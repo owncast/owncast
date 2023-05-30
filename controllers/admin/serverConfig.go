@@ -59,6 +59,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ChatDisabled:            data.GetChatDisabled(),
 		ChatJoinMessagesEnabled: data.GetChatJoinMessagesEnabled(),
 		SocketHostOverride:      data.GetWebsocketOverrideHost(),
+		VideoServingEndpoint:    data.GetVideoServingEndpoint(),
 		ChatEstablishedUserMode: data.GetChatEstbalishedUsersOnlyMode(),
 		HideViewerCount:         data.GetHideViewerCount(),
 		DisableSearchIndexing:   data.GetDisableSearchIndexing(),
@@ -107,6 +108,7 @@ type serverConfigAdminResponse struct {
 	SocketHostOverride      string                      `json:"socketHostOverride,omitempty"`
 	WebServerIP             string                      `json:"webServerIP"`
 	VideoCodec              string                      `json:"videoCodec"`
+	VideoServingEndpoint    string                      `json:"videoServingEndpoint"`
 	S3                      models.S3                   `json:"s3"`
 	Federation              federationConfigResponse    `json:"federation"`
 	SupportedCodecs         []string                    `json:"supportedCodecs"`
@@ -120,9 +122,9 @@ type serverConfigAdminResponse struct {
 	ChatDisabled            bool                        `json:"chatDisabled"`
 	ChatJoinMessagesEnabled bool                        `json:"chatJoinMessagesEnabled"`
 	ChatEstablishedUserMode bool                        `json:"chatEstablishedUserMode"`
+	DisableSearchIndexing   bool                        `json:"disableSearchIndexing"`
 	StreamKeyOverridden     bool                        `json:"streamKeyOverridden"`
 	HideViewerCount         bool                        `json:"hideViewerCount"`
-	DisableSearchIndexing   bool                        `json:"disableSearchIndexing"`
 }
 
 type videoSettings struct {

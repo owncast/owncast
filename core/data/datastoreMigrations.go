@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	datastoreValuesVersion   = 2
+	datastoreValuesVersion   = 3
 	datastoreValueVersionKey = "DATA_STORE_VERSION"
 )
 
@@ -25,6 +25,8 @@ func migrateDatastoreValues(datastore *Datastore) {
 			migrateToDatastoreValues1(datastore)
 		case 1:
 			migrateToDatastoreValues2(datastore)
+		case 2:
+			migrateToDatastoreValues3ServingEndpoint3(datastore)
 		default:
 			log.Fatalln("missing datastore values migration step")
 		}
@@ -60,4 +62,14 @@ func migrateToDatastoreValues2(datastore *Datastore) {
 	_ = SetStreamKeys([]models.StreamKey{
 		{Key: oldAdminPassword, Comment: "Default stream key"},
 	})
+}
+
+func migrateToDatastoreValues3ServingEndpoint3(_ *Datastore) {
+	s3Config := GetS3Config()
+
+	if !s3Config.Enabled {
+		return
+	}
+
+	_ = SetVideoServingEndpoint(s3Config.ServingEndpoint)
 }

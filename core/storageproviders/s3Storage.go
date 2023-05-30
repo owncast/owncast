@@ -1,7 +1,6 @@
 package storageproviders
 
 import (
-	"bufio"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,7 +10,6 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/playlist"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 
@@ -21,8 +19,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
 	"github.com/owncast/owncast/config"
-
-	"github.com/grafov/m3u8"
 )
 
 // S3Storage is the s3 implementation of a storage provider.
@@ -58,8 +54,9 @@ func (s *S3Storage) Setup() error {
 	log.Trace("Setting up S3 for external storage of video...")
 
 	s3Config := data.GetS3Config()
-	if s3Config.ServingEndpoint != "" {
-		s.host = s3Config.ServingEndpoint
+	customVideoServingEndpoint := data.GetVideoServingEndpoint()
+	if customVideoServingEndpoint != "" {
+		s.host = customVideoServingEndpoint
 	} else {
 		s.host = fmt.Sprintf("%s/%s", s3Config.Endpoint, s3Config.Bucket)
 	}
@@ -130,7 +127,7 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	// Rewrite the playlist to use absolute remote S3 URLs
-	if err := s.rewriteRemotePlaylist(localFilePath); err != nil {
+	if err := rewriteRemotePlaylist(localFilePath, s.host); err != nil {
 		log.Warnln(err)
 	}
 }
@@ -215,27 +212,4 @@ func (s *S3Storage) connectAWS() *session.Session {
 		log.Panicln(err)
 	}
 	return sess
-}
-
-// rewriteRemotePlaylist will take a local playlist and rewrite it to have absolute URLs to remote locations.
-func (s *S3Storage) rewriteRemotePlaylist(filePath string) error {
-	f, err := os.Open(filePath) // nolint
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	p := m3u8.NewMasterPlaylist()
-	if err := p.DecodeFrom(bufio.NewReader(f), false); err != nil {
-		log.Warnln(err)
-	}
-
-	for _, item := range p.Variants {
-		item.URI = s.host + filepath.Join("/hls", item.URI)
-	}
-
-	publicPath := filepath.Join(config.HLSStoragePath, filepath.Base(filePath))
-
-	newPlaylist := p.String()
-
-	return playlist.WritePlaylist(newPlaylist, publicPath)
 }
