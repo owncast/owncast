@@ -38,7 +38,7 @@ const API_HIDE_VIEWER_COUNT = '/hideviewercount';
 const API_CHAT_DISABLE = '/chat/disable';
 const API_CHAT_JOIN_MESSAGES_ENABLED = '/chat/joinmessagesenabled';
 const API_CHAT_ESTABLISHED_MODE = '/chat/establishedusermode';
-
+const API_DISABLE_SEARCH_INDEXING = '/disablesearchindexing';
 const API_SOCKET_HOST_OVERRIDE = '/sockethostoverride';
 
 // Federation
@@ -210,6 +210,13 @@ export const FIELD_PROPS_HIDE_VIEWER_COUNT = {
   configPath: '',
   label: 'Hide viewer count',
   tip: 'Turn this ON to hide the viewer count on the web page.',
+};
+
+export const FIELD_PROPS_DISABLE_SEARCH_INDEXING = {
+  apiPath: API_DISABLE_SEARCH_INDEXING,
+  configPath: '',
+  label: 'Disable search engine indexing',
+  tip: 'Turn this ON to to tell search engines not to index this site.',
 };
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {

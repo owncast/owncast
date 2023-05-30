@@ -751,6 +751,26 @@ func SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "hide viewer count setting updated")
 }
 
+// SetDisableSearchIndexing will set search indexing support.
+func SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		controllers.WriteSimpleResponse(w, false, "unable to update search indexing")
+		return
+	}
+
+	if err := data.SetDisableSearchIndexing(configValue.Value.(bool)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	controllers.WriteSimpleResponse(w, true, "search indexing support updated")
+}
+
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
