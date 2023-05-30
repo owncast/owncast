@@ -10,6 +10,7 @@ import {
   TEXTFIELD_PROPS_SOCKET_HOST_OVERRIDE,
   TEXTFIELD_PROPS_ADMIN_PASSWORD,
   TEXTFIELD_PROPS_WEB_PORT,
+  TEXTFIELD_PROPS_VIDEO_SERVING_ENDPOINT,
 } from '../../utils/config-constants';
 import { UpdateArgs } from '../../types/config-section';
 import { ResetYP } from './ResetYP';
@@ -24,8 +25,15 @@ export default function EditInstanceDetails() {
 
   const { serverConfig } = serverStatusData || {};
 
-  const { adminPassword, ffmpegPath, rtmpServerPort, webServerPort, yp, socketHostOverride } =
-    serverConfig;
+  const {
+    adminPassword,
+    ffmpegPath,
+    rtmpServerPort,
+    webServerPort,
+    yp,
+    socketHostOverride,
+    videoServingEndpoint,
+  } = serverConfig;
 
   useEffect(() => {
     setFormDataValues({
@@ -34,6 +42,7 @@ export default function EditInstanceDetails() {
       rtmpServerPort,
       webServerPort,
       socketHostOverride,
+      videoServingEndpoint,
     });
   }, [serverConfig]);
 
@@ -116,6 +125,15 @@ export default function EditInstanceDetails() {
             {...TEXTFIELD_PROPS_SOCKET_HOST_OVERRIDE}
             value={formDataValues.socketHostOverride}
             initialValue={socketHostOverride || ''}
+            type={TEXTFIELD_TYPE_URL}
+            onChange={handleFieldChange}
+          />
+
+          <TextFieldWithSubmit
+            fieldName="videoServingEndpoint"
+            {...TEXTFIELD_PROPS_VIDEO_SERVING_ENDPOINT}
+            value={formDataValues.videoServingEndpoint}
+            initialValue={videoServingEndpoint || ''}
             type={TEXTFIELD_TYPE_URL}
             onChange={handleFieldChange}
           />

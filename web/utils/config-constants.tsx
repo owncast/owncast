@@ -40,6 +40,7 @@ const API_CHAT_JOIN_MESSAGES_ENABLED = '/chat/joinmessagesenabled';
 const API_CHAT_ESTABLISHED_MODE = '/chat/establishedusermode';
 const API_DISABLE_SEARCH_INDEXING = '/disablesearchindexing';
 const API_SOCKET_HOST_OVERRIDE = '/sockethostoverride';
+const API_VIDEO_SERVING_ENDPOINT = '/videoservingendpoint';
 
 // Federation
 const API_FEDERATION_ENABLED = '/federation/enable';
@@ -175,6 +176,18 @@ export const TEXTFIELD_PROPS_SOCKET_HOST_OVERRIDE = {
   placeholder: 'https://owncast.mysite.com',
   label: 'Websocket host override',
   tip: 'The direct URL of your Owncast server.',
+  type: TEXTFIELD_TYPE_URL,
+  pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
+  useTrim: true,
+};
+
+export const TEXTFIELD_PROPS_VIDEO_SERVING_ENDPOINT = {
+  apiPath: API_VIDEO_SERVING_ENDPOINT,
+  fieldName: 'videoServingEndpoint',
+  label: 'Serving Endpoint',
+  maxLength: 255,
+  placeholder: 'http://cdn.provider.endpoint.com',
+  tip: 'Optional URL that video content should be accessed from instead of the default.  Used with CDNs and specific storage providers. Generally not required.',
   type: TEXTFIELD_TYPE_URL,
   pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
   useTrim: true,
@@ -520,16 +533,6 @@ export const S3_TEXT_FIELDS_INFO = {
     maxLength: 255,
     placeholder: 'your secret key',
     tip: '',
-  },
-  servingEndpoint: {
-    fieldName: 'servingEndpoint',
-    label: 'Serving Endpoint',
-    maxLength: 255,
-    placeholder: 'http://cdn.ss3.provider.endpoint.com',
-    tip: 'Optional URL that content should be accessed from instead of the default.  Used with CDNs and specific storage providers. Generally not required.',
-    type: TEXTFIELD_TYPE_URL,
-    pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
-    useTrim: true,
   },
   forcePathStyle: {
     fieldName: 'forcePathStyle',

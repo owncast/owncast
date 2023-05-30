@@ -6,13 +6,15 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/transcoder"
 )
 
 // LocalStorage represents an instance of the local storage provider for HLS video.
 type LocalStorage struct {
 	// Cleanup old public HLS content every N min from the webroot.
-	onlineCleanupTicker *time.Ticker
+	onlineCleanupTicker        *time.Ticker
+	customVideoServingEndpoint string
 }
 
 // NewLocalStorage returns a new LocalStorage instance.
@@ -22,6 +24,10 @@ func NewLocalStorage() *LocalStorage {
 
 // Setup configures this storage provider.
 func (s *LocalStorage) Setup() error {
+	if data.GetVideoServingEndpoint() != "" {
+		s.customVideoServingEndpoint = data.GetVideoServingEndpoint()
+	}
+
 	// NOTE: This cleanup timer will have to be disabled to support recordings in the future
 	// as all HLS segments have to be publicly available on disk to keep a recording of them.
 	s.onlineCleanupTicker = time.NewTicker(1 * time.Minute)
@@ -50,7 +56,12 @@ func (s *LocalStorage) VariantPlaylistWritten(localFilePath string) {
 
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *LocalStorage) MasterPlaylistWritten(localFilePath string) {
-	if _, err := s.Save(localFilePath, 0); err != nil {
+	if s.customVideoServingEndpoint != "" {
+		// Rewrite the playlist to use custom absolute remote URLs
+		if err := rewriteRemotePlaylist(localFilePath, s.customVideoServingEndpoint); err != nil {
+			log.Warnln(err)
+		}
+	} else if _, err := s.Save(localFilePath, 0); err != nil {
 		log.Warnln(err)
 	}
 }
