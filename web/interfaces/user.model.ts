@@ -9,6 +9,11 @@ export class User {
     this.nameChangedAt = u.nameChangedAt;
     this.scopes = u.scopes;
     this.authenticated = u.authenticated;
+    this.isBot = u.isBot;
+
+    if (this.scopes && this.scopes.length > 0) {
+      this.isModerator = this.scopes.includes('MODERATOR');
+    }
   }
 
   id: string;
@@ -27,11 +32,7 @@ export class User {
 
   authenticated: boolean;
 
-  public isModerator = (): boolean => {
-    if (!this.scopes || this.scopes.length === 0) {
-      return false;
-    }
+  isBot: boolean;
 
-    return this.scopes.includes('MODERATOR');
-  };
+  isModerator: boolean;
 }
