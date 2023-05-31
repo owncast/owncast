@@ -530,6 +530,7 @@ export const S3_TEXT_FIELDS_INFO = {
   secret: {
     fieldName: 'secret',
     label: 'Secret key',
+    type: 'password',
     maxLength: 255,
     placeholder: 'your secret key',
     tip: '',
