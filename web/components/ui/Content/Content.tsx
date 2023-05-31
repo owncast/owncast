@@ -1,5 +1,6 @@
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { Skeleton, Col, Row } from 'antd';
+import { Skeleton, Col, Row, Button } from 'antd';
+import MessageFilled from '@ant-design/icons/MessageFilled';
 import { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import classnames from 'classnames';
@@ -11,12 +12,12 @@ import {
   clientConfigStateAtom,
   chatMessagesAtom,
   currentUserAtom,
-  isChatAvailableSelector,
   isChatVisibleSelector,
   appStateAtom,
   isOnlineSelector,
   isMobileAtom,
   serverStatusState,
+  isChatAvailableSelector,
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 
@@ -32,6 +33,7 @@ import { ExternalAction } from '../../../interfaces/external-action';
 import { Modal } from '../Modal/Modal';
 import { DesktopContent } from './DesktopContent';
 import { MobileContent } from './MobileContent';
+import { ChatModal } from '../../modals/ChatModal/ChatModal';
 
 // Lazy loaded components
 
@@ -91,12 +93,12 @@ export const Content: FC = () => {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
-  const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const currentUser = useRecoilValue(currentUserAtom);
   const serverStatus = useRecoilValue<ServerStatus>(serverStatusState);
   const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
   const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
   const online = useRecoilValue<boolean>(isOnlineSelector);
+  const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
 
   const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } =
     useRecoilValue<ServerStatus>(serverStatusState);
@@ -123,6 +125,8 @@ export const Content: FC = () => {
 
   const [supportsBrowserNotifications, setSupportsBrowserNotifications] = useState(false);
   const supportFediverseFeatures = fediverseEnabled;
+
+  const [showChatModal, setShowChatModal] = useState(false);
 
   const externalActionSelected = (action: ExternalAction) => {
     const { openExternally, url } = action;
@@ -178,10 +182,10 @@ export const Content: FC = () => {
     setSupportsBrowserNotifications(isPushNotificationSupported() && browserNotificationsEnabled);
   }, [browserNotificationsEnabled]);
 
-  const showChat = online && !chatDisabled && isChatVisible;
+  const showChat = isChatAvailable && !chatDisabled && isChatVisible;
 
   // accounts for sidebar width when online in desktop
-  const dynamicPadding = online && !isMobile ? '320px' : '0px';
+  const dynamicPadding = showChat && !isMobile ? '320px' : '0px';
 
   return (
     <>
@@ -262,12 +266,9 @@ export const Content: FC = () => {
               tags={tags}
               socialHandles={socialHandles}
               extraPageContent={extraPageContent}
-              messages={messages}
-              currentUser={currentUser}
-              showChat={showChat}
               setShowFollowModal={setShowFollowModal}
               supportFediverseFeatures={supportFediverseFeatures}
-              chatEnabled={isChatAvailable}
+              online={online}
             />
           ) : (
             <Col span={24} style={{ paddingRight: dynamicPadding }}>
@@ -304,7 +305,23 @@ export const Content: FC = () => {
           handleClose={() => setShowFollowModal(false)}
         />
       </Modal>
+      {isMobile && showChatModal && isChatVisible && (
+        <ChatModal
+          messages={messages}
+          currentUser={currentUser}
+          handleClose={() => setShowChatModal(false)}
+        />
+      )}
+      {isMobile && isChatAvailable && (
+        <Button
+          id="mobile-chat-button"
+          type="primary"
+          onClick={() => setShowChatModal(true)}
+          className={styles.floatingMobileChatModalButton}
+        >
+          Chat <MessageFilled />
+        </Button>
+      )}
     </>
   );
 };
-export default Content;

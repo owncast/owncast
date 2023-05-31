@@ -16,37 +16,37 @@ import (
 )
 
 type webConfigResponse struct {
-	Name                 string                       `json:"name"`
+	AppearanceVariables  map[string]string            `json:"appearanceVariables"`
+	Notifications        notificationsConfigResponse  `json:"notifications"`
+	CustomStyles         string                       `json:"customStyles"`
 	Summary              string                       `json:"summary"`
 	OfflineMessage       string                       `json:"offlineMessage"`
 	Logo                 string                       `json:"logo"`
-	Tags                 []string                     `json:"tags"`
 	Version              string                       `json:"version"`
-	NSFW                 bool                         `json:"nsfw"`
 	SocketHostOverride   string                       `json:"socketHostOverride,omitempty"`
 	ExtraPageContent     string                       `json:"extraPageContent"`
 	StreamTitle          string                       `json:"streamTitle,omitempty"` // What's going on with the current stream
-	SocialHandles        []models.SocialHandle        `json:"socialHandles"`
-	ChatDisabled         bool                         `json:"chatDisabled"`
-	ExternalActions      []models.ExternalAction      `json:"externalActions"`
-	CustomStyles         string                       `json:"customStyles"`
-	AppearanceVariables  map[string]string            `json:"appearanceVariables"`
-	MaxSocketPayloadSize int                          `json:"maxSocketPayloadSize"`
+	Name                 string                       `json:"name"`
 	Federation           federationConfigResponse     `json:"federation"`
-	Notifications        notificationsConfigResponse  `json:"notifications"`
+	SocialHandles        []models.SocialHandle        `json:"socialHandles"`
+	ExternalActions      []models.ExternalAction      `json:"externalActions"`
+	Tags                 []string                     `json:"tags"`
+	MaxSocketPayloadSize int                          `json:"maxSocketPayloadSize"`
+	ChatDisabled         bool                         `json:"chatDisabled"`
+	NSFW                 bool                         `json:"nsfw"`
 	Authentication       authenticationConfigResponse `json:"authentication"`
 	HideViewerCount      bool                         `json:"hideViewerCount"`
 }
 
 type federationConfigResponse struct {
-	Enabled       bool   `json:"enabled"`
 	Account       string `json:"account,omitempty"`
 	FollowerCount int    `json:"followerCount,omitempty"`
+	Enabled       bool   `json:"enabled"`
 }
 
 type browserNotificationsConfigResponse struct {
-	Enabled   bool   `json:"enabled"`
 	PublicKey string `json:"publicKey,omitempty"`
+	Enabled   bool   `json:"enabled"`
 }
 
 type notificationsConfigResponse struct {
@@ -72,6 +72,7 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 
 func getConfigResponse() webConfigResponse {
 	pageContent := utils.RenderPageContentMarkdown(data.GetExtraPageBodyContent())
+	offlineMessage := utils.RenderSimpleMarkdown(data.GetCustomOfflineMessage())
 	socialHandles := data.GetSocialHandles()
 	for i, handle := range socialHandles {
 		platform := models.GetSocialHandle(handle.Platform)
@@ -119,7 +120,7 @@ func getConfigResponse() webConfigResponse {
 	return webConfigResponse{
 		Name:                 data.GetServerName(),
 		Summary:              serverSummary,
-		OfflineMessage:       data.GetCustomOfflineMessage(),
+		OfflineMessage:       offlineMessage,
 		Logo:                 "/logo",
 		Tags:                 data.GetServerMetadataTags(),
 		Version:              config.GetReleaseString(),

@@ -186,26 +186,27 @@ func makeFederatedActionChatEventFromRowData(row rowData) events.FediverseEngage
 }
 
 type rowData struct {
-	id        string
-	userID    *string
-	body      string
-	eventType models.EventType
-	hiddenAt  *time.Time
-	timestamp time.Time
-	title     *string
-	subtitle  *string
-	image     *string
-	link      *string
+	timestamp         time.Time
+	image             *string
+	previousUsernames *string
 
-	userDisplayName     *string
-	userDisplayColor    *int
+	userDisplayName  *string
+	userDisplayColor *int
+	userID           *string
+	title            *string
+	subtitle         *string
+	link             *string
+
+	userType            *string
+	userScopes          *string
+	hiddenAt            *time.Time
 	userCreatedAt       *time.Time
 	userDisabledAt      *time.Time
-	previousUsernames   *string
-	userNameChangedAt   *time.Time
 	userAuthenticatedAt *time.Time
-	userScopes          *string
-	userType            *string
+	userNameChangedAt   *time.Time
+	body                string
+	eventType           models.EventType
+	id                  string
 }
 
 func getChat(rows *sql.Rows) ([]interface{}, error) {

@@ -29,6 +29,7 @@ export type ChatContainerProps = {
   showInput?: boolean;
   height?: string;
   chatAvailable: boolean;
+  focusInput?: boolean;
 };
 
 function shouldCollapseMessages(
@@ -82,7 +83,7 @@ function checkIsModerator(message: ChatMessage | ConnectedClientInfoEvent) {
 
   const u = new User(user);
 
-  return u.isModerator();
+  return u.isModerator;
 }
 
 export const ChatContainer: FC<ChatContainerProps> = ({
@@ -93,6 +94,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   showInput,
   height,
   chatAvailable: chatEnabled,
+  focusInput = true,
 }) => {
   const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(false);
@@ -160,8 +162,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         highlightString={usernameToHighlight} // What to highlight in the message
         sentBySelf={message.user?.id === chatUserId} // The local user sent this message
         sameUserAsLast={collapsed}
-        isAuthorModerator={message.user?.scopes?.includes('MODERATOR')}
-        isAuthorBot={message.user?.scopes?.includes('BOT')}
+        isAuthorModerator={message.user?.isModerator}
+        isAuthorBot={message.user?.isBot}
         isAuthorAuthenticated={message.user?.authenticated}
         key={message.id}
       />
@@ -211,7 +213,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
       });
       setIsAtBottom(true);
       setShowScrollToBottomButton(false);
-    }, 100);
+    }, 150);
   };
 
   // This is a hack to force a scroll to the very bottom of the chat messages
@@ -282,7 +284,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         {MessagesTable}
         {showInput && (
           <div className={styles.chatTextField}>
-            <ChatTextField enabled={chatEnabled} />
+            <ChatTextField enabled={chatEnabled} focusInput={focusInput} />
           </div>
         )}
       </div>

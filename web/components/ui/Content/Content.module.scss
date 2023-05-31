@@ -4,33 +4,25 @@
   padding: var(--content-padding);
 }
 
-.lowerSectionMobile {
+.lowerSectionMobileTabbed {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   flex-shrink: 0;
-  padding: 0.3em;
-  position: absolute;
+  position: relative;
   bottom: 0;
   width: 100%;
 
   @include screen(tablet) {
-    //sets the position of tabbed content for online mode
-    top: 430px;
-  }
-
-  @include screen(mobile) {
-    //sets the position of tabbed content for online mode
-    top: 280px;
+    top: 0;
+    position: relative;
   }
 
   :global(.ant-tabs-nav) {
     margin-bottom: 0px;
+    padding-top: 0.5vh;
+    padding-left: 1vw;
   }
-}
-
-.mobileNoTabs {
-  padding-top: 20px;
 }
 
 .topSectionElement {
@@ -46,15 +38,21 @@
   color: var(--theme-color-background-main);
 }
 
-.mobileActionButtonMenu {
+.mobileActionButtons {
   display: none;
 
   @include screen(tablet) {
-    display: block;
+    display: flex;
+    align-items: center;
     position: absolute;
     top: 4px;
     right: 10px;
-    z-index: 200;
+    z-index: 199;
+  }
+
+  > * {
+    margin-left: 5px;
+    margin-right: 5px;
   }
 }
 
@@ -64,7 +62,6 @@
   @include screen(tablet) {
     display: none;
   }
-
 }
 
 //not sure if this is needed
@@ -86,6 +83,13 @@
   padding: calc(2 * var(--content-padding));
   border-radius: var(--theme-rounded-corners);
   width: 100%;
+  margin-bottom: 20px;
+
+  h1,
+  h2,
+  h3 {
+    line-height: 2rem;
+  }
 
   h1:first-child,
   h2:first-child,
@@ -95,4 +99,18 @@
 }
 .offlineBanner {
   color: var(--theme-color-background-main);
+}
+
+.floatingMobileChatModalButton {
+  position: fixed;
+  width: 100px;
+  height: 40px;
+  bottom: 40px;
+  right: var(--content-padding);
+  font-weight: 600;
+  font-size: 1em;
+  z-index: 99;
+  background-color: var(--theme-color-components-chat-background);
+  border-width: 0;
+  box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 20%);
 }

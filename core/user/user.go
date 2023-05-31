@@ -27,16 +27,16 @@ const (
 
 // User represents a single chat user.
 type User struct {
-	ID              string     `json:"id"`
-	DisplayName     string     `json:"displayName"`
-	DisplayColor    int        `json:"displayColor"`
 	CreatedAt       time.Time  `json:"createdAt"`
 	DisabledAt      *time.Time `json:"disabledAt,omitempty"`
-	PreviousNames   []string   `json:"previousNames"`
 	NameChangedAt   *time.Time `json:"nameChangedAt,omitempty"`
-	Scopes          []string   `json:"scopes,omitempty"`
-	IsBot           bool       `json:"isBot"`
 	AuthenticatedAt *time.Time `json:"-"`
+	ID              string     `json:"id"`
+	DisplayName     string     `json:"displayName"`
+	PreviousNames   []string   `json:"previousNames"`
+	Scopes          []string   `json:"scopes,omitempty"`
+	DisplayColor    int        `json:"displayColor"`
+	IsBot           bool       `json:"isBot"`
 	Authenticated   bool       `json:"authenticated"`
 }
 

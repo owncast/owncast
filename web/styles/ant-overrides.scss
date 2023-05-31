@@ -162,7 +162,6 @@ DROPDOWN
     height: 100%;
   }
   .ant-tabs-content {
-    height: 100% !important;
     overflow: auto;
     .ant-tabs-tabpane-active {
       height: 100%;
@@ -179,6 +178,10 @@ DROPDOWN
 }
 
 .ant-modal-close:hover {
+  color: var(--theme-color-components-modal-header-text);
+}
+
+.ant-modal-title {
   color: var(--theme-color-components-modal-header-text);
 }
 

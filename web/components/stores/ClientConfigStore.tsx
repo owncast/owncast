@@ -23,9 +23,9 @@ import {
   FediverseEvent,
 } from '../../interfaces/socket-events';
 import { mergeMeta } from '../../utils/helpers';
-import handleConnectedClientInfoMessage from './eventhandlers/connected-client-info-handler';
+import { handleConnectedClientInfoMessage } from './eventhandlers/connected-client-info-handler';
 import { ServerStatusServiceContext } from '../../services/status-service';
-import handleNameChangeEvent from './eventhandlers/handleNameChangeEvent';
+import { handleNameChangeEvent } from './eventhandlers/handleNameChangeEvent';
 import { DisplayableError } from '../../types/displayable-error';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
@@ -108,7 +108,7 @@ export const clockSkewAtom = atom<Number>({
   default: 0.0,
 });
 
-export const removedMessageIdsAtom = atom<string[]>({
+const removedMessageIdsAtom = atom<string[]>({
   key: 'removedMessageIds',
   default: [],
 });
@@ -304,7 +304,7 @@ export const ClientConfigStore: FC = () => {
         );
         if (message as ChatEvent) {
           const m = new ChatEvent(message);
-          if (!hasBeenModeratorNotified && m.user?.isModerator()) {
+          if (!hasBeenModeratorNotified && m.user?.isModerator) {
             setChatMessages(currentState => [...currentState, message as ChatEvent]);
             hasBeenModeratorNotified = true;
           }

@@ -1,7 +1,4 @@
-import { convertToText } from '../chat';
 import { getDiffInDaysFromNow } from '../../../utils/helpers';
-
-const convertToMarkup = (str = '') => convertToText(str).replace(/\n/g, '<p></p>');
 
 export function formatTimestamp(sentAt: Date) {
   const now = new Date(sentAt);
@@ -17,15 +14,4 @@ export function formatTimestamp(sentAt: Date) {
   }
 
   return `${now.toLocaleTimeString()}`;
-}
-
-/*
-  You would call this when receiving a plain text
-  value back from an API, and before inserting the
-  text into the `contenteditable` area on a page.
-*/
-
-export function formatMessageText(message: string) {
-  const formattedText = convertToMarkup(message);
-  return formattedText;
 }

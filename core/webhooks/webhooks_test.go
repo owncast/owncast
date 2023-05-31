@@ -17,6 +17,17 @@ import (
 	jsonpatch "gopkg.in/evanphx/json-patch.v5"
 )
 
+func fakeGetStatus() models.Status {
+	return models.Status{
+		Online:                true,
+		ViewerCount:           5,
+		OverallMaxViewerCount: 420,
+		SessionMaxViewerCount: 69,
+		StreamTitle:           "my stream",
+		VersionNumber:         "1.2.3",
+	}
+}
+
 func TestMain(m *testing.M) {
 	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-db.db")
 	if err != nil {
@@ -29,7 +40,8 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	InitWorkerPool()
+	SetupWebhooks(fakeGetStatus)
+
 	defer close(queue)
 
 	m.Run()

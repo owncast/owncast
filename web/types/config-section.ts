@@ -81,7 +81,6 @@ export interface S3Field {
   endpoint: string;
   region: string;
   secret: string;
-  servingEndpoint?: string;
   forcePathStyle: boolean;
 }
 
@@ -145,6 +144,7 @@ export interface ConfigDetails {
   videoSettings: VideoSettingsFields;
   webServerPort: string;
   socketHostOverride: string;
+  videoServingEndpoint: string;
   yp: ConfigDirectoryFields;
   supportedCodecs: string[];
   videoCodec: string;
@@ -156,4 +156,5 @@ export interface ConfigDetails {
   chatJoinMessagesEnabled: boolean;
   chatEstablishedUserMode: boolean;
   hideViewerCount: boolean;
+  disableSearchIndexing: boolean;
 }

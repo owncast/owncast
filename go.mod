@@ -1,9 +1,9 @@
 module github.com/owncast/owncast
 
-go 1.18
+go 1.20
 
 require (
-	github.com/aws/aws-sdk-go v1.44.248
+	github.com/aws/aws-sdk-go v1.44.271
 	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -11,12 +11,12 @@ require (
 	github.com/grafov/m3u8 v0.12.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/mattn/go-sqlite3 v1.14.16
-	github.com/microcosm-cc/bluemonday v1.0.23
+	github.com/microcosm-cc/bluemonday v1.0.24
 	github.com/nareix/joy5 v0.0.0-20210317075623-2c912ca30590
 	github.com/oschwald/geoip2-golang v1.8.0
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/schollz/sqlite3dump v1.3.1
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.2
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
 	github.com/yuin/goldmark v1.5.4
 	golang.org/x/mod v0.10.0
@@ -32,17 +32,17 @@ require (
 	github.com/tklauser/numcpus v0.6.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
-	golang.org/x/net v0.9.0
-	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/net v0.10.0
+	golang.org/x/sys v0.8.0 // indirect
 )
 
-require github.com/prometheus/client_golang v1.15.0
+require github.com/prometheus/client_golang v1.15.1
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/klauspost/compress v1.14.1 // indirect
+	github.com/klauspost/compress v1.16.4 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect

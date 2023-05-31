@@ -18,13 +18,12 @@ const WarningOutlined = dynamic(() => import('@ant-design/icons/WarningOutlined'
   ssr: false,
 });
 
-export const STATUS_RESET_TIMEOUT = 3000;
-
 export const STATUS_ERROR = 'error';
-export const STATUS_INVALID = 'invalid';
 export const STATUS_PROCESSING = 'proessing';
 export const STATUS_SUCCESS = 'success';
 export const STATUS_WARNING = 'warning';
+
+const STATUS_INVALID = 'invalid';
 
 export type InputStatusTypes = 'error' | 'invalid' | 'proessing' | 'success' | 'warning';
 
@@ -37,7 +36,7 @@ interface InputStates {
   [key: string]: StatusState;
 }
 
-export const INPUT_STATES: InputStates = {
+const INPUT_STATES: InputStates = {
   [STATUS_SUCCESS]: {
     type: STATUS_SUCCESS,
     icon: <CheckCircleFilled style={{ color: 'green' }} />,

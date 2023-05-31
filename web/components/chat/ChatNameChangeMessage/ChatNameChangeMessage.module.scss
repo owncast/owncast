@@ -1,18 +1,18 @@
 .nameChangeView {
   display: flex;
   font-size: var(--chat-message-text-size);
-	font-weight: 300;
+  font-weight: 400;
   border-radius: var(--theme-rounded-corners);
   padding: 5px 15px;
   color: var(--theme-color-components-chat-text);
   & .nameChangeText {
-    font-weight: 300;
+    font-weight: 400;
     & .plain {
-      font-weight: 300;
+      font-weight: 400;
     }
   }
 }
 
 .icon {
-	padding-right: var(--chat-notification-icon-padding);
+  padding-right: var(--chat-notification-icon-padding);
 }

@@ -3,7 +3,7 @@ package resolvers
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/go-fed/activity/streams"
@@ -63,7 +63,7 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 
 	defer response.Body.Close()
 
-	data, err := ioutil.ReadAll(response.Body)
+	data, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}

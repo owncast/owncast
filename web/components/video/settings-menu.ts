@@ -111,5 +111,3 @@ export function createVideoSettingsMenuButton(player, videojs, qualities, latenc
   // eslint-disable-next-line consistent-return
   return menuButton;
 }
-
-export default createVideoSettingsMenuButton;

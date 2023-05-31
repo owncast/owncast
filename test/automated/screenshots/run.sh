@@ -5,7 +5,9 @@ set -o errexit
 set -o pipefail
 
 finish() {
+	# shellcheck disable=SC2317
 	kill_with_kids "$BROWSERSTACK_PID"
+	# shellcheck disable=SC2317
 	kill_with_kids "$STREAM_PID"
 }
 

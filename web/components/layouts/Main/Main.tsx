@@ -16,6 +16,8 @@ import {
   fatalErrorStateAtom,
   appStateAtom,
   serverStatusState,
+  isMobileAtom,
+  isChatVisibleSelector,
 } from '../../stores/ClientConfigStore';
 import { Content } from '../../ui/Content/Content';
 import { Header } from '../../ui/Header/Header';
@@ -30,6 +32,7 @@ import { PushNotificationServiceWorker } from '../../workers/PushNotificationSer
 import { AppStateOptions } from '../../stores/application-state';
 import { Noscript } from '../../ui/Noscript/Noscript';
 import { ServerStatus } from '../../../interfaces/server-status.model';
+import { DYNAMIC_PADDING_VALUE } from '../../../utils/constants';
 
 // Lazy loaded components
 
@@ -50,11 +53,16 @@ export const Main: FC = () => {
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
-
+  const isMobile = useRecoilValue<boolean | undefined>(isMobileAtom);
+  const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
   const { videoAvailable } = appState;
-  const { online, streamTitle, versionNumber: version } = clientStatus;
+  const { online, streamTitle } = clientStatus;
+
+  // accounts for sidebar width when online in desktop
+  const showChat = online && !chatDisabled && isChatVisible;
+  const dynamicFooterPadding = showChat && !isMobile ? DYNAMIC_PADDING_VALUE : '';
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
@@ -90,7 +98,6 @@ export const Main: FC = () => {
         <link rel="authorization_endpoint" href="/api/auth/provider/indieauth" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/img/favicon/ms-icon-144x144.png" />
-        <meta name="theme-color" content="#ffffff" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
@@ -152,7 +159,6 @@ export const Main: FC = () => {
       <TitleNotifier name={name} />
       <Theme />
       <Script strategy="afterInteractive" src="/customjavascript" />
-
       <Layout ref={layoutRef} className={styles.layout}>
         <Header
           name={headerText}
@@ -164,9 +170,11 @@ export const Main: FC = () => {
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
-        <Footer version={version} />
-      </Layout>
 
+        <div className={styles.footerContainer}>
+          <Footer dynamicPaddingValue={dynamicFooterPadding} />
+        </div>
+      </Layout>
       <Noscript />
     </>
   );

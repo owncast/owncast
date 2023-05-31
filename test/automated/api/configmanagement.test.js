@@ -37,6 +37,8 @@ const defaultFederationConfig = {
 	blockedDomains: [],
 };
 const defaultHideViewerCount = false;
+const defaultDisableSearchIndexing = false;
+
 const defaultSocialHandles = [
 	{
 		icon: '/img/platformlogos/github.svg',
@@ -130,6 +132,7 @@ const newFederationConfig = {
 };
 
 const newHideViewerCount = !defaultHideViewerCount;
+const newDisableSearchIndexing = !defaultDisableSearchIndexing;
 
 const overriddenWebsocketHost = 'ws://lolcalhost.biz';
 const customCSS = randomString();
@@ -340,6 +343,14 @@ test('enable federation', async (done) => {
 	done();
 });
 
+test('disable search indexing', async (done) => {
+	await sendAdminRequest(
+		'config/disablesearchindexing',
+		newDisableSearchIndexing
+	);
+	done();
+});
+
 test('change admin password', async (done) => {
 	const res = await sendAdminRequest('config/adminpass', newAdminPassword);
 	done();
@@ -371,11 +382,12 @@ test('set override websocket host', async (done) => {
 
 test('verify updated config values', async (done) => {
 	const res = await request.get('/api/config');
+
 	expect(res.body.name).toBe(newServerName);
 	expect(res.body.streamTitle).toBe(newStreamTitle);
 	expect(res.body.summary).toBe(`${newServerSummary}`);
 	expect(res.body.extraPageContent).toBe(newPageContent);
-	expect(res.body.offlineMessage).toBe(newOfflineMessage);
+	expect(res.body.offlineMessage).toBe(`<p>${newOfflineMessage}</p>`);
 	expect(res.body.logo).toBe('/logo');
 	expect(res.body.socialHandles).toStrictEqual(newSocialHandles);
 	expect(res.body.socketHostOverride).toBe(overriddenWebsocketHost);
@@ -468,6 +480,21 @@ test('verify frontend status', (done) => {
 		.expect(200)
 		.then((res) => {
 			expect(res.body.viewerCount).toBe(undefined);
+			done();
+		});
+});
+
+test('verify robots.txt is correct after disabling search indexing', (done) => {
+	const expected = `User-agent: *
+Disallow: /admin
+Disallow: /api
+Disallow: /`;
+
+	request
+		.get('/robots.txt')
+		.expect(200)
+		.then((res) => {
+			expect(res.text).toBe(expected);
 			done();
 		});
 });

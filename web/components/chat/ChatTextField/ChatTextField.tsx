@@ -2,7 +2,15 @@ import { Popover } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor } from 'slate';
-import { Slate, Editable, withReact, ReactEditor, useSelected, useFocused } from 'slate-react';
+import {
+  Slate,
+  DefaultPlaceholder,
+  Editable,
+  withReact,
+  ReactEditor,
+  useSelected,
+  useFocused,
+} from 'slate-react';
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
 import WebsocketService from '../../../services/websocket-service';
@@ -123,11 +131,12 @@ const getCharacterCount = node => {
 export type ChatTextFieldProps = {
   defaultText?: string;
   enabled: boolean;
+  focusInput: boolean;
 };
 
 const characterLimit = 300;
 
-export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled }) => {
+export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
@@ -146,7 +155,9 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled }) 
       return;
     }
 
-    const message = serialize(editor);
+    let message = serialize(editor);
+    // Strip the opening and closing <p> tags.
+    message = message.replace(/^<p>|<\/p>$/g, '');
     websocketService.send({ type: MessageType.CHAT, body: message });
 
     // Clear the editor.
@@ -230,7 +241,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled }) 
   };
 
   return (
-    <div className={styles.root}>
+    <div id="chat-input" className={styles.root}>
       <div
         className={classNames(
           styles.inputWrap,
@@ -245,11 +256,21 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled }) 
             disabled={!enabled}
             readOnly={!enabled}
             renderElement={renderElement}
+            renderPlaceholder={({ children, attributes }) => (
+              <DefaultPlaceholder
+                attributes={{
+                  ...attributes,
+                  style: { ...attributes.style, top: '15%' },
+                }}
+              >
+                {children}
+              </DefaultPlaceholder>
+            )}
             placeholder={enabled ? 'Send a message to chat' : 'Chat is currently unavailable.'}
             style={{ width: '100%' }}
             role="textbox"
             aria-label="Chat text input"
-            autoFocus
+            autoFocus={focusInput}
           />
           <Popover
             content={
