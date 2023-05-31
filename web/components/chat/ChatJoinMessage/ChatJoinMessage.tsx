@@ -31,11 +31,11 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
         </span>
         <span className={styles.user}>{displayName}</span>
         {isAuthorModerator && (
-          <span>
+          <span className={styles.moderatorBadge}>
             <ModerationBadge userColor={userColor} />
           </span>
         )}
-      </span>{' '}
+      </span>
       joined the chat.
     </div>
   );
