@@ -26,7 +26,9 @@ type Link struct {
 // MakeWebfingerResponse will create a new Webfinger response.
 func MakeWebfingerResponse(account string, inbox string, host string) WebfingerResponse {
 	accountIRI := MakeLocalIRIForAccount(account)
-
+	streamIRI := MakeLocalIRIForStreamURL()
+	logoIRI := MakeLocalIRIforLogo()
+	logoType := GetLogoType()
 	return WebfingerResponse{
 		Subject: fmt.Sprintf("acct:%s@%s", account, host),
 		Aliases: []string{
@@ -42,6 +44,16 @@ func MakeWebfingerResponse(account string, inbox string, host string) WebfingerR
 				Rel:  "http://webfinger.net/rel/profile-page",
 				Type: "text/html",
 				Href: accountIRI.String(),
+			},
+			{
+				Rel:  "http://webfinger.net/rel/avatar",
+				Type: logoType,
+				Href: logoIRI.String(),
+			},
+			{
+				Rel:  "alternate",
+				Type: "application/x-mpegURL",
+				Href: streamIRI.String(),
 			},
 		},
 	}
