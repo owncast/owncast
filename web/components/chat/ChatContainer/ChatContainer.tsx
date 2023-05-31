@@ -83,7 +83,7 @@ function checkIsModerator(message: ChatMessage | ConnectedClientInfoEvent) {
 
   const u = new User(user);
 
-  return u.isModerator();
+  return u.isModerator;
 }
 
 export const ChatContainer: FC<ChatContainerProps> = ({
@@ -162,8 +162,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         highlightString={usernameToHighlight} // What to highlight in the message
         sentBySelf={message.user?.id === chatUserId} // The local user sent this message
         sameUserAsLast={collapsed}
-        isAuthorModerator={message.user?.scopes?.includes('MODERATOR')}
-        isAuthorBot={message.user?.scopes?.includes('BOT')}
+        isAuthorModerator={message.user?.isModerator}
+        isAuthorBot={message.user?.isBot}
         isAuthorAuthenticated={message.user?.authenticated}
         key={message.id}
       />

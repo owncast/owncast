@@ -304,7 +304,7 @@ export const ClientConfigStore: FC = () => {
         );
         if (message as ChatEvent) {
           const m = new ChatEvent(message);
-          if (!hasBeenModeratorNotified && m.user?.isModerator()) {
+          if (!hasBeenModeratorNotified && m.user?.isModerator) {
             setChatMessages(currentState => [...currentState, message as ChatEvent]);
             hasBeenModeratorNotified = true;
           }
