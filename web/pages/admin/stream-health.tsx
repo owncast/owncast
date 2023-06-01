@@ -25,7 +25,7 @@ const WifiOutlined = dynamic(() => import('@ant-design/icons/WifiOutlined'), {
 
 interface TimedValue {
   time: Date;
-  value: Number;
+  value: number;
 }
 
 interface DescriptionBoxProps {
@@ -60,7 +60,7 @@ const StreamHealth = () => {
   const [minimumPlayerBitrate, setMinimumPlayerBitrate] = useState<TimedValue[]>([]);
   const [medianPlayerBitrate, setMedianPlayerBitrate] = useState<TimedValue[]>([]);
   const [maximumPlayerBitrate, setMaximumPlayerBitrate] = useState<TimedValue[]>([]);
-  const [availableBitrates, setAvailableBitrates] = useState<Number[]>([]);
+  const [availableBitrates, setAvailableBitrates] = useState<number[]>([]);
   const [segmentLength, setSegmentLength] = useState(0);
 
   const getMetrics = async () => {
