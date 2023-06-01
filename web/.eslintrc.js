@@ -19,7 +19,7 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['react', 'prettier', '@typescript-eslint'],
+  plugins: ['react', 'prettier', '@typescript-eslint', 'import'],
   ignorePatterns: ['!./storybook/**'],
   rules: {
     'prettier/prettier': 'error',
@@ -75,6 +75,7 @@ module.exports = {
         peerDependencies: true,
       },
     ],
+    'import/no-unused-modules': [1, { unusedExports: true }],
   },
   settings: {
     'import/resolver': {

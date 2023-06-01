@@ -1,7 +1,6 @@
 import React, { FC, useContext, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { VideoJsPlayerOptions } from 'video.js';
 import classNames from 'classnames';
 import { ErrorBoundary } from 'react-error-boundary';
 import { VideoJS } from '../VideoJS/VideoJS';
@@ -10,7 +9,7 @@ import { VideoPoster } from '../VideoPoster/VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 import { isVideoPlayingAtom, clockSkewAtom } from '../../stores/ClientConfigStore';
 import PlaybackMetrics from '../metrics/playback';
-import createVideoSettingsMenuButton from '../settings-menu';
+import { createVideoSettingsMenuButton } from '../settings-menu';
 import LatencyCompensator from '../latencyCompensator';
 import styles from './OwncastPlayer.module.scss';
 import { VideoSettingsServiceContext } from '../../../services/video-settings-service';
@@ -30,7 +29,7 @@ export type OwncastPlayerProps = {
   initiallyMuted?: boolean;
   title: string;
   className?: string;
-  fill?: boolean;
+  embedded?: boolean;
 };
 
 export const OwncastPlayer: FC<OwncastPlayerProps> = ({
@@ -39,7 +38,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   initiallyMuted = false,
   title,
   className,
-  fill,
+  embedded = false,
 }) => {
   const VideoSettingsService = useContext(VideoSettingsServiceContext);
   const playerRef = React.useRef(null);
@@ -244,7 +243,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
         type: 'application/x-mpegURL',
       },
     ],
-  } satisfies VideoJsPlayerOptions;
+  };
 
   const handlePlayerReady = (player, videojs) => {
     playerRef.current = player;
@@ -314,7 +313,10 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
         />
       )}
     >
-      <div className={classNames(styles.container, className, fill && styles.fill)} id="player">
+      <div
+        className={classNames(styles.container, className, embedded && styles.embedded)}
+        id="player"
+      >
         {online && (
           <div className={styles.player}>
             <VideoJS options={videoJsOptions} onReady={handlePlayerReady} aria-label={title} />

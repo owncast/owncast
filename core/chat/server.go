@@ -27,10 +27,7 @@ var _lastSeenCache = map[string]time.Time{}
 
 // Server represents an instance of the chat server.
 type Server struct {
-	mu                       sync.RWMutex
-	seq                      uint
-	clients                  map[uint]*Client
-	maxSocketConnectionLimit int64
+	clients map[uint]*Client
 
 	// send outbound message payload to all clients
 	outbound chan []byte
@@ -41,7 +38,11 @@ type Server struct {
 	// unregister requests from clients.
 	unregister chan uint // the ChatClient id
 
-	geoipClient *geoip.Client
+	geoipClient              *geoip.Client
+	seq                      uint
+	maxSocketConnectionLimit int64
+
+	mu sync.RWMutex
 }
 
 // NewChat will return a new instance of the chat server.

@@ -67,16 +67,20 @@ const ActionButtons: FC<ActionButtonProps> = ({
           )}
         </ActionButtonRow>
       </div>
-      <div className={styles.mobileActionButtonMenu}>
-        <ActionButtonMenu
-          className={styles.actionButtonMenu}
-          showFollowItem={supportFediverseFeatures}
-          showNotifyItem={supportsBrowserNotifications}
-          actions={externalActions}
-          externalActionSelected={setExternalActionToDisplay}
-          notifyItemSelected={() => setShowNotifyModal(true)}
-          followItemSelected={() => setShowFollowModal(true)}
-        />
+      <div className={styles.mobileActionButtons}>
+        {(supportsBrowserNotifications ||
+          supportsBrowserNotifications ||
+          externalActionButtons.length > 0) && (
+          <ActionButtonMenu
+            className={styles.actionButtonMenu}
+            showFollowItem={supportFediverseFeatures}
+            showNotifyItem={supportsBrowserNotifications}
+            actions={externalActions}
+            externalActionSelected={setExternalActionToDisplay}
+            notifyItemSelected={() => setShowNotifyModal(true)}
+            followItemSelected={() => setShowFollowModal(true)}
+          />
+        )}
       </div>
     </>
   );

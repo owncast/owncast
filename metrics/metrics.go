@@ -22,19 +22,20 @@ const (
 
 // CollectedMetrics stores different collected + timestamped values.
 type CollectedMetrics struct {
-	m sync.Mutex `json:"-"`
-
-	CPUUtilizations  []TimestampedValue `json:"cpu"`
-	RAMUtilizations  []TimestampedValue `json:"memory"`
-	DiskUtilizations []TimestampedValue `json:"disk"`
-
-	errorCount     []TimestampedValue `json:"-"`
-	lowestBitrate  []TimestampedValue `json:"-"`
-	medianBitrate  []TimestampedValue `json:"-"`
-	highestBitrate []TimestampedValue `json:"-"`
+	streamHealthOverview *models.StreamHealthOverview
 
 	medianSegmentDownloadSeconds  []TimestampedValue `json:"-"`
 	maximumSegmentDownloadSeconds []TimestampedValue `json:"-"`
+	DiskUtilizations              []TimestampedValue `json:"disk"`
+
+	errorCount      []TimestampedValue `json:"-"`
+	lowestBitrate   []TimestampedValue `json:"-"`
+	medianBitrate   []TimestampedValue `json:"-"`
+	RAMUtilizations []TimestampedValue `json:"memory"`
+
+	CPUUtilizations []TimestampedValue `json:"cpu"`
+	highestBitrate  []TimestampedValue `json:"-"`
+
 	minimumSegmentDownloadSeconds []TimestampedValue `json:"-"`
 
 	minimumLatency []TimestampedValue `json:"-"`
@@ -43,7 +44,7 @@ type CollectedMetrics struct {
 
 	qualityVariantChanges []TimestampedValue `json:"-"`
 
-	streamHealthOverview *models.StreamHealthOverview
+	m sync.Mutex `json:"-"`
 }
 
 // Metrics is the shared Metrics instance.

@@ -6,7 +6,7 @@ import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
 import { ConfigDetails, UpdateArgs } from '../types/config-section';
 import { DEFAULT_VARIANT_STATE } from './config-constants';
 
-export const initialServerConfigState: ConfigDetails = {
+const initialServerConfigState: ConfigDetails = {
   streamKeys: [],
   streamKeyOverridden: false,
   adminPassword: '',
@@ -30,6 +30,7 @@ export const initialServerConfigState: ConfigDetails = {
   rtmpServerPort: '',
   webServerPort: '',
   socketHostOverride: null,
+  videoServingEndpoint: '',
   s3: {
     accessKey: '',
     acl: '',
@@ -38,7 +39,6 @@ export const initialServerConfigState: ConfigDetails = {
     endpoint: '',
     region: '',
     secret: '',
-    servingEndpoint: '',
     forcePathStyle: false,
   },
   yp: {
@@ -71,6 +71,7 @@ export const initialServerConfigState: ConfigDetails = {
   chatJoinMessagesEnabled: true,
   chatEstablishedUserMode: false,
   hideViewerCount: false,
+  disableSearchIndexing: false,
 };
 
 const initialServerStatusState = {
@@ -102,7 +103,7 @@ export const ServerStatusContext = React.createContext({
   serverConfig: initialServerConfigState,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setFieldInConfigState: (args: UpdateArgs) => null,
+  setFieldInConfigState: (_args: UpdateArgs) => null,
 });
 
 export type ServerStatusProviderProps = {

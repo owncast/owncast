@@ -189,3 +189,7 @@
 .ant-menu-submenu-arrow {
   color: unset;
 }
+
+.ant-modal-title {
+  color: var(--theme-color-components-modal-header-text);
+}

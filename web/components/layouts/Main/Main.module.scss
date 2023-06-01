@@ -2,23 +2,14 @@
 
 .layout {
   // this margin is for fixed header
-  margin-top: 55px;
+  padding-top: var(--header-height);
   background-color: var(--theme-color-main-background);
-  @include screen(tablet) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    // this one is for fixed footer
-    margin-bottom: 30px;
-  }
+  min-height: 100vh;
 
-  @include screen(mobile) {
-    margin-bottom: 0px;
+  position: relative;
 
-    footer {
-      display: none;
-    }
+  // add some spacing between the last row of content and the footer
+  .footerContainer {
+    margin-top: 5em;
   }
 }

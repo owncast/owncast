@@ -1,5 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Typography } from 'antd';
+import { Button, Typography } from 'antd';
+import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
+import CodeMirror from '@uiw/react-codemirror';
+import { bbedit } from '@uiw/codemirror-theme-bbedit';
+import { languages } from '@codemirror/language-data';
 import {
   TextFieldWithSubmit,
   TEXTFIELD_TYPE_TEXTAREA,
@@ -16,10 +20,14 @@ import {
   FIELD_PROPS_YP,
   FIELD_PROPS_NSFW,
   FIELD_PROPS_HIDE_VIEWER_COUNT,
+  API_SERVER_OFFLINE_MESSAGE,
+  FIELD_PROPS_DISABLE_SEARCH_INDEXING,
 } from '../../../../utils/config-constants';
 import { UpdateArgs } from '../../../../types/config-section';
 import { ToggleSwitch } from '../../ToggleSwitch';
 import { EditLogo } from '../../EditLogo';
+import FormStatusIndicator from '../../FormStatusIndicator';
+import { createInputStatus, STATUS_SUCCESS } from '../../../../utils/input-statuses';
 
 const { Title } = Typography;
 
@@ -29,14 +37,17 @@ export default function EditInstanceDetails() {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig } = serverStatusData || {};
 
-  const { instanceDetails, yp, hideViewerCount } = serverConfig;
+  const { instanceDetails, yp, hideViewerCount, disableSearchIndexing } = serverConfig;
   const { instanceUrl } = yp;
+
+  const [offlineMessageSaveStatus, setOfflineMessageSaveStatus] = useState(null);
 
   useEffect(() => {
     setFormDataValues({
       ...instanceDetails,
       ...yp,
       hideViewerCount,
+      disableSearchIndexing,
     });
   }, [instanceDetails, yp]);
 
@@ -56,6 +67,17 @@ export default function EditInstanceDetails() {
     }
   };
 
+  const handleSaveOfflineMessage = () => {
+    postConfigUpdateToAPI({
+      apiPath: API_SERVER_OFFLINE_MESSAGE,
+      data: { value: formDataValues.offlineMessage },
+    });
+    setOfflineMessageSaveStatus(createInputStatus(STATUS_SUCCESS));
+    setTimeout(() => {
+      setOfflineMessageSaveStatus(null);
+    }, 2000);
+  };
+
   const handleFieldChange = ({ fieldName, value }: UpdateArgs) => {
     setFormDataValues({
       ...formDataValues,
@@ -65,6 +87,10 @@ export default function EditInstanceDetails() {
 
   function handleHideViewerCountChange(enabled: boolean) {
     handleFieldChange({ fieldName: 'hideViewerCount', value: enabled });
+  }
+
+  function handleDisableSearchEngineIndexingChange(enabled: boolean) {
+    handleFieldChange({ fieldName: 'disableSearchIndexing', value: enabled });
   }
 
   const hasInstanceUrl = instanceUrl !== '';
@@ -103,14 +129,42 @@ export default function EditInstanceDetails() {
         onChange={handleFieldChange}
       />
 
-      <TextFieldWithSubmit
-        fieldName="offlineMessage"
-        {...TEXTFIELD_PROPS_SERVER_OFFLINE_MESSAGE}
-        type={TEXTFIELD_TYPE_TEXTAREA}
-        value={formDataValues.offlineMessage}
-        initialValue={instanceDetails.offlineMessage}
-        onChange={handleFieldChange}
-      />
+      <div style={{ marginBottom: '50px', marginRight: '150px' }}>
+        <div
+          style={{
+            display: 'flex',
+            width: '80vh',
+            justifyContent: 'space-between',
+            alignItems: 'end',
+          }}
+        >
+          <p style={{ margin: '20px', marginRight: '10px', fontWeight: '400' }}>Offline Message:</p>
+          <CodeMirror
+            value={formDataValues.offlineMessage}
+            {...TEXTFIELD_PROPS_SERVER_OFFLINE_MESSAGE}
+            theme={bbedit}
+            height="150px"
+            width="450px"
+            onChange={value => {
+              handleFieldChange({ fieldName: 'offlineMessage', value });
+            }}
+            extensions={[markdown({ base: markdownLanguage, codeLanguages: languages })]}
+          />
+        </div>
+        <div className="field-tip">
+          The offline message is displayed to your page visitors when you&apos;re not streaming.
+          Markdown is supported.
+        </div>
+
+        <Button
+          type="primary"
+          onClick={handleSaveOfflineMessage}
+          style={{ margin: '10px', float: 'right' }}
+        >
+          Save Message
+        </Button>
+        <FormStatusIndicator status={offlineMessageSaveStatus} />
+      </div>
 
       {/* Logo section */}
       <EditLogo />
@@ -121,6 +175,14 @@ export default function EditInstanceDetails() {
         {...FIELD_PROPS_HIDE_VIEWER_COUNT}
         checked={formDataValues.hideViewerCount}
         onChange={handleHideViewerCountChange}
+      />
+
+      <ToggleSwitch
+        fieldName="disableSearchIndexing"
+        useSubmit
+        {...FIELD_PROPS_DISABLE_SEARCH_INDEXING}
+        checked={formDataValues.disableSearchIndexing}
+        onChange={handleDisableSearchEngineIndexingChange}
       />
 
       <br />

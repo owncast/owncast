@@ -43,7 +43,7 @@ Here is the list for all the prerequisites required ->
 - npm (Node Package Manager) is installed as `sudo apt install npm`.
 - Node.js is installed (LTS Version) `sudo apt install nodejs`.
 - [ffmpeg](https://ffmpeg.org/download.html)
-- Install the [Go toolchain](https://golang.org/dl/) (1.18 or above).
+- Install the [Go toolchain](https://golang.org/dl/) (1.20 or above).
 
 ### Read more
 
