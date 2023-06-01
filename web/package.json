@@ -53,8 +53,8 @@
 		"ua-parser-js": "1.0.35",
 		"video.js": "^8.3.0",
 		"webpack-deadcode-plugin": "^0.1.17",
-		"workbox-precaching": "^6.5.4",
-		"workbox-window": "^6.5.4",
+		"workbox-precaching": "^7.0.0",
+		"workbox-window": "^7.0.0",
 		"xstate": "4.37.2",
 		"yaml": "2.3.1"
 	},
