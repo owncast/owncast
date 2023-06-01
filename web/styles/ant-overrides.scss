@@ -231,3 +231,7 @@ th {
     right: 0.35rem;
   }
 }
+
+.ant-collapse > .ant-collapse-item {
+  background: var(--theme-color-palette-14);
+}
