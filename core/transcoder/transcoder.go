@@ -304,7 +304,7 @@ func (v *HLSVariant) getVariantString(t *Transcoder) string {
 	if (v.videoSize.Width != 0 || v.videoSize.Height != 0) && !v.isVideoPassthrough {
 		// Order here matters, you must scale before changing hardware formats
 		filters := []string{
-			v.getScalingString(),
+			v.getScalingString(t.codec.Scaler()),
 		}
 		if t.codec.ExtraFilters() != "" {
 			filters = append(filters, t.codec.ExtraFilters())
@@ -355,8 +355,11 @@ func (v *HLSVariant) SetVideoScalingHeight(height int) {
 	v.videoSize.Height = height
 }
 
-func (v *HLSVariant) getScalingString() string {
-	return fmt.Sprintf("scale=%s", v.videoSize.getString())
+func (v *HLSVariant) getScalingString(scaler string) string {
+	if scaler == "" {
+		scaler = "scale"
+	}
+	return fmt.Sprintf("%s=%s", scaler, v.videoSize.getString())
 }
 
 // Video Quality

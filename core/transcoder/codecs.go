@@ -16,6 +16,7 @@ type Codec interface {
 	DisplayName() string
 	GlobalFlags() string
 	PixelFormat() string
+	Scaler() string
 	ExtraArguments() string
 	ExtraFilters() string
 	VariantFlags(v *HLSVariant) string
@@ -51,6 +52,11 @@ func (c *Libx264Codec) GlobalFlags() string {
 // PixelFormat is the pixel format required for this codec.
 func (c *Libx264Codec) PixelFormat() string {
 	return "yuv420p" //nolint:goconst
+}
+
+// Scaler is the scaler used for resizing the video in the transcoder.
+func (c *Libx264Codec) Scaler() string {
+	return ""
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
@@ -117,6 +123,11 @@ func (c *OmxCodec) PixelFormat() string {
 	return "yuv420p"
 }
 
+// Scaler is the scaler used for resizing the video in the transcoder.
+func (c *OmxCodec) Scaler() string {
+	return ""
+}
+
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
 func (c *OmxCodec) ExtraArguments() string {
 	return strings.Join([]string{
@@ -170,6 +181,8 @@ func (c *VaapiCodec) DisplayName() string {
 // GlobalFlags are the global flags used with this codec in the transcoder.
 func (c *VaapiCodec) GlobalFlags() string {
 	flags := []string{
+		"-hwaccel", "vaapi",
+		"-hwaccel_output_format", "vaapi",
 		"-vaapi_device", "/dev/dri/renderD128",
 	}
 
@@ -181,9 +194,14 @@ func (c *VaapiCodec) PixelFormat() string {
 	return "vaapi_vld"
 }
 
+// Scaler is the scaler used for resizing the video in the transcoder.
+func (c *VaapiCodec) Scaler() string {
+	return "scale_vaapi"
+}
+
 // ExtraFilters are the extra filters required for this codec in the transcoder.
 func (c *VaapiCodec) ExtraFilters() string {
-	return "format=nv12,hwupload"
+	return ""
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
@@ -232,7 +250,7 @@ func (c *NvencCodec) DisplayName() string {
 // GlobalFlags are the global flags used with this codec in the transcoder.
 func (c *NvencCodec) GlobalFlags() string {
 	flags := []string{
-		"-hwaccel cuda",
+		"-hwaccel", "cuda",
 	}
 
 	return strings.Join(flags, " ")
@@ -241,6 +259,11 @@ func (c *NvencCodec) GlobalFlags() string {
 // PixelFormat is the pixel format required for this codec.
 func (c *NvencCodec) PixelFormat() string {
 	return "yuv420p"
+}
+
+// Scaler is the scaler used for resizing the video in the transcoder.
+func (c *NvencCodec) Scaler() string {
+	return ""
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
@@ -302,6 +325,11 @@ func (c *QuicksyncCodec) PixelFormat() string {
 	return "nv12"
 }
 
+// Scaler is the scaler used for resizing the video in the transcoder.
+func (c *QuicksyncCodec) Scaler() string {
+	return ""
+}
+
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
 func (c *QuicksyncCodec) ExtraArguments() string {
 	return ""
@@ -358,6 +386,11 @@ func (c *Video4Linux) GlobalFlags() string {
 // PixelFormat is the pixel format required for this codec.
 func (c *Video4Linux) PixelFormat() string {
 	return "nv21"
+}
+
+// Scaler is the scaler used for resizing the video in the transcoder.
+func (c *Video4Linux) Scaler() string {
+	return ""
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
@@ -417,6 +450,11 @@ func (c *VideoToolboxCodec) GlobalFlags() string {
 // PixelFormat is the pixel format required for this codec.
 func (c *VideoToolboxCodec) PixelFormat() string {
 	return "nv12"
+}
+
+// Scaler is the scaler used for resizing the video in the transcoder.
+func (c *VideoToolboxCodec) Scaler() string {
+	return ""
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
