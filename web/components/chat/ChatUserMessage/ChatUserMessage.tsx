@@ -109,9 +109,7 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
           <Interweave
             className={styles.message}
             content={body}
-            matchers={[
-              new ChatMessageHighlightMatcher('highlight', { highlightString }),
-            ]}
+            matchers={[new ChatMessageHighlightMatcher('highlight', { highlightString })]}
           />
         </Tooltip>
         {showModeratorMenu && (
