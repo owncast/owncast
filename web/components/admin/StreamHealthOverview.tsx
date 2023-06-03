@@ -80,7 +80,7 @@ export const StreamHealthOverview: FC<StreamHealthOverviewProps> = ({ showTroubl
               showIcon
               action={
                 showTroubleshootButton && (
-                  <Link passHref href="/stream-health">
+                  <Link passHref href="/admin/stream-health">
                     <Button size="small" type="text" style={{ color: 'black' }}>
                       TROUBLESHOOT
                     </Button>

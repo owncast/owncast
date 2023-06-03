@@ -19,6 +19,10 @@ $p-v-size: 2px;
     font-weight: 600;
   }
 
+  .userBadges {
+    margin-left: 3px;
+  }
+
   .message {
     overflow: hidden;
     overflow-wrap: anywhere;
@@ -87,5 +91,5 @@ $p-v-size: 2px;
 }
 
 .messagePaddingCollapsed {
-  padding: 0px 5px 0px 5px;
+  padding: 2px 5px 0px 5px;
 }

@@ -12,10 +12,10 @@ import (
 type Viewer struct {
 	FirstSeen time.Time         `json:"firstSeen"`
 	LastSeen  time.Time         `json:"-"`
+	Geo       *geoip.GeoDetails `json:"geo"`
 	UserAgent string            `json:"userAgent"`
 	IPAddress string            `json:"ipAddress"`
 	ClientID  string            `json:"clientID"`
-	Geo       *geoip.GeoDetails `json:"geo"`
 }
 
 // GenerateViewerFromRequest will return a chat client from a http request.

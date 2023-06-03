@@ -30,6 +30,7 @@ const initialServerConfigState: ConfigDetails = {
   rtmpServerPort: '',
   webServerPort: '',
   socketHostOverride: null,
+  videoServingEndpoint: '',
   s3: {
     accessKey: '',
     acl: '',
@@ -38,7 +39,6 @@ const initialServerConfigState: ConfigDetails = {
     endpoint: '',
     region: '',
     secret: '',
-    servingEndpoint: '',
     forcePathStyle: false,
   },
   yp: {
@@ -71,6 +71,7 @@ const initialServerConfigState: ConfigDetails = {
   chatJoinMessagesEnabled: true,
   chatEstablishedUserMode: false,
   hideViewerCount: false,
+  disableSearchIndexing: false,
 };
 
 const initialServerStatusState = {

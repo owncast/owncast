@@ -37,6 +37,8 @@ const defaultFederationConfig = {
 	blockedDomains: [],
 };
 const defaultHideViewerCount = false;
+const defaultDisableSearchIndexing = false;
+
 const defaultSocialHandles = [
 	{
 		icon: '/img/platformlogos/github.svg',
@@ -130,6 +132,7 @@ const newFederationConfig = {
 };
 
 const newHideViewerCount = !defaultHideViewerCount;
+const newDisableSearchIndexing = !defaultDisableSearchIndexing;
 
 const overriddenWebsocketHost = 'ws://lolcalhost.biz';
 const customCSS = randomString();
@@ -340,6 +343,14 @@ test('enable federation', async (done) => {
 	done();
 });
 
+test('disable search indexing', async (done) => {
+	await sendAdminRequest(
+		'config/disablesearchindexing',
+		newDisableSearchIndexing
+	);
+	done();
+});
+
 test('change admin password', async (done) => {
 	const res = await sendAdminRequest('config/adminpass', newAdminPassword);
 	done();
@@ -469,6 +480,21 @@ test('verify frontend status', (done) => {
 		.expect(200)
 		.then((res) => {
 			expect(res.body.viewerCount).toBe(undefined);
+			done();
+		});
+});
+
+test('verify robots.txt is correct after disabling search indexing', (done) => {
+	const expected = `User-agent: *
+Disallow: /admin
+Disallow: /api
+Disallow: /`;
+
+	request
+		.get('/robots.txt')
+		.expect(200)
+		.then((res) => {
+			expect(res.text).toBe(expected);
 			done();
 		});
 });

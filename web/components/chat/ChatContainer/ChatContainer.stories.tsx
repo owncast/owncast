@@ -28,9 +28,10 @@ const testMessages = `[
 			"timestamp": "2022-04-28T20:30:27.001762726Z",
 			"user": {
 				"id": "h_5GQ6E7R",
-				"displayName": "UserDisplayName42",
+				"displayName": "iAmABot",
 				"displayColor": 329,
 				"createdAt": "2022-03-24T03:52:37.966584694Z",
+				"isBot": true,
 				"previousNames": [
 					"gifted-nobel",
 					"EliteMooseTaskForce"
@@ -48,13 +49,14 @@ const testMessages = `[
 			"timestamp": "2022-04-28T20:30:28.806999545Z",
 			"user": {
 				"id": "h_5GQ6E7R",
-				"displayName": "EliteMooseTaskForce",
+				"displayName": "IAmABot",
 				"displayColor": 329,
 				"createdAt": "2022-03-24T03:52:37.966584694Z",
 				"previousNames": [
 					"gifted-nobel",
 					"EliteMooseTaskForce"
 				],
+				"isBot": true,
 				"nameChangedAt": "2022-04-26T23:56:05.531287897Z",
 				"scopes": [
 					""
@@ -68,13 +70,14 @@ const testMessages = `[
 			"timestamp": "2022-04-28T20:30:34.500150601Z",
 			"user": {
 				"id": "h_5GQ6E7R",
-				"displayName": "EliteMooseTaskForce",
+				"displayName": "IAmABot",
 				"displayColor": 329,
 				"createdAt": "2022-03-24T03:52:37.966584694Z",
 				"previousNames": [
 					"gifted-nobel",
 					"EliteMooseTaskForce"
 				],
+				"isBot": true,
 				"nameChangedAt": "2022-04-26T23:56:05.531287897Z",
 				"scopes": [
 					""

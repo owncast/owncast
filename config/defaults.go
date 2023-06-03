@@ -8,32 +8,37 @@ import (
 
 // Defaults will hold default configuration values.
 type Defaults struct {
-	Name                 string
-	Title                string
+	PageBodyContent string
+
+	FederationGoLiveMessage string
+
 	Summary              string
 	ServerWelcomeMessage string
 	Logo                 string
-	Tags                 []string
-	PageBodyContent      string
+	YPServer             string
+
+	Title string
 
 	DatabaseFilePath string
-	WebServerPort    int
-	WebServerIP      string
-	RTMPServerPort   int
-	AdminPassword    string
-	StreamKeys       []models.StreamKey
 
-	YPEnabled bool
-	YPServer  string
+	FederationUsername string
+	WebServerIP        string
+	Name               string
+	AdminPassword      string
+	StreamKeys         []models.StreamKey
+
+	StreamVariants []models.StreamOutputVariant
+
+	Tags               []string
+	RTMPServerPort     int
+	SegmentsInPlaylist int
 
 	SegmentLengthSeconds int
-	SegmentsInPlaylist   int
-	StreamVariants       []models.StreamOutputVariant
-
-	FederationUsername      string
-	FederationGoLiveMessage string
+	WebServerPort        int
 
 	ChatEstablishedUserModeTimeDuration time.Duration
+
+	YPEnabled bool
 }
 
 // GetDefaults will return default configuration values.

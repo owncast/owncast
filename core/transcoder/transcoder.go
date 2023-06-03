@@ -22,37 +22,40 @@ var _commandExec *exec.Cmd
 
 // Transcoder is a single instance of a video transcoder.
 type Transcoder struct {
-	input                string
-	stdin                *io.PipeReader
-	segmentOutputPath    string
+	codec Codec
+
+	stdin *io.PipeReader
+
+	TranscoderCompleted  func(error)
 	playlistOutputPath   string
-	variants             []HLSVariant
-	appendToStream       bool
 	ffmpegPath           string
 	segmentIdentifier    string
 	internalListenerPort string
-	codec                Codec
+	input                string
+	segmentOutputPath    string
+	variants             []HLSVariant
 
 	currentStreamOutputSettings []models.StreamOutputVariant
 	currentLatencyLevel         models.LatencyLevel
+	appendToStream              bool
 	isEvent                     bool
-
-	TranscoderCompleted func(error)
 }
 
 // HLSVariant is a combination of settings that results in a single HLS stream.
 type HLSVariant struct {
-	index int
+	audioBitrate string // The audio bitrate
 
-	videoSize          VideoSize // Resizes the video via scaling
-	framerate          int       // The output framerate
-	videoBitrate       int       // The output bitrate
-	isVideoPassthrough bool      // Override all settings and just copy the video stream
+	videoSize VideoSize // Resizes the video via scaling
+	index     int
 
-	audioBitrate       string // The audio bitrate
-	isAudioPassthrough bool   // Override all settings and just copy the audio stream
+	framerate    int // The output framerate
+	videoBitrate int // The output bitrate
 
-	cpuUsageLevel int // The amount of hardware to use for encoding a stream
+	cpuUsageLevel      int  // The amount of hardware to use for encoding a stream
+	isVideoPassthrough bool // Override all settings and just copy the video stream
+
+	isAudioPassthrough bool // Override all settings and just copy the audio stream
+
 }
 
 // VideoSize is the scaled size of the video output.
@@ -301,7 +304,7 @@ func (v *HLSVariant) getVariantString(t *Transcoder) string {
 	if (v.videoSize.Width != 0 || v.videoSize.Height != 0) && !v.isVideoPassthrough {
 		// Order here matters, you must scale before changing hardware formats
 		filters := []string{
-			v.getScalingString(),
+			v.getScalingString(t.codec.Scaler()),
 		}
 		if t.codec.ExtraFilters() != "" {
 			filters = append(filters, t.codec.ExtraFilters())
@@ -352,8 +355,11 @@ func (v *HLSVariant) SetVideoScalingHeight(height int) {
 	v.videoSize.Height = height
 }
 
-func (v *HLSVariant) getScalingString() string {
-	return fmt.Sprintf("scale=%s", v.videoSize.getString())
+func (v *HLSVariant) getScalingString(scaler string) string {
+	if scaler == "" {
+		scaler = "scale"
+	}
+	return fmt.Sprintf("%s=%s", scaler, v.videoSize.getString())
 }
 
 // Video Quality

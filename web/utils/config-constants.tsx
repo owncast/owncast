@@ -38,8 +38,9 @@ const API_HIDE_VIEWER_COUNT = '/hideviewercount';
 const API_CHAT_DISABLE = '/chat/disable';
 const API_CHAT_JOIN_MESSAGES_ENABLED = '/chat/joinmessagesenabled';
 const API_CHAT_ESTABLISHED_MODE = '/chat/establishedusermode';
-
+const API_DISABLE_SEARCH_INDEXING = '/disablesearchindexing';
 const API_SOCKET_HOST_OVERRIDE = '/sockethostoverride';
+const API_VIDEO_SERVING_ENDPOINT = '/videoservingendpoint';
 
 // Federation
 const API_FEDERATION_ENABLED = '/federation/enable';
@@ -180,6 +181,18 @@ export const TEXTFIELD_PROPS_SOCKET_HOST_OVERRIDE = {
   useTrim: true,
 };
 
+export const TEXTFIELD_PROPS_VIDEO_SERVING_ENDPOINT = {
+  apiPath: API_VIDEO_SERVING_ENDPOINT,
+  fieldName: 'videoServingEndpoint',
+  label: 'Serving Endpoint',
+  maxLength: 255,
+  placeholder: 'http://cdn.provider.endpoint.com',
+  tip: 'Optional URL that video content should be accessed from instead of the default.  Used with CDNs and specific storage providers. Generally not required.',
+  type: TEXTFIELD_TYPE_URL,
+  pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
+  useTrim: true,
+};
+
 // MISC FIELDS
 export const FIELD_PROPS_TAGS = {
   apiPath: API_TAGS,
@@ -210,6 +223,13 @@ export const FIELD_PROPS_HIDE_VIEWER_COUNT = {
   configPath: '',
   label: 'Hide viewer count',
   tip: 'Turn this ON to hide the viewer count on the web page.',
+};
+
+export const FIELD_PROPS_DISABLE_SEARCH_INDEXING = {
+  apiPath: API_DISABLE_SEARCH_INDEXING,
+  configPath: '',
+  label: 'Disable search engine indexing',
+  tip: 'Turn this ON to to tell search engines not to index this site.',
 };
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {
@@ -510,19 +530,10 @@ export const S3_TEXT_FIELDS_INFO = {
   secret: {
     fieldName: 'secret',
     label: 'Secret key',
+    type: 'password',
     maxLength: 255,
     placeholder: 'your secret key',
     tip: '',
-  },
-  servingEndpoint: {
-    fieldName: 'servingEndpoint',
-    label: 'Serving Endpoint',
-    maxLength: 255,
-    placeholder: 'http://cdn.ss3.provider.endpoint.com',
-    tip: 'Optional URL that content should be accessed from instead of the default.  Used with CDNs and specific storage providers. Generally not required.',
-    type: TEXTFIELD_TYPE_URL,
-    pattern: DEFAULT_TEXTFIELD_URL_PATTERN,
-    useTrim: true,
   },
   forcePathStyle: {
     fieldName: 'forcePathStyle',

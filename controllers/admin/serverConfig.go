@@ -59,8 +59,10 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ChatDisabled:            data.GetChatDisabled(),
 		ChatJoinMessagesEnabled: data.GetChatJoinMessagesEnabled(),
 		SocketHostOverride:      data.GetWebsocketOverrideHost(),
+		VideoServingEndpoint:    data.GetVideoServingEndpoint(),
 		ChatEstablishedUserMode: data.GetChatEstbalishedUsersOnlyMode(),
 		HideViewerCount:         data.GetHideViewerCount(),
+		DisableSearchIndexing:   data.GetDisableSearchIndexing(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         data.GetStreamLatencyLevel().Level,
@@ -99,27 +101,29 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 
 type serverConfigAdminResponse struct {
 	InstanceDetails         webConfigResponse           `json:"instanceDetails"`
+	Notifications           notificationsConfigResponse `json:"notifications"`
+	YP                      yp                          `json:"yp"`
 	FFmpegPath              string                      `json:"ffmpegPath"`
 	AdminPassword           string                      `json:"adminPassword"`
-	StreamKeys              []models.StreamKey          `json:"streamKeys"`
-	StreamKeyOverridden     bool                        `json:"streamKeyOverridden"`
-	WebServerPort           int                         `json:"webServerPort"`
+	SocketHostOverride      string                      `json:"socketHostOverride,omitempty"`
 	WebServerIP             string                      `json:"webServerIP"`
-	RTMPServerPort          int                         `json:"rtmpServerPort"`
+	VideoCodec              string                      `json:"videoCodec"`
+	VideoServingEndpoint    string                      `json:"videoServingEndpoint"`
 	S3                      models.S3                   `json:"s3"`
+	Federation              federationConfigResponse    `json:"federation"`
+	SupportedCodecs         []string                    `json:"supportedCodecs"`
+	ExternalActions         []models.ExternalAction     `json:"externalActions"`
+	ForbiddenUsernames      []string                    `json:"forbiddenUsernames"`
+	SuggestedUsernames      []string                    `json:"suggestedUsernames"`
+	StreamKeys              []models.StreamKey          `json:"streamKeys"`
 	VideoSettings           videoSettings               `json:"videoSettings"`
-	YP                      yp                          `json:"yp"`
+	RTMPServerPort          int                         `json:"rtmpServerPort"`
+	WebServerPort           int                         `json:"webServerPort"`
 	ChatDisabled            bool                        `json:"chatDisabled"`
 	ChatJoinMessagesEnabled bool                        `json:"chatJoinMessagesEnabled"`
 	ChatEstablishedUserMode bool                        `json:"chatEstablishedUserMode"`
-	ExternalActions         []models.ExternalAction     `json:"externalActions"`
-	SupportedCodecs         []string                    `json:"supportedCodecs"`
-	VideoCodec              string                      `json:"videoCodec"`
-	ForbiddenUsernames      []string                    `json:"forbiddenUsernames"`
-	Federation              federationConfigResponse    `json:"federation"`
-	SuggestedUsernames      []string                    `json:"suggestedUsernames"`
-	SocketHostOverride      string                      `json:"socketHostOverride,omitempty"`
-	Notifications           notificationsConfigResponse `json:"notifications"`
+	DisableSearchIndexing   bool                        `json:"disableSearchIndexing"`
+	StreamKeyOverridden     bool                        `json:"streamKeyOverridden"`
 	HideViewerCount         bool                        `json:"hideViewerCount"`
 }
 
@@ -129,35 +133,35 @@ type videoSettings struct {
 }
 
 type webConfigResponse struct {
-	Name                string                `json:"name"`
-	Summary             string                `json:"summary"`
+	AppearanceVariables map[string]string     `json:"appearanceVariables"`
+	Version             string                `json:"version"`
 	WelcomeMessage      string                `json:"welcomeMessage"`
 	OfflineMessage      string                `json:"offlineMessage"`
 	Logo                string                `json:"logo"`
-	Tags                []string              `json:"tags"`
-	Version             string                `json:"version"`
-	NSFW                bool                  `json:"nsfw"`
+	Name                string                `json:"name"`
 	ExtraPageContent    string                `json:"extraPageContent"`
 	StreamTitle         string                `json:"streamTitle"` // What's going on with the current stream
-	SocialHandles       []models.SocialHandle `json:"socialHandles"`
 	CustomStyles        string                `json:"customStyles"`
 	CustomJavascript    string                `json:"customJavascript"`
-	AppearanceVariables map[string]string     `json:"appearanceVariables"`
+	Summary             string                `json:"summary"`
+	Tags                []string              `json:"tags"`
+	SocialHandles       []models.SocialHandle `json:"socialHandles"`
+	NSFW                bool                  `json:"nsfw"`
 }
 
 type yp struct {
-	Enabled      bool   `json:"enabled"`
 	InstanceURL  string `json:"instanceUrl"` // The public URL the directory should link to
 	YPServiceURL string `json:"-"`           // The base URL to the YP API to register with (optional)
+	Enabled      bool   `json:"enabled"`
 }
 
 type federationConfigResponse struct {
-	Enabled        bool     `json:"enabled"`
-	IsPrivate      bool     `json:"isPrivate"`
 	Username       string   `json:"username"`
 	GoLiveMessage  string   `json:"goLiveMessage"`
-	ShowEngagement bool     `json:"showEngagement"`
 	BlockedDomains []string `json:"blockedDomains"`
+	Enabled        bool     `json:"enabled"`
+	IsPrivate      bool     `json:"isPrivate"`
+	ShowEngagement bool     `json:"showEngagement"`
 }
 
 type notificationsConfigResponse struct {

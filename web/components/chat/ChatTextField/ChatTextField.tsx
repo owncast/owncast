@@ -248,7 +248,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
           characterCount >= characterLimit && styles.maxCharacters,
         )}
       >
-        <Slate editor={editor} value={defaultEditorValue}>
+        <Slate editor={editor} initialValue={defaultEditorValue}>
           <Editable
             className="chat-text-input"
             onKeyDown={onKeyDown}

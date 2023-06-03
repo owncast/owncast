@@ -358,8 +358,9 @@ func GetHashtagsFromText(text string) []string {
 
 // ShuffleStringSlice will shuffle a slice of strings.
 func ShuffleStringSlice(s []string) []string {
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(s), func(i, j int) {
+	// nolint:gosec
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	r.Shuffle(len(s), func(i, j int) {
 		s[i], s[j] = s[j], s[i]
 	})
 	return s
@@ -375,18 +376,18 @@ func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
 	s := strings.SplitN(url, ",", 2)
 	if len(s) < 2 {
 		err = errors.New("error splitting base64 image data")
-		return
+		return nil, "", err
 	}
 
 	bytes, err = base64.StdEncoding.DecodeString(s[1])
 	if err != nil {
-		return
+		return nil, "", err
 	}
 
 	splitHeader := strings.Split(s[0], ":")
 	if len(splitHeader) < 2 {
 		err = errors.New("error splitting base64 image header")
-		return
+		return nil, "", err
 	}
 
 	contentType := strings.Split(splitHeader[1], ";")[0]
@@ -403,7 +404,7 @@ func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
 
 	if extension == "" {
 		err = errors.New("missing or invalid contentType in base64 image")
-		return
+		return nil, "", err
 	}
 
 	return bytes, extension, nil
