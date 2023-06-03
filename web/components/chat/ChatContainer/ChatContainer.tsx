@@ -58,7 +58,7 @@ function shouldCollapseMessages(
     return false;
   }
 
-  const maxTimestampDelta = 1000 * 60; // 1 minute
+  const maxTimestampDelta = 1000 * 40; // 40 seconds
   const lastTimestamp = new Date(lastMessage?.timestamp).getTime();
   const thisTimestamp = new Date(message.timestamp).getTime();
   if (thisTimestamp - lastTimestamp > maxTimestampDelta) {
