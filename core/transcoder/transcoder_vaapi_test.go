@@ -18,7 +18,7 @@ func TestFFmpegVaapiCommand(t *testing.T) {
 	transcoder.SetOutputPath("fakeOutput")
 	transcoder.SetIdentifier("jdofFGg")
 	transcoder.SetInternalHTTPPort("8123")
-	transcoder.SetCodec(codec.Name())
+	transcoder.codec = &codec
 	transcoder.currentLatencyLevel = latencyLevel
 
 	variant := HLSVariant{}
