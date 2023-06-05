@@ -17,7 +17,7 @@ import (
 const (
 	// FfmpegWithGeneralPixFmtVersion is the version of ffmpeg user for 'vaapi' fix_fmt value, instead of 'vaapi_vld'.
 	FfmpegWithGeneralPixFmtVersion = "v5.0" // Requires the v
-	// Vaapi_Pix_Fmt is pix_fmt argument used in modern Ffmpeg 5.0+ versions
+	// Vaapi_Pix_Fmt is pix_fmt argument used in modern Ffmpeg 5.0+ versions.
 	Vaapi_Pix_Fmt = "vaapi"
 )
 
@@ -192,7 +192,7 @@ func NewVaapiCodec() (result VaapiCodec) {
 	if err == nil {
 		result = VaapiCodec{version: version}
 	} else {
-		// Fallback to empty version, we are not increase risks of failure
+		// Fallback to empty version, we are not increase risks of failure.
 		result = VaapiCodec{version: ""}
 	}
 	return result
@@ -246,18 +246,18 @@ func (c *VaapiCodec) GlobalFlags() string {
 // PixelFormat is the pixel format required for this codec.
 func (c *VaapiCodec) PixelFormat() string {
 	if !semver.IsValid(c.version) {
-		// Fallback variant for unrecognized version number
+		// Fallback variant for unrecognized version number.
 		return Vaapi_Pix_Fmt
 	}
 	versionCompare := semver.Compare(c.version, FfmpegWithGeneralPixFmtVersion)
 	switch versionCompare {
-	// versions less than config.FfmpegWithGeneralPixFmtVersion
+	// Versions less than FfmpegWithGeneralPixFmtVersion.
 	case -1:
 		return "vaapi_vld"
-	// versions equals or greater config.FfmpegWithGeneralPixFmtVersion
+	// Versions equals or greater FfmpegWithGeneralPixFmtVersion.
 	case 0, 1:
 		return Vaapi_Pix_Fmt
-	// Fallback for unexpected semver.Compare behaviour
+	// Fallback for unexpected semver.Compare behaviour.
 	default:
 		return Vaapi_Pix_Fmt
 	}
