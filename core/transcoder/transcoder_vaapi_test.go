@@ -1,7 +1,6 @@
 package transcoder
 
 import (
-	"github.com/owncast/owncast/config"
 	"path/filepath"
 	"testing"
 
@@ -10,7 +9,7 @@ import (
 
 func TestFFmpegVaapiCommand(t *testing.T) {
 	latencyLevel := models.GetLatencyLevel(2)
-	codec := NewVaapiCodecWithVersion(config.FfmpegWithGeneralPixFmtVersion)
+	codec := NewVaapiCodecWithVersion(FfmpegWithGeneralPixFmtVersion)
 
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = filepath.Join("fake", "path", "ffmpeg")
