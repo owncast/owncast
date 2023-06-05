@@ -433,8 +433,12 @@ func Start() error {
 		Handler:           compress(m),
 	}
 
-	log.Infof("Web server is listening on IP %s port %d.", ip, port)
-	log.Infoln("The web admin interface is available at /admin.")
+	if ip != "0.0.0.0" {
+		log.Infof("Web server is listening at %s:%d.", ip, port)
+	} else {
+		log.Infof("Web server is listening on port %d.", port)
+	}
+	log.Infoln("Configure this server by visiting /admin.")
 
 	return server.ListenAndServe()
 }

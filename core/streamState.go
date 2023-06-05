@@ -65,7 +65,7 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 			_currentBroadcast = nil
 		}
 		_transcoder.SetStdin(rtmpOut)
-		_transcoder.Start()
+		_transcoder.Start(true)
 	}()
 
 	go webhooks.SendStreamStatusEvent(models.StreamStarted)
