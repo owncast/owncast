@@ -2,7 +2,7 @@
 import { Popover, Select } from 'antd';
 import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor } from 'slate';
+import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor, Range } from 'slate';
 import {
   Slate,
   DefaultPlaceholder,
@@ -186,7 +186,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({
   const editor = useMemo(() => withReact(withMentions(withImages(createEditor()))), []);
   const inputRef = useRef<HTMLDivElement>(null);
 
-  const [search, setSearch] = useState('');
+  const [search, _setSearch] = useState('');
 
   const chatUserNames = knownChatUserDisplayNames
     ?.filter(c => c.toLowerCase().startsWith(search.toLowerCase()))
