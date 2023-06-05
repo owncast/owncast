@@ -5,8 +5,8 @@ import "path/filepath"
 const (
 	// StaticVersionNumber is the version of Owncast that is used when it's not overwritten via build-time settings.
 	StaticVersionNumber = "0.1.1" // Shown when you build from develop
-	// FfmpegSuggestedVersion is the version of ffmpeg we suggest.
-	FfmpegSuggestedVersion = "v4.1.5" // Requires the v
+	// FfmpegWithGeneralPixFmtVersion is the version of ffmpeg user for 'vaapi' fix_fmt value, instead of 'vaapi_vld'.
+	FfmpegWithGeneralPixFmtVersion = "v5.0" // Requires the v
 	// DataDirectory is the directory we save data to.
 	DataDirectory = "data"
 	// EmojiDir defines the URL route prefix for emoji requests.

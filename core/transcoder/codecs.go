@@ -4,8 +4,13 @@ package transcoder
 
 import (
 	"fmt"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/utils"
+	"golang.org/x/mod/semver"
 	"os/exec"
 	"strings"
+
+	"github.com/owncast/owncast/core/data"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -166,7 +171,45 @@ func (c *OmxCodec) GetPresetForLevel(l int) string {
 }
 
 // VaapiCodec represents an instance of the Vaapi codec.
-type VaapiCodec struct{}
+type VaapiCodec struct {
+	version string
+}
+
+// VaapiCodec represents an instance of the Vaapi codec.
+func NewVaapiCodec() VaapiCodec {
+	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+	version, err := GetStringFfmpegVersion(ffmpeg)
+	if err != nil {
+		//fallback to empty version, we didnt increase risks of failure
+		return VaapiCodec{version: ""}
+	}
+
+	return VaapiCodec{version: version}
+}
+
+func NewVaapiCodecWithVersion(version string) VaapiCodec {
+	return VaapiCodec{version: version}
+}
+
+func GetStringFfmpegVersion(ffmpeg string) (string, error) {
+	cmd := exec.Command(ffmpeg)
+	out, _ := cmd.CombinedOutput()
+
+	response := string(out)
+	if response == "" {
+		return "", fmt.Errorf("unable to determine the version of your ffmpeg installation at %s you may experience issues with video", ffmpeg)
+	}
+
+	responseComponents := strings.Split(response, " ")
+	if len(responseComponents) < 3 {
+		return "", fmt.Errorf("unable to determine the version of your ffmpeg installation at %s you may experience issues with video", ffmpeg)
+	}
+
+	fullVersionString := strings.TrimPrefix(responseComponents[2], "n")
+
+	versionString := "v" + strings.Split(fullVersionString, "-")[0]
+	return versionString, nil
+}
 
 // Name returns the codec name.
 func (c *VaapiCodec) Name() string {
@@ -191,7 +234,22 @@ func (c *VaapiCodec) GlobalFlags() string {
 
 // PixelFormat is the pixel format required for this codec.
 func (c *VaapiCodec) PixelFormat() string {
-	return "vaapi_vld"
+	if !semver.IsValid(c.version) {
+		// Fallback variant for unrecognized version number
+		return "vaapi"
+	}
+	versionCompare := semver.Compare(c.version, config.FfmpegWithGeneralPixFmtVersion)
+	switch versionCompare {
+	// versions less than config.FfmpegWithGeneralPixFmtVersion
+	case -1:
+		return "vaapi_vld"
+	// versions equals or greater config.FfmpegWithGeneralPixFmtVersion
+	case 0, 1:
+		return "vaapi"
+	// Fallback for unexpected semver.Compare behaviour
+	default:
+		return "vaapi"
+	}
 }
 
 // Scaler is the scaler used for resizing the video in the transcoder.
@@ -533,7 +591,8 @@ func getCodec(name string) Codec {
 	case (&NvencCodec{}).Name():
 		return &NvencCodec{}
 	case (&VaapiCodec{}).Name():
-		return &VaapiCodec{}
+		vaapiCodec := NewVaapiCodec()
+		return &vaapiCodec
 	case (&QuicksyncCodec{}).Name():
 		return &QuicksyncCodec{}
 	case (&OmxCodec{}).Name():
