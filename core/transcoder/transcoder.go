@@ -55,7 +55,6 @@ type HLSVariant struct {
 	isVideoPassthrough bool // Override all settings and just copy the video stream
 
 	isAudioPassthrough bool // Override all settings and just copy the audio stream
-
 }
 
 // VideoSize is the scaled size of the video output.
@@ -112,11 +111,13 @@ func (t *Transcoder) Stop() {
 }
 
 // Start will execute the transcoding process with the settings previously set.
-func (t *Transcoder) Start() {
+func (t *Transcoder) Start(shouldLog bool) {
 	_lastTranscoderLogMessage = ""
 
 	command := t.getString()
-	log.Infof("Video transcoder started using %s with %d stream variants.", t.codec.DisplayName(), len(t.variants))
+	if shouldLog {
+		log.Infof("Processing video using codec %s with %d output qualities configured.", t.codec.DisplayName(), len(t.variants))
+	}
 	createVariantDirectories()
 
 	if config.EnableDebugFeatures {

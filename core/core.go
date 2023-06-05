@@ -76,7 +76,9 @@ func Start() error {
 	go rtmp.Start(setStreamAsConnected, setBroadcaster)
 
 	rtmpPort := data.GetRTMPPortNumber()
-	log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
+	if rtmpPort != 1935 {
+		log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
+	}
 
 	webhooks.SetupWebhooks(GetStatus)
 
@@ -108,7 +110,7 @@ func transitionToOfflineVideoStreamContent() {
 	}
 
 	_transcoder.SetInput(offlineFilePath)
-	go _transcoder.Start()
+	go _transcoder.Start(false)
 
 	// Copy the logo to be the thumbnail
 	logo := data.GetLogoPath()
