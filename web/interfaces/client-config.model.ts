@@ -5,7 +5,6 @@ export interface ClientConfig {
   offlineMessage?: string;
   logo: string;
   tags: string[];
-  version: string;
   nsfw: boolean;
   extraPageContent: string;
   socialHandles: SocialHandle[];
@@ -52,7 +51,6 @@ export function makeEmptyClientConfig(): ClientConfig {
     offlineMessage: '',
     logo: '',
     tags: [],
-    version: '',
     nsfw: false,
     extraPageContent: '',
     socialHandles: [],
