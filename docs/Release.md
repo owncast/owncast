@@ -16,7 +16,7 @@ The original Docker Hub image was [gabekangas/owncast](https://hub.docker.com/re
 **Run**:
 
 ```bash
-earthly +package-all --version="v0.1.0"
+earthly +package-all --version="0.1.0"
 ```
 
 2. Create a release on GitHub with release notes and Changelog for the version.
@@ -35,11 +35,11 @@ earthly +package --platform="linux/amd64"
 
 ## Build and upload Docker images
 
-Specify the human readable version number in the `version` flag such as `v0.1.0`, `nightly`, `develop`, etc. It will be used to identify this binary when running Owncast.
+Specify the human readable version number in the `version` flag such as `0.1.0`, `nightly`, `develop`, etc. It will be used to identify this binary when running Owncast.
 
 Create and push the image to Docker Hub with a list of tags. You'll want to tag the image with both the new version number and `latest`.
 
-**Run**: `earthly --push +docker-all --images="owncast/owncast:0.1.0 owncast/owncast:latest gabekangas/owncast:0.1.0 gabekangas/owncast:latest" --version="v0.1.0"`
+**Run**: `earthly --push +docker-all --images="owncast/owncast:0.1.0 owncast/owncast:latest gabekangas/owncast:0.1.0 gabekangas/owncast:latest" --version="0.1.0"`
 
 Omit `--push` if you don't want to push the image to Docker Hub and want to just build and test the image locally first.
 
