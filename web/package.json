@@ -52,7 +52,6 @@
 		"slate-react": "0.95.0",
 		"ua-parser-js": "1.0.35",
 		"video.js": "^8.3.0",
-		"webpack-deadcode-plugin": "^0.1.17",
 		"workbox-precaching": "^7.0.0",
 		"workbox-window": "^7.0.0",
 		"xstate": "4.37.2",
