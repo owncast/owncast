@@ -137,12 +137,6 @@ docker:
 dockerfile:
   FROM DOCKERFILE -f Dockerfile .
 
-testing:
-	ARG images
-	FOR i IN ${images}
-		RUN echo "Testing ${i}"
-	END
-
 unit-tests:
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
   COPY . /build

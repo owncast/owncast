@@ -180,7 +180,7 @@ export default function ConfigChat() {
           onChange={handleChatJoinMessagesEnabledChange}
         />
         <ToggleSwitch
-          fieldName="establishedUserMode"
+          fieldName="chatEstablishedUserMode"
           {...CHAT_ESTABLISHED_USER_MODE}
           checked={formDataValues.chatEstablishedUserMode}
           onChange={handleEstablishedUserModeChange}
