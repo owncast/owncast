@@ -15,6 +15,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	Vaapi_Pix_Fmt = "vaapi"
+)
+
 // Codec represents a supported codec on the system.
 type Codec interface {
 	Name() string
@@ -176,15 +180,20 @@ type VaapiCodec struct {
 }
 
 // VaapiCodec represents an instance of the Vaapi codec.
-func NewVaapiCodec() VaapiCodec {
+func NewVaapiCodec() (result VaapiCodec) {
+	defer func() {
+		recover()
+		result = VaapiCodec{version: ""}
+	}()
 	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
 	version, err := GetStringFfmpegVersion(ffmpeg)
-	if err != nil {
-		//fallback to empty version, we didnt increase risks of failure
-		return VaapiCodec{version: ""}
+	if err == nil {
+		result = VaapiCodec{version: version}
+	} else {
+		// Fallback to empty version, we are not increase risks of failure
+		result = VaapiCodec{version: ""}
 	}
-
-	return VaapiCodec{version: version}
+	return result
 }
 
 func NewVaapiCodecWithVersion(version string) VaapiCodec {
@@ -236,7 +245,7 @@ func (c *VaapiCodec) GlobalFlags() string {
 func (c *VaapiCodec) PixelFormat() string {
 	if !semver.IsValid(c.version) {
 		// Fallback variant for unrecognized version number
-		return "vaapi"
+		return Vaapi_Pix_Fmt
 	}
 	versionCompare := semver.Compare(c.version, config.FfmpegWithGeneralPixFmtVersion)
 	switch versionCompare {
@@ -245,10 +254,10 @@ func (c *VaapiCodec) PixelFormat() string {
 		return "vaapi_vld"
 	// versions equals or greater config.FfmpegWithGeneralPixFmtVersion
 	case 0, 1:
-		return "vaapi"
+		return Vaapi_Pix_Fmt
 	// Fallback for unexpected semver.Compare behaviour
 	default:
-		return "vaapi"
+		return Vaapi_Pix_Fmt
 	}
 }
 
