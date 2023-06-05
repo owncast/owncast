@@ -33,7 +33,6 @@ const Page = () => {
     summary: '',
     logo: '',
     tags: [],
-    version: '',
     nsfw: false,
     extraPageContent: '',
     socialHandles: [],
