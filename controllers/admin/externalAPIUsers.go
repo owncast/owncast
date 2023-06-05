@@ -69,7 +69,6 @@ func GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {
 		controllers.InternalErrorHandler(w, err)
 		return
 	}
-
 	controllers.WriteResponse(w, tokens)
 }
 

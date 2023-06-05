@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/router/middleware"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -55,9 +56,11 @@ func WriteSimpleResponse(w http.ResponseWriter, success bool, message string) {
 	}
 }
 
-// WriteResponse will return an object as a JSON encoded response.
+// WriteResponse will return an object as a JSON encoded uncacheable response.
 func WriteResponse(w http.ResponseWriter, response interface{}) {
 	w.Header().Set("Content-Type", "application/json")
+	middleware.DisableCache(w)
+
 	w.WriteHeader(http.StatusOK)
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
