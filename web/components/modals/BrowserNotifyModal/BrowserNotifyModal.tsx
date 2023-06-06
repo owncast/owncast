@@ -1,5 +1,7 @@
 import { Row, Spin, Typography, Button } from 'antd';
 import React, { FC, useState } from 'react';
+import UploadOutlined from '@ant-design/icons/lib/icons/UploadOutlined';
+import PlusSquareOutlined from '@ant-design/icons/lib/icons/PlusSquareOutlined';
 import { useRecoilValue } from 'recoil';
 import { ErrorBoundary } from 'react-error-boundary';
 import { accessTokenAtom, clientConfigStateAtom } from '../../stores/ClientConfigStore';
@@ -8,8 +10,10 @@ import {
   saveNotificationRegistration,
 } from '../../../services/notifications-service';
 import styles from './BrowserNotifyModal.module.scss';
-import isPushNotificationSupported from '../../../utils/browserPushNotifications';
 import { ComponentError } from '../../ui/ComponentError/ComponentError';
+
+import { isMobileSafariHomeScreenApp, isMobileSafariIos } from '../../../utils/helpers';
+import { arePushNotificationSupported } from '../../../utils/browserPushNotifications';
 
 const { Title } = Typography;
 
@@ -19,6 +23,31 @@ const NotificationsNotSupported = () => (
 
 const NotificationsNotSupportedLocal = () => (
   <div>Browser notifications are not supported for local servers.</div>
+);
+
+const MobileSafariInstructions = () => (
+  <div>
+    <Title level={3}>Get notified on iOS</Title>
+    It takes a couple extra steps to make sure you get notified when your favorite streams go live.
+    <ol>
+      <li>
+        Tap the <strong>share</strong> button <UploadOutlined /> in Safari.
+      </li>
+      <li>
+        Scroll down and tap <strong>&ldquo;Add to Home Screen&rdquo;</strong> <PlusSquareOutlined />
+        .
+      </li>
+      <li>
+        Tap <strong>&ldquo;Add&rdquo;</strong>.
+      </li>
+      <li>Give this link a name and tap the new icon on your home screen</li>
+
+      <li>Come back to this screen and enable notifications.</li>
+      <li>
+        Tap <strong>&ldquo;Allow&rdquo;</strong> when prompted.
+      </li>
+    </ol>
+  </div>
 );
 
 export type PermissionPopupPreviewProps = {
@@ -78,22 +107,27 @@ export const BrowserNotifyModal = () => {
   const [browserPushPermissionsPending, setBrowserPushPermissionsPending] =
     useState<boolean>(false);
   const notificationsPermitted =
-    isPushNotificationSupported() && Notification.permission !== 'default';
+    arePushNotificationSupported() && Notification.permission !== 'default';
 
   const { notifications } = config;
   const { browser } = notifications;
   const { publicKey } = browser;
 
-  const browserPushSupported = browser.enabled && isPushNotificationSupported();
+  const browserPushSupported =
+    browser.enabled && (arePushNotificationSupported() || isMobileSafariHomeScreenApp());
 
   // If notification permissions are granted, show user info how to disable them
   if (notificationsPermitted) {
     return <NotificationsEnabled />;
   }
 
+  if (isMobileSafariIos() && !isMobileSafariHomeScreenApp()) {
+    return <MobileSafariInstructions />;
+  }
+
   const startBrowserPushRegistration = async () => {
     // If notification permissions are already denied or granted, don't do anything.
-    if (isPushNotificationSupported() && Notification.permission !== 'default') {
+    if (arePushNotificationSupported() && Notification.permission !== 'default') {
       return;
     }
 
