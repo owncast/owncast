@@ -23,7 +23,7 @@
 		"@fontsource/poppins": "5.0.2",
 		"@next/bundle-analyzer": "^13.1.1",
 		"@uiw/codemirror-theme-bbedit": "4.20.3",
-		"@uiw/react-codemirror": "4.20.2",
+		"@uiw/react-codemirror": "4.20.3",
 		"@xstate/react": "3.2.2",
 		"antd": "4.24.10",
 		"autoprefixer": "^10.4.14",
