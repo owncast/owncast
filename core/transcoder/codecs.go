@@ -29,7 +29,7 @@ type Codec interface {
 	GetPresetForLevel(l int) string
 }
 
-// MockedCodec is mock for each codec to easy testing. Respect to https://github.com/anpavlov
+// MockedCodec is mock for each codec to easy testing. Respect to https://github.com/anpavlov .
 type MockedCodec struct {
 	Codec
 }
