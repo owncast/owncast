@@ -9,7 +9,7 @@ import (
 
 func TestFFmpegVideoToolboxCommand(t *testing.T) {
 	latencyLevel := models.GetLatencyLevel(2)
-	codec := VideoToolboxCodec{}
+	codec := MockedCodec{Codec: &VideoToolboxCodec{}}
 
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = filepath.Join("fake", "path", "ffmpeg")

@@ -3,22 +3,17 @@
 package transcoder
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"github.com/owncast/owncast/utils"
-	"golang.org/x/mod/semver"
+	"golang.org/x/exp/slices"
 	"os/exec"
 	"strings"
 
 	"github.com/owncast/owncast/core/data"
 
 	log "github.com/sirupsen/logrus"
-)
-
-const (
-	// FfmpegWithGeneralPixFmtVersion is the version of ffmpeg user for 'vaapi' fix_fmt value, instead of 'vaapi_vld'.
-	FfmpegWithGeneralPixFmtVersion = "v5.0" // Requires the v
-	// Vaapi_Pix_Fmt is pix_fmt argument used in modern Ffmpeg 5.0+ versions.
-	Vaapi_Pix_Fmt = "vaapi"
 )
 
 // Codec represents a supported codec on the system.
@@ -34,12 +29,30 @@ type Codec interface {
 	GetPresetForLevel(l int) string
 }
 
+// MockedCodec is mock for each codec to easy testing. Respect to https://github.com/anpavlov
+type MockedCodec struct {
+	Codec
+}
+
+// PixelFormat is the mocked function for tests.
+func (c *MockedCodec) PixelFormat() string {
+	return prefferedPixelFormats[c.Name()][0]
+}
+
 var supportedCodecs = map[string]string{
 	(&Libx264Codec{}).Name():      "libx264",
 	(&OmxCodec{}).Name():          "omx",
 	(&VaapiCodec{}).Name():        "vaapi",
 	(&NvencCodec{}).Name():        "NVIDIA nvenc",
 	(&VideoToolboxCodec{}).Name(): "videotoolbox",
+}
+
+var prefferedPixelFormats = map[string][]string{
+	(&Libx264Codec{}).Name():      {"yuv420p"},
+	(&OmxCodec{}).Name():          {"yuv420p"},
+	(&VaapiCodec{}).Name():        {"vaapi", "vaapi_vld"},
+	(&NvencCodec{}).Name():        {"yuv420p"},
+	(&VideoToolboxCodec{}).Name(): {"nv12"},
 }
 
 // Libx264Codec represents an instance of the Libx264 Codec.
@@ -62,7 +75,7 @@ func (c *Libx264Codec) GlobalFlags() string {
 
 // PixelFormat is the pixel format required for this codec.
 func (c *Libx264Codec) PixelFormat() string {
-	return "yuv420p" //nolint:goconst
+	return getPixelFormatWrapper(c)
 }
 
 // Scaler is the scaler used for resizing the video in the transcoder.
@@ -131,7 +144,7 @@ func (c *OmxCodec) GlobalFlags() string {
 
 // PixelFormat is the pixel format required for this codec.
 func (c *OmxCodec) PixelFormat() string {
-	return "yuv420p"
+	return getPixelFormatWrapper(c)
 }
 
 // Scaler is the scaler used for resizing the video in the transcoder.
@@ -177,50 +190,7 @@ func (c *OmxCodec) GetPresetForLevel(l int) string {
 }
 
 // VaapiCodec represents an instance of the Vaapi codec.
-type VaapiCodec struct {
-	version string
-}
-
-// VaapiCodec represents an instance of the Vaapi codec.
-func NewVaapiCodec() (result VaapiCodec) {
-	defer func() {
-		recover()
-		result = VaapiCodec{version: ""}
-	}()
-	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
-	version, err := GetStringFfmpegVersion(ffmpeg)
-	if err == nil {
-		result = VaapiCodec{version: version}
-	} else {
-		// Fallback to empty version, we are not increase risks of failure.
-		result = VaapiCodec{version: ""}
-	}
-	return result
-}
-
-func NewVaapiCodecWithVersion(version string) VaapiCodec {
-	return VaapiCodec{version: version}
-}
-
-func GetStringFfmpegVersion(ffmpeg string) (string, error) {
-	cmd := exec.Command(ffmpeg)
-	out, _ := cmd.CombinedOutput()
-
-	response := string(out)
-	if response == "" {
-		return "", fmt.Errorf("unable to determine the version of your ffmpeg installation at %s you may experience issues with video", ffmpeg)
-	}
-
-	responseComponents := strings.Split(response, " ")
-	if len(responseComponents) < 3 {
-		return "", fmt.Errorf("unable to determine the version of your ffmpeg installation at %s you may experience issues with video", ffmpeg)
-	}
-
-	fullVersionString := strings.TrimPrefix(responseComponents[2], "n")
-
-	versionString := "v" + strings.Split(fullVersionString, "-")[0]
-	return versionString, nil
-}
+type VaapiCodec struct{}
 
 // Name returns the codec name.
 func (c *VaapiCodec) Name() string {
@@ -245,22 +215,7 @@ func (c *VaapiCodec) GlobalFlags() string {
 
 // PixelFormat is the pixel format required for this codec.
 func (c *VaapiCodec) PixelFormat() string {
-	if !semver.IsValid(c.version) {
-		// Fallback variant for unrecognized version number.
-		return Vaapi_Pix_Fmt
-	}
-	versionCompare := semver.Compare(c.version, FfmpegWithGeneralPixFmtVersion)
-	switch versionCompare {
-	// Versions less than FfmpegWithGeneralPixFmtVersion.
-	case -1:
-		return "vaapi_vld"
-	// Versions equals or greater FfmpegWithGeneralPixFmtVersion.
-	case 0, 1:
-		return Vaapi_Pix_Fmt
-	// Fallback for unexpected semver.Compare behaviour.
-	default:
-		return Vaapi_Pix_Fmt
-	}
+	return getPixelFormatWrapper(c)
 }
 
 // Scaler is the scaler used for resizing the video in the transcoder.
@@ -327,7 +282,7 @@ func (c *NvencCodec) GlobalFlags() string {
 
 // PixelFormat is the pixel format required for this codec.
 func (c *NvencCodec) PixelFormat() string {
-	return "yuv420p"
+	return getPixelFormatWrapper(c)
 }
 
 // Scaler is the scaler used for resizing the video in the transcoder.
@@ -391,7 +346,7 @@ func (c *QuicksyncCodec) GlobalFlags() string {
 
 // PixelFormat is the pixel format required for this codec.
 func (c *QuicksyncCodec) PixelFormat() string {
-	return "nv12"
+	return getPixelFormatWrapper(c)
 }
 
 // Scaler is the scaler used for resizing the video in the transcoder.
@@ -454,7 +409,7 @@ func (c *Video4Linux) GlobalFlags() string {
 
 // PixelFormat is the pixel format required for this codec.
 func (c *Video4Linux) PixelFormat() string {
-	return "nv21"
+	return getPixelFormatWrapper(c)
 }
 
 // Scaler is the scaler used for resizing the video in the transcoder.
@@ -518,7 +473,7 @@ func (c *VideoToolboxCodec) GlobalFlags() string {
 
 // PixelFormat is the pixel format required for this codec.
 func (c *VideoToolboxCodec) PixelFormat() string {
-	return "nv12"
+	return getPixelFormatWrapper(c)
 }
 
 // Scaler is the scaler used for resizing the video in the transcoder.
@@ -602,8 +557,7 @@ func getCodec(name string) Codec {
 	case (&NvencCodec{}).Name():
 		return &NvencCodec{}
 	case (&VaapiCodec{}).Name():
-		vaapiCodec := NewVaapiCodec()
-		return &vaapiCodec
+		return &VaapiCodec{}
 	case (&QuicksyncCodec{}).Name():
 		return &QuicksyncCodec{}
 	case (&OmxCodec{}).Name():
@@ -615,4 +569,42 @@ func getCodec(name string) Codec {
 	default:
 		return &Libx264Codec{}
 	}
+}
+
+func getAvailablePixelFormat(codec Codec) (string, error) {
+	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+	cmd := exec.Command(fmt.Sprintf("%s -h encoder=%s", ffmpeg, codec.Name()))
+	out, err := cmd.CombinedOutput()
+
+	if err != nil || len(out) == 0 {
+		return "", fmt.Errorf("unable to determine supported pixel formats for your ffmpeg installation at %s you may experience issues with video: %w", ffmpeg, err)
+	}
+
+	scanner := bufio.NewScanner(bytes.NewReader(out))
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, "Supported pixel formats") {
+			components := strings.Split(line, ":")
+			if len(components) != 2 {
+				return "", fmt.Errorf("unable to determine supported pixel formats for your ffmpeg installation at %s you may experience issues with video", ffmpeg)
+			}
+			availableFormats := strings.Fields(components[1])
+			prefferedFormats := prefferedPixelFormats[codec.Name()]
+			for _, format := range availableFormats {
+				if slices.Contains(prefferedFormats, format) {
+					return format, nil
+				}
+			}
+		}
+	}
+
+	return "", fmt.Errorf("unable to determine supported pixel formats for your ffmpeg installation at %s you may experience issues with video", ffmpeg)
+}
+
+func getPixelFormatWrapper(c Codec) string {
+	format, err := getAvailablePixelFormat(c)
+	if err != nil {
+		panic(err)
+	}
+	return format
 }

@@ -9,7 +9,7 @@ import (
 
 func TestFFmpegNvencCommand(t *testing.T) {
 	latencyLevel := models.GetLatencyLevel(2)
-	codec := NvencCodec{}
+	codec := MockedCodec{Codec: &NvencCodec{}}
 
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = filepath.Join("fake", "path", "ffmpeg")

@@ -9,7 +9,7 @@ import (
 
 func TestFFmpegx264Command(t *testing.T) {
 	latencyLevel := models.GetLatencyLevel(2)
-	codec := Libx264Codec{}
+	codec := MockedCodec{Codec: &Libx264Codec{}}
 
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = filepath.Join("fake", "path", "ffmpeg")

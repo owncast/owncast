@@ -9,7 +9,7 @@ import (
 
 func TestFFmpegOmxCommand(t *testing.T) {
 	latencyLevel := models.GetLatencyLevel(2)
-	codec := OmxCodec{}
+	codec := MockedCodec{Codec: &OmxCodec{}}
 
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = filepath.Join("fake", "path", "ffmpeg")

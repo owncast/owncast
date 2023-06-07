@@ -9,7 +9,7 @@ import (
 
 func TestFFmpegVaapiCommand(t *testing.T) {
 	latencyLevel := models.GetLatencyLevel(2)
-	codec := NewVaapiCodecWithVersion(FfmpegWithGeneralPixFmtVersion)
+	codec := MockedCodec{Codec: &VaapiCodec{}}
 
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = filepath.Join("fake", "path", "ffmpeg")
