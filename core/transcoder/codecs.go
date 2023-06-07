@@ -604,7 +604,8 @@ func getAvailablePixelFormat(codec Codec) (string, error) {
 func getPixelFormatWrapper(c Codec) string {
 	format, err := getAvailablePixelFormat(c)
 	if err != nil {
-		panic(err)
+		// Fallback to supported pixel formats.
+		format = prefferedPixelFormats[c.Name()][0]
 	}
 	return format
 }
