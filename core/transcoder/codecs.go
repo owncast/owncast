@@ -6,12 +6,12 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/owncast/owncast/utils"
-	"golang.org/x/exp/slices"
 	"os/exec"
 	"strings"
 
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/utils"
+	"golang.org/x/exp/slices"
 
 	log "github.com/sirupsen/logrus"
 )
