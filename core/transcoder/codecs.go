@@ -573,7 +573,13 @@ func getCodec(name string) Codec {
 
 func getAvailablePixelFormat(codec Codec) (string, error) {
 	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
-	cmd := exec.Command(fmt.Sprintf("%s -h encoder=%s", ffmpeg, codec.Name()))
+	pixelFormatsFlags := []string{
+		ffmpeg,
+		"-h",
+		fmt.Sprintf("encoder=%s", codec.Name()),
+	}
+	ffmpegCmd := strings.Join(pixelFormatsFlags, " ")
+	cmd := exec.Command("sh", "-c", ffmpegCmd)
 	out, err := cmd.CombinedOutput()
 
 	if err != nil || len(out) == 0 {
