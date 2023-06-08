@@ -22,7 +22,7 @@
 		"@fontsource/inter": "^5.0.0",
 		"@fontsource/poppins": "5.0.2",
 		"@next/bundle-analyzer": "^13.1.1",
-		"@uiw/codemirror-theme-bbedit": "4.20.4",
+		"@uiw/codemirror-theme-bbedit": "4.21.0",
 		"@uiw/react-codemirror": "4.20.4",
 		"@xstate/react": "3.2.2",
 		"antd": "4.24.10",
