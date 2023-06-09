@@ -29,16 +29,6 @@ type Codec interface {
 	GetPresetForLevel(l int) string
 }
 
-// MockedCodec is mock for each codec to easy testing. Respect to https://github.com/anpavlov .
-type MockedCodec struct {
-	Codec
-}
-
-// PixelFormat is the mocked function for tests.
-func (c *MockedCodec) PixelFormat() string {
-	return prefferedPixelFormats[c.Name()][0]
-}
-
 var supportedCodecs = map[string]string{
 	(&Libx264Codec{}).Name():      "libx264",
 	(&OmxCodec{}).Name():          "omx",
@@ -600,6 +590,11 @@ func getAvailablePixelFormat(codec Codec) (string, error) {
 				if slices.Contains(prefferedFormats, format) {
 					return format, nil
 				}
+			}
+			if len(availableFormats) > 0 {
+				return availableFormats[0], nil
+			} else {
+				return "", fmt.Errorf("no supported pixel formats for your ffmpeg installation at %s", ffmpeg)
 			}
 		}
 	}

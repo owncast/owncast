@@ -281,7 +281,8 @@ func NewTranscoder() *Transcoder {
 
 	transcoder.currentStreamOutputSettings = data.GetStreamOutputVariants()
 	transcoder.currentLatencyLevel = data.GetStreamLatencyLevel()
-	transcoder.codec = getCodec(data.GetVideoCodec())
+	codec := getCodec(data.GetVideoCodec())
+	transcoder.SetCodec(codec)
 	transcoder.segmentOutputPath = config.HLSStoragePath
 	transcoder.playlistOutputPath = config.HLSStoragePath
 
@@ -446,4 +447,8 @@ func (t *Transcoder) SetIdentifier(output string) {
 // SetInternalHTTPPort will set the port to be used for internal communication.
 func (t *Transcoder) SetInternalHTTPPort(port string) {
 	t.internalListenerPort = port
+}
+
+func (t *Transcoder) SetCodec(codec Codec) {
+	t.codec = codec
 }

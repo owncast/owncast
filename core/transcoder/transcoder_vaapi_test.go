@@ -4,12 +4,14 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 )
 
 func TestFFmpegVaapiCommand(t *testing.T) {
+	data.SetupPersistence(":memory:")
 	latencyLevel := models.GetLatencyLevel(2)
-	codec := MockedCodec{Codec: &VaapiCodec{}}
+	codec := VaapiCodec{}
 
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = filepath.Join("fake", "path", "ffmpeg")
@@ -17,7 +19,7 @@ func TestFFmpegVaapiCommand(t *testing.T) {
 	transcoder.SetOutputPath("fakeOutput")
 	transcoder.SetIdentifier("jdofFGg")
 	transcoder.SetInternalHTTPPort("8123")
-	transcoder.codec = &codec
+	transcoder.SetCodec(&codec)
 	transcoder.currentLatencyLevel = latencyLevel
 
 	variant := HLSVariant{}
