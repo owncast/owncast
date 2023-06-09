@@ -4,32 +4,32 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/activitypub/controllers"
-	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/webserver/middleware"
 )
 
 // StartRouter will start the federation specific http router.
-func StartRouter() {
+func StartRouter(router *http.ServeMux) {
 	// WebFinger
-	http.HandleFunc("/.well-known/webfinger", controllers.WebfingerHandler)
+	router.HandleFunc("/.well-known/webfinger", controllers.WebfingerHandler)
 
 	// Host Metadata
-	http.HandleFunc("/.well-known/host-meta", controllers.HostMetaController)
+	router.HandleFunc("/.well-known/host-meta", controllers.HostMetaController)
 
 	// Nodeinfo v1
-	http.HandleFunc("/.well-known/nodeinfo", controllers.NodeInfoController)
+	router.HandleFunc("/.well-known/nodeinfo", controllers.NodeInfoController)
 
 	// x-nodeinfo v2
-	http.HandleFunc("/.well-known/x-nodeinfo2", controllers.XNodeInfo2Controller)
+	router.HandleFunc("/.well-known/x-nodeinfo2", controllers.XNodeInfo2Controller)
 
 	// Nodeinfo v2
-	http.HandleFunc("/nodeinfo/2.0", controllers.NodeInfoV2Controller)
+	router.HandleFunc("/nodeinfo/2.0", controllers.NodeInfoV2Controller)
 
 	// Instance details
-	http.HandleFunc("/api/v1/instance", controllers.InstanceV1Controller)
+	router.HandleFunc("/api/v1/instance", controllers.InstanceV1Controller)
 
 	// Single ActivityPub Actor
-	http.HandleFunc("/federation/user/", middleware.RequireActivityPubOrRedirect(controllers.ActorHandler))
+	router.HandleFunc("/federation/user/", middleware.RequireActivityPubOrRedirect(controllers.ActorHandler))
 
 	// Single AP object
-	http.HandleFunc("/federation/", middleware.RequireActivityPubOrRedirect(controllers.ObjectHandler))
+	router.HandleFunc("/federation/", middleware.RequireActivityPubOrRedirect(controllers.ObjectHandler))
 }
