@@ -7,8 +7,8 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/user"
-	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/middleware"
 	log "github.com/sirupsen/logrus"
 )
 

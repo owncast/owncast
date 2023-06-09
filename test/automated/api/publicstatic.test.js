@@ -32,7 +32,7 @@ test('public directory is writable', async (done) => {
 	done();
 });
 
-test('public static file is accessible', async (done) => {
+test('public static file is accessible: ' + filename, async (done) => {
 	request
 		.get('/public/' + filename)
 		.expect(200)

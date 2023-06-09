@@ -1,6 +1,8 @@
 package activitypub
 
 import (
+	"net/http"
+
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/inbox"
 	"github.com/owncast/owncast/activitypub/outbox"
@@ -13,11 +15,11 @@ import (
 )
 
 // Start will initialize and start the federation support.
-func Start(datastore *data.Datastore) {
+func Start(datastore *data.Datastore, router *http.ServeMux) {
 	persistence.Setup(datastore)
 	workerpool.InitOutboundWorkerPool()
 	inbox.InitInboxWorkerPool()
-	StartRouter()
+	StartRouter(router)
 
 	// Generate the keys for signing federated activity if needed.
 	if data.GetPrivateKey() == "" {
