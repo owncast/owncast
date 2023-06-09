@@ -6,13 +6,13 @@ import (
 	"strconv"
 
 	"github.com/owncast/owncast/logging"
+	"github.com/owncast/owncast/webserver"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
-	"github.com/owncast/owncast/router"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -105,8 +105,9 @@ func main() {
 
 	go metrics.Start(core.GetStatus)
 
-	if err := router.Start(); err != nil {
-		log.Fatalln("failed to start/run the router", err)
+	webserver := webserver.New()
+	if err := webserver.Start(config.WebServerIP, config.WebServerPort); err != nil {
+		log.Fatalln("failed to start/run the web server", err)
 	}
 }
 
