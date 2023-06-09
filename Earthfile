@@ -145,6 +145,7 @@ testing:
 
 unit-tests:
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+  RUN apk add ffmpeg && fc-cache -f
   COPY . /build
 	WORKDIR /build
 	RUN go test ./...
