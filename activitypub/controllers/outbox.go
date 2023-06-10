@@ -62,7 +62,7 @@ func ActorObjectHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
-		// controllers.WriteSimpleResponse(w, false, err.Error())
+		// responses.WriteSimpleResponse(w, false, err.Error())
 	}
 
 	if _, err := w.Write([]byte(object)); err != nil {

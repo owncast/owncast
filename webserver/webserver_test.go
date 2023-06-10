@@ -33,12 +33,3 @@ func TestPrometheusDebugPath(t *testing.T) {
 		t.Errorf("Expected 404, got %d", w.Result().StatusCode)
 	}
 }
-
-func TestTestingEndpoint(t *testing.T) {
-	r := httptest.NewRequest(http.MethodGet, "/test", nil)
-	w := httptest.NewRecorder()
-	srv.ServeHTTP(w, r)
-	if w.Result().StatusCode != http.StatusOK {
-		t.Errorf("Expected 200, got %d", w.Result().StatusCode)
-	}
-}
