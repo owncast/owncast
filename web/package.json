@@ -102,7 +102,7 @@
 		"eslint-plugin-react-hooks": "4.6.0",
 		"eslint-plugin-storybook": "0.6.12",
 		"handlebars": "^4.7.7",
-		"html-webpack-plugin": "5.5.1",
+		"html-webpack-plugin": "5.5.2",
 		"install": "^0.13.0",
 		"knip": "^2.11.0",
 		"less": "4.1.3",
