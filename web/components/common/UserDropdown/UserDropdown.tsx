@@ -159,7 +159,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
           open={showNameChangeModal}
           handleCancel={closeChangeNameModal}
         >
-          <NameChangeModal closeChangeNameModal={closeChangeNameModal} />
+          <NameChangeModal closeModal={closeChangeNameModal} />
         </Modal>
         <Modal
           title="Authenticate"
