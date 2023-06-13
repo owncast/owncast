@@ -205,16 +205,14 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     }
   };
 
-  const scrollChatToBottom = (ref, behavior = 'smooth') => {
+  const scrollChatToBottom = ref => {
     clearTimeout(scrollToBottomDelay.current);
     scrollToBottomDelay.current = setTimeout(() => {
-      ref.current?.scrollToIndex({
-        index: messages.length - 1,
-        behavior,
-      });
+      ref.current?.scrollTo({ top: Infinity, left: 0, behavior: 'auto' });
+
       setIsAtBottom(true);
-      setShowScrollToBottomButton(false);
     }, 150);
+    setShowScrollToBottomButton(false);
   };
 
   // This is a hack to force a scroll to the very bottom of the chat messages
@@ -222,7 +220,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   // For https://github.com/owncast/owncast/issues/2500
   useEffect(() => {
     setTimeout(() => {
-      scrollChatToBottom(chatContainerRef, 'auto');
+      scrollChatToBottom(chatContainerRef);
     }, 500);
   }, []);
 
@@ -240,7 +238,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
           followOutput={() => {
             if (isAtBottom) {
               setShowScrollToBottomButton(false);
-              scrollChatToBottom(chatContainerRef, 'auto');
+              scrollChatToBottom(chatContainerRef);
               return 'smooth';
             }
 
@@ -261,7 +259,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         {showScrollToBottomButton && (
           <ScrollToBotBtn
             onClick={() => {
-              scrollChatToBottom(chatContainerRef, 'auto');
+              scrollChatToBottom(chatContainerRef);
             }}
           />
         )}
