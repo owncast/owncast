@@ -187,6 +187,18 @@ test('verify default admin configuration', async (done) => {
 	done();
 });
 
+test('verify stream key validation', async (done) => {
+	const badPayload = { id: 'zz', comment: 'ouch' };
+	const url = '/api/admin/config/streamkeys';
+	const res = await request
+		.post(url)
+		.auth('admin', defaultAdminPassword)
+		.send(badPayload)
+		.expect(400);
+
+	done();
+});
+
 test('set server name', async (done) => {
 	const res = await sendAdminRequest('config/name', newServerName);
 	done();
