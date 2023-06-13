@@ -86,6 +86,10 @@ export const UserDropdown: FC<UserDropdownProps> = ({
     setShowNameChangeModal(true);
   };
 
+  const closeChangeNameModal = () => {
+    setShowNameChangeModal(false);
+  };
+
   // Register keyboard shortcut for the space bar to toggle playback
   useHotkeys(
     'c',
@@ -153,9 +157,9 @@ export const UserDropdown: FC<UserDropdownProps> = ({
         <Modal
           title="Change Chat Display Name"
           open={showNameChangeModal}
-          handleCancel={() => setShowNameChangeModal(false)}
+          handleCancel={closeChangeNameModal}
         >
-          <NameChangeModal />
+          <NameChangeModal closeModal={closeChangeNameModal} />
         </Modal>
         <Modal
           title="Authenticate"
