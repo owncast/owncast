@@ -850,6 +850,18 @@ func SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(streamKeys.Value) == 0 {
+		controllers.WriteSimpleResponse(w, false, "must provide at least one valid stream key")
+		return
+	}
+
+	for _, streamKey := range streamKeys.Value {
+		if streamKey.Key == "" {
+			controllers.WriteSimpleResponse(w, false, "stream key cannot be empty")
+			return
+		}
+	}
+
 	if err := data.SetStreamKeys(streamKeys.Value); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return

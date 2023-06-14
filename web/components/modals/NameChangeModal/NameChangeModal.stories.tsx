@@ -27,7 +27,7 @@ const Example = () => {
 
   return (
     <div>
-      <NameChangeModal />
+      <NameChangeModal closeModal={() => {}} />
     </div>
   );
 };
