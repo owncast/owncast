@@ -51,7 +51,7 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 		Image            string
 		StatusJSON       string
 		ServerConfigJSON string
-		EmbedVideo			 string
+		EmbedVideo       string
 		Nonce            string
 	}
 
@@ -79,7 +79,7 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 		Image:            "logo/external",
 		StatusJSON:       string(sb),
 		ServerConfigJSON: string(cb),
-		EmbedVideo:				"embed/video",
+		EmbedVideo:       "embed/video",
 		Nonce:            nonce,
 	}
 
