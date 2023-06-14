@@ -262,16 +262,18 @@ export const Content: FC = () => {
         </Modal>
         <Row>
           {isMobile ? (
-            <MobileContent
-              name={name}
-              summary={summary}
-              tags={tags}
-              socialHandles={socialHandles}
-              extraPageContent={extraPageContent}
-              setShowFollowModal={setShowFollowModal}
-              supportFediverseFeatures={supportFediverseFeatures}
-              online={online}
-            />
+            <Col span={24}>
+              <MobileContent
+                name={name}
+                summary={summary}
+                tags={tags}
+                socialHandles={socialHandles}
+                extraPageContent={extraPageContent}
+                setShowFollowModal={setShowFollowModal}
+                supportFediverseFeatures={supportFediverseFeatures}
+                online={online}
+              />
+            </Col>
           ) : (
             <Col span={24} style={{ paddingRight: dynamicPadding }}>
               <div className={desktopStyles.bottomSectionContent}>
