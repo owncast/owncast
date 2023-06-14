@@ -9,8 +9,8 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/core/webhooks"
+	"github.com/owncast/owncast/storage"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -26,6 +26,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 
 	// Check if name is on the blocklist
 	blocklist := data.GetForbiddenUsernameList()
+	userRepository := storage.GetUserRepository()
 
 	// Names have a max length
 	proposedUsername = utils.MakeSafeStringOfLength(proposedUsername, config.MaxChatDisplayNameLength)
@@ -47,7 +48,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	}
 
 	// Check if the name is not already assigned to a registered user.
-	if available, err := user.IsDisplayNameAvailable(proposedUsername); err != nil {
+	if available, err := userRepository.IsDisplayNameAvailable(proposedUsername); err != nil {
 		log.Errorln("error checking if name is available", err)
 		return
 	} else if !available {
@@ -60,7 +61,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 		return
 	}
 
-	savedUser := user.GetUserByToken(eventData.client.accessToken)
+	savedUser := userRepository.GetUserByToken(eventData.client.accessToken)
 	oldName := savedUser.DisplayName
 
 	// Check that the new name is different from old.
@@ -70,7 +71,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	}
 
 	// Save the new name
-	if err := user.ChangeUsername(eventData.client.User.ID, proposedUsername); err != nil {
+	if err := userRepository.ChangeUsername(eventData.client.User.ID, proposedUsername); err != nil {
 		log.Errorln("error changing username", err)
 	}
 
@@ -114,9 +115,10 @@ func (s *Server) userColorChanged(eventData chatClientEvent) {
 		log.Errorln("invalid color requested when changing user display color")
 		return
 	}
+	userRepository := storage.GetUserRepository()
 
 	// Save the new color
-	if err := user.ChangeUserColor(eventData.client.User.ID, receivedEvent.NewColor); err != nil {
+	if err := userRepository.ChangeUserColor(eventData.client.User.ID, receivedEvent.NewColor); err != nil {
 		log.Errorln("error changing user display color", err)
 	}
 

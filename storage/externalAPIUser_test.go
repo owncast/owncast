@@ -1,4 +1,4 @@
-package user
+package storage
 
 import (
 	"testing"
@@ -11,24 +11,27 @@ const (
 	token     = "test-token-123"
 )
 
-var testScopes = []string{"test-scope"}
+var (
+	testScopes     = []string{"test-scope"}
+	userRepository UserRepository
+)
 
 func TestMain(m *testing.M) {
 	if err := data.SetupPersistence(":memory:"); err != nil {
 		panic(err)
 	}
 
-	SetupUsers()
+	userRepository = NewUserRepository(data.GetDatastore())
 
 	m.Run()
 }
 
 func TestCreateExternalAPIUser(t *testing.T) {
-	if err := InsertExternalAPIUser(token, tokenName, 0, testScopes); err != nil {
+	if err := userRepository.InsertExternalAPIUser(token, tokenName, 0, testScopes); err != nil {
 		t.Fatal(err)
 	}
 
-	user := GetUserByToken(token)
+	user := userRepository.GetUserByToken(token)
 	if user == nil {
 		t.Fatal("api user not found after creating")
 	}
@@ -43,13 +46,13 @@ func TestCreateExternalAPIUser(t *testing.T) {
 }
 
 func TestDeleteExternalAPIUser(t *testing.T) {
-	if err := DeleteExternalAPIUser(token); err != nil {
+	if err := userRepository.DeleteExternalAPIUser(token); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestVerifyTokenDisabled(t *testing.T) {
-	users, err := GetExternalAPIUser()
+	users, err := userRepository.GetExternalAPIUser()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +63,7 @@ func TestVerifyTokenDisabled(t *testing.T) {
 }
 
 func TestVerifyGetUserTokenDisabled(t *testing.T) {
-	user := GetUserByToken(token)
+	user := userRepository.GetUserByToken(token)
 	if user == nil {
 		t.Fatal("user not returned in GetUserByToken after disabling")
 	}
@@ -71,7 +74,7 @@ func TestVerifyGetUserTokenDisabled(t *testing.T) {
 }
 
 func TestVerifyGetExternalAPIUserForAccessTokenAndScopeTokenDisabled(t *testing.T) {
-	user, _ := GetExternalAPIUserForAccessTokenAndScope(token, testScopes[0])
+	user, _ := userRepository.GetExternalAPIUserForAccessTokenAndScope(token, testScopes[0])
 
 	if user != nil {
 		t.Fatal("user returned in GetExternalAPIUserForAccessTokenAndScope after disabling")
@@ -79,13 +82,13 @@ func TestVerifyGetExternalAPIUserForAccessTokenAndScopeTokenDisabled(t *testing.
 }
 
 func TestCreateAdditionalAPIUser(t *testing.T) {
-	if err := InsertExternalAPIUser("ignore-me", "token-to-be-ignored", 0, testScopes); err != nil {
+	if err := userRepository.InsertExternalAPIUser("ignore-me", "token-to-be-ignored", 0, testScopes); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestAgainVerifyGetExternalAPIUserForAccessTokenAndScopeTokenDisabled(t *testing.T) {
-	user, _ := GetExternalAPIUserForAccessTokenAndScope(token, testScopes[0])
+	user, _ := userRepository.GetExternalAPIUserForAccessTokenAndScope(token, testScopes[0])
 
 	if user != nil {
 		t.Fatal("user returned in TestAgainVerifyGetExternalAPIUserForAccessTokenAndScopeTokenDisabled after disabling")

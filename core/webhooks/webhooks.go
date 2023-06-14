@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 )
 
@@ -17,13 +16,13 @@ type WebhookEvent struct {
 
 // WebhookChatMessage represents a single chat message sent as a webhook payload.
 type WebhookChatMessage struct {
-	User      *user.User `json:"user,omitempty"`
-	Timestamp *time.Time `json:"timestamp,omitempty"`
-	Body      string     `json:"body,omitempty"`
-	RawBody   string     `json:"rawBody,omitempty"`
-	ID        string     `json:"id,omitempty"`
-	ClientID  uint       `json:"clientId,omitempty"`
-	Visible   bool       `json:"visible"`
+	User      *models.User `json:"user,omitempty"`
+	Timestamp *time.Time   `json:"timestamp,omitempty"`
+	Body      string       `json:"body,omitempty"`
+	RawBody   string       `json:"rawBody,omitempty"`
+	ID        string       `json:"id,omitempty"`
+	ClientID  uint         `json:"clientId,omitempty"`
+	Visible   bool         `json:"visible"`
 }
 
 // SendEventToWebhooks will send a single webhook event to all webhook destinations.
