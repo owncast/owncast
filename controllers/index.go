@@ -51,6 +51,7 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 		Image            string
 		StatusJSON       string
 		ServerConfigJSON string
+		EmbedVideo       string
 		Nonce            string
 	}
 
@@ -71,13 +72,14 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 	content := serverSideContent{
 		Name:             data.GetServerName(),
 		Summary:          data.GetServerSummary(),
-		RequestedURL:     data.GetServerURL(),
+		RequestedURL:     fmt.Sprintf("%s%s", data.GetServerURL(), "/"),
 		TagsString:       strings.Join(data.GetServerMetadataTags(), ","),
-		ThumbnailURL:     "/thumbnail.jpg",
-		Thumbnail:        "/thumbnail.jpg",
-		Image:            "/logo/external",
+		ThumbnailURL:     "thumbnail.jpg",
+		Thumbnail:        "thumbnail.jpg",
+		Image:            "logo/external",
 		StatusJSON:       string(sb),
 		ServerConfigJSON: string(cb),
+		EmbedVideo:       "embed/video",
 		Nonce:            nonce,
 	}
 
