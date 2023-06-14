@@ -13,8 +13,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/geoip"
+	"github.com/owncast/owncast/models"
 )
 
 // Client represents a single chat client.
@@ -23,7 +23,7 @@ type Client struct {
 	timeoutTimer *time.Timer
 	rateLimiter  *rate.Limiter
 	conn         *websocket.Conn
-	User         *user.User `json:"user"`
+	User         *models.User `json:"user"`
 	server       *Server
 	Geo          *geoip.GeoDetails `json:"geo"`
 	// Buffered channel of outbound messages.

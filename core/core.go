@@ -13,7 +13,6 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/core/transcoder"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/notifications"
@@ -56,7 +55,7 @@ func Start() error {
 		log.Errorln("storage error", err)
 	}
 
-	user.SetupUsers()
+	// user.SetupUsers()
 	auth.Setup(data.GetDatastore())
 
 	fileWriter.SetupFileWriterReceiverService(&handler)

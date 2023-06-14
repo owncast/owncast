@@ -8,7 +8,6 @@ import (
 
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -104,7 +103,7 @@ func makeUserMessageEventFromRowData(row rowData) events.UserMessageEvent {
 	isBot := (row.userType != nil && *row.userType == "API")
 	scopeSlice := strings.Split(scopes, ",")
 
-	u := user.User{
+	u := models.User{
 		ID:              *row.userID,
 		DisplayName:     displayName,
 		DisplayColor:    displayColor,

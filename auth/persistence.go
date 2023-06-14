@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
 
 	"github.com/owncast/owncast/db"
 )
@@ -39,7 +39,7 @@ func AddAuth(userID, authToken string, authType Type) error {
 
 // GetUserByAuth will return an existing user given auth details if a user
 // has previously authenticated with that method.
-func GetUserByAuth(authToken string, authType Type) *user.User {
+func GetUserByAuth(authToken string, authType Type) *models.User {
 	u, err := _datastore.GetQueries().GetUserByAuth(context.Background(), db.GetUserByAuthParams{
 		Token: authToken,
 		Type:  string(authType),
@@ -53,7 +53,7 @@ func GetUserByAuth(authToken string, authType Type) *user.User {
 		scopes = strings.Split(u.Scopes.String, ",")
 	}
 
-	return &user.User{
+	return &models.User{
 		ID:              u.ID,
 		DisplayName:     u.DisplayName,
 		DisplayColor:    int(u.DisplayColor),
