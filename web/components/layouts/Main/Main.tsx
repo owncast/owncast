@@ -123,8 +123,8 @@ export const Main: FC = () => {
           <meta property="og:image:url" content="{{.RequestedURL}}{{.Thumbnail}}" />
           <meta property="og:image:alt" content="{{.RequestedURL}}{{.Image}}" />
 
-          <meta property="og:video" content="{{.RequestedURL}}/embed/video" />
-          <meta property="og:video:secure_url" content="{{.RequestedURL}}/embed/video" />
+          <meta property="og:video" content="{{.RequestedURL}}{{.EmbedVideo}}" />
+          <meta property="og:video:secure_url" content="{{.RequestedURL}}{{.EmbedVideo}}" />
           <meta property="og:video:height" content="315" />
           <meta property="og:video:width" content="560" />
           <meta property="og:video:type" content="text/html" />
@@ -135,7 +135,7 @@ export const Main: FC = () => {
           <meta property="twitter:description" content="{{.Summary}}" />
           <meta property="twitter:image" content="{{.Image}}" />
           <meta property="twitter:card" content="player" />
-          <meta property="twitter:player" content="{{.RequestedURL}}/embed/video" />
+          <meta property="twitter:player" content="{{.RequestedURL}}{{.EmbedVideo}}" />
           <meta property="twitter:player:width" content="560" />
           <meta property="twitter:player:height" content="315" />
         </Head>
