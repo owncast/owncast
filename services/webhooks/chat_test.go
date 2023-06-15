@@ -26,7 +26,7 @@ func TestSendChatEvent(t *testing.T) {
 	}
 
 	checkPayload(t, models.MessageSent, func() {
-		SendChatEvent(&events.UserMessageEvent{
+		manager.SendChatEvent(&events.UserMessageEvent{
 			Event: events.Event{
 				Type:      events.MessageSent,
 				ID:        "id",
@@ -79,7 +79,7 @@ func TestSendChatEventUsernameChanged(t *testing.T) {
 	}
 
 	checkPayload(t, models.UserNameChanged, func() {
-		SendChatEventUsernameChanged(events.NameChangeEvent{
+		manager.SendChatEventUsernameChanged(events.NameChangeEvent{
 			Event: events.Event{
 				Type:      events.UserNameChanged,
 				ID:        "id",
@@ -127,7 +127,7 @@ func TestSendChatEventUserJoined(t *testing.T) {
 	}
 
 	checkPayload(t, models.UserJoined, func() {
-		SendChatEventUserJoined(events.UserJoinedEvent{
+		manager.SendChatEventUserJoined(events.UserJoinedEvent{
 			Event: events.Event{
 				Type:      events.UserJoined,
 				ID:        "id",
@@ -160,7 +160,7 @@ func TestSendChatEventSetMessageVisibility(t *testing.T) {
 	timestamp := time.Unix(72, 6).UTC()
 
 	checkPayload(t, models.VisibiltyToggled, func() {
-		SendChatEventSetMessageVisibility(events.SetMessageVisibilityEvent{
+		manager.SendChatEventSetMessageVisibility(events.SetMessageVisibilityEvent{
 			Event: events.Event{
 				Type:      events.VisibiltyUpdate,
 				ID:        "id",

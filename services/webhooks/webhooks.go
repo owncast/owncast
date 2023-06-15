@@ -26,11 +26,11 @@ type WebhookChatMessage struct {
 }
 
 // SendEventToWebhooks will send a single webhook event to all webhook destinations.
-func SendEventToWebhooks(payload WebhookEvent) {
-	sendEventToWebhooks(payload, nil)
+func (w *LiveWebhookManager) SendEventToWebhooks(payload WebhookEvent) {
+	w.sendEventToWebhooks(payload, nil)
 }
 
-func sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
+func (w *LiveWebhookManager) sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
 	webhooks := data.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {
@@ -38,6 +38,6 @@ func sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
 		if wg != nil {
 			wg.Add(1)
 		}
-		addToQueue(webhook, payload, wg)
+		w.addToQueue(webhook, payload, wg)
 	}
 }

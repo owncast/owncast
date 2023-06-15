@@ -18,6 +18,8 @@ import (
 	jsonpatch "gopkg.in/evanphx/json-patch.v5"
 )
 
+var manager *LiveWebhookManager
+
 func fakeGetStatus() models.Status {
 	return models.Status{
 		Online:                true,
@@ -41,9 +43,9 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	SetupWebhooks(fakeGetStatus)
-
-	defer close(queue)
+	InitTemporarySingleton(fakeGetStatus)
+	manager = GetWebhooks()
+	defer close(manager.queue)
 
 	m.Run()
 }
@@ -77,7 +79,7 @@ func TestPublicSend(t *testing.T) {
 			EventData: struct{}{},
 			Type:      models.MessageSent,
 		}
-		SendEventToWebhooks(wh)
+		manager.SendEventToWebhooks(wh)
 	}
 
 	wg.Wait()
@@ -126,7 +128,7 @@ func TestRouting(t *testing.T) {
 			EventData: struct{}{},
 			Type:      eventType,
 		}
-		sendEventToWebhooks(wh, &wg)
+		manager.sendEventToWebhooks(wh, &wg)
 	}
 
 	wg.Wait()
@@ -166,7 +168,7 @@ func TestMultiple(t *testing.T) {
 		EventData: struct{}{},
 		Type:      models.MessageSent,
 	}
-	sendEventToWebhooks(wh, &wg)
+	manager.sendEventToWebhooks(wh, &wg)
 
 	wg.Wait()
 
@@ -205,7 +207,7 @@ func TestTimestamps(t *testing.T) {
 		EventData: struct{}{},
 		Type:      eventTypes[0],
 	}
-	sendEventToWebhooks(wh, &wg)
+	manager.sendEventToWebhooks(wh, &wg)
 
 	wg.Wait()
 
@@ -302,7 +304,7 @@ func TestParallel(t *testing.T) {
 			EventData: struct{}{},
 			Type:      models.MessageSent,
 		}
-		sendEventToWebhooks(wh, &wgMessages)
+		manager.sendEventToWebhooks(wh, &wgMessages)
 	}
 
 	wgMessages.Wait()

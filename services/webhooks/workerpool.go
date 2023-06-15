@@ -23,39 +23,28 @@ type Job struct {
 	webhook models.Webhook
 }
 
-var (
-	queue     chan Job
-	getStatus func() models.Status
-)
-
-// SetupWebhooks initializes the webhook worker pool and sets the function to get the current status.
-func SetupWebhooks(getStatusFunc func() models.Status) {
-	getStatus = getStatusFunc
-	initWorkerPool()
-}
-
 // initWorkerPool starts n go routines that await webhook jobs.
-func initWorkerPool() {
-	queue = make(chan Job)
+func (w *LiveWebhookManager) initWorkerPool() {
+	w.queue = make(chan Job)
 
 	// start workers
 	for i := 1; i <= webhookWorkerPoolSize; i++ {
-		go worker(i, queue)
+		go w.worker(i, w.queue)
 	}
 }
 
-func addToQueue(webhook models.Webhook, payload WebhookEvent, wg *sync.WaitGroup) {
+func (w *LiveWebhookManager) addToQueue(webhook models.Webhook, payload WebhookEvent, wg *sync.WaitGroup) {
 	log.Tracef("Queued Event %s for Webhook %s", payload.Type, webhook.URL)
-	queue <- Job{wg, payload, webhook}
+	w.queue <- Job{webhook, payload, wg}
 }
 
-func worker(workerID int, queue <-chan Job) {
+func (w *LiveWebhookManager) worker(workerID int, queue <-chan Job) {
 	log.Debugf("Started Webhook worker %d", workerID)
 
 	for job := range queue {
 		log.Debugf("Event %s sent to Webhook %s using worker %d", job.payload.Type, job.webhook.URL, workerID)
 
-		if err := sendWebhook(job); err != nil {
+		if err := w.sendWebhook(job); err != nil {
 			log.Errorf("Event: %s failed to send to webhook: %s Error: %s", job.payload.Type, job.webhook.URL, err)
 		}
 		log.Tracef("Done with Event %s to Webhook %s using worker %d", job.payload.Type, job.webhook.URL, workerID)
@@ -65,7 +54,7 @@ func worker(workerID int, queue <-chan Job) {
 	}
 }
 
-func sendWebhook(job Job) error {
+func (w *LiveWebhookManager) sendWebhook(job Job) error {
 	jsonText, err := json.Marshal(job.payload)
 	if err != nil {
 		return err
