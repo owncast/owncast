@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/services/metrics"
 	log "github.com/sirupsen/logrus"
 )
 

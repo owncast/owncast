@@ -12,7 +12,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/services/metrics"
 	"github.com/owncast/owncast/utils"
 )
 
