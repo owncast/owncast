@@ -11,9 +11,9 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/notifications"
+	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/services/yp"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/video/rtmp"
@@ -79,7 +79,7 @@ func Start() error {
 		log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
 	}
 
-	webhooks.SetupWebhooks(GetStatus)
+	webhooks.InitTemporarySingleton(GetStatus)
 
 	notifications.Setup(data.GetStore())
 

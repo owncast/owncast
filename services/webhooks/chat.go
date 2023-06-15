@@ -6,7 +6,7 @@ import (
 )
 
 // SendChatEvent will send a chat event to webhook destinations.
-func SendChatEvent(chatEvent *events.UserMessageEvent) {
+func (w *LiveWebhookManager) SendChatEvent(chatEvent *events.UserMessageEvent) {
 	webhookEvent := WebhookEvent{
 		Type: chatEvent.GetMessageType(),
 		EventData: &WebhookChatMessage{
@@ -20,27 +20,27 @@ func SendChatEvent(chatEvent *events.UserMessageEvent) {
 		},
 	}
 
-	SendEventToWebhooks(webhookEvent)
+	w.SendEventToWebhooks(webhookEvent)
 }
 
 // SendChatEventUsernameChanged will send a username changed event to webhook destinations.
-func SendChatEventUsernameChanged(event events.NameChangeEvent) {
+func (w *LiveWebhookManager) SendChatEventUsernameChanged(event events.NameChangeEvent) {
 	webhookEvent := WebhookEvent{
 		Type:      models.UserNameChanged,
 		EventData: event,
 	}
 
-	SendEventToWebhooks(webhookEvent)
+	w.SendEventToWebhooks(webhookEvent)
 }
 
 // SendChatEventUserJoined sends a webhook notifying that a user has joined.
-func SendChatEventUserJoined(event events.UserJoinedEvent) {
+func (w *LiveWebhookManager) SendChatEventUserJoined(event events.UserJoinedEvent) {
 	webhookEvent := WebhookEvent{
 		Type:      models.UserJoined,
 		EventData: event,
 	}
 
-	SendEventToWebhooks(webhookEvent)
+	w.SendEventToWebhooks(webhookEvent)
 }
 
 // SendChatEventUserParted sends a webhook notifying that a user has parted.
@@ -55,11 +55,11 @@ func SendChatEventUserParted(event events.UserPartEvent) {
 
 // SendChatEventSetMessageVisibility sends a webhook notifying that the visibility of one or more
 // messages has changed.
-func SendChatEventSetMessageVisibility(event events.SetMessageVisibilityEvent) {
+func (w *LiveWebhookManager) SendChatEventSetMessageVisibility(event events.SetMessageVisibilityEvent) {
 	webhookEvent := WebhookEvent{
 		Type:      models.VisibiltyToggled,
 		EventData: event,
 	}
 
-	SendEventToWebhooks(webhookEvent)
+	w.SendEventToWebhooks(webhookEvent)
 }

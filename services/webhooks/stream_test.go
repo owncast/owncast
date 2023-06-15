@@ -15,7 +15,7 @@ func TestSendStreamStatusEvent(t *testing.T) {
 	data.SetStreamTitle("my stream")
 
 	checkPayload(t, models.StreamStarted, func() {
-		sendStreamStatusEvent(events.StreamStarted, "id", time.Unix(72, 6).UTC())
+		manager.sendStreamStatusEvent(events.StreamStarted, "id", time.Unix(72, 6).UTC())
 	}, `{
 		"id": "id",
 		"name": "my server",
