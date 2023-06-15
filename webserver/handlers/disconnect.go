@@ -6,7 +6,7 @@ import (
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/webserver/responses"
 
-	"github.com/owncast/owncast/core/rtmp"
+	"github.com/owncast/owncast/video/rtmp"
 )
 
 // DisconnectInboundConnection will force-disconnect an inbound stream.
