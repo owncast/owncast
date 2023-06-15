@@ -2,7 +2,7 @@ package core
 
 import (
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/storageproviders"
+	"github.com/owncast/owncast/video/storageproviders"
 )
 
 func setupStorage() error {
