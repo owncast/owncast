@@ -12,11 +12,11 @@ import (
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
-	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/video/transcoder"
 	"github.com/owncast/owncast/yp"
 )
 
