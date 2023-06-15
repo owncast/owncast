@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/owncast/owncast/core/data"
@@ -17,38 +16,28 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var (
-	pendingAuthRequests = make(map[string]*Request)
-	lock                = sync.Mutex{}
-)
-
 const registrationTimeout = time.Minute * 10
-
-func init() {
-	go setupExpiredRequestPruner()
-}
 
 // Clear out any pending requests that have been pending for greater than
 // the specified timeout value.
-func setupExpiredRequestPruner() {
+func (c *IndieAuthClient) setupExpiredRequestPruner() {
 	pruneExpiredRequestsTimer := time.NewTicker(registrationTimeout)
 
 	for range pruneExpiredRequestsTimer.C {
-		lock.Lock()
+		c.lock.Lock()
 		log.Debugln("Pruning expired IndieAuth requests.")
-		for k, v := range pendingAuthRequests {
+		for k, v := range c.pendingAuthRequests {
 			if time.Since(v.Timestamp) > registrationTimeout {
-				delete(pendingAuthRequests, k)
+				delete(c.pendingAuthRequests, k)
 			}
 		}
-		lock.Unlock()
+		c.lock.Unlock()
 	}
 }
 
 // StartAuthFlow will begin the IndieAuth flow by generating an auth request.
-func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
-	// Limit the number of pending requests
-	if len(pendingAuthRequests) >= maxPendingRequests {
+func (c *IndieAuthClient) StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
+	if len(c.pendingAuthRequests) >= maxPendingRequests {
 		return nil, errors.New("Please try again later. Too many pending requests.")
 	}
 
@@ -78,15 +67,15 @@ func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL,
 		return nil, errors.Wrap(err, "unable to generate IndieAuth request")
 	}
 
-	pendingAuthRequests[r.State] = r
+	c.pendingAuthRequests[r.State] = r
 
 	return r.Redirect, nil
 }
 
 // HandleCallbackCode will handle the callback from the IndieAuth server
 // to continue the next step of the auth flow.
-func HandleCallbackCode(code, state string) (*Request, *Response, error) {
-	request, exists := pendingAuthRequests[state]
+func (c *IndieAuthClient) HandleCallbackCode(code, state string) (*Request, *Response, error) {
+	request, exists := c.pendingAuthRequests[state]
 	if !exists {
 		return nil, nil, errors.New("no auth requests pending")
 	}

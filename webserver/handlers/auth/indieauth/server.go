@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/url"
 
-	ia "github.com/owncast/owncast/auth/indieauth"
+	ia "github.com/owncast/owncast/services/auth/indieauth"
 	"github.com/owncast/owncast/webserver/middleware"
 	"github.com/owncast/owncast/webserver/responses"
 )
@@ -31,7 +31,8 @@ func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query().Get("state")
 	me := r.URL.Query().Get("me")
 
-	request, err := ia.StartServerAuth(clientID, redirectURI, codeChallenge, state, me)
+	indieAuthServer := ia.GetIndieAuthServer()
+	request, err := indieAuthServer.StartServerAuth(clientID, redirectURI, codeChallenge, state, me)
 	if err != nil {
 		_ = responses.WriteString(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -70,7 +71,8 @@ func handleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
 
 	// If the server auth flow cannot be completed then return with specific
 	// "invalid_client" error.
-	response, err := ia.CompleteServerAuth(code, redirectURI, clientID, codeVerifier)
+	indieAuthServer := ia.GetIndieAuthServer()
+	response, err := indieAuthServer.CompleteServerAuth(code, redirectURI, clientID, codeVerifier)
 	if err != nil {
 		responses.WriteResponse(w, ia.Response{
 			Error:            "invalid_client",

@@ -6,10 +6,11 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/owncast/owncast/auth"
-	ia "github.com/owncast/owncast/auth/indieauth"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/auth"
+	ia "github.com/owncast/owncast/services/auth/indieauth"
+	"github.com/owncast/owncast/storage"
 	"github.com/owncast/owncast/webserver/responses"
 	log "github.com/sirupsen/logrus"
 )
@@ -38,7 +39,8 @@ func StartAuthFlow(u user.User, w http.ResponseWriter, r *http.Request) {
 
 	accessToken := r.URL.Query().Get("accessToken")
 
-	redirectURL, err := ia.StartAuthFlow(authRequest.AuthHost, u.ID, accessToken, u.DisplayName)
+	indieAuthClient := ia.GetIndieAuthClient()
+	redirectURL, err := indieAuthClient.StartAuthFlow(authRequest.AuthHost, u.ID, accessToken, u.DisplayName)
 	if err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -53,9 +55,10 @@ func StartAuthFlow(u user.User, w http.ResponseWriter, r *http.Request) {
 // HandleRedirect will handle the redirect from an IndieAuth server to
 // continue the auth flow.
 func HandleRedirect(w http.ResponseWriter, r *http.Request) {
+	indieAuthClient := ia.GetIndieAuthClient()
 	state := r.URL.Query().Get("state")
 	code := r.URL.Query().Get("code")
-	request, response, err := ia.HandleCallbackCode(code, state)
+	request, response, err := indieAuthClient.HandleCallbackCode(code, state)
 	if err != nil {
 		log.Debugln(err)
 		msg := `Unable to complete authentication. <a href="/">Go back.</a><hr/>`

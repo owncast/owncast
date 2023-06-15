@@ -38,15 +38,13 @@ type ServerProfileResponse struct {
 	ErrorDescription string `json:"error_description,omitempty"`
 }
 
-var pendingServerAuthRequests = map[string]ServerAuthRequest{}
-
 const maxPendingRequests = 100
 
 // StartServerAuth will handle the authentication for the admin user of this
 // Owncast server. Initiated via a GET of the auth endpoint.
 // https://indieweb.org/authorization-endpoint
-func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*ServerAuthRequest, error) {
-	if len(pendingServerAuthRequests)+1 >= maxPendingRequests {
+func (s *IndieAuthServer) StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*ServerAuthRequest, error) {
+	if len(s.pendingServerAuthRequests)+1 >= maxPendingRequests {
 		return nil, errors.New("Please try again later. Too many pending requests.")
 	}
 
@@ -62,15 +60,15 @@ func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*S
 		Timestamp:     time.Now(),
 	}
 
-	pendingServerAuthRequests[code] = r
+	s.pendingServerAuthRequests[code] = r
 
 	return &r, nil
 }
 
 // CompleteServerAuth will verify that the values provided in the final step
 // of the IndieAuth flow are correct, and return some basic profile info.
-func CompleteServerAuth(code, redirectURI, clientID string, codeVerifier string) (*ServerProfileResponse, error) {
-	request, pending := pendingServerAuthRequests[code]
+func (s *IndieAuthServer) CompleteServerAuth(code, redirectURI, clientID string, codeVerifier string) (*ServerProfileResponse, error) {
+	request, pending := s.pendingServerAuthRequests[code]
 	if !pending {
 		return nil, errors.New("no pending authentication request")
 	}
