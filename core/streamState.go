@@ -15,7 +15,7 @@ import (
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/notifications"
+	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/utils"
 )
 
