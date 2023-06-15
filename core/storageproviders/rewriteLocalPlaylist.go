@@ -7,7 +7,7 @@ import (
 
 	"github.com/grafov/m3u8"
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/playlist"
+	playlist "github.com/owncast/owncast/video/playlists"
 
 	log "github.com/sirupsen/logrus"
 )
