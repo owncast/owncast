@@ -8,8 +8,8 @@ import (
 
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/user"
-	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/metrics"
 	"github.com/owncast/owncast/webserver/responses"
 	log "github.com/sirupsen/logrus"
 )
