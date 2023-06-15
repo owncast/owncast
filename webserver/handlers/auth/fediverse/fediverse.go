@@ -6,11 +6,12 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/activitypub"
-	"github.com/owncast/owncast/auth"
-	fediverseauth "github.com/owncast/owncast/auth/fediverse"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/auth"
+	fediverseauth "github.com/owncast/owncast/services/auth/fediverse"
+	"github.com/owncast/owncast/storage"
 	"github.com/owncast/owncast/webserver/responses"
 	log "github.com/sirupsen/logrus"
 )
@@ -27,8 +28,9 @@ func RegisterFediverseOTPRequest(u user.User, w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	fediAuth := fediverseauth.GetFediAuth()
 	accessToken := r.URL.Query().Get("accessToken")
-	reg, success, err := fediverseauth.RegisterFediverseOTP(accessToken, u.ID, u.DisplayName, req.FediverseAccount)
+	reg, success, err := fediAuth.RegisterFediverseOTP(accessToken, u.ID, u.DisplayName, req.FediverseAccount)
 	if err != nil {
 		responses.WriteSimpleResponse(w, false, "Could not register auth request: "+err.Error())
 		return
@@ -61,7 +63,9 @@ func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	accessToken := r.URL.Query().Get("accessToken")
-	valid, authRegistration := fediverseauth.ValidateFediverseOTP(accessToken, req.Code)
+	fediAuth := fediverseauth.GetFediAuth()
+
+	valid, authRegistration := fediAuth.ValidateFediverseOTP(accessToken, req.Code)
 	if !valid {
 		w.WriteHeader(http.StatusForbidden)
 		return

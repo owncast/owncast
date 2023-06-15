@@ -11,6 +11,34 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type FediAuth struct {
+	// Key by access token to limit one OTP request for a person
+	// to be active at a time.
+	pendingAuthRequests map[string]OTPRegistration
+	lock                sync.Mutex
+}
+
+var temporaryFediAuthGlobalInstance *FediAuth
+
+// GetFediAuth returns the temporary global instance.
+// Remove this after dependency injection is implemented.
+func GetFediAuth() *FediAuth {
+	if temporaryFediAuthGlobalInstance == nil {
+		temporaryFediAuthGlobalInstance = NewFediAuth()
+	}
+
+	return temporaryFediAuthGlobalInstance
+}
+
+// NewFediAuth creates a new FediAuth instance.
+func NewFediAuth() *FediAuth {
+	f := &FediAuth{
+		pendingAuthRequests: make(map[string]OTPRegistration),
+	}
+	go f.setupExpiredRequestPruner()
+	return f
+}
+
 // OTPRegistration represents a single OTP request.
 type OTPRegistration struct {
 	Timestamp       time.Time
@@ -20,43 +48,32 @@ type OTPRegistration struct {
 	Account         string
 }
 
-// Key by access token to limit one OTP request for a person
-// to be active at a time.
-var (
-	pendingAuthRequests = make(map[string]OTPRegistration)
-	lock                = sync.Mutex{}
-)
-
 const (
 	registrationTimeout = time.Minute * 10
 	maxPendingRequests  = 1000
 )
 
-func init() {
-	go setupExpiredRequestPruner()
-}
-
 // Clear out any pending requests that have been pending for greater than
 // the specified timeout value.
-func setupExpiredRequestPruner() {
+func (f *FediAuth) setupExpiredRequestPruner() {
 	pruneExpiredRequestsTimer := time.NewTicker(registrationTimeout)
 
 	for range pruneExpiredRequestsTimer.C {
-		lock.Lock()
+		f.lock.Lock()
 		log.Debugln("Pruning expired OTP requests.")
-		for k, v := range pendingAuthRequests {
+		for k, v := range f.pendingAuthRequests {
 			if time.Since(v.Timestamp) > registrationTimeout {
-				delete(pendingAuthRequests, k)
+				delete(f.pendingAuthRequests, k)
 			}
 		}
-		lock.Unlock()
+		f.lock.Unlock()
 	}
 }
 
 // RegisterFediverseOTP will start the OTP flow for a user, creating a new
 // code and returning it to be sent to a destination.
-func RegisterFediverseOTP(accessToken, userID, userDisplayName, account string) (OTPRegistration, bool, error) {
-	request, requestExists := pendingAuthRequests[accessToken]
+func (f *FediAuth) RegisterFediverseOTP(accessToken, userID, userDisplayName, account string) (OTPRegistration, bool, error) {
+	request, requestExists := f.pendingAuthRequests[accessToken]
 
 	// If a request is already registered and has not expired then return that
 	// existing request.
@@ -64,10 +81,10 @@ func RegisterFediverseOTP(accessToken, userID, userDisplayName, account string) 
 		return request, false, nil
 	}
 
-	lock.Lock()
-	defer lock.Unlock()
+	f.lock.Lock()
+	defer f.lock.Unlock()
 
-	if len(pendingAuthRequests)+1 > maxPendingRequests {
+	if len(f.pendingAuthRequests)+1 > maxPendingRequests {
 		return request, false, errors.New("Please try again later. Too many pending requests.")
 	}
 
@@ -79,23 +96,23 @@ func RegisterFediverseOTP(accessToken, userID, userDisplayName, account string) 
 		Account:         strings.ToLower(account),
 		Timestamp:       time.Now(),
 	}
-	pendingAuthRequests[accessToken] = r
+	f.pendingAuthRequests[accessToken] = r
 
 	return r, true, nil
 }
 
 // ValidateFediverseOTP will verify a OTP code for a auth request.
-func ValidateFediverseOTP(accessToken, code string) (bool, *OTPRegistration) {
-	request, ok := pendingAuthRequests[accessToken]
+func (f *FediAuth) ValidateFediverseOTP(accessToken, code string) (bool, *OTPRegistration) {
+	request, ok := f.pendingAuthRequests[accessToken]
 
 	if !ok || request.Code != code || time.Since(request.Timestamp) > registrationTimeout {
 		return false, nil
 	}
 
-	lock.Lock()
-	defer lock.Unlock()
+	f.lock.Lock()
+	defer f.lock.Unlock()
 
-	delete(pendingAuthRequests, accessToken)
+	delete(f.pendingAuthRequests, accessToken)
 	return true, &request
 }
 

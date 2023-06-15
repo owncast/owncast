@@ -7,11 +7,11 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/auth"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/auth"
 	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/services/yp"
