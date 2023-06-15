@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/core/user"
-	"github.com/owncast/owncast/notifications"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/webserver/responses"
 
 	"github.com/owncast/owncast/utils"

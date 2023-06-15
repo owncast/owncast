@@ -6,8 +6,8 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/notifications/browser"
-	"github.com/owncast/owncast/notifications/discord"
+	"github.com/owncast/owncast/services/notifications/browser"
+	"github.com/owncast/owncast/services/notifications/discord"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
