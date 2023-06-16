@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/grafov/m3u8"
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/config"
 	playlist "github.com/owncast/owncast/video/playlists"
 
 	log "github.com/sirupsen/logrus"
@@ -34,8 +34,8 @@ func rewritePlaylistLocations(localFilePath, remoteServingEndpoint, pathPrefix s
 		}
 		item.URI = remoteServingEndpoint + filepath.Join(finalPath, item.URI)
 	}
-
-	publicPath := filepath.Join(config.HLSStoragePath, filepath.Base(localFilePath))
+	c := config.GetConfig()
+	publicPath := filepath.Join(c.HLSStoragePath, filepath.Base(localFilePath))
 
 	newPlaylist := p.String()
 

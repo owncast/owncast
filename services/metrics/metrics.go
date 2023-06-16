@@ -4,9 +4,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 )
 
 // How often we poll for updates.
@@ -61,8 +61,11 @@ func Start(getStatus func() models.Status) {
 	if host == "" {
 		host = "unknown"
 	}
+
+	c := config.GetConfig()
+
 	labels = map[string]string{
-		"version": config.VersionNumber,
+		"version": c.VersionNumber,
 		"host":    host,
 	}
 

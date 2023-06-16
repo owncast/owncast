@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -118,7 +118,8 @@ func SetupPersistence(file string) error {
 
 	dbBackupTicker := time.NewTicker(1 * time.Hour)
 	go func() {
-		backupFile := filepath.Join(config.BackupDirectory, "owncastdb.bak")
+		c := config.GetConfig()
+		backupFile := filepath.Join(c.BackupDirectory, "owncastdb.bak")
 		for range dbBackupTicker.C {
 			utils.Backup(_db, backupFile)
 		}

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/go-fed/httpsig"
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/config"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -77,7 +77,9 @@ func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) (*
 
 	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
 
-	ua := fmt.Sprintf("%s; https://owncast.online", config.GetReleaseString())
+	c := config.GetConfig()
+	ua := fmt.Sprintf("%s; https://owncast.online", c.GetReleaseString())
+
 	req.Header.Set("User-Agent", ua)
 	req.Header.Set("Content-Type", "application/activity+json")
 

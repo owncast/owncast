@@ -6,15 +6,17 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 )
 
 func migrateDatabaseSchema(db *sql.DB, from, to int) error {
+	c := config.GetConfig()
+
 	log.Printf("Migrating database from version %d to %d", from, to)
-	dbBackupFile := filepath.Join(config.BackupDirectory, fmt.Sprintf("owncast-v%d.bak", from))
+	dbBackupFile := filepath.Join(c.BackupDirectory, fmt.Sprintf("owncast-v%d.bak", from))
 	utils.Backup(db, dbBackupFile)
 	for v := from; v < to; v++ {
 		log.Tracef("Migration step from %d to %d\n", v, v+1)

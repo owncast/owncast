@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -42,8 +42,9 @@ func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks Fil
 		log.Fatalln("Unable to start internal video writing service", err)
 	}
 
+	c := config.GetConfig()
 	listenerPort := strings.Split(listener.Addr().String(), ":")[1]
-	config.InternalHLSListenerPort = listenerPort
+	c.InternalHLSListenerPort = listenerPort
 	log.Traceln("Transcoder response service listening on: " + listenerPort)
 	go func() {
 		//nolint: gosec
@@ -59,8 +60,9 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 		return
 	}
 
+	c := config.GetConfig()
 	path := r.URL.Path
-	writePath := filepath.Join(config.HLSStoragePath, path)
+	writePath := filepath.Join(c.HLSStoragePath, path)
 	f, err := os.Create(writePath) //nolint: gosec
 	if err != nil {
 		returnError(err, w)

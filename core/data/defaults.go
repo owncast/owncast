@@ -1,8 +1,8 @@
 package data
 
 import (
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 )
 
 // HasPopulatedDefaults will determine if the defaults have been inserted into the database.

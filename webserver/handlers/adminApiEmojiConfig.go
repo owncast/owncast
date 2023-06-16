@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/requests"
 	"github.com/owncast/owncast/webserver/responses"
@@ -38,10 +38,11 @@ func (h *Handlers) UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Prevent path traversal attacks
+	c := config.GetConfig()
 	emojiFileName := filepath.Base(emoji.Name)
-	targetPath := filepath.Join(config.CustomEmojiPath, emojiFileName)
+	targetPath := filepath.Join(c.CustomEmojiPath, emojiFileName)
 
-	err = os.MkdirAll(config.CustomEmojiPath, 0o700)
+	err = os.MkdirAll(c.CustomEmojiPath, 0o700)
 	if err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -77,8 +78,8 @@ func (h *Handlers) DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// var emojiFileName = filepath.Base(emoji.Name)
-	targetPath := filepath.Join(config.CustomEmojiPath, emoji.Name)
+	c := config.GetConfig()
+	targetPath := filepath.Join(c.CustomEmojiPath, emoji.Name)
 
 	if err := os.Remove(targetPath); err != nil {
 		if os.IsNotExist(err) {

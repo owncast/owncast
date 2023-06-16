@@ -7,9 +7,9 @@ import (
 	"net/url"
 
 	"github.com/owncast/owncast/activitypub"
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/middleware"
 	"github.com/owncast/owncast/webserver/responses"
@@ -118,13 +118,15 @@ func getConfigResponse() webConfigResponse {
 		IndieAuthEnabled: data.GetServerURL() != "",
 	}
 
+	c := config.GetConfig()
+
 	return webConfigResponse{
 		Name:                 data.GetServerName(),
 		Summary:              serverSummary,
 		OfflineMessage:       offlineMessage,
 		Logo:                 "/logo",
 		Tags:                 data.GetServerMetadataTags(),
-		Version:              config.GetReleaseString(),
+		Version:              c.GetReleaseString(),
 		NSFW:                 data.GetNSFW(),
 		SocketHostOverride:   data.GetWebsocketOverrideHost(),
 		ExtraPageContent:     pageContent,

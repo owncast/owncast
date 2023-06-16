@@ -18,8 +18,8 @@ import (
 	"github.com/owncast/owncast/activitypub/workerpool"
 	"github.com/pkg/errors"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
@@ -77,8 +77,9 @@ func SendLive() error {
 	if err == nil {
 		var imageToAttach string
 		var mediaType string
-		previewGif := filepath.Join(config.TempDir, "preview.gif")
-		thumbnailJpg := filepath.Join(config.TempDir, "thumbnail.jpg")
+		c := config.GetConfig()
+		previewGif := filepath.Join(c.TempDir, "preview.gif")
+		thumbnailJpg := filepath.Join(c.TempDir, "thumbnail.jpg")
 		uniquenessString := shortid.MustGenerate()
 		if utils.DoesFileExists(previewGif) {
 			imageToAttach = "preview.gif"

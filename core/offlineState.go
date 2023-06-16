@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/grafov/m3u8"
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -19,8 +19,9 @@ func appendOfflineToVariantPlaylist(index int, playlistFilePath string) {
 		return
 	}
 
+	c := config.GetConfig()
 	tmpFileName := fmt.Sprintf("tmp-stream-%d.m3u8", index)
-	atomicWriteTmpPlaylistFile, err := os.CreateTemp(config.TempDir, tmpFileName)
+	atomicWriteTmpPlaylistFile, err := os.CreateTemp(c.TempDir, tmpFileName)
 	if err != nil {
 		log.Errorln("error creating tmp playlist file to write to", playlistFilePath, err)
 		return
@@ -49,8 +50,9 @@ func appendOfflineToVariantPlaylist(index int, playlistFilePath string) {
 }
 
 func makeVariantIndexOffline(index int, offlineFilePath string, offlineFilename string) {
-	playlistFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/stream.m3u8"), index)
-	segmentFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/%s"), index, offlineFilename)
+	c := config.GetConfig()
+	playlistFilePath := fmt.Sprintf(filepath.Join(c.HLSStoragePath, "%d/stream.m3u8"), index)
+	segmentFilePath := fmt.Sprintf(filepath.Join(c.HLSStoragePath, "%d/%s"), index, offlineFilename)
 
 	if err := utils.Copy(offlineFilePath, segmentFilePath); err != nil {
 		log.Warnln(err)
@@ -94,7 +96,8 @@ func createEmptyOfflinePlaylist(playlistFilePath string, offlineFilename string)
 
 func saveOfflineClipToDisk(offlineFilename string) (string, error) {
 	offlineFileData := static.GetOfflineSegment()
-	offlineTmpFile, err := os.CreateTemp(config.TempDir, offlineFilename)
+	c := config.GetConfig()
+	offlineTmpFile, err := os.CreateTemp(c.TempDir, offlineFilename)
 	if err != nil {
 		log.Errorln("unable to create temp file for offline video segment", err)
 	}

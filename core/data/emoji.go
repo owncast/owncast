@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
@@ -102,11 +102,13 @@ func SetupEmojiDirectory() (err error) {
 		isDir bool
 	}
 
-	if utils.DoesFileExists(config.CustomEmojiPath) {
+	c := config.GetConfig()
+
+	if utils.DoesFileExists(c.CustomEmojiPath) {
 		return nil
 	}
 
-	if err = os.MkdirAll(config.CustomEmojiPath, 0o750); err != nil {
+	if err = os.MkdirAll(c.CustomEmojiPath, 0o750); err != nil {
 		return fmt.Errorf("unable to create custom emoji directory: %w", err)
 	}
 
@@ -137,7 +139,7 @@ func SetupEmojiDirectory() (err error) {
 
 	// Now copy all built-in emojis to the custom emoji directory
 	for _, path := range files {
-		emojiPath := filepath.Join(config.CustomEmojiPath, path.path)
+		emojiPath := filepath.Join(c.CustomEmojiPath, path.path)
 
 		if path.isDir {
 			if err := os.Mkdir(emojiPath, 0o700); err != nil {

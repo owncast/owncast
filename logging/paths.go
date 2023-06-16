@@ -3,14 +3,16 @@ package logging
 import (
 	"path/filepath"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/config"
 )
 
 // GetTranscoderLogFilePath returns the logging path for the transcoder log output.
 func GetTranscoderLogFilePath() string {
-	return filepath.Join(config.LogDirectory, "transcoder.log")
+	c := config.GetConfig()
+	return filepath.Join(c.LogDirectory, "transcoder.log")
 }
 
 func getLogFilePath() string {
-	return filepath.Join(config.LogDirectory, "owncast.log")
+	c := config.GetConfig()
+	return filepath.Join(c.LogDirectory, "owncast.log")
 }

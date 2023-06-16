@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/responses"
 )
@@ -16,8 +16,9 @@ const (
 
 // GetThumbnail will return the thumbnail image as a response.
 func (h *Handlers) GetThumbnail(w http.ResponseWriter, r *http.Request) {
+	c := config.GetConfig()
 	imageFilename := "thumbnail.jpg"
-	imagePath := filepath.Join(config.TempDir, imageFilename)
+	imagePath := filepath.Join(c.TempDir, imageFilename)
 
 	var imageBytes []byte
 	var err error
@@ -40,8 +41,9 @@ func (h *Handlers) GetThumbnail(w http.ResponseWriter, r *http.Request) {
 
 // GetPreview will return the preview gif as a response.
 func (h *Handlers) GetPreview(w http.ResponseWriter, r *http.Request) {
+	c := config.GetConfig()
 	imageFilename := "preview.gif"
-	imagePath := filepath.Join(config.TempDir, imageFilename)
+	imagePath := filepath.Join(c.TempDir, imageFilename)
 
 	var imageBytes []byte
 	var err error

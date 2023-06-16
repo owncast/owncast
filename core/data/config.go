@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
@@ -596,7 +596,8 @@ func GetVideoCodec() string {
 
 // VerifySettings will perform a sanity check for specific settings values.
 func VerifySettings() error {
-	if len(GetStreamKeys()) == 0 && config.TemporaryStreamKey == "" {
+	c := config.GetConfig()
+	if len(GetStreamKeys()) == 0 && c.TemporaryStreamKey == "" {
 		log.Errorln("No stream key set. Streaming is disabled. Please set one via the admin or command line arguments")
 	}
 

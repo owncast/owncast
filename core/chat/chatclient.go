@@ -11,9 +11,9 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/gorilla/websocket"
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/services/geoip"
 )
 

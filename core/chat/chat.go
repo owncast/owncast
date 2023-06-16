@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	log "github.com/sirupsen/logrus"
@@ -29,12 +29,13 @@ func Start(getStatusFunc func() models.Status) error {
 	go _server.Run()
 
 	log.Traceln("Chat server started with max connection count of", _server.maxSocketConnectionLimit)
+	c := config.GetConfig()
 
 	chatMessagesSentCounter = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "total_chat_message_count",
 		Help: "The number of chat messages incremented over time.",
 		ConstLabels: map[string]string{
-			"version": config.VersionNumber,
+			"version": c.VersionNumber,
 			"host":    data.GetServerURL(),
 		},
 	})

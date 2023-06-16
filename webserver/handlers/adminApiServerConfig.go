@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/video/transcoder"
 	"github.com/owncast/owncast/webserver/middleware"
@@ -18,6 +18,7 @@ func (h *Handlers) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
 	usernameBlocklist := data.GetForbiddenUsernameList()
 	usernameSuggestions := data.GetSuggestedUsernamesList()
+	c := config.GetConfig()
 
 	videoQualityVariants := make([]models.StreamOutputVariant, 0)
 	for _, variant := range data.GetStreamOutputVariants() {
@@ -52,9 +53,9 @@ func (h *Handlers) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		FFmpegPath:              ffmpeg,
 		AdminPassword:           data.GetAdminPassword(),
 		StreamKeys:              data.GetStreamKeys(),
-		StreamKeyOverridden:     config.TemporaryStreamKey != "",
-		WebServerPort:           config.WebServerPort,
-		WebServerIP:             config.WebServerIP,
+		StreamKeyOverridden:     c.TemporaryStreamKey != "",
+		WebServerPort:           c.WebServerPort,
+		WebServerIP:             c.WebServerIP,
 		RTMPServerPort:          data.GetRTMPPortNumber(),
 		ChatDisabled:            data.GetChatDisabled(),
 		ChatJoinMessagesEnabled: data.GetChatJoinPartMessagesEnabled(),

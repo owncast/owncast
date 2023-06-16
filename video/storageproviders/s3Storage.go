@@ -22,7 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/config"
 )
 
 // S3Storage is the s3 implementation of a storage provider.
@@ -158,8 +158,10 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	}
 	defer file.Close()
 
+	c := config.GetConfig()
+
 	// Convert the local path to the variant/file path by stripping the local storage location.
-	normalizedPath := strings.TrimPrefix(filePath, config.HLSStoragePath)
+	normalizedPath := strings.TrimPrefix(filePath, c.HLSStoragePath)
 	// Build the remote path by adding the "hls" path prefix.
 	remotePath := strings.Join([]string{"hls", normalizedPath}, "")
 

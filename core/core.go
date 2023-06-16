@@ -7,11 +7,11 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/auth"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/services/yp"
@@ -113,7 +113,8 @@ func transitionToOfflineVideoStreamContent() {
 
 	// Copy the logo to be the thumbnail
 	logo := data.GetLogoPath()
-	dst := filepath.Join(config.TempDir, "thumbnail.jpg")
+	c := config.GetConfig()
+	dst := filepath.Join(c.TempDir, "thumbnail.jpg")
 	if err = utils.Copy(filepath.Join("data", logo), dst); err != nil {
 		log.Warnln(err)
 	}
@@ -126,7 +127,8 @@ func resetDirectories() {
 	log.Trace("Resetting file directories to a clean slate.")
 
 	// Wipe hls data directory
-	utils.CleanupDirectory(config.HLSStoragePath)
+	c := config.GetConfig()
+	utils.CleanupDirectory(c.HLSStoragePath)
 
 	// Remove the previous thumbnail
 	logo := data.GetLogoPath()

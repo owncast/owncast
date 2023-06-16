@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
+	"github.com/owncast/owncast/storage"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/responses"
 )

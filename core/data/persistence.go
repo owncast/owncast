@@ -9,8 +9,8 @@ import (
 
 	// sqlite requires a blank import.
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/db"
+	"github.com/owncast/owncast/services/config"
 	log "github.com/sirupsen/logrus"
 )
 
