@@ -8,10 +8,10 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/activitypub"
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"
@@ -51,7 +51,8 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 		go _yp.Start()
 	}
 
-	segmentPath := config.HLSStoragePath
+	c := config.GetConfig()
+	segmentPath := c.HLSStoragePath
 
 	if err := setupStorage(); err != nil {
 		log.Fatalln("failed to setup the storage", err)

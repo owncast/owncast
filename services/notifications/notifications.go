@@ -3,9 +3,9 @@ package notifications
 import (
 	"fmt"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/services/notifications/browser"
 	"github.com/owncast/owncast/services/notifications/discord"
 	"github.com/pkg/errors"

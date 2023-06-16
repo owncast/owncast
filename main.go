@@ -9,10 +9,11 @@ import (
 	"github.com/owncast/owncast/webserver"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
+	configservice "github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/services/metrics"
+
 	"github.com/owncast/owncast/utils"
 )
 
@@ -28,11 +29,14 @@ var (
 	webServerPortOverride = flag.String("webserverport", "", "Force the web server to listen on a specific port")
 	webServerIPOverride   = flag.String("webserverip", "", "Force web server to listen on this IP address")
 	rtmpPortOverride      = flag.Int("rtmpport", 0, "Set listen port for the RTMP server")
+	config                *configservice.Config
 )
 
 // nolint:cyclop
 func main() {
 	flag.Parse()
+
+	config = configservice.NewConfig()
 
 	if *logDirectory != "" {
 		config.LogDirectory = *logDirectory

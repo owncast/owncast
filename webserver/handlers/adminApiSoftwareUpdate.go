@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/webserver/responses"
 	log "github.com/sirupsen/logrus"
 )
@@ -44,9 +44,11 @@ func (h *Handlers) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
 		CanRestart:     false,
 	}
 
+	c := config.GetConfig()
+
 	// Nothing is supported when running under "dev" or the feature is
 	// explicitly disabled.
-	if config.BuildPlatform == "dev" || !config.EnableAutoUpdate {
+	if c.BuildPlatform == "dev" || !c.EnableAutoUpdate {
 		responses.WriteResponse(w, updateOptions)
 		return
 	}

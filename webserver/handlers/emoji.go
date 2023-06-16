@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/webserver/responses"
 )
 
@@ -27,7 +27,9 @@ func (h *Handlers) GetCustomEmojiImage(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/img/emoji/")
 	r.URL.Path = path
 
-	emojiFS := os.DirFS(config.CustomEmojiPath)
+	c := config.GetConfig()
+	emojiFS := os.DirFS(c.CustomEmojiPath)
 	middleware.SetCachingHeaders(w, r)
+
 	http.FileServer(http.FS(emojiFS)).ServeHTTP(w, r)
 }

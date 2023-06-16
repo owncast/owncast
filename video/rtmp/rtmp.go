@@ -11,9 +11,9 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/nareix/joy5/format/rtmp"
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 )
 
 var _hasInboundRTMPConnection = false
@@ -81,9 +81,11 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	accessGranted := false
 	validStreamingKeys := data.GetStreamKeys()
 
+	configservice := config.GetConfig()
+
 	// If a stream key override was specified then use that instead.
-	if config.TemporaryStreamKey != "" {
-		validStreamingKeys = []models.StreamKey{{Key: config.TemporaryStreamKey}}
+	if configservice.TemporaryStreamKey != "" {
+		validStreamingKeys = []models.StreamKey{{Key: configservice.TemporaryStreamKey}}
 	}
 
 	for _, key := range validStreamingKeys {

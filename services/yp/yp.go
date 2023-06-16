@@ -8,9 +8,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 
 	log "github.com/sirupsen/logrus"
 )

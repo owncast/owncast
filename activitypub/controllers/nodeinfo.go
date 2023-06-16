@@ -9,8 +9,8 @@ import (
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/services/config"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -95,6 +95,7 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 	}
 
 	localPostCount, _ := persistence.GetLocalPostCount()
+	c := config.GetConfig()
 
 	res := response{
 		Version: "2.0",
@@ -104,7 +105,7 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 		},
 		Software: software{
 			Name:    "owncast",
-			Version: config.VersionNumber,
+			Version: c.VersionNumber,
 		},
 		Usage: usage{
 			Users: users{
@@ -175,6 +176,7 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 	}
 
 	localPostCount, _ := persistence.GetLocalPostCount()
+	c := config.GetConfig()
 
 	res := &response{
 		Organization: Organization{
@@ -183,7 +185,7 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 		},
 		Server: Server{
 			BaseURL:  serverURL,
-			Version:  config.VersionNumber,
+			Version:  c.VersionNumber,
 			Name:     "owncast",
 			Software: "owncast",
 		},
@@ -192,7 +194,7 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 			Outbound: []string{"activitypub"},
 		},
 		Protocols: []string{"activitypub"},
-		Version:   config.VersionNumber,
+		Version:   c.VersionNumber,
 		Usage: Usage{
 			Users: Users{
 				ActiveWeek:     1,
@@ -251,13 +253,14 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 
 	thumbnail.Path = "/logo/external"
 	localPostCount, _ := persistence.GetLocalPostCount()
+	c := config.GetConfig()
 
 	res := response{
 		URI:              serverURL,
 		Title:            data.GetServerName(),
 		ShortDescription: data.GetServerSummary(),
 		Description:      data.GetServerSummary(),
-		Version:          config.GetReleaseString(),
+		Version:          c.GetReleaseString(),
 		Stats: Stats{
 			UserCount:   1,
 			StatusCount: int(localPostCount),

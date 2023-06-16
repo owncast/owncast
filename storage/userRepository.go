@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	"github.com/teris-io/shortid"

@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/activitypub"
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/services/config"
+	"github.com/owncast/owncast/storage"
 	"github.com/owncast/owncast/utils"
 	fediverseauth "github.com/owncast/owncast/webserver/handlers/auth/fediverse"
 	"github.com/owncast/owncast/webserver/handlers/auth/indieauth"
@@ -49,6 +49,8 @@ func (s *webServer) setupRoutes() {
 }
 
 func (s *webServer) setupWebAssetRoutes() {
+	c := config.GetConfig()
+
 	// The admin web app.
 	s.router.HandleFunc("/admin/", middleware.RequireAdminAuth(s.handlers.IndexHandler))
 
@@ -72,7 +74,7 @@ func (s *webServer) setupWebAssetRoutes() {
 	s.router.HandleFunc("/robots.txt", s.handlers.GetRobotsDotTxt)
 
 	// Optional public static files
-	s.router.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(config.PublicFilesPath))))
+	s.router.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(c.PublicFilesPath))))
 }
 
 func (s *webServer) setupInternalAPIRoutes() {
