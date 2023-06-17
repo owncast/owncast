@@ -1,9 +1,12 @@
-package data
+package migrations
 
 import (
 	"strings"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/storage/configrepository"
+	"github.com/owncast/owncast/storage/datastore"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -12,8 +15,8 @@ const (
 	datastoreValueVersionKey = "DATA_STORE_VERSION"
 )
 
-func migrateDatastoreValues(datastore *Datastore) {
-	currentVersion, _ := _datastore.GetNumber(datastoreValueVersionKey)
+func migrateDatastoreValues(ds *datastore.Datastore, cr *configrepository.ConfigRepository) {
+	currentVersion, _ := ds.GetNumber(datastoreValueVersionKey)
 	if currentVersion == 0 {
 		currentVersion = datastoreValuesVersion
 	}
@@ -22,41 +25,42 @@ func migrateDatastoreValues(datastore *Datastore) {
 		log.Infof("Migration datastore values from %d to %d\n", int(v), int(v+1))
 		switch v {
 		case 0:
-			migrateToDatastoreValues1(datastore)
+			migrateToDatastoreValues1(ds)
 		case 1:
-			migrateToDatastoreValues2(datastore)
+			migrateToDatastoreValues2(ds)
 		case 2:
-			migrateToDatastoreValues3ServingEndpoint3(datastore)
+			migrateToDatastoreValues3ServingEndpoint3(ds)
 		default:
 			log.Fatalln("missing datastore values migration step")
 		}
 	}
-	if err := _datastore.SetNumber(datastoreValueVersionKey, datastoreValuesVersion); err != nil {
+	if err := ds.SetNumber(datastoreValueVersionKey, datastoreValuesVersion); err != nil {
 		log.Errorln("error setting datastore value version:", err)
 	}
 }
 
-func migrateToDatastoreValues1(datastore *Datastore) {
+func migrateToDatastoreValues1(ds *datastore.Datastore, cr *configrepository.ConfigRepository) {
 	// Migrate the forbidden usernames to be a slice instead of a string.
-	forbiddenUsernamesString, _ := datastore.GetString(blockedUsernamesKey)
+
+	forbiddenUsernamesString, _ := ds.GetString(blockedUsernamesKey)
 	if forbiddenUsernamesString != "" {
 		forbiddenUsernamesSlice := strings.Split(forbiddenUsernamesString, ",")
-		if err := datastore.SetStringSlice(blockedUsernamesKey, forbiddenUsernamesSlice); err != nil {
+		if err := ds.SetStringSlice(blockedUsernamesKey, forbiddenUsernamesSlice); err != nil {
 			log.Errorln("error migrating blocked username list:", err)
 		}
 	}
 
 	// Migrate the suggested usernames to be a slice instead of a string.
-	suggestedUsernamesString, _ := datastore.GetString(suggestedUsernamesKey)
+	suggestedUsernamesString, _ := ds.GetString(suggestedUsernamesKey)
 	if suggestedUsernamesString != "" {
 		suggestedUsernamesSlice := strings.Split(suggestedUsernamesString, ",")
-		if err := datastore.SetStringSlice(suggestedUsernamesKey, suggestedUsernamesSlice); err != nil {
+		if err := ds.SetStringSlice(suggestedUsernamesKey, suggestedUsernamesSlice); err != nil {
 			log.Errorln("error migrating suggested username list:", err)
 		}
 	}
 }
 
-func migrateToDatastoreValues2(datastore *Datastore) {
+func migrateToDatastoreValues2(ds *datastore.Datastore) {
 	oldAdminPassword, _ := datastore.GetString("stream_key")
 	_ = SetAdminPassword(oldAdminPassword)
 	_ = SetStreamKeys([]models.StreamKey{

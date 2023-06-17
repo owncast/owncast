@@ -1,4 +1,4 @@
-package data
+package storage
 
 import (
 	"context"
@@ -6,34 +6,7 @@ import (
 
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
-	log "github.com/sirupsen/logrus"
 )
-
-// CreateMessagesTable will create the chat messages table if needed.
-func CreateMessagesTable(db *sql.DB) {
-	createTableSQL := `CREATE TABLE IF NOT EXISTS messages (
-		"id" string NOT NULL,
-		"user_id" TEXT,
-		"body" TEXT,
-		"eventType" TEXT,
-		"hidden_at" DATETIME,
-		"timestamp" DATETIME,
-		"title" TEXT,
-		"subtitle" TEXT,
-		"image" TEXT,
-		"link" TEXT,
-		PRIMARY KEY (id)
-	);`
-	MustExec(createTableSQL, db)
-
-	// Create indexes
-	MustExec(`CREATE INDEX IF NOT EXISTS user_id_hidden_at_timestamp ON messages (id, user_id, hidden_at, timestamp);`, db)
-	MustExec(`CREATE INDEX IF NOT EXISTS idx_id ON messages (id);`, db)
-	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id ON messages (user_id);`, db)
-	MustExec(`CREATE INDEX IF NOT EXISTS idx_hidden_at ON messages (hidden_at);`, db)
-	MustExec(`CREATE INDEX IF NOT EXISTS idx_timestamp ON messages (timestamp);`, db)
-	MustExec(`CREATE INDEX IF NOT EXISTS idx_messages_hidden_at_timestamp on messages(hidden_at, timestamp);`, db)
-}
 
 // GetMessagesCount will return the number of messages in the database.
 func GetMessagesCount() int64 {
@@ -50,24 +23,6 @@ func GetMessagesCount() int64 {
 		}
 	}
 	return count
-}
-
-// CreateBanIPTable will create the IP ban table if needed.
-func CreateBanIPTable(db *sql.DB) {
-	createTableSQL := `  CREATE TABLE IF NOT EXISTS ip_bans (
-    "ip_address" TEXT NOT NULL PRIMARY KEY,
-    "notes" TEXT,
-    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  );`
-
-	stmt, err := db.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal("error creating ip ban table", err)
-	}
-	defer stmt.Close()
-	if _, err := stmt.Exec(); err != nil {
-		log.Fatal("error creating ip ban table", err)
-	}
 }
 
 // BanIPAddress will persist a new IP address ban to the datastore.

@@ -1,12 +1,13 @@
 package core
 
 import (
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/owncast/owncast/video/storageproviders"
 )
 
 func setupStorage() error {
-	s3Config := data.GetS3Config()
+	config := configrepository.GetConfigRepository()
+	s3Config := config.GetS3Config()
 
 	if s3Config.Enabled {
 		_storage = storageproviders.NewS3Storage()

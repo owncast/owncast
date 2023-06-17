@@ -8,7 +8,6 @@ import (
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
-	"github.com/owncast/owncast/core/data"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -6,7 +6,6 @@ import (
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/webserver/requests"
 	"github.com/owncast/owncast/webserver/responses"
 )

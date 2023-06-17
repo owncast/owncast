@@ -1,4 +1,4 @@
-package data
+package webhooks
 
 import (
 	"errors"
@@ -9,27 +9,6 @@ import (
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
-
-func createWebhooksTable() {
-	log.Traceln("Creating webhooks table...")
-
-	createTableSQL := `CREATE TABLE IF NOT EXISTS webhooks (
-		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
-		"url" string NOT NULL,
-		"events" TEXT NOT NULL,
-		"timestamp" DATETIME DEFAULT CURRENT_TIMESTAMP,
-		"last_used" DATETIME
-	);`
-
-	stmt, err := _db.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-	if _, err = stmt.Exec(); err != nil {
-		log.Warnln(err)
-	}
-}
 
 // InsertWebhook will add a new webhook to the database.
 func InsertWebhook(url string, events []models.EventType) (int, error) {

@@ -18,7 +18,6 @@ import (
 	"github.com/owncast/owncast/activitypub/workerpool"
 	"github.com/pkg/errors"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"

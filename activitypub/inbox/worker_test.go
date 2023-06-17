@@ -8,7 +8,6 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
-	"github.com/owncast/owncast/core/data"
 )
 
 func makeFakePerson() vocab.ActivityStreamsPerson {

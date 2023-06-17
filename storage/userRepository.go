@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
+	"github.com/owncast/owncast/storage/datastore"
 	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	"github.com/teris-io/shortid"
@@ -40,7 +40,7 @@ type UserRepository interface {
 }
 
 type SqlUserRepository struct {
-	datastore *data.Datastore
+	datastore *datastore.Datastore
 }
 
 // NOTE: This is temporary during the transition period.
@@ -49,7 +49,7 @@ var temporaryGlobalInstance UserRepository
 // GetUserRepository will return the user repository.
 func GetUserRepository() UserRepository {
 	if temporaryGlobalInstance == nil {
-		i := NewUserRepository(data.GetDatastore())
+		i := NewUserRepository(datastore.GetDatastore())
 		temporaryGlobalInstance = i
 	}
 	return temporaryGlobalInstance
@@ -63,14 +63,13 @@ const (
 	// ScopeHasAdminAccess will allow performing administrative actions on the server.
 	ScopeHasAdminAccess = "HAS_ADMIN_ACCESS"
 
-	moderatorScopeKey              = "MODERATOR"
-	minSuggestedUsernamePoolLength = 10
+	moderatorScopeKey = "MODERATOR"
 )
 
 // User represents a single chat user.
 
 // SetupUsers will perform the initial initialization of the user package.
-func NewUserRepository(datastore *data.Datastore) UserRepository {
+func NewUserRepository(datastore *datastore.Datastore) UserRepository {
 	r := &SqlUserRepository{
 		datastore: datastore,
 	}
@@ -78,27 +77,17 @@ func NewUserRepository(datastore *data.Datastore) UserRepository {
 	return r
 }
 
-func (u *SqlUserRepository) generateDisplayName() string {
-	suggestedUsernamesList := data.GetSuggestedUsernamesList()
-
-	if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {
-		index := utils.RandomIndex(len(suggestedUsernamesList))
-		return suggestedUsernamesList[index]
-	} else {
-		return utils.GeneratePhrase()
-	}
-}
-
 // CreateAnonymousUser will create a new anonymous user with the provided display name.
 func (r *SqlUserRepository) CreateAnonymousUser(displayName string) (*models.User, string, error) {
+	if displayName == "" {
+		return nil, "", errors.New("display name cannot be empty")
+	}
+
 	// Try to assign a name that was requested.
-	if displayName != "" {
-		// If name isn't available then generate a random one.
-		if available, _ := r.IsDisplayNameAvailable(displayName); !available {
-			displayName = r.generateDisplayName()
-		}
-	} else {
-		displayName = r.generateDisplayName()
+	// If name isn't available then generate a random one.
+	if available, _ := r.IsDisplayNameAvailable(displayName); !available {
+		rand, _ := utils.GenerateRandomString(3)
+		displayName = displayName + rand
 	}
 
 	displayColor := utils.GenerateRandomDisplayColor(config.MaxUserColor)
@@ -767,4 +756,21 @@ func (r *SqlUserRepository) HasValidScopes(scopes []string) bool {
 		}
 	}
 	return true
+}
+
+// GetUsersCount will return the number of users in the database.
+func (r *SqlUserRepository) GetUsersCount() int64 {
+	query := `SELECT COUNT(*) FROM users`
+	rows, err := r.datastore.DB.Query(query)
+	if err != nil || rows.Err() != nil {
+		return 0
+	}
+	defer rows.Close()
+	var count int64
+	for rows.Next() {
+		if err := rows.Scan(&count); err != nil {
+			return 0
+		}
+	}
+	return count
 }
