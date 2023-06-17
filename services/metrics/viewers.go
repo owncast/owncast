@@ -6,7 +6,6 @@ import (
 	"github.com/nakabonne/tstorage"
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/data"
 	log "github.com/sirupsen/logrus"
 )
 

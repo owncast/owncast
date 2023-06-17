@@ -5,8 +5,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
-
-	"github.com/owncast/owncast/core/data"
 )
 
 var srv *webServer

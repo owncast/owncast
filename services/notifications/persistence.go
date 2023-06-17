@@ -2,26 +2,11 @@ package notifications
 
 import (
 	"context"
-	"database/sql"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
-
-func createNotificationsTable(db *sql.DB) {
-	log.Traceln("Creating federation followers table...")
-
-	createTableSQL := `CREATE TABLE IF NOT EXISTS notifications (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		"channel" TEXT NOT NULL,
-		"destination" TEXT NOT NULL,
-		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`
-
-	data.MustExec(createTableSQL, db)
-	data.MustExec(`CREATE INDEX IF NOT EXISTS idx_channel ON notifications (channel);`, db)
-}
 
 // AddNotification saves a new user notification destination.
 func AddNotification(channel, destination string) error {

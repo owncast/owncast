@@ -7,7 +7,6 @@ import (
 
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/auth"
 	fediverseauth "github.com/owncast/owncast/services/auth/fediverse"

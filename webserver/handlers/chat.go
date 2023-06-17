@@ -9,6 +9,7 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/storage"
+	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/middleware"
 	"github.com/owncast/owncast/webserver/responses"
@@ -96,4 +97,17 @@ func (h *Handlers) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Requ
 	middleware.DisableCache(w)
 
 	responses.WriteResponse(w, response)
+}
+
+func generateDisplayName() string {
+	cr := configrepository.GetConfigRepository()
+	suggestedUsernamesList := cr.GetSuggestedUsernames()
+
+	const minSuggestedUsernamePoolLength = 10
+	if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {
+		index := utils.RandomIndex(len(suggestedUsernamesList))
+		return suggestedUsernamesList[index]
+	} else {
+		return utils.GeneratePhrase()
+	}
 }

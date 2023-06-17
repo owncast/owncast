@@ -4,7 +4,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
@@ -20,7 +19,6 @@ var followers = []models.Follower{}
 func setup() {
 	data.SetupPersistence(":memory:")
 	_datastore = data.GetDatastore()
-	createFederationFollowersTable()
 
 	number := 100
 	for i := 0; i < number; i++ {

@@ -5,7 +5,6 @@ import (
 
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/storage"
 	"github.com/owncast/owncast/utils"

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/pkg/errors"
 	"github.com/teris-io/shortid"
 )

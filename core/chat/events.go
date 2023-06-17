@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/storage"

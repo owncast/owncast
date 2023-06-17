@@ -10,7 +10,6 @@ import (
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/data"
 	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"

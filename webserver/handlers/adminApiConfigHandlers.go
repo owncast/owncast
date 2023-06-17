@@ -11,7 +11,6 @@ import (
 
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"

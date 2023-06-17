@@ -4,7 +4,6 @@ import (
 	"context"
 	"strings"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 
 	"github.com/owncast/owncast/db"

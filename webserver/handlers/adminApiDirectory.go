@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/webserver/responses"
 	log "github.com/sirupsen/logrus"
 )

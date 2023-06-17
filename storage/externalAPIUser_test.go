@@ -2,8 +2,6 @@ package storage
 
 import (
 	"testing"
-
-	"github.com/owncast/owncast/core/data"
 )
 
 const (

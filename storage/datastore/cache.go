@@ -1,8 +1,10 @@
-package data
+package datastore
 
 import (
 	"errors"
 	"sync"
+
+	log "github.com/sirupsen/logrus"
 )
 
 var _cacheLock = sync.Mutex{}
@@ -26,4 +28,23 @@ func (ds *Datastore) SetCachedValue(key string, b []byte) {
 	defer _cacheLock.Unlock()
 
 	ds.cache[key] = b
+}
+
+func (ds *Datastore) warmCache() {
+	log.Traceln("Warming config value cache")
+
+	res, err := ds.DB.Query("SELECT key, value FROM datastore")
+	if err != nil || res.Err() != nil {
+		log.Errorln("error warming config cache", err, res.Err())
+	}
+	defer res.Close()
+
+	for res.Next() {
+		var rowKey string
+		var rowValue []byte
+		if err := res.Scan(&rowKey, &rowValue); err != nil {
+			log.Errorln("error pre-caching config row", err)
+		}
+		ds.cache[rowKey] = rowValue
+	}
 }

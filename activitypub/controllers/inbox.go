@@ -7,7 +7,6 @@ import (
 
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/inbox"
-	"github.com/owncast/owncast/core/data"
 
 	log "github.com/sirupsen/logrus"
 )

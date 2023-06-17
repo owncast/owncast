@@ -11,7 +11,6 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/resolvers"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
 	"github.com/pkg/errors"
@@ -191,37 +190,6 @@ func removeFollow(actor *url.URL) error {
 	}
 
 	return tx.Commit()
-}
-
-// createFederatedActivitiesTable will create the accepted
-// activities table if needed.
-func createFederatedActivitiesTable() {
-	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_accepted_activities (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		"iri" TEXT NOT NULL,
-    "actor" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
-		"timestamp" TIMESTAMP NOT NULL
-	);`
-
-	_datastore.MustExec(createTableSQL)
-	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_iri_actor_index ON ap_accepted_activities (iri,actor);`)
-}
-
-func createFederationOutboxTable() {
-	log.Traceln("Creating federation outbox table...")
-	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_outbox (
-		"iri" TEXT NOT NULL,
-		"value" BLOB,
-		"type" TEXT NOT NULL,
-		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "live_notification" BOOLEAN DEFAULT FALSE,
-		PRIMARY KEY (iri));`
-
-	_datastore.MustExec(createTableSQL)
-	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_iri ON ap_outbox (iri);`)
-	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_type ON ap_outbox (type);`)
-	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_live_notification ON ap_outbox (live_notification);`)
 }
 
 // GetOutboxPostCount will return the number of posts in the outbox.
