@@ -331,4 +331,3 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     </ErrorBoundary>
   );
 };
-export default OwncastPlayer;
