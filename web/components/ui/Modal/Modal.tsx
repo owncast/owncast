@@ -97,7 +97,6 @@ export const Modal: FC<ModalProps> = ({
     </AntModal>
   );
 };
-export default Modal;
 
 Modal.defaultProps = {
   url: undefined,
