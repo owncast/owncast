@@ -1,16 +1,7 @@
 import { Popover } from 'antd';
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useReducer, useRef, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Transforms, createEditor, BaseEditor, Text, Descendant, Editor } from 'slate';
-import {
-  Slate,
-  DefaultPlaceholder,
-  Editable,
-  withReact,
-  ReactEditor,
-  useSelected,
-  useFocused,
-} from 'slate-react';
+import ContentEditable from 'react-contenteditable';
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
 import WebsocketService from '../../../services/websocket-service';
@@ -32,102 +23,6 @@ const SmileOutlined = dynamic(() => import('@ant-design/icons/SmileOutlined'), {
   ssr: false,
 });
 
-type CustomElement = { type: 'paragraph' | 'span'; children: CustomText[] } | ImageNode;
-type CustomText = { text: string };
-
-type EmptyText = {
-  text: string;
-};
-
-type ImageNode = {
-  type: 'image';
-  alt: string;
-  src: string;
-  name: string;
-  children: EmptyText[];
-};
-
-declare module 'slate' {
-  interface CustomTypes {
-    Editor: BaseEditor & ReactEditor;
-    Element: CustomElement;
-    Text: CustomText;
-  }
-}
-
-const Image = p => {
-  const { attributes, element, children } = p;
-
-  const selected = useSelected();
-  const focused = useFocused();
-  return (
-    <span {...attributes} contentEditable={false}>
-      <img
-        alt={element.alt}
-        src={element.src}
-        title={element.name}
-        style={{
-          display: 'inline',
-          maxWidth: '50px',
-          maxHeight: '20px',
-          boxShadow: `${selected && focused ? '0 0 0 3px #B4D5FF' : 'none'}`,
-        }}
-      />
-      {children}
-    </span>
-  );
-};
-
-const withImages = editor => {
-  const { isVoid } = editor;
-
-  // eslint-disable-next-line no-param-reassign
-  editor.isVoid = element => (element.type === 'image' ? true : isVoid(element));
-  // eslint-disable-next-line no-param-reassign
-  editor.isInline = element => element.type === 'image';
-
-  return editor;
-};
-
-const serialize = node => {
-  if (Text.isText(node)) {
-    const string = node.text;
-    return string;
-  }
-
-  let children;
-  if (node.children.length === 0) {
-    children = [{ text: '' }];
-  } else {
-    children = node.children?.map(n => serialize(n)).join('');
-  }
-
-  switch (node.type) {
-    case 'paragraph':
-      return `<p>${children}</p>`;
-    case 'image':
-      return `<img src="${node.src}" alt="${node.alt}" title="${node.name}" class="emoji"/>`;
-    default:
-      return children;
-  }
-};
-
-const getCharacterCount = node => {
-  if (Text.isText(node)) {
-    return node.text.length;
-  }
-  if (node.type === 'image') {
-    return 5;
-  }
-
-  let count = 0;
-  node.children.forEach(child => {
-    count += getCharacterCount(child);
-  });
-
-  return count;
-};
-
 export type ChatTextFieldProps = {
   defaultText?: string;
   enabled: boolean;
@@ -136,18 +31,88 @@ export type ChatTextFieldProps = {
 
 const characterLimit = 300;
 
+function getCaretPosition(node) {
+  const selection = window.getSelection();
+
+  if (selection.rangeCount === 0) {
+    return 0;
+  }
+
+  const range = selection.getRangeAt(0);
+  const preCaretRange = range.cloneRange();
+  const tempElement = document.createElement('div');
+
+  preCaretRange.selectNodeContents(node);
+  preCaretRange.setEnd(range.endContainer, range.endOffset);
+  tempElement.appendChild(preCaretRange.cloneContents());
+
+  return tempElement.innerHTML.length;
+}
+
+function setCaretPosition(editableDiv, position) {
+  try {
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNode(editableDiv);
+    range.setStart(editableDiv.childNodes[0], position);
+    range.collapse(true);
+
+    sel.removeAllRanges();
+    sel.addRange(range);
+  } catch (e) {
+    console.debug(e);
+  }
+}
+
+function convertToText(str = '') {
+  // Ensure string.
+  let value = String(str);
+
+  // Convert encoding.
+  value = value.replace(/&nbsp;/gi, ' ');
+  value = value.replace(/&amp;/gi, '&');
+
+  // Replace `<br>`.
+  value = value.replace(/<br>/gi, '\n');
+
+  // Replace `<div>` (from Chrome).
+  value = value.replace(/<div>/gi, '\n');
+
+  // Replace `<p>` (from IE).
+  value = value.replace(/<p>/gi, '\n');
+
+  // Cleanup the emoji titles.
+  value = value.replace(/\u200C{2}/gi, '');
+
+  // Trim each line.
+  value = value
+    .split('\n')
+    .map((line = '') => line.trim())
+    .join('\n');
+
+  // No more than 2x newline, per "paragraph".
+  value = value.replace(/\n\n+/g, '\n\n');
+
+  // Clean up spaces.
+  value = value.replace(/[ ]+/g, ' ');
+  value = value.trim();
+
+  // Expose string.
+  return value;
+}
+
 export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
-  const editor = useMemo(() => withReact(withImages(createEditor())), []);
+  const text = useRef(defaultText || '');
+  const [savedCursorLocation, setSavedCursorLocation] = useState(0);
 
-  const defaultEditorValue: Descendant[] = [
-    {
-      type: 'paragraph',
-      children: [{ text: defaultText || '' }],
-    },
-  ];
+  // This is a bit of a hack to force the component to re-render when the text changes.
+  // By default when updating a ref the component doesn't re-render.
+  const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+  const getCharacterCount = () => text.current.length;
 
   const sendMessage = () => {
     if (!websocketService) {
@@ -155,51 +120,71 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
       return;
     }
 
-    let message = serialize(editor);
+    let message = text.current;
     // Strip the opening and closing <p> tags.
     message = message.replace(/^<p>|<\/p>$/g, '');
     websocketService.send({ type: MessageType.CHAT, body: message });
 
-    // Clear the editor.
-    Transforms.delete(editor, {
-      at: {
-        anchor: Editor.start(editor, []),
-        focus: Editor.end(editor, []),
-      },
-    });
+    // Clear the input.
+    text.current = '';
     setCharacterCount(0);
+    forceUpdate();
   };
 
-  const createImageNode = (alt, src, name): ImageNode => ({
-    type: 'image',
-    alt,
-    src,
-    name,
-    children: [{ text: '' }],
-  });
+  const insertTextAtCursor = (textToInsert: string) => {
+    const output = [
+      text.current.slice(0, savedCursorLocation),
+      textToInsert,
+      text.current.slice(savedCursorLocation),
+    ].join('');
+    text.current = output;
+    forceUpdate();
+  };
 
-  const insertImage = (url, name) => {
-    if (!url) return;
+  const convertOnPaste = (event: React.ClipboardEvent) => {
+    // Prevent paste.
+    event.preventDefault();
 
-    const image = createImageNode(name, url, name);
+    // Set later.
+    let value = '';
 
-    Transforms.insertNodes(editor, image);
-    Editor.normalize(editor, { force: true });
+    // Does method exist?
+    const hasEventClipboard = !!(
+      event.clipboardData &&
+      typeof event.clipboardData === 'object' &&
+      typeof event.clipboardData.getData === 'function'
+    );
+
+    // Get clipboard data?
+    if (hasEventClipboard) {
+      value = event.clipboardData.getData('text/plain');
+    }
+
+    // Insert into temp `<textarea>`, read back out.
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = value;
+    value = textarea.innerText;
+
+    // Clean up text.
+    value = convertToText(value);
+
+    // Insert text.
+    insertTextAtCursor(value);
   };
 
   // Native emoji
   const onEmojiSelect = (emoji: string) => {
-    ReactEditor.focus(editor);
-    Transforms.insertText(editor, emoji);
+    insertTextAtCursor(emoji);
   };
 
+  // Custom emoji images
   const onCustomEmojiSelect = (name: string, emoji: string) => {
-    ReactEditor.focus(editor);
-    insertImage(emoji, name);
+    const html = `<img src="${emoji}" alt="${name}" title=${name} class="emoji" />`;
+    insertTextAtCursor(html);
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    const charCount = getCharacterCount(editor) + 1;
+    const charCount = getCharacterCount() + 1;
 
     // Send the message when hitting enter.
     if (e.key === 'Enter') {
@@ -207,10 +192,20 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
       sendMessage();
       return;
     }
-
     // Always allow backspace.
     if (e.key === 'Backspace') {
       setCharacterCount(charCount - 1);
+      return;
+    }
+
+    // Always allow delete.
+    if (e.key === 'Delete') {
+      setCharacterCount(charCount - 1);
+      return;
+    }
+
+    // Always allow ctrl + a.
+    if (e.key === 'a' && e.ctrlKey) {
       return;
     }
 
@@ -218,26 +213,28 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     if (charCount + 1 > characterLimit) {
       e.preventDefault();
     }
-
     setCharacterCount(charCount + 1);
   };
 
-  const onPaste = (e: React.ClipboardEvent) => {
-    const text = e.clipboardData.getData('text/plain');
-
-    const { length } = text;
-    if (characterCount + length > characterLimit) {
-      e.preventDefault();
-    }
+  const handleChange = evt => {
+    text.current = evt.target.value;
   };
 
-  const renderElement = p => {
-    switch (p.element.type) {
-      case 'image':
-        return <Image {...p} />;
-      default:
-        return <p {...p} />;
+  const handleBlur = () => {
+    // Save the cursor location.
+    setSavedCursorLocation(
+      getCaretPosition(document.getElementById('chat-input-content-editable')),
+    );
+  };
+
+  const handleFocus = () => {
+    if (!savedCursorLocation) {
+      return;
     }
+
+    // Restore the cursor location.
+    setCaretPosition(document.getElementById('chat-input-content-editable'), savedCursorLocation);
+    setSavedCursorLocation(0);
   };
 
   return (
@@ -248,44 +245,30 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
           characterCount >= characterLimit && styles.maxCharacters,
         )}
       >
-        <Slate editor={editor} initialValue={defaultEditorValue}>
-          <Editable
-            className="chat-text-input"
-            onKeyDown={onKeyDown}
-            onPaste={onPaste}
-            disabled={!enabled}
-            readOnly={!enabled}
-            renderElement={renderElement}
-            renderPlaceholder={({ children, attributes }) => (
-              <DefaultPlaceholder
-                attributes={{
-                  ...attributes,
-                  style: { ...attributes.style, top: '15%' },
-                }}
-              >
-                {children}
-              </DefaultPlaceholder>
-            )}
-            placeholder={enabled ? 'Send a message to chat' : 'Chat is currently unavailable.'}
-            style={{ width: '100%' }}
-            role="textbox"
-            aria-label="Chat text input"
-            autoFocus={focusInput}
-          />
-          <Popover
-            content={
-              <EmojiPicker
-                onEmojiSelect={onEmojiSelect}
-                onCustomEmojiSelect={onCustomEmojiSelect}
-              />
-            }
-            trigger="click"
-            placement="topRight"
-            onOpenChange={open => setShowEmojis(open)}
-            open={showEmojis}
-          />
-        </Slate>
-
+        <Popover
+          content={
+            <EmojiPicker onEmojiSelect={onEmojiSelect} onCustomEmojiSelect={onCustomEmojiSelect} />
+          }
+          trigger="click"
+          placement="topRight"
+          onOpenChange={open => setShowEmojis(open)}
+          open={showEmojis}
+        />
+        <ContentEditable
+          id="chat-input-content-editable"
+          html={text.current}
+          placeholder={enabled ? 'Type a message...' : 'Chat is disabled'}
+          disabled={!enabled}
+          onKeyDown={onKeyDown}
+          onPaste={convertOnPaste}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+          autoFocus={focusInput}
+          style={{ width: '100%' }}
+          role="textbox"
+          aria-label="Chat text input"
+        />
         {enabled && (
           <div style={{ display: 'flex', paddingLeft: '5px' }}>
             <button

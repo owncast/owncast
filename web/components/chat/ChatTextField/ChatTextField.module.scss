@@ -25,22 +25,30 @@
       background-color: var(--theme-color-components-form-field-background);
       box-shadow: inset 0px 0px 2px 2px var(--theme-color-palette-3);
     }
+
+    // Size of custom emoji.
+    img {
+      width: 20px;
+      height: 20px;
+    }
   }
 
   .maxCharacters {
     border-style: solid;
-    border-width: 1px;
+    border-width: 2px;
     border-color: red;
   }
 
   div[role='textbox'] {
     font-size: 13px;
-		font-weight: 400;
+    font-weight: 400;
     padding: 0.3rem;
     background-color: inherit;
     border-color: var(--theme-color-components-form-field-border);
     box-shadow: 0;
     transition: box-shadow 50ms ease-in-out;
+    max-height: 40px; // 2 lines of text
+    min-height: 30px;
     &:focus {
       outline: 1px solid var(--color-owncast-gray-500) !important;
     }
@@ -48,13 +56,20 @@
       margin: 0px;
     }
   }
+
+  // Placeholder styling
+  :empty:before {
+    content: attr(placeholder);
+    display: block;
+    color: #aaa;
+  }
 }
 
 .emojiButton {
   border: none;
   background: none;
   cursor: pointer;
-  padding: 0 .25rem;
+  padding: 0 0.25rem;
 }
 
 .sendButton {

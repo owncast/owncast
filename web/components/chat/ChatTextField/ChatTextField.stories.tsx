@@ -44,8 +44,7 @@ export default {
         component: `
 - This is a element using \`contentEditable\` in order to support rendering emoji images inline.
 - Emoji button shows emoji picker.
-- Should show one line by default, but grow to two lines as needed.
-- The Send button should be hidden for desktop layouts and be shown for mobile layouts.`,
+- Should show one line by default, but grow to two lines as needed.`,
       },
     },
   },
