@@ -23,6 +23,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
       className={cn([`${styles.button}`, 'action-button'])}
       onClick={() => externalActionSelected(action)}
       style={{ backgroundColor: color }}
+      title={description || title}
     >
       {icon && <img src={icon} className={`${styles.icon}`} alt={description} />}
       {title}
