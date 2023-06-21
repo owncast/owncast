@@ -67,6 +67,10 @@
 		"storybook-addon-fetch-mock",
 		"storybook-preset-less",
 		"style-loader",
-		"ts-jest"
+		"ts-jest",
+		"stylelint-config-standard",
+		"stylelint-config-standard-scss",
+		"postcss",
+		"stylelint"
 	]
 }
