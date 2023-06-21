@@ -6,6 +6,7 @@ HEADER
   line-height: unset;
   height: auto;
 }
+
 /* ------------------------- //
 BUTTONS
 // ------------------------- */
@@ -14,6 +15,7 @@ BUTTONS
   background-color: var(--theme-color-components-secondary-button-background-disabled);
   color: var(--theme-color-components-secondary-button-text-disabled);
   border-color: var(--theme-color-components-secondary-button-border-disabled);
+
   &:hover,
   &:focus {
     background-color: var(--theme-color-components-secondary-button-background-disabled);
@@ -23,15 +25,16 @@ BUTTONS
 }
 
 .ant-btn-default {
-  color: currentColor;
+  color: currentcolor;
   border-width: 2px;
   border-color: var(--theme-color-components-primary-button-border);
   border-radius: var(--theme-rounded-corners);
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgb(0 0 0 / 10%);
+
   &:hover,
   &:focus {
-    color: currentColor;
-    border-color: rgba(0, 0, 0, 0.55);
+    color: currentcolor;
+    border-color: rgb(0 0 0 / 55%);
     background-color: var(--theme-color-components-secondary-button-background);
   }
 }
@@ -41,7 +44,6 @@ BUTTONS
   font-size: 0.85rem;
   border-width: 2px;
   border-radius: var(--theme-rounded-corners);
-  color: var(--theme-color-components-primary-button-text);
   border-color: var(--theme-color-components-primary-button-border);
 
   &:hover,
@@ -54,16 +56,20 @@ BUTTONS
   &:focus {
     border-color: var(--theme-color-components-secondary-button-text);
   }
-  &[ant-click-animating-without-extra-node]:after {
+
+  &[ant-click-animating-without-extra-node]::after {
     animation: 0s !important;
   }
+
   background-color: var(--theme-color-components-primary-button-background);
   color: var(--theme-color-components-primary-button-text);
+
   &:hover {
     background-color: var(--theme-color-action-hover);
     color: var(--theme-color-components-primary-button-text);
     border-color: var(--theme-color-action-hover);
   }
+
   &:focus {
     background-color: var(--theme-color-action-hover);
     color: var(--theme-color-components-primary-button-text);
@@ -75,6 +81,7 @@ BUTTONS
   background-color: var(--theme-color-components-primary-button-background-disabled);
   border-color: var(--theme-color-components-primary-button-border-disabled);
   color: var(--theme-color-components-primary-button-text-disabled);
+
   &:hover,
   &:focus {
     background-color: var(--theme-color-components-primary-button-background-disabled);
@@ -84,8 +91,9 @@ BUTTONS
 }
 
 .ant-btn-background-ghost {
-  border: 0px;
+  border: 0;
   box-shadow: none !important;
+
   &:hover,
   &:focus {
     background-color: var(--theme-unknown);
@@ -100,15 +108,19 @@ DROPDOWN
   border-radius: var(--theme-rounded-corners);
   background-color: var(--theme-color-components-menu-background);
 }
+
 .ant-dropdown-menu-item {
   color: var(--theme-color-components-menu-item-text);
+
   &:hover {
     background-color: var(--theme-color-components-menu-item-hover-bg);
   }
+
   &:focus {
     background-color: var(--theme-color-components-menu-item-focus-bg);
   }
 }
+
 .ant-dropdown-menu-item,
 .ant-dropdown-menu-submenu-title {
   font-size: 0.8rem;
@@ -123,6 +135,7 @@ DROPDOWN
 .ant-input-number-input {
   background-color: var(--theme-color-components-form-field-background);
   color: var(--theme-color-components-form-field-text);
+
   &::placeholder {
     color: var(--theme-color-components-form-field-placeholder);
   }
@@ -132,6 +145,7 @@ DROPDOWN
   .ant-alert-icon {
     color: var(--theme-color-palette-error);
   }
+
   .ant-alert-message {
     color: var(--theme-color-palette-error);
   }
@@ -142,13 +156,17 @@ DROPDOWN
   background-color: transparent;
   border-radius: var(--theme-rounded-corners) var(--theme-rounded-corners) 0 0;
   font-weight: 600;
+
   & + .ant-tabs-tab {
     margin-left: var(--module-spacing);
   }
+
   &.ant-tabs-tab-active {
     background-color: var(--theme-color-palette-4);
+
     .ant-tabs-tab-btn {
       color: var(--theme-color-action);
+
       &:hover {
         color: var(--theme-color-action-hover);
       }
@@ -158,11 +176,14 @@ DROPDOWN
 
 .ant-tabs {
   height: 100%;
+
   .ant-tabs-content-holder {
     height: 100%;
   }
+
   .ant-tabs-content {
     overflow: auto;
+
     .ant-tabs-tabpane-active {
       height: 100%;
     }
@@ -173,7 +194,7 @@ DROPDOWN
   background-color: var(--theme-color-action);
 }
 
-.ant-tabs-nav:before {
+.ant-tabs-nav::before {
   border-bottom-color: var(--theme-color-components-menu-item-focus-bg) !important;
 }
 
@@ -225,6 +246,7 @@ th {
 
 .line-chart-container {
   position: relative;
+
   .download-btn {
     position: absolute;
     top: 0.3rem;

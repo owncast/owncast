@@ -1,4 +1,4 @@
-@import '../../../styles/mixins.scss';
+@import '../../../styles/mixins';
 
 .lowerSection {
   padding: var(--content-padding);
@@ -19,7 +19,7 @@
   }
 
   :global(.ant-tabs-nav) {
-    margin-bottom: 0px;
+    margin-bottom: 0;
     padding-top: 0.5vh;
     padding-left: 1vw;
   }
@@ -27,6 +27,7 @@
 
 .topSectionElement {
   background-color: var(--theme-color-components-video-background);
+
   @include screen(tablet) {
     // "sticks" the stream to the top of the page
     position: sticky;
@@ -97,6 +98,7 @@
     margin-top: unset;
   }
 }
+
 .offlineBanner {
   color: var(--theme-color-background-main);
 }
@@ -112,5 +114,5 @@
   z-index: 99;
   background-color: var(--theme-color-components-chat-background);
   border-width: 0;
-  box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 20%);
+  box-shadow: 0 1px 3px 1px rgb(0 0 0 / 20%);
 }

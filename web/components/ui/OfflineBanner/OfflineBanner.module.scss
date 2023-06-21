@@ -1,4 +1,4 @@
-@import '../../../styles/mixins.scss';
+@import '../../../styles/mixins';
 
 .outerContainer {
   display: flex;
@@ -56,6 +56,7 @@
   color: var(--theme-color-action);
   text-decoration: underline;
   cursor: pointer;
+
   &:hover {
     color: var(--color-owncast-palette-7);
   }

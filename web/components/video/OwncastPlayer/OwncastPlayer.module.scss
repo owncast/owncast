@@ -1,4 +1,4 @@
-@import '../../../styles/mixins.scss';
+@import '../../../styles/mixins';
 
 .container {
   display: grid;
@@ -7,7 +7,7 @@
   height: var(--player-container-height);
   aspect-ratio: 16 / 9;
 
-  @media (max-width: 1200px) {
+  @media (width <= 1200px) {
     height: 100%;
     max-height: var(--player-container-height);
   }

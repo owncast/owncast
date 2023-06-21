@@ -1,26 +1,27 @@
-@import '../../../styles/mixins.scss';
+@import '../../../styles/mixins';
 
 .header {
   height: var(--header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 20;
   padding: 0.7rem var(--content-padding);
-  box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 10%);
+  box-shadow: 0 1px 3px 1px rgb(0 0 0 / 10%);
   background-color: var(--theme-color-background-header);
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 200;
+
   h1 {
     margin-top: unset;
     margin-bottom: unset;
   }
+
   // fixes header on tablet and below
   @include screen(tablet) {
     position: fixed;
-    top: 0px;
+    top: 0;
     width: 100%;
   }
 }
@@ -43,11 +44,12 @@
 .title {
   color: var(--theme-color-components-text-on-dark);
   font-family: var(--theme-text-display-font-family);
-  margin-bottom: 0px;
+  margin-bottom: 0;
   font-size: clamp(1rem, 4vw, 1.6rem);
   font-weight: 600;
   white-space: nowrap;
   text-overflow: ellipsis;
+
   // 6rem is an overapproximation of the width of
   // the user menu
   max-width: min(70vw, calc(100vw - 6rem));
@@ -78,15 +80,14 @@
 .avatar {
   background-color: var(--theme-color-background-header);
   box-sizing: content-box;
-  outline-color: #ffffff26;
-  outline-width: 2px;
-  outline-style: solid;
+  outline: #ffffff26 solid 2px;
 }
 
 .chatOfflineText {
   color: var(--theme-color-palette-8);
   font-size: 0.75rem;
 }
+
 .toolTip {
   font-size: 0.8rem;
 }

@@ -1,4 +1,4 @@
-@import 'styles/mixins.scss';
+@import 'styles/mixins';
 
 .customPageContent {
   font-size: 1rem;
@@ -19,6 +19,7 @@
   p {
     margin: 0.5rem 0;
   }
+
 	a:hover {
 		color: var(--color-owncast-palette-7)
 	}

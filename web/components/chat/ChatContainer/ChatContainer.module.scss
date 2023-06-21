@@ -1,4 +1,4 @@
-@import '../../../styles/mixins.scss';
+@import '../../../styles/mixins';
 
 // The button that is displayed to scroll to the bottom of the chat.
 .toBottomWrap {
@@ -12,7 +12,7 @@
   button {
     background-color: var(--theme-color-background-light);
     z-index: 9999;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%), 0 1px 5px 0 rgb(0 0 0 / 12%);
     display: flex;
     align-items: center;
     opacity: 0;
@@ -29,6 +29,7 @@
   height: 100%;
   font-size: var(--chat-message-text-size);
 }
+
 .virtuoso {
   width: auto;
   flex-grow: 1;
@@ -54,8 +55,9 @@
     opacity: 0;
     transform: translateY(5px);
   }
+
   to {
     opacity: 1;
-    transform: translateY(0px);
+    transform: translateY(0);
   }
 }

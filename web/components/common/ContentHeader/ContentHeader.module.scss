@@ -1,4 +1,4 @@
-@import '../../../styles/mixins.scss';
+@import '../../../styles/mixins';
 
 $vert-spacing: 0.75rem;
 
@@ -19,12 +19,14 @@ $vert-spacing: 0.75rem;
 .logoTitleSection {
   display: flex;
   flex-direction: column;
+
   .logo {
     margin: auto 0.6rem;
   }
 
   @include screen(desktop) {
     flex-direction: row;
+
     .logo {
       margin: 0.6rem;
     }
@@ -32,6 +34,7 @@ $vert-spacing: 0.75rem;
 
   @include screen(tablet) {
     align-items: center;
+
     .logo {
       margin: 1.2rem auto;
     }
@@ -42,6 +45,7 @@ $vert-spacing: 0.75rem;
   display: flex;
   flex-direction: column;
   margin-left: 0.6rem;
+
   @include screen(tablet) {
     margin-left: 0;
   }
