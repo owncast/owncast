@@ -2,16 +2,16 @@
   background: var(--theme-color-background-main);
   background: linear-gradient(
     70deg,
-    rgb(87, 51, 141) 0%,
-    rgb(65, 28, 139) 40%,
-    rgb(71, 50, 133) 80%
+    rgb(87 51 141) 0%,
+    rgb(65 28 139) 40%,
+    rgb(71 50 133) 80%
   );
   margin: 5px;
   margin-bottom: 10px;
   border-radius: 5px;
   border-width: 1px;
   border-style: solid;
-  padding: 12px 12px;
+  padding: 12px;
 
   .user {
     display: flex;
@@ -20,6 +20,7 @@
     font-weight: bold;
     color: white;
   }
+
   .message {
     color: white;
 
@@ -45,6 +46,7 @@
 
   a {
     color: var(--theme-color-palette-4);
+
     :hover {
       text-decoration: underline;
       text-underline-offset: 2px;

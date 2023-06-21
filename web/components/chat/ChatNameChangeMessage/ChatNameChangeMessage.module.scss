@@ -5,8 +5,10 @@
   border-radius: var(--theme-rounded-corners);
   padding: 5px 15px;
   color: var(--theme-color-components-chat-text);
+
   & .nameChangeText {
     font-weight: 400;
+
     & .plain {
       font-weight: 400;
     }

@@ -4,7 +4,7 @@
 @import '@fontsource/inter/800.css';
 @import '@fontsource/poppins/400.css';
 @import '@fontsource/poppins/600.css';
-@import './mixins.scss';
+@import './mixins';
 
 :root {
   --content-padding: 0.95rem;
@@ -19,7 +19,6 @@
   --chat-message-padding: 10px;
   --chat-text-highlight-border-radius: 3px;
 	--chat-col-width: 320px;
-
 	--player-container-height: 75vh;
 	--status-bar-height: 2rem;
 	--footer-padding-x: 1rem;
@@ -28,6 +27,7 @@
     --header-height: 3.85rem;
 		--player-container-height: 400px;
   }
+
 	@include screen(mobile) {
 		--player-container-height: 250px;
 	}
@@ -96,7 +96,7 @@ body {
 
   ul,
   ol {
-    margin: 0.7em 0 0 0;
+    margin: 0.7em 0 0;
     padding: 0 1em;
 
     ul,
@@ -105,7 +105,7 @@ body {
     }
 
     li {
-      margin: 0.175em 0 0 0;
+      margin: 0.175em 0 0;
     }
   }
 

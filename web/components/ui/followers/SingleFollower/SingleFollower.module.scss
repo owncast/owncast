@@ -1,10 +1,10 @@
-@import '../../../../../web/styles/mixins.scss';
+@import '../../../../../web/styles/mixins';
 
 .follower {
-  border-color: rgba(0, 0, 0, 0.3);
+  border-color: rgb(0 0 0 / 30%);
   border-width: 1px;
   border-style: solid;
-  padding: 10px 10px;
+  padding: 10px;
   border-radius: 15px;
   background-color: var(--theme-color-background-main);
   margin: 0.5em;
@@ -18,7 +18,7 @@
   .avatar {
     height: 60px;
     width: 60px;
-    border-color: rgba(0, 0, 0, 0.3);
+    border-color: rgb(0 0 0 / 30%);
     border-width: 1px;
     border-style: solid;
     font-size: 1.8rem;

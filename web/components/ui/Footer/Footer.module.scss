@@ -1,23 +1,19 @@
-@import '../../../styles/mixins.scss';
+@import '../../../styles/mixins';
 
 .footer {
-
 	position: absolute;
 	bottom: 0;
-
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   justify-content: space-between;
-  flex-direction: row;
   background-color: var(--theme-color-background-header);
   color: var(--theme-color-components-text-on-dark);
   font-family: var(--theme-text-body-font-family);
-
   padding: 0.6rem var(--footer-padding-x);
   font-size: 0.75rem;
   font-weight: 400;
-  border-top: 1px solid rgba(214, 211, 211, 0.5);
+  border-top: 1px solid rgb(214 211 211 / 50%);
   width: 100%;
 
 

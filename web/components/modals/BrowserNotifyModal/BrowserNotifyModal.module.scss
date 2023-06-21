@@ -14,7 +14,7 @@
     margin: 10px;
     padding: 15px;
     background-color: white;
-    box-shadow: 2px 6px 7px 0px #87898d;
+    box-shadow: 2px 6px 7px 0 #87898d;
 
     .title {
       font-weight: bold;
@@ -38,18 +38,13 @@
 
       .disabled {
         cursor: not-allowed;
-        outline-width: 1;
-        outline-color: '#e2e8f0';
-        outline-style: 'solid';
+        outline: '#e2e8f0' 'solid' 1;
         background-color: white;
       }
 
       button {
         margin-left: 10px;
-        padding-left: 15px;
-        padding-right: 15px;
-        padding-top: 4px;
-        padding-bottom: 4px;
+        padding: 4px 15px;
         border-radius: 3px;
         border-style: solid;
       }

@@ -1,4 +1,4 @@
-$border-style: 3px solid currentColor;
+$border-style: 3px solid currentcolor;
 $p-size: 8px;
 $p-h-size: 8px;
 $p-v-size: 2px;
@@ -7,6 +7,7 @@ $p-v-size: 2px;
   * {
     z-index: 100;
   }
+
   border-left: $border-style;
   position: relative;
   font-size: var(--chat-message-text-size);
@@ -39,6 +40,7 @@ $p-v-size: 2px;
 
     a {
       color: var(--theme-color-palette-12);
+
       &:hover {
         color: var(--theme-color-palette-4);
       }
@@ -51,11 +53,11 @@ $p-v-size: 2px;
 
     .background {
       position: absolute;
-      top: 0px;
-      left: 0px;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      background-color: currentColor;
+      background-color: currentcolor;
       opacity: 0.07;
       border-radius: 0.25rem;
       overflow: hidden;
@@ -68,6 +70,7 @@ $p-v-size: 2px;
     top: 5px;
     right: 10px;
     color: black;
+
     & button:focus,
     & button:active {
       display: block !important;
@@ -87,9 +90,9 @@ $p-v-size: 2px;
 }
 
 .messagePadding {
-  padding: 0.4rem 5px 0px 5px;
+  padding: 0.4rem 5px 0;
 }
 
 .messagePaddingCollapsed {
-  padding: 2px 5px 0px 5px;
+  padding: 2px 5px 0;
 }

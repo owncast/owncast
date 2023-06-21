@@ -1,7 +1,8 @@
-@import '../../../styles/mixins.scss';
+@import '../../../styles/mixins';
 
 .root {
   background-color: var(--theme-color-components-chat-background);
+
   @include screen(desktop) {
     position: fixed;
     right: 0;
@@ -10,7 +11,7 @@
     z-index:100;
   }
 
-  @media screen and (max-width: 1120px) and (min-width: 768px) {
+  @media screen and (width <= 1120px) and (width >= 768px) {
     top: 65px;
   }
 }
