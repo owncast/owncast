@@ -80,7 +80,7 @@
 		"@types/markdown-it": "12.2.3",
 		"@types/node": "18.16.18",
 		"@types/prop-types": "15.7.5",
-		"@types/react": "18.2.12",
+		"@types/react": "18.2.13",
 		"@types/react-linkify": "1.0.1",
 		"@types/ua-parser-js": "0.7.36",
 		"@types/video.js": "^7.3.50",
