@@ -257,7 +257,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
         <ContentEditable
           id="chat-input-content-editable"
           html={text.current}
-          placeholder={enabled ? 'Type a message...' : 'Chat is disabled'}
+          placeholder={enabled ? 'Send a message to chat' : 'Chat is disabled'}
           disabled={!enabled}
           onKeyDown={onKeyDown}
           onPaste={convertOnPaste}
