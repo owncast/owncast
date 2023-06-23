@@ -29,6 +29,10 @@ const LockOutlined = dynamic(() => import('@ant-design/icons/LockOutlined'), {
   ssr: false,
 });
 
+const ShrinkOutlined = dynamic(() => import('@ant-design/icons/ShrinkOutlined'), {
+  ssr: false,
+});
+
 const ExpandAltOutlined = dynamic(() => import('@ant-design/icons/ExpandAltOutlined'), {
   ssr: false,
 });
@@ -75,6 +79,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
   const [showNameChangeModal, setShowNameChangeModal] = useState<boolean>(false);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [chatToggleVisible, setChatToggleVisible] = useRecoilState(chatVisibleToggleAtom);
+  const [popupWindow, setPopupWindow] = useState<Window>(null);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
   const toggleChatVisibility = () => {
@@ -94,9 +99,22 @@ export const UserDropdown: FC<UserDropdownProps> = ({
     setShowNameChangeModal(false);
   };
 
-  const openChatPopup = () => {
-    window.open('/embed/chat/readwrite', '_blank', 'popup');
+  const closeChatPopup = () => {
+    if (popupWindow) {
+      popupWindow.close();
+    }
+    setPopupWindow(null);
   };
+
+  const openChatPopup = () => {
+    // close popup (if any) to prevent multiple popup windows.
+    closeChatPopup();
+    let w = window.open('/embed/chat/readwrite', '_blank', 'popup');
+    w.addEventListener('beforeunload', closeChatPopup);
+    setPopupWindow(w);
+  };
+
+  const canShowChatPopup = () => showHideChatOption && appState.chatAvailable && window.opener == null;
 
   // Register keyboard shortcut for the space bar to toggle playback
   useHotkeys(
@@ -134,9 +152,15 @@ export const UserDropdown: FC<UserDropdownProps> = ({
           {chatToggleVisible ? 'Hide Chat' : 'Show Chat'}
         </Menu.Item>
       )}
-      <Menu.Item key="4" icon={<ExpandAltOutlined />} onClick={openChatPopup}>
-        Pop out chat
-      </Menu.Item>
+      {canShowChatPopup() && (popupWindow ? (
+        <Menu.Item key="4" icon={<ShrinkOutlined />} onClick={closeChatPopup}>
+          Put chat back
+        </Menu.Item>
+      ) : (
+        <Menu.Item key="4" icon={<ExpandAltOutlined />} onClick={openChatPopup}>
+          Pop out chat
+        </Menu.Item>
+      ) )}
     </Menu>
   );
 
