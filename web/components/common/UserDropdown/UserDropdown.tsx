@@ -104,6 +104,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
       popupWindow.close();
     }
     setPopupWindow(null);
+    setChatToggleVisible(true);
   };
 
   const openChatPopup = () => {
@@ -112,8 +113,10 @@ export const UserDropdown: FC<UserDropdownProps> = ({
     let w = window.open('/embed/chat/readwrite', '_blank', 'popup');
     w.addEventListener('beforeunload', closeChatPopup);
     setPopupWindow(w);
+    setChatToggleVisible(false);
   };
 
+  const canShowHideChat = () => popupWindow == null && showHideChatOption && appState.chatAvailable;
   const canShowChatPopup = () => showHideChatOption && appState.chatAvailable && window.opener == null;
 
   // Register keyboard shortcut for the space bar to toggle playback
@@ -141,7 +144,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
       <Menu.Item key="1" icon={<LockOutlined />} onClick={() => setShowAuthModal(true)}>
         Authenticate
       </Menu.Item>
-      {showHideChatOption && appState.chatAvailable && (
+      {canShowHideChat() && (
         <Menu.Item
           key="3"
           icon={<MessageOutlined />}
