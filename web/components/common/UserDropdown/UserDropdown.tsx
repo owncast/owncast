@@ -29,6 +29,10 @@ const LockOutlined = dynamic(() => import('@ant-design/icons/LockOutlined'), {
   ssr: false,
 });
 
+const ExpandAltOutlined = dynamic(() => import('@ant-design/icons/ExpandAltOutlined'), {
+  ssr: false,
+});
+
 const MessageOutlined = dynamic(() => import('@ant-design/icons/MessageOutlined'), {
   ssr: false,
 });
@@ -90,6 +94,10 @@ export const UserDropdown: FC<UserDropdownProps> = ({
     setShowNameChangeModal(false);
   };
 
+  const openChatPopup = () => {
+    window.open('/embed/chat/readwrite', '_blank', 'popup');
+  };
+
   // Register keyboard shortcut for the space bar to toggle playback
   useHotkeys(
     'c',
@@ -126,6 +134,9 @@ export const UserDropdown: FC<UserDropdownProps> = ({
           {chatToggleVisible ? 'Hide Chat' : 'Show Chat'}
         </Menu.Item>
       )}
+      <Menu.Item key="4" icon={<ExpandAltOutlined />} onClick={openChatPopup}>
+        Pop out chat
+      </Menu.Item>
     </Menu>
   );
 
