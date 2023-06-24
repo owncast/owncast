@@ -18,6 +18,7 @@ import {
   ConnectedClientInfoEvent,
   MessageType,
   ChatEvent,
+  NameChangeEvent,
   MessageVisibilityEvent,
   SocketEvent,
   FediverseEvent,
@@ -315,7 +316,7 @@ export const ClientConfigStore: FC = () => {
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
         break;
       case MessageType.NAME_CHANGE:
-        handleNameChangeEvent(message as ChatEvent, setChatMessages);
+        handleNameChangeEvent(message as NameChangeEvent, setChatMessages, setCurrentUser);
         break;
       case MessageType.USER_JOINED:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);

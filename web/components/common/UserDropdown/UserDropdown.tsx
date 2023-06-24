@@ -110,14 +110,15 @@ export const UserDropdown: FC<UserDropdownProps> = ({
   const openChatPopup = () => {
     // close popup (if any) to prevent multiple popup windows.
     closeChatPopup();
-    let w = window.open('/embed/chat/readwrite', '_blank', 'popup');
+    const w = window.open('/embed/chat/readwrite', '_blank', 'popup');
     w.addEventListener('beforeunload', closeChatPopup);
     setPopupWindow(w);
     setChatToggleVisible(false);
   };
 
   const canShowHideChat = () => popupWindow == null && showHideChatOption && appState.chatAvailable;
-  const canShowChatPopup = () => showHideChatOption && appState.chatAvailable && window.opener == null;
+  const canShowChatPopup = () =>
+    showHideChatOption && appState.chatAvailable && window.opener == null;
 
   // Register keyboard shortcut for the space bar to toggle playback
   useHotkeys(
@@ -155,15 +156,16 @@ export const UserDropdown: FC<UserDropdownProps> = ({
           {chatToggleVisible ? 'Hide Chat' : 'Show Chat'}
         </Menu.Item>
       )}
-      {canShowChatPopup() && (popupWindow ? (
-        <Menu.Item key="4" icon={<ShrinkOutlined />} onClick={closeChatPopup}>
-          Put chat back
-        </Menu.Item>
-      ) : (
-        <Menu.Item key="4" icon={<ExpandAltOutlined />} onClick={openChatPopup}>
-          Pop out chat
-        </Menu.Item>
-      ) )}
+      {canShowChatPopup() &&
+        (popupWindow ? (
+          <Menu.Item key="4" icon={<ShrinkOutlined />} onClick={closeChatPopup}>
+            Put chat back
+          </Menu.Item>
+        ) : (
+          <Menu.Item key="4" icon={<ExpandAltOutlined />} onClick={openChatPopup}>
+            Pop out chat
+          </Menu.Item>
+        ))}
     </Menu>
   );
 
