@@ -58,8 +58,8 @@ export const TitleNotifier: FC<TitleNotifierProps> = ({ name }) => {
     }
 
     // Only alert on real chat messages from people.
-    const lastMessage = chatMessages[chatMessages.length - 1];
-    if (lastMessage.type !== 'CHAT') {
+    const lastMessage = chatMessages.at(-1);
+    if (!lastMessage || lastMessage.type !== 'CHAT') {
       return;
     }
 
