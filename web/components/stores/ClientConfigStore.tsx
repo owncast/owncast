@@ -89,11 +89,6 @@ export const isMobileAtom = atom<boolean | undefined>({
   default: undefined,
 });
 
-export const chatVisibleToggleAtom = atom<boolean>({
-  key: 'chatVisibilityToggleAtom',
-  default: true,
-});
-
 export const isVideoPlayingAtom = atom<boolean>({
   key: 'isVideoPlayingAtom',
   default: false,
@@ -123,15 +118,23 @@ export const isChatAvailableSelector = selector({
   },
 });
 
-// Chat is visible if the user wishes it to be visible AND the required
-// chat state is set.
-export const isChatVisibleSelector = selector({
-  key: 'isChatVisibleSelector',
-  get: ({ get }) => {
-    const state: AppStateOptions = get(appStateAtom);
-    const userVisibleToggle: boolean = get(chatVisibleToggleAtom);
-    return state.chatAvailable && userVisibleToggle && !hasWebsocketDisconnected;
-  },
+// The requested state of chat in the UI
+export enum ChatState {
+  VISIBLE, // Chat is open (the default state when the stream is online)
+  HIDDEN, // Chat is hidden
+  POPPED_OUT, // Chat is playing in a popout window
+  EMBEDDED, // This window is opened at /embed/chat/readwrite/
+}
+
+export const chatStateAtom = atom<ChatState>({
+  key: 'chatState',
+  default: (() => {
+    // XXX Somehow, `window` is undefined here, even though this runs in client
+    const window: Window = globalThis;
+    return window?.location?.pathname === '/embed/chat/readwrite/'
+      ? ChatState.EMBEDDED
+      : ChatState.VISIBLE;
+  })(),
 });
 
 // We display in an "online/live" state as long as video is actively playing.
