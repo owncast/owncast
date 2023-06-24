@@ -130,7 +130,7 @@ export const chatStateAtom = atom<ChatState>({
   key: 'chatState',
   default: (() => {
     // XXX Somehow, `window` is undefined here, even though this runs in client
-    const window: Window = globalThis;
+    const window = globalThis;
     return window?.location?.pathname === '/embed/chat/readwrite/'
       ? ChatState.EMBEDDED
       : ChatState.VISIBLE;
