@@ -6,7 +6,27 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
+	"github.com/prometheus/client_golang/prometheus"
 )
+
+type Metrics struct {
+	metrics                       *CollectedMetrics
+	getStatus                     func() models.Status
+	windowedErrorCounts           map[string]float64
+	windowedQualityVariantChanges map[string]float64
+	windowedBandwidths            map[string]float64
+	windowedLatencies             map[string]float64
+	windowedDownloadDurations     map[string]float64
+
+	// Prometheus
+	labels                  map[string]string
+	activeViewerCount       prometheus.Gauge
+	activeChatClientCount   prometheus.Gauge
+	cpuUsage                prometheus.Gauge
+	chatUserCount           prometheus.Gauge
+	currentChatMessageCount prometheus.Gauge
+	playbackErrorCount      prometheus.Gauge
+}
 
 // How often we poll for updates.
 const (
@@ -25,81 +45,98 @@ const (
 type CollectedMetrics struct {
 	streamHealthOverview *models.StreamHealthOverview
 
-	medianSegmentDownloadSeconds  []TimestampedValue `json:"-"`
-	maximumSegmentDownloadSeconds []TimestampedValue `json:"-"`
-	DiskUtilizations              []TimestampedValue `json:"disk"`
+	medianSegmentDownloadSeconds  []models.TimestampedValue `json:"-"`
+	maximumSegmentDownloadSeconds []models.TimestampedValue `json:"-"`
+	DiskUtilizations              []models.TimestampedValue `json:"disk"`
 
-	errorCount      []TimestampedValue `json:"-"`
-	lowestBitrate   []TimestampedValue `json:"-"`
-	medianBitrate   []TimestampedValue `json:"-"`
-	RAMUtilizations []TimestampedValue `json:"memory"`
+	errorCount      []models.TimestampedValue `json:"-"`
+	lowestBitrate   []models.TimestampedValue `json:"-"`
+	medianBitrate   []models.TimestampedValue `json:"-"`
+	RAMUtilizations []models.TimestampedValue `json:"memory"`
 
-	CPUUtilizations []TimestampedValue `json:"cpu"`
-	highestBitrate  []TimestampedValue `json:"-"`
+	CPUUtilizations []models.TimestampedValue `json:"cpu"`
+	highestBitrate  []models.TimestampedValue `json:"-"`
 
-	minimumSegmentDownloadSeconds []TimestampedValue `json:"-"`
+	minimumSegmentDownloadSeconds []models.TimestampedValue `json:"-"`
 
-	minimumLatency []TimestampedValue `json:"-"`
-	maximumLatency []TimestampedValue `json:"-"`
-	medianLatency  []TimestampedValue `json:"-"`
+	minimumLatency []models.TimestampedValue `json:"-"`
+	maximumLatency []models.TimestampedValue `json:"-"`
+	medianLatency  []models.TimestampedValue `json:"-"`
 
-	qualityVariantChanges []TimestampedValue `json:"-"`
+	qualityVariantChanges []models.TimestampedValue `json:"-"`
 
 	m sync.Mutex `json:"-"`
 }
 
-// Metrics is the shared Metrics instance.
-var metrics *CollectedMetrics
+// New will return a new Metrics instance.
+func New() *Metrics {
+	return &Metrics{
+		windowedErrorCounts:           map[string]float64{},
+		windowedQualityVariantChanges: map[string]float64{},
+		windowedBandwidths:            map[string]float64{},
+		windowedLatencies:             map[string]float64{},
+		windowedDownloadDurations:     map[string]float64{},
+	}
+}
 
-var _getStatus func() models.Status
+// Metrics is the shared Metrics instance.
 
 // Start will begin the metrics collection and alerting.
-func Start(getStatus func() models.Status) {
-	_getStatus = getStatus
-	host := data.GetServerURL()
+func (m *Metrics) Start(getStatus func() models.Status) {
+	m.getStatus = getStatus
+	host := configRepository.GetServerURL()
 	if host == "" {
 		host = "unknown"
 	}
 
 	c := config.GetConfig()
 
-	labels = map[string]string{
+	m.labels = map[string]string{
 		"version": c.VersionNumber,
 		"host":    host,
 	}
 
-	setupPrometheusCollectors()
+	m.setupPrometheusCollectors()
 
-	metrics = new(CollectedMetrics)
-	go startViewerCollectionMetrics()
+	m.metrics = new(CollectedMetrics)
+	go m.startViewerCollectionMetrics()
 
 	go func() {
 		for range time.Tick(hardwareMetricsPollingInterval) {
-			handlePolling()
+			m.handlePolling()
 		}
 	}()
 
 	go func() {
 		for range time.Tick(playbackMetricsPollingInterval) {
-			handlePlaybackPolling()
+			m.handlePlaybackPolling()
 		}
 	}()
 }
 
-func handlePolling() {
-	metrics.m.Lock()
-	defer metrics.m.Unlock()
+func (m *Metrics) handlePolling() {
+	m.metrics.m.Lock()
+	defer m.metrics.m.Unlock()
 
 	// Collect hardware stats
-	collectCPUUtilization()
-	collectRAMUtilization()
-	collectDiskUtilization()
+	m.collectCPUUtilization()
+	m.collectRAMUtilization()
+	m.collectDiskUtilization()
 
 	// Alerting
-	handleAlerting()
+	m.handleAlerting()
 }
 
 // GetMetrics will return the collected metrics.
-func GetMetrics() *CollectedMetrics {
-	return metrics
+func (m *Metrics) GetMetrics() *CollectedMetrics {
+	return m.metrics
+}
+
+var temporaryGlobalInstance *Metrics
+
+func Get() *Metrics {
+	if temporaryGlobalInstance == nil {
+		temporaryGlobalInstance = new(Metrics)
+	}
+	return temporaryGlobalInstance
 }

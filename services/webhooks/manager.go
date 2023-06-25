@@ -13,8 +13,8 @@ type LiveWebhookManager struct {
 	getStatus func() models.Status
 }
 
-// NewWebhookManager creates a new webhook manager.
-func NewWebhookManager(getStatusFunc func() models.Status) *LiveWebhookManager {
+// New creates a new webhook manager.
+func New(getStatusFunc func() models.Status) *LiveWebhookManager {
 	m := &LiveWebhookManager{
 		getStatus: getStatusFunc,
 	}
@@ -25,13 +25,13 @@ func NewWebhookManager(getStatusFunc func() models.Status) *LiveWebhookManager {
 // InitTemporarySingleton initializes the the temporary global instance of the webhook manager
 // to be deleted once dependency injection is implemented.
 func InitTemporarySingleton(getStatusFunc func() models.Status) {
-	temporaryGlobalInstance = NewWebhookManager(getStatusFunc)
+	temporaryGlobalInstance = New(getStatusFunc)
 }
 
 var temporaryGlobalInstance *LiveWebhookManager
 
-// GetWebhooks returns the temporary global instance of the webhook manager.
+// Get returns the temporary global instance of the webhook manager.
 // Remove this after dependency injection is implemented.
-func GetWebhooks() *LiveWebhookManager {
+func Get() *LiveWebhookManager {
 	return temporaryGlobalInstance
 }

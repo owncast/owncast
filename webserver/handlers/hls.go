@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
@@ -31,7 +30,7 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 
 	// If using external storage then only allow requests for the
 	// master playlist at stream.m3u8, no variants or segments.
-	if data.GetS3Config().Enabled && relativePath != "stream.m3u8" {
+	if configRepository.GetS3Config().Enabled && relativePath != "stream.m3u8" {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}

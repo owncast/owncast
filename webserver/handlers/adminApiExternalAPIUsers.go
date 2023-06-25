@@ -8,7 +8,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
-	"github.com/owncast/owncast/storage"
+	"github.com/owncast/owncast/storage/userrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/responses"
 )
@@ -31,8 +31,10 @@ func (h *Handlers) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	userRepository := userrepository.Get()
+
 	// Verify all the scopes provided are valid
-	if !user.HasValidScopes(request.Scopes) {
+	if !userRepository.HasValidScopes(request.Scopes) {
 		responses.BadRequestHandler(w, errors.New("one or more invalid scopes provided"))
 		return
 	}
@@ -45,13 +47,13 @@ func (h *Handlers) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request)
 
 	color := utils.GenerateRandomDisplayColor(config.MaxUserColor)
 
-	if err := user.InsertExternalAPIUser(token, request.Name, color, request.Scopes); err != nil {
+	if err := userRepository.InsertExternalAPIUser(token, request.Name, color, request.Scopes); err != nil {
 		responses.InternalErrorHandler(w, err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	responses.WriteResponse(w, user.ExternalAPIUser{
+	responses.WriteResponse(w, models.ExternalAPIUser{
 		AccessToken:  token,
 		DisplayName:  request.Name,
 		DisplayColor: color,
@@ -65,7 +67,9 @@ func (h *Handlers) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request)
 func (h *Handlers) GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	tokens, err := user.GetExternalAPIUser()
+	userRepository := userrepository.Get()
+
+	tokens, err := userRepository.GetExternalAPIUser()
 	if err != nil {
 		responses.InternalErrorHandler(w, err)
 		return
@@ -94,7 +98,9 @@ func (h *Handlers) DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := user.DeleteExternalAPIUser(request.Token); err != nil {
+	userRepository := userrepository.Get()
+
+	if err := userRepository.DeleteExternalAPIUser(request.Token); err != nil {
 		responses.InternalErrorHandler(w, err)
 		return
 	}

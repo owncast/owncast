@@ -1,31 +1,25 @@
 package configrepository
 
 import (
-	"os"
 	"testing"
 
-	"github.com/owncast/owncast/storage/datastore"
+	"github.com/owncast/owncast/storage/data"
 	"github.com/owncast/owncast/utils"
 )
 
 var (
-	_datastore        *datastore.Datastore
+	_datastore        *data.Store
 	_configRepository *SqlConfigRepository
 )
 
 func TestMain(m *testing.M) {
-	dbFile, err := os.CreateTemp(os.TempDir(), ":memory:")
-	if err != nil {
-		panic(err)
-	}
-
-	ds, err := datastore.NewDatastore(dbFile.Name())
+	ds, err := data.NewStore(":memory")
 	if err != nil {
 		panic(err)
 	}
 	_datastore = ds
 
-	_configRepository = NewConfigRepository(_datastore)
+	_configRepository = New(_datastore)
 
 	m.Run()
 }

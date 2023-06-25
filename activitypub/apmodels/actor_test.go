@@ -1,13 +1,13 @@
 package apmodels
 
 import (
-	"io/ioutil"
 	"net/url"
-	"os"
 	"testing"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
+	"github.com/owncast/owncast/storage/configrepository"
+	"github.com/owncast/owncast/storage/data"
 )
 
 func makeFakeService() vocab.ActivityStreamsService {
@@ -50,13 +50,14 @@ func makeFakeService() vocab.ActivityStreamsService {
 }
 
 func TestMain(m *testing.M) {
-	dbFile, err := ioutil.TempFile(os.TempDir(), "owncast-test-db.db")
+	ds, err := data.NewStore(":memory:")
 	if err != nil {
 		panic(err)
 	}
 
-	data.SetupPersistence(dbFile.Name())
-	data.SetServerURL("https://my.cool.site.biz")
+	configRepository := configrepository.New(ds)
+	configRepository.PopulateDefaults()
+	configRepository.SetServerURL("https://my.cool.site.biz")
 
 	m.Run()
 }

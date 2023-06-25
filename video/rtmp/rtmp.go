@@ -13,6 +13,7 @@ import (
 	"github.com/nareix/joy5/format/rtmp"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
+	"github.com/owncast/owncast/storage/configrepository"
 )
 
 var _hasInboundRTMPConnection = false
@@ -27,12 +28,14 @@ var (
 	_setBroadcaster       func(models.Broadcaster)
 )
 
+var configRepository = configrepository.Get()
+
 // Start starts the rtmp service, listening on specified RTMP port.
 func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models.Broadcaster)) {
 	_setStreamAsConnected = setStreamAsConnected
 	_setBroadcaster = setBroadcaster
 
-	port := data.GetRTMPPortNumber()
+	port := configRepository.GetRTMPPortNumber()
 	s := rtmp.NewServer()
 	var lis net.Listener
 	var err error
@@ -78,7 +81,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	}
 
 	accessGranted := false
-	validStreamingKeys := data.GetStreamKeys()
+	validStreamingKeys := configRepository.GetStreamKeys()
 
 	configservice := config.GetConfig()
 

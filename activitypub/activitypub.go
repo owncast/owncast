@@ -8,23 +8,27 @@ import (
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/workerpool"
+	"github.com/owncast/owncast/storage/configrepository"
+	"github.com/owncast/owncast/storage/data"
 
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
+var configRepository = configrepository.Get()
+
 // Start will initialize and start the federation support.
-func Start(datastore *data.Datastore, router *http.ServeMux) {
+func Start(datastore *data.Store, router *http.ServeMux) {
 	persistence.Setup(datastore)
 	workerpool.InitOutboundWorkerPool()
 	inbox.InitInboxWorkerPool()
 	StartRouter(router)
 
 	// Generate the keys for signing federated activity if needed.
-	if data.GetPrivateKey() == "" {
+	if configRepository.GetPrivateKey() == "" {
 		privateKey, publicKey, err := crypto.GenerateKeys()
-		_ = data.SetPrivateKey(string(privateKey))
-		_ = data.SetPublicKey(string(publicKey))
+		_ = configRepository.SetPrivateKey(string(privateKey))
+		_ = configRepository.SetPublicKey(string(publicKey))
 		if err != nil {
 			log.Errorln("Unable to get private key", err)
 		}

@@ -10,6 +10,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
+	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -50,7 +51,9 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 
 	req, _ := http.NewRequest(http.MethodGet, iri, nil)
 
-	actor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	configRepository := configrepository.Get()
+
+	actor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 	if err := crypto.SignRequest(req, nil, actor); err != nil {
 		return err
 	}

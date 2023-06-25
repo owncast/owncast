@@ -10,8 +10,12 @@ import (
 	"strings"
 	"time"
 
+<<<<<<< HEAD
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
+=======
+	"github.com/owncast/owncast/storage/configrepository"
+>>>>>>> 659a19bf2 (WIP refactored all storage into repos. Tests pass.)
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -41,6 +45,7 @@ func (c *IndieAuthClient) StartAuthFlow(authHost, userID, accessToken, displayNa
 		return nil, errors.New("Please try again later. Too many pending requests.")
 	}
 
+<<<<<<< HEAD
 	// Reject any requests to our internal network or loopback
 	if utils.IsHostnameInternal(authHost) {
 		return nil, errors.New("unable to use provided host")
@@ -58,6 +63,10 @@ func (c *IndieAuthClient) StartAuthFlow(authHost, userID, accessToken, displayNa
 	}
 
 	serverURL := data.GetServerURL()
+=======
+	configRepository := configrepository.Get()
+	serverURL := configRepository.GetServerURL()
+>>>>>>> 659a19bf2 (WIP refactored all storage into repos. Tests pass.)
 	if serverURL == "" {
 		return nil, errors.New("Owncast server URL must be set when using auth")
 	}

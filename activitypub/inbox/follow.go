@@ -26,7 +26,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		return fmt.Errorf("unable to handle request")
 	}
 
-	approved := !data.GetFederationIsPrivate()
+	approved := !configRepository.GetFederationIsPrivate()
 
 	followRequest := *follow
 
@@ -35,7 +35,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		return err
 	}
 
-	localAccountName := data.GetDefaultFederationUsername()
+	localAccountName := configRepository.GetDefaultFederationUsername()
 
 	if approved {
 		if err := requests.SendFollowAccept(follow.Inbox, activity, localAccountName); err != nil {

@@ -10,7 +10,7 @@ import (
 // ResetYPRegistration will clear the YP protocol registration key.
 func (h *Handlers) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
 	log.Traceln("Resetting YP registration key")
-	if err := data.SetDirectoryRegistrationKey(""); err != nil {
+	if err := configRepository.SetDirectoryRegistrationKey(""); err != nil {
 		log.Errorln(err)
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return

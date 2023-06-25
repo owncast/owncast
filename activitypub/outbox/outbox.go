@@ -16,6 +16,8 @@ import (
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/activitypub/webfinger"
 	"github.com/owncast/owncast/activitypub/workerpool"
+	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/pkg/errors"
 
 	"github.com/owncast/owncast/services/config"
@@ -24,9 +26,11 @@ import (
 	"github.com/teris-io/shortid"
 )
 
+var configRepository = configrepository.Get()
+
 // SendLive will send all followers the message saying you started a live stream.
 func SendLive() error {
-	textContent := data.GetFederationGoLiveMessage()
+	textContent := configRepository.GetFederationGoLiveMessage()
 
 	// If the message is empty then do not send it.
 	if textContent == "" {
@@ -37,7 +41,7 @@ func SendLive() error {
 	reg := regexp.MustCompile("[^a-zA-Z0-9]+")
 
 	tagProp := streams.NewActivityStreamsTagProperty()
-	for _, tagString := range data.GetServerMetadataTags() {
+	for _, tagString := range configRepository.GetServerMetadataTags() {
 		tagWithoutSpecialCharacters := reg.ReplaceAllString(tagString, "")
 		hashtag := apmodels.MakeHashtag(tagWithoutSpecialCharacters)
 		tagProp.AppendTootHashtag(hashtag)
@@ -56,7 +60,7 @@ func SendLive() error {
 	tagsString := strings.Join(tagStrings, " ")
 
 	var streamTitle string
-	if title := data.GetStreamTitle(); title != "" {
+	if title := configRepository.GetStreamTitle(); title != "" {
 		streamTitle = fmt.Sprintf("<p>%s</p>", title)
 	}
 	textContent = fmt.Sprintf("<p>%s</p>%s<p>%s</p><p><a href=\"%s\">%s</a></p>", textContent, streamTitle, tagsString, data.GetServerURL(), data.GetServerURL())
@@ -64,7 +68,7 @@ func SendLive() error {
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 
 	// To the public if we're not treating ActivityPub as "private".
-	if !data.GetFederationIsPrivate() {
+	if !configRepository.GetFederationIsPrivate() {
 		note = apmodels.MakeNotePublic(note)
 		activity = apmodels.MakeActivityPublic(activity)
 	}
@@ -72,7 +76,7 @@ func SendLive() error {
 	note.SetActivityStreamsTag(tagProp)
 
 	// Attach an image along with the Federated message.
-	previewURL, err := url.Parse(data.GetServerURL())
+	previewURL, err := url.Parse(configRepository.GetServerURL())
 	if err == nil {
 		var imageToAttach string
 		var mediaType string
@@ -94,7 +98,7 @@ func SendLive() error {
 		}
 	}
 
-	if data.GetNSFW() {
+	if configRepository.GetNSFW() {
 		// Mark content as sensitive.
 		sensitive := streams.NewActivityStreamsSensitiveProperty()
 		sensitive.AppendXMLSchemaBoolean(true)
@@ -173,7 +177,7 @@ func SendPublicMessage(textContent string) error {
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 	note.SetActivityStreamsTag(tagProp)
 
-	if !data.GetFederationIsPrivate() {
+	if !configRepository.GetFederationIsPrivate() {
 		note = apmodels.MakeNotePublic(note)
 		activity = apmodels.MakeActivityPublic(activity)
 	}
@@ -197,7 +201,7 @@ func SendPublicMessage(textContent string) error {
 
 // nolint: unparam
 func createBaseOutboundMessage(textContent string) (vocab.ActivityStreamsCreate, string, vocab.ActivityStreamsNote, string) {
-	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 	noteID := shortid.MustGenerate()
 	noteIRI := apmodels.MakeLocalIRIForResource(noteID)
 	id := shortid.MustGenerate()
@@ -218,7 +222,7 @@ func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
 
 // SendToFollowers will send an arbitrary payload to all follower inboxes.
 func SendToFollowers(payload []byte) error {
-	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 
 	followers, _, err := persistence.GetFederationFollowers(-1, 0)
 	if err != nil {
@@ -241,7 +245,7 @@ func SendToFollowers(payload []byte) error {
 
 // SendToUser will send a payload to a single specific inbox.
 func SendToUser(inbox *url.URL, payload []byte) error {
-	localActor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 
 	req, err := requests.CreateSignedRequest(payload, inbox, localActor)
 	if err != nil {
@@ -256,7 +260,7 @@ func SendToUser(inbox *url.URL, payload []byte) error {
 // UpdateFollowersWithAccountUpdates will send an update to all followers alerting of a profile update.
 func UpdateFollowersWithAccountUpdates() error {
 	// Don't do anything if federation is disabled.
-	if !data.GetFederationEnabled() {
+	if !configRepository.GetFederationEnabled() {
 		return nil
 	}
 
@@ -265,7 +269,7 @@ func UpdateFollowersWithAccountUpdates() error {
 	activity := apmodels.MakeUpdateActivity(objectID)
 
 	actor := streams.NewActivityStreamsPerson()
-	actorID := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	actorID := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 	actorIDProperty := streams.NewJSONLDIdProperty()
 	actorIDProperty.Set(actorID)
 	actor.SetJSONLDId(actorIDProperty)

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/metrics"
 	"github.com/owncast/owncast/webserver/middleware"
@@ -27,7 +26,7 @@ func (h *Handlers) GetAdminStatus(w http.ResponseWriter, r *http.Request) {
 		OverallPeakViewerCount: status.OverallMaxViewerCount,
 		SessionPeakViewerCount: status.SessionMaxViewerCount,
 		VersionNumber:          status.VersionNumber,
-		StreamTitle:            data.GetStreamTitle(),
+		StreamTitle:            configRepository.GetStreamTitle(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

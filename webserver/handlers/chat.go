@@ -8,7 +8,6 @@ import (
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
-	"github.com/owncast/owncast/storage"
 	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/middleware"
@@ -17,13 +16,13 @@ import (
 )
 
 // ExternalGetChatMessages gets all of the chat messages.
-func (h *Handlers) ExternalGetChatMessages(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) ExternalGetChatMessages(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 	getChatMessages(w, r)
 }
 
 // GetChatMessages gets all of the chat messages.
-func (h *Handlers) GetChatMessages(u user.User, w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) GetChatMessages(u models.User, w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 	getChatMessages(w, r)
 }
@@ -81,7 +80,7 @@ func (h *Handlers) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Requ
 	}
 
 	proposedNewDisplayName := utils.MakeSafeStringOfLength(request.DisplayName, config.MaxChatDisplayNameLength)
-	newUser, accessToken, err := user.CreateAnonymousUser(proposedNewDisplayName)
+	newUser, accessToken, err := userRepository.CreateAnonymousUser(proposedNewDisplayName)
 	if err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -100,8 +99,8 @@ func (h *Handlers) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Requ
 }
 
 func generateDisplayName() string {
-	cr := configrepository.GetConfigRepository()
-	suggestedUsernamesList := cr.GetSuggestedUsernames()
+	cr := configrepository.Get()
+	suggestedUsernamesList := cr.GetSuggestedUsernamesList()
 
 	const minSuggestedUsernamePoolLength = 10
 	if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {

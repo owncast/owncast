@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/pkg/errors"
 	"github.com/teris-io/shortid"
 )
@@ -85,12 +86,14 @@ func (s *IndieAuthServer) CompleteServerAuth(code, redirectURI, clientID string,
 		return nil, errors.New("code verifier is incorrect")
 	}
 
+	configRepository := configrepository.Get()
+
 	response := ServerProfileResponse{
-		Me: data.GetServerURL(),
+		Me: configRepository.GetServerURL(),
 		Profile: ServerProfile{
-			Name:  data.GetServerName(),
-			URL:   data.GetServerURL(),
-			Photo: fmt.Sprintf("%s/%s", data.GetServerURL(), data.GetLogoPath()),
+			Name:  configRepository.GetServerName(),
+			URL:   configRepository.GetServerURL(),
+			Photo: fmt.Sprintf("%s/%s", configRepository.GetServerURL(), configRepository.GetLogoPath()),
 		},
 	}
 

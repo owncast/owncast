@@ -82,10 +82,10 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 	}
 
 	content := serverSideContent{
-		Name:             data.GetServerName(),
-		Summary:          data.GetServerSummary(),
-		RequestedURL:     fmt.Sprintf("%s%s", data.GetServerURL(), "/"),
-		TagsString:       strings.Join(data.GetServerMetadataTags(), ","),
+		Name:             configRepository.GetServerName(),
+		Summary:          configRepository.GetServerSummary(),
+		RequestedURL:     fmt.Sprintf("%s%s", configRepository.GetServerURL(), "/"),
+		TagsString:       strings.Join(configRepository.GetServerMetadataTags(), ","),
 		ThumbnailURL:     "thumbnail.jpg",
 		Thumbnail:        "thumbnail.jpg",
 		Image:            "logo/external",

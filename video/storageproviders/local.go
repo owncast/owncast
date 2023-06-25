@@ -8,7 +8,6 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/services/config"
 )
 
@@ -64,7 +63,7 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 
 func (s *LocalStorage) Cleanup() error {
 	// Determine how many files we should keep on disk
-	maxNumber := data.GetStreamLatencyLevel().SegmentCount
+	maxNumber := configRepository.GetStreamLatencyLevel().SegmentCount
 	buffer := 10
 	c := config.GetConfig()
 	baseDirectory := c.HLSStoragePath

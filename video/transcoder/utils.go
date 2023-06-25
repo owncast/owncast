@@ -7,7 +7,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -102,8 +101,8 @@ func createVariantDirectories() {
 	// Create private hls data dirs
 	utils.CleanupDirectory(c.HLSStoragePath)
 
-	if len(data.GetStreamOutputVariants()) != 0 {
-		for index := range data.GetStreamOutputVariants() {
+	if len(configRepository.GetStreamOutputVariants()) != 0 {
+		for index := range configRepository.GetStreamOutputVariants() {
 			if err := os.MkdirAll(path.Join(c.HLSStoragePath, strconv.Itoa(index)), 0o750); err != nil {
 				log.Fatalln(err)
 			}

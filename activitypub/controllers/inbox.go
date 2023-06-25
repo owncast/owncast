@@ -21,7 +21,7 @@ func InboxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
-	if !data.GetFederationEnabled() {
+	if !configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
@@ -38,7 +38,7 @@ func acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
 
 	// The account this request is for must match the account name we have set
 	// for federation.
-	if forLocalAccount != data.GetFederationUsername() {
+	if forLocalAccount != configRepository.GetFederationUsername() {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}

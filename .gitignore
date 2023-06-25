@@ -46,3 +46,5 @@ web/style-definitions/build/
 
 web/public/sw.js
 web/public/workbox-*.js
+
+!storage/data

@@ -36,7 +36,7 @@ func (h *Handlers) SetTags(w http.ResponseWriter, r *http.Request) {
 		tagStrings = append(tagStrings, strings.TrimLeft(tag.Value.(string), "#"))
 	}
 
-	if err := data.SetServerMetadataTags(tagStrings); err != nil {
+	if err := configRepository.SetServerMetadataTags(tagStrings); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -63,20 +63,20 @@ func (h *Handlers) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 
 	value := configValue.Value.(string)
 
-	if err := data.SetStreamTitle(value); err != nil {
+	if err := configRepository.SetStreamTitle(value); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 	if value != "" {
 		sendSystemChatAction(fmt.Sprintf("Stream title changed to **%s**", value), true)
-		webhookManager := webhooks.GetWebhooks()
+		webhookManager := webhooks.Get()
 		go webhookManager.SendStreamStatusEvent(models.StreamTitleUpdated)
 	}
 	responses.WriteSimpleResponse(w, true, "changed")
 }
 
 // ExternalSetStreamTitle will change the stream title on behalf of an external integration API request.
-func (h *Handlers) ExternalSetStreamTitle(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) ExternalSetStreamTitle(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	h.SetStreamTitle(w, r)
 }
 
@@ -97,7 +97,7 @@ func (h *Handlers) SetServerName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetServerName(configValue.Value.(string)); err != nil {
+	if err := configRepository.SetServerName(configValue.Value.(string)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -122,7 +122,7 @@ func (h *Handlers) SetServerSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetServerSummary(configValue.Value.(string)); err != nil {
+	if err := configRepository.SetServerSummary(configValue.Value.(string)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -147,7 +147,7 @@ func (h *Handlers) SetCustomOfflineMessage(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if err := data.SetCustomOfflineMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
+	if err := configRepository.SetCustomOfflineMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -166,7 +166,7 @@ func (h *Handlers) SetServerWelcomeMessage(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if err := data.SetServerWelcomeMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
+	if err := configRepository.SetServerWelcomeMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -185,7 +185,7 @@ func (h *Handlers) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetExtraPageBodyContent(configValue.Value.(string)); err != nil {
+	if err := configRepository.SetExtraPageBodyContent(configValue.Value.(string)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -204,7 +204,7 @@ func (h *Handlers) SetAdminPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetAdminPassword(configValue.Value.(string)); err != nil {
+	if err := configRepository.SetAdminPassword(configValue.Value.(string)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -240,12 +240,12 @@ func (h *Handlers) SetLogo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetLogoPath("logo" + extension); err != nil {
+	if err := configRepository.SetLogoPath("logo" + extension); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	if err := data.SetLogoUniquenessString(shortid.MustGenerate()); err != nil {
+	if err := configRepository.SetLogoUniquenessString(shortid.MustGenerate()); err != nil {
 		log.Error("Error saving logo uniqueness string: ", err)
 	}
 
@@ -269,7 +269,7 @@ func (h *Handlers) SetNSFW(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetNSFW(configValue.Value.(bool)); err != nil {
+	if err := configRepository.SetNSFW(configValue.Value.(bool)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -294,7 +294,7 @@ func (h *Handlers) SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetFfmpegPath(configValue.Value.(string)); err != nil {
+	if err := configRepository.SetFfmpegPath(configValue.Value.(string)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -318,7 +318,7 @@ func (h *Handlers) SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 			responses.WriteSimpleResponse(w, false, "Port number must be between 1 and 65535")
 			return
 		}
-		if err := data.SetHTTPPortNumber(port); err != nil {
+		if err := configRepository.SetHTTPPortNumber(port); err != nil {
 			responses.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
@@ -343,7 +343,7 @@ func (h *Handlers) SetWebServerIP(w http.ResponseWriter, r *http.Request) {
 
 	if input, ok := configValue.Value.(string); ok {
 		if ip := net.ParseIP(input); ip != nil {
-			if err := data.SetHTTPListenAddress(ip.String()); err != nil {
+			if err := configRepository.SetHTTPListenAddress(ip.String()); err != nil {
 				responses.WriteSimpleResponse(w, false, err.Error())
 				return
 			}
@@ -369,7 +369,7 @@ func (h *Handlers) SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetRTMPPortNumber(configValue.Value.(float64)); err != nil {
+	if err := configRepository.SetRTMPPortNumber(configValue.Value.(float64)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -403,7 +403,7 @@ func (h *Handlers) SetServerURL(w http.ResponseWriter, r *http.Request) {
 	// Trim any trailing slash
 	serverURL := strings.TrimRight(rawValue, "/")
 
-	if err := data.SetServerURL(serverURL); err != nil {
+	if err := configRepository.SetServerURL(serverURL); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -422,7 +422,7 @@ func (h *Handlers) SetSocketHostOverride(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := data.SetWebsocketOverrideHost(configValue.Value.(string)); err != nil {
+	if err := configRepository.SetWebsocketOverrideHost(configValue.Value.(string)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -441,7 +441,7 @@ func (h *Handlers) SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetDirectoryEnabled(configValue.Value.(bool)); err != nil {
+	if err := configRepository.SetDirectoryEnabled(configValue.Value.(bool)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -459,7 +459,7 @@ func (h *Handlers) SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := data.SetStreamLatencyLevel(configValue.Value.(float64)); err != nil {
+	if err := configRepository.SetStreamLatencyLevel(configValue.Value.(float64)); err != nil {
 		responses.WriteSimpleResponse(w, false, "error setting stream latency "+err.Error())
 		return
 	}
@@ -506,7 +506,7 @@ func (h *Handlers) SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := data.SetS3Config(newS3Config.Value); err != nil {
+	if err := configRepository.SetS3Config(newS3Config.Value); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -530,7 +530,7 @@ func (h *Handlers) SetStreamOutputVariants(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if err := data.SetStreamOutputVariants(videoVariants.Value); err != nil {
+	if err := configRepository.SetStreamOutputVariants(videoVariants.Value); err != nil {
 		responses.WriteSimpleResponse(w, false, "unable to update video config with provided values "+err.Error())
 		return
 	}
@@ -555,7 +555,7 @@ func (h *Handlers) SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetSocialHandles(socialHandles.Value); err != nil {
+	if err := configRepository.SetSocialHandles(socialHandles.Value); err != nil {
 		responses.WriteSimpleResponse(w, false, "unable to update social handles with provided values")
 		return
 	}
@@ -581,7 +581,7 @@ func (h *Handlers) SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetChatDisabled(configValue.Value.(bool)); err != nil {
+	if err := configRepository.SetChatDisabled(configValue.Value.(bool)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -601,7 +601,7 @@ func (h *Handlers) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetVideoCodec(configValue.Value.(string)); err != nil {
+	if err := configRepository.SetVideoCodec(configValue.Value.(string)); err != nil {
 		responses.WriteSimpleResponse(w, false, "unable to update codec")
 		return
 	}
@@ -622,7 +622,7 @@ func (h *Handlers) SetExternalActions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetExternalActions(actions.Value); err != nil {
+	if err := configRepository.SetExternalActions(actions.Value); err != nil {
 		responses.WriteSimpleResponse(w, false, "unable to update external actions with provided values")
 		return
 	}
@@ -638,7 +638,7 @@ func (h *Handlers) SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetCustomStyles(customStyles.Value.(string)); err != nil {
+	if err := configRepository.SetCustomStyles(customStyles.Value.(string)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -654,7 +654,7 @@ func (h *Handlers) SetCustomJavascript(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetCustomJavascript(customJavascript.Value.(string)); err != nil {
+	if err := configRepository.SetCustomJavascript(customJavascript.Value.(string)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -675,7 +675,7 @@ func (h *Handlers) SetForbiddenUsernameList(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if err := data.SetForbiddenUsernameList(request.Value); err != nil {
+	if err := configRepository.SetForbiddenUsernameList(request.Value); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -697,7 +697,7 @@ func (h *Handlers) SetSuggestedUsernameList(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if err := data.SetSuggestedUsernamesList(request.Value); err != nil {
+	if err := configRepository.SetSuggestedUsernamesList(request.Value); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -717,7 +717,7 @@ func (h *Handlers) SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if err := data.SetChatJoinMessagesEnabled(configValue.Value.(bool)); err != nil {
+	if err := configRepository.SetChatJoinMessagesEnabled(configValue.Value.(bool)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -737,7 +737,7 @@ func (h *Handlers) SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetHideViewerCount(configValue.Value.(bool)); err != nil {
+	if err := configRepository.SetHideViewerCount(configValue.Value.(bool)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -757,7 +757,7 @@ func (h *Handlers) SetDisableSearchIndexing(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if err := data.SetDisableSearchIndexing(configValue.Value.(bool)); err != nil {
+	if err := configRepository.SetDisableSearchIndexing(configValue.Value.(bool)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -779,7 +779,7 @@ func (h *Handlers) SetVideoServingEndpoint(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if err := data.SetVideoServingEndpoint(value); err != nil {
+	if err := configRepository.SetVideoServingEndpoint(value); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -816,7 +816,7 @@ func (h *Handlers) SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := data.SetStreamKeys(streamKeys.Value); err != nil {
+	if err := configRepository.SetStreamKeys(streamKeys.Value); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

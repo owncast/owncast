@@ -5,7 +5,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
-	"github.com/owncast/owncast/storage/datastore"
+	"github.com/owncast/owncast/storage/data"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -122,15 +122,15 @@ type ConfigRepository interface {
 }
 
 type SqlConfigRepository struct {
-	datastore *datastore.Datastore
+	datastore *data.Store
 }
 
-// NewConfigRepository will create a new config repository.
-func NewConfigRepository(datastore *datastore.Datastore) *SqlConfigRepository {
+// New will create a new config repository.
+func New(datastore *data.Store) *SqlConfigRepository {
 	r := SqlConfigRepository{
 		datastore: datastore,
 	}
-
+	temporaryGlobalInstance = &r
 	return &r
 }
 
@@ -138,9 +138,9 @@ func NewConfigRepository(datastore *datastore.Datastore) *SqlConfigRepository {
 var temporaryGlobalInstance *SqlConfigRepository
 
 // GetUserRepository will return the temporary repository singleton.
-func GetConfigRepository() *SqlConfigRepository {
+func Get() *SqlConfigRepository {
 	if temporaryGlobalInstance == nil {
-		i := NewConfigRepository(datastore.GetDatastore())
+		i := New(data.GetDatastore())
 		temporaryGlobalInstance = i
 	}
 	return temporaryGlobalInstance
@@ -148,10 +148,6 @@ func GetConfigRepository() *SqlConfigRepository {
 
 // Setup will create the datastore table and perform initial initialization.
 func (cr *SqlConfigRepository) Setup() {
-	// ds.cache = make(map[string][]byte)
-	// ds.DB = GetDatabase()
-	// ds.DbLock = &sync.Mutex{}
-
 	if !cr.HasPopulatedDefaults() {
 		cr.PopulateDefaults()
 	}
@@ -169,6 +165,4 @@ func (cr *SqlConfigRepository) Setup() {
 	if hasSetInitDate, _ := cr.GetServerInitTime(); hasSetInitDate == nil || !hasSetInitDate.Valid {
 		_ = cr.SetServerInitTime(time.Now())
 	}
-
-	// migrateDatastoreValues(_datastore)
 }
