@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/storage"
 )
 
 // WebhookEvent represents an event sent as a webhook.
@@ -24,13 +25,15 @@ type WebhookChatMessage struct {
 	Visible   bool         `json:"visible"`
 }
 
+var webhookRepository = storage.GetWebhookRepository()
+
 // SendEventToWebhooks will send a single webhook event to all webhook destinations.
 func (w *LiveWebhookManager) SendEventToWebhooks(payload WebhookEvent) {
 	w.sendEventToWebhooks(payload, nil)
 }
 
 func (w *LiveWebhookManager) sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
-	webhooks := data.GetWebhooksForEvent(payload.Type)
+	webhooks := webhookRepository.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {
 		// Use wg to track the number of notifications to be sent.

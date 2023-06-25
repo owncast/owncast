@@ -8,10 +8,11 @@ import (
 
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/storage/data"
 	log "github.com/sirupsen/logrus"
 )
 
-var _datastore *data.Datastore
+var _datastore *data.Store
 
 const (
 	maxBacklogHours  = 2  // Keep backlog max hours worth of messages

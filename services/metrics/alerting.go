@@ -3,6 +3,7 @@ package metrics
 import (
 	"time"
 
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -22,18 +23,18 @@ var errorResetDuration = time.Minute * 5
 
 const alertingError = "The %s utilization of %f%% could cause problems with video generation and delivery. Visit the documentation at http://owncast.online/docs/troubleshooting/ if you are experiencing issues."
 
-func handleAlerting() {
-	handleCPUAlerting()
-	handleRAMAlerting()
-	handleDiskAlerting()
+func (m *Metrics) handleAlerting() {
+	m.handleCPUAlerting()
+	m.handleRAMAlerting()
+	m.handleDiskAlerting()
 }
 
-func handleCPUAlerting() {
-	if len(metrics.CPUUtilizations) < 2 {
+func (m *Metrics) handleCPUAlerting() {
+	if len(m.metrics.CPUUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(metrics.CPUUtilizations)
+	avg := m.recentAverage(m.metrics.CPUUtilizations)
 	if avg > maxCPUAlertingThresholdPCT && !inCPUAlertingState {
 		log.Warnf(alertingError, "CPU", avg)
 		inCPUAlertingState = true
@@ -46,12 +47,12 @@ func handleCPUAlerting() {
 	}
 }
 
-func handleRAMAlerting() {
-	if len(metrics.RAMUtilizations) < 2 {
+func (m *Metrics) handleRAMAlerting() {
+	if len(m.metrics.RAMUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(metrics.RAMUtilizations)
+	avg := m.recentAverage(m.metrics.RAMUtilizations)
 	if avg > maxRAMAlertingThresholdPCT && !inRAMAlertingState {
 		log.Warnf(alertingError, "memory", avg)
 		inRAMAlertingState = true
@@ -64,12 +65,12 @@ func handleRAMAlerting() {
 	}
 }
 
-func handleDiskAlerting() {
-	if len(metrics.DiskUtilizations) < 2 {
+func (m *Metrics) handleDiskAlerting() {
+	if len(m.metrics.DiskUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(metrics.DiskUtilizations)
+	avg := m.recentAverage(m.metrics.DiskUtilizations)
 
 	if avg > maxDiskAlertingThresholdPCT && !inDiskAlertingState {
 		log.Warnf(alertingError, "disk", avg)
@@ -83,6 +84,6 @@ func handleDiskAlerting() {
 	}
 }
 
-func recentAverage(values []TimestampedValue) float64 {
+func (m *Metrics) recentAverage(values []models.TimestampedValue) float64 {
 	return (values[len(values)-1].Value + values[len(values)-2].Value) / 2
 }

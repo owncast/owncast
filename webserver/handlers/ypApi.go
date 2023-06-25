@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -29,28 +28,28 @@ type ypDetailsResponse struct {
 
 // GetYPResponse gets the status of the server for YP purposes.
 func (h *Handlers) GetYPResponse(w http.ResponseWriter, r *http.Request) {
-	if !data.GetDirectoryEnabled() {
+	if !configRepository.GetDirectoryEnabled() {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
 	status := core.GetStatus()
 
-	streamTitle := data.GetStreamTitle()
+	streamTitle := configRepository.GetStreamTitle()
 
 	response := ypDetailsResponse{
-		Name:                  data.GetServerName(),
-		Description:           data.GetServerSummary(),
+		Name:                  configRepository.GetServerName(),
+		Description:           configRepository.GetServerSummary(),
 		StreamTitle:           streamTitle,
 		Logo:                  "/logo",
-		NSFW:                  data.GetNSFW(),
-		Tags:                  data.GetServerMetadataTags(),
+		NSFW:                  configRepository.GetNSFW(),
+		Tags:                  configRepository.GetServerMetadataTags(),
 		Online:                status.Online,
 		ViewerCount:           status.ViewerCount,
 		OverallMaxViewerCount: status.OverallMaxViewerCount,
 		SessionMaxViewerCount: status.SessionMaxViewerCount,
 		LastConnectTime:       status.LastConnectTime,
-		Social:                data.GetSocialHandles(),
+		Social:                configRepository.GetSocialHandles(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

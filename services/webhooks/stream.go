@@ -4,8 +4,11 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/teris-io/shortid"
 )
+
+var configRepository = configrepository.Get()
 
 // SendStreamStatusEvent will send all webhook destinations the current stream status.
 func (w *LiveWebhookManager) SendStreamStatusEvent(eventType models.EventType) {
@@ -17,9 +20,9 @@ func (w *LiveWebhookManager) sendStreamStatusEvent(eventType models.EventType, i
 		Type: eventType,
 		EventData: map[string]interface{}{
 			"id":          id,
-			"name":        data.GetServerName(),
-			"summary":     data.GetServerSummary(),
-			"streamTitle": data.GetStreamTitle(),
+			"name":        configRepository.GetServerName(),
+			"summary":     configRepository.GetServerSummary(),
+			"streamTitle": configRepository.GetStreamTitle(),
 			"status":      w.getStatus(),
 			"timestamp":   timestamp,
 		},

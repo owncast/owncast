@@ -13,25 +13,25 @@ import (
 
 // ObjectHandler handles requests for a single federated ActivityPub object.
 func ObjectHandler(w http.ResponseWriter, r *http.Request) {
-	if !data.GetFederationEnabled() {
+	if !configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
 	// If private federation mode is enabled do not allow access to objects.
-	if data.GetFederationIsPrivate() {
+	if configRepository.GetFederationIsPrivate() {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	iri := strings.Join([]string{strings.TrimSuffix(data.GetServerURL(), "/"), r.URL.Path}, "")
+	iri := strings.Join([]string{strings.TrimSuffix(configRepository.GetServerURL(), "/"), r.URL.Path}, "")
 	object, _, _, err := persistence.GetObjectByIRI(iri)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	accountName := data.GetDefaultFederationUsername()
+	accountName := configRepository.GetDefaultFederationUsername()
 	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
 	publicKey := crypto.GetPublicKey(actorIRI)
 

@@ -6,20 +6,19 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/activitypub/apmodels"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
 // WebfingerHandler will handle webfinger lookup requests.
 func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
-	if !data.GetFederationEnabled() {
+	if !configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		log.Debugln("webfinger request rejected! Federation is not enabled")
 		return
 	}
 
-	instanceHostURL := data.GetServerURL()
+	instanceHostURL := configRepository.GetServerURL()
 	if instanceHostURL == "" {
 		w.WriteHeader(http.StatusNotFound)
 		log.Warnln("webfinger request rejected! Federation is enabled but server URL is empty.")
@@ -29,7 +28,7 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	instanceHostString := utils.GetHostnameFromURLString(instanceHostURL)
 	if instanceHostString == "" {
 		w.WriteHeader(http.StatusNotFound)
-		log.Warnln("webfinger request rejected! Federation is enabled but server URL is not set properly. data.GetServerURL(): " + data.GetServerURL())
+		log.Warnln("webfinger request rejected! Federation is enabled but server URL is not set properly. configRepository.GetServerURL(): " + configRepository.GetServerURL())
 		return
 	}
 
@@ -51,7 +50,7 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	host := userComponents[1]
 	user := userComponents[0]
 
-	if _, valid := data.GetFederatedInboxMap()[user]; !valid {
+	if _, valid := configRepository.GetFederatedInboxMap()[user]; !valid {
 		w.WriteHeader(http.StatusNotFound)
 		log.Debugln("webfinger request rejected! Invalid user: " + user)
 		return

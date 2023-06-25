@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/webserver/responses"
 )
 
@@ -20,6 +20,6 @@ func (h *Handlers) GetConnectedChatClients(w http.ResponseWriter, r *http.Reques
 }
 
 // ExternalGetConnectedChatClients returns currently connected clients.
-func (h *Handlers) ExternalGetConnectedChatClients(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) ExternalGetConnectedChatClients(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	h.GetConnectedChatClients(w, r)
 }

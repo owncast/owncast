@@ -3,12 +3,22 @@ package indieauth
 import (
 	"testing"
 
+	"github.com/owncast/owncast/storage/data"
 	"github.com/owncast/owncast/utils"
 )
 
-var indieAuthServer = GetIndieAuthServer()
+func TestMain(m *testing.M) {
+	_, err := data.NewStore(":memory:")
+	if err != nil {
+		panic(err)
+	}
+
+	m.Run()
+}
 
 func TestLimitGlobalPendingRequests(t *testing.T) {
+	indieAuthServer := GetIndieAuthServer()
+
 	// Simulate 10 pending requests
 	for i := 0; i < maxPendingRequests-1; i++ {
 		cid, _ := utils.GenerateRandomString(10)

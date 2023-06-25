@@ -8,6 +8,8 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/storage/configrepository"
+	"github.com/owncast/owncast/storage/data"
 )
 
 func makeFakePerson() vocab.ActivityStreamsPerson {
@@ -47,22 +49,30 @@ func makeFakePerson() vocab.ActivityStreamsPerson {
 }
 
 func TestMain(m *testing.M) {
-	data.SetupPersistence(":memory:")
-	data.SetServerURL("https://my.cool.site.biz")
-	persistence.Setup(data.GetDatastore())
+	ds, err := data.NewStore(":memory:")
+	if err != nil {
+		panic(err)
+	}
+
+	configRepository := configrepository.New(ds)
+	configRepository.PopulateDefaults()
+	configRepository.SetServerURL("https://my.cool.site.biz")
+
 	m.Run()
 }
 
 func TestBlockedDomains(t *testing.T) {
+	cr := configrepository.Get()
+
 	person := makeFakePerson()
 
-	data.SetBlockedFederatedDomains([]string{"freedom.eagle", "guns.life"})
+	cr.SetBlockedFederatedDomains([]string{"freedom.eagle", "guns.life"})
 
-	if len(data.GetBlockedFederatedDomains()) != 2 {
+	if len(cr.GetBlockedFederatedDomains()) != 2 {
 		t.Error("Blocked federated domains is not set correctly")
 	}
 
-	for _, domain := range data.GetBlockedFederatedDomains() {
+	for _, domain := range cr.GetBlockedFederatedDomains() {
 		if domain == person.GetJSONLDId().GetIRI().Host {
 			return
 		}

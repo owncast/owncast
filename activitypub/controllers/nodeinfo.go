@@ -24,12 +24,12 @@ func NodeInfoController(w http.ResponseWriter, r *http.Request) {
 		Links []links `json:"links"`
 	}
 
-	if !data.GetFederationEnabled() {
+	if !configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	serverURL := data.GetServerURL()
+	serverURL := configRepository.GetServerURL()
 	if serverURL == "" {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -88,7 +88,7 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 		Metadata          metadata `json:"metadata"`
 	}
 
-	if !data.GetFederationEnabled() {
+	if !configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
@@ -117,7 +117,7 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 		OpenRegistrations: false,
 		Protocols:         []string{"activitypub"},
 		Metadata: metadata{
-			ChatEnabled: !data.GetChatDisabled(),
+			ChatEnabled: !configRepository.GetChatDisabled(),
 		},
 	}
 
@@ -163,12 +163,12 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 		OpenRegistrations bool         `json:"openRegistrations"`
 	}
 
-	if !data.GetFederationEnabled() {
+	if !configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	serverURL := data.GetServerURL()
+	serverURL := configRepository.GetServerURL()
 	if serverURL == "" {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -179,7 +179,7 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 
 	res := &response{
 		Organization: Organization{
-			Name:    data.GetServerName(),
+			Name:    configRepository.GetServerName(),
 			Contact: serverURL,
 		},
 		Server: Server{
@@ -233,12 +233,12 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 		InvitesEnabled   bool     `json:"invites_enabled"`
 	}
 
-	if !data.GetFederationEnabled() {
+	if !configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	serverURL := data.GetServerURL()
+	serverURL := configRepository.GetServerURL()
 	if serverURL == "" {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -256,9 +256,9 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 
 	res := response{
 		URI:              serverURL,
-		Title:            data.GetServerName(),
-		ShortDescription: data.GetServerSummary(),
-		Description:      data.GetServerSummary(),
+		Title:            configRepository.GetServerName(),
+		ShortDescription: configRepository.GetServerSummary(),
+		Description:      configRepository.GetServerSummary(),
 		Version:          c.GetReleaseString(),
 		Stats: Stats{
 			UserCount:   1,
@@ -277,7 +277,7 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 }
 
 func writeResponse(payload interface{}, w http.ResponseWriter) error {
-	accountName := data.GetDefaultFederationUsername()
+	accountName := configRepository.GetDefaultFederationUsername()
 	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
 	publicKey := crypto.GetPublicKey(actorIRI)
 
@@ -286,7 +286,7 @@ func writeResponse(payload interface{}, w http.ResponseWriter) error {
 
 // HostMetaController points to webfinger.
 func HostMetaController(w http.ResponseWriter, r *http.Request) {
-	serverURL := data.GetServerURL()
+	serverURL := configRepository.GetServerURL()
 	if serverURL == "" {
 		w.WriteHeader(http.StatusNotFound)
 		return

@@ -15,7 +15,7 @@ import (
 
 // RegisterForLiveNotifications will register a channel + destination to be
 // notified when a stream goes live.
-func (h *Handlers) RegisterForLiveNotifications(u user.User, w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) RegisterForLiveNotifications(u models.User, w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		responses.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return

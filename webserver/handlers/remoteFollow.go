@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/activitypub/webfinger"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/webserver/responses"
 )
 
@@ -34,8 +33,8 @@ func (h *Handlers) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	localActorPath, _ := url.Parse(data.GetServerURL())
-	localActorPath.Path = fmt.Sprintf("/federation/user/%s", data.GetDefaultFederationUsername())
+	localActorPath, _ := url.Parse(configRepository.GetServerURL())
+	localActorPath.Path = fmt.Sprintf("/federation/user/%s", configRepository.GetDefaultFederationUsername())
 	var template string
 	links, err := webfinger.GetWebfingerLinks(request.Account)
 	if err != nil {

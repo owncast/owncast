@@ -75,7 +75,7 @@ func (w *LiveWebhookManager) sendWebhook(job Job) error {
 
 	defer resp.Body.Close()
 
-	if err := data.SetWebhookAsUsed(job.webhook); err != nil {
+	if err := webhookRepository.SetWebhookAsUsed(job.webhook); err != nil {
 		log.Warnln(err)
 	}
 

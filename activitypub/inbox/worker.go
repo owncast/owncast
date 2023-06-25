@@ -130,7 +130,7 @@ func Verify(request *http.Request) (bool, error) {
 }
 
 func isBlockedDomain(domain string) bool {
-	blockedDomains := data.GetBlockedFederatedDomains()
+	blockedDomains := configRepository.GetBlockedFederatedDomains()
 
 	for _, blockedDomain := range blockedDomains {
 		if strings.Contains(domain, blockedDomain) {

@@ -14,6 +14,8 @@ import (
 	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/services/yp"
+	"github.com/owncast/owncast/storage/configrepository"
+	"github.com/owncast/owncast/storage/data"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/video/rtmp"
 	"github.com/owncast/owncast/video/transcoder"
@@ -29,13 +31,15 @@ var (
 	fileWriter   = transcoder.FileWriterReceiverService{}
 )
 
+var configRepository = configrepository.Get()
+
 // Start starts up the core processing.
 func Start() error {
 	resetDirectories()
 
-	data.PopulateDefaults()
+	configRepository.PopulateDefaults()
 
-	if err := data.VerifySettings(); err != nil {
+	if err := configRepository.VerifySettings(); err != nil {
 		log.Error(err)
 		return err
 	}
@@ -73,14 +77,14 @@ func Start() error {
 	// start the rtmp server
 	go rtmp.Start(setStreamAsConnected, setBroadcaster)
 
-	rtmpPort := data.GetRTMPPortNumber()
+	rtmpPort := configRepository.GetRTMPPortNumber()
 	if rtmpPort != 1935 {
 		log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
 	}
 
 	webhooks.InitTemporarySingleton(GetStatus)
 
-	notifications.Setup(data.GetStore())
+	notifications.Setup(data.GetDatastore())
 
 	return nil
 }
@@ -111,7 +115,7 @@ func transitionToOfflineVideoStreamContent() {
 	go _transcoder.Start(false)
 
 	// Copy the logo to be the thumbnail
-	logo := data.GetLogoPath()
+	logo := configRepository.GetLogoPath()
 	c := config.GetConfig()
 	dst := filepath.Join(c.TempDir, "thumbnail.jpg")
 	if err = utils.Copy(filepath.Join("data", logo), dst); err != nil {
@@ -130,7 +134,7 @@ func resetDirectories() {
 	utils.CleanupDirectory(c.HLSStoragePath)
 
 	// Remove the previous thumbnail
-	logo := data.GetLogoPath()
+	logo := configRepository.GetLogoPath()
 	if utils.DoesFileExists(logo) {
 		err := utils.Copy(path.Join("data", logo), filepath.Join(config.DataDirectory, "thumbnail.jpg"))
 		if err != nil {

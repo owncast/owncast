@@ -10,12 +10,15 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/services/config"
+	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/owncast/owncast/utils"
 )
 
-var _timer *time.Ticker
+var (
+	_timer           *time.Ticker
+	configRepository = configrepository.Get()
+)
 
 // StopThumbnailGenerator will stop the periodic generating of a thumbnail from video.
 func StopThumbnailGenerator() {
@@ -92,7 +95,7 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	}
 
 	mostRecentFile := path.Join(framePath, names[0])
-	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+	ffmpegPath := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
 	outputFileTemp := path.Join(c.TempDir, "tempthumbnail.jpg")
 
 	thumbnailCmdFlags := []string{
@@ -123,7 +126,7 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 
 func makeAnimatedGifPreview(sourceFile string, outputFile string) {
 	c := config.GetConfig()
-	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+	ffmpegPath := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
 	outputFileTemp := path.Join(c.TempDir, "temppreview.gif")
 
 	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/

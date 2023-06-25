@@ -46,7 +46,7 @@ func (h *Handlers) SetFederationEnabled(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if err := data.SetFederationEnabled(configValue.Value.(bool)); err != nil {
+	if err := configRepository.SetFederationEnabled(configValue.Value.(bool)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -64,7 +64,7 @@ func (h *Handlers) SetFederationActivityPrivate(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if err := data.SetFederationIsPrivate(configValue.Value.(bool)); err != nil {
+	if err := configRepository.SetFederationIsPrivate(configValue.Value.(bool)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -89,7 +89,7 @@ func (h *Handlers) SetFederationShowEngagement(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	if err := data.SetFederationShowEngagement(configValue.Value.(bool)); err != nil {
+	if err := configRepository.SetFederationShowEngagement(configValue.Value.(bool)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -107,7 +107,7 @@ func (h *Handlers) SetFederationUsername(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := data.SetFederationUsername(configValue.Value.(string)); err != nil {
+	if err := configRepository.SetFederationUsername(configValue.Value.(string)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -126,7 +126,7 @@ func (h *Handlers) SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if err := data.SetFederationGoLiveMessage(configValue.Value.(string)); err != nil {
+	if err := configRepository.SetFederationGoLiveMessage(configValue.Value.(string)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -151,7 +151,7 @@ func (h *Handlers) SetFederationBlockDomains(w http.ResponseWriter, r *http.Requ
 		domainStrings = append(domainStrings, domain.Value.(string))
 	}
 
-	if err := data.SetBlockedFederatedDomains(domainStrings); err != nil {
+	if err := configRepository.SetBlockedFederatedDomains(domainStrings); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

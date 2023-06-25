@@ -274,16 +274,16 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 
 // NewTranscoder will return a new Transcoder, populated by the config.
 func NewTranscoder() *Transcoder {
-	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+	ffmpegPath := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
 	c := config.GetConfig()
 
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = ffmpegPath
 	transcoder.internalListenerPort = c.InternalHLSListenerPort
 
-	transcoder.currentStreamOutputSettings = data.GetStreamOutputVariants()
-	transcoder.currentLatencyLevel = data.GetStreamLatencyLevel()
-	transcoder.codec = getCodec(data.GetVideoCodec())
+	transcoder.currentStreamOutputSettings = configRepository.GetStreamOutputVariants()
+	transcoder.currentLatencyLevel = configRepository.GetStreamLatencyLevel()
+	transcoder.codec = getCodec(configRepository.GetVideoCodec())
 	transcoder.segmentOutputPath = c.HLSStoragePath
 	transcoder.playlistOutputPath = c.HLSStoragePath
 

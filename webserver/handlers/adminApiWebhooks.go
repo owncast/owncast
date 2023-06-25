@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/storage"
 	"github.com/owncast/owncast/webserver/responses"
 )
 
@@ -21,6 +22,8 @@ type createWebhookRequest struct {
 
 // CreateWebhook will add a single webhook.
 func (h *Handlers) CreateWebhook(w http.ResponseWriter, r *http.Request) {
+	webhookRepository := storage.GetWebhookRepository()
+
 	decoder := json.NewDecoder(r.Body)
 	var request createWebhookRequest
 	if err := decoder.Decode(&request); err != nil {
@@ -34,7 +37,7 @@ func (h *Handlers) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newWebhookID, err := data.InsertWebhook(request.URL, request.Events)
+	newWebhookID, err := webhookRepository.InsertWebhook(request.URL, request.Events)
 	if err != nil {
 		responses.InternalErrorHandler(w, err)
 		return
@@ -51,7 +54,9 @@ func (h *Handlers) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 
 // GetWebhooks will return all webhooks.
 func (h *Handlers) GetWebhooks(w http.ResponseWriter, r *http.Request) {
-	webhooks, err := data.GetWebhooks()
+	webhookRepository := storage.GetWebhookRepository()
+
+	webhooks, err := webhookRepository.GetWebhooks()
 	if err != nil {
 		responses.InternalErrorHandler(w, err)
 		return
@@ -74,7 +79,9 @@ func (h *Handlers) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.DeleteWebhook(request.ID); err != nil {
+	webhookRepository := storage.GetWebhookRepository()
+
+	if err := webhookRepository.DeleteWebhook(request.ID); err != nil {
 		responses.InternalErrorHandler(w, err)
 		return
 	}

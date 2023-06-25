@@ -9,9 +9,9 @@ import (
 )
 
 func TestSendStreamStatusEvent(t *testing.T) {
-	data.SetServerName("my server")
-	data.SetServerSummary("my server where I stream")
-	data.SetStreamTitle("my stream")
+	configRepository.SetServerName("my server")
+	configRepository.SetServerSummary("my server where I stream")
+	configRepository.SetStreamTitle("my stream")
 
 	checkPayload(t, models.StreamStarted, func() {
 		manager.sendStreamStatusEvent(events.StreamStarted, "id", time.Unix(72, 6).UTC())

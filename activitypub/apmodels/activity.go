@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/storage/configrepository"
 )
 
 // PrivacyAudience represents the audience for an activity.
@@ -87,8 +87,10 @@ func MakeActivityDirect(activity vocab.ActivityStreamsCreate, toIRI *url.URL) vo
 // MakeActivityPublic sets the required properties to make this activity
 // seen as public.
 func MakeActivityPublic(activity vocab.ActivityStreamsCreate) vocab.ActivityStreamsCreate {
+	configRepository := configrepository.Get()
+
 	// TO the public if we're not treating ActivityPub as "private".
-	if !data.GetFederationIsPrivate() {
+	if !configRepository.GetFederationIsPrivate() {
 		public, _ := url.Parse(PUBLIC)
 
 		to := streams.NewActivityStreamsToProperty()
@@ -115,13 +117,15 @@ func MakeCreateActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
 
 // MakeUpdateActivity will return a new Update activity with the provided aID.
 func MakeUpdateActivity(activityID *url.URL) vocab.ActivityStreamsUpdate {
+	configRepository := configrepository.Get()
+
 	activity := streams.NewActivityStreamsUpdate()
 	id := streams.NewJSONLDIdProperty()
 	id.Set(activityID)
 	activity.SetJSONLDId(id)
 
 	// CC the public if we're not treating ActivityPub as "private".
-	if !data.GetFederationIsPrivate() {
+	if !configRepository.GetFederationIsPrivate() {
 		public, _ := url.Parse(PUBLIC)
 		cc := streams.NewActivityStreamsCcProperty()
 		cc.AppendIRI(public)

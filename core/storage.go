@@ -6,7 +6,7 @@ import (
 )
 
 func setupStorage() error {
-	config := configrepository.GetConfigRepository()
+	config := configrepository.Get()
 	s3Config := config.GetS3Config()
 
 	if s3Config.Enabled {

@@ -94,7 +94,11 @@ func (s *Server) Addclient(conn *websocket.Conn, user *models.User, accessToken 
 		ConnectedAt: time.Now(),
 	}
 
-	shouldSendJoinedMessages := data.GetChatJoinPartMessagesEnabled()
+	// Do not send user re-joined broadcast message if they've been active within 10 minutes.
+	shouldSendJoinedMessages := configRepository.GetChatJoinPartMessagesEnabled()
+	if previouslyLastSeen, ok := _lastSeenCache[user.ID]; ok && time.Since(previouslyLastSeen) < time.Minute*10 {
+		shouldSendJoinedMessages = false
+	}
 
 	s.mu.Lock()
 	{
@@ -127,7 +131,7 @@ func (s *Server) Addclient(conn *websocket.Conn, user *models.User, accessToken 
 		s.sendWelcomeMessageToClient(client)
 	}
 
-	// Asynchronously, optionally, fetch GeoIP data.
+	// Asynchronously, optionally, fetch GeoIP configRepository.
 	go func(client *Client) {
 		client.Geo = s.geoipClient.GetGeoFromIP(ipAddress)
 	}(client)
@@ -146,7 +150,7 @@ func (s *Server) sendUserJoinedMessage(c *Client) {
 	}
 
 	// Send chat user joined webhook
-	webhookManager := webhooks.GetWebhooks()
+	webhookManager := webhooks.Get()
 	webhookManager.SendChatEventUserJoined(userJoinedEvent)
 }
 
@@ -191,14 +195,14 @@ func (s *Server) sendUserPartedMessage(c *Client) {
 
 // HandleClientConnection is fired when a single client connects to the websocket.
 func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
-	if data.GetChatDisabled() {
+	if configRepository.GetChatDisabled() {
 		_, _ = w.Write([]byte(events.ChatDisabled))
 		return
 	}
 
 	ipAddress := utils.GetIPAddressFromRequest(r)
 	// Check if this client's IP address is banned. If so send a rejection.
-	if blocked, err := data.IsIPAddressBanned(ipAddress); blocked {
+	if blocked, err := configRepository.IsIPAddressBanned(ipAddress); blocked {
 		log.Debugln("Client ip address has been blocked. Rejecting.")
 
 		w.WriteHeader(http.StatusForbidden)
@@ -374,7 +378,7 @@ func (s *Server) eventReceived(event chatClientEvent) {
 
 	// If established chat user only mode is enabled and the user is not old
 	// enough then reject this event and send them an informative message.
-	if u != nil && data.GetChatEstbalishedUsersOnlyMode() && time.Since(event.client.User.CreatedAt) < config.GetDefaults().ChatEstablishedUserModeTimeDuration && !u.IsModerator() {
+	if u != nil && configRepository.GetChatEstbalishedUsersOnlyMode() && time.Since(event.client.User.CreatedAt) < config.GetDefaults().ChatEstablishedUserModeTimeDuration && !u.IsModerator() {
 		s.sendActionToClient(c, "You have not been an established chat participant long enough to take part in chat. Please enjoy the stream and try again later.")
 		return
 	}
@@ -404,7 +408,7 @@ func (s *Server) sendWelcomeMessageToClient(c *Client) {
 	// Add an artificial delay so people notice this message come in.
 	time.Sleep(7 * time.Second)
 
-	welcomeMessage := utils.RenderSimpleMarkdown(data.GetServerWelcomeMessage())
+	welcomeMessage := utils.RenderSimpleMarkdown(configRepository.GetServerWelcomeMessage())
 
 	if welcomeMessage != "" {
 		s.sendSystemMessageToClient(c, welcomeMessage)
@@ -412,7 +416,7 @@ func (s *Server) sendWelcomeMessageToClient(c *Client) {
 }
 
 func (s *Server) sendAllWelcomeMessage() {
-	welcomeMessage := utils.RenderSimpleMarkdown(data.GetServerWelcomeMessage())
+	welcomeMessage := utils.RenderSimpleMarkdown(configRepository.GetServerWelcomeMessage())
 
 	if welcomeMessage != "" {
 		clientMessage := events.SystemMessageEvent{

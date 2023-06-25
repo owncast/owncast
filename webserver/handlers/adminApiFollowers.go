@@ -6,7 +6,6 @@ import (
 
 	"github.com/owncast/owncast/activitypub/persistence"
 	aprequests "github.com/owncast/owncast/activitypub/requests"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/webserver/requests"
 	"github.com/owncast/owncast/webserver/responses"
 )
@@ -36,7 +35,7 @@ func (h *Handlers) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		localAccountName := data.GetDefaultFederationUsername()
+		localAccountName := configRepository.GetDefaultFederationUsername()
 
 		followRequest, err := persistence.GetFollower(approval.ActorIRI)
 		if err != nil {

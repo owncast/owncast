@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
+	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	log "github.com/sirupsen/logrus"
@@ -17,6 +18,8 @@ var (
 	getStatus               func() models.Status
 	chatMessagesSentCounter prometheus.Gauge
 )
+
+var configRepository = configrepository.Get()
 
 // Start begins the chat server.
 func Start(getStatusFunc func() models.Status) error {
@@ -35,7 +38,7 @@ func Start(getStatusFunc func() models.Status) error {
 		Help: "The number of chat messages incremented over time.",
 		ConstLabels: map[string]string{
 			"version": c.VersionNumber,
-			"host":    data.GetServerURL(),
+			"host":    configRepository.GetServerURL(),
 		},
 	})
 

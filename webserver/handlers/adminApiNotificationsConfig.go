@@ -26,7 +26,7 @@ func (h *Handlers) SetDiscordNotificationConfiguration(w http.ResponseWriter, r 
 		return
 	}
 
-	if err := data.SetDiscordConfig(config.Value); err != nil {
+	if err := configRepository.SetDiscordConfig(config.Value); err != nil {
 		responses.WriteSimpleResponse(w, false, "unable to update discord config with provided values")
 		return
 	}
@@ -51,7 +51,7 @@ func (h *Handlers) SetBrowserNotificationConfiguration(w http.ResponseWriter, r 
 		return
 	}
 
-	if err := data.SetBrowserPushConfig(config.Value); err != nil {
+	if err := configRepository.SetBrowserPushConfig(config.Value); err != nil {
 		responses.WriteSimpleResponse(w, false, "unable to update browser push config with provided values")
 		return
 	}

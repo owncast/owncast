@@ -1,7 +1,5 @@
 package events
 
-import "github.com/owncast/owncast/core/data"
-
 // SystemMessageEvent is a message displayed in chat on behalf of the server.
 type SystemMessageEvent struct {
 	Event
@@ -16,7 +14,7 @@ func (e *SystemMessageEvent) GetBroadcastPayload() EventPayload {
 		"body":      e.Body,
 		"type":      SystemMessageSent,
 		"user": EventPayload{
-			"displayName": data.GetServerName(),
+			"displayName": configRepository.GetServerName(),
 		},
 	}
 }
