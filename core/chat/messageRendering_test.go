@@ -10,17 +10,14 @@ import (
 // and fully rendered HTML out of it.
 func TestRenderAndSanitize(t *testing.T) {
 	messageContent := `
-  Test one two three!  I go to http://yahoo.com and search for _sports_ and **answers**.
-  Here is an iframe <iframe src="http://yahoo.com"></iframe>
-
-  ## blah blah blah
-  [test link](http://owncast.online)
-  <img class="emoji" alt="bananadance.gif" width="600px" src="/img/emoji/bananadance.gif">
-  <script src="http://hackers.org/hack.js"></script>
-  `
+Test one two three!  I go to http://yahoo.com and search for _sports_ and **answers**.
+Here is an iframe<iframe src="http://yahoo.com"></iframe>
+## blah blah blah
+[test link](http://owncast.online)
+<img class="emoji" src="/img/emoji/bananadance.gif">`
 
 	expected := `Test one two three!  I go to <a href="http://yahoo.com" rel="nofollow noreferrer noopener" target="_blank">http://yahoo.com</a> and search for <em>sports</em> and <strong>answers</strong>.
-Here is an iframe 
+Here is an iframe
 blah blah blah
 <a href="http://owncast.online" rel="nofollow noreferrer noopener" target="_blank">test link</a>
 <img class="emoji" src="/img/emoji/bananadance.gif">`

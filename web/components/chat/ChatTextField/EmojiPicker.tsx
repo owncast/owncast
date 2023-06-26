@@ -43,7 +43,7 @@ export const EmojiPicker: FC<EmojiPickerProps> = ({ onEmojiSelect, onCustomEmoji
     });
     picker.addEventListener('emoji:select', event => {
       if (event.url) {
-        onCustomEmojiSelect(event.name, event.url);
+        onCustomEmojiSelect(event.label, event.url);
       } else {
         onEmojiSelect(event.emoji);
       }

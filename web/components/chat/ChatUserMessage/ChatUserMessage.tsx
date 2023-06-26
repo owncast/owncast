@@ -81,6 +81,7 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
   if (isAuthorBot) {
     badgeNodes.push(<BotUserBadge key="bot" userColor={displayColor} />);
   }
+
   return (
     <div
       className={cn(

@@ -179,7 +179,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
 
   // Custom emoji images
   const onCustomEmojiSelect = (name: string, emoji: string) => {
-    const html = `<img src="${emoji}" alt="${name}" title=${name} class="emoji" />`;
+    const html = `<img src="${emoji}" alt="${name}" title="${name}" class="emoji" />`;
     insertTextAtCursor(html);
   };
 
