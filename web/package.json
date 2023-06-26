@@ -17,7 +17,7 @@
 		"@codemirror/lang-css": "6.2.0",
 		"@codemirror/lang-html": "^6.4.2",
 		"@codemirror/lang-javascript": "^6.1.2",
-		"@codemirror/lang-markdown": "6.1.1",
+		"@codemirror/lang-markdown": "6.2.0",
 		"@codemirror/language-data": "6.3.1",
 		"@fontsource/inter": "^5.0.0",
 		"@fontsource/poppins": "5.0.3",
