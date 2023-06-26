@@ -1,5 +1,10 @@
 /* eslint-disable max-classes-per-file */
-export function createVideoSettingsMenuButton(player, videojs, qualities, latencyItemPressed): any {
+export function createVideoSettingsMenuButton(
+  player,
+  videojs,
+  qualities,
+  latencyItemPressed: () => boolean,
+): any {
   const VjsMenuItem = videojs.getComponent('MenuItem');
   const MenuItem = videojs.getComponent('MenuItem');
   const MenuButtonClass = videojs.getComponent('MenuButton');
@@ -19,10 +24,11 @@ export function createVideoSettingsMenuButton(player, videojs, qualities, latenc
 
   const lowLatencyItem = new MenuItem(player, {
     selectable: true,
+    label: 'minimize latency (experimental)',
   });
-  lowLatencyItem.setAttribute('class', 'latency-toggle-item');
   lowLatencyItem.on('click', () => {
-    latencyItemPressed();
+    const enabled: boolean = latencyItemPressed();
+    lowLatencyItem.selected(enabled);
   });
 
   const separator = new MenuSeparator(player, {
@@ -40,38 +46,45 @@ export function createVideoSettingsMenuButton(player, videojs, qualities, latenc
 
       const defaultAutoItem = new MenuItem(player, {
         selectable: true,
+        selected: true,
         label: 'Auto',
       });
 
-      const items = qualities.map(item => {
-        const newMenuItem = new MenuItem(player, {
+      const items = Array(qualities.length);
+      qualities.forEach(item => {
+        items[item.index] = new MenuItem(player, {
           selectable: true,
           label: item.name,
         });
+      });
 
+      for (let i = 0; i < items.length; i += 1) {
+        const item = items[i];
         // Quality selected
-        newMenuItem.on('click', () => {
+        item.on('click', () => {
           // If for some reason tech doesn't exist, then don't do anything
           if (!tech) {
             console.warn('Invalid attempt to access null player tech');
             return;
           }
-          // Only enable this single, selected representation.
+          // Only enable and highlight this single, selected representation.
           tech.vhs.representations().forEach((rep, index) => {
-            rep.enabled(index === item.index);
+            const isCurrent: boolean = index === i;
+            rep.enabled(isCurrent);
+            items[index].selected(isCurrent);
           });
-          newMenuItem.selected(false);
+          defaultAutoItem.selected(false);
         });
-
-        return newMenuItem;
-      });
+      }
 
       defaultAutoItem.on('click', () => {
         // Re-enable all representations.
         tech.vhs.representations().forEach(rep => {
           rep.enabled(true);
         });
-        defaultAutoItem.selected(false);
+        // Only highlight "Auto"
+        items.forEach(item => item.selected(false));
+        defaultAutoItem.selected(true);
       });
 
       const supportsLatencyCompensator = !!tech && !!tech.vhs;
@@ -95,19 +108,8 @@ export function createVideoSettingsMenuButton(player, videojs, qualities, latenc
   const menuButton = new MenuButton();
   menuButton.el().setAttribute('aria-label', 'Settings');
 
-  // If none of the settings in this menu are applicable then don't show it.
-  const tech = player.tech({ IWillNotUseThisInPlugins: true });
   menuButton.addClass('vjs-quality-selector');
   videojs.registerComponent('MenuButton', MenuButton);
 
-  if (!tech.vhs) {
-    return menuButton;
-  }
-
-  if (qualities.length < 2 && (!tech || !tech.vhs)) {
-    return menuButton;
-  }
-
-  // eslint-disable-next-line consistent-return
   return menuButton;
 }
