@@ -7,7 +7,8 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import dynamic from 'next/dynamic';
 import { ErrorBoundary } from 'react-error-boundary';
 import {
-  chatVisibleToggleAtom,
+  ChatState,
+  chatStateAtom,
   currentUserAtom,
   appStateAtom,
 } from '../../stores/ClientConfigStore';
@@ -26,6 +27,14 @@ const EditOutlined = dynamic(() => import('@ant-design/icons/EditOutlined'), {
 });
 
 const LockOutlined = dynamic(() => import('@ant-design/icons/LockOutlined'), {
+  ssr: false,
+});
+
+const ShrinkOutlined = dynamic(() => import('@ant-design/icons/ShrinkOutlined'), {
+  ssr: false,
+});
+
+const ExpandAltOutlined = dynamic(() => import('@ant-design/icons/ExpandAltOutlined'), {
   ssr: false,
 });
 
@@ -70,7 +79,8 @@ export const UserDropdown: FC<UserDropdownProps> = ({
 }) => {
   const [showNameChangeModal, setShowNameChangeModal] = useState<boolean>(false);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
-  const [chatToggleVisible, setChatToggleVisible] = useRecoilState(chatVisibleToggleAtom);
+  const [chatState, setChatState] = useRecoilState(chatStateAtom);
+  const [popupWindow, setPopupWindow] = useState<Window>(null);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
   const toggleChatVisibility = () => {
@@ -79,7 +89,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
       return;
     }
 
-    setChatToggleVisible(!chatToggleVisible);
+    setChatState(chatState === ChatState.VISIBLE ? ChatState.HIDDEN : ChatState.VISIBLE);
   };
 
   const handleChangeName = () => {
@@ -90,6 +100,34 @@ export const UserDropdown: FC<UserDropdownProps> = ({
     setShowNameChangeModal(false);
   };
 
+  const closeChatPopup = () => {
+    if (popupWindow) {
+      popupWindow.close();
+    }
+    setPopupWindow(null);
+    setChatState(ChatState.VISIBLE);
+  };
+
+  const openChatPopup = () => {
+    // close popup (if any) to prevent multiple popup windows.
+    closeChatPopup();
+    const w = window.open('/embed/chat/readwrite', '_blank', 'popup');
+    w.addEventListener('beforeunload', closeChatPopup);
+    setPopupWindow(w);
+    setChatState(ChatState.POPPED_OUT);
+  };
+
+  const canShowHideChat =
+    showHideChatOption &&
+    appState.chatAvailable &&
+    (chatState === ChatState.HIDDEN || chatState === ChatState.VISIBLE);
+  const canShowChatPopup =
+    showHideChatOption &&
+    appState.chatAvailable &&
+    (chatState === ChatState.HIDDEN ||
+      chatState === ChatState.VISIBLE ||
+      chatState === ChatState.POPPED_OUT);
+
   // Register keyboard shortcut for the space bar to toggle playback
   useHotkeys(
     'c',
@@ -97,7 +135,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
     {
       enableOnContentEditable: false,
     },
-    [chatToggleVisible],
+    [chatState === ChatState.VISIBLE],
   );
 
   const currentUser = useRecoilValue(currentUserAtom);
@@ -115,17 +153,27 @@ export const UserDropdown: FC<UserDropdownProps> = ({
       <Menu.Item key="1" icon={<LockOutlined />} onClick={() => setShowAuthModal(true)}>
         Authenticate
       </Menu.Item>
-      {showHideChatOption && appState.chatAvailable && (
+      {canShowHideChat && (
         <Menu.Item
           key="3"
           icon={<MessageOutlined />}
           onClick={() => toggleChatVisibility()}
-          aria-expanded={chatToggleVisible}
+          aria-expanded={chatState === ChatState.VISIBLE}
           className={styles.chatToggle}
         >
-          {chatToggleVisible ? 'Hide Chat' : 'Show Chat'}
+          {chatState === ChatState.VISIBLE ? 'Hide Chat' : 'Show Chat'}
         </Menu.Item>
       )}
+      {canShowChatPopup &&
+        (popupWindow ? (
+          <Menu.Item key="4" icon={<ShrinkOutlined />} onClick={closeChatPopup}>
+            Put chat back
+          </Menu.Item>
+        ) : (
+          <Menu.Item key="4" icon={<ExpandAltOutlined />} onClick={openChatPopup}>
+            Pop out chat
+          </Menu.Item>
+        ))}
     </Menu>
   );
 

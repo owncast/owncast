@@ -17,7 +17,8 @@ import {
   appStateAtom,
   serverStatusState,
   isMobileAtom,
-  isChatVisibleSelector,
+  ChatState,
+  chatStateAtom,
 } from '../../stores/ClientConfigStore';
 import { Content } from '../../ui/Content/Content';
 import { Header } from '../../ui/Header/Header';
@@ -54,14 +55,14 @@ export const Main: FC = () => {
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const isMobile = useRecoilValue<boolean | undefined>(isMobileAtom);
-  const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
+  const chatState = useRecoilValue<ChatState>(chatStateAtom);
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
   const { videoAvailable } = appState;
   const { online, streamTitle } = clientStatus;
 
   // accounts for sidebar width when online in desktop
-  const showChat = online && !chatDisabled && isChatVisible;
+  const showChat = online && !chatDisabled && chatState === ChatState.VISIBLE;
   const dynamicFooterPadding = showChat && !isMobile ? DYNAMIC_PADDING_VALUE : '';
 
   useEffect(() => {

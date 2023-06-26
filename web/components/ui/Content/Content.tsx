@@ -12,7 +12,8 @@ import {
   clientConfigStateAtom,
   chatMessagesAtom,
   currentUserAtom,
-  isChatVisibleSelector,
+  ChatState,
+  chatStateAtom,
   appStateAtom,
   isOnlineSelector,
   isMobileAtom,
@@ -92,7 +93,7 @@ const ExternalModal = ({ externalActionToDisplay, setExternalActionToDisplay }) 
 export const Content: FC = () => {
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const isChatVisible = useRecoilValue<boolean>(isChatVisibleSelector);
+  const chatState = useRecoilValue<ChatState>(chatStateAtom);
   const currentUser = useRecoilValue(currentUserAtom);
   const serverStatus = useRecoilValue<ServerStatus>(serverStatusState);
   const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
@@ -184,7 +185,7 @@ export const Content: FC = () => {
     );
   }, [browserNotificationsEnabled]);
 
-  const showChat = isChatAvailable && !chatDisabled && isChatVisible;
+  const showChat = isChatAvailable && !chatDisabled && chatState === ChatState.VISIBLE;
 
   // accounts for sidebar width when online in desktop
   const dynamicPadding = showChat && !isMobile ? '320px' : '0px';
@@ -309,7 +310,7 @@ export const Content: FC = () => {
           handleClose={() => setShowFollowModal(false)}
         />
       </Modal>
-      {isMobile && showChatModal && isChatVisible && (
+      {isMobile && showChatModal && chatState === ChatState.VISIBLE && (
         <ChatModal
           messages={messages}
           currentUser={currentUser}
