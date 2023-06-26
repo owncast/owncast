@@ -6,7 +6,8 @@ import {
   accessTokenAtom,
   appStateAtom,
   chatMessagesAtom,
-  chatVisibleToggleAtom,
+  ChatState,
+  chatStateAtom,
   clientConfigStateAtom,
   currentUserAtom,
   fatalErrorStateAtom,
@@ -68,7 +69,7 @@ const initializeDefaultState = (mutableState: MutableSnapshot) => {
     chatAvailable: false,
   });
   mutableState.set(clientConfigStateAtom, defaultClientConfig);
-  mutableState.set(chatVisibleToggleAtom, true);
+  mutableState.set(chatStateAtom, ChatState.VISIBLE);
   mutableState.set(accessTokenAtom, 'token');
   mutableState.set(currentUserAtom, {
     ...spidermanUser,
