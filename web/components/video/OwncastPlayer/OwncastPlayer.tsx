@@ -81,15 +81,6 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     }
   };
 
-  const setLatencyCompensatorItemTitle = t => {
-    const item = document.querySelector('.latency-toggle-item > .vjs-menu-item-text');
-    if (!item) {
-      return;
-    }
-
-    item.innerHTML = t;
-  };
-
   const startLatencyCompensator = () => {
     if (latencyCompensator) {
       latencyCompensator.stop();
@@ -101,8 +92,6 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     latencyCompensator.setClockSkew(clockSkew);
     latencyCompensator.enable();
     setLocalStorage(LATENCY_COMPENSATION_ENABLED, true);
-
-    setLatencyCompensatorItemTitle('disable minimized latency');
   };
 
   const stopLatencyCompensator = () => {
@@ -112,17 +101,16 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     latencyCompensator = null;
     latencyCompensatorEnabled = false;
     setLocalStorage(LATENCY_COMPENSATION_ENABLED, false);
-    setLatencyCompensatorItemTitle(
-      '<span style="font-size: 0.8em">enable minimized latency (experimental)</span>',
-    );
   };
 
+  // Toggle minimized latency mode. Return the new state.
   const toggleLatencyCompensator = () => {
     if (latencyCompensatorEnabled) {
       stopLatencyCompensator();
     } else {
       startLatencyCompensator();
     }
+    return latencyCompensatorEnabled;
   };
 
   const setupLatencyCompensator = player => {
