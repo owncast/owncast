@@ -72,6 +72,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const text = useRef(defaultText || '');
   const [savedCursorLocation, setSavedCursorLocation] = useState(0);
+  const [customEmoji, setCustomEmoji] = useState([]);
 
   // This is a bit of a hack to force the component to re-render when the text changes.
   // By default when updating a ref the component doesn't re-render.
@@ -211,6 +212,28 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     document.getElementById('chat-input-content-editable').focus();
   }, []);
 
+  const getCustomEmoji = async () => {
+    try {
+      const response = await fetch(`/api/emoji`);
+      const emoji = await response.json();
+      setCustomEmoji(emoji);
+
+      emoji.forEach(e => {
+        const preImg = document.createElement('link');
+        preImg.href = e.url;
+        preImg.rel = 'preload';
+        preImg.as = 'image';
+        document.head.appendChild(preImg);
+      });
+    } catch (e) {
+      console.error('cannot fetch custom emoji', e);
+    }
+  };
+
+  useEffect(() => {
+    getCustomEmoji();
+  }, []);
+
   return (
     <div id="chat-input" className={styles.root}>
       <div
@@ -221,7 +244,11 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
       >
         <Popover
           content={
-            <EmojiPicker onEmojiSelect={onEmojiSelect} onCustomEmojiSelect={onCustomEmojiSelect} />
+            <EmojiPicker
+              customEmoji={customEmoji}
+              onEmojiSelect={onEmojiSelect}
+              onCustomEmojiSelect={onCustomEmojiSelect}
+            />
           }
           trigger="click"
           placement="topRight"
