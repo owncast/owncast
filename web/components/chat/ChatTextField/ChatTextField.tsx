@@ -1,7 +1,9 @@
 import { Popover } from 'antd';
-import React, { FC, useReducer, useRef, useState } from 'react';
+import React, { FC, useEffect, useReducer, useRef, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import ContentEditable from 'react-contenteditable';
+import sanitizeHtml from 'sanitize-html';
+
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
 import WebsocketService from '../../../services/websocket-service';
@@ -64,43 +66,6 @@ function setCaretPosition(editableDiv, position) {
   }
 }
 
-function convertToText(str = '') {
-  // Ensure string.
-  let value = String(str);
-
-  // Convert encoding.
-  value = value.replace(/&nbsp;/gi, ' ');
-  value = value.replace(/&amp;/gi, '&');
-
-  // Replace `<br>`.
-  value = value.replace(/<br>/gi, '\n');
-
-  // Replace `<div>` (from Chrome).
-  value = value.replace(/<div>/gi, '\n');
-
-  // Replace `<p>` (from IE).
-  value = value.replace(/<p>/gi, '\n');
-
-  // Cleanup the emoji titles.
-  value = value.replace(/\u200C{2}/gi, '');
-
-  // Trim each line.
-  value = value
-    .split('\n')
-    .map((line = '') => line.trim())
-    .join('\n');
-
-  // No more than 2x newline, per "paragraph".
-  value = value.replace(/\n\n+/g, '\n\n');
-
-  // Clean up spaces.
-  value = value.replace(/[ ]+/g, ' ');
-  value = value.trim();
-
-  // Expose string.
-  return value;
-}
-
 export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
@@ -132,44 +97,21 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   };
 
   const insertTextAtCursor = (textToInsert: string) => {
-    const output = [
-      text.current.slice(0, savedCursorLocation),
-      textToInsert,
-      text.current.slice(savedCursorLocation),
-    ].join('');
-    text.current = output;
-    forceUpdate();
-  };
-
-  const convertOnPaste = (event: React.ClipboardEvent) => {
-    // Prevent paste.
-    event.preventDefault();
-
-    // Set later.
-    let value = '';
-
-    // Does method exist?
-    const hasEventClipboard = !!(
-      event.clipboardData &&
-      typeof event.clipboardData === 'object' &&
-      typeof event.clipboardData.getData === 'function'
-    );
-
-    // Get clipboard data?
-    if (hasEventClipboard) {
-      value = event.clipboardData.getData('text/plain');
+    let cursorLocation;
+    if (savedCursorLocation > 0) {
+      cursorLocation = savedCursorLocation;
+    } else {
+      cursorLocation = getCaretPosition(document.getElementById('chat-input'));
     }
 
-    // Insert into temp `<textarea>`, read back out.
-    const textarea = document.createElement('textarea');
-    textarea.innerHTML = value;
-    value = textarea.innerText;
+    const output = [
+      text.current.slice(0, cursorLocation),
+      textToInsert,
+      text.current.slice(cursorLocation),
+    ].join('');
 
-    // Clean up text.
-    value = convertToText(value);
-
-    // Insert text.
-    insertTextAtCursor(value);
+    text.current = output;
+    forceUpdate();
   };
 
   // Native emoji
@@ -184,14 +126,13 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    const charCount = getCharacterCount() + 1;
-
-    // Send the message when hitting enter.
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      sendMessage();
+    // Allow native line breaks
+    if (e.key === 'Enter' && e.shiftKey) {
       return;
     }
+
+    const charCount = getCharacterCount() + 1;
+
     // Always allow backspace.
     if (e.key === 'Backspace') {
       setCharacterCount(charCount - 1);
@@ -213,11 +154,36 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     if (charCount + 1 > characterLimit) {
       e.preventDefault();
     }
+
+    // Send the message when hitting enter.
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+      return;
+    }
+
     setCharacterCount(charCount + 1);
   };
 
   const handleChange = evt => {
-    text.current = evt.target.value;
+    const sanitized = sanitizeHtml(evt.target.value, {
+      allowedTags: ['b', 'i', 'em', 'strong', 'a', 'br', 'p', 'img'],
+      allowedAttributes: {
+        img: ['class', 'alt', 'title', 'src'],
+      },
+      allowedClasses: {
+        img: ['emoji'],
+      },
+      transformTags: {
+        h1: 'p',
+        h2: 'p',
+        h3: 'p',
+      },
+    });
+    text.current = sanitized;
+    setSavedCursorLocation(
+      getCaretPosition(document.getElementById('chat-input-content-editable')),
+    );
   };
 
   const handleBlur = () => {
@@ -236,6 +202,14 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     setCaretPosition(document.getElementById('chat-input-content-editable'), savedCursorLocation);
     setSavedCursorLocation(0);
   };
+
+  // Focus the input when the component mounts.
+  useEffect(() => {
+    if (!focusInput) {
+      return;
+    }
+    document.getElementById('chat-input-content-editable').focus();
+  }, []);
 
   return (
     <div id="chat-input" className={styles.root}>
@@ -260,11 +234,9 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
           placeholder={enabled ? 'Send a message to chat' : 'Chat is disabled'}
           disabled={!enabled}
           onKeyDown={onKeyDown}
-          onPaste={convertOnPaste}
           onChange={handleChange}
           onBlur={handleBlur}
           onFocus={handleFocus}
-          autoFocus={focusInput}
           style={{ width: '100%' }}
           role="textbox"
           aria-label="Chat text input"

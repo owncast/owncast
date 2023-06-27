@@ -149,7 +149,7 @@ func sanitize(raw string) string {
 	// Allow breaks
 	p.AllowElements("br")
 
-	p.AllowElementsContent("p")
+	p.AllowElements("p")
 
 	// Allow img tags from the the local emoji directory only
 	p.AllowAttrs("src").Matching(_sanitizeReSrcMatch).OnElements("img")
