@@ -52,9 +52,7 @@ filterTests(['desktop'], () => {
 			cy.get('#name-change-field').type('{ctrl+a}');
 			cy.get('#name-change-field').type('my-new-name');
 			cy.get('#name-change-submit').click();
-			cy.get('.ant-modal-close-x').click();
 			cy.wait(1500);
-			// cy.contains('is now known as').should('be.visible');
 		});
 
 		it('Should change to custom websocket host', () => {
