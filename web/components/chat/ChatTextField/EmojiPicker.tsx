@@ -1,30 +1,18 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import { createPicker } from 'picmo';
 
-const CUSTOM_EMOJI_URL = '/api/emoji';
 export type EmojiPickerProps = {
   onEmojiSelect: (emoji: string) => void;
   onCustomEmojiSelect: (name: string, url: string) => void;
+  customEmoji: any[];
 };
 
-export const EmojiPicker: FC<EmojiPickerProps> = ({ onEmojiSelect, onCustomEmojiSelect }) => {
-  const [customEmoji, setCustomEmoji] = useState([]);
+export const EmojiPicker: FC<EmojiPickerProps> = ({
+  onEmojiSelect,
+  onCustomEmojiSelect,
+  customEmoji,
+}) => {
   const ref = useRef();
-
-  const getCustomEmoji = async () => {
-    try {
-      const response = await fetch(CUSTOM_EMOJI_URL);
-      const emoji = await response.json();
-      setCustomEmoji(emoji);
-    } catch (e) {
-      console.error('cannot fetch custom emoji', e);
-    }
-  };
-
-  // Fetch the custom emoji on component mount.
-  useEffect(() => {
-    getCustomEmoji();
-  }, []);
 
   // Recreate the emoji picker when the custom emoji changes.
   useEffect(() => {
@@ -48,7 +36,7 @@ export const EmojiPicker: FC<EmojiPickerProps> = ({ onEmojiSelect, onCustomEmoji
         onEmojiSelect(event.emoji);
       }
     });
-  }, [customEmoji]);
+  }, []);
 
   return <div ref={ref} />;
 };
