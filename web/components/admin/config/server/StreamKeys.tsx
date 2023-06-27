@@ -31,7 +31,7 @@ const saveKeys = async (keys, setError) => {
     });
   } catch (error) {
     console.error(error);
-    setError(error);
+    setError(error.message);
   }
 };
 export const generateRndKey = () => {
@@ -199,7 +199,13 @@ const StreamKeys = () => {
     {
       title: '',
       key: 'delete',
-      render: text => <Button onClick={() => handleDeleteKey(text)} icon={<DeleteOutlined />} />,
+      render: text => (
+        <Button
+          disabled={streamKeys.length === 1}
+          onClick={() => handleDeleteKey(text)}
+          icon={<DeleteOutlined />}
+        />
+      ),
     },
   ];
 
