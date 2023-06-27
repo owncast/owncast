@@ -8,6 +8,12 @@ $p-v-size: 2px;
     z-index: 100;
   }
 
+  // Chat messages are wrapped in <p> tags. We don't want to render
+  // the default margins for these initial <p> tags, so we remove them here.
+  p:nth-of-type(1) {
+    margin: initial;
+  }
+
   border-left: $border-style;
   position: relative;
   font-size: var(--chat-message-text-size);
