@@ -98,14 +98,12 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
       >
         <div className={styles.background} style={{ color }} />
 
-        {!sameUserAsLast && (
-          <UserTooltip user={user}>
-            <div className={styles.user} style={{ color }}>
-              <span className={styles.userName}>{displayName}</span>
-              <span className={styles.userBadges}>{badgeNodes}</span>
-            </div>
-          </UserTooltip>
-        )}
+        <UserTooltip user={user}>
+          <div className={sameUserAsLast ? styles.repeatUser : styles.user} style={{ color }}>
+            <span className={styles.userName}>{displayName}</span>
+            <span className={styles.userBadges}>{badgeNodes}</span>
+          </div>
+        </UserTooltip>
         <Tooltip title={formattedTimestamp} mouseEnterDelay={1}>
           <Interweave
             className={styles.message}

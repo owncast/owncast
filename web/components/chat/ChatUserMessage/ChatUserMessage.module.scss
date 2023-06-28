@@ -26,6 +26,11 @@ $p-v-size: 2px;
     font-weight: 600;
   }
 
+  .repeatUser {
+    @extend .user;
+    display: none;
+  }
+
   .userBadges {
     margin-left: 3px;
   }
