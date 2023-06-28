@@ -17,7 +17,7 @@
     // padding-right: 320px;
   }
 
-  //set height of player for tablet
+  // set height of player for tablet
   @include screen(tablet) {
     height: var(--player-container-height);
     max-height: var(--player-container-height);
@@ -32,6 +32,6 @@
 }
 
 .embedded {
-  height: 100vh;
+  height: 96vh; // Leave room for the status bar
   max-height: unset;
 }
