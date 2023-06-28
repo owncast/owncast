@@ -65,7 +65,7 @@
   }
 }
 
-//not sure if this is needed
+// not sure if this is needed
 .statusBar {
   flex-shrink: 0;
 }
@@ -99,10 +99,6 @@
   }
 }
 
-.offlineBanner {
-  color: var(--theme-color-background-main);
-}
-
 .floatingMobileChatModalButton {
   position: fixed;
   width: 100px;
@@ -115,4 +111,11 @@
   background-color: var(--theme-color-components-chat-background);
   border-width: 0;
   box-shadow: 0 1px 3px 1px rgb(0 0 0 / 20%);
+}
+
+.centerSpinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }

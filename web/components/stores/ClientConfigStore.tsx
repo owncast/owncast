@@ -412,6 +412,14 @@ export const ClientConfigStore: FC = () => {
     } catch (e) {
       console.error('error parsing status hydration', e);
     }
+
+    try {
+      if ((window as any).configHydration && (window as any).statusHydration) {
+        sendEvent([AppStateEvent.Loaded]);
+      }
+    } catch (e) {
+      console.error('error sending loaded event', e);
+    }
   }, []);
 
   useEffect(() => {
