@@ -33,6 +33,12 @@ export const Theme: FC = () => {
 				:root {
 					${appearanceVars.join(';\n')}
 				}
+			`,
+        }}
+      />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
 				${customStyles}
 			`,
         }}
