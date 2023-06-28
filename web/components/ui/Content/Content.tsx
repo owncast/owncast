@@ -1,5 +1,5 @@
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { Skeleton, Col, Row, Button } from 'antd';
+import { Skeleton, Col, Row, Button, Spin } from 'antd';
 import MessageFilled from '@ant-design/icons/MessageFilled';
 import { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -194,7 +194,12 @@ export const Content: FC = () => {
     <>
       <>
         {appState.appLoading && (
-          <div className={styles.topSectionElement} style={{ height: '30vh' }} />
+          <div
+            className={classnames([styles.topSectionElement, styles.centerSpinner])}
+            style={{ height: '30vh' }}
+          >
+            <Spin delay={2} size="large" tip="One moment..." />
+          </div>
         )}
         {showChat && !isMobile && <Sidebar />}
         <Row>
@@ -262,6 +267,7 @@ export const Content: FC = () => {
           <BrowserNotifyModal />
         </Modal>
         <Row>
+          {!name && <Skeleton active loading style={{ marginLeft: '10vw', marginRight: '10vw' }} />}
           {isMobile ? (
             <Col span={24}>
               <MobileContent
