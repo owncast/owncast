@@ -435,10 +435,13 @@ export const ClientConfigStore: FC = () => {
   }, [hasLoadedConfig, accessToken]);
 
   useEffect(() => {
-    updateClientConfig();
+    if (!(window as any).configHydration) {
+      updateClientConfig();
+    }
     handleUserRegistration();
-    updateServerStatus();
-
+    if (!(window as any).statusHydration) {
+      updateServerStatus();
+    }
     clearInterval(serverStatusRefreshPoll);
     serverStatusRefreshPoll = setInterval(() => {
       updateServerStatus();
