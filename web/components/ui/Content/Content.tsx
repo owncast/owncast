@@ -194,7 +194,7 @@ export const Content: FC = () => {
     <>
       <>
         {appState.appLoading && (
-          <Skeleton loading active paragraph={{ rows: 7 }} className={styles.topSectionElement} />
+          <div className={styles.topSectionElement} style={{ height: '30vh' }} />
         )}
         {showChat && !isMobile && <Sidebar />}
         <Row>
