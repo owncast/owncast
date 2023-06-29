@@ -27,7 +27,9 @@ func GetEmojiList() []models.CustomEmoji {
 		}
 
 		emojiPath := filepath.Join(config.EmojiDir, path)
-		singleEmoji := models.CustomEmoji{Name: d.Name(), URL: emojiPath}
+		fileName := d.Name()
+		fileBase := fileName[:len(fileName)-len(filepath.Ext(fileName))]
+		singleEmoji := models.CustomEmoji{Name: fileBase, URL: emojiPath}
 		emojiResponse = append(emojiResponse, singleEmoji)
 		return nil
 	}
