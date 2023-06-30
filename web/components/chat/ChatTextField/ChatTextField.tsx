@@ -33,17 +33,50 @@ export type ChatTextFieldProps = {
 
 const characterLimit = 300;
 
+function getTextContent(node) {
+  let text = '';
+
+  switch(node.nodeType) {
+    case Node.CDATA_SECTION_NODE: // unlikely
+    case Node.TEXT_NODE: {
+      text = node.nodeValue;
+      break;
+    }
+    case Node.ELEMENT_NODE: {
+      switch(node.tagName.toLowerCase()) {
+        case 'img': {
+          text = node.getAttribute('alt') || '';
+          break;
+        }
+        case 'p':
+        case 'span':
+        case 'div': {
+          for(let i=0; i<node.childNodes.length;i++) {
+            text += getTextContent(node.childNodes[i]);
+          }
+          break;
+        }
+        default: break;
+      }
+      break;
+    }
+    default: break;
+  }
+  return text;
+}
+
 export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const text = useRef(defaultText || '');
+  const contentEditable = React.createRef();
   const [customEmoji, setCustomEmoji] = useState([]);
 
   // This is a bit of a hack to force the component to re-render when the text changes.
   // By default when updating a ref the component doesn't re-render.
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
-  const getCharacterCount = () => text.current.length;
+  const getCharacterCount = () => getTextContent(contentEditable.current);
 
   const sendMessage = () => {
     const count = getCharacterCount();
@@ -53,11 +86,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
       return;
     }
 
-    if (count === 0 || count > characterLimit) return;
-
-    let message = text.current;
-    // Strip the opening and closing <p> tags.
-    message = message.replace(/^<p>|<\/p>$/g, '');
+    let message = getTextContent(contentEditable.current);
     websocketService.send({ type: MessageType.CHAT, body: message });
 
     // Clear the input.
@@ -81,7 +110,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
 
   // Custom emoji images
   const onCustomEmojiSelect = (name: string, emoji: string) => {
-    const html = `<img src="${emoji}" alt="${name}" title="${name}" class="emoji" />`;
+    const html = `<img src="${emoji}" alt=":${name}:" title=":${name}:" class="emoji" />`;
     insertTextAtEnd(html);
   };
 
@@ -161,6 +190,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
           style={{ width: '100%' }}
           role="textbox"
           aria-label="Chat text input"
+          innerRef={contentEditable}
         />
         {enabled && (
           <div style={{ display: 'flex', paddingLeft: '5px' }}>
