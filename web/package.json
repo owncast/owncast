@@ -25,7 +25,7 @@
 		"@uiw/codemirror-theme-bbedit": "4.21.7",
 		"@uiw/react-codemirror": "4.21.7",
 		"@xstate/react": "3.2.2",
-		"antd": "4.24.10",
+		"antd": "4.24.11",
 		"autoprefixer": "^10.4.14",
 		"chart.js": "^4.2.0",
 		"classnames": "2.3.2",
