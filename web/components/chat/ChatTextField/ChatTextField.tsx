@@ -48,6 +48,10 @@ function getTextContent(node) {
           text = node.getAttribute('alt') || '';
           break;
         }
+        case 'br': {
+          text = '\n';
+          break;
+        }
         case 'p':
         case 'span':
         case 'div': {
