@@ -67,7 +67,6 @@ function setCaretPosition(editableDiv, position) {
 }
 
 export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
-  const [showEmojis, setShowEmojis] = useState(false);
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const text = useRef(defaultText || '');
@@ -97,33 +96,21 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     forceUpdate();
   };
 
-  const insertTextAtCursor = (textToInsert: string) => {
-    let cursorLocation;
-    if (savedCursorLocation > 0) {
-      cursorLocation = savedCursorLocation;
-    } else {
-      cursorLocation = getCaretPosition(document.getElementById('chat-input'));
-    }
-
-    const output = [
-      text.current.slice(0, cursorLocation),
-      textToInsert,
-      text.current.slice(cursorLocation),
-    ].join('');
-
+  const insertTextAtEnd = (textToInsert: string) => {
+    const output = text.current + textToInsert;
     text.current = output;
     forceUpdate();
   };
 
   // Native emoji
   const onEmojiSelect = (emoji: string) => {
-    insertTextAtCursor(emoji);
+    insertTextAtEnd(emoji);
   };
 
   // Custom emoji images
   const onCustomEmojiSelect = (name: string, emoji: string) => {
     const html = `<img src="${emoji}" alt="${name}" title="${name}" class="emoji" />`;
-    insertTextAtCursor(html);
+    insertTextAtEnd(html);
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -136,13 +123,11 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
 
     // Always allow backspace.
     if (e.key === 'Backspace') {
-      setCharacterCount(charCount - 1);
       return;
     }
 
     // Always allow delete.
     if (e.key === 'Delete') {
-      setCharacterCount(charCount - 1);
       return;
     }
 
@@ -154,6 +139,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     // Limit the number of characters.
     if (charCount + 1 > characterLimit) {
       e.preventDefault();
+      return;
     }
 
     // Send the message when hitting enter.
@@ -182,6 +168,10 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
       },
     });
     text.current = sanitized;
+
+    const charCountString = sanitized.replace(/<\/?[^>]+(>|$)/g, '');
+    setCharacterCount(charCountString.length);
+
     setSavedCursorLocation(
       getCaretPosition(document.getElementById('chat-input-content-editable')),
     );
@@ -242,19 +232,6 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
           characterCount >= characterLimit && styles.maxCharacters,
         )}
       >
-        <Popover
-          content={
-            <EmojiPicker
-              customEmoji={customEmoji}
-              onEmojiSelect={onEmojiSelect}
-              onCustomEmojiSelect={onCustomEmojiSelect}
-            />
-          }
-          trigger="click"
-          placement="topRight"
-          onOpenChange={open => setShowEmojis(open)}
-          open={showEmojis}
-        />
         <ContentEditable
           id="chat-input-content-editable"
           html={text.current}
@@ -270,14 +247,21 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
         />
         {enabled && (
           <div style={{ display: 'flex', paddingLeft: '5px' }}>
-            <button
-              type="button"
-              className={styles.emojiButton}
-              title="Emoji picker button"
-              onClick={() => setShowEmojis(!showEmojis)}
+            <Popover
+              content={
+                <EmojiPicker
+                  customEmoji={customEmoji}
+                  onEmojiSelect={onEmojiSelect}
+                  onCustomEmojiSelect={onCustomEmojiSelect}
+                />
+              }
+              trigger="click"
+              placement="topRight"
             >
-              <SmileOutlined />
-            </button>
+              <button type="button" className={styles.emojiButton} title="Emoji picker button">
+                <SmileOutlined />
+              </button>
+            </Popover>
             <button
               type="button"
               className={styles.sendButton}
