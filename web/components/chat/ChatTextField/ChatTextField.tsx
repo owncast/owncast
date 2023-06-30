@@ -33,44 +33,10 @@ export type ChatTextFieldProps = {
 
 const characterLimit = 300;
 
-function getCaretPosition(node) {
-  const selection = window.getSelection();
-
-  if (selection.rangeCount === 0) {
-    return 0;
-  }
-
-  const range = selection.getRangeAt(0);
-  const preCaretRange = range.cloneRange();
-  const tempElement = document.createElement('div');
-
-  preCaretRange.selectNodeContents(node);
-  preCaretRange.setEnd(range.endContainer, range.endOffset);
-  tempElement.appendChild(preCaretRange.cloneContents());
-
-  return tempElement.innerHTML.length;
-}
-
-function setCaretPosition(editableDiv, position) {
-  try {
-    const range = document.createRange();
-    const sel = window.getSelection();
-    range.selectNode(editableDiv);
-    range.setStart(editableDiv.childNodes[0], position);
-    range.collapse(true);
-
-    sel.removeAllRanges();
-    sel.addRange(range);
-  } catch (e) {
-    console.debug(e);
-  }
-}
-
 export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const text = useRef(defaultText || '');
-  const [savedCursorLocation, setSavedCursorLocation] = useState(0);
   const [customEmoji, setCustomEmoji] = useState([]);
 
   // This is a bit of a hack to force the component to re-render when the text changes.
@@ -80,10 +46,14 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   const getCharacterCount = () => text.current.length;
 
   const sendMessage = () => {
+    const count = getCharacterCount();
+
     if (!websocketService) {
       console.log('websocketService is not defined');
       return;
     }
+
+    if (count === 0 || count > characterLimit) return;
 
     let message = text.current;
     // Strip the opening and closing <p> tags.
@@ -99,6 +69,8 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   const insertTextAtEnd = (textToInsert: string) => {
     const output = text.current + textToInsert;
     text.current = output;
+
+    setCharacterCount(getCharacterCount());
     forceUpdate();
   };
 
@@ -114,42 +86,10 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    // Allow native line breaks
-    if (e.key === 'Enter' && e.shiftKey) {
-      return;
-    }
-
-    const charCount = getCharacterCount() + 1;
-
-    // Always allow backspace.
-    if (e.key === 'Backspace') {
-      return;
-    }
-
-    // Always allow delete.
-    if (e.key === 'Delete') {
-      return;
-    }
-
-    // Always allow ctrl + a.
-    if (e.key === 'a' && e.ctrlKey) {
-      return;
-    }
-
-    // Limit the number of characters.
-    if (charCount + 1 > characterLimit) {
-      e.preventDefault();
-      return;
-    }
-
-    // Send the message when hitting enter.
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !(e.shiftKey || e.metaKey || e.ctrlKey || e.altKey)) {
       e.preventDefault();
       sendMessage();
-      return;
     }
-
-    setCharacterCount(charCount + 1);
   };
 
   const handleChange = evt => {
@@ -167,31 +107,10 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
         h3: 'p',
       },
     });
-    text.current = sanitized;
 
-    const charCountString = sanitized.replace(/<\/?[^>]+(>|$)/g, '');
-    setCharacterCount(charCountString.length);
+    if (text.current !== sanitized) text.current = sanitized;
 
-    setSavedCursorLocation(
-      getCaretPosition(document.getElementById('chat-input-content-editable')),
-    );
-  };
-
-  const handleBlur = () => {
-    // Save the cursor location.
-    setSavedCursorLocation(
-      getCaretPosition(document.getElementById('chat-input-content-editable')),
-    );
-  };
-
-  const handleFocus = () => {
-    if (!savedCursorLocation) {
-      return;
-    }
-
-    // Restore the cursor location.
-    setCaretPosition(document.getElementById('chat-input-content-editable'), savedCursorLocation);
-    setSavedCursorLocation(0);
+    setCharacterCount(getCharacterCount());
   };
 
   // Focus the input when the component mounts.
@@ -229,7 +148,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
       <div
         className={classNames(
           styles.inputWrap,
-          characterCount >= characterLimit && styles.maxCharacters,
+          characterCount > characterLimit && styles.maxCharacters,
         )}
       >
         <ContentEditable
@@ -239,8 +158,6 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
           disabled={!enabled}
           onKeyDown={onKeyDown}
           onChange={handleChange}
-          onBlur={handleBlur}
-          onFocus={handleFocus}
           style={{ width: '100%' }}
           role="textbox"
           aria-label="Chat text input"
