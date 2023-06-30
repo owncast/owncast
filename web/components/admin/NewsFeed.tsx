@@ -17,6 +17,7 @@ export type ArticleProps = {
   url: string;
   content_html: string;
   date_published: string;
+  defaultOpen?: boolean;
 };
 
 const ArticleItem: FC<ArticleProps> = ({
@@ -24,12 +25,13 @@ const ArticleItem: FC<ArticleProps> = ({
   url,
   content_html: content,
   date_published: date,
+  defaultOpen = false,
 }) => {
   const dateObject = new Date(date);
   const dateString = format(dateObject, 'MMM dd, yyyy, HH:mm');
   return (
     <article>
-      <Collapse>
+      <Collapse defaultActiveKey={defaultOpen ? url : null}>
         <Panel header={title} key={url}>
           <p className="timestamp">
             {dateString} (
@@ -74,7 +76,7 @@ export const NewsFeed = () => {
       <Title level={2}>News &amp; Updates from Owncast</Title>
       {loadingSpinner}
       {feed.map(item => (
-        <ArticleItem {...item} key={item.url} />
+        <ArticleItem {...item} key={item.url} defaultOpen={feed.length === 1} />
       ))}
 
       {noNews}
