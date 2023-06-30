@@ -46,14 +46,14 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   const getCharacterCount = () => text.current.length;
 
   const sendMessage = () => {
-		const count = getCharacterCount();
+    const count = getCharacterCount();
 
     if (!websocketService) {
       console.log('websocketService is not defined');
       return;
     }
 
-    if(count === 0 || count > characterLimit) return;
+    if (count === 0 || count > characterLimit) return;
 
     let message = text.current;
     // Strip the opening and closing <p> tags.
@@ -86,11 +86,9 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && ! (e.shiftKey || e.metaKey || e.ctrlKey ||
-      e.altKey)) {
+    if (e.key === 'Enter' && !(e.shiftKey || e.metaKey || e.ctrlKey || e.altKey)) {
       e.preventDefault();
       sendMessage();
-      return;
     }
   };
 
@@ -110,11 +108,10 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
       },
     });
 
-    if(text.current !== sanitized) text.current = sanitized;
+    if (text.current !== sanitized) text.current = sanitized;
 
     setCharacterCount(getCharacterCount());
   };
-
 
   // Focus the input when the component mounts.
   useEffect(() => {
