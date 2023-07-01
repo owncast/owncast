@@ -99,12 +99,7 @@ func loadEmoji() {
 
 }
 
-// RenderAndSanitizeMessageBody will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
-// the message into something safe and renderable for clients.
-func (m *MessageEvent) RenderAndSanitizeMessageBody() {
-	m.RawBody = m.Body
-
-
+func injectEmoji(body string) string {
 	// flag to ensure we only check for new emoji on the first regex match
 	emojiCheck := false
 
@@ -123,10 +118,16 @@ func (m *MessageEvent) RenderAndSanitizeMessageBody() {
 		return match
 	}
 
-	body := emojiRegex.ReplaceAllStringFunc(m.RawBody,replaceFunc)
+	return emojiRegex.ReplaceAllStringFunc(body,replaceFunc)
+}
+
+// RenderAndSanitizeMessageBody will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
+// the message into something safe and renderable for clients.
+func (m *MessageEvent) RenderAndSanitizeMessageBody() {
+	m.RawBody = m.Body
 
 	// Set the new, sanitized and rendered message body
-	m.Body = RenderAndSanitize(body)
+	m.Body = RenderAndSanitize(injectEmoji(m.RawBody))
 }
 
 // Empty will return if this message's contents is empty.
