@@ -36,28 +36,20 @@ const characterLimit = 300;
 const maxNodeDepth = 10;
 const graphemeSplitter = new GraphemeSplitter();
 
-function getChildrenTextContent(node,depth) {
-  let text = '';
-  for (let i=0; i<node.childNodes.length; i++) {
-    text += getNodeTextContent(node.childNodes[i],depth+1);
-  }
-  return text;
-}
-
-function getNodeTextContent(node,depth) {
+const getNodeTextContent = (node, depth) => {
   let text = '';
 
-  if(depth > maxNodeDepth) return text;
-  if(node === null) return text;
+  if (depth > maxNodeDepth) return text;
+  if (node === null) return text;
 
-  switch(node.nodeType) {
+  switch (node.nodeType) {
     case Node.CDATA_SECTION_NODE: // unlikely
     case Node.TEXT_NODE: {
       text = node.nodeValue;
       break;
     }
     case Node.ELEMENT_NODE: {
-      switch(node.tagName.toLowerCase()) {
+      switch (node.tagName.toLowerCase()) {
         case 'img': {
           text = node.getAttribute('alt') || '';
           break;
@@ -69,41 +61,56 @@ function getNodeTextContent(node,depth) {
         case 'strong':
         case 'b': {
           /* markdown representation of bold/strong */
-          text = '**' + getChildrenTextContent(node,depth) + '**';
+          text = '**';
+          for (let i = 0; i < node.childNodes.length; i += 1) {
+            text += getNodeTextContent(node.childNodes[i], depth + 1);
+          }
+          text += '**';
           break;
         }
         case 'emph':
         case 'i': {
           /* markdown representation of italic/emphasis */
-          text = '*' + getChildrenTextContent(node,depth) + '*';
+          text = '*';
+          for (let i = 0; i < node.childNodes.length; i += 1) {
+            text += getNodeTextContent(node.childNodes[i], depth + 1);
+          }
+          text += '*';
           break;
         }
         case 'p': {
-          text = '\n' + getChildrenTextContent(node,depth);
+          text = '\n';
+          for (let i = 0; i < node.childNodes.length; i += 1) {
+            text += getNodeTextContent(node.childNodes[i], depth + 1);
+          }
           break;
         }
         case 'a':
         case 'span':
         case 'div': {
-          text = getChildrenTextContent(node,depth);
+          for (let i = 0; i < node.childNodes.length; i += 1) {
+            text += getNodeTextContent(node.childNodes[i], depth + 1);
+          }
           break;
         }
-        default: break;
+        default:
+          break;
       }
       break;
     }
-    default: break;
+    default:
+      break;
   }
   return text;
-}
+};
 
-function getTextContent(node) {
-  const text = getNodeTextContent(node,0)
-    .replace(/^\s+/,'') /* remove leading whitespace */
-    .replace(/\s+$/,'') /* remove trailing whitespace */
-    .replace(/\n([^\n])/g,'  \n$1'); /* single line break to markdown break */
+const getTextContent = node => {
+  const text = getNodeTextContent(node, 0)
+    .replace(/^\s+/, '') /* remove leading whitespace */
+    .replace(/\s+$/, '') /* remove trailing whitespace */
+    .replace(/\n([^\n])/g, '  \n$1'); /* single line break to markdown break */
   return text;
-}
+};
 
 export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
@@ -117,9 +124,9 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
   const getCharacterCount = () => {
-    const text = getTextContent(contentEditable.current);
-    return graphemeSplitter.countGraphemes(text);
-  }
+    const message = getTextContent(contentEditable.current);
+    return graphemeSplitter.countGraphemes(message);
+  };
 
   const sendMessage = () => {
     if (!websocketService) {
@@ -127,9 +134,9 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
       return;
     }
 
-    let message = getTextContent(contentEditable.current);
-    let count = graphemeSplitter.countGraphemes(message)
-    if(count === 0 || count > characterLimit) return;
+    const message = getTextContent(contentEditable.current);
+    const count = graphemeSplitter.countGraphemes(message);
+    if (count === 0 || count > characterLimit) return;
 
     websocketService.send({ type: MessageType.CHAT, body: message });
 
