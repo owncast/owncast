@@ -21,21 +21,29 @@ var emojiCacheMu sync.Mutex
 var emojiCacheData = make([]models.CustomEmoji, 0)
 var emojiCacheModTime time.Time
 
-// GetEmojiList returns a list of custom emoji from the emoji directory.
-func GetEmojiList() []models.CustomEmoji {
-	emojiInfo, err := os.Stat(config.CustomEmojiPath)
-	if err != nil {
-		return nil
-	}
-	modTime := emojiInfo.ModTime()
+// UpdateEmojiList will update the cache (if required) and
+// return the modifiation time.
+func UpdateEmojiList(force bool) (time.Time, error) {
+	var modTime time.Time
 
-	if modTime.After(emojiCacheModTime) {
+	emojiPathInfo, err := os.Stat(config.CustomEmojiPath)
+	if err != nil {
+		return modTime, err
+	}
+
+	modTime = emojiPathInfo.ModTime()
+
+	if modTime.After(emojiCacheModTime) || force {
 		emojiCacheMu.Lock()
 		defer emojiCacheMu.Unlock()
+
 		// double-check that another thread didn't update this while waiting
-		if modTime.After(emojiCacheModTime) {
+		if modTime.After(emojiCacheModTime) || force {
 
 			emojiCacheModTime = modTime
+			if force {
+				emojiCacheModTime = time.Now()
+			}
 	    emojiFS := os.DirFS(config.CustomEmojiPath)
 
 	    emojiCacheData = make([]models.CustomEmoji, 0)
@@ -55,13 +63,21 @@ func GetEmojiList() []models.CustomEmoji {
 
 	    if err := fs.WalkDir(emojiFS, ".", walkFunction); err != nil {
 	    	log.Errorln("unable to fetch emojis: " + err.Error())
-	    	return emojiCacheData
 	    }
 		}
 	}
 
-	return emojiCacheData
+	return modTime, nil
+}
 
+// GetEmojiList returns a list of custom emoji from the emoji directory.
+func GetEmojiList() []models.CustomEmoji {
+	_, err := UpdateEmojiList(false)
+	if err != nil {
+		return nil
+	}
+
+	return emojiCacheData
 }
 
 // SetupEmojiDirectory sets up the custom emoji directory by copying all built-in

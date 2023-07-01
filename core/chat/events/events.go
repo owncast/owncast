@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"sync"
+	"text/template"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/teris-io/shortid"
@@ -14,6 +16,7 @@ import (
 	"mvdan.cc/xurls"
 
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/core/data"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -66,13 +69,64 @@ func (e *UserMessageEvent) SetDefaults() {
 	e.RenderAndSanitizeMessageBody()
 }
 
+var (
+  emojiMu sync.Mutex
+  emojiData = make(map[string]string)
+  emojiModTime time.Time
+  emojiRegex = regexp.MustCompile(`(:[^:]+:)`)
+  emojiHTMLFormat = `<img src="{{ .URL }}" class="emoji" alt=":{{ .Name }}:" title=":{{ .Name }}:">`
+  emojiHTMLTemplate = template.Must(template.New("emojiHTML").Parse(emojiHTMLFormat))
+)
+
+func loadEmoji() {
+	modTime, err := data.UpdateEmojiList(false)
+	if err != nil {
+		return
+	}
+
+	if modTime.After(emojiModTime) {
+		emojiMu.Lock()
+		defer emojiMu.Unlock()
+
+		emojiData = make(map[string]string)
+		emojiList := data.GetEmojiList()
+		for i:=0; i<len(emojiList); i++ {
+			var buf bytes.Buffer
+			emojiHTMLTemplate.Execute(&buf, emojiList[i])
+			emojiData[emojiList[i].Name] = buf.String()
+		}
+	}
+
+}
+
 // RenderAndSanitizeMessageBody will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
 // the message into something safe and renderable for clients.
 func (m *MessageEvent) RenderAndSanitizeMessageBody() {
 	m.RawBody = m.Body
 
+
+	// flag to ensure we only check for new emoji on the first regex match
+	emojiCheck := false
+
+	// replace shortcodes like :some-emote: with HTML
+	replaceFunc := func(match string) string {
+		if(!emojiCheck) {
+			emojiCheck = true
+			loadEmoji()
+		}
+		// remove leading/trailing colons
+		baseName := match[1:len(match)-1]
+		html, ok := emojiData[baseName]
+		if ok {
+			return html
+		}
+		return match
+	}
+
+	body := emojiRegex.ReplaceAllStringFunc(m.RawBody,replaceFunc)
+
 	// Set the new, sanitized and rendered message body
-	m.Body = RenderAndSanitize(m.RawBody)
+	m.Body = RenderAndSanitize(body)
 }
 
 // Empty will return if this message's contents is empty.

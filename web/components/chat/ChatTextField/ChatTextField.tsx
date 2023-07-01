@@ -3,6 +3,7 @@ import React, { FC, useEffect, useReducer, useRef, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import ContentEditable from 'react-contenteditable';
 import sanitizeHtml from 'sanitize-html';
+import GraphemeSplitter from 'grapheme-splitter';
 
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
@@ -32,9 +33,22 @@ export type ChatTextFieldProps = {
 };
 
 const characterLimit = 300;
+const maxNodeDepth = 10;
+const graphemeSplitter = new GraphemeSplitter();
 
-function getTextContent(node) {
+function getChildrenTextContent(node,depth) {
   let text = '';
+  for (let i=0; i<node.childNodes.length; i++) {
+    text += getNodeTextContent(node.childNodes[i],depth+1);
+  }
+  return text;
+}
+
+function getNodeTextContent(node,depth) {
+  let text = '';
+
+  if(depth > maxNodeDepth) return text;
+  if(node === null) return text;
 
   switch(node.nodeType) {
     case Node.CDATA_SECTION_NODE: // unlikely
@@ -52,12 +66,26 @@ function getTextContent(node) {
           text = '\n';
           break;
         }
-        case 'p':
+        case 'strong':
+        case 'b': {
+          /* markdown representation of bold/strong */
+          text = '**' + getChildrenTextContent(node,depth) + '**';
+          break;
+        }
+        case 'emph':
+        case 'i': {
+          /* markdown representation of italic/emphasis */
+          text = '*' + getChildrenTextContent(node,depth) + '*';
+          break;
+        }
+        case 'p': {
+          text = '\n' + getChildrenTextContent(node,depth);
+          break;
+        }
+        case 'a':
         case 'span':
         case 'div': {
-          for(let i=0; i<node.childNodes.length;i++) {
-            text += getTextContent(node.childNodes[i]);
-          }
+          text = getChildrenTextContent(node,depth);
           break;
         }
         default: break;
@@ -66,6 +94,14 @@ function getTextContent(node) {
     }
     default: break;
   }
+  return text;
+}
+
+function getTextContent(node) {
+  const text = getNodeTextContent(node,0)
+    .replace(/^\s+/,'') /* remove leading whitespace */
+    .replace(/\s+$/,'') /* remove trailing whitespace */
+    .replace(/\n([^\n])/g,'  \n$1'); /* single line break to markdown break */
   return text;
 }
 
@@ -80,17 +116,21 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   // By default when updating a ref the component doesn't re-render.
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
-  const getCharacterCount = () => getTextContent(contentEditable.current);
+  const getCharacterCount = () => {
+    const text = getTextContent(contentEditable.current);
+    return graphemeSplitter.countGraphemes(text);
+  }
 
   const sendMessage = () => {
-    const count = getCharacterCount();
-
     if (!websocketService) {
       console.log('websocketService is not defined');
       return;
     }
 
     let message = getTextContent(contentEditable.current);
+    let count = graphemeSplitter.countGraphemes(message)
+    if(count === 0 || count > characterLimit) return;
+
     websocketService.send({ type: MessageType.CHAT, body: message });
 
     // Clear the input.
@@ -103,18 +143,19 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     const output = text.current + textToInsert;
     text.current = output;
 
-    setCharacterCount(getCharacterCount());
     forceUpdate();
   };
 
   // Native emoji
   const onEmojiSelect = (emoji: string) => {
+    setCharacterCount(getCharacterCount() + 1);
     insertTextAtEnd(emoji);
   };
 
   // Custom emoji images
   const onCustomEmojiSelect = (name: string, emoji: string) => {
     const html = `<img src="${emoji}" alt=":${name}:" title=":${name}:" class="emoji" />`;
+    setCharacterCount(getCharacterCount() + name.length + 2);
     insertTextAtEnd(html);
   };
 
