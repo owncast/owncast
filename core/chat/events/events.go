@@ -82,7 +82,7 @@ type emojis struct {
 	children []emojiDef.Emojis
 }
 
-// return a new Emojis set
+// return a new Emojis set.
 func newEmojis(emotes ...emojiDef.Emoji) emojiDef.Emojis {
 	self := &emojis{
 		list:     emotes,
@@ -127,7 +127,6 @@ func (self *emojis) Clone() emojiDef.Emojis {
 		children: make([]emojiDef.Emojis, len(self.children)),
 	}
 
-	// TODO should this call Clone on each child?
 	copy(clone.children, self.children)
 
 	return clone
@@ -159,7 +158,10 @@ func loadEmoji() {
 
 		for i := 0; i < len(emojiList); i++ {
 			var buf bytes.Buffer
-			emojiHTMLTemplate.Execute(&buf, emojiList[i])
+			err := emojiHTMLTemplate.Execute(&buf, emojiList[i])
+			if err != nil {
+				return
+			}
 			emojiHTML[strings.ToLower(emojiList[i].Name)] = buf.String()
 
 			emoji := emojiDef.NewEmoji(emojiList[i].Name, nil, strings.ToLower(emojiList[i].Name))
@@ -168,7 +170,6 @@ func loadEmoji() {
 
 		emojiDefs = newEmojis(emojiArr...)
 	}
-
 }
 
 // RenderAndSanitizeMessageBody will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
@@ -229,7 +230,7 @@ func RenderMarkdown(raw string) string {
 				emoji.WithRenderingMethod(emoji.Func),
 				emoji.WithRendererFunc(func(w util.BufWriter, source []byte, n *emojiAst.Emoji, config *emoji.RendererConfig) {
 					baseName := n.Value.ShortNames[0]
-					w.WriteString(emojiHTML[baseName])
+					_, _ = w.WriteString(emojiHTML[baseName])
 				}),
 			),
 		),

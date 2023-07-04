@@ -37,9 +37,8 @@ func UpdateEmojiList(force bool) (time.Time, error) {
 		emojiCacheMu.Lock()
 		defer emojiCacheMu.Unlock()
 
-		// double-check that another thread didn't update this while waiting
+		// double-check that another thread didn't update this while waiting.
 		if modTime.After(emojiCacheModTime) || force {
-
 			emojiCacheModTime = modTime
 			if force {
 				emojiCacheModTime = time.Now()
