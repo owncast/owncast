@@ -116,7 +116,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const text = useRef(defaultText || '');
-  const contentEditable = React.createRef();
+  const contentEditable = React.createRef<HTMLElement>();
   const [customEmoji, setCustomEmoji] = useState([]);
 
   // This is a bit of a hack to force the component to re-render when the text changes.
