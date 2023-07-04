@@ -7,6 +7,7 @@
 }
 
 .mainColumn {
+  flex: 1 1 auto;
   overflow: scroll;
 }
 
@@ -69,6 +70,7 @@
 
 .desktopActionButtons {
   display: block;
+  width: 100%;
 
   @include screen(tablet) {
     display: none;
