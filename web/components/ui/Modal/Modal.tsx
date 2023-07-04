@@ -1,4 +1,4 @@
-import { Spin, Skeleton, Modal as AntModal } from 'antd';
+import { Spin, Modal as AntModal } from 'antd';
 import React, { FC, ReactNode, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ComponentError } from '../ComponentError/ComponentError';
@@ -85,13 +85,11 @@ export const Modal: FC<ModalProps> = ({
         )}
       >
         <div id="modal-container" style={{ height: '100%' }}>
-          {loading && (
-            <Skeleton active={loading} style={{ padding: '10px' }} paragraph={{ rows: 10 }} />
-          )}
-
           {iframe && <div style={{ display: iframeDisplayStyle }}>{iframe}</div>}
           {children && <div className={styles.content}>{children}</div>}
-          {loading && <Spin className={styles.spinner} spinning={loading} size="large" />}
+          {loading && (
+            <Spin className={styles.spinner} spinning={loading} size="large" tip={title} />
+          )}
         </div>
       </ErrorBoundary>
     </AntModal>
