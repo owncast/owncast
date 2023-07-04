@@ -44,26 +44,26 @@ func UpdateEmojiList(force bool) (time.Time, error) {
 			if force {
 				emojiCacheModTime = time.Now()
 			}
-	    emojiFS := os.DirFS(config.CustomEmojiPath)
+			emojiFS := os.DirFS(config.CustomEmojiPath)
 
-	    emojiCacheData = make([]models.CustomEmoji, 0)
+			emojiCacheData = make([]models.CustomEmoji, 0)
 
-	    walkFunction := func(path string, d os.DirEntry, err error) error {
-	    	if d.IsDir() {
-	    		return nil
-	    	}
+			walkFunction := func(path string, d os.DirEntry, err error) error {
+				if d.IsDir() {
+					return nil
+				}
 
-	    	emojiPath := filepath.Join(config.EmojiDir, path)
-	    	fileName := d.Name()
-	    	fileBase := fileName[:len(fileName)-len(filepath.Ext(fileName))]
-	    	singleEmoji := models.CustomEmoji{Name: fileBase, URL: emojiPath}
-	    	emojiCacheData = append(emojiCacheData, singleEmoji)
-	    	return nil
-	    }
+				emojiPath := filepath.Join(config.EmojiDir, path)
+				fileName := d.Name()
+				fileBase := fileName[:len(fileName)-len(filepath.Ext(fileName))]
+				singleEmoji := models.CustomEmoji{Name: fileBase, URL: emojiPath}
+				emojiCacheData = append(emojiCacheData, singleEmoji)
+				return nil
+			}
 
-	    if err := fs.WalkDir(emojiFS, ".", walkFunction); err != nil {
-	    	log.Errorln("unable to fetch emojis: " + err.Error())
-	    }
+			if err := fs.WalkDir(emojiFS, ".", walkFunction); err != nil {
+				log.Errorln("unable to fetch emojis: " + err.Error())
+			}
 		}
 	}
 
@@ -77,7 +77,16 @@ func GetEmojiList() []models.CustomEmoji {
 		return nil
 	}
 
-	return emojiCacheData
+	// Lock to make sure this doesn't get updated in the middle of reading
+	emojiCacheMu.Lock()
+	defer emojiCacheMu.Unlock()
+
+	// return a copy of cache data, ensures underlying slice isn't affected
+	// by future update
+	emojiData := make([]models.CustomEmoji, len(emojiCacheData))
+	copy(emojiData, emojiCacheData)
+
+	return emojiData
 }
 
 // SetupEmojiDirectory sets up the custom emoji directory by copying all built-in
