@@ -123,6 +123,7 @@ export const Content: FC = () => {
   const { enabled: browserNotificationsEnabled } = browserNotifications;
   const { online: isStreamLive } = serverStatus;
   const [externalActionToDisplay, setExternalActionToDisplay] = useState<ExternalAction>(null);
+  const [currentBrowserWindowUrl, setCurrentBrowserWindowUrl] = useState('');
 
   const [supportsBrowserNotifications, setSupportsBrowserNotifications] = useState(false);
   const supportFediverseFeatures = fediverseEnabled;
@@ -131,11 +132,24 @@ export const Content: FC = () => {
 
   const externalActionSelected = (action: ExternalAction) => {
     const { openExternally, url } = action;
+    const { displayName } = currentUser;
+
+    const updatedUrl = new URL(url);
+    // Append url and username to params so the link knows where we came from and who we are.
+    updatedUrl.searchParams.append('username', displayName);
+    updatedUrl.searchParams.append('instance', currentBrowserWindowUrl);
+    const fullUrl = updatedUrl.toString();
+    // Overwrite URL with the updated one that includes the params.
+    const updatedAction = {
+      ...action,
+      url: fullUrl,
+    };
+
     // apply openExternally only if we don't have an HTML embed
-    if (openExternally && url) {
-      window.open(url, '_blank');
+    if (openExternally && updatedAction) {
+      window.open(fullUrl, '_blank');
     } else {
-      setExternalActionToDisplay(action);
+      setExternalActionToDisplay(updatedAction);
     }
   };
 
@@ -184,6 +198,10 @@ export const Content: FC = () => {
       canPushNotificationsBeSupported() && browserNotificationsEnabled,
     );
   }, [browserNotificationsEnabled]);
+
+  useEffect(() => {
+    setCurrentBrowserWindowUrl(window.location.href);
+  }, []);
 
   const showChat = isChatAvailable && !chatDisabled && chatState === ChatState.VISIBLE;
 
