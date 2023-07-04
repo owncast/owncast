@@ -28,7 +28,7 @@ export const Sidebar: FC = () => {
   if (!currentUser) {
     return (
       <Sider className={styles.root} collapsedWidth={0} width={320}>
-        <Spin spinning size="large" />
+        <Spin spinning size="large" style={{ position: 'relative', top: '40vh' }} />
       </Sider>
     );
   }
