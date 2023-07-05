@@ -307,6 +307,7 @@ export const Content: FC = () => {
             </div>
           )}
         </Row>
+        <div style={{flex: "1 1"}} />
         <Footer />
       </div>
       {showChat && !isMobile && currentUser && (

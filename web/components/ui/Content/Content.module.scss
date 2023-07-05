@@ -4,9 +4,12 @@
   display: flex;
   flex-direction: row;
   overflow: hidden;
+  height: 100%;
 }
 
 .mainColumn {
+  display: flex;
+  flex-direction: column;
   flex: 1 1 auto;
   overflow: scroll;
 }
