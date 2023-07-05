@@ -19,7 +19,18 @@ export class ChatMessageHighlightMatcher extends Matcher {
       return null;
     }
 
-    const result = str.match(highlightString);
+    const escapedString = highlightString
+      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      .replace(/\s/g, '\\s');
+
+    const normalizedString = escapedString.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    let highlightRegex = escapedString;
+    if (escapedString !== normalizedString) {
+      highlightRegex = `(?:${escapedString})|(?:${normalizedString})`;
+    }
+
+    const result = str.match(new RegExp(highlightRegex, 'ui'));
 
     if (!result) {
       return null;
