@@ -137,7 +137,7 @@ const Emoji = () => {
       <Paragraph>
         Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the
         filename without extension will be used as emoji name. Additionally, emoji names are
-				case-insensitive. For best results, ensure all emoji have unique names.
+        case-insensitive. For best results, ensure all emoji have unique names.
       </Paragraph>
       <br />
       <Upload
