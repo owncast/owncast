@@ -19,9 +19,18 @@ export class ChatMessageHighlightMatcher extends Matcher {
       return null;
     }
 
-    const highlightRegex = new RegExp(highlightString.replace(/\s/g, '\\s'), 'ui');
+    const escapedString = highlightString
+      .replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&')
+      .replace(/\s/g, '\\s');
 
-    const result = str.match(highlightRegex);
+    const normalizedString = escapedString.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    let highlightRegex = escapedString;
+    if (escapedString !== normalizedString) {
+      highlightRegex = `(?:${escapedString})|(?:${normalizedString})`;
+    }
+
+    const result = str.match(new RegExp(highlightRegex, 'ui'));
 
     if (!result) {
       return null;
