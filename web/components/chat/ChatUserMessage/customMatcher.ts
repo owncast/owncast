@@ -19,7 +19,9 @@ export class ChatMessageHighlightMatcher extends Matcher {
       return null;
     }
 
-    const result = str.match(highlightString);
+    const highlightRegex = new RegExp(highlightString.replace(/\s/g, '\\s'), 'ui');
+
+    const result = str.match(highlightRegex);
 
     if (!result) {
       return null;
