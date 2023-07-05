@@ -20,7 +20,7 @@ export class ChatMessageHighlightMatcher extends Matcher {
     }
 
     const escapedString = highlightString
-      .replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&')
+      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       .replace(/\s/g, '\\s');
 
     const normalizedString = escapedString.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
