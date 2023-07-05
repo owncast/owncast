@@ -32,46 +32,30 @@ export type ChatContainerProps = {
   focusInput?: boolean;
 };
 
-function shouldCollapseMessages(
-  messages: ChatMessage[],
-  index: number,
-  collapsedMessageIds: Set<string>,
-): boolean {
-  if (messages.length < 2) {
+function shouldCollapseMessages(message: ChatMessage, previous: ChatMessage): boolean {
+  if (!message || !message.user) {
     return false;
   }
 
-  const message = messages[index];
-  if (!message || !message.user) {
+  if (previous.type !== MessageType.CHAT) {
     return false;
   }
 
   const {
     user: { id },
   } = message;
-  const lastMessage = messages[index - 1];
-  if (lastMessage?.type !== MessageType.CHAT) {
+  if (id !== previous.user.id) {
     return false;
   }
 
-  if (!lastMessage?.timestamp || !message.timestamp) {
+  if (!previous.timestamp || !message.timestamp) {
     return false;
   }
 
   const maxTimestampDelta = 1000 * 40; // 40 seconds
-  const lastTimestamp = new Date(lastMessage?.timestamp).getTime();
+  const lastTimestamp = new Date(previous.timestamp).getTime();
   const thisTimestamp = new Date(message.timestamp).getTime();
   if (thisTimestamp - lastTimestamp > maxTimestampDelta) {
-    return false;
-  }
-
-  if (id !== lastMessage?.user.id) {
-    return false;
-  }
-
-  // Limit the number of messages that can be collapsed in a row.
-  const maxCollapsedMessageCount = 5;
-  if (collapsedMessageIds.size >= maxCollapsedMessageCount) {
     return false;
   }
 
@@ -101,7 +85,28 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   const chatContainerRef = useRef(null);
   const scrollToBottomDelay = useRef(null);
 
-  const collapsedMessageIds = new Set<string>();
+  const collapsedIndexes: boolean[] = [];
+  let consecutiveTally: number = 1;
+
+  function calculateCollapsedMessages() {
+    // Limits the number of messages that can be collapsed in a row.
+    const maxCollapsedMessageCount = 5;
+    for (let i = collapsedIndexes.length; i < messages.length; i += 1) {
+      const collapse: boolean =
+        i > 0 &&
+        consecutiveTally < maxCollapsedMessageCount &&
+        shouldCollapseMessages(messages[i], messages[i - 1]);
+      collapsedIndexes.push(collapse);
+      consecutiveTally = 1 + (collapse ? consecutiveTally : 0);
+    }
+  }
+
+  function shouldCollapse(index: number): boolean {
+    if (collapsedIndexes.length <= index) {
+      calculateCollapsedMessages();
+    }
+    return collapsedIndexes[index];
+  }
 
   useEffect(
     () =>
@@ -147,13 +152,6 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   };
 
   const getUserChatMessageView = (index: number, message: ChatMessage) => {
-    const collapsed = shouldCollapseMessages(messages, index, collapsedMessageIds);
-    if (!collapsed) {
-      collapsedMessageIds.clear();
-    } else {
-      collapsedMessageIds.add(message.id);
-    }
-
     const isAuthorModerator = checkIsModerator(message);
 
     return (
@@ -162,7 +160,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         showModeratorMenu={isModerator} // Moderators have access to an additional menu
         highlightString={usernameToHighlight} // What to highlight in the message
         sentBySelf={message.user?.id === chatUserId} // The local user sent this message
-        sameUserAsLast={collapsed}
+        sameUserAsLast={shouldCollapse(index)}
         isAuthorModerator={isAuthorModerator}
         isAuthorBot={message.user?.isBot}
         isAuthorAuthenticated={message.user?.authenticated}
