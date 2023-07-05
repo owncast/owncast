@@ -68,7 +68,7 @@ const getNodeTextContent = (node, depth) => {
           text += '**';
           break;
         }
-        case 'emph':
+        case 'em':
         case 'i': {
           /* markdown representation of italic/emphasis */
           text = '*';
@@ -93,8 +93,15 @@ const getNodeTextContent = (node, depth) => {
           }
           break;
         }
-        default:
+        /* nodes which should specifically not be parsed */
+        case 'script':
+        case 'style': {
           break;
+        }
+        default: {
+          text = node.textContent;
+          break;
+        }
       }
       break;
     }
