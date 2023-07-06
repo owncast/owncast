@@ -30,6 +30,7 @@
 		"chart.js": "^4.2.0",
 		"classnames": "2.3.2",
 		"date-fns": "^2.29.3",
+		"grapheme-splitter": "^1.0.4",
 		"interweave": "^13.0.0",
 		"interweave-autolink": "^5.1.0",
 		"lodash": "4.17.21",

@@ -4,15 +4,22 @@ import (
 	"bytes"
 	"regexp"
 	"strings"
+	"sync"
+	"text/template"
 	"time"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/teris-io/shortid"
 	"github.com/yuin/goldmark"
+	emoji "github.com/yuin/goldmark-emoji"
+	emojiAst "github.com/yuin/goldmark-emoji/ast"
+	emojiDef "github.com/yuin/goldmark-emoji/definition"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
+	"github.com/yuin/goldmark/util"
 	"mvdan.cc/xurls"
 
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	log "github.com/sirupsen/logrus"
 )
@@ -66,6 +73,105 @@ func (e *UserMessageEvent) SetDefaults() {
 	e.RenderAndSanitizeMessageBody()
 }
 
+// implements the emojiDef.Emojis interface but uses case-insensitive search.
+// the .children field isn't currently used, but could be used in a future
+// implementation of say, emoji packs where a child represents a pack.
+type emojis struct {
+	list     []emojiDef.Emoji
+	names    map[string]*emojiDef.Emoji
+	children []emojiDef.Emojis
+}
+
+// return a new Emojis set.
+func newEmojis(emotes ...emojiDef.Emoji) emojiDef.Emojis {
+	self := &emojis{
+		list:     emotes,
+		names:    map[string]*emojiDef.Emoji{},
+		children: []emojiDef.Emojis{},
+	}
+
+	for i := range self.list {
+		emoji := &self.list[i]
+		for _, s := range emoji.ShortNames {
+			self.names[s] = emoji
+		}
+	}
+
+	return self
+}
+
+func (self *emojis) Get(shortName string) (*emojiDef.Emoji, bool) {
+	v, ok := self.names[strings.ToLower(shortName)]
+	if ok {
+		return v, ok
+	}
+
+	for _, child := range self.children {
+		v, ok := child.Get(shortName)
+		if ok {
+			return v, ok
+		}
+	}
+
+	return nil, false
+}
+
+func (self *emojis) Add(emotes emojiDef.Emojis) {
+	self.children = append(self.children, emotes)
+}
+
+func (self *emojis) Clone() emojiDef.Emojis {
+	clone := &emojis{
+		list:     self.list,
+		names:    self.names,
+		children: make([]emojiDef.Emojis, len(self.children)),
+	}
+
+	copy(clone.children, self.children)
+
+	return clone
+}
+
+var (
+	emojiMu           sync.Mutex
+	emojiDefs         = newEmojis()
+	emojiHTML         = make(map[string]string)
+	emojiModTime      time.Time
+	emojiHTMLFormat   = `<img src="{{ .URL }}" class="emoji" alt=":{{ .Name }}:" title=":{{ .Name }}:">`
+	emojiHTMLTemplate = template.Must(template.New("emojiHTML").Parse(emojiHTMLFormat))
+)
+
+func loadEmoji() {
+	modTime, err := data.UpdateEmojiList(false)
+	if err != nil {
+		return
+	}
+
+	if modTime.After(emojiModTime) {
+		emojiMu.Lock()
+		defer emojiMu.Unlock()
+
+		emojiHTML = make(map[string]string)
+
+		emojiList := data.GetEmojiList()
+		emojiArr := make([]emojiDef.Emoji, 0)
+
+		for i := 0; i < len(emojiList); i++ {
+			var buf bytes.Buffer
+			err := emojiHTMLTemplate.Execute(&buf, emojiList[i])
+			if err != nil {
+				return
+			}
+			emojiHTML[strings.ToLower(emojiList[i].Name)] = buf.String()
+
+			emoji := emojiDef.NewEmoji(emojiList[i].Name, nil, strings.ToLower(emojiList[i].Name))
+			emojiArr = append(emojiArr, emoji)
+		}
+
+		emojiDefs = newEmojis(emojiArr...)
+	}
+}
+
 // RenderAndSanitizeMessageBody will turn markdown into HTML, sanitize raw user-supplied HTML and standardize
 // the message into something safe and renderable for clients.
 func (m *MessageEvent) RenderAndSanitizeMessageBody() {
@@ -98,6 +204,11 @@ func RenderAndSanitize(raw string) string {
 
 // RenderMarkdown will return HTML rendered from the string body of a chat message.
 func RenderMarkdown(raw string) string {
+	loadEmoji()
+
+	emojiMu.Lock()
+	defer emojiMu.Unlock()
+
 	markdown := goldmark.New(
 		goldmark.WithRendererOptions(
 			html.WithUnsafe(),
@@ -111,6 +222,16 @@ func RenderMarkdown(raw string) string {
 				extension.WithLinkifyURLRegexp(
 					xurls.Strict,
 				),
+			),
+			emoji.New(
+				emoji.WithEmojis(
+					emojiDefs,
+				),
+				emoji.WithRenderingMethod(emoji.Func),
+				emoji.WithRendererFunc(func(w util.BufWriter, source []byte, n *emojiAst.Emoji, config *emoji.RendererConfig) {
+					baseName := n.Value.ShortNames[0]
+					_, _ = w.WriteString(emojiHTML[baseName])
+				}),
 			),
 		),
 	)
