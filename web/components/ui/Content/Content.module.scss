@@ -11,7 +11,11 @@
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  overflow: scroll;
+  overflow: auto;
+}
+
+.mainColumn::-webkit-scrollbar, .mainColumn::-webkit-scrollbar-thumb {
+  display: none;
 }
 
 .lowerSection {
