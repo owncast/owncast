@@ -49,6 +49,7 @@
 		"react-markdown": "8.0.7",
 		"react-virtuoso": "4.3.11",
 		"recoil": "0.7.7",
+		"regexpu-core": "^5.3.2",
 		"sanitize-html": "^2.11.0",
 		"sharp": "0.32.1",
 		"ua-parser-js": "1.0.35",
