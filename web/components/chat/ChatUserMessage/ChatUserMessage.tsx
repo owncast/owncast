@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { Interweave } from 'interweave';
 import { UrlMatcher } from 'interweave-autolink';
 import { ChatMessageHighlightMatcher } from './customMatcher';
+import { ChatMessageEmojiMatcher } from './emojiMatcher';
 import styles from './ChatUserMessage.module.scss';
 import { formatTimestamp } from './messageFmt';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -111,6 +112,7 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
             matchers={[
               new UrlMatcher('url', { customTLDs: ['online'] }),
               new ChatMessageHighlightMatcher('highlight', { highlightString }),
+              new ChatMessageEmojiMatcher('emoji', { className: 'emoji' }),
             ]}
           />
         </Tooltip>
