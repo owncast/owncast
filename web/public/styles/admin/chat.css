@@ -2,22 +2,28 @@
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
 .chat-messages .ant-table-cell.toggle-col label {
   font-size: 0.7rem;
 }
+
 .chat-messages .ant-table-cell .message-contents {
   overflow: auto;
   max-height: 200px;
 }
+
 .chat-messages .ant-table-cell .message-contents img {
   position: relative;
   margin-top: -5px;
-  width: 3rem;
+  max-height: 50px;
+  max-width: 50px;
   padding: 0.25rem;
 }
+
 .chat-messages .ant-table-cell .message-contents p {
   margin-bottom: 0;
 }
+
 .chat-messages .bulk-editor {
   margin: 0.5rem 0;
   padding: 0.5rem;
@@ -34,42 +40,52 @@
   color: var(--theme-color-palette-10);
   margin-right: 0.5rem;
 }
+
 .chat-messages .bulk-editor button {
   margin: 0 0.2rem;
   font-size: 0.75rem;
 }
+
 .ant-table-filter-dropdown {
   max-width: 250px;
 }
+
 .toggle-switch {
   display: flex;
-  flex-direction: row;
+  flex-flow: row nowrap;
   align-items: center;
-  flex-wrap: nowrap;
   justify-content: flex-end;
   transition: opacity 0.15s;
 }
+
 .toggle-switch .outcome-icon {
   margin-right: 0.5rem;
 }
+
 .toggle-switch.hidden {
   opacity: 0.25;
 }
+
 .toggle-switch.hidden:hover {
   opacity: 1;
 }
+
 .toggle-switch .ant-btn .anticon {
   opacity: 0.5;
 }
+
 .toggle-switch .ant-btn:hover .anticon {
   opacity: 1;
 }
+
 .toggle-switch .ant-btn-text:hover {
   background-color: var(--theme-color-palette-10);
 }
+
 .blockuser-popover {
   max-width: 400px;
 }
+
 .user-item-container {
   border: none;
   background: none;
@@ -79,32 +95,41 @@
   cursor: pointer;
   outline: none;
 }
+
 .user-item-container .display-name {
   color: var(--theme-color-palette-2);
   border-bottom: 1px dotted var(--theme-color-palette-10);
 }
+
 .user-item-container:hover .display-name {
   border-color: var(--theme-color-palette-4);
 }
+
 .user-details h5 {
   color: var(--theme-color-palette-0);
 }
+
 .user-details .created-at {
   font-size: 0.75em;
   font-style: italic;
 }
+
 .user-details .connection-info {
   font-size: 0.88em;
 }
+
 .user-details .previous-names-list {
   font-size: 0.88em;
 }
+
 .user-details .previous-names-list .user-name-item {
   font-family: monospace;
 }
+
 .user-details .previous-names-list .latest {
   font-style: italic;
 }
+
 .user-details .previous-names-list .latest .user-name-item {
   font-weight: bold;
   font-style: normal;
