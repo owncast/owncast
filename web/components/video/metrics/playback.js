@@ -102,7 +102,7 @@ class PlaybackMetrics {
     const tech = this.player.tech({ IWillNotUseThisInPlugins: true });
     this.supportsDetailedMetrics = !!tech;
 
-    tech.on('usage', e => {
+    tech?.on('usage', e => {
       if (e.name === 'vhs-unknown-waiting') {
         this.setIsBuffering(true);
       }
