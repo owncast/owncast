@@ -69,6 +69,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.11.0 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
+	github.com/yuin/goldmark-emoji v1.0.2 // indirect
 )
 
 require (

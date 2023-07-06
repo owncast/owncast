@@ -3,6 +3,7 @@ import React, { FC, useEffect, useReducer, useRef, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import ContentEditable from 'react-contenteditable';
 import sanitizeHtml from 'sanitize-html';
+import GraphemeSplitter from 'grapheme-splitter';
 
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
@@ -32,32 +33,118 @@ export type ChatTextFieldProps = {
 };
 
 const characterLimit = 300;
+const maxNodeDepth = 10;
+const graphemeSplitter = new GraphemeSplitter();
+
+const getNodeTextContent = (node, depth) => {
+  let text = '';
+
+  if (depth > maxNodeDepth) return text;
+  if (node === null) return text;
+
+  switch (node.nodeType) {
+    case Node.CDATA_SECTION_NODE: // unlikely
+    case Node.TEXT_NODE: {
+      text = node.nodeValue;
+      break;
+    }
+    case Node.ELEMENT_NODE: {
+      switch (node.tagName.toLowerCase()) {
+        case 'img': {
+          text = node.getAttribute('alt') || '';
+          break;
+        }
+        case 'br': {
+          text = '\n';
+          break;
+        }
+        case 'strong':
+        case 'b': {
+          /* markdown representation of bold/strong */
+          text = '**';
+          for (let i = 0; i < node.childNodes.length; i += 1) {
+            text += getNodeTextContent(node.childNodes[i], depth + 1);
+          }
+          text += '**';
+          break;
+        }
+        case 'em':
+        case 'i': {
+          /* markdown representation of italic/emphasis */
+          text = '*';
+          for (let i = 0; i < node.childNodes.length; i += 1) {
+            text += getNodeTextContent(node.childNodes[i], depth + 1);
+          }
+          text += '*';
+          break;
+        }
+        case 'p': {
+          text = '\n';
+          for (let i = 0; i < node.childNodes.length; i += 1) {
+            text += getNodeTextContent(node.childNodes[i], depth + 1);
+          }
+          break;
+        }
+        case 'a':
+        case 'span':
+        case 'div': {
+          for (let i = 0; i < node.childNodes.length; i += 1) {
+            text += getNodeTextContent(node.childNodes[i], depth + 1);
+          }
+          break;
+        }
+        /* nodes which should specifically not be parsed */
+        case 'script':
+        case 'style': {
+          break;
+        }
+        default: {
+          text = node.textContent;
+          break;
+        }
+      }
+      break;
+    }
+    default:
+      break;
+  }
+  return text;
+};
+
+const getTextContent = node => {
+  const text = getNodeTextContent(node, 0)
+    .replace(/^\s+/, '') /* remove leading whitespace */
+    .replace(/\s+$/, '') /* remove trailing whitespace */
+    .replace(/\n([^\n])/g, '  \n$1'); /* single line break to markdown break */
+  return text;
+};
 
 export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const text = useRef(defaultText || '');
+  const contentEditable = React.createRef<HTMLElement>();
   const [customEmoji, setCustomEmoji] = useState([]);
 
   // This is a bit of a hack to force the component to re-render when the text changes.
   // By default when updating a ref the component doesn't re-render.
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
-  const getCharacterCount = () => text.current.length;
+  const getCharacterCount = () => {
+    const message = getTextContent(contentEditable.current);
+    return graphemeSplitter.countGraphemes(message);
+  };
 
   const sendMessage = () => {
-    const count = getCharacterCount();
-
     if (!websocketService) {
       console.log('websocketService is not defined');
       return;
     }
 
+    const message = getTextContent(contentEditable.current);
+    const count = graphemeSplitter.countGraphemes(message);
     if (count === 0 || count > characterLimit) return;
 
-    let message = text.current;
-    // Strip the opening and closing <p> tags.
-    message = message.replace(/^<p>|<\/p>$/g, '');
     websocketService.send({ type: MessageType.CHAT, body: message });
 
     // Clear the input.
@@ -70,18 +157,19 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     const output = text.current + textToInsert;
     text.current = output;
 
-    setCharacterCount(getCharacterCount());
     forceUpdate();
   };
 
   // Native emoji
   const onEmojiSelect = (emoji: string) => {
+    setCharacterCount(getCharacterCount() + 1);
     insertTextAtEnd(emoji);
   };
 
   // Custom emoji images
   const onCustomEmojiSelect = (name: string, emoji: string) => {
-    const html = `<img src="${emoji}" alt="${name}" title="${name}" class="emoji" />`;
+    const html = `<img src="${emoji}" alt=":${name}:" title=":${name}:" class="emoji" />`;
+    setCharacterCount(getCharacterCount() + name.length + 2);
     insertTextAtEnd(html);
   };
 
@@ -161,6 +249,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
           style={{ width: '100%' }}
           role="textbox"
           aria-label="Chat text input"
+          innerRef={contentEditable}
         />
         {enabled && (
           <div style={{ display: 'flex', paddingLeft: '5px' }}>
