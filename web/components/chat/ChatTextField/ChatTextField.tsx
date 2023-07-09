@@ -1,12 +1,12 @@
 import { Popover } from 'antd';
-import React, { FC, useEffect, useReducer, useRef, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import ContentEditable from 'react-contenteditable';
 import sanitizeHtml from 'sanitize-html';
 import GraphemeSplitter from 'grapheme-splitter';
 
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
+import ContentEditable from './ContentEditable';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
@@ -122,16 +122,15 @@ const getTextContent = node => {
 export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
-  const text = useRef(defaultText || '');
-  const contentEditable = React.createRef<HTMLElement>();
+  const [contentEditable, setContentEditable] = useState(null);
   const [customEmoji, setCustomEmoji] = useState([]);
 
-  // This is a bit of a hack to force the component to re-render when the text changes.
-  // By default when updating a ref the component doesn't re-render.
-  const [, forceUpdate] = useReducer(x => x + 1, 0);
+  const onRootRef = el => {
+    setContentEditable(el);
+  };
 
   const getCharacterCount = () => {
-    const message = getTextContent(contentEditable.current);
+    const message = getTextContent(contentEditable);
     return graphemeSplitter.countGraphemes(message);
   };
 
@@ -141,35 +140,26 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
       return;
     }
 
-    const message = getTextContent(contentEditable.current);
+    const message = getTextContent(contentEditable);
     const count = graphemeSplitter.countGraphemes(message);
     if (count === 0 || count > characterLimit) return;
 
     websocketService.send({ type: MessageType.CHAT, body: message });
-
-    // Clear the input.
-    text.current = '';
-    setCharacterCount(0);
-    forceUpdate();
+    contentEditable.innerHTML = '';
   };
 
   const insertTextAtEnd = (textToInsert: string) => {
-    const output = text.current + textToInsert;
-    text.current = output;
-
-    forceUpdate();
+    contentEditable.innerHTML += textToInsert;
   };
 
   // Native emoji
   const onEmojiSelect = (emoji: string) => {
-    setCharacterCount(getCharacterCount() + 1);
     insertTextAtEnd(emoji);
   };
 
   // Custom emoji images
   const onCustomEmojiSelect = (name: string, emoji: string) => {
     const html = `<img src="${emoji}" alt=":${name}:" title=":${name}:" class="emoji" />`;
-    setCharacterCount(getCharacterCount() + name.length + 2);
     insertTextAtEnd(html);
   };
 
@@ -180,8 +170,27 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     }
   };
 
-  const handleChange = evt => {
-    const sanitized = sanitizeHtml(evt.target.value, {
+  const onPaste = evt => {
+    evt.preventDefault();
+
+    const clip = evt.clipboardData;
+    const { types } = clip;
+    const contentTypes = ['text/html', 'text/plain'];
+
+    let content;
+
+    for (let i = 0; i < contentTypes.length; i += 1) {
+      const contentType = contentTypes[i];
+
+      if (types.includes(contentType)) {
+        content = clip.getData(contentType);
+        break;
+      }
+    }
+
+    if (!content) return;
+
+    const sanitized = sanitizeHtml(content, {
       allowedTags: ['b', 'i', 'em', 'strong', 'a', 'br', 'p', 'img'],
       allowedAttributes: {
         img: ['class', 'alt', 'title', 'src'],
@@ -196,9 +205,22 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
       },
     });
 
-    if (text.current !== sanitized) text.current = sanitized;
+    // MDN lists this as deprecated, but it's the only way to save this paste
+    // into the browser's Undo buffer. Plus it handles all the selection
+    // deletion, caret positioning, etc automaticaly.
+    if (sanitized) document.execCommand('insertHTML', false, sanitized);
+  };
 
-    setCharacterCount(getCharacterCount());
+  const handleChange = () => {
+    const count = getCharacterCount();
+    setCharacterCount(count);
+
+    if (count === 0 && contentEditable.children.length === 1) {
+      /* if we have a single <br> element added by the browser, remove. */
+      if (contentEditable.children[0].tagName.toLowerCase() === 'br') {
+        contentEditable.removeChild(contentEditable.children[0]);
+      }
+    }
   };
 
   // Focus the input when the component mounts.
@@ -241,15 +263,16 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
       >
         <ContentEditable
           id="chat-input-content-editable"
-          html={text.current}
+          html={defaultText || ''}
           placeholder={enabled ? 'Send a message to chat' : 'Chat is disabled'}
           disabled={!enabled}
           onKeyDown={onKeyDown}
-          onChange={handleChange}
-          style={{ width: '100%' }}
+          onContentChange={handleChange}
+          onPaste={onPaste}
+          onRootRef={onRootRef}
+          style={{ whiteSpace: 'pre-wrap', width: '100%' }}
           role="textbox"
           aria-label="Chat text input"
-          innerRef={contentEditable}
         />
         {enabled && (
           <div style={{ display: 'flex', paddingLeft: '5px' }}>
