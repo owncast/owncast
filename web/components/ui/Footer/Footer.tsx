@@ -4,18 +4,11 @@ import styles from './Footer.module.scss';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { serverStatusState } from '../../stores/ClientConfigStore';
 
-export type FooterProps = {
-  dynamicPaddingValue?: string;
-};
-
-export const Footer: FC<FooterProps> = ({ dynamicPaddingValue }) => {
+export const Footer: FC = () => {
   const clientStatus = useRecoilValue<ServerStatus>(serverStatusState);
   const { versionNumber } = clientStatus;
-  const dynamicPaddingStyle = dynamicPaddingValue
-    ? { paddingRight: `calc(${dynamicPaddingValue} + var(--footer-padding-x)` }
-    : null;
   return (
-    <footer className={styles.footer} id="footer" style={dynamicPaddingStyle}>
+    <footer className={styles.footer} id="footer">
       <span>
         Powered by <a href="https://owncast.online">Owncast v{versionNumber}</a>
       </span>

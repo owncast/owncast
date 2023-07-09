@@ -8,7 +8,6 @@ import { Layout } from 'antd';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Footer } from '../../ui/Footer/Footer';
 import {
   ClientConfigStore,
   isChatAvailableSelector,
@@ -16,9 +15,6 @@ import {
   fatalErrorStateAtom,
   appStateAtom,
   serverStatusState,
-  isMobileAtom,
-  ChatState,
-  chatStateAtom,
 } from '../../stores/ClientConfigStore';
 import { Content } from '../../ui/Content/Content';
 import { Header } from '../../ui/Header/Header';
@@ -33,7 +29,6 @@ import { PushNotificationServiceWorker } from '../../workers/PushNotificationSer
 import { AppStateOptions } from '../../stores/application-state';
 import { Noscript } from '../../ui/Noscript/Noscript';
 import { ServerStatus } from '../../../interfaces/server-status.model';
-import { DYNAMIC_PADDING_VALUE } from '../../../utils/constants';
 
 // Lazy loaded components
 
@@ -54,16 +49,10 @@ export const Main: FC = () => {
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
-  const isMobile = useRecoilValue<boolean | undefined>(isMobileAtom);
-  const chatState = useRecoilValue<ChatState>(chatStateAtom);
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
   const { videoAvailable } = appState;
   const { online, streamTitle } = clientStatus;
-
-  // accounts for sidebar width when online in desktop
-  const showChat = online && !chatDisabled && chatState === ChatState.VISIBLE;
-  const dynamicFooterPadding = showChat && !isMobile ? DYNAMIC_PADDING_VALUE : '';
 
   useEffect(() => {
     setupNoLinkReferrer(layoutRef.current);
@@ -171,10 +160,6 @@ export const Main: FC = () => {
         {fatalError && (
           <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
         )}
-
-        <div className={styles.footerContainer}>
-          <Footer dynamicPaddingValue={dynamicFooterPadding} />
-        </div>
       </Layout>
       <Noscript />
     </>

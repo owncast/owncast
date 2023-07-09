@@ -2,8 +2,8 @@
 
 // The button that is displayed to scroll to the bottom of the chat.
 .toBottomWrap {
+  align-self: center;
   display: flex;
-  width: 100%;
   justify-content: center;
   position: absolute;
   bottom: 75px;
@@ -23,6 +23,7 @@
 }
 
 .chatContainer {
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   background-color: var(--theme-color-components-chat-background);
