@@ -42,6 +42,7 @@ test/automated/browser/screenshots
 lefthook.yml
 test/automated/browser/cypress/screenshots
 test/automated/browser/cypress/videos
+web/style-definitions/build/
 
 web/public/sw.js
 web/public/workbox-*.js

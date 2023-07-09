@@ -54,5 +54,29 @@ module.exports = {
         },
       ],
     },
+    'ios-swift': {
+      transforms: [
+        'attribute/cti',
+        'name/ti/camel',
+        'color/ColorSwiftUI',
+        'content/swift/literal',
+        'asset/swift/literal',
+        'size/swift/remToCGFloat',
+        'font/swift/literal',
+      ],
+      buildPath: 'build/',
+      files: [
+        {
+          format: 'ios-swift/class.swift',
+          className: 'PlatformColor',
+          destination: 'Colors.swift',
+          filter: {
+            attributes: {
+              category: 'color',
+            },
+          },
+        },
+      ],
+    },
   },
 };
