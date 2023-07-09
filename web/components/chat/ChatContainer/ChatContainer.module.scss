@@ -23,7 +23,8 @@
 }
 
 .chatContainer {
-  flex: 0 0 var(--chat-col-width);
+  flex: 0 0 auto;
+  width: var(--chat-col-width);
   display: flex;
   flex-direction: column;
   background-color: var(--theme-color-components-chat-background);
