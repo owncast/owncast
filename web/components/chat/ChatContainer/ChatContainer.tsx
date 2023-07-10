@@ -293,7 +293,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   window.addEventListener('resize', () => {
     const container = desktop && document.getElementById('chat-container');
     if (container) {
-      const currentWidth = parseFloat(container.style.width, 10) || defaultChatWidth;
+      const currentWidth = parseFloat(container.style.width) || defaultChatWidth;
       container.style.width = `${clampChatWidth(currentWidth)}px`;
     }
   });
