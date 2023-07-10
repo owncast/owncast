@@ -30,7 +30,7 @@ export type ChatContainerProps = {
   height?: string;
   chatAvailable: boolean;
   focusInput?: boolean;
-  desktop: boolean;
+  desktop?: boolean;
 };
 
 function shouldCollapseMessages(message: ChatMessage, previous: ChatMessage): boolean {
