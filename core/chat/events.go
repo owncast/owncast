@@ -63,6 +63,12 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	savedUser := user.GetUserByToken(eventData.client.accessToken)
 	oldName := savedUser.DisplayName
 
+	// Check that the new name is different from old.
+	if proposedUsername == oldName {
+		eventData.client.sendConnectedClientInfo()
+		return
+	}
+
 	// Save the new name
 	if err := user.ChangeUsername(eventData.client.User.ID, proposedUsername); err != nil {
 		log.Errorln("error changing username", err)
