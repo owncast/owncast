@@ -291,7 +291,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
 
   // Re-clamp the chat size whenever the window resizes
   window.addEventListener('resize', () => {
-    const container = document.getElementById('chat-container');
+    const container = desktop && document.getElementById('chat-container');
     if (container) {
       const currentWidth = parseFloat(container.style.width, 10) || defaultChatWidth;
       container.style.width = `${clampChatWidth(currentWidth)}px`;
