@@ -2,7 +2,7 @@ import { Popover } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import sanitizeHtml from 'sanitize-html';
-import GraphemeSplitter from 'grapheme-splitter';
+import Graphemer from 'graphemer';
 
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
@@ -34,7 +34,7 @@ export type ChatTextFieldProps = {
 
 const characterLimit = 300;
 const maxNodeDepth = 10;
-const graphemeSplitter = new GraphemeSplitter();
+const graphemer = new Graphemer();
 
 const getNodeTextContent = (node, depth) => {
   let text = '';
@@ -131,7 +131,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
 
   const getCharacterCount = () => {
     const message = getTextContent(contentEditable);
-    return graphemeSplitter.countGraphemes(message);
+    return graphemer.countGraphemes(message);
   };
 
   const sendMessage = () => {
@@ -141,7 +141,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     }
 
     const message = getTextContent(contentEditable);
-    const count = graphemeSplitter.countGraphemes(message);
+    const count = graphemer.countGraphemes(message);
     if (count === 0 || count > characterLimit) return;
 
     websocketService.send({ type: MessageType.CHAT, body: message });
