@@ -321,6 +321,7 @@ export const Content: FC = () => {
           isModerator={currentUser.isModerator}
           chatAvailable={isChatAvailable}
           showInput={!!currentUser}
+          desktop
         />
       )}
       {externalActionToDisplay && (
