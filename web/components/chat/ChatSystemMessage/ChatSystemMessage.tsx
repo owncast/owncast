@@ -18,17 +18,19 @@ export const ChatSystemMessage: FC<ChatSystemMessageProps> = ({
   },
   highlightString,
 }) => (
-  <div className={cn([styles.chatSystemMessage, 'chat-message_system'])}>
-    <div className={styles.user}>
-      <span className={styles.userName}>{displayName}</span>
+  <div className={styles.chatSystemMessagePadding}>
+    <div className={cn([styles.chatSystemMessage, 'chat-message_system'])}>
+      <div className={styles.user}>
+        <span className={styles.userName}>{displayName}</span>
+      </div>
+      <Interweave
+        className={styles.message}
+        content={body}
+        matchers={[
+          new UrlMatcher('url', { customTLDs: ['online'] }),
+          new ChatMessageHighlightMatcher('highlight', { highlightString }),
+        ]}
+      />
     </div>
-    <Interweave
-      className={styles.message}
-      content={body}
-      matchers={[
-        new UrlMatcher('url', { customTLDs: ['online'] }),
-        new ChatMessageHighlightMatcher('highlight', { highlightString }),
-      ]}
-    />
   </div>
 );
