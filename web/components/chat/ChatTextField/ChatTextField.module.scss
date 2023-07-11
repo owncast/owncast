@@ -6,7 +6,6 @@
   bottom: 0;
   width: 100%;
   padding: 0.6em;
-  overflow-x: hidden;
   background-color: var(--theme-color-components-chat-background);
 
   .inputWrap {
@@ -18,7 +17,6 @@
     bottom: 0;
     width: 100%;
     padding: 0.3rem;
-    overflow-x: hidden;
     transition: box-shadow 90ms ease-in-out;
 
     &:focus-within {
@@ -50,6 +48,7 @@
     max-height: 40px; // 2 lines of text
     min-height: 30px;
     cursor: text;
+    overflow-x: auto;
 
     &:focus {
       outline: 1px solid var(--color-owncast-gray-500) !important;
