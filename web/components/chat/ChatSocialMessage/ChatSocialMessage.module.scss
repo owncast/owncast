@@ -1,3 +1,7 @@
+.followerPadding {
+  padding: 0.5em;
+}
+
 .follower {
   border-color: rgb(0 0 0 / 30%);
   border-width: 1px;
@@ -5,7 +9,6 @@
   padding: 10px;
   border-radius: var(--theme-rounded-corners);
   background-color: var(--theme-color-background-main);
-  margin: 0.5em;
 
   &:hover {
     border-color: var(--theme-text-link);

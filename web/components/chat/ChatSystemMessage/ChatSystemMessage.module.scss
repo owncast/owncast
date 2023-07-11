@@ -1,3 +1,8 @@
+.chatSystemMessagePadding {
+  padding: 5px;
+  padding-bottom: 10px;
+}
+
 .chatSystemMessage {
   background: var(--theme-color-background-main);
   background: linear-gradient(
@@ -6,8 +11,6 @@
     rgb(65 28 139) 40%,
     rgb(71 50 133) 80%
   );
-  margin: 5px;
-  margin-bottom: 10px;
   border-radius: 5px;
   border-width: 1px;
   border-style: solid;
