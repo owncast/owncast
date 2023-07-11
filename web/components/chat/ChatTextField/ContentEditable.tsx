@@ -53,6 +53,7 @@ export default class ContentEditable extends React.Component<ContentEditableProp
     const { tagName, html, ...newProps } = this.props;
 
     delete newProps.onRootRef;
+    delete newProps.onContentChange;
 
     return React.createElement(tagName || 'div', {
       ...newProps,
