@@ -40,7 +40,7 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
   const { displayName, displayColor } = currentUser;
 
   const saveEnabled = () => {
-    const count = Array.from(newName).length;
+    const count = newName !== undefined ? Array.from(newName).length : 0;
     return (
       newName !== displayName &&
       count > 0 &&
