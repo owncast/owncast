@@ -31,6 +31,15 @@
   font-size: var(--chat-message-text-size);
 }
 
+.resizeHandle {
+  background: linear-gradient(45deg, transparent 0px,transparent 4px, var(--color-owncast-palette-6) 4px, var(--color-owncast-palette-6) 5px, transparent 5px, transparent 9px, var(--color-owncast-palette-6) 9px, var(--color-owncast-palette-6) 10px, transparent 10px, transparent 14px, var(--color-owncast-palette-6) 14px, var(--color-owncast-palette-6) 15px, transparent 15px);
+  position: absolute;
+  bottom: 0;
+  width: 30px;
+  height: 30px;
+  cursor: col-resize;
+}
+
 .virtuoso {
   width: auto;
   flex-grow: 1;

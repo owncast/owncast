@@ -5,11 +5,6 @@
   flex-direction: row;
   overflow: hidden;
   height: 100%;
-
-  // I'm not quite sure why, but sass ignores `#chat-container` here
-  [id="chat-container"] {
-    width: var(--chat-col-width);
-  }
 }
 
 .mainColumn {

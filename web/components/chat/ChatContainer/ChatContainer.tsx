@@ -30,6 +30,7 @@ export type ChatContainerProps = {
   height?: string;
   chatAvailable: boolean;
   focusInput?: boolean;
+  desktop?: boolean;
 };
 
 function shouldCollapseMessages(message: ChatMessage, previous: ChatMessage): boolean {
@@ -77,6 +78,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   showInput,
   height,
   chatAvailable: chatEnabled,
+  desktop,
   focusInput = true,
 }) => {
   const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false);
@@ -266,6 +268,36 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     [messages, usernameToHighlight, chatUserId, isModerator, showScrollToBottomButton, isAtBottom],
   );
 
+  const defaultChatWidth: number = 320;
+  function clampChatWidth(desired) {
+    return Math.max(200, Math.min(window.innerWidth * 0.666, desired));
+  }
+
+  function startDrag(dragEvent) {
+    const container = document.getElementById('chat-container');
+    function move(event) {
+      container.style.width = `${clampChatWidth(window.innerWidth - event.x)}px`;
+    }
+    function endDrag() {
+      window.document.removeEventListener('mousemove', move);
+      window.document.removeEventListener('mouseup', endDrag);
+      window.document.removeEventListener('focusout', endDrag);
+    }
+    window.document.addEventListener('mousemove', move);
+    window.document.addEventListener('mouseup', endDrag);
+    window.document.addEventListener('focusout', endDrag);
+    dragEvent.preventDefault(); // Prevent selecting the page as you resize it
+  }
+
+  // Re-clamp the chat size whenever the window resizes
+  window.addEventListener('resize', () => {
+    const container = desktop && document.getElementById('chat-container');
+    if (container) {
+      const currentWidth = parseFloat(container.style.width) || defaultChatWidth;
+      container.style.width = `${clampChatWidth(currentWidth)}px`;
+    }
+  });
+
   return (
     <ErrorBoundary
       // eslint-disable-next-line react/no-unstable-nested-components
@@ -277,12 +309,19 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         />
       )}
     >
-      <div id="chat-container" className={styles.chatContainer}>
+      <div
+        id="chat-container"
+        className={styles.chatContainer}
+        style={desktop && { width: `${defaultChatWidth}px` }}
+      >
         {MessagesTable}
         {showInput && (
           <div className={styles.chatTextField}>
             <ChatTextField enabled={chatEnabled} focusInput={focusInput} />
           </div>
+        )}
+        {desktop && (
+          <div className={styles.resizeHandle} onMouseDown={startDrag} role="presentation" />
         )}
       </div>
     </ErrorBoundary>
