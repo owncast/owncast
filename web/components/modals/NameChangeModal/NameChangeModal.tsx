@@ -31,14 +31,23 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const [newName, setNewName] = useState<string>(currentUser?.displayName);
 
+  const characterLimit = 30;
+
   if (!currentUser) {
     return null;
   }
 
   const { displayName, displayColor } = currentUser;
 
-  const saveEnabled = () =>
-    newName !== displayName && newName !== '' && websocketService?.isConnected();
+  const saveEnabled = () => {
+    const count = newName !== undefined ? Array.from(newName).length : 0;
+    return (
+      newName !== displayName &&
+      count > 0 &&
+      count <= characterLimit &&
+      websocketService?.isConnected()
+    );
+  };
 
   const handleNameChange = () => {
     if (!saveEnabled()) return;
@@ -58,6 +67,8 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
     };
     websocketService.send(colorChange);
   };
+
+  const showCount = info => (info.count > characterLimit ? 'Over limit' : '');
 
   const maxColor = 8; // 0...n
   const colorOptions = [...Array(maxColor)].map((_, i) => i);
@@ -84,8 +95,7 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
           onChange={e => setNewName(e.target.value)}
           placeholder="Your chat display name"
           aria-label="Your chat display name"
-          maxLength={30}
-          showCount
+          showCount={{ formatter: showCount }}
           defaultValue={displayName}
           className={styles.inputGroup}
         />

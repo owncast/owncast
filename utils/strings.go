@@ -18,10 +18,14 @@ func MakeSafeStringOfLength(s string, length int) string {
 	newString := s
 	newString = StripHTML(newString)
 
-	if len(newString) > length {
-		newString = newString[:length]
+	// Convert utf-8 string into Unicode code points.
+	codePoints := []rune(newString)
+
+	if len(codePoints) > length {
+		codePoints = codePoints[:length]
 	}
 
+	newString = string(codePoints)
 	newString = strings.ReplaceAll(newString, "\r", "")
 	newString = strings.TrimSpace(newString)
 
