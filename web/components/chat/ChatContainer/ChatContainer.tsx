@@ -33,6 +33,8 @@ export type ChatContainerProps = {
   desktop?: boolean;
 };
 
+let resizeWindowCallback: () => void;
+
 function shouldCollapseMessages(message: ChatMessage, previous: ChatMessage): boolean {
   if (!message || !message.user) {
     return false;
@@ -290,13 +292,21 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   }
 
   // Re-clamp the chat size whenever the window resizes
-  window.addEventListener('resize', () => {
+  function resize() {
     const container = desktop && document.getElementById('chat-container');
     if (container) {
       const currentWidth = parseFloat(container.style.width) || defaultChatWidth;
       container.style.width = `${clampChatWidth(currentWidth)}px`;
     }
-  });
+  }
+
+  if (resizeWindowCallback) window.removeEventListener('resize', resizeWindowCallback);
+  if (desktop) {
+    window.addEventListener('resize', resize);
+    resizeWindowCallback = resize;
+  } else {
+    resizeWindowCallback = null;
+  }
 
   return (
     <ErrorBoundary
