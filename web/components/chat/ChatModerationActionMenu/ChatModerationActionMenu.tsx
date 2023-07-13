@@ -1,9 +1,8 @@
-import { Dropdown, Menu, MenuProps, Space, message, Modal as AntModal } from 'antd';
+import { Dropdown, MenuProps, Space, message, Modal as AntModal } from 'antd';
 import { FC, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Modal } from '../../ui/Modal/Modal';
 import { ChatModerationDetailsModal } from '../ChatModerationDetailsModal/ChatModerationDetailsModal';
-import styles from './ChatModerationActionMenu.module.scss';
 import ChatModeration from '../../../services/moderation-service';
 
 const { confirm } = AntModal;
@@ -82,53 +81,29 @@ export const ChatModerationActionMenu: FC<ChatModerationActionMenuProps> = ({
     });
   };
 
-  const onMenuClick: MenuProps['onClick'] = ({ key }) => {
-    if (key === 'hide-message') {
-      confirmHideMessage();
-    } else if (key === 'ban-user') {
-      confirmBanUser();
-    } else if (key === 'more-info') {
-      setShowUserDetailsModal(true);
-    }
-  };
-
-  const menu = (
-    <Menu
-      onClick={onMenuClick}
-      items={[
-        {
-          label: (
-            <div>
-              <span className={styles.icon}>
-                <EyeInvisibleOutlined />
-              </span>
-              Hide Message
-            </div>
-          ),
-          key: 'hide-message',
-        },
-        {
-          label: (
-            <div>
-              <span className={styles.icon}>
-                <CloseCircleOutlined />
-              </span>
-              Ban User
-            </div>
-          ),
-          key: 'ban-user',
-        },
-        {
-          label: <div>More Info...</div>,
-          key: 'more-info',
-        },
-      ]}
-    />
-  );
+  const items: MenuProps['items'] = [
+    {
+      icon: <EyeInvisibleOutlined />,
+      label: 'Hide Message',
+      key: 'hide-message',
+      onClick: confirmHideMessage,
+    },
+    {
+      icon: <CloseCircleOutlined />,
+      label: 'Ban User',
+      key: 'ban-user',
+      onClick: confirmBanUser,
+    },
+    {
+      label: 'More Info...',
+      key: 'more-info',
+      onClick: () => setShowUserDetailsModal(true),
+    },
+  ];
 
   return (
     <>
-      <Dropdown overlay={menu} trigger={['click']}>
+      <Dropdown menu={{ items }} trigger={['click']}>
         <button type="button" onClick={e => e.preventDefault()}>
           <Space>
             <SmallDashOutlined />

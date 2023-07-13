@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, ReactElement } from 'react';
-import { Row, Col, Typography, Menu, Dropdown, Spin, Alert } from 'antd';
+import { Row, Col, Typography, MenuProps, Dropdown, Spin, Alert } from 'antd';
 import { getUnixTime, sub } from 'date-fns';
 import dynamic from 'next/dynamic';
 import { Chart } from '../../components/admin/Chart';
@@ -85,22 +85,12 @@ export default function ViewersOverTime() {
     setTimeWindowStart(times[key]);
   };
 
-  const menu = (
-    <Menu>
-      {online && streamStart && (
-        <Menu.Item key="0" onClick={onTimeWindowSelect}>
-          {times[0].title}
-        </Menu.Item>
-      )}
-      {times.slice(1).map((time, index) => (
-        // The array is hard coded, so it's safe to use the index as a key.
-        // eslint-disable-next-line react/no-array-index-key
-        <Menu.Item key={index + 1} onClick={onTimeWindowSelect}>
-          {time.title}
-        </Menu.Item>
-      ))}
-    </Menu>
-  );
+  const offset: number = online && streamStart ? 0 : 1;
+  const items: MenuProps['items'] = times.slice(offset).map((time, index) => ({
+    key: index + offset,
+    label: time.title,
+    onClick: onTimeWindowSelect,
+  }));
 
   return (
     <>
@@ -142,7 +132,7 @@ export default function ViewersOverTime() {
       )}
 
       <Spin spinning={!viewerInfo.length || loadingChart}>
-        <Dropdown overlay={menu} trigger={['click']}>
+        <Dropdown menu={{ items }} trigger={['click']}>
           <button
             type="button"
             style={{ float: 'right', background: 'transparent', border: 'unset' }}
