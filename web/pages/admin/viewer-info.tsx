@@ -86,7 +86,7 @@ export default function ViewersOverTime() {
   };
 
   const offset: number = online && streamStart ? 0 : 1;
-  const items: MenuProps.items = times.slice(offset).map((time, index) => ({
+  const items: MenuProps['items'] = times.slice(offset).map((time, index) => ({
     key: index + offset,
     label: time.title,
     onClick: onTimeWindowSelect,

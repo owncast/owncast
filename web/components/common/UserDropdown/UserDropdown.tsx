@@ -146,7 +146,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
   const { displayName } = currentUser;
   const username = defaultUsername || displayName;
 
-  const items: MenuProps.items = [
+  const items: MenuProps['items'] = [
     {
       key: 0,
       icon: <EditOutlined />,
@@ -168,7 +168,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
       icon: <MessageOutlined />,
       label: chatState === ChatState.VISIBLE ? 'Hide Chat' : 'Show Chat',
       onClick: toggleChatVisibility,
-    });
+    } as MenuProps['items'][0]);
   if (canShowChatPopup)
     items.push({
       key: 4,

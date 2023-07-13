@@ -81,7 +81,7 @@ export const ChatModerationActionMenu: FC<ChatModerationActionMenuProps> = ({
     });
   };
 
-  const items: MenuProps.item = [
+  const items: MenuProps['items'] = [
     {
       icon: <EyeInvisibleOutlined />,
       label: 'Hide Message',
