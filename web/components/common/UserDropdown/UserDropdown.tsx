@@ -1,4 +1,4 @@
-import { Menu, Dropdown, Button } from 'antd';
+import { MenuProps, Dropdown, Button } from 'antd';
 import classnames from 'classnames';
 
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -145,37 +145,37 @@ export const UserDropdown: FC<UserDropdownProps> = ({
 
   const { displayName } = currentUser;
   const username = defaultUsername || displayName;
-  const menu = (
-    <Menu>
-      <Menu.Item key="0" icon={<EditOutlined />} onClick={() => handleChangeName()}>
-        Change name
-      </Menu.Item>
-      <Menu.Item key="1" icon={<LockOutlined />} onClick={() => setShowAuthModal(true)}>
-        Authenticate
-      </Menu.Item>
-      {canShowHideChat && (
-        <Menu.Item
-          key="3"
-          icon={<MessageOutlined />}
-          onClick={() => toggleChatVisibility()}
-          aria-expanded={chatState === ChatState.VISIBLE}
-          className={styles.chatToggle}
-        >
-          {chatState === ChatState.VISIBLE ? 'Hide Chat' : 'Show Chat'}
-        </Menu.Item>
-      )}
-      {canShowChatPopup &&
-        (popupWindow ? (
-          <Menu.Item key="4" icon={<ShrinkOutlined />} onClick={closeChatPopup}>
-            Put chat back
-          </Menu.Item>
-        ) : (
-          <Menu.Item key="4" icon={<ExpandAltOutlined />} onClick={openChatPopup}>
-            Pop out chat
-          </Menu.Item>
-        ))}
-    </Menu>
-  );
+
+  const items: MenuProps['items'] = [
+    {
+      key: 0,
+      icon: <EditOutlined />,
+      label: 'Change name',
+      onClick: handleChangeName,
+    },
+    {
+      key: 1,
+      icon: <LockOutlined />,
+      label: 'Authenticate',
+      onClick: () => setShowAuthModal(true),
+    },
+  ];
+  if (canShowHideChat)
+    items.push({
+      key: 3,
+      'aria-expanded': chatState === ChatState.VISIBLE,
+      className: styles.chatToggle, // TODO why do we hide this button on tablets?
+      icon: <MessageOutlined />,
+      label: chatState === ChatState.VISIBLE ? 'Hide Chat' : 'Show Chat',
+      onClick: toggleChatVisibility,
+    } as MenuProps['items'][0]);
+  if (canShowChatPopup)
+    items.push({
+      key: 4,
+      icon: popupWindow ? <ShrinkOutlined /> : <ExpandAltOutlined />,
+      label: popupWindow ? 'Put chat back' : 'Pop out chat',
+      onClick: popupWindow ? closeChatPopup : openChatPopup,
+    });
 
   return (
     <ErrorBoundary
@@ -189,7 +189,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
       )}
     >
       <div className={styles.root}>
-        <Dropdown overlay={menu} trigger={['click']}>
+        <Dropdown menu={{ items }} trigger={['click']}>
           <Button id={id} type="primary" icon={<UserOutlined className={styles.userIcon} />}>
             <span
               className={classnames([

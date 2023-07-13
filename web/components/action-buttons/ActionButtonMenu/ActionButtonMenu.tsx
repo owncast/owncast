@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Button, Dropdown, Menu } from 'antd';
+import { Button, Dropdown } from 'antd';
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';
 import styles from './ActionButtonMenu.module.scss';
@@ -41,7 +41,7 @@ export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
   showNotifyItem,
   className,
 }) => {
-  const onMenuClick = a => {
+  const onClick = a => {
     if (a.key === NOTIFY_KEY) {
       notifyItemSelected();
       return;
@@ -87,13 +87,11 @@ export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
     });
   }
 
-  const menu = <Menu items={items} onClick={onMenuClick} />;
-
   const dropdownClasses = classNames([styles.menu, className]);
 
   return (
     <Dropdown
-      overlay={menu}
+      menu={{ items, onClick }}
       placement="bottomRight"
       trigger={['click']}
       className={dropdownClasses}
