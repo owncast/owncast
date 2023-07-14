@@ -50,7 +50,7 @@
 		"recoil": "0.7.7",
 		"regexpu-core": "^5.3.2",
 		"sanitize-html": "^2.11.0",
-		"sharp": "0.32.1",
+		"sharp": "0.32.2",
 		"ua-parser-js": "1.0.35",
 		"video.js": "^8.3.0",
 		"workbox-precaching": "^7.0.0",
