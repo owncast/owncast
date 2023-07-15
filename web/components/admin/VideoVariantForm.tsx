@@ -1,6 +1,17 @@
 // This content populates the video variant modal, which is spawned from the variants table. This relies on the `dataState` prop fed in by the table.
-import React, { FC } from 'react';
-import { Popconfirm, Row, Col, Slider, Collapse, Typography, Alert, Button } from 'antd';
+import React, { FC, useState } from 'react';
+import {
+  Alert,
+  Button,
+  Col,
+  Collapse,
+  Dropdown,
+  MenuProps,
+  Popconfirm,
+  Row,
+  Slider,
+  Typography,
+} from 'antd';
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';
 import { FieldUpdaterFunc, VideoVariant, UpdateArgs } from '../../types/config-section';
@@ -13,7 +24,6 @@ import {
   ENCODER_PRESET_TOOLTIPS,
   VIDEO_BITRATE_DEFAULTS,
   VIDEO_BITRATE_SLIDER_MARKS,
-  FRAMERATE_SLIDER_MARKS,
   FRAMERATE_DEFAULTS,
   FRAMERATE_TOOLTIPS,
 } from '../../utils/config-constants';
@@ -36,6 +46,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
   dataState = DEFAULT_VARIANT_STATE,
   onUpdateField,
 }) => {
+  const [isCustomFramerate, setCustomFramerate] = useState(false);
   const videoPassthroughEnabled = dataState.videoPassthrough;
 
   const handleFramerateChange = (value: number) => {
@@ -107,6 +118,29 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
     }
     return ENCODER_PRESET_TOOLTIPS[dataState.cpuUsageLevel] || '';
   };
+
+  const framerates: MenuProps['items'] = [
+    {
+      label: 'Custom',
+      key: 'custom',
+      onClick: () => {
+        setCustomFramerate(true);
+      },
+    },
+  ];
+  for (let i = FRAMERATE_DEFAULTS.min; i <= FRAMERATE_DEFAULTS.max; i += 1) {
+    const tooltip = FRAMERATE_TOOLTIPS[i];
+    if (tooltip) {
+      framerates.push({
+        label: tooltip,
+        key: i,
+        onClick: () => {
+          setCustomFramerate(false);
+          onUpdateField({ fieldName: 'framerate', value: i });
+        },
+      });
+    }
+  }
 
   const classes = classNames({
     'config-variant-form': true,
@@ -313,19 +347,23 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
           <div className="form-module frame-rate-module">
             <Typography.Title level={3}>Frame rate</Typography.Title>
             <p className="description">{FRAMERATE_DEFAULTS.tip}</p>
-            <div className="segment-slider-container">
-              <Slider
-                tipFormatter={value => `${value} ${FRAMERATE_DEFAULTS.unit}`}
-                defaultValue={dataState.framerate}
-                value={dataState.framerate}
-                onChange={handleFramerateChange}
-                step={FRAMERATE_DEFAULTS.incrementBy}
-                min={FRAMERATE_DEFAULTS.min}
-                max={FRAMERATE_DEFAULTS.max}
-                marks={FRAMERATE_SLIDER_MARKS}
-                disabled={dataState.videoPassthrough}
-              />
-              <p className="selected-value-note">{selectedFramerateNote()}</p>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <Dropdown menu={{ items: framerates }} trigger={['click']}>
+                <Button>
+                  {isCustomFramerate ? 'Custom Framerate:' : `Framerate: ${dataState.framerate}fps`}
+                </Button>
+              </Dropdown>
+              {isCustomFramerate ? (
+                <TextField
+                  type="number"
+                  value={dataState.framerate}
+                  onChange={arg => handleFramerateChange(arg.value)}
+                />
+              ) : (
+                <div style={{ alignSelf: 'center', marginLeft: '1em' }}>
+                  {selectedFramerateNote()}
+                </div>
+              )}
             </div>
             <p className="read-more-subtext">
               <a

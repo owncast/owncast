@@ -395,15 +395,6 @@ export const FRAMERATE_DEFAULTS = {
   incrementBy: null,
   tip: 'Reducing your framerate will decrease the amount of video that needs to be encoded and sent to your viewers, saving CPU and bandwidth at the expense of smoothness.  A lower value is generally is fine for most content.',
 };
-export const FRAMERATE_SLIDER_MARKS = {
-  [FRAMERATE_DEFAULTS.min]: `${FRAMERATE_DEFAULTS.min} ${FRAMERATE_DEFAULTS.unit}`,
-  25: ' ',
-  30: ' ',
-  50: ' ',
-  60: ' ',
-  90: ' ',
-  [FRAMERATE_DEFAULTS.max]: `${FRAMERATE_DEFAULTS.max} ${FRAMERATE_DEFAULTS.unit}`,
-};
 export const FRAMERATE_TOOLTIPS = {
   [FRAMERATE_DEFAULTS.min]: `${FRAMERATE_DEFAULTS.min}fps - Good for film, presentations, music, low power/bandwidth servers.`,
   25: '25fps - Good for film, presentations, music, low power/bandwidth servers.',
