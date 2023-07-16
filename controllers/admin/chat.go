@@ -164,12 +164,17 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 		disconnectedUser := user.GetUserByID(request.UserID)
 		_ = chat.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
 
+		localIP4Address := "127.0.0.1"
+		localIP6Address := "::1"
+
 		// Ban this user's IP address.
 		for _, client := range clients {
 			ipAddress := client.IPAddress
-			reason := fmt.Sprintf("Banning of %s", disconnectedUser.DisplayName)
-			if err := data.BanIPAddress(ipAddress, reason); err != nil {
-				log.Errorln("error banning IP address: ", err)
+			if ipAddress != localIP4Address && ipAddress != localIP6Address {
+				reason := fmt.Sprintf("Banning of %s", disconnectedUser.DisplayName)
+				if err := data.BanIPAddress(ipAddress, reason); err != nil {
+					log.Errorln("error banning IP address: ", err)
+				}
 			}
 		}
 	}
