@@ -15,7 +15,7 @@ import {
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';
 import { FieldUpdaterFunc, VideoVariant, UpdateArgs } from '../../types/config-section';
-import { TextField } from './TextField';
+import { TextField, TEXTFIELD_TYPE_NUMBER } from './TextField';
 import {
   DEFAULT_VARIANT_STATE,
   VIDEO_VARIANT_SETTING_DEFAULTS,
@@ -133,7 +133,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
         </span>
       );
     if (dataState.framerate > 60)
-      return <span>High framerates will use a lot of bandwidth and CPU. {}</span>;
+      return <span>High framerates use more bandwidth and CPU. {}</span>;
     return undefined;
   }
   const cpuUsageNote = () => {
@@ -152,18 +152,16 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
       },
     },
   ];
-  for (let i = FRAMERATE_DEFAULTS.min; i <= FRAMERATE_DEFAULTS.max; i += 1) {
+  for (let i in FRAMERATE_TOOLTIPS) {
     const tooltip = FRAMERATE_TOOLTIPS[i];
-    if (tooltip) {
-      framerates.push({
-        label: tooltip,
-        key: i,
-        onClick: () => {
-          setCustomFramerate(false);
-          onUpdateField({ fieldName: 'framerate', value: i });
-        },
-      });
-    }
+    framerates.push({
+      label: tooltip,
+      key: i,
+      onClick: () => {
+        setCustomFramerate(false);
+        onUpdateField({ fieldName: 'framerate', value: i });
+      },
+    });
   }
 
   const classes = classNames({
@@ -380,7 +378,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
               {isCustomFramerate ? (
                 <TextField
                   fieldName="framerate"
-                  type="number"
+                  type={TEXTFIELD_TYPE_NUMBER}
                   value={dataState.framerate}
                   onChange={arg => handleFramerateChange(arg.value)}
                 />
