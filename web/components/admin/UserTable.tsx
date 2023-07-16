@@ -7,6 +7,11 @@ import { UserPopover } from './UserPopover';
 import { BanUserButton } from './BanUserButton';
 
 export function formatDisplayDate(date: string | Date) {
+  const d = new Date(date);
+  if (d.getFullYear() !== new Date().getFullYear()) {
+    return format(new Date(date), 'MMM d, yyyy H:mma');
+  }
+
   return format(new Date(date), 'MMM d H:mma');
 }
 
