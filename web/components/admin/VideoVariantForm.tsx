@@ -49,7 +49,11 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
   const [isCustomFramerate, setCustomFramerate] = useState(false);
   const videoPassthroughEnabled = dataState.videoPassthrough;
 
-  const handleFramerateChange = (value: number) => {
+  const handleFramerateChange = (framerate: number) => {
+    let value = framerate;
+    if (value < 0) value = 0;
+    if (value > 144) value = 144;
+    if (!Number.isFinite(value)) value = 30;
     onUpdateField({ fieldName: 'framerate', value });
   };
   const handleVideoBitrateChange = (value: number) => {
@@ -112,6 +116,26 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
     }
     return FRAMERATE_TOOLTIPS[dataState.framerate] || '';
   };
+  function customFramerateWarning() {
+    if (videoPassthroughEnabled || !isCustomFramerate) return undefined;
+    if (dataState.framerate < 12)
+      return (
+        <span style={{ color: 'var(--color-owncast-palette-error)' }}>
+          Very low framerates are not recommended for video streaming. {}
+        </span>
+      );
+    if (dataState.framerate < 23.9)
+      return <span>Low framerates may appear &quot;choppy&quot; {}</span>;
+    if (dataState.framerate > 90)
+      return (
+        <span style={{ color: 'var(--color-owncast-palette-error)' }}>
+          Very high framerates will use a lot of bandwidth and CPU. This is not recommended. {}
+        </span>
+      );
+    if (dataState.framerate > 60)
+      return <span>High framerates will use a lot of bandwidth and CPU. {}</span>;
+    return undefined;
+  }
   const cpuUsageNote = () => {
     if (videoPassthroughEnabled) {
       return 'CPU usage selection is disabled when Video Passthrough is enabled.';
@@ -355,6 +379,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
               </Dropdown>
               {isCustomFramerate ? (
                 <TextField
+                  fieldName="framerate"
                   type="number"
                   value={dataState.framerate}
                   onChange={arg => handleFramerateChange(arg.value)}
@@ -366,6 +391,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
               )}
             </div>
             <p className="read-more-subtext">
+              {customFramerateWarning()}
               <a
                 href="https://owncast.online/docs/video/?source=admin#framerate"
                 target="_blank"
