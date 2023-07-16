@@ -123,7 +123,7 @@ const ColorCollection: FC<ColorCollectionProps> = ({ variables, updateColor }) =
 // eslint-disable-next-line react/function-component-definition
 export default function Appearance() {
   const serverStatusData = useContext(ServerStatusContext);
-  const { serverConfig } = serverStatusData;
+  const { serverConfig, setFieldInConfigState } = serverStatusData;
   const { instanceDetails } = serverConfig;
   const { appearanceVariables } = instanceDetails;
 
@@ -202,6 +202,12 @@ export default function Appearance() {
       onSuccess: () => {
         setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+
+        setFieldInConfigState({
+          fieldName: 'appearanceVariables',
+          value: c,
+          path: 'instanceDetails',
+        });
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
