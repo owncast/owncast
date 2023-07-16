@@ -13,6 +13,14 @@ const withPWA = require('next-pwa')({
       urlPattern: /\.(?:ts|m3u8)$/i,
       handler: 'NetworkOnly',
     },
+    {
+      urlPattern: /^\/admin\/.*$/,
+      handler: 'NetworkOnly',
+    },
+    {
+      urlPattern: /^\/api\/.*$/,
+      handler: 'NetworkOnly',
+    },
   ],
   register: true,
   skipWaiting: true,
