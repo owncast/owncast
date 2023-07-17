@@ -174,7 +174,7 @@ export const ClientConfigStore: FC = () => {
   const setAppState = useSetRecoilState<AppStateOptions>(appStateAtom);
   const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
   const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
-  const [hiddenMessageIds, setHiddenMessageIds] = useRecoilState<string[]>(removedMessageIdsAtom);
+  const setHiddenMessageIds = useSetRecoilState<string[]>(removedMessageIdsAtom);
   const [hasLoadedConfig, setHasLoadedConfig] = useState(false);
 
   let ws: WebsocketService;
@@ -279,11 +279,9 @@ export const ClientConfigStore: FC = () => {
   const handleMessageVisibilityChange = (message: MessageVisibilityEvent) => {
     const { ids, visible } = message;
     if (visible) {
-      const updatedIds = hiddenMessageIds.filter(id => !ids.includes(id));
-      setHiddenMessageIds(updatedIds);
+      setHiddenMessageIds(currentState => currentState.filter(id => !ids.includes(id)));
     } else {
-      const updatedIds = [...hiddenMessageIds, ...ids];
-      setHiddenMessageIds(updatedIds);
+      setHiddenMessageIds(currentState => [...currentState, ...ids]);
     }
   };
 
