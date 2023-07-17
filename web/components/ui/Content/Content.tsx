@@ -10,7 +10,6 @@ import { canPushNotificationsBeSupported } from '../../../utils/browserPushNotif
 
 import {
   clientConfigStateAtom,
-  chatMessagesAtom,
   currentUserAtom,
   ChatState,
   chatStateAtom,
@@ -19,6 +18,7 @@ import {
   isMobileAtom,
   serverStatusState,
   isChatAvailableSelector,
+  visibleChatMessagesSelector,
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 
@@ -103,7 +103,7 @@ export const Content: FC = () => {
   const currentUser = useRecoilValue(currentUserAtom);
   const serverStatus = useRecoilValue<ServerStatus>(serverStatusState);
   const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
-  const messages = useRecoilValue<ChatMessage[]>(chatMessagesAtom);
+  const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
   const online = useRecoilValue<boolean>(isOnlineSelector);
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
 
