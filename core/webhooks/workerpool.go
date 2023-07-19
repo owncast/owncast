@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"runtime"
 	"sync"
 
 	log "github.com/sirupsen/logrus"
@@ -12,10 +13,8 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
-const (
-	// webhookWorkerPoolSize defines the number of concurrent HTTP webhook requests.
-	webhookWorkerPoolSize = 10
-)
+// webhookWorkerPoolSize defines the number of concurrent HTTP webhook requests.
+var webhookWorkerPoolSize = runtime.GOMAXPROCS(0)
 
 // Job struct bundling the webhook and the payload in one struct.
 type Job struct {

@@ -51,7 +51,7 @@ func TestMain(m *testing.M) {
 // this test ensures that `SendToWebhooks` without a `WaitGroup` doesn't panic.
 func TestPublicSend(t *testing.T) {
 	// Send enough events to be sure at least one worker delivers a second event.
-	const eventsCount = webhookWorkerPoolSize + 1
+	eventsCount := webhookWorkerPoolSize + 1
 
 	var wg sync.WaitGroup
 	wg.Add(eventsCount)
@@ -267,7 +267,7 @@ func TestParallel(t *testing.T) {
 		myId := atomic.AddUint32(&calls, 1)
 
 		// We made it to the pool size + 1 event, so we're done with the test.
-		if myId == webhookWorkerPoolSize+1 {
+		if myId == uint32(webhookWorkerPoolSize)+1 {
 			close(finished)
 			return
 		}
