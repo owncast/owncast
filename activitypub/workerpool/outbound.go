@@ -2,14 +2,13 @@ package workerpool
 
 import (
 	"net/http"
+	"runtime"
 
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	// ActivityPubWorkerPoolSize defines the number of concurrent HTTP ActivityPub requests.
-	ActivityPubWorkerPoolSize = 10
-)
+// workerPoolSize defines the number of concurrent HTTP ActivityPub requests.
+var workerPoolSize = runtime.GOMAXPROCS(0)
 
 // Job struct bundling the ActivityPub and the payload in one struct.
 type Job struct {
@@ -23,7 +22,7 @@ func InitOutboundWorkerPool() {
 	queue = make(chan Job)
 
 	// start workers
-	for i := 1; i <= ActivityPubWorkerPoolSize; i++ {
+	for i := 1; i <= workerPoolSize; i++ {
 		go worker(i, queue)
 	}
 }
