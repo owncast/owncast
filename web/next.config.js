@@ -54,27 +54,27 @@ module.exports = withPWA(
         return [
           {
             source: '/api/:path*',
-            destination: 'http://localhost:8080/api/:path*', // Proxy to Backend to work around CORS.
+            destination: `${process.env.NEXT_PUBLIC_API_HOST}/api/:path*`, // Proxy to Backend to work around CORS.
           },
           {
             source: '/hls/:path*',
-            destination: 'http://localhost:8080/hls/:path*', // Proxy to Backend to work around CORS.
+            destination: `${process.env.NEXT_PUBLIC_API_HOST}/hls/:path*`, // Proxy to Backend to work around CORS.
           },
           {
             source: '/img/:path*',
-            destination: 'http://localhost:8080/img/:path*', // Proxy to Backend to work around CORS.
+            destination: `${process.env.NEXT_PUBLIC_API_HOST}/img/:path*`, // Proxy to Backend to work around CORS.
           },
           {
             source: '/logo',
-            destination: 'http://localhost:8080/logo', // Proxy to Backend to work around CORS.
+            destination: `${process.env.NEXT_PUBLIC_API_HOST}/logo`, // Proxy to Backend to work around CORS.
           },
           {
             source: '/thumbnail.jpg',
-            destination: 'http://localhost:8080/thumbnail.jpg', // Proxy to Backend to work around CORS.
+            destination: `${process.env.NEXT_PUBLIC_API_HOST}/thumbnail.jpg`, // Proxy to Backend to work around CORS.
           },
           {
             source: '/customjavascript',
-            destination: 'http://localhost:8080/customjavascript', // Proxy to Backend to work around CORS.
+            destination: `${process.env.NEXT_PUBLIC_API_HOST}/customjavascript`, // Proxy to Backend to work around CORS.
           },
         ];
       },
