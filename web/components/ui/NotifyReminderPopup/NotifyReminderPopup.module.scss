@@ -3,6 +3,7 @@
 }
 
 .contentbutton {
+  width: 150px;
   background-color: transparent;
   border: none;
   text-align: left;
@@ -12,8 +13,8 @@
 
 .closebutton {
   position: absolute;
-  right: 10px;
-  top: 10px;
+  right: 0;
+  top: 0;
   background-color: transparent;
   border: none;
   font-size: 1.3rem;

@@ -1,0 +1,37 @@
+
+.anchor {
+  position: relative;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+.popover {
+  background-color: var(--theme-color-components-primary-button-background);
+  position: absolute;
+  bottom: 10px;
+  right: -20px;
+  border-radius: 5px;
+  width: max-content;
+}
+
+.popover>.title {
+  padding: 10px;
+  padding-bottom: 0;
+}
+
+.popover>.content {
+  padding: 10px;
+  padding-top: 0;
+}
+
+// Popover tail
+.popover::after {
+  content: '';
+  border: 10px solid transparent;
+  border-top-color: var(--theme-color-components-primary-button-background);
+  right: 10px;
+  position: absolute;
+}
+
+
