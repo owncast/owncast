@@ -21,7 +21,7 @@ export type PopoverProps = {
 //  color (it uses var(--theme-color-components-primary-button-background))
 
 export const Popover: FC<PopoverProps> = ({ open, title, content, children }) => (
-  <div style={{width: 'max-content', height: 'max-content'}}>
+  <div style={{ width: 'max-content', height: 'max-content' }}>
     {open && (
       <div className={styles.anchor}>
         <div className={styles.popover}>
