@@ -38,7 +38,7 @@ func (h *Handlers) UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Prevent path traversal attacks
-	c := config.GetConfig()
+	c := config.Get()
 	emojiFileName := filepath.Base(emoji.Name)
 	targetPath := filepath.Join(c.CustomEmojiPath, emojiFileName)
 
@@ -78,7 +78,7 @@ func (h *Handlers) DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := config.GetConfig()
+	c := config.Get()
 	targetPath := filepath.Join(c.CustomEmojiPath, emoji.Name)
 
 	if err := os.Remove(targetPath); err != nil {

@@ -9,9 +9,9 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/activitypub/apmodels"
-	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/apfederation/apmodels"
+	"github.com/owncast/owncast/services/apfederation/resolvers"
 	"github.com/owncast/owncast/storage/data"
 	"github.com/owncast/owncast/storage/sqlstorage"
 	"github.com/owncast/owncast/utils"
@@ -306,6 +306,8 @@ func (f *FederationRepository) GetOutboxPostCount() (int64, error) {
 func (f *FederationRepository) GetOutbox(limit int, offset int) (vocab.ActivityStreamsOrderedCollection, error) {
 	collection := streams.NewActivityStreamsOrderedCollection()
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
+	r := resolvers.Get()
+
 	rows, err := f.datastore.GetQueries().GetOutboxWithOffset(
 		context.Background(),
 		sqlstorage.GetOutboxWithOffsetParams{Limit: int32(limit), Offset: int32(offset)},
@@ -319,7 +321,7 @@ func (f *FederationRepository) GetOutbox(limit int, offset int) (vocab.ActivityS
 			orderedItems.AppendActivityStreamsCreate(activity)
 			return nil
 		}
-		if err := resolvers.Resolve(context.Background(), value, createCallback); err != nil {
+		if err := r.Resolve(context.Background(), value, createCallback); err != nil {
 			return collection, err
 		}
 	}

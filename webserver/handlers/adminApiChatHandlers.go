@@ -9,10 +9,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/storage/chatrepository"
 	"github.com/owncast/owncast/storage/userrepository"
 	"github.com/owncast/owncast/utils"
@@ -23,7 +21,7 @@ import (
 )
 
 var (
-	chatRepository = chatrepository.GetChatRepository()
+	chatRepository = chatrepository.Get()
 	userRepository = userrepository.Get()
 )
 
@@ -53,7 +51,7 @@ func (h *Handlers) UpdateMessageVisibility(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if err := chat.SetMessagesVisibility(request.IDArray, request.Visible); err != nil {
+	if err := h.chatService.SetMessagesVisibility(request.IDArray, request.Visible); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -148,16 +146,18 @@ func (h *Handlers) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	// Hide/show the user's chat messages if disabling.
 	// Leave hidden messages hidden to be safe.
 	if !request.Enabled {
-		if err := chat.SetMessageVisibilityForUserID(request.UserID, request.Enabled); err != nil {
+		messageIds, err := h.chatRepository.SetMessageVisibilityForUserID(request.UserID, request.Enabled)
+		if err != nil {
 			log.Errorln("error changing user messages visibility", err)
 			responses.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
+		h.chatService.SetMessagesVisibility(messageIds, request.Enabled)
 	}
 
 	// Forcefully disconnect the user from the chat
 	if !request.Enabled {
-		clients, err := chat.GetClientsForUser(request.UserID)
+		clients, err := h.chatService.GetClientsForUser(request.UserID)
 		if len(clients) == 0 {
 			// Nothing to do
 			return
@@ -169,9 +169,9 @@ func (h *Handlers) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		chat.DisconnectClients(clients)
+		h.chatService.DisconnectClients(clients)
 		disconnectedUser := userRepository.GetUserByID(request.UserID)
-		_ = chat.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
+		_ = h.chatService.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
 
 		localIP4Address := "127.0.0.1"
 		localIP6Address := "::1"
@@ -181,7 +181,7 @@ func (h *Handlers) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 			ipAddress := client.IPAddress
 			if ipAddress != localIP4Address && ipAddress != localIP6Address {
 				reason := fmt.Sprintf("Banning of %s", disconnectedUser.DisplayName)
-				if err := data.BanIPAddress(ipAddress, reason); err != nil {
+				if err := h.chatRepository.BanIPAddress(ipAddress, reason); err != nil {
 					log.Errorln("error banning IP address: ", err)
 				}
 			}
@@ -226,7 +226,7 @@ func (h *Handlers) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update the clients for this user to know about the moderator access change.
-	if err := chat.SendConnectedClientInfoToUser(req.UserID); err != nil {
+	if err := h.chatService.SendConnectedClientInfoToUser(req.UserID); err != nil {
 		log.Debugln(err)
 	}
 
@@ -245,7 +245,7 @@ func (h *Handlers) GetModerators(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) GetAdminChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	messages := chat.GetChatModerationHistory()
+	messages := h.chatRepository.GetChatModerationHistory()
 	responses.WriteResponse(w, messages)
 }
 
@@ -253,13 +253,13 @@ func (h *Handlers) GetAdminChatMessages(w http.ResponseWriter, r *http.Request) 
 func (h *Handlers) SendSystemMessage(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var message events.SystemMessageEvent
+	var message chat.SystemMessageEvent
 	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
 		responses.InternalErrorHandler(w, err)
 		return
 	}
 
-	if err := chat.SendSystemMessage(message.Body, false); err != nil {
+	if err := h.chatService.SendSystemMessage(message.Body, false); err != nil {
 		responses.BadRequestHandler(w, err)
 	}
 
@@ -281,13 +281,13 @@ func (h *Handlers) SendSystemMessageToConnectedClient(integration models.Externa
 		return
 	}
 
-	var message events.SystemMessageEvent
+	var message chat.SystemMessageEvent
 	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
 		responses.InternalErrorHandler(w, err)
 		return
 	}
 
-	chat.SendSystemMessageToClient(uint(clientIDNumeric), message.Body)
+	h.chatService.SendSystemMessageToClient(uint(clientIDNumeric), message.Body)
 	responses.WriteSimpleResponse(w, true, "sent")
 }
 
@@ -308,7 +308,7 @@ func (h *Handlers) SendIntegrationChatMessage(integration models.ExternalAPIUser
 		return
 	}
 
-	var event events.UserMessageEvent
+	var event chat.UserMessageEvent
 	if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
 		responses.InternalErrorHandler(w, err)
 		return
@@ -330,12 +330,12 @@ func (h *Handlers) SendIntegrationChatMessage(integration models.ExternalAPIUser
 		IsBot:        true,
 	}
 
-	if err := chat.Broadcast(&event); err != nil {
+	if err := h.chatService.Broadcast(&event); err != nil {
 		responses.BadRequestHandler(w, err)
 		return
 	}
 
-	chat.SaveUserMessage(event)
+	h.chatRepository.SaveUserMessage(event)
 
 	responses.WriteSimpleResponse(w, true, "sent")
 }
@@ -344,7 +344,7 @@ func (h *Handlers) SendIntegrationChatMessage(integration models.ExternalAPIUser
 func (h *Handlers) SendChatAction(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var message events.SystemActionEvent
+	var message chat.SystemActionEvent
 	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
 		responses.InternalErrorHandler(w, err)
 		return
@@ -353,7 +353,7 @@ func (h *Handlers) SendChatAction(integration models.ExternalAPIUser, w http.Res
 	message.SetDefaults()
 	message.RenderBody()
 
-	if err := chat.SendSystemAction(message.Body, false); err != nil {
+	if err := h.chatService.SendSystemAction(message.Body, false); err != nil {
 		responses.BadRequestHandler(w, err)
 		return
 	}

@@ -25,15 +25,15 @@ var (
 
 var (
 	_setStreamAsConnected func(*io.PipeReader)
-	_setBroadcaster       func(models.Broadcaster)
+	_setBroadcaster       func(*models.Broadcaster)
 )
 
-var configRepository = configrepository.Get()
-
 // Start starts the rtmp service, listening on specified RTMP port.
-func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models.Broadcaster)) {
+func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(*models.Broadcaster)) {
 	_setStreamAsConnected = setStreamAsConnected
 	_setBroadcaster = setBroadcaster
+
+	configRepository := configrepository.Get()
 
 	port := configRepository.GetRTMPPortNumber()
 	s := rtmp.NewServer()
@@ -80,10 +80,12 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		return
 	}
 
+	configRepository := configrepository.Get()
+
 	accessGranted := false
 	validStreamingKeys := configRepository.GetStreamKeys()
 
-	configservice := config.GetConfig()
+	configservice := config.Get()
 
 	// If a stream key override was specified then use that instead.
 	if configservice.TemporaryStreamKey != "" {

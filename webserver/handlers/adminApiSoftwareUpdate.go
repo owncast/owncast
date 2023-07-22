@@ -44,7 +44,7 @@ func (h *Handlers) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
 		CanRestart:     false,
 	}
 
-	c := config.GetConfig()
+	c := config.Get()
 
 	// Nothing is supported when running under "dev" or the feature is
 	// explicitly disabled.

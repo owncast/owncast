@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/services/status"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/middleware"
 	"github.com/owncast/owncast/webserver/responses"
@@ -24,17 +24,17 @@ func (h *Handlers) GetStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func getStatusResponse() webStatusResponse {
-	status := core.GetStatus()
+	s := status.Get()
 	response := webStatusResponse{
-		Online:             status.Online,
+		Online:             s.Online,
 		ServerTime:         time.Now(),
-		LastConnectTime:    status.LastConnectTime,
-		LastDisconnectTime: status.LastDisconnectTime,
-		VersionNumber:      status.VersionNumber,
-		StreamTitle:        status.StreamTitle,
+		LastConnectTime:    s.Status.LastConnectTime,
+		LastDisconnectTime: s.Status.LastDisconnectTime,
+		VersionNumber:      s.VersionNumber,
+		StreamTitle:        s.StreamTitle,
 	}
 	if !configRepository.GetHideViewerCount() {
-		response.ViewerCount = status.ViewerCount
+		response.ViewerCount = s.ViewerCount
 	}
 	return response
 }

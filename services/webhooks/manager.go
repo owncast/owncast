@@ -10,11 +10,11 @@ type Manager interface {
 // to be sent out to all registered webhook destinations.
 type LiveWebhookManager struct {
 	queue     chan Job
-	getStatus func() models.Status
+	getStatus func() *models.Status
 }
 
 // New creates a new webhook manager.
-func New(getStatusFunc func() models.Status) *LiveWebhookManager {
+func New(getStatusFunc func() *models.Status) *LiveWebhookManager {
 	m := &LiveWebhookManager{
 		getStatus: getStatusFunc,
 	}
@@ -24,7 +24,7 @@ func New(getStatusFunc func() models.Status) *LiveWebhookManager {
 
 // InitTemporarySingleton initializes the the temporary global instance of the webhook manager
 // to be deleted once dependency injection is implemented.
-func InitTemporarySingleton(getStatusFunc func() models.Status) {
+func InitTemporarySingleton(getStatusFunc func() *models.Status) {
 	temporaryGlobalInstance = New(getStatusFunc)
 }
 

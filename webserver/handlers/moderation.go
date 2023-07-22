@@ -6,9 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/webserver/responses"
 	log "github.com/sirupsen/logrus"
 )
@@ -24,9 +23,9 @@ func (h *Handlers) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type response struct {
-		User             *models.User              `json:"user"`
-		ConnectedClients []connectedClient         `json:"connectedClients"`
-		Messages         []events.UserMessageEvent `json:"messages"`
+		User             *models.User            `json:"user"`
+		ConnectedClients []connectedClient       `json:"connectedClients"`
+		Messages         []chat.UserMessageEvent `json:"messages"`
 	}
 
 	pathComponents := strings.Split(r.URL.Path, "/")
@@ -39,7 +38,7 @@ func (h *Handlers) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, _ := chat.GetClientsForUser(uid)
+	c, _ := h.chatService.GetClientsForUser(uid)
 	clients := make([]connectedClient, len(c))
 	for i, c := range c {
 		client := connectedClient{
@@ -55,7 +54,7 @@ func (h *Handlers) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 		clients[i] = client
 	}
 
-	messages, err := chat.GetMessagesFromUser(uid)
+	messages, err := h.chatRepository.GetMessagesFromUser(uid)
 	if err != nil {
 		log.Errorln(err)
 	}

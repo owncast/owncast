@@ -17,7 +17,7 @@ func (h *Handlers) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	ffmpeg := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
 	usernameBlocklist := configRepository.GetForbiddenUsernameList()
 	usernameSuggestions := configRepository.GetSuggestedUsernamesList()
-	c := config.GetConfig()
+	c := config.Get()
 
 	videoQualityVariants := make([]models.StreamOutputVariant, 0)
 	for _, variant := range configRepository.GetStreamOutputVariants() {

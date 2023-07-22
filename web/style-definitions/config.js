@@ -41,15 +41,40 @@ module.exports = {
         },
       ],
     },
-    less: {
-      transformGroup: 'less',
+    // less: {
+    //   transformGroup: 'less',
+    //   buildPath: 'build/',
+    //   files: [
+    //     {
+    //       destination: 'variables.less',
+    //       format: 'less/variables',
+    //       options: {
+    //         fileHeader: 'myCustomHeader',
+    //       },
+    //     },
+    //   ],
+    // },
+    'ios-swift': {
+      transforms: [
+        'attribute/cti',
+        'name/cti/camel',
+        'color/UIColorSwift',
+        'content/swift/literal',
+        'size/swift/remToCGFloat',
+        'font/swift/literal',
+      ],
       buildPath: 'build/',
       files: [
         {
-          destination: 'variables.less',
-          format: 'less/variables',
+          destination: 'Assets.swift',
+          format: 'ios-swift/enum.swift',
+          className: 'Assets',
+          filter: token => {
+            return token.attributes.category === 'asset';
+          },
           options: {
-            fileHeader: 'myCustomHeader',
+            outputReferences: true,
+            showFileHeader: false,
           },
         },
       ],

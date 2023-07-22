@@ -22,12 +22,15 @@ type Notifier struct {
 }
 
 var (
-	configRepository        = configrepository.Get()
-	notificationsRepository = notificationsrepository.Get()
+	configRepository        *configrepository.SqlConfigRepository
+	notificationsRepository *notificationsrepository.SqlNotificationsRepository
 )
 
 // Setup will perform any pre-use setup for the notifier.
 func Setup(datastore *data.Store) {
+	configRepository = configrepository.Get()
+	notificationsRepository = notificationsrepository.Get()
+
 	initializeBrowserPushIfNeeded()
 }
 

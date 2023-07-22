@@ -47,7 +47,7 @@ var temporaryGlobalDatastoreInstance *Store
 // GetDatastore returns the shared instance of the owncast datastore.
 func GetDatastore() *Store {
 	if temporaryGlobalDatastoreInstance == nil {
-		c := config.GetConfig()
+		c := config.Get()
 		i, err := NewStore(c.DatabaseFilePath)
 		if err != nil {
 			log.Fatal(err)

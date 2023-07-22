@@ -44,7 +44,7 @@ type Config struct {
 }
 
 // NewFediAuth creates a new FediAuth instance.
-func NewConfig() *Config {
+func New() *Config {
 	// Default config values.
 	c := &Config{
 		DatabaseFilePath:        "data/owncast.db",
@@ -71,9 +71,9 @@ var temporaryGlobalInstance *Config
 
 // GetConfig returns the temporary global instance.
 // Remove this after dependency injection is implemented.
-func GetConfig() *Config {
+func Get() *Config {
 	if temporaryGlobalInstance == nil {
-		temporaryGlobalInstance = NewConfig()
+		temporaryGlobalInstance = New()
 	}
 
 	return temporaryGlobalInstance
@@ -103,4 +103,9 @@ func (c *Config) GetReleaseString() string {
 	gitCommit := c.GetCommit()
 
 	return fmt.Sprintf("Owncast v%s-%s (%s)", versionNumber, buildPlatform, gitCommit)
+}
+
+// GetTranscoderLogFilePath returns the logging path for the transcoder log output.
+func (c *Config) GetTranscoderLogFilePath() string {
+	return filepath.Join(c.LogDirectory, "transcoder.log")
 }

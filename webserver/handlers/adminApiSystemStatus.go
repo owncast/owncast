@@ -4,28 +4,30 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/metrics"
+	"github.com/owncast/owncast/services/status"
 	"github.com/owncast/owncast/webserver/middleware"
 	log "github.com/sirupsen/logrus"
 )
 
 // Status gets the details of the inbound broadcaster.
 func (h *Handlers) GetAdminStatus(w http.ResponseWriter, r *http.Request) {
-	broadcaster := core.GetBroadcaster()
-	status := core.GetStatus()
-	currentBroadcast := core.GetCurrentBroadcast()
-	health := metrics.GetStreamHealthOverview()
+	s := status.Get()
+	m := metrics.Get()
+
+	broadcaster := s.GetBroadcaster()
+	currentBroadcast := s.GetCurrentBroadcast()
+	health := m.GetStreamHealthOverview()
 	response := adminStatusResponse{
 		Broadcaster:            broadcaster,
 		CurrentBroadcast:       currentBroadcast,
-		Online:                 status.Online,
+		Online:                 s.Online,
 		Health:                 health,
-		ViewerCount:            status.ViewerCount,
-		OverallPeakViewerCount: status.OverallMaxViewerCount,
-		SessionPeakViewerCount: status.SessionMaxViewerCount,
-		VersionNumber:          status.VersionNumber,
+		ViewerCount:            s.ViewerCount,
+		OverallPeakViewerCount: s.OverallMaxViewerCount,
+		SessionPeakViewerCount: s.SessionMaxViewerCount,
+		VersionNumber:          s.VersionNumber,
 		StreamTitle:            configRepository.GetStreamTitle(),
 	}
 

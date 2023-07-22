@@ -1,0 +1,173 @@
+package federation
+
+import (
+	"fmt"
+	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
+
+	"github.com/owncast/owncast/services/apfederation/apmodels"
+	"github.com/owncast/owncast/services/apfederation/crypto"
+	"github.com/owncast/owncast/services/apfederation/requests"
+	"github.com/owncast/owncast/storage/configrepository"
+	"github.com/owncast/owncast/storage/federationrepository"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/go-fed/activity/streams"
+	"github.com/go-fed/activity/streams/vocab"
+)
+
+const (
+	followersPageSize = 50
+)
+
+// FollowersHandler will return the list of remote followers on the Fediverse.
+func FollowersHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	var response interface{}
+	var err error
+	if r.URL.Query().Get("page") != "" {
+		response, err = getFollowersPage(r.URL.Query().Get("page"), r)
+	} else {
+		response, err = getInitialFollowersRequest(r)
+	}
+
+	if response == nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err != nil {
+		_, _ = w.Write([]byte(err.Error()))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	pathComponents := strings.Split(r.URL.Path, "/")
+	accountName := pathComponents[3]
+	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
+	publicKey := crypto.GetPublicKey(actorIRI)
+
+	req := requests.Get()
+	if err := req.WriteStreamResponse(response.(vocab.Type), w, publicKey); err != nil {
+		log.Errorln("unable to write stream response for followers handler", err)
+	}
+}
+
+func getInitialFollowersRequest(r *http.Request) (vocab.ActivityStreamsOrderedCollection, error) {
+	federationRespository := federationrepository.Get()
+
+	followerCount, _ := federationRespository.GetFollowerCount()
+	collection := streams.NewActivityStreamsOrderedCollection()
+	idProperty := streams.NewJSONLDIdProperty()
+	id, err := createPageURL(r, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to create followers page property")
+	}
+	idProperty.SetIRI(id)
+	collection.SetJSONLDId(idProperty)
+
+	totalItemsProperty := streams.NewActivityStreamsTotalItemsProperty()
+	totalItemsProperty.Set(int(followerCount))
+	collection.SetActivityStreamsTotalItems(totalItemsProperty)
+
+	first := streams.NewActivityStreamsFirstProperty()
+	page := "1"
+	firstIRI, err := createPageURL(r, &page)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to create first page property")
+	}
+
+	first.SetIRI(firstIRI)
+	collection.SetActivityStreamsFirst(first)
+
+	return collection, nil
+}
+
+func getFollowersPage(page string, r *http.Request) (vocab.ActivityStreamsOrderedCollectionPage, error) {
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to parse page number")
+	}
+
+	federationRespository := federationrepository.Get()
+
+	followerCount, err := federationRespository.GetFollowerCount()
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to get follower count")
+	}
+
+	followers, _, err := federationRespository.GetFederationFollowers(followersPageSize, (pageInt-1)*followersPageSize)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to get federation followers")
+	}
+
+	collectionPage := streams.NewActivityStreamsOrderedCollectionPage()
+	idProperty := streams.NewJSONLDIdProperty()
+	id, err := createPageURL(r, &page)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to create followers page ID")
+	}
+	idProperty.SetIRI(id)
+	collectionPage.SetJSONLDId(idProperty)
+
+	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
+
+	for _, follower := range followers {
+		u, _ := url.Parse(follower.ActorIRI)
+		orderedItems.AppendIRI(u)
+	}
+	collectionPage.SetActivityStreamsOrderedItems(orderedItems)
+
+	partOf := streams.NewActivityStreamsPartOfProperty()
+	partOfIRI, err := createPageURL(r, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to create partOf property for followers page")
+	}
+
+	partOf.SetIRI(partOfIRI)
+	collectionPage.SetActivityStreamsPartOf(partOf)
+
+	if pageInt*followersPageSize < int(followerCount) {
+		next := streams.NewActivityStreamsNextProperty()
+		nextPage := fmt.Sprintf("%d", pageInt+1)
+		nextIRI, err := createPageURL(r, &nextPage)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to create next page property")
+		}
+
+		next.SetIRI(nextIRI)
+		collectionPage.SetActivityStreamsNext(next)
+	}
+
+	return collectionPage, nil
+}
+
+func createPageURL(r *http.Request, page *string) (*url.URL, error) {
+	configRepository := configrepository.Get()
+
+	domain := configRepository.GetServerURL()
+	if domain == "" {
+		return nil, errors.New("unable to get server URL")
+	}
+
+	pageURL, err := url.Parse(domain)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to parse server URL")
+	}
+
+	if page != nil {
+		query := pageURL.Query()
+		query.Add("page", *page)
+		pageURL.RawQuery = query.Encode()
+	}
+	pageURL.Path = r.URL.Path
+
+	return pageURL, nil
+}

@@ -8,14 +8,14 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-var configRepository = configrepository.Get()
-
 // SendStreamStatusEvent will send all webhook destinations the current stream status.
 func (w *LiveWebhookManager) SendStreamStatusEvent(eventType models.EventType) {
 	w.sendStreamStatusEvent(eventType, shortid.MustGenerate(), time.Now())
 }
 
 func (w *LiveWebhookManager) sendStreamStatusEvent(eventType models.EventType, id string, timestamp time.Time) {
+	configRepository := configrepository.Get()
+
 	w.SendEventToWebhooks(WebhookEvent{
 		Type: eventType,
 		EventData: map[string]interface{}{

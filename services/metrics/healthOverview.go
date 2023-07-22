@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/status"
 	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/owncast/owncast/utils"
 )
@@ -15,8 +16,6 @@ const (
 	maxCPUUsage               = 90
 	minClientCountForDetails  = 3
 )
-
-var configRepository = configrepository.Get()
 
 // GetStreamHealthOverview will return the stream health overview.
 func (m *Metrics) GetStreamHealthOverview() *models.StreamHealthOverview {
@@ -70,6 +69,8 @@ func (m *Metrics) networkSpeedHealthOverviewMessage() string {
 		isVideoPassthrough bool
 		bitrate            int
 	}
+
+	configRepository := configrepository.Get()
 
 	outputVariants := configRepository.GetStreamOutputVariants()
 
@@ -137,12 +138,14 @@ func (m *Metrics) wastefulBitrateOverviewMessage() string {
 		return ""
 	}
 
-	currentBroadcast := core.GetCurrentBroadcast()
+	stat := status.Get()
+
+	currentBroadcast := stat.GetCurrentBroadcast()
 	if currentBroadcast == nil {
 		return ""
 	}
 
-	currentBroadcaster := core.GetBroadcaster()
+	currentBroadcaster := stat.GetBroadcaster()
 	if currentBroadcast == nil {
 		return ""
 	}
@@ -156,6 +159,7 @@ func (m *Metrics) wastefulBitrateOverviewMessage() string {
 	if inboundBitrate == 0 {
 		return ""
 	}
+	configRepository := configrepository.Get()
 
 	outputVariants := configRepository.GetStreamOutputVariants()
 
@@ -230,6 +234,8 @@ func (m *Metrics) errorCountHealthOverviewMessage() string {
 	if totalNumberOfClients >= minClientCountForDetails {
 		healthyPercentage := utils.IntPercentage(clientsWithErrors, totalNumberOfClients)
 
+		configRepository := configrepository.Get()
+
 		isUsingPassthrough := false
 		outputVariants := configRepository.GetStreamOutputVariants()
 		for _, variant := range outputVariants {
@@ -242,7 +248,8 @@ func (m *Metrics) errorCountHealthOverviewMessage() string {
 			return fmt.Sprintf("%d of %d viewers (%d%%) are experiencing errors. You're currently using a video passthrough output, often known for causing playback issues for people. It is suggested you turn it off.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 		}
 
-		currentBroadcast := core.GetCurrentBroadcast()
+		stat := status.Get()
+		currentBroadcast := stat.GetCurrentBroadcast()
 		if currentBroadcast != nil && currentBroadcast.LatencyLevel.SecondsPerSegment < 3 {
 			return fmt.Sprintf("%d of %d viewers (%d%%) may be experiencing some issues. You may want to increase your latency buffer level in your video configuration to see if it helps.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 		}

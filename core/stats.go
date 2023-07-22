@@ -9,6 +9,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/geoip"
+	"github.com/owncast/owncast/storage/configrepository"
 )
 
 var (
@@ -43,6 +44,8 @@ func IsStreamConnected() bool {
 	if !_stats.StreamConnected {
 		return false
 	}
+
+	configRepository := configrepository.Get()
 
 	// Kind of a hack.  It takes a handful of seconds between a RTMP connection and when HLS data is available.
 	// So account for that with an artificial buffer of four segments.
@@ -110,6 +113,8 @@ func pruneViewerCount() {
 }
 
 func saveStats() {
+	configRepository := configrepository.Get()
+
 	if err := configRepository.SetPeakOverallViewerCount(_stats.OverallMaxViewerCount); err != nil {
 		log.Errorln("error saving viewer count", err)
 	}
@@ -124,6 +129,8 @@ func saveStats() {
 }
 
 func getSavedStats() models.Stats {
+	configRepository := configrepository.Get()
+
 	savedLastDisconnectTime, _ := configRepository.GetLastDisconnectTime()
 
 	result := models.Stats{

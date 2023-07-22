@@ -93,8 +93,8 @@ type ConfigRepository interface {
 	GetFederationShowEngagement() bool
 	SetBlockedFederatedDomains(domains []string) error
 	GetBlockedFederatedDomains() []string
-	SetChatJoinMessagesEnabled(enabled bool) error
-	GetChatJoinMessagesEnabled() bool
+	SetChatJoinPartMessagesEnabled(enabled bool) error
+	GetChatJoinPartMessagesEnabled() bool
 	SetNotificationsEnabled(enabled bool) error
 	GetNotificationsEnabled() bool
 	GetDiscordConfig() models.DiscordConfiguration
@@ -119,6 +119,7 @@ type ConfigRepository interface {
 	GetDisableSearchIndexing() bool
 	GetVideoServingEndpoint() string
 	SetVideoServingEndpoint(message string) error
+	GetDefaultFederationUsername() string
 }
 
 type SqlConfigRepository struct {

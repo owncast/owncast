@@ -11,6 +11,8 @@ func New(datastore *data.Store) *ChatRepository {
 		datastore: datastore,
 	}
 
+	r.startPruner()
+
 	return r
 }
 
@@ -18,7 +20,7 @@ func New(datastore *data.Store) *ChatRepository {
 var temporaryGlobalInstance *ChatRepository
 
 // GetUserRepository will return the user repository.
-func GetChatRepository() *ChatRepository {
+func Get() *ChatRepository {
 	if temporaryGlobalInstance == nil {
 		i := New(data.GetDatastore())
 		temporaryGlobalInstance = i

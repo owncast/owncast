@@ -3,19 +3,18 @@ package webserver
 import (
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
+
+	"github.com/owncast/owncast/storage/data"
 )
 
 var srv *webServer
 
 func TestMain(m *testing.M) {
-	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-db.db")
+	_, err := data.NewStore(":memory:")
 	if err != nil {
 		panic(err)
 	}
-
-	data.SetupPersistence(dbFile.Name())
 	srv = New()
 
 	m.Run()

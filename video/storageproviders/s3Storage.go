@@ -53,8 +53,6 @@ type S3Storage struct {
 	s3ForcePathStyle bool
 }
 
-var configRepository = configrepository.Get()
-
 // NewS3Storage returns a new S3Storage instance.
 func NewS3Storage() *S3Storage {
 	return &S3Storage{
@@ -66,6 +64,7 @@ func NewS3Storage() *S3Storage {
 // Setup sets up the s3 storage for saving the video to s3.
 func (s *S3Storage) Setup() error {
 	log.Trace("Setting up S3 for external storage of video...")
+	configRepository := configrepository.Get()
 
 	s3Config := configRepository.GetS3Config()
 	customVideoServingEndpoint := configRepository.GetVideoServingEndpoint()
@@ -109,6 +108,8 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 
 	// Warn the user about long-running save operations
 	if averagePerformance != 0 {
+		configRepository := configrepository.Get()
+
 		if averagePerformance > float64(configRepository.GetStreamLatencyLevel().SecondsPerSegment)*0.9 {
 			log.Warnln("Possible slow uploads: average upload S3 save duration", averagePerformance, "s. troubleshoot this issue by visiting https://owncast.online/docs/troubleshooting/")
 		}
@@ -160,7 +161,7 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	}
 	defer file.Close()
 
-	c := config.GetConfig()
+	c := config.Get()
 
 	// Convert the local path to the variant/file path by stripping the local storage location.
 	normalizedPath := strings.TrimPrefix(filePath, c.HLSStoragePath)
@@ -219,6 +220,8 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 }
 
 func (s *S3Storage) Cleanup() error {
+	configRepository := configrepository.Get()
+
 	// Determine how many files we should keep on S3 storage
 	maxNumber := configRepository.GetStreamLatencyLevel().SegmentCount
 	buffer := 20

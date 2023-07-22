@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/status"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -13,8 +14,10 @@ func (m *Metrics) handlePlaybackPolling() {
 	m.metrics.m.Lock()
 	defer m.metrics.m.Unlock()
 
+	s := status.Get()
+
 	// Make sure this is fired first before all the values get cleared below.
-	if m.getStatus().Online {
+	if s.Online {
 		m.generateStreamHealthOverview()
 	}
 

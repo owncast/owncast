@@ -537,7 +537,7 @@ func (cr *SqlConfigRepository) GetVideoCodec() string {
 
 // VerifySettings will perform a sanity check for specific settings values.
 func (cr *SqlConfigRepository) VerifySettings() error {
-	c := config.GetConfig()
+	c := config.Get()
 	if len(cr.GetStreamKeys()) == 0 && c.TemporaryStreamKey == "" {
 		log.Errorln("No stream key set. Streaming is disabled. Please set one via the admin or command line arguments")
 	}
@@ -752,13 +752,13 @@ func (cr *SqlConfigRepository) GetBlockedFederatedDomains() []string {
 	return strings.Split(domains, ",")
 }
 
-// SetChatJoinMessagesEnabled will set if chat join messages are enabled.
-func (cr *SqlConfigRepository) SetChatJoinMessagesEnabled(enabled bool) error {
+// SetChatJoinPartMessagesEnabled will set if chat join messages are enabled.
+func (cr *SqlConfigRepository) SetChatJoinPartMessagesEnabled(enabled bool) error {
 	return cr.datastore.SetBool(chatJoinMessagesEnabledKey, enabled)
 }
 
-// GetChatJoinMessagesEnabled will return if chat join messages are enabled.
-func (cr *SqlConfigRepository) GetChatJoinMessagesEnabled() bool {
+// GetChatJoinPartMessagesEnabled will return if chat join messages are enabled.
+func (cr *SqlConfigRepository) GetChatJoinPartMessagesEnabled() bool {
 	enabled, err := cr.datastore.GetBool(chatJoinMessagesEnabledKey)
 	if err != nil {
 		return true

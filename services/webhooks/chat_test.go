@@ -4,14 +4,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 )
 
 func TestSendChatEvent(t *testing.T) {
 	timestamp := time.Unix(72, 6).UTC()
-	user := user.User{
+	user := models.User{
 		ID:              "user id",
 		DisplayName:     "display name",
 		DisplayColor:    4,
@@ -26,18 +24,18 @@ func TestSendChatEvent(t *testing.T) {
 	}
 
 	checkPayload(t, models.MessageSent, func() {
-		manager.SendChatEvent(&events.UserMessageEvent{
-			Event: events.Event{
-				Type:      events.MessageSent,
+		manager.SendChatEvent(&models.UserMessageEvent{
+			Event: models.Event{
+				Type:      models.MessageSent,
 				ID:        "id",
 				Timestamp: timestamp,
 			},
-			UserEvent: events.UserEvent{
+			UserEvent: models.UserEvent{
 				User:     &user,
 				ClientID: 51,
 				HiddenAt: nil,
 			},
-			MessageEvent: events.MessageEvent{
+			MessageEvent: models.MessageEvent{
 				OutboundEvent: nil,
 				Body:          "body",
 				RawBody:       "raw body",
@@ -64,7 +62,7 @@ func TestSendChatEvent(t *testing.T) {
 
 func TestSendChatEventUsernameChanged(t *testing.T) {
 	timestamp := time.Unix(72, 6).UTC()
-	user := user.User{
+	user := models.User{
 		ID:              "user id",
 		DisplayName:     "display name",
 		DisplayColor:    4,
@@ -79,13 +77,13 @@ func TestSendChatEventUsernameChanged(t *testing.T) {
 	}
 
 	checkPayload(t, models.UserNameChanged, func() {
-		manager.SendChatEventUsernameChanged(events.NameChangeEvent{
-			Event: events.Event{
-				Type:      events.UserNameChanged,
+		manager.SendChatEventUsernameChanged(models.NameChangeEvent{
+			Event: models.Event{
+				Type:      models.UserNameChanged,
 				ID:        "id",
 				Timestamp: timestamp,
 			},
-			UserEvent: events.UserEvent{
+			UserEvent: models.UserEvent{
 				User:     &user,
 				ClientID: 51,
 				HiddenAt: nil,
@@ -112,7 +110,7 @@ func TestSendChatEventUsernameChanged(t *testing.T) {
 
 func TestSendChatEventUserJoined(t *testing.T) {
 	timestamp := time.Unix(72, 6).UTC()
-	user := user.User{
+	user := models.User{
 		ID:              "user id",
 		DisplayName:     "display name",
 		DisplayColor:    4,
@@ -127,13 +125,13 @@ func TestSendChatEventUserJoined(t *testing.T) {
 	}
 
 	checkPayload(t, models.UserJoined, func() {
-		manager.SendChatEventUserJoined(events.UserJoinedEvent{
-			Event: events.Event{
-				Type:      events.UserJoined,
+		manager.SendChatEventUserJoined(models.UserJoinedEvent{
+			Event: models.Event{
+				Type:      models.UserJoined,
 				ID:        "id",
 				Timestamp: timestamp,
 			},
-			UserEvent: events.UserEvent{
+			UserEvent: models.UserEvent{
 				User:     &user,
 				ClientID: 51,
 				HiddenAt: nil,
@@ -160,13 +158,13 @@ func TestSendChatEventSetMessageVisibility(t *testing.T) {
 	timestamp := time.Unix(72, 6).UTC()
 
 	checkPayload(t, models.VisibiltyToggled, func() {
-		manager.SendChatEventSetMessageVisibility(events.SetMessageVisibilityEvent{
-			Event: events.Event{
-				Type:      events.VisibiltyUpdate,
+		manager.SendChatEventSetMessageVisibility(models.SetMessageVisibilityEvent{
+			Event: models.Event{
+				Type:      models.VisibiltyUpdate,
 				ID:        "id",
 				Timestamp: timestamp,
 			},
-			UserMessageEvent: events.UserMessageEvent{},
+			UserMessageEvent: models.UserMessageEvent{},
 			MessageIDs:       []string{"message1", "message2"},
 			Visible:          false,
 		})
