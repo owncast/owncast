@@ -4,9 +4,8 @@ import (
 	"time"
 
 	"github.com/nakabonne/tstorage"
-	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/status"
 	"github.com/owncast/owncast/storage/chatrepository"
 	"github.com/owncast/owncast/storage/userrepository"
 	log "github.com/sirupsen/logrus"
@@ -30,12 +29,14 @@ func (m *Metrics) startViewerCollectionMetrics() {
 }
 
 func (m *Metrics) collectViewerCount() {
+	s := status.Get()
+
 	// Don't collect metrics for viewers if there's no stream active.
-	if !core.GetStatus().Online {
+	if !s.Online {
 		return
 	}
 
-	count := core.GetStatus().ViewerCount
+	count := s.ViewerCount
 
 	// Save active viewer count to our Prometheus collector.
 	m.activeViewerCount.Set(float64(count))
@@ -52,9 +53,9 @@ func (m *Metrics) collectViewerCount() {
 }
 
 func (m *Metrics) collectChatClientCount() {
-	count := len(chat.GetClients())
+	count := len(m.chatService.GetClients())
 	m.activeChatClientCount.Set(float64(count))
-	chatRepository := chatrepository.GetChatRepository()
+	chatRepository := chatrepository.Get()
 	usersRepository := userrepository.Get()
 
 	// Total message count

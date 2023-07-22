@@ -91,7 +91,7 @@ func InitializeDatabase(file string, schemaVersion int) (*sql.DB, error) {
 
 	dbBackupTicker := time.NewTicker(1 * time.Hour)
 	go func() {
-		c := config.GetConfig()
+		c := config.Get()
 		backupFile := filepath.Join(c.BackupDirectory, "owncastdb.bak")
 		for range dbBackupTicker.C {
 			utils.Backup(db, backupFile)

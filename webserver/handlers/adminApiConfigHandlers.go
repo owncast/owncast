@@ -9,9 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/owncast/owncast/activitypub/outbox"
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/apfederation/outbox"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/requests"
@@ -41,8 +40,10 @@ func (h *Handlers) SetTags(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ob := outbox.Get()
+
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := ob.UpdateFollowersWithAccountUpdates(); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -68,7 +69,7 @@ func (h *Handlers) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if value != "" {
-		sendSystemChatAction(fmt.Sprintf("Stream title changed to **%s**", value), true)
+		h.sendSystemChatAction(fmt.Sprintf("Stream title changed to **%s**", value), true)
 		webhookManager := webhooks.Get()
 		go webhookManager.SendStreamStatusEvent(models.StreamTitleUpdated)
 	}
@@ -80,8 +81,8 @@ func (h *Handlers) ExternalSetStreamTitle(integration models.ExternalAPIUser, w 
 	h.SetStreamTitle(w, r)
 }
 
-func sendSystemChatAction(messageText string, ephemeral bool) {
-	if err := chat.SendSystemAction(messageText, ephemeral); err != nil {
+func (h *Handlers) sendSystemChatAction(messageText string, ephemeral bool) {
+	if err := h.chatService.SendSystemAction(messageText, ephemeral); err != nil {
 		log.Errorln(err)
 	}
 }
@@ -102,8 +103,10 @@ func (h *Handlers) SetServerName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ob := outbox.Get()
+
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := ob.UpdateFollowersWithAccountUpdates(); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -127,8 +130,10 @@ func (h *Handlers) SetServerSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ob := outbox.Get()
+
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := ob.UpdateFollowersWithAccountUpdates(); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -249,8 +254,10 @@ func (h *Handlers) SetLogo(w http.ResponseWriter, r *http.Request) {
 		log.Error("Error saving logo uniqueness string: ", err)
 	}
 
+	ob := outbox.Get()
+
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := ob.UpdateFollowersWithAccountUpdates(); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -560,8 +567,10 @@ func (h *Handlers) SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ob := outbox.Get()
+
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := ob.UpdateFollowersWithAccountUpdates(); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -717,7 +726,7 @@ func (h *Handlers) SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if err := configRepository.SetChatJoinMessagesEnabled(configValue.Value.(bool)); err != nil {
+	if err := configRepository.SetChatJoinPartMessagesEnabled(configValue.Value.(bool)); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

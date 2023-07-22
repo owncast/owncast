@@ -25,14 +25,13 @@ type WebhookChatMessage struct {
 	Visible   bool         `json:"visible"`
 }
 
-var webhookRepository = storage.GetWebhookRepository()
-
 // SendEventToWebhooks will send a single webhook event to all webhook destinations.
 func (w *LiveWebhookManager) SendEventToWebhooks(payload WebhookEvent) {
 	w.sendEventToWebhooks(payload, nil)
 }
 
 func (w *LiveWebhookManager) sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
+	webhookRepository := storage.GetWebhookRepository()
 	webhooks := webhookRepository.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {

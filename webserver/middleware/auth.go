@@ -106,7 +106,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 // Not to be used for validating 3rd party access.
 func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc {
 	userRepository := userrepository.Get()
-	chatRepository := chatrepository.GetChatRepository()
+	chatRepository := chatrepository.Get()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accessToken := r.URL.Query().Get("accessToken")

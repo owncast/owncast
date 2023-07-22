@@ -11,9 +11,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 
-	"github.com/owncast/owncast/logging"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
+	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -119,7 +119,7 @@ func (t *Transcoder) Start(shouldLog bool) {
 	}
 	createVariantDirectories()
 
-	c := config.GetConfig()
+	c := config.Get()
 
 	if c.EnableDebugFeatures {
 		log.Println(command)
@@ -137,7 +137,7 @@ func (t *Transcoder) Start(shouldLog bool) {
 	}
 
 	if err := _commandExec.Start(); err != nil {
-		log.Errorln("Transcoder error. See", logging.GetTranscoderLogFilePath(), "for full output to debug.")
+		log.Errorln("Transcoder error. See", c.GetTranscoderLogFilePath(), "for full output to debug.")
 		log.Panicln(err, command)
 	}
 
@@ -155,7 +155,7 @@ func (t *Transcoder) Start(shouldLog bool) {
 	}
 
 	if err != nil {
-		log.Errorln("transcoding error. look at", logging.GetTranscoderLogFilePath(), "to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/codecs/")
+		log.Errorln("transcoding error. look at", c.GetTranscoderLogFilePath(), "to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/codecs/")
 	}
 }
 
@@ -198,8 +198,11 @@ func (t *Transcoder) getString() string {
 	if len(hlsOptionFlags) > 0 {
 		hlsOptionsString = "-hls_flags " + strings.Join(hlsOptionFlags, "+")
 	}
+
+	c := config.Get()
+
 	ffmpegFlags := []string{
-		fmt.Sprintf(`FFREPORT=file="%s":level=32`, logging.GetTranscoderLogFilePath()),
+		fmt.Sprintf(`FFREPORT=file="%s":level=32`, c.GetTranscoderLogFilePath()),
 		t.ffmpegPath,
 		"-hide_banner",
 		"-loglevel warning",
@@ -272,10 +275,22 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 	return variant
 }
 
+var temporaryGlobalInstance *Transcoder
+
+func Get() *Transcoder {
+	if temporaryGlobalInstance == nil {
+		temporaryGlobalInstance = NewTranscoder()
+	}
+
+	return temporaryGlobalInstance
+}
+
 // NewTranscoder will return a new Transcoder, populated by the config.
 func NewTranscoder() *Transcoder {
+	configRepository := configrepository.Get()
+
 	ffmpegPath := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
-	c := config.GetConfig()
+	c := config.Get()
 
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = ffmpegPath

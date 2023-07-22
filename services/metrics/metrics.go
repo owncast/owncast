@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/config"
+	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -26,6 +28,8 @@ type Metrics struct {
 	chatUserCount           prometheus.Gauge
 	currentChatMessageCount prometheus.Gauge
 	playbackErrorCount      prometheus.Gauge
+
+	chatService *chat.Chat
 }
 
 // How often we poll for updates.
@@ -76,6 +80,7 @@ func New() *Metrics {
 		windowedBandwidths:            map[string]float64{},
 		windowedLatencies:             map[string]float64{},
 		windowedDownloadDurations:     map[string]float64{},
+		chatService:                   chat.Get(),
 	}
 }
 
@@ -84,12 +89,14 @@ func New() *Metrics {
 // Start will begin the metrics collection and alerting.
 func (m *Metrics) Start(getStatus func() models.Status) {
 	m.getStatus = getStatus
+	configRepository := configrepository.Get()
+
 	host := configRepository.GetServerURL()
 	if host == "" {
 		host = "unknown"
 	}
 
-	c := config.GetConfig()
+	c := config.Get()
 
 	m.labels = map[string]string{
 		"version": c.VersionNumber,

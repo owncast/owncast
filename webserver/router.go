@@ -3,13 +3,10 @@ package webserver
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/activitypub"
-	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
-	"github.com/owncast/owncast/storage"
 	"github.com/owncast/owncast/utils"
-	fediverseauth "github.com/owncast/owncast/webserver/handlers/auth/fediverse"
-	"github.com/owncast/owncast/webserver/handlers/auth/indieauth"
+	"github.com/owncast/owncast/webserver/handlers/federation"
 	"github.com/owncast/owncast/webserver/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -20,12 +17,13 @@ func (s *webServer) setupRoutes() {
 	s.setupAdminAPIRoutes()
 	s.setupExternalThirdPartyAPIRoutes()
 	s.setupModerationAPIRoutes()
+	s.setupActivityPubFederationRoutes()
 
 	s.router.HandleFunc("/hls/", s.handlers.HandleHLSRequest)
 
 	// websocket
 	s.router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		chat.HandleClientConnection(w, r)
+		s.chatService.HandleClientConnection(w, r)
 	})
 
 	s.router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -42,13 +40,10 @@ func (s *webServer) setupRoutes() {
 			// s.ServeHTTP(w, r)
 		}
 	})
-
-	// ActivityPub has its own router
-	activitypub.Start(data.GetDatastore(), s.router)
 }
 
 func (s *webServer) setupWebAssetRoutes() {
-	c := config.GetConfig()
+	c := config.Get()
 
 	// The admin web app.
 	s.router.HandleFunc("/admin/", middleware.RequireAdminAuth(s.handlers.IndexHandler))
@@ -119,12 +114,12 @@ func (s *webServer) setupInternalAPIRoutes() {
 	s.router.HandleFunc("/api/notifications/register", middleware.RequireUserAccessToken(s.handlers.RegisterForLiveNotifications))
 
 	// Start auth flow
-	s.router.HandleFunc("/api/auth/indieauth", middleware.RequireUserAccessToken(indieauth.StartAuthFlow))
-	s.router.HandleFunc("/api/auth/indieauth/callback", indieauth.HandleRedirect)
-	s.router.HandleFunc("/api/auth/provider/indieauth", indieauth.HandleAuthEndpoint)
+	s.router.HandleFunc("/api/auth/indieauth", middleware.RequireUserAccessToken(s.indieAuthHandlers.StartAuthFlow))
+	s.router.HandleFunc("/api/auth/indieauth/callback", s.indieAuthHandlers.HandleRedirect)
+	s.router.HandleFunc("/api/auth/provider/indieauth", s.indieAuthHandlers.HandleAuthEndpoint)
 
-	s.router.HandleFunc("/api/auth/fediverse", middleware.RequireUserAccessToken(fediverseauth.RegisterFediverseOTPRequest))
-	s.router.HandleFunc("/api/auth/fediverse/verify", fediverseauth.VerifyFediverseOTPRequest)
+	s.router.HandleFunc("/api/auth/fediverse", middleware.RequireUserAccessToken(s.fediAuthHandlers.RegisterFediverseOTPRequest))
+	s.router.HandleFunc("/api/auth/fediverse/verify", s.fediAuthHandlers.VerifyFediverseOTPRequest)
 }
 
 func (s *webServer) setupAdminAPIRoutes() {
@@ -376,31 +371,31 @@ func (s *webServer) setupAdminAPIRoutes() {
 
 func (s *webServer) setupExternalThirdPartyAPIRoutes() {
 	// Send a system message to chat
-	s.router.HandleFunc("/api/integrations/chat/system", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, s.handlers.SendSystemMessage))
+	s.router.HandleFunc("/api/integrations/chat/system", middleware.RequireExternalAPIAccessToken(models.ScopeCanSendSystemMessages, s.handlers.SendSystemMessage))
 
 	// Send a system message to a single client
-	s.router.HandleFunc(utils.RestEndpoint("/api/integrations/chat/system/client/{clientId}", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, s.handlers.SendSystemMessageToConnectedClient)))
+	s.router.HandleFunc(utils.RestEndpoint("/api/integrations/chat/system/client/{clientId}", middleware.RequireExternalAPIAccessToken(models.ScopeCanSendSystemMessages, s.handlers.SendSystemMessageToConnectedClient)))
 
 	// Send a user message to chat *NO LONGER SUPPORTED
-	s.router.HandleFunc("/api/integrations/chat/user", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendChatMessages, s.handlers.SendUserMessage))
+	s.router.HandleFunc("/api/integrations/chat/user", middleware.RequireExternalAPIAccessToken(models.ScopeCanSendChatMessages, s.handlers.SendUserMessage))
 
 	// Send a message to chat as a specific 3rd party bot/integration based on its access token
-	s.router.HandleFunc("/api/integrations/chat/send", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendChatMessages, s.handlers.SendIntegrationChatMessage))
+	s.router.HandleFunc("/api/integrations/chat/send", middleware.RequireExternalAPIAccessToken(models.ScopeCanSendChatMessages, s.handlers.SendIntegrationChatMessage))
 
 	// Send a user action to chat
-	s.router.HandleFunc("/api/integrations/chat/action", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, s.handlers.SendChatAction))
+	s.router.HandleFunc("/api/integrations/chat/action", middleware.RequireExternalAPIAccessToken(models.ScopeCanSendSystemMessages, s.handlers.SendChatAction))
 
 	// Hide chat message
-	s.router.HandleFunc("/api/integrations/chat/messagevisibility", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, s.handlers.ExternalUpdateMessageVisibility))
+	s.router.HandleFunc("/api/integrations/chat/messagevisibility", middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, s.handlers.ExternalUpdateMessageVisibility))
 
 	// Stream title
-	s.router.HandleFunc("/api/integrations/streamtitle", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, s.handlers.ExternalSetStreamTitle))
+	s.router.HandleFunc("/api/integrations/streamtitle", middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, s.handlers.ExternalSetStreamTitle))
 
 	// Get chat history
-	s.router.HandleFunc("/api/integrations/chat", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, s.handlers.ExternalGetChatMessages))
+	s.router.HandleFunc("/api/integrations/chat", middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, s.handlers.ExternalGetChatMessages))
 
 	// Connected clients
-	s.router.HandleFunc("/api/integrations/clients", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, s.handlers.ExternalGetConnectedChatClients))
+	s.router.HandleFunc("/api/integrations/clients", middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, s.handlers.ExternalGetConnectedChatClients))
 }
 
 func (s *webServer) setupModerationAPIRoutes() {
@@ -412,4 +407,31 @@ func (s *webServer) setupModerationAPIRoutes() {
 
 	// Get a user's details
 	s.router.HandleFunc("/api/moderation/chat/user/", middleware.RequireUserModerationScopeAccesstoken(s.handlers.GetUserDetails))
+}
+
+// StartRouter will start the federation specific http router.
+func (s *webServer) setupActivityPubFederationRoutes() {
+	// WebFinger
+	s.router.HandleFunc("/.well-known/webfinger", federation.WebfingerHandler)
+
+	// Host Metadata
+	s.router.HandleFunc("/.well-known/host-meta", federation.HostMetaController)
+
+	// Nodeinfo v1
+	s.router.HandleFunc("/.well-known/nodeinfo", federation.NodeInfoController)
+
+	// x-nodeinfo v2
+	s.router.HandleFunc("/.well-known/x-nodeinfo2", federation.XNodeInfo2Controller)
+
+	// Nodeinfo v2
+	s.router.HandleFunc("/nodeinfo/2.0", federation.NodeInfoV2Controller)
+
+	// Instance details
+	s.router.HandleFunc("/api/v1/instance", federation.InstanceV1Controller)
+
+	// Single ActivityPub Actor
+	s.router.HandleFunc("/federation/user/", middleware.RequireActivityPubOrRedirect(federation.ActorHandler))
+
+	// Single AP object
+	s.router.HandleFunc("/federation/", middleware.RequireActivityPubOrRedirect(federation.ObjectHandler))
 }

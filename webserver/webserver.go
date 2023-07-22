@@ -6,21 +6,32 @@ import (
 	"time"
 
 	"github.com/CAFxX/httpcompression"
+	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/webserver/handlers"
+	"github.com/owncast/owncast/webserver/handlers/auth/fediverse"
+	"github.com/owncast/owncast/webserver/handlers/auth/indieauth"
+
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
 
 type webServer struct {
-	router   *http.ServeMux
-	handlers *handlers.Handlers
-	server   *http.Server
+	router            *http.ServeMux
+	handlers          *handlers.Handlers
+	fediAuthHandlers  *fediverse.FediAuthHandlers
+	indieAuthHandlers *indieauth.IndieAuthHandlers
+	chatService       *chat.Chat
+
+	server *http.Server
 }
 
 func New() *webServer {
 	s := &webServer{
-		router: http.NewServeMux(),
+		router:            http.NewServeMux(),
+		handlers:          handlers.New(),
+		fediAuthHandlers:  fediverse.New(),
+		indieAuthHandlers: indieauth.New(),
 	}
 
 	s.setupRoutes()

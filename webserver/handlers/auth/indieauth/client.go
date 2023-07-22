@@ -6,22 +6,35 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
 	ia "github.com/owncast/owncast/services/auth/indieauth"
+	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/storage/chatrepository"
 	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/owncast/owncast/storage/userrepository"
 	"github.com/owncast/owncast/webserver/responses"
 	log "github.com/sirupsen/logrus"
 )
 
-var (
-	userRepository   = userrepository.Get()
-	configRepository = configrepository.Get()
-)
+type IndieAuthHandlers struct {
+	configRepository *configrepository.SqlConfigRepository
+	chatService      *chat.Chat
+	chatRepository   *chatrepository.ChatRepository
+	userRepository   *userrepository.SqlUserRepository
+}
+
+// New creates a new instances of web server handlers.
+func New() *IndieAuthHandlers {
+	return &IndieAuthHandlers{
+		configRepository: configrepository.Get(),
+		chatService:      chat.Get(),
+		chatRepository:   chatrepository.Get(),
+		userRepository:   userrepository.Get(),
+	}
+}
 
 // StartAuthFlow will begin the IndieAuth flow for the current user.
-func StartAuthFlow(u models.User, w http.ResponseWriter, r *http.Request) {
+func (h *IndieAuthHandlers) StartAuthFlow(u models.User, w http.ResponseWriter, r *http.Request) {
 	type request struct {
 		AuthHost string `json:"authHost"`
 	}
@@ -59,7 +72,7 @@ func StartAuthFlow(u models.User, w http.ResponseWriter, r *http.Request) {
 
 // HandleRedirect will handle the redirect from an IndieAuth server to
 // continue the auth flow.
-func HandleRedirect(w http.ResponseWriter, r *http.Request) {
+func (h *IndieAuthHandlers) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	indieAuthClient := ia.GetIndieAuthClient()
 	state := r.URL.Query().Get("state")
 	code := r.URL.Query().Get("code")
@@ -72,21 +85,21 @@ func HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if a user with this auth already exists, if so, log them in.
-	if u := userRepository.GetUserByAuth(response.Me, models.IndieAuth); u != nil {
+	if u := h.userRepository.GetUserByAuth(response.Me, models.IndieAuth); u != nil {
 		// Handle existing auth.
 		log.Debugln("user with provided indieauth already exists, logging them in")
 
 		// Update the current user's access token to point to the existing user id.
 		accessToken := request.CurrentAccessToken
 		userID := u.ID
-		if err := userRepository.SetAccessTokenToOwner(accessToken, userID); err != nil {
+		if err := h.userRepository.SetAccessTokenToOwner(accessToken, userID); err != nil {
 			responses.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 
 		if request.DisplayName != u.DisplayName {
 			loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", request.DisplayName, u.DisplayName)
-			if err := chat.SendSystemAction(loginMessage, true); err != nil {
+			if err := h.chatService.SendSystemAction(loginMessage, true); err != nil {
 				log.Errorln(err)
 			}
 		}
@@ -98,14 +111,14 @@ func HandleRedirect(w http.ResponseWriter, r *http.Request) {
 
 	// Otherwise, save this as new auth.
 	log.Debug("indieauth token does not already exist, saving it as a new one for the current user")
-	if err := userRepository.AddAuth(request.UserID, response.Me, models.IndieAuth); err != nil {
+	if err := h.userRepository.AddAuth(request.UserID, response.Me, models.IndieAuth); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	// Update the current user's authenticated flag so we can show it in
 	// the chat UI.
-	if err := userRepository.SetUserAsAuthenticated(request.UserID); err != nil {
+	if err := h.userRepository.SetUserAsAuthenticated(request.UserID); err != nil {
 		log.Errorln(err)
 	}
 

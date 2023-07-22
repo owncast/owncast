@@ -22,7 +22,7 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := config.GetConfig()
+	c := config.Get()
 
 	requestedPath := r.URL.Path
 	relativePath := strings.Replace(requestedPath, "/hls/", "", 1)

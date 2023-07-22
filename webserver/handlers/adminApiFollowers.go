@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/activitypub/persistence"
-	aprequests "github.com/owncast/owncast/activitypub/requests"
+	"github.com/owncast/owncast/services/apfederation/outbox"
+	"github.com/owncast/owncast/storage/federationrepository"
 	"github.com/owncast/owncast/webserver/requests"
 	"github.com/owncast/owncast/webserver/responses"
 )
@@ -28,29 +28,33 @@ func (h *Handlers) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	federationRepository := federationrepository.Get()
+
 	if approval.Approved {
 		// Approve a follower
-		if err := persistence.ApprovePreviousFollowRequest(approval.ActorIRI); err != nil {
+		if err := federationRepository.ApprovePreviousFollowRequest(approval.ActorIRI); err != nil {
 			responses.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 
 		localAccountName := configRepository.GetDefaultFederationUsername()
 
-		followRequest, err := persistence.GetFollower(approval.ActorIRI)
+		followRequest, err := federationRepository.GetFollower(approval.ActorIRI)
 		if err != nil {
 			responses.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 
+		ob := outbox.Get()
+
 		// Send the approval to the follow requestor.
-		if err := aprequests.SendFollowAccept(followRequest.Inbox, followRequest.RequestObject, localAccountName); err != nil {
+		if err := ob.SendFollowAccept(followRequest.Inbox, followRequest.RequestObject, localAccountName); err != nil {
 			responses.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 	} else {
 		// Remove/block a follower
-		if err := persistence.BlockOrRejectFollower(approval.ActorIRI); err != nil {
+		if err := federationRepository.BlockOrRejectFollower(approval.ActorIRI); err != nil {
 			responses.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
@@ -61,7 +65,8 @@ func (h *Handlers) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 
 // GetPendingFollowRequests will return a list of pending follow requests.
 func (h *Handlers) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
-	requests, err := persistence.GetPendingFollowRequests()
+	federationRepository := federationrepository.Get()
+	requests, err := federationRepository.GetPendingFollowRequests()
 	if err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -72,7 +77,8 @@ func (h *Handlers) GetPendingFollowRequests(w http.ResponseWriter, r *http.Reque
 
 // GetBlockedAndRejectedFollowers will return blocked and rejected followers.
 func (h *Handlers) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
-	rejections, err := persistence.GetBlockedAndRejectedFollowers()
+	federationRepository := federationrepository.Get()
+	rejections, err := federationRepository.GetBlockedAndRejectedFollowers()
 	if err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return

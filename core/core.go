@@ -9,9 +9,9 @@ import (
 
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/services/auth"
 	"github.com/owncast/owncast/services/config"
 	"github.com/owncast/owncast/services/notifications"
+	"github.com/owncast/owncast/services/status"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/services/yp"
 	"github.com/owncast/owncast/storage/configrepository"
@@ -31,11 +31,10 @@ var (
 	fileWriter   = transcoder.FileWriterReceiverService{}
 )
 
-var configRepository = configrepository.Get()
-
 // Start starts up the core processing.
 func Start() error {
 	resetDirectories()
+	configRepository := configrepository.Get()
 
 	configRepository.PopulateDefaults()
 
@@ -59,7 +58,7 @@ func Start() error {
 	}
 
 	// user.SetupUsers()
-	auth.Setup(data.GetDatastore())
+	// auth.Setup(data.GetDatastore())
 
 	fileWriter.SetupFileWriterReceiverService(&handler)
 
@@ -68,77 +67,29 @@ func Start() error {
 		return err
 	}
 
-	_yp = yp.NewYP(GetStatus)
+	s := status.Get()
+	gsf := func() *models.Status {
+		s := status.Get()
+		return &s.Status
+	}
 
-	if err := chat.Start(GetStatus); err != nil {
+	_yp = yp.NewYP(gsf)
+
+	if err := chat.Start(gsf); err != nil {
 		log.Errorln(err)
 	}
 
 	// start the rtmp server
-	go rtmp.Start(setStreamAsConnected, setBroadcaster)
+	go rtmp.Start(setStreamAsConnected, s.SetBroadcaster)
 
 	rtmpPort := configRepository.GetRTMPPortNumber()
 	if rtmpPort != 1935 {
 		log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
 	}
 
-	webhooks.InitTemporarySingleton(GetStatus)
+	webhooks.InitTemporarySingleton(gsf)
 
 	notifications.Setup(data.GetDatastore())
 
 	return nil
-}
-
-func createInitialOfflineState() error {
-	transitionToOfflineVideoStreamContent()
-
-	return nil
-}
-
-// transitionToOfflineVideoStreamContent will overwrite the current stream with the
-// offline video stream state only.  No live stream HLS segments will continue to be
-// referenced.
-func transitionToOfflineVideoStreamContent() {
-	log.Traceln("Firing transcoder with offline stream state")
-
-	_transcoder := transcoder.NewTranscoder()
-	_transcoder.SetIdentifier("offline")
-	_transcoder.SetLatencyLevel(models.GetLatencyLevel(4))
-	_transcoder.SetIsEvent(true)
-
-	offlineFilePath, err := saveOfflineClipToDisk("offline.ts")
-	if err != nil {
-		log.Fatalln("unable to save offline clip:", err)
-	}
-
-	_transcoder.SetInput(offlineFilePath)
-	go _transcoder.Start(false)
-
-	// Copy the logo to be the thumbnail
-	logo := configRepository.GetLogoPath()
-	c := config.GetConfig()
-	dst := filepath.Join(c.TempDir, "thumbnail.jpg")
-	if err = utils.Copy(filepath.Join("data", logo), dst); err != nil {
-		log.Warnln(err)
-	}
-
-	// Delete the preview Gif
-	_ = os.Remove(path.Join(config.DataDirectory, "preview.gif"))
-}
-
-func resetDirectories() {
-	log.Trace("Resetting file directories to a clean slate.")
-
-	// Wipe hls data directory
-	c := config.GetConfig()
-	utils.CleanupDirectory(c.HLSStoragePath)
-
-	// Remove the previous thumbnail
-	logo := configRepository.GetLogoPath()
-	if utils.DoesFileExists(logo) {
-		err := utils.Copy(path.Join("data", logo), filepath.Join(config.DataDirectory, "thumbnail.jpg"))
-		if err != nil {
-			log.Warnln(err)
-		}
-	}
 }

@@ -25,7 +25,9 @@ func (h *Handlers) GetViewersOverTime(w http.ResponseWriter, r *http.Request) {
 	windowStartAt := time.Unix(int64(windowStartAtUnix), 0)
 	windowEnd := time.Now()
 
-	viewersOverTime := metrics.GetViewersOverTime(windowStartAt, windowEnd)
+	m := metrics.Get()
+
+	viewersOverTime := m.GetViewersOverTime(windowStartAt, windowEnd)
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(viewersOverTime)
 	if err != nil {

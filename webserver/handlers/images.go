@@ -16,7 +16,7 @@ const (
 
 // GetThumbnail will return the thumbnail image as a response.
 func (h *Handlers) GetThumbnail(w http.ResponseWriter, r *http.Request) {
-	c := config.GetConfig()
+	c := config.Get()
 	imageFilename := "thumbnail.jpg"
 	imagePath := filepath.Join(c.TempDir, imageFilename)
 
@@ -41,7 +41,7 @@ func (h *Handlers) GetThumbnail(w http.ResponseWriter, r *http.Request) {
 
 // GetPreview will return the preview gif as a response.
 func (h *Handlers) GetPreview(w http.ResponseWriter, r *http.Request) {
-	c := config.GetConfig()
+	c := config.Get()
 	imageFilename := "preview.gif"
 	imagePath := filepath.Join(c.TempDir, imageFilename)
 

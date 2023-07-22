@@ -18,11 +18,9 @@ import (
 const pingInterval = 4 * time.Minute
 
 var (
-	getStatus     func() models.Status
+	getStatus     func() *models.Status
 	_inErrorState = false
 )
-
-var configRepository = configrepository.Get()
 
 // YP is a service for handling listing in the Owncast directory.
 type YP struct {
@@ -42,7 +40,7 @@ type ypPingRequest struct {
 }
 
 // NewYP creates a new instance of the YP service handler.
-func NewYP(getStatusFunc func() models.Status) *YP {
+func NewYP(getStatusFunc func() *models.Status) *YP {
 	getStatus = getStatusFunc
 	return &YP{}
 }
@@ -63,6 +61,8 @@ func (yp *YP) Stop() {
 }
 
 func (yp *YP) ping() {
+	configRepository := configrepository.Get()
+
 	if !configRepository.GetDirectoryEnabled() {
 		return
 	}

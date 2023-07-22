@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/activitypub"
-	"github.com/owncast/owncast/activitypub/outbox"
-	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/services/apfederation"
+	"github.com/owncast/owncast/services/apfederation/outbox"
+	"github.com/owncast/owncast/storage/federationrepository"
 	"github.com/owncast/owncast/webserver/requests"
 	"github.com/owncast/owncast/webserver/responses"
 )
@@ -27,7 +27,9 @@ func (h *Handlers) SendFederatedMessage(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if err := activitypub.SendPublicFederatedMessage(message); err != nil {
+	ap := apfederation.Get()
+
+	if err := ap.SendPublicFederatedMessage(message); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -69,8 +71,10 @@ func (h *Handlers) SetFederationActivityPrivate(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	ob := outbox.Get()
+
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := ob.UpdateFollowersWithAccountUpdates(); err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -164,7 +168,9 @@ func (h *Handlers) SetFederationBlockDomains(w http.ResponseWriter, r *http.Requ
 func (h *Handlers) GetFederatedActions(page int, pageSize int, w http.ResponseWriter, r *http.Request) {
 	offset := pageSize * page
 
-	activities, total, err := persistence.GetInboundActivities(pageSize, offset)
+	federationRepository := federationrepository.Get()
+
+	activities, total, err := federationRepository.GetInboundActivities(pageSize, offset)
 	if err != nil {
 		responses.WriteSimpleResponse(w, false, err.Error())
 		return

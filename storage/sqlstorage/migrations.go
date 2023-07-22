@@ -21,7 +21,7 @@ func NewSqlMigrations(db *sql.DB) *SqlMigrations {
 }
 
 func (m *SqlMigrations) MigrateDatabaseSchema(db *sql.DB, from, to int) error {
-	c := config.GetConfig()
+	c := config.Get()
 
 	log.Printf("Migrating database from version %d to %d", from, to)
 	dbBackupFile := filepath.Join(c.BackupDirectory, fmt.Sprintf("owncast-v%d.bak", from))

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -15,13 +14,15 @@ import (
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/storage"
+	"github.com/owncast/owncast/storage/data"
 	jsonpatch "gopkg.in/evanphx/json-patch.v5"
 )
 
 var manager *LiveWebhookManager
 
-func fakeGetStatus() models.Status {
-	return models.Status{
+func fakeGetStatus() *models.Status {
+	return &models.Status{
 		Online:                true,
 		ViewerCount:           5,
 		OverallMaxViewerCount: 420,
@@ -32,14 +33,8 @@ func fakeGetStatus() models.Status {
 }
 
 func TestMain(m *testing.M) {
-	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-db.db")
+	_, err := data.NewStore(":memory:")
 	if err != nil {
-		panic(err)
-	}
-	dbFile.Close()
-	defer os.Remove(dbFile.Name())
-
-	if err := data.SetupPersistence(dbFile.Name()); err != nil {
 		panic(err)
 	}
 
@@ -53,6 +48,8 @@ func TestMain(m *testing.M) {
 // Because the other tests use `sendEventToWebhooks` with a `WaitGroup` to know when the test completes,
 // this test ensures that `SendToWebhooks` without a `WaitGroup` doesn't panic.
 func TestPublicSend(t *testing.T) {
+	webhookRepository := storage.GetWebhookRepository()
+
 	// Send enough events to be sure at least one worker delivers a second event.
 	eventsCount := webhookWorkerPoolSize + 1
 
@@ -87,6 +84,8 @@ func TestPublicSend(t *testing.T) {
 
 // Make sure that events are only sent to interested endpoints.
 func TestRouting(t *testing.T) {
+	webhookRepository := storage.GetWebhookRepository()
+
 	eventTypes := []models.EventType{models.ChatActionSent, models.UserJoined, events.UserParted}
 
 	calls := map[models.EventType]int{}
@@ -142,6 +141,8 @@ func TestRouting(t *testing.T) {
 
 // Make sure that events are sent to all interested endpoints.
 func TestMultiple(t *testing.T) {
+	webhookRepository := storage.GetWebhookRepository()
+
 	const times = 2
 
 	var calls uint32
@@ -179,6 +180,8 @@ func TestMultiple(t *testing.T) {
 
 // Make sure when a webhook is used its last used timestamp is updated.
 func TestTimestamps(t *testing.T) {
+	webhookRepository := storage.GetWebhookRepository()
+
 	const tolerance = time.Second
 	start := time.Now()
 	eventTypes := []models.EventType{models.StreamStarted, models.StreamStopped}
@@ -260,6 +263,8 @@ func TestTimestamps(t *testing.T) {
 
 // Make sure up to the expected number of events can be fired in parallel.
 func TestParallel(t *testing.T) {
+	webhookRepository := storage.GetWebhookRepository()
+
 	var calls uint32
 
 	var wgStart sync.WaitGroup
@@ -312,6 +317,8 @@ func TestParallel(t *testing.T) {
 
 // Send an event, capture it, and verify that it has the expected payload.
 func checkPayload(t *testing.T, eventType models.EventType, send func(), expectedJson string) {
+	webhookRepository := storage.GetWebhookRepository()
+
 	eventChannel := make(chan WebhookEvent)
 
 	// Set up a server.

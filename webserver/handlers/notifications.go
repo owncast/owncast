@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/notifications"
+	"github.com/owncast/owncast/storage/notificationsrepository"
 	"github.com/owncast/owncast/webserver/responses"
 
 	"github.com/owncast/owncast/utils"
@@ -44,7 +45,9 @@ func (h *Handlers) RegisterForLiveNotifications(u models.User, w http.ResponseWr
 		return
 	}
 
-	if err := notifications.AddNotification(req.Channel, req.Destination); err != nil {
+	n := notificationsrepository.Get()
+
+	if err := n.AddNotification(req.Channel, req.Destination); err != nil {
 		log.Errorln(err)
 		responses.WriteSimpleResponse(w, false, "unable to save notification")
 		return

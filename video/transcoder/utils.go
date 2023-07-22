@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/owncast/owncast/services/config"
+	"github.com/owncast/owncast/storage/configrepository"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -96,10 +97,12 @@ func handleTranscoderMessage(message string) {
 }
 
 func createVariantDirectories() {
-	c := config.GetConfig()
+	c := config.Get()
 
 	// Create private hls data dirs
 	utils.CleanupDirectory(c.HLSStoragePath)
+
+	configRepository := configrepository.Get()
 
 	if len(configRepository.GetStreamOutputVariants()) != 0 {
 		for index := range configRepository.GetStreamOutputVariants() {

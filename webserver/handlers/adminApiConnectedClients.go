@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/webserver/responses"
 )
 
 // GetConnectedChatClients returns currently connected clients.
 func (h *Handlers) GetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
-	clients := chat.GetClients()
+	clients := h.chatService.GetClients()
 	w.Header().Set("Content-Type", "application/json")
 
 	if err := json.NewEncoder(w).Encode(clients); err != nil {

@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/config"
+	"github.com/owncast/owncast/storage/federationrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/middleware"
 	"github.com/owncast/owncast/webserver/responses"
@@ -87,7 +87,9 @@ func getConfigResponse() webConfigResponse {
 	var federationResponse federationConfigResponse
 	federationEnabled := configRepository.GetFederationEnabled()
 
-	followerCount, _ := activitypub.GetFollowerCount()
+	federationRepository := federationrepository.Get()
+
+	followerCount, _ := federationRepository.GetFollowerCount()
 	if federationEnabled {
 		serverURLString := configRepository.GetServerURL()
 		serverURL, _ := url.Parse(serverURLString)
@@ -117,7 +119,7 @@ func getConfigResponse() webConfigResponse {
 		IndieAuthEnabled: configRepository.GetServerURL() != "",
 	}
 
-	c := config.GetConfig()
+	c := config.Get()
 
 	return webConfigResponse{
 		Name:                 configRepository.GetServerName(),

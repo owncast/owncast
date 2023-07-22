@@ -6,9 +6,9 @@ import (
 
 // Stats holds the stats for the system.
 type Stats struct {
+	LastConnectTime    *utils.NullTime `json:"lastConnectTime"`
 	LastDisconnectTime *utils.NullTime `json:"lastDisconnectTime"`
 
-	LastConnectTime       *utils.NullTime    `json:"-"`
 	ChatClients           map[string]Client  `json:"-"`
 	Viewers               map[string]*Viewer `json:"-"`
 	SessionMaxViewerCount int                `json:"sessionMaxViewerCount"`

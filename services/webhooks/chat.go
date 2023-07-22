@@ -1,12 +1,11 @@
 package webhooks
 
 import (
-	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
 )
 
 // SendChatEvent will send a chat event to webhook destinations.
-func (w *LiveWebhookManager) SendChatEvent(chatEvent *events.UserMessageEvent) {
+func (w *LiveWebhookManager) SendChatEvent(chatEvent *models.UserMessageEvent) {
 	webhookEvent := WebhookEvent{
 		Type: chatEvent.GetMessageType(),
 		EventData: &WebhookChatMessage{
@@ -24,7 +23,7 @@ func (w *LiveWebhookManager) SendChatEvent(chatEvent *events.UserMessageEvent) {
 }
 
 // SendChatEventUsernameChanged will send a username changed event to webhook destinations.
-func (w *LiveWebhookManager) SendChatEventUsernameChanged(event events.NameChangeEvent) {
+func (w *LiveWebhookManager) SendChatEventUsernameChanged(event models.NameChangeEvent) {
 	webhookEvent := WebhookEvent{
 		Type:      models.UserNameChanged,
 		EventData: event,
@@ -34,7 +33,7 @@ func (w *LiveWebhookManager) SendChatEventUsernameChanged(event events.NameChang
 }
 
 // SendChatEventUserJoined sends a webhook notifying that a user has joined.
-func (w *LiveWebhookManager) SendChatEventUserJoined(event events.UserJoinedEvent) {
+func (w *LiveWebhookManager) SendChatEventUserJoined(event models.UserJoinedEvent) {
 	webhookEvent := WebhookEvent{
 		Type:      models.UserJoined,
 		EventData: event,
@@ -55,7 +54,7 @@ func SendChatEventUserParted(event events.UserPartEvent) {
 
 // SendChatEventSetMessageVisibility sends a webhook notifying that the visibility of one or more
 // messages has changed.
-func (w *LiveWebhookManager) SendChatEventSetMessageVisibility(event events.SetMessageVisibilityEvent) {
+func (w *LiveWebhookManager) SendChatEventSetMessageVisibility(event models.SetMessageVisibilityEvent) {
 	webhookEvent := WebhookEvent{
 		Type:      models.VisibiltyToggled,
 		EventData: event,

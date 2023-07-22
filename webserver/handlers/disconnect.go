@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/services/status"
 	"github.com/owncast/owncast/webserver/responses"
 
 	"github.com/owncast/owncast/video/rtmp"
@@ -11,7 +11,9 @@ import (
 
 // DisconnectInboundConnection will force-disconnect an inbound stream.
 func (h *Handlers) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
-	if !core.GetStatus().Online {
+	s := status.Get()
+
+	if !s.Online {
 		responses.WriteSimpleResponse(w, false, "no inbound stream connected")
 		return
 	}

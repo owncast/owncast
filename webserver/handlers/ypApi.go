@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/status"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -33,7 +33,7 @@ func (h *Handlers) GetYPResponse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	status := core.GetStatus()
+	s := status.Get()
 
 	streamTitle := configRepository.GetStreamTitle()
 
@@ -44,11 +44,11 @@ func (h *Handlers) GetYPResponse(w http.ResponseWriter, r *http.Request) {
 		Logo:                  "/logo",
 		NSFW:                  configRepository.GetNSFW(),
 		Tags:                  configRepository.GetServerMetadataTags(),
-		Online:                status.Online,
-		ViewerCount:           status.ViewerCount,
-		OverallMaxViewerCount: status.OverallMaxViewerCount,
-		SessionMaxViewerCount: status.SessionMaxViewerCount,
-		LastConnectTime:       status.LastConnectTime,
+		Online:                s.Online,
+		ViewerCount:           s.ViewerCount,
+		OverallMaxViewerCount: s.OverallMaxViewerCount,
+		SessionMaxViewerCount: s.SessionMaxViewerCount,
+		LastConnectTime:       s.Status.LastConnectTime,
 		Social:                configRepository.GetSocialHandles(),
 	}
 

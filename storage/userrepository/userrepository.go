@@ -59,17 +59,6 @@ func Get() *SqlUserRepository {
 	return temporaryGlobalInstance
 }
 
-const (
-	// ScopeCanSendChatMessages will allow sending chat messages as itself.
-	ScopeCanSendChatMessages = "CAN_SEND_MESSAGES"
-	// ScopeCanSendSystemMessages will allow sending chat messages as the system.
-	ScopeCanSendSystemMessages = "CAN_SEND_SYSTEM_MESSAGES"
-	// ScopeHasAdminAccess will allow performing administrative actions on the server.
-	ScopeHasAdminAccess = "HAS_ADMIN_ACCESS"
-
-	moderatorScopeKey = "MODERATOR"
-)
-
 // User represents a single chat user.
 
 // SetupUsers will perform the initial initialization of the user package.
@@ -285,10 +274,10 @@ func (r *SqlUserRepository) SetUserAsAuthenticated(userID string) error {
 // SetModerator will add or remove moderator status for a single user by ID.
 func (r *SqlUserRepository) SetModerator(userID string, isModerator bool) error {
 	if isModerator {
-		return r.addScopeToUser(userID, moderatorScopeKey)
+		return r.addScopeToUser(userID, models.ModeratorScopeKey)
 	}
 
-	return r.removeScopeFromUser(userID, moderatorScopeKey)
+	return r.removeScopeFromUser(userID, models.ModeratorScopeKey)
 }
 
 func (r *SqlUserRepository) addScopeToUser(userID string, scope string) error {
@@ -401,7 +390,7 @@ func (r *SqlUserRepository) GetModeratorUsers() []*models.User {
 		 ORDER BY created_at
 	  ) AS token WHERE token.scope = ?`
 
-	rows, err := r.datastore.DB.Query(query, moderatorScopeKey)
+	rows, err := r.datastore.DB.Query(query, models.ModeratorScopeKey)
 	if err != nil {
 		log.Errorln(err)
 		return nil
@@ -748,9 +737,9 @@ func (r *SqlUserRepository) makeExternalAPIUsersFromRows(rows *sql.Rows) ([]mode
 func (r *SqlUserRepository) HasValidScopes(scopes []string) bool {
 	// For a scope to be seen as "valid" it must live in this slice.
 	validAccessTokenScopes := []string{
-		ScopeCanSendChatMessages,
-		ScopeCanSendSystemMessages,
-		ScopeHasAdminAccess,
+		models.ScopeCanSendChatMessages,
+		models.ScopeCanSendSystemMessages,
+		models.ScopeHasAdminAccess,
 	}
 
 	for _, scope := range scopes {

@@ -30,5 +30,5 @@ func setCurrentBroadcasterInfo(t flvio.Tag, remoteAddr string) {
 		},
 	}
 
-	_setBroadcaster(broadcaster)
+	_setBroadcaster(&broadcaster)
 }
