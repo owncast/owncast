@@ -109,6 +109,13 @@ The frontend is the web interface that includes the player, chat, embed componen
 1. Run `npm install` to install the Javascript dependencies.
 1. Run `npm run dev`
 
+If you wish to run the front end on a different host then the backend, you'll need some custom configuration.
+
+1. In `web/.env.production` modify the value of `NEXT_PUBLIC_API_HOST` to match your backend URL from the above section
+1. Create a static build of the next.js app with `npm run build`
+1. Start an application server in production mode with `npm run start`
+1. In the Owncast `/admin` UI change the value in Configuration => Server Setup => Advanced Settings => Websocket host override to the backend URL from the above section
+
 ## Contributing
 
 Owncast is a growing open source project that is giving freedom, flexibility and fun to live streamers.
