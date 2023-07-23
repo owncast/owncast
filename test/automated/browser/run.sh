@@ -32,6 +32,7 @@ fi
 # Install the web test framework
 if [ -z "$SKIP_BUILD" ]; then
 	echo "Installing test dependencies..."
+	export PUPPETEER_SKIP_DOWNLOAD=true
 	npm install --quiet --no-progress
 
 else
