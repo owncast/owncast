@@ -5,7 +5,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-OFFLINE=0
+OFFLINE=
 while [[ $# -gt 0 ]]; do
   case $1 in
     --offline)
