@@ -38,7 +38,7 @@ let serverStatusRefreshPoll: ReturnType<typeof setInterval>;
 let hasBeenModeratorNotified = false;
 let hasWebsocketDisconnected = false;
 
-const serverConnectivityError = `Cannot connect to the Owncast service. Please check your internet connection and verify this Owncast server is running.`;
+const serverConnectivityError = `Cannot connect to the backend service. Please check your internet connection and verify this Owncast server is running.`;
 
 // Server status is what gets updated such as viewer count, durations,
 // stream title, online/offline state, etc.
@@ -234,6 +234,7 @@ export const ClientConfigStore: FC = () => {
 
       setGlobalFatalErrorMessage(null);
     } catch (error) {
+      // TODO: make a static HTML error perhaps with some stream info?
       sendEvent([AppStateEvent.Fail]);
       setGlobalFatalError('Unable to reach Owncast server', serverConnectivityError);
       console.error(`serverStatusState -> getStatus() ERROR: \n`, error);
