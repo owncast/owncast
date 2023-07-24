@@ -200,7 +200,9 @@ func (s *S3Storage) Cleanup() error {
 		return err
 	}
 
-	s.deleteObjects(keys)
+	if len(keys) > 0 {
+		s.deleteObjects(keys)
+	}
 
 	return nil
 }
@@ -239,6 +241,10 @@ func (s *S3Storage) getDeletableVideoSegmentsWithOffset(offset int) ([]s3object,
 	objectsToDelete, err := s.retrieveAllVideoSegments()
 	if err != nil {
 		return nil, err
+	}
+
+	if offset > len(objectsToDelete)-1 {
+		offset = len(objectsToDelete) - 1
 	}
 
 	objectsToDelete = objectsToDelete[offset : len(objectsToDelete)-1]
