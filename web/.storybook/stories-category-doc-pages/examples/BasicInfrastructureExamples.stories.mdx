@@ -36,6 +36,52 @@ This is the most basic Owncast setup and is what you get when you run it without
 
 <Description
   markdown={`
+## Split Backend
+
+The backend requires transcoding with ffmpeg, which consumes the highest
+amount of CPU in Owncast. This can lead to some low-end cloud servers failing
+to deliver video because ffmpeg can't keep up with clients. For people 
+who do not intend to have a 24/7 stream, splitting the backend onto a dedicated
+cloud server can save cost, since it can be shut down when there is no stream without
+taking the website offline.
+
+This is similar to the S3 Object Storage example that follows but optimized for 
+low cost, not speed.
+`} />
+
+<Mermaid
+  chart={`graph TD
+	 	subgraph Chat & Web Assets
+    Frontend{fa:fa-server Next.js app}
+    end
+		
+    Backend--Upload\\nVideo-->Frontend
+    Backend<--API\\nCalls-->Frontend
+    
+    subgraph Video and Backend API
+    Backend[fa:fa-hard-drive Golang app]
+    end
+
+    subgraph Clients
+    WebPlayer[fa:fa-window-maximize Web App]
+    Embeds[fa:fa-window-restore Embeds]
+    MobileApps[fa:fa-mobile-screen Mobile Apps]
+    SmartTV[fa:fa-tv Smart TV]
+    VLC[fa:fa-shapes VLC]
+    end
+
+    Frontend--Web-->WebPlayer
+    Frontend--Web-->Embeds
+    Backend<--Chat-->WebPlayer
+    Frontend--Download\\nVideo-->WebPlayer
+    Frontend--Download\\nVideo-->Embeds
+    Frontend--Download\\nVideo-->MobileApps
+    Frontend--Download\\nVideo-->SmartTV
+    Frontend--Download\\nVideo-->VLC
+`} />
+
+<Description
+  markdown={`
 ## S3 Object Storage
 
 If you would like no video traffic to take place from your Owncast server to your clients, you can use S3 Object Storage to be responsible for this instead.
