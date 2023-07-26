@@ -138,27 +138,32 @@ export const Content: FC = () => {
 
   const externalActionSelected = (action: ExternalAction) => {
     const { openExternally, url } = action;
-    const updatedUrl = new URL(url);
-    updatedUrl.searchParams.append('instance', currentBrowserWindowUrl);
 
-    if (currentUser) {
-      const { displayName } = currentUser;
+    if (url) {
+      const updatedUrl = new URL(url);
+      updatedUrl.searchParams.append('instance', currentBrowserWindowUrl);
 
-      // Append url and username to params so the link knows where we came from and who we are.
-      updatedUrl.searchParams.append('username', displayName);
-    }
-    const fullUrl = updatedUrl.toString();
-    // Overwrite URL with the updated one that includes the params.
-    const updatedAction = {
-      ...action,
-      url: fullUrl,
-    };
+      if (currentUser) {
+        const { displayName } = currentUser;
 
-    // apply openExternally only if we don't have an HTML embed
-    if (openExternally) {
-      window.open(fullUrl, '_blank');
+        // Append url and username to params so the link knows where we came from and who we are.
+        updatedUrl.searchParams.append('username', displayName);
+      }
+      const fullUrl = updatedUrl.toString();
+      // Overwrite URL with the updated one that includes the params.
+      const updatedAction = {
+        ...action,
+        url: fullUrl,
+      };
+
+      // apply openExternally only if we don't have an HTML embed
+      if (openExternally) {
+        window.open(fullUrl, '_blank');
+      } else {
+        setExternalActionToDisplay(updatedAction);
+      }
     } else {
-      setExternalActionToDisplay(updatedAction);
+      setExternalActionToDisplay(action);
     }
   };
 
