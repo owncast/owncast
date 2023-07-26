@@ -1,4 +1,5 @@
 /* eslint-disable react/no-unknown-property */
+import classnames from 'classnames';
 import React, { useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import { useRouter } from 'next/router';
@@ -102,7 +103,7 @@ export default function VideoEmbed() {
     <>
       <ClientConfigStore />
       <Theme />
-      <div className="video-embed">{getView()}</div>
+      <div className={classnames([styles.videoEmbed, "video-embed"])}>{getView()}</div>
     </>
   );
 }

@@ -1,8 +1,11 @@
+.videoEmbed {
+  height: 100vh;
+}
+
 .onlineContainer {
-  height: 96vh;
   background-color: var(--theme-color-components-video-status-bar-background);
 
-  @media only screen and (width <= 768px) {
-    height: 100vh;
-  }
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }

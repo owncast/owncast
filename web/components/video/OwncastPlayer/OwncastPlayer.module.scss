@@ -7,22 +7,6 @@
   height: var(--player-container-height);
   aspect-ratio: 16 / 9;
 
-  @media (width <= 1200px) {
-    height: 100%;
-    max-height: var(--player-container-height);
-  }
-
-  @include screen(desktop) {
-    // prevent sidebar from overlapping stream
-    // padding-right: 320px;
-  }
-
-  // set height of player for tablet
-  @include screen(tablet) {
-    height: var(--player-container-height);
-    max-height: var(--player-container-height);
-  }
-
   .player,
   .poster {
     width: 100%;
@@ -32,6 +16,5 @@
 }
 
 .embedded {
-  height: 96vh; // Leave room for the status bar
-  max-height: unset;
+  flex: 1 1 auto;
 }
