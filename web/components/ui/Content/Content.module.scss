@@ -14,7 +14,8 @@
   overflow: auto;
 }
 
-.mainColumn::-webkit-scrollbar, .mainColumn::-webkit-scrollbar-thumb {
+.mainColumn::-webkit-scrollbar,
+.mainColumn::-webkit-scrollbar-thumb {
   display: none;
 }
 
@@ -64,8 +65,8 @@
     display: flex;
     align-items: center;
     position: absolute;
-    top: 4px;
-    right: 10px;
+    margin: 5px;
+    right: 5px;
     z-index: 199;
   }
 
