@@ -101,7 +101,7 @@ export default function HardwareInfo() {
           <Col>
             <StatisticItem
               title={series[0].name}
-              value={`${Math.round(currentCPUUsage) || 0}`}
+              value={Math.round(currentCPUUsage) || 0}
               prefix={<LaptopOutlined style={{ color: series[0].color }} />}
               color={series[0].color}
               progress
@@ -111,7 +111,7 @@ export default function HardwareInfo() {
           <Col>
             <StatisticItem
               title={series[1].name}
-              value={`${Math.round(currentRamUsage) || 0}`}
+              value={Math.round(currentRamUsage) || 0}
               prefix={<BulbOutlined style={{ color: series[1].color }} />}
               color={series[1].color}
               progress
@@ -121,7 +121,7 @@ export default function HardwareInfo() {
           <Col>
             <StatisticItem
               title={series[2].name}
-              value={`${Math.round(currentDiskUsage) || 0}`}
+              value={Math.round(currentDiskUsage) || 0}
               prefix={<SaveOutlined style={{ color: series[2].color }} />}
               color={series[2].color}
               progress

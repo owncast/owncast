@@ -292,7 +292,7 @@ const StreamHealth = () => {
               <div style={statStyle}>
                 <Statistic
                   title="Viewer Playback Speed"
-                  value={`${currentSpeed}`}
+                  value={currentSpeed.toString()}
                   prefix={<WifiOutlined style={{ marginRight: '5px' }} />}
                   precision={0}
                   suffix="kbps"
@@ -306,7 +306,7 @@ const StreamHealth = () => {
                 <div style={statStyle}>
                   <Statistic
                     title="Viewer Latency"
-                    value={`${latencyStat}`}
+                    value={latencyStat}
                     prefix={<ClockCircleOutlined style={{ marginRight: '5px' }} />}
                     precision={0}
                     suffix="seconds"
@@ -320,7 +320,7 @@ const StreamHealth = () => {
               <div style={statStyle}>
                 <Statistic
                   title="Recent Playback Errors"
-                  value={`${recentErrorCount || 0}`}
+                  value={recentErrorCount || 0}
                   valueStyle={{ color: errorStatColor }}
                   prefix={<WarningOutlined style={{ marginRight: '5px' }} />}
                   suffix=""

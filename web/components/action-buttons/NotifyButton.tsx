@@ -17,7 +17,7 @@ export type NotifyButtonProps = {
 export const NotifyButton: FC<NotifyButtonProps> = ({ onClick, text }) => (
   <Button
     type="primary"
-    className={`${styles.button}`}
+    className={styles.button}
     icon={<BellFilled />}
     onClick={onClick}
     id="notify-button"

@@ -6,5 +6,5 @@ export type ActionButtonRowProps = {
 };
 
 export const ActionButtonRow: FC<ActionButtonRowProps> = ({ children }) => (
-  <div className={`${styles.row}`}>{children}</div>
+  <div className={styles.row}>{children}</div>
 );
