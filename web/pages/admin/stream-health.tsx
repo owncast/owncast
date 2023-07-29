@@ -292,7 +292,7 @@ const StreamHealth = () => {
               <div style={statStyle}>
                 <Statistic
                   title="Viewer Playback Speed"
-                  value={currentSpeed}
+                  value={currentSpeed.toString()}
                   prefix={<WifiOutlined style={{ marginRight: '5px' }} />}
                   precision={0}
                   suffix="kbps"

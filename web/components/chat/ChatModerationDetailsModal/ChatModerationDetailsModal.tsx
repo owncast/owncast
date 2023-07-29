@@ -75,7 +75,7 @@ const ConnectedClient = ({ client }: { client: Client }) => {
 
   return (
     <div>
-      <ValueRow label="Messages Sent" value={messageCount} />
+      <ValueRow label="Messages Sent" value={messageCount.toString()} />
       {geo !== 'N/A' && <ValueRow label="Geo" value={geo} />}
       <ValueRow label="Connected At" value={connectedAtDate} />
     </div>
