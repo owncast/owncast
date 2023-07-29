@@ -1,4 +1,4 @@
-name: Javascript Formatting
+name: Javascript
 
 # This action works with pull requests and pushes
 on:
@@ -90,3 +90,41 @@ jobs:
 
       - name: Check for unused JS code and dependencies
         run: npx knip --include dependencies,files,exports
+
+  # After any formatting and linting is complete we can run the build
+  # and bundle step. This both will verify that the build is successful as
+  # well as commiting the updated static files into the repository for use.
+  web-bundle:
+    runs-on: ubuntu-latest
+    if: github.repository == 'owncast/owncast'
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules-bundle-web-app
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('web/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Bundle web app (next.js build)
+        uses: actions/checkout@v3
+      - run: build/web/bundleWeb.sh
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          pull: --rebase --autostash
+          message: 'Bundle embedded web app'
+          add: 'static/web'
+          author_name: Owncast
+          author_email: owncast@owncast.online
