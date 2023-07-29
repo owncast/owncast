@@ -1,4 +1,4 @@
-name: Lint
+name: Javascript Formatting
 
 # This action works with pull requests and pushes
 on:
@@ -10,39 +10,8 @@ on:
       - web/**
 
 jobs:
-  prettier:
-    name: Javascript prettier
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./web
-
-    if: ${{ github.actor != 'dependabot[bot]' }}
-    steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@v5
-        with:
-          concurrent_skipping: 'same_content_newer'
-
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          fetch-depth: 0
-
-      - name: Prettify code
-        uses: creyD/prettier_action@v4.3
-        with:
-          # This part is also where you can pass other options, for example:
-          prettier_options: --write **/*.{js,ts,jsx,tsx,css,md}
-          only_changed: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  linter:
-    name: Javascript linter
+  formatting:
+    name: Javascript code formatting
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -61,12 +30,39 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v37
+        with:
+          files_yaml: |
+            src:
+              - '**.js'
+              - '**.ts'
+              - '**.tsx'
+              - '**.jsx'
+              - '**.css'
+              - '**.md'
 
       - name: Install Dependencies
         run: npm install
 
       - name: Lint
-        run: npm run lint
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: npx eslint --fix ${{ steps.changed-files.outputs.all_changed_files }}
+
+      - name: Prettier
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: npx prettier --write ${{ steps.changed-files.outputs.all_changed_files }}
+
+      - name: Commit changes
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: Owncast
+          author_email: owncast@owncast.online
+          message: 'Javascript formatting autofixes'
+          pull: '--rebase --autostash'
 
   unused-code:
     name: Test for unused code

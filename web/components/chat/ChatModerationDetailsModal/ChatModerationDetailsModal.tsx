@@ -75,7 +75,7 @@ const ConnectedClient = ({ client }: { client: Client }) => {
 
   return (
     <div>
-      <ValueRow label="Messages Sent" value={`${messageCount}`} />
+      <ValueRow label="Messages Sent" value={messageCount.toString()} />
       {geo !== 'N/A' && <ValueRow label="Geo" value={geo} />}
       <ValueRow label="Connected At" value={connectedAtDate} />
     </div>
@@ -162,9 +162,7 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
     >
       <Spin spinning={loading}>
         <UserColorBlock color={displayColor} />
-        {scopes?.map(scope => (
-          <Tag key={scope}>{scope}</Tag>
-        ))}
+        {scopes?.map(scope => <Tag key={scope}>{scope}</Tag>)}
         {authenticated && <Tag>Authenticated</Tag>}
         {isBot && <Tag>Bot</Tag>}
         <ValueRow label="Messages Sent Across Clients" value={totalMessagesSent.toString()} />

@@ -6,11 +6,12 @@
 		"dev": "next dev",
 		"build": "next build && next export",
 		"start": "next start",
-		"lint": "eslint --ext .js,.ts,.tsx types/ pages/ components/ stories/",
+		"lint": "eslint --fix --ext .js,.ts,.tsx types/ pages/ components/ stories/",
 		"storybook": "start-storybook -p 6006",
 		"build-storybook": "build-storybook",
 		"build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -",
-		"test": "jest"
+		"test": "jest",
+		"format": "prettier --write  **/*.{js,ts,jsx,tsx,css,md}"
 	},
 	"dependencies": {
 		"@ant-design/icons": "4.8.0",
@@ -100,7 +101,7 @@
 		"eslint-plugin-import": "^2.27.5",
 		"eslint-plugin-jsx-a11y": "6.7.1",
 		"eslint-plugin-prettier": "4.2.1",
-		"eslint-plugin-react": "7.32.2",
+		"eslint-plugin-react": "7.33.0",
 		"eslint-plugin-react-hooks": "4.6.0",
 		"eslint-plugin-storybook": "0.6.13",
 		"handlebars": "^4.7.7",
