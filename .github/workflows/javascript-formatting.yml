@@ -68,6 +68,13 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: Owncast
+          author_email: owncast@owncast.online
+          message: 'Linter fixes'
+
   unused-code:
     name: Test for unused code
     runs-on: ubuntu-latest

@@ -6,7 +6,7 @@
 		"dev": "next dev",
 		"build": "next build && next export",
 		"start": "next start",
-		"lint": "eslint --ext .js,.ts,.tsx types/ pages/ components/ stories/",
+		"lint": "eslint --fix --ext .js,.ts,.tsx types/ pages/ components/ stories/",
 		"storybook": "start-storybook -p 6006",
 		"build-storybook": "build-storybook",
 		"build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -",
