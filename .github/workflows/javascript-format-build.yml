@@ -11,7 +11,7 @@ on:
 
 jobs:
   formatting:
-    name: Javascript code formatting
+    name: Code formatting
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -43,6 +43,18 @@ jobs:
               - '**.jsx'
               - '**.css'
               - '**.md'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules-bundle-web-app
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('web/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
       - name: Install Dependencies
         run: npm install
@@ -85,6 +97,18 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
 
+      - name: Cache node modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules-bundle-web-app
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('web/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Install Dependencies
         run: npm install
 
@@ -95,6 +119,7 @@ jobs:
   # and bundle step. This both will verify that the build is successful as
   # well as commiting the updated static files into the repository for use.
   web-bundle:
+    name: Build and bundle web project
     runs-on: ubuntu-latest
     if: github.repository == 'owncast/owncast'
 
@@ -120,8 +145,11 @@ jobs:
         uses: actions/checkout@v3
       - run: build/web/bundleWeb.sh
 
+        # Only commit built web project files on develop.
       - name: Commit changes
+        if: ${{ github.ref == 'refs/heads/develop' && env.GH_CR_PAT != null }}
         uses: EndBug/add-and-commit@v9
+
         with:
           pull: --rebase --autostash
           message: 'Bundle embedded web app'
