@@ -25,7 +25,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
       style={{ backgroundColor: color }}
       title={description || title}
     >
-      {icon && <img src={icon} className={`${styles.icon}`} alt={description} />}
+      {icon && <img src={icon} className={styles.icon} alt={description} />}
       {title}
     </Button>
   );
