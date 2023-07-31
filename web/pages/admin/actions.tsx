@@ -393,7 +393,7 @@ const Actions = () => {
       title: 'Opens',
       key: 'openExternally',
       dataIndex: 'openExternally',
-      // Note: embeds will alway open in the same tab / in a modal
+      // Note: embeds will always open in the same tab / in a modal
       render: (openExternally: boolean, record) =>
         !openExternally || record.html ? 'In the same tab' : 'In a new tab',
     },
