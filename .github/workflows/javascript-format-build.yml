@@ -147,7 +147,7 @@ jobs:
 
         # Only commit built web project files on develop.
       - name: Commit changes
-        if: ${{ github.ref == 'refs/heads/develop' && env.GH_CR_PAT != null }}
+        if: ${{ github.ref == 'refs/heads/develop' }}
         uses: EndBug/add-and-commit@v9
 
         with:
