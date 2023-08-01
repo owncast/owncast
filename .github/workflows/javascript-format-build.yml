@@ -35,6 +35,11 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v37
         with:
+          dir_names: true
+          dir_names_exclude_current_dir: true
+          files_ignore: |
+            static/**
+            web/next.config.js
           files_yaml: |
             src:
               - 'web/**.js'
