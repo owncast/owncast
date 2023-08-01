@@ -122,7 +122,7 @@ jobs:
     name: Build and bundle web project
     runs-on: ubuntu-latest
     if: github.repository == 'owncast/owncast'
-
+    needs: [formatting, unused-code]
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
