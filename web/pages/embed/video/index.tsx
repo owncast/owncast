@@ -39,10 +39,13 @@ export default function VideoEmbed() {
    * query parameters ourselves
    */
   const path = router.asPath.split('?')[1] ?? '';
-  const query = path.split('&').reduce((currQuery, part) => {
-    const [key, value] = part.split('=');
-    return { ...currQuery, [key]: value };
-  }, {} as Record<string, string>);
+  const query = path.split('&').reduce(
+    (currQuery, part) => {
+      const [key, value] = part.split('=');
+      return { ...currQuery, [key]: value };
+    },
+    {} as Record<string, string>,
+  );
 
   const initiallyMuted = query.initiallyMuted === 'true';
 
