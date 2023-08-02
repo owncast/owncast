@@ -1,7 +1,7 @@
 /* eslint-disable react/no-danger */
-import { Html, Head, Main, NextScript } from 'next/document';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { Html, Head, Main, NextScript } from 'next/document';
 
 class InlineStylesHead extends Head {
   getCssLinks: Head['getCssLinks'] = ({ allFiles }) => {
