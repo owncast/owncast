@@ -144,18 +144,27 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Bundle web app (next.js build)
+      - name: Checkout
         uses: actions/checkout@v3
-      - run: build/web/bundleWeb.sh
+        with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+
+      - name: Bundle web app (next.js build)
+        run: build/web/bundleWeb.sh
 
         # Only commit built web project files on develop.
       - name: Commit changes
         if: ${{ github.ref == 'refs/heads/develop' }}
         uses: EndBug/add-and-commit@v9
-
         with:
-          pull: --rebase --autostash
           message: 'Bundle embedded web app'
           add: 'static/web'
           author_name: Owncast
           author_email: owncast@owncast.online
+
+      - run: |
+          git pull --rebase
+          git push
