@@ -39,6 +39,7 @@ const initialServerConfigState: ConfigDetails = {
     endpoint: '',
     region: '',
     secret: '',
+    pathPrefix: '',
     forcePathStyle: false,
   },
   yp: {

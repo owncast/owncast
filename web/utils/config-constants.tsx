@@ -535,6 +535,13 @@ export const S3_TEXT_FIELDS_INFO = {
     placeholder: 'your secret key',
     tip: '',
   },
+  pathPrefix: {
+    fieldName: 'pathPrefix',
+    label: 'Path prefix',
+    maxLength: 255,
+    placeholder: '/my/custom/path',
+    tip: 'Optionally prepend a custom path for the final URL',
+  },
   forcePathStyle: {
     fieldName: 'forcePathStyle',
     label: 'Force path-style',

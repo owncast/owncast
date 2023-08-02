@@ -13,7 +13,7 @@ import (
 )
 
 // rewriteRemotePlaylist will take a local playlist and rewrite it to have absolute URLs to remote locations.
-func rewriteRemotePlaylist(localFilePath, remoteServingEndpoint string) error {
+func rewriteRemotePlaylist(localFilePath, remoteServingEndpoint, pathPrefix string) error {
 	f, err := os.Open(localFilePath) // nolint
 	if err != nil {
 		log.Fatalln(err)
@@ -25,7 +25,14 @@ func rewriteRemotePlaylist(localFilePath, remoteServingEndpoint string) error {
 	}
 
 	for _, item := range p.Variants {
-		item.URI = remoteServingEndpoint + filepath.Join("/hls", item.URI)
+		// Determine the final path to this playlist.
+		var finalPath string
+		if pathPrefix != "" {
+			finalPath = filepath.Join(pathPrefix, "/hls")
+		} else {
+			finalPath = "/hls"
+		}
+		item.URI = remoteServingEndpoint + filepath.Join(finalPath, item.URI)
 	}
 
 	publicPath := filepath.Join(config.HLSStoragePath, filepath.Base(localFilePath))

@@ -28,7 +28,8 @@ const { Panel } = Collapse;
 // we could probably add more detailed checks here
 // `currentValues` is what's currently in the global store and in the db
 function checkSaveable(formValues: any, currentValues: any) {
-  const { endpoint, accessKey, secret, bucket, region, enabled, acl, forcePathStyle } = formValues;
+  const { endpoint, accessKey, secret, bucket, region, enabled, acl, forcePathStyle, pathPrefix } =
+    formValues;
   // if fields are filled out and different from what's in store, then return true
   if (enabled) {
     if (!!endpoint && isValidUrl(endpoint) && !!accessKey && !!secret && !!bucket && !!region) {
@@ -39,6 +40,7 @@ function checkSaveable(formValues: any, currentValues: any) {
         secret !== currentValues.secret ||
         bucket !== currentValues.bucket ||
         region !== currentValues.region ||
+        pathPrefix !== currentValues.pathPrefix ||
         (!currentValues.acl && acl !== '') ||
         (!!currentValues.acl && acl !== currentValues.acl) ||
         forcePathStyle !== currentValues.forcePathStyle
@@ -72,6 +74,7 @@ export default function EditStorage() {
     endpoint = '',
     region = '',
     secret = '',
+    pathPrefix = '',
     forcePathStyle = false,
   } = s3;
 
@@ -84,6 +87,7 @@ export default function EditStorage() {
       endpoint,
       region,
       secret,
+      pathPrefix,
       forcePathStyle,
     });
     setShouldDisplayForm(enabled);
@@ -215,6 +219,14 @@ export default function EditStorage() {
               <TextField
                 {...S3_TEXT_FIELDS_INFO.acl}
                 value={formDataValues.acl}
+                onChange={handleFieldChange}
+              />
+            </div>
+
+            <div className="field-container">
+              <TextField
+                {...S3_TEXT_FIELDS_INFO.pathPrefix}
+                value={formDataValues.pathPrefix}
                 onChange={handleFieldChange}
               />
             </div>
