@@ -81,6 +81,7 @@ export interface S3Field {
   endpoint: string;
   region: string;
   secret: string;
+  pathPrefix: string;
   forcePathStyle: boolean;
 }
 
