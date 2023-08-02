@@ -11,7 +11,7 @@ interface options {
   className: string;
 }
 
-const emojiPattern = '\\p{RGI_Emoji}+';
+const emojiPattern = '\\p{RGI_Emoji}';
 
 const regexSupportsUnicodeSets = (() => {
   // Using a variable for regexpFlags to avoid eslint error about the flag
