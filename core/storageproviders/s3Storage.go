@@ -259,7 +259,9 @@ func (s *S3Storage) getDeletableVideoSegmentsWithOffset(offset int) ([]s3object,
 }
 
 func (s *S3Storage) removeLocalFile(filePath string) {
-	if err := os.Remove(filePath); err != nil {
+	cleanFilepath := filepath.Clean(filePath)
+
+	if err := os.Remove(cleanFilepath); err != nil {
 		log.Errorln(err)
 	}
 }
