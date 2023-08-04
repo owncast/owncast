@@ -165,6 +165,8 @@ jobs:
           author_name: Owncast
           author_email: owncast@owncast.online
 
-      - run: |
+      - name: Push changes
+        if: ${{ github.ref == 'refs/heads/develop' }}
+        run: |
           git pull --rebase --autostash
           git push
