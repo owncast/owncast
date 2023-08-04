@@ -184,8 +184,14 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 			return s.Save(filePath, retryCount+1)
 		}
 
+		// Upload failure. Remove the local file.
+		s.removeLocalFile(filePath)
+
 		return "", fmt.Errorf("Giving up uploading %s to object storage %s", filePath, s.s3Endpoint)
 	}
+
+	// Upload success. Remove the local file.
+	s.removeLocalFile(filePath)
 
 	return response.Location, nil
 }
@@ -250,6 +256,14 @@ func (s *S3Storage) getDeletableVideoSegmentsWithOffset(offset int) ([]s3object,
 	objectsToDelete = objectsToDelete[offset : len(objectsToDelete)-1]
 
 	return objectsToDelete, nil
+}
+
+func (s *S3Storage) removeLocalFile(filePath string) {
+	cleanFilepath := filepath.Clean(filePath)
+
+	if err := os.Remove(cleanFilepath); err != nil {
+		log.Errorln(err)
+	}
 }
 
 func (s *S3Storage) deleteObjects(objects []s3object) {
