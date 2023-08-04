@@ -166,5 +166,5 @@ jobs:
           author_email: owncast@owncast.online
 
       - run: |
-          git pull --rebase
+          git pull --rebase --autostash
           git push
