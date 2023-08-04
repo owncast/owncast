@@ -13,6 +13,14 @@ import (
 func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) error {
 	object := activity.GetActivityStreamsObject()
 	actorReference := activity.GetActivityStreamsActor()
+	if object.Len() < 1 {
+		return errors.New("like activity is missing object")
+	}
+
+	if actorReference.Len() < 1 {
+		return errors.New("like activity is missing actor")
+	}
+
 	objectIRI := object.At(0).GetIRI().String()
 	actorIRI := actorReference.At(0).GetIRI().String()
 
