@@ -99,8 +99,11 @@ func createInitialOfflineState() error {
 func transitionToOfflineVideoStreamContent() {
 	log.Traceln("Firing transcoder with offline stream state")
 
-	_transcoder := transcoder.NewTranscoder()
-	_transcoder.SetIdentifier("offline")
+	streamId := "offline"
+	_storage.SetStreamId(streamId)
+	handler.SetStreamId(streamId)
+
+	_transcoder := transcoder.NewTranscoder(streamId)
 	_transcoder.SetLatencyLevel(models.GetLatencyLevel(4))
 	_transcoder.SetIsEvent(true)
 
@@ -127,7 +130,7 @@ func resetDirectories() {
 	log.Trace("Resetting file directories to a clean slate.")
 
 	// Wipe hls data directory
-	utils.CleanupDirectory(config.HLSStoragePath)
+	utils.CleanupDirectory(config.HLSStoragePath, config.EnableRecordingFeatures)
 
 	// Remove the previous thumbnail
 	logo := data.GetLogoPath()

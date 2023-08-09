@@ -108,3 +108,35 @@ UPDATE users SET display_name = $1, previous_names = previous_names || $2, namec
 
 -- name: ChangeDisplayColor :exec
 UPDATE users SET display_color = $1 WHERE id = $2;
+
+-- Recording and clip related queries.
+
+-- name: GetStreams :many
+SELECT id, stream_title, start_time, end_time FROM streams ORDER BY start_time DESC;
+
+-- name: GetStreamById :one
+SELECT id, stream_title, start_time, end_time FROM streams WHERE id = $1 LIMIT 1;
+
+-- name: GetOutputConfigurationsForStreamId :many
+SELECT id, stream_id, variant_id, name, segment_duration, bitrate, framerate, resolution_width, resolution_height FROM video_segment_output_configuration WHERE stream_id = $1;
+
+-- name: GetOutputConfigurationForId :one
+SELECT id, stream_id, variant_id, name, segment_duration, bitrate, framerate, resolution_width, resolution_height FROM video_segment_output_configuration WHERE id = $1;
+
+-- name: GetSegmentsForOutputId :many
+SELECT id, stream_id, output_configuration_id, path, timestamp FROM video_segments WHERE output_configuration_id = $1 ORDER BY timestamp ASC;
+
+-- name: GetSegmentsForOutputIdAndWindow :many
+SELECT id, stream_id, output_configuration_id, timestamp FROM video_segments WHERE output_configuration_id = $1 AND timestamp >= $2 AND timestamp <= $3 ORDER BY timestamp ASC;
+
+-- name: InsertStream :exec
+INSERT INTO streams (id, stream_title, start_time, end_time) VALUES($1, $2, $3, $4);
+
+-- name: InsertOutputConfiguration :exec
+INSERT INTO video_segment_output_configuration (id, variant_id, stream_id, name, segment_duration, bitrate, framerate, resolution_width, resolution_height) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);
+
+-- name: InsertSegment :exec
+INSERT INTO video_segments (id, stream_id, output_configuration_id, path) VALUES($1, $2, $3, $4);
+
+-- name: SetStreamEnded :exec
+UPDATE streams SET end_time = CURRENT_TIMESTAMP WHERE id = $1;

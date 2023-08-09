@@ -56,7 +56,7 @@ func makeVariantIndexOffline(index int, offlineFilePath string, offlineFilename 
 		log.Warnln(err)
 	}
 
-	if _, err := _storage.Save(segmentFilePath, 0); err != nil {
+	if _, err := _storage.Save(segmentFilePath, segmentFilePath, 0); err != nil {
 		log.Warnln(err)
 	}
 
@@ -65,7 +65,7 @@ func makeVariantIndexOffline(index int, offlineFilePath string, offlineFilename 
 	} else {
 		createEmptyOfflinePlaylist(playlistFilePath, offlineFilename)
 	}
-	if _, err := _storage.Save(playlistFilePath, 0); err != nil {
+	if _, err := _storage.Save(playlistFilePath, playlistFilePath, 0); err != nil {
 		log.Warnln(err)
 	}
 }

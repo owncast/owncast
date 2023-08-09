@@ -274,10 +274,12 @@ func VerifyFFMpegPath(path string) error {
 }
 
 // CleanupDirectory removes the directory and makes it fresh again. Throws fatal error on failure.
-func CleanupDirectory(path string) {
-	log.Traceln("Cleaning", path)
-	if err := os.RemoveAll(path); err != nil {
-		log.Fatalln("Unable to remove directory. Please check the ownership and permissions", err)
+func CleanupDirectory(path string, keepOldFiles bool) {
+	if !keepOldFiles {
+		log.Traceln("Cleaning", path)
+		if err := os.RemoveAll(path); err != nil {
+			log.Fatalln("Unable to remove directory. Please check the ownership and permissions", err)
+		}
 	}
 	if err := os.MkdirAll(path, 0o750); err != nil {
 		log.Fatalln("Unable to create directory. Please check the ownership and permissions", err)
