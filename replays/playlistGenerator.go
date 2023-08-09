@@ -30,11 +30,6 @@ func NewPlaylistGenerator() *PlaylistGenerator {
 }
 
 func (p *PlaylistGenerator) GenerateMasterPlaylistForStream(streamId string) (*m3u8.MasterPlaylist, error) {
-	// stream, err := p.GetStream(streamId)
-	// if err != nil {
-	// 	return nil, errors.Wrap(err, "failed to get stream")
-	// }
-
 	// Determine the different output configurations for this stream.
 	configs, err := p.GetConfigurationsForStream(streamId)
 	if err != nil {
@@ -261,23 +256,3 @@ func createConfigFromConfigRow(row db.GetOutputConfigurationForIdRow) *HLSOutput
 	}
 	return &config
 }
-
-// func createOutputConfigsFromConfigRows(rows []db.GetOutputConfigurationsForStreamIdRow) []HLSOutputConfiguration {
-// 	outputConfigs := []HLSOutputConfiguration{}
-// 	for _, row := range rows {
-// 		config := HLSOutputConfiguration{
-// 			ID:              row.ID,
-// 			StreamId:        row.StreamID,
-// 			VariantId:       row.VariantID,
-// 			Name:            row.Name,
-// 			VideoBitrate:    int(row.Bitrate),
-// 			Framerate:       int(row.Framerate),
-// 			ScaledHeight:    int(row.ResolutionWidth.Int32),
-// 			ScaledWidth:     int(row.ResolutionHeight.Int32),
-// 			SegmentDuration: float64(row.SegmentDuration),
-// 		}
-// 		outputConfigs = append(outputConfigs, config)
-// 	}
-
-// 	return outputConfigs
-// }

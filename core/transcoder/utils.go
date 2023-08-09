@@ -98,7 +98,7 @@ func handleTranscoderMessage(message string) {
 
 func createVariantDirectories(streamID string) {
 	// Create private hls data dirs
-	utils.CleanupDirectory(config.HLSStoragePath, config.EnableRecordingFeatures)
+	utils.CleanupDirectory(config.HLSStoragePath, config.EnableReplayFeatures)
 
 	if len(data.GetStreamOutputVariants()) != 0 {
 		for index := range data.GetStreamOutputVariants() {

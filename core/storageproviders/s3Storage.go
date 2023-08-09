@@ -205,7 +205,7 @@ func (s *S3Storage) Save(localFilePath, remoteDestinationPath string, retryCount
 
 func (s *S3Storage) Cleanup() error {
 	// If we're recording, don't perform the cleanup.
-	if config.EnableRecordingFeatures {
+	if config.EnableReplayFeatures {
 		return nil
 	}
 
