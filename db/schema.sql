@@ -97,3 +97,45 @@ CREATE TABLE IF NOT EXISTS messages (
 	CREATE INDEX user_id ON messages (user_id);
 	CREATE INDEX hidden_at ON messages (hidden_at);
 	CREATE INDEX timestamp ON messages (timestamp);
+
+-- Record the high level details of each stream.
+CREATE TABLE IF NOT EXISTS streams (
+	"id" string NOT NULL PRIMARY KEY,
+	"stream_title" TEXT,
+	"start_time" DATE NOT NULL,
+	"end_time" DATE,
+	PRIMARY KEY (id)
+);
+CREATE INDEX streams_id ON streams (id);
+CREATE INDEX streams_start_time ON streams (start_time);
+CREATE INDEX streams_start_end_time ON streams (start_time,end_time);
+
+-- Record the output configuration of a stream.
+CREATE TABLE IF NOT EXISTS video_segment_output_configuration (
+	"id" string NOT NULL PRIMARY KEY,
+	"variant_id" string NOT NULL,
+	"name" string NOT NULL,
+	"stream_id" string NOT NULL,
+	"segment_duration" INTEGER NOT NULL,
+	"bitrate" INTEGER NOT NULL,
+	"framerate" INTEGER NOT NULL,
+	"resolution_width" INTEGER,
+	"resolution_height" INTEGER,
+	"timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	PRIMARY KEY (id)
+);
+	CREATE INDEX video_segment_output_configuration_stream_id ON video_segment_output_configuration (stream_id);
+
+-- Support querying all segments for a single stream as well
+-- as segments for a time window.
+CREATE TABLE IF NOT EXISTS video_segments (
+	"id" string NOT NULL PRIMARY KEY,
+	"stream_id" string NOT NULL,
+	"output_configuration_id" string NOT NULL,
+	"path" TEXT NOT NULL,
+	"timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	PRIMARY KEY (id)
+);
+	CREATE INDEX video_segments_stream_id ON video_segments (stream_id);
+	CREATE INDEX video_segments_stream_id_timestamp ON video_segments (stream_id,timestamp);
+

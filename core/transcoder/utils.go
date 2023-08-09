@@ -13,8 +13,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var _lastTranscoderLogMessage = ""
-var l = &sync.RWMutex{}
+var (
+	_lastTranscoderLogMessage = ""
+	l                         = &sync.RWMutex{}
+)
 
 var errorMap = map[string]string{
 	"Unrecognized option 'vaapi_device'":        "you are likely trying to utilize a vaapi codec, but your version of ffmpeg or your hardware doesn't support it. change your codec to libx264 and restart your stream",
@@ -94,20 +96,20 @@ func handleTranscoderMessage(message string) {
 	_lastTranscoderLogMessage = message
 }
 
-func createVariantDirectories() {
+func createVariantDirectories(streamID string) {
 	// Create private hls data dirs
-	utils.CleanupDirectory(config.HLSStoragePath)
+	utils.CleanupDirectory(config.HLSStoragePath, config.EnableRecordingFeatures)
 
 	if len(data.GetStreamOutputVariants()) != 0 {
 		for index := range data.GetStreamOutputVariants() {
-			if err := os.MkdirAll(path.Join(config.HLSStoragePath, strconv.Itoa(index)), 0750); err != nil {
+			if err := os.MkdirAll(path.Join(config.HLSStoragePath, streamID, strconv.Itoa(index)), 0o750); err != nil {
 				log.Fatalln(err)
 			}
 		}
 	} else {
 		dir := path.Join(config.HLSStoragePath, strconv.Itoa(0))
 		log.Traceln("Creating", dir)
-		if err := os.MkdirAll(dir, 0750); err != nil {
+		if err := os.MkdirAll(dir, 0o750); err != nil {
 			log.Fatalln(err)
 		}
 	}

@@ -26,6 +26,7 @@ type FileWriterReceiverServiceCallback interface {
 // as it can send HTTP requests to this service with the results.
 type FileWriterReceiverService struct {
 	callbacks FileWriterReceiverServiceCallback
+	streamId  string
 }
 
 // SetupFileWriterReceiverService will start listening for transcoder responses.
@@ -51,6 +52,10 @@ func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks Fil
 			log.Fatalln("Unable to start internal video writing service", err)
 		}
 	}()
+}
+
+func (s *FileWriterReceiverService) SetStreamID(streamID string) {
+	s.streamId = streamID
 }
 
 func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +84,7 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 }
 
 func (s *FileWriterReceiverService) fileWritten(path string) {
-	if utils.GetRelativePathFromAbsolutePath(path) == "hls/stream.m3u8" {
+	if utils.GetRelativePathFromAbsolutePath(path) == s.streamId+"/stream.m3u8" {
 		s.callbacks.MasterPlaylistWritten(path)
 	} else if strings.HasSuffix(path, ".ts") {
 		s.callbacks.SegmentWritten(path)
