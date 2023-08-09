@@ -86,7 +86,7 @@ func (s *LocalStorage) Save(filePath, destinationPath string, retryCount int) (s
 
 func (s *LocalStorage) Cleanup() error {
 	// If we're recording, don't perform the cleanup.
-	if config.EnableRecordingFeatures {
+	if config.EnableReplayFeatures {
 		return nil
 	}
 

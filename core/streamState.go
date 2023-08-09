@@ -52,7 +52,7 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 
 	StopOfflineCleanupTimer()
 
-	if !config.EnableRecordingFeatures {
+	if !config.EnableReplayFeatures {
 		startOnlineCleanupTimer()
 	}
 

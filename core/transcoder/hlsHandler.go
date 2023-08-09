@@ -16,7 +16,7 @@ type HLSHandler struct {
 // StreamEnded is called when a stream is ended so the end time can be noted
 // in the stream's metadata.
 func (h *HLSHandler) StreamEnded() {
-	if config.EnableRecordingFeatures {
+	if config.EnableReplayFeatures {
 		h.Recorder.StreamEnded()
 	}
 }

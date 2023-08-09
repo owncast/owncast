@@ -130,7 +130,7 @@ func resetDirectories() {
 	log.Trace("Resetting file directories to a clean slate.")
 
 	// Wipe hls data directory
-	utils.CleanupDirectory(config.HLSStoragePath, config.EnableRecordingFeatures)
+	utils.CleanupDirectory(config.HLSStoragePath, config.EnableReplayFeatures)
 
 	// Remove the previous thumbnail
 	logo := data.GetLogoPath()
