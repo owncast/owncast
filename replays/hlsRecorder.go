@@ -46,7 +46,7 @@ func NewRecording(streamID string) *HLSRecorder {
 
 	if err := h.datastore.GetQueries().InsertStream(context.Background(), db.InsertStreamParams{
 		ID:          streamID,
-		StartTime:   h.startTime,
+		StartTime:   sql.NullTime{Time: h.startTime, Valid: true},
 		StreamTitle: sql.NullString{String: streamTitle, Valid: validTitle},
 	}); err != nil {
 		log.Panicln(err)
@@ -66,6 +66,7 @@ func NewRecording(streamID string) *HLSRecorder {
 			Framerate:        int32(o.Framerate),
 			ResolutionWidth:  sql.NullInt32{Int32: int32(o.ScaledWidth), Valid: true},
 			ResolutionHeight: sql.NullInt32{Int32: int32(o.ScaledHeight), Valid: true},
+			Timestamp:        sql.NullTime{Time: time.Now(), Valid: true},
 		}); err != nil {
 			log.Panicln(err)
 		}
@@ -104,18 +105,15 @@ func (h *HLSRecorder) SegmentWritten(path string) {
 	}
 
 	p := strings.ReplaceAll(path, "data/", "")
-
-	segment := HLSSegment{
-		ID:       shortid.MustGenerate(),
-		StreamID: h.streamID,
-		Path:     p,
-	}
+	relativeTimestamp := time.Since(h.startTime)
 
 	if err := h.datastore.GetQueries().InsertSegment(context.Background(), db.InsertSegmentParams{
-		ID:                    segment.ID,
-		StreamID:              segment.StreamID,
+		ID:                    shortid.MustGenerate(),
+		StreamID:              h.streamID,
 		OutputConfigurationID: h.outputConfigurations[outputConfigurationIndex].ID,
-		Path:                  segment.Path,
+		Path:                  p,
+		RelativeTimestamp:     float32(relativeTimestamp.Seconds()),
+		Timestamp:             sql.NullTime{Time: time.Now(), Valid: true},
 	}); err != nil {
 		log.Errorln(err)
 	}
@@ -124,7 +122,10 @@ func (h *HLSRecorder) SegmentWritten(path string) {
 // StreamEnded is called when a stream is ended so the end time can be noted
 // in the stream's metadata.
 func (h *HLSRecorder) StreamEnded() {
-	if err := h.datastore.GetQueries().SetStreamEnded(context.Background(), h.streamID); err != nil {
+	if err := h.datastore.GetQueries().SetStreamEnded(context.Background(), db.SetStreamEndedParams{
+		ID:      h.streamID,
+		EndTime: sql.NullTime{Time: time.Now(), Valid: true},
+	}); err != nil {
 		log.Errorln(err)
 	}
 }

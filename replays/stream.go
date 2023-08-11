@@ -30,7 +30,7 @@ func GetStreams() ([]*Stream, error) {
 		s := Stream{
 			ID:         stream.ID,
 			Title:      stream.StreamTitle.String,
-			StartTime:  stream.StartTime,
+			StartTime:  stream.StartTime.Time,
 			EndTime:    stream.EndTime.Time,
 			InProgress: !stream.EndTime.Valid,
 			Manifest:   fmt.Sprintf("/replay/%s", stream.ID),

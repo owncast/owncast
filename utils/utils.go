@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"math/rand"
 	"net/url"
 	"os"
@@ -410,4 +411,24 @@ func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
 	}
 
 	return bytes, extension, nil
+}
+
+// RoundUpToNearest rounds up to the nearest number divisible.
+func RoundUpToNearest(x float32, to int) int {
+	xInt := int(math.Ceil(float64(x)))
+
+	if xInt%to == 0 {
+		return xInt
+	}
+	return xInt + to - xInt%to
+}
+
+// RoundDownToNearest rounds down to the nearest number divisible.
+func RoundDownToNearest(x float32, to int) int {
+	xInt := int(math.Floor(float64(x)))
+
+	if xInt%to == 0 {
+		return xInt
+	}
+	return xInt - xInt%to
 }

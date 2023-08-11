@@ -72,10 +72,20 @@ type Notification struct {
 	CreatedAt   sql.NullTime
 }
 
+type ReplayClip struct {
+	ID                string
+	StreamID          string
+	ClippedBy         sql.NullString
+	ClipTitle         sql.NullString
+	RelativeStartTime sql.NullFloat64
+	RelativeEndTime   sql.NullFloat64
+	Timestamp         sql.NullTime
+}
+
 type Stream struct {
 	ID          string
 	StreamTitle sql.NullString
-	StartTime   time.Time
+	StartTime   sql.NullTime
 	EndTime     sql.NullTime
 }
 
@@ -104,7 +114,8 @@ type VideoSegment struct {
 	StreamID              string
 	OutputConfigurationID string
 	Path                  string
-	Timestamp             time.Time
+	RelativeTimestamp     float32
+	Timestamp             sql.NullTime
 }
 
 type VideoSegmentOutputConfiguration struct {
@@ -117,5 +128,5 @@ type VideoSegmentOutputConfiguration struct {
 	Framerate        int32
 	ResolutionWidth  sql.NullInt32
 	ResolutionHeight sql.NullInt32
-	Timestamp        time.Time
+	Timestamp        sql.NullTime
 }

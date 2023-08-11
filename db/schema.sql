@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS messages (
 CREATE TABLE IF NOT EXISTS streams (
 	"id" string NOT NULL PRIMARY KEY,
 	"stream_title" TEXT,
-	"start_time" DATE NOT NULL,
+	"start_time" DATE,
 	"end_time" DATE,
 	PRIMARY KEY (id)
 );
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS video_segment_output_configuration (
 	"framerate" INTEGER NOT NULL,
 	"resolution_width" INTEGER,
 	"resolution_height" INTEGER,
-	"timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"timestamp" DATE,
 	PRIMARY KEY (id)
 );
 	CREATE INDEX video_segment_output_configuration_stream_id ON video_segment_output_configuration (stream_id);
@@ -133,9 +133,25 @@ CREATE TABLE IF NOT EXISTS video_segments (
 	"stream_id" string NOT NULL,
 	"output_configuration_id" string NOT NULL,
 	"path" TEXT NOT NULL,
-	"timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"relative_timestamp" REAL NOT NULL,
+	"timestamp" DATE,
 	PRIMARY KEY (id)
 );
 	CREATE INDEX video_segments_stream_id ON video_segments (stream_id);
 	CREATE INDEX video_segments_stream_id_timestamp ON video_segments (stream_id,timestamp);
 
+-- Record the details of a replayable clip.
+CREATE TABLE IF NOT EXISTS replay_clips (
+	"id" string NOT NULL,
+	"stream_id" string NOT NULL,
+	"clipped_by" string,
+	"clip_title" TEXT,
+	"relative_start_time" REAL,
+	"relative_end_time" REAL,
+	"timestamp" DATE,
+	PRIMARY KEY (id),
+  FOREIGN KEY(stream_id) REFERENCES streams(id)
+);
+CREATE INDEX clip_id ON replay_clips (id);
+CREATE INDEX clip_stream_id ON replay_clips (stream_id);
+CREATE INDEX clip_start_end_time ON replay_clips (start_time,end_time);

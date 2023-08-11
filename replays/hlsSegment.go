@@ -7,6 +7,7 @@ type HLSSegment struct {
 	ID                    string
 	StreamID              string
 	Timestamp             time.Time
+	RelativeTimestamp     float32
 	OutputConfigurationID string
 	Path                  string
 }
