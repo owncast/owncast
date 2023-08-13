@@ -155,6 +155,11 @@ jobs:
       - name: Bundle web app (next.js build)
         run: build/web/bundleWeb.sh
 
+      - name: Rebase
+        if: ${{ github.ref == 'refs/heads/develop' }}
+        run: |
+          git pull --rebase --autostash
+
         # Only commit built web project files on develop.
       - name: Commit changes
         if: ${{ github.ref == 'refs/heads/develop' }}
