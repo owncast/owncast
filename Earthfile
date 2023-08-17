@@ -6,10 +6,10 @@ ARG version=develop
 WORKDIR /build
 
 build-all:
-  BUILD --platform=linux/amd64 --platform=linux/386 --platform=linux/arm64 --platform=linux/arm/v7 --platform=darwin/amd64 +build
+  BUILD --platform=linux/amd64 --platform=linux/386 --platform=linux/arm64 --platform=linux/arm/v7 --platform=darwin/amd64 --platform=darwin/arm64 +build
 
 package-all:
-  BUILD --platform=linux/amd64 --platform=linux/386 --platform=linux/arm64 --platform=linux/arm/v7 --platform=darwin/amd64 +package
+  BUILD --platform=linux/amd64 --platform=linux/386 --platform=linux/arm64 --platform=linux/arm/v7 --platform=darwin/amd64 --platform=darwin/arm64 +package
 
 docker-all:
   BUILD --platform=linux/amd64 --platform=linux/386 --platform=linux/arm64 --platform=linux/arm/v7 +docker
@@ -36,7 +36,6 @@ build:
 
   FROM --platform=linux/amd64 +code
 
-  RUN echo $EARTHLY_GIT_HASH
   RUN echo "Finding CC configuration for $TARGETPLATFORM"
   IF [ "$TARGETPLATFORM" = "linux/amd64" ]
     ARG NAME=linux-64bit
@@ -59,6 +58,10 @@ build:
     ARG NAME=macOS-64bit
     ARG CC=o64-clang
     ARG CXX=o64-clang++
+  ELSE IF [ "$TARGETPLATFORM" = "darwin/arm64" ]
+    ARG NAME=macOS-arm64
+    ARG CC=o64-clang
+    ARG CXX=o64-clang++
   ELSE
     RUN echo "Failed to find CC configuration for $TARGETPLATFORM"
     ARG --required CC
@@ -76,10 +79,13 @@ build:
   # MacOSX disallows static executables, so we omit the static flag on this platform
   RUN go build -a -installsuffix cgo -ldflags "$([ "$GOOS"z != darwinz ] && echo "-linkmode external -extldflags -static ") -s -w -X github.com/owncast/owncast/config.GitCommit=$EARTHLY_GIT_HASH -X github.com/owncast/owncast/config.VersionNumber=$version -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -tags sqlite_omit_load_extension -o owncast main.go
 
-	# Decrease the size of the shipped binary
-	RUN upx --best --lzma owncast
-	# Test the binary
-	RUN upx -t owncast
+	# Decrease the size of the shipped binary. But only for non-Apple platforms.
+  # See https://github.com/upx/upx/issues/612
+  IF [ "$GOOS" != "darwin" ]
+	  RUN upx --best --lzma owncast
+	  # Test the binary
+	  RUN upx -t owncast
+  END
 
   SAVE ARTIFACT owncast owncast
 
@@ -97,6 +103,8 @@ package:
     ARG NAME=linux-arm7
   ELSE IF [ "$TARGETPLATFORM" = "darwin/amd64" ]
     ARG NAME=macOS-64bit
+  ELSE IF [ "$TARGETPLATFORM" = "darwin/arm64" ]
+    ARG NAME=macOS-arm64
   ELSE
     ARG NAME=custom
   END
