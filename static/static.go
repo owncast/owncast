@@ -76,3 +76,14 @@ func getFileSystemStaticFileOrDefault(path string, defaultData []byte) []byte {
 
 	return data
 }
+
+//go:embed metadata.html.tmpl
+var botMetadataTemplate embed.FS
+
+// GetBotMetadataTemplate will return the bot/scraper metadata template.
+func GetBotMetadataTemplate() (*template.Template, error) {
+	name := "metadata.html.tmpl"
+	t, err := template.ParseFS(botMetadataTemplate, name)
+	tmpl := template.Must(t, err)
+	return tmpl, err
+}
