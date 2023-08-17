@@ -1,6 +1,8 @@
 package data
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 func createRecordingTables(db *sql.DB) {
 	createSegmentsTableSQL := `CREATE TABLE IF NOT EXISTS video_segments (

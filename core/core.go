@@ -17,6 +17,7 @@ import (
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/notifications"
+	"github.com/owncast/owncast/replays"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
 )
@@ -58,6 +59,7 @@ func Start() error {
 
 	user.SetupUsers()
 	auth.Setup(data.GetDatastore())
+	replays.Setup()
 
 	fileWriter.SetupFileWriterReceiverService(&handler)
 

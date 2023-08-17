@@ -163,3 +163,6 @@ SELECT id AS clip_id, stream_id, clipped_by, clip_title, timestamp AS clip_times
 
 -- name: GetFinalSegmentForStream :one
 SELECT id, stream_id, output_configuration_id, path, relative_timestamp, timestamp FROM video_segments WHERE stream_id = $1 ORDER BY relative_timestamp DESC LIMIT 1;
+
+-- name: FixUnfinishedStreams :exec
+UPDATE streams SET end_time = (SELECT timestamp FROM video_segments WHERE stream_id = streams.id) WHERE end_time IS NULL;

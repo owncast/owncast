@@ -205,6 +205,15 @@ func (q *Queries) DoesInboundActivityExist(ctx context.Context, arg DoesInboundA
 	return count, err
 }
 
+const fixUnfinishedStreams = `-- name: FixUnfinishedStreams :exec
+UPDATE streams SET end_time = (SELECT timestamp FROM video_segments WHERE stream_id = streams.id) WHERE end_time IS NULL
+`
+
+func (q *Queries) FixUnfinishedStreams(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, fixUnfinishedStreams)
+	return err
+}
+
 const getAllClips = `-- name: GetAllClips :many
 SELECT rc.id AS id, rc.clip_title, rc.stream_id, rc.relative_start_time, rc.relative_end_time, (rc.relative_end_time - rc.relative_start_time) AS duration_seconds, rc.timestamp, s.stream_title AS stream_title
 	FROM replay_clips rc
