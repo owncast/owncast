@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Button, Typography } from 'antd';
+import React, { useState, useContext, useEffect, FC } from 'react';
+import { Button, Modal, Typography } from 'antd';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import CodeMirror from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';
@@ -31,6 +31,67 @@ import { createInputStatus, STATUS_SUCCESS } from '../../../../utils/input-statu
 
 const { Title } = Typography;
 
+export type DirectoryInfoModalProps = {
+  cancelPressed: () => void;
+  okPressed: () => void;
+};
+
+const DirectoryInfoModal: FC<DirectoryInfoModalProps> = ({ cancelPressed, okPressed }) => (
+  <Modal
+    width="70%"
+    title="Owncast Directory"
+    visible
+    onCancel={cancelPressed}
+    footer={
+      <div>
+        <Button onClick={cancelPressed}>Do not share my server.</Button>
+        <Button type="primary" onClick={okPressed}>
+          Understood. Share my server publicly.
+        </Button>
+      </div>
+    }
+  >
+    <Typography.Title level={3}>What is the Owncast Directory?</Typography.Title>
+    <Typography.Paragraph>
+      Owncast operates a public directory at{' '}
+      <a href="https://directory.owncast.online">directory.owncast.online</a> to share your video
+      streams with more people, while also using these as examples for others. Live streams and
+      servers listed on the directory may optionally be shared on other platforms and applications.
+    </Typography.Paragraph>
+
+    <Typography.Title level={3}>Disclaimers and Responsibility</Typography.Title>
+    <Typography.Paragraph>
+      <ul>
+        <li>
+          By enabling this feature you are granting explicit rights to Owncast to share your stream
+          to the public via the directory, as well as other sites, applications and any platform
+          where the Owncast project may be promoting Owncast-powered streams including social media.
+        </li>
+        <li>
+          There is no obligation to list any specific server or topic. Servers can and will be
+          removed at any time for any reason.
+        </li>
+        <li>
+          Any server that is streaming Not Safe For Work (NSFW) content and does not have the NSFW
+          toggle enabled on their server will be removed.
+        </li>
+        <li>
+          Any server streaming harmful, hurtful, misleading or hateful content in any way will not
+          be listed.
+        </li>
+        <li>
+          You may reach out to the Owncast team to report any objectionable content or content that
+          you believe should not be be publicly listed.
+        </li>
+        <li>
+          You have the right to free software and to build whatever you want with it. But there is
+          no obligation for others to share it.
+        </li>
+      </ul>
+    </Typography.Paragraph>
+  </Modal>
+);
+
 // eslint-disable-next-line react/function-component-definition
 export default function EditInstanceDetails() {
   const [formDataValues, setFormDataValues] = useState(null);
@@ -41,6 +102,7 @@ export default function EditInstanceDetails() {
   const { instanceUrl } = yp;
 
   const [offlineMessageSaveStatus, setOfflineMessageSaveStatus] = useState(null);
+  const [isDirectoryInfoModalOpen, setIsDirectoryInfoModalOpen] = useState(false);
 
   useEffect(() => {
     setFormDataValues({
@@ -54,6 +116,20 @@ export default function EditInstanceDetails() {
   if (!formDataValues) {
     return null;
   }
+
+  const handleDirectorySwitchChange = (value: boolean) => {
+    if (!value) {
+      // Disabled. No-op.
+    } else {
+      setIsDirectoryInfoModalOpen(true);
+    }
+    setFormDataValues({
+      ...formDataValues,
+      yp: {
+        enabled: value,
+      },
+    });
+  };
 
   // if instanceUrl is empty, we should also turn OFF the `enabled` field of directory.
   const handleSubmitInstanceUrl = () => {
@@ -91,6 +167,23 @@ export default function EditInstanceDetails() {
 
   function handleDisableSearchEngineIndexingChange(enabled: boolean) {
     handleFieldChange({ fieldName: 'disableSearchIndexing', value: enabled });
+  }
+
+  function directoryInfoModalCancelPressed() {
+    setIsDirectoryInfoModalOpen(false);
+    handleDirectorySwitchChange(false);
+    handleFieldChange({ fieldName: 'enabled', value: false });
+  }
+
+  function directoryInfoModalOkPressed() {
+    setIsDirectoryInfoModalOpen(false);
+    handleFieldChange({ fieldName: 'enabled', value: true });
+    setFormDataValues({
+      ...formDataValues,
+      yp: {
+        enabled: true,
+      },
+    });
   }
 
   const hasInstanceUrl = instanceUrl !== '';
@@ -214,6 +307,7 @@ export default function EditInstanceDetails() {
           {...FIELD_PROPS_YP}
           checked={formDataValues.enabled}
           disabled={!hasInstanceUrl}
+          onChange={handleDirectorySwitchChange}
         />
         <ToggleSwitch
           fieldName="nsfw"
@@ -223,6 +317,12 @@ export default function EditInstanceDetails() {
           disabled={!hasInstanceUrl}
         />
       </div>
+      {isDirectoryInfoModalOpen && (
+        <DirectoryInfoModal
+          cancelPressed={directoryInfoModalCancelPressed}
+          okPressed={directoryInfoModalOkPressed}
+        />
+      )}
     </div>
   );
 }
