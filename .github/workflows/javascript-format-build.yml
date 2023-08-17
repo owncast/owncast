@@ -158,6 +158,7 @@ jobs:
       - name: Rebase
         if: ${{ github.ref == 'refs/heads/develop' }}
         run: |
+          git add static/web
           git pull --rebase --autostash
 
         # Only commit built web project files on develop.
