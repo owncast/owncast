@@ -4,13 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"strings"
 
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 // IndexHandler handles the default index route.
@@ -21,6 +26,13 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	if utils.IsUserAgentAPlayer(r.UserAgent()) && isIndexRequest {
 		http.Redirect(w, r, "/hls/stream.m3u8", http.StatusTemporaryRedirect)
+		return
+	}
+
+	// For search engine bots and social scrapers return a special
+	// server-rendered page.
+	if utils.IsUserAgentABot(r.UserAgent()) && isIndexRequest {
+		handleScraperMetadataPage(w, r)
 		return
 	}
 
@@ -91,5 +103,81 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 
 	if err := index.Execute(w, content); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// MetadataPage represents a server-rendered web page for bots and web scrapers.
+type MetadataPage struct {
+	RequestedURL  string
+	Image         string
+	Thumbnail     string
+	TagsString    string
+	Summary       string
+	Name          string
+	Tags          []string
+	SocialHandles []models.SocialHandle
+}
+
+// Return a basic HTML page with server-rendered metadata from the config
+// to give to Opengraph clients and web scrapers (bots, web crawlers, etc).
+func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := static.GetBotMetadataTemplate()
+	if err != nil {
+		log.Errorln(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	scheme := "http"
+
+	if siteURL := data.GetServerURL(); siteURL != "" {
+		if parsed, err := url.Parse(siteURL); err == nil && parsed.Scheme != "" {
+			scheme = parsed.Scheme
+		}
+	}
+
+	fullURL, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, r.URL.Path))
+	if err != nil {
+		log.Errorln(err)
+	}
+	imageURL, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, "/logo/external"))
+	if err != nil {
+		log.Errorln(err)
+	}
+
+	status := core.GetStatus()
+
+	// If the thumbnail does not exist or we're offline then just use the logo image
+	var thumbnailURL string
+	if status.Online && utils.DoesFileExists(filepath.Join(config.DataDirectory, "tmp", "thumbnail.jpg")) {
+		thumbnail, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, "/thumbnail.jpg"))
+		if err != nil {
+			log.Errorln(err)
+			thumbnailURL = imageURL.String()
+		} else {
+			thumbnailURL = thumbnail.String()
+		}
+	} else {
+		thumbnailURL = imageURL.String()
+	}
+
+	tagsString := strings.Join(data.GetServerMetadataTags(), ",")
+	metadata := MetadataPage{
+		Name:          data.GetServerName(),
+		RequestedURL:  fullURL.String(),
+		Image:         imageURL.String(),
+		Summary:       data.GetServerSummary(),
+		Thumbnail:     thumbnailURL,
+		TagsString:    tagsString,
+		Tags:          data.GetServerMetadataTags(),
+		SocialHandles: data.GetSocialHandles(),
+	}
+
+	// Set a cache header
+	middleware.SetCachingHeaders(w, r)
+
+	w.Header().Set("Content-Type", "text/html")
+	if err := tmpl.Execute(w, metadata); err != nil {
+		log.Errorln(err)
 	}
 }
