@@ -3,6 +3,7 @@
 	"rules": {
 		"selector-class-pattern": null,
 		"no-descending-specificity": null,
-		"selector-pseudo-class-no-unknown": null
+		"selector-pseudo-class-no-unknown": null,
+		"scss/at-extend-no-missing-placeholder": null
 	}
 }
