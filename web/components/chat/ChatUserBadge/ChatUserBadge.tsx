@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import cn from 'classnames';
 import styles from './ChatUserBadge.module.scss';
 
 export type ChatUserBadgeProps = {
@@ -12,7 +13,7 @@ export const ChatUserBadge: FC<ChatUserBadgeProps> = ({ badge, userColor, title 
   const style = { color };
 
   return (
-    <span style={style} className={styles.badge} title={title}>
+    <span style={style} className={cn([styles.badge, 'chat-user-badge'])} title={title}>
       {badge}
     </span>
   );

@@ -1,14 +1,14 @@
 .badge {
   color: white;
   background-color: var(--color-owncast-palette-0);
-  height: 18px;
-  width: 18px;
-  border-radius: calc(0.3 * var(--theme-rounded-corners));
+  height: 16px;
+  width: 16px;
+  border-radius: calc(0.4 * var(--theme-rounded-corners));
   text-align: center;
   padding: 2px;
   display: inline-flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
 }

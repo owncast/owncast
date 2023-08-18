@@ -27,12 +27,20 @@ $p-v-size: 2px;
   }
 
   .repeatUser {
+    // nolint: scss/at-extend-no-missing-placeholder
     @extend .user;
+
     display: none;
   }
 
   .userBadges {
     margin-left: 3px;
+    display: flex;
+    justify-content: space-between;
+
+    > * {
+      margin-left: 3px;
+    }
   }
 
   .message {
