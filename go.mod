@@ -18,7 +18,7 @@ require (
 	github.com/schollz/sqlite3dump v1.3.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/teris-io/shortid v0.0.0-20160104014424-6c56cef5189c
-	github.com/yuin/goldmark v1.5.5
+	github.com/yuin/goldmark v1.5.6
 	golang.org/x/mod v0.12.0
 	golang.org/x/time v0.3.0
 )
@@ -67,7 +67,6 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	github.com/mssola/user_agent v0.6.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.11.0 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 )
@@ -75,6 +74,7 @@ require (
 require (
 	github.com/CAFxX/httpcompression v0.0.8
 	github.com/andybalholm/cascadia v1.3.2
+	github.com/mssola/user_agent v0.6.0
 	github.com/yuin/goldmark-emoji v1.0.2
 	gopkg.in/evanphx/json-patch.v5 v5.6.0
 	mvdan.cc/xurls v1.1.0
