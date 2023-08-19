@@ -49,7 +49,7 @@ filterTests(['desktop'], () => {
 
 		it('Should change name', () => {
 			cy.get('#name-change-field').focus();
-			cy.get('#name-change-field').type('{ctrl+a}');
+			cy.get('#name-change-field').type('{selectall}');
 			cy.get('#name-change-field').type('my-new-name');
 			cy.get('#name-change-submit').click();
 			cy.wait(1500);
