@@ -5,9 +5,12 @@ on:
   push:
     paths:
       - web/**
+      - '!**.md'
+
   pull_request:
     paths:
       - web/**
+      - '!**.md'
 
 jobs:
   formatting:
@@ -22,6 +25,8 @@ jobs:
         uses: fkirc/skip-duplicate-actions@v5
         with:
           concurrent_skipping: 'same_content_newer'
+          cancel_others: 'true'
+          skip_after_successful_duplicate: 'true'
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -77,6 +82,7 @@ jobs:
           author_name: Owncast
           author_email: owncast@owncast.online
           message: 'Javascript formatting autofixes'
+          add: ${{ steps.changed-files.outputs.src_all_changed_files }}
           pull: '--rebase --autostash'
 
   unused-code:
@@ -91,6 +97,8 @@ jobs:
         uses: fkirc/skip-duplicate-actions@v5
         with:
           concurrent_skipping: 'same_content_newer'
+          cancel_others: 'true'
+          skip_after_successful_duplicate: 'true'
 
       - name: Checkout
         uses: actions/checkout@v3
