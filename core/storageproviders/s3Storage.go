@@ -116,6 +116,7 @@ func (s *S3Storage) SegmentWritten(localFilePath string) (string, int, error) {
 	// them are in sync.
 	playlistPath := filepath.Join(filepath.Dir(localFilePath), "stream.m3u8")
 	playlistRemoteDestinationPath := s.GetRemoteDestinationPathFromLocalFilePath(playlistPath)
+
 	if _, err := s.Save(playlistPath, playlistRemoteDestinationPath, 0); err != nil {
 		s.queuedPlaylistUpdates[playlistPath] = playlistPath
 		if pErr, ok := err.(*os.PathError); ok {
@@ -145,7 +146,7 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	// Rewrite the playlist to use absolute remote S3 URLs
-	if err := rewriteRemotePlaylist(localFilePath, s.host); err != nil {
+	if err := rewriteRemotePlaylist(localFilePath, s.streamId, s.host); err != nil {
 		log.Warnln(err)
 	}
 }

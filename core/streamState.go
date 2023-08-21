@@ -119,7 +119,7 @@ func SetStreamAsDisconnected() {
 	}
 
 	for index := range _currentBroadcast.OutputSettings {
-		makeVariantIndexOffline(index, offlineFilePath, offlineFilename)
+		makeVariantIndexOffline(_currentBroadcast.StreamID, index, offlineFilePath, offlineFilename)
 	}
 
 	StartOfflineCleanupTimer()

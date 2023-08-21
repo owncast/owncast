@@ -31,6 +31,7 @@ func (h *HLSHandler) SegmentWritten(localFilePath string) {
 	remotePath, _, err := h.Storage.SegmentWritten(localFilePath)
 	if err != nil {
 		log.Errorln(err)
+		return
 	}
 
 	if h.Recorder != nil {
