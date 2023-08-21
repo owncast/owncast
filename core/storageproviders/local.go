@@ -93,7 +93,7 @@ func (s *LocalStorage) Cleanup() error {
 	// Determine how many files we should keep on disk
 	maxNumber := data.GetStreamLatencyLevel().SegmentCount
 	buffer := 10
-	baseDirectory := config.HLSStoragePath
+	baseDirectory := filepath.Join(config.HLSStoragePath, s.streamID)
 
 	files, err := getAllFilesRecursive(baseDirectory)
 	if err != nil {
