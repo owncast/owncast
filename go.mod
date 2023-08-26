@@ -3,7 +3,7 @@ module github.com/owncast/owncast
 go 1.20
 
 require (
-	github.com/aws/aws-sdk-go v1.44.327
+	github.com/aws/aws-sdk-go v1.44.332
 	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-ole/go-ole v1.2.6 // indirect
