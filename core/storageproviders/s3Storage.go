@@ -275,7 +275,7 @@ func (s *S3Storage) removeLocalFile(filePath string) {
 	cleanFilepath := filepath.Clean(filePath)
 
 	if err := os.Remove(cleanFilepath); err != nil {
-		log.Errorln(err)
+		log.Debugln(err)
 	}
 }
 
