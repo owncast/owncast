@@ -84,17 +84,6 @@ func NewRecording(streamID string) *HLSRecorder {
 	return &h
 }
 
-// SetOutputConfigurations sets the output configurations for this stream.
-func (h *HLSRecorder) SetOutputConfigurations(configs []HLSOutputConfiguration) {
-	h.outputConfigurations = configs
-}
-
-// StreamBegan is called when a stream is started.
-func (h *HLSRecorder) StreamBegan(id string) {
-	h.streamID = id
-	h.startTime = time.Now()
-}
-
 // SegmentWritten is called when a segment is written to disk.
 func (h *HLSRecorder) SegmentWritten(path string) {
 	outputConfigurationIndexString := utils.GetIndexFromFilePath(path)
