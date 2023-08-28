@@ -112,7 +112,7 @@ package:
   COPY (+build/owncast --platform $TARGETPLATFORM) /build/dist/owncast
   ENV ZIPNAME owncast-$version-$NAME.zip
   RUN cd /build/dist && zip -r -q -8 /build/dist/owncast.zip .
-  SAVE ARTIFACT /build/dist/owncast.zip owncast.zip AS LOCAL dist/$ZIPNAME
+  SAVE ARTIFACT --keep-ts /build/dist/owncast.zip owncast.zip AS LOCAL dist/$ZIPNAME
 
 docker:
 	# Multiple image names can be tagged at once. They should all be passed
