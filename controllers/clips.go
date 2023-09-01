@@ -7,12 +7,18 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/replays"
 	log "github.com/sirupsen/logrus"
 )
 
 // GetAllClips will return all clips that have been previously created.
 func GetAllClips(w http.ResponseWriter, r *http.Request) {
+	if !config.EnableReplayFeatures {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	clips, err := replays.GetAllClips()
 	if err != nil {
 		log.Errorln(err)
@@ -25,6 +31,11 @@ func GetAllClips(w http.ResponseWriter, r *http.Request) {
 
 // AddClip will create a new clip for a given stream and time window.
 func AddClip(w http.ResponseWriter, r *http.Request) {
+	if !config.EnableReplayFeatures {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	type addClipRequest struct {
 		StreamId                 string  `json:"streamId"`
 		ClipTitle                string  `json:"clipTitle"`
@@ -95,6 +106,11 @@ func AddClip(w http.ResponseWriter, r *http.Request) {
 
 // GetClip will return playable content for a given clip Id.
 func GetClip(w http.ResponseWriter, r *http.Request) {
+	if !config.EnableReplayFeatures {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	pathComponents := strings.Split(r.URL.Path, "/")
 	if len(pathComponents) == 3 {
 		// Return the master playlist for the requested stream

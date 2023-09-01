@@ -23,7 +23,9 @@ func (h *HLSHandler) StreamEnded() {
 
 func (h *HLSHandler) SetStreamId(streamId string) {
 	h.Storage.SetStreamId(streamId)
-	h.Recorder = replays.NewRecording(streamId)
+	if config.EnableReplayFeatures {
+		h.Recorder = replays.NewRecording(streamId)
+	}
 }
 
 // SegmentWritten is fired when a HLS segment is written to disk.

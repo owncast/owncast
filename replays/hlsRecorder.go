@@ -32,6 +32,8 @@ func NewRecording(streamID string) *HLSRecorder {
 		return nil
 	}
 
+	log.Infoln("Recording replay of this stream:", streamID)
+
 	h := HLSRecorder{
 		streamID:  streamID,
 		startTime: time.Now(),

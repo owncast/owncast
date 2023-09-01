@@ -4,12 +4,18 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/replays"
 	log "github.com/sirupsen/logrus"
 )
 
 // GetReplays will return a list of all available replays.
 func GetReplays(w http.ResponseWriter, r *http.Request) {
+	if !config.EnableReplayFeatures {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	streams, err := replays.GetStreams()
 	if err != nil {
 		log.Errorln(err)
