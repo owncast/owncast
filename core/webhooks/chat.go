@@ -43,6 +43,16 @@ func SendChatEventUserJoined(event events.UserJoinedEvent) {
 	SendEventToWebhooks(webhookEvent)
 }
 
+// SendChatEventUserParted sends a webhook notifying that a user has parted.
+func SendChatEventUserParted(event events.UserPartEvent) {
+	webhookEvent := WebhookEvent{
+		Type:      events.UserParted,
+		EventData: event,
+	}
+
+	SendEventToWebhooks(webhookEvent)
+}
+
 // SendChatEventSetMessageVisibility sends a webhook notifying that the visibility of one or more
 // messages has changed.
 func SendChatEventSetMessageVisibility(event events.SetMessageVisibilityEvent) {

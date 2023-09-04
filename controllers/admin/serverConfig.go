@@ -57,7 +57,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		WebServerIP:             config.WebServerIP,
 		RTMPServerPort:          data.GetRTMPPortNumber(),
 		ChatDisabled:            data.GetChatDisabled(),
-		ChatJoinMessagesEnabled: data.GetChatJoinMessagesEnabled(),
+		ChatJoinMessagesEnabled: data.GetChatJoinPartMessagesEnabled(),
 		SocketHostOverride:      data.GetWebsocketOverrideHost(),
 		VideoServingEndpoint:    data.GetVideoServingEndpoint(),
 		ChatEstablishedUserMode: data.GetChatEstbalishedUsersOnlyMode(),

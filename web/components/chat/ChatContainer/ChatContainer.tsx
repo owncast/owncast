@@ -14,6 +14,7 @@ import { ChatTextField } from '../ChatTextField/ChatTextField';
 import { ChatModeratorNotification } from '../ChatModeratorNotification/ChatModeratorNotification';
 import { ChatSystemMessage } from '../ChatSystemMessage/ChatSystemMessage';
 import { ChatJoinMessage } from '../ChatJoinMessage/ChatJoinMessage';
+import { ChatPartMessage } from '../ChatPartMessage/ChatPartMessage';
 import { ScrollToBotBtn } from './ScrollToBotBtn';
 import { ChatActionMessage } from '../ChatActionMessage/ChatActionMessage';
 import { ChatSocialMessage } from '../ChatSocialMessage/ChatSocialMessage';
@@ -137,6 +138,20 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     );
   };
 
+  const getUserPartMessage = (message: ChatMessage) => {
+    const {
+      user: { displayName, displayColor },
+    } = message;
+    const isAuthorModerator = checkIsModerator(message);
+    return (
+      <ChatPartMessage
+        displayName={displayName}
+        userColor={displayColor}
+        isAuthorModerator={isAuthorModerator}
+      />
+    );
+  };
+
   const getActionMessage = (message: ChatMessage) => {
     const { body } = message;
     return <ChatActionMessage body={body} />;
@@ -185,6 +200,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         return getConnectedInfoMessage(message as ConnectedClientInfoEvent);
       case MessageType.USER_JOINED:
         return getUserJoinedMessage(message as ChatMessage);
+      case MessageType.USER_PARTED:
+        return getUserPartMessage(message as ChatMessage);
       case MessageType.CHAT_ACTION:
         return getActionMessage(message as ChatMessage);
       case MessageType.SYSTEM:
