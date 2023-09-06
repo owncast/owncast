@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/netip"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
-	"regexp"
 
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/controllers"
@@ -407,12 +407,11 @@ func SetServerURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Block private IPv4 URLs of the range 10.0.0.0/8 and 192.168.0.0/16 with regexp
-	matchPvtURL_10, _ := regexp.MatchString(`10\.\d{1,3}\.\d{1,3}\.\d{1,3}.*`, serverHostString)
-	matchPvtURL_192_168, _ := regexp.MatchString(`192\.168\.\d{1,3}\.\d{1,3}.*`, serverHostString)
+	// Block Private IP URLs
+	ipAddr, ipErr := netip.ParseAddr(utils.GetHostnameWithoutPortFromURLString(rawValue))
 
-	if matchPvtURL_10 || matchPvtURL_192_168 {
-		controllers.WriteSimpleResponse(w, false, "Server URL cannot be a private URL")
+	if ipErr == nil && ipAddr.IsPrivate() {
+		controllers.WriteSimpleResponse(w, false, "Server URL cannot be private")
 		return
 	}
 
