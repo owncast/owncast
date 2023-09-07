@@ -379,6 +379,16 @@ func GetHostnameFromURLString(s string) string {
 	return u.Host
 }
 
+// GetHostnameWithoutPortFromURLString will return the hostname component without the port from a URL object.
+func GetHostnameWithoutPortFromURLString(s string) string {
+	u, err := url.Parse(s)
+	if err != nil {
+		return ""
+	}
+
+	return u.Hostname()
+}
+
 // GetHashtagsFromText returns all the #Hashtags from a string.
 func GetHashtagsFromText(text string) []string {
 	re := regexp.MustCompile(`#[a-zA-Z0-9_]+`)
