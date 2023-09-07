@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/netip"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -403,6 +404,14 @@ func SetServerURL(w http.ResponseWriter, r *http.Request) {
 	serverHostString := utils.GetHostnameFromURLString(rawValue)
 	if serverHostString == "" {
 		controllers.WriteSimpleResponse(w, false, "server url value invalid")
+		return
+	}
+
+	// Block Private IP URLs
+	ipAddr, ipErr := netip.ParseAddr(utils.GetHostnameWithoutPortFromURLString(rawValue))
+
+	if ipErr == nil && ipAddr.IsPrivate() {
+		controllers.WriteSimpleResponse(w, false, "Server URL cannot be private")
 		return
 	}
 
