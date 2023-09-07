@@ -42,7 +42,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/klauspost/compress v1.16.4 // indirect
+	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
@@ -61,7 +61,7 @@ require (
 require github.com/SherClockHolmes/webpush-go v1.2.0
 
 require (
-	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/go-test/deep v1.0.4 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
@@ -72,7 +72,7 @@ require (
 )
 
 require (
-	github.com/CAFxX/httpcompression v0.0.8
+	github.com/CAFxX/httpcompression v0.0.9
 	github.com/andybalholm/cascadia v1.3.2
 	github.com/mssola/user_agent v0.6.0
 	github.com/yuin/goldmark-emoji v1.0.2
