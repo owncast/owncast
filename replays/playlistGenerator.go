@@ -3,6 +3,7 @@ package replays
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/grafov/m3u8"
@@ -50,8 +51,14 @@ func (p *PlaylistGenerator) createMediaPlaylistForConfigurationAndSegments(confi
 
 	// Add the segments to the playlist.
 	for index, segment := range segments {
+		// If it's a URL leave it as is, if it's a local path then append a slash.
+		path := segment.Path
+		if !strings.HasPrefix(path, "http") {
+			path = "/" + path
+		}
+
 		mediaSegment := m3u8.MediaSegment{
-			URI:             "/" + segment.Path,
+			URI:             path,
 			Duration:        segmentDuration,
 			SeqId:           uint64(index),
 			ProgramDateTime: segment.Timestamp,

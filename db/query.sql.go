@@ -1144,7 +1144,7 @@ func (q *Queries) InsertStream(ctx context.Context, arg InsertStreamParams) erro
 }
 
 const isDisplayNameAvailable = `-- name: IsDisplayNameAvailable :one
-SELECT count(*) FROM users WHERE display_name = $1 AND authenticated_at is not null AND disabled_at is NULL
+SELECT count(*) FROM users WHERE display_name = $1 AND ( type='API' OR authenticated_at IS NOT NULL ) AND disabled_at IS NULL
 `
 
 func (q *Queries) IsDisplayNameAvailable(ctx context.Context, displayName string) (int64, error) {

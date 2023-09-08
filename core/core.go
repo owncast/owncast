@@ -103,6 +103,7 @@ func transitionToOfflineVideoStreamContent() {
 
 	streamId := "offline"
 	_storage.SetStreamId(streamId)
+	fileWriter.SetStreamID(streamId)
 	handler.SetStreamId(streamId)
 
 	_transcoder := transcoder.NewTranscoder(streamId)

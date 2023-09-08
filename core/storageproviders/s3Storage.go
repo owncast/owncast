@@ -37,6 +37,7 @@ type S3Storage struct {
 	s3AccessKey       string
 	s3Secret          string
 	s3ACL             string
+	s3PathPrefix      string
 	s3ForcePathStyle  bool
 
 	// If we try to upload a playlist but it is not yet on disk
@@ -78,6 +79,7 @@ func (s *S3Storage) Setup() error {
 	s.s3AccessKey = s3Config.AccessKey
 	s.s3Secret = s3Config.Secret
 	s.s3ACL = s3Config.ACL
+	s.s3PathPrefix = s3Config.PathPrefix
 	s.s3ForcePathStyle = s3Config.ForcePathStyle
 
 	s.sess = s.connectAWS()
@@ -146,7 +148,11 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	// Rewrite the playlist to use absolute remote S3 URLs
-	if err := rewriteRemotePlaylist(localFilePath, s.streamId, s.host); err != nil {
+	pathPrefix := filepath.Join("hls", s.streamId)
+	if s.s3PathPrefix != "" {
+		pathPrefix = filepath.Join(s.s3PathPrefix, pathPrefix)
+	}
+	if err := rewriteRemotePlaylist(localFilePath, s.host, pathPrefix); err != nil {
 		log.Warnln(err)
 	}
 }
@@ -159,13 +165,24 @@ func (s *S3Storage) Save(localFilePath, remoteDestinationPath string, retryCount
 	}
 	defer file.Close()
 
+	// Convert the local path to the variant/file path by stripping the local storage location.
+	normalizedPath := strings.TrimPrefix(localFilePath, config.HLSStoragePath)
+	// Build the remote path by adding the "hls" path prefix.
+	remotePath := strings.Join([]string{"hls", normalizedPath}, "")
+
+	// If a custom path prefix is set prepend it.
+	if s.s3PathPrefix != "" {
+		prefix := strings.TrimPrefix(s.s3PathPrefix, "/")
+		remotePath = strings.Join([]string{prefix, remotePath}, "/")
+	}
+
 	maxAgeSeconds := utils.GetCacheDurationSecondsForPath(localFilePath)
 	cacheControlHeader := fmt.Sprintf("max-age=%d", maxAgeSeconds)
 
 	uploadInput := &s3manager.UploadInput{
-		Bucket:       aws.String(s.s3Bucket),            // Bucket to be used
-		Key:          aws.String(remoteDestinationPath), // Name of the file to be saved
-		Body:         file,                              // File
+		Bucket:       aws.String(s.s3Bucket), // Bucket to be used
+		Key:          aws.String(remotePath), // Name of the file to be saved
+		Body:         file,                   // File
 		CacheControl: &cacheControlHeader,
 	}
 

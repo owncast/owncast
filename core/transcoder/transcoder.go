@@ -28,11 +28,9 @@ type Transcoder struct {
 
 	TranscoderCompleted  func(error)
 	StreamID             string
-	playlistOutputPath   string
 	ffmpegPath           string
 	internalListenerPort string
 	input                string
-	segmentOutputPath    string
 	variants             []HLSVariant
 
 	currentStreamOutputSettings []models.StreamOutputVariant
@@ -286,9 +284,6 @@ func NewTranscoder(streamID string) *Transcoder {
 	transcoder.currentStreamOutputSettings = data.GetStreamOutputVariants()
 	transcoder.currentLatencyLevel = data.GetStreamLatencyLevel()
 	transcoder.codec = getCodec(data.GetVideoCodec())
-	transcoder.segmentOutputPath = config.HLSStoragePath
-	transcoder.playlistOutputPath = config.HLSStoragePath
-
 	transcoder.input = "pipe:0" // stdin
 
 	for index, quality := range transcoder.currentStreamOutputSettings {
@@ -435,11 +430,6 @@ func (t *Transcoder) SetInput(input string) {
 // SetStdin sets the Stdin of the ffmpeg command.
 func (t *Transcoder) SetStdin(pipe *io.PipeReader) {
 	t.stdin = pipe
-}
-
-// SetOutputPath sets the root directory that should include playlists and video segments.
-func (t *Transcoder) SetOutputPath(output string) {
-	t.segmentOutputPath = output
 }
 
 // SetStreamID sets a unique identifier for the currently transcoding stream.

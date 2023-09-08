@@ -101,7 +101,7 @@ UPDATE users SET authenticated_at = CURRENT_TIMESTAMP WHERE id = $1;
 SELECT id, body, hidden_at, timestamp FROM messages WHERE eventType = 'CHAT' AND user_id = $1 ORDER BY TIMESTAMP DESC;
 
 -- name: IsDisplayNameAvailable :one
-SELECT count(*) FROM users WHERE display_name = $1 AND authenticated_at is not null AND disabled_at is NULL;
+SELECT count(*) FROM users WHERE display_name = $1 AND ( type='API' OR authenticated_at IS NOT NULL ) AND disabled_at IS NULL;
 
 -- name: ChangeDisplayName :exec
 UPDATE users SET display_name = $1, previous_names = previous_names || $2, namechanged_at = $3 WHERE id = $4;

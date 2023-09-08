@@ -32,7 +32,7 @@ func (h *HLSHandler) SetStreamId(streamId string) {
 func (h *HLSHandler) SegmentWritten(localFilePath string) {
 	remotePath, _, err := h.Storage.SegmentWritten(localFilePath)
 	if err != nil {
-		log.Errorln(err)
+		log.Debugln(err, localFilePath)
 		return
 	}
 

@@ -17,6 +17,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mssola/user_agent"
 	log "github.com/sirupsen/logrus"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -67,7 +68,7 @@ func Copy(source, destination string) error {
 func Move(source, destination string) error {
 	err := os.Rename(source, destination)
 	if err != nil {
-		log.Warnln("Moving with os.Rename failed, falling back to copy and delete!", err)
+		log.Debugln("Moving with os.Rename failed, falling back to copy and delete!", err)
 		return moveFallback(source, destination)
 	}
 	return nil
@@ -119,6 +120,34 @@ func IsUserAgentAPlayer(userAgent string) bool {
 	}
 
 	return false
+}
+
+// IsUserAgentABot returns if a web client user-agent is seen as a bot.
+func IsUserAgentABot(userAgent string) bool {
+	if userAgent == "" {
+		return false
+	}
+
+	botStrings := []string{
+		"mastodon",
+		"pleroma",
+		"applebot",
+		"whatsapp",
+		"matrix",
+		"synapse",
+		"element",
+		"rocket.chat",
+		"duckduckbot",
+	}
+
+	for _, botString := range botStrings {
+		if strings.Contains(strings.ToLower(userAgent), botString) {
+			return true
+		}
+	}
+
+	ua := user_agent.New(userAgent)
+	return ua.Bot()
 }
 
 // RenderSimpleMarkdown will return HTML without sanitization or specific formatting rules.

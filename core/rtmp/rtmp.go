@@ -73,7 +73,7 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	}
 
 	if _hasInboundRTMPConnection {
-		log.Errorln("stream already running; can not overtake an existing stream")
+		log.Errorln("stream already running; can not overtake an existing stream from", nc.RemoteAddr().String())
 		_ = nc.Close()
 		return
 	}
@@ -94,14 +94,14 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 	}
 
 	if !accessGranted {
-		log.Errorln("invalid streaming key; rejecting incoming stream")
+		log.Errorln("invalid streaming key; rejecting incoming stream from", nc.RemoteAddr().String())
 		_ = nc.Close()
 		return
 	}
 
 	rtmpOut, rtmpIn := io.Pipe()
 	_pipe = rtmpIn
-	log.Infoln("Inbound stream connected.")
+	log.Infoln("Inbound stream connected from", nc.RemoteAddr().String())
 	_setStreamAsConnected(rtmpOut)
 
 	_hasInboundRTMPConnection = true
