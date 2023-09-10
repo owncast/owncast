@@ -54,15 +54,22 @@ const TEXTFIELD_TYPE_URL = 'url';
 
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const { apiPath, data, onSuccess, onError } = args;
-  const result = await fetchData(`${SERVER_CONFIG_UPDATE_URL}${apiPath}`, {
-    data,
-    method: 'POST',
-    auth: true,
-  });
-  if (result.success && onSuccess) {
-    onSuccess(result.message);
-  } else if (onError) {
-    onError(result.message);
+  try {
+    const result = await fetchData(`${SERVER_CONFIG_UPDATE_URL}${apiPath}`, {
+      data,
+      method: 'POST',
+      auth: true,
+    });
+    if (result.success && onSuccess) {
+      onSuccess(result.message);
+    } else if (onError) {
+      onError(result.message);
+    }
+  }
+  catch (e) {
+    if (onError) {
+      onError(e.message);
+    }
   }
 }
 
