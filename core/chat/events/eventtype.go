@@ -8,6 +8,8 @@ const (
 	MessageSent EventType = "CHAT"
 	// UserJoined is the event sent when a chat user join action takes place.
 	UserJoined EventType = "USER_JOINED"
+	// UserParted is the event sent when a chat user part action takes place.
+	UserParted EventType = "USER_PARTED"
 	// UserNameChanged is the event sent when a chat username change takes place.
 	UserNameChanged EventType = "NAME_CHANGE"
 	// UserColorChanged is the event sent when a chat user color change takes place.
