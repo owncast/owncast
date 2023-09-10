@@ -30,6 +30,7 @@ const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'),
 const availableEvents = {
   CHAT: { name: 'Chat messages', description: 'When a user sends a chat message', color: 'purple' },
   USER_JOINED: { name: 'User joined', description: 'When a user joins the chat', color: 'green' },
+  USER_PARTED: { name: 'User parted', description: 'When a user leaves the chat', color: 'green' },
   NAME_CHANGE: {
     name: 'User name changed',
     description: 'When a user changes their name',

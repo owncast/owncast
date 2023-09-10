@@ -322,6 +322,9 @@ export const ClientConfigStore: FC = () => {
       case MessageType.USER_JOINED:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
         break;
+      case MessageType.USER_PARTED:
+        setChatMessages(currentState => [...currentState, message as ChatEvent]);
+        break;
       case MessageType.SYSTEM:
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
         break;

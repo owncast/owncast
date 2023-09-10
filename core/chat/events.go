@@ -167,7 +167,6 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 
 	SaveUserMessage(event)
 	eventData.client.MessageCount++
-	_lastSeenCache[event.User.ID] = time.Now()
 }
 
 func logSanitize(userValue string) string {

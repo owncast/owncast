@@ -816,8 +816,8 @@ func SetChatJoinMessagesEnabled(enabled bool) error {
 	return _datastore.SetBool(chatJoinMessagesEnabledKey, enabled)
 }
 
-// GetChatJoinMessagesEnabled will return if chat join messages are enabled.
-func GetChatJoinMessagesEnabled() bool {
+// GetChatJoinPartMessagesEnabled will return if chat join messages are enabled.
+func GetChatJoinPartMessagesEnabled() bool {
 	enabled, err := _datastore.GetBool(chatJoinMessagesEnabledKey)
 	if err != nil {
 		return true

@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	jsonpatch "gopkg.in/evanphx/json-patch.v5"
@@ -84,7 +85,7 @@ func TestPublicSend(t *testing.T) {
 
 // Make sure that events are only sent to interested endpoints.
 func TestRouting(t *testing.T) {
-	eventTypes := []models.EventType{models.ChatActionSent, models.UserJoined}
+	eventTypes := []models.EventType{models.ChatActionSent, models.UserJoined, events.UserParted}
 
 	calls := map[models.EventType]int{}
 	var lock sync.Mutex
