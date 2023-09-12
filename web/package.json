@@ -52,7 +52,7 @@
 		"regexpu-core": "^5.3.2",
 		"sanitize-html": "^2.11.0",
 		"sharp": "0.32.5",
-		"ua-parser-js": "1.0.35",
+		"ua-parser-js": "1.0.36",
 		"video.js": "^8.3.0",
 		"workbox-precaching": "^7.0.0",
 		"workbox-window": "^7.0.0",
