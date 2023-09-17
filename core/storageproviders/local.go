@@ -48,7 +48,7 @@ func (s *LocalStorage) MasterPlaylistWritten(localFilePath string) {
 
 	// If we're using a remote serving endpoint, we need to rewrite the master playlist
 	if s.host != "" {
-		if err := rewriteRemotePlaylist(localFilePath, s.host, ""); err != nil {
+		if err := rewritePlaylistLocations(localFilePath, s.host, ""); err != nil {
 			log.Warnln(err)
 		}
 	} else {
