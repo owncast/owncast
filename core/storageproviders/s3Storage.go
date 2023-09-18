@@ -117,8 +117,8 @@ func (s *S3Storage) SegmentWritten(localFilePath string) (string, int, error) {
 	// so the segments and the HLS playlist referencing
 	// them are in sync.
 	playlistPath := filepath.Join(filepath.Dir(localFilePath), "stream.m3u8")
-	playlistRemoteDestinationPath := s.GetRemoteDestinationPathFromLocalFilePath(playlistPath)
 
+	playlistRemoteDestinationPath := s.GetRemoteDestinationPathFromLocalFilePath(playlistPath)
 	if _, err := s.Save(playlistPath, playlistRemoteDestinationPath, 0); err != nil {
 		s.queuedPlaylistUpdates[playlistPath] = playlistPath
 		if pErr, ok := err.(*os.PathError); ok {
@@ -135,6 +135,10 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 	// We are uploading the variant playlist after uploading the segment
 	// to make sure we're not referring to files in a playlist that don't
 	// yet exist.  See SegmentWritten.
+	if s.s3PathPrefix != "" {
+		// Remove streamId from path
+		localFilePath = strings.Replace(localFilePath, s.streamId+"/", "", 1)
+	}
 	if _, ok := s.queuedPlaylistUpdates[localFilePath]; ok {
 		remoteDestinationPath := s.GetRemoteDestinationPathFromLocalFilePath(localFilePath)
 		if _, err := s.Save(localFilePath, remoteDestinationPath, 0); err != nil {
@@ -148,11 +152,11 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	// Rewrite the playlist to use absolute remote S3 URLs
-	pathPrefix := s.s3PathPrefix
-	if s.s3PathPrefix != "" {
-		pathPrefix = filepath.Join(s.s3PathPrefix, pathPrefix)
-	} else {
+	pathPrefix := ""
+	if s.s3PathPrefix == "" {
 		pathPrefix = filepath.Join("hls", s.streamId)
+	} else {
+		localFilePath = strings.Replace(localFilePath, s.streamId+"/", "", 1)
 	}
 	if err := rewriteRemotePlaylist(localFilePath, s.host, pathPrefix); err != nil {
 		log.Warnln(err)
@@ -169,9 +173,12 @@ func (s *S3Storage) Save(localFilePath, remoteDestinationPath string, retryCount
 
 	// Convert the local path to the variant/file path by stripping the local storage location.
 	normalizedPath := strings.TrimPrefix(localFilePath, config.HLSStoragePath)
+	if s.s3PathPrefix != "" {
+		// Remove streamId from path
+		normalizedPath = strings.Replace(normalizedPath, s.streamId+"/", "", 1)
+	}
 	// Build the remote path by adding the "hls" path prefix.
 	remotePath := strings.Join([]string{"hls", normalizedPath}, "")
-
 	// If a custom path prefix is set prepend it.
 	if s.s3PathPrefix != "" {
 		prefix := strings.TrimPrefix(s.s3PathPrefix, "/")
@@ -355,7 +362,6 @@ func (s *S3Storage) retrieveAllVideoSegments() ([]s3object, error) {
 func (s *S3Storage) GetRemoteDestinationPathFromLocalFilePath(localFilePath string) string {
 	// Convert the local path to the variant/file path by stripping the local storage location.
 	normalizedPath := strings.TrimPrefix(localFilePath, config.HLSStoragePath)
-
 	// Build the remote path by adding the "hls" path prefix.
 	remoteDestionationPath := strings.Join([]string{"hls", normalizedPath}, "")
 
