@@ -14,7 +14,6 @@ func TestFFmpegOmxCommand(t *testing.T) {
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = filepath.Join("fake", "path", "ffmpeg")
 	transcoder.SetInput("fakecontent.flv")
-	transcoder.SetOutputPath("fakeOutput")
 	transcoder.SetStreamID("jdFsdfzGg")
 	transcoder.SetInternalHTTPPort("8123")
 	transcoder.SetCodec(codec.Name())
