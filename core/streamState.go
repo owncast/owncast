@@ -67,7 +67,7 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 	setupVideoComponentsForId(streamId)
 	setupLiveTranscoderForId(streamId, rtmpOut)
 
-	go webhooks.SendStreamStatusEvent(models.StreamStarted)
+	go webhooks.SendStreamStatusEvent(models.StreamStarted, streamId)
 	segmentPath := filepath.Join(config.HLSStoragePath, streamId)
 	transcoder.StartThumbnailGenerator(segmentPath, data.FindHighestVideoQualityIndex(_currentBroadcast.OutputSettings))
 
@@ -126,7 +126,7 @@ func SetStreamAsDisconnected() {
 	stopOnlineCleanupTimer()
 	saveStats()
 
-	go webhooks.SendStreamStatusEvent(models.StreamStopped)
+	go webhooks.SendStreamStatusEvent(models.StreamStopped, _currentBroadcast.StreamID)
 }
 
 // StartOfflineCleanupTimer will fire a cleanup after n minutes being disconnected.
