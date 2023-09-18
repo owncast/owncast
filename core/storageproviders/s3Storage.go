@@ -148,9 +148,11 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	// Rewrite the playlist to use absolute remote S3 URLs
-	pathPrefix := filepath.Join("hls", s.streamId)
+	pathPrefix := s.s3PathPrefix
 	if s.s3PathPrefix != "" {
 		pathPrefix = filepath.Join(s.s3PathPrefix, pathPrefix)
+	} else {
+		pathPrefix = filepath.Join("hls", s.streamId)
 	}
 	if err := rewriteRemotePlaylist(localFilePath, s.host, pathPrefix); err != nil {
 		log.Warnln(err)
