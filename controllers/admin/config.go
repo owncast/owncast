@@ -12,6 +12,7 @@ import (
 
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/controllers"
+	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
@@ -75,8 +76,10 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if value != "" {
+		streamID := core.GetCurrentBroadcast().StreamID
+
 		sendSystemChatAction(fmt.Sprintf("Stream title changed to **%s**", value), true)
-		go webhooks.SendStreamStatusEvent(models.StreamTitleUpdated)
+		go webhooks.SendStreamStatusEvent(models.StreamTitleUpdated, streamID)
 	}
 	controllers.WriteSimpleResponse(w, true, "changed")
 }

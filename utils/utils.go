@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"math/rand"
 	"net/url"
 	"os"
@@ -67,7 +68,7 @@ func Copy(source, destination string) error {
 func Move(source, destination string) error {
 	err := os.Rename(source, destination)
 	if err != nil {
-		log.Warnln("Moving with os.Rename failed, falling back to copy and delete!", err)
+		log.Debugln("Moving with os.Rename failed, falling back to copy and delete!", err)
 		return moveFallback(source, destination)
 	}
 	return nil
@@ -303,10 +304,12 @@ func VerifyFFMpegPath(path string) error {
 }
 
 // CleanupDirectory removes the directory and makes it fresh again. Throws fatal error on failure.
-func CleanupDirectory(path string) {
-	log.Traceln("Cleaning", path)
-	if err := os.RemoveAll(path); err != nil {
-		log.Fatalln("Unable to remove directory. Please check the ownership and permissions", err)
+func CleanupDirectory(path string, keepOldFiles bool) {
+	if !keepOldFiles {
+		log.Traceln("Cleaning", path)
+		if err := os.RemoveAll(path); err != nil {
+			log.Fatalln("Unable to remove directory. Please check the ownership and permissions", err)
+		}
 	}
 	if err := os.MkdirAll(path, 0o750); err != nil {
 		log.Fatalln("Unable to create directory. Please check the ownership and permissions", err)
@@ -437,4 +440,24 @@ func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
 	}
 
 	return bytes, extension, nil
+}
+
+// RoundUpToNearest rounds up to the nearest number divisible.
+func RoundUpToNearest(x float32, to int) int {
+	xInt := int(math.Ceil(float64(x)))
+
+	if xInt%to == 0 {
+		return xInt
+	}
+	return xInt + to - xInt%to
+}
+
+// RoundDownToNearest rounds down to the nearest number divisible.
+func RoundDownToNearest(x float32, to int) int {
+	xInt := int(math.Floor(float64(x)))
+
+	if xInt%to == 0 {
+		return xInt
+	}
+	return xInt - xInt%to
 }

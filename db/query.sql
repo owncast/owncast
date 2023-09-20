@@ -108,3 +108,61 @@ UPDATE users SET display_name = $1, previous_names = previous_names || $2, namec
 
 -- name: ChangeDisplayColor :exec
 UPDATE users SET display_color = $1 WHERE id = $2;
+
+-- Recording and clip related queries.
+
+-- name: GetStreams :many
+SELECT id, stream_title, start_time, end_time FROM streams ORDER BY start_time DESC;
+
+-- name: GetStreamById :one
+SELECT id, stream_title, start_time, end_time FROM streams WHERE id = $1 LIMIT 1;
+
+-- name: GetOutputConfigurationsForStreamId :many
+SELECT id, stream_id, variant_id, name, segment_duration, bitrate, framerate, resolution_width, resolution_height FROM video_segment_output_configuration WHERE stream_id = $1;
+
+-- name: GetOutputConfigurationForId :one
+SELECT id, stream_id, variant_id, name, segment_duration, bitrate, framerate, resolution_width, resolution_height FROM video_segment_output_configuration WHERE id = $1;
+
+-- name: GetSegmentsForOutputId :many
+SELECT id, stream_id, output_configuration_id, path, timestamp FROM video_segments WHERE output_configuration_id = $1 ORDER BY timestamp ASC;
+
+-- name: GetSegmentsForOutputIdAndWindow :many
+SELECT id, stream_id, output_configuration_id, path, relative_timestamp, timestamp FROM video_segments WHERE output_configuration_id = $1 AND (cast ( relative_timestamp as int ) - ( relative_timestamp < cast ( relative_timestamp as int ))) >= @start_seconds::REAL AND (cast ( relative_timestamp as int ) + ( relative_timestamp > cast ( relative_timestamp as int ))) <= @end_seconds::REAL ORDER BY relative_timestamp ASC;
+
+-- name: InsertStream :exec
+INSERT INTO streams (id, stream_title, start_time, end_time) VALUES($1, $2, $3, $4);
+
+-- name: InsertOutputConfiguration :exec
+INSERT INTO video_segment_output_configuration (id, variant_id, stream_id, name, segment_duration, bitrate, framerate, resolution_width, resolution_height, timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+
+-- name: InsertSegment :exec
+INSERT INTO video_segments (id, stream_id, output_configuration_id, path, relative_timestamp, timestamp) VALUES($1, $2, $3, $4, $5, $6);
+
+-- name: SetStreamEnded :exec
+UPDATE streams SET end_time = $1 WHERE id = $2;
+
+-- name: InsertClip :exec
+INSERT INTO replay_clips (id, stream_id, clip_title, relative_start_time, relative_end_time, timestamp) VALUES($1, $2, $3, $4, $5, $6);
+
+-- name: GetAllClips :many
+SELECT rc.id AS id, rc.clip_title, rc.stream_id, rc.relative_start_time, rc.relative_end_time, (rc.relative_end_time - rc.relative_start_time) AS duration_seconds, rc.timestamp, s.stream_title AS stream_title
+	FROM replay_clips rc
+	JOIN streams s ON rc.stream_id = s.id
+	ORDER BY timestamp DESC;
+
+-- name: GetAllClipsForStream :many
+SELECT rc.id AS clip_id, rc.stream_id, rc.clipped_by, rc.clip_title, rc.relative_start_time, rc.relative_end_time, rc.timestamp,
+	s.id AS stream_id, s.stream_title AS stream_title
+	FROM replay_clips rc
+	JOIN streams s ON rc.stream_id = s.id
+	WHERE rc.stream_id = $1
+	ORDER BY timestamp DESC;
+
+-- name: GetClip :one
+SELECT id AS clip_id, stream_id, clipped_by, clip_title, timestamp AS clip_timestamp, relative_start_time, relative_end_time FROM replay_clips WHERE id = $1;
+
+-- name: GetFinalSegmentForStream :one
+SELECT id, stream_id, output_configuration_id, path, relative_timestamp, timestamp FROM video_segments WHERE stream_id = $1 ORDER BY relative_timestamp DESC LIMIT 1;
+
+-- name: FixUnfinishedStreams :exec
+UPDATE streams SET end_time = (SELECT timestamp FROM video_segments WHERE stream_id = streams.id) WHERE end_time IS NULL;

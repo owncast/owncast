@@ -28,6 +28,7 @@ var (
 	webServerPortOverride = flag.String("webserverport", "", "Force the web server to listen on a specific port")
 	webServerIPOverride   = flag.String("webserverip", "", "Force web server to listen on this IP address")
 	rtmpPortOverride      = flag.Int("rtmpport", 0, "Set listen port for the RTMP server")
+	enableReplayFeatures  = flag.Bool("enableReplayFeatures", false, "Enable experimental replay features")
 )
 
 // nolint:cyclop
@@ -41,6 +42,8 @@ func main() {
 	if *backupDirectory != "" {
 		config.BackupDirectory = *backupDirectory
 	}
+
+	config.EnableReplayFeatures = *enableReplayFeatures
 
 	// Create the data directory if needed
 	if !utils.DoesFileExists("data") {

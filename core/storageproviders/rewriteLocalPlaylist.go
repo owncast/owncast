@@ -25,14 +25,7 @@ func rewriteRemotePlaylist(localFilePath, remoteServingEndpoint, pathPrefix stri
 	}
 
 	for _, item := range p.Variants {
-		// Determine the final path to this playlist.
-		var finalPath string
-		if pathPrefix != "" {
-			finalPath = filepath.Join(pathPrefix, "/hls")
-		} else {
-			finalPath = "/hls"
-		}
-		item.URI = remoteServingEndpoint + filepath.Join(finalPath, item.URI)
+		item.URI = filepath.Join(remoteServingEndpoint, pathPrefix, item.URI)
 	}
 
 	publicPath := filepath.Join(config.HLSStoragePath, filepath.Base(localFilePath))
@@ -40,4 +33,30 @@ func rewriteRemotePlaylist(localFilePath, remoteServingEndpoint, pathPrefix stri
 	newPlaylist := p.String()
 
 	return playlist.WritePlaylist(newPlaylist, publicPath)
+}
+
+// rewriteLocalPlaylist will take a local master playlist and rewrite it to
+// refer to the path that includes the stream ID.
+func rewriteLocalPlaylist(localFilePath, streamID, destinationPath string) error {
+	f, err := os.Open(localFilePath) // nolint
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	p := m3u8.NewMasterPlaylist()
+	if err := p.DecodeFrom(bufio.NewReader(f), false); err != nil {
+		log.Warnln(err)
+	}
+
+	if streamID == "" {
+		log.Fatalln("stream id must be set when rewriting playlist contents")
+	}
+
+	for _, item := range p.Variants {
+		item.URI = filepath.Join("/hls", streamID, item.URI)
+	}
+
+	newPlaylist := p.String()
+
+	return playlist.WritePlaylist(newPlaylist, destinationPath)
 }
