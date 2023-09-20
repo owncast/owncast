@@ -117,6 +117,10 @@ func (s *S3Storage) SegmentWritten(localFilePath string) (string, int, error) {
 	// so the segments and the HLS playlist referencing
 	// them are in sync.
 	playlistPath := filepath.Join(filepath.Dir(localFilePath), "stream.m3u8")
+	if s.s3PathPrefix != "" {
+		// Remove streamId from path
+		playlistPath = strings.Replace(localFilePath, s.streamId+"/", "", 1)
+	}
 
 	playlistRemoteDestinationPath := s.GetRemoteDestinationPathFromLocalFilePath(playlistPath)
 	if _, err := s.Save(playlistPath, playlistRemoteDestinationPath, 0); err != nil {
