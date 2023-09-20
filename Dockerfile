@@ -33,5 +33,5 @@ COPY --from=build /build/owncast /app/owncast
 RUN mkdir /app/data
 RUN chown -R owncast:owncast /app
 USER owncast
-ENTRYPOINT ["/app/owncast", "-enableReplayFeatures"]
+ENTRYPOINT ["/app/owncast", "-enableReplayFeatures", "-enableVerboseLogging"]
 EXPOSE 8080 1935
