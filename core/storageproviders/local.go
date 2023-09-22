@@ -16,6 +16,7 @@ import (
 // LocalStorage represents an instance of the local storage provider for HLS video.
 type LocalStorage struct {
 	streamID string
+	host string
 }
 
 // NewLocalStorage returns a new LocalStorage instance.
@@ -30,6 +31,7 @@ func (s *LocalStorage) SetStreamId(streamID string) {
 
 // Setup configures this storage provider.
 func (s *LocalStorage) Setup() error {
+	s.host = data.GetVideoServingEndpoint()
 	return nil
 }
 
