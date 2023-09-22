@@ -12,8 +12,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// rewriteRemotePlaylist will take a local playlist and rewrite it to have absolute URLs to remote locations.
-func rewriteRemotePlaylist(localFilePath, remoteServingEndpoint, pathPrefix string) error {
+// rewritePlaylistLocations will take a local playlist and rewrite it to have absolute URLs to a specified location.
+func rewritePlaylistLocations(localFilePath, remoteServingEndpoint, pathPrefix string) error {
 	f, err := os.Open(localFilePath) // nolint
 	if err != nil {
 		log.Fatalln(err)
