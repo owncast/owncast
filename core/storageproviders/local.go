@@ -13,7 +13,9 @@ import (
 )
 
 // LocalStorage represents an instance of the local storage provider for HLS video.
-type LocalStorage struct{}
+type LocalStorage struct {
+	host string
+}
 
 // NewLocalStorage returns a new LocalStorage instance.
 func NewLocalStorage() *LocalStorage {
@@ -22,6 +24,7 @@ func NewLocalStorage() *LocalStorage {
 
 // Setup configures this storage provider.
 func (s *LocalStorage) Setup() error {
+	s.host = data.GetVideoServingEndpoint()
 	return nil
 }
 
@@ -42,8 +45,16 @@ func (s *LocalStorage) VariantPlaylistWritten(localFilePath string) {
 
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *LocalStorage) MasterPlaylistWritten(localFilePath string) {
-	if _, err := s.Save(localFilePath, 0); err != nil {
-		log.Warnln(err)
+
+	// If we're using a remote serving endpoint, we need to rewrite the master playlist
+	if s.host != "" {
+		if err := rewritePlaylistLocations(localFilePath, s.host, ""); err != nil {
+			log.Warnln(err)
+		}
+	} else {
+		if _, err := s.Save(localFilePath, 0); err != nil {
+			log.Warnln(err)
+		}
 	}
 }
 
