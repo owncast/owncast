@@ -45,7 +45,6 @@ func (s *LocalStorage) VariantPlaylistWritten(localFilePath string) {
 
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *LocalStorage) MasterPlaylistWritten(localFilePath string) {
-
 	// If we're using a remote serving endpoint, we need to rewrite the master playlist
 	if s.host != "" {
 		if err := rewritePlaylistLocations(localFilePath, s.host, ""); err != nil {
