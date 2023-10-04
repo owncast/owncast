@@ -35,7 +35,7 @@
 		"interweave": "^13.0.0",
 		"interweave-autolink": "^5.1.0",
 		"lodash": "4.17.21",
-		"next": "13.4.19",
+		"next": "13.5.4",
 		"next-pwa": "^5.6.0",
 		"next-with-less": "3.0.1",
 		"picmo": "5.8.5",
