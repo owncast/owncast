@@ -44,7 +44,7 @@ jobs:
           cache: true
 
       - name: Install Google Chrome
-        run: sudo apt-get install google-chrome-stable
+        run: sudo apt-get update && sudo apt-get install google-chrome-stable
 
       - name: Run Browser tests
         uses: nick-fields/retry@v2
