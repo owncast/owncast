@@ -24,7 +24,7 @@ jobs:
         uses: fkirc/skip-duplicate-actions@v5
         with:
           concurrent_skipping: 'same_content_newer'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-go@v4
         with:
           go-version: '1.20'

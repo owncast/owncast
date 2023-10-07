@@ -19,7 +19,7 @@ jobs:
     container:
       image: aquasec/trivy
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Check critical issues
         run: trivy config --exit-code 1 --severity "HIGH,CRITICAL" ./Dockerfile

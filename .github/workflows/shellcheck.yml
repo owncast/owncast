@@ -20,7 +20,7 @@ jobs:
     container:
       image: docker.io/ubuntu:23.10
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install shellcheck
         run: apt update && apt install -y shellcheck bash && shellcheck --version

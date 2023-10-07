@@ -20,7 +20,7 @@ jobs:
           concurrent_skipping: 'same_content_newer'
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - uses: actions/setup-node@v3
         with:

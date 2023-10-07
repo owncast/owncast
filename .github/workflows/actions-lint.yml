@@ -13,7 +13,7 @@ jobs:
     name: GitHub actions
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: docker://rhysd/actionlint:latest
         with:

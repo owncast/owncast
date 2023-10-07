@@ -29,7 +29,7 @@ jobs:
           skip_after_successful_duplicate: 'true'
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Make sure the actual branch is checked out when running on pull requests
           ref: ${{ github.event.pull_request.head.ref }}
@@ -101,7 +101,7 @@ jobs:
           skip_after_successful_duplicate: 'true'
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Make sure the actual branch is checked out when running on pull requests
           ref: ${{ github.event.pull_request.head.ref }}
@@ -155,7 +155,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Make sure the actual branch is checked out when running on pull requests
           ref: ${{ github.event.pull_request.head.ref }}

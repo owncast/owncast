@@ -32,7 +32,7 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: all
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Run API tests
         uses: nick-fields/retry@v2
