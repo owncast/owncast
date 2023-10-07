@@ -80,7 +80,7 @@
 		"@types/chart.js": "2.9.38",
 		"@types/classnames": "2.3.1",
 		"@types/jest": "^29.5.0",
-		"@types/markdown-it": "13.0.1",
+		"@types/markdown-it": "13.0.2",
 		"@types/node": "18.18.1",
 		"@types/prop-types": "15.7.8",
 		"@types/react": "18.2.21",
