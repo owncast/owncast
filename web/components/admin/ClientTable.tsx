@@ -41,7 +41,7 @@ export const ClientTable: FC<ClientTableProps> = ({ data }) => {
         <div style={{ padding: 8 }}>
           <Input
             placeholder="Search display names..."
-            value={selectedKeys[0]}
+            value={selectedKeys[0].toString()} // Convert selectedKeys[0] to string
             onChange={e => {
               setSelectedKeys(e.target.value ? [e.target.value] : []);
               confirm({ closeDropdown: false });
