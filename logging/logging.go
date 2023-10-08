@@ -34,7 +34,7 @@ func Setup(enableDebugOptions bool, enableVerboseLogging bool) {
 	// Create the logging directory if needed
 	loggingDirectory := filepath.Dir(getLogFilePath())
 	if !utils.DoesFileExists(loggingDirectory) {
-		if err := os.Mkdir(loggingDirectory, 0700); err != nil {
+		if err := os.Mkdir(loggingDirectory, 0o700); err != nil {
 			logger.Errorln("unable to create logs directory", loggingDirectory, err)
 		}
 	}

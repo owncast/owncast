@@ -35,14 +35,14 @@ type Server struct {
 	// unregister requests from clients.
 	unregister chan uint // the ChatClient id
 
-	geoipClient              *geoip.Client
+	geoipClient *geoip.Client
+
+	// a map of user IDs and timers that fire for chat part messages.
+	userPartedTimers         map[string]*time.Ticker
 	seq                      uint
 	maxSocketConnectionLimit int64
 
 	mu sync.RWMutex
-
-	// a map of user IDs and timers that fire for chat part messages.
-	userPartedTimers map[string]*time.Ticker
 }
 
 // NewChat will return a new instance of the chat server.

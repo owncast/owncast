@@ -20,7 +20,7 @@ func getPatternForRestEndpoint(pattern string) string {
 }
 
 func zip2D(iterable1 *[]string, iterable2 *[]string) map[string]string {
-	var dict = make(map[string]string)
+	dict := make(map[string]string)
 	for index, key := range *iterable1 {
 		dict[key] = (*iterable2)[index]
 	}

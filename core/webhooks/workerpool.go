@@ -18,9 +18,9 @@ var webhookWorkerPoolSize = runtime.GOMAXPROCS(0)
 
 // Job struct bundling the webhook and the payload in one struct.
 type Job struct {
-	webhook models.Webhook
-	payload WebhookEvent
 	wg      *sync.WaitGroup
+	payload WebhookEvent
+	webhook models.Webhook
 }
 
 var (
@@ -46,7 +46,7 @@ func initWorkerPool() {
 
 func addToQueue(webhook models.Webhook, payload WebhookEvent, wg *sync.WaitGroup) {
 	log.Tracef("Queued Event %s for Webhook %s", payload.Type, webhook.URL)
-	queue <- Job{webhook, payload, wg}
+	queue <- Job{wg, payload, webhook}
 }
 
 func worker(workerID int, queue <-chan Job) {

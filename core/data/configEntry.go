@@ -8,8 +8,8 @@ import (
 // ConfigEntry is the actual object saved to the database.
 // The Value is encoded using encoding/gob.
 type ConfigEntry struct {
-	Key   string
 	Value interface{}
+	Key   string
 }
 
 func (c *ConfigEntry) getStringSlice() ([]string, error) {

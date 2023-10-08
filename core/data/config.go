@@ -622,8 +622,8 @@ func VerifySettings() error {
 // FindHighestVideoQualityIndex will return the highest quality from a slice of variants.
 func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 	type IndexedQuality struct {
-		index   int
 		quality models.StreamOutputVariant
+		index   int
 	}
 
 	if len(qualities) < 2 {
@@ -632,7 +632,7 @@ func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 
 	indexedQualities := make([]IndexedQuality, 0)
 	for index, quality := range qualities {
-		indexedQuality := IndexedQuality{index, quality}
+		indexedQuality := IndexedQuality{quality, index}
 		indexedQualities = append(indexedQualities, indexedQuality)
 	}
 
