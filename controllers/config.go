@@ -17,25 +17,25 @@ import (
 
 type webConfigResponse struct {
 	AppearanceVariables  map[string]string            `json:"appearanceVariables"`
-	Notifications        notificationsConfigResponse  `json:"notifications"`
+	Name                 string                       `json:"name"`
 	CustomStyles         string                       `json:"customStyles"`
-	Summary              string                       `json:"summary"`
+	StreamTitle          string                       `json:"streamTitle,omitempty"` // What's going on with the current stream
 	OfflineMessage       string                       `json:"offlineMessage"`
 	Logo                 string                       `json:"logo"`
 	Version              string                       `json:"version"`
 	SocketHostOverride   string                       `json:"socketHostOverride,omitempty"`
 	ExtraPageContent     string                       `json:"extraPageContent"`
-	StreamTitle          string                       `json:"streamTitle,omitempty"` // What's going on with the current stream
-	Name                 string                       `json:"name"`
-	Federation           federationConfigResponse     `json:"federation"`
+	Summary              string                       `json:"summary"`
+	Tags                 []string                     `json:"tags"`
 	SocialHandles        []models.SocialHandle        `json:"socialHandles"`
 	ExternalActions      []models.ExternalAction      `json:"externalActions"`
-	Tags                 []string                     `json:"tags"`
+	Notifications        notificationsConfigResponse  `json:"notifications"`
+	Federation           federationConfigResponse     `json:"federation"`
 	MaxSocketPayloadSize int                          `json:"maxSocketPayloadSize"`
+	HideViewerCount      bool                         `json:"hideViewerCount"`
 	ChatDisabled         bool                         `json:"chatDisabled"`
 	NSFW                 bool                         `json:"nsfw"`
 	Authentication       authenticationConfigResponse `json:"authentication"`
-	HideViewerCount      bool                         `json:"hideViewerCount"`
 }
 
 type federationConfigResponse struct {

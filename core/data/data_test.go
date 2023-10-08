@@ -20,6 +20,8 @@ func TestString(t *testing.T) {
 	const testKey = "test string key"
 	const testValue = "test string value"
 
+	fmt.Println(testKey, testValue)
+
 	if err := _datastore.SetString(testKey, testValue); err != nil {
 		panic(err)
 	}
@@ -87,7 +89,7 @@ func TestCustomType(t *testing.T) {
 	}
 
 	// Save config entry to the database
-	if err := _datastore.Save(ConfigEntry{testKey, &testStruct}); err != nil {
+	if err := _datastore.Save(ConfigEntry{&testStruct, testKey}); err != nil {
 		t.Error(err)
 	}
 
@@ -119,7 +121,7 @@ func TestStringMap(t *testing.T) {
 	}
 
 	// Save config entry to the database
-	if err := _datastore.Save(ConfigEntry{testKey, &testMap}); err != nil {
+	if err := _datastore.Save(ConfigEntry{&testMap, testKey}); err != nil {
 		t.Error(err)
 	}
 

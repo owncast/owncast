@@ -11,7 +11,7 @@ func (ds *Datastore) GetStringSlice(key string) ([]string, error) {
 
 // SetStringSlice will set the string slice value for a key.
 func (ds *Datastore) SetStringSlice(key string, value []string) error {
-	configEntry := ConfigEntry{key, value}
+	configEntry := ConfigEntry{value, key}
 	return ds.Save(configEntry)
 }
 
@@ -26,7 +26,7 @@ func (ds *Datastore) GetString(key string) (string, error) {
 
 // SetString will set the string value for a key.
 func (ds *Datastore) SetString(key string, value string) error {
-	configEntry := ConfigEntry{key, value}
+	configEntry := ConfigEntry{value, key}
 	return ds.Save(configEntry)
 }
 
@@ -41,7 +41,7 @@ func (ds *Datastore) GetNumber(key string) (float64, error) {
 
 // SetNumber will set the numeric value for a key.
 func (ds *Datastore) SetNumber(key string, value float64) error {
-	configEntry := ConfigEntry{key, value}
+	configEntry := ConfigEntry{value, key}
 	return ds.Save(configEntry)
 }
 
@@ -56,7 +56,7 @@ func (ds *Datastore) GetBool(key string) (bool, error) {
 
 // SetBool will set the boolean value for a key.
 func (ds *Datastore) SetBool(key string, value bool) error {
-	configEntry := ConfigEntry{key, value}
+	configEntry := ConfigEntry{value, key}
 	return ds.Save(configEntry)
 }
 
@@ -71,6 +71,6 @@ func (ds *Datastore) GetStringMap(key string) (map[string]string, error) {
 
 // SetStringMap will set the string map value for a key.
 func (ds *Datastore) SetStringMap(key string, value map[string]string) error {
-	configEntry := ConfigEntry{key, value}
+	configEntry := ConfigEntry{value, key}
 	return ds.Save(configEntry)
 }

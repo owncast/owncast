@@ -28,23 +28,25 @@ type S3Storage struct {
 	streamId string
 	sess     *session.Session
 	s3Client *s3.S3
-	host     string
 
-	s3Endpoint        string
-	s3ServingEndpoint string
-	s3Region          string
-	s3Bucket          string
-	s3AccessKey       string
-	s3Secret          string
-	s3ACL             string
-	s3PathPrefix      string
-	s3ForcePathStyle  bool
+	uploader *s3manager.Uploader
 
 	// If we try to upload a playlist but it is not yet on disk
 	// then keep a reference to it here.
 	queuedPlaylistUpdates map[string]string
 
-	uploader *s3manager.Uploader
+	s3Bucket          string
+	s3Region          string
+	s3ServingEndpoint string
+	s3AccessKey       string
+	s3Secret          string
+	s3ACL             string
+	s3PathPrefix      string
+
+	s3Endpoint string
+	host       string
+
+	s3ForcePathStyle bool
 }
 
 // NewS3Storage returns a new S3Storage instance.
@@ -361,6 +363,6 @@ func (s *S3Storage) GetRemoteDestinationPathFromLocalFilePath(localFilePath stri
 }
 
 type s3object struct {
-	key          string
 	lastModified time.Time
+	key          string
 }

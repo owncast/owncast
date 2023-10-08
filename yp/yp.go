@@ -17,8 +17,10 @@ import (
 
 const pingInterval = 4 * time.Minute
 
-var getStatus func() models.Status
-var _inErrorState = false
+var (
+	getStatus     func() models.Status
+	_inErrorState = false
+)
 
 // YP is a service for handling listing in the Owncast directory.
 type YP struct {
