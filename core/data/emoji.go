@@ -17,9 +17,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var emojiCacheMu sync.Mutex
-var emojiCacheData = make([]models.CustomEmoji, 0)
-var emojiCacheModTime time.Time
+var (
+	emojiCacheMu      sync.Mutex
+	emojiCacheData    = make([]models.CustomEmoji, 0)
+	emojiCacheModTime time.Time
+)
 
 // UpdateEmojiList will update the cache (if required) and
 // return the modifiation time.

@@ -76,7 +76,7 @@ func (c *Client) fetchGeoForIP(ip string) *GeoDetails {
 		// If no country is available then exit
 		// If we believe this IP to be anonymous then no reason to report it
 		if record.Country.IsoCode != "" && !record.Traits.IsAnonymousProxy {
-			var regionName = "Unknown"
+			regionName := "Unknown"
 			if len(record.Subdivisions) > 0 {
 				if region, ok := record.Subdivisions[0].Names["en"]; ok {
 					regionName = region

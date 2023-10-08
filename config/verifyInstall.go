@@ -29,8 +29,8 @@ func VerifyFFMpegPath(path string) error {
 	}
 
 	mode := stat.Mode()
-	//source: https://stackoverflow.com/a/60128480
-	if mode&0111 == 0 {
+	// source: https://stackoverflow.com/a/60128480
+	if mode&0o111 == 0 {
 		return errors.New("ffmpeg path is not executable")
 	}
 
