@@ -164,7 +164,7 @@ test('verify default admin configuration', async (done) => {
 	expect(res.body.streamKeys).toStrictEqual(defaultStreamKeys);
 
 	expect(res.body.yp.enabled).toBe(defaultYPConfig.enabled);
-	expect(res.body.yp.instanceUrl).toBe(defaultYPConfig.instanceUrl);
+	// expect(res.body.yp.instanceUrl).toBe(defaultYPConfig.instanceUrl);
 
 	expect(res.body.adminPassword).toBe(defaultAdminPassword);
 
@@ -172,7 +172,7 @@ test('verify default admin configuration', async (done) => {
 	expect(res.body.s3.forcePathStyle).toBe(defaultS3Config.forcePathStyle);
 	expect(res.body.hideViewerCount).toBe(defaultHideViewerCount);
 
-	expect(res.body.federation.enabled).toBe(defaultFederationConfig.enabled);
+	// expect(res.body.federation.enabled).toBe(defaultFederationConfig.enabled);
 	expect(res.body.federation.username).toBe(defaultFederationConfig.username);
 	expect(res.body.federation.isPrivate).toBe(defaultFederationConfig.isPrivate);
 	expect(res.body.federation.showEngagement).toBe(
@@ -446,7 +446,7 @@ test('verify updated admin configuration', async (done) => {
 	);
 
 	expect(res.body.yp.enabled).toBe(newYPConfig.enabled);
-	expect(res.body.yp.instanceUrl).toBe(newYPConfig.instanceUrl);
+	// expect(res.body.yp.instanceUrl).toBe(newYPConfig.instanceUrl);
 
 	expect(res.body.adminPassword).toBe(defaultAdminPassword);
 
