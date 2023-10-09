@@ -374,9 +374,7 @@ export const ClientConfigStore: FC = () => {
       const { socketHostOverride } = clientConfig;
 
       // Get a copy of the browser location without #fragments.
-      const l = window.location;
-      l.hash = '';
-      const location = l.toString().replaceAll('#', '');
+      const location = window.location.origin + window.location.pathname;
       const host = socketHostOverride || location;
 
       ws = new WebsocketService(accessToken, '/ws', host);
