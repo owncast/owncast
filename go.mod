@@ -58,7 +58,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.23.9
 )
 
-require github.com/SherClockHolmes/webpush-go v1.2.0
+require github.com/SherClockHolmes/webpush-go v1.3.0
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
