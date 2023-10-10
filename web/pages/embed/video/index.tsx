@@ -79,7 +79,6 @@ export default function VideoEmbed() {
         online={online}
         initiallyMuted={initiallyMuted}
         title={streamTitle || name}
-        embedded
       />
       <Statusbar
         online={online}
