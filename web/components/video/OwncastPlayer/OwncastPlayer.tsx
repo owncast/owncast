@@ -299,10 +299,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
         />
       )}
     >
-      <div
-        className={classNames(styles.container, className)}
-        id="player"
-      >
+      <div className={classNames(styles.container, className)} id="player">
         {online && (
           <div className={styles.player}>
             <VideoJS options={videoJsOptions} onReady={handlePlayerReady} aria-label={title} />
