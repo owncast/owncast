@@ -227,7 +227,7 @@ export const Content: FC = () => {
             className={classnames([styles.topSectionElement, styles.centerSpinner])}
             style={{ height: '30vh' }}
           >
-            <Spin delay={2} size="large" tip="One moment..." />
+            <Spin delay={2} size="large" />
           </div>
         )}
         <Row>

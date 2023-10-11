@@ -66,7 +66,7 @@ export const Modal: FC<ModalProps> = ({
       onOk={handleOk}
       onCancel={handleCancel}
       afterClose={afterClose}
-      bodyStyle={modalContentBodyStyle}
+			styles={{body: modalContentBodyStyle}}
       width={width ?? defaultWidth}
       zIndex={999}
       footer={null}
@@ -88,7 +88,7 @@ export const Modal: FC<ModalProps> = ({
           {iframe && <div style={{ display: iframeDisplayStyle }}>{iframe}</div>}
           {children && <div className={styles.content}>{children}</div>}
           {loading && (
-            <Spin className={styles.spinner} spinning={loading} size="large" tip={title} />
+            <Spin className={styles.spinner} spinning={loading} size="large" />
           )}
         </div>
       </ErrorBoundary>

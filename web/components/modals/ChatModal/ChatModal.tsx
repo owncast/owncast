@@ -44,11 +44,8 @@ export const ChatModal: FC<ChatModalProps> = ({ messages, currentUser, handleClo
         maskClosable={false}
         footer={null}
         title={<UserDropdown id="chat-modal-user-menu" showToggleChatOption={false} />}
-        maskStyle={{
-          zIndex: 700,
-        }}
         className={styles.root}
-        bodyStyle={modalBodyStyle}
+        styles={{body: modalBodyStyle, mask: {zIndex: 700}}}
         wrapClassName={styles.modalWrapper}
         onCancel={handleClose}
       >
