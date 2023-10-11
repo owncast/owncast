@@ -157,7 +157,6 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
             </p>
             <div className="segment-slider-container">
               <Slider
-                tipFormatter={value => ENCODER_PRESET_TOOLTIPS[value]}
                 onChange={handleVideoCpuUsageLevelChange}
                 min={0}
                 max={Object.keys(ENCODER_PRESET_SLIDER_MARKS).length - 1}
@@ -165,6 +164,9 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
                 defaultValue={dataState.cpuUsageLevel}
                 value={dataState.cpuUsageLevel}
                 disabled={dataState.videoPassthrough}
+                tooltip={{
+                  formatter: value => ENCODER_PRESET_TOOLTIPS[value]
+                }}
               />
               <p className="selected-value-note">{cpuUsageNote()}</p>
             </div>
@@ -193,7 +195,6 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
             <p className="description">{VIDEO_BITRATE_DEFAULTS.tip}</p>
             <div className="segment-slider-container">
               <Slider
-                tipFormatter={value => `${value} ${VIDEO_BITRATE_DEFAULTS.unit}`}
                 disabled={dataState.videoPassthrough}
                 defaultValue={dataState.videoBitrate}
                 value={dataState.videoBitrate}
@@ -202,6 +203,9 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
                 min={VIDEO_BITRATE_DEFAULTS.min}
                 max={VIDEO_BITRATE_DEFAULTS.max}
                 marks={VIDEO_BITRATE_SLIDER_MARKS}
+                tooltip={{
+                  formatter: value => `${value} ${VIDEO_BITRATE_DEFAULTS.unit}`
+                }}
               />
               <p className="selected-value-note">{selectedVideoBRnote()}</p>
             </div>
@@ -315,7 +319,6 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
             <p className="description">{FRAMERATE_DEFAULTS.tip}</p>
             <div className="segment-slider-container">
               <Slider
-                tipFormatter={value => `${value} ${FRAMERATE_DEFAULTS.unit}`}
                 defaultValue={dataState.framerate}
                 value={dataState.framerate}
                 onChange={handleFramerateChange}
@@ -324,6 +327,9 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
                 max={FRAMERATE_DEFAULTS.max}
                 marks={FRAMERATE_SLIDER_MARKS}
                 disabled={dataState.videoPassthrough}
+                tooltip={{
+                  formatter: value => `${value} ${FRAMERATE_DEFAULTS.unit}`
+                }}
               />
               <p className="selected-value-note">{selectedFramerateNote()}</p>
             </div>
