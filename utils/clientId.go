@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"net"
 	"net/http"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -24,7 +25,13 @@ func GetIPAddressFromRequest(req *http.Request) string {
 	ipAddressString := req.RemoteAddr
 	xForwardedFor := req.Header.Get("X-FORWARDED-FOR")
 	if xForwardedFor != "" {
-		return xForwardedFor
+		clientIpString := strings.Split(xForwardedFor, ", ")[0]
+		ip, _, err := net.SplitHostPort(clientIpString)
+		if err != nil {
+			log.Errorln(err)
+			return ""
+		}
+		return ip
 	}
 
 	ip, _, err := net.SplitHostPort(ipAddressString)
