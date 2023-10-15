@@ -66,7 +66,7 @@ export const Modal: FC<ModalProps> = ({
       onOk={handleOk}
       onCancel={handleCancel}
       afterClose={afterClose}
-			styles={{body: modalContentBodyStyle}}
+      styles={{ body: modalContentBodyStyle }}
       width={width ?? defaultWidth}
       zIndex={999}
       footer={null}
@@ -87,9 +87,7 @@ export const Modal: FC<ModalProps> = ({
         <div id="modal-container" style={{ height: '100%' }}>
           {iframe && <div style={{ display: iframeDisplayStyle }}>{iframe}</div>}
           {children && <div className={styles.content}>{children}</div>}
-          {loading && (
-            <Spin className={styles.spinner} spinning={loading} size="large" />
-          )}
+          {loading && <Spin className={styles.spinner} spinning={loading} size="large" />}
         </div>
       </ErrorBoundary>
     </AntModal>

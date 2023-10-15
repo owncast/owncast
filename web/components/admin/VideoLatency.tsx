@@ -125,7 +125,7 @@ export const VideoLatency: FC = () => {
           defaultValue={selectedOption}
           value={selectedOption}
           tooltip={{
-            formatter: value => SLIDER_COMMENTS[value]
+            formatter: value => SLIDER_COMMENTS[value],
           }}
         />
         <p className="selected-value-note">{SLIDER_COMMENTS[selectedOption]}</p>
