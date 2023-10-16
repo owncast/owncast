@@ -1,12 +1,15 @@
 {
+	"ignoreExportsUsedInFile": true,
 	"ignore": [
 		"**/.eslintrc.js",
 		".storybook/**",
 		"**/*config.?s",
 		"**/*mock.?s",
 		"**/*fixture.?s",
+		"**/*stories.*",
 		"next-env.d.ts",
-		"public/**"
+		"public/**",
+		"tests/**"
 	],
 	"ignoreDependencies": [
 		"@fontsource/inter",
@@ -22,6 +25,7 @@
 		"workbox-precaching",
 		"workbox-window",
 		"@storybook/addon-a11y",
+		"@storybook/addon-actions",
 		"@storybook/addon-docs",
 		"@storybook/addon-essentials",
 		"@storybook/addon-links",
