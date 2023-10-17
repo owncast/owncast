@@ -24,8 +24,8 @@ export const ActionButton: FC<ActionButtonProps> = ({
       onClick={() => externalActionSelected(action)}
       style={{ backgroundColor: color }}
       title={description || title}
+			icon={icon && <img src={icon} className={styles.icon} alt={description} />}
     >
-      {icon && <img src={icon} className={styles.icon} alt={description} />}
       {title}
     </Button>
   );
