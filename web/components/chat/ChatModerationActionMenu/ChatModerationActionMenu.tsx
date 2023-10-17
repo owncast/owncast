@@ -1,4 +1,10 @@
-import { Dropdown, MenuProps, Space, message, Modal as AntModal } from 'antd';
+import {
+	Dropdown,
+	MenuProps,
+	message,
+	Modal as AntModal,
+	Button
+} from 'antd';
 import { FC, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Modal } from '../../ui/Modal/Modal';
@@ -104,11 +110,7 @@ export const ChatModerationActionMenu: FC<ChatModerationActionMenuProps> = ({
   return (
     <>
       <Dropdown menu={{ items }} trigger={['click']}>
-        <button type="button" onClick={e => e.preventDefault()}>
-          <Space>
-            <SmallDashOutlined />
-          </Space>
-        </button>
+        <Button type="default" onClick={e => e.preventDefault()} icon={<SmallDashOutlined />} />
       </Dropdown>
       <Modal
         title={userDisplayName}
