@@ -10,6 +10,10 @@
   border-radius: var(--theme-rounded-corners);
   background-color: var(--theme-color-background-main);
 
+	a {
+		text-decoration: none;
+	}
+
   &:hover {
     border-color: var(--theme-text-link);
   }
