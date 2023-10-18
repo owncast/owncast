@@ -95,7 +95,7 @@ The Owncast backend is a service written in Go.
 1. Ensure you have prerequisites installed.
    - C compiler, such as [GCC compiler](https://gcc.gnu.org/install/download.html) or a [Musl-compatible compiler](https://musl.libc.org/)
    - [ffmpeg](https://ffmpeg.org/download.html)
-1. Install the [Go toolchain](https://golang.org/dl/) (1.20 or above).
+1. Install the [Go toolchain](https://golang.org/dl/) (1.21 or above).
 1. Clone the repo. `git clone https://github.com/owncast/owncast`
 1. `go run main.go` will run from the source.
 1. Visit `http://yourserver:8080` to access the web interface or `http://yourserver:8080/admin` to access the admin.
