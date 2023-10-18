@@ -19,7 +19,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/teris-io/shortid v0.0.0-20160104014424-6c56cef5189c
 	github.com/yuin/goldmark v1.5.6
-	golang.org/x/mod v0.12.0
+	golang.org/x/mod v0.13.0
 	golang.org/x/time v0.3.0
 )
 
