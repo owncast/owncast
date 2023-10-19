@@ -26,14 +26,16 @@ func GetIPAddressFromRequest(req *http.Request) string {
 	xForwardedFor := req.Header.Get("X-FORWARDED-FOR")
 	if xForwardedFor != "" {
 		clientIpString := strings.Split(xForwardedFor, ", ")[0]
-		ip, _, err := net.SplitHostPort(clientIpString)
-		if err != nil {
-			log.Errorln(err)
-			return ""
+		if strings.Contains(clientIpString, ":") {
+			ip, _, err := net.SplitHostPort(clientIpString)
+			if err != nil {
+				log.Errorln(err)
+				return ""
+			}
+			return ip
 		}
-		return ip
+		return clientIpString
 	}
-
 	ip, _, err := net.SplitHostPort(ipAddressString)
 	if err != nil {
 		log.Errorln(err)
