@@ -115,7 +115,7 @@
 		"npm": "^10.0.0",
 		"postcss": "^8.4.31",
 		"prettier": "3.0.3",
-		"sass": "1.69.3",
+		"sass": "1.69.4",
 		"sass-loader": "13.3.2",
 		"sb": "6.5.16",
 		"storybook-addon-designs": "6.3.1",
