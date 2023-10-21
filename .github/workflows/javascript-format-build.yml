@@ -40,17 +40,13 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v39
         with:
+          path: 'web'
           files_ignore: |
             static/**
             web/next.config.js
           files_yaml: |
             src:
-              - 'web/**.js'
-              - 'web/**.ts'
-              - 'web/**.tsx'
-              - 'web/**.jsx'
-              - 'web/**.css'
-              - 'web/**.md'
+              - '**/*.{js,ts,tsx,jsx,css,md}'
 
       - name: Cache node modules
         uses: actions/cache@v3

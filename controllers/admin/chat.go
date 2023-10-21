@@ -31,6 +31,7 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method != controllers.POST {
+		// nolint:goconst
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}
