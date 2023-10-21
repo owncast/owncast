@@ -50,3 +50,5 @@ jobs:
           projectToken: f47410569b62
           # Skip onlyChanged for now because it's not detecting globals.scss updates
           onlyChanged: false
+          externals:
+            - 'web/styles/**'
