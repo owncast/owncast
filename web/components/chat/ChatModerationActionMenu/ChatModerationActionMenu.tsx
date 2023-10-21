@@ -1,10 +1,4 @@
-import {
-	Dropdown,
-	MenuProps,
-	message,
-	Modal as AntModal,
-	Button
-} from 'antd';
+import { Dropdown, MenuProps, message, Modal as AntModal, Button } from 'antd';
 import { FC, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Modal } from '../../ui/Modal/Modal';
