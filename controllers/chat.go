@@ -54,6 +54,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method != http.MethodPost {
+		// nolint:goconst
 		WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}
