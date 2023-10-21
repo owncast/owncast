@@ -69,10 +69,13 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 			return
 		}
 
-		authHeader := strings.Split(r.Header.Get("Authorization"), "Bearer ")
-		token := strings.Join(authHeader, "")
+		authHeader := r.Header.Get("Authorization")
+		token := ""
+		if strings.HasPrefix(strings.ToLower(authHeader), "bearer ") {
+			token = authHeader[len("bearer "):]
+		}
 
-		if len(authHeader) == 0 || token == "" {
+		if token == "" {
 			log.Warnln("invalid access token")
 			accessDenied(w)
 			return

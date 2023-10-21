@@ -83,7 +83,7 @@ test('send a system message using access token', async (done) => {
 	};
 	const res = await request
 		.post('/api/integrations/chat/system')
-		.set('Authorization', 'Bearer ' + accessToken)
+		.set('Authorization', 'bearer ' + accessToken)
 		.send(payload)
 		.expect(200);
 	done();
