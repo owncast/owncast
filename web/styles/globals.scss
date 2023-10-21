@@ -37,7 +37,7 @@
 }
 
 *, ::before, ::after {
-	box-sizing: border-box;
+	box-sizing: border-box; // Imported from Ant Design v4
 }
 
 html {
@@ -46,7 +46,7 @@ html {
 
 body {
   font-family: var(--theme-text-body-font-family);
-  line-height: 1.5715;
+  line-height: 1.5715; // Imported from Ant Design v4
   font-weight: 300;
   margin: 0;
   background-color: var(--theme-color-background-main);
