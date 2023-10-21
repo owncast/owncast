@@ -11,7 +11,6 @@ export type ChatUserBadgeProps = {
 export const ChatUserBadge: FC<ChatUserBadgeProps> = ({ badge, userColor, title }) => {
   const color = `var(--theme-color-users-${userColor})`;
   const style = { color };
-	// Force re-test
 
   return (
     <span style={style} className={cn([styles.badge, 'chat-user-badge'])} title={title}>
