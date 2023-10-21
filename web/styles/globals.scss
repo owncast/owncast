@@ -36,6 +36,10 @@
   background-color: var(--theme-color-palette-12);
 }
 
+*, ::before, ::after {
+	box-sizing: border-box;
+}
+
 html {
   font-size: clamp(15px, 1.35vw, 16px);
 }
