@@ -22,6 +22,22 @@ export const ChatModal: FC<ChatModalProps> = ({ messages, currentUser, handleClo
   }
   const { id, displayName, isModerator } = currentUser;
 
+  const modalWrapperStyle = {
+    zIndex: 799,
+    top: 'unset',
+  };
+
+  const modalContentStyle = {
+    padding: 0,
+  };
+
+  const modalHeaderStyle = {
+    padding: '16px 24px',
+    background: 'var(--theme-color-components-modal-header-background)',
+    margin: 0,
+    borderBottom: '1px solid #f0f0f0',
+  };
+
   const modalBodyStyle = {
     padding: '0px',
     height: '55vh',
@@ -45,7 +61,13 @@ export const ChatModal: FC<ChatModalProps> = ({ messages, currentUser, handleClo
         footer={null}
         title={<UserDropdown id="chat-modal-user-menu" showToggleChatOption={false} />}
         className={styles.root}
-        styles={{ body: modalBodyStyle, mask: { zIndex: 700 } }}
+        styles={{
+          header: modalHeaderStyle,
+          body: modalBodyStyle,
+          mask: { zIndex: 700 },
+          content: modalContentStyle,
+          wrapper: modalWrapperStyle,
+        }}
         wrapClassName={styles.modalWrapper}
         onCancel={handleClose}
       >
