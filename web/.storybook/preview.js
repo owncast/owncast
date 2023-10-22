@@ -5,7 +5,6 @@ import './preview.scss';
 import { themes } from '@storybook/theming';
 import { DocsContainer } from './storybook-theme';
 import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
-import _ from 'lodash';
 
 /**
  * Takes an entry of a viewport (from Object.entries()) and converts it
@@ -75,7 +74,6 @@ export const parameters = {
   docs: {
     container: DocsContainer,
   },
-  actions: { argTypesRegex: '^on[A-Z].*' },
   viewMode: 'docs',
   controls: {
     matchers: {
