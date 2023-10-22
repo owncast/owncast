@@ -45,12 +45,16 @@ func UpdateEmojiList(force bool) (time.Time, error) {
 			if force {
 				emojiCacheModTime = time.Now()
 			}
+
 			emojiFS := os.DirFS(config.CustomEmojiPath)
+			if emojiFS == nil {
+				return modTime, fmt.Errorf("unable to open custom emoji directory")
+			}
 
 			emojiCacheData = make([]models.CustomEmoji, 0)
 
 			walkFunction := func(path string, d os.DirEntry, err error) error {
-				if d.IsDir() {
+				if d == nil || d.IsDir() {
 					return nil
 				}
 
