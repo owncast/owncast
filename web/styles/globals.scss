@@ -48,6 +48,8 @@ body {
   font-family: var(--theme-text-body-font-family);
   line-height: 1.5715; // Imported from Ant Design v4
 	font-size: 14px; // Imported from Ant Design v4
+	font-variant: normal; // Imported from Ant Design v4
+	font-feature-settings: "tnum"; // Imported from Ant Design v4
   font-weight: 300;
   margin: 0;
   background-color: var(--theme-color-background-main);
