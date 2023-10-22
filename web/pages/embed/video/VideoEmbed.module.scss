@@ -1,8 +1,6 @@
 .onlineContainer {
-  height: 96vh;
+  height: 100vh;
   background-color: var(--theme-color-components-video-status-bar-background);
-
-  @media only screen and (width <= 768px) {
-    height: 100vh;
-  }
+	display: flex;
+	flex-direction: column;
 }
