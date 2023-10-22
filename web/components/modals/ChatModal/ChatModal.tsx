@@ -66,6 +66,10 @@ export const ChatModal: FC<ChatModalProps> = ({ messages, currentUser, handleClo
           body: modalBodyStyle,
           mask: { zIndex: 700 },
           content: modalContentStyle,
+          // styles.wrapper was added recently (5.10.0) and wrapClassName isn't working
+          // So, using ts-ignore for now until the documentation/implementation mismatch is resolved
+          // Reported Ant Design issue: https://github.com/ant-design/ant-design/issues/45481
+          // @ts-ignore
           wrapper: modalWrapperStyle,
         }}
         wrapClassName={styles.modalWrapper}
