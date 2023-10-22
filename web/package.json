@@ -86,7 +86,7 @@
 		"@types/react": "18.2.29",
 		"@types/react-linkify": "1.0.3",
 		"@types/sanitize-html": "^2.9.0",
-		"@types/ua-parser-js": "0.7.37",
+		"@types/ua-parser-js": "0.7.38",
 		"@types/video.js": "^7.3.50",
 		"@typescript-eslint/eslint-plugin": "6.8.0",
 		"@typescript-eslint/parser": "6.8.0",
