@@ -35,9 +35,10 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
+          persist-credentials: true
 
       - name: Get changed files
-        id: changed-files
+        id: changed-files-yaml
         uses: tj-actions/changed-files@v39
         with:
           path: 'web'
