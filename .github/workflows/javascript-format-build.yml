@@ -35,9 +35,10 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
+          persist-credentials: true
 
       - name: Get changed files
-        id: changed-files
+        id: changed-files-yaml
         uses: tj-actions/changed-files@v39
         with:
           path: 'web'
@@ -64,21 +65,21 @@ jobs:
         run: npm install
 
       - name: Lint
-        if: steps.changed-files.outputs.src_any_changed == 'true'
-        run: npx eslint --fix ${{ steps.changed-files.outputs.src_all_changed_files }}
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        run: npx eslint --fix ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
 
       - name: Prettier
-        if: steps.changed-files.outputs.src_any_changed == 'true'
-        run: npx prettier --write ${{ steps.changed-files.outputs.src_all_changed_files }}
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        run: npx prettier --write ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
 
       - name: Commit changes
-        if: steps.changed-files.outputs.src_any_changed == 'true'
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         uses: EndBug/add-and-commit@v9
         with:
           author_name: Owncast
           author_email: owncast@owncast.online
           message: 'Javascript formatting autofixes'
-          add: ${{ steps.changed-files.outputs.src_all_changed_files }}
+          add: ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
           pull: '--rebase --autostash'
 
   unused-code:
