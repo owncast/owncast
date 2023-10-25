@@ -49,7 +49,7 @@ const ActionButtons: FC<ActionButtonProps> = ({
   ));
 
   return (
-    <>
+    <div className={styles.actionButtonsContainer}>
       <div className={styles.desktopActionButtons}>
         <ActionButtonRow>
           {externalActionButtons}
@@ -82,7 +82,7 @@ const ActionButtons: FC<ActionButtonProps> = ({
           />
         )}
       </div>
-    </>
+    </div>
   );
 };
 
