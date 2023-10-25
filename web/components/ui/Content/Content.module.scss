@@ -58,6 +58,13 @@
   color: var(--theme-color-palette-4);
 }
 
+.actionButtonsContainer {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
 .mobileActionButtons {
   display: none;
 
