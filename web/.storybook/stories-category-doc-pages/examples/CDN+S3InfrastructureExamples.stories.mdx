@@ -1,5 +1,5 @@
 import { Mermaid } from 'mdx-mermaid/Mermaid';
-import { Canvas, Meta, Story, Description } from '@storybook/addon-docs';
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
 <Meta
   title="owncast/Documentation/Infrastructure Examples/S3 With CDN Example"
@@ -9,14 +9,10 @@ import { Canvas, Meta, Story, Description } from '@storybook/addon-docs';
   }}
 />
 
-<Description
-  markdown={`
 ## CDN in front of S3 Object Storage
 
 If you're using a S3 provider but would like to increase the speed of your video delivery to your clients around the world, you can use a CDN in front of your S3 provider.
 This leads to not only your server not serving any video traffic, but the video traffic would be distributed globally so each client player would be pulling video from somewhere geographically closer, reducing the likelihood of buffering and slower network requests.
-
-`} />
 
 <Mermaid
   chart={`flowchart TD

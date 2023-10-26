@@ -1,4 +1,4 @@
-import { Canvas, Meta, Story, ColorPalette, ColorItem, Description } from '@storybook/addon-docs';
+import { Canvas, Meta, Story, ColorPalette, ColorItem } from '@storybook/addon-docs';
 import { ColorRow, getColor } from './Color';
 
 <Meta
@@ -8,14 +8,9 @@ import { ColorRow, getColor } from './Color';
     chromatic: { disableSnapshot: true },
   }}
 />
-
-<Description markdown={`
-  
 ## User Colors
 
 These are the colors available for assigning to chat users for display purposes. The CSS variables can be overwritten for customizing the theme.
-
-`}/>
 
 <ColorPalette>
   <ColorItem title="User Color 0" colors={{ ...getColor('theme-color-users-0') }} />

@@ -75,6 +75,12 @@
 		"stylelint-config-standard",
 		"stylelint-config-standard-scss",
 		"postcss",
-		"stylelint"
+		"stylelint",
+		"@babel/core",
+		"@storybook/addon-mdx-gfm",
+		"@storybook/addon-styling-webpack",
+		"@storybook/nextjs",
+		"@storybook/react",
+		"resolve-url-loader",
 	]
 }

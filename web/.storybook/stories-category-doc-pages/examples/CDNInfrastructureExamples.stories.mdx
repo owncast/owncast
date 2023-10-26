@@ -1,5 +1,5 @@
 import { Mermaid } from 'mdx-mermaid/Mermaid';
-import { Canvas, Meta, Story, Description } from '@storybook/addon-docs';
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
 <Meta
   title="owncast/Documentation/Infrastructure Examples/CDN Example"
@@ -9,12 +9,9 @@ import { Canvas, Meta, Story, Description } from '@storybook/addon-docs';
   }}
 />
 
-<Description
-  markdown={`
 ## CDN in front of Owncast
 
 If you're ok with some video requests coming directly to your Owncast server, and want to generally increase the overall speed that your viewers globally access all your Owncast assets, including video and the web interface, you can put a CDN in front of your entire Owncast server.
-`} />
 
 <Mermaid
   chart={`flowchart TD
