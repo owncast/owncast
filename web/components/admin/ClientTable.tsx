@@ -37,18 +37,23 @@ export const ClientTable: FC<ClientTableProps> = ({ data }) => {
       sorter: (a: any, b: any) => b.user.displayName.localeCompare(a.user.displayName),
       filterIcon: <SearchOutlined />,
       // eslint-disable-next-line react/no-unstable-nested-components
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }: FilterDropdownProps) => (
-        <div style={{ padding: 8 }}>
-          <Input
-            placeholder="Search display names..."
-            value={selectedKeys[0].toString()} // Convert selectedKeys[0] to string
-            onChange={e => {
-              setSelectedKeys(e.target.value ? [e.target.value] : []);
-              confirm({ closeDropdown: false });
-            }}
-          />
-        </div>
-      ),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }: FilterDropdownProps) => {
+        if (selectedKeys.length === 0) {
+          return null;
+        }
+        return (
+          <div style={{ padding: 8 }}>
+            <Input
+              placeholder="Search display names..."
+              value={selectedKeys[0].toString()} // Convert selectedKeys[0] to string
+              onChange={e => {
+                setSelectedKeys(e.target.value ? [e.target.value] : []);
+                confirm({ closeDropdown: false });
+              }}
+            />
+          </div>
+        );
+      },
       onFilter: (value: string, record: Client) => record.user.displayName.includes(value),
       sortDirections: ['descend', 'ascend'] as SortOrder[],
     },
