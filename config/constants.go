@@ -8,7 +8,7 @@ const (
 	// FfmpegSuggestedVersion is the version of ffmpeg we suggest.
 	FfmpegSuggestedVersion = "v4.1.5" // Requires the v
 	// DataDirectory is the directory we save data to.
-	DataDirectory = "data"
+	DataDirectory = "/tmp/data"
 	// EmojiDir defines the URL route prefix for emoji requests.
 	EmojiDir = "/img/emoji/"
 	// MaxUserColor is the largest color value available to assign to users.
