@@ -1,16 +1,15 @@
 module.exports = {
-  core: {
-    builder: 'webpack5',
-  },
   features: {
     previewMdx2: true,
   },
+
   stories: [
     '../.storybook/stories-category-doc-pages/**/*.stories.mdx',
     '../stories/**/*.stories.@(js|jsx|ts|tsx)',
     '../components/**/*.stories.@(js|jsx|ts|tsx)',
     '../pages/**/*.stories.@(js|jsx|ts|tsx)',
   ],
+
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
@@ -19,7 +18,10 @@ module.exports = {
     '@storybook/addon-a11y',
     'storybook-addon-designs',
     'storybook-addon-fetch-mock',
+    '@storybook/addon-mdx-gfm',
+    '@storybook/addon-styling-webpack'
   ],
+
   webpackFinal: async (config, { configType }) => {
     // @see https://github.com/storybookjs/storybook/issues/9070
     const fileLoaderRule = config.module.rules.find(rule => rule.test && rule.test.test('.svg'));
@@ -47,6 +49,15 @@ module.exports = {
 
     return config;
   },
-  framework: '@storybook/react',
+
+  framework: {
+    name: '@storybook/nextjs',
+    options: {}
+  },
+
   staticDirs: ['../public', '../../static', './story-assets'],
+
+  docs: {
+    autodocs: true
+  }
 };
