@@ -24,9 +24,11 @@ func rewriteRemotePlaylist(localFilePath, remoteServingEndpoint, pathPrefix stri
 		log.Warnln(err)
 	}
 
-	for _, item := range p.Variants {
-		item.URI = filepath.Join(remoteServingEndpoint, pathPrefix, item.URI)
-	}
+	// We want to use relative pathing. Removing this for now
+	// for _, item := range p.Variants {
+	// item.URI = filepath.Join(remoteServingEndpoint, pathPrefix, item.URI)
+	// item.URI = filepath.Join(pathPrefix, item.URI)
+	// }
 
 	publicPath := filepath.Join(config.HLSStoragePath, filepath.Base(localFilePath))
 

@@ -110,18 +110,18 @@ func transitionToOfflineVideoStreamContent() {
 	_transcoder.SetLatencyLevel(models.GetLatencyLevel(4))
 	_transcoder.SetIsEvent(true)
 
-	offlineFilePath, err := saveOfflineClipToDisk("offline.ts")
-	if err != nil {
-		log.Fatalln("unable to save offline clip:", err)
-	}
+	// offlineFilePath, err := saveOfflineClipToDisk("offline.ts")
+	// if err != nil {
+	// 	log.Fatalln("unable to save offline clip:", err)
+	// }
 
-	_transcoder.SetInput(offlineFilePath)
-	go _transcoder.Start(false)
+	// _transcoder.SetInput(offlineFilePath)
+	// go _transcoder.Start(false)
 
 	// Copy the logo to be the thumbnail
 	logo := data.GetLogoPath()
 	dst := filepath.Join(config.TempDir, "thumbnail.jpg")
-	if err = utils.Copy(filepath.Join("data", logo), dst); err != nil {
+	if err := utils.Copy(filepath.Join("data", logo), dst); err != nil {
 		log.Warnln(err)
 	}
 

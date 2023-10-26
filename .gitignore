@@ -46,3 +46,4 @@ web/style-definitions/build/
 
 web/public/sw.js
 web/public/workbox-*.js
+.DS_Store
