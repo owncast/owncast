@@ -14,12 +14,89 @@ module.exports = {
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@storybook/preset-scss',
-    '@storybook/addon-postcss',
     '@storybook/addon-a11y',
-    'storybook-addon-designs',
     'storybook-addon-fetch-mock',
     '@storybook/addon-mdx-gfm',
-    '@storybook/addon-styling-webpack'
+    '@storybook/addon-styling-webpack',
+    {
+      name: '@storybook/addon-styling-webpack',
+
+      options: {
+        rules: [
+          {
+            test: /\.css$/,
+            sideEffects: true,
+            use: [
+              require.resolve('style-loader'),
+              {
+                loader: require.resolve('css-loader'),
+                options: {
+                  // Want to add more CSS Modules options? Read more here: https://github.com/webpack-contrib/css-loader#modules
+                  modules: {
+                    auto: true,
+                  },
+                },
+              },
+            ],
+          },
+          {
+            test: /\.s[ac]ss$/,
+            sideEffects: true,
+            use: [
+              require.resolve('style-loader'),
+              {
+                loader: require.resolve('css-loader'),
+                options: {
+                  // Want to add more CSS Modules options? Read more here: https://github.com/webpack-contrib/css-loader#modules
+                  modules: {
+                    auto: true,
+                  },
+                  importLoaders: 2,
+                },
+              },
+              require.resolve('resolve-url-loader'),
+              {
+                loader: require.resolve('sass-loader'),
+                options: {
+                  // Want to add more Sass options? Read more here: https://webpack.js.org/loaders/sass-loader/#options
+                  implementation: require.resolve('sass'),
+                  sourceMap: true,
+                  sassOptions: {},
+                },
+              },
+            ],
+          },
+          {
+            test: /\.less$/,
+            sideEffects: true,
+            use: [
+              require.resolve('style-loader'),
+              {
+                loader: require.resolve('css-loader'),
+                options: {
+                  // Want to add more CSS Modules options? Read more here: https://github.com/webpack-contrib/css-loader#modules
+                  modules: {
+                    auto: true,
+                  },
+                  importLoaders: 1,
+                },
+              },
+              {
+                loader: require.resolve('less-loader'),
+                options: {
+                  // Want to add more Less options? Read more here: https://webpack.js.org/loaders/less-loader/#options
+                  implementation: require.resolve('less'),
+                  sourceMap: true,
+                  lessOptions: {
+                    javascriptEnabled: true,
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
   ],
 
   webpackFinal: async (config, { configType }) => {
@@ -33,31 +110,31 @@ module.exports = {
       use: ['@svgr/webpack'],
     });
 
-    config.module.rules.push({
-      test: /\.less$/,
-      use: [
-        require.resolve('style-loader'),
-        require.resolve('css-loader'),
-        {
-          loader: require.resolve('less-loader'),
-          options: {
-            lessOptions: { javascriptEnabled: true },
-          },
-        },
-      ],
-    });
+    // config.module.rules.push({
+    //   test: /\.less$/,
+    //   use: [
+    //     require.resolve('style-loader'),
+    //     require.resolve('css-loader'),
+    //     {
+    //       loader: require.resolve('less-loader'),
+    //       options: {
+    //         lessOptions: { javascriptEnabled: true },
+    //       },
+    //     },
+    //   ],
+    // });
 
     return config;
   },
 
   framework: {
     name: '@storybook/nextjs',
-    options: {}
+    options: {},
   },
 
   staticDirs: ['../public', '../../static', './story-assets'],
 
   docs: {
-    autodocs: true
-  }
+    autodocs: true,
+  },
 };
