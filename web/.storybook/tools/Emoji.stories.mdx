@@ -1,4 +1,4 @@
-import { Canvas, Meta, Story, Description, IconGallery, IconItem } from '@storybook/addon-docs';
+import { Canvas, Meta, Story, IconGallery, IconItem } from '@storybook/addon-docs';
 import { Image, ImageRow } from './ImageAsset';
 
 <Meta title="owncast/Frontend Assets/Emoji" parameters=\{{previewTabs: { canvas: { hidden: true } }, chromatic: { disableSnapshot: true }}} />
@@ -7,14 +7,11 @@ import { Image, ImageRow } from './ImageAsset';
 
 {{#each emojiCollections}}
 
-<Description
-  markdown={`
 ## {{capitalize this.name}}
 
 <a href="img/emoji/{{this.name}}/LICENSE.md" target="_blank">
   LICENSE
 </a>
-`} />
 
     <IconGallery>
     		{{#each images}}
