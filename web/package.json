@@ -56,7 +56,7 @@
 		"video.js": "^8.3.0",
 		"workbox-precaching": "^7.0.0",
 		"workbox-window": "^7.0.0",
-		"xstate": "4.38.2",
+		"xstate": "4.38.3",
 		"yaml": "2.3.3"
 	},
 	"devDependencies": {
