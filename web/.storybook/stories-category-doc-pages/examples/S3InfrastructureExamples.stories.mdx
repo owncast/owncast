@@ -1,5 +1,5 @@
 import { Mermaid } from 'mdx-mermaid/Mermaid';
-import { Canvas, Meta, Story, Description } from '@storybook/addon-docs';
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
 <Meta
   title="owncast/Documentation/Infrastructure Examples/S3 Example"
@@ -9,13 +9,10 @@ import { Canvas, Meta, Story, Description } from '@storybook/addon-docs';
   }}
 />
 
-<Description
-  markdown={`
 ## S3 Object Storage
 
 If you would like no video traffic to take place from your Owncast server to your clients, you can use S3 Object Storage to be responsible for this instead.
 Instead of video players pulling the stream from your Owncast server it would instead make these requests to a S3 provider, and Owncast would upload video to this provider to make it available.
-`} />
 
 <Mermaid
   chart={`graph TD

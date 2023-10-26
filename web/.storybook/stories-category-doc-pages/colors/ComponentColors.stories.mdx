@@ -1,4 +1,4 @@
-import { Canvas, Meta, Story, ColorPalette, ColorItem, Description } from '@storybook/addon-docs';
+import { Canvas, Meta, Story, ColorPalette, ColorItem } from '@storybook/addon-docs';
 import { ColorRow, getColor } from './Color';
 
 <Meta
@@ -9,13 +9,9 @@ import { ColorRow, getColor } from './Color';
   }}
 />
 
-<Description markdown={`
-  
 ## Component Colors
 
 These are the specific colors used for components in the web application. They point to colors in the Owncast color palette but CSS variable names can be overwritten for customizing the theme.
-
-`}/>
 
 <ColorPalette>
   <ColorItem
