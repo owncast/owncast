@@ -1103,7 +1103,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ConfigValue'
-            example: '# Welcome to my cool server!<br><br>I _hope_ you enjoy it.'
+            example:
+              value: '# Welcome to my cool server!<br><br>I _hope_ you enjoy it.'
 
   /api/admin/config/streamtitle:
     post:
