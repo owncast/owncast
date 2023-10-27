@@ -3,9 +3,11 @@ package core
 import (
 	"context"
 	"io"
+	"path/filepath"
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/teris-io/shortid"
 
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/config"
@@ -39,36 +41,34 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 	_stats.LastConnectTime = &now
 	_stats.SessionMaxViewerCount = 0
 
+	streamId := shortid.MustGenerate()
+	fileWriter.SetStreamID(streamId)
+
 	_currentBroadcast = &models.CurrentBroadcast{
+		StreamID:       streamId,
 		LatencyLevel:   data.GetStreamLatencyLevel(),
 		OutputSettings: data.GetStreamOutputVariants(),
 	}
 
 	StopOfflineCleanupTimer()
-	startOnlineCleanupTimer()
+
+	if !config.EnableReplayFeatures {
+		startOnlineCleanupTimer()
+	}
 
 	if _yp != nil {
 		go _yp.Start()
 	}
 
-	segmentPath := config.HLSStoragePath
-
 	if err := setupStorage(); err != nil {
 		log.Fatalln("failed to setup the storage", err)
 	}
 
-	go func() {
-		_transcoder = transcoder.NewTranscoder()
-		_transcoder.TranscoderCompleted = func(error) {
-			SetStreamAsDisconnected()
-			_transcoder = nil
-			_currentBroadcast = nil
-		}
-		_transcoder.SetStdin(rtmpOut)
-		_transcoder.Start(true)
-	}()
+	setupVideoComponentsForId(streamId)
+	setupLiveTranscoderForId(streamId, rtmpOut)
 
-	go webhooks.SendStreamStatusEvent(models.StreamStarted)
+	go webhooks.SendStreamStatusEvent(models.StreamStarted, streamId)
+	segmentPath := filepath.Join(config.HLSStoragePath, streamId)
 	transcoder.StartThumbnailGenerator(segmentPath, data.FindHighestVideoQualityIndex(_currentBroadcast.OutputSettings))
 
 	_ = chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
@@ -100,6 +100,7 @@ func SetStreamAsDisconnected() {
 		return
 	}
 
+	handler.StreamEnded()
 	transcoder.StopThumbnailGenerator()
 	rtmp.Disconnect()
 
@@ -118,14 +119,14 @@ func SetStreamAsDisconnected() {
 	}
 
 	for index := range _currentBroadcast.OutputSettings {
-		makeVariantIndexOffline(index, offlineFilePath, offlineFilename)
+		makeVariantIndexOffline(_currentBroadcast.StreamID, index, offlineFilePath, offlineFilename)
 	}
 
 	StartOfflineCleanupTimer()
 	stopOnlineCleanupTimer()
 	saveStats()
 
-	go webhooks.SendStreamStatusEvent(models.StreamStopped)
+	go webhooks.SendStreamStatusEvent(models.StreamStopped, _currentBroadcast.StreamID)
 }
 
 // StartOfflineCleanupTimer will fire a cleanup after n minutes being disconnected.

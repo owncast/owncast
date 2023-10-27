@@ -96,13 +96,13 @@ func handleTranscoderMessage(message string) {
 	_lastTranscoderLogMessage = message
 }
 
-func createVariantDirectories() {
+func createVariantDirectories(streamID string) {
 	// Create private hls data dirs
-	utils.CleanupDirectory(config.HLSStoragePath)
+	utils.CleanupDirectory(config.HLSStoragePath, config.EnableReplayFeatures)
 
 	if len(data.GetStreamOutputVariants()) != 0 {
 		for index := range data.GetStreamOutputVariants() {
-			if err := os.MkdirAll(path.Join(config.HLSStoragePath, strconv.Itoa(index)), 0o750); err != nil {
+			if err := os.MkdirAll(path.Join(config.HLSStoragePath, streamID, strconv.Itoa(index)), 0o750); err != nil {
 				log.Fatalln(err)
 			}
 		}

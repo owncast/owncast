@@ -17,6 +17,7 @@ import (
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/notifications"
+	"github.com/owncast/owncast/replays"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
 )
@@ -58,6 +59,7 @@ func Start() error {
 
 	user.SetupUsers()
 	auth.Setup(data.GetDatastore())
+	replays.Setup()
 
 	fileWriter.SetupFileWriterReceiverService(&handler)
 
@@ -99,8 +101,12 @@ func createInitialOfflineState() error {
 func transitionToOfflineVideoStreamContent() {
 	log.Traceln("Firing transcoder with offline stream state")
 
-	_transcoder := transcoder.NewTranscoder()
-	_transcoder.SetIdentifier("offline")
+	streamId := "offline"
+	_storage.SetStreamId(streamId)
+	fileWriter.SetStreamID(streamId)
+	handler.SetStreamId(streamId)
+
+	_transcoder := transcoder.NewTranscoder(streamId)
 	_transcoder.SetLatencyLevel(models.GetLatencyLevel(4))
 	_transcoder.SetIsEvent(true)
 
@@ -127,7 +133,7 @@ func resetDirectories() {
 	log.Trace("Resetting file directories to a clean slate.")
 
 	// Wipe hls data directory
-	utils.CleanupDirectory(config.HLSStoragePath)
+	utils.CleanupDirectory(config.HLSStoragePath, config.EnableReplayFeatures)
 
 	// Remove the previous thumbnail
 	logo := data.GetLogoPath()

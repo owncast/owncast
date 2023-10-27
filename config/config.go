@@ -43,6 +43,9 @@ var EnableAutoUpdate = false
 // A temporary stream key that can be set via the command line.
 var TemporaryStreamKey = ""
 
+// EnableReplayFeatures will enable replay features.
+var EnableReplayFeatures = true
+
 // GetCommit will return an identifier used for identifying the point in time this build took place.
 func GetCommit() string {
 	if GitCommit == "" {

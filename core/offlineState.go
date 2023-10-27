@@ -48,15 +48,16 @@ func appendOfflineToVariantPlaylist(index int, playlistFilePath string) {
 	}
 }
 
-func makeVariantIndexOffline(index int, offlineFilePath string, offlineFilename string) {
-	playlistFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/stream.m3u8"), index)
-	segmentFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/%s"), index, offlineFilename)
+func makeVariantIndexOffline(streamId string, index int, offlineFilePath string, offlineFilename string) {
+	playlistFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, streamId, "%d/stream.m3u8"), index)
+	// segmentFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, streamId, "%d/%s"), index, offlineFilename)
+	segmentFileDestinationPath := fmt.Sprintf(filepath.Join("hls", streamId, "%d/%s"), index, offlineFilename)
 
-	if err := utils.Copy(offlineFilePath, segmentFilePath); err != nil {
+	if err := utils.Copy(offlineFilePath, offlineFilePath); err != nil {
 		log.Warnln(err)
 	}
 
-	if _, err := _storage.Save(segmentFilePath, 0); err != nil {
+	if _, err := _storage.Save(offlineFilePath, segmentFileDestinationPath, 0); err != nil {
 		log.Warnln(err)
 	}
 
@@ -65,7 +66,7 @@ func makeVariantIndexOffline(index int, offlineFilePath string, offlineFilename 
 	} else {
 		createEmptyOfflinePlaylist(playlistFilePath, offlineFilename)
 	}
-	if _, err := _storage.Save(playlistFilePath, 0); err != nil {
+	if _, err := _storage.Save(playlistFilePath, playlistFilePath, 0); err != nil {
 		log.Warnln(err)
 	}
 }

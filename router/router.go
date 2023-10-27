@@ -392,6 +392,15 @@ func Start() error {
 	http.HandleFunc("/api/auth/fediverse", middleware.RequireUserAccessToken(fediverseauth.RegisterFediverseOTPRequest))
 	http.HandleFunc("/api/auth/fediverse/verify", fediverseauth.VerifyFediverseOTPRequest)
 
+	// Replay functionality. This route handles both /replay/{streamId} (master)
+	// and /replay/{streamId}/{outputConfigId} (media) routes.
+	http.HandleFunc("/api/replays", controllers.GetReplays)
+	http.HandleFunc("/replay/", controllers.GetReplay)
+
+	http.HandleFunc("/api/clips", controllers.GetAllClips)
+	http.HandleFunc("/api/clip", controllers.AddClip)
+	http.HandleFunc("/clip/", controllers.GetClip)
+
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
 

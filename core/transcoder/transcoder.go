@@ -27,12 +27,10 @@ type Transcoder struct {
 	stdin *io.PipeReader
 
 	TranscoderCompleted  func(error)
-	playlistOutputPath   string
+	StreamID             string
 	ffmpegPath           string
-	segmentIdentifier    string
 	internalListenerPort string
 	input                string
-	segmentOutputPath    string
 	variants             []HLSVariant
 
 	currentStreamOutputSettings []models.StreamOutputVariant
@@ -118,7 +116,9 @@ func (t *Transcoder) Start(shouldLog bool) {
 	if shouldLog {
 		log.Infof("Processing video using codec %s with %d output qualities configured.", t.codec.DisplayName(), len(t.variants))
 	}
-	createVariantDirectories()
+
+	// Make directory for this stream.
+	createVariantDirectories(t.StreamID)
 
 	if config.EnableDebugFeatures {
 		log.Println(command)
@@ -181,8 +181,8 @@ func (t *Transcoder) getString() string {
 		hlsOptionFlags = append(hlsOptionFlags, "append_list")
 	}
 
-	if t.segmentIdentifier == "" {
-		t.segmentIdentifier = shortid.MustGenerate()
+	if t.StreamID == "" {
+		t.StreamID = shortid.MustGenerate()
 	}
 
 	hlsEventString := ""
@@ -197,6 +197,7 @@ func (t *Transcoder) getString() string {
 	if len(hlsOptionFlags) > 0 {
 		hlsOptionsString = "-hls_flags " + strings.Join(hlsOptionFlags, "+")
 	}
+
 	ffmpegFlags := []string{
 		fmt.Sprintf(`FFREPORT=file="%s":level=32`, logging.GetTranscoderLogFilePath()),
 		t.ffmpegPath,
@@ -226,11 +227,11 @@ func (t *Transcoder) getString() string {
 		// Filenames
 		"-master_pl_name", "stream.m3u8",
 
-		"-hls_segment_filename", localListenerAddress + "/%v/stream-" + t.segmentIdentifier + "-%d.ts", // Send HLS segments back to us over HTTP
+		"-hls_segment_filename", localListenerAddress + "/" + t.StreamID + "/%v/stream-" + t.StreamID + "-%d.ts", // Send HLS segments back to us over HTTP
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 
-		"-method PUT",                            // HLS results sent back to us will be over PUTs
-		localListenerAddress + "/%v/stream.m3u8", // Send HLS playlists back to us over HTTP
+		"-method PUT", // HLS results sent back to us will be over PUTs
+		localListenerAddress + "/" + t.StreamID + "/%v/stream.m3u8", // Send HLS playlists back to us over HTTP
 	}
 
 	return strings.Join(ffmpegFlags, " ")
@@ -272,19 +273,17 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 }
 
 // NewTranscoder will return a new Transcoder, populated by the config.
-func NewTranscoder() *Transcoder {
+func NewTranscoder(streamID string) *Transcoder {
 	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
 
 	transcoder := new(Transcoder)
+	transcoder.StreamID = streamID
 	transcoder.ffmpegPath = ffmpegPath
 	transcoder.internalListenerPort = config.InternalHLSListenerPort
 
 	transcoder.currentStreamOutputSettings = data.GetStreamOutputVariants()
 	transcoder.currentLatencyLevel = data.GetStreamLatencyLevel()
 	transcoder.codec = getCodec(data.GetVideoCodec())
-	transcoder.segmentOutputPath = config.HLSStoragePath
-	transcoder.playlistOutputPath = config.HLSStoragePath
-
 	transcoder.input = "pipe:0" // stdin
 
 	for index, quality := range transcoder.currentStreamOutputSettings {
@@ -433,14 +432,9 @@ func (t *Transcoder) SetStdin(pipe *io.PipeReader) {
 	t.stdin = pipe
 }
 
-// SetOutputPath sets the root directory that should include playlists and video segments.
-func (t *Transcoder) SetOutputPath(output string) {
-	t.segmentOutputPath = output
-}
-
-// SetIdentifier enables appending a unique identifier to segment file name.
-func (t *Transcoder) SetIdentifier(output string) {
-	t.segmentIdentifier = output
+// SetStreamID sets a unique identifier for the currently transcoding stream.
+func (t *Transcoder) SetStreamID(id string) {
+	t.StreamID = id
 }
 
 // SetInternalHTTPPort will set the port to be used for internal communication.
