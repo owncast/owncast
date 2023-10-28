@@ -40,7 +40,7 @@ type ServerProfileResponse struct {
 
 var pendingServerAuthRequests = map[string]ServerAuthRequest{}
 
-const maxPendingRequests = 1000
+const maxPendingRequests = 100
 
 // StartServerAuth will handle the authentication for the admin user of this
 // Owncast server. Initiated via a GET of the auth endpoint.

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -46,8 +47,25 @@ func setupExpiredRequestPruner() {
 
 // StartAuthFlow will begin the IndieAuth flow by generating an auth request.
 func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
+	// Limit the number of pending requests
 	if len(pendingAuthRequests) >= maxPendingRequests {
 		return nil, errors.New("Please try again later. Too many pending requests.")
+	}
+
+	// Reject any requests to our internal network or loopback
+	if utils.IsHostnameInternal(authHost) {
+		return nil, errors.New("unable to use provided host")
+	}
+
+	// Santity check the server URL
+	u, err := url.ParseRequestURI(authHost)
+	if err != nil {
+		return nil, errors.New("unable to parse server URL")
+	}
+
+	// Limit to only secured connections
+	if u.Scheme != "https" {
+		return nil, errors.New("only servers secured with https are supported")
 	}
 
 	serverURL := data.GetServerURL()
