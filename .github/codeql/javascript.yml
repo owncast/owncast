@@ -1,0 +1,4 @@
+name: Javascript config
+
+paths-ignore:
+  - static/web
