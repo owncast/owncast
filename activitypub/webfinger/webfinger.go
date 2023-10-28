@@ -2,10 +2,13 @@ package webfinger
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/owncast/owncast/utils"
 )
 
 // GetWebfingerLinks will return webfinger data for an account.
@@ -17,6 +20,11 @@ func GetWebfingerLinks(account string) ([]map[string]interface{}, error) {
 	account = strings.TrimLeft(account, "@") // remove any leading @
 	accountComponents := strings.Split(account, "@")
 	fediverseServer := accountComponents[1]
+
+	// Reject any requests to our internal network or loopback.
+	if utils.IsHostnameInternal(fediverseServer) {
+		return nil, errors.New("unable to use provided host as a valid fediverse server")
+	}
 
 	// HTTPS is required.
 	requestURL, err := url.Parse("https://" + fediverseServer)
