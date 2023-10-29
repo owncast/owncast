@@ -39,7 +39,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files-yaml
-        uses: tj-actions/changed-files@v39
+        uses: tj-actions/changed-files@v40
         with:
           path: 'web'
           files_ignore: |
