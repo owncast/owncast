@@ -92,13 +92,13 @@ func SetStreamAsDisconnected() {
 	_stats.LastConnectTime = nil
 	_broadcaster = nil
 
-	// offlineFilename := "offline.ts"
+	offlineFilename := "offline.ts"
 
-	// offlineFilePath, err := saveOfflineClipToDisk(offlineFilename)
-	// if err != nil {
-	// 	log.Errorln(err)
-	// 	return
-	// }
+	offlineFilePath, err := saveOfflineClipToDisk(offlineFilename)
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
 
 	handler.StreamEnded()
 	transcoder.StopThumbnailGenerator()
@@ -118,9 +118,9 @@ func SetStreamAsDisconnected() {
 		return
 	}
 
-	// for index := range _currentBroadcast.OutputSettings {
-	// makeVariantIndexOffline(_currentBroadcast.StreamID, index, offlineFilePath, offlineFilename)
-	// }
+	for index := range _currentBroadcast.OutputSettings {
+		makeVariantIndexOffline(_currentBroadcast.StreamID, index, offlineFilePath, offlineFilename)
+	}
 
 	StartOfflineCleanupTimer()
 	stopOnlineCleanupTimer()
