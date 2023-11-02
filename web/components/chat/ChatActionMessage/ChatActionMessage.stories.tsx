@@ -1,9 +1,8 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { ChatActionMessage } from './ChatActionMessage';
 import Mock from '../../../stories/assets/mocks/chatmessage-action.png';
 
-export default {
+const meta = {
   title: 'owncast/Chat/Messages/Chat action',
   component: ChatActionMessage,
   parameters: {
@@ -17,11 +16,12 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof ChatActionMessage>;
+} satisfies Meta<typeof ChatActionMessage>;
 
-const Template: ComponentStory<typeof ChatActionMessage> = args => <ChatActionMessage {...args} />;
+export default meta;
 
-export const Basic = Template.bind({});
-Basic.args = {
-  body: 'This is a basic action message.',
+export const Basic = {
+  args: {
+    body: 'This is a basic action message.',
+  },
 };

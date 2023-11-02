@@ -1,11 +1,10 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { ChatUserBadge } from './ChatUserBadge';
 import { ModerationBadge } from './ModerationBadge';
 import { AuthedUserBadge } from './AuthedUserBadge';
 import { BotUserBadge } from './BotUserBadge';
 
-export default {
+const meta = {
   title: 'owncast/Chat/Messages/User Flag',
   component: ChatUserBadge,
   argTypes: {
@@ -14,36 +13,43 @@ export default {
       control: { type: 'select' },
     },
   },
-} as ComponentMeta<typeof ChatUserBadge>;
+} satisfies Meta<typeof ChatUserBadge>;
 
-const Template: ComponentStory<typeof ChatUserBadge> = args => <ChatUserBadge {...args} />;
-const ModerationTemplate: ComponentStory<typeof ModerationBadge> = args => (
-  <ModerationBadge {...args} />
-);
+export default meta;
 
-const AuthedTemplate: ComponentStory<typeof ModerationBadge> = args => (
-  <AuthedUserBadge {...args} />
-);
+const ModerationTemplate: StoryFn<typeof ModerationBadge> = args => <ModerationBadge {...args} />;
 
-const BotTemplate: ComponentStory<typeof BotUserBadge> = args => <BotUserBadge {...args} />;
+const AuthedTemplate: StoryFn<typeof ModerationBadge> = args => <AuthedUserBadge {...args} />;
 
-export const Authenticated = AuthedTemplate.bind({});
-Authenticated.args = {
-  userColor: '3',
+const BotTemplate: StoryFn<typeof BotUserBadge> = args => <BotUserBadge {...args} />;
+
+export const Authenticated = {
+  render: AuthedTemplate,
+
+  args: {
+    userColor: '3',
+  },
 };
 
-export const Moderator = ModerationTemplate.bind({});
-Moderator.args = {
-  userColor: '5',
+export const Moderator = {
+  render: ModerationTemplate,
+
+  args: {
+    userColor: '5',
+  },
 };
 
-export const Bot = BotTemplate.bind({});
-Bot.args = {
-  userColor: '7',
+export const Bot = {
+  render: BotTemplate,
+
+  args: {
+    userColor: '7',
+  },
 };
 
-export const Generic = Template.bind({});
-Generic.args = {
-  badge: '?',
-  userColor: '6',
+export const Generic = {
+  args: {
+    badge: '?',
+    userColor: '6',
+  },
 };
