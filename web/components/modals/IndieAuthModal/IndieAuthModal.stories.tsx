@@ -1,5 +1,4 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { IndieAuthModal } from './IndieAuthModal';
 import Mock from '../../../stories/assets/mocks/indieauth-modal.png';
 
@@ -9,7 +8,7 @@ const Example = () => (
   </div>
 );
 
-export default {
+const meta = {
   title: 'owncast/Modals/IndieAuth',
   component: IndieAuthModal,
   parameters: {
@@ -19,10 +18,12 @@ export default {
       scale: 0.5,
     },
   },
-} as ComponentMeta<typeof IndieAuthModal>;
+} satisfies Meta<typeof IndieAuthModal>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof IndieAuthModal> = () => <Example />;
+export default meta;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Basic = Template.bind({});
+const Template: StoryFn<typeof IndieAuthModal> = () => <Example />;
+
+export const Basic = {
+  render: Template,
+};
