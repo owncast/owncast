@@ -1,21 +1,17 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { FatalErrorStateModal } from './FatalErrorStateModal';
 
-export default {
+const meta = {
   title: 'owncast/Modals/Global error state',
   component: FatalErrorStateModal,
   parameters: {},
-} as ComponentMeta<typeof FatalErrorStateModal>;
+} satisfies Meta<typeof FatalErrorStateModal>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof FatalErrorStateModal> = args => (
-  <FatalErrorStateModal {...args} />
-);
+export default meta;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Example = Template.bind({});
-Example.args = {
-  title: 'Example error title',
-  message: 'Example error message',
+export const Example = {
+  args: {
+    title: 'Example error title',
+    message: 'Example error message',
+  },
 };

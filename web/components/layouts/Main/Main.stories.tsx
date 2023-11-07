@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { MutableSnapshot, RecoilRoot } from 'recoil';
 import { makeEmptyClientConfig } from '../../../interfaces/client-config.model';
 import { ServerStatus, makeEmptyServerStatus } from '../../../interfaces/server-status.model';
@@ -30,12 +30,14 @@ import videoSettingsServiceMockOf from '../../../services/video-settings-service
 import { spidermanUser } from '../../../interfaces/user.fixture';
 import { exampleChatHistory } from '../../../interfaces/chat-message.fixture';
 
-export default {
+const meta = {
   title: 'owncast/Layout/Main',
   parameters: {
     layout: 'fullscreen',
   },
-} satisfies ComponentMeta<typeof Main>;
+} satisfies Meta<typeof Main>;
+
+export default meta;
 
 // mock the Websocket to prevent ani webhook calls from being made in storybook
 // @ts-ignore
@@ -92,7 +94,7 @@ const DefaultServerStatusServiceMock = serverStatusServiceMockOf(defaultServerSt
 const OnlineServerStatusServiceMock = serverStatusServiceMockOf(onlineServerStatus);
 const VideoSettingsServiceMock = videoSettingsServiceMockOf([]);
 
-const Template: ComponentStory<typeof Main> = ({
+const Template: StoryFn<typeof Main> = ({
   initializeState,
   ServerStatusServiceMock = DefaultServerStatusServiceMock,
   ...args
@@ -113,57 +115,79 @@ const Template: ComponentStory<typeof Main> = ({
   </RecoilRoot>
 );
 
-export const OfflineDesktop: typeof Template = Template.bind({});
-OfflineDesktop.parameters = {
-  chromatic: { diffThreshold: 0.88 },
-};
+export const OfflineDesktop: StoryObj<typeof Template> = {
+  render: Template,
 
-export const OfflineMobile: typeof Template = Template.bind({});
-OfflineMobile.args = {
-  initializeState: (mutableState: MutableSnapshot) => {
-    mutableState.set(isMobileAtom, true);
-  },
-};
-OfflineMobile.parameters = {
-  viewport: {
-    defaultViewport: 'mobile1',
+  parameters: {
+    chromatic: { diffThreshold: 0.88 },
   },
 };
 
-export const OfflineTablet: typeof Template = Template.bind({});
-OfflineTablet.parameters = {
-  viewport: {
-    defaultViewport: 'tablet',
+export const OfflineMobile: StoryObj<typeof Template> = {
+  render: Template,
+
+  args: {
+    initializeState: (mutableState: MutableSnapshot) => {
+      mutableState.set(isMobileAtom, true);
+    },
+  },
+
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
   },
 };
 
-export const Online: typeof Template = Template.bind({});
-Online.args = {
-  ServerStatusServiceMock: OnlineServerStatusServiceMock,
-};
-Online.parameters = {
-  chromatic: { diffThreshold: 0.88 },
-};
+export const OfflineTablet: StoryObj<typeof Template> = {
+  render: Template,
 
-export const OnlineMobile: typeof Template = Online.bind({});
-OnlineMobile.args = {
-  ServerStatusServiceMock: OnlineServerStatusServiceMock,
-  initializeState: (mutableState: MutableSnapshot) => {
-    mutableState.set(isMobileAtom, true);
-  },
-};
-OnlineMobile.parameters = {
-  viewport: {
-    defaultViewport: 'mobile1',
+  parameters: {
+    viewport: {
+      defaultViewport: 'tablet',
+    },
   },
 };
 
-export const OnlineTablet: typeof Template = Online.bind({});
-OnlineTablet.args = {
-  ServerStatusServiceMock: OnlineServerStatusServiceMock,
+export const Online: StoryObj<typeof Template> = {
+  render: Template,
+
+  args: {
+    ServerStatusServiceMock: OnlineServerStatusServiceMock,
+  },
+
+  parameters: {
+    chromatic: { diffThreshold: 0.88 },
+  },
 };
-OnlineTablet.parameters = {
-  viewport: {
-    defaultViewport: 'tablet',
+
+export const OnlineMobile: StoryObj<typeof Template> = {
+  render: Template,
+
+  args: {
+    ServerStatusServiceMock: OnlineServerStatusServiceMock,
+    initializeState: (mutableState: MutableSnapshot) => {
+      mutableState.set(isMobileAtom, true);
+    },
+  },
+
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+};
+
+export const OnlineTablet: StoryObj<typeof Template> = {
+  render: Template,
+
+  args: {
+    ServerStatusServiceMock: OnlineServerStatusServiceMock,
+  },
+
+  parameters: {
+    viewport: {
+      defaultViewport: 'tablet',
+    },
   },
 };

@@ -1,5 +1,4 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { action } from '@storybook/addon-actions';
 import { FollowerCollection } from './FollowerCollection';
@@ -258,15 +257,17 @@ const noFollowersMock = {
   ],
 };
 
-export default {
+const meta = {
   title: 'owncast/Components/Followers/Followers collection',
   component: FollowerCollection,
   parameters: {
     chromatic: { diffThreshold: 0.86 },
   },
-} as ComponentMeta<typeof FollowerCollection>;
+} satisfies Meta<typeof FollowerCollection>;
 
-const Template: ComponentStory<typeof FollowerCollection> = (args: object) => (
+export default meta;
+
+const Template: StoryFn<typeof FollowerCollection> = (args: object) => (
   <RecoilRoot>
     <FollowerCollection
       onFollowButtonClick={() => {
@@ -278,12 +279,18 @@ const Template: ComponentStory<typeof FollowerCollection> = (args: object) => (
   </RecoilRoot>
 );
 
-export const NoFollowers = Template.bind({});
-NoFollowers.parameters = {
-  fetchMock: noFollowersMock,
+export const NoFollowers = {
+  render: Template,
+
+  parameters: {
+    fetchMock: noFollowersMock,
+  },
 };
 
-export const Example = Template.bind({});
-Example.parameters = {
-  fetchMock: mocks,
+export const Example = {
+  render: Template,
+
+  parameters: {
+    fetchMock: mocks,
+  },
 };

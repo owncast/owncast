@@ -1,30 +1,37 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { Header } from './Header';
 
-export default {
+const meta = {
   title: 'owncast/Layout/Header',
   component: Header,
   parameters: {
     chromatic: { diffThreshold: 0.75 },
   },
-} as ComponentMeta<typeof Header>;
+} satisfies Meta<typeof Header>;
 
-const Template: ComponentStory<typeof Header> = args => (
+export default meta;
+
+const Template: StoryFn<typeof Header> = args => (
   <RecoilRoot>
     <Header {...args} />
   </RecoilRoot>
 );
 
-export const ChatAvailable = Template.bind({});
-ChatAvailable.args = {
-  name: 'Example Stream Name',
-  chatAvailable: true,
+export const ChatAvailable = {
+  render: Template,
+
+  args: {
+    name: 'Example Stream Name',
+    chatAvailable: true,
+  },
 };
 
-export const ChatNotAvailable = Template.bind({});
-ChatNotAvailable.args = {
-  name: 'Example Stream Name',
-  chatAvailable: false,
+export const ChatNotAvailable = {
+  render: Template,
+
+  args: {
+    name: 'Example Stream Name',
+    chatAvailable: false,
+  },
 };

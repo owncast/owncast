@@ -1,5 +1,4 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { ChatModerationDetailsModal } from './ChatModerationDetailsModal';
 
@@ -64,7 +63,7 @@ const mocks = {
   ],
 };
 
-export default {
+const meta = {
   title: 'owncast/Chat/Moderation modal',
   component: ChatModerationDetailsModal,
   parameters: {
@@ -79,14 +78,16 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof ChatModerationDetailsModal>;
+} satisfies Meta<typeof ChatModerationDetailsModal>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof ChatModerationDetailsModal> = () => (
+export default meta;
+
+const Template: StoryFn<typeof ChatModerationDetailsModal> = () => (
   <RecoilRoot>
     <ChatModerationDetailsModal userId="testuser123" accessToken="fakeaccesstoken4839" />
   </RecoilRoot>
 );
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Example = Template.bind({});
+export const Example = {
+  render: Template,
+};

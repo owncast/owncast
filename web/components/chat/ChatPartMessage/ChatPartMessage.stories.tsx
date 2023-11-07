@@ -1,9 +1,8 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { ChatPartMessage } from './ChatPartMessage';
 import Mock from '../../../stories/assets/mocks/chatmessage-action.png';
 
-export default {
+const meta = {
   title: 'owncast/Chat/Messages/Chat Part',
   component: ChatPartMessage,
   argTypes: {
@@ -23,20 +22,22 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof ChatPartMessage>;
+} satisfies Meta<typeof ChatPartMessage>;
 
-const Template: ComponentStory<typeof ChatPartMessage> = args => <ChatPartMessage {...args} />;
+export default meta;
 
-export const Regular = Template.bind({});
-Regular.args = {
-  displayName: 'RandomChatter',
-  isAuthorModerator: false,
-  userColor: 3,
+export const Regular = {
+  args: {
+    displayName: 'RandomChatter',
+    isAuthorModerator: false,
+    userColor: 3,
+  },
 };
 
-export const Moderator = Template.bind({});
-Moderator.args = {
-  displayName: 'RandomChatter',
-  isAuthorModerator: true,
-  userColor: 2,
+export const Moderator = {
+  args: {
+    displayName: 'RandomChatter',
+    isAuthorModerator: true,
+    userColor: 2,
+  },
 };

@@ -1,23 +1,21 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { ChatNameChangeMessage } from './ChatNameChangeMessage';
 
-export default {
+const meta = {
   title: 'owncast/Chat/Messages/Chat name change',
   component: ChatNameChangeMessage,
-} as ComponentMeta<typeof ChatNameChangeMessage>;
+} satisfies Meta<typeof ChatNameChangeMessage>;
 
-const Template: ComponentStory<typeof ChatNameChangeMessage> = args => (
-  <ChatNameChangeMessage {...args} />
-);
+export default meta;
 
-export const Basic = Template.bind({});
-Basic.args = {
-  message: {
-    oldName: 'JohnnyOldName',
-    user: {
-      displayName: 'JohnnyNewName',
-      displayColor: '3',
+export const Basic = {
+  args: {
+    message: {
+      oldName: 'JohnnyOldName',
+      user: {
+        displayName: 'JohnnyNewName',
+        displayColor: '3',
+      },
     },
   },
 };

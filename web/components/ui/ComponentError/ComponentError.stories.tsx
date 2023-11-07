@@ -1,8 +1,7 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { ComponentError } from './ComponentError';
 
-export default {
+const meta = {
   title: 'owncast/Components/Component Error',
   component: ComponentError,
   parameters: {
@@ -12,31 +11,35 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof ComponentError>;
+} satisfies Meta<typeof ComponentError>;
 
-const Template: ComponentStory<typeof ComponentError> = args => <ComponentError {...args} />;
+export default meta;
 
-export const DefaultMessage = Template.bind({});
-DefaultMessage.args = {
-  componentName: 'Test Component',
+export const DefaultMessage = {
+  args: {
+    componentName: 'Test Component',
+  },
 };
 
-export const Error1 = Template.bind({});
-Error1.args = { message: 'This is a test error message.', componentName: 'Test Component' };
-
-export const WithDetails = Template.bind({});
-WithDetails.args = {
-  message: 'This is a test error message.',
-  componentName: 'Test Component',
-  details: 'Here are some additional details about the error.',
+export const Error1 = {
+  args: { message: 'This is a test error message.', componentName: 'Test Component' },
 };
 
-export const CanRetry = Template.bind({});
-CanRetry.args = {
-  message: 'This is a test error message.',
-  componentName: 'Test Component',
-  details: 'Here are some additional details about the error.',
-  retryFunction: () => {
-    console.log('retrying');
+export const WithDetails = {
+  args: {
+    message: 'This is a test error message.',
+    componentName: 'Test Component',
+    details: 'Here are some additional details about the error.',
+  },
+};
+
+export const CanRetry = {
+  args: {
+    message: 'This is a test error message.',
+    componentName: 'Test Component',
+    details: 'Here are some additional details about the error.',
+    retryFunction: () => {
+      console.log('retrying');
+    },
   },
 };

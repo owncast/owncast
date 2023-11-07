@@ -1,20 +1,21 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { ActionButtonMenu } from './ActionButtonMenu';
 
-export default {
+const meta = {
   title: 'owncast/Components/Action Buttons/Action Menu',
   component: ActionButtonMenu,
   parameters: {},
-} as ComponentMeta<typeof ActionButtonMenu>;
+} satisfies Meta<typeof ActionButtonMenu>;
+
+export default meta;
 
 const itemSelected = a => {
   console.log('itemSelected', a);
   action(a.title);
 };
 
-const Template: ComponentStory<typeof ActionButtonMenu> = args => (
+const Template: StoryFn<typeof ActionButtonMenu> = args => (
   <ActionButtonMenu {...args} externalActionSelected={a => itemSelected(a)} />
 );
 
@@ -37,26 +38,38 @@ const actions = [
   },
 ];
 
-export const Example = Template.bind({});
-Example.args = {
-  actions,
+export const Example = {
+  render: Template,
+
+  args: {
+    actions,
+  },
 };
 
-export const ShowFollowExample = Template.bind({});
-ShowFollowExample.args = {
-  actions,
-  showFollowItem: true,
+export const ShowFollowExample = {
+  render: Template,
+
+  args: {
+    actions,
+    showFollowItem: true,
+  },
 };
 
-export const ShowNotifyExample = Template.bind({});
-ShowNotifyExample.args = {
-  actions,
-  showNotifyItem: true,
+export const ShowNotifyExample = {
+  render: Template,
+
+  args: {
+    actions,
+    showNotifyItem: true,
+  },
 };
 
-export const ShowNotifyAndFollowExample = Template.bind({});
-ShowNotifyAndFollowExample.args = {
-  actions,
-  showNotifyItem: true,
-  showFollowItem: true,
+export const ShowNotifyAndFollowExample = {
+  render: Template,
+
+  args: {
+    actions,
+    showNotifyItem: true,
+    showFollowItem: true,
+  },
 };

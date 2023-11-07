@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { useState } from 'react';
+import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { ChatContainer } from './ChatContainer';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 
-export default {
+const meta = {
   title: 'owncast/Chat/Chat messages container',
   component: ChatContainer,
   parameters: {
@@ -19,7 +19,9 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof ChatContainer>;
+} satisfies Meta<typeof ChatContainer>;
+
+export default meta;
 
 const testMessages = `[
 		{
@@ -586,37 +588,46 @@ const AddMessagesChatExample = args => {
   );
 };
 
-const Template: ComponentStory<typeof ChatContainer> = args => <AddMessagesChatExample {...args} />;
+const Template: StoryFn<typeof ChatContainer> = args => <AddMessagesChatExample {...args} />;
 
-export const Example = Template.bind({});
-Example.args = {
-  loading: false,
-  messages,
-  usernameToHighlight: 'testuser',
-  chatUserId: 'testuser',
-  isModerator: true,
-  showInput: true,
-  chatAvailable: true,
+export const Example = {
+  render: Template,
+
+  args: {
+    loading: false,
+    messages,
+    usernameToHighlight: 'testuser',
+    chatUserId: 'testuser',
+    isModerator: true,
+    showInput: true,
+    chatAvailable: true,
+  },
 };
 
-export const ChatDisabled = Template.bind({});
-ChatDisabled.args = {
-  loading: false,
-  messages,
-  usernameToHighlight: 'testuser',
-  chatUserId: 'testuser',
-  isModerator: true,
-  showInput: true,
-  chatAvailable: false,
+export const ChatDisabled = {
+  render: Template,
+
+  args: {
+    loading: false,
+    messages,
+    usernameToHighlight: 'testuser',
+    chatUserId: 'testuser',
+    isModerator: true,
+    showInput: true,
+    chatAvailable: false,
+  },
 };
 
-export const SingleMessage = Template.bind({});
-SingleMessage.args = {
-  loading: false,
-  messages: [messages[0]],
-  usernameToHighlight: 'testuser',
-  chatUserId: 'testuser',
-  isModerator: true,
-  showInput: true,
-  chatAvailable: true,
+export const SingleMessage = {
+  render: Template,
+
+  args: {
+    loading: false,
+    messages: [messages[0]],
+    usernameToHighlight: 'testuser',
+    chatUserId: 'testuser',
+    isModerator: true,
+    showInput: true,
+    chatAvailable: true,
+  },
 };

@@ -1,8 +1,7 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { VideoPoster } from './VideoPoster';
 
-export default {
+const meta = {
   title: 'owncast/Player/Video poster',
   component: VideoPoster,
   parameters: {
@@ -17,29 +16,30 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof VideoPoster>;
+} satisfies Meta<typeof VideoPoster>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof VideoPoster> = args => <VideoPoster {...args} />;
+export default meta;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Example1 = Template.bind({});
-Example1.args = {
-  initialSrc: 'https://watch.owncast.online/logo',
-  src: 'https://watch.owncast.online/thumbnail.jpg',
-  online: true,
+export const Example1 = {
+  args: {
+    initialSrc: 'https://watch.owncast.online/logo',
+    src: 'https://watch.owncast.online/thumbnail.jpg',
+    online: true,
+  },
 };
 
-export const Example2 = Template.bind({});
-Example2.args = {
-  initialSrc: 'https://listen.batstationrad.io/logo',
-  src: 'https://listen.batstationrad.io//thumbnail.jpg',
-  online: true,
+export const Example2 = {
+  args: {
+    initialSrc: 'https://listen.batstationrad.io/logo',
+    src: 'https://listen.batstationrad.io//thumbnail.jpg',
+    online: true,
+  },
 };
 
-export const Offline = Template.bind({});
-Offline.args = {
-  initialSrc: 'https://watch.owncast.online/logo',
-  src: 'https://watch.owncast.online/thumbnail.jpg',
-  online: false,
+export const Offline = {
+  args: {
+    initialSrc: 'https://watch.owncast.online/logo',
+    src: 'https://watch.owncast.online/thumbnail.jpg',
+    online: false,
+  },
 };

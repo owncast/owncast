@@ -1,5 +1,4 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { OwncastPlayer } from './OwncastPlayer';
 
@@ -9,7 +8,7 @@ const streams = {
   localhost: `http://localhost:8080/hls/stream.m3u8`,
 };
 
-export default {
+const meta = {
   title: 'owncast/Player/Player',
   component: OwncastPlayer,
   argTypes: {
@@ -22,17 +21,22 @@ export default {
     },
   },
   parameters: {},
-} as ComponentMeta<typeof OwncastPlayer>;
+} satisfies Meta<typeof OwncastPlayer>;
 
-const Template: ComponentStory<typeof OwncastPlayer> = args => (
+export default meta;
+
+const Template: StoryFn<typeof OwncastPlayer> = args => (
   <RecoilRoot>
     <OwncastPlayer {...args} />
   </RecoilRoot>
 );
 
-export const LiveDemo = Template.bind({});
-LiveDemo.args = {
-  online: true,
-  source: 'https://watch.owncast.online/hls/stream.m3u8',
-  title: 'Stream title',
+export const LiveDemo = {
+  render: Template,
+
+  args: {
+    online: true,
+    source: 'https://watch.owncast.online/hls/stream.m3u8',
+    title: 'Stream title',
+  },
 };

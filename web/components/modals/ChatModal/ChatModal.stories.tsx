@@ -1,21 +1,21 @@
-/* eslint-disable object-shorthand */
-
-import React, { useEffect } from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { useEffect } from 'react';
+import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { ChatModal, ChatModalProps } from './ChatModal';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { CurrentUser } from '../../../interfaces/current-user';
 import { currentUserAtom } from '../../stores/ClientConfigStore';
 
-export default {
+const meta = {
   title: 'owncast/Chat/Chat modal',
   component: ChatModal,
   parameters: {
     chromatic: { diffThreshold: 0.8 },
     docs: {},
   },
-} as ComponentMeta<typeof ChatModal>;
+} satisfies Meta<typeof ChatModal>;
+
+export default meta;
 
 const testMessages = `[
 		{
@@ -578,21 +578,24 @@ const Component = args => {
   return <ChatModal {...args} />;
 };
 
-const Template: ComponentStory<typeof ChatModal> = args => (
+const Template: StoryFn<typeof ChatModal> = args => (
   <RecoilRoot>
     <Component {...args} />
   </RecoilRoot>
 );
 
-export const Example = Template.bind({});
-Example.args = {
-  loading: false,
-  messages: messages,
-  usernameToHighlight: 'testuser',
-  chatUserId: 'testuser',
-  isModerator: true,
-  showInput: true,
-  chatAvailable: true,
-  handleClose: () => {},
-  currentUser: currentUser,
-} as ChatModalProps;
+export const Example = {
+  render: Template,
+
+  args: {
+    loading: false,
+    messages,
+    usernameToHighlight: 'testuser',
+    chatUserId: 'testuser',
+    isModerator: true,
+    showInput: true,
+    chatAvailable: true,
+    handleClose: () => {},
+    currentUser,
+  } as ChatModalProps,
+};

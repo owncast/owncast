@@ -1,5 +1,4 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { ChatTextField } from './ChatTextField';
 import Mockup from '../../../stories/assets/mocks/chatinput-mock.png';
@@ -28,7 +27,7 @@ const mocks = {
   ],
 };
 
-export default {
+const meta = {
   title: 'owncast/Chat/Input text field',
   component: ChatTextField,
   parameters: {
@@ -48,43 +47,54 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof ChatTextField>;
+} satisfies Meta<typeof ChatTextField>;
 
-const Template: ComponentStory<typeof ChatTextField> = args => (
+export default meta;
+
+const Template: StoryFn<typeof ChatTextField> = args => (
   <RecoilRoot>
     <ChatTextField {...args} />
   </RecoilRoot>
 );
 
-export const Example = Template.bind({});
-Example.args = {
-  enabled: true,
+export const Example = {
+  render: Template,
+
+  args: {
+    enabled: true,
+  },
 };
 
-export const LongerMessage = Template.bind({});
-LongerMessage.args = {
-  enabled: true,
-  defaultText:
-    'Lorem ipsum dolor sit amet,  consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-};
+export const LongerMessage = {
+  render: Template,
 
-LongerMessage.parameters = {
-  docs: {
-    description: {
-      story: 'Should display two lines of text and scroll to display more.',
+  args: {
+    enabled: true,
+    defaultText:
+      'Lorem ipsum dolor sit amet,  consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+  },
+
+  parameters: {
+    docs: {
+      description: {
+        story: 'Should display two lines of text and scroll to display more.',
+      },
     },
   },
 };
 
-export const DisabledChat = Template.bind({});
-DisabledChat.args = {
-  enabled: false,
-};
+export const DisabledChat = {
+  render: Template,
 
-DisabledChat.parameters = {
-  docs: {
-    description: {
-      story: 'Should not allow you to type anything and should state that chat is disabled.',
+  args: {
+    enabled: false,
+  },
+
+  parameters: {
+    docs: {
+      description: {
+        story: 'Should not allow you to type anything and should state that chat is disabled.',
+      },
     },
   },
 };

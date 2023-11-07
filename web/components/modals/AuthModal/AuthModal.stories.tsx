@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { useEffect } from 'react';
+import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { AuthModal } from './AuthModal';
 import { currentUserAtom } from '../../stores/ClientConfigStore';
@@ -26,17 +26,20 @@ const Example = () => {
   );
 };
 
-export default {
+const meta = {
   title: 'owncast/Modals/Auth',
   component: AuthModal,
   parameters: {},
-} as ComponentMeta<typeof AuthModal>;
+} satisfies Meta<typeof AuthModal>;
 
-const Template: ComponentStory<typeof AuthModal> = () => (
+export default meta;
+
+const Template: StoryFn<typeof AuthModal> = () => (
   <RecoilRoot>
     <Example />
   </RecoilRoot>
 );
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Basic = Template.bind({});
+export const Basic = {
+  render: Template,
+};

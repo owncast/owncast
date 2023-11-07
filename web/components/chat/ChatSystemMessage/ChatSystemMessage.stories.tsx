@@ -1,10 +1,9 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { ChatSystemMessage } from './ChatSystemMessage';
 import Mock from '../../../stories/assets/mocks/chatmessage-system.png';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 
-export default {
+const meta = {
   title: 'owncast/Chat/Messages/System',
   component: ChatSystemMessage,
   parameters: {
@@ -18,9 +17,9 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof ChatSystemMessage>;
+} satisfies Meta<typeof ChatSystemMessage>;
 
-const Template: ComponentStory<typeof ChatSystemMessage> = args => <ChatSystemMessage {...args} />;
+export default meta;
 
 const message: ChatMessage = JSON.parse(`{
   "type": "SYSTEM",
@@ -34,14 +33,15 @@ const message: ChatMessage = JSON.parse(`{
   },
   "body": "Test system message from the chat server."}`);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Basic = Template.bind({});
-Basic.args = {
-  message,
+export const Basic = {
+  args: {
+    message,
+  },
 };
 
-export const HighlightExample = Template.bind({});
-HighlightExample.args = {
-  message,
-  highlightString: 'chat',
+export const HighlightExample = {
+  args: {
+    message,
+    highlightString: 'chat',
+  },
 };
