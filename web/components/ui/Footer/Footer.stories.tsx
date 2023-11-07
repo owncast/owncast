@@ -1,22 +1,25 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { Footer } from './Footer';
 
-export default {
+const meta = {
   title: 'owncast/Layout/Footer',
   component: Footer,
   parameters: {},
-} as ComponentMeta<typeof Footer>;
+} satisfies Meta<typeof Footer>;
 
-const Template: ComponentStory<typeof Footer> = args => (
+export default meta;
+
+const Template: StoryFn<typeof Footer> = args => (
   <RecoilRoot>
     <Footer {...args} />
   </RecoilRoot>
 );
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Example = Template.bind({});
-Example.args = {
-  version: 'v1.2.3',
+export const Example = {
+  render: Template,
+
+  args: {
+    version: 'v1.2.3',
+  },
 };

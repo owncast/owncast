@@ -1,6 +1,5 @@
 /* eslint-disable no-alert */
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { NotifyReminderPopup } from './NotifyReminderPopup';
 import Mock from '../../../stories/assets/mocks/notify-popup.png';
 
@@ -12,7 +11,7 @@ const Example = args => (
   </div>
 );
 
-export default {
+const meta = {
   title: 'owncast/Components/Notify Reminder',
   component: NotifyReminderPopup,
   parameters: {
@@ -27,22 +26,30 @@ Clicking it will make the notification modal display. Clicking the "X" will hide
       },
     },
   },
-} as ComponentMeta<typeof NotifyReminderPopup>;
+} satisfies Meta<typeof NotifyReminderPopup>;
 
-const Template: ComponentStory<typeof NotifyReminderPopup> = args => <Example {...args} />;
+export default meta;
 
-export const Active = Template.bind({});
-Active.args = {
-  open: true,
-  notificationClicked: () => {
-    alert('notification clicked');
-  },
-  notificationClosed: () => {
-    alert('notification closed');
+const Template: StoryFn<typeof NotifyReminderPopup> = args => <Example {...args} />;
+
+export const Active = {
+  render: Template,
+
+  args: {
+    open: true,
+    notificationClicked: () => {
+      alert('notification clicked');
+    },
+    notificationClosed: () => {
+      alert('notification closed');
+    },
   },
 };
 
-export const InActive = Template.bind({});
-InActive.args = {
-  open: false,
+export const InActive = {
+  render: Template,
+
+  args: {
+    open: false,
+  },
 };

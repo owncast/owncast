@@ -1,8 +1,7 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { Modal } from './Modal';
 
-export default {
+const meta = {
   title: 'owncast/Modals/Container',
   component: Modal,
   parameters: {
@@ -12,23 +11,31 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof Modal>;
+} satisfies Meta<typeof Modal>;
 
-const Template: ComponentStory<typeof Modal> = args => {
+export default meta;
+
+const Template: StoryFn<typeof Modal> = args => {
   const { children } = args;
   return <Modal {...args}>{children}</Modal>;
 };
 
-export const Example = Template.bind({});
-Example.args = {
-  title: 'Modal example with content nodes',
-  visible: true,
-  children: <div>Test 123</div>,
+export const Example = {
+  render: Template,
+
+  args: {
+    title: 'Modal example with content nodes',
+    visible: true,
+    children: <div>Test 123</div>,
+  },
 };
 
-export const UrlExample = Template.bind({});
-UrlExample.args = {
-  title: 'Modal example with URL',
-  visible: true,
-  url: 'https://owncast.online',
+export const UrlExample = {
+  render: Template,
+
+  args: {
+    title: 'Modal example with URL',
+    visible: true,
+    url: 'https://owncast.online',
+  },
 };

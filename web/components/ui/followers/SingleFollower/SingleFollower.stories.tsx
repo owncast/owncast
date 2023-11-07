@@ -1,9 +1,8 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { SingleFollower } from './SingleFollower';
 import SingleFollowerMock from '../../../../stories/assets/mocks/single-follower.png';
 
-export default {
+const meta = {
   title: 'owncast/Components/Followers/Single Follower',
   component: SingleFollower,
   parameters: {
@@ -17,17 +16,18 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof SingleFollower>;
+} satisfies Meta<typeof SingleFollower>;
 
-const Template: ComponentStory<typeof SingleFollower> = args => <SingleFollower {...args} />;
+export default meta;
 
-export const Example = Template.bind({});
-Example.args = {
-  follower: {
-    name: 'John Doe',
-    description: 'User',
-    username: '@account@domain.tld',
-    image: 'https://avatars0.githubusercontent.com/u/1234?s=460&v=4',
-    link: 'https://yahoo.com',
+export const Example = {
+  args: {
+    follower: {
+      name: 'John Doe',
+      description: 'User',
+      username: '@account@domain.tld',
+      image: 'https://avatars0.githubusercontent.com/u/1234?s=460&v=4',
+      link: 'https://yahoo.com',
+    },
   },
 };
