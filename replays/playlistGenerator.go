@@ -55,8 +55,11 @@ func (p *PlaylistGenerator) createMediaPlaylistForConfigurationAndSegments(confi
 		path := segment.Path
 		if !strings.HasPrefix(path, "http") {
 			path = "/" + path
+		} else {
+			// Split url and only take last 2 parts
+			urlParts := strings.Split(path, "/")
+			path = strings.Join(urlParts[len(urlParts)-2:], "/")
 		}
-
 		mediaSegment := m3u8.MediaSegment{
 			URI:             path,
 			Duration:        segmentDuration,
@@ -113,6 +116,7 @@ func (p *PlaylistGenerator) GetAllSegmentsForOutputConfiguration(outputId string
 
 	segments := []HLSSegment{}
 	for _, row := range segmentRows {
+		// urlParsed := strings.Split(row.Path, "/")
 		segment := HLSSegment{
 			ID:                    row.ID,
 			StreamID:              row.StreamID,

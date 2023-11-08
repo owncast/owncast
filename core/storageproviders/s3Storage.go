@@ -117,7 +117,6 @@ func (s *S3Storage) SegmentWritten(localFilePath string) (string, int, error) {
 	// so the segments and the HLS playlist referencing
 	// them are in sync.
 	playlistPath := filepath.Join(filepath.Dir(localFilePath), "stream.m3u8")
-
 	playlistRemoteDestinationPath := s.GetRemoteDestinationPathFromLocalFilePath(playlistPath)
 	if _, err := s.Save(playlistPath, playlistRemoteDestinationPath, 0); err != nil {
 		s.queuedPlaylistUpdates[playlistPath] = playlistPath
@@ -179,6 +178,9 @@ func (s *S3Storage) Save(localFilePath, remoteDestinationPath string, retryCount
 	}
 	// Build the remote path by adding the "hls" path prefix.
 	remotePath := strings.Join([]string{"hls", normalizedPath}, "")
+	// Only keep last 2 parts of path
+	remotePathParts := strings.Split(remotePath, "/")
+	remotePathRelative := strings.Join(remotePathParts[len(remotePathParts)-2:], "/")
 	// If a custom path prefix is set prepend it.
 	if s.s3PathPrefix != "" {
 		prefix := strings.TrimPrefix(s.s3PathPrefix, "/")
@@ -210,7 +212,7 @@ func (s *S3Storage) Save(localFilePath, remoteDestinationPath string, retryCount
 		uploadInput.ACL = aws.String("public-read")
 	}
 
-	response, err := s.uploader.Upload(uploadInput)
+	_, err = s.uploader.Upload(uploadInput)
 	if err != nil {
 		log.Traceln("error uploading segment", err.Error())
 		if retryCount < 4 {
@@ -221,13 +223,13 @@ func (s *S3Storage) Save(localFilePath, remoteDestinationPath string, retryCount
 		// Upload failure. Remove the local file.
 		s.removeLocalFile(localFilePath)
 
-		return "", fmt.Errorf("Giving up uploading %s to object storage %s", localFilePath, s.s3Endpoint)
+		return "", fmt.Errorf("giving up uploading %s to object storage %s", localFilePath, s.s3Endpoint)
 	}
 
 	// Upload success. Remove the local file.
 	s.removeLocalFile(localFilePath)
 
-	return response.Location, nil
+	return remotePathRelative, nil
 }
 
 func (s *S3Storage) Cleanup() error {
