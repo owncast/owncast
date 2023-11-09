@@ -1,9 +1,8 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { FediAuthModal } from './FediAuthModal';
 import FediAuthModalMock from '../../../stories/assets/mocks/fediauth-modal.png';
 
-export default {
+const meta = {
   title: 'owncast/Modals/FediAuth',
   component: FediAuthModal,
   parameters: {
@@ -13,20 +12,22 @@ export default {
       scale: 0.5,
     },
   },
-} as ComponentMeta<typeof FediAuthModal>;
+} satisfies Meta<typeof FediAuthModal>;
 
-const Template: ComponentStory<typeof FediAuthModal> = args => <FediAuthModal {...args} />;
+export default meta;
 
-export const NotYetAuthenticated = Template.bind({});
-NotYetAuthenticated.args = {
-  displayName: 'fake-user',
-  authenticated: false,
-  accessToken: '',
+export const NotYetAuthenticated = {
+  args: {
+    displayName: 'fake-user',
+    authenticated: false,
+    accessToken: '',
+  },
 };
 
-export const Authenticated = Template.bind({});
-Authenticated.args = {
-  displayName: 'fake-user',
-  authenticated: true,
-  accessToken: '',
+export const Authenticated = {
+  args: {
+    displayName: 'fake-user',
+    authenticated: true,
+    accessToken: '',
+  },
 };

@@ -1,5 +1,4 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { BrowserNotifyModal } from './BrowserNotifyModal';
 import BrowserNotifyModalMock from '../../../stories/assets/mocks/notify-modal.png';
@@ -10,7 +9,7 @@ const Example = () => (
   </div>
 );
 
-export default {
+const meta = {
   title: 'owncast/Modals/Browser Notifications',
   component: BrowserNotifyModal,
   parameters: {
@@ -31,14 +30,16 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof BrowserNotifyModal>;
+} satisfies Meta<typeof BrowserNotifyModal>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof BrowserNotifyModal> = () => (
+export default meta;
+
+const Template: StoryFn<typeof BrowserNotifyModal> = () => (
   <RecoilRoot>
     <Example />
   </RecoilRoot>
 );
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Basic = Template.bind({});
+export const Basic = {
+  render: Template,
+};
