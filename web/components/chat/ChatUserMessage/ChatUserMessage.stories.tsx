@@ -1,11 +1,10 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot } from 'recoil';
 import { ChatUserMessage } from './ChatUserMessage';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import Mock from '../../../stories/assets/mocks/chatmessage-user.png';
 
-export default {
+const meta = {
   title: 'owncast/Chat/Messages/Standard user',
   component: ChatUserMessage,
   parameters: {
@@ -20,9 +19,11 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof ChatUserMessage>;
+} satisfies Meta<typeof ChatUserMessage>;
 
-const Template: ComponentStory<typeof ChatUserMessage> = args => (
+export default meta;
+
+const Template: StoryFn<typeof ChatUserMessage> = args => (
   <RecoilRoot>
     <ChatUserMessage {...args} />
   </RecoilRoot>
@@ -105,48 +106,69 @@ const botUserMessage: ChatMessage = JSON.parse(`{
 				},
 				"body": "I am a bot."}`);
 
-export const WithoutModeratorMenu = Template.bind({});
-WithoutModeratorMenu.args = {
-  message: standardMessage,
-  showModeratorMenu: false,
+export const WithoutModeratorMenu = {
+  render: Template,
+
+  args: {
+    message: standardMessage,
+    showModeratorMenu: false,
+  },
 };
 
-export const WithLinkAndCustomEmoji = Template.bind({});
-WithLinkAndCustomEmoji.args = {
-  message: messageWithLinkAndCustomEmoji,
-  showModeratorMenu: false,
+export const WithLinkAndCustomEmoji = {
+  render: Template,
+
+  args: {
+    message: messageWithLinkAndCustomEmoji,
+    showModeratorMenu: false,
+  },
 };
 
-export const WithModeratorMenu = Template.bind({});
-WithModeratorMenu.args = {
-  message: standardMessage,
-  showModeratorMenu: true,
+export const WithModeratorMenu = {
+  render: Template,
+
+  args: {
+    message: standardMessage,
+    showModeratorMenu: true,
+  },
 };
 
-export const FromModeratorUser = Template.bind({});
-FromModeratorUser.args = {
-  message: moderatorMessage,
-  showModeratorMenu: false,
-  isAuthorModerator: true,
+export const FromModeratorUser = {
+  render: Template,
+
+  args: {
+    message: moderatorMessage,
+    showModeratorMenu: false,
+    isAuthorModerator: true,
+  },
 };
 
-export const FromAuthenticatedUser = Template.bind({});
-FromAuthenticatedUser.args = {
-  message: authenticatedUserMessage,
-  showModeratorMenu: false,
-  isAuthorAuthenticated: true,
+export const FromAuthenticatedUser = {
+  render: Template,
+
+  args: {
+    message: authenticatedUserMessage,
+    showModeratorMenu: false,
+    isAuthorAuthenticated: true,
+  },
 };
 
-export const FromBotUser = Template.bind({});
-FromBotUser.args = {
-  message: botUserMessage,
-  showModeratorMenu: false,
-  isAuthorBot: true,
+export const FromBotUser = {
+  render: Template,
+
+  args: {
+    message: botUserMessage,
+    showModeratorMenu: false,
+    isAuthorBot: true,
+  },
 };
 
-export const WithStringHighlighted = Template.bind({});
-WithStringHighlighted.args = {
-  message: standardMessage,
-  showModeratorMenu: false,
-  highlightString: 'message',
+export const WithStringHighlighted = {
+  render: Template,
+
+  args: {
+    message: standardMessage,
+    showModeratorMenu: false,
+    highlightString: 'message',
+  },
 };

@@ -356,7 +356,7 @@ components:
     StreamKey:
       type: object
       properties:
-        id:
+        key:
           type: string
           description: The key used for authing a stream.
           example: yklw5Imng
@@ -1086,7 +1086,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StreamKeyArray'
+              type: object
+              properties:
+                value:
+                  $ref: '#/components/schemas/StreamKeyArray'
 
   /api/admin/config/pagecontent:
     post:

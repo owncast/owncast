@@ -1,10 +1,9 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { ActionButtonRow } from './ActionButtonRow';
 import { ActionButton } from '../ActionButton/ActionButton';
 
-export default {
+const meta = {
   title: 'owncast/Components/Action Buttons/Buttons Row',
   component: ActionButtonRow,
   parameters: {
@@ -15,15 +14,15 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof ActionButtonRow>;
+} satisfies Meta<typeof ActionButtonRow>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof ActionButtonRow> = args => {
+export default meta;
+
+const Template: StoryFn<typeof ActionButtonRow> = args => {
   const { buttons } = args as any;
   return <ActionButtonRow>{buttons}</ActionButtonRow>;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const actions = [
   {
     url: 'https://owncast.online/docs',
@@ -49,7 +48,11 @@ const itemSelected = a => {
 };
 
 const buttons = actions.map(a => <ActionButton externalActionSelected={itemSelected} action={a} />);
-export const Example1 = Template.bind({});
-Example1.args = {
-  buttons,
+
+export const Example1 = {
+  render: Template,
+
+  args: {
+    buttons,
+  },
 };

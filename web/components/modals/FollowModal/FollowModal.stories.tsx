@@ -1,5 +1,4 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import { FollowModal } from './FollowModal';
 import FollowModalMock from '../../../stories/assets/mocks/follow-modal.png';
 
@@ -9,7 +8,7 @@ const Example = () => (
   </div>
 );
 
-export default {
+const meta = {
   title: 'owncast/Modals/Follow',
   component: FollowModal,
   parameters: {
@@ -29,10 +28,12 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof FollowModal>;
+} satisfies Meta<typeof FollowModal>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Template: ComponentStory<typeof FollowModal> = () => <Example />;
+export default meta;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Basic = Template.bind({});
+const Template: StoryFn<typeof FollowModal> = () => <Example />;
+
+export const Basic = {
+  render: Template,
+};
