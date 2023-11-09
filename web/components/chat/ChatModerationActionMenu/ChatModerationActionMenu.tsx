@@ -104,7 +104,11 @@ export const ChatModerationActionMenu: FC<ChatModerationActionMenuProps> = ({
   return (
     <>
       <Dropdown menu={{ items }} trigger={['click']}>
-        <button type="button" onClick={e => e.preventDefault()}>
+        <button
+          type="button"
+          aria-label="Chat moderation options"
+          onClick={e => e.preventDefault()}
+        >
           <Space>
             <SmallDashOutlined />
           </Space>

@@ -287,12 +287,18 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
               trigger="click"
               placement="topRight"
             >
-              <button type="button" className={styles.emojiButton} title="Emoji picker button">
+              <button
+                type="button"
+                aria-label="Emoji picker"
+                className={styles.emojiButton}
+                title="Emoji picker button"
+              >
                 <SmileOutlined />
               </button>
             </Popover>
             <button
               type="button"
+              aria-label="Send message"
               className={styles.sendButton}
               title="Send message Button"
               onClick={sendMessage}

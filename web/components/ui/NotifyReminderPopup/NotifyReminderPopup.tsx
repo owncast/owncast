@@ -48,7 +48,12 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
 
   const content = (
     <div onClick={popupClicked} onKeyDown={popupClicked} role="menuitem" tabIndex={0}>
-      <button type="button" className={styles.closebutton} onClick={popupClosed}>
+      <button
+        type="button"
+        aria-label="Follow"
+        className={styles.closebutton}
+        onClick={popupClosed}
+      >
         <CloseOutlined />
       </button>
       <div className={styles.contentbutton}>Click and never miss future streams!</div>
