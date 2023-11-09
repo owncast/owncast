@@ -26,6 +26,11 @@ func GetIPAddressFromRequest(req *http.Request) string {
 	xForwardedFor := req.Header.Get("X-FORWARDED-FOR")
 	if xForwardedFor != "" {
 		clientIpString := strings.Split(xForwardedFor, ", ")[0]
+
+		// If the IP has a prefix of ::ffff: then it's an IPv4 address.
+		// Strip the prefix so we can parse it as an IPv4 address.
+		clientIpString = strings.TrimPrefix(clientIpString, "::ffff:")
+
 		if strings.Contains(clientIpString, ":") {
 			ip, _, err := net.SplitHostPort(clientIpString)
 			if err != nil {
