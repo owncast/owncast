@@ -78,7 +78,7 @@
 		"@storybook/react": "7.5.3",
 		"@storybook/testing-library": "0.2.2",
 		"@svgr/webpack": "8.1.0",
-		"@types/chart.js": "2.9.39",
+		"@types/chart.js": "2.9.40",
 		"@types/classnames": "2.3.1",
 		"@types/jest": "^29.5.0",
 		"@types/markdown-it": "13.0.5",
