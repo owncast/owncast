@@ -2,3 +2,4 @@
 node_modules
 out
 ../static/web
+public/styles/admin/config-public-details.css
