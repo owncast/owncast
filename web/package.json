@@ -84,7 +84,7 @@
 		"@types/markdown-it": "13.0.6",
 		"@types/node": "20.8.10",
 		"@types/prop-types": "15.7.10",
-		"@types/react": "18.2.36",
+		"@types/react": "18.2.37",
 		"@types/react-linkify": "1.0.4",
 		"@types/sanitize-html": "^2.9.0",
 		"@types/ua-parser-js": "0.7.38",
