@@ -6,7 +6,7 @@ import styles from './ChatPartMessage.module.scss';
 
 // Lazy loaded components
 
-const TeamOutlined = dynamic(() => import('@ant-design/icons/TeamOutlined'), {
+const UsergroupDeleteOutlined = dynamic(() => import('@ant-design/icons/UsergroupDeleteOutlined'), {
   ssr: false,
 });
 
@@ -27,7 +27,7 @@ export const ChatPartMessage: FC<ChatPartMessageProps> = ({
     <div className={styles.root}>
       <span style={{ color }}>
         <span className={styles.icon}>
-          <TeamOutlined />
+          <UsergroupDeleteOutlined />
         </span>
         <span className={styles.user}>{displayName}</span>
         {isAuthorModerator && (

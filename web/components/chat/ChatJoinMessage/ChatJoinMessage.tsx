@@ -6,7 +6,7 @@ import styles from './ChatJoinMessage.module.scss';
 
 // Lazy loaded components
 
-const TeamOutlined = dynamic(() => import('@ant-design/icons/TeamOutlined'), {
+const UsergroupAddOutlined = dynamic(() => import('@ant-design/icons/UsergroupAddOutlined'), {
   ssr: false,
 });
 
@@ -27,7 +27,7 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
     <div className={styles.root}>
       <span style={{ color }}>
         <span className={styles.icon}>
-          <TeamOutlined />
+          <UsergroupAddOutlined />
         </span>
         <span className={styles.user}>{displayName}</span>
         {isAuthorModerator && (
