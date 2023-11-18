@@ -77,6 +77,7 @@ func (c *Libx264Codec) VariantFlags(v *HLSVariant) string {
 		fmt.Sprintf("-x264-params:v:%d \"scenecut=0:open_gop=0\"", v.index), // How often the encoder checks the bitrate in order to meet average/max values
 		fmt.Sprintf("-bufsize:v:%d %dk", v.index, v.getBufferSize()),
 		fmt.Sprintf("-profile:v:%d %s", v.index, "high"), // Encoding profile
+		fmt.Sprintf("-level:%d %s", v.index, "4.0"),      // Encoding level
 	}, " ")
 }
 
