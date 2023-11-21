@@ -620,14 +620,14 @@ func VerifySettings() error {
 }
 
 // FindHighestVideoQualityIndex will return the highest quality from a slice of variants.
-func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
+func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) (int, bool) {
 	type IndexedQuality struct {
 		quality models.StreamOutputVariant
 		index   int
 	}
 
 	if len(qualities) < 2 {
-		return 0
+		return 0, qualities[0].IsVideoPassthrough
 	}
 
 	indexedQualities := make([]IndexedQuality, 0)
@@ -649,7 +649,8 @@ func FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) int {
 	})
 
 	// nolint:gosec
-	return indexedQualities[0].index
+	selectedQuality := indexedQualities[0]
+	return selectedQuality.index, selectedQuality.quality.IsVideoPassthrough
 }
 
 // GetForbiddenUsernameList will return the blocked usernames as a comma separated string.

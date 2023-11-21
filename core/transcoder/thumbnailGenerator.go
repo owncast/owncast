@@ -25,7 +25,7 @@ func StopThumbnailGenerator() {
 }
 
 // StartThumbnailGenerator starts generating thumbnails.
-func StartThumbnailGenerator(chunkPath string, variantIndex int) {
+func StartThumbnailGenerator(chunkPath string, variantIndex int, isVideoPassthrough bool) {
 	// Every 20 seconds create a thumbnail from the most
 	// recent video segment.
 	_timer = time.NewTicker(20 * time.Second)
@@ -36,7 +36,11 @@ func StartThumbnailGenerator(chunkPath string, variantIndex int) {
 			select {
 			case <-_timer.C:
 				if err := fireThumbnailGenerator(chunkPath, variantIndex); err != nil {
-					log.Errorln("Unable to generate thumbnail:", err)
+					logMsg := "Unable to generate thumbnail: " + err.Error()
+					if isVideoPassthrough {
+						logMsg += ". Video Passthrough is enabled. You should disable it to fix this, and other, streaming errors. https://owncast.online/troubleshoot"
+					}
+					log.Errorln("Unable to generate thumbnail:", logMsg)
 				}
 			case <-quit:
 				log.Debug("thumbnail generator has stopped")
