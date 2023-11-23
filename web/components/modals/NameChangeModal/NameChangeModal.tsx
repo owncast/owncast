@@ -18,8 +18,9 @@ const UserColor: FC<UserColorProps> = ({ color }) => {
     backgroundColor: `var(--theme-color-users-${color})`,
     width: '100%',
     height: '100%',
+		color: 'transparent'
   };
-  return <div style={style} />;
+	return <div style={style}>{color.toString()}</div>;
 };
 
 type NameChangeModalProps = {
