@@ -25,8 +25,8 @@ export const ActionButton: FC<ActionButtonProps> = ({
       style={{ backgroundColor: color }}
       title={description || title}
     >
-			{/* We use this icon here instead of the `icon` property on `Button` to load external images properly. */}
-			{icon && <img src={icon} className={styles.icon} alt={description} />}
+      {/* We use this icon here instead of the `icon` property on `Button` to load external images properly. */}
+      {icon && <img src={icon} className={styles.icon} alt={description} />}
       {title}
     </Button>
   );

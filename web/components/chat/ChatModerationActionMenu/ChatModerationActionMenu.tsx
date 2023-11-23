@@ -105,11 +105,11 @@ export const ChatModerationActionMenu: FC<ChatModerationActionMenuProps> = ({
     <>
       <Dropdown menu={{ items }} trigger={['click']}>
         <Button
-					type="default"
-					style={{ borderColor: "#d9d9d9" }} // Use Ant Design default gray instead of OwnCast purple
-				  onClick={e => e.preventDefault()}
-					icon={<SmallDashOutlined />}
-				/>
+          type="default"
+          style={{ borderColor: '#d9d9d9' }} // Use Ant Design default gray instead of OwnCast purple
+          onClick={e => e.preventDefault()}
+          icon={<SmallDashOutlined />}
+        />
       </Dropdown>
       <Modal
         title={userDisplayName}
