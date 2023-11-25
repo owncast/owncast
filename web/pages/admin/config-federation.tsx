@@ -98,6 +98,7 @@ const ConfigFederation = () => {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const [blockedDomainSaveState, setBlockedDomainSaveState] = useState(null);
+  const [isUsernameValid, setIsUsernameValid] = useState(false);
 
   const { federation, yp, instanceDetails } = serverConfig;
   const { enabled, isPrivate, username, goLiveMessage, showEngagement, blockedDomains } =
@@ -110,6 +111,32 @@ const ConfigFederation = () => {
       ...formDataValues,
       [fieldName]: value,
     });
+  };
+
+  const isAlphanumeric = str => {
+    const regex = /^[a-zA-Z0-9]+$/i;
+    return regex.test(str);
+  };
+
+  const handleUsernameChange = ({ fieldName, value }: UpdateArgs) => {
+    handleFieldChange({
+      fieldName: fieldName,
+      value: value,
+    });
+    const username = value;
+    const hasUsername = username !== '';
+    if (hasUsername) {
+      if (username.includes('@')) {
+        const usernameWithoutServer = username.split('@').slice(0, -1).join('@');
+        if (usernameWithoutServer.length > 0 && isAlphanumeric(usernameWithoutServer)) {
+          setIsUsernameValid(true);
+        } else {
+          setIsUsernameValid(false);
+        }
+      } else {
+        setIsUsernameValid(false);
+      }
+    }
   };
 
   const handleEnabledSwitchChange = (value: boolean) => {
@@ -304,7 +331,8 @@ const ConfigFederation = () => {
             {...TEXTFIELD_PROPS_FEDERATION_DEFAULT_USER}
             value={formDataValues.username}
             initialValue={username}
-            onChange={handleFieldChange}
+            onChange={handleUsernameChange}
+            isValid={isUsernameValid}
             disabled={!enabled}
           />
           <TextFieldWithSubmit

@@ -22,6 +22,7 @@ export type TextFieldWithSubmitProps = TextFieldProps & {
   configPath?: string;
   initialValue?: string;
   hasComplexityRequirements?: boolean;
+  isValid?: boolean;
 };
 
 export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
@@ -30,6 +31,7 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
   initialValue,
   useTrim,
   useTrimLead,
+  isValid,
   ...textFieldProps // rest of props
 }) => {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
@@ -56,7 +58,7 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
     // TODO: Add native validity checks here, somehow
     // https://developer.mozilla.org/en-US/docs/Web/API/ValidityState
     // const hasValidity = (type !== TEXTFIELD_TYPE_NUMBER && e.target.validity.valid) || type === TEXTFIELD_TYPE_NUMBER ;
-    if ((required && (value === '' || value === null)) || value === initialValue) {
+    if ((required && (value === '' || value === null)) || value === initialValue || !isValid) {
       setHasChanged(false);
     } else {
       // show submit button
@@ -156,4 +158,5 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
 TextFieldWithSubmit.defaultProps = {
   configPath: '',
   initialValue: '',
+  isValid: true,
 };
