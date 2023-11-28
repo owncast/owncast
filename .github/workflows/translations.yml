@@ -6,6 +6,7 @@ on:
       - 'web/i18n/**'
       - 'crowdin.yml'
       - '.github/workflows/translations.yml'
+      - 'web/i18next-parser.config.mjs'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
