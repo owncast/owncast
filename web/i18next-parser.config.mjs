@@ -10,10 +10,9 @@ export default {
   defaultNamespace: 'translation',
   // Default namespace used in your i18next config
 
-  defaultValue: null,
-  // defaultValue: function (locale, namespace, key, value) {
-  //   return `${key} (${locale})`;
-  // }, // Default value to give to keys with no value
+  defaultValue: function (locale, namespace, key, value) {
+    return `${key}`;
+  }, // Default value to give to keys with no value
   // You may also specify a function accepting the locale, namespace, key, and value as arguments
 
   indentation: 2,
