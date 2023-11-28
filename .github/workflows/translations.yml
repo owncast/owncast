@@ -1,19 +1,43 @@
-name: Crowdin Action
+name: Translation job
 
 on:
   push:
-    branches: [translations]
+    paths:
+      - 'web/i18n/**'
+      - 'crowdin.yml'
+      - '.github/workflows/translations.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  synchronize-with-crowdin:
+  generate-translations:
+    defaults:
+      run:
+        working-directory: ./web
+
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' }}
+        run: npm install
+
+      - name: Generate translation files
+        run: npm run translate
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: Owncast
+          author_email: owncast@owncast.online
+          message: 'Commit updated translations'
+          add: 'web/i18n/**'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Crowdin action
         uses: crowdin/github-action@v1
@@ -23,6 +47,6 @@ jobs:
           localization_branch_name: translations
           config: crowdin.yml
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
