@@ -10,9 +10,10 @@ export default {
   defaultNamespace: 'translation',
   // Default namespace used in your i18next config
 
-  defaultValue: function (locale, namespace, key, value) {
-    return `${key} (${locale})`;
-  }, // Default value to give to keys with no value
+  defaultValue: null,
+  // defaultValue: function (locale, namespace, key, value) {
+  //   return `${key} (${locale})`;
+  // }, // Default value to give to keys with no value
   // You may also specify a function accepting the locale, namespace, key, and value as arguments
 
   indentation: 2,
@@ -72,7 +73,7 @@ export default {
   sort: false,
   // Whether or not to sort the catalog. Can also be a [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#parameters)
 
-  verbose: true,
+  verbose: false,
   // Display info about the parsing including some stats
 
   failOnWarnings: false,
@@ -98,7 +99,7 @@ export default {
   // for that key across locales are reset to the default value, and existing translations are moved to
   // the `_old` file.
 
-  i18nextOptions: null,
+  i18nextOptions: { returnDetails: true, lng: '$LOCALE' },
   // If you wish to customize options in internally used i18next instance, you can define an object with any
   // configuration property supported by i18next (https://www.i18next.com/overview/configuration-options).
   // { compatibilityJSON: 'v3' } can be used to generate v3 compatible plurals.
