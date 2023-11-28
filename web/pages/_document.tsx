@@ -24,7 +24,7 @@ class InlineStylesHead extends Head {
 
 export default function Document() {
   return (
-    <Html lang="en">
+    <Html>
       <InlineStylesHead />
       <body>
         <Main />
