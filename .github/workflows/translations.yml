@@ -1,0 +1,28 @@
+name: Crowdin Action
+
+on:
+  push:
+    branches: [translations]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synchronize-with-crowdin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Crowdin action
+        uses: crowdin/github-action@v1
+        with:
+          upload_sources: true
+          download_translations: true
+          localization_branch_name: translations
+          config: crowdin.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
