@@ -1,0 +1,10 @@
+'pull_request_title': 'Translations update: %two_letters_code%'
+'pull_request_labels': ['crowdin', 'l10n']
+'commit_message': 'Updated translations for %two_letters_code%'
+
+files:
+  - source: web/i18n/*.json
+    translation: web/i18n/%original_file_name%
+
+project_id_env: CROWDIN_PROJECT_ID
+api_token_env: CROWDIN_PERSONAL_TOKEN

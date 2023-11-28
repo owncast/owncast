@@ -1,3 +1,0 @@
-files:
-  - source: /translations/locales/en-us.po
-    translation: /translations/locales/%locale%.po
