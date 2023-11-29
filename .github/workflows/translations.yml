@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'web/i18n/strings.json'
+      - 'web/**/*.tsx'
+      - 'web/**/*.js'
       - 'crowdin.yml'
       - '.github/workflows/translations.yml'
       - 'web/i18next-parser.config.mjs'
