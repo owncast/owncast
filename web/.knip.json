@@ -9,7 +9,9 @@
 		"**/*stories.*",
 		"next-env.d.ts",
 		"public/**",
-		"tests/**"
+		"tests/**",
+		"i18n/index.js",
+		"i18next-parser.config.mjs",
 	],
 	"ignoreDependencies": [
 		"@fontsource/inter",
@@ -82,5 +84,6 @@
 		"@storybook/nextjs",
 		"@storybook/react",
 		"resolve-url-loader",
+		"i18next-scanner"
 	]
 }
