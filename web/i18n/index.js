@@ -1,14 +1,14 @@
-const en = require('./translations.en.json');
-const de = require('./translations.de.json');
-const fr = require('./translations.fr.json');
-const sp = require('./translations.sp.json');
+const en = require('./en-US.json');
+const es = require('./es-ES.json');
+const de = require('./de-DE.json');
+const fr = require('./fr-FR.json');
 
 const i18n = {
   translations: {
     en,
+    es,
     de,
     fr,
-    sp,
   },
   defaultLang: 'en',
   useBrowserDefault: true,
