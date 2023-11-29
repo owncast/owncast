@@ -1,7 +1,7 @@
-const en = require('./en-US.json');
-const es = require('./es-ES.json');
-const de = require('./de-DE.json');
-const fr = require('./fr-FR.json');
+const en = require('./en.json');
+const es = require('./es.json');
+const de = require('./de.json');
+const fr = require('./fr.json');
 
 const i18n = {
   translations: {
