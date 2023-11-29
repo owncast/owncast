@@ -3,7 +3,7 @@ name: Translation job
 on:
   push:
     paths:
-      - 'web/i18n/**'
+      - 'web/i18n/strings.json'
       - 'crowdin.yml'
       - '.github/workflows/translations.yml'
       - 'web/i18next-parser.config.mjs'
