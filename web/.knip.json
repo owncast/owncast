@@ -9,14 +9,15 @@
 		"**/*stories.*",
 		"next-env.d.ts",
 		"public/**",
-		"tests/**"
+		"tests/**",
+		"i18n/index.js",
+		"i18next-parser.config.mjs"
 	],
 	"ignoreDependencies": [
 		"@fontsource/inter",
 		"@fontsource/poppins",
 		"@next/bundle-analyzer",
 		"autoprefixer",
-		"webpack-deadcode-plugin",
 		"yaml",
 		"postcss-flexbugs-fixes",
 		"sharp",
@@ -31,9 +32,7 @@
 		"@storybook/addon-links",
 		"@storybook/addon-postcss",
 		"@storybook/addon-viewport",
-		"@storybook/builder-webpack5",
 		"@storybook/cli",
-		"@storybook/manager-webpack5",
 		"@storybook/mdx2-csf",
 		"@storybook/preset-scss",
 		"@mdx-js/react",
@@ -64,16 +63,13 @@
 		"less-loader",
 		"mdx-mermaid",
 		"mermaid",
-		"prettier",
 		"sass-loader",
 		"sb",
-		"storybook-addon-designs",
 		"storybook-addon-fetch-mock",
 		"storybook-preset-less",
 		"style-loader",
 		"ts-jest",
 		"stylelint-config-standard",
-		"stylelint-config-standard-scss",
 		"postcss",
 		"stylelint",
 		"@babel/core",
@@ -82,5 +78,6 @@
 		"@storybook/nextjs",
 		"@storybook/react",
 		"resolve-url-loader",
+		"i18next-scanner"
 	]
 }
