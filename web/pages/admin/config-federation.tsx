@@ -120,8 +120,8 @@ const ConfigFederation = () => {
 
   const handleUsernameChange = ({ fieldName, value }: UpdateArgs) => {
     handleFieldChange({
-      fieldName: fieldName,
-      value: value,
+      fieldName,
+      value,
     });
     const usernameValue = value;
     const hasUsername = usernameValue !== '';
