@@ -274,6 +274,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
               setShowScrollToBottomButton(true);
             }
           }}
+          //aria-live="polite"
+          //role="log"
         />
         {showScrollToBottomButton && (
           <ScrollToBotBtn
@@ -337,10 +339,13 @@ export const ChatContainer: FC<ChatContainerProps> = ({
       )}
     >
       <div
+        aria-live="polite"
         id="chat-container"
         className={styles.chatContainer}
         style={desktop && { width: `${defaultChatWidth}px` }}
-      >
+        role = "log"
+        >
+
         {MessagesTable}
         {showInput && (
           <div className={styles.chatTextField}>
