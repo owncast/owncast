@@ -319,12 +319,12 @@ export const ChatContainer: FC<ChatContainerProps> = ({
 
   // Get and clean body of newest message to be read out by screenreader
   function getLastMessage() {
-    if (messages.length > 0 && typeof messages[messages.length - 1].body != "undefined") {
-      return messages[messages.length - 1].body.replace( /(<([^>]+)>)/ig, '')
+    if (messages.length > 0 && typeof messages[messages.length - 1].body !== 'undefined') {
+      return messages[messages.length - 1].body.replace( /(<([^>]+)>)/gi, '');
+    }
+    return '';
   }
-    return ''
-  }
-  const lastMessage = getLastMessage()
+  const lastMessage = getLastMessage();
 
   if (resizeWindowCallback) window.removeEventListener('resize', resizeWindowCallback);
   if (desktop) {
@@ -350,7 +350,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         id="chat-container"
         className={styles.chatContainer}
         style={desktop && { width: `${defaultChatWidth}px` }}
-        >
+      >
 
         {MessagesTable}
         {showInput && (
@@ -362,9 +362,9 @@ export const ChatContainer: FC<ChatContainerProps> = ({
           <div className={styles.resizeHandle} onMouseDown={startDrag} role="presentation" />
         )}
       </div>
-          <span className={styles.chatAccessibilityHidden} aria-live="polite">
-            {lastMessage}
-          </span>
+      <span className={styles.chatAccessibilityHidden} aria-live="polite">
+        {lastMessage}
+      </span>
     </ErrorBoundary>
   );
 };
