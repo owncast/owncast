@@ -351,7 +351,6 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         className={styles.chatContainer}
         style={desktop && { width: `${defaultChatWidth}px` }}
       >
-
         {MessagesTable}
         {showInput && (
           <div className={styles.chatTextField}>
