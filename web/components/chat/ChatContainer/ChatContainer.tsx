@@ -349,7 +349,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         aria-live="off"
         id="chat-container"
         className={styles.chatContainer}
-        style={desktop && { width: `${defaultChatWidth}px` }}>
+        style={desktop && { width: `${defaultChatWidth}px` }}
+      >
 
         {MessagesTable}
         {showInput && (
