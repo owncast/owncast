@@ -320,7 +320,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   // Get and clean body of newest message to be read out by screenreader
   function getLastMessage() {
     if (messages.length > 0 && typeof messages[messages.length - 1].body !== 'undefined') {
-      return messages[messages.length - 1].body.replace( /(<([^>]+)>)/gi, '');
+      return messages[messages.length - 1].body.replace(/(<([^>]+)>)/gi, '');
     }
     return '';
   }
@@ -349,8 +349,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         aria-live="off"
         id="chat-container"
         className={styles.chatContainer}
-        style={desktop && { width: `${defaultChatWidth}px` }}
-      >
+        style={desktop && { width: `${defaultChatWidth}px` }}>
 
         {MessagesTable}
         {showInput && (
