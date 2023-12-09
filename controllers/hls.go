@@ -83,8 +83,6 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 
 		fileServer := &FileServerHandler{HLSPath: fullPath}
 		longTermHLSSegmentCache.Middleware(fileServer).ServeHTTP(w, r)
-		// http.ServeH
-		// http.Handle("/hls", longTermHLSSegmentCache.Middleware(fileServer))
 		return
 	}
 
