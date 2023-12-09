@@ -32,9 +32,11 @@ import (
 // Start starts the router for the http, ws, and rtmp.
 func Start() error {
 	// Setup a web response cache
+	enableCache := !config.DisableResponseCaching
+
 	responseCache, err := memory.NewAdapter(
 		memory.AdapterWithAlgorithm(memory.LRU),
-		memory.AdapterWithCapacity(5),
+		memory.AdapterWithCapacity(50),
 	)
 	if err != nil {
 		log.Warn("unable to create web cache", err)
@@ -105,9 +107,13 @@ func Start() error {
 	})
 
 	// status of the system
-	http.HandleFunc("/api/status", func(rw http.ResponseWriter, r *http.Request) {
-		superShortCacheClient.Middleware(http.HandlerFunc(controllers.GetStatus)).ServeHTTP(rw, r)
-	})
+	if enableCache {
+		http.HandleFunc("/api/status", func(rw http.ResponseWriter, r *http.Request) {
+			superShortCacheClient.Middleware(http.HandlerFunc(controllers.GetStatus)).ServeHTTP(rw, r)
+		})
+	} else {
+		http.HandleFunc("/api/status", controllers.GetStatus)
+	}
 
 	// custom emoji supported in the chat
 	http.HandleFunc("/api/emoji", func(rw http.ResponseWriter, r *http.Request) {
@@ -115,14 +121,22 @@ func Start() error {
 	})
 
 	// chat rest api
-	http.HandleFunc("/api/chat", func(rw http.ResponseWriter, r *http.Request) {
-		superShortCacheClient.Middleware(middleware.RequireUserAccessToken(controllers.GetChatMessages))
-	})
+	if enableCache {
+		http.HandleFunc("/api/chat", func(rw http.ResponseWriter, r *http.Request) {
+			superShortCacheClient.Middleware(middleware.RequireUserAccessToken(controllers.GetChatMessages))
+		})
+	} else {
+		http.HandleFunc("/api/chat", middleware.RequireUserAccessToken(controllers.GetChatMessages))
+	}
 
 	// web config api
-	http.HandleFunc("/api/config", func(rw http.ResponseWriter, r *http.Request) {
-		superShortCacheClient.Middleware(http.HandlerFunc(controllers.GetWebConfig)).ServeHTTP(rw, r)
-	})
+	if enableCache {
+		http.HandleFunc("/api/config", func(rw http.ResponseWriter, r *http.Request) {
+			superShortCacheClient.Middleware(http.HandlerFunc(controllers.GetWebConfig)).ServeHTTP(rw, r)
+		})
+	} else {
+		http.HandleFunc("/api/config", controllers.GetWebConfig)
+	}
 
 	// return the YP protocol data
 	http.HandleFunc("/api/yp", yp.GetYPResponse)
