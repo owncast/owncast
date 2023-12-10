@@ -182,15 +182,15 @@ test('verify responses of /federation/user/ when federation is enabled', async (
 		.get('/federation/user/not' + fediUsername)
 		.set('Accept', 'application/json')
 		.expect(404);
-	// const resWithAcceptUsername = request.get('/federation/user/' + fediUsername)
-	// 	.set('Accept', 'application/json')
-	// 	.expect(200)
-	// 	.expect('Content-Type', /json/)
-	// 	.then((res) => {
-	// 		parseJson(res.text);
-	// 		done();
-	// 	});
-	done();
+	const resWithAcceptUsername = request
+		.get('/federation/user/' + fediUsername)
+		.set('Accept', 'application/json')
+		.expect(200)
+		.expect('Content-Type', /json/)
+		.then((res) => {
+			parseJson(res.text);
+			done();
+		});
 });
 
 test('verify responses of /federation/ when federation is enabled', async (done) => {
