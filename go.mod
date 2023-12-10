@@ -69,6 +69,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.11.0 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
+	github.com/victorspringer/http-cache v0.0.0-20231006141456-6446fe59efba // indirect
 )
 
 require (
