@@ -1,5 +1,5 @@
 import { Meta } from '@storybook/react';
-import ConfigFederation from './config-federation';
+import ConfigFederation from '../pages/admin/config-federation';
 
 const meta = {
   title: 'owncast/Admin/Config/Federation',
