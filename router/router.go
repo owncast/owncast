@@ -24,52 +24,131 @@ import (
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
+
+	cache "github.com/victorspringer/http-cache"
+	"github.com/victorspringer/http-cache/adapter/memory"
 )
 
 // Start starts the router for the http, ws, and rtmp.
 func Start() error {
+	// Setup a web response cache
+	enableCache := !config.DisableResponseCaching
+
+	responseCache, err := memory.NewAdapter(
+		memory.AdapterWithAlgorithm(memory.LRU),
+		memory.AdapterWithCapacity(50),
+	)
+	if err != nil {
+		log.Warn("unable to create web cache", err)
+	}
+
+	superShortCacheClient, err := cache.NewClient(
+		cache.ClientWithAdapter(responseCache),
+		cache.ClientWithTTL(3*time.Second),
+	)
+	if err != nil {
+		log.Warn("unable to create web cache client", err)
+	}
+	reasonableDurationCacheClient, err := cache.NewClient(
+		cache.ClientWithAdapter(responseCache),
+		cache.ClientWithTTL(8*time.Second),
+	)
+	if err != nil {
+		log.Warn("unable to create web cache client", err)
+	}
+	longerDurationCacheClient, err := cache.NewClient(
+		cache.ClientWithAdapter(responseCache),
+		cache.ClientWithTTL(3*time.Minute),
+	)
+	if err != nil {
+		log.Warn("unable to create web cache client", err)
+	}
 	// The primary web app.
-	http.HandleFunc("/", controllers.IndexHandler)
+	if enableCache {
+		http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
+			longerDurationCacheClient.Middleware(http.HandlerFunc(controllers.IndexHandler)).ServeHTTP(rw, r)
+		})
+	} else {
+		http.HandleFunc("/", controllers.IndexHandler)
+	}
 
 	// The admin web app.
 	http.HandleFunc("/admin/", middleware.RequireAdminAuth(controllers.IndexHandler))
 
 	// Images
-	http.HandleFunc("/thumbnail.jpg", controllers.GetThumbnail)
-	http.HandleFunc("/preview.gif", controllers.GetPreview)
-	http.HandleFunc("/logo", controllers.GetLogo)
+	http.HandleFunc("/thumbnail.jpg", func(rw http.ResponseWriter, r *http.Request) {
+		superShortCacheClient.Middleware(http.HandlerFunc(controllers.GetThumbnail)).ServeHTTP(rw, r)
+	})
+
+	http.HandleFunc("/preview.gif", func(rw http.ResponseWriter, r *http.Request) {
+		superShortCacheClient.Middleware(http.HandlerFunc(controllers.GetPreview)).ServeHTTP(rw, r)
+	})
+
+	http.HandleFunc("/logo", func(rw http.ResponseWriter, r *http.Request) {
+		longerDurationCacheClient.Middleware(http.HandlerFunc(controllers.GetLogo)).ServeHTTP(rw, r)
+	})
 
 	// Custom Javascript
-	http.HandleFunc("/customjavascript", controllers.ServeCustomJavascript)
+	http.HandleFunc("/customjavascript", func(rw http.ResponseWriter, r *http.Request) {
+		longerDurationCacheClient.Middleware(http.HandlerFunc(controllers.ServeCustomJavascript)).ServeHTTP(rw, r)
+	})
 
 	// Return a single emoji image.
-	http.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
+	http.HandleFunc(config.EmojiDir, func(rw http.ResponseWriter, r *http.Request) {
+		longerDurationCacheClient.Middleware(http.HandlerFunc(controllers.GetCustomEmojiImage)).ServeHTTP(rw, r)
+	})
 
 	// return the logo
 
 	// return a logo that's compatible with external social networks
-	http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
+	http.HandleFunc("/logo/external", func(rw http.ResponseWriter, r *http.Request) {
+		longerDurationCacheClient.Middleware(http.HandlerFunc(controllers.GetCompatibleLogo)).ServeHTTP(rw, r)
+	})
 
 	// robots.txt
-	http.HandleFunc("/robots.txt", controllers.GetRobotsDotTxt)
+	http.HandleFunc("/robots.txt", func(rw http.ResponseWriter, r *http.Request) {
+		longerDurationCacheClient.Middleware(http.HandlerFunc(controllers.GetRobotsDotTxt)).ServeHTTP(rw, r)
+	})
 
 	// status of the system
-	http.HandleFunc("/api/status", controllers.GetStatus)
+	if enableCache {
+		http.HandleFunc("/api/status", func(rw http.ResponseWriter, r *http.Request) {
+			superShortCacheClient.Middleware(http.HandlerFunc(controllers.GetStatus)).ServeHTTP(rw, r)
+		})
+	} else {
+		http.HandleFunc("/api/status", controllers.GetStatus)
+	}
 
 	// custom emoji supported in the chat
-	http.HandleFunc("/api/emoji", controllers.GetCustomEmojiList)
+	http.HandleFunc("/api/emoji", func(rw http.ResponseWriter, r *http.Request) {
+		reasonableDurationCacheClient.Middleware(http.HandlerFunc(controllers.GetCustomEmojiList)).ServeHTTP(rw, r)
+	})
 
 	// chat rest api
-	http.HandleFunc("/api/chat", middleware.RequireUserAccessToken(controllers.GetChatMessages))
+	if enableCache {
+		http.HandleFunc("/api/chat", func(rw http.ResponseWriter, r *http.Request) {
+			superShortCacheClient.Middleware(middleware.RequireUserAccessToken(controllers.GetChatMessages))
+		})
+	} else {
+		http.HandleFunc("/api/chat", middleware.RequireUserAccessToken(controllers.GetChatMessages))
+	}
 
 	// web config api
-	http.HandleFunc("/api/config", controllers.GetWebConfig)
+	if enableCache {
+		http.HandleFunc("/api/config", func(rw http.ResponseWriter, r *http.Request) {
+			superShortCacheClient.Middleware(http.HandlerFunc(controllers.GetWebConfig)).ServeHTTP(rw, r)
+		})
+	} else {
+		http.HandleFunc("/api/config", controllers.GetWebConfig)
+	}
 
 	// return the YP protocol data
 	http.HandleFunc("/api/yp", yp.GetYPResponse)
 
 	// list of all social platforms
-	http.HandleFunc("/api/socialplatforms", controllers.GetAllSocialPlatforms)
+	http.HandleFunc("/api/socialplatforms", func(rw http.ResponseWriter, r *http.Request) {
+		reasonableDurationCacheClient.Middleware(http.HandlerFunc(controllers.GetAllSocialPlatforms)).ServeHTTP(rw, r)
+	})
 
 	// return the list of video variants available
 	http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
@@ -84,7 +163,9 @@ func Start() error {
 	http.HandleFunc("/api/remotefollow", controllers.RemoteFollow)
 
 	// return followers
-	http.HandleFunc("/api/followers", middleware.HandlePagination(controllers.GetFollowers))
+	http.HandleFunc("/api/followers", func(rw http.ResponseWriter, r *http.Request) {
+		reasonableDurationCacheClient.Middleware(middleware.HandlePagination(controllers.GetFollowers)).ServeHTTP(rw, r)
+	})
 
 	// save client video playback metrics
 	http.HandleFunc("/api/metrics/playback", controllers.ReportPlaybackMetrics)
