@@ -111,7 +111,7 @@ type serverConfigAdminResponse struct {
 	VideoServingEndpoint    string                      `json:"videoServingEndpoint"`
 	S3                      models.S3                   `json:"s3"`
 	Federation              federationConfigResponse    `json:"federation"`
-	SupportedCodecs         []string                    `json:"supportedCodecs"`
+	SupportedCodecs         []models.VideoCodec         `json:"supportedCodecs"`
 	ExternalActions         []models.ExternalAction     `json:"externalActions"`
 	ForbiddenUsernames      []string                    `json:"forbiddenUsernames"`
 	SuggestedUsernames      []string                    `json:"suggestedUsernames"`

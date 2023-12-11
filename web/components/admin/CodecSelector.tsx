@@ -77,30 +77,12 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
     });
   }
 
-  const items = supportedCodecs.map(codec => {
-    let title = codec;
-    if (title === 'libx264') {
-      title = 'Default (libx264)';
-    } else if (title === 'h264_nvenc') {
-      title = 'NVIDIA GPU acceleration';
-    } else if (title === 'h264_vaapi') {
-      title = 'VA-API hardware encoding';
-    } else if (title === 'h264_qsv') {
-      title = 'Intel QuickSync';
-    } else if (title === 'h264_v4l2m2m') {
-      title = 'Video4Linux hardware encoding';
-    } else if (title === 'h264_omx') {
-      title = 'OpenMax (omx) for Raspberry Pi';
-    } else if (title === 'h264_videotoolbox') {
-      title = 'Apple VideoToolbox (hardware)';
-    }
-
-    return (
-      <Option key={codec} value={codec}>
-        {title}
-      </Option>
-    );
-  });
+  // console.log(supportedCodecs);
+  const items = supportedCodecs.map(codec => (
+    <Option key={codec.key} value={codec.key}>
+      {codec.displayName}
+    </Option>
+  ));
 
   let description = '';
   if (selectedCodec === 'libx264') {
@@ -109,9 +91,12 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
   } else if (selectedCodec === 'h264_nvenc') {
     description =
       'You can use your NVIDIA GPU for encoding if you have a modern NVIDIA card with encoding cores.';
+  } else if (selectedCodec === 'h264_vaapi_legacy') {
+    description =
+      'For versions of ffmpeg < 5.0. VA-API may be supported by your NVIDIA proprietary drivers, Mesa open-source drivers for AMD or Intel graphics.';
   } else if (selectedCodec === 'h264_vaapi') {
     description =
-      'VA-API may be supported by your NVIDIA proprietary drivers, Mesa open-source drivers for AMD or Intel graphics.';
+      'For versions of ffmpeg > 5.0. VA-API may be supported by your NVIDIA proprietary drivers, Mesa open-source drivers for AMD or Intel graphics.';
   } else if (selectedCodec === 'h264_qsv') {
     description =
       "Quick Sync Video is Intel's brand for its dedicated video encoding and decoding hardware. It may be an option if you have a modern Intel CPU with integrated graphics.";
