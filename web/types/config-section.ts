@@ -1,5 +1,7 @@
 // TS types for elements on the Config pages
 
+import { VideoCodec } from './video-codec';
+
 // for dropdown
 export interface SocialHandleDropdownItem {
   icon: string;
@@ -147,7 +149,7 @@ export interface ConfigDetails {
   socketHostOverride: string;
   videoServingEndpoint: string;
   yp: ConfigDirectoryFields;
-  supportedCodecs: string[];
+  supportedCodecs: VideoCodec[];
   videoCodec: string;
   forbiddenUsernames: string[];
   suggestedUsernames: string[];
