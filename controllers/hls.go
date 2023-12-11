@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	cacheAdapter     *cache.Adapter
+	hlsCacheAdapter  *cache.Adapter
 	hlsResponseCache *cache.Client
 )
 
@@ -40,13 +40,13 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if cacheAdapter == nil {
+	if hlsCacheAdapter == nil {
 		ca, err := memory.NewAdapter(
 			memory.AdapterWithAlgorithm(memory.LFU),
 			memory.AdapterWithCapacity(50),
 			memory.AdapterWithStorageCapacity(104_857_600),
 		)
-		cacheAdapter = &ca
+		hlsCacheAdapter = &ca
 		if err != nil {
 			log.Warn("unable to create web cache", err)
 		}
@@ -56,7 +56,7 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	// individual segments for a long time.
 	if hlsResponseCache == nil {
 		rc, err := cache.NewClient(
-			cache.ClientWithAdapter(*cacheAdapter),
+			cache.ClientWithAdapter(*hlsCacheAdapter),
 			cache.ClientWithTTL(30*time.Second),
 			cache.ClientWithExpiresHeader(),
 		)
