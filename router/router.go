@@ -64,13 +64,7 @@ func Start() error {
 		log.Warn("unable to create web cache client", err)
 	}
 	// The primary web app.
-	if enableCache {
-		http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
-			longerDurationCacheClient.Middleware(http.HandlerFunc(controllers.IndexHandler)).ServeHTTP(rw, r)
-		})
-	} else {
-		http.HandleFunc("/", controllers.IndexHandler)
-	}
+	http.HandleFunc("/", controllers.IndexHandler)
 
 	// The admin web app.
 	http.HandleFunc("/admin/", middleware.RequireAdminAuth(controllers.IndexHandler))
