@@ -42,7 +42,7 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 
 	if hlsCacheAdapter == nil {
 		ca, err := memory.NewAdapter(
-			memory.AdapterWithAlgorithm(memory.LFU),
+			memory.AdapterWithAlgorithm(memory.LRU),
 			memory.AdapterWithCapacity(50),
 			memory.AdapterWithStorageCapacity(104_857_600),
 		)
