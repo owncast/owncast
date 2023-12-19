@@ -126,16 +126,13 @@ const ConfigFederation = () => {
     const usernameValue = value;
     const hasUsername = usernameValue !== '';
     if (hasUsername) {
-      if (usernameValue.includes('@')) {
-        const usernameWithoutServer = usernameValue.split('@').slice(0, -1).join('@');
-        if (usernameWithoutServer.length > 0 && isAlphanumeric(usernameWithoutServer)) {
-          setIsUsernameValid(true);
-        } else {
-          setIsUsernameValid(false);
-        }
+      if (isAlphanumeric(usernameValue)) {
+        setIsUsernameValid(true);
       } else {
         setIsUsernameValid(false);
       }
+    } else {
+      setIsUsernameValid(false);
     }
   };
 
