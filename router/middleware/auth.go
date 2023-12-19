@@ -25,11 +25,9 @@ func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 		password := data.GetAdminPassword()
 		realm := "Owncast Authenticated Request"
 
-		// The following line is kind of a work around.
-		// If you want HTTP Basic Auth + Cors it requires _explicit_ origins to be provided in the
-		// Access-Control-Allow-Origin header.  So we just pull out the origin header and specify it.
-		// If we want to lock down admin APIs to not be CORS accessible for anywhere, this is where we would do that.
-		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+		// Alow CORS only for localhost:3000 to support Owncast development.
+		validAdminHost := "http://localhost:3000"
+		w.Header().Set("Access-Control-Allow-Origin", validAdminHost)
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
 
