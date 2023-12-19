@@ -10,7 +10,7 @@ const meta = {
   title: 'owncast/Chat/Chat modal',
   component: ChatModal,
   parameters: {
-    chromatic: { diffThreshold: 0.8, delay: 5000 },
+    chromatic: { diffThreshold: 0.8 },
     docs: {},
   },
 } satisfies Meta<typeof ChatModal>;
@@ -598,4 +598,8 @@ export const Example = {
     handleClose: () => {},
     currentUser,
   } as ChatModalProps,
+	parameters: {
+    chromatic: { delay: 5000 },
+    docs: {},
+  }
 };
