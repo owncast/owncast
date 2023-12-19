@@ -10,7 +10,7 @@ const meta = {
   title: 'owncast/Chat/Chat modal',
   component: ChatModal,
   parameters: {
-    chromatic: { diffThreshold: 0.8, delay: 1000 },
+    chromatic: { diffThreshold: 0.8, delay: 5000 },
     docs: {},
   },
 } satisfies Meta<typeof ChatModal>;
