@@ -43,7 +43,7 @@ function start_owncast() {
 	go build -o owncast main.go
 
 	echo "Running owncast..."
-	./owncast -disableResponseCaching -database "$TEMP_DB" &
+	./owncast -database "$TEMP_DB" &
 	SERVER_PID=$!
 	popd >/dev/null
 

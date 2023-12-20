@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
@@ -17,44 +16,11 @@ import (
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
-	cache "github.com/victorspringer/http-cache"
-	"github.com/victorspringer/http-cache/adapter/memory"
-)
-
-var (
-	indexCacheAdapter   *cache.Adapter
-	indexBotSearchCache *cache.Client
 )
 
 // IndexHandler handles the default index route.
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
-
-	if indexCacheAdapter == nil {
-		ca, err := memory.NewAdapter(
-			memory.AdapterWithAlgorithm(memory.LFU),
-			memory.AdapterWithCapacity(50),
-			memory.AdapterWithStorageCapacity(104_857_600),
-		)
-		indexCacheAdapter = &ca
-		if err != nil {
-			log.Warn("unable to create web cache", err)
-		}
-	}
-
-	if indexBotSearchCache == nil {
-		rc, err := cache.NewClient(
-			cache.ClientWithAdapter(*indexCacheAdapter),
-			cache.ClientWithTTL(30*time.Second),
-			cache.ClientWithExpiresHeader(),
-			cache.ClientWithRefreshKey("bot-search-page"),
-			cache.ClientWithExpiresHeader(),
-		)
-		indexBotSearchCache = rc
-		if err != nil {
-			log.Warn("unable to create web cache client", err)
-		}
-	}
 
 	isIndexRequest := r.URL.Path == "/" || filepath.Base(r.URL.Path) == "index.html" || filepath.Base(r.URL.Path) == ""
 
@@ -66,7 +32,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// For search engine bots and social scrapers return a special
 	// server-rendered page.
 	if utils.IsUserAgentABot(r.UserAgent()) && isIndexRequest {
-		indexBotSearchCache.Middleware(http.HandlerFunc(handleScraperMetadataPage))
+		handleScraperMetadataPage(w, r)
 		return
 	}
 

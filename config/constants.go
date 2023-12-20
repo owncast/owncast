@@ -30,8 +30,4 @@ var (
 
 	// PublicFilesPath is the optional directory for hosting public files.
 	PublicFilesPath = filepath.Join(DataDirectory, "public")
-
-	// DisableResponseCaching will disable caching of API and resource
-	// responses. Disable this feature to turn off the optimizations.
-	DisableResponseCaching = false
 )
