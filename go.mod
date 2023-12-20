@@ -31,9 +31,9 @@ require (
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
-	golang.org/x/crypto v0.17.0 // indirect
+	golang.org/x/crypto v0.15.0 // indirect
 	golang.org/x/net v0.18.0
-	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
 )
 
 require github.com/prometheus/client_golang v1.17.0
@@ -75,7 +75,6 @@ require (
 	github.com/CAFxX/httpcompression v0.0.9
 	github.com/andybalholm/cascadia v1.3.2
 	github.com/mssola/user_agent v0.6.0
-	github.com/victorspringer/http-cache v0.0.0-20231006141456-6446fe59efba
 	github.com/yuin/goldmark-emoji v1.0.2
 	gopkg.in/evanphx/json-patch.v5 v5.7.0
 	mvdan.cc/xurls v1.1.0
