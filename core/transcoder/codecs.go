@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -14,6 +15,7 @@ import (
 type Codec interface {
 	Name() string
 	DisplayName() string
+	Key() string
 	GlobalFlags() string
 	PixelFormat() string
 	Scaler() string
@@ -21,17 +23,18 @@ type Codec interface {
 	ExtraFilters() string
 	VariantFlags(v *HLSVariant) string
 	GetPresetForLevel(l int) string
+	GetRepresentation() models.VideoCodec
 }
 
 var supportedCodecs = map[string]string{
 	(&Libx264Codec{}).Name():      "libx264",
 	(&OmxCodec{}).Name():          "omx",
-	(&VaapiCodec{}).Name():        "vaapi",
+	(&VaapiLegacyCodec{}).Name():  "vaapi (legacy)",
+	(&VaapiCodec{}).Name():        "vaapi (ffmpeg 5+)",
 	(&NvencCodec{}).Name():        "NVIDIA nvenc",
 	(&VideoToolboxCodec{}).Name(): "videotoolbox",
 }
 
-// Libx264Codec represents an instance of the Libx264 Codec.
 type Libx264Codec struct{}
 
 // Name returns the codec name.
@@ -41,7 +44,12 @@ func (c *Libx264Codec) Name() string {
 
 // DisplayName returns the human readable name of the codec.
 func (c *Libx264Codec) DisplayName() string {
-	return "x264"
+	return "x264 (Default)"
+}
+
+// Name returns the codec key.
+func (c *Libx264Codec) Key() string {
+	return c.Name()
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
@@ -100,6 +108,15 @@ func (c *Libx264Codec) GetPresetForLevel(l int) string {
 	return preset
 }
 
+// GetRepresentation returns the simplified codec representation of this codec.
+func (c *Libx264Codec) GetRepresentation() models.VideoCodec {
+	return models.VideoCodec{
+		Name:        c.Name(),
+		DisplayName: c.DisplayName(),
+		Key:         c.Key(),
+	}
+}
+
 // OmxCodec represents an instance of the Omx codec.
 type OmxCodec struct{}
 
@@ -111,6 +128,11 @@ func (c *OmxCodec) Name() string {
 // DisplayName returns the human readable name of the codec.
 func (c *OmxCodec) DisplayName() string {
 	return "OpenMAX (omx)"
+}
+
+// Name returns the codec key.
+func (c *OmxCodec) Key() string {
+	return c.Name()
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
@@ -165,7 +187,99 @@ func (c *OmxCodec) GetPresetForLevel(l int) string {
 	return preset
 }
 
-// VaapiCodec represents an instance of the Vaapi codec.
+// GetRepresentation returns the simplified codec representation of this codec.
+func (c *OmxCodec) GetRepresentation() models.VideoCodec {
+	return models.VideoCodec{
+		Name:        c.Name(),
+		DisplayName: c.DisplayName(),
+		Key:         c.Key(),
+	}
+}
+
+// VaapiLegacyCodec represents an instance of the Vaapi codec.
+type VaapiLegacyCodec struct{}
+
+// Name returns the codec name.
+func (c *VaapiLegacyCodec) Name() string {
+	return "h264_vaapi" //nolint:goconst
+}
+
+// DisplayName returns the human readable name of the codec.
+func (c *VaapiLegacyCodec) DisplayName() string {
+	return "VA-API (Legacy)"
+}
+
+// Name returns the codec key.
+func (c *VaapiLegacyCodec) Key() string {
+	return "h264_vaapi_legacy"
+}
+
+// GlobalFlags are the global flags used with this codec in the transcoder.
+func (c *VaapiLegacyCodec) GlobalFlags() string {
+	flags := []string{
+		"-hwaccel", "vaapi",
+		"-hwaccel_output_format", "vaapi",
+		"-vaapi_device", "/dev/dri/renderD128",
+	}
+
+	return strings.Join(flags, " ")
+}
+
+// PixelFormat is the pixel format required for this codec.
+func (c *VaapiLegacyCodec) PixelFormat() string {
+	return "vaapi_vld"
+}
+
+// Scaler is the scaler used for resizing the video in the transcoder.
+func (c *VaapiLegacyCodec) Scaler() string {
+	return "scale_vaapi"
+}
+
+// ExtraFilters are the extra filters required for this codec in the transcoder.
+func (c *VaapiLegacyCodec) ExtraFilters() string {
+	return ""
+}
+
+// ExtraArguments are the extra arguments used with this codec in the transcoder.
+func (c *VaapiLegacyCodec) ExtraArguments() string {
+	return ""
+}
+
+// VariantFlags returns a string representing a single variant processed by this codec.
+func (c *VaapiLegacyCodec) VariantFlags(v *HLSVariant) string {
+	return ""
+}
+
+// GetPresetForLevel returns the string preset for this codec given an integer level.
+func (c *VaapiLegacyCodec) GetPresetForLevel(l int) string {
+	presetMapping := map[int]string{
+		0: "ultrafast",
+		1: "superfast",
+		2: "veryfast",
+		3: "faster",
+		4: "fast",
+	}
+
+	preset, ok := presetMapping[l]
+	if !ok {
+		defaultPreset := presetMapping[1]
+		log.Errorf("Invalid level for vaapi preset %d, defaulting to %s", l, defaultPreset)
+		return defaultPreset
+	}
+
+	return preset
+}
+
+// GetRepresentation returns the simplified codec representation of this codec.
+func (c *VaapiLegacyCodec) GetRepresentation() models.VideoCodec {
+	return models.VideoCodec{
+		Name:        c.Name(),
+		DisplayName: c.DisplayName(),
+		Key:         c.Key(),
+	}
+}
+
+// VaapiCodec represents the vaapi codec included in ffmpeg 5.0+.
 type VaapiCodec struct{}
 
 // Name returns the codec name.
@@ -175,7 +289,12 @@ func (c *VaapiCodec) Name() string {
 
 // DisplayName returns the human readable name of the codec.
 func (c *VaapiCodec) DisplayName() string {
-	return "VA-API"
+	return "VA-API (ffmpeg 5+)"
+}
+
+// Name returns the codec key.
+func (c *VaapiCodec) Key() string {
+	return "h264_vaapi"
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
@@ -191,7 +310,7 @@ func (c *VaapiCodec) GlobalFlags() string {
 
 // PixelFormat is the pixel format required for this codec.
 func (c *VaapiCodec) PixelFormat() string {
-	return "vaapi_vld"
+	return "vaapi"
 }
 
 // Scaler is the scaler used for resizing the video in the transcoder.
@@ -234,6 +353,15 @@ func (c *VaapiCodec) GetPresetForLevel(l int) string {
 	return preset
 }
 
+// GetRepresentation returns the simplified codec representation of this codec.
+func (c *VaapiCodec) GetRepresentation() models.VideoCodec {
+	return models.VideoCodec{
+		Name:        c.Name(),
+		DisplayName: c.DisplayName(),
+		Key:         c.Key(),
+	}
+}
+
 // NvencCodec represents an instance of the Nvenc Codec.
 type NvencCodec struct{}
 
@@ -245,6 +373,11 @@ func (c *NvencCodec) Name() string {
 // DisplayName returns the human readable name of the codec.
 func (c *NvencCodec) DisplayName() string {
 	return "nvidia nvenc"
+}
+
+// Name returns the codec key.
+func (c *NvencCodec) Key() string {
+	return c.Name()
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
@@ -302,6 +435,15 @@ func (c *NvencCodec) GetPresetForLevel(l int) string {
 	return preset
 }
 
+// GetRepresentation returns the simplified codec representation of this codec.
+func (c *NvencCodec) GetRepresentation() models.VideoCodec {
+	return models.VideoCodec{
+		Name:        c.Name(),
+		DisplayName: c.DisplayName(),
+		Key:         c.Key(),
+	}
+}
+
 // QuicksyncCodec represents an instance of the Intel Quicksync Codec.
 type QuicksyncCodec struct{}
 
@@ -313,6 +455,11 @@ func (c *QuicksyncCodec) Name() string {
 // DisplayName returns the human readable name of the codec.
 func (c *QuicksyncCodec) DisplayName() string {
 	return "Intel QuickSync"
+}
+
+// Name returns the codec key.
+func (c *QuicksyncCodec) Key() string {
+	return c.Name()
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
@@ -365,6 +512,15 @@ func (c *QuicksyncCodec) GetPresetForLevel(l int) string {
 	return preset
 }
 
+// GetRepresentation returns the simplified codec representation of this codec.
+func (c *QuicksyncCodec) GetRepresentation() models.VideoCodec {
+	return models.VideoCodec{
+		Name:        c.Name(),
+		DisplayName: c.DisplayName(),
+		Key:         c.Key(),
+	}
+}
+
 // Video4Linux represents an instance of the V4L Codec.
 type Video4Linux struct{}
 
@@ -376,6 +532,11 @@ func (c *Video4Linux) Name() string {
 // DisplayName returns the human readable name of the codec.
 func (c *Video4Linux) DisplayName() string {
 	return "Video4Linux"
+}
+
+// Name returns the codec key.
+func (c *Video4Linux) Key() string {
+	return c.Name()
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
@@ -427,6 +588,15 @@ func (c *Video4Linux) GetPresetForLevel(l int) string {
 	return preset
 }
 
+// GetRepresentation returns the simplified codec representation of this codec.
+func (c *Video4Linux) GetRepresentation() models.VideoCodec {
+	return models.VideoCodec{
+		Name:        c.Name(),
+		DisplayName: c.DisplayName(),
+		Key:         c.Key(),
+	}
+}
+
 // VideoToolboxCodec represents an instance of the VideoToolbox codec.
 type VideoToolboxCodec struct{}
 
@@ -438,6 +608,11 @@ func (c *VideoToolboxCodec) Name() string {
 // DisplayName returns the human readable name of the codec.
 func (c *VideoToolboxCodec) DisplayName() string {
 	return "VideoToolbox"
+}
+
+// Name returns the codec key.
+func (c *VideoToolboxCodec) Key() string {
+	return c.Name()
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
@@ -502,25 +677,35 @@ func (c *VideoToolboxCodec) GetPresetForLevel(l int) string {
 	return preset
 }
 
+// GetRepresentation returns the simplified codec representation of this codec.
+func (c *VideoToolboxCodec) GetRepresentation() models.VideoCodec {
+	return models.VideoCodec{
+		Name:        c.Name(),
+		DisplayName: c.DisplayName(),
+		Key:         c.Key(),
+	}
+}
+
 // GetCodecs will return the supported codecs available on the system.
-func GetCodecs(ffmpegPath string) []string {
-	codecs := make([]string, 0)
+func GetCodecs(ffmpegPath string) []models.VideoCodec {
+	codecs := make([]models.VideoCodec, 0)
 
 	cmd := exec.Command(ffmpegPath, "-encoders")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Errorln(err)
 		return codecs
 	}
-
 	response := string(out)
 	lines := strings.Split(response, "\n")
 	for _, line := range lines {
 		if strings.Contains(line, "H.264") {
 			fields := strings.Fields(line)
-			codec := fields[1]
-			if _, supported := supportedCodecs[codec]; supported {
-				codecs = append(codecs, codec)
+			codecString := fields[1]
+			supportedCodecsForName := getCodec(codecString)
+			for _, codec := range supportedCodecsForName {
+				if _, supported := supportedCodecs[codecString]; supported {
+					codecs = append(codecs, codec.GetRepresentation())
+				}
 			}
 		}
 	}
@@ -528,19 +713,44 @@ func GetCodecs(ffmpegPath string) []string {
 	return codecs
 }
 
-func getCodec(name string) Codec {
+func getCodec(name string) []Codec {
 	switch name {
 	case (&NvencCodec{}).Name():
-		return &NvencCodec{}
+		return []Codec{&NvencCodec{}}
+	case (&VaapiLegacyCodec{}).Name():
+		return []Codec{&VaapiLegacyCodec{}, &VaapiCodec{}}
 	case (&VaapiCodec{}).Name():
-		return &VaapiCodec{}
+		return []Codec{&VaapiLegacyCodec{}, &VaapiCodec{}}
 	case (&QuicksyncCodec{}).Name():
-		return &QuicksyncCodec{}
+		return []Codec{&QuicksyncCodec{}}
 	case (&OmxCodec{}).Name():
-		return &OmxCodec{}
+		return []Codec{&OmxCodec{}}
 	case (&Video4Linux{}).Name():
-		return &Video4Linux{}
+		return []Codec{&Video4Linux{}}
 	case (&VideoToolboxCodec{}).Name():
+		return []Codec{&VideoToolboxCodec{}}
+	case (&Libx264Codec{}).Name():
+		return []Codec{&Libx264Codec{}}
+	default:
+		return []Codec{}
+	}
+}
+
+func getCodecForKey(key string) Codec {
+	switch key {
+	case (&NvencCodec{}).Key():
+		return &NvencCodec{}
+	case (&VaapiLegacyCodec{}).Key():
+		return &VaapiLegacyCodec{}
+	case (&VaapiCodec{}).Key():
+		return &VaapiCodec{}
+	case (&QuicksyncCodec{}).Key():
+		return &QuicksyncCodec{}
+	case (&OmxCodec{}).Key():
+		return &OmxCodec{}
+	case (&Video4Linux{}).Key():
+		return &Video4Linux{}
+	case (&VideoToolboxCodec{}).Key():
 		return &VideoToolboxCodec{}
 	default:
 		return &Libx264Codec{}

@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	datastoreValuesVersion   = 3
+	datastoreValuesVersion   = 4
 	datastoreValueVersionKey = "DATA_STORE_VERSION"
 )
 
@@ -27,6 +27,8 @@ func migrateDatastoreValues(datastore *Datastore) {
 			migrateToDatastoreValues2(datastore)
 		case 2:
 			migrateToDatastoreValues3ServingEndpoint3(datastore)
+		case 3:
+			migrateToDatastoreVaapiCodecSettingValue4(datastore)
 		default:
 			log.Fatalln("missing datastore values migration step")
 		}
@@ -72,4 +74,20 @@ func migrateToDatastoreValues3ServingEndpoint3(_ *Datastore) {
 	}
 
 	_ = SetVideoServingEndpoint(s3Config.ServingEndpoint)
+}
+
+func migrateToDatastoreVaapiCodecSettingValue4(_ *Datastore) {
+	// If the currently selected codec is "vaapi" then we need
+	// to migrate the name to the updated name.
+	currentCodec := GetVideoCodec()
+	if currentCodec != "vaapi" {
+		return
+	}
+
+	// The updated name for the old vaapi codec is "h264_vaapi_legacy"
+	// so we update it. This is assuming existing users will be using older
+	// versions of ffmpeg.
+	_ = SetVideoCodec("h264_vaapi_legacy")
+
+	log.Println("An update to the vaapi video codec has been made. It will now be selected as vaapi (Legacy) in your video settings. However, if you are running a version of ffmpeg greater than 5.0 you should update your video codec settings to use the 5.0+ codec setting instead.")
 }
