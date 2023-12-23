@@ -80,7 +80,7 @@ func migrateToDatastoreVaapiCodecSettingValue4(_ *Datastore) {
 	// If the currently selected codec is "vaapi" then we need
 	// to migrate the name to the updated name.
 	currentCodec := GetVideoCodec()
-	if currentCodec != "vaapi" {
+	if currentCodec != "h264_vaapi" {
 		return
 	}
 
