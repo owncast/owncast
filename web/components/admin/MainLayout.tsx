@@ -284,11 +284,10 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    menuItems.forEach(
-      item =>
-        item?.children?.forEach(child => {
-          if (child?.key === route) setOpenKeys([...openMenuItems, item.key]);
-        }),
+    menuItems.forEach(item =>
+      item?.children?.forEach(child => {
+        if (child?.key === route) setOpenKeys([...openMenuItems, item.key]);
+      }),
     );
   }, []);
 
