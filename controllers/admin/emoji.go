@@ -76,8 +76,12 @@ func DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// var emojiFileName = filepath.Base(emoji.Name)
 	targetPath := filepath.Join(config.CustomEmojiPath, emoji.Name)
+
+	if !filepath.IsLocal(targetPath) {
+		controllers.WriteSimpleResponse(w, false, "Emoji path is not valid")
+		return
+	}
 
 	if err := os.Remove(targetPath); err != nil {
 		if os.IsNotExist(err) {
