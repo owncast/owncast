@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 18.9.0
+          node-version: latest
 
       - name: Cache node modules
         uses: actions/cache@v3
