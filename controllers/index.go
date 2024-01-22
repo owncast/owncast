@@ -1,15 +1,18 @@
 package controllers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
+	"github.com/owncast/owncast/core/cache"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/router/middleware"
@@ -17,6 +20,8 @@ import (
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
+
+var gc = cache.GetGlobalCache()
 
 // IndexHandler handles the default index route.
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -121,6 +126,17 @@ type MetadataPage struct {
 // Return a basic HTML page with server-rendered metadata from the config
 // to give to Opengraph clients and web scrapers (bots, web crawlers, etc).
 func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
+	cacheKey := "bot-scraper-html"
+	cacheHtmlExpiration := time.Duration(10) * time.Second
+	c := gc.GetOrCreateCache(cacheKey, cacheHtmlExpiration)
+
+	cachedHtml := c.GetValueForKey(cacheKey)
+	if cachedHtml != nil {
+		w.Header().Set("Content-Type", "text/html")
+		_, _ = w.Write(cachedHtml)
+		return
+	}
+
 	tmpl, err := static.GetBotMetadataTemplate()
 	if err != nil {
 		log.Errorln(err)
@@ -173,11 +189,18 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 		SocialHandles: data.GetSocialHandles(),
 	}
 
+	// Cache the rendered HTML
+	var b bytes.Buffer
+	if err := tmpl.Execute(&b, metadata); err != nil {
+		log.Errorln(err)
+	}
+	c.Set(cacheKey, b.Bytes())
+
 	// Set a cache header
 	middleware.SetCachingHeaders(w, r)
 
 	w.Header().Set("Content-Type", "text/html")
-	if err := tmpl.Execute(w, metadata); err != nil {
+	if _, err = w.Write(b.Bytes()); err != nil {
 		log.Errorln(err)
 	}
 }
