@@ -202,19 +202,23 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 			return s.Save(filePath, retryCount+1)
 		}
 
-		// Upload failure. Remove the local file.
-		s.removeLocalFile(filePath)
-
 		return "", fmt.Errorf("Giving up uploading %s to object storage %s", filePath, s.s3Endpoint)
 	}
-
-	// Upload success. Remove the local file.
-	s.removeLocalFile(filePath)
 
 	return response.Location, nil
 }
 
+// Cleanup will fire the different cleanup tasks required.
 func (s *S3Storage) Cleanup() error {
+	if err := s.RemoteCleanup(); err != nil {
+		log.Errorln(err)
+	}
+
+	return localCleanup(4)
+}
+
+// RemoteCleanup will remove old files from the remote storage provider.
+func (s *S3Storage) RemoteCleanup() error {
 	// Determine how many files we should keep on S3 storage
 	maxNumber := data.GetStreamLatencyLevel().SegmentCount
 	buffer := 20
@@ -274,14 +278,6 @@ func (s *S3Storage) getDeletableVideoSegmentsWithOffset(offset int) ([]s3object,
 	objectsToDelete = objectsToDelete[offset : len(objectsToDelete)-1]
 
 	return objectsToDelete, nil
-}
-
-func (s *S3Storage) removeLocalFile(filePath string) {
-	cleanFilepath := filepath.Clean(filePath)
-
-	if err := os.Remove(cleanFilepath); err != nil {
-		log.Errorln(err)
-	}
 }
 
 func (s *S3Storage) deleteObjects(objects []s3object) {
