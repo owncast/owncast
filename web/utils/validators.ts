@@ -53,33 +53,6 @@ export function isValidAccount(account: string, protocol: string): boolean {
 }
 
 /**
- * Determines if an account is valid by simply checking for a protocol, username
- * and server, delimited by a colon. For example: @username:example.com
- * @param {string} account - An account to validate. Example: @me:matrix.org
- * @returns {boolean} - True if the account is valid, false otherwise.
- */
-export function isValidMatrixAccount(account: string): boolean {
-  if (account.startsWith('matrix:')) {
-    // eslint-disable-next-line no-param-reassign
-    account = account.slice(7);
-  }
-
-  if (account.startsWith('@')) {
-    // eslint-disable-next-line no-param-reassign
-    account = account.slice(1);
-  }
-
-  const components = account.split(':');
-  const [user, host] = components;
-
-  if (components.length !== 2 || !user || !host) {
-    return false;
-  }
-
-  return true;
-}
-
-/**
  * Determines if a fediverse account is valid.
  * For example: @username@example.com
  * @param {string} account - An account to validate.

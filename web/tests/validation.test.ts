@@ -1,4 +1,4 @@
-import { isValidUrl, isValidAccount, isValidMatrixAccount } from '../utils/validators';
+import { isValidUrl, isValidAccount } from '../utils/validators';
 
 describe('test url validation', () => {
   const validURL = 'https://example.com';
@@ -23,20 +23,5 @@ describe('test xmpp account validation', () => {
 
   test('should fail', () => {
     expect(isValidAccount(invalidAccount, 'xmpp')).toBe(false);
-  });
-});
-
-describe('test matrix account validation', () => {
-  const validMatrixAccount = '@me:matrix.org';
-  const validMatrixAccountWithProtocol = 'matrix:@me:matrix.org';
-  const invalidMatrixAccount = 'something.invalid@something';
-
-  test('should succeed', () => {
-    expect(isValidMatrixAccount(validMatrixAccount)).toBe(true);
-    expect(isValidMatrixAccount(validMatrixAccountWithProtocol)).toBe(true);
-  });
-
-  test('should fail', () => {
-    expect(isValidMatrixAccount(invalidMatrixAccount)).toBe(false);
   });
 });

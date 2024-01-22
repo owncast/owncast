@@ -14,7 +14,6 @@ import {
 } from '../../../../utils/config-constants';
 import { SocialHandle, UpdateArgs } from '../../../../types/config-section';
 import {
-  isValidMatrixAccount,
   isValidAccount,
   isValidUrl,
   DEFAULT_TEXTFIELD_URL_PATTERN,
@@ -293,9 +292,6 @@ export default function EditSocialLinks() {
   const isValid = (url: string, platform: string) => {
     if (platform === 'xmpp') {
       return isValidAccount(url, 'xmpp');
-    }
-    if (platform === 'matrix') {
-      return isValidMatrixAccount(url);
     }
 
     return isValidUrl(url);
