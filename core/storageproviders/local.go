@@ -5,10 +5,8 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 )
 
@@ -62,36 +60,12 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 	return filePath, nil
 }
 
+// Cleanup will remove old files from the storage provider.
 func (s *LocalStorage) Cleanup() error {
 	// Determine how many files we should keep on disk
 	maxNumber := data.GetStreamLatencyLevel().SegmentCount
 	buffer := 10
-	baseDirectory := config.HLSStoragePath
-
-	files, err := getAllFilesRecursive(baseDirectory)
-	if err != nil {
-		return errors.Wrap(err, "unable find old video files for cleanup")
-	}
-
-	// Delete old private HLS files on disk
-	for directory := range files {
-		files := files[directory]
-		if len(files) < maxNumber+buffer {
-			continue
-		}
-
-		filesToDelete := files[maxNumber+buffer:]
-		log.Traceln("Deleting", len(filesToDelete), "old files from", baseDirectory, "for video variant", directory)
-
-		for _, file := range filesToDelete {
-			fileToDelete := filepath.Join(baseDirectory, directory, file.Name())
-			err := os.Remove(fileToDelete)
-			if err != nil {
-				return errors.Wrap(err, "unable to delete old video files")
-			}
-		}
-	}
-	return nil
+	return localCleanup(maxNumber + buffer)
 }
 
 func getAllFilesRecursive(baseDirectory string) (map[string][]os.FileInfo, error) {
