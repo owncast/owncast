@@ -1,7 +1,7 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Table, Tag, Typography } from 'antd';
 import Linkify from 'react-linkify';
-import { SortOrder } from 'antd/lib/table/interface';
+import { SortOrder, TablePaginationConfig } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
 
 const { Title } = Typography;
@@ -24,13 +24,19 @@ function renderMessage(text) {
 
 export type LogTableProps = {
   logs: object[];
-  pageSize: number;
+  initialPageSize: number;
 };
 
-export const LogTable: FC<LogTableProps> = ({ logs, pageSize }) => {
+export const LogTable: FC<LogTableProps> = ({ logs, initialPageSize }) => {
   if (!logs?.length) {
     return null;
   }
+
+  const [pageSize, setPageSize] = useState(initialPageSize);
+  const handleTableChange = (pagination: TablePaginationConfig) => {
+    setPageSize(pagination.pageSize);
+  };
+
   const columns = [
     {
       title: 'Level',
@@ -81,7 +87,10 @@ export const LogTable: FC<LogTableProps> = ({ logs, pageSize }) => {
         dataSource={logs}
         columns={columns}
         rowKey={row => row.time}
-        pagination={{ pageSize: pageSize || 20 }}
+        pagination={{
+          pageSize,
+        }}
+        onChange={handleTableChange}
       />
     </div>
   );

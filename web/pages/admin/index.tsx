@@ -187,7 +187,7 @@ export default function Home() {
         </Row>
       </div>
       <br />
-      <LogTable logs={logsData} pageSize={5} />
+      <LogTable logs={logsData} initialPageSize={5} />
     </div>
   );
 }
