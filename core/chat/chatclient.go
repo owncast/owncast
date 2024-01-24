@@ -200,7 +200,7 @@ func (c *Client) close() {
 }
 
 func (c *Client) passesRateLimit() bool {
-	return c.rateLimiter.Allow() && !c.inTimeout
+	return c.User.IsModerator() || (c.rateLimiter.Allow() && !c.inTimeout)
 }
 
 func (c *Client) startChatRejectionTimeout() {
