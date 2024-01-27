@@ -156,5 +156,4 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
 TextFieldWithSubmit.defaultProps = {
   configPath: '',
   initialValue: '',
-  isValid: true,
 };
