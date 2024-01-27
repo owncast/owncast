@@ -326,11 +326,11 @@ export const TEXTFIELD_PROPS_FEDERATION_LIVE_MESSAGE = {
 export const TEXTFIELD_PROPS_FEDERATION_DEFAULT_USER = {
   apiPath: API_FEDERATION_USERNAME,
   configPath: 'federation',
-  maxLength: 50,
+  maxLength: 10,
   placeholder: 'owncast',
   default: 'owncast',
   label: 'Username',
-  tip: 'The username used for sending and receiving activities from the Fediverse. For example, if you use "bob" as a username you would send messages to the fediverse from @bob@yourserver. Username cannot have special characters. Once people start following your instance you should not change this.',
+  tip: 'The username used for sending and receiving activities from the Fediverse. For example, if you use "bob" as a username you would send messages to the fediverse from @bob@yourserver. Once people start following your instance you should not change this.\nNote: Username cannot have special characters. ',
 };
 
 export const TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL = {

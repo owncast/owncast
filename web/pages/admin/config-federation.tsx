@@ -98,7 +98,6 @@ const ConfigFederation = () => {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const [blockedDomainSaveState, setBlockedDomainSaveState] = useState(null);
-  const [isUsernameValid, setIsUsernameValid] = useState(false);
 
   const { federation, yp, instanceDetails } = serverConfig;
   const { enabled, isPrivate, username, goLiveMessage, showEngagement, blockedDomains } =
@@ -113,27 +112,15 @@ const ConfigFederation = () => {
     });
   };
 
-  const isAlphanumeric = str => {
-    const regex = /^[a-zA-Z0-9]+$/i;
-    return regex.test(str);
-  };
-
   const handleUsernameChange = ({ fieldName, value }: UpdateArgs) => {
     handleFieldChange({
       fieldName,
       value,
     });
-    const usernameValue = value;
-    const hasUsername = usernameValue !== '';
-    if (hasUsername) {
-      if (isAlphanumeric(usernameValue)) {
-        setIsUsernameValid(true);
-      } else {
-        setIsUsernameValid(false);
-      }
-    } else {
-      setIsUsernameValid(false);
-    }
+    setFormDataValues({
+      ...formDataValues,
+      username: value.replace(/\W/g, ''),
+    });
   };
 
   const handleEnabledSwitchChange = (value: boolean) => {
@@ -329,7 +316,6 @@ const ConfigFederation = () => {
             value={formDataValues.username}
             initialValue={username}
             onChange={handleUsernameChange}
-            isValid={isUsernameValid}
             disabled={!enabled}
           />
           <TextFieldWithSubmit
