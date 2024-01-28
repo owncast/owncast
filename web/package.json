@@ -60,7 +60,7 @@
 		"yaml": "2.3.4"
 	},
 	"devDependencies": {
-		"@babel/core": "7.23.7",
+		"@babel/core": "7.23.9",
 		"@mdx-js/react": "3.0.0",
 		"@storybook/addon-a11y": "7.6.10",
 		"@storybook/addon-actions": "7.6.10",
