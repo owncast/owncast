@@ -112,6 +112,17 @@ const ConfigFederation = () => {
     });
   };
 
+  const handleUsernameChange = ({ fieldName, value }: UpdateArgs) => {
+    handleFieldChange({
+      fieldName,
+      value,
+    });
+    setFormDataValues({
+      ...formDataValues,
+      username: value.replace(/\W/g, ''),
+    });
+  };
+
   const handleEnabledSwitchChange = (value: boolean) => {
     if (!value) {
       setFormDataValues({
@@ -304,7 +315,7 @@ const ConfigFederation = () => {
             {...TEXTFIELD_PROPS_FEDERATION_DEFAULT_USER}
             value={formDataValues.username}
             initialValue={username}
-            onChange={handleFieldChange}
+            onChange={handleUsernameChange}
             disabled={!enabled}
           />
           <TextFieldWithSubmit
