@@ -65,8 +65,7 @@ export async function postConfigUpdateToAPI(args: ApiPostArgs) {
     } else if (onError) {
       onError(result.message);
     }
-  }
-  catch (e) {
+  } catch (e) {
     if (onError) {
       onError(e.message);
     }
@@ -331,7 +330,7 @@ export const TEXTFIELD_PROPS_FEDERATION_DEFAULT_USER = {
   placeholder: 'owncast',
   default: 'owncast',
   label: 'Username',
-  tip: 'The username used for sending and receiving activities from the Fediverse. For example, if you use "bob" as a username you would send messages to the fediverse from @bob@yourserver. Once people start following your instance you should not change this.',
+  tip: 'The username used for sending and receiving activities from the Fediverse. For example, if you use "bob" as a username you would send messages to the fediverse from @bob@yourserver. Once people start following your instance you should not change this.\nNote: Username cannot have special characters. ',
 };
 
 export const TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL = {
