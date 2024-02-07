@@ -5,6 +5,7 @@ export interface ContentEditableProps extends React.HTMLAttributes<HTMLElement> 
   onContentChange?: Function;
   tagName?: string;
   html: string;
+  placeholder: string;
   disabled: boolean;
 }
 
