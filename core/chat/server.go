@@ -96,6 +96,13 @@ func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken st
 
 	shouldSendJoinedMessages := data.GetChatJoinPartMessagesEnabled()
 
+	// If there are existing clients connected for this user do not send
+	// a user joined message. Do not put this under a mutex, as
+	// GetClientsForUser already has a lock.
+	if existingConnectedClients, _ := GetClientsForUser(user.ID); len(existingConnectedClients) > 0 {
+		shouldSendJoinedMessages = false
+	}
+
 	s.mu.Lock()
 	{
 		// If there is a pending disconnect timer then clear it.
