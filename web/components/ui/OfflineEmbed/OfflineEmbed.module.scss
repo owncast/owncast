@@ -1,0 +1,141 @@
+@import '../../../styles/mixins';
+
+.offlineContainer {
+  /* Offline */
+  position: relative;
+  width: 546px;
+  height: 308px;
+  border-radius: 8px;
+  background-image: linear-gradient(to bottom, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 75%) 100%),
+    radial-gradient(circle, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 50%) 100%),
+    linear-gradient(to bottom, rgb(122 92 243 / 100%) 0%, rgb(35 134 226 / 100%) 100%),
+    linear-gradient(rgb(240 243 248 / 100%), rgb(240 243 248 / 100%));
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+
+  /* Content */
+  .content {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px;
+    text-align: center;
+
+    /* Message */
+    .message {
+      color: rgb(255 255 255 / 100%);
+      font-family: Inter;
+      font-style: normal;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.375;
+      letter-spacing: 0;
+      text-decoration: none;
+      text-transform: none;
+    }
+
+    /* Heading */
+    .heading {
+      color: rgb(255 255 255 / 100%);
+      font-family: Poppins;
+      font-style: normal;
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 1.125;
+      letter-spacing: -0.125px;
+      text-decoration: none;
+      text-transform: none;
+    }
+
+    /* Page Logo */
+    .pageLogo {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      border-radius: 96px;
+      background-color: rgb(255 255 255 / 100%);
+      border: 5px solid rgb(18 22 29 / 100%);
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: start;
+      justify-content: start;
+      gap: 0;
+      padding: 10px;
+    }
+
+    /* Page Name */
+    .pageName {
+      color: rgb(255 255 255 / 100%);
+      font-family: Poppins;
+      font-style: normal;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1.1875;
+      letter-spacing: -0.0625px;
+      text-decoration: none;
+      text-transform: none;
+    }
+  }
+}
+
+// .innerContainer {
+//   width: clamp(00px, 100%, 600px);
+//   display: flex;
+//   flex-direction: column;
+//   margin: 5vh auto;
+//   padding: 2.4em;
+
+//   @include screen(tablet) {
+//     font-size: 1.2rem;
+//     padding: 1em;
+//     margin: 1rem 0.2rem;
+//   }
+// }
+
+// .bodyText {
+//   line-height: 2rem;
+//   font-size: 1.2rem;
+// }
+
+// .separator {
+//   margin-top: 15px;
+//   margin-bottom: 15px;
+// }
+
+// .lastLiveDate {
+//   margin-top: 2rem;
+//   font-size: 0.8rem;
+//   opacity: 0.7;
+//   font-family: var(--theme-text-body-font-family);
+//   font-weight: 300;
+
+//   .clockIcon {
+//     margin-right: 6px;
+//   }
+// }
+
+// .header {
+//   font-family: var(--theme-text-display-font-family);
+//   font-weight: 600;
+//   font-size: 1.4rem;
+// }
+
+// .footer {
+//   margin-top: 15px;
+// }
+
+// .actionLink {
+//   color: var(--theme-color-action);
+//   text-decoration: underline;
+//   cursor: pointer;
+
+//   &:hover {
+//     color: var(--color-owncast-palette-7);
+//   }
+// }
