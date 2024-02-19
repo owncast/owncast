@@ -19,6 +19,7 @@ type Webhook struct {
 var validEvents = []EventType{
 	MessageSent,
 	UserJoined,
+	UserParted,
 	UserNameChanged,
 	VisibiltyToggled,
 	StreamStarted,
