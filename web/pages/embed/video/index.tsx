@@ -10,7 +10,6 @@ import {
   serverStatusState,
   appStateAtom,
 } from '../../../components/stores/ClientConfigStore';
-import { OfflineBanner } from '../../../components/ui/OfflineBanner/OfflineBanner';
 import { Statusbar } from '../../../components/ui/Statusbar/Statusbar';
 import { OwncastPlayer } from '../../../components/video/OwncastPlayer/OwncastPlayer';
 import { ClientConfig } from '../../../interfaces/client-config.model';
@@ -18,6 +17,7 @@ import { ServerStatus } from '../../../interfaces/server-status.model';
 import { AppStateOptions } from '../../../components/stores/application-state';
 import { Theme } from '../../../components/theme/Theme';
 import styles from './VideoEmbed.module.scss';
+import { OfflineEmbed } from '../../../components/ui/OfflineEmbed/OfflineEmbed';
 
 export default function VideoEmbed() {
   const status = useRecoilValue<ServerStatus>(serverStatusState);
@@ -57,12 +57,17 @@ export default function VideoEmbed() {
   }, []);
 
   const offlineState = (
-    <OfflineBanner
+    <OfflineEmbed
       streamName={name}
-      customText={offlineMessage}
-      lastLive={lastDisconnectTime}
-      notificationsEnabled={false}
+      subtitle={offlineMessage}
+      image="https://placehold.co/600x400/orange/white"
     />
+    // <OfflineBanner
+    //   streamName={name}
+    //   customText={offlineMessage}
+    //   lastLive={lastDisconnectTime}
+    //   notificationsEnabled={false}
+    // />
   );
 
   const onlineState = (

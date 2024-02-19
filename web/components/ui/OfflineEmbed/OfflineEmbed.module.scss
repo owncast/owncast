@@ -1,10 +1,9 @@
 @import '../../../styles/mixins';
 
 .offlineContainer {
-  /* Offline */
-  position: relative;
-  width: 546px;
-  height: 308px;
+  position: absolute;
+  width: 100%;
+  height: 100%;
   border-radius: 8px;
   background-image: linear-gradient(to bottom, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 75%) 100%),
     radial-gradient(circle, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 50%) 100%),
@@ -30,7 +29,7 @@
     /* Message */
     .message {
       color: rgb(255 255 255 / 100%);
-      font-family: Inter;
+      font-family: var(--theme-text-body-font-family);
       font-style: normal;
       font-size: 16px;
       font-weight: 400;
@@ -43,7 +42,7 @@
     /* Heading */
     .heading {
       color: rgb(255 255 255 / 100%);
-      font-family: Poppins;
+      font-family: var(--theme-text-display-font-family);
       font-style: normal;
       font-size: 24px;
       font-weight: 500;
@@ -56,23 +55,29 @@
     /* Page Logo */
     .pageLogo {
       position: relative;
-      width: 64px;
-      height: 64px;
+      width: 10vw;
+      height: 10vw;
+      min-height: 64px;
+      min-width: 64px;
+      max-height: 100px;
+      max-width: 100px;
       border-radius: 96px;
       background-color: rgb(255 255 255 / 100%);
       border: 5px solid rgb(18 22 29 / 100%);
       display: flex;
       flex-flow: row nowrap;
-      align-items: start;
-      justify-content: start;
+      align-items: flex-start;
+      justify-content: flex-start;
       gap: 0;
       padding: 10px;
+      background-size: cover;
+      background-position: center;
     }
 
     /* Page Name */
     .pageName {
       color: rgb(255 255 255 / 100%);
-      font-family: Poppins;
+      font-family: var(--theme-text-display-font-family);
       font-style: normal;
       font-size: 20px;
       font-weight: 500;
@@ -83,59 +88,3 @@
     }
   }
 }
-
-// .innerContainer {
-//   width: clamp(00px, 100%, 600px);
-//   display: flex;
-//   flex-direction: column;
-//   margin: 5vh auto;
-//   padding: 2.4em;
-
-//   @include screen(tablet) {
-//     font-size: 1.2rem;
-//     padding: 1em;
-//     margin: 1rem 0.2rem;
-//   }
-// }
-
-// .bodyText {
-//   line-height: 2rem;
-//   font-size: 1.2rem;
-// }
-
-// .separator {
-//   margin-top: 15px;
-//   margin-bottom: 15px;
-// }
-
-// .lastLiveDate {
-//   margin-top: 2rem;
-//   font-size: 0.8rem;
-//   opacity: 0.7;
-//   font-family: var(--theme-text-body-font-family);
-//   font-weight: 300;
-
-//   .clockIcon {
-//     margin-right: 6px;
-//   }
-// }
-
-// .header {
-//   font-family: var(--theme-text-display-font-family);
-//   font-weight: 600;
-//   font-size: 1.4rem;
-// }
-
-// .footer {
-//   margin-top: 15px;
-// }
-
-// .actionLink {
-//   color: var(--theme-color-action);
-//   text-decoration: underline;
-//   cursor: pointer;
-
-//   &:hover {
-//     color: var(--color-owncast-palette-7);
-//   }
-// }

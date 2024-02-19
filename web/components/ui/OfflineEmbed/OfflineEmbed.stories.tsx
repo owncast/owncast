@@ -34,5 +34,6 @@ export const ExampleDefaultWithNotifications = {
   args: {
     streamName: 'Cool stream 42',
     subtitle: 'This stream rocks. You should watch it.',
+    image: 'https://placehold.co/600x400/orange/white',
   },
 };
