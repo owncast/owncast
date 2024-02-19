@@ -78,7 +78,7 @@ require (
 require (
 	github.com/CAFxX/httpcompression v0.0.9
 	github.com/andybalholm/cascadia v1.3.2
-	github.com/jellydator/ttlcache/v3 v3.1.1
+	github.com/jellydator/ttlcache/v3 v3.2.0
 	github.com/mssola/user_agent v0.6.0
 	github.com/stretchr/testify v1.8.4
 	github.com/yuin/goldmark-emoji v1.0.2
