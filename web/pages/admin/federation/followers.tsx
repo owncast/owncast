@@ -103,7 +103,7 @@ export default function FediverseFollowers() {
 
   useEffect(() => {
     getFollowers();
-  }, []);
+  }, [currentPage]);
 
   const columns: ColumnsType<Follower> = [
     {
