@@ -228,7 +228,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     if (!focusInput) {
       return;
     }
-    document.getElementById('chat-input-content-editable').focus();
+    document.getElementById('chat-input-content-editable').focus({ preventScroll: true });
   }, []);
 
   const getCustomEmoji = async () => {
