@@ -24,11 +24,11 @@ export default function VideoEmbed() {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
-  const { name } = clientConfig;
+  const { name, summary, offlineMessage, federation } = clientConfig;
 
-  const { offlineMessage } = clientConfig;
   const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } = status;
   const online = useRecoilValue<boolean>(isOnlineSelector);
+  const { enabled: socialEnabled } = federation;
 
   const router = useRouter();
 
@@ -48,6 +48,7 @@ export default function VideoEmbed() {
   );
 
   const initiallyMuted = query.initiallyMuted === 'true';
+  const supportsSocialFollow = socialEnabled && query.supportsSocialFollow !== 'false';
 
   const loadingState = <Skeleton active style={{ padding: '10px' }} paragraph={{ rows: 10 }} />;
 
@@ -59,15 +60,10 @@ export default function VideoEmbed() {
   const offlineState = (
     <OfflineEmbed
       streamName={name}
-      subtitle={offlineMessage}
+      subtitle={offlineMessage || summary}
       image="https://placehold.co/600x400/orange/white"
+      supportsFollows={supportsSocialFollow}
     />
-    // <OfflineBanner
-    //   streamName={name}
-    //   customText={offlineMessage}
-    //   lastLive={lastDisconnectTime}
-    //   notificationsEnabled={false}
-    // />
   );
 
   const onlineState = (
