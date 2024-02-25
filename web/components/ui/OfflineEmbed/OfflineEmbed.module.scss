@@ -1,0 +1,99 @@
+@import '../../../styles/mixins';
+
+.offlineContainer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background-image: linear-gradient(to bottom, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 75%) 100%),
+    radial-gradient(circle, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 50%) 100%),
+    linear-gradient(to bottom, rgb(122 92 243 / 100%) 0%, rgb(35 134 226 / 100%) 100%),
+    linear-gradient(rgb(240 243 248 / 100%), rgb(240 243 248 / 100%));
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+
+  /* Content */
+  .content {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px;
+    text-align: center;
+
+    /* Message */
+    .message {
+      color: rgb(255 255 255 / 100%);
+      font-family: var(--theme-text-body-font-family);
+      font-style: normal;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.375;
+      letter-spacing: 0;
+      text-decoration: none;
+      text-transform: none;
+    }
+
+    /* Heading */
+    .heading {
+      color: rgb(255 255 255 / 100%);
+      font-family: var(--theme-text-display-font-family);
+      font-style: normal;
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 1.125;
+      letter-spacing: -0.125px;
+      text-decoration: none;
+      text-transform: none;
+    }
+
+    /* Page Logo */
+    .pageLogo {
+      position: relative;
+      width: 10vw;
+      height: 10vw;
+      min-height: 64px;
+      min-width: 64px;
+      max-height: 100px;
+      max-width: 100px;
+      border-radius: 96px;
+      background-color: rgb(255 255 255 / 100%);
+      border: 5px solid rgb(18 22 29 / 100%);
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 0;
+      padding: 10px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Page Name */
+    .pageName {
+      color: rgb(255 255 255 / 100%);
+      font-family: var(--theme-text-display-font-family);
+      font-style: normal;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1.1875;
+      letter-spacing: -0.0625px;
+      text-decoration: none;
+      text-transform: none;
+    }
+  }
+
+  .submitButton {
+    margin-top: 10px;
+  }
+
+  .footer {
+    color: white;
+    padding: 5px;
+  }
+}

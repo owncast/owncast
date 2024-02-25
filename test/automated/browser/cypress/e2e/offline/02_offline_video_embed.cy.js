@@ -7,9 +7,7 @@ describe(`Offline video embed`, () => {
 	});
 
 	// Offline banner
-	it('Has correct offline banner values', () => {
-		cy.contains('This stream is offline. Check back soon!').should(
-			'be.visible'
-		);
+	it('Has correct offline embed values', () => {
+		cy.contains('This stream is not currently live.').should('be.visible');
 	});
 });
