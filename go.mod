@@ -80,7 +80,7 @@ require (
 	github.com/andybalholm/cascadia v1.3.2
 	github.com/jellydator/ttlcache/v3 v3.2.0
 	github.com/mssola/user_agent v0.6.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/yuin/goldmark-emoji v1.0.2
 	gopkg.in/evanphx/json-patch.v5 v5.7.0
 	mvdan.cc/xurls v1.1.0
