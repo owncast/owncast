@@ -17,7 +17,7 @@ require (
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/schollz/sqlite3dump v1.3.1
 	github.com/sirupsen/logrus v1.9.3
-	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
+	github.com/teris-io/shortid v1.0
 	github.com/yuin/goldmark v1.7.0
 	golang.org/x/mod v0.15.0
 	golang.org/x/time v0.5.0
