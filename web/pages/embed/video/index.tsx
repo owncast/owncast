@@ -61,7 +61,7 @@ export default function VideoEmbed() {
     <OfflineEmbed
       streamName={name}
       subtitle={offlineMessage || summary}
-      image="https://placehold.co/600x400/orange/white"
+      image="/logo"
       supportsFollows={supportsSocialFollow}
     />
   );
