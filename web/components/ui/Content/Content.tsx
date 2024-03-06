@@ -354,7 +354,7 @@ export const Content: FC = () => {
           handleClose={() => setShowChatModal(false)}
         />
       )}
-      {isMobile && isChatAvailable && (
+      {isMobile && isChatAvailable && !chatDisabled && (
         <Button
           id="mobile-chat-button"
           type="primary"
