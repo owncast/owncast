@@ -317,6 +317,17 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     }
   }
 
+  // Retrieve, clean, and attach username to newest chat message to be read out by screenreader
+  function getLastMessage() {
+    if (messages.length > 0 && typeof messages[messages.length - 1].body !== 'undefined') {
+      const message = messages[messages.length - 1].body.replace(/(<([^>]+)>)/gi, '');
+      const stringToRead = `${usernameToHighlight} said ${message}`;
+      return stringToRead;
+    }
+    return '';
+  }
+  const lastMessage = getLastMessage();
+
   if (resizeWindowCallback) window.removeEventListener('resize', resizeWindowCallback);
   if (desktop) {
     window.addEventListener('resize', resize);
@@ -337,6 +348,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
       )}
     >
       <div
+        aria-live="off"
         id="chat-container"
         className={styles.chatContainer}
         style={desktop && { width: `${defaultChatWidth}px` }}
@@ -351,6 +363,9 @@ export const ChatContainer: FC<ChatContainerProps> = ({
           <div className={styles.resizeHandle} onMouseDown={startDrag} role="presentation" />
         )}
       </div>
+      <span className={styles.chatAccessibilityHidden} aria-live="polite">
+        {lastMessage}
+      </span>
     </ErrorBoundary>
   );
 };
