@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { Divider } from 'antd';
 import { FC } from 'react';
-import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { formatDistanceToNow } from 'date-fns';
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
 import styles from './OfflineBanner.module.scss';

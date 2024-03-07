@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, ReactElement } from 'react';
 import { Table, Avatar, Button, Tabs } from 'antd';
 import { ColumnsType, SortOrder } from 'antd/lib/table/interface';
-import format from 'date-fns/format';
+import { format } from 'date-fns';
 import dynamic from 'next/dynamic';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import {

@@ -1,5 +1,4 @@
-import formatDistanceToNow from 'date-fns/formatDistanceToNow';
-import intervalToDuration from 'date-fns/intervalToDuration';
+import { intervalToDuration, formatDistanceToNow } from 'date-fns';
 import { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
