@@ -21,7 +21,7 @@
 		"@codemirror/lang-markdown": "6.2.4",
 		"@codemirror/language-data": "6.4.1",
 		"@fontsource/inter": "^5.0.0",
-		"@fontsource/poppins": "5.0.8",
+		"@fontsource/poppins": "5.0.12",
 		"@next/bundle-analyzer": "^14.0.0",
 		"@uiw/codemirror-theme-bbedit": "4.21.24",
 		"@uiw/react-codemirror": "4.21.24",
