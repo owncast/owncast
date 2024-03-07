@@ -1,6 +1,6 @@
 import { Button, Col, Collapse, Row, Spin, Table, Tag } from 'antd';
 import { FC, useEffect, useState } from 'react';
-import format from 'date-fns/format';
+import { format } from 'date-fns';
 import { ColumnsType } from 'antd/lib/table';
 import dynamic from 'next/dynamic';
 import { ErrorBoundary } from 'react-error-boundary';

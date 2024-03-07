@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import { Table, Tag, Typography } from 'antd';
 import Linkify from 'react-linkify';
 import { SortOrder, TablePaginationConfig } from 'antd/lib/table/interface';
-import format from 'date-fns/format';
+import { format } from 'date-fns';
 
 const { Title } = Typography;
 
