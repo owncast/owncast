@@ -30,7 +30,7 @@
 		"autoprefixer": "^10.4.14",
 		"chart.js": "^4.2.0",
 		"classnames": "2.5.1",
-		"date-fns": "^2.29.3",
+		"date-fns": "^3.0.0",
 		"graphemer": "^1.4.0",
 		"interweave": "^13.0.0",
 		"interweave-autolink": "^5.1.0",

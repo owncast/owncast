@@ -1,4 +1,4 @@
-import format from 'date-fns/format';
+import { format } from 'date-fns';
 import { FC, useRef } from 'react';
 
 import { DownloadOutlined } from '@ant-design/icons';

@@ -2,7 +2,7 @@ import React, { useState, useEffect, ReactElement } from 'react';
 import { Table, Typography, Button } from 'antd';
 import classNames from 'classnames';
 import { ColumnsType } from 'antd/es/table';
-import format from 'date-fns/format';
+import { format } from 'date-fns';
 
 import dynamic from 'next/dynamic';
 import { MessageType } from '../../../types/chat';

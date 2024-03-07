@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/lib/table/interface';
-import format from 'date-fns/format';
+import { format } from 'date-fns';
 import { FEDERATION_ACTIONS, fetchData } from '../../../utils/apis';
 
 import { isEmptyObject } from '../../../utils/format';

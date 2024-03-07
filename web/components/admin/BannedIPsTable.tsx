@@ -1,6 +1,6 @@
 import { Table, Button } from 'antd';
-import format from 'date-fns/format';
 import { SortOrder } from 'antd/lib/table/interface';
+import { format } from 'date-fns';
 import React, { FC } from 'react';
 import dynamic from 'next/dynamic';
 import { User } from '../../types/chat';

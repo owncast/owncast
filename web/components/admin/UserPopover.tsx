@@ -2,8 +2,7 @@
 
 import { useState, ReactNode, FC } from 'react';
 import { Divider, Modal, Typography, Row, Col, Space, Tooltip } from 'antd';
-import formatDistanceToNow from 'date-fns/formatDistanceToNow';
-import format from 'date-fns/format';
+import { format, formatDistanceToNow } from 'date-fns';
 import { uniq } from 'lodash';
 
 import { BanUserButton } from './BanUserButton';

@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from 'antd';
 
-import format from 'date-fns/format';
+import { format } from 'date-fns';
 
 import dynamic from 'next/dynamic';
 import {
