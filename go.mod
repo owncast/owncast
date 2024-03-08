@@ -82,7 +82,7 @@ require (
 	github.com/mssola/user_agent v0.6.0
 	github.com/stretchr/testify v1.9.0
 	github.com/yuin/goldmark-emoji v1.0.2
-	gopkg.in/evanphx/json-patch.v5 v5.7.0
+	gopkg.in/evanphx/json-patch.v5 v5.9.0
 	mvdan.cc/xurls v1.1.0
 	mvdan.cc/xurls/v2 v2.5.0
 )
