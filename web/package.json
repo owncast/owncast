@@ -83,7 +83,7 @@
 		"@types/jest": "^29.5.0",
 		"@types/markdown-it": "13.0.7",
 		"@types/node": "20.11.30",
-		"@types/prop-types": "15.7.11",
+		"@types/prop-types": "15.7.12",
 		"@types/react": "18.2.67",
 		"@types/react-linkify": "1.0.4",
 		"@types/sanitize-html": "^2.9.0",
