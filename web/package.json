@@ -14,7 +14,7 @@
 		"format": "prettier --write  **/*.{js,ts,jsx,tsx,css,md}"
 	},
 	"dependencies": {
-		"@ant-design/icons": "4.8.2",
+		"@ant-design/icons": "4.8.3",
 		"@codemirror/lang-css": "6.2.1",
 		"@codemirror/lang-html": "^6.4.2",
 		"@codemirror/lang-javascript": "^6.1.2",
