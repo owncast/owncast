@@ -21,7 +21,7 @@ servers:
     description: Localhost port 8080
 
 paths:
-  /api/status:
+  /status:
     get:
       summary: Get the status of the server
       operationId: status

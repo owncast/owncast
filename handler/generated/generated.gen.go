@@ -13,7 +13,7 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Get the status of the server
-	// (GET /api/status)
+	// (GET /status)
 	Status(w http.ResponseWriter, r *http.Request)
 }
 
@@ -22,7 +22,7 @@ type ServerInterface interface {
 type Unimplemented struct{}
 
 // Get the status of the server
-// (GET /api/status)
+// (GET /status)
 func (_ Unimplemented) Status(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -165,7 +165,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/api/status", wrapper.Status)
+		r.Get(options.BaseURL+"/status", wrapper.Status)
 	})
 
 	return r

@@ -430,7 +430,7 @@ func Start() error {
 
 	// @behlers test for chi router w/ oapi codegen
 	r := chi.NewRouter()
-	r.Mount("/", handler.New().Handler())
+	r.Mount("/api/", handler.New().Handler())
 
 	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
 	server := &http.Server{
