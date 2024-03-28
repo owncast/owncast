@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/CAFxX/httpcompression"
+	"github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/http2"
@@ -21,6 +22,7 @@ import (
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/handler"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
@@ -54,7 +56,7 @@ func Start() error {
 	http.HandleFunc("/robots.txt", controllers.GetRobotsDotTxt)
 
 	// status of the system
-	http.HandleFunc("/api/status", controllers.GetStatus)
+	// http.HandleFunc("/api/status", controllers.GetStatus)
 
 	// custom emoji supported in the chat
 	http.HandleFunc("/api/emoji", controllers.GetCustomEmojiList)
@@ -426,11 +428,15 @@ func Start() error {
 		}
 	})
 
+	// @behlers test for chi router w/ oapi codegen
+	r := chi.NewRouter()
+	r.Mount("/", handler.New().Handler())
+
 	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
 	server := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", ip, port),
 		ReadHeaderTimeout: 4 * time.Second,
-		Handler:           compress(m),
+		Handler:           compress(r),
 	}
 
 	if ip != "0.0.0.0" {

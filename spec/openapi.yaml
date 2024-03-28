@@ -1,0 +1,59 @@
+openapi: 3.1.0
+
+info:
+  version: 0.1.2
+  title: Owncast APIs
+  description: |-
+    Internal
+    The APIs required to make the Owncast web interface and internal functionality work. These APIs will never reach stability and will always change as Owncast features and functionality change. This means these endpoints are not good options to build your own tooling and features on top of. You can, however, of course can if that risk is acceptable to you.
+
+    Admin
+    The APIs used to configure the Owncast server, as well as power the web admin interface. These APIs are protected by the admin password, using HTTP Basic authentication. They should not be used by external tools or integrations as it would require you to give your admin password to a third party.
+  contact:
+    name: Gabe Kangas
+    email: gabek@real-ity.com
+    url: 'http://owncast.online'
+  license:
+    url: 'https://github.com/owncast/owncast/blob/develop/LICENSE'
+    name: MIT
+servers:
+  - url: 'http://localhost:8080'
+    description: Localhost port 8080
+
+paths:
+  /api/status:
+    get:
+      summary: Get the status of the server
+      operationId: status
+      tags:
+        - internal
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+
+components:
+  schemas:
+    Status:
+      type: object
+      description: Response for status
+      properties:
+        serverTime:
+          type: string
+        lastConnectTime:
+          type: string
+        lastDisconnectTime:
+          type: string
+        versionNumber:
+          type: string
+        viewerCount:
+          type: integer
+        online:
+          type: boolean
+  responses:
+    '404':
+      description: Not found
+

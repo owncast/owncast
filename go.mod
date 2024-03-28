@@ -76,6 +76,7 @@ require (
 require (
 	github.com/CAFxX/httpcompression v0.0.9
 	github.com/andybalholm/cascadia v1.3.2
+	github.com/go-chi/chi/v5 v5.0.12
 	github.com/jellydator/ttlcache/v3 v3.2.0
 	github.com/mssola/user_agent v0.6.0
 	github.com/stretchr/testify v1.9.0
