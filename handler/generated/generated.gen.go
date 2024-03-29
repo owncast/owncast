@@ -12,18 +12,27 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Get list of custom emojis supported in the chat
+	// (GET /emoji)
+	GetEmoji(w http.ResponseWriter, r *http.Request)
 	// Get the status of the server
 	// (GET /status)
-	Status(w http.ResponseWriter, r *http.Request)
+	GetStatus(w http.ResponseWriter, r *http.Request)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
 
+// Get list of custom emojis supported in the chat
+// (GET /emoji)
+func (_ Unimplemented) GetEmoji(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get the status of the server
 // (GET /status)
-func (_ Unimplemented) Status(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetStatus(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -36,12 +45,27 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
-// Status operation middleware
-func (siw *ServerInterfaceWrapper) Status(w http.ResponseWriter, r *http.Request) {
+// GetEmoji operation middleware
+func (siw *ServerInterfaceWrapper) GetEmoji(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.Status(w, r)
+		siw.Handler.GetEmoji(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetStatus operation middleware
+func (siw *ServerInterfaceWrapper) GetStatus(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetStatus(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -165,7 +189,10 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/status", wrapper.Status)
+		r.Get(options.BaseURL+"/emoji", wrapper.GetEmoji)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/status", wrapper.GetStatus)
 	})
 
 	return r

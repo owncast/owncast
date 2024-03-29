@@ -17,6 +17,10 @@ func (s *ServerInterfaceImpl) Handler() http.Handler {
 	return generated.Handler(s)
 }
 
-func (s *ServerInterfaceImpl) Status(w http.ResponseWriter, r *http.Request) {
+func (s *ServerInterfaceImpl) GetStatus(w http.ResponseWriter, r *http.Request) {
 	controllers.GetStatus(w, r)
+}
+
+func (s *ServerInterfaceImpl) GetEmoji(w http.ResponseWriter, r *http.Request) {
+	controllers.GetCustomEmojiList(w, r)
 }

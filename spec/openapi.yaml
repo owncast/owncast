@@ -24,7 +24,7 @@ paths:
   /status:
     get:
       summary: Get the status of the server
-      operationId: status
+      operationId: getStatus
       tags:
         - internal
       responses:
@@ -34,6 +34,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Status"
+  /emoji:
+    get:
+      summary: Get list of custom emojis supported in the chat
+      operationId: getEmoji
+      tags:
+        - internal
+      responses:
+        '200':
+          description: List of valid emojis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Emoji"
+        '500':
+          $ref: "#/components/responses/500"
 
 components:
   schemas:
@@ -53,7 +68,29 @@ components:
           type: integer
         online:
           type: boolean
+    Emoji:
+      type: object
+      description: Name and url for an emoji
+      properties:
+        name:
+          type: string
+          description: The name of the emoji
+        url:
+          type: string
+          description: URL for the emoji image
+    Error:
+      type: object
+      description: Structure for an error response
+      properties:
+        error:
+          type: string
   responses:
     '404':
       description: Not found
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
 

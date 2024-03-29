@@ -7,6 +7,7 @@ import (
 
 	"github.com/CAFxX/httpcompression"
 	"github.com/go-chi/chi/v5"
+	chiMW "github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/http2"
@@ -59,7 +60,7 @@ func Start() error {
 	// http.HandleFunc("/api/status", controllers.GetStatus)
 
 	// custom emoji supported in the chat
-	http.HandleFunc("/api/emoji", controllers.GetCustomEmojiList)
+	// http.HandleFunc("/api/emoji", controllers.GetCustomEmojiList)
 
 	// chat rest api
 	http.HandleFunc("/api/chat", middleware.RequireUserAccessToken(controllers.GetChatMessages))
@@ -430,6 +431,7 @@ func Start() error {
 
 	// @behlers test for chi router w/ oapi codegen
 	r := chi.NewRouter()
+	r.Use(chiMW.Logger) // added for testing and debugging
 	r.Mount("/api/", handler.New().Handler())
 
 	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
