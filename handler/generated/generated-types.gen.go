@@ -34,6 +34,9 @@ type Emoji struct {
 	Url *string `json:"url,omitempty"`
 }
 
+// Emojis defines model for Emojis.
+type Emojis = []Emoji
+
 // Error Structure for an error response
 type Error struct {
 	Error *string `json:"error,omitempty"`

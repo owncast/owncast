@@ -46,7 +46,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Emoji"
+                $ref: "#/components/schemas/Emojis"
         '500':
           $ref: "#/components/responses/500"
   /chat:
@@ -83,6 +83,10 @@ components:
           type: integer
         online:
           type: boolean
+    Emojis:
+      type: array
+      items:
+        $ref: "#/components/schemas/Emoji"
     Emoji:
       type: object
       description: Name and url for an emoji
