@@ -5,6 +5,7 @@ import (
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/handler/generated"
+	"github.com/owncast/owncast/router/middleware"
 )
 
 type ServerInterfaceImpl struct {}
@@ -17,10 +18,14 @@ func (s *ServerInterfaceImpl) Handler() http.Handler {
 	return generated.Handler(s)
 }
 
-func (s *ServerInterfaceImpl) GetStatus(w http.ResponseWriter, r *http.Request) {
+func (*ServerInterfaceImpl) GetStatus(w http.ResponseWriter, r *http.Request) {
 	controllers.GetStatus(w, r)
 }
 
-func (s *ServerInterfaceImpl) GetEmoji(w http.ResponseWriter, r *http.Request) {
+func (*ServerInterfaceImpl) GetEmoji(w http.ResponseWriter, r *http.Request) {
 	controllers.GetCustomEmojiList(w, r)
+}
+
+func (*ServerInterfaceImpl) GetChatList(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireUserAccessToken(controllers.GetChatMessages)(w, r)
 }

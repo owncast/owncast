@@ -49,6 +49,21 @@ paths:
                 $ref: "#/components/schemas/Emoji"
         '500':
           $ref: "#/components/responses/500"
+  /chat:
+    get:
+      summary: Gets a list of chat messages
+      operationId: getChatList
+      tags:
+        - internal
+      responses:
+        '200':
+          description: List of chat messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatMessages"
+        '501':
+          $ref: "#/components/responses/501"
 
 components:
   schemas:
@@ -78,6 +93,93 @@ components:
         url:
           type: string
           description: URL for the emoji image
+    User:
+      type: object
+      properties:
+        createdAt:
+          type: string
+        disabledAt:
+          type: string
+        nameChangedAt:
+          type: string
+        id:
+          type: string
+        displayName:
+          type: string
+        previousNames:
+          type: array
+          items:
+            type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        displayColor:
+          type: integer
+        isBot:
+          type: boolean
+        authenticated:
+          type: boolean
+    Event:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        type:
+          type: string
+        id:
+          type: string
+    UserEvent:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        hiddenAt:
+          type: string
+        clientId:
+          type: integer
+    MessageEvent:
+      type: object
+      properties:
+        body:
+          type: string
+    ChatMessages:
+      type: array
+      items:
+        oneOf:
+          - $ref: "#/components/schemas/UserMessage"
+          - $ref: "#/components/schemas/SystemMessage"
+          - $ref: "#/components/schemas/ActionMessage"
+          - $ref: "#/components/schemas/FederatedAction"
+    UserMessage:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Event"
+        - $ref: "#/components/schemas/UserEvent"
+        - $ref: "#/components/schemas/MessageEvent"
+    SystemMessage:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Event"
+        - $ref: "#/components/schemas/MessageEvent"
+    ActionMessage:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Event"
+        - $ref: "#/components/schemas/MessageEvent"
+    FederatedAction:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Event"
+        - $ref: "#/components/schemas/MessageEvent"
+        - type: object
+          properties:
+            image:
+              type: string
+            link:
+              type: string
+            title:
+              type: string
     Error:
       type: object
       description: Structure for an error response
@@ -89,6 +191,12 @@ components:
       description: Not found
     '500':
       description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    '501':
+      description: Not Implemented
       content:
         application/json:
           schema:

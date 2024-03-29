@@ -12,6 +12,9 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Gets a list of chat messages
+	// (GET /chat)
+	GetChatList(w http.ResponseWriter, r *http.Request)
 	// Get list of custom emojis supported in the chat
 	// (GET /emoji)
 	GetEmoji(w http.ResponseWriter, r *http.Request)
@@ -23,6 +26,12 @@ type ServerInterface interface {
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// Gets a list of chat messages
+// (GET /chat)
+func (_ Unimplemented) GetChatList(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // Get list of custom emojis supported in the chat
 // (GET /emoji)
@@ -44,6 +53,21 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// GetChatList operation middleware
+func (siw *ServerInterfaceWrapper) GetChatList(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetChatList(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
 
 // GetEmoji operation middleware
 func (siw *ServerInterfaceWrapper) GetEmoji(w http.ResponseWriter, r *http.Request) {
@@ -188,6 +212,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/chat", wrapper.GetChatList)
+	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/emoji", wrapper.GetEmoji)
 	})
