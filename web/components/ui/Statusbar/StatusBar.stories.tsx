@@ -1,5 +1,5 @@
 import { Meta } from '@storybook/react';
-import { subHours } from 'date-fns';
+import { subHours, subMinutes, subSeconds } from 'date-fns';
 import { Statusbar } from './Statusbar';
 
 const meta = {
@@ -14,7 +14,23 @@ export const Online = {
   args: {
     online: true,
     viewerCount: 42,
-    lastConnectTime: subHours(new Date(), 3),
+    lastConnectTime: subSeconds(subMinutes(subHours(new Date(), 3), 17), 22),
+  },
+};
+
+export const Minutes = {
+  args: {
+    online: true,
+    viewerCount: 42,
+    lastConnectTime: subSeconds(subMinutes(new Date(), 17), 22),
+  },
+};
+
+export const DaysAgo = {
+  args: {
+    online: true,
+    viewerCount: 42,
+    lastConnectTime: subHours(new Date(), 17),
   },
 };
 
