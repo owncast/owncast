@@ -25,8 +25,6 @@ paths:
     get:
       summary: Get the status of the server
       operationId: getStatus
-      tags:
-        - internal
       responses:
         '200':
           description: Successful response
@@ -38,8 +36,6 @@ paths:
     get:
       summary: Get list of custom emojis supported in the chat
       operationId: getEmoji
-      tags:
-        - internal
       responses:
         '200':
           description: List of valid emojis
@@ -53,8 +49,6 @@ paths:
     get:
       summary: Gets a list of chat messages
       operationId: getChatList
-      tags:
-        - internal
       responses:
         '200':
           description: List of chat messages
@@ -64,6 +58,19 @@ paths:
                 $ref: "#/components/schemas/ChatMessages"
         '501':
           $ref: "#/components/responses/501"
+  /config:
+    get:
+      summary: Get the web config
+      operationId: getConfig
+      responses:
+        '200':
+          description: The current web config
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebConfig"
+        '500':
+          $ref: "#/components/responses/500"
 
 components:
   schemas:
@@ -150,7 +157,7 @@ components:
     ChatMessages:
       type: array
       items:
-        oneOf:
+        anyOf:
           - $ref: "#/components/schemas/UserMessage"
           - $ref: "#/components/schemas/SystemMessage"
           - $ref: "#/components/schemas/ActionMessage"
@@ -184,6 +191,109 @@ components:
               type: string
             title:
               type: string
+    WebConfig:
+      type: object
+      properties:
+        appearanceVariables:
+          type: object
+          additionalProperties:
+            type: string
+        name:
+          type: string
+        customStyles:
+          type: string
+        streamTitle:
+          type: string
+        offlineMessage:
+          type: string
+        logo:
+          type: string
+        version:
+          type: string
+        socketHostOverride:
+          type: string
+        extraPageContent:
+          type: string
+        summary:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        socialHandles:
+          type: array
+          items:
+            $ref: "#/components/schemas/SocialHandle"
+        externalActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExternalAction"
+        notifications:
+          $ref: "#/components/schemas/NotificationConfig"
+        federation:
+          $ref: "#/components/schemas/FederationConfig"
+        maxSocketPayloadSize:
+          type: integer
+        hideViewerCount:
+          type: boolean
+        chatDisabled:
+          type: boolean
+        nsfw:
+          type: boolean
+        authentication:
+          $ref: "#/components/schemas/AuthenticationConfig"
+    SocialHandle:
+      type: object
+      properties:
+        platform:
+          type: string
+        url:
+          type: string
+        icon:
+          type: string
+    ExternalAction:
+      type: object
+      properties:
+        url:
+          type: string
+        html:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+        openExternally:
+          type: boolean
+    NotificationConfig:
+      type: object
+      properties:
+        browser:
+          $ref: "#/components/schemas/BrowserConfig"
+    BrowserConfig:
+      type: object
+      properties:
+        publicKey:
+          type: string
+        enabled:
+          type: boolean
+    FederationConfig:
+      type: object
+      properties:
+        account:
+          type: string
+        followerCount:
+          type: integer
+        enabled:
+          type: boolean
+    AuthenticationConfig:
+      type: object
+      properties:
+        indieAuthEnabled:
+          type: boolean
     Error:
       type: object
       description: Structure for an error response

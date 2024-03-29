@@ -17,6 +17,17 @@ type ActionMessage struct {
 	Type      *string `json:"type,omitempty"`
 }
 
+// AuthenticationConfig defines model for AuthenticationConfig.
+type AuthenticationConfig struct {
+	IndieAuthEnabled *bool `json:"indieAuthEnabled,omitempty"`
+}
+
+// BrowserConfig defines model for BrowserConfig.
+type BrowserConfig struct {
+	Enabled   *bool   `json:"enabled,omitempty"`
+	PublicKey *string `json:"publicKey,omitempty"`
+}
+
 // ChatMessages defines model for ChatMessages.
 type ChatMessages = []ChatMessages_Item
 
@@ -49,6 +60,17 @@ type Event struct {
 	Type      *string `json:"type,omitempty"`
 }
 
+// ExternalAction defines model for ExternalAction.
+type ExternalAction struct {
+	Color          *string `json:"color,omitempty"`
+	Description    *string `json:"description,omitempty"`
+	Html           *string `json:"html,omitempty"`
+	Icon           *string `json:"icon,omitempty"`
+	OpenExternally *bool   `json:"openExternally,omitempty"`
+	Title          *string `json:"title,omitempty"`
+	Url            *string `json:"url,omitempty"`
+}
+
 // FederatedAction defines model for FederatedAction.
 type FederatedAction struct {
 	Body      *string `json:"body,omitempty"`
@@ -60,9 +82,28 @@ type FederatedAction struct {
 	Type      *string `json:"type,omitempty"`
 }
 
+// FederationConfig defines model for FederationConfig.
+type FederationConfig struct {
+	Account       *string `json:"account,omitempty"`
+	Enabled       *bool   `json:"enabled,omitempty"`
+	FollowerCount *int    `json:"followerCount,omitempty"`
+}
+
 // MessageEvent defines model for MessageEvent.
 type MessageEvent struct {
 	Body *string `json:"body,omitempty"`
+}
+
+// NotificationConfig defines model for NotificationConfig.
+type NotificationConfig struct {
+	Browser *BrowserConfig `json:"browser,omitempty"`
+}
+
+// SocialHandle defines model for SocialHandle.
+type SocialHandle struct {
+	Icon     *string `json:"icon,omitempty"`
+	Platform *string `json:"platform,omitempty"`
+	Url      *string `json:"url,omitempty"`
 }
 
 // Status Response for status
@@ -113,6 +154,30 @@ type UserMessage struct {
 	Timestamp *string `json:"timestamp,omitempty"`
 	Type      *string `json:"type,omitempty"`
 	User      *User   `json:"user,omitempty"`
+}
+
+// WebConfig defines model for WebConfig.
+type WebConfig struct {
+	AppearanceVariables  *map[string]string    `json:"appearanceVariables,omitempty"`
+	Authentication       *AuthenticationConfig `json:"authentication,omitempty"`
+	ChatDisabled         *bool                 `json:"chatDisabled,omitempty"`
+	CustomStyles         *string               `json:"customStyles,omitempty"`
+	ExternalActions      *[]ExternalAction     `json:"externalActions,omitempty"`
+	ExtraPageContent     *string               `json:"extraPageContent,omitempty"`
+	Federation           *FederationConfig     `json:"federation,omitempty"`
+	HideViewerCount      *bool                 `json:"hideViewerCount,omitempty"`
+	Logo                 *string               `json:"logo,omitempty"`
+	MaxSocketPayloadSize *int                  `json:"maxSocketPayloadSize,omitempty"`
+	Name                 *string               `json:"name,omitempty"`
+	Notifications        *NotificationConfig   `json:"notifications,omitempty"`
+	Nsfw                 *bool                 `json:"nsfw,omitempty"`
+	OfflineMessage       *string               `json:"offlineMessage,omitempty"`
+	SocialHandles        *[]SocialHandle       `json:"socialHandles,omitempty"`
+	SocketHostOverride   *string               `json:"socketHostOverride,omitempty"`
+	StreamTitle          *string               `json:"streamTitle,omitempty"`
+	Summary              *string               `json:"summary,omitempty"`
+	Tags                 *[]string             `json:"tags,omitempty"`
+	Version              *string               `json:"version,omitempty"`
 }
 
 // N500 Structure for an error response

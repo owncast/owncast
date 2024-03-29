@@ -15,6 +15,9 @@ type ServerInterface interface {
 	// Gets a list of chat messages
 	// (GET /chat)
 	GetChatList(w http.ResponseWriter, r *http.Request)
+	// Get the web config
+	// (GET /config)
+	GetConfig(w http.ResponseWriter, r *http.Request)
 	// Get list of custom emojis supported in the chat
 	// (GET /emoji)
 	GetEmoji(w http.ResponseWriter, r *http.Request)
@@ -30,6 +33,12 @@ type Unimplemented struct{}
 // Gets a list of chat messages
 // (GET /chat)
 func (_ Unimplemented) GetChatList(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get the web config
+// (GET /config)
+func (_ Unimplemented) GetConfig(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -60,6 +69,21 @@ func (siw *ServerInterfaceWrapper) GetChatList(w http.ResponseWriter, r *http.Re
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetChatList(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetConfig operation middleware
+func (siw *ServerInterfaceWrapper) GetConfig(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetConfig(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -214,6 +238,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/chat", wrapper.GetChatList)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/config", wrapper.GetConfig)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/emoji", wrapper.GetEmoji)

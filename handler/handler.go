@@ -29,3 +29,7 @@ func (*ServerInterfaceImpl) GetEmoji(w http.ResponseWriter, r *http.Request) {
 func (*ServerInterfaceImpl) GetChatList(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireUserAccessToken(controllers.GetChatMessages)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetConfig(w http.ResponseWriter, r *http.Request) {
+	controllers.GetWebConfig(w, r)
+}

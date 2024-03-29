@@ -66,7 +66,7 @@ func Start() error {
 	// http.HandleFunc("/api/chat", middleware.RequireUserAccessToken(controllers.GetChatMessages))
 
 	// web config api
-	http.HandleFunc("/api/config", controllers.GetWebConfig)
+	// http.HandleFunc("/api/config", controllers.GetWebConfig)
 
 	// return the YP protocol data
 	http.HandleFunc("/api/yp", yp.GetYPResponse)
