@@ -86,7 +86,7 @@ func Start() error {
 	// http.HandleFunc("/api/remotefollow", controllers.RemoteFollow)
 
 	// return followers
-	http.HandleFunc("/api/followers", middleware.HandlePagination(controllers.GetFollowers))
+	// http.HandleFunc("/api/followers", middleware.HandlePagination(controllers.GetFollowers))
 
 	// save client video playback metrics
 	http.HandleFunc("/api/metrics/playback", controllers.ReportPlaybackMetrics)

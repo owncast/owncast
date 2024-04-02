@@ -28,6 +28,9 @@ type ServerInterface interface {
 	// Get list of custom emojis supported in the chat
 	// (GET /emoji)
 	GetEmoji(w http.ResponseWriter, r *http.Request)
+	// Gets the list of followers
+	// (GET /followers)
+	GetFollowers(w http.ResponseWriter, r *http.Request, params GetFollowersParams)
 	// Tell the backend you're an active viewer
 	// (GET /ping)
 	Ping(w http.ResponseWriter, r *http.Request)
@@ -78,6 +81,12 @@ func (_ Unimplemented) GetConfig(w http.ResponseWriter, r *http.Request) {
 // Get list of custom emojis supported in the chat
 // (GET /emoji)
 func (_ Unimplemented) GetEmoji(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Gets the list of followers
+// (GET /followers)
+func (_ Unimplemented) GetFollowers(w http.ResponseWriter, r *http.Request, params GetFollowersParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -218,6 +227,42 @@ func (siw *ServerInterfaceWrapper) GetEmoji(w http.ResponseWriter, r *http.Reque
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetEmoji(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetFollowers operation middleware
+func (siw *ServerInterfaceWrapper) GetFollowers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetFollowersParams
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetFollowers(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -444,6 +489,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/emoji", wrapper.GetEmoji)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/followers", wrapper.GetFollowers)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/ping", wrapper.Ping)

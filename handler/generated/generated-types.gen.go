@@ -234,6 +234,15 @@ type RegisterAnonymousChatUserParams struct {
 	XForwardedUser *string `json:"X-Forwarded-User,omitempty"`
 }
 
+// GetFollowersParams defines parameters for GetFollowers.
+type GetFollowersParams struct {
+	// Offset The number of items to skip before starting to collect the result set
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit The numbers of items to return
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // RemoteFollowJSONBody defines parameters for RemoteFollow.
 type RemoteFollowJSONBody struct {
 	Account *string `json:"account,omitempty"`

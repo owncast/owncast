@@ -176,7 +176,36 @@ paths:
                     type: string
         '400':
           $ref: "#/components/responses/400"
-
+  /followers:
+    get:
+      summary: Gets the list of followers
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The numbers of items to return
+      responses:
+        '200':
+          description: Paginated follower count
+          content:
+            application/json:
+              schema:
+                type: object
+                parameters:
+                  total:
+                    type: integer
+                  results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Follower"
+        '400':
+          $ref: "#/components/responses/400"
 
 components:
   schemas:
@@ -246,6 +275,27 @@ components:
           type: boolean
         authenticated:
           type: boolean
+    Follower:
+      type: object
+      properties:
+        link:
+          type: string
+          description: The IRI of the remote actor.
+        name:
+          type: string
+          description: The display name of the follower.
+        username:
+          type: string
+          description: The account username of the remote actor.
+        image:
+          type: string
+          description: The avatar image of the follower.
+        timestamp:
+          type: string
+          description: When this follow request was created.
+        disabledAt:
+          type: string
+          description: When this follower was rejected or disabled.
     Event:
       type: object
       properties:
