@@ -59,3 +59,7 @@ func (*ServerInterfaceImpl) GetVideoVariants(w http.ResponseWriter, r *http.Requ
 func (*ServerInterfaceImpl) Ping(w http.ResponseWriter, r *http.Request) {
 	controllers.Ping(w, r)
 }
+
+func (*ServerInterfaceImpl) RemoteFollow(w http.ResponseWriter, r *http.Request) {
+	controllers.RemoteFollow(w, r)
+}

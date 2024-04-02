@@ -234,8 +234,16 @@ type RegisterAnonymousChatUserParams struct {
 	XForwardedUser *string `json:"X-Forwarded-User,omitempty"`
 }
 
+// RemoteFollowJSONBody defines parameters for RemoteFollow.
+type RemoteFollowJSONBody struct {
+	Account *string `json:"account,omitempty"`
+}
+
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
+
+// RemoteFollowJSONRequestBody defines body for RemoteFollow for application/json ContentType.
+type RemoteFollowJSONRequestBody RemoteFollowJSONBody
 
 // AsUserMessage returns the union data inside the ChatMessages_Item as a UserMessage
 func (t ChatMessages_Item) AsUserMessage() (UserMessage, error) {

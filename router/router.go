@@ -83,7 +83,7 @@ func Start() error {
 	// http.HandleFunc("/api/chat/register", controllers.RegisterAnonymousChatUser)
 
 	// return remote follow details
-	http.HandleFunc("/api/remotefollow", controllers.RemoteFollow)
+	// http.HandleFunc("/api/remotefollow", controllers.RemoteFollow)
 
 	// return followers
 	http.HandleFunc("/api/followers", middleware.HandlePagination(controllers.GetFollowers))
@@ -431,6 +431,7 @@ func Start() error {
 	// @behlers test for chi router w/ oapi codegen
 	r := chi.NewRouter()
 	r.Use(chiMW.Logger) // added for testing and debugging
+	r.Use(chiMW.Recoverer)
 	r.Mount("/api/", handler.New().Handler())
 
 	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration

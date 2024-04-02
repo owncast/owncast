@@ -31,6 +31,9 @@ type ServerInterface interface {
 	// Tell the backend you're an active viewer
 	// (GET /ping)
 	Ping(w http.ResponseWriter, r *http.Request)
+	// Request remote follow
+	// (POST /remotefollow)
+	RemoteFollow(w http.ResponseWriter, r *http.Request)
 	// Get all social platforms
 	// (GET /socialplatforms)
 	GetSocialPlatforms(w http.ResponseWriter, r *http.Request)
@@ -81,6 +84,12 @@ func (_ Unimplemented) GetEmoji(w http.ResponseWriter, r *http.Request) {
 // Tell the backend you're an active viewer
 // (GET /ping)
 func (_ Unimplemented) Ping(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Request remote follow
+// (POST /remotefollow)
+func (_ Unimplemented) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -224,6 +233,21 @@ func (siw *ServerInterfaceWrapper) Ping(w http.ResponseWriter, r *http.Request) 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.Ping(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// RemoteFollow operation middleware
+func (siw *ServerInterfaceWrapper) RemoteFollow(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RemoteFollow(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -423,6 +447,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/ping", wrapper.Ping)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/remotefollow", wrapper.RemoteFollow)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/socialplatforms", wrapper.GetSocialPlatforms)

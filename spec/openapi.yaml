@@ -152,6 +152,31 @@ paths:
       responses:
         '200':
           description: Added as an active viewer
+  /remotefollow:
+    post:
+      summary: Request remote follow
+      operationId: remoteFollow
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account:
+                  type: string
+      responses:
+        '200':
+          description: Contains redirect URL remote follow follow
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirectUrl:
+                    type: string
+        '400':
+          $ref: "#/components/responses/400"
+
 
 components:
   schemas:
