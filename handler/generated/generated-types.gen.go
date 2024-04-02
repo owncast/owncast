@@ -102,6 +102,27 @@ type FederationConfig struct {
 	FollowerCount *int    `json:"followerCount,omitempty"`
 }
 
+// Follower defines model for Follower.
+type Follower struct {
+	// DisabledAt When this follower was rejected or disabled.
+	DisabledAt *string `json:"disabledAt,omitempty"`
+
+	// Image The avatar image of the follower.
+	Image *string `json:"image,omitempty"`
+
+	// Link The IRI of the remote actor.
+	Link *string `json:"link,omitempty"`
+
+	// Name The display name of the follower.
+	Name *string `json:"name,omitempty"`
+
+	// Timestamp When this follow request was created.
+	Timestamp *string `json:"timestamp,omitempty"`
+
+	// Username The account username of the remote actor.
+	Username *string `json:"username,omitempty"`
+}
+
 // MessageEvent defines model for MessageEvent.
 type MessageEvent struct {
 	Body *string `json:"body,omitempty"`
@@ -110,6 +131,15 @@ type MessageEvent struct {
 // NotificationConfig defines model for NotificationConfig.
 type NotificationConfig struct {
 	Browser *BrowserConfig `json:"browser,omitempty"`
+}
+
+// PlaybackMetrics defines model for PlaybackMetrics.
+type PlaybackMetrics struct {
+	Bandwidth             *float64 `json:"bandwidth,omitempty"`
+	DownloadDuration      *float64 `json:"downloadDuration,omitempty"`
+	Errors                *float64 `json:"errors,omitempty"`
+	Latency               *float64 `json:"latency,omitempty"`
+	QualityVariantChanges *float64 `json:"qualityVariantChanges,omitempty"`
 }
 
 // SocialHandle defines model for SocialHandle.
@@ -250,6 +280,9 @@ type RemoteFollowJSONBody struct {
 
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
+
+// PostMetricsPlaybackJSONRequestBody defines body for PostMetricsPlayback for application/json ContentType.
+type PostMetricsPlaybackJSONRequestBody = PlaybackMetrics
 
 // RemoteFollowJSONRequestBody defines body for RemoteFollow for application/json ContentType.
 type RemoteFollowJSONRequestBody RemoteFollowJSONBody

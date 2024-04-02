@@ -31,6 +31,9 @@ type ServerInterface interface {
 	// Gets the list of followers
 	// (GET /followers)
 	GetFollowers(w http.ResponseWriter, r *http.Request, params GetFollowersParams)
+	// Save video playback metrics for future video health recording
+	// (POST /metrics/playback)
+	PostMetricsPlayback(w http.ResponseWriter, r *http.Request)
 	// Tell the backend you're an active viewer
 	// (GET /ping)
 	Ping(w http.ResponseWriter, r *http.Request)
@@ -87,6 +90,12 @@ func (_ Unimplemented) GetEmoji(w http.ResponseWriter, r *http.Request) {
 // Gets the list of followers
 // (GET /followers)
 func (_ Unimplemented) GetFollowers(w http.ResponseWriter, r *http.Request, params GetFollowersParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Save video playback metrics for future video health recording
+// (POST /metrics/playback)
+func (_ Unimplemented) PostMetricsPlayback(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -263,6 +272,21 @@ func (siw *ServerInterfaceWrapper) GetFollowers(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFollowers(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PostMetricsPlayback operation middleware
+func (siw *ServerInterfaceWrapper) PostMetricsPlayback(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostMetricsPlayback(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -492,6 +516,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/followers", wrapper.GetFollowers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/metrics/playback", wrapper.PostMetricsPlayback)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/ping", wrapper.Ping)

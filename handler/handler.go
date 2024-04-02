@@ -68,3 +68,7 @@ func (*ServerInterfaceImpl) GetFollowers(w http.ResponseWriter, r *http.Request,
 	// TODO instead of using the mw, we can use the params object
 	middleware.HandlePagination(controllers.GetFollowers)(w, r)
 }
+
+func (*ServerInterfaceImpl) PostMetricsPlayback(w http.ResponseWriter, r *http.Request) {
+	controllers.ReportPlaybackMetrics(w, r)
+}

@@ -89,7 +89,7 @@ func Start() error {
 	// http.HandleFunc("/api/followers", middleware.HandlePagination(controllers.GetFollowers))
 
 	// save client video playback metrics
-	http.HandleFunc("/api/metrics/playback", controllers.ReportPlaybackMetrics)
+	// http.HandleFunc("/api/metrics/playback", controllers.ReportPlaybackMetrics)
 
 	// Register for notifications
 	http.HandleFunc("/api/notifications/register", middleware.RequireUserAccessToken(controllers.RegisterForLiveNotifications))

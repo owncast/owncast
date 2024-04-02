@@ -197,13 +197,27 @@ paths:
             application/json:
               schema:
                 type: object
-                parameters:
+                properties:
                   total:
                     type: integer
                   results:
                     type: array
                     items:
                       $ref: "#/components/schemas/Follower"
+        '400':
+          $ref: "#/components/responses/400"
+  /metrics/playback:
+    post:
+      summary: Save video playback metrics for future video health recording
+      requestBody:
+        description: Video metrics to record
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlaybackMetrics"
+      responses:
+        '200':
+          description: Metrics successfully recorded
         '400':
           $ref: "#/components/responses/400"
 
@@ -497,6 +511,24 @@ components:
           type: integer
         name:
           type: string
+    PlaybackMetrics:
+      type: object
+      properties:
+        bandwidth:
+          type: number
+          format: double
+        latency:
+          type: number
+          format: double
+        errors:
+          type: number
+          format: double
+        downloadDuration:
+          type: number
+          format: double
+        qualityVariantChanges:
+          type: number
+          format: double
     Error:
       type: object
       description: Structure for an error response
