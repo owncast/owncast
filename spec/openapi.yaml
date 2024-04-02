@@ -99,6 +99,19 @@ paths:
                   $ref: '#/components/schemas/SocialHandle'
         '500':
           $ref: "#/components/responses/500"
+  /video/variants:
+    get:
+      summary: Get a list of video variants available
+      operationId: getVideoVariants
+      responses:
+        '200':
+          description: List of available video variants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VideoVariant"
 
 components:
   schemas:
@@ -327,7 +340,6 @@ components:
       properties:
         lastConnectTime:
           type: string
-          nullable: true
         name:
           type: string
         description:
@@ -354,6 +366,13 @@ components:
           type: boolean
         online:
           type: boolean
+    VideoVariant:
+      type: object
+      properties:
+        index:
+          type: integer
+        name:
+          type: string
     Error:
       type: object
       description: Structure for an error response

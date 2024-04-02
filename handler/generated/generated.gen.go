@@ -27,6 +27,9 @@ type ServerInterface interface {
 	// Get the status of the server
 	// (GET /status)
 	GetStatus(w http.ResponseWriter, r *http.Request)
+	// Get a list of video variants available
+	// (GET /video/variants)
+	GetVideoVariants(w http.ResponseWriter, r *http.Request)
 	// Get the YP protocol data
 	// (GET /yp)
 	GetYP(w http.ResponseWriter, r *http.Request)
@@ -63,6 +66,12 @@ func (_ Unimplemented) GetSocialPlatforms(w http.ResponseWriter, r *http.Request
 // Get the status of the server
 // (GET /status)
 func (_ Unimplemented) GetStatus(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a list of video variants available
+// (GET /video/variants)
+func (_ Unimplemented) GetVideoVariants(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -147,6 +156,21 @@ func (siw *ServerInterfaceWrapper) GetStatus(w http.ResponseWriter, r *http.Requ
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetStatus(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetVideoVariants operation middleware
+func (siw *ServerInterfaceWrapper) GetVideoVariants(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetVideoVariants(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -298,6 +322,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/status", wrapper.GetStatus)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/video/variants", wrapper.GetVideoVariants)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/yp", wrapper.GetYP)

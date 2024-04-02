@@ -156,6 +156,12 @@ type UserMessage struct {
 	User      *User   `json:"user,omitempty"`
 }
 
+// VideoVariant defines model for VideoVariant.
+type VideoVariant struct {
+	Index *int    `json:"index,omitempty"`
+	Name  *string `json:"name,omitempty"`
+}
+
 // WebConfig defines model for WebConfig.
 type WebConfig struct {
 	AppearanceVariables  *map[string]string    `json:"appearanceVariables,omitempty"`
@@ -183,7 +189,7 @@ type WebConfig struct {
 // YPDetails defines model for YPDetails.
 type YPDetails struct {
 	Description           *string         `json:"description,omitempty"`
-	LastConnectTime       *string         `json:"lastConnectTime"`
+	LastConnectTime       *string         `json:"lastConnectTime,omitempty"`
 	Logo                  *string         `json:"logo,omitempty"`
 	Name                  *string         `json:"name,omitempty"`
 	Nsfw                  *bool           `json:"nsfw,omitempty"`

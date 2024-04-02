@@ -42,3 +42,7 @@ func (*ServerInterfaceImpl) GetYP(w http.ResponseWriter, r *http.Request) {
 func (*ServerInterfaceImpl) GetSocialPlatforms(w http.ResponseWriter, r *http.Request) {
 	controllers.GetAllSocialPlatforms(w, r)
 }
+
+func (*ServerInterfaceImpl) GetVideoVariants(w http.ResponseWriter, r *http.Request) {
+	controllers.GetVideoStreamOutputVariants(w, r)
+}

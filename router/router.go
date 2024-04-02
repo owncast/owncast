@@ -74,7 +74,7 @@ func Start() error {
 	// http.HandleFunc("/api/socialplatforms", controllers.GetAllSocialPlatforms)
 
 	// return the list of video variants available
-	http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
+	// http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
 
 	// tell the backend you're an active viewer
 	http.HandleFunc("/api/ping", controllers.Ping)
