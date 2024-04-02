@@ -38,3 +38,7 @@ func (*ServerInterfaceImpl) GetConfig(w http.ResponseWriter, r *http.Request) {
 func (*ServerInterfaceImpl) GetYP(w http.ResponseWriter, r *http.Request) {
 	yp.GetYPResponse(w, r)
 }
+
+func (*ServerInterfaceImpl) GetSocialPlatforms(w http.ResponseWriter, r *http.Request) {
+	controllers.GetAllSocialPlatforms(w, r)
+}

@@ -71,7 +71,7 @@ func Start() error {
 	// http.HandleFunc("/api/yp", yp.GetYPResponse)
 
 	// list of all social platforms
-	http.HandleFunc("/api/socialplatforms", controllers.GetAllSocialPlatforms)
+	// http.HandleFunc("/api/socialplatforms", controllers.GetAllSocialPlatforms)
 
 	// return the list of video variants available
 	http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)

@@ -80,10 +80,25 @@ paths:
           description: The current YP protocol configuration
           content:
             application/json:
-              schemas:
+              schema:
                 $ref: "#/components/schemas/YPDetails"
         '404':
           $ref: "#/components/responses/404"
+  /socialplatforms:
+    get:
+      summary: Get all social platforms
+      operationId: getSocialPlatforms
+      responses:
+        '200':
+          description: The list of social platforms
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/SocialHandle'
+        '500':
+          $ref: "#/components/responses/500"
 
 components:
   schemas:

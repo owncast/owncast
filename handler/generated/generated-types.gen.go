@@ -180,6 +180,22 @@ type WebConfig struct {
 	Version              *string               `json:"version,omitempty"`
 }
 
+// YPDetails defines model for YPDetails.
+type YPDetails struct {
+	Description           *string         `json:"description,omitempty"`
+	LastConnectTime       *string         `json:"lastConnectTime"`
+	Logo                  *string         `json:"logo,omitempty"`
+	Name                  *string         `json:"name,omitempty"`
+	Nsfw                  *bool           `json:"nsfw,omitempty"`
+	Online                *bool           `json:"online,omitempty"`
+	OverallMaxViewerCount *int            `json:"overallMaxViewerCount,omitempty"`
+	SessionMaxViewerCount *int            `json:"sessionMaxViewerCount,omitempty"`
+	Social                *[]SocialHandle `json:"social,omitempty"`
+	StreamTitle           *string         `json:"streamTitle,omitempty"`
+	Tags                  *[]string       `json:"tags,omitempty"`
+	ViewerCount           *int            `json:"viewerCount,omitempty"`
+}
+
 // N500 Structure for an error response
 type N500 = Error
 
