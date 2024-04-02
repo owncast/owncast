@@ -112,6 +112,13 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/VideoVariant"
+  /ping:
+    get:
+      summary: Tell the backend you're an active viewer
+      operationId: Ping
+      responses:
+        '200':
+          description: Added as an active viewer
 
 components:
   schemas:

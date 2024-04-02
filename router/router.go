@@ -77,7 +77,7 @@ func Start() error {
 	// http.HandleFunc("/api/video/variants", controllers.GetVideoStreamOutputVariants)
 
 	// tell the backend you're an active viewer
-	http.HandleFunc("/api/ping", controllers.Ping)
+	// http.HandleFunc("/api/ping", controllers.Ping)
 
 	// register a new chat user
 	http.HandleFunc("/api/chat/register", controllers.RegisterAnonymousChatUser)

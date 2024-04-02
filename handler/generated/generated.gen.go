@@ -21,6 +21,9 @@ type ServerInterface interface {
 	// Get list of custom emojis supported in the chat
 	// (GET /emoji)
 	GetEmoji(w http.ResponseWriter, r *http.Request)
+	// Tell the backend you're an active viewer
+	// (GET /ping)
+	Ping(w http.ResponseWriter, r *http.Request)
 	// Get all social platforms
 	// (GET /socialplatforms)
 	GetSocialPlatforms(w http.ResponseWriter, r *http.Request)
@@ -54,6 +57,12 @@ func (_ Unimplemented) GetConfig(w http.ResponseWriter, r *http.Request) {
 // Get list of custom emojis supported in the chat
 // (GET /emoji)
 func (_ Unimplemented) GetEmoji(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Tell the backend you're an active viewer
+// (GET /ping)
+func (_ Unimplemented) Ping(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -126,6 +135,21 @@ func (siw *ServerInterfaceWrapper) GetEmoji(w http.ResponseWriter, r *http.Reque
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetEmoji(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// Ping operation middleware
+func (siw *ServerInterfaceWrapper) Ping(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.Ping(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -316,6 +340,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/emoji", wrapper.GetEmoji)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/ping", wrapper.Ping)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/socialplatforms", wrapper.GetSocialPlatforms)

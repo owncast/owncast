@@ -46,3 +46,7 @@ func (*ServerInterfaceImpl) GetSocialPlatforms(w http.ResponseWriter, r *http.Re
 func (*ServerInterfaceImpl) GetVideoVariants(w http.ResponseWriter, r *http.Request) {
 	controllers.GetVideoStreamOutputVariants(w, r)
 }
+
+func (*ServerInterfaceImpl) Ping(w http.ResponseWriter, r *http.Request) {
+	controllers.Ping(w, r)
+}
