@@ -26,7 +26,6 @@ import (
 	"github.com/owncast/owncast/handler"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
-	"github.com/owncast/owncast/yp"
 )
 
 // Start starts the router for the http, ws, and rtmp.
@@ -69,7 +68,7 @@ func Start() error {
 	// http.HandleFunc("/api/config", controllers.GetWebConfig)
 
 	// return the YP protocol data
-	http.HandleFunc("/api/yp", yp.GetYPResponse)
+	// http.HandleFunc("/api/yp", yp.GetYPResponse)
 
 	// list of all social platforms
 	http.HandleFunc("/api/socialplatforms", controllers.GetAllSocialPlatforms)

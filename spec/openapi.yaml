@@ -71,6 +71,19 @@ paths:
                 $ref: "#/components/schemas/WebConfig"
         '500':
           $ref: "#/components/responses/500"
+  /yp:
+    get:
+      summary: Get the YP protocol data
+      operationId: getYP
+      responses:
+        '200':
+          description: The current YP protocol configuration
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/YPDetails"
+        '404':
+          $ref: "#/components/responses/404"
 
 components:
   schemas:
@@ -293,6 +306,38 @@ components:
       type: object
       properties:
         indieAuthEnabled:
+          type: boolean
+    YPDetails:
+      type: object
+      properties:
+        lastConnectTime:
+          type: string
+          nullable: true
+        name:
+          type: string
+        description:
+          type: string
+        streamTitle:
+          type: string
+        logo:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        social:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialHandle'
+        viewerCount:
+          type: integer
+        overallMaxViewerCount:
+          type: integer
+        sessionMaxViewerCount:
+          type: integer
+        nsfw:
+          type: boolean
+        online:
           type: boolean
     Error:
       type: object

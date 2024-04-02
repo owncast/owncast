@@ -24,6 +24,9 @@ type ServerInterface interface {
 	// Get the status of the server
 	// (GET /status)
 	GetStatus(w http.ResponseWriter, r *http.Request)
+	// Get the YP protocol data
+	// (GET /yp)
+	GetYP(w http.ResponseWriter, r *http.Request)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -51,6 +54,12 @@ func (_ Unimplemented) GetEmoji(w http.ResponseWriter, r *http.Request) {
 // Get the status of the server
 // (GET /status)
 func (_ Unimplemented) GetStatus(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get the YP protocol data
+// (GET /yp)
+func (_ Unimplemented) GetYP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -114,6 +123,21 @@ func (siw *ServerInterfaceWrapper) GetStatus(w http.ResponseWriter, r *http.Requ
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetStatus(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetYP operation middleware
+func (siw *ServerInterfaceWrapper) GetYP(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetYP(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -247,6 +271,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/status", wrapper.GetStatus)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/yp", wrapper.GetYP)
 	})
 
 	return r

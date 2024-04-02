@@ -6,6 +6,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/handler/generated"
 	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/yp"
 )
 
 type ServerInterfaceImpl struct {}
@@ -32,4 +33,8 @@ func (*ServerInterfaceImpl) GetChatList(w http.ResponseWriter, r *http.Request) 
 
 func (*ServerInterfaceImpl) GetConfig(w http.ResponseWriter, r *http.Request) {
 	controllers.GetWebConfig(w, r)
+}
+
+func (*ServerInterfaceImpl) GetYP(w http.ResponseWriter, r *http.Request) {
+	yp.GetYPResponse(w, r)
 }
