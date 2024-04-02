@@ -273,6 +273,20 @@ type GetFollowersParams struct {
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// PostNotificationsRegisterJSONBody defines parameters for PostNotificationsRegister.
+type PostNotificationsRegisterJSONBody struct {
+	// Channel Name of notification channel
+	Channel *string `json:"channel,omitempty"`
+
+	// Destination Target of the notification in the channel
+	Destination *string `json:"destination,omitempty"`
+}
+
+// PostNotificationsRegisterParams defines parameters for PostNotificationsRegister.
+type PostNotificationsRegisterParams struct {
+	AccessToken string `form:"accessToken" json:"accessToken"`
+}
+
 // RemoteFollowJSONBody defines parameters for RemoteFollow.
 type RemoteFollowJSONBody struct {
 	Account *string `json:"account,omitempty"`
@@ -283,6 +297,9 @@ type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
 
 // PostMetricsPlaybackJSONRequestBody defines body for PostMetricsPlayback for application/json ContentType.
 type PostMetricsPlaybackJSONRequestBody = PlaybackMetrics
+
+// PostNotificationsRegisterJSONRequestBody defines body for PostNotificationsRegister for application/json ContentType.
+type PostNotificationsRegisterJSONRequestBody PostNotificationsRegisterJSONBody
 
 // RemoteFollowJSONRequestBody defines body for RemoteFollow for application/json ContentType.
 type RemoteFollowJSONRequestBody RemoteFollowJSONBody

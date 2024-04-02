@@ -34,6 +34,9 @@ type ServerInterface interface {
 	// Save video playback metrics for future video health recording
 	// (POST /metrics/playback)
 	PostMetricsPlayback(w http.ResponseWriter, r *http.Request)
+	// Register for notifications
+	// (POST /notifications/register)
+	PostNotificationsRegister(w http.ResponseWriter, r *http.Request, params PostNotificationsRegisterParams)
 	// Tell the backend you're an active viewer
 	// (GET /ping)
 	Ping(w http.ResponseWriter, r *http.Request)
@@ -96,6 +99,12 @@ func (_ Unimplemented) GetFollowers(w http.ResponseWriter, r *http.Request, para
 // Save video playback metrics for future video health recording
 // (POST /metrics/playback)
 func (_ Unimplemented) PostMetricsPlayback(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Register for notifications
+// (POST /notifications/register)
+func (_ Unimplemented) PostNotificationsRegister(w http.ResponseWriter, r *http.Request, params PostNotificationsRegisterParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -287,6 +296,41 @@ func (siw *ServerInterfaceWrapper) PostMetricsPlayback(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PostMetricsPlayback(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PostNotificationsRegister operation middleware
+func (siw *ServerInterfaceWrapper) PostNotificationsRegister(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostNotificationsRegisterParams
+
+	// ------------- Required query parameter "accessToken" -------------
+
+	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "accessToken", r.URL.Query(), &params.AccessToken)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accessToken", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostNotificationsRegister(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -519,6 +563,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/metrics/playback", wrapper.PostMetricsPlayback)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/notifications/register", wrapper.PostNotificationsRegister)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/ping", wrapper.Ping)

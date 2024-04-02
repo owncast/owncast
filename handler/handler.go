@@ -72,3 +72,7 @@ func (*ServerInterfaceImpl) GetFollowers(w http.ResponseWriter, r *http.Request,
 func (*ServerInterfaceImpl) PostMetricsPlayback(w http.ResponseWriter, r *http.Request) {
 	controllers.ReportPlaybackMetrics(w, r)
 }
+
+func (*ServerInterfaceImpl) PostNotificationsRegister(w http.ResponseWriter, r *http.Request, params generated.PostNotificationsRegisterParams) {
+	middleware.RequireUserAccessToken(controllers.RegisterForLiveNotifications)(w, r)
+}

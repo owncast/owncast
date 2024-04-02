@@ -220,6 +220,35 @@ paths:
           description: Metrics successfully recorded
         '400':
           $ref: "#/components/responses/400"
+  /notifications/register:
+    post:
+      summary: Register for notifications
+      parameters:
+        - in: query
+          name: accessToken
+          schema:
+            type: string
+          required: true
+      requestBody:
+        description: Information for notification
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel:
+                  type: string
+                  description: Name of notification channel
+                destination:
+                  type: string
+                  description: Target of the notification in the channel
+      responses:
+        '200':
+          description: Successfully added notification channel
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401"
 
 components:
   schemas:
@@ -557,6 +586,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/BaseAPIResponse"
+    '401':
+      description: Unauthorized
+      content:
+        text/plain:
+          schema:
+            type: string
     '404':
       description: Not found
     '500':

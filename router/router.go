@@ -92,7 +92,7 @@ func Start() error {
 	// http.HandleFunc("/api/metrics/playback", controllers.ReportPlaybackMetrics)
 
 	// Register for notifications
-	http.HandleFunc("/api/notifications/register", middleware.RequireUserAccessToken(controllers.RegisterForLiveNotifications))
+	// http.HandleFunc("/api/notifications/register", middleware.RequireUserAccessToken(controllers.RegisterForLiveNotifications))
 
 	// Authenticated admin requests
 
