@@ -58,6 +58,39 @@ paths:
                 $ref: "#/components/schemas/ChatMessages"
         '501':
           $ref: "#/components/responses/501"
+  /chat/register:
+    post:
+      summary: Registers an anonymous chat user
+      operationId: registerAnonymousChatUser
+      parameters:
+        - in: header
+          name: X-Forwarded-User
+          schema:
+            type: string
+          required: false
+      requestBody:
+        description: The display name of the new user
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName:
+                  type: string
+      responses:
+        '200':
+          description: Anonymous user information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnonymousUser"
+        '400':
+          $ref: "#/components/responses/400"
+    options:
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /config:
     get:
       summary: Get the web config
@@ -115,7 +148,7 @@ paths:
   /ping:
     get:
       summary: Tell the backend you're an active viewer
-      operationId: Ping
+      operationId: ping
       responses:
         '200':
           description: Added as an active viewer
@@ -152,6 +185,15 @@ components:
         url:
           type: string
           description: URL for the emoji image
+    AnonymousUser:
+      type: object
+      properties:
+        id:
+          type: string
+        accessToken:
+          type: string
+        displayName:
+          type: string
     User:
       type: object
       properties:
@@ -386,7 +428,28 @@ components:
       properties:
         error:
           type: string
+    BaseAPIResponse:
+      type: object
+      description: Simple API response
+      properties:
+        message:
+          type: string
+        success:
+          type: boolean
   responses:
+    '204':
+      description: No Content
+      headers:
+        Access-Control-Allow-Origin:
+          description: All options requests should have a wildcard CORS header
+          schema:
+            type: string
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseAPIResponse"
     '404':
       description: Not found
     '500':

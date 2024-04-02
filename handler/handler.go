@@ -31,6 +31,15 @@ func (*ServerInterfaceImpl) GetChatList(w http.ResponseWriter, r *http.Request) 
 	middleware.RequireUserAccessToken(controllers.GetChatMessages)(w, r)
 }
 
+func (*ServerInterfaceImpl) OptionsChatRegister(w http.ResponseWriter, r *http.Request) {
+	// TODO this uses the same method as POST, should break that method up
+	controllers.RegisterAnonymousChatUser(w, r)
+}
+
+func (*ServerInterfaceImpl) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params generated.RegisterAnonymousChatUserParams) {
+	controllers.RegisterAnonymousChatUser(w, r)
+}
+
 func (*ServerInterfaceImpl) GetConfig(w http.ResponseWriter, r *http.Request) {
 	controllers.GetWebConfig(w, r)
 }

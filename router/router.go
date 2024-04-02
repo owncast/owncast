@@ -80,7 +80,7 @@ func Start() error {
 	// http.HandleFunc("/api/ping", controllers.Ping)
 
 	// register a new chat user
-	http.HandleFunc("/api/chat/register", controllers.RegisterAnonymousChatUser)
+	// http.HandleFunc("/api/chat/register", controllers.RegisterAnonymousChatUser)
 
 	// return remote follow details
 	http.HandleFunc("/api/remotefollow", controllers.RemoteFollow)

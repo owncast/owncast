@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/oapi-codegen/runtime"
 )
 
 // ServerInterface represents all server handlers.
@@ -15,6 +16,12 @@ type ServerInterface interface {
 	// Gets a list of chat messages
 	// (GET /chat)
 	GetChatList(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /chat/register)
+	OptionsChatRegister(w http.ResponseWriter, r *http.Request)
+	// Registers an anonymous chat user
+	// (POST /chat/register)
+	RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params RegisterAnonymousChatUserParams)
 	// Get the web config
 	// (GET /config)
 	GetConfig(w http.ResponseWriter, r *http.Request)
@@ -45,6 +52,17 @@ type Unimplemented struct{}
 // Gets a list of chat messages
 // (GET /chat)
 func (_ Unimplemented) GetChatList(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /chat/register)
+func (_ Unimplemented) OptionsChatRegister(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Registers an anonymous chat user
+// (POST /chat/register)
+func (_ Unimplemented) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params RegisterAnonymousChatUserParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -105,6 +123,62 @@ func (siw *ServerInterfaceWrapper) GetChatList(w http.ResponseWriter, r *http.Re
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetChatList(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// OptionsChatRegister operation middleware
+func (siw *ServerInterfaceWrapper) OptionsChatRegister(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OptionsChatRegister(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// RegisterAnonymousChatUser operation middleware
+func (siw *ServerInterfaceWrapper) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RegisterAnonymousChatUserParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Forwarded-User" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Forwarded-User")]; found {
+		var XForwardedUser string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Forwarded-User", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Forwarded-User", valueList[0], &XForwardedUser, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Forwarded-User", Err: err})
+			return
+		}
+
+		params.XForwardedUser = &XForwardedUser
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RegisterAnonymousChatUser(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -334,6 +408,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/chat", wrapper.GetChatList)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/chat/register", wrapper.OptionsChatRegister)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/chat/register", wrapper.RegisterAnonymousChatUser)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/config", wrapper.GetConfig)

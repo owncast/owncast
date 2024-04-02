@@ -17,9 +17,22 @@ type ActionMessage struct {
 	Type      *string `json:"type,omitempty"`
 }
 
+// AnonymousUser defines model for AnonymousUser.
+type AnonymousUser struct {
+	AccessToken *string `json:"accessToken,omitempty"`
+	DisplayName *string `json:"displayName,omitempty"`
+	Id          *string `json:"id,omitempty"`
+}
+
 // AuthenticationConfig defines model for AuthenticationConfig.
 type AuthenticationConfig struct {
 	IndieAuthEnabled *bool `json:"indieAuthEnabled,omitempty"`
+}
+
+// BaseAPIResponse Simple API response
+type BaseAPIResponse struct {
+	Message *string `json:"message,omitempty"`
+	Success *bool   `json:"success,omitempty"`
 }
 
 // BrowserConfig defines model for BrowserConfig.
@@ -202,11 +215,27 @@ type YPDetails struct {
 	ViewerCount           *int            `json:"viewerCount,omitempty"`
 }
 
+// N400 Simple API response
+type N400 = BaseAPIResponse
+
 // N500 Structure for an error response
 type N500 = Error
 
 // N501 Structure for an error response
 type N501 = Error
+
+// RegisterAnonymousChatUserJSONBody defines parameters for RegisterAnonymousChatUser.
+type RegisterAnonymousChatUserJSONBody struct {
+	DisplayName *string `json:"displayName,omitempty"`
+}
+
+// RegisterAnonymousChatUserParams defines parameters for RegisterAnonymousChatUser.
+type RegisterAnonymousChatUserParams struct {
+	XForwardedUser *string `json:"X-Forwarded-User,omitempty"`
+}
+
+// RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
+type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
 
 // AsUserMessage returns the union data inside the ChatMessages_Item as a UserMessage
 func (t ChatMessages_Item) AsUserMessage() (UserMessage, error) {
