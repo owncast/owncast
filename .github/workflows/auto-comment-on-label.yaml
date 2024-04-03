@@ -11,7 +11,7 @@ jobs:
       issues: write
     steps:
       - name: Add comment
-        uses: peter-evans/create-or-update-comment@5e08535dbf140c83ed0490e2f480ce1b8f2334e0
+        uses: peter-evans/create-or-update-comment@8d281ecfdf52405614030db6e4265486aa119f52
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
