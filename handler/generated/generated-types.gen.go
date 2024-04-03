@@ -245,6 +245,9 @@ type YPDetails struct {
 	ViewerCount           *int            `json:"viewerCount,omitempty"`
 }
 
+// AuthorizationHeader defines model for AuthorizationHeader.
+type AuthorizationHeader = string
+
 // N400 Simple API response
 type N400 = BaseAPIResponse
 
@@ -273,6 +276,12 @@ type GetFollowersParams struct {
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// SendSystemMessageParams defines parameters for SendSystemMessage.
+type SendSystemMessageParams struct {
+	// Authorization Bearer access token
+	Authorization *AuthorizationHeader `json:"Authorization,omitempty"`
+}
+
 // PostNotificationsRegisterJSONBody defines parameters for PostNotificationsRegister.
 type PostNotificationsRegisterJSONBody struct {
 	// Channel Name of notification channel
@@ -294,6 +303,9 @@ type RemoteFollowJSONBody struct {
 
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
+
+// SendSystemMessageJSONRequestBody defines body for SendSystemMessage for application/json ContentType.
+type SendSystemMessageJSONRequestBody = SystemMessage
 
 // PostMetricsPlaybackJSONRequestBody defines body for PostMetricsPlayback for application/json ContentType.
 type PostMetricsPlaybackJSONRequestBody = PlaybackMetrics

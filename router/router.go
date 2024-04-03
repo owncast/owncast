@@ -246,7 +246,7 @@ func Start() error {
 	http.HandleFunc("/api/admin/update/forcequit", middleware.RequireAdminAuth(admin.AutoUpdateForceQuit))
 
 	// Send a system message to chat
-	http.HandleFunc("/api/integrations/chat/system", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessage))
+	// http.HandleFunc("/api/integrations/chat/system", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessage))
 
 	// Send a system message to a single client
 	http.HandleFunc(utils.RestEndpoint("/api/integrations/chat/system/client/{clientId}", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessageToConnectedClient)))

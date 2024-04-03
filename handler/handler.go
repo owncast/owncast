@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/controllers"
+	"github.com/owncast/owncast/controllers/admin"
+	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/handler/generated"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/yp"
@@ -75,4 +77,8 @@ func (*ServerInterfaceImpl) PostMetricsPlayback(w http.ResponseWriter, r *http.R
 
 func (*ServerInterfaceImpl) PostNotificationsRegister(w http.ResponseWriter, r *http.Request, params generated.PostNotificationsRegisterParams) {
 	middleware.RequireUserAccessToken(controllers.RegisterForLiveNotifications)(w, r)
+}
+
+func (*ServerInterfaceImpl) SendSystemMessage(w http.ResponseWriter, r *http.Request, params generated.SendSystemMessageParams) {
+	middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessage)(w, r)
 }

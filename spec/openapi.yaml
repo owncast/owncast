@@ -249,6 +249,32 @@ paths:
           $ref: "#/components/responses/400"
         '401':
           $ref: "#/components/responses/401"
+  /integrations/chat/system:
+    post:
+      summary: Send a system message to the chat
+      operationId: sendSystemMessage
+      parameters:
+        - $ref: "#/components/parameters/AuthorizationHeader"
+      requestBody:
+        description: The content of the system message
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SystemMessage"
+      responses:
+        '200':
+          description: Message sent successfully
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: "#/components/headers/Access-Control-Allow-Origin"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '401':
+          $ref: "#/components/responses/401"
+        '500':
+          $ref: "#/components/responses/500"
 
 components:
   schemas:
@@ -572,14 +598,23 @@ components:
           type: string
         success:
           type: boolean
+  parameters:
+    AuthorizationHeader:
+      in: header
+      name: Authorization
+      description: Bearer access token
+      schema:
+        type: string
+  headers:
+    'Access-Control-Allow-Origin':
+      schema:
+        type: string
   responses:
     '204':
       description: No Content
       headers:
-        Access-Control-Allow-Origin:
-          description: All options requests should have a wildcard CORS header
-          schema:
-            type: string
+        'Access-Control-Allow-Origin':
+          $ref: "#/components/headers/Access-Control-Allow-Origin"
     '400':
       description: Bad request
       content:
