@@ -5,6 +5,7 @@ package generated
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/oapi-codegen/runtime"
 )
@@ -15,6 +16,19 @@ type ActionMessage struct {
 	Id        *string `json:"id,omitempty"`
 	Timestamp *string `json:"timestamp,omitempty"`
 	Type      *string `json:"type,omitempty"`
+}
+
+// AdminStatus defines model for AdminStatus.
+type AdminStatus struct {
+	Broadcaster            *Broadcaster          `json:"broadcaster,omitempty"`
+	CurrentBroadcast       *CurrentBroadcast     `json:"currentBroadcast,omitempty"`
+	Health                 *StreamHealthOverview `json:"health,omitempty"`
+	Online                 *bool                 `json:"online,omitempty"`
+	OverallPeakViewerCount *int                  `json:"overallPeakViewerCount,omitempty"`
+	SessionPeakViewerCount *int                  `json:"sessionPeakViewerCount,omitempty"`
+	StreamTitle            *string               `json:"streamTitle,omitempty"`
+	VersionNumber          *string               `json:"versionNumber,omitempty"`
+	ViewerCount            *int                  `json:"viewerCount,omitempty"`
 }
 
 // AnonymousUser defines model for AnonymousUser.
@@ -35,6 +49,13 @@ type BaseAPIResponse struct {
 	Success *bool   `json:"success,omitempty"`
 }
 
+// Broadcaster defines model for Broadcaster.
+type Broadcaster struct {
+	RemoteAddr    *string               `json:"remoteAddr,omitempty"`
+	StreamDetails *InboundStreamDetails `json:"streamDetails,omitempty"`
+	Time          *time.Time            `json:"time,omitempty"`
+}
+
 // BrowserConfig defines model for BrowserConfig.
 type BrowserConfig struct {
 	Enabled   *bool   `json:"enabled,omitempty"`
@@ -47,6 +68,12 @@ type ChatMessages = []ChatMessages_Item
 // ChatMessages_Item defines model for ChatMessages.Item.
 type ChatMessages_Item struct {
 	union json.RawMessage
+}
+
+// CurrentBroadcast defines model for CurrentBroadcast.
+type CurrentBroadcast struct {
+	LatencyLevel   *LatencyLevel          `json:"latencyLevel,omitempty"`
+	OutputSettings *[]StreamOutputVariant `json:"outputSettings,omitempty"`
 }
 
 // Emoji Name and url for an emoji
@@ -123,6 +150,23 @@ type Follower struct {
 	Username *string `json:"username,omitempty"`
 }
 
+// InboundStreamDetails defines model for InboundStreamDetails.
+type InboundStreamDetails struct {
+	AudioBitrate *int     `json:"audioBitrate,omitempty"`
+	AudioCodec   *string  `json:"audioCodec,omitempty"`
+	Encoder      *string  `json:"encoder,omitempty"`
+	Framerate    *float32 `json:"framerate,omitempty"`
+	Height       *int     `json:"height,omitempty"`
+	VideoBitrate *int     `json:"videoBitrate,omitempty"`
+	VideoCodec   *string  `json:"videoCodec,omitempty"`
+	Width        *int     `json:"width,omitempty"`
+}
+
+// LatencyLevel defines model for LatencyLevel.
+type LatencyLevel struct {
+	Level *int `json:"level,omitempty"`
+}
+
 // MessageEvent defines model for MessageEvent.
 type MessageEvent struct {
 	Body *string `json:"body,omitempty"`
@@ -157,6 +201,27 @@ type Status struct {
 	ServerTime         *string `json:"serverTime,omitempty"`
 	VersionNumber      *string `json:"versionNumber,omitempty"`
 	ViewerCount        *int    `json:"viewerCount,omitempty"`
+}
+
+// StreamHealthOverview defines model for StreamHealthOverview.
+type StreamHealthOverview struct {
+	HealthPercentage *int    `json:"healthPercentage,omitempty"`
+	Healthy          *bool   `json:"healthy,omitempty"`
+	Message          *string `json:"message,omitempty"`
+	Representation   *int    `json:"representation,omitempty"`
+}
+
+// StreamOutputVariant defines model for StreamOutputVariant.
+type StreamOutputVariant struct {
+	AudioBitrate     *int    `json:"audioBitrate,omitempty"`
+	AudioPassthrough *bool   `json:"audioPassthrough,omitempty"`
+	CpuUsageLevel    *int    `json:"cpuUsageLevel,omitempty"`
+	Framerate        *int    `json:"framerate,omitempty"`
+	Name             *string `json:"name,omitempty"`
+	ScaledHeight     *int    `json:"scaledHeight,omitempty"`
+	ScaledWidth      *int    `json:"scaledWidth,omitempty"`
+	VideoBitrate     *int    `json:"videoBitrate,omitempty"`
+	VideoPassthrough *bool   `json:"videoPassthrough,omitempty"`
 }
 
 // SystemMessage defines model for SystemMessage.
@@ -245,8 +310,11 @@ type YPDetails struct {
 	ViewerCount           *int            `json:"viewerCount,omitempty"`
 }
 
-// AuthorizationHeader defines model for AuthorizationHeader.
-type AuthorizationHeader = string
+// BasicAuthorizationHeader defines model for BasicAuthorizationHeader.
+type BasicAuthorizationHeader = string
+
+// BearerAuthorizationHeader defines model for BearerAuthorizationHeader.
+type BearerAuthorizationHeader = string
 
 // N400 Simple API response
 type N400 = BaseAPIResponse
@@ -256,6 +324,12 @@ type N500 = Error
 
 // N501 Structure for an error response
 type N501 = Error
+
+// GetAdminStatusParams defines parameters for GetAdminStatus.
+type GetAdminStatusParams struct {
+	// Authorization Basic authentication string
+	Authorization *BasicAuthorizationHeader `json:"Authorization,omitempty"`
+}
 
 // RegisterAnonymousChatUserJSONBody defines parameters for RegisterAnonymousChatUser.
 type RegisterAnonymousChatUserJSONBody struct {
@@ -278,8 +352,8 @@ type GetFollowersParams struct {
 
 // SendSystemMessageParams defines parameters for SendSystemMessage.
 type SendSystemMessageParams struct {
-	// Authorization Bearer access token
-	Authorization *AuthorizationHeader `json:"Authorization,omitempty"`
+	// Authorization BearerAuthorizationHeader
+	Authorization *BearerAuthorizationHeader `json:"Authorization,omitempty"`
 }
 
 // PostNotificationsRegisterJSONBody defines parameters for PostNotificationsRegister.

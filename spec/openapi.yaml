@@ -249,12 +249,33 @@ paths:
           $ref: "#/components/responses/400"
         '401':
           $ref: "#/components/responses/401"
+  /admin/status:
+    get:
+      summary: Get current inboard broadcaster
+      parameters:
+        - $ref: "#/components/parameters/BasicAuthorizationHeader"
+      responses:
+        '200':
+          description: Worked
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: "#/components/headers/Access-Control-Allow-Origin"
+            'Access-Control-Allow-Credentials':
+              $ref: "#/components/headers/Access-Control-Allow-Credentials"
+            'Access-Control-Allow-Headers':
+              $ref: "#/components/headers/Access-Control-Allow-Headers"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStatus"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
       operationId: sendSystemMessage
       parameters:
-        - $ref: "#/components/parameters/AuthorizationHeader"
+        - $ref: "#/components/parameters/BearerAuthorizationHeader"
       requestBody:
         description: The content of the system message
         content:
@@ -584,6 +605,103 @@ components:
         qualityVariantChanges:
           type: number
           format: double
+    AdminStatus:
+      type: object
+      properties:
+        broadcaster:
+          $ref: '#/components/schemas/Broadcaster'
+        currentBroadcast:
+          $ref: '#/components/schemas/CurrentBroadcast'
+        health:
+          $ref: '#/components/schemas/StreamHealthOverview'
+        streamTitle:
+          type: string
+        versionNumber:
+          type: string
+        viewerCount:
+          type: integer
+        overallPeakViewerCount:
+          type: integer
+        sessionPeakViewerCount:
+          type: integer
+        online:
+          type: boolean
+    Broadcaster:
+      type: object
+      properties:
+        time:
+          type: string
+          format: date-time
+        remoteAddr:
+          type: string
+        streamDetails:
+          $ref: '#/components/schemas/InboundStreamDetails'
+    InboundStreamDetails:
+      type: object
+      properties:
+        videoCodec:
+          type: string
+        audioCodec:
+          type: string
+        encoder:
+          type: string
+        width:
+          type: integer
+        height:
+          type: integer
+        videoBitrate:
+          type: integer
+        audioBitrate:
+          type: integer
+        framerate:
+          type: number
+          format: float
+    CurrentBroadcast:
+      type: object
+      properties:
+        outputSettings:
+          type: array
+          items:
+            $ref: '#/components/schemas/StreamOutputVariant'
+        latencyLevel:
+          $ref: '#/components/schemas/LatencyLevel'
+    StreamOutputVariant:
+      type: object
+      properties:
+        name:
+          type: string
+        videoPassthrough:
+          type: boolean
+        audioPassthrough:
+          type: boolean
+        videoBitrate:
+          type: integer
+        audioBitrate:
+          type: integer
+        scaledWidth:
+          type: integer
+        scaledHeight:
+          type: integer
+        framerate:
+          type: integer
+        cpuUsageLevel:
+          type: integer
+    LatencyLevel:
+      type: object
+      properties:
+        level:
+          type: integer
+    StreamHealthOverview:
+      type: object
+      properties:
+        message:
+          type: string
+        healthPercentage:
+          type: integer
+        representation:
+          type: integer
+        healthy:
+          type: boolean
     Error:
       type: object
       description: Structure for an error response
@@ -599,14 +717,33 @@ components:
         success:
           type: boolean
   parameters:
-    AuthorizationHeader:
+    BasicAuthorizationHeader:
       in: header
       name: Authorization
-      description: Bearer access token
+      description: Basic authentication string
+      schema:
+        type: string
+    BearerAuthorizationHeader:
+      in: header
+      name: Authorization
+      description: BearerAuthorizationHeader
       schema:
         type: string
   headers:
     'Access-Control-Allow-Origin':
+      schema:
+        type: string
+    'Access-Control-Allow-Credentials':
+      schema:
+        type: string
+        format: boolean
+    'Access-Control-Allow-Headers':
+      schema:
+        type: string
+    'WWW-Authenticate':
+      schema:
+        type: string
+    'X-Content-Type-Options':
       schema:
         type: string
   responses:
@@ -623,6 +760,17 @@ components:
             $ref: "#/components/schemas/BaseAPIResponse"
     '401':
       description: Unauthorized
+      content:
+        text/plain:
+          schema:
+            type: string
+    '401BasicAuth':
+      description: Basic auth failure
+      headers:
+        'WWW-Authenticate':
+          $ref: "#/components/headers/WWW-Authenticate"
+        'X-Content-Type-Options':
+          $ref: "#/components/headers/X-Content-Type-Options"
       content:
         text/plain:
           schema:

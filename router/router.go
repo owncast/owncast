@@ -97,7 +97,7 @@ func Start() error {
 	// Authenticated admin requests
 
 	// Current inbound broadcaster
-	http.HandleFunc("/api/admin/status", middleware.RequireAdminAuth(admin.Status))
+	// http.HandleFunc("/api/admin/status", middleware.RequireAdminAuth(admin.Status))
 
 	// Return HLS video
 	http.HandleFunc("/hls/", controllers.HandleHLSRequest)
