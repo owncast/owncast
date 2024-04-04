@@ -103,7 +103,7 @@ func Start() error {
 	http.HandleFunc("/hls/", controllers.HandleHLSRequest)
 
 	// Disconnect inbound stream
-	http.HandleFunc("/api/admin/disconnect", middleware.RequireAdminAuth(admin.DisconnectInboundConnection))
+	// http.HandleFunc("/api/admin/disconnect", middleware.RequireAdminAuth(admin.DisconnectInboundConnection))
 
 	// Server config
 	http.HandleFunc("/api/admin/serverconfig", middleware.RequireAdminAuth(admin.GetServerConfig))

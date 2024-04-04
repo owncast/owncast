@@ -4,6 +4,7 @@
 package generated
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -13,9 +14,12 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Disconnect inbound stream
+	// (GET /admin/disconnect)
+	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
 	// Get current inboard broadcaster
 	// (GET /admin/status)
-	GetAdminStatus(w http.ResponseWriter, r *http.Request, params GetAdminStatusParams)
+	GetAdminStatus(w http.ResponseWriter, r *http.Request)
 	// Gets a list of chat messages
 	// (GET /chat)
 	GetChatList(w http.ResponseWriter, r *http.Request)
@@ -36,7 +40,7 @@ type ServerInterface interface {
 	GetFollowers(w http.ResponseWriter, r *http.Request, params GetFollowersParams)
 	// Send a system message to the chat
 	// (POST /integrations/chat/system)
-	SendSystemMessage(w http.ResponseWriter, r *http.Request, params SendSystemMessageParams)
+	SendSystemMessage(w http.ResponseWriter, r *http.Request)
 	// Save video playback metrics for future video health recording
 	// (POST /metrics/playback)
 	PostMetricsPlayback(w http.ResponseWriter, r *http.Request)
@@ -67,9 +71,15 @@ type ServerInterface interface {
 
 type Unimplemented struct{}
 
+// Disconnect inbound stream
+// (GET /admin/disconnect)
+func (_ Unimplemented) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get current inboard broadcaster
 // (GET /admin/status)
-func (_ Unimplemented) GetAdminStatus(w http.ResponseWriter, r *http.Request, params GetAdminStatusParams) {
+func (_ Unimplemented) GetAdminStatus(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -110,7 +120,7 @@ func (_ Unimplemented) GetFollowers(w http.ResponseWriter, r *http.Request, para
 
 // Send a system message to the chat
 // (POST /integrations/chat/system)
-func (_ Unimplemented) SendSystemMessage(w http.ResponseWriter, r *http.Request, params SendSystemMessageParams) {
+func (_ Unimplemented) SendSystemMessage(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -171,38 +181,31 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
+// DisconnectInboundConnection operation middleware
+func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DisconnectInboundConnection(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetAdminStatus operation middleware
 func (siw *ServerInterfaceWrapper) GetAdminStatus(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetAdminStatusParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "Authorization" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Authorization")]; found {
-		var Authorization BasicAuthorizationHeader
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Authorization", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithOptions("simple", "Authorization", valueList[0], &Authorization, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Authorization", Err: err})
-			return
-		}
-
-		params.Authorization = &Authorization
-
-	}
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetAdminStatus(w, r, params)
+		siw.Handler.GetAdminStatus(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -353,34 +356,10 @@ func (siw *ServerInterfaceWrapper) GetFollowers(w http.ResponseWriter, r *http.R
 func (siw *ServerInterfaceWrapper) SendSystemMessage(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params SendSystemMessageParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "Authorization" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Authorization")]; found {
-		var Authorization BearerAuthorizationHeader
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Authorization", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithOptions("simple", "Authorization", valueList[0], &Authorization, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false})
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Authorization", Err: err})
-			return
-		}
-
-		params.Authorization = &Authorization
-
-	}
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.SendSystemMessage(w, r, params)
+		siw.Handler.SendSystemMessage(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -643,6 +622,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)
+	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/status", wrapper.GetAdminStatus)
 	})

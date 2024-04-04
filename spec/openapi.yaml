@@ -252,11 +252,11 @@ paths:
   /admin/status:
     get:
       summary: Get current inboard broadcaster
-      parameters:
-        - $ref: "#/components/parameters/BasicAuthorizationHeader"
+      security:
+        - BasicAuth: []
       responses:
         '200':
-          description: Worked
+          description: Gives the status of the system
           headers:
             'Access-Control-Allow-Origin':
               $ref: "#/components/headers/Access-Control-Allow-Origin"
@@ -270,12 +270,34 @@ paths:
                 $ref: "#/components/schemas/AdminStatus"
         '401':
           $ref: "#/components/responses/401BasicAuth"
+  /admin/disconnect:
+    get:
+      summary: Disconnect inbound stream
+      operationId: disconnectInboundConnection
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Contains information about disconnection status
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: "#/components/headers/Access-Control-Allow-Origin"
+            'Access-Control-Allow-Credentials':
+              $ref: "#/components/headers/Access-Control-Allow-Credentials"
+            'Access-Control-Allow-Headers':
+              $ref: "#/components/headers/Access-Control-Allow-Headers"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
       operationId: sendSystemMessage
-      parameters:
-        - $ref: "#/components/parameters/BearerAuthorizationHeader"
+      security:
+        - BearerAuth: []
       requestBody:
         description: The content of the system message
         content:
@@ -716,19 +738,6 @@ components:
           type: string
         success:
           type: boolean
-  parameters:
-    BasicAuthorizationHeader:
-      in: header
-      name: Authorization
-      description: Basic authentication string
-      schema:
-        type: string
-    BearerAuthorizationHeader:
-      in: header
-      name: Authorization
-      description: BearerAuthorizationHeader
-      schema:
-        type: string
   headers:
     'Access-Control-Allow-Origin':
       schema:
@@ -789,4 +798,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
+
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
 

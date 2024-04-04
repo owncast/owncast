@@ -10,6 +10,11 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
+const (
+	BasicAuthScopes  = "BasicAuth.Scopes"
+	BearerAuthScopes = "BearerAuth.Scopes"
+)
+
 // ActionMessage defines model for ActionMessage.
 type ActionMessage struct {
 	Body      *string `json:"body,omitempty"`
@@ -310,12 +315,6 @@ type YPDetails struct {
 	ViewerCount           *int            `json:"viewerCount,omitempty"`
 }
 
-// BasicAuthorizationHeader defines model for BasicAuthorizationHeader.
-type BasicAuthorizationHeader = string
-
-// BearerAuthorizationHeader defines model for BearerAuthorizationHeader.
-type BearerAuthorizationHeader = string
-
 // N400 Simple API response
 type N400 = BaseAPIResponse
 
@@ -324,12 +323,6 @@ type N500 = Error
 
 // N501 Structure for an error response
 type N501 = Error
-
-// GetAdminStatusParams defines parameters for GetAdminStatus.
-type GetAdminStatusParams struct {
-	// Authorization Basic authentication string
-	Authorization *BasicAuthorizationHeader `json:"Authorization,omitempty"`
-}
 
 // RegisterAnonymousChatUserJSONBody defines parameters for RegisterAnonymousChatUser.
 type RegisterAnonymousChatUserJSONBody struct {
@@ -348,12 +341,6 @@ type GetFollowersParams struct {
 
 	// Limit The numbers of items to return
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
-}
-
-// SendSystemMessageParams defines parameters for SendSystemMessage.
-type SendSystemMessageParams struct {
-	// Authorization BearerAuthorizationHeader
-	Authorization *BearerAuthorizationHeader `json:"Authorization,omitempty"`
 }
 
 // PostNotificationsRegisterJSONBody defines parameters for PostNotificationsRegister.
