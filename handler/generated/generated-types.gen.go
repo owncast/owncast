@@ -23,6 +23,51 @@ type ActionMessage struct {
 	Type      *string `json:"type,omitempty"`
 }
 
+// AdminFederationConfig defines model for AdminFederationConfig.
+type AdminFederationConfig struct {
+	BlockedDomains *[]string `json:"blockedDomains,omitempty"`
+	Enabled        *bool     `json:"enabled,omitempty"`
+	GoLiveMessage  *string   `json:"goLiveMessage,omitempty"`
+	IsPrivate      *bool     `json:"isPrivate,omitempty"`
+	ShowEngagement *bool     `json:"showEngagement,omitempty"`
+	Username       *string   `json:"username,omitempty"`
+}
+
+// AdminNotificationsConfig defines model for AdminNotificationsConfig.
+type AdminNotificationsConfig struct {
+	Browser *BrowserNotificationConfiguration `json:"browser,omitempty"`
+	Discord *DiscordConfiguration             `json:"discord,omitempty"`
+}
+
+// AdminServerConfig defines model for AdminServerConfig.
+type AdminServerConfig struct {
+	AdminPassword           *string                   `json:"adminPassword,omitempty"`
+	ChatDisabled            *bool                     `json:"chatDisabled,omitempty"`
+	ChatEstablishedUserMode *bool                     `json:"chatEstablishedUserMode,omitempty"`
+	ChatJoinMessagesEnabled *bool                     `json:"chatJoinMessagesEnabled,omitempty"`
+	DisableSearchIndexing   *bool                     `json:"disableSearchIndexing,omitempty"`
+	ExternalActions         *[]ExternalAction         `json:"externalActions,omitempty"`
+	Federation              *AdminFederationConfig    `json:"federation,omitempty"`
+	FfmpegPath              *string                   `json:"ffmpegPath,omitempty"`
+	ForbiddenUsernames      *[]string                 `json:"forbiddenUsernames,omitempty"`
+	HideViewerCount         *bool                     `json:"hideViewerCount,omitempty"`
+	InstanceDetails         *AdminWebConfig           `json:"instanceDetails,omitempty"`
+	Notifications           *AdminNotificationsConfig `json:"notifications,omitempty"`
+	RtmpServerPort          *int                      `json:"rtmpServerPort,omitempty"`
+	S3                      *S3Info                   `json:"s3,omitempty"`
+	SocketHostOverride      *string                   `json:"socketHostOverride,omitempty"`
+	StreamKeyOverridden     *bool                     `json:"streamKeyOverridden,omitempty"`
+	StreamKeys              *[]StreamKey              `json:"streamKeys,omitempty"`
+	SuggestedUsernames      *[]string                 `json:"suggestedUsernames,omitempty"`
+	SupportedCodecs         *[]string                 `json:"supportedCodecs,omitempty"`
+	VideoCodec              *string                   `json:"videoCodec,omitempty"`
+	VideoServingEndpoint    *string                   `json:"videoServingEndpoint,omitempty"`
+	VideoSettings           *AdminVideoSettings       `json:"videoSettings,omitempty"`
+	WebServerIP             *string                   `json:"webServerIP,omitempty"`
+	WebServerPort           *int                      `json:"webServerPort,omitempty"`
+	Yp                      *AdminYPInfo              `json:"yp,omitempty"`
+}
+
 // AdminStatus defines model for AdminStatus.
 type AdminStatus struct {
 	Broadcaster            *Broadcaster          `json:"broadcaster,omitempty"`
@@ -34,6 +79,36 @@ type AdminStatus struct {
 	StreamTitle            *string               `json:"streamTitle,omitempty"`
 	VersionNumber          *string               `json:"versionNumber,omitempty"`
 	ViewerCount            *int                  `json:"viewerCount,omitempty"`
+}
+
+// AdminVideoSettings defines model for AdminVideoSettings.
+type AdminVideoSettings struct {
+	LatencyLevel         *int                   `json:"latencyLevel,omitempty"`
+	VideoQualityVariants *[]StreamOutputVariant `json:"videoQualityVariants,omitempty"`
+}
+
+// AdminWebConfig defines model for AdminWebConfig.
+type AdminWebConfig struct {
+	AppearanceVariables *map[string]string `json:"appearanceVariables,omitempty"`
+	CustomJavascript    *string            `json:"customJavascript,omitempty"`
+	CustomStyles        *string            `json:"customStyles,omitempty"`
+	ExtraPageContent    *string            `json:"extraPageContent,omitempty"`
+	Logo                *string            `json:"logo,omitempty"`
+	Name                *string            `json:"name,omitempty"`
+	Nsfw                *bool              `json:"nsfw,omitempty"`
+	OfflineMessage      *string            `json:"offlineMessage,omitempty"`
+	SocialHandles       *[]SocialHandle    `json:"socialHandles,omitempty"`
+	StreamTitle         *string            `json:"streamTitle,omitempty"`
+	Summary             *string            `json:"summary,omitempty"`
+	Tags                *[]string          `json:"tags,omitempty"`
+	Version             *string            `json:"version,omitempty"`
+	WelcomeMessage      *string            `json:"welcomeMessage,omitempty"`
+}
+
+// AdminYPInfo defines model for AdminYPInfo.
+type AdminYPInfo struct {
+	Enabled     *bool   `json:"enabled,omitempty"`
+	InstanceUrl *string `json:"instanceUrl,omitempty"`
 }
 
 // AnonymousUser defines model for AnonymousUser.
@@ -67,6 +142,12 @@ type BrowserConfig struct {
 	PublicKey *string `json:"publicKey,omitempty"`
 }
 
+// BrowserNotificationConfiguration defines model for BrowserNotificationConfiguration.
+type BrowserNotificationConfiguration struct {
+	Enabled       *bool   `json:"enabled,omitempty"`
+	GoLiveMessage *string `json:"goLiveMessage,omitempty"`
+}
+
 // ChatMessages defines model for ChatMessages.
 type ChatMessages = []ChatMessages_Item
 
@@ -79,6 +160,13 @@ type ChatMessages_Item struct {
 type CurrentBroadcast struct {
 	LatencyLevel   *LatencyLevel          `json:"latencyLevel,omitempty"`
 	OutputSettings *[]StreamOutputVariant `json:"outputSettings,omitempty"`
+}
+
+// DiscordConfiguration defines model for DiscordConfiguration.
+type DiscordConfiguration struct {
+	Enabled       *bool   `json:"enabled,omitempty"`
+	GoLiveMessage *string `json:"goLiveMessage,omitempty"`
+	Webhook       *string `json:"webhook,omitempty"`
 }
 
 // Emoji Name and url for an emoji
@@ -191,6 +279,19 @@ type PlaybackMetrics struct {
 	QualityVariantChanges *float64 `json:"qualityVariantChanges,omitempty"`
 }
 
+// S3Info defines model for S3Info.
+type S3Info struct {
+	AccessKey      *string `json:"accessKey,omitempty"`
+	Acl            *string `json:"acl,omitempty"`
+	Bucket         *string `json:"bucket,omitempty"`
+	Enabled        *bool   `json:"enabled,omitempty"`
+	Endpoint       *string `json:"endpoint,omitempty"`
+	ForcePathStyle *bool   `json:"forcePathStyle,omitempty"`
+	PathPrefix     *string `json:"pathPrefix,omitempty"`
+	Region         *string `json:"region,omitempty"`
+	Secret         *string `json:"secret,omitempty"`
+}
+
 // SocialHandle defines model for SocialHandle.
 type SocialHandle struct {
 	Icon     *string `json:"icon,omitempty"`
@@ -214,6 +315,12 @@ type StreamHealthOverview struct {
 	Healthy          *bool   `json:"healthy,omitempty"`
 	Message          *string `json:"message,omitempty"`
 	Representation   *int    `json:"representation,omitempty"`
+}
+
+// StreamKey defines model for StreamKey.
+type StreamKey struct {
+	Comment *string `json:"comment,omitempty"`
+	Key     *string `json:"key,omitempty"`
 }
 
 // StreamOutputVariant defines model for StreamOutputVariant.

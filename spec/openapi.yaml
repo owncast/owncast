@@ -292,6 +292,28 @@ paths:
                 $ref: "#/components/schemas/BaseAPIResponse"
         '401':
           $ref: "#/components/responses/401BasicAuth"
+  /admin/serverconfig:
+    get:
+      summary: Get the current server config
+      operationId: getServerConfig
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Current server config
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: "#/components/headers/Access-Control-Allow-Origin"
+            'Access-Control-Allow-Credentials':
+              $ref: "#/components/headers/Access-Control-Allow-Credentials"
+            'Access-Control-Allow-Headers':
+              $ref: "#/components/headers/Access-Control-Allow-Headers"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminServerConfig"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
@@ -321,6 +343,20 @@ paths:
 
 components:
   schemas:
+    Error:
+      type: object
+      description: Structure for an error response
+      properties:
+        error:
+          type: string
+    BaseAPIResponse:
+      type: object
+      description: Simple API response
+      properties:
+        message:
+          type: string
+        success:
+          type: boolean
     Status:
       type: object
       description: Response for status
@@ -627,27 +663,6 @@ components:
         qualityVariantChanges:
           type: number
           format: double
-    AdminStatus:
-      type: object
-      properties:
-        broadcaster:
-          $ref: '#/components/schemas/Broadcaster'
-        currentBroadcast:
-          $ref: '#/components/schemas/CurrentBroadcast'
-        health:
-          $ref: '#/components/schemas/StreamHealthOverview'
-        streamTitle:
-          type: string
-        versionNumber:
-          type: string
-        viewerCount:
-          type: integer
-        overallPeakViewerCount:
-          type: integer
-        sessionPeakViewerCount:
-          type: integer
-        online:
-          type: boolean
     Broadcaster:
       type: object
       properties:
@@ -724,20 +739,211 @@ components:
           type: integer
         healthy:
           type: boolean
-    Error:
+    BrowserNotificationConfiguration:
       type: object
-      description: Structure for an error response
       properties:
-        error:
+        goLiveMessage:
           type: string
-    BaseAPIResponse:
-      type: object
-      description: Simple API response
-      properties:
-        message:
-          type: string
-        success:
+        enabled:
           type: boolean
+    DiscordConfiguration:
+      type: object
+      properties:
+        webhook:
+          type: string
+        goLiveMessage:
+          type: string
+        enabled:
+          type: boolean
+    S3Info:
+      type: object
+      properties:
+        endpoint:
+          type: string
+        accessKey:
+          type: string
+        secret:
+          type: string
+        bucket:
+          type: string
+        region:
+          type: string
+        acl:
+          type: string
+        pathPrefix:
+          type: string
+        enabled:
+          type: boolean
+        forcePathStyle:
+          type: boolean
+    StreamKey:
+      type: object
+      properties:
+        key:
+          type: string
+        comment:
+          type: string
+    AdminStatus:
+      type: object
+      properties:
+        broadcaster:
+          $ref: '#/components/schemas/Broadcaster'
+        currentBroadcast:
+          $ref: '#/components/schemas/CurrentBroadcast'
+        health:
+          $ref: '#/components/schemas/StreamHealthOverview'
+        streamTitle:
+          type: string
+        versionNumber:
+          type: string
+        viewerCount:
+          type: integer
+        overallPeakViewerCount:
+          type: integer
+        sessionPeakViewerCount:
+          type: integer
+        online:
+          type: boolean
+    AdminServerConfig:
+      type: object
+      properties:
+        instanceDetails:
+          $ref: '#/components/schemas/AdminWebConfig'
+        notifications:
+          $ref: '#/components/schemas/AdminNotificationsConfig'
+        yp:
+          $ref: '#/components/schemas/AdminYPInfo'
+        ffmpegPath:
+          type: string
+        adminPassword:
+          type: string
+        socketHostOverride:
+          type: string
+        webServerIP:
+          type: string
+        videoCodec:
+          type: string
+        videoServingEndpoint:
+          type: string
+        s3:
+          $ref: '#/components/schemas/S3Info'
+        federation:
+          $ref: '#/components/schemas/AdminFederationConfig'
+        supportedCodecs:
+          type: array
+          items:
+            type: string
+        externalActions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalAction'
+        forbiddenUsernames:
+          type: array
+          items:
+            type: string
+        suggestedUsernames:
+          type: array
+          items:
+            type: string
+        streamKeys:
+          type: array
+          items:
+            $ref: '#/components/schemas/StreamKey'
+        videoSettings:
+          $ref: '#/components/schemas/AdminVideoSettings'
+        rtmpServerPort:
+          type: integer
+        webServerPort:
+          type: integer
+        chatDisabled:
+          type: boolean
+        chatJoinMessagesEnabled:
+          type: boolean
+        chatEstablishedUserMode:
+          type: boolean
+        disableSearchIndexing:
+          type: boolean
+        streamKeyOverridden:
+          type: boolean
+        hideViewerCount:
+          type: boolean
+    AdminWebConfig:
+      type: object
+      properties:
+        appearanceVariables:
+          type: object
+          additionalProperties:
+            type: string
+        version:
+          type: string
+        welcomeMessage:
+          type: string
+        offlineMessage:
+          type: string
+        logo:
+          type: string
+        name:
+          type: string
+        extraPageContent:
+          type: string
+        streamTitle:
+          type: string
+        customStyles:
+          type: string
+        customJavascript:
+          type: string
+        summary:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        socialHandles:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialHandle'
+        nsfw:
+          type: boolean
+    AdminNotificationsConfig:
+      type: object
+      properties:
+        browser:
+          $ref: '#/components/schemas/BrowserNotificationConfiguration'
+        discord:
+          $ref: '#/components/schemas/DiscordConfiguration'
+    AdminYPInfo:
+      type: object
+      properties:
+        instanceUrl:
+          type: string
+        enabled:
+          type: boolean
+    AdminFederationConfig:
+      type: object
+      properties:
+        username:
+          type: string
+        goLiveMessage:
+          type: string
+        blockedDomains:
+          type: array
+          items:
+            type: string
+        enabled:
+          type: boolean
+        isPrivate:
+          type: boolean
+        showEngagement:
+          type: boolean
+    AdminVideoSettings:
+      type: object
+      properties:
+        videoQualityVariants:
+          type: array
+          items:
+            $ref: '#/components/schemas/StreamOutputVariant'
+        latencyLevel:
+          type: integer
   headers:
     'Access-Control-Allow-Origin':
       schema:

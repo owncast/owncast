@@ -14,3 +14,7 @@ func (*ServerInterfaceImpl) GetAdminStatus(w http.ResponseWriter, r *http.Reques
 func (*ServerInterfaceImpl) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.DisconnectInboundConnection)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetServerConfig(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetServerConfig)(w, r)
+}

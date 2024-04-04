@@ -17,6 +17,9 @@ type ServerInterface interface {
 	// Disconnect inbound stream
 	// (GET /admin/disconnect)
 	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
+	// Get the current server config
+	// (GET /admin/serverconfig)
+	GetServerConfig(w http.ResponseWriter, r *http.Request)
 	// Get current inboard broadcaster
 	// (GET /admin/status)
 	GetAdminStatus(w http.ResponseWriter, r *http.Request)
@@ -74,6 +77,12 @@ type Unimplemented struct{}
 // Disconnect inbound stream
 // (GET /admin/disconnect)
 func (_ Unimplemented) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get the current server config
+// (GET /admin/serverconfig)
+func (_ Unimplemented) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -189,6 +198,23 @@ func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWr
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DisconnectInboundConnection(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetServerConfig operation middleware
+func (siw *ServerInterfaceWrapper) GetServerConfig(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetServerConfig(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -624,6 +650,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/serverconfig", wrapper.GetServerConfig)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/status", wrapper.GetAdminStatus)
