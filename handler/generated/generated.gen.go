@@ -23,6 +23,9 @@ type ServerInterface interface {
 	// Get current inboard broadcaster
 	// (GET /admin/status)
 	GetAdminStatus(w http.ResponseWriter, r *http.Request)
+	// Get viewer count over time
+	// (GET /admin/viewersOverTime)
+	GetViewersOverTime(w http.ResponseWriter, r *http.Request, params GetViewersOverTimeParams)
 	// Gets a list of chat messages
 	// (GET /chat)
 	GetChatList(w http.ResponseWriter, r *http.Request)
@@ -89,6 +92,12 @@ func (_ Unimplemented) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 // Get current inboard broadcaster
 // (GET /admin/status)
 func (_ Unimplemented) GetAdminStatus(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get viewer count over time
+// (GET /admin/viewersOverTime)
+func (_ Unimplemented) GetViewersOverTime(w http.ResponseWriter, r *http.Request, params GetViewersOverTimeParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -232,6 +241,36 @@ func (siw *ServerInterfaceWrapper) GetAdminStatus(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAdminStatus(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetViewersOverTime operation middleware
+func (siw *ServerInterfaceWrapper) GetViewersOverTime(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetViewersOverTimeParams
+
+	// ------------- Optional query parameter "windowStart" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "windowStart", r.URL.Query(), &params.WindowStart)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "windowStart", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetViewersOverTime(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -656,6 +695,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/status", wrapper.GetAdminStatus)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/viewersOverTime", wrapper.GetViewersOverTime)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/chat", wrapper.GetChatList)

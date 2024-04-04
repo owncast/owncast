@@ -344,6 +344,12 @@ type SystemMessage struct {
 	Type      *string `json:"type,omitempty"`
 }
 
+// TimestampedValue defines model for TimestampedValue.
+type TimestampedValue struct {
+	Time  *time.Time `json:"time,omitempty"`
+	Value *float64   `json:"value,omitempty"`
+}
+
 // User defines model for User.
 type User struct {
 	Authenticated *bool     `json:"authenticated,omitempty"`
@@ -430,6 +436,15 @@ type N500 = Error
 
 // N501 Structure for an error response
 type N501 = Error
+
+// Default Simple API response
+type Default = BaseAPIResponse
+
+// GetViewersOverTimeParams defines parameters for GetViewersOverTime.
+type GetViewersOverTimeParams struct {
+	// WindowStart Start date in unix time
+	WindowStart *string `form:"windowStart,omitempty" json:"windowStart,omitempty"`
+}
 
 // RegisterAnonymousChatUserJSONBody defines parameters for RegisterAnonymousChatUser.
 type RegisterAnonymousChatUserJSONBody struct {

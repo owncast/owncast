@@ -270,6 +270,8 @@ paths:
                 $ref: "#/components/schemas/AdminStatus"
         '401':
           $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/disconnect:
     get:
       summary: Disconnect inbound stream
@@ -292,6 +294,8 @@ paths:
                 $ref: "#/components/schemas/BaseAPIResponse"
         '401':
           $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/serverconfig:
     get:
       summary: Get the current server config
@@ -314,6 +318,40 @@ paths:
                 $ref: "#/components/schemas/AdminServerConfig"
         '401':
           $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/viewersOverTime:
+    get:
+      summary: Get viewer count over time
+      operationId: getViewersOverTime
+      security:
+        - BasicAuth: []
+      parameters:
+        - in: query
+          name: windowStart
+          description: Start date in unix time
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Viewer count over time
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: "#/components/headers/Access-Control-Allow-Origin"
+            'Access-Control-Allow-Credentials':
+              $ref: "#/components/headers/Access-Control-Allow-Credentials"
+            'Access-Control-Allow-Headers':
+              $ref: "#/components/headers/Access-Control-Allow-Headers"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimestampedValue"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
@@ -783,6 +821,15 @@ components:
           type: string
         comment:
           type: string
+    TimestampedValue:
+      type: object
+      properties:
+        time:
+          type: string
+          format: date-time
+        value:
+          type: number
+          format: double
     AdminStatus:
       type: object
       properties:
@@ -962,6 +1009,12 @@ components:
       schema:
         type: string
   responses:
+    Default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseAPIResponse"
     '204':
       description: No Content
       headers:
@@ -982,6 +1035,12 @@ components:
     '401BasicAuth':
       description: Basic auth failure
       headers:
+        'Access-Control-Allow-Origin':
+          $ref: "#/components/headers/Access-Control-Allow-Origin"
+        'Access-Control-Allow-Credentials':
+          $ref: "#/components/headers/Access-Control-Allow-Credentials"
+        'Access-Control-Allow-Headers':
+          $ref: "#/components/headers/Access-Control-Allow-Headers"
         'WWW-Authenticate':
           $ref: "#/components/headers/WWW-Authenticate"
         'X-Content-Type-Options':

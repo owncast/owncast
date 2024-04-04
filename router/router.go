@@ -109,7 +109,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/serverconfig", middleware.RequireAdminAuth(admin.GetServerConfig))
 
 	// Get viewer count over time
-	http.HandleFunc("/api/admin/viewersOverTime", middleware.RequireAdminAuth(admin.GetViewersOverTime))
+	// http.HandleFunc("/api/admin/viewersOverTime", middleware.RequireAdminAuth(admin.GetViewersOverTime))
 
 	// Get active viewers
 	http.HandleFunc("/api/admin/viewers", middleware.RequireAdminAuth(admin.GetActiveViewers))

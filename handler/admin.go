@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/controllers/admin"
+	"github.com/owncast/owncast/handler/generated"
 	"github.com/owncast/owncast/router/middleware"
 )
 
@@ -17,4 +18,8 @@ func (*ServerInterfaceImpl) DisconnectInboundConnection(w http.ResponseWriter, r
 
 func (*ServerInterfaceImpl) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetServerConfig)(w, r)
+}
+
+func (*ServerInterfaceImpl) GetViewersOverTime(w http.ResponseWriter, r *http.Request, params generated.GetViewersOverTimeParams) {
+	middleware.RequireAdminAuth(admin.GetViewersOverTime)(w, r)
 }
