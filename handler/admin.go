@@ -27,3 +27,7 @@ func (*ServerInterfaceImpl) GetViewersOverTime(w http.ResponseWriter, r *http.Re
 func (*ServerInterfaceImpl) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetActiveViewers)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetHardwareStats(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetHardwareStats)(w, r)
+}

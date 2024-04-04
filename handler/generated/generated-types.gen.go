@@ -156,6 +156,13 @@ type ChatMessages_Item struct {
 	union json.RawMessage
 }
 
+// CollectedMetrics defines model for CollectedMetrics.
+type CollectedMetrics struct {
+	Cpu    *[]TimestampedValue `json:"cpu,omitempty"`
+	Disk   *[]TimestampedValue `json:"disk,omitempty"`
+	Memory *[]TimestampedValue `json:"memory,omitempty"`
+}
+
 // CurrentBroadcast defines model for CurrentBroadcast.
 type CurrentBroadcast struct {
 	LatencyLevel   *LatencyLevel          `json:"latencyLevel,omitempty"`

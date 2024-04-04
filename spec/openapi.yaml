@@ -378,6 +378,32 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/hardwarestats:
+    get:
+      summary: Get the current hardware stats
+      operationId: getHardwareStats
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Current hardware stats
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: "#/components/headers/Access-Control-Allow-Origin"
+            'Access-Control-Allow-Credentials':
+              $ref: "#/components/headers/Access-Control-Allow-Credentials"
+            'Access-Control-Allow-Headers':
+              $ref: "#/components/headers/Access-Control-Allow-Headers"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/StreamHealthOverview"
+                  - $ref: "#/components/schemas/CollectedMetrics"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
@@ -879,6 +905,21 @@ components:
           type: string
         timeZone:
           type: string
+    CollectedMetrics:
+      type: object
+      properties:
+        disk:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimestampedValue'
+        memory:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimestampedValue'
+        cpu:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimestampedValue'
     AdminStatus:
       type: object
       properties:
