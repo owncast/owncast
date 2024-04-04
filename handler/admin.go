@@ -23,3 +23,7 @@ func (*ServerInterfaceImpl) GetServerConfig(w http.ResponseWriter, r *http.Reque
 func (*ServerInterfaceImpl) GetViewersOverTime(w http.ResponseWriter, r *http.Request, params generated.GetViewersOverTimeParams) {
 	middleware.RequireAdminAuth(admin.GetViewersOverTime)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetActiveViewers)(w, r)
+}

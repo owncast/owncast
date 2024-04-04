@@ -243,6 +243,13 @@ type Follower struct {
 	Username *string `json:"username,omitempty"`
 }
 
+// GeoDetails defines model for GeoDetails.
+type GeoDetails struct {
+	CountryCode *string `json:"countryCode,omitempty"`
+	RegionName  *string `json:"regionName,omitempty"`
+	TimeZone    *string `json:"timeZone,omitempty"`
+}
+
 // InboundStreamDetails defines model for InboundStreamDetails.
 type InboundStreamDetails struct {
 	AudioBitrate *int     `json:"audioBitrate,omitempty"`
@@ -386,6 +393,15 @@ type UserMessage struct {
 type VideoVariant struct {
 	Index *int    `json:"index,omitempty"`
 	Name  *string `json:"name,omitempty"`
+}
+
+// Viewer defines model for Viewer.
+type Viewer struct {
+	ClientID  *string     `json:"clientID,omitempty"`
+	FirstSeen *time.Time  `json:"firstSeen,omitempty"`
+	Geo       *GeoDetails `json:"geo,omitempty"`
+	IpAddress *string     `json:"ipAddress,omitempty"`
+	UserAgent *string     `json:"userAgent,omitempty"`
 }
 
 // WebConfig defines model for WebConfig.

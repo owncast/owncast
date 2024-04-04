@@ -23,6 +23,9 @@ type ServerInterface interface {
 	// Get current inboard broadcaster
 	// (GET /admin/status)
 	GetAdminStatus(w http.ResponseWriter, r *http.Request)
+	// Get active viewers
+	// (GET /admin/viewers)
+	GetActiveViewers(w http.ResponseWriter, r *http.Request)
 	// Get viewer count over time
 	// (GET /admin/viewersOverTime)
 	GetViewersOverTime(w http.ResponseWriter, r *http.Request, params GetViewersOverTimeParams)
@@ -92,6 +95,12 @@ func (_ Unimplemented) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 // Get current inboard broadcaster
 // (GET /admin/status)
 func (_ Unimplemented) GetAdminStatus(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get active viewers
+// (GET /admin/viewers)
+func (_ Unimplemented) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -241,6 +250,23 @@ func (siw *ServerInterfaceWrapper) GetAdminStatus(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAdminStatus(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetActiveViewers operation middleware
+func (siw *ServerInterfaceWrapper) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetActiveViewers(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -695,6 +721,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/status", wrapper.GetAdminStatus)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/viewers", wrapper.GetActiveViewers)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/viewersOverTime", wrapper.GetViewersOverTime)

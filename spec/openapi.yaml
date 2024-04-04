@@ -352,6 +352,32 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/viewers:
+    get:
+      summary: Get active viewers
+      operationId: GetActiveViewers
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of active viewers
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: "#/components/headers/Access-Control-Allow-Origin"
+            'Access-Control-Allow-Credentials':
+              $ref: "#/components/headers/Access-Control-Allow-Credentials"
+            'Access-Control-Allow-Headers':
+              $ref: "#/components/headers/Access-Control-Allow-Headers"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Viewer"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
@@ -830,6 +856,29 @@ components:
         value:
           type: number
           format: double
+    Viewer:
+      type: object
+      properties:
+        firstSeen:
+          type: string
+          format: date-time
+        geo:
+          $ref: '#/components/schemas/GeoDetails'
+        userAgent:
+          type: string
+        ipAddress:
+          type: string
+        clientID:
+          type: string
+    GeoDetails:
+      type: object
+      properties:
+        countryCode:
+          type: string
+        regionName:
+          type: string
+        timeZone:
+          type: string
     AdminStatus:
       type: object
       properties:
