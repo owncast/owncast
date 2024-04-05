@@ -60,9 +60,9 @@ export const Header: FC<HeaderComponentProps> = ({ name, chatAvailable, chatDisa
       )}
       {!chatAvailable && !chatDisabled && (
         
-       !online && <Tooltip
+       <Tooltip
           overlayClassName={styles.toolTip}
-          title="Chat will be available when the stream is live." 
+          title={!online?"Chat will be available when the stream is live.":"Chat disabled by streamer"} 
           placement="left"
         >
           <span className={styles.chatOfflineText}>Chat is offline</span>
