@@ -175,7 +175,7 @@ const StreamKeys = () => {
         <Space direction="horizontal">
           <Paragraph
             copyable={{
-              text: showKeyMap[text] ? text : '**********',
+              text: text,
               onCopy: () => copyText(text),
             }}
           >
