@@ -171,22 +171,22 @@ const StreamKeys = () => {
       title: 'Key',
       dataIndex: 'key',
       key: 'key',
-      render: text => (
+      render: key => (
         <Space direction="horizontal">
           <Paragraph
             copyable={{
-              text: text,
-              onCopy: () => copyText(text),
+              text: key,
+              onCopy: () => copyText(key),
             }}
           >
-            {showKeyMap[text] ? text : '**********'}
+            {showKeyMap[key] ? key : '**********'}
           </Paragraph>
 
           <Button
             type="link"
             style={{ top: '-7px' }}
             icon={<EyeOutlined />}
-            onClick={() => handleToggleShowKey(text)}
+            onClick={() => handleToggleShowKey(key)}
           />
         </Space>
       ),
