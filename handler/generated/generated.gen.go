@@ -26,6 +26,9 @@ type ServerInterface interface {
 	// Get all logs
 	// (GET /admin/logs)
 	GetLogs(w http.ResponseWriter, r *http.Request)
+	// Get warning/error logs
+	// (GET /admin/logs/warnings)
+	GetWarnings(w http.ResponseWriter, r *http.Request)
 	// Get the current server config
 	// (GET /admin/serverconfig)
 	GetServerConfig(w http.ResponseWriter, r *http.Request)
@@ -110,6 +113,12 @@ func (_ Unimplemented) GetHardwareStats(w http.ResponseWriter, r *http.Request) 
 // Get all logs
 // (GET /admin/logs)
 func (_ Unimplemented) GetLogs(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get warning/error logs
+// (GET /admin/logs/warnings)
+func (_ Unimplemented) GetWarnings(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -294,6 +303,23 @@ func (siw *ServerInterfaceWrapper) GetLogs(w http.ResponseWriter, r *http.Reques
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetLogs(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetWarnings operation middleware
+func (siw *ServerInterfaceWrapper) GetWarnings(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetWarnings(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -802,6 +828,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/logs", wrapper.GetLogs)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/logs/warnings", wrapper.GetWarnings)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/serverconfig", wrapper.GetServerConfig)

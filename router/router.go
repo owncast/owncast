@@ -124,7 +124,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/logs", middleware.RequireAdminAuth(admin.GetLogs))
 
 	// Get warning/error logs
-	http.HandleFunc("/api/admin/logs/warnings", middleware.RequireAdminAuth(admin.GetWarnings))
+	// http.HandleFunc("/api/admin/logs/warnings", middleware.RequireAdminAuth(admin.GetWarnings))
 
 	// Get all chat messages for the admin, unfiltered.
 	http.HandleFunc("/api/admin/chat/messages", middleware.RequireAdminAuth(admin.GetChatMessages))
