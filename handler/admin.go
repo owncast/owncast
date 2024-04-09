@@ -63,3 +63,7 @@ func (*ServerInterfaceImpl) BanIPAddress(w http.ResponseWriter, r *http.Request)
 func (*ServerInterfaceImpl) UnbanIPAddress(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.UnBanIPAddress)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetIPAddressBans)(w, r)
+}

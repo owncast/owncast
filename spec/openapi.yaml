@@ -554,6 +554,25 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/chat/users/ipbans:
+    get:
+      summary: Get all banned IP addresses
+      operationId: getIPAddressBans
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of banned IP addresses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IPAddress"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/logs:
     get:
       summary: Get all logs
@@ -1136,6 +1155,16 @@ components:
           type: string
         messageCount:
           type: integer
+    IPAddress:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        ipAddress:
+          type: string
+        notes:
+          type: string
     AdminStatus:
       type: object
       properties:

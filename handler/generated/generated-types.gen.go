@@ -278,6 +278,13 @@ type GeoDetails struct {
 	TimeZone    *string `json:"timeZone,omitempty"`
 }
 
+// IPAddress defines model for IPAddress.
+type IPAddress struct {
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	IpAddress *string    `json:"ipAddress,omitempty"`
+	Notes     *string    `json:"notes,omitempty"`
+}
+
 // InboundStreamDetails defines model for InboundStreamDetails.
 type InboundStreamDetails struct {
 	AudioBitrate *int     `json:"audioBitrate,omitempty"`
