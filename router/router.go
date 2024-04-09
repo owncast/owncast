@@ -118,7 +118,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/hardwarestats", middleware.RequireAdminAuth(admin.GetHardwareStats))
 
 	// Get a a detailed list of currently connected chat clients
-	http.HandleFunc("/api/admin/chat/clients", middleware.RequireAdminAuth(admin.GetConnectedChatClients))
+	// http.HandleFunc("/api/admin/chat/clients", middleware.RequireAdminAuth(admin.GetConnectedChatClients))
 
 	// Get all logs
 	http.HandleFunc("/api/admin/logs", middleware.RequireAdminAuth(admin.GetLogs))
