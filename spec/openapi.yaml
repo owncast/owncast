@@ -17,7 +17,7 @@ info:
     url: 'https://github.com/owncast/owncast/blob/develop/LICENSE'
     name: MIT
 servers:
-  - url: 'http://localhost:8080'
+  - url: 'http://localhost:8080/api'
     description: Localhost port 8080
 
 paths:
@@ -483,7 +483,33 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
-
+  /admin/chat/users/setenabled:
+    post:
+      summary: Enable or disable a user
+      operationId: updateUserEnabled
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                enabled:
+                  type: boolean
+      responses:
+        '200':
+          description: Successfully updated the user
+          content:
+            application/json:
+              schema:
+               $ref: "#/components/schemas/BaseAPIResponse"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/logs:
     get:
       summary: Get all logs

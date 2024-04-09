@@ -51,3 +51,7 @@ func (*ServerInterfaceImpl) GetWarnings(w http.ResponseWriter, r *http.Request) 
 func (*ServerInterfaceImpl) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.UpdateMessageVisibility)(w, r)
 }
+
+func (*ServerInterfaceImpl) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.UpdateUserEnabled)(w, r)
+}

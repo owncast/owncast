@@ -485,6 +485,12 @@ type UpdateMessageVisibilityJSONBody struct {
 	Visible *bool     `json:"visible,omitempty"`
 }
 
+// UpdateUserEnabledJSONBody defines parameters for UpdateUserEnabled.
+type UpdateUserEnabledJSONBody struct {
+	Enabled *bool   `json:"enabled,omitempty"`
+	UserId  *string `json:"userId,omitempty"`
+}
+
 // GetViewersOverTimeParams defines parameters for GetViewersOverTime.
 type GetViewersOverTimeParams struct {
 	// WindowStart Start date in unix time
@@ -531,6 +537,9 @@ type RemoteFollowJSONBody struct {
 
 // UpdateMessageVisibilityJSONRequestBody defines body for UpdateMessageVisibility for application/json ContentType.
 type UpdateMessageVisibilityJSONRequestBody UpdateMessageVisibilityJSONBody
+
+// UpdateUserEnabledJSONRequestBody defines body for UpdateUserEnabled for application/json ContentType.
+type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody
 
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody

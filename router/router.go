@@ -133,7 +133,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/chat/messagevisibility", middleware.RequireAdminAuth(admin.UpdateMessageVisibility))
 
 	// Enable/disable a user
-	http.HandleFunc("/api/admin/chat/users/setenabled", middleware.RequireAdminAuth(admin.UpdateUserEnabled))
+	// http.HandleFunc("/api/admin/chat/users/setenabled", middleware.RequireAdminAuth(admin.UpdateUserEnabled))
 
 	// Ban/unban an IP address
 	http.HandleFunc("/api/admin/chat/users/ipbans/create", middleware.RequireAdminAuth(admin.BanIPAddress))
