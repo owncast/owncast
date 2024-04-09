@@ -14,6 +14,9 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Get a detailed list of currently connected chat clients
+	// (GET /admin/chat/clients)
+	GetConnectedChatClients(w http.ResponseWriter, r *http.Request)
 	// Disconnect inbound stream
 	// (GET /admin/disconnect)
 	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
@@ -82,6 +85,12 @@ type ServerInterface interface {
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// Get a detailed list of currently connected chat clients
+// (GET /admin/chat/clients)
+func (_ Unimplemented) GetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // Disconnect inbound stream
 // (GET /admin/disconnect)
@@ -216,6 +225,23 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// GetConnectedChatClients operation middleware
+func (siw *ServerInterfaceWrapper) GetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetConnectedChatClients(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
 
 // DisconnectInboundConnection operation middleware
 func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
@@ -739,6 +765,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/chat/clients", wrapper.GetConnectedChatClients)
+	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)
 	})

@@ -148,6 +148,15 @@ type BrowserNotificationConfiguration struct {
 	GoLiveMessage *string `json:"goLiveMessage,omitempty"`
 }
 
+// ChatClient defines model for ChatClient.
+type ChatClient struct {
+	ConnectedAt  *time.Time  `json:"connectedAt,omitempty"`
+	Geo          *GeoDetails `json:"geo,omitempty"`
+	MessageCount *int        `json:"messageCount,omitempty"`
+	User         *User       `json:"user,omitempty"`
+	UserAgent    *string     `json:"userAgent,omitempty"`
+}
+
 // ChatMessages defines model for ChatMessages.
 type ChatMessages = []ChatMessages_Item
 

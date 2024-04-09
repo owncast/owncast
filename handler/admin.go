@@ -31,3 +31,7 @@ func (*ServerInterfaceImpl) GetActiveViewers(w http.ResponseWriter, r *http.Requ
 func (*ServerInterfaceImpl) GetHardwareStats(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetHardwareStats)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetConnectedChatClients)(w, r)
+}

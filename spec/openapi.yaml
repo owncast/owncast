@@ -404,6 +404,32 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/chat/clients:
+    get:
+      summary: Get a detailed list of currently connected chat clients
+      operationId: getConnectedChatClients
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of chat clients
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: "#/components/headers/Access-Control-Allow-Origin"
+            'Access-Control-Allow-Credentials':
+              $ref: "#/components/headers/Access-Control-Allow-Credentials"
+            'Access-Control-Allow-Headers':
+              $ref: "#/components/headers/Access-Control-Allow-Headers"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatClient"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
@@ -920,6 +946,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TimestampedValue'
+    ChatClient:
+      type: object
+      properties:
+        connectedAt:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/User'
+        geo:
+          $ref: '#/components/schemas/GeoDetails'
+        userAgent:
+          type: string
+        messageCount:
+          type: integer
     AdminStatus:
       type: object
       properties:
