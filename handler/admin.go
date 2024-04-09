@@ -55,3 +55,7 @@ func (*ServerInterfaceImpl) UpdateMessageVisibility(w http.ResponseWriter, r *ht
 func (*ServerInterfaceImpl) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.UpdateUserEnabled)(w, r)
 }
+
+func (*ServerInterfaceImpl) BanIPAddress(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.BanIPAddress)(w, r)
+}

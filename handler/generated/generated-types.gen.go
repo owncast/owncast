@@ -23,6 +23,11 @@ type ActionMessage struct {
 	Type      *string `json:"type,omitempty"`
 }
 
+// AdminConfigValue defines model for AdminConfigValue.
+type AdminConfigValue struct {
+	Value *string `json:"value,omitempty"`
+}
+
 // AdminFederationConfig defines model for AdminFederationConfig.
 type AdminFederationConfig struct {
 	BlockedDomains *[]string `json:"blockedDomains,omitempty"`
@@ -537,6 +542,9 @@ type RemoteFollowJSONBody struct {
 
 // UpdateMessageVisibilityJSONRequestBody defines body for UpdateMessageVisibility for application/json ContentType.
 type UpdateMessageVisibilityJSONRequestBody UpdateMessageVisibilityJSONBody
+
+// BanIPAddressJSONRequestBody defines body for BanIPAddress for application/json ContentType.
+type BanIPAddressJSONRequestBody = AdminConfigValue
 
 // UpdateUserEnabledJSONRequestBody defines body for UpdateUserEnabled for application/json ContentType.
 type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody

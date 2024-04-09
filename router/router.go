@@ -136,7 +136,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/chat/users/setenabled", middleware.RequireAdminAuth(admin.UpdateUserEnabled))
 
 	// Ban/unban an IP address
-	http.HandleFunc("/api/admin/chat/users/ipbans/create", middleware.RequireAdminAuth(admin.BanIPAddress))
+	// http.HandleFunc("/api/admin/chat/users/ipbans/create", middleware.RequireAdminAuth(admin.BanIPAddress))
 
 	// Remove an IP address ban
 	http.HandleFunc("/api/admin/chat/users/ipbans/remove", middleware.RequireAdminAuth(admin.UnBanIPAddress))

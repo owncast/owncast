@@ -510,6 +510,28 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/chat/users/ipbans/create:
+    post:
+      summary: Ban an IP address
+      operationId: banIPAddress
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminConfigValue"
+      responses:
+        '200':
+          description: IP was successfully banned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/logs:
     get:
       summary: Get all logs
@@ -1262,6 +1284,11 @@ components:
         message:
           type: string
         level:
+          type: string
+    AdminConfigValue:
+      type: object
+      properties:
+        value:
           type: string
   headers:
     'Access-Control-Allow-Origin':
