@@ -546,6 +546,9 @@ type UpdateMessageVisibilityJSONRequestBody UpdateMessageVisibilityJSONBody
 // BanIPAddressJSONRequestBody defines body for BanIPAddress for application/json ContentType.
 type BanIPAddressJSONRequestBody = AdminConfigValue
 
+// UnbanIPAddressJSONRequestBody defines body for UnbanIPAddress for application/json ContentType.
+type UnbanIPAddressJSONRequestBody = AdminConfigValue
+
 // UpdateUserEnabledJSONRequestBody defines body for UpdateUserEnabled for application/json ContentType.
 type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody
 

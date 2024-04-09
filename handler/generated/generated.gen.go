@@ -26,6 +26,9 @@ type ServerInterface interface {
 	// Ban an IP address
 	// (POST /admin/chat/users/ipbans/create)
 	BanIPAddress(w http.ResponseWriter, r *http.Request)
+	// Remove an IP ban
+	// (POST /admin/chat/users/ipbans/remove)
+	UnbanIPAddress(w http.ResponseWriter, r *http.Request)
 	// Enable or disable a user
 	// (POST /admin/chat/users/setenabled)
 	UpdateUserEnabled(w http.ResponseWriter, r *http.Request)
@@ -125,6 +128,12 @@ func (_ Unimplemented) UpdateMessageVisibility(w http.ResponseWriter, r *http.Re
 // Ban an IP address
 // (POST /admin/chat/users/ipbans/create)
 func (_ Unimplemented) BanIPAddress(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Remove an IP ban
+// (POST /admin/chat/users/ipbans/remove)
+func (_ Unimplemented) UnbanIPAddress(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -339,6 +348,23 @@ func (siw *ServerInterfaceWrapper) BanIPAddress(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.BanIPAddress(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// UnbanIPAddress operation middleware
+func (siw *ServerInterfaceWrapper) UnbanIPAddress(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UnbanIPAddress(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -932,6 +958,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/chat/users/ipbans/create", wrapper.BanIPAddress)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/chat/users/ipbans/remove", wrapper.UnbanIPAddress)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/chat/users/setenabled", wrapper.UpdateUserEnabled)

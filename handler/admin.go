@@ -59,3 +59,7 @@ func (*ServerInterfaceImpl) UpdateUserEnabled(w http.ResponseWriter, r *http.Req
 func (*ServerInterfaceImpl) BanIPAddress(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.BanIPAddress)(w, r)
 }
+
+func (*ServerInterfaceImpl) UnbanIPAddress(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.UnBanIPAddress)(w, r)
+}
