@@ -20,6 +20,9 @@ type ServerInterface interface {
 	// Get all chat messages for the admin, unfiltered
 	// (GET /admin/chat/messages)
 	GetAdminChatMessages(w http.ResponseWriter, r *http.Request)
+	// Update visibility of chat messages
+	// (POST /admin/chat/messagevisibility)
+	UpdateMessageVisibility(w http.ResponseWriter, r *http.Request)
 	// Disconnect inbound stream
 	// (GET /admin/disconnect)
 	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
@@ -104,6 +107,12 @@ func (_ Unimplemented) GetConnectedChatClients(w http.ResponseWriter, r *http.Re
 // Get all chat messages for the admin, unfiltered
 // (GET /admin/chat/messages)
 func (_ Unimplemented) GetAdminChatMessages(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update visibility of chat messages
+// (POST /admin/chat/messagevisibility)
+func (_ Unimplemented) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -278,6 +287,23 @@ func (siw *ServerInterfaceWrapper) GetAdminChatMessages(w http.ResponseWriter, r
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAdminChatMessages(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// UpdateMessageVisibility operation middleware
+func (siw *ServerInterfaceWrapper) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateMessageVisibility(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -848,6 +874,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/chat/messages", wrapper.GetAdminChatMessages)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/chat/messagevisibility", wrapper.UpdateMessageVisibility)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)

@@ -47,3 +47,7 @@ func (*ServerInterfaceImpl) GetLogs(w http.ResponseWriter, r *http.Request) {
 func (*ServerInterfaceImpl) GetWarnings(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWarnings)(w, r)
 }
+
+func (*ServerInterfaceImpl) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.UpdateMessageVisibility)(w, r)
+}

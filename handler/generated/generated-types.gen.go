@@ -479,6 +479,12 @@ type N501 = Error
 // Default Simple API response
 type Default = BaseAPIResponse
 
+// UpdateMessageVisibilityJSONBody defines parameters for UpdateMessageVisibility.
+type UpdateMessageVisibilityJSONBody struct {
+	IdArray *[]string `json:"idArray,omitempty"`
+	Visible *bool     `json:"visible,omitempty"`
+}
+
 // GetViewersOverTimeParams defines parameters for GetViewersOverTime.
 type GetViewersOverTimeParams struct {
 	// WindowStart Start date in unix time
@@ -522,6 +528,9 @@ type PostNotificationsRegisterParams struct {
 type RemoteFollowJSONBody struct {
 	Account *string `json:"account,omitempty"`
 }
+
+// UpdateMessageVisibilityJSONRequestBody defines body for UpdateMessageVisibility for application/json ContentType.
+type UpdateMessageVisibilityJSONRequestBody UpdateMessageVisibilityJSONBody
 
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
