@@ -36,6 +36,10 @@ func (*ServerInterfaceImpl) GetConnectedChatClients(w http.ResponseWriter, r *ht
 	middleware.RequireAdminAuth(admin.GetConnectedChatClients)(w, r)
 }
 
+func (*ServerInterfaceImpl) GetAdminChatMessages(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetChatMessages)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetLogs(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetLogs)(w, r)
 }

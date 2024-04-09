@@ -430,6 +430,30 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/chat/messages:
+    get:
+      summary: Get all chat messages for the admin, unfiltered
+      operationId: getAdminChatMessages
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of chat messages for the admin
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: "#/components/headers/Access-Control-Allow-Origin"
+            'Access-Control-Allow-Credentials':
+              $ref: "#/components/headers/Access-Control-Allow-Credentials"
+            'Access-Control-Allow-Headers':
+              $ref: "#/components/headers/Access-Control-Allow-Headers"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatMessages"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/logs:
     get:
       summary: Get all logs
