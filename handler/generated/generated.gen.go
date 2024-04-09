@@ -23,6 +23,9 @@ type ServerInterface interface {
 	// Get the current hardware stats
 	// (GET /admin/hardwarestats)
 	GetHardwareStats(w http.ResponseWriter, r *http.Request)
+	// Get all logs
+	// (GET /admin/logs)
+	GetLogs(w http.ResponseWriter, r *http.Request)
 	// Get the current server config
 	// (GET /admin/serverconfig)
 	GetServerConfig(w http.ResponseWriter, r *http.Request)
@@ -101,6 +104,12 @@ func (_ Unimplemented) DisconnectInboundConnection(w http.ResponseWriter, r *htt
 // Get the current hardware stats
 // (GET /admin/hardwarestats)
 func (_ Unimplemented) GetHardwareStats(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get all logs
+// (GET /admin/logs)
+func (_ Unimplemented) GetLogs(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -268,6 +277,23 @@ func (siw *ServerInterfaceWrapper) GetHardwareStats(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetHardwareStats(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetLogs operation middleware
+func (siw *ServerInterfaceWrapper) GetLogs(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetLogs(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -773,6 +799,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/hardwarestats", wrapper.GetHardwareStats)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/logs", wrapper.GetLogs)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/serverconfig", wrapper.GetServerConfig)

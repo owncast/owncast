@@ -430,6 +430,32 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/logs:
+    get:
+      summary: Get all logs
+      operationId: GetLogs
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of logs
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: "#/components/headers/Access-Control-Allow-Origin"
+            'Access-Control-Allow-Credentials':
+              $ref: "#/components/headers/Access-Control-Allow-Credentials"
+            'Access-Control-Allow-Headers':
+              $ref: "#/components/headers/Access-Control-Allow-Headers"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminLog"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
@@ -1121,6 +1147,16 @@ components:
             $ref: '#/components/schemas/StreamOutputVariant'
         latencyLevel:
           type: integer
+    AdminLog:
+      type: object
+      properties:
+        time:
+          type: string
+          format: date-time
+        message:
+          type: string
+        level:
+          type: string
   headers:
     'Access-Control-Allow-Origin':
       schema:

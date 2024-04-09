@@ -35,3 +35,7 @@ func (*ServerInterfaceImpl) GetHardwareStats(w http.ResponseWriter, r *http.Requ
 func (*ServerInterfaceImpl) GetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetConnectedChatClients)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetLogs(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetLogs)(w, r)
+}

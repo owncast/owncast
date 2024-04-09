@@ -33,6 +33,13 @@ type AdminFederationConfig struct {
 	Username       *string   `json:"username,omitempty"`
 }
 
+// AdminLog defines model for AdminLog.
+type AdminLog struct {
+	Level   *string    `json:"level,omitempty"`
+	Message *string    `json:"message,omitempty"`
+	Time    *time.Time `json:"time,omitempty"`
+}
+
 // AdminNotificationsConfig defines model for AdminNotificationsConfig.
 type AdminNotificationsConfig struct {
 	Browser *BrowserNotificationConfiguration `json:"browser,omitempty"`
