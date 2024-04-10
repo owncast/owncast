@@ -152,6 +152,8 @@ export interface ConfigDetails {
   forbiddenUsernames: string[];
   suggestedUsernames: string[];
   chatDisabled: boolean;
+  chatSpamProtectionEnabled: boolean;
+  chatSlurFilterEnabled: boolean;
   federation: Federation;
   notifications: NotificationsConfig;
   chatJoinMessagesEnabled: boolean;

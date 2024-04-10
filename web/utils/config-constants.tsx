@@ -38,6 +38,8 @@ const API_HIDE_VIEWER_COUNT = '/hideviewercount';
 const API_CHAT_DISABLE = '/chat/disable';
 const API_CHAT_JOIN_MESSAGES_ENABLED = '/chat/joinmessagesenabled';
 const API_CHAT_ESTABLISHED_MODE = '/chat/establishedusermode';
+const API_CHAT_SPAM_PROTECTION_ENABLED = '/chat/spamprotectionenabled';
+const API_CHAT_SLUR_FILTER_ENABLED = '/chat/slurfilterenabled';
 const API_DISABLE_SEARCH_INDEXING = '/disablesearchindexing';
 const API_SOCKET_HOST_OVERRIDE = '/sockethostoverride';
 const API_VIDEO_SERVING_ENDPOINT = '/videoservingendpoint';
@@ -258,11 +260,27 @@ export const FIELD_PROPS_DISABLE_CHAT = {
   useSubmit: true,
 };
 
+export const FIELD_PROPS_ENABLE_SPAM_PROTECTION = {
+  apiPath: API_CHAT_SPAM_PROTECTION_ENABLED,
+  configPath: '',
+  label: 'Spam Protection',
+  tip: 'Limits how quickly messages can be sent to prevent spamming.',
+  useSubmit: true,
+};
+
 export const FIELD_PROPS_CHAT_JOIN_MESSAGES_ENABLED = {
   apiPath: API_CHAT_JOIN_MESSAGES_ENABLED,
   configPath: '',
   label: 'Join Messages',
   tip: 'Show when a viewer joins the chat.',
+  useSubmit: true,
+};
+
+export const FIELD_PROPS_ENABLE_CHAT_SLUR_FILTER = {
+  apiPath: API_CHAT_SLUR_FILTER_ENABLED,
+  configPath: '',
+  label: 'Chat language filter',
+  tip: 'Filters out messages that contain offensive language.',
   useSubmit: true,
 };
 

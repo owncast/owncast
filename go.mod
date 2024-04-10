@@ -59,6 +59,7 @@ require (
 require github.com/SherClockHolmes/webpush-go v1.3.0
 
 require (
+	github.com/TwiN/go-away v1.6.13 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect

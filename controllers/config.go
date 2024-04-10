@@ -16,26 +16,27 @@ import (
 )
 
 type webConfigResponse struct {
-	AppearanceVariables  map[string]string            `json:"appearanceVariables"`
-	Name                 string                       `json:"name"`
-	CustomStyles         string                       `json:"customStyles"`
-	StreamTitle          string                       `json:"streamTitle,omitempty"` // What's going on with the current stream
-	OfflineMessage       string                       `json:"offlineMessage"`
-	Logo                 string                       `json:"logo"`
-	Version              string                       `json:"version"`
-	SocketHostOverride   string                       `json:"socketHostOverride,omitempty"`
-	ExtraPageContent     string                       `json:"extraPageContent"`
-	Summary              string                       `json:"summary"`
-	Tags                 []string                     `json:"tags"`
-	SocialHandles        []models.SocialHandle        `json:"socialHandles"`
-	ExternalActions      []models.ExternalAction      `json:"externalActions"`
-	Notifications        notificationsConfigResponse  `json:"notifications"`
-	Federation           federationConfigResponse     `json:"federation"`
-	MaxSocketPayloadSize int                          `json:"maxSocketPayloadSize"`
-	HideViewerCount      bool                         `json:"hideViewerCount"`
-	ChatDisabled         bool                         `json:"chatDisabled"`
-	NSFW                 bool                         `json:"nsfw"`
-	Authentication       authenticationConfigResponse `json:"authentication"`
+	AppearanceVariables        map[string]string            `json:"appearanceVariables"`
+	Name                       string                       `json:"name"`
+	CustomStyles               string                       `json:"customStyles"`
+	StreamTitle                string                       `json:"streamTitle,omitempty"` // What's going on with the current stream
+	OfflineMessage             string                       `json:"offlineMessage"`
+	Logo                       string                       `json:"logo"`
+	Version                    string                       `json:"version"`
+	SocketHostOverride         string                       `json:"socketHostOverride,omitempty"`
+	ExtraPageContent           string                       `json:"extraPageContent"`
+	Summary                    string                       `json:"summary"`
+	Tags                       []string                     `json:"tags"`
+	SocialHandles              []models.SocialHandle        `json:"socialHandles"`
+	ExternalActions            []models.ExternalAction      `json:"externalActions"`
+	Notifications              notificationsConfigResponse  `json:"notifications"`
+	Federation                 federationConfigResponse     `json:"federation"`
+	MaxSocketPayloadSize       int                          `json:"maxSocketPayloadSize"`
+	HideViewerCount            bool                         `json:"hideViewerCount"`
+	ChatDisabled               bool                         `json:"chatDisabled"`
+	ChatSpamProtectionDisabled bool                         `json:"chatSpamProtectionDisabled"`
+	NSFW                       bool                         `json:"nsfw"`
+	Authentication             authenticationConfigResponse `json:"authentication"`
 }
 
 type federationConfigResponse struct {
@@ -118,26 +119,27 @@ func getConfigResponse() webConfigResponse {
 	}
 
 	return webConfigResponse{
-		Name:                 data.GetServerName(),
-		Summary:              serverSummary,
-		OfflineMessage:       offlineMessage,
-		Logo:                 "/logo",
-		Tags:                 data.GetServerMetadataTags(),
-		Version:              config.GetReleaseString(),
-		NSFW:                 data.GetNSFW(),
-		SocketHostOverride:   data.GetWebsocketOverrideHost(),
-		ExtraPageContent:     pageContent,
-		StreamTitle:          data.GetStreamTitle(),
-		SocialHandles:        socialHandles,
-		ChatDisabled:         data.GetChatDisabled(),
-		ExternalActions:      data.GetExternalActions(),
-		CustomStyles:         data.GetCustomStyles(),
-		MaxSocketPayloadSize: config.MaxSocketPayloadSize,
-		Federation:           federationResponse,
-		Notifications:        notificationsResponse,
-		Authentication:       authenticationResponse,
-		AppearanceVariables:  data.GetCustomColorVariableValues(),
-		HideViewerCount:      data.GetHideViewerCount(),
+		Name:                       data.GetServerName(),
+		Summary:                    serverSummary,
+		OfflineMessage:             offlineMessage,
+		Logo:                       "/logo",
+		Tags:                       data.GetServerMetadataTags(),
+		Version:                    config.GetReleaseString(),
+		NSFW:                       data.GetNSFW(),
+		SocketHostOverride:         data.GetWebsocketOverrideHost(),
+		ExtraPageContent:           pageContent,
+		StreamTitle:                data.GetStreamTitle(),
+		SocialHandles:              socialHandles,
+		ChatDisabled:               data.GetChatDisabled(),
+		ChatSpamProtectionDisabled: data.GetChatSpamProtectionEnabled(),
+		ExternalActions:            data.GetExternalActions(),
+		CustomStyles:               data.GetCustomStyles(),
+		MaxSocketPayloadSize:       config.MaxSocketPayloadSize,
+		Federation:                 federationResponse,
+		Notifications:              notificationsResponse,
+		Authentication:             authenticationResponse,
+		AppearanceVariables:        data.GetCustomColorVariableValues(),
+		HideViewerCount:            data.GetHideViewerCount(),
 	}
 }
 
