@@ -43,7 +43,7 @@ jobs:
       - name: Publish to Chromatic
         if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' }}
 
-        uses: chromaui/action@v1
+        uses: chromaui/action@v11
         # Chromatic GitHub Action options
         with:
           workingDir: web
