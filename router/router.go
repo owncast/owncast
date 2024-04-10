@@ -213,6 +213,8 @@ func Start() error {
 	// Enable or disable chat spam protection
 	http.HandleFunc("/api/admin/config/chat/spamprotectionenabled", middleware.RequireAdminAuth(admin.SetChatSpamProtectionEnabled))
 
+	http.HandleFunc("/api/admin/config/chat/slurfilterenabled", middleware.RequireAdminAuth(admin.SetChatSlurFilterEnabled))
+
 	// Set video codec
 	http.HandleFunc("/api/admin/config/video/codec", middleware.RequireAdminAuth(admin.SetVideoCodec))
 

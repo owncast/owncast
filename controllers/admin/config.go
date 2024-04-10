@@ -820,6 +820,24 @@ func SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "chat spam protection changed")
 }
 
+// SetChatSlurFilterEnabled will enable or disable the chat slur filter.
+func SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := data.SetChatSlurFilterEnabled(configValue.Value.(bool)); err != nil {
+		controllers.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+	controllers.WriteSimpleResponse(w, true, "chat message slur filter changed")
+}
+
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")

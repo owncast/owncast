@@ -60,6 +60,7 @@ const (
 	chatJoinMessagesEnabledKey      = "chat_join_messages_enabled"
 	chatEstablishedUsersOnlyModeKey = "chat_established_users_only_mode"
 	chatSpamProtectionEnabledKey    = "chat_spam_protection_enabled"
+	chatSlurFilterEnabledKey        = "chat_slur_filter_enabled"
 	notificationsEnabledKey         = "notifications_enabled"
 	discordConfigurationKey         = "discord_configuration"
 	browserPushConfigurationKey     = "browser_push_configuration"
@@ -542,6 +543,21 @@ func GetChatSpamProtectionEnabled() bool {
 	}
 
 	return true
+}
+
+// SetChatSlurFilterEnabled will enable the chat slur filter.
+func SetChatSlurFilterEnabled(enabled bool) error {
+	return _datastore.SetBool(chatSlurFilterEnabledKey, enabled)
+}
+
+// GetChatSlurFilterEnabled will return if the chat slur filter is enabled.
+func GetChatSlurFilterEnabled() bool {
+	enabled, err := _datastore.GetBool(chatSlurFilterEnabledKey)
+	if err == nil {
+		return enabled
+	}
+
+	return false
 }
 
 // GetExternalActions will return the registered external actions.

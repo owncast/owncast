@@ -16,6 +16,7 @@ import {
   API_CHAT_FORBIDDEN_USERNAMES,
   API_CHAT_SUGGESTED_USERNAMES,
   FIELD_PROPS_CHAT_JOIN_MESSAGES_ENABLED,
+  FIELD_PROPS_ENABLE_CHAT_SLUR_FILTER,
   CHAT_ESTABLISHED_USER_MODE,
   FIELD_PROPS_DISABLE_CHAT,
   postConfigUpdateToAPI,
@@ -45,6 +46,7 @@ export default function ConfigChat() {
     suggestedUsernames,
     chatEstablishedUserMode,
     chatSpamProtectionEnabled,
+    chatSlurFilterEnabled,
   } = serverConfig;
   const { welcomeMessage } = instanceDetails;
 
@@ -69,6 +71,10 @@ export default function ConfigChat() {
 
   function handleChatSpamProtectionChange(enabled: boolean) {
     handleFieldChange({ fieldName: 'chatSpamProtectionEnabled', value: enabled });
+  }
+
+  function handleChatSlurFilterChange(enabled: boolean) {
+    handleFieldChange({ fieldName: 'chatSlurFilterEnabled', value: enabled });
   }
 
   function resetForbiddenUsernameState() {
@@ -162,6 +168,7 @@ export default function ConfigChat() {
       welcomeMessage,
       chatEstablishedUserMode,
       chatSpamProtectionEnabled,
+      chatSlurFilterEnabled,
     });
   }, [serverConfig]);
 
@@ -236,6 +243,12 @@ export default function ConfigChat() {
               {...CHAT_ESTABLISHED_USER_MODE}
               checked={formDataValues.chatEstablishedUserMode}
               onChange={handleEstablishedUserModeChange}
+            />
+            <ToggleSwitch
+              fieldName="chatSlurFilterEnabled"
+              {...FIELD_PROPS_ENABLE_CHAT_SLUR_FILTER}
+              checked={formDataValues.chatSlurFilterEnabled}
+              onChange={handleChatSlurFilterChange}
             />
           </div>
         </Col>
