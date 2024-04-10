@@ -23,6 +23,9 @@ type ServerInterface interface {
 	// Update visibility of chat messages
 	// (POST /admin/chat/messagevisibility)
 	UpdateMessageVisibility(w http.ResponseWriter, r *http.Request)
+	// Get a list of disabled users
+	// (GET /admin/chat/users/disabled)
+	GetDisabledUsers(w http.ResponseWriter, r *http.Request)
 	// Get all banned IP addresses
 	// (GET /admin/chat/users/ipbans)
 	GetIPAddressBans(w http.ResponseWriter, r *http.Request)
@@ -125,6 +128,12 @@ func (_ Unimplemented) GetAdminChatMessages(w http.ResponseWriter, r *http.Reque
 // Update visibility of chat messages
 // (POST /admin/chat/messagevisibility)
 func (_ Unimplemented) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a list of disabled users
+// (GET /admin/chat/users/disabled)
+func (_ Unimplemented) GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -340,6 +349,23 @@ func (siw *ServerInterfaceWrapper) UpdateMessageVisibility(w http.ResponseWriter
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateMessageVisibility(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetDisabledUsers operation middleware
+func (siw *ServerInterfaceWrapper) GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetDisabledUsers(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -981,6 +1007,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/chat/messagevisibility", wrapper.UpdateMessageVisibility)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/chat/users/disabled", wrapper.GetDisabledUsers)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/chat/users/ipbans", wrapper.GetIPAddressBans)

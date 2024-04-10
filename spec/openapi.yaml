@@ -510,6 +510,25 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/chat/users/disabled:
+    get:
+      summary: Get a list of disabled users
+      operationId: getDisabledUsers
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of disabled users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/chat/users/ipbans/create:
     post:
       summary: Ban an IP address
