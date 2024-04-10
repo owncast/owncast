@@ -75,3 +75,7 @@ func (*ServerInterfaceImpl) GetDisabledUsers(w http.ResponseWriter, r *http.Requ
 func (*ServerInterfaceImpl) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.UpdateUserModerator)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetModerators(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetModerators)(w, r)
+}

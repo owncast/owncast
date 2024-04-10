@@ -424,6 +424,9 @@ type UserMessage struct {
 	User      *User   `json:"user,omitempty"`
 }
 
+// Users defines model for Users.
+type Users = []User
+
 // VideoVariant defines model for VideoVariant.
 type VideoVariant struct {
 	Index *int    `json:"index,omitempty"`

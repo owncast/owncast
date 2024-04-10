@@ -151,7 +151,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/chat/users/setmoderator", middleware.RequireAdminAuth(admin.UpdateUserModerator))
 
 	// Get a list of moderator users
-	http.HandleFunc("/api/admin/chat/users/moderators", middleware.RequireAdminAuth(admin.GetModerators))
+	// http.HandleFunc("/api/admin/chat/users/moderators", middleware.RequireAdminAuth(admin.GetModerators))
 
 	// return followers
 	http.HandleFunc("/api/admin/followers", middleware.RequireAdminAuth(middleware.HandlePagination(controllers.GetFollowers)))

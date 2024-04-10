@@ -522,9 +522,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/Users"
         '401':
           $ref: "#/components/responses/401BasicAuth"
         default:
@@ -615,6 +613,23 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BaseAPIResponse"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/chat/users/moderators:
+    get:
+      summary: Get a list of moderator users
+      operationId: getModerators
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of moderator users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
         '401':
           $ref: "#/components/responses/401BasicAuth"
         default:
@@ -780,6 +795,10 @@ components:
           type: boolean
         authenticated:
           type: boolean
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
     Follower:
       type: object
       properties:
