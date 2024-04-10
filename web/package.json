@@ -118,7 +118,7 @@
 		"prettier": "3.2.5",
 		"resolve-url-loader": "^5.0.0",
 		"sass": "1.74.1",
-		"sass-loader": "^13.3.2",
+		"sass-loader": "^14.0.0",
 		"storybook": "^7.5.1",
 		"storybook-addon-fetch-mock": "1.0.1",
 		"storybook-preset-less": "1.1.3",
