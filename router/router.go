@@ -210,6 +210,9 @@ func Start() error {
 	// Set the suggested chat usernames that will be assigned automatically
 	http.HandleFunc("/api/admin/config/chat/suggestedusernames", middleware.RequireAdminAuth(admin.SetSuggestedUsernameList))
 
+	// Enable or disable chat spam protection
+	http.HandleFunc("/api/admin/config/chat/spamprotectionenabled", middleware.RequireAdminAuth(admin.SetChatSpamProtectionEnabled))
+
 	// Set video codec
 	http.HandleFunc("/api/admin/config/video/codec", middleware.RequireAdminAuth(admin.SetVideoCodec))
 

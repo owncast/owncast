@@ -38,6 +38,8 @@ const API_HIDE_VIEWER_COUNT = '/hideviewercount';
 const API_CHAT_DISABLE = '/chat/disable';
 const API_CHAT_JOIN_MESSAGES_ENABLED = '/chat/joinmessagesenabled';
 const API_CHAT_ESTABLISHED_MODE = '/chat/establishedusermode';
+const API_CHAT_SPAM_PROTECTION_ENABLED = '/chat/spamprotectionenabled';
+
 const API_DISABLE_SEARCH_INDEXING = '/disablesearchindexing';
 const API_SOCKET_HOST_OVERRIDE = '/sockethostoverride';
 const API_VIDEO_SERVING_ENDPOINT = '/videoservingendpoint';
@@ -255,6 +257,14 @@ export const FIELD_PROPS_DISABLE_CHAT = {
   configPath: '',
   label: 'Chat',
   tip: 'Turn the chat functionality on/off on your Owncast server.',
+  useSubmit: true,
+};
+
+export const FIELD_PROPS_ENABLE_SPAM_PROTECTION = {
+  apiPath: API_CHAT_SPAM_PROTECTION_ENABLED,
+  configPath: '',
+  label: 'Spam Protection',
+  tip: 'Limits how quickly messages can be sent to prevent spamming.',
   useSubmit: true,
 };
 

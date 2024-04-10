@@ -59,6 +59,7 @@ const (
 	suggestedUsernamesKey           = "suggested_usernames"
 	chatJoinMessagesEnabledKey      = "chat_join_messages_enabled"
 	chatEstablishedUsersOnlyModeKey = "chat_established_users_only_mode"
+	chatSpamProtectionEnabledKey    = "chat_spam_protection_enabled"
 	notificationsEnabledKey         = "notifications_enabled"
 	discordConfigurationKey         = "discord_configuration"
 	browserPushConfigurationKey     = "browser_push_configuration"
@@ -526,6 +527,21 @@ func GetChatEstbalishedUsersOnlyMode() bool {
 	}
 
 	return false
+}
+
+// SetChatSpamProtectionEnabled will enable chat spam protection if set to true.
+func SetChatSpamProtectionEnabled(enabled bool) error {
+	return _datastore.SetBool(chatSpamProtectionEnabledKey, enabled)
+}
+
+// GetChatSpamProtectionEnabled will return if chat spam protection is enabled.
+func GetChatSpamProtectionEnabled() bool {
+	enabled, err := _datastore.GetBool(chatSpamProtectionEnabledKey)
+	if err == nil {
+		return enabled
+	}
+
+	return true
 }
 
 // GetExternalActions will return the registered external actions.

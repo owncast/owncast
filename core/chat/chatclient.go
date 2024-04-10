@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/geoip"
 )
@@ -200,7 +201,13 @@ func (c *Client) close() {
 }
 
 func (c *Client) passesRateLimit() bool {
-	return c.User.IsModerator() || (c.rateLimiter.Allow() && !c.inTimeout)
+	// If spam rate limiting is disabled, or the user is a moderator, always
+	// allow the message.
+	if !data.GetChatSpamProtectionEnabled() || c.User.IsModerator() {
+		return true
+	}
+
+	return (c.rateLimiter.Allow() && !c.inTimeout)
 }
 
 func (c *Client) startChatRejectionTimeout() {
