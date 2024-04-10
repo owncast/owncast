@@ -330,27 +330,14 @@ func (c *VaapiCodec) ExtraArguments() string {
 
 // VariantFlags returns a string representing a single variant processed by this codec.
 func (c *VaapiCodec) VariantFlags(v *HLSVariant) string {
-	return ""
+	return "-compression_level 0"
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *VaapiCodec) GetPresetForLevel(l int) string {
-	presetMapping := map[int]string{
-		0: "ultrafast",
-		1: "superfast",
-		2: "veryfast",
-		3: "faster",
-		4: "fast",
-	}
-
-	preset, ok := presetMapping[l]
-	if !ok {
-		defaultPreset := presetMapping[1]
-		log.Errorf("Invalid level for vaapi preset %d, defaulting to %s", l, defaultPreset)
-		return defaultPreset
-	}
-
-	return preset
+	// This codec does not support presets. It uses a compression level instead.
+	// See the VariantFlags method.
+	return ""
 }
 
 // GetRepresentation returns the simplified codec representation of this codec.
