@@ -2,6 +2,8 @@ github.com/CAFxX/httpcompression v0.0.9 h1:0ue2X8dOLEpxTm8tt+OdHcgA+gbDge0OqFQWG
 github.com/CAFxX/httpcompression v0.0.9/go.mod h1:XX8oPZA+4IDcfZ0A71Hz0mZsv/YJOgYygkFhizVPilM=
 github.com/SherClockHolmes/webpush-go v1.3.0 h1:CAu3FvEE9QS4drc3iKNgpBWFfGqNthKlZhp5QpYnu6k=
 github.com/SherClockHolmes/webpush-go v1.3.0/go.mod h1:AxRHmJuYwKGG1PVgYzToik1lphQvDnqFYDqimHvwhIw=
+github.com/TwiN/go-away v1.6.13 h1:aB6l/FPXmA5ds+V7I9zdhxzpsLLUvVtEuS++iU/ZmgE=
+github.com/TwiN/go-away v1.6.13/go.mod h1:MpvIC9Li3minq+CGgbgUDvQ9tDaeW35k5IXZrF9MVas=
 github.com/andybalholm/brotli v1.0.5 h1:8uQZIdzKmjc/iuPu7O2ioW48L81FgatrcpfFmiq/cCs=
 github.com/andybalholm/brotli v1.0.5/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
 github.com/andybalholm/cascadia v1.3.2 h1:3Xi6Dw5lHF15JtdcmAHD3i1+T8plmv7BQ/nsViSLyss=
