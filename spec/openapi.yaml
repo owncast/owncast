@@ -592,6 +592,33 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/chat/users/setmoderator:
+    post:
+      summary: Set moderator status for a user
+      operationId: updateUserModerator
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                isModerator:
+                  type: boolean
+      responses:
+        '200':
+          description: Successfully update the moderator status of the user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/logs:
     get:
       summary: Get all logs

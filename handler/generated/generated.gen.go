@@ -38,6 +38,9 @@ type ServerInterface interface {
 	// Enable or disable a user
 	// (POST /admin/chat/users/setenabled)
 	UpdateUserEnabled(w http.ResponseWriter, r *http.Request)
+	// Set moderator status for a user
+	// (POST /admin/chat/users/setmoderator)
+	UpdateUserModerator(w http.ResponseWriter, r *http.Request)
 	// Disconnect inbound stream
 	// (GET /admin/disconnect)
 	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
@@ -158,6 +161,12 @@ func (_ Unimplemented) UnbanIPAddress(w http.ResponseWriter, r *http.Request) {
 // Enable or disable a user
 // (POST /admin/chat/users/setenabled)
 func (_ Unimplemented) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set moderator status for a user
+// (POST /admin/chat/users/setmoderator)
+func (_ Unimplemented) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -434,6 +443,23 @@ func (siw *ServerInterfaceWrapper) UpdateUserEnabled(w http.ResponseWriter, r *h
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateUserEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// UpdateUserModerator operation middleware
+func (siw *ServerInterfaceWrapper) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateUserModerator(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1022,6 +1048,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/chat/users/setenabled", wrapper.UpdateUserEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/chat/users/setmoderator", wrapper.UpdateUserModerator)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)

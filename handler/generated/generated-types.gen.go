@@ -503,6 +503,12 @@ type UpdateUserEnabledJSONBody struct {
 	UserId  *string `json:"userId,omitempty"`
 }
 
+// UpdateUserModeratorJSONBody defines parameters for UpdateUserModerator.
+type UpdateUserModeratorJSONBody struct {
+	IsModerator *bool   `json:"isModerator,omitempty"`
+	UserId      *string `json:"userId,omitempty"`
+}
+
 // GetViewersOverTimeParams defines parameters for GetViewersOverTime.
 type GetViewersOverTimeParams struct {
 	// WindowStart Start date in unix time
@@ -558,6 +564,9 @@ type UnbanIPAddressJSONRequestBody = AdminConfigValue
 
 // UpdateUserEnabledJSONRequestBody defines body for UpdateUserEnabled for application/json ContentType.
 type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody
+
+// UpdateUserModeratorJSONRequestBody defines body for UpdateUserModerator for application/json ContentType.
+type UpdateUserModeratorJSONRequestBody UpdateUserModeratorJSONBody
 
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody

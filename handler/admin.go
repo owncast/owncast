@@ -71,3 +71,7 @@ func (*ServerInterfaceImpl) GetIPAddressBans(w http.ResponseWriter, r *http.Requ
 func (*ServerInterfaceImpl) GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetDisabledUsers)(w, r)
 }
+
+func (*ServerInterfaceImpl) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.UpdateUserModerator)(w, r)
+}
