@@ -77,7 +77,7 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
     });
   }
 
-  // console.log(supportedCodecs);
+  console.log(supportedCodecs);
   const items = supportedCodecs.map(codec => (
     <Option key={codec.key} value={codec.key}>
       {codec.displayName}
