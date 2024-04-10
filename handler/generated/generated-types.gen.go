@@ -312,6 +312,12 @@ type NotificationConfig struct {
 	Browser *BrowserConfig `json:"browser,omitempty"`
 }
 
+// PaginatedFollowers defines model for PaginatedFollowers.
+type PaginatedFollowers struct {
+	Results *[]Follower `json:"results,omitempty"`
+	Total   *int        `json:"total,omitempty"`
+}
+
 // PlaybackMetrics defines model for PlaybackMetrics.
 type PlaybackMetrics struct {
 	Bandwidth             *float64 `json:"bandwidth,omitempty"`
@@ -482,6 +488,12 @@ type YPDetails struct {
 	ViewerCount           *int            `json:"viewerCount,omitempty"`
 }
 
+// Limit The numbers of items to return
+type Limit = int
+
+// Offset The number of items to skip before starting to collect the result set
+type Offset = int
+
 // N400 Simple API response
 type N400 = BaseAPIResponse
 
@@ -512,6 +524,12 @@ type UpdateUserModeratorJSONBody struct {
 	UserId      *string `json:"userId,omitempty"`
 }
 
+// GetFollowersAdminParams defines parameters for GetFollowersAdmin.
+type GetFollowersAdminParams struct {
+	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // GetViewersOverTimeParams defines parameters for GetViewersOverTime.
 type GetViewersOverTimeParams struct {
 	// WindowStart Start date in unix time
@@ -530,11 +548,8 @@ type RegisterAnonymousChatUserParams struct {
 
 // GetFollowersParams defines parameters for GetFollowers.
 type GetFollowersParams struct {
-	// Offset The number of items to skip before starting to collect the result set
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
-
-	// Limit The numbers of items to return
-	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // PostNotificationsRegisterJSONBody defines parameters for PostNotificationsRegister.

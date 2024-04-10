@@ -47,6 +47,9 @@ type ServerInterface interface {
 	// Disconnect inbound stream
 	// (GET /admin/disconnect)
 	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
+	// Get followers
+	// (GET /admin/followers)
+	GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams)
 	// Get the current hardware stats
 	// (GET /admin/hardwarestats)
 	GetHardwareStats(w http.ResponseWriter, r *http.Request)
@@ -182,6 +185,12 @@ func (_ Unimplemented) UpdateUserModerator(w http.ResponseWriter, r *http.Reques
 // Disconnect inbound stream
 // (GET /admin/disconnect)
 func (_ Unimplemented) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get followers
+// (GET /admin/followers)
+func (_ Unimplemented) GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -503,6 +512,44 @@ func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWr
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DisconnectInboundConnection(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetFollowersAdmin operation middleware
+func (siw *ServerInterfaceWrapper) GetFollowersAdmin(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetFollowersAdminParams
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetFollowersAdmin(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1083,6 +1130,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/followers", wrapper.GetFollowersAdmin)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/hardwarestats", wrapper.GetHardwareStats)

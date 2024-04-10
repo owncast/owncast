@@ -180,30 +180,15 @@ paths:
     get:
       summary: Gets the list of followers
       parameters:
-        - in: query
-          name: offset
-          schema:
-            type: integer
-          description: The number of items to skip before starting to collect the result set
-        - in: query
-          name: limit
-          schema:
-            type: integer
-          description: The numbers of items to return
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
       responses:
         '200':
           description: Paginated follower count
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                  results:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Follower"
+                $ref: "#/components/schemas/PaginatedFollowers"
         '400':
           $ref: "#/components/responses/400"
   /metrics/playback:
@@ -686,6 +671,26 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/followers:
+    get:
+      summary: Get followers
+      operationId: getFollowersAdmin
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        '200':
+          description: Paginated follower count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedFollowers"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
@@ -820,6 +825,15 @@ components:
         disabledAt:
           type: string
           description: When this follower was rejected or disabled.
+    PaginatedFollowers:
+      type: object
+      properties:
+        total:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Follower"
     Event:
       type: object
       properties:
@@ -1479,6 +1493,20 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
 
+  parameters:
+    Offset:
+      in: query
+      name: offset
+      schema:
+        type: integer
+        description: The number of items to skip before starting to collect the result set
+    Limit:
+      in: query
+      name: limit
+      schema:
+        type: integer
+        description: The numbers of items to return
+
   securitySchemes:
     BasicAuth:
       type: http
@@ -1486,4 +1514,3 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
-

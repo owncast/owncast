@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/handler/generated"
 	"github.com/owncast/owncast/router/middleware"
@@ -78,4 +79,9 @@ func (*ServerInterfaceImpl) UpdateUserModerator(w http.ResponseWriter, r *http.R
 
 func (*ServerInterfaceImpl) GetModerators(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetModerators)(w, r)
+}
+
+func (*ServerInterfaceImpl) GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params generated.GetFollowersAdminParams) {
+	// FIXME this calls the same function as `GetFollowers` but with admin auth
+	middleware.RequireAdminAuth(middleware.HandlePagination(controllers.GetFollowers))(w, r)
 }
