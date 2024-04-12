@@ -615,6 +615,9 @@ type UpdateUserModeratorJSONRequestBody UpdateUserModeratorJSONBody
 // SetAdminPasswordJSONRequestBody defines body for SetAdminPassword for application/json ContentType.
 type SetAdminPasswordJSONRequestBody = AdminConfigValue
 
+// SetServerNameJSONRequestBody defines body for SetServerName for application/json ContentType.
+type SetServerNameJSONRequestBody = AdminConfigValue
+
 // SetExtraPageContentJSONRequestBody defines body for SetExtraPageContent for application/json ContentType.
 type SetExtraPageContentJSONRequestBody = AdminConfigValue
 

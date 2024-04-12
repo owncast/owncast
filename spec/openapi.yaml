@@ -875,7 +875,28 @@ paths:
         $ref: "#/components/requestBodies/AdminConfigValue"
       responses:
         '200':
-          description: Page content has been changed
+          description: Stream title has been changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/config/name:
+    post:
+      summary: Change the server name
+      operationId: setServerName
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/AdminConfigValue"
+      responses:
+        '200':
+          description: Server name has been changed
           content:
             application/json:
               schema:
