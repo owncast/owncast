@@ -1,4 +1,4 @@
-import { Canvas, Meta, Story, ColorPalette, ColorItem, Description } from '@storybook/addon-docs';
+import { Canvas, Meta, Story, ColorPalette, ColorItem, Description } from '@storybook/blocks';
 import { ColorRow, getColor } from './Color';
 
 <Meta
@@ -8,6 +8,7 @@ import { ColorRow, getColor } from './Color';
     chromatic: { disableSnapshot: true },
   }}
 />
+
 ## Theme Color Palette
 
 These are the colors used across the web application. All the specific component colors point to colors in this palette. If you override one of these colors all usage of that color will be updated.
@@ -25,6 +26,7 @@ These are the colors used across the web application. All the specific component
       ...getColor('theme-color-palette-5'),
     }}
   />
+
   <ColorItem
     colors={{
       ...getColor('theme-color-palette-6'),
@@ -34,8 +36,7 @@ These are the colors used across the web application. All the specific component
       ...getColor('theme-color-palette-10'),
       ...getColor('theme-color-palette-11'),
     }}
-
-/>
+  />
 
   <ColorItem
     colors={{
@@ -47,6 +48,7 @@ These are the colors used across the web application. All the specific component
       ...getColor('theme-color-palette-warning'),
     }}
   />
+
   <ColorItem
     colors={{
       ...getColor('theme-color-background-light'),

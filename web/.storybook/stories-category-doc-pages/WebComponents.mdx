@@ -1,6 +1,6 @@
-import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Canvas, Meta, Story } from '@storybook/blocks';
 
-<Meta title="owncast/Documentation/Building Frontend Components" parameters={{previewTabs: { canvas: { hidden: true } }, chromatic: { disableSnapshot: true }}}/>
+<Meta title="owncast/Documentation/Building Frontend Components" parameters={{previewTabs: { canvas: { hidden: true } }, chromatic: { disableSnapshot: true }}} />
 
 # How we develop components
 
@@ -64,7 +64,7 @@ export const MyNewButton: FC<MyNewButtonProps> = ({ label, onClick }) => {
 ### Rationale
 
 Since there's a lot of ways to create components, settling on one pattern helps maintain readability.
-But why _this_ style?
+But why *this* style?
 
 See the discussion on the PR that introduced this pattern: [#2082](https://github.com/owncast/owncast/pull/2082).
 
@@ -101,4 +101,3 @@ We use [Storybook](https://storybook.js.org/) to create a component library wher
 Make sure to include a `.stories.tsx` file with each (exported) component you create, and to update the stories file when making changes to existing components.
 
 You can run the Storybook server locally with `npm run storybook`.
-
