@@ -633,6 +633,9 @@ type SetStreamKeysJSONRequestBody SetStreamKeysJSONBody
 // SetStreamTitleJSONRequestBody defines body for SetStreamTitle for application/json ContentType.
 type SetStreamTitleJSONRequestBody = AdminConfigValue
 
+// SetServerWelcomeMessageJSONRequestBody defines body for SetServerWelcomeMessage for application/json ContentType.
+type SetServerWelcomeMessageJSONRequestBody = AdminConfigValue
+
 // DeleteCustomEmojiJSONRequestBody defines body for DeleteCustomEmoji for application/json ContentType.
 type DeleteCustomEmojiJSONRequestBody DeleteCustomEmojiJSONBody
 
