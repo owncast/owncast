@@ -25,7 +25,18 @@ type ActionMessage struct {
 
 // AdminConfigValue defines model for AdminConfigValue.
 type AdminConfigValue struct {
-	Value *string `json:"value,omitempty"`
+	Value *AdminConfigValue_Value `json:"value,omitempty"`
+}
+
+// AdminConfigValueValue0 defines model for .
+type AdminConfigValueValue0 = string
+
+// AdminConfigValueValue1 defines model for .
+type AdminConfigValueValue1 = bool
+
+// AdminConfigValue_Value defines model for AdminConfigValue.Value.
+type AdminConfigValue_Value struct {
+	union json.RawMessage
 }
 
 // AdminFederationConfig defines model for AdminFederationConfig.
@@ -618,6 +629,9 @@ type SetAdminPasswordJSONRequestBody = AdminConfigValue
 // SetChatDisabledJSONRequestBody defines body for SetChatDisabled for application/json ContentType.
 type SetChatDisabledJSONRequestBody = AdminConfigValue
 
+// SetEnableEstablishedChatUserModeJSONRequestBody defines body for SetEnableEstablishedChatUserMode for application/json ContentType.
+type SetEnableEstablishedChatUserModeJSONRequestBody = AdminConfigValue
+
 // SetChatJoinMessagesEnabledJSONRequestBody defines body for SetChatJoinMessagesEnabled for application/json ContentType.
 type SetChatJoinMessagesEnabledJSONRequestBody = AdminConfigValue
 
@@ -665,6 +679,68 @@ type PostNotificationsRegisterJSONRequestBody PostNotificationsRegisterJSONBody
 
 // RemoteFollowJSONRequestBody defines body for RemoteFollow for application/json ContentType.
 type RemoteFollowJSONRequestBody RemoteFollowJSONBody
+
+// AsAdminConfigValueValue0 returns the union data inside the AdminConfigValue_Value as a AdminConfigValueValue0
+func (t AdminConfigValue_Value) AsAdminConfigValueValue0() (AdminConfigValueValue0, error) {
+	var body AdminConfigValueValue0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAdminConfigValueValue0 overwrites any union data inside the AdminConfigValue_Value as the provided AdminConfigValueValue0
+func (t *AdminConfigValue_Value) FromAdminConfigValueValue0(v AdminConfigValueValue0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAdminConfigValueValue0 performs a merge with any union data inside the AdminConfigValue_Value, using the provided AdminConfigValueValue0
+func (t *AdminConfigValue_Value) MergeAdminConfigValueValue0(v AdminConfigValueValue0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAdminConfigValueValue1 returns the union data inside the AdminConfigValue_Value as a AdminConfigValueValue1
+func (t AdminConfigValue_Value) AsAdminConfigValueValue1() (AdminConfigValueValue1, error) {
+	var body AdminConfigValueValue1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAdminConfigValueValue1 overwrites any union data inside the AdminConfigValue_Value as the provided AdminConfigValueValue1
+func (t *AdminConfigValue_Value) FromAdminConfigValueValue1(v AdminConfigValueValue1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAdminConfigValueValue1 performs a merge with any union data inside the AdminConfigValue_Value, using the provided AdminConfigValueValue1
+func (t *AdminConfigValue_Value) MergeAdminConfigValueValue1(v AdminConfigValueValue1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AdminConfigValue_Value) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AdminConfigValue_Value) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsUserMessage returns the union data inside the ChatMessages_Item as a UserMessage
 func (t ChatMessages_Item) AsUserMessage() (UserMessage, error) {

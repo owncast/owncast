@@ -50,6 +50,9 @@ type ServerInterface interface {
 	// Disable chat
 	// (POST /admin/config/chat/disable)
 	SetChatDisabled(w http.ResponseWriter, r *http.Request)
+	// Enable/disable chat established user mode
+	// (POST /admin/config/chat/establishedusermode)
+	SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request)
 	// Enable chat for user join messages
 	// (POST /admin/config/chat/joinmessagesenabled)
 	SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request)
@@ -236,6 +239,12 @@ func (_ Unimplemented) SetAdminPassword(w http.ResponseWriter, r *http.Request) 
 // Disable chat
 // (POST /admin/config/chat/disable)
 func (_ Unimplemented) SetChatDisabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Enable/disable chat established user mode
+// (POST /admin/config/chat/establishedusermode)
+func (_ Unimplemented) SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -664,6 +673,23 @@ func (siw *ServerInterfaceWrapper) SetChatDisabled(w http.ResponseWriter, r *htt
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatDisabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetEnableEstablishedChatUserMode operation middleware
+func (siw *ServerInterfaceWrapper) SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetEnableEstablishedChatUserMode(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1523,6 +1549,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/disable", wrapper.SetChatDisabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/chat/establishedusermode", wrapper.SetEnableEstablishedChatUserMode)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/joinmessagesenabled", wrapper.SetChatJoinMessagesEnabled)
