@@ -47,6 +47,9 @@ type ServerInterface interface {
 	// Change the current admin password
 	// (POST /admin/config/adminpass)
 	SetAdminPassword(w http.ResponseWriter, r *http.Request)
+	// Set an array of valid stream keys
+	// (POST /admin/config/streamkeys)
+	SetStreamKeys(w http.ResponseWriter, r *http.Request)
 	// Disconnect inbound stream
 	// (GET /admin/disconnect)
 	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
@@ -203,6 +206,12 @@ func (_ Unimplemented) UpdateUserModerator(w http.ResponseWriter, r *http.Reques
 // Change the current admin password
 // (POST /admin/config/adminpass)
 func (_ Unimplemented) SetAdminPassword(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set an array of valid stream keys
+// (POST /admin/config/streamkeys)
+func (_ Unimplemented) SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -566,6 +575,23 @@ func (siw *ServerInterfaceWrapper) SetAdminPassword(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetAdminPassword(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetStreamKeys operation middleware
+func (siw *ServerInterfaceWrapper) SetStreamKeys(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetStreamKeys(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1286,6 +1312,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/adminpass", wrapper.SetAdminPassword)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/streamkeys", wrapper.SetStreamKeys)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)

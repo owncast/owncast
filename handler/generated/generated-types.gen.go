@@ -527,6 +527,11 @@ type UpdateUserModeratorJSONBody struct {
 	UserId      *string `json:"userId,omitempty"`
 }
 
+// SetStreamKeysJSONBody defines parameters for SetStreamKeys.
+type SetStreamKeysJSONBody struct {
+	Value *[]StreamKey `json:"value,omitempty"`
+}
+
 // DeleteCustomEmojiJSONBody defines parameters for DeleteCustomEmoji.
 type DeleteCustomEmojiJSONBody struct {
 	Name *string `json:"name,omitempty"`
@@ -609,6 +614,9 @@ type UpdateUserModeratorJSONRequestBody UpdateUserModeratorJSONBody
 
 // SetAdminPasswordJSONRequestBody defines body for SetAdminPassword for application/json ContentType.
 type SetAdminPasswordJSONRequestBody = AdminConfigValue
+
+// SetStreamKeysJSONRequestBody defines body for SetStreamKeys for application/json ContentType.
+type SetStreamKeysJSONRequestBody SetStreamKeysJSONBody
 
 // DeleteCustomEmojiJSONRequestBody defines body for DeleteCustomEmoji for application/json ContentType.
 type DeleteCustomEmojiJSONRequestBody DeleteCustomEmojiJSONBody

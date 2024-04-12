@@ -109,3 +109,7 @@ func (*ServerInterfaceImpl) DeleteCustomEmoji(w http.ResponseWriter, r *http.Req
 func (*ServerInterfaceImpl) SetAdminPassword(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetAdminPassword)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetStreamKeys(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetStreamKeys)(w, r)
+}
