@@ -1,4 +1,4 @@
-import { Canvas, Meta, Story, Typeset, Source } from '@storybook/addon-docs';
+import { Canvas, Meta, Story, Typeset, Source } from '@storybook/blocks';
 
 <Meta
   title="owncast/Styles/Typography"
@@ -14,7 +14,7 @@ export const SampleText = 'Lorem ipsum dolor sit amet, consectetur adipiscing el
 
 These are the font families in use by Owncast.
 
----
+***
 
 export const bodyFont = {
   type: {
@@ -63,12 +63,7 @@ export const bodyFont = {
 
 ## Usage
 
-<Canvas
-  columns={2}
-  withSource="open"
-  withToolbar
-  style={{ fontFamily: 'var(--theme-text-body-font-family)' }}
->
+<Canvas columns={2} withSource="open" withToolbar style={{ fontFamily: 'var(--theme-text-body-font-family)' }}>
   {getComputedStyle(document.documentElement).getPropertyValue('--theme-text-body-font-family')}
 </Canvas>
 
@@ -128,11 +123,7 @@ export const displayFont = {
 
 ## Usage
 
-<Canvas
-  columns={2}
-  withSource="open"
-  withToolbarstyle={{ fontFamily: 'var(--theme-text-display-font-family)' }}
->
+<Canvas columns={2} withSource="open" withToolbarstyle={{ fontFamily: 'var(--theme-text-display-font-family)' }}>
   {getComputedStyle(document.documentElement).getPropertyValue('--theme-text-display-font-family')}
 </Canvas>
 

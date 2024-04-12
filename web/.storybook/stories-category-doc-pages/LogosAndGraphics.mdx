@@ -1,11 +1,12 @@
-import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Canvas, Meta, Story } from '@storybook/blocks';
 import { Image, ImageRow } from './ImageAsset';
 
-<Meta title="owncast/Project Assets/Logos &amp; Graphics" parameters={{chromatic: { disableSnapshot: true }}} />
+<Meta title="owncast/Project Assets/Logos & Graphics" parameters={{chromatic: { disableSnapshot: true }}} />
 
-# Logos &amp; Graphics
+# Logos & Graphics
 
-    <ImageRow images={[
+<ImageRow
+  images={[
     		{src: "project/header.png", name: "header.png"},
     		{src: "project/kiss-cut-stickers-5.5x5.5-default-60874a6c11849.png", name: "kiss-cut-stickers-5.5x5.5-default-60874a6c11849.png"},
     		{src: "project/logo-glare-outlined.png", name: "logo-glare-outlined.png"},
@@ -16,5 +17,5 @@ import { Image, ImageRow } from './ImageAsset';
     		{src: "project/owncast-background.png", name: "owncast-background.png"},
     		{src: "project/owncast-browser-mobile.png", name: "owncast-browser-mobile.png"},
     		{src: "project/sticker-bigtech-alt.png", name: "sticker-bigtech-alt.png"},
-    ]}/>
-
+    ]}
+/>
