@@ -44,6 +44,9 @@ type ServerInterface interface {
 	// Set moderator status for a user
 	// (POST /admin/chat/users/setmoderator)
 	UpdateUserModerator(w http.ResponseWriter, r *http.Request)
+	// Change the current admin password
+	// (POST /admin/config/adminpass)
+	SetAdminPassword(w http.ResponseWriter, r *http.Request)
 	// Disconnect inbound stream
 	// (GET /admin/disconnect)
 	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
@@ -194,6 +197,12 @@ func (_ Unimplemented) UpdateUserEnabled(w http.ResponseWriter, r *http.Request)
 // Set moderator status for a user
 // (POST /admin/chat/users/setmoderator)
 func (_ Unimplemented) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Change the current admin password
+// (POST /admin/config/adminpass)
+func (_ Unimplemented) SetAdminPassword(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -540,6 +549,23 @@ func (siw *ServerInterfaceWrapper) UpdateUserModerator(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateUserModerator(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetAdminPassword operation middleware
+func (siw *ServerInterfaceWrapper) SetAdminPassword(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetAdminPassword(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1257,6 +1283,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/chat/users/setmoderator", wrapper.UpdateUserModerator)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/adminpass", wrapper.SetAdminPassword)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)

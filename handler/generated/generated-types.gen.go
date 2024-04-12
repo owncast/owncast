@@ -607,6 +607,9 @@ type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody
 // UpdateUserModeratorJSONRequestBody defines body for UpdateUserModerator for application/json ContentType.
 type UpdateUserModeratorJSONRequestBody UpdateUserModeratorJSONBody
 
+// SetAdminPasswordJSONRequestBody defines body for SetAdminPassword for application/json ContentType.
+type SetAdminPasswordJSONRequestBody = AdminConfigValue
+
 // DeleteCustomEmojiJSONRequestBody defines body for DeleteCustomEmoji for application/json ContentType.
 type DeleteCustomEmojiJSONRequestBody DeleteCustomEmojiJSONBody
 

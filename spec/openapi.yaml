@@ -485,10 +485,7 @@ paths:
       security:
         - BasicAuth: []
       requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AdminConfigValue"
+        $ref: "#/components/requestBodies/AdminConfigValue"
       responses:
         '200':
           description: IP was successfully banned
@@ -787,6 +784,27 @@ paths:
       responses:
         '200':
           description: Emoji has been deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/config/adminpass:
+    post:
+      summary: Change the current admin password
+      operationId: setAdminPassword
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/AdminConfigValue"
+      responses:
+        '200':
+          description: Admin password has been updated
           content:
             application/json:
               schema:
@@ -1545,6 +1563,13 @@ components:
     'X-Content-Type-Options':
       schema:
         type: string
+  requestBodies:
+    AdminConfigValue:
+      description: A single value that is used in the request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AdminConfigValue"
   responses:
     Default:
       description: Unexpected error
