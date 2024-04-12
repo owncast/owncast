@@ -53,6 +53,9 @@ type ServerInterface interface {
 	// Set an array of valid stream keys
 	// (POST /admin/config/streamkeys)
 	SetStreamKeys(w http.ResponseWriter, r *http.Request)
+	// Change the stream title
+	// (POST /admin/config/streamtitle)
+	SetStreamTitle(w http.ResponseWriter, r *http.Request)
 	// Disconnect inbound stream
 	// (GET /admin/disconnect)
 	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
@@ -221,6 +224,12 @@ func (_ Unimplemented) SetExtraPageContent(w http.ResponseWriter, r *http.Reques
 // Set an array of valid stream keys
 // (POST /admin/config/streamkeys)
 func (_ Unimplemented) SetStreamKeys(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Change the stream title
+// (POST /admin/config/streamtitle)
+func (_ Unimplemented) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -618,6 +627,23 @@ func (siw *ServerInterfaceWrapper) SetStreamKeys(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamKeys(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetStreamTitle operation middleware
+func (siw *ServerInterfaceWrapper) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetStreamTitle(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1344,6 +1370,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/streamkeys", wrapper.SetStreamKeys)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/streamtitle", wrapper.SetStreamTitle)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)

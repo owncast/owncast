@@ -621,6 +621,9 @@ type SetExtraPageContentJSONRequestBody = AdminConfigValue
 // SetStreamKeysJSONRequestBody defines body for SetStreamKeys for application/json ContentType.
 type SetStreamKeysJSONRequestBody SetStreamKeysJSONBody
 
+// SetStreamTitleJSONRequestBody defines body for SetStreamTitle for application/json ContentType.
+type SetStreamTitleJSONRequestBody = AdminConfigValue
+
 // DeleteCustomEmojiJSONRequestBody defines body for DeleteCustomEmoji for application/json ContentType.
 type DeleteCustomEmojiJSONRequestBody DeleteCustomEmojiJSONBody
 

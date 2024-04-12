@@ -117,3 +117,7 @@ func (*ServerInterfaceImpl) SetStreamKeys(w http.ResponseWriter, r *http.Request
 func (*ServerInterfaceImpl) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetExtraPageContent)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetStreamTitle)(w, r)
+}
