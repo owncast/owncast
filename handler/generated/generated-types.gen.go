@@ -543,6 +543,11 @@ type SetForbiddenUsernameListJSONBody struct {
 	Value *[]string `json:"value,omitempty"`
 }
 
+// SetSuggestedUsernameListJSONBody defines parameters for SetSuggestedUsernameList.
+type SetSuggestedUsernameListJSONBody struct {
+	Value *[]string `json:"value,omitempty"`
+}
+
 // SetStreamKeysJSONBody defines parameters for SetStreamKeys.
 type SetStreamKeysJSONBody struct {
 	Value *[]StreamKey `json:"value,omitempty"`
@@ -642,6 +647,9 @@ type SetForbiddenUsernameListJSONRequestBody SetForbiddenUsernameListJSONBody
 
 // SetChatJoinMessagesEnabledJSONRequestBody defines body for SetChatJoinMessagesEnabled for application/json ContentType.
 type SetChatJoinMessagesEnabledJSONRequestBody = AdminConfigValue
+
+// SetSuggestedUsernameListJSONRequestBody defines body for SetSuggestedUsernameList for application/json ContentType.
+type SetSuggestedUsernameListJSONRequestBody SetSuggestedUsernameListJSONBody
 
 // SetServerNameJSONRequestBody defines body for SetServerName for application/json ContentType.
 type SetServerNameJSONRequestBody = AdminConfigValue

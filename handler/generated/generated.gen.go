@@ -59,6 +59,9 @@ type ServerInterface interface {
 	// Enable chat for user join messages
 	// (POST /admin/config/chat/joinmessagesenabled)
 	SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request)
+	// Set the suggested chat usernames that will be assigned automatically
+	// (POST /admin/config/chat/suggestedusernames)
+	SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request)
 	// Change the server name
 	// (POST /admin/config/name)
 	SetServerName(w http.ResponseWriter, r *http.Request)
@@ -260,6 +263,12 @@ func (_ Unimplemented) SetForbiddenUsernameList(w http.ResponseWriter, r *http.R
 // Enable chat for user join messages
 // (POST /admin/config/chat/joinmessagesenabled)
 func (_ Unimplemented) SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set the suggested chat usernames that will be assigned automatically
+// (POST /admin/config/chat/suggestedusernames)
+func (_ Unimplemented) SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -733,6 +742,23 @@ func (siw *ServerInterfaceWrapper) SetChatJoinMessagesEnabled(w http.ResponseWri
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatJoinMessagesEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetSuggestedUsernameList operation middleware
+func (siw *ServerInterfaceWrapper) SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetSuggestedUsernameList(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1584,6 +1610,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/joinmessagesenabled", wrapper.SetChatJoinMessagesEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/chat/suggestedusernames", wrapper.SetSuggestedUsernameList)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/name", wrapper.SetServerName)

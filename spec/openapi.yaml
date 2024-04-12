@@ -1062,6 +1062,35 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/config/chat/suggestedusernames:
+    post:
+      summary: Set the suggested chat usernames that will be assigned automatically
+      operationId: setSuggestedUsernameList
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Suggested usernames updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
