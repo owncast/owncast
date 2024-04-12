@@ -533,6 +533,9 @@ type GetFollowersAdminParams struct {
 	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// ApproveFollowerJSONBody defines parameters for ApproveFollower.
+type ApproveFollowerJSONBody = interface{}
+
 // GetViewersOverTimeParams defines parameters for GetViewersOverTime.
 type GetViewersOverTimeParams struct {
 	// WindowStart Start date in unix time
@@ -588,6 +591,9 @@ type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody
 
 // UpdateUserModeratorJSONRequestBody defines body for UpdateUserModerator for application/json ContentType.
 type UpdateUserModeratorJSONRequestBody UpdateUserModeratorJSONBody
+
+// ApproveFollowerJSONRequestBody defines body for ApproveFollower for application/json ContentType.
+type ApproveFollowerJSONRequestBody = ApproveFollowerJSONBody
 
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody

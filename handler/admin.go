@@ -93,3 +93,7 @@ func (*ServerInterfaceImpl) GetPendingFollowers(w http.ResponseWriter, r *http.R
 func (*ServerInterfaceImpl) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetBlockedAndRejectedFollowers)(w, r)
 }
+
+func (*ServerInterfaceImpl) ApproveFollower(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.ApproveFollower)(w, r)
+}

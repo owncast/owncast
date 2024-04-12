@@ -50,6 +50,9 @@ type ServerInterface interface {
 	// Get followers
 	// (GET /admin/followers)
 	GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams)
+	// Set the following state of a follower or follow request
+	// (POST /admin/followers/approve)
+	ApproveFollower(w http.ResponseWriter, r *http.Request)
 	// Get a list of rejected or blocked follows
 	// (GET /admin/followers/blocked)
 	GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request)
@@ -197,6 +200,12 @@ func (_ Unimplemented) DisconnectInboundConnection(w http.ResponseWriter, r *htt
 // Get followers
 // (GET /admin/followers)
 func (_ Unimplemented) GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set the following state of a follower or follow request
+// (POST /admin/followers/approve)
+func (_ Unimplemented) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -568,6 +577,23 @@ func (siw *ServerInterfaceWrapper) GetFollowersAdmin(w http.ResponseWriter, r *h
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFollowersAdmin(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// ApproveFollower operation middleware
+func (siw *ServerInterfaceWrapper) ApproveFollower(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ApproveFollower(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1185,6 +1211,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/followers", wrapper.GetFollowersAdmin)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/followers/approve", wrapper.ApproveFollower)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/followers/blocked", wrapper.GetBlockedAndRejectedFollowers)
