@@ -137,3 +137,7 @@ func (*ServerInterfaceImpl) SetCustomOfflineMessage(w http.ResponseWriter, r *ht
 func (*ServerInterfaceImpl) SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetServerWelcomeMessage)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetChatDisabled(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetChatDisabled)(w, r)
+}

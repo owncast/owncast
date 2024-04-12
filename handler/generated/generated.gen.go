@@ -47,6 +47,9 @@ type ServerInterface interface {
 	// Change the current admin password
 	// (POST /admin/config/adminpass)
 	SetAdminPassword(w http.ResponseWriter, r *http.Request)
+	// Disable chat
+	// (POST /admin/config/chat/disable)
+	SetChatDisabled(w http.ResponseWriter, r *http.Request)
 	// Change the server name
 	// (POST /admin/config/name)
 	SetServerName(w http.ResponseWriter, r *http.Request)
@@ -224,6 +227,12 @@ func (_ Unimplemented) UpdateUserModerator(w http.ResponseWriter, r *http.Reques
 // Change the current admin password
 // (POST /admin/config/adminpass)
 func (_ Unimplemented) SetAdminPassword(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Disable chat
+// (POST /admin/config/chat/disable)
+func (_ Unimplemented) SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -629,6 +638,23 @@ func (siw *ServerInterfaceWrapper) SetAdminPassword(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetAdminPassword(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetChatDisabled operation middleware
+func (siw *ServerInterfaceWrapper) SetChatDisabled(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetChatDisabled(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1468,6 +1494,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/adminpass", wrapper.SetAdminPassword)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/chat/disable", wrapper.SetChatDisabled)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/name", wrapper.SetServerName)
