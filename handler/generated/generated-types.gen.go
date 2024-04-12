@@ -538,6 +538,11 @@ type UpdateUserModeratorJSONBody struct {
 	UserId      *string `json:"userId,omitempty"`
 }
 
+// SetCustomColorVariableValuesJSONBody defines parameters for SetCustomColorVariableValues.
+type SetCustomColorVariableValuesJSONBody struct {
+	Value *map[string]string `json:"value,omitempty"`
+}
+
 // SetForbiddenUsernameListJSONBody defines parameters for SetForbiddenUsernameList.
 type SetForbiddenUsernameListJSONBody struct {
 	Value *[]string `json:"value,omitempty"`
@@ -635,6 +640,9 @@ type UpdateUserModeratorJSONRequestBody UpdateUserModeratorJSONBody
 
 // SetAdminPasswordJSONRequestBody defines body for SetAdminPassword for application/json ContentType.
 type SetAdminPasswordJSONRequestBody = AdminConfigValue
+
+// SetCustomColorVariableValuesJSONRequestBody defines body for SetCustomColorVariableValues for application/json ContentType.
+type SetCustomColorVariableValuesJSONRequestBody SetCustomColorVariableValuesJSONBody
 
 // SetChatDisabledJSONRequestBody defines body for SetChatDisabled for application/json ContentType.
 type SetChatDisabledJSONRequestBody = AdminConfigValue

@@ -161,3 +161,7 @@ func (*ServerInterfaceImpl) SetSuggestedUsernameList(w http.ResponseWriter, r *h
 func (*ServerInterfaceImpl) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetVideoCodec)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetCustomColorVariableValues)(w, r)
+}
