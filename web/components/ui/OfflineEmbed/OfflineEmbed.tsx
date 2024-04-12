@@ -1,3 +1,5 @@
+/* eslint-disable react/no-danger */
+
 import { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import Head from 'next/head';
