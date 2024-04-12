@@ -97,3 +97,7 @@ func (*ServerInterfaceImpl) GetBlockedAndRejectedFollowers(w http.ResponseWriter
 func (*ServerInterfaceImpl) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.ApproveFollower)(w, r)
 }
+
+func (*ServerInterfaceImpl) UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.UploadCustomEmoji)(w, r)
+}

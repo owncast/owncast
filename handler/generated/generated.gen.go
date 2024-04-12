@@ -47,6 +47,9 @@ type ServerInterface interface {
 	// Disconnect inbound stream
 	// (GET /admin/disconnect)
 	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
+	// Upload custom emoji
+	// (POST /admin/emoji/upload)
+	UploadCustomEmoji(w http.ResponseWriter, r *http.Request)
 	// Get followers
 	// (GET /admin/followers)
 	GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams)
@@ -194,6 +197,12 @@ func (_ Unimplemented) UpdateUserModerator(w http.ResponseWriter, r *http.Reques
 // Disconnect inbound stream
 // (GET /admin/disconnect)
 func (_ Unimplemented) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Upload custom emoji
+// (POST /admin/emoji/upload)
+func (_ Unimplemented) UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -539,6 +548,23 @@ func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWr
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DisconnectInboundConnection(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// UploadCustomEmoji operation middleware
+func (siw *ServerInterfaceWrapper) UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UploadCustomEmoji(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1208,6 +1234,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/emoji/upload", wrapper.UploadCustomEmoji)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/followers", wrapper.GetFollowersAdmin)

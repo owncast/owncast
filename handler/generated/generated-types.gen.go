@@ -527,6 +527,13 @@ type UpdateUserModeratorJSONBody struct {
 	UserId      *string `json:"userId,omitempty"`
 }
 
+// UploadCustomEmojiJSONBody defines parameters for UploadCustomEmoji.
+type UploadCustomEmojiJSONBody struct {
+	// Data Base 64 encoded image data
+	Data *string `json:"data,omitempty"`
+	Name *string `json:"name,omitempty"`
+}
+
 // GetFollowersAdminParams defines parameters for GetFollowersAdmin.
 type GetFollowersAdminParams struct {
 	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
@@ -534,7 +541,10 @@ type GetFollowersAdminParams struct {
 }
 
 // ApproveFollowerJSONBody defines parameters for ApproveFollower.
-type ApproveFollowerJSONBody = interface{}
+type ApproveFollowerJSONBody struct {
+	ActorIRI *string `json:"actorIRI,omitempty"`
+	Approved *bool   `json:"approved,omitempty"`
+}
 
 // GetViewersOverTimeParams defines parameters for GetViewersOverTime.
 type GetViewersOverTimeParams struct {
@@ -592,8 +602,11 @@ type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody
 // UpdateUserModeratorJSONRequestBody defines body for UpdateUserModerator for application/json ContentType.
 type UpdateUserModeratorJSONRequestBody UpdateUserModeratorJSONBody
 
+// UploadCustomEmojiJSONRequestBody defines body for UploadCustomEmoji for application/json ContentType.
+type UploadCustomEmojiJSONRequestBody UploadCustomEmojiJSONBody
+
 // ApproveFollowerJSONRequestBody defines body for ApproveFollower for application/json ContentType.
-type ApproveFollowerJSONRequestBody = ApproveFollowerJSONBody
+type ApproveFollowerJSONRequestBody ApproveFollowerJSONBody
 
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody

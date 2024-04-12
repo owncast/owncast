@@ -721,13 +721,45 @@ paths:
         content:
           application/json:
             schema:
-              actorIRI:
-                type: string
-              approved:
-                type: bool
+              type: object
+              properties:
+                actorIRI:
+                  type: string
+                approved:
+                  type: boolean
       responses:
         '200':
           description: List of rejected or blocked follows
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/emoji/upload:
+    post:
+      summary: Upload custom emoji
+      operationId: uploadCustomEmoji
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                data:
+                  description: Base 64 encoded image data
+                  type: string
+      responses:
+        '200':
+          description: Emoji has been uploaded
           content:
             application/json:
               schema:
