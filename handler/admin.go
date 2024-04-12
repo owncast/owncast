@@ -101,3 +101,7 @@ func (*ServerInterfaceImpl) ApproveFollower(w http.ResponseWriter, r *http.Reque
 func (*ServerInterfaceImpl) UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.UploadCustomEmoji)(w, r)
 }
+
+func (*ServerInterfaceImpl) DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.DeleteCustomEmoji)(w, r)
+}

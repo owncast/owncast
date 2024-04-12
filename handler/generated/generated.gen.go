@@ -47,6 +47,9 @@ type ServerInterface interface {
 	// Disconnect inbound stream
 	// (GET /admin/disconnect)
 	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
+	// Delete custom emoji
+	// (POST /admin/emoji/delete)
+	DeleteCustomEmoji(w http.ResponseWriter, r *http.Request)
 	// Upload custom emoji
 	// (POST /admin/emoji/upload)
 	UploadCustomEmoji(w http.ResponseWriter, r *http.Request)
@@ -197,6 +200,12 @@ func (_ Unimplemented) UpdateUserModerator(w http.ResponseWriter, r *http.Reques
 // Disconnect inbound stream
 // (GET /admin/disconnect)
 func (_ Unimplemented) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete custom emoji
+// (POST /admin/emoji/delete)
+func (_ Unimplemented) DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -548,6 +557,23 @@ func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWr
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DisconnectInboundConnection(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// DeleteCustomEmoji operation middleware
+func (siw *ServerInterfaceWrapper) DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteCustomEmoji(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1234,6 +1260,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/emoji/delete", wrapper.DeleteCustomEmoji)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/emoji/upload", wrapper.UploadCustomEmoji)

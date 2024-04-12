@@ -527,6 +527,11 @@ type UpdateUserModeratorJSONBody struct {
 	UserId      *string `json:"userId,omitempty"`
 }
 
+// DeleteCustomEmojiJSONBody defines parameters for DeleteCustomEmoji.
+type DeleteCustomEmojiJSONBody struct {
+	Name *string `json:"name,omitempty"`
+}
+
 // UploadCustomEmojiJSONBody defines parameters for UploadCustomEmoji.
 type UploadCustomEmojiJSONBody struct {
 	// Data Base 64 encoded image data
@@ -601,6 +606,9 @@ type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody
 
 // UpdateUserModeratorJSONRequestBody defines body for UpdateUserModerator for application/json ContentType.
 type UpdateUserModeratorJSONRequestBody UpdateUserModeratorJSONBody
+
+// DeleteCustomEmojiJSONRequestBody defines body for DeleteCustomEmoji for application/json ContentType.
+type DeleteCustomEmojiJSONRequestBody DeleteCustomEmojiJSONBody
 
 // UploadCustomEmojiJSONRequestBody defines body for UploadCustomEmoji for application/json ContentType.
 type UploadCustomEmojiJSONRequestBody UploadCustomEmojiJSONBody
