@@ -538,6 +538,11 @@ type UpdateUserModeratorJSONBody struct {
 	UserId      *string `json:"userId,omitempty"`
 }
 
+// SetForbiddenUsernameListJSONBody defines parameters for SetForbiddenUsernameList.
+type SetForbiddenUsernameListJSONBody struct {
+	Value *[]string `json:"value,omitempty"`
+}
+
 // SetStreamKeysJSONBody defines parameters for SetStreamKeys.
 type SetStreamKeysJSONBody struct {
 	Value *[]StreamKey `json:"value,omitempty"`
@@ -631,6 +636,9 @@ type SetChatDisabledJSONRequestBody = AdminConfigValue
 
 // SetEnableEstablishedChatUserModeJSONRequestBody defines body for SetEnableEstablishedChatUserMode for application/json ContentType.
 type SetEnableEstablishedChatUserModeJSONRequestBody = AdminConfigValue
+
+// SetForbiddenUsernameListJSONRequestBody defines body for SetForbiddenUsernameList for application/json ContentType.
+type SetForbiddenUsernameListJSONRequestBody SetForbiddenUsernameListJSONBody
 
 // SetChatJoinMessagesEnabledJSONRequestBody defines body for SetChatJoinMessagesEnabled for application/json ContentType.
 type SetChatJoinMessagesEnabledJSONRequestBody = AdminConfigValue

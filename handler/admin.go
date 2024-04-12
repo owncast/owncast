@@ -149,3 +149,7 @@ func (*ServerInterfaceImpl) SetChatJoinMessagesEnabled(w http.ResponseWriter, r 
 func (*ServerInterfaceImpl) SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetEnableEstablishedChatUserMode)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetForbiddenUsernameList)(w, r)
+}
