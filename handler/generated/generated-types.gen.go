@@ -618,6 +618,9 @@ type SetAdminPasswordJSONRequestBody = AdminConfigValue
 // SetChatDisabledJSONRequestBody defines body for SetChatDisabled for application/json ContentType.
 type SetChatDisabledJSONRequestBody = AdminConfigValue
 
+// SetChatJoinMessagesEnabledJSONRequestBody defines body for SetChatJoinMessagesEnabled for application/json ContentType.
+type SetChatJoinMessagesEnabledJSONRequestBody = AdminConfigValue
+
 // SetServerNameJSONRequestBody defines body for SetServerName for application/json ContentType.
 type SetServerNameJSONRequestBody = AdminConfigValue
 

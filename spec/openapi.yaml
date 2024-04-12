@@ -991,6 +991,27 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/config/chat/joinmessagesenabled:
+    post:
+      summary: Enable chat for user join messages
+      operationId: setChatJoinMessagesEnabled
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/AdminConfigValue"
+      responses:
+        '200':
+          description: User join messages has been enabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
@@ -1721,7 +1742,9 @@ components:
       type: object
       properties:
         value:
-          type: string
+          oneOf:
+          - type: string
+          - type: boolean
   headers:
     'Access-Control-Allow-Origin':
       schema:

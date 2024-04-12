@@ -201,7 +201,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/config/chat/disable", middleware.RequireAdminAuth(admin.SetChatDisabled))
 
 	// Disable chat user join messages
-	http.HandleFunc("/api/admin/config/chat/joinmessagesenabled", middleware.RequireAdminAuth(admin.SetChatJoinMessagesEnabled))
+	// http.HandleFunc("/api/admin/config/chat/joinmessagesenabled", middleware.RequireAdminAuth(admin.SetChatJoinMessagesEnabled))
 
 	// Enable/disable chat established user mode
 	http.HandleFunc("/api/admin/config/chat/establishedusermode", middleware.RequireAdminAuth(admin.SetEnableEstablishedChatUserMode))
