@@ -621,6 +621,9 @@ type SetServerNameJSONRequestBody = AdminConfigValue
 // SetExtraPageContentJSONRequestBody defines body for SetExtraPageContent for application/json ContentType.
 type SetExtraPageContentJSONRequestBody = AdminConfigValue
 
+// SetServerSummaryJSONRequestBody defines body for SetServerSummary for application/json ContentType.
+type SetServerSummaryJSONRequestBody = AdminConfigValue
+
 // SetStreamKeysJSONRequestBody defines body for SetStreamKeys for application/json ContentType.
 type SetStreamKeysJSONRequestBody SetStreamKeysJSONBody
 

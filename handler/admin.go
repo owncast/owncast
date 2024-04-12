@@ -125,3 +125,7 @@ func (*ServerInterfaceImpl) SetStreamTitle(w http.ResponseWriter, r *http.Reques
 func (*ServerInterfaceImpl) SetServerName(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetServerName)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetServerSummary(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetServerSummary)(w, r)
+}
