@@ -129,3 +129,7 @@ func (*ServerInterfaceImpl) SetServerName(w http.ResponseWriter, r *http.Request
 func (*ServerInterfaceImpl) SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetServerSummary)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetCustomOfflineMessage)(w, r)
+}

@@ -618,6 +618,9 @@ type SetAdminPasswordJSONRequestBody = AdminConfigValue
 // SetServerNameJSONRequestBody defines body for SetServerName for application/json ContentType.
 type SetServerNameJSONRequestBody = AdminConfigValue
 
+// SetCustomOfflineMessageJSONRequestBody defines body for SetCustomOfflineMessage for application/json ContentType.
+type SetCustomOfflineMessageJSONRequestBody = AdminConfigValue
+
 // SetExtraPageContentJSONRequestBody defines body for SetExtraPageContent for application/json ContentType.
 type SetExtraPageContentJSONRequestBody = AdminConfigValue
 

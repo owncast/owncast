@@ -50,6 +50,9 @@ type ServerInterface interface {
 	// Change the server name
 	// (POST /admin/config/name)
 	SetServerName(w http.ResponseWriter, r *http.Request)
+	// Change the offline message
+	// (POST /admin/config/offlinemessage)
+	SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request)
 	// Change the extra page content in memory
 	// (POST /admin/config/pagecontent)
 	SetExtraPageContent(w http.ResponseWriter, r *http.Request)
@@ -224,6 +227,12 @@ func (_ Unimplemented) SetAdminPassword(w http.ResponseWriter, r *http.Request) 
 // Change the server name
 // (POST /admin/config/name)
 func (_ Unimplemented) SetServerName(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Change the offline message
+// (POST /admin/config/offlinemessage)
+func (_ Unimplemented) SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -628,6 +637,23 @@ func (siw *ServerInterfaceWrapper) SetServerName(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerName(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetCustomOfflineMessage operation middleware
+func (siw *ServerInterfaceWrapper) SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetCustomOfflineMessage(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1419,6 +1445,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/name", wrapper.SetServerName)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/offlinemessage", wrapper.SetCustomOfflineMessage)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/pagecontent", wrapper.SetExtraPageContent)
