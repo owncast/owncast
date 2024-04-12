@@ -271,6 +271,9 @@ type Follower struct {
 	Username *string `json:"username,omitempty"`
 }
 
+// Followers defines model for Followers.
+type Followers = []Follower
+
 // GeoDetails defines model for GeoDetails.
 type GeoDetails struct {
 	CountryCode *string `json:"countryCode,omitempty"`
@@ -314,8 +317,8 @@ type NotificationConfig struct {
 
 // PaginatedFollowers defines model for PaginatedFollowers.
 type PaginatedFollowers struct {
-	Results *[]Follower `json:"results,omitempty"`
-	Total   *int        `json:"total,omitempty"`
+	Results *Followers `json:"results,omitempty"`
+	Total   *int       `json:"total,omitempty"`
 }
 
 // PlaybackMetrics defines model for PlaybackMetrics.

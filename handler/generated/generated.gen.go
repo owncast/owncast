@@ -50,6 +50,9 @@ type ServerInterface interface {
 	// Get followers
 	// (GET /admin/followers)
 	GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams)
+	// Get a list of rejected or blocked follows
+	// (GET /admin/followers/blocked)
+	GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request)
 	// Get a list of pending follow requests
 	// (GET /admin/followers/pending)
 	GetPendingFollowers(w http.ResponseWriter, r *http.Request)
@@ -194,6 +197,12 @@ func (_ Unimplemented) DisconnectInboundConnection(w http.ResponseWriter, r *htt
 // Get followers
 // (GET /admin/followers)
 func (_ Unimplemented) GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a list of rejected or blocked follows
+// (GET /admin/followers/blocked)
+func (_ Unimplemented) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -559,6 +568,23 @@ func (siw *ServerInterfaceWrapper) GetFollowersAdmin(w http.ResponseWriter, r *h
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFollowersAdmin(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetBlockedAndRejectedFollowers operation middleware
+func (siw *ServerInterfaceWrapper) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetBlockedAndRejectedFollowers(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1159,6 +1185,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/followers", wrapper.GetFollowersAdmin)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/followers/blocked", wrapper.GetBlockedAndRejectedFollowers)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/followers/pending", wrapper.GetPendingFollowers)

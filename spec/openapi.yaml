@@ -703,9 +703,24 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Follower"
+                $ref: "#/components/schemas/Followers"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/followers/blocked:
+    get:
+      summary: Get a list of rejected or blocked follows
+      operationId: getBlockedAndRejectedFollowers
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of rejected or blocked follows
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Followers"
         '401':
           $ref: "#/components/responses/401BasicAuth"
         default:
@@ -844,15 +859,17 @@ components:
         disabledAt:
           type: string
           description: When this follower was rejected or disabled.
+    Followers:
+      type: array
+      items:
+        $ref: "#/components/schemas/Follower"
     PaginatedFollowers:
       type: object
       properties:
         total:
           type: integer
         results:
-          type: array
-          items:
-            $ref: "#/components/schemas/Follower"
+          $ref: "#/components/schemas/Followers"
     Event:
       type: object
       properties:
