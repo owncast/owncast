@@ -71,11 +71,11 @@ export const parameters = {
   fetchMock: {
     mocks: [],
   },
-  actions: { argTypesRegex: '^on[A-Z].*' },
+  // actions: { argTypesRegex: '^on[A-Z].*' },
   docs: {
     container: DocsContainer,
   },
-  actions: { argTypesRegex: '^on[A-Z].*' },
+  // actions: { argTypesRegex: '^on[A-Z].*' },
   viewMode: 'docs',
   controls: {
     matchers: {
