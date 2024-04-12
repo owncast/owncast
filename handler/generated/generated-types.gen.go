@@ -669,6 +669,9 @@ type SetStreamKeysJSONRequestBody SetStreamKeysJSONBody
 // SetStreamTitleJSONRequestBody defines body for SetStreamTitle for application/json ContentType.
 type SetStreamTitleJSONRequestBody = AdminConfigValue
 
+// SetVideoCodecJSONRequestBody defines body for SetVideoCodec for application/json ContentType.
+type SetVideoCodecJSONRequestBody = AdminConfigValue
+
 // SetServerWelcomeMessageJSONRequestBody defines body for SetServerWelcomeMessage for application/json ContentType.
 type SetServerWelcomeMessageJSONRequestBody = AdminConfigValue
 

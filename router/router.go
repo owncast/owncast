@@ -213,7 +213,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/config/chat/suggestedusernames", middleware.RequireAdminAuth(admin.SetSuggestedUsernameList))
 
 	// Set video codec
-	http.HandleFunc("/api/admin/config/video/codec", middleware.RequireAdminAuth(admin.SetVideoCodec))
+	// http.HandleFunc("/api/admin/config/video/codec", middleware.RequireAdminAuth(admin.SetVideoCodec))
 
 	// Set style/color/css values
 	http.HandleFunc("/api/admin/config/appearance", middleware.RequireAdminAuth(admin.SetCustomColorVariableValues))

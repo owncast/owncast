@@ -157,3 +157,7 @@ func (*ServerInterfaceImpl) SetForbiddenUsernameList(w http.ResponseWriter, r *h
 func (*ServerInterfaceImpl) SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetSuggestedUsernameList)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetVideoCodec)(w, r)
+}
