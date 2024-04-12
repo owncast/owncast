@@ -85,3 +85,7 @@ func (*ServerInterfaceImpl) GetFollowersAdmin(w http.ResponseWriter, r *http.Req
 	// FIXME this calls the same function as `GetFollowers` but with admin auth
 	middleware.RequireAdminAuth(middleware.HandlePagination(controllers.GetFollowers))(w, r)
 }
+
+func (*ServerInterfaceImpl) GetPendingFollowers(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetPendingFollowRequests)(w, r)
+}
