@@ -96,7 +96,7 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
         <Spin spinning={loading}>
           <div className={styles.content}>
             <div className={styles.heading}>This stream is not currently live.</div>
-            <div className={styles.message} dangerouslySetInnerHTML={{ __html: subtitle }}></div>
+            <div className={styles.message} dangerouslySetInnerHTML={{ __html: subtitle }} />
 
             <div className={styles.pageLogo} style={{ backgroundImage: `url(${image})` }} />
             <div className={styles.pageName}>{streamName}</div>
