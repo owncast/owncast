@@ -8,19 +8,22 @@ const runtimeCaching = require('next-pwa/cache');
 const withPWA = require('next-pwa')({
   dest: 'public',
   runtimeCaching: [
-    ...runtimeCaching,
     {
       urlPattern: /\.(?:ts|m3u8)$/i,
       handler: 'NetworkOnly',
     },
     {
-      urlPattern: /^\/admin\/.*$/,
+      urlPattern: (url) => { return url.pathname.startsWith("/admin/"); },
       handler: 'NetworkOnly',
+      options: {
+        fetchOptions: { credentials: 'same-origin' }
+      }
     },
     {
-      urlPattern: /^\/api\/.*$/,
+      urlPattern: (url) => { return url.pathname.startsWith("/api/"); },
       handler: 'NetworkOnly',
     },
+    ...runtimeCaching,
   ],
   register: true,
   skipWaiting: true,
