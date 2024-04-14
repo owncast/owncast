@@ -320,8 +320,16 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   // Retrieve, clean, and attach username to newest chat message to be read out by screenreader
   function getLastMessage() {
     if (messages.length > 0 && typeof messages[messages.length - 1].body !== 'undefined') {
-      const message = messages[messages.length - 1].body.replace(/(<([^>]+)>)/gi, '');
-      const stringToRead = `${usernameToHighlight} said ${message}`;
+      const lastMessage = messages[messages.length - 1];
+      const message = lastMessage.body.replace(/(<([^>]+)>)/gi, '');
+      let stringToRead = '';
+      console.log(message);
+      if (typeof lastMessage.user !== 'undefined') {
+        const username = lastMessage.user.displayName;
+        stringToRead = `${username} said ${message}`;
+      } else {
+        stringToRead = `System message: ${message}`;
+      }
       return stringToRead;
     }
     return '';
