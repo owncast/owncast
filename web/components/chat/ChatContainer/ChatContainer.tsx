@@ -1,6 +1,7 @@
 import { Virtuoso } from 'react-virtuoso';
 import { useState, useMemo, useRef, CSSProperties, FC, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { Interweave } from 'interweave';
 import {
   ConnectedClientInfoEvent,
   FediverseEvent,
@@ -323,7 +324,6 @@ export const ChatContainer: FC<ChatContainerProps> = ({
       const lastMessage = messages[messages.length - 1];
       const message = lastMessage.body.replace(/(<([^>]+)>)/gi, '');
       let stringToRead = '';
-      console.log(message);
       if (typeof lastMessage.user !== 'undefined') {
         const username = lastMessage.user.displayName;
         stringToRead = `${username} said ${message}`;
@@ -372,7 +372,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         )}
       </div>
       <span className={styles.chatAccessibilityHidden} aria-live="polite">
-        {lastMessage}
+        <Interweave content={lastMessage} />
       </span>
     </ErrorBoundary>
   );
