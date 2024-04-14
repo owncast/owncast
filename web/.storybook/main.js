@@ -50,6 +50,7 @@ module.exports = {
                   // Want to add more CSS Modules options? Read more here: https://github.com/webpack-contrib/css-loader#modules
                   modules: {
                     auto: true,
+		    namedExport: false,
                   },
                   importLoaders: 2,
                 },
