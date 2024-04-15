@@ -219,7 +219,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/config/appearance", middleware.RequireAdminAuth(admin.SetCustomColorVariableValues))
 
 	// Return all webhooks
-	http.HandleFunc("/api/admin/webhooks", middleware.RequireAdminAuth(admin.GetWebhooks))
+	// http.HandleFunc("/api/admin/webhooks", middleware.RequireAdminAuth(admin.GetWebhooks))
 
 	// Delete a single webhook
 	http.HandleFunc("/api/admin/webhooks/delete", middleware.RequireAdminAuth(admin.DeleteWebhook))

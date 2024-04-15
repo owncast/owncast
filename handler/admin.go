@@ -165,3 +165,7 @@ func (*ServerInterfaceImpl) SetVideoCodec(w http.ResponseWriter, r *http.Request
 func (*ServerInterfaceImpl) SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetCustomColorVariableValues)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
+}

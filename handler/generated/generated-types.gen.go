@@ -15,6 +15,22 @@ const (
 	BearerAuthScopes = "BearerAuth.Scopes"
 )
 
+// Defines values for WebhookEventType.
+const (
+	CHAT               WebhookEventType = "CHAT"
+	CHATACTION         WebhookEventType = "CHAT_ACTION"
+	NAMECHANGE         WebhookEventType = "NAME_CHANGE"
+	PING               WebhookEventType = "PING"
+	PONG               WebhookEventType = "PONG"
+	STREAMSTARTED      WebhookEventType = "STREAM_STARTED"
+	STREAMSTOPPED      WebhookEventType = "STREAM_STOPPED"
+	STREAMTITLEUPDATED WebhookEventType = "STREAM_TITLE_UPDATED"
+	SYSTEM             WebhookEventType = "SYSTEM"
+	USERJOINED         WebhookEventType = "USER_JOINED"
+	USERPARTED         WebhookEventType = "USER_PARTED"
+	VISIBILITYUPDATE   WebhookEventType = "VISIBILITY-UPDATE"
+)
+
 // ActionMessage defines model for ActionMessage.
 type ActionMessage struct {
 	Body      *string `json:"body,omitempty"`
@@ -485,6 +501,18 @@ type WebConfig struct {
 	Tags                 *[]string             `json:"tags,omitempty"`
 	Version              *string               `json:"version,omitempty"`
 }
+
+// Webhook defines model for Webhook.
+type Webhook struct {
+	Events    *[]WebhookEventType `json:"events,omitempty"`
+	Id        *int                `json:"id,omitempty"`
+	LastUsed  *time.Time          `json:"lastUsed,omitempty"`
+	Timestamp *time.Time          `json:"timestamp,omitempty"`
+	Url       *string             `json:"url,omitempty"`
+}
+
+// WebhookEventType defines model for WebhookEventType.
+type WebhookEventType string
 
 // YPDetails defines model for YPDetails.
 type YPDetails struct {

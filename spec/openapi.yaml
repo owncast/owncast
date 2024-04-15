@@ -1141,6 +1141,27 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/webhooks:
+    get:
+      summary: Get all the webhooks
+      operationId: getWebhooks
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: All webhooks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Webhook"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
@@ -1696,6 +1717,38 @@ components:
           type: string
         notes:
           type: string
+    Webhook:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        lastUsed:
+          type: string
+          format: date-time
+        url:
+          type: string
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookEventType'
+        id:
+          type: integer
+    WebhookEventType:
+      type: string
+      enum:
+        - CHAT
+        - USER_JOINED
+        - USER_PARTED
+        - NAME_CHANGE
+        - VISIBILITY-UPDATE
+        - PING
+        - PONG
+        - STREAM_STARTED
+        - STREAM_STOPPED
+        - STREAM_TITLE_UPDATED
+        - SYSTEM
+        - CHAT_ACTION
     AdminStatus:
       type: object
       properties:

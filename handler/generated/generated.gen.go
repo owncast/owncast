@@ -131,6 +131,9 @@ type ServerInterface interface {
 	// Get viewer count over time
 	// (GET /admin/viewersOverTime)
 	GetViewersOverTime(w http.ResponseWriter, r *http.Request, params GetViewersOverTimeParams)
+	// Get all the webhooks
+	// (GET /admin/webhooks)
+	GetWebhooks(w http.ResponseWriter, r *http.Request)
 	// Gets a list of chat messages
 	// (GET /chat)
 	GetChatList(w http.ResponseWriter, r *http.Request)
@@ -413,6 +416,12 @@ func (_ Unimplemented) GetActiveViewers(w http.ResponseWriter, r *http.Request) 
 // Get viewer count over time
 // (GET /admin/viewersOverTime)
 func (_ Unimplemented) GetViewersOverTime(w http.ResponseWriter, r *http.Request, params GetViewersOverTimeParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get all the webhooks
+// (GET /admin/webhooks)
+func (_ Unimplemented) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1211,6 +1220,23 @@ func (siw *ServerInterfaceWrapper) GetViewersOverTime(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetWebhooks operation middleware
+func (siw *ServerInterfaceWrapper) GetWebhooks(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetWebhooks(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetChatList operation middleware
 func (siw *ServerInterfaceWrapper) GetChatList(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1734,6 +1760,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/viewersOverTime", wrapper.GetViewersOverTime)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/webhooks", wrapper.GetWebhooks)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/chat", wrapper.GetChatList)
