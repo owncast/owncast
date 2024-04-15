@@ -1162,6 +1162,64 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/webhooks/delete:
+    post:
+      summary: Delete a single webhook
+      operationId: deleteWebhook
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+      responses:
+        '200':
+          description: Webhook successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/webhooks/create:
+    post:
+      summary: Create a single webhook
+      operationId: createWebhook
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                events:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/WebhookEventType"
+      responses:
+        '200':
+          description: The new webhook
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Webhook"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat

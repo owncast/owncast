@@ -616,6 +616,17 @@ type GetViewersOverTimeParams struct {
 	WindowStart *string `form:"windowStart,omitempty" json:"windowStart,omitempty"`
 }
 
+// CreateWebhookJSONBody defines parameters for CreateWebhook.
+type CreateWebhookJSONBody struct {
+	Events *[]WebhookEventType `json:"events,omitempty"`
+	Url    *string             `json:"url,omitempty"`
+}
+
+// DeleteWebhookJSONBody defines parameters for DeleteWebhook.
+type DeleteWebhookJSONBody struct {
+	Id *int `json:"id,omitempty"`
+}
+
 // RegisterAnonymousChatUserJSONBody defines parameters for RegisterAnonymousChatUser.
 type RegisterAnonymousChatUserJSONBody struct {
 	DisplayName *string `json:"displayName,omitempty"`
@@ -719,6 +730,12 @@ type UploadCustomEmojiJSONRequestBody UploadCustomEmojiJSONBody
 
 // ApproveFollowerJSONRequestBody defines body for ApproveFollower for application/json ContentType.
 type ApproveFollowerJSONRequestBody ApproveFollowerJSONBody
+
+// CreateWebhookJSONRequestBody defines body for CreateWebhook for application/json ContentType.
+type CreateWebhookJSONRequestBody CreateWebhookJSONBody
+
+// DeleteWebhookJSONRequestBody defines body for DeleteWebhook for application/json ContentType.
+type DeleteWebhookJSONRequestBody DeleteWebhookJSONBody
 
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody

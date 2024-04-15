@@ -134,6 +134,12 @@ type ServerInterface interface {
 	// Get all the webhooks
 	// (GET /admin/webhooks)
 	GetWebhooks(w http.ResponseWriter, r *http.Request)
+	// Create a single webhook
+	// (POST /admin/webhooks/create)
+	CreateWebhook(w http.ResponseWriter, r *http.Request)
+	// Delete a single webhook
+	// (POST /admin/webhooks/delete)
+	DeleteWebhook(w http.ResponseWriter, r *http.Request)
 	// Gets a list of chat messages
 	// (GET /chat)
 	GetChatList(w http.ResponseWriter, r *http.Request)
@@ -422,6 +428,18 @@ func (_ Unimplemented) GetViewersOverTime(w http.ResponseWriter, r *http.Request
 // Get all the webhooks
 // (GET /admin/webhooks)
 func (_ Unimplemented) GetWebhooks(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a single webhook
+// (POST /admin/webhooks/create)
+func (_ Unimplemented) CreateWebhook(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete a single webhook
+// (POST /admin/webhooks/delete)
+func (_ Unimplemented) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1237,6 +1255,40 @@ func (siw *ServerInterfaceWrapper) GetWebhooks(w http.ResponseWriter, r *http.Re
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// CreateWebhook operation middleware
+func (siw *ServerInterfaceWrapper) CreateWebhook(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateWebhook(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// DeleteWebhook operation middleware
+func (siw *ServerInterfaceWrapper) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteWebhook(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetChatList operation middleware
 func (siw *ServerInterfaceWrapper) GetChatList(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1763,6 +1815,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/webhooks", wrapper.GetWebhooks)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/webhooks/create", wrapper.CreateWebhook)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/webhooks/delete", wrapper.DeleteWebhook)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/chat", wrapper.GetChatList)
