@@ -1220,6 +1220,85 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/accesstokens:
+    get:
+      summary: Get all access tokens
+      operationId: getExternalAPIUsers
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of external API users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExternalAPIUser"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/accesstokens/delete:
+    post:
+      summary: Delete a single external API user
+      operationId: deleteExternalAPIUser
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: External API user successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/accesstokens/create:
+    post:
+      summary: Create a single access token
+      operationId: createExternalAPIUser
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                scopes:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: The new external API user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExternalAPIUser"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
@@ -1807,6 +1886,31 @@ components:
         - STREAM_TITLE_UPDATED
         - SYSTEM
         - CHAT_ACTION
+    ExternalAPIUser:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        lastUsedAt:
+          type: string
+          format: date-time
+        id:
+          type: string
+        accessToken:
+          type: string
+        displayName:
+          type: string
+        type:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        displayColor:
+          type: integer
+        isBot:
+          type: boolean
     AdminStatus:
       type: object
       properties:

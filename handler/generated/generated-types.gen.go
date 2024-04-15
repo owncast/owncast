@@ -248,6 +248,19 @@ type Event struct {
 	Type      *string `json:"type,omitempty"`
 }
 
+// ExternalAPIUser defines model for ExternalAPIUser.
+type ExternalAPIUser struct {
+	AccessToken  *string    `json:"accessToken,omitempty"`
+	CreatedAt    *time.Time `json:"createdAt,omitempty"`
+	DisplayColor *int       `json:"displayColor,omitempty"`
+	DisplayName  *string    `json:"displayName,omitempty"`
+	Id           *string    `json:"id,omitempty"`
+	IsBot        *bool      `json:"isBot,omitempty"`
+	LastUsedAt   *time.Time `json:"lastUsedAt,omitempty"`
+	Scopes       *[]string  `json:"scopes,omitempty"`
+	Type         *string    `json:"type,omitempty"`
+}
+
 // ExternalAction defines model for ExternalAction.
 type ExternalAction struct {
 	Color          *string `json:"color,omitempty"`
@@ -548,6 +561,17 @@ type N501 = Error
 // Default Simple API response
 type Default = BaseAPIResponse
 
+// CreateExternalAPIUserJSONBody defines parameters for CreateExternalAPIUser.
+type CreateExternalAPIUserJSONBody struct {
+	Name   *string   `json:"name,omitempty"`
+	Scopes *[]string `json:"scopes,omitempty"`
+}
+
+// DeleteExternalAPIUserJSONBody defines parameters for DeleteExternalAPIUser.
+type DeleteExternalAPIUserJSONBody struct {
+	Token *string `json:"token,omitempty"`
+}
+
 // UpdateMessageVisibilityJSONBody defines parameters for UpdateMessageVisibility.
 type UpdateMessageVisibilityJSONBody struct {
 	IdArray *[]string `json:"idArray,omitempty"`
@@ -661,6 +685,12 @@ type PostNotificationsRegisterParams struct {
 type RemoteFollowJSONBody struct {
 	Account *string `json:"account,omitempty"`
 }
+
+// CreateExternalAPIUserJSONRequestBody defines body for CreateExternalAPIUser for application/json ContentType.
+type CreateExternalAPIUserJSONRequestBody CreateExternalAPIUserJSONBody
+
+// DeleteExternalAPIUserJSONRequestBody defines body for DeleteExternalAPIUser for application/json ContentType.
+type DeleteExternalAPIUserJSONRequestBody DeleteExternalAPIUserJSONBody
 
 // UpdateMessageVisibilityJSONRequestBody defines body for UpdateMessageVisibility for application/json ContentType.
 type UpdateMessageVisibilityJSONRequestBody UpdateMessageVisibilityJSONBody

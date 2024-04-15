@@ -14,6 +14,15 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Get all access tokens
+	// (GET /admin/accesstokens)
+	GetExternalAPIUsers(w http.ResponseWriter, r *http.Request)
+
+	// (POST /admin/accesstokens/create)
+	CreateExternalAPIUser(w http.ResponseWriter, r *http.Request)
+	// Delete a single external API user
+	// (POST /admin/accesstokens/delete)
+	DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request)
 	// Get a detailed list of currently connected chat clients
 	// (GET /admin/chat/clients)
 	GetConnectedChatClients(w http.ResponseWriter, r *http.Request)
@@ -190,6 +199,23 @@ type ServerInterface interface {
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// Get all access tokens
+// (GET /admin/accesstokens)
+func (_ Unimplemented) GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (POST /admin/accesstokens/create)
+func (_ Unimplemented) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete a single external API user
+// (POST /admin/accesstokens/delete)
+func (_ Unimplemented) DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // Get a detailed list of currently connected chat clients
 // (GET /admin/chat/clients)
@@ -540,6 +566,57 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// GetExternalAPIUsers operation middleware
+func (siw *ServerInterfaceWrapper) GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetExternalAPIUsers(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// CreateExternalAPIUser operation middleware
+func (siw *ServerInterfaceWrapper) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateExternalAPIUser(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// DeleteExternalAPIUser operation middleware
+func (siw *ServerInterfaceWrapper) DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteExternalAPIUser(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
 
 // GetConnectedChatClients operation middleware
 func (siw *ServerInterfaceWrapper) GetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
@@ -1696,6 +1773,15 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/accesstokens", wrapper.GetExternalAPIUsers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/accesstokens/create", wrapper.CreateExternalAPIUser)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/accesstokens/delete", wrapper.DeleteExternalAPIUser)
+	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/chat/clients", wrapper.GetConnectedChatClients)
 	})

@@ -177,3 +177,15 @@ func (*ServerInterfaceImpl) DeleteWebhook(w http.ResponseWriter, r *http.Request
 func (*ServerInterfaceImpl) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.CreateWebhook)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetExternalAPIUsers)(w, r)
+}
+
+func (*ServerInterfaceImpl) DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.DeleteExternalAPIUser)(w, r)
+}
+
+func (*ServerInterfaceImpl) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.CreateExternalAPIUser)(w, r)
+}

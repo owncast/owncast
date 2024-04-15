@@ -228,13 +228,13 @@ func Start() error {
 	// http.HandleFunc("/api/admin/webhooks/create", middleware.RequireAdminAuth(admin.CreateWebhook))
 
 	// Get all access tokens
-	http.HandleFunc("/api/admin/accesstokens", middleware.RequireAdminAuth(admin.GetExternalAPIUsers))
+	// http.HandleFunc("/api/admin/accesstokens", middleware.RequireAdminAuth(admin.GetExternalAPIUsers))
 
 	// Delete a single access token
-	http.HandleFunc("/api/admin/accesstokens/delete", middleware.RequireAdminAuth(admin.DeleteExternalAPIUser))
+	// http.HandleFunc("/api/admin/accesstokens/delete", middleware.RequireAdminAuth(admin.DeleteExternalAPIUser))
 
 	// Create a single access token
-	http.HandleFunc("/api/admin/accesstokens/create", middleware.RequireAdminAuth(admin.CreateExternalAPIUser))
+	// http.HandleFunc("/api/admin/accesstokens/create", middleware.RequireAdminAuth(admin.CreateExternalAPIUser))
 
 	// Return the auto-update features that are supported for this instance.
 	http.HandleFunc("/api/admin/update/options", middleware.RequireAdminAuth(admin.AutoUpdateOptions))
