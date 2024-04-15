@@ -237,13 +237,13 @@ func Start() error {
 	// http.HandleFunc("/api/admin/accesstokens/create", middleware.RequireAdminAuth(admin.CreateExternalAPIUser))
 
 	// Return the auto-update features that are supported for this instance.
-	http.HandleFunc("/api/admin/update/options", middleware.RequireAdminAuth(admin.AutoUpdateOptions))
+	// http.HandleFunc("/api/admin/update/options", middleware.RequireAdminAuth(admin.AutoUpdateOptions))
 
 	// Begin the auto update
-	http.HandleFunc("/api/admin/update/start", middleware.RequireAdminAuth(admin.AutoUpdateStart))
+	// http.HandleFunc("/api/admin/update/start", middleware.RequireAdminAuth(admin.AutoUpdateStart))
 
 	// Force quit the service to restart it
-	http.HandleFunc("/api/admin/update/forcequit", middleware.RequireAdminAuth(admin.AutoUpdateForceQuit))
+	// http.HandleFunc("/api/admin/update/forcequit", middleware.RequireAdminAuth(admin.AutoUpdateForceQuit))
 
 	// Send a system message to chat
 	// http.HandleFunc("/api/integrations/chat/system", middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessage))

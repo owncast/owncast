@@ -189,3 +189,15 @@ func (*ServerInterfaceImpl) DeleteExternalAPIUser(w http.ResponseWriter, r *http
 func (*ServerInterfaceImpl) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.CreateExternalAPIUser)(w, r)
 }
+
+func (*ServerInterfaceImpl) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.AutoUpdateOptions)(w, r)
+}
+
+func (*ServerInterfaceImpl) AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.AutoUpdateStart)(w, r)
+}
+
+func (*ServerInterfaceImpl) AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.AutoUpdateForceQuit)(w, r)
+}

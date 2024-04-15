@@ -17,7 +17,7 @@ type ServerInterface interface {
 	// Get all access tokens
 	// (GET /admin/accesstokens)
 	GetExternalAPIUsers(w http.ResponseWriter, r *http.Request)
-
+	// Create a single access token
 	// (POST /admin/accesstokens/create)
 	CreateExternalAPIUser(w http.ResponseWriter, r *http.Request)
 	// Delete a single external API user
@@ -134,6 +134,15 @@ type ServerInterface interface {
 	// Get current inboard broadcaster
 	// (GET /admin/status)
 	GetAdminStatus(w http.ResponseWriter, r *http.Request)
+	// Force quit the server and restart it
+	// (GET /admin/update/forcequit)
+	AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request)
+	// Return the auto-update features that are supported for this instance
+	// (GET /admin/update/options)
+	AutoUpdateOptions(w http.ResponseWriter, r *http.Request)
+	// Begin the auto-update
+	// (GET /admin/update/start)
+	AutoUpdateStart(w http.ResponseWriter, r *http.Request)
 	// Get active viewers
 	// (GET /admin/viewers)
 	GetActiveViewers(w http.ResponseWriter, r *http.Request)
@@ -206,6 +215,7 @@ func (_ Unimplemented) GetExternalAPIUsers(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// Create a single access token
 // (POST /admin/accesstokens/create)
 func (_ Unimplemented) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
@@ -436,6 +446,24 @@ func (_ Unimplemented) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 // Get current inboard broadcaster
 // (GET /admin/status)
 func (_ Unimplemented) GetAdminStatus(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Force quit the server and restart it
+// (GET /admin/update/forcequit)
+func (_ Unimplemented) AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Return the auto-update features that are supported for this instance
+// (GET /admin/update/options)
+func (_ Unimplemented) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Begin the auto-update
+// (GET /admin/update/start)
+func (_ Unimplemented) AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1268,6 +1296,57 @@ func (siw *ServerInterfaceWrapper) GetAdminStatus(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// AutoUpdateForceQuit operation middleware
+func (siw *ServerInterfaceWrapper) AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AutoUpdateForceQuit(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// AutoUpdateOptions operation middleware
+func (siw *ServerInterfaceWrapper) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AutoUpdateOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// AutoUpdateStart operation middleware
+func (siw *ServerInterfaceWrapper) AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AutoUpdateStart(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetActiveViewers operation middleware
 func (siw *ServerInterfaceWrapper) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1892,6 +1971,15 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/status", wrapper.GetAdminStatus)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/update/forcequit", wrapper.AutoUpdateForceQuit)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/update/options", wrapper.AutoUpdateOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/update/start", wrapper.AutoUpdateStart)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/viewers", wrapper.GetActiveViewers)

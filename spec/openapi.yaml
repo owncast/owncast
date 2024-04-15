@@ -1299,6 +1299,68 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/update/options:
+    get:
+      summary: Return the auto-update features that are supported for this instance
+      operationId: autoUpdateOptions
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Current auto-update options
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  supportsUpdate:
+                    type: boolean
+                  canRestart:
+                    type: boolean
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/update/start:
+    get:
+      summary: Begin the auto-update
+      operationId: autoUpdateStart
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Console output from update
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/update/forcequit:
+    get:
+      summary: Force quit the server and restart it
+      operationId: autoUpdateForceQuit
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Server force restart has been ordered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
