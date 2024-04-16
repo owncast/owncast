@@ -1383,10 +1383,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
         '401':
           $ref: "#/components/responses/401"
         '500':
           $ref: "#/components/responses/500"
+        default:
+          $ref: "#/components/responses/Default"
+  /integrations/chat/system/client/{clientId}:
+    post:
+      summary: Send a system message to a single client
+      operationId: sendSystemMessageToConnectedClient
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+          description: The ID of the specified client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SystemMessage"
+      responses:
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401"
+        '500':
+          $ref: "#/components/responses/500"
+        default:
+          $ref: "#/components/responses/Default"
 
 components:
   schemas:

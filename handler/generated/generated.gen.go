@@ -179,6 +179,9 @@ type ServerInterface interface {
 	// Send a system message to the chat
 	// (POST /integrations/chat/system)
 	SendSystemMessage(w http.ResponseWriter, r *http.Request)
+	// Send a system message to a single client
+	// (POST /integrations/chat/system/client/{clientId})
+	SendSystemMessageToConnectedClient(w http.ResponseWriter, r *http.Request, clientId int)
 	// Save video playback metrics for future video health recording
 	// (POST /metrics/playback)
 	PostMetricsPlayback(w http.ResponseWriter, r *http.Request)
@@ -535,6 +538,12 @@ func (_ Unimplemented) GetFollowers(w http.ResponseWriter, r *http.Request, para
 // Send a system message to the chat
 // (POST /integrations/chat/system)
 func (_ Unimplemented) SendSystemMessage(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Send a system message to a single client
+// (POST /integrations/chat/system/client/{clientId})
+func (_ Unimplemented) SendSystemMessageToConnectedClient(w http.ResponseWriter, r *http.Request, clientId int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1599,6 +1608,34 @@ func (siw *ServerInterfaceWrapper) SendSystemMessage(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SendSystemMessageToConnectedClient operation middleware
+func (siw *ServerInterfaceWrapper) SendSystemMessageToConnectedClient(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "clientId" -------------
+	var clientId int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "clientId", chi.URLParam(r, "clientId"), &clientId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clientId", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SendSystemMessageToConnectedClient(w, r, clientId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // PostMetricsPlayback operation middleware
 func (siw *ServerInterfaceWrapper) PostMetricsPlayback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2016,6 +2053,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/system", wrapper.SendSystemMessage)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/integrations/chat/system/client/{clientId}", wrapper.SendSystemMessageToConnectedClient)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/metrics/playback", wrapper.PostMetricsPlayback)

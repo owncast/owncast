@@ -773,6 +773,9 @@ type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
 // SendSystemMessageJSONRequestBody defines body for SendSystemMessage for application/json ContentType.
 type SendSystemMessageJSONRequestBody = SystemMessage
 
+// SendSystemMessageToConnectedClientJSONRequestBody defines body for SendSystemMessageToConnectedClient for application/json ContentType.
+type SendSystemMessageToConnectedClientJSONRequestBody = SystemMessage
+
 // PostMetricsPlaybackJSONRequestBody defines body for PostMetricsPlayback for application/json ContentType.
 type PostMetricsPlaybackJSONRequestBody = PlaybackMetrics
 
