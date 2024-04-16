@@ -91,10 +91,6 @@ paths:
                 $ref: "#/components/schemas/AnonymousUser"
         '400':
           $ref: "#/components/responses/400"
-    options:
-      responses:
-        '204':
-          $ref: "#/components/responses/204"
   /config:
     get:
       summary: Get the web config
