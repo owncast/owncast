@@ -427,6 +427,14 @@ type StreamOutputVariant struct {
 	VideoPassthrough *bool   `json:"videoPassthrough,omitempty"`
 }
 
+// SystemActionEvent defines model for SystemActionEvent.
+type SystemActionEvent struct {
+	Body      *string `json:"body,omitempty"`
+	Id        *string `json:"id,omitempty"`
+	Timestamp *string `json:"timestamp,omitempty"`
+	Type      *string `json:"type,omitempty"`
+}
+
 // SystemMessage defines model for SystemMessage.
 type SystemMessage struct {
 	Body      *string `json:"body,omitempty"`
@@ -769,6 +777,9 @@ type DeleteWebhookJSONRequestBody DeleteWebhookJSONBody
 
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
+
+// SendChatActionJSONRequestBody defines body for SendChatAction for application/json ContentType.
+type SendChatActionJSONRequestBody = SystemActionEvent
 
 // SendIntegrationChatMessageJSONRequestBody defines body for SendIntegrationChatMessage for application/json ContentType.
 type SendIntegrationChatMessageJSONRequestBody = UserMessage

@@ -1454,6 +1454,32 @@ paths:
           $ref: "#/components/responses/500"
         default:
           $ref: "#/components/responses/Default"
+  /integrations/chat/action:
+    post:
+      summary: Send a user action to chat
+      operationId: sendChatAction
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SystemActionEvent"
+      responses:
+        '200':
+          description: Action sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401"
+        '500':
+          $ref: "#/components/responses/500"
+        default:
+          $ref: "#/components/responses/Default"
 
 components:
   schemas:
@@ -1611,6 +1637,11 @@ components:
         - $ref: "#/components/schemas/UserEvent"
         - $ref: "#/components/schemas/MessageEvent"
     SystemMessage:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Event"
+        - $ref: "#/components/schemas/MessageEvent"
+    SystemActionEvent:
       type: object
       allOf:
         - $ref: "#/components/schemas/Event"
