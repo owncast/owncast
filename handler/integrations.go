@@ -19,3 +19,7 @@ func (*ServerInterfaceImpl) SendSystemMessageToConnectedClient(w http.ResponseWr
 	r.Header[utils.RestURLPatternHeaderKey] = []string{`/api/integrations/chat/system/client/{clientId}`}
 	middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessageToConnectedClient)(w, r)
 }
+
+func (*ServerInterfaceImpl) SendUserMessage(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireExternalAPIAccessToken(user.ScopeCanSendChatMessages, admin.SendUserMessage)(w, r)
+}

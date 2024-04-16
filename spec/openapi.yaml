@@ -1418,6 +1418,16 @@ paths:
           $ref: "#/components/responses/500"
         default:
           $ref: "#/components/responses/Default"
+  /integrations/chat/user:
+    post:
+      deprecated: true
+      summary: Send a user message to chat
+      operationId: sendUserMessage
+      security:
+        - BearerAuth: []
+      responses:
+        '400':
+          $ref: "#/components/responses/400"
 
 components:
   schemas:

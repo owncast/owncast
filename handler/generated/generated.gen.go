@@ -182,6 +182,9 @@ type ServerInterface interface {
 	// Send a system message to a single client
 	// (POST /integrations/chat/system/client/{clientId})
 	SendSystemMessageToConnectedClient(w http.ResponseWriter, r *http.Request, clientId int)
+	// Send a user message to chat
+	// (POST /integrations/chat/user)
+	SendUserMessage(w http.ResponseWriter, r *http.Request)
 	// Save video playback metrics for future video health recording
 	// (POST /metrics/playback)
 	PostMetricsPlayback(w http.ResponseWriter, r *http.Request)
@@ -544,6 +547,12 @@ func (_ Unimplemented) SendSystemMessage(w http.ResponseWriter, r *http.Request)
 // Send a system message to a single client
 // (POST /integrations/chat/system/client/{clientId})
 func (_ Unimplemented) SendSystemMessageToConnectedClient(w http.ResponseWriter, r *http.Request, clientId int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Send a user message to chat
+// (POST /integrations/chat/user)
+func (_ Unimplemented) SendUserMessage(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1636,6 +1645,23 @@ func (siw *ServerInterfaceWrapper) SendSystemMessageToConnectedClient(w http.Res
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SendUserMessage operation middleware
+func (siw *ServerInterfaceWrapper) SendUserMessage(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SendUserMessage(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // PostMetricsPlayback operation middleware
 func (siw *ServerInterfaceWrapper) PostMetricsPlayback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2056,6 +2082,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/system/client/{clientId}", wrapper.SendSystemMessageToConnectedClient)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/integrations/chat/user", wrapper.SendUserMessage)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/metrics/playback", wrapper.PostMetricsPlayback)
