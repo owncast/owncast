@@ -1149,6 +1149,27 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/config/tags:
+    post:
+      summary: Update server tags
+      operationId: setTags
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/AdminConfigValue"
+      responses:
+        '200':
+          description: Tags updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/webhooks:
     get:
       summary: Get all the webhooks
@@ -2344,6 +2365,9 @@ components:
           oneOf:
           - type: string
           - type: boolean
+          - type: array
+            items:
+              type: string
     AdminMessageVisibilityUpdate:
       type: object
       properties:

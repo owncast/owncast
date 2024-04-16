@@ -274,7 +274,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogo))
 
 	// Server tags
-	http.HandleFunc("/api/admin/config/tags", middleware.RequireAdminAuth(admin.SetTags))
+	// http.HandleFunc("/api/admin/config/tags", middleware.RequireAdminAuth(admin.SetTags))
 
 	// ffmpeg
 	http.HandleFunc("/api/admin/config/ffmpegpath", middleware.RequireAdminAuth(admin.SetFfmpegPath))

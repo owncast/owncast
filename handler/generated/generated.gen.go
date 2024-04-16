@@ -95,6 +95,9 @@ type ServerInterface interface {
 	// Change the stream title
 	// (POST /admin/config/streamtitle)
 	SetStreamTitle(w http.ResponseWriter, r *http.Request)
+	// Update server tags
+	// (POST /admin/config/tags)
+	SetTags(w http.ResponseWriter, r *http.Request)
 	// Set video codec
 	// (POST /admin/config/video/codec)
 	SetVideoCodec(w http.ResponseWriter, r *http.Request)
@@ -392,6 +395,12 @@ func (_ Unimplemented) SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 // Change the stream title
 // (POST /admin/config/streamtitle)
 func (_ Unimplemented) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update server tags
+// (POST /admin/config/tags)
+func (_ Unimplemented) SetTags(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1118,6 +1127,23 @@ func (siw *ServerInterfaceWrapper) SetStreamTitle(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamTitle(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetTags operation middleware
+func (siw *ServerInterfaceWrapper) SetTags(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetTags(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2174,6 +2200,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/streamtitle", wrapper.SetStreamTitle)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/tags", wrapper.SetTags)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/video/codec", wrapper.SetVideoCodec)
