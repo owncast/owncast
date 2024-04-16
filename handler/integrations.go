@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
@@ -39,4 +40,8 @@ func (*ServerInterfaceImpl) ExternalUpdateMessageVisibility(w http.ResponseWrite
 
 func (*ServerInterfaceImpl) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalSetStreamTitle)(w, r)
+}
+
+func (*ServerInterfaceImpl) ExternalGetChatMessages(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, controllers.ExternalGetChatMessages)(w, r)
 }

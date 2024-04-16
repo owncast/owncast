@@ -9,7 +9,7 @@ import (
 	"github.com/owncast/owncast/yp"
 )
 
-type ServerInterfaceImpl struct {}
+type ServerInterfaceImpl struct{}
 
 func New() *ServerInterfaceImpl {
 	return &ServerInterfaceImpl{}
@@ -27,7 +27,7 @@ func (*ServerInterfaceImpl) GetEmoji(w http.ResponseWriter, r *http.Request) {
 	controllers.GetCustomEmojiList(w, r)
 }
 
-func (*ServerInterfaceImpl) GetChatList(w http.ResponseWriter, r *http.Request) {
+func (*ServerInterfaceImpl) GetChatMessages(w http.ResponseWriter, r *http.Request, params generated.GetChatMessagesParams) {
 	middleware.RequireUserAccessToken(controllers.GetChatMessages)(w, r)
 }
 

@@ -48,7 +48,9 @@ paths:
   /chat:
     get:
       summary: Gets a list of chat messages
-      operationId: getChatList
+      operationId: getChatMessages
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
       responses:
         '200':
           description: List of chat messages
@@ -56,6 +58,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ChatMessages"
+        '401':
+          $ref: "#/components/responses/401"
         '501':
           $ref: "#/components/responses/501"
   /chat/register:
@@ -209,11 +213,7 @@ paths:
     post:
       summary: Register for notifications
       parameters:
-        - in: query
-          name: accessToken
-          schema:
-            type: string
-          required: true
+        - $ref: "#/components/parameters/AccessToken"
       requestBody:
         description: Information for notification
         content:
@@ -1518,6 +1518,25 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /integrations/chat:
+    get:
+      summary: Get chat history
+      operationId: externalGetChatMessages
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of chat messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatMessages"
+        '401':
+          $ref: "#/components/responses/401"
+        '501':
+          $ref: "#/components/responses/501"
+        default:
+          $ref: "#/components/responses/Default"
 
 components:
   schemas:
@@ -2389,6 +2408,12 @@ components:
       schema:
         type: integer
         description: The numbers of items to return
+    AccessToken:
+      in: query
+      name: accessToken
+      schema:
+        type: string
+      required: true
 
   securitySchemes:
     BasicAuth:

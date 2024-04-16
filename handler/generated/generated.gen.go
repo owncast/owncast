@@ -160,7 +160,7 @@ type ServerInterface interface {
 	DeleteWebhook(w http.ResponseWriter, r *http.Request)
 	// Gets a list of chat messages
 	// (GET /chat)
-	GetChatList(w http.ResponseWriter, r *http.Request)
+	GetChatMessages(w http.ResponseWriter, r *http.Request, params GetChatMessagesParams)
 
 	// (OPTIONS /chat/register)
 	OptionsChatRegister(w http.ResponseWriter, r *http.Request)
@@ -176,6 +176,9 @@ type ServerInterface interface {
 	// Gets the list of followers
 	// (GET /followers)
 	GetFollowers(w http.ResponseWriter, r *http.Request, params GetFollowersParams)
+	// Get chat history
+	// (GET /integrations/chat)
+	ExternalGetChatMessages(w http.ResponseWriter, r *http.Request)
 	// Send a user action to chat
 	// (POST /integrations/chat/action)
 	SendChatAction(w http.ResponseWriter, r *http.Request)
@@ -517,7 +520,7 @@ func (_ Unimplemented) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 
 // Gets a list of chat messages
 // (GET /chat)
-func (_ Unimplemented) GetChatList(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetChatMessages(w http.ResponseWriter, r *http.Request, params GetChatMessagesParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -547,6 +550,12 @@ func (_ Unimplemented) GetEmoji(w http.ResponseWriter, r *http.Request) {
 // Gets the list of followers
 // (GET /followers)
 func (_ Unimplemented) GetFollowers(w http.ResponseWriter, r *http.Request, params GetFollowersParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get chat history
+// (GET /integrations/chat)
+func (_ Unimplemented) ExternalGetChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1499,12 +1508,32 @@ func (siw *ServerInterfaceWrapper) DeleteWebhook(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// GetChatList operation middleware
-func (siw *ServerInterfaceWrapper) GetChatList(w http.ResponseWriter, r *http.Request) {
+// GetChatMessages operation middleware
+func (siw *ServerInterfaceWrapper) GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetChatMessagesParams
+
+	// ------------- Required query parameter "accessToken" -------------
+
+	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "accessToken", r.URL.Query(), &params.AccessToken)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accessToken", Err: err})
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetChatList(w, r)
+		siw.Handler.GetChatMessages(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1627,6 +1656,23 @@ func (siw *ServerInterfaceWrapper) GetFollowers(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFollowers(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// ExternalGetChatMessages operation middleware
+func (siw *ServerInterfaceWrapper) ExternalGetChatMessages(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExternalGetChatMessages(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2164,7 +2210,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/admin/webhooks/delete", wrapper.DeleteWebhook)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/chat", wrapper.GetChatList)
+		r.Get(options.BaseURL+"/chat", wrapper.GetChatMessages)
 	})
 	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/chat/register", wrapper.OptionsChatRegister)
@@ -2180,6 +2226,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/followers", wrapper.GetFollowers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/integrations/chat", wrapper.ExternalGetChatMessages)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/action", wrapper.SendChatAction)

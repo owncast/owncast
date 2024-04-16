@@ -557,6 +557,9 @@ type YPDetails struct {
 	ViewerCount           *int            `json:"viewerCount,omitempty"`
 }
 
+// AccessToken defines model for AccessToken.
+type AccessToken = string
+
 // Limit The numbers of items to return
 type Limit = int
 
@@ -659,6 +662,11 @@ type DeleteWebhookJSONBody struct {
 	Id *int `json:"id,omitempty"`
 }
 
+// GetChatMessagesParams defines parameters for GetChatMessages.
+type GetChatMessagesParams struct {
+	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
+}
+
 // RegisterAnonymousChatUserJSONBody defines parameters for RegisterAnonymousChatUser.
 type RegisterAnonymousChatUserJSONBody struct {
 	DisplayName *string `json:"displayName,omitempty"`
@@ -686,7 +694,7 @@ type PostNotificationsRegisterJSONBody struct {
 
 // PostNotificationsRegisterParams defines parameters for PostNotificationsRegister.
 type PostNotificationsRegisterParams struct {
-	AccessToken string `form:"accessToken" json:"accessToken"`
+	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
 }
 
 // RemoteFollowJSONBody defines parameters for RemoteFollow.
