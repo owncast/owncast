@@ -292,7 +292,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/config/sockethostoverride", middleware.RequireAdminAuth(admin.SetSocketHostOverride))
 
 	// Custom video serving endpoint
-	http.HandleFunc("/api/admin/config/videoservingendpoint", middleware.RequireAdminAuth(admin.SetVideoServingEndpoint))
+	// http.HandleFunc("/api/admin/config/videoservingendpoint", middleware.RequireAdminAuth(admin.SetVideoServingEndpoint))
 
 	// Is server marked as NSFW
 	http.HandleFunc("/api/admin/config/nsfw", middleware.RequireAdminAuth(admin.SetNSFW))

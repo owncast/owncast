@@ -194,6 +194,10 @@ func (*ServerInterfaceImpl) SetSocketHostOverride(w http.ResponseWriter, r *http
 	middleware.RequireAdminAuth(admin.SetSocketHostOverride)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetVideoServingEndpoint(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetVideoServingEndpoint)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }
