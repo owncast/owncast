@@ -74,6 +74,9 @@ type ServerInterface interface {
 	// Set the suggested chat usernames that will be assigned automatically
 	// (POST /admin/config/chat/suggestedusernames)
 	SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request)
+	// Update logo
+	// (POST /admin/config/logo)
+	SetLogo(w http.ResponseWriter, r *http.Request)
 	// Change the server name
 	// (POST /admin/config/name)
 	SetServerName(w http.ResponseWriter, r *http.Request)
@@ -161,9 +164,6 @@ type ServerInterface interface {
 	// Gets a list of chat messages
 	// (GET /chat)
 	GetChatMessages(w http.ResponseWriter, r *http.Request, params GetChatMessagesParams)
-
-	// (OPTIONS /chat/register)
-	OptionsChatRegister(w http.ResponseWriter, r *http.Request)
 	// Registers an anonymous chat user
 	// (POST /chat/register)
 	RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params RegisterAnonymousChatUserParams)
@@ -353,6 +353,12 @@ func (_ Unimplemented) SetSuggestedUsernameList(w http.ResponseWriter, r *http.R
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// Update logo
+// (POST /admin/config/logo)
+func (_ Unimplemented) SetLogo(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Change the server name
 // (POST /admin/config/name)
 func (_ Unimplemented) SetServerName(w http.ResponseWriter, r *http.Request) {
@@ -524,11 +530,6 @@ func (_ Unimplemented) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 // Gets a list of chat messages
 // (GET /chat)
 func (_ Unimplemented) GetChatMessages(w http.ResponseWriter, r *http.Request, params GetChatMessagesParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// (OPTIONS /chat/register)
-func (_ Unimplemented) OptionsChatRegister(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -998,6 +999,23 @@ func (siw *ServerInterfaceWrapper) SetSuggestedUsernameList(w http.ResponseWrite
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetSuggestedUsernameList(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetLogo operation middleware
+func (siw *ServerInterfaceWrapper) SetLogo(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetLogo(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1543,21 +1561,6 @@ func (siw *ServerInterfaceWrapper) GetChatMessages(w http.ResponseWriter, r *htt
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetChatMessages(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// OptionsChatRegister operation middleware
-func (siw *ServerInterfaceWrapper) OptionsChatRegister(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.OptionsChatRegister(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2152,6 +2155,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/admin/config/chat/suggestedusernames", wrapper.SetSuggestedUsernameList)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/logo", wrapper.SetLogo)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/name", wrapper.SetServerName)
 	})
 	r.Group(func(r chi.Router) {
@@ -2237,9 +2243,6 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/chat", wrapper.GetChatMessages)
-	})
-	r.Group(func(r chi.Router) {
-		r.Options(options.BaseURL+"/chat/register", wrapper.OptionsChatRegister)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/chat/register", wrapper.RegisterAnonymousChatUser)

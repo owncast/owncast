@@ -271,7 +271,7 @@ func Start() error {
 	// http.HandleFunc("/api/integrations/clients", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalGetConnectedChatClients))
 
 	// Logo path
-	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogo))
+	// http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogo))
 
 	// Server tags
 	http.HandleFunc("/api/admin/config/tags", middleware.RequireAdminAuth(admin.SetTags))

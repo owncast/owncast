@@ -166,6 +166,10 @@ func (*ServerInterfaceImpl) SetCustomColorVariableValues(w http.ResponseWriter, 
 	middleware.RequireAdminAuth(admin.SetCustomColorVariableValues)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetLogo(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetLogo)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }
