@@ -74,6 +74,9 @@ type ServerInterface interface {
 	// Set the suggested chat usernames that will be assigned automatically
 	// (POST /admin/config/chat/suggestedusernames)
 	SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request)
+	// Update FFMPEG path
+	// (POST /admin/config/ffmpegpath)
+	SetFfmpegPath(w http.ResponseWriter, r *http.Request)
 	// Update logo
 	// (POST /admin/config/logo)
 	SetLogo(w http.ResponseWriter, r *http.Request)
@@ -353,6 +356,12 @@ func (_ Unimplemented) SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http
 // Set the suggested chat usernames that will be assigned automatically
 // (POST /admin/config/chat/suggestedusernames)
 func (_ Unimplemented) SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update FFMPEG path
+// (POST /admin/config/ffmpegpath)
+func (_ Unimplemented) SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1008,6 +1017,23 @@ func (siw *ServerInterfaceWrapper) SetSuggestedUsernameList(w http.ResponseWrite
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetSuggestedUsernameList(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetFfmpegPath operation middleware
+func (siw *ServerInterfaceWrapper) SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFfmpegPath(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2179,6 +2205,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/suggestedusernames", wrapper.SetSuggestedUsernameList)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/ffmpegpath", wrapper.SetFfmpegPath)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/logo", wrapper.SetLogo)

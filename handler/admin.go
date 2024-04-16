@@ -174,6 +174,10 @@ func (*ServerInterfaceImpl) SetTags(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetTags)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetFfmpegPath)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }
