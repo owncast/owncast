@@ -176,6 +176,9 @@ type ServerInterface interface {
 	// Gets the list of followers
 	// (GET /followers)
 	GetFollowers(w http.ResponseWriter, r *http.Request, params GetFollowersParams)
+	// Send a message to chat as a specific 3rd party bot/integration based on its access token
+	// (POST /integrations/chat/send)
+	SendIntegrationChatMessage(w http.ResponseWriter, r *http.Request)
 	// Send a system message to the chat
 	// (POST /integrations/chat/system)
 	SendSystemMessage(w http.ResponseWriter, r *http.Request)
@@ -535,6 +538,12 @@ func (_ Unimplemented) GetEmoji(w http.ResponseWriter, r *http.Request) {
 // Gets the list of followers
 // (GET /followers)
 func (_ Unimplemented) GetFollowers(w http.ResponseWriter, r *http.Request, params GetFollowersParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Send a message to chat as a specific 3rd party bot/integration based on its access token
+// (POST /integrations/chat/send)
+func (_ Unimplemented) SendIntegrationChatMessage(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1600,6 +1609,23 @@ func (siw *ServerInterfaceWrapper) GetFollowers(w http.ResponseWriter, r *http.R
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SendIntegrationChatMessage operation middleware
+func (siw *ServerInterfaceWrapper) SendIntegrationChatMessage(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SendIntegrationChatMessage(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SendSystemMessage operation middleware
 func (siw *ServerInterfaceWrapper) SendSystemMessage(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2076,6 +2102,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/followers", wrapper.GetFollowers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/integrations/chat/send", wrapper.SendIntegrationChatMessage)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/system", wrapper.SendSystemMessage)

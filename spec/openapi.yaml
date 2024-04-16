@@ -1428,6 +1428,32 @@ paths:
       responses:
         '400':
           $ref: "#/components/responses/400"
+  /integrations/chat/send:
+    post:
+      summary: Send a message to chat as a specific 3rd party bot/integration based on its access token
+      operationId: sendIntegrationChatMessage
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserMessage"
+      responses:
+        '200':
+          description: Message sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401"
+        '500':
+          $ref: "#/components/responses/500"
+        default:
+          $ref: "#/components/responses/Default"
 
 components:
   schemas:

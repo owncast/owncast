@@ -770,6 +770,9 @@ type DeleteWebhookJSONRequestBody DeleteWebhookJSONBody
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
 
+// SendIntegrationChatMessageJSONRequestBody defines body for SendIntegrationChatMessage for application/json ContentType.
+type SendIntegrationChatMessageJSONRequestBody = UserMessage
+
 // SendSystemMessageJSONRequestBody defines body for SendSystemMessage for application/json ContentType.
 type SendSystemMessageJSONRequestBody = SystemMessage
 
