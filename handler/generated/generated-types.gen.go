@@ -753,6 +753,9 @@ type SetChatJoinMessagesEnabledJSONRequestBody = AdminConfigValue
 // SetSuggestedUsernameListJSONRequestBody defines body for SetSuggestedUsernameList for application/json ContentType.
 type SetSuggestedUsernameListJSONRequestBody SetSuggestedUsernameListJSONBody
 
+// SetDirectoryEnabledJSONRequestBody defines body for SetDirectoryEnabled for application/json ContentType.
+type SetDirectoryEnabledJSONRequestBody = AdminConfigValue
+
 // SetFfmpegPathJSONRequestBody defines body for SetFfmpegPath for application/json ContentType.
 type SetFfmpegPathJSONRequestBody = AdminConfigValue
 

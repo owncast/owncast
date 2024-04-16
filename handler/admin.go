@@ -202,6 +202,10 @@ func (*ServerInterfaceImpl) SetNSFW(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetNSFW)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetDirectoryEnabled)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }
