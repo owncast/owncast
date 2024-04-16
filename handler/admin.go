@@ -190,6 +190,10 @@ func (*ServerInterfaceImpl) SetRTMPServerPort(w http.ResponseWriter, r *http.Req
 	middleware.RequireAdminAuth(admin.SetRTMPServerPort)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetSocketHostOverride)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }

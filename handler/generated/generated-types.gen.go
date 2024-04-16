@@ -774,6 +774,9 @@ type SetRTMPServerPortJSONRequestBody = AdminConfigValue
 // SetServerSummaryJSONRequestBody defines body for SetServerSummary for application/json ContentType.
 type SetServerSummaryJSONRequestBody = AdminConfigValue
 
+// SetSocketHostOverrideJSONRequestBody defines body for SetSocketHostOverride for application/json ContentType.
+type SetSocketHostOverrideJSONRequestBody = AdminConfigValue
+
 // SetStreamKeysJSONRequestBody defines body for SetStreamKeys for application/json ContentType.
 type SetStreamKeysJSONRequestBody SetStreamKeysJSONBody
 

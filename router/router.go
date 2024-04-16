@@ -289,7 +289,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/config/rtmpserverport", middleware.RequireAdminAuth(admin.SetRTMPServerPort))
 
 	// Websocket host override
-	http.HandleFunc("/api/admin/config/sockethostoverride", middleware.RequireAdminAuth(admin.SetSocketHostOverride))
+	// http.HandleFunc("/api/admin/config/sockethostoverride", middleware.RequireAdminAuth(admin.SetSocketHostOverride))
 
 	// Custom video serving endpoint
 	http.HandleFunc("/api/admin/config/videoservingendpoint", middleware.RequireAdminAuth(admin.SetVideoServingEndpoint))

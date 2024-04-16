@@ -95,6 +95,9 @@ type ServerInterface interface {
 	// Change the server summary
 	// (POST /admin/config/serversummary)
 	SetServerSummary(w http.ResponseWriter, r *http.Request)
+	// Update websocket host override
+	// (POST /admin/config/sockethostoverride)
+	SetSocketHostOverride(w http.ResponseWriter, r *http.Request)
 	// Set an array of valid stream keys
 	// (POST /admin/config/streamkeys)
 	SetStreamKeys(w http.ResponseWriter, r *http.Request)
@@ -407,6 +410,12 @@ func (_ Unimplemented) SetRTMPServerPort(w http.ResponseWriter, r *http.Request)
 // Change the server summary
 // (POST /admin/config/serversummary)
 func (_ Unimplemented) SetServerSummary(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update websocket host override
+// (POST /admin/config/sockethostoverride)
+func (_ Unimplemented) SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1163,6 +1172,23 @@ func (siw *ServerInterfaceWrapper) SetServerSummary(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerSummary(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetSocketHostOverride operation middleware
+func (siw *ServerInterfaceWrapper) SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetSocketHostOverride(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2304,6 +2330,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/serversummary", wrapper.SetServerSummary)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/sockethostoverride", wrapper.SetSocketHostOverride)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/streamkeys", wrapper.SetStreamKeys)
