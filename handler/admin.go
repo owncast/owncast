@@ -178,6 +178,10 @@ func (*ServerInterfaceImpl) SetFfmpegPath(w http.ResponseWriter, r *http.Request
 	middleware.RequireAdminAuth(admin.SetFfmpegPath)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetWebServerPort(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetWebServerPort)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }

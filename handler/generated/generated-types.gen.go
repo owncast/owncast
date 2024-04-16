@@ -53,6 +53,9 @@ type AdminConfigValueValue1 = bool
 // AdminConfigValueValue2 defines model for .
 type AdminConfigValueValue2 = []string
 
+// AdminConfigValueValue3 defines model for .
+type AdminConfigValueValue3 = float32
+
 // AdminConfigValue_Value defines model for AdminConfigValue.Value.
 type AdminConfigValue_Value struct {
 	union json.RawMessage
@@ -780,6 +783,9 @@ type SetTagsJSONRequestBody = AdminConfigValue
 // SetVideoCodecJSONRequestBody defines body for SetVideoCodec for application/json ContentType.
 type SetVideoCodecJSONRequestBody = AdminConfigValue
 
+// SetWebServerPortJSONRequestBody defines body for SetWebServerPort for application/json ContentType.
+type SetWebServerPortJSONRequestBody = AdminConfigValue
+
 // SetServerWelcomeMessageJSONRequestBody defines body for SetServerWelcomeMessage for application/json ContentType.
 type SetServerWelcomeMessageJSONRequestBody = AdminConfigValue
 
@@ -896,6 +902,32 @@ func (t *AdminConfigValue_Value) FromAdminConfigValueValue2(v AdminConfigValueVa
 
 // MergeAdminConfigValueValue2 performs a merge with any union data inside the AdminConfigValue_Value, using the provided AdminConfigValueValue2
 func (t *AdminConfigValue_Value) MergeAdminConfigValueValue2(v AdminConfigValueValue2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAdminConfigValueValue3 returns the union data inside the AdminConfigValue_Value as a AdminConfigValueValue3
+func (t AdminConfigValue_Value) AsAdminConfigValueValue3() (AdminConfigValueValue3, error) {
+	var body AdminConfigValueValue3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAdminConfigValueValue3 overwrites any union data inside the AdminConfigValue_Value as the provided AdminConfigValueValue3
+func (t *AdminConfigValue_Value) FromAdminConfigValueValue3(v AdminConfigValueValue3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAdminConfigValueValue3 performs a merge with any union data inside the AdminConfigValue_Value, using the provided AdminConfigValueValue3
+func (t *AdminConfigValue_Value) MergeAdminConfigValueValue3(v AdminConfigValueValue3) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
