@@ -36,3 +36,7 @@ func (*ServerInterfaceImpl) SendChatAction(w http.ResponseWriter, r *http.Reques
 func (*ServerInterfaceImpl) ExternalUpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalUpdateMessageVisibility)(w, r)
 }
+
+func (*ServerInterfaceImpl) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalSetStreamTitle)(w, r)
+}

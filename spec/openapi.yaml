@@ -1497,6 +1497,27 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /integrations/streamtitle:
+    post:
+      summary: Stream title
+      operationId: externalSetStreamTitle
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/AdminConfigValue"
+      responses:
+        '200':
+          description: Stream title has been changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
 
 components:
   schemas:

@@ -793,6 +793,9 @@ type SendSystemMessageJSONRequestBody = SystemMessage
 // SendSystemMessageToConnectedClientJSONRequestBody defines body for SendSystemMessageToConnectedClient for application/json ContentType.
 type SendSystemMessageToConnectedClientJSONRequestBody = SystemMessage
 
+// ExternalSetStreamTitleJSONRequestBody defines body for ExternalSetStreamTitle for application/json ContentType.
+type ExternalSetStreamTitleJSONRequestBody = AdminConfigValue
+
 // PostMetricsPlaybackJSONRequestBody defines body for PostMetricsPlayback for application/json ContentType.
 type PostMetricsPlaybackJSONRequestBody = PlaybackMetrics
 
