@@ -198,6 +198,10 @@ func (*ServerInterfaceImpl) SetVideoServingEndpoint(w http.ResponseWriter, r *ht
 	middleware.RequireAdminAuth(admin.SetVideoServingEndpoint)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetNSFW(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetNSFW)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }

@@ -762,6 +762,9 @@ type SetLogoJSONRequestBody = AdminConfigValue
 // SetServerNameJSONRequestBody defines body for SetServerName for application/json ContentType.
 type SetServerNameJSONRequestBody = AdminConfigValue
 
+// SetNSFWJSONRequestBody defines body for SetNSFW for application/json ContentType.
+type SetNSFWJSONRequestBody = AdminConfigValue
+
 // SetCustomOfflineMessageJSONRequestBody defines body for SetCustomOfflineMessage for application/json ContentType.
 type SetCustomOfflineMessageJSONRequestBody = AdminConfigValue
 

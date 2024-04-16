@@ -1285,7 +1285,28 @@ paths:
         $ref: "#/components/requestBodies/AdminConfigValue"
       responses:
         '200':
-          description: Websocket host override updated
+          description: Video Serving Endpoint updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/config/nsfw:
+    post:
+      summary: Update NSFW marking
+      operationId: setNSFW
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/AdminConfigValue"
+      responses:
+        '200':
+          description: NSFW status updated
           content:
             application/json:
               schema:
