@@ -182,6 +182,10 @@ func (*ServerInterfaceImpl) SetWebServerPort(w http.ResponseWriter, r *http.Requ
 	middleware.RequireAdminAuth(admin.SetWebServerPort)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetWebServerIP(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetWebServerIP)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }

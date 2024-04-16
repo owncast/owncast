@@ -104,6 +104,9 @@ type ServerInterface interface {
 	// Set video codec
 	// (POST /admin/config/video/codec)
 	SetVideoCodec(w http.ResponseWriter, r *http.Request)
+	// Update server IP address
+	// (POST /admin/config/webserverip)
+	SetWebServerIP(w http.ResponseWriter, r *http.Request)
 	// Update server port
 	// (POST /admin/config/webserverport)
 	SetWebServerPort(w http.ResponseWriter, r *http.Request)
@@ -419,6 +422,12 @@ func (_ Unimplemented) SetTags(w http.ResponseWriter, r *http.Request) {
 // Set video codec
 // (POST /admin/config/video/codec)
 func (_ Unimplemented) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update server IP address
+// (POST /admin/config/webserverip)
+func (_ Unimplemented) SetWebServerIP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1196,6 +1205,23 @@ func (siw *ServerInterfaceWrapper) SetVideoCodec(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetVideoCodec(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetWebServerIP operation middleware
+func (siw *ServerInterfaceWrapper) SetWebServerIP(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetWebServerIP(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2261,6 +2287,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/video/codec", wrapper.SetVideoCodec)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/webserverip", wrapper.SetWebServerIP)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/webserverport", wrapper.SetWebServerPort)

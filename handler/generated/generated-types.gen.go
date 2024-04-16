@@ -783,6 +783,9 @@ type SetTagsJSONRequestBody = AdminConfigValue
 // SetVideoCodecJSONRequestBody defines body for SetVideoCodec for application/json ContentType.
 type SetVideoCodecJSONRequestBody = AdminConfigValue
 
+// SetWebServerIPJSONRequestBody defines body for SetWebServerIP for application/json ContentType.
+type SetWebServerIPJSONRequestBody = AdminConfigValue
+
 // SetWebServerPortJSONRequestBody defines body for SetWebServerPort for application/json ContentType.
 type SetWebServerPortJSONRequestBody = AdminConfigValue
 

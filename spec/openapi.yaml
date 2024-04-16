@@ -1180,7 +1180,7 @@ paths:
         $ref: "#/components/requestBodies/AdminConfigValue"
       responses:
         '200':
-          description: Tags updated
+          description: Path updated
           content:
             application/json:
               schema:
@@ -1201,7 +1201,28 @@ paths:
         $ref: "#/components/requestBodies/AdminConfigValue"
       responses:
         '200':
-          description: Tags updated
+          description: Port updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/config/webserverip:
+    post:
+      summary: Update server IP address
+      operationId: setWebServerIP
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/AdminConfigValue"
+      responses:
+        '200':
+          description: IP Address updated
           content:
             application/json:
               schema:
