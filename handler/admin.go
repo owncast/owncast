@@ -186,6 +186,10 @@ func (*ServerInterfaceImpl) SetWebServerIP(w http.ResponseWriter, r *http.Reques
 	middleware.RequireAdminAuth(admin.SetWebServerIP)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetRTMPServerPort)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }

@@ -768,6 +768,9 @@ type SetCustomOfflineMessageJSONRequestBody = AdminConfigValue
 // SetExtraPageContentJSONRequestBody defines body for SetExtraPageContent for application/json ContentType.
 type SetExtraPageContentJSONRequestBody = AdminConfigValue
 
+// SetRTMPServerPortJSONRequestBody defines body for SetRTMPServerPort for application/json ContentType.
+type SetRTMPServerPortJSONRequestBody = AdminConfigValue
+
 // SetServerSummaryJSONRequestBody defines body for SetServerSummary for application/json ContentType.
 type SetServerSummaryJSONRequestBody = AdminConfigValue
 

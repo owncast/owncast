@@ -89,6 +89,9 @@ type ServerInterface interface {
 	// Change the extra page content in memory
 	// (POST /admin/config/pagecontent)
 	SetExtraPageContent(w http.ResponseWriter, r *http.Request)
+	// Update RTMP post
+	// (POST /admin/config/rtmpserverport)
+	SetRTMPServerPort(w http.ResponseWriter, r *http.Request)
 	// Change the server summary
 	// (POST /admin/config/serversummary)
 	SetServerSummary(w http.ResponseWriter, r *http.Request)
@@ -392,6 +395,12 @@ func (_ Unimplemented) SetCustomOfflineMessage(w http.ResponseWriter, r *http.Re
 // Change the extra page content in memory
 // (POST /admin/config/pagecontent)
 func (_ Unimplemented) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update RTMP post
+// (POST /admin/config/rtmpserverport)
+func (_ Unimplemented) SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1120,6 +1129,23 @@ func (siw *ServerInterfaceWrapper) SetExtraPageContent(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetExtraPageContent(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetRTMPServerPort operation middleware
+func (siw *ServerInterfaceWrapper) SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetRTMPServerPort(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2272,6 +2298,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/pagecontent", wrapper.SetExtraPageContent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/rtmpserverport", wrapper.SetRTMPServerPort)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/serversummary", wrapper.SetServerSummary)
