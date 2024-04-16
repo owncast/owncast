@@ -32,3 +32,7 @@ func (*ServerInterfaceImpl) SendIntegrationChatMessage(w http.ResponseWriter, r 
 func (*ServerInterfaceImpl) SendChatAction(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendChatAction)(w, r)
 }
+
+func (*ServerInterfaceImpl) ExternalUpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalUpdateMessageVisibility)(w, r)
+}

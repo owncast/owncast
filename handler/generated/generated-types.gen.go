@@ -72,6 +72,12 @@ type AdminLog struct {
 	Time    *time.Time `json:"time,omitempty"`
 }
 
+// AdminMessageVisibilityUpdate defines model for AdminMessageVisibilityUpdate.
+type AdminMessageVisibilityUpdate struct {
+	IdArray *[]string `json:"idArray,omitempty"`
+	Visible *bool     `json:"visible,omitempty"`
+}
+
 // AdminNotificationsConfig defines model for AdminNotificationsConfig.
 type AdminNotificationsConfig struct {
 	Browser *BrowserNotificationConfiguration `json:"browser,omitempty"`
@@ -580,12 +586,6 @@ type DeleteExternalAPIUserJSONBody struct {
 	Token *string `json:"token,omitempty"`
 }
 
-// UpdateMessageVisibilityJSONBody defines parameters for UpdateMessageVisibility.
-type UpdateMessageVisibilityJSONBody struct {
-	IdArray *[]string `json:"idArray,omitempty"`
-	Visible *bool     `json:"visible,omitempty"`
-}
-
 // UpdateUserEnabledJSONBody defines parameters for UpdateUserEnabled.
 type UpdateUserEnabledJSONBody struct {
 	Enabled *bool   `json:"enabled,omitempty"`
@@ -701,7 +701,7 @@ type CreateExternalAPIUserJSONRequestBody CreateExternalAPIUserJSONBody
 type DeleteExternalAPIUserJSONRequestBody DeleteExternalAPIUserJSONBody
 
 // UpdateMessageVisibilityJSONRequestBody defines body for UpdateMessageVisibility for application/json ContentType.
-type UpdateMessageVisibilityJSONRequestBody UpdateMessageVisibilityJSONBody
+type UpdateMessageVisibilityJSONRequestBody = AdminMessageVisibilityUpdate
 
 // BanIPAddressJSONRequestBody defines body for BanIPAddress for application/json ContentType.
 type BanIPAddressJSONRequestBody = AdminConfigValue
@@ -780,6 +780,9 @@ type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
 
 // SendChatActionJSONRequestBody defines body for SendChatAction for application/json ContentType.
 type SendChatActionJSONRequestBody = SystemActionEvent
+
+// ExternalUpdateMessageVisibilityJSONRequestBody defines body for ExternalUpdateMessageVisibility for application/json ContentType.
+type ExternalUpdateMessageVisibilityJSONRequestBody = AdminMessageVisibilityUpdate
 
 // SendIntegrationChatMessageJSONRequestBody defines body for SendIntegrationChatMessage for application/json ContentType.
 type SendIntegrationChatMessageJSONRequestBody = UserMessage

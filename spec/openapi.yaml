@@ -409,14 +409,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                idArray:
-                  type: array
-                  items:
-                    type: string
-                visible:
-                  type: boolean
+              $ref: "#/components/schemas/AdminMessageVisibilityUpdate"
       responses:
         '200':
           description: Messages updated
@@ -1480,6 +1473,30 @@ paths:
           $ref: "#/components/responses/500"
         default:
           $ref: "#/components/responses/Default"
+  /integrations/chat/messagevisibility:
+    post:
+      summary: Hide chat message
+      operationId: externalUpdateMessageVisibility
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminMessageVisibilityUpdate"
+      responses:
+        '200':
+          description: Messages updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
 
 components:
   schemas:
@@ -2249,6 +2266,15 @@ components:
           oneOf:
           - type: string
           - type: boolean
+    AdminMessageVisibilityUpdate:
+      type: object
+      properties:
+        idArray:
+          type: array
+          items:
+            type: string
+        visible:
+          type: boolean
   headers:
     'Access-Control-Allow-Origin':
       schema:

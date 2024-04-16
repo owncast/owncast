@@ -179,6 +179,9 @@ type ServerInterface interface {
 	// Send a user action to chat
 	// (POST /integrations/chat/action)
 	SendChatAction(w http.ResponseWriter, r *http.Request)
+	// Hide chat message
+	// (POST /integrations/chat/messagevisibility)
+	ExternalUpdateMessageVisibility(w http.ResponseWriter, r *http.Request)
 	// Send a message to chat as a specific 3rd party bot/integration based on its access token
 	// (POST /integrations/chat/send)
 	SendIntegrationChatMessage(w http.ResponseWriter, r *http.Request)
@@ -547,6 +550,12 @@ func (_ Unimplemented) GetFollowers(w http.ResponseWriter, r *http.Request, para
 // Send a user action to chat
 // (POST /integrations/chat/action)
 func (_ Unimplemented) SendChatAction(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Hide chat message
+// (POST /integrations/chat/messagevisibility)
+func (_ Unimplemented) ExternalUpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1635,6 +1644,23 @@ func (siw *ServerInterfaceWrapper) SendChatAction(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// ExternalUpdateMessageVisibility operation middleware
+func (siw *ServerInterfaceWrapper) ExternalUpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExternalUpdateMessageVisibility(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SendIntegrationChatMessage operation middleware
 func (siw *ServerInterfaceWrapper) SendIntegrationChatMessage(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2131,6 +2157,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/action", wrapper.SendChatAction)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/integrations/chat/messagevisibility", wrapper.ExternalUpdateMessageVisibility)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/send", wrapper.SendIntegrationChatMessage)
