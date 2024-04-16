@@ -22,7 +22,6 @@ import (
 	"github.com/owncast/owncast/controllers/moderation"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/handler"
 	"github.com/owncast/owncast/router/middleware"
 )
@@ -269,7 +268,7 @@ func Start() error {
 	// http.HandleFunc("/api/integrations/chat", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, controllers.ExternalGetChatMessages))
 
 	// Connected clients
-	http.HandleFunc("/api/integrations/clients", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalGetConnectedChatClients))
+	// http.HandleFunc("/api/integrations/clients", middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalGetConnectedChatClients))
 
 	// Logo path
 	http.HandleFunc("/api/admin/config/logo", middleware.RequireAdminAuth(admin.SetLogo))

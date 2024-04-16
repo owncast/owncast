@@ -202,6 +202,9 @@ type ChatClient struct {
 	UserAgent    *string     `json:"userAgent,omitempty"`
 }
 
+// ChatClients defines model for ChatClients.
+type ChatClients = []ChatClient
+
 // ChatMessages defines model for ChatMessages.
 type ChatMessages = []ChatMessages_Item
 

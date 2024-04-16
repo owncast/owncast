@@ -197,6 +197,9 @@ type ServerInterface interface {
 	// Send a user message to chat
 	// (POST /integrations/chat/user)
 	SendUserMessage(w http.ResponseWriter, r *http.Request)
+	// Connected clients
+	// (GET /integrations/clients)
+	ExternalGetConnectedChatClients(w http.ResponseWriter, r *http.Request)
 	// Stream title
 	// (POST /integrations/streamtitle)
 	ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request)
@@ -592,6 +595,12 @@ func (_ Unimplemented) SendSystemMessageToConnectedClient(w http.ResponseWriter,
 // Send a user message to chat
 // (POST /integrations/chat/user)
 func (_ Unimplemented) SendUserMessage(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Connected clients
+// (GET /integrations/clients)
+func (_ Unimplemented) ExternalGetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1795,6 +1804,23 @@ func (siw *ServerInterfaceWrapper) SendUserMessage(w http.ResponseWriter, r *htt
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// ExternalGetConnectedChatClients operation middleware
+func (siw *ServerInterfaceWrapper) ExternalGetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExternalGetConnectedChatClients(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // ExternalSetStreamTitle operation middleware
 func (siw *ServerInterfaceWrapper) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2247,6 +2273,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/user", wrapper.SendUserMessage)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/integrations/clients", wrapper.ExternalGetConnectedChatClients)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/streamtitle", wrapper.ExternalSetStreamTitle)

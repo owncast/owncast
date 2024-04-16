@@ -45,3 +45,7 @@ func (*ServerInterfaceImpl) ExternalSetStreamTitle(w http.ResponseWriter, r *htt
 func (*ServerInterfaceImpl) ExternalGetChatMessages(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, controllers.ExternalGetChatMessages)(w, r)
 }
+
+func (*ServerInterfaceImpl) ExternalGetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalGetConnectedChatClients)(w, r)
+}

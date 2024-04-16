@@ -371,9 +371,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ChatClient"
+                $ref: "#/components/schemas/ChatClients"
         '400':
           $ref: "#/components/responses/400"
         '401':
@@ -1537,6 +1535,25 @@ paths:
           $ref: "#/components/responses/501"
         default:
           $ref: "#/components/responses/Default"
+  /integrations/clients:
+    get:
+      summary: Connected clients
+      operationId: externalGetConnectedChatClients
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of chat clients
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatClients"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
 
 components:
   schemas:
@@ -2061,6 +2078,10 @@ components:
           type: string
         messageCount:
           type: integer
+    ChatClients:
+      type: array
+      items:
+        $ref: "#/components/schemas/ChatClient"
     IPAddress:
       type: object
       properties:
