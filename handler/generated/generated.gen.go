@@ -203,6 +203,9 @@ type ServerInterface interface {
 	// Delete a single webhook
 	// (POST /admin/webhooks/delete)
 	DeleteWebhook(w http.ResponseWriter, r *http.Request)
+	// Reset YP configuration
+	// (GET /admin/yp/reset)
+	ResetYPRegistration(w http.ResponseWriter, r *http.Request)
 	// Gets a list of chat messages
 	// (GET /chat)
 	GetChatMessages(w http.ResponseWriter, r *http.Request, params GetChatMessagesParams)
@@ -650,6 +653,12 @@ func (_ Unimplemented) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 // Delete a single webhook
 // (POST /admin/webhooks/delete)
 func (_ Unimplemented) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Reset YP configuration
+// (GET /admin/yp/reset)
+func (_ Unimplemented) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1899,6 +1908,23 @@ func (siw *ServerInterfaceWrapper) DeleteWebhook(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// ResetYPRegistration operation middleware
+func (siw *ServerInterfaceWrapper) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ResetYPRegistration(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetChatMessages operation middleware
 func (siw *ServerInterfaceWrapper) GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2646,6 +2672,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/webhooks/delete", wrapper.DeleteWebhook)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/yp/reset", wrapper.ResetYPRegistration)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/chat", wrapper.GetChatMessages)

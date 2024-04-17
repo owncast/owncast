@@ -1685,6 +1685,25 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/yp/reset:
+    get:
+      summary: Reset YP configuration
+      operationId: resetYPRegistration
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: YP Registration has been reset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat

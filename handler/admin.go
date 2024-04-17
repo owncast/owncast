@@ -261,3 +261,7 @@ func (*ServerInterfaceImpl) AutoUpdateStart(w http.ResponseWriter, r *http.Reque
 func (*ServerInterfaceImpl) AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.AutoUpdateForceQuit)(w, r)
 }
+
+func (*ServerInterfaceImpl) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.ResetYPRegistration)(w, r)
+}
