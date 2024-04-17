@@ -803,6 +803,9 @@ type SetTagsJSONRequestBody = AdminConfigValue
 // SetVideoCodecJSONRequestBody defines body for SetVideoCodec for application/json ContentType.
 type SetVideoCodecJSONRequestBody = AdminConfigValue
 
+// SetStreamLatencyLevelJSONRequestBody defines body for SetStreamLatencyLevel for application/json ContentType.
+type SetStreamLatencyLevelJSONRequestBody = AdminConfigValue
+
 // SetVideoServingEndpointJSONRequestBody defines body for SetVideoServingEndpoint for application/json ContentType.
 type SetVideoServingEndpointJSONRequestBody = AdminConfigValue
 

@@ -1099,6 +1099,27 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/config/video/streamlatencylevel:
+    post:
+      summary: Set the number of video segments and duration per segment in a playlist
+      operationId: setStreamLatencyLevel
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/AdminConfigValue"
+      responses:
+        '200':
+          description: Stream latency updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/config/appearance:
     post:
       summary: Set style/color/css values

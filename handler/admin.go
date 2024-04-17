@@ -162,6 +162,10 @@ func (*ServerInterfaceImpl) SetVideoCodec(w http.ResponseWriter, r *http.Request
 	middleware.RequireAdminAuth(admin.SetVideoCodec)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetStreamLatencyLevel)(w, r)
+}
+
 func (*ServerInterfaceImpl) SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetCustomColorVariableValues)(w, r)
 }
