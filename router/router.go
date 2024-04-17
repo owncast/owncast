@@ -328,7 +328,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/config/customjavascript", middleware.RequireAdminAuth(admin.SetCustomJavascript))
 
 	// Video playback metrics
-	http.HandleFunc("/api/admin/metrics/video", middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics))
+	// http.HandleFunc("/api/admin/metrics/video", middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics))
 
 	// Is the viewer count hidden from viewers
 	http.HandleFunc("/api/admin/config/hideviewercount", middleware.RequireAdminAuth(admin.SetHideViewerCount))

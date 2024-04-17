@@ -1775,6 +1775,78 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/metrics/video:
+    get:
+      summary: Get video playback metrics
+      operationId: getVideoPlaybackMetrics
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Video playback metrics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  qualityVariantChanges:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  highestLatency:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  medianLatency:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  lowestLatency:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  medianSegmentDownloadDuration:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  maximumSegmentDownloadDuration:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  minimumSegmentDownloadDuration:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  minPlayerBitrate:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  medianPlayerBitrate:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  maxPlayerBitrate:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  availableBitrates:
+                    type: array
+                    items:
+                      type: integer
+                  segmentLength:
+                    type: integer
+                  representation:
+                    type: integer
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat

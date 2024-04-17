@@ -277,3 +277,7 @@ func (*ServerInterfaceImpl) AutoUpdateForceQuit(w http.ResponseWriter, r *http.R
 func (*ServerInterfaceImpl) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.ResetYPRegistration)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics)(w, r)
+}
