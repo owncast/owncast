@@ -325,7 +325,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/config/customstyles", middleware.RequireAdminAuth(admin.SetCustomStyles))
 
 	// set custom style javascript
-	http.HandleFunc("/api/admin/config/customjavascript", middleware.RequireAdminAuth(admin.SetCustomJavascript))
+	// http.HandleFunc("/api/admin/config/customjavascript", middleware.RequireAdminAuth(admin.SetCustomJavascript))
 
 	// Video playback metrics
 	http.HandleFunc("/api/admin/metrics/video", middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics))

@@ -234,6 +234,10 @@ func (*ServerInterfaceImpl) SetCustomStyles(w http.ResponseWriter, r *http.Reque
 	middleware.RequireAdminAuth(admin.SetCustomStyles)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetCustomJavascript(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetCustomJavascript)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }
