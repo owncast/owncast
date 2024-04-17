@@ -1120,6 +1120,35 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/config/video/streamoutputvariants:
+    post:
+      summary: Set an array of video output configurations
+      operationId: setStreamOutputVariants
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StreamOutputVariant'
+      responses:
+        '200':
+          description: Stream Output Variants updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/config/appearance:
     post:
       summary: Set style/color/css values

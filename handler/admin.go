@@ -166,6 +166,10 @@ func (*ServerInterfaceImpl) SetStreamLatencyLevel(w http.ResponseWriter, r *http
 	middleware.RequireAdminAuth(admin.SetStreamLatencyLevel)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetStreamOutputVariants)(w, r)
+}
+
 func (*ServerInterfaceImpl) SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetCustomColorVariableValues)(w, r)
 }

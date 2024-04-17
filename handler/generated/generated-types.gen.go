@@ -635,6 +635,11 @@ type SetStreamKeysJSONBody struct {
 	Value *[]StreamKey `json:"value,omitempty"`
 }
 
+// SetStreamOutputVariantsJSONBody defines parameters for SetStreamOutputVariants.
+type SetStreamOutputVariantsJSONBody struct {
+	Value *[]StreamOutputVariant `json:"value,omitempty"`
+}
+
 // DeleteCustomEmojiJSONBody defines parameters for DeleteCustomEmoji.
 type DeleteCustomEmojiJSONBody struct {
 	Name *string `json:"name,omitempty"`
@@ -805,6 +810,9 @@ type SetVideoCodecJSONRequestBody = AdminConfigValue
 
 // SetStreamLatencyLevelJSONRequestBody defines body for SetStreamLatencyLevel for application/json ContentType.
 type SetStreamLatencyLevelJSONRequestBody = AdminConfigValue
+
+// SetStreamOutputVariantsJSONRequestBody defines body for SetStreamOutputVariants for application/json ContentType.
+type SetStreamOutputVariantsJSONRequestBody SetStreamOutputVariantsJSONBody
 
 // SetVideoServingEndpointJSONRequestBody defines body for SetVideoServingEndpoint for application/json ContentType.
 type SetVideoServingEndpointJSONRequestBody = AdminConfigValue

@@ -122,6 +122,9 @@ type ServerInterface interface {
 	// Set the number of video segments and duration per segment in a playlist
 	// (POST /admin/config/video/streamlatencylevel)
 	SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request)
+	// Set an array of video output configurations
+	// (POST /admin/config/video/streamoutputvariants)
+	SetStreamOutputVariants(w http.ResponseWriter, r *http.Request)
 	// Update custom video serving endpoint
 	// (POST /admin/config/videoservingendpoint)
 	SetVideoServingEndpoint(w http.ResponseWriter, r *http.Request)
@@ -479,6 +482,12 @@ func (_ Unimplemented) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 // Set the number of video segments and duration per segment in a playlist
 // (POST /admin/config/video/streamlatencylevel)
 func (_ Unimplemented) SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set an array of video output configurations
+// (POST /admin/config/video/streamoutputvariants)
+func (_ Unimplemented) SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1370,6 +1379,23 @@ func (siw *ServerInterfaceWrapper) SetStreamLatencyLevel(w http.ResponseWriter, 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamLatencyLevel(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetStreamOutputVariants operation middleware
+func (siw *ServerInterfaceWrapper) SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetStreamOutputVariants(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2487,6 +2513,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/video/streamlatencylevel", wrapper.SetStreamLatencyLevel)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/video/streamoutputvariants", wrapper.SetStreamOutputVariants)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/videoservingendpoint", wrapper.SetVideoServingEndpoint)
