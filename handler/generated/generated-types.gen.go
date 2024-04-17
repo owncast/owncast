@@ -782,6 +782,9 @@ type SetCustomStylesJSONRequestBody = AdminConfigValue
 // SetDirectoryEnabledJSONRequestBody defines body for SetDirectoryEnabled for application/json ContentType.
 type SetDirectoryEnabledJSONRequestBody = AdminConfigValue
 
+// SetDisableSearchIndexingJSONRequestBody defines body for SetDisableSearchIndexing for application/json ContentType.
+type SetDisableSearchIndexingJSONRequestBody = AdminConfigValue
+
 // SetExternalActionsJSONRequestBody defines body for SetExternalActions for application/json ContentType.
 type SetExternalActionsJSONRequestBody SetExternalActionsJSONBody
 

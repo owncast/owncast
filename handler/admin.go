@@ -242,6 +242,10 @@ func (*ServerInterfaceImpl) SetHideViewerCount(w http.ResponseWriter, r *http.Re
 	middleware.RequireAdminAuth(admin.SetHideViewerCount)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetDisableSearchIndexing)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }
