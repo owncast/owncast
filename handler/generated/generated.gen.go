@@ -98,6 +98,9 @@ type ServerInterface interface {
 	// Update RTMP post
 	// (POST /admin/config/rtmpserverport)
 	SetRTMPServerPort(w http.ResponseWriter, r *http.Request)
+	// Update S3 configuration
+	// (POST /admin/config/s3)
+	SetS3Configuration(w http.ResponseWriter, r *http.Request)
 	// Change the server summary
 	// (POST /admin/config/serversummary)
 	SetServerSummary(w http.ResponseWriter, r *http.Request)
@@ -434,6 +437,12 @@ func (_ Unimplemented) SetExtraPageContent(w http.ResponseWriter, r *http.Reques
 // Update RTMP post
 // (POST /admin/config/rtmpserverport)
 func (_ Unimplemented) SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update S3 configuration
+// (POST /admin/config/s3)
+func (_ Unimplemented) SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1243,6 +1252,23 @@ func (siw *ServerInterfaceWrapper) SetRTMPServerPort(w http.ResponseWriter, r *h
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetRTMPServerPort(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetS3Configuration operation middleware
+func (siw *ServerInterfaceWrapper) SetS3Configuration(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetS3Configuration(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2489,6 +2515,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/rtmpserverport", wrapper.SetRTMPServerPort)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/s3", wrapper.SetS3Configuration)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/serversummary", wrapper.SetServerSummary)

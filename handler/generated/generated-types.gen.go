@@ -625,6 +625,11 @@ type SetSuggestedUsernameListJSONBody struct {
 	Value *[]string `json:"value,omitempty"`
 }
 
+// SetS3ConfigurationJSONBody defines parameters for SetS3Configuration.
+type SetS3ConfigurationJSONBody struct {
+	Value *S3Info `json:"value,omitempty"`
+}
+
 // SetSocialHandlesJSONBody defines parameters for SetSocialHandles.
 type SetSocialHandlesJSONBody struct {
 	Value *[]SocialHandle `json:"value,omitempty"`
@@ -786,6 +791,9 @@ type SetExtraPageContentJSONRequestBody = AdminConfigValue
 
 // SetRTMPServerPortJSONRequestBody defines body for SetRTMPServerPort for application/json ContentType.
 type SetRTMPServerPortJSONRequestBody = AdminConfigValue
+
+// SetS3ConfigurationJSONRequestBody defines body for SetS3Configuration for application/json ContentType.
+type SetS3ConfigurationJSONRequestBody SetS3ConfigurationJSONBody
 
 // SetServerSummaryJSONRequestBody defines body for SetServerSummary for application/json ContentType.
 type SetServerSummaryJSONRequestBody = AdminConfigValue

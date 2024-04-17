@@ -1417,7 +1417,33 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
-
+  /admin/config/s3:
+    post:
+      summary: Update S3 configuration
+      operationId: setS3Configuration
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  $ref: "#/components/schemas/S3Info"
+      responses:
+        '200':
+          description: Directory Enabled updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/webhooks:
     get:
       summary: Get all the webhooks

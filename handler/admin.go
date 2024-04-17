@@ -218,6 +218,10 @@ func (*ServerInterfaceImpl) SetSocialHandles(w http.ResponseWriter, r *http.Requ
 	middleware.RequireAdminAuth(admin.SetSocialHandles)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetS3Configuration(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetS3Configuration)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }
