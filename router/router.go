@@ -331,7 +331,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/metrics/video", middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics))
 
 	// Is the viewer count hidden from viewers
-	http.HandleFunc("/api/admin/config/hideviewercount", middleware.RequireAdminAuth(admin.SetHideViewerCount))
+	// http.HandleFunc("/api/admin/config/hideviewercount", middleware.RequireAdminAuth(admin.SetHideViewerCount))
 
 	// set disabling of search indexing
 	http.HandleFunc("/api/admin/config/disablesearchindexing", middleware.RequireAdminAuth(admin.SetDisableSearchIndexing))

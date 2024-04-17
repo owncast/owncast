@@ -788,6 +788,9 @@ type SetExternalActionsJSONRequestBody SetExternalActionsJSONBody
 // SetFfmpegPathJSONRequestBody defines body for SetFfmpegPath for application/json ContentType.
 type SetFfmpegPathJSONRequestBody = AdminConfigValue
 
+// SetHideViewerCountJSONRequestBody defines body for SetHideViewerCount for application/json ContentType.
+type SetHideViewerCountJSONRequestBody = AdminConfigValue
+
 // SetLogoJSONRequestBody defines body for SetLogo for application/json ContentType.
 type SetLogoJSONRequestBody = AdminConfigValue
 

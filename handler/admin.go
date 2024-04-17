@@ -238,6 +238,10 @@ func (*ServerInterfaceImpl) SetCustomJavascript(w http.ResponseWriter, r *http.R
 	middleware.RequireAdminAuth(admin.SetCustomJavascript)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetHideViewerCount)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }

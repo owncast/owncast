@@ -89,6 +89,9 @@ type ServerInterface interface {
 	// Update FFMPEG path
 	// (POST /admin/config/ffmpegpath)
 	SetFfmpegPath(w http.ResponseWriter, r *http.Request)
+	// Update hide viewer count
+	// (POST /admin/config/hideviewercount)
+	SetHideViewerCount(w http.ResponseWriter, r *http.Request)
 	// Update logo
 	// (POST /admin/config/logo)
 	SetLogo(w http.ResponseWriter, r *http.Request)
@@ -437,6 +440,12 @@ func (_ Unimplemented) SetExternalActions(w http.ResponseWriter, r *http.Request
 // Update FFMPEG path
 // (POST /admin/config/ffmpegpath)
 func (_ Unimplemented) SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update hide viewer count
+// (POST /admin/config/hideviewercount)
+func (_ Unimplemented) SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1255,6 +1264,23 @@ func (siw *ServerInterfaceWrapper) SetFfmpegPath(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFfmpegPath(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetHideViewerCount operation middleware
+func (siw *ServerInterfaceWrapper) SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetHideViewerCount(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2662,6 +2688,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/ffmpegpath", wrapper.SetFfmpegPath)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/hideviewercount", wrapper.SetHideViewerCount)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/logo", wrapper.SetLogo)
