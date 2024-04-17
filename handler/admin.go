@@ -230,6 +230,10 @@ func (*ServerInterfaceImpl) SetExternalActions(w http.ResponseWriter, r *http.Re
 	middleware.RequireAdminAuth(admin.SetExternalActions)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetCustomStyles(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetCustomStyles)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }

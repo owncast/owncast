@@ -74,10 +74,13 @@ type ServerInterface interface {
 	// Set the suggested chat usernames that will be assigned automatically
 	// (POST /admin/config/chat/suggestedusernames)
 	SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request)
+	// Update custom styles
+	// (POST /admin/config/customstyles)
+	SetCustomStyles(w http.ResponseWriter, r *http.Request)
 	// Update directory enabled
 	// (POST /admin/config/directoryenabled)
 	SetDirectoryEnabled(w http.ResponseWriter, r *http.Request)
-	// Update external actions links
+	// Update external action links
 	// (POST /admin/config/externalactions)
 	SetExternalActions(w http.ResponseWriter, r *http.Request)
 	// Update FFMPEG path
@@ -401,13 +404,19 @@ func (_ Unimplemented) SetSuggestedUsernameList(w http.ResponseWriter, r *http.R
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// Update custom styles
+// (POST /admin/config/customstyles)
+func (_ Unimplemented) SetCustomStyles(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Update directory enabled
 // (POST /admin/config/directoryenabled)
 func (_ Unimplemented) SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// Update external actions links
+// Update external action links
 // (POST /admin/config/externalactions)
 func (_ Unimplemented) SetExternalActions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
@@ -1143,6 +1152,23 @@ func (siw *ServerInterfaceWrapper) SetSuggestedUsernameList(w http.ResponseWrite
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetSuggestedUsernameList(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetCustomStyles operation middleware
+func (siw *ServerInterfaceWrapper) SetCustomStyles(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetCustomStyles(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2569,6 +2595,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/suggestedusernames", wrapper.SetSuggestedUsernameList)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/customstyles", wrapper.SetCustomStyles)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/directoryenabled", wrapper.SetDirectoryEnabled)
