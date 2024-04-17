@@ -222,6 +222,10 @@ func (*ServerInterfaceImpl) SetS3Configuration(w http.ResponseWriter, r *http.Re
 	middleware.RequireAdminAuth(admin.SetS3Configuration)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetServerURL(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetServerURL)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }

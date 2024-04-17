@@ -798,6 +798,9 @@ type SetS3ConfigurationJSONRequestBody SetS3ConfigurationJSONBody
 // SetServerSummaryJSONRequestBody defines body for SetServerSummary for application/json ContentType.
 type SetServerSummaryJSONRequestBody = AdminConfigValue
 
+// SetServerURLJSONRequestBody defines body for SetServerURL for application/json ContentType.
+type SetServerURLJSONRequestBody = AdminConfigValue
+
 // SetSocialHandlesJSONRequestBody defines body for SetSocialHandles for application/json ContentType.
 type SetSocialHandlesJSONRequestBody SetSocialHandlesJSONBody
 
