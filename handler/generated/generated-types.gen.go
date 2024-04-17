@@ -625,6 +625,11 @@ type SetSuggestedUsernameListJSONBody struct {
 	Value *[]string `json:"value,omitempty"`
 }
 
+// SetSocialHandlesJSONBody defines parameters for SetSocialHandles.
+type SetSocialHandlesJSONBody struct {
+	Value *[]SocialHandle `json:"value,omitempty"`
+}
+
 // SetStreamKeysJSONBody defines parameters for SetStreamKeys.
 type SetStreamKeysJSONBody struct {
 	Value *[]StreamKey `json:"value,omitempty"`
@@ -779,6 +784,9 @@ type SetRTMPServerPortJSONRequestBody = AdminConfigValue
 
 // SetServerSummaryJSONRequestBody defines body for SetServerSummary for application/json ContentType.
 type SetServerSummaryJSONRequestBody = AdminConfigValue
+
+// SetSocialHandlesJSONRequestBody defines body for SetSocialHandles for application/json ContentType.
+type SetSocialHandlesJSONRequestBody SetSocialHandlesJSONBody
 
 // SetSocketHostOverrideJSONRequestBody defines body for SetSocketHostOverride for application/json ContentType.
 type SetSocketHostOverrideJSONRequestBody = AdminConfigValue
