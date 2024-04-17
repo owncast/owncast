@@ -625,6 +625,11 @@ type SetSuggestedUsernameListJSONBody struct {
 	Value *[]string `json:"value,omitempty"`
 }
 
+// SetExternalActionsJSONBody defines parameters for SetExternalActions.
+type SetExternalActionsJSONBody struct {
+	Value *[]ExternalAction `json:"value,omitempty"`
+}
+
 // SetS3ConfigurationJSONBody defines parameters for SetS3Configuration.
 type SetS3ConfigurationJSONBody struct {
 	Value *S3Info `json:"value,omitempty"`
@@ -770,6 +775,9 @@ type SetSuggestedUsernameListJSONRequestBody SetSuggestedUsernameListJSONBody
 
 // SetDirectoryEnabledJSONRequestBody defines body for SetDirectoryEnabled for application/json ContentType.
 type SetDirectoryEnabledJSONRequestBody = AdminConfigValue
+
+// SetExternalActionsJSONRequestBody defines body for SetExternalActions for application/json ContentType.
+type SetExternalActionsJSONRequestBody SetExternalActionsJSONBody
 
 // SetFfmpegPathJSONRequestBody defines body for SetFfmpegPath for application/json ContentType.
 type SetFfmpegPathJSONRequestBody = AdminConfigValue

@@ -226,6 +226,10 @@ func (*ServerInterfaceImpl) SetServerURL(w http.ResponseWriter, r *http.Request)
 	middleware.RequireAdminAuth(admin.SetServerURL)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetExternalActions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetExternalActions)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
 }

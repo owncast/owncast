@@ -77,6 +77,9 @@ type ServerInterface interface {
 	// Update directory enabled
 	// (POST /admin/config/directoryenabled)
 	SetDirectoryEnabled(w http.ResponseWriter, r *http.Request)
+	// Update external actions links
+	// (POST /admin/config/externalactions)
+	SetExternalActions(w http.ResponseWriter, r *http.Request)
 	// Update FFMPEG path
 	// (POST /admin/config/ffmpegpath)
 	SetFfmpegPath(w http.ResponseWriter, r *http.Request)
@@ -401,6 +404,12 @@ func (_ Unimplemented) SetSuggestedUsernameList(w http.ResponseWriter, r *http.R
 // Update directory enabled
 // (POST /admin/config/directoryenabled)
 func (_ Unimplemented) SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update external actions links
+// (POST /admin/config/externalactions)
+func (_ Unimplemented) SetExternalActions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1151,6 +1160,23 @@ func (siw *ServerInterfaceWrapper) SetDirectoryEnabled(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetDirectoryEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetExternalActions operation middleware
+func (siw *ServerInterfaceWrapper) SetExternalActions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetExternalActions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2546,6 +2572,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/directoryenabled", wrapper.SetDirectoryEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/externalactions", wrapper.SetExternalActions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/ffmpegpath", wrapper.SetFfmpegPath)
