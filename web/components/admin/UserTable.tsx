@@ -1,5 +1,5 @@
 import { Table } from 'antd';
-import format from 'date-fns/format';
+import { format } from 'date-fns';
 import { SortOrder } from 'antd/lib/table/interface';
 import { FC } from 'react';
 import { User } from '../../types/chat';

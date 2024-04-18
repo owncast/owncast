@@ -135,12 +135,6 @@ const AddKeyButton = ({ setShowAddKeyForm }) => (
     <PlusOutlined />
   </Button>
 );
-const copyText = (text: string) => {
-  navigator.clipboard
-    .writeText(text)
-    .then(() => message.success('Copied to clipboard'))
-    .catch(() => message.error('Failed to copy to clipboard'));
-};
 
 const StreamKeys = () => {
   const serverStatusData = useContext(ServerStatusContext);
@@ -171,22 +165,22 @@ const StreamKeys = () => {
       title: 'Key',
       dataIndex: 'key',
       key: 'key',
-      render: text => (
+      render: key => (
         <Space direction="horizontal">
           <Paragraph
             copyable={{
-              text: showKeyMap[text] ? text : '**********',
-              onCopy: () => copyText(text),
+              text: key,
+              onCopy: () => message.success('Copied to clipboard'),
             }}
           >
-            {showKeyMap[text] ? text : '**********'}
+            {showKeyMap[key] ? key : '**********'}
           </Paragraph>
 
           <Button
             type="link"
             style={{ top: '-7px' }}
             icon={<EyeOutlined />}
-            onClick={() => handleToggleShowKey(text)}
+            onClick={() => handleToggleShowKey(key)}
           />
         </Space>
       ),

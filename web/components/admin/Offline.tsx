@@ -170,7 +170,7 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
           <NewsFeed />
         </Col>
       </Row>
-      <LogTable logs={logs} pageSize={5} />
+      <LogTable logs={logs} initialPageSize={5} />
     </>
   );
 };
