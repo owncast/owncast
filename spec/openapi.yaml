@@ -1641,7 +1641,28 @@ paths:
         $ref: "#/components/requestBodies/AdminConfigValue"
       responses:
         '200':
-          description: Search Indexing updated
+          description: Federation features enabled/disabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/config/federation/private:
+    post:
+      summary: Set if federation activities are private
+      operationId: SetFederationActivityPrivate
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/AdminConfigValue"
+      responses:
+        '200':
+          description: Private status set
           content:
             application/json:
               schema:

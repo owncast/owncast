@@ -150,3 +150,7 @@ func (*ServerInterfaceImpl) SetDisableSearchIndexing(w http.ResponseWriter, r *h
 func (*ServerInterfaceImpl) SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetFederationEnabled)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetFederationActivityPrivate)(w, r)
+}
