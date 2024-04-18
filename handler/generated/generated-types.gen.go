@@ -934,6 +934,9 @@ type DeleteCustomEmojiJSONRequestBody DeleteCustomEmojiJSONBody
 // UploadCustomEmojiJSONRequestBody defines body for UploadCustomEmoji for application/json ContentType.
 type UploadCustomEmojiJSONRequestBody UploadCustomEmojiJSONBody
 
+// SendFederatedMessageJSONRequestBody defines body for SendFederatedMessage for application/json ContentType.
+type SendFederatedMessageJSONRequestBody = AdminConfigValue
+
 // ApproveFollowerJSONRequestBody defines body for ApproveFollower for application/json ContentType.
 type ApproveFollowerJSONRequestBody ApproveFollowerJSONBody
 

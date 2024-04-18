@@ -2151,6 +2151,27 @@ paths:
 
         Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
       operationId: deletePrometheusAPI
+  /admin/federation/send:
+    post:
+      summary: Send a public message to the Fediverse from the server's user
+      operationId: sendFederatedMessage
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/AdminConfigValue"
+      responses:
+        '200':
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat

@@ -149,3 +149,7 @@ func (*ServerInterfaceImpl) ResetYPRegistration(w http.ResponseWriter, r *http.R
 func (*ServerInterfaceImpl) GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics)(w, r)
 }
+
+func (*ServerInterfaceImpl) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SendFederatedMessage)(w, r)
+}

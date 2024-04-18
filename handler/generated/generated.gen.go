@@ -191,6 +191,9 @@ type ServerInterface interface {
 	// Upload custom emoji
 	// (POST /admin/emoji/upload)
 	UploadCustomEmoji(w http.ResponseWriter, r *http.Request)
+	// Send a public message to the Fediverse from the server's user
+	// (POST /admin/federation/send)
+	SendFederatedMessage(w http.ResponseWriter, r *http.Request)
 	// Get followers
 	// (GET /admin/followers)
 	GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams)
@@ -692,6 +695,12 @@ func (_ Unimplemented) DeleteCustomEmoji(w http.ResponseWriter, r *http.Request)
 // Upload custom emoji
 // (POST /admin/emoji/upload)
 func (_ Unimplemented) UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Send a public message to the Fediverse from the server's user
+// (POST /admin/federation/send)
+func (_ Unimplemented) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1995,6 +2004,23 @@ func (siw *ServerInterfaceWrapper) UploadCustomEmoji(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SendFederatedMessage operation middleware
+func (siw *ServerInterfaceWrapper) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SendFederatedMessage(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetFollowersAdmin operation middleware
 func (siw *ServerInterfaceWrapper) GetFollowersAdmin(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -3261,6 +3287,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/emoji/upload", wrapper.UploadCustomEmoji)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/federation/send", wrapper.SendFederatedMessage)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/followers", wrapper.GetFollowersAdmin)
