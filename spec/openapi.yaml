@@ -1757,6 +1757,33 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/config/notifications/discord:
+    post:
+      summary: Configure Discord notifications
+      operationId: setDiscordNotificationConfiguration
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  $ref: "#/components/schemas/DiscordNotificationConfiguration"
+      responses:
+        '200':
+          description: Federation blocked domains set
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/webhooks:
     get:
       summary: Get all the webhooks
@@ -2721,7 +2748,7 @@ components:
           type: string
         enabled:
           type: boolean
-    DiscordConfiguration:
+    DiscordNotificationConfiguration:
       type: object
       properties:
         webhook:
@@ -3054,7 +3081,7 @@ components:
         browser:
           $ref: '#/components/schemas/BrowserNotificationConfiguration'
         discord:
-          $ref: '#/components/schemas/DiscordConfiguration'
+          $ref: '#/components/schemas/DiscordNotificationConfiguration'
     AdminYPInfo:
       type: object
       properties:

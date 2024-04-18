@@ -119,6 +119,9 @@ type ServerInterface interface {
 	// Change the server name
 	// (POST /admin/config/name)
 	SetServerName(w http.ResponseWriter, r *http.Request)
+	// Configure Discord notifications
+	// (POST /admin/config/notifications/discord)
+	SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 	// Update NSFW marking
 	// (POST /admin/config/nsfw)
 	SetNSFW(w http.ResponseWriter, r *http.Request)
@@ -530,6 +533,12 @@ func (_ Unimplemented) SetLogo(w http.ResponseWriter, r *http.Request) {
 // Change the server name
 // (POST /admin/config/name)
 func (_ Unimplemented) SetServerName(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Configure Discord notifications
+// (POST /admin/config/notifications/discord)
+func (_ Unimplemented) SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1524,6 +1533,23 @@ func (siw *ServerInterfaceWrapper) SetServerName(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerName(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetDiscordNotificationConfiguration operation middleware
+func (siw *ServerInterfaceWrapper) SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetDiscordNotificationConfiguration(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3041,6 +3067,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/name", wrapper.SetServerName)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/notifications/discord", wrapper.SetDiscordNotificationConfiguration)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/nsfw", wrapper.SetNSFW)

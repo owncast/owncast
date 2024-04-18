@@ -170,3 +170,7 @@ func (*ServerInterfaceImpl) SetFederationGoLiveMessage(w http.ResponseWriter, r 
 func (*ServerInterfaceImpl) SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetFederationBlockDomains)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetDiscordNotificationConfiguration)(w, r)
+}

@@ -81,7 +81,7 @@ type AdminLog struct {
 // AdminNotificationsConfig defines model for AdminNotificationsConfig.
 type AdminNotificationsConfig struct {
 	Browser *BrowserNotificationConfiguration `json:"browser,omitempty"`
-	Discord *DiscordConfiguration             `json:"discord,omitempty"`
+	Discord *DiscordNotificationConfiguration `json:"discord,omitempty"`
 }
 
 // AdminServerConfig defines model for AdminServerConfig.
@@ -226,8 +226,8 @@ type CurrentBroadcast struct {
 	OutputSettings *[]StreamOutputVariant `json:"outputSettings,omitempty"`
 }
 
-// DiscordConfiguration defines model for DiscordConfiguration.
-type DiscordConfiguration struct {
+// DiscordNotificationConfiguration defines model for DiscordNotificationConfiguration.
+type DiscordNotificationConfiguration struct {
 	Enabled       *bool   `json:"enabled,omitempty"`
 	GoLiveMessage *string `json:"goLiveMessage,omitempty"`
 	Webhook       *string `json:"webhook,omitempty"`
@@ -646,6 +646,11 @@ type SetExternalActionsJSONBody struct {
 	Value *[]ExternalAction `json:"value,omitempty"`
 }
 
+// SetDiscordNotificationConfigurationJSONBody defines parameters for SetDiscordNotificationConfiguration.
+type SetDiscordNotificationConfigurationJSONBody struct {
+	Value *DiscordNotificationConfiguration `json:"value,omitempty"`
+}
+
 // SetS3ConfigurationJSONBody defines parameters for SetS3Configuration.
 type SetS3ConfigurationJSONBody struct {
 	Value *S3Info `json:"value,omitempty"`
@@ -854,6 +859,9 @@ type SetLogoJSONRequestBody = AdminConfigValue
 
 // SetServerNameJSONRequestBody defines body for SetServerName for application/json ContentType.
 type SetServerNameJSONRequestBody = AdminConfigValue
+
+// SetDiscordNotificationConfigurationJSONRequestBody defines body for SetDiscordNotificationConfiguration for application/json ContentType.
+type SetDiscordNotificationConfigurationJSONRequestBody SetDiscordNotificationConfigurationJSONBody
 
 // SetNSFWJSONRequestBody defines body for SetNSFW for application/json ContentType.
 type SetNSFWJSONRequestBody = AdminConfigValue
