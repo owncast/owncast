@@ -275,6 +275,9 @@ type ServerInterface interface {
 	// Save video playback metrics for future video health recording
 	// (POST /metrics/playback)
 	PostMetricsPlayback(w http.ResponseWriter, r *http.Request)
+	// Get a user's details
+	// (GET /moderation/chat/user/{userId})
+	GetUserDetails(w http.ResponseWriter, r *http.Request, userId string, params GetUserDetailsParams)
 	// Register for notifications
 	// (POST /notifications/register)
 	PostNotificationsRegister(w http.ResponseWriter, r *http.Request, params PostNotificationsRegisterParams)
@@ -821,6 +824,12 @@ func (_ Unimplemented) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Req
 // Save video playback metrics for future video health recording
 // (POST /metrics/playback)
 func (_ Unimplemented) PostMetricsPlayback(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a user's details
+// (GET /moderation/chat/user/{userId})
+func (_ Unimplemented) GetUserDetails(w http.ResponseWriter, r *http.Request, userId string, params GetUserDetailsParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2490,6 +2499,50 @@ func (siw *ServerInterfaceWrapper) PostMetricsPlayback(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetUserDetails operation middleware
+func (siw *ServerInterfaceWrapper) GetUserDetails(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "userId" -------------
+	var userId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "userId", chi.URLParam(r, "userId"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetUserDetailsParams
+
+	// ------------- Required query parameter "accessToken" -------------
+
+	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "accessToken", r.URL.Query(), &params.AccessToken)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accessToken", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetUserDetails(w, r, userId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // PostNotificationsRegister operation middleware
 func (siw *ServerInterfaceWrapper) PostNotificationsRegister(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2988,6 +3041,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/metrics/playback", wrapper.PostMetricsPlayback)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/moderation/chat/user/{userId}", wrapper.GetUserDetails)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/notifications/register", wrapper.PostNotificationsRegister)

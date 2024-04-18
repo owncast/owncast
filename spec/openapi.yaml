@@ -2144,6 +2144,31 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /moderation/chat/user/{userId}:
+    get:
+      summary: Get a user's details
+      operationId: getUserDetails
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          description: The ID of the user to find
+          required: true
+        - $ref: "#/components/parameters/AccessToken"
+      responses:
+        '200':
+          description: User information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModerationUserDetails"
+        '401':
+          $ref: "#/components/responses/401"
+        '404':
+          $ref: "#/components/responses/404"
+        default:
+          $ref: "#/components/responses/Default"
 
 components:
   schemas:
@@ -2748,6 +2773,34 @@ components:
             type: string
         visible:
           type: boolean
+    ModerationUserDetails:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        connectedClients:
+          type: array
+          items:
+            $ref: "#/components/schemas/ModerationConnectedClient"
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserMessage"
+    ModerationConnectedClient:
+      type: object
+      properties:
+        connectedAt:
+          type: string
+          format: date-time
+        userAgent:
+          type: string
+        geo:
+          type: string
+        id:
+          type: integer
+          format: int64
+        messageCount:
+          type: integer
     AdminStatus:
       type: object
       properties:

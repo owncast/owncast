@@ -365,6 +365,22 @@ type MessageVisibilityUpdate struct {
 	Visible *bool     `json:"visible,omitempty"`
 }
 
+// ModerationConnectedClient defines model for ModerationConnectedClient.
+type ModerationConnectedClient struct {
+	ConnectedAt  *time.Time `json:"connectedAt,omitempty"`
+	Geo          *string    `json:"geo,omitempty"`
+	Id           *int64     `json:"id,omitempty"`
+	MessageCount *int       `json:"messageCount,omitempty"`
+	UserAgent    *string    `json:"userAgent,omitempty"`
+}
+
+// ModerationUserDetails defines model for ModerationUserDetails.
+type ModerationUserDetails struct {
+	ConnectedClients *[]ModerationConnectedClient `json:"connectedClients,omitempty"`
+	Messages         *[]UserMessage               `json:"messages,omitempty"`
+	User             *User                        `json:"user,omitempty"`
+}
+
 // NotificationConfig defines model for NotificationConfig.
 type NotificationConfig struct {
 	Browser *BrowserConfig `json:"browser,omitempty"`
@@ -726,6 +742,11 @@ type UpdateUserEnabledParams struct {
 type GetFollowersParams struct {
 	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
 	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// GetUserDetailsParams defines parameters for GetUserDetails.
+type GetUserDetailsParams struct {
+	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
 }
 
 // PostNotificationsRegisterJSONBody defines parameters for PostNotificationsRegister.
