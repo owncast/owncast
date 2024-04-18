@@ -1,22 +1,26 @@
 {
-  "name": "owncast-test-automation",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "supertest": "^6.3.2",
-    "websocket": "^1.0.32",
-    "ajv": "^8.11.0",
-    "ajv-draft-04" : "^1.0.0",
-    "jsonfile": "^6.1.0",
-    "crypto-random": "^2.0.1"
-  },
-  "devDependencies": {
-    "jest": "^26.6.3"
-  }
+	"name": "owncast-test-automation",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "jest --runInBand *.test.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"supertest": "^6.3.2",
+		"websocket": "^1.0.32",
+		"ajv": "^8.11.0",
+		"ajv-draft-04": "^1.0.0",
+		"jsonfile": "^6.1.0",
+		"crypto-random": "^2.0.1"
+	},
+	"devDependencies": {
+		"jest": "^26.6.3"
+	},
+	"jest": {
+		"verbose": true,
+		"maxWorkers": 1
+	}
 }
