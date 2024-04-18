@@ -174,3 +174,7 @@ func (*ServerInterfaceImpl) SetFederationBlockDomains(w http.ResponseWriter, r *
 func (*ServerInterfaceImpl) SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetDiscordNotificationConfiguration)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetBrowserNotificationConfiguration)(w, r)
+}

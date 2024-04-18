@@ -1773,7 +1773,34 @@ paths:
                   $ref: "#/components/schemas/DiscordNotificationConfiguration"
       responses:
         '200':
-          description: Federation blocked domains set
+          description: Discord notification configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
+  /admin/config/notifications/browser:
+    post:
+      summary: Configure Browser notifications
+      operationId: setBrowserNotificationConfiguration
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  $ref: "#/components/schemas/BrowserNotificationConfiguration"
+      responses:
+        '200':
+          description: Browser notification configuration updated
           content:
             application/json:
               schema:

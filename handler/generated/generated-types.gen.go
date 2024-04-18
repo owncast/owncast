@@ -646,6 +646,11 @@ type SetExternalActionsJSONBody struct {
 	Value *[]ExternalAction `json:"value,omitempty"`
 }
 
+// SetBrowserNotificationConfigurationJSONBody defines parameters for SetBrowserNotificationConfiguration.
+type SetBrowserNotificationConfigurationJSONBody struct {
+	Value *BrowserNotificationConfiguration `json:"value,omitempty"`
+}
+
 // SetDiscordNotificationConfigurationJSONBody defines parameters for SetDiscordNotificationConfiguration.
 type SetDiscordNotificationConfigurationJSONBody struct {
 	Value *DiscordNotificationConfiguration `json:"value,omitempty"`
@@ -859,6 +864,9 @@ type SetLogoJSONRequestBody = AdminConfigValue
 
 // SetServerNameJSONRequestBody defines body for SetServerName for application/json ContentType.
 type SetServerNameJSONRequestBody = AdminConfigValue
+
+// SetBrowserNotificationConfigurationJSONRequestBody defines body for SetBrowserNotificationConfiguration for application/json ContentType.
+type SetBrowserNotificationConfigurationJSONRequestBody SetBrowserNotificationConfigurationJSONBody
 
 // SetDiscordNotificationConfigurationJSONRequestBody defines body for SetDiscordNotificationConfiguration for application/json ContentType.
 type SetDiscordNotificationConfigurationJSONRequestBody SetDiscordNotificationConfigurationJSONBody
