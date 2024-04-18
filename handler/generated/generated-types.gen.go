@@ -828,6 +828,9 @@ type SetExternalActionsJSONRequestBody SetExternalActionsJSONBody
 // SetFederationEnabledJSONRequestBody defines body for SetFederationEnabled for application/json ContentType.
 type SetFederationEnabledJSONRequestBody = AdminConfigValue
 
+// SetFederationGoLiveMessageJSONRequestBody defines body for SetFederationGoLiveMessage for application/json ContentType.
+type SetFederationGoLiveMessageJSONRequestBody = AdminConfigValue
+
 // SetFederationActivityPrivateJSONRequestBody defines body for SetFederationActivityPrivate for application/json ContentType.
 type SetFederationActivityPrivateJSONRequestBody = AdminConfigValue
 

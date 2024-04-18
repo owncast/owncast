@@ -162,3 +162,7 @@ func (*ServerInterfaceImpl) SetFederationShowEngagement(w http.ResponseWriter, r
 func (*ServerInterfaceImpl) SetFederationUsername(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetFederationUsername)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetFederationGoLiveMessage)(w, r)
+}

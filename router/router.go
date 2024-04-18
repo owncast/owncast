@@ -361,7 +361,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/config/federation/username", middleware.RequireAdminAuth(admin.SetFederationUsername))
 
 	// set federated go live message
-	http.HandleFunc("/api/admin/config/federation/livemessage", middleware.RequireAdminAuth(admin.SetFederationGoLiveMessage))
+	// http.HandleFunc("/api/admin/config/federation/livemessage", middleware.RequireAdminAuth(admin.SetFederationGoLiveMessage))
 
 	// Federation blocked domains
 	http.HandleFunc("/api/admin/config/federation/blockdomains", middleware.RequireAdminAuth(admin.SetFederationBlockDomains))

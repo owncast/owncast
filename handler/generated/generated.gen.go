@@ -92,6 +92,9 @@ type ServerInterface interface {
 	// Enable/disable federation features
 	// (POST /admin/config/federation/enable)
 	SetFederationEnabled(w http.ResponseWriter, r *http.Request)
+	// Set federated go live message
+	// (POST /admin/config/federation/livemessage)
+	SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request)
 	// Set if federation activities are private
 	// (POST /admin/config/federation/private)
 	SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request)
@@ -470,6 +473,12 @@ func (_ Unimplemented) SetExternalActions(w http.ResponseWriter, r *http.Request
 // Enable/disable federation features
 // (POST /admin/config/federation/enable)
 func (_ Unimplemented) SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set federated go live message
+// (POST /admin/config/federation/livemessage)
+func (_ Unimplemented) SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1353,6 +1362,23 @@ func (siw *ServerInterfaceWrapper) SetFederationEnabled(w http.ResponseWriter, r
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetFederationGoLiveMessage operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationGoLiveMessage(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2962,6 +2988,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/enable", wrapper.SetFederationEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/federation/livemessage", wrapper.SetFederationGoLiveMessage)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/private", wrapper.SetFederationActivityPrivate)
