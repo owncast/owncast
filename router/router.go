@@ -27,30 +27,30 @@ import (
 
 // Start starts the router for the http, ws, and rtmp.
 func Start() error {
-	// The primary web app.
-	http.HandleFunc("/", controllers.IndexHandler)
+	// // The primary web app.
+	// http.HandleFunc("/", controllers.IndexHandler)
 
-	// The admin web app.
-	http.HandleFunc("/admin/", middleware.RequireAdminAuth(controllers.IndexHandler))
+	// // The admin web app.
+	// http.HandleFunc("/admin/", middleware.RequireAdminAuth(controllers.IndexHandler))
 
-	// Images
-	http.HandleFunc("/thumbnail.jpg", controllers.GetThumbnail)
-	http.HandleFunc("/preview.gif", controllers.GetPreview)
-	http.HandleFunc("/logo", controllers.GetLogo)
+	// // Images
+	// http.HandleFunc("/thumbnail.jpg", controllers.GetThumbnail)
+	// http.HandleFunc("/preview.gif", controllers.GetPreview)
+	// http.HandleFunc("/logo", controllers.GetLogo)
 
-	// Custom Javascript
-	http.HandleFunc("/customjavascript", controllers.ServeCustomJavascript)
+	// // Custom Javascript
+	// http.HandleFunc("/customjavascript", controllers.ServeCustomJavascript)
 
-	// Return a single emoji image.
-	http.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
+	// // Return a single emoji image.
+	// http.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
 
-	// return the logo
+	// // return the logo
 
-	// return a logo that's compatible with external social networks
-	http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
+	// // return a logo that's compatible with external social networks
+	// http.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
 
-	// robots.txt
-	http.HandleFunc("/robots.txt", controllers.GetRobotsDotTxt)
+	// // robots.txt
+	// http.HandleFunc("/robots.txt", controllers.GetRobotsDotTxt)
 
 	// status of the system
 	// http.HandleFunc("/api/status", controllers.GetStatus)
@@ -97,7 +97,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/status", middleware.RequireAdminAuth(admin.Status))
 
 	// Return HLS video
-	http.HandleFunc("/hls/", controllers.HandleHLSRequest)
+	// http.HandleFunc("/hls/", controllers.HandleHLSRequest)
 
 	// Disconnect inbound stream
 	// http.HandleFunc("/api/admin/disconnect", middleware.RequireAdminAuth(admin.DisconnectInboundConnection))
@@ -395,12 +395,49 @@ func Start() error {
 	activitypub.Start(data.GetDatastore())
 
 	// websocket
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		chat.HandleClientConnection(w, r)
-	})
+	// http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	// 	chat.HandleClientConnection(w, r)
+	// })
 
 	// Optional public static files
-	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(config.PublicFilesPath))))
+	// http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(config.PublicFilesPath))))
+
+	// @behlers test for chi router w/ oapi codegen
+	r := chi.NewRouter()
+	r.Use(chiMW.Logger) // added for testing and debugging
+	r.Use(chiMW.Recoverer)
+	r.Mount("/api/", handler.New().Handler())
+
+	// The primary web app.
+	r.HandleFunc("/", controllers.IndexHandler)
+
+	// The admin web app.
+	r.HandleFunc("/admin/", middleware.RequireAdminAuth(controllers.IndexHandler))
+
+	// Images
+	r.HandleFunc("/thumbnail.jpg", controllers.GetThumbnail)
+	r.HandleFunc("/preview.gif", controllers.GetPreview)
+	r.HandleFunc("/logo", controllers.GetLogo)
+	// return a logo that's compatible with external social networks
+	r.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
+
+	// Custom Javascript
+	r.HandleFunc("/customjavascript", controllers.ServeCustomJavascript)
+
+	// robots.txt
+	r.HandleFunc("/robots.txt", controllers.GetRobotsDotTxt)
+
+	fs := http.FileServer(http.Dir(config.PublicFilesPath))
+	r.Handle("/public/*", http.StripPrefix("/public/", fs))
+
+	// Return a single emoji image.
+	r.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
+
+	// Return HLS video
+	http.HandleFunc("/hls/", controllers.HandleHLSRequest)
+
+	// websocket
+	http.HandleFunc("/ws", chat.HandleClientConnection)
 
 	port := config.WebServerPort
 	ip := config.WebServerIP
@@ -410,7 +447,7 @@ func Start() error {
 	// Create a custom mux handler to intercept the /debug/vars endpoint.
 	// This is a hack because Prometheus enables this endpoint by default
 	// due to its use of expvar and we do not want this exposed.
-	defaultMux := h2c.NewHandler(http.DefaultServeMux, h2s)
+	http2Handler := h2c.NewHandler(r, h2s)
 	m := http.NewServeMux()
 
 	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -421,21 +458,15 @@ func Start() error {
 			// Redirect /embed/chat
 			http.Redirect(w, r, "/embed/chat/readonly", http.StatusTemporaryRedirect)
 		} else {
-			defaultMux.ServeHTTP(w, r)
+			http2Handler.ServeHTTP(w, r)
 		}
 	})
-
-	// @behlers test for chi router w/ oapi codegen
-	r := chi.NewRouter()
-	r.Use(chiMW.Logger) // added for testing and debugging
-	r.Use(chiMW.Recoverer)
-	r.Mount("/api/", handler.New().Handler())
 
 	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
 	server := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", ip, port),
 		ReadHeaderTimeout: 4 * time.Second,
-		Handler:           compress(r),
+		Handler:           compress(m),
 	}
 
 	if ip != "0.0.0.0" {
