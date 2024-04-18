@@ -825,6 +825,9 @@ type SetDisableSearchIndexingJSONRequestBody = AdminConfigValue
 // SetExternalActionsJSONRequestBody defines body for SetExternalActions for application/json ContentType.
 type SetExternalActionsJSONRequestBody SetExternalActionsJSONBody
 
+// SetFederationBlockDomainsJSONRequestBody defines body for SetFederationBlockDomains for application/json ContentType.
+type SetFederationBlockDomainsJSONRequestBody = AdminConfigValue
+
 // SetFederationEnabledJSONRequestBody defines body for SetFederationEnabled for application/json ContentType.
 type SetFederationEnabledJSONRequestBody = AdminConfigValue
 

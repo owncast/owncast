@@ -166,3 +166,7 @@ func (*ServerInterfaceImpl) SetFederationUsername(w http.ResponseWriter, r *http
 func (*ServerInterfaceImpl) SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetFederationGoLiveMessage)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetFederationBlockDomains)(w, r)
+}

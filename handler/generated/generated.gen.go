@@ -89,6 +89,9 @@ type ServerInterface interface {
 	// Update external action links
 	// (POST /admin/config/externalactions)
 	SetExternalActions(w http.ResponseWriter, r *http.Request)
+	// Set Federation blocked domains
+	// (POST /admin/config/federation/blockdomains)
+	SetFederationBlockDomains(w http.ResponseWriter, r *http.Request)
 	// Enable/disable federation features
 	// (POST /admin/config/federation/enable)
 	SetFederationEnabled(w http.ResponseWriter, r *http.Request)
@@ -467,6 +470,12 @@ func (_ Unimplemented) SetDisableSearchIndexing(w http.ResponseWriter, r *http.R
 // Update external action links
 // (POST /admin/config/externalactions)
 func (_ Unimplemented) SetExternalActions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set Federation blocked domains
+// (POST /admin/config/federation/blockdomains)
+func (_ Unimplemented) SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1345,6 +1354,23 @@ func (siw *ServerInterfaceWrapper) SetExternalActions(w http.ResponseWriter, r *
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetExternalActions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetFederationBlockDomains operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationBlockDomains(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2985,6 +3011,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/externalactions", wrapper.SetExternalActions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/federation/blockdomains", wrapper.SetFederationBlockDomains)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/enable", wrapper.SetFederationEnabled)
