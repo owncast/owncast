@@ -15,7 +15,6 @@ import (
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/controllers/admin"
 	fediverseauth "github.com/owncast/owncast/controllers/auth/fediverse"
 	"github.com/owncast/owncast/controllers/auth/indieauth"
 	"github.com/owncast/owncast/core/chat"
@@ -369,7 +368,7 @@ func Start() error {
 	// http.HandleFunc("/api/admin/federation/send", middleware.RequireAdminAuth(admin.SendFederatedMessage))
 
 	// Return federated activities
-	http.HandleFunc("/api/admin/federation/actions", middleware.RequireAdminAuth(middleware.HandlePagination(admin.GetFederatedActions)))
+	// http.HandleFunc("/api/admin/federation/actions", middleware.RequireAdminAuth(middleware.HandlePagination(admin.GetFederatedActions)))
 
 	// Prometheus metrics
 	// http.Handle("/api/admin/prometheus", middleware.RequireAdminAuth(func(rw http.ResponseWriter, r *http.Request) {

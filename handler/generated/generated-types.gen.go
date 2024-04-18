@@ -292,6 +292,14 @@ type FederatedAction struct {
 	Type      *string `json:"type,omitempty"`
 }
 
+// FederatedActivity defines model for FederatedActivity.
+type FederatedActivity struct {
+	ActorIRI  *string    `json:"actorIRI,omitempty"`
+	Iri       *string    `json:"iri,omitempty"`
+	Timestamp *time.Time `json:"timestamp,omitempty"`
+	Type      *string    `json:"type,omitempty"`
+}
+
 // FederationConfig defines model for FederationConfig.
 type FederationConfig struct {
 	Account       *string `json:"account,omitempty"`
@@ -384,6 +392,12 @@ type ModerationUserDetails struct {
 // NotificationConfig defines model for NotificationConfig.
 type NotificationConfig struct {
 	Browser *BrowserConfig `json:"browser,omitempty"`
+}
+
+// PaginatedFederatedActivity defines model for PaginatedFederatedActivity.
+type PaginatedFederatedActivity struct {
+	Results *FederatedActivity `json:"results,omitempty"`
+	Total   *int               `json:"total,omitempty"`
 }
 
 // PaginatedFollowers defines model for PaginatedFollowers.
@@ -686,6 +700,12 @@ type UploadCustomEmojiJSONBody struct {
 	// Data Base 64 encoded image data
 	Data *string `json:"data,omitempty"`
 	Name *string `json:"name,omitempty"`
+}
+
+// GetFederatedActionsParams defines parameters for GetFederatedActions.
+type GetFederatedActionsParams struct {
+	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // GetFollowersAdminParams defines parameters for GetFollowersAdmin.

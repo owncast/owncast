@@ -191,6 +191,9 @@ type ServerInterface interface {
 	// Upload custom emoji
 	// (POST /admin/emoji/upload)
 	UploadCustomEmoji(w http.ResponseWriter, r *http.Request)
+	// Get a paginated list of federated activities
+	// (GET /admin/federation/actions)
+	GetFederatedActions(w http.ResponseWriter, r *http.Request, params GetFederatedActionsParams)
 	// Send a public message to the Fediverse from the server's user
 	// (POST /admin/federation/send)
 	SendFederatedMessage(w http.ResponseWriter, r *http.Request)
@@ -695,6 +698,12 @@ func (_ Unimplemented) DeleteCustomEmoji(w http.ResponseWriter, r *http.Request)
 // Upload custom emoji
 // (POST /admin/emoji/upload)
 func (_ Unimplemented) UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a paginated list of federated activities
+// (GET /admin/federation/actions)
+func (_ Unimplemented) GetFederatedActions(w http.ResponseWriter, r *http.Request, params GetFederatedActionsParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2004,6 +2013,44 @@ func (siw *ServerInterfaceWrapper) UploadCustomEmoji(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetFederatedActions operation middleware
+func (siw *ServerInterfaceWrapper) GetFederatedActions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetFederatedActionsParams
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetFederatedActions(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SendFederatedMessage operation middleware
 func (siw *ServerInterfaceWrapper) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -3287,6 +3334,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/emoji/upload", wrapper.UploadCustomEmoji)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/federation/actions", wrapper.GetFederatedActions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/federation/send", wrapper.SendFederatedMessage)

@@ -2172,6 +2172,28 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/federation/actions:
+    get:
+      summary: Get a paginated list of federated activities
+      operationId: getFederatedActions
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        '200':
+          description: A paginated list of federated activities
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedFederatedActivity"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
@@ -3031,6 +3053,25 @@ components:
           format: int64
         messageCount:
           type: integer
+    FederatedActivity:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        iri:
+          type: string
+        actorIRI:
+          type: string
+        type:
+          type: string
+    PaginatedFederatedActivity:
+      type: object
+      properties:
+        total:
+          type: integer
+        results:
+          $ref: "#/components/schemas/FederatedActivity"
     AdminStatus:
       type: object
       properties:

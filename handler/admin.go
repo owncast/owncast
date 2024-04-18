@@ -153,3 +153,7 @@ func (*ServerInterfaceImpl) GetVideoPlaybackMetrics(w http.ResponseWriter, r *ht
 func (*ServerInterfaceImpl) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SendFederatedMessage)(w, r)
 }
+
+func (*ServerInterfaceImpl) GetFederatedActions(w http.ResponseWriter, r *http.Request, params generated.GetFederatedActionsParams) {
+	middleware.RequireAdminAuth(middleware.HandlePagination(admin.GetFederatedActions))(w, r)
+}
