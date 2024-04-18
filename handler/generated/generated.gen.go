@@ -215,6 +215,18 @@ type ServerInterface interface {
 	// Get video playback metrics
 	// (GET /admin/metrics/video)
 	GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request)
+	// Endpoint to interface with Prometheus
+	// (DELETE /admin/prometheus)
+	DeletePrometheusAPI(w http.ResponseWriter, r *http.Request)
+	// Endpoint to interface with Prometheus
+	// (GET /admin/prometheus)
+	GetPrometheusAPI(w http.ResponseWriter, r *http.Request)
+	// Endpoint to interface with Prometheus
+	// (POST /admin/prometheus)
+	PostPrometheusAPI(w http.ResponseWriter, r *http.Request)
+	// Endpoint to interface with Prometheus
+	// (PUT /admin/prometheus)
+	PutPrometheusAPI(w http.ResponseWriter, r *http.Request)
 	// Get the current server config
 	// (GET /admin/serverconfig)
 	GetServerConfig(w http.ResponseWriter, r *http.Request)
@@ -728,6 +740,30 @@ func (_ Unimplemented) GetWarnings(w http.ResponseWriter, r *http.Request) {
 // Get video playback metrics
 // (GET /admin/metrics/video)
 func (_ Unimplemented) GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Endpoint to interface with Prometheus
+// (DELETE /admin/prometheus)
+func (_ Unimplemented) DeletePrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Endpoint to interface with Prometheus
+// (GET /admin/prometheus)
+func (_ Unimplemented) GetPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Endpoint to interface with Prometheus
+// (POST /admin/prometheus)
+func (_ Unimplemented) PostPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Endpoint to interface with Prometheus
+// (PUT /admin/prometheus)
+func (_ Unimplemented) PutPrometheusAPI(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2116,6 +2152,66 @@ func (siw *ServerInterfaceWrapper) GetVideoPlaybackMetrics(w http.ResponseWriter
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// DeletePrometheusAPI operation middleware
+func (siw *ServerInterfaceWrapper) DeletePrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeletePrometheusAPI(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetPrometheusAPI operation middleware
+func (siw *ServerInterfaceWrapper) GetPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetPrometheusAPI(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PostPrometheusAPI operation middleware
+func (siw *ServerInterfaceWrapper) PostPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostPrometheusAPI(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PutPrometheusAPI operation middleware
+func (siw *ServerInterfaceWrapper) PutPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PutPrometheusAPI(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetServerConfig operation middleware
 func (siw *ServerInterfaceWrapper) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -3189,6 +3285,18 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/metrics/video", wrapper.GetVideoPlaybackMetrics)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/admin/prometheus", wrapper.DeletePrometheusAPI)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/prometheus", wrapper.GetPrometheusAPI)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/prometheus", wrapper.PostPrometheusAPI)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/admin/prometheus", wrapper.PutPrometheusAPI)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/serverconfig", wrapper.GetServerConfig)

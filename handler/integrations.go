@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func (*ServerInterfaceImpl) SendSystemMessage(w http.ResponseWriter, r *http.Request) {
@@ -48,4 +49,32 @@ func (*ServerInterfaceImpl) ExternalGetChatMessages(w http.ResponseWriter, r *ht
 
 func (*ServerInterfaceImpl) ExternalGetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireExternalAPIAccessToken(user.ScopeHasAdminAccess, admin.ExternalGetConnectedChatClients)(w, r)
+}
+
+func (*ServerInterfaceImpl) GetPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	// TODO might need to bring this out of the codegen
+	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
+		promhttp.Handler()
+	})(w, r)
+}
+
+func (*ServerInterfaceImpl) PostPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	// TODO might need to bring this out of the codegen
+	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
+		promhttp.Handler()
+	})(w, r)
+}
+
+func (*ServerInterfaceImpl) PutPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	// TODO might need to bring this out of the codegen
+	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
+		promhttp.Handler()
+	})(w, r)
+}
+
+func (*ServerInterfaceImpl) DeletePrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	// TODO might need to bring this out of the codegen
+	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
+		promhttp.Handler()
+	})(w, r)
 }

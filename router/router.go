@@ -8,7 +8,6 @@ import (
 	"github.com/CAFxX/httpcompression"
 	"github.com/go-chi/chi/v5"
 	chiMW "github.com/go-chi/chi/v5/middleware"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -373,9 +372,9 @@ func Start() error {
 	http.HandleFunc("/api/admin/federation/actions", middleware.RequireAdminAuth(middleware.HandlePagination(admin.GetFederatedActions)))
 
 	// Prometheus metrics
-	http.Handle("/api/admin/prometheus", middleware.RequireAdminAuth(func(rw http.ResponseWriter, r *http.Request) {
-		promhttp.Handler().ServeHTTP(rw, r)
-	}))
+	// http.Handle("/api/admin/prometheus", middleware.RequireAdminAuth(func(rw http.ResponseWriter, r *http.Request) {
+	// 	promhttp.Handler().ServeHTTP(rw, r)
+	// }))
 
 	// Configure outbound notification channels.
 	// http.HandleFunc("/api/admin/config/notifications/discord", middleware.RequireAdminAuth(admin.SetDiscordNotificationConfiguration))

@@ -2122,6 +2122,35 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/prometheus:
+    get:
+      summary: Endpoint to interface with Prometheus
+      description: |-
+        This endpoint interfaces with the Prometheus metrics API.
+
+        Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
+      operationId: getPrometheusAPI
+    post:
+      summary: Endpoint to interface with Prometheus
+      description: |-
+        This endpoint interfaces with the Prometheus metrics API.
+
+        Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
+      operationId: postPrometheusAPI
+    put:
+      summary: Endpoint to interface with Prometheus
+      description: |-
+        This endpoint interfaces with the Prometheus metrics API.
+
+        Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
+      operationId: putPrometheusAPI
+    delete:
+      summary: Endpoint to interface with Prometheus
+      description: |-
+        This endpoint interfaces with the Prometheus metrics API.
+
+        Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
+      operationId: deletePrometheusAPI
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
