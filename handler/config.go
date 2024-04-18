@@ -146,3 +146,7 @@ func (*ServerInterfaceImpl) SetHideViewerCount(w http.ResponseWriter, r *http.Re
 func (*ServerInterfaceImpl) SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetDisableSearchIndexing)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetFederationEnabled)(w, r)
+}

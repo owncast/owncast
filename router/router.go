@@ -349,7 +349,7 @@ func Start() error {
 	// Configure Federation features
 
 	// enable/disable federation features
-	http.HandleFunc("/api/admin/config/federation/enable", middleware.RequireAdminAuth(admin.SetFederationEnabled))
+	// http.HandleFunc("/api/admin/config/federation/enable", middleware.RequireAdminAuth(admin.SetFederationEnabled))
 
 	// set if federation activities are private
 	http.HandleFunc("/api/admin/config/federation/private", middleware.RequireAdminAuth(admin.SetFederationActivityPrivate))
