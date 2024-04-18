@@ -78,12 +78,6 @@ type AdminLog struct {
 	Time    *time.Time `json:"time,omitempty"`
 }
 
-// AdminMessageVisibilityUpdate defines model for AdminMessageVisibilityUpdate.
-type AdminMessageVisibilityUpdate struct {
-	IdArray *[]string `json:"idArray,omitempty"`
-	Visible *bool     `json:"visible,omitempty"`
-}
-
 // AdminNotificationsConfig defines model for AdminNotificationsConfig.
 type AdminNotificationsConfig struct {
 	Browser *BrowserNotificationConfiguration `json:"browser,omitempty"`
@@ -363,6 +357,12 @@ type LatencyLevel struct {
 // MessageEvent defines model for MessageEvent.
 type MessageEvent struct {
 	Body *string `json:"body,omitempty"`
+}
+
+// MessageVisibilityUpdate defines model for MessageVisibilityUpdate.
+type MessageVisibilityUpdate struct {
+	IdArray *[]string `json:"idArray,omitempty"`
+	Visible *bool     `json:"visible,omitempty"`
 }
 
 // NotificationConfig defines model for NotificationConfig.
@@ -696,6 +696,11 @@ type GetChatMessagesParams struct {
 	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
 }
 
+// UpdateMessageVisibilityParams defines parameters for UpdateMessageVisibility.
+type UpdateMessageVisibilityParams struct {
+	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
+}
+
 // RegisterAnonymousChatUserJSONBody defines parameters for RegisterAnonymousChatUser.
 type RegisterAnonymousChatUserJSONBody struct {
 	DisplayName *string `json:"displayName,omitempty"`
@@ -737,8 +742,8 @@ type CreateExternalAPIUserJSONRequestBody CreateExternalAPIUserJSONBody
 // DeleteExternalAPIUserJSONRequestBody defines body for DeleteExternalAPIUser for application/json ContentType.
 type DeleteExternalAPIUserJSONRequestBody DeleteExternalAPIUserJSONBody
 
-// UpdateMessageVisibilityJSONRequestBody defines body for UpdateMessageVisibility for application/json ContentType.
-type UpdateMessageVisibilityJSONRequestBody = AdminMessageVisibilityUpdate
+// UpdateMessageVisibilityAdminJSONRequestBody defines body for UpdateMessageVisibilityAdmin for application/json ContentType.
+type UpdateMessageVisibilityAdminJSONRequestBody = MessageVisibilityUpdate
 
 // BanIPAddressJSONRequestBody defines body for BanIPAddress for application/json ContentType.
 type BanIPAddressJSONRequestBody = AdminConfigValue
@@ -872,6 +877,9 @@ type CreateWebhookJSONRequestBody CreateWebhookJSONBody
 // DeleteWebhookJSONRequestBody defines body for DeleteWebhook for application/json ContentType.
 type DeleteWebhookJSONRequestBody DeleteWebhookJSONBody
 
+// UpdateMessageVisibilityJSONRequestBody defines body for UpdateMessageVisibility for application/json ContentType.
+type UpdateMessageVisibilityJSONRequestBody = MessageVisibilityUpdate
+
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
 
@@ -879,7 +887,7 @@ type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
 type SendChatActionJSONRequestBody = SystemActionEvent
 
 // ExternalUpdateMessageVisibilityJSONRequestBody defines body for ExternalUpdateMessageVisibility for application/json ContentType.
-type ExternalUpdateMessageVisibilityJSONRequestBody = AdminMessageVisibilityUpdate
+type ExternalUpdateMessageVisibilityJSONRequestBody = MessageVisibilityUpdate
 
 // SendIntegrationChatMessageJSONRequestBody defines body for SendIntegrationChatMessage for application/json ContentType.
 type SendIntegrationChatMessageJSONRequestBody = UserMessage

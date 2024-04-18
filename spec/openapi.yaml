@@ -91,6 +91,30 @@ paths:
                 $ref: "#/components/schemas/AnonymousUser"
         '400':
           $ref: "#/components/responses/400"
+  /chat/messagevisibility:
+    post:
+      summary: Update chat message visibility
+      operationId: updateMessageVisibility
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageVisibilityUpdate"
+      responses:
+        '200':
+          description: Message visibility updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401"
+        default:
+          $ref: "#/components/responses/Default"
   /config:
     get:
       summary: Get the web config
@@ -396,14 +420,14 @@ paths:
   /admin/chat/messagevisibility:
     post:
       summary: Update visibility of chat messages
-      operationId: updateMessageVisibility
+      operationId: updateMessageVisibilityAdmin
       security:
         - BasicAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AdminMessageVisibilityUpdate"
+              $ref: "#/components/schemas/MessageVisibilityUpdate"
       responses:
         '200':
           description: Messages updated
@@ -2018,7 +2042,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AdminMessageVisibilityUpdate"
+              $ref: "#/components/schemas/MessageVisibilityUpdate"
       responses:
         '200':
           description: Messages updated
@@ -2686,6 +2710,15 @@ components:
           type: integer
         isBot:
           type: boolean
+    MessageVisibilityUpdate:
+      type: object
+      properties:
+        idArray:
+          type: array
+          items:
+            type: string
+        visible:
+          type: boolean
     AdminStatus:
       type: object
       properties:
@@ -2868,15 +2901,7 @@ components:
             items:
               type: string
           - type: number
-    AdminMessageVisibilityUpdate:
-      type: object
-      properties:
-        idArray:
-          type: array
-          items:
-            type: string
-        visible:
-          type: boolean
+
   headers:
     'Access-Control-Allow-Origin':
       schema:

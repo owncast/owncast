@@ -31,7 +31,7 @@ type ServerInterface interface {
 	GetAdminChatMessages(w http.ResponseWriter, r *http.Request)
 	// Update visibility of chat messages
 	// (POST /admin/chat/messagevisibility)
-	UpdateMessageVisibility(w http.ResponseWriter, r *http.Request)
+	UpdateMessageVisibilityAdmin(w http.ResponseWriter, r *http.Request)
 	// Get a list of disabled users
 	// (GET /admin/chat/users/disabled)
 	GetDisabledUsers(w http.ResponseWriter, r *http.Request)
@@ -227,6 +227,9 @@ type ServerInterface interface {
 	// Gets a list of chat messages
 	// (GET /chat)
 	GetChatMessages(w http.ResponseWriter, r *http.Request, params GetChatMessagesParams)
+	// Update chat message visibility
+	// (POST /chat/messagevisibility)
+	UpdateMessageVisibility(w http.ResponseWriter, r *http.Request, params UpdateMessageVisibilityParams)
 	// Registers an anonymous chat user
 	// (POST /chat/register)
 	RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params RegisterAnonymousChatUserParams)
@@ -328,7 +331,7 @@ func (_ Unimplemented) GetAdminChatMessages(w http.ResponseWriter, r *http.Reque
 
 // Update visibility of chat messages
 // (POST /admin/chat/messagevisibility)
-func (_ Unimplemented) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) UpdateMessageVisibilityAdmin(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -722,6 +725,12 @@ func (_ Unimplemented) GetChatMessages(w http.ResponseWriter, r *http.Request, p
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// Update chat message visibility
+// (POST /chat/messagevisibility)
+func (_ Unimplemented) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request, params UpdateMessageVisibilityParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Registers an anonymous chat user
 // (POST /chat/register)
 func (_ Unimplemented) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params RegisterAnonymousChatUserParams) {
@@ -942,14 +951,14 @@ func (siw *ServerInterfaceWrapper) GetAdminChatMessages(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// UpdateMessageVisibility operation middleware
-func (siw *ServerInterfaceWrapper) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+// UpdateMessageVisibilityAdmin operation middleware
+func (siw *ServerInterfaceWrapper) UpdateMessageVisibilityAdmin(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateMessageVisibility(w, r)
+		siw.Handler.UpdateMessageVisibilityAdmin(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2116,6 +2125,41 @@ func (siw *ServerInterfaceWrapper) GetChatMessages(w http.ResponseWriter, r *htt
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// UpdateMessageVisibility operation middleware
+func (siw *ServerInterfaceWrapper) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateMessageVisibilityParams
+
+	// ------------- Required query parameter "accessToken" -------------
+
+	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "accessToken", r.URL.Query(), &params.AccessToken)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accessToken", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateMessageVisibility(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // RegisterAnonymousChatUser operation middleware
 func (siw *ServerInterfaceWrapper) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2656,7 +2700,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/admin/chat/messages", wrapper.GetAdminChatMessages)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/admin/chat/messagevisibility", wrapper.UpdateMessageVisibility)
+		r.Post(options.BaseURL+"/admin/chat/messagevisibility", wrapper.UpdateMessageVisibilityAdmin)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/chat/users/disabled", wrapper.GetDisabledUsers)
@@ -2852,6 +2896,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/chat", wrapper.GetChatMessages)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/chat/messagevisibility", wrapper.UpdateMessageVisibility)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/chat/register", wrapper.RegisterAnonymousChatUser)

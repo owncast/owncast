@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/controllers"
+	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/handler/generated"
 	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/yp"
@@ -38,6 +39,10 @@ func (*ServerInterfaceImpl) OptionsChatRegister(w http.ResponseWriter, r *http.R
 
 func (*ServerInterfaceImpl) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params generated.RegisterAnonymousChatUserParams) {
 	controllers.RegisterAnonymousChatUser(w, r)
+}
+
+func (*ServerInterfaceImpl) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request, params generated.UpdateMessageVisibilityParams) {
+	middleware.RequireUserModerationScopeAccesstoken(admin.UpdateMessageVisibility)(w, r)
 }
 
 func (*ServerInterfaceImpl) GetConfig(w http.ResponseWriter, r *http.Request) {
