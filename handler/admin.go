@@ -53,7 +53,7 @@ func (*ServerInterfaceImpl) UpdateMessageVisibilityAdmin(w http.ResponseWriter, 
 	middleware.RequireAdminAuth(admin.UpdateMessageVisibility)(w, r)
 }
 
-func (*ServerInterfaceImpl) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
+func (*ServerInterfaceImpl) UpdateUserEnabledAdmin(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.UpdateUserEnabled)(w, r)
 }
 

@@ -342,7 +342,7 @@ func Start() error {
 	// http.HandleFunc("/api/chat/messagevisibility", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateMessageVisibility))
 
 	// Enable/disable a user
-	http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
+	// http.HandleFunc("/api/chat/users/setenabled", middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled))
 
 	// Get a user's details
 	http.HandleFunc("/api/moderation/chat/user/", middleware.RequireUserModerationScopeAccesstoken(moderation.GetUserDetails))

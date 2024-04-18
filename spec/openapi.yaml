@@ -115,6 +115,35 @@ paths:
           $ref: "#/components/responses/401"
         default:
           $ref: "#/components/responses/Default"
+  /chat/users/setenabled:
+    post:
+      summary: Enable/disable a user
+      operationId: updateUserEnabled
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                enabled:
+                  type: boolean
+      responses:
+        '200':
+          description: User status has been updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401"
+        default:
+          $ref: "#/components/responses/Default"
   /config:
     get:
       summary: Get the web config
@@ -444,7 +473,7 @@ paths:
   /admin/chat/users/setenabled:
     post:
       summary: Enable or disable a user
-      operationId: updateUserEnabled
+      operationId: updateUserEnabledAdmin
       security:
         - BasicAuth: []
       requestBody:

@@ -12,6 +12,9 @@ import (
 
 type ServerInterfaceImpl struct{}
 
+// ensure ServerInterfaceImpl implements ServerInterface
+var _ generated.ServerInterface = &ServerInterfaceImpl{}
+
 func New() *ServerInterfaceImpl {
 	return &ServerInterfaceImpl{}
 }
@@ -32,17 +35,16 @@ func (*ServerInterfaceImpl) GetChatMessages(w http.ResponseWriter, r *http.Reque
 	middleware.RequireUserAccessToken(controllers.GetChatMessages)(w, r)
 }
 
-func (*ServerInterfaceImpl) OptionsChatRegister(w http.ResponseWriter, r *http.Request) {
-	// TODO this uses the same method as POST, should break that method up
-	controllers.RegisterAnonymousChatUser(w, r)
-}
-
 func (*ServerInterfaceImpl) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params generated.RegisterAnonymousChatUserParams) {
 	controllers.RegisterAnonymousChatUser(w, r)
 }
 
 func (*ServerInterfaceImpl) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request, params generated.UpdateMessageVisibilityParams) {
 	middleware.RequireUserModerationScopeAccesstoken(admin.UpdateMessageVisibility)(w, r)
+}
+
+func (*ServerInterfaceImpl) UpdateUserEnabled(w http.ResponseWriter, r *http.Request, params generated.UpdateUserEnabledParams) {
+	middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled)(w, r)
 }
 
 func (*ServerInterfaceImpl) GetConfig(w http.ResponseWriter, r *http.Request) {

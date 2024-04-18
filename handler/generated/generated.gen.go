@@ -49,7 +49,7 @@ type ServerInterface interface {
 	GetModerators(w http.ResponseWriter, r *http.Request)
 	// Enable or disable a user
 	// (POST /admin/chat/users/setenabled)
-	UpdateUserEnabled(w http.ResponseWriter, r *http.Request)
+	UpdateUserEnabledAdmin(w http.ResponseWriter, r *http.Request)
 	// Set moderator status for a user
 	// (POST /admin/chat/users/setmoderator)
 	UpdateUserModerator(w http.ResponseWriter, r *http.Request)
@@ -233,6 +233,9 @@ type ServerInterface interface {
 	// Registers an anonymous chat user
 	// (POST /chat/register)
 	RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params RegisterAnonymousChatUserParams)
+	// Enable/disable a user
+	// (POST /chat/users/setenabled)
+	UpdateUserEnabled(w http.ResponseWriter, r *http.Request, params UpdateUserEnabledParams)
 	// Get the web config
 	// (GET /config)
 	GetConfig(w http.ResponseWriter, r *http.Request)
@@ -367,7 +370,7 @@ func (_ Unimplemented) GetModerators(w http.ResponseWriter, r *http.Request) {
 
 // Enable or disable a user
 // (POST /admin/chat/users/setenabled)
-func (_ Unimplemented) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) UpdateUserEnabledAdmin(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -737,6 +740,12 @@ func (_ Unimplemented) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// Enable/disable a user
+// (POST /chat/users/setenabled)
+func (_ Unimplemented) UpdateUserEnabled(w http.ResponseWriter, r *http.Request, params UpdateUserEnabledParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get the web config
 // (GET /config)
 func (_ Unimplemented) GetConfig(w http.ResponseWriter, r *http.Request) {
@@ -1053,14 +1062,14 @@ func (siw *ServerInterfaceWrapper) GetModerators(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// UpdateUserEnabled operation middleware
-func (siw *ServerInterfaceWrapper) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
+// UpdateUserEnabledAdmin operation middleware
+func (siw *ServerInterfaceWrapper) UpdateUserEnabledAdmin(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateUserEnabled(w, r)
+		siw.Handler.UpdateUserEnabledAdmin(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2201,6 +2210,41 @@ func (siw *ServerInterfaceWrapper) RegisterAnonymousChatUser(w http.ResponseWrit
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// UpdateUserEnabled operation middleware
+func (siw *ServerInterfaceWrapper) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateUserEnabledParams
+
+	// ------------- Required query parameter "accessToken" -------------
+
+	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "accessToken", r.URL.Query(), &params.AccessToken)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accessToken", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateUserEnabled(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetConfig operation middleware
 func (siw *ServerInterfaceWrapper) GetConfig(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2718,7 +2762,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/admin/chat/users/moderators", wrapper.GetModerators)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/admin/chat/users/setenabled", wrapper.UpdateUserEnabled)
+		r.Post(options.BaseURL+"/admin/chat/users/setenabled", wrapper.UpdateUserEnabledAdmin)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/chat/users/setmoderator", wrapper.UpdateUserModerator)
@@ -2902,6 +2946,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/chat/register", wrapper.RegisterAnonymousChatUser)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/chat/users/setenabled", wrapper.UpdateUserEnabled)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/config", wrapper.GetConfig)

@@ -598,8 +598,8 @@ type DeleteExternalAPIUserJSONBody struct {
 	Token *string `json:"token,omitempty"`
 }
 
-// UpdateUserEnabledJSONBody defines parameters for UpdateUserEnabled.
-type UpdateUserEnabledJSONBody struct {
+// UpdateUserEnabledAdminJSONBody defines parameters for UpdateUserEnabledAdmin.
+type UpdateUserEnabledAdminJSONBody struct {
 	Enabled *bool   `json:"enabled,omitempty"`
 	UserId  *string `json:"userId,omitempty"`
 }
@@ -711,6 +711,17 @@ type RegisterAnonymousChatUserParams struct {
 	XForwardedUser *string `json:"X-Forwarded-User,omitempty"`
 }
 
+// UpdateUserEnabledJSONBody defines parameters for UpdateUserEnabled.
+type UpdateUserEnabledJSONBody struct {
+	Enabled *bool   `json:"enabled,omitempty"`
+	UserId  *string `json:"userId,omitempty"`
+}
+
+// UpdateUserEnabledParams defines parameters for UpdateUserEnabled.
+type UpdateUserEnabledParams struct {
+	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
+}
+
 // GetFollowersParams defines parameters for GetFollowers.
 type GetFollowersParams struct {
 	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
@@ -751,8 +762,8 @@ type BanIPAddressJSONRequestBody = AdminConfigValue
 // UnbanIPAddressJSONRequestBody defines body for UnbanIPAddress for application/json ContentType.
 type UnbanIPAddressJSONRequestBody = AdminConfigValue
 
-// UpdateUserEnabledJSONRequestBody defines body for UpdateUserEnabled for application/json ContentType.
-type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody
+// UpdateUserEnabledAdminJSONRequestBody defines body for UpdateUserEnabledAdmin for application/json ContentType.
+type UpdateUserEnabledAdminJSONRequestBody UpdateUserEnabledAdminJSONBody
 
 // UpdateUserModeratorJSONRequestBody defines body for UpdateUserModerator for application/json ContentType.
 type UpdateUserModeratorJSONRequestBody UpdateUserModeratorJSONBody
@@ -882,6 +893,9 @@ type UpdateMessageVisibilityJSONRequestBody = MessageVisibilityUpdate
 
 // RegisterAnonymousChatUserJSONRequestBody defines body for RegisterAnonymousChatUser for application/json ContentType.
 type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
+
+// UpdateUserEnabledJSONRequestBody defines body for UpdateUserEnabled for application/json ContentType.
+type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody
 
 // SendChatActionJSONRequestBody defines body for SendChatAction for application/json ContentType.
 type SendChatActionJSONRequestBody = SystemActionEvent
