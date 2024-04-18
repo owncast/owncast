@@ -2421,6 +2421,90 @@ paths:
           $ref: "#/components/responses/404"
         default:
           $ref: "#/components/responses/Default"
+  /auth/indieauth:
+    post:
+      summary: Begins auth flow
+      operationId: startIndieAuthFlow
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                authHost:
+                  type: string
+      responses:
+        '200':
+          description: Authentication redirect
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirect:
+                    type: string
+                    format: url
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401"
+        default:
+          $ref: "#/components/responses/Default"
+  /auth/indieauth/callback:
+    get:
+      summary: Handle the redirect from an IndieAuth server to continue the auth flow
+      operationId: handleIndieAuthRedirect
+      parameters:
+        - $ref: "#/components/parameters/IndieAuthState"
+        - $ref: "#/components/parameters/IndieAuthCode"
+      responses:
+        '307':
+          description: Redirected to home page
+        '400':
+          $ref: "#/components/responses/400"
+  /auth/provider/indieauth:
+    get:
+      summary: Handles the IndieAuth auth endpoint
+      operationId: handleIndieAuthEndpointGet
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IndieAuthClientId"
+        - $ref: "#/components/parameters/IndieAuthRedirectURI"
+        - $ref: "#/components/parameters/IndieAuthCodeChallenge"
+        - $ref: "#/components/parameters/IndieAuthState"
+        - $ref: "#/components/parameters/IndieAuthCode"
+      responses:
+        '200':
+          description: IndieAuth flow concluded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IndieAuthResponse"
+        '307':
+          description: Redirected to redirect URI
+        '400':
+          $ref: "#/components/responses/400"
+        '500':
+          $ref: "#/components/responses/500"
+    post:
+      summary: Handles IndieAuth from form submission
+      operationId: handleIndieAuthEndpointPost
+      requestBody:
+        $ref: "#/components/requestBodies/IndieAuthEndpointForm"
+      responses:
+        '200':
+          description: IndieAuth flow concluded
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/IndieAuthResponse"
+                  - $ref: "#/components/schemas/IndieAuthServerProfileResponse"
+        '400':
+          $ref: "#/components/responses/400"
 
 components:
   schemas:
@@ -3254,6 +3338,46 @@ components:
             items:
               type: string
           - type: number
+    IndieAuthResponse:
+      type: object
+      properties:
+        me:
+          type: string
+        profile:
+          $ref: "#/components/schemas/IndieAuthProfile"
+        error:
+          type: string
+        errorDescription:
+          type: string
+    IndieAuthProfile:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        photo:
+          type: string
+    IndieAuthServerProfileResponse:
+      type: object
+      properties:
+        me:
+          type: string
+        profile:
+          $ref: "#/components/schemas/IndieAuthServerProfile"
+        error:
+          type: string
+        errorDescription:
+          type: string
+    IndieAuthServerProfile:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        photo:
+          type: string
 
   headers:
     'Access-Control-Allow-Origin':
@@ -3272,6 +3396,7 @@ components:
     'X-Content-Type-Options':
       schema:
         type: string
+
   requestBodies:
     AdminConfigValue:
       description: A single value that is used in the request
@@ -3279,6 +3404,22 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/AdminConfigValue"
+    IndieAuthEndpointForm:
+      description: Form submission from IndieAuth
+      content:
+        application/x-www-form-urlencoded:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              redirect_uri:
+                type: string
+              client_id:
+                type: string
+              codeVerifier:
+                type: string
+
   responses:
     Default:
       description: Unexpected error
@@ -3351,6 +3492,42 @@ components:
     AccessToken:
       in: query
       name: accessToken
+      schema:
+        type: string
+      required: true
+    IndieAuthClientId:
+      in: query
+      name: client_id
+      schema:
+        type: string
+      required: true
+    IndieAuthRedirectURI:
+      in: query
+      name: redirect_uri
+      schema:
+        type: string
+      required: true
+    IndieAuthCodeChallenge:
+      in: query
+      name: code_challenge
+      schema:
+        type: string
+      required: true
+    IndieAuthState:
+      in: query
+      name: state
+      schema:
+        type: string
+      required: true
+    IndieAuthCode:
+      in: query
+      name: code
+      schema:
+        type: string
+      required: true
+    IndieAuthMe:
+      in: query
+      name: me
       schema:
         type: string
       required: true

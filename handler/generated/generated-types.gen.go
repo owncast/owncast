@@ -357,6 +357,36 @@ type InboundStreamDetails struct {
 	Width        *int     `json:"width,omitempty"`
 }
 
+// IndieAuthProfile defines model for IndieAuthProfile.
+type IndieAuthProfile struct {
+	Name  *string `json:"name,omitempty"`
+	Photo *string `json:"photo,omitempty"`
+	Url   *string `json:"url,omitempty"`
+}
+
+// IndieAuthResponse defines model for IndieAuthResponse.
+type IndieAuthResponse struct {
+	Error            *string           `json:"error,omitempty"`
+	ErrorDescription *string           `json:"errorDescription,omitempty"`
+	Me               *string           `json:"me,omitempty"`
+	Profile          *IndieAuthProfile `json:"profile,omitempty"`
+}
+
+// IndieAuthServerProfile defines model for IndieAuthServerProfile.
+type IndieAuthServerProfile struct {
+	Name  *string `json:"name,omitempty"`
+	Photo *string `json:"photo,omitempty"`
+	Url   *string `json:"url,omitempty"`
+}
+
+// IndieAuthServerProfileResponse defines model for IndieAuthServerProfileResponse.
+type IndieAuthServerProfileResponse struct {
+	Error            *string                 `json:"error,omitempty"`
+	ErrorDescription *string                 `json:"errorDescription,omitempty"`
+	Me               *string                 `json:"me,omitempty"`
+	Profile          *IndieAuthServerProfile `json:"profile,omitempty"`
+}
+
 // LatencyLevel defines model for LatencyLevel.
 type LatencyLevel struct {
 	Level *int `json:"level,omitempty"`
@@ -599,6 +629,21 @@ type YPDetails struct {
 // AccessToken defines model for AccessToken.
 type AccessToken = string
 
+// IndieAuthClientId defines model for IndieAuthClientId.
+type IndieAuthClientId = string
+
+// IndieAuthCode defines model for IndieAuthCode.
+type IndieAuthCode = string
+
+// IndieAuthCodeChallenge defines model for IndieAuthCodeChallenge.
+type IndieAuthCodeChallenge = string
+
+// IndieAuthRedirectURI defines model for IndieAuthRedirectURI.
+type IndieAuthRedirectURI = string
+
+// IndieAuthState defines model for IndieAuthState.
+type IndieAuthState = string
+
 // Limit The numbers of items to return
 type Limit = int
 
@@ -735,6 +780,39 @@ type CreateWebhookJSONBody struct {
 // DeleteWebhookJSONBody defines parameters for DeleteWebhook.
 type DeleteWebhookJSONBody struct {
 	Id *int `json:"id,omitempty"`
+}
+
+// StartIndieAuthFlowJSONBody defines parameters for StartIndieAuthFlow.
+type StartIndieAuthFlowJSONBody struct {
+	AuthHost *string `json:"authHost,omitempty"`
+}
+
+// StartIndieAuthFlowParams defines parameters for StartIndieAuthFlow.
+type StartIndieAuthFlowParams struct {
+	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
+}
+
+// HandleIndieAuthRedirectParams defines parameters for HandleIndieAuthRedirect.
+type HandleIndieAuthRedirectParams struct {
+	State IndieAuthState `form:"state" json:"state"`
+	Code  IndieAuthCode  `form:"code" json:"code"`
+}
+
+// HandleIndieAuthEndpointGetParams defines parameters for HandleIndieAuthEndpointGet.
+type HandleIndieAuthEndpointGetParams struct {
+	ClientId      IndieAuthClientId      `form:"client_id" json:"client_id"`
+	RedirectUri   IndieAuthRedirectURI   `form:"redirect_uri" json:"redirect_uri"`
+	CodeChallenge IndieAuthCodeChallenge `form:"code_challenge" json:"code_challenge"`
+	State         IndieAuthState         `form:"state" json:"state"`
+	Code          IndieAuthCode          `form:"code" json:"code"`
+}
+
+// HandleIndieAuthEndpointPostFormdataBody defines parameters for HandleIndieAuthEndpointPost.
+type HandleIndieAuthEndpointPostFormdataBody struct {
+	ClientId     *string `form:"client_id,omitempty" json:"client_id,omitempty"`
+	Code         *string `form:"code,omitempty" json:"code,omitempty"`
+	CodeVerifier *string `form:"codeVerifier,omitempty" json:"codeVerifier,omitempty"`
+	RedirectUri  *string `form:"redirect_uri,omitempty" json:"redirect_uri,omitempty"`
 }
 
 // GetChatMessagesParams defines parameters for GetChatMessages.
@@ -965,6 +1043,12 @@ type CreateWebhookJSONRequestBody CreateWebhookJSONBody
 
 // DeleteWebhookJSONRequestBody defines body for DeleteWebhook for application/json ContentType.
 type DeleteWebhookJSONRequestBody DeleteWebhookJSONBody
+
+// StartIndieAuthFlowJSONRequestBody defines body for StartIndieAuthFlow for application/json ContentType.
+type StartIndieAuthFlowJSONRequestBody StartIndieAuthFlowJSONBody
+
+// HandleIndieAuthEndpointPostFormdataRequestBody defines body for HandleIndieAuthEndpointPost for application/x-www-form-urlencoded ContentType.
+type HandleIndieAuthEndpointPostFormdataRequestBody HandleIndieAuthEndpointPostFormdataBody
 
 // UpdateMessageVisibilityJSONRequestBody defines body for UpdateMessageVisibility for application/json ContentType.
 type UpdateMessageVisibilityJSONRequestBody = MessageVisibilityUpdate

@@ -266,6 +266,18 @@ type ServerInterface interface {
 	// Reset YP configuration
 	// (GET /admin/yp/reset)
 	ResetYPRegistration(w http.ResponseWriter, r *http.Request)
+	// Begins auth flow
+	// (POST /auth/indieauth)
+	StartIndieAuthFlow(w http.ResponseWriter, r *http.Request, params StartIndieAuthFlowParams)
+	// Handle the redirect from an IndieAuth server to continue the auth flow
+	// (GET /auth/indieauth/callback)
+	HandleIndieAuthRedirect(w http.ResponseWriter, r *http.Request, params HandleIndieAuthRedirectParams)
+	// Handles the IndieAuth auth endpoint
+	// (GET /auth/provider/indieauth)
+	HandleIndieAuthEndpointGet(w http.ResponseWriter, r *http.Request, params HandleIndieAuthEndpointGetParams)
+	// Handles IndieAuth from form submission
+	// (POST /auth/provider/indieauth)
+	HandleIndieAuthEndpointPost(w http.ResponseWriter, r *http.Request)
 	// Gets a list of chat messages
 	// (GET /chat)
 	GetChatMessages(w http.ResponseWriter, r *http.Request, params GetChatMessagesParams)
@@ -848,6 +860,30 @@ func (_ Unimplemented) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 // Reset YP configuration
 // (GET /admin/yp/reset)
 func (_ Unimplemented) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Begins auth flow
+// (POST /auth/indieauth)
+func (_ Unimplemented) StartIndieAuthFlow(w http.ResponseWriter, r *http.Request, params StartIndieAuthFlowParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Handle the redirect from an IndieAuth server to continue the auth flow
+// (GET /auth/indieauth/callback)
+func (_ Unimplemented) HandleIndieAuthRedirect(w http.ResponseWriter, r *http.Request, params HandleIndieAuthRedirectParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Handles the IndieAuth auth endpoint
+// (GET /auth/provider/indieauth)
+func (_ Unimplemented) HandleIndieAuthEndpointGet(w http.ResponseWriter, r *http.Request, params HandleIndieAuthEndpointGetParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Handles IndieAuth from form submission
+// (POST /auth/provider/indieauth)
+func (_ Unimplemented) HandleIndieAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2485,6 +2521,203 @@ func (siw *ServerInterfaceWrapper) ResetYPRegistration(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// StartIndieAuthFlow operation middleware
+func (siw *ServerInterfaceWrapper) StartIndieAuthFlow(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params StartIndieAuthFlowParams
+
+	// ------------- Required query parameter "accessToken" -------------
+
+	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "accessToken", r.URL.Query(), &params.AccessToken)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accessToken", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.StartIndieAuthFlow(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// HandleIndieAuthRedirect operation middleware
+func (siw *ServerInterfaceWrapper) HandleIndieAuthRedirect(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params HandleIndieAuthRedirectParams
+
+	// ------------- Required query parameter "state" -------------
+
+	if paramValue := r.URL.Query().Get("state"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "state"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "state", r.URL.Query(), &params.State)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "state", Err: err})
+		return
+	}
+
+	// ------------- Required query parameter "code" -------------
+
+	if paramValue := r.URL.Query().Get("code"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "code"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "code", r.URL.Query(), &params.Code)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "code", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.HandleIndieAuthRedirect(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// HandleIndieAuthEndpointGet operation middleware
+func (siw *ServerInterfaceWrapper) HandleIndieAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params HandleIndieAuthEndpointGetParams
+
+	// ------------- Required query parameter "client_id" -------------
+
+	if paramValue := r.URL.Query().Get("client_id"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "client_id"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "client_id", r.URL.Query(), &params.ClientId)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "client_id", Err: err})
+		return
+	}
+
+	// ------------- Required query parameter "redirect_uri" -------------
+
+	if paramValue := r.URL.Query().Get("redirect_uri"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "redirect_uri"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "redirect_uri", r.URL.Query(), &params.RedirectUri)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "redirect_uri", Err: err})
+		return
+	}
+
+	// ------------- Required query parameter "code_challenge" -------------
+
+	if paramValue := r.URL.Query().Get("code_challenge"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "code_challenge"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "code_challenge", r.URL.Query(), &params.CodeChallenge)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "code_challenge", Err: err})
+		return
+	}
+
+	// ------------- Required query parameter "state" -------------
+
+	if paramValue := r.URL.Query().Get("state"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "state"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "state", r.URL.Query(), &params.State)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "state", Err: err})
+		return
+	}
+
+	// ------------- Required query parameter "code" -------------
+
+	if paramValue := r.URL.Query().Get("code"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "code"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "code", r.URL.Query(), &params.Code)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "code", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.HandleIndieAuthEndpointGet(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// HandleIndieAuthEndpointPost operation middleware
+func (siw *ServerInterfaceWrapper) HandleIndieAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.HandleIndieAuthEndpointPost(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetChatMessages operation middleware
 func (siw *ServerInterfaceWrapper) GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -3409,6 +3642,18 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/yp/reset", wrapper.ResetYPRegistration)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/auth/indieauth", wrapper.StartIndieAuthFlow)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/auth/indieauth/callback", wrapper.HandleIndieAuthRedirect)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/auth/provider/indieauth", wrapper.HandleIndieAuthEndpointGet)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/auth/provider/indieauth", wrapper.HandleIndieAuthEndpointPost)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/chat", wrapper.GetChatMessages)

@@ -382,8 +382,8 @@ func Start() error {
 	// Auth
 
 	// Start auth flow
-	http.HandleFunc("/api/auth/indieauth", middleware.RequireUserAccessToken(indieauth.StartAuthFlow))
-	http.HandleFunc("/api/auth/indieauth/callback", indieauth.HandleRedirect)
+	// http.HandleFunc("/api/auth/indieauth", middleware.RequireUserAccessToken(indieauth.StartAuthFlow))
+	// http.HandleFunc("/api/auth/indieauth/callback", indieauth.HandleRedirect)
 	http.HandleFunc("/api/auth/provider/indieauth", indieauth.HandleAuthEndpoint)
 
 	http.HandleFunc("/api/auth/fediverse", middleware.RequireUserAccessToken(fediverseauth.RegisterFediverseOTPRequest))
