@@ -49,20 +49,22 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			CustomJavascript:    data.GetCustomJavascript(),
 			AppearanceVariables: data.GetCustomColorVariableValues(),
 		},
-		FFmpegPath:              ffmpeg,
-		AdminPassword:           data.GetAdminPassword(),
-		StreamKeys:              data.GetStreamKeys(),
-		StreamKeyOverridden:     config.TemporaryStreamKey != "",
-		WebServerPort:           config.WebServerPort,
-		WebServerIP:             config.WebServerIP,
-		RTMPServerPort:          data.GetRTMPPortNumber(),
-		ChatDisabled:            data.GetChatDisabled(),
-		ChatJoinMessagesEnabled: data.GetChatJoinPartMessagesEnabled(),
-		SocketHostOverride:      data.GetWebsocketOverrideHost(),
-		VideoServingEndpoint:    data.GetVideoServingEndpoint(),
-		ChatEstablishedUserMode: data.GetChatEstbalishedUsersOnlyMode(),
-		HideViewerCount:         data.GetHideViewerCount(),
-		DisableSearchIndexing:   data.GetDisableSearchIndexing(),
+		FFmpegPath:                ffmpeg,
+		AdminPassword:             data.GetAdminPassword(),
+		StreamKeys:                data.GetStreamKeys(),
+		StreamKeyOverridden:       config.TemporaryStreamKey != "",
+		WebServerPort:             config.WebServerPort,
+		WebServerIP:               config.WebServerIP,
+		RTMPServerPort:            data.GetRTMPPortNumber(),
+		ChatDisabled:              data.GetChatDisabled(),
+		ChatJoinMessagesEnabled:   data.GetChatJoinPartMessagesEnabled(),
+		SocketHostOverride:        data.GetWebsocketOverrideHost(),
+		VideoServingEndpoint:      data.GetVideoServingEndpoint(),
+		ChatEstablishedUserMode:   data.GetChatEstbalishedUsersOnlyMode(),
+		ChatSpamProtectionEnabled: data.GetChatSpamProtectionEnabled(),
+		ChatSlurFilterEnabled:     data.GetChatSlurFilterEnabled(),
+		HideViewerCount:           data.GetHideViewerCount(),
+		DisableSearchIndexing:     data.GetDisableSearchIndexing(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         data.GetStreamLatencyLevel().Level,
@@ -100,31 +102,33 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 type serverConfigAdminResponse struct {
-	InstanceDetails         webConfigResponse           `json:"instanceDetails"`
-	Notifications           notificationsConfigResponse `json:"notifications"`
-	YP                      yp                          `json:"yp"`
-	FFmpegPath              string                      `json:"ffmpegPath"`
-	AdminPassword           string                      `json:"adminPassword"`
-	SocketHostOverride      string                      `json:"socketHostOverride,omitempty"`
-	WebServerIP             string                      `json:"webServerIP"`
-	VideoCodec              string                      `json:"videoCodec"`
-	VideoServingEndpoint    string                      `json:"videoServingEndpoint"`
-	S3                      models.S3                   `json:"s3"`
-	Federation              federationConfigResponse    `json:"federation"`
-	SupportedCodecs         []string                    `json:"supportedCodecs"`
-	ExternalActions         []models.ExternalAction     `json:"externalActions"`
-	ForbiddenUsernames      []string                    `json:"forbiddenUsernames"`
-	SuggestedUsernames      []string                    `json:"suggestedUsernames"`
-	StreamKeys              []models.StreamKey          `json:"streamKeys"`
-	VideoSettings           videoSettings               `json:"videoSettings"`
-	RTMPServerPort          int                         `json:"rtmpServerPort"`
-	WebServerPort           int                         `json:"webServerPort"`
-	ChatDisabled            bool                        `json:"chatDisabled"`
-	ChatJoinMessagesEnabled bool                        `json:"chatJoinMessagesEnabled"`
-	ChatEstablishedUserMode bool                        `json:"chatEstablishedUserMode"`
-	DisableSearchIndexing   bool                        `json:"disableSearchIndexing"`
-	StreamKeyOverridden     bool                        `json:"streamKeyOverridden"`
-	HideViewerCount         bool                        `json:"hideViewerCount"`
+	InstanceDetails           webConfigResponse           `json:"instanceDetails"`
+	Notifications             notificationsConfigResponse `json:"notifications"`
+	YP                        yp                          `json:"yp"`
+	FFmpegPath                string                      `json:"ffmpegPath"`
+	AdminPassword             string                      `json:"adminPassword"`
+	SocketHostOverride        string                      `json:"socketHostOverride,omitempty"`
+	WebServerIP               string                      `json:"webServerIP"`
+	VideoCodec                string                      `json:"videoCodec"`
+	VideoServingEndpoint      string                      `json:"videoServingEndpoint"`
+	S3                        models.S3                   `json:"s3"`
+	Federation                federationConfigResponse    `json:"federation"`
+	SupportedCodecs           []string                    `json:"supportedCodecs"`
+	ExternalActions           []models.ExternalAction     `json:"externalActions"`
+	ForbiddenUsernames        []string                    `json:"forbiddenUsernames"`
+	SuggestedUsernames        []string                    `json:"suggestedUsernames"`
+	StreamKeys                []models.StreamKey          `json:"streamKeys"`
+	VideoSettings             videoSettings               `json:"videoSettings"`
+	RTMPServerPort            int                         `json:"rtmpServerPort"`
+	WebServerPort             int                         `json:"webServerPort"`
+	ChatDisabled              bool                        `json:"chatDisabled"`
+	ChatJoinMessagesEnabled   bool                        `json:"chatJoinMessagesEnabled"`
+	ChatEstablishedUserMode   bool                        `json:"chatEstablishedUserMode"`
+	ChatSpamProtectionEnabled bool                        `json:"chatSpamProtectionEnabled"`
+	ChatSlurFilterEnabled     bool                        `json:"chatSlurFilterEnabled"`
+	DisableSearchIndexing     bool                        `json:"disableSearchIndexing"`
+	StreamKeyOverridden       bool                        `json:"streamKeyOverridden"`
+	HideViewerCount           bool                        `json:"hideViewerCount"`
 }
 
 type videoSettings struct {

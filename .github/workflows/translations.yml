@@ -32,17 +32,7 @@ jobs:
       - name: Generate translation files
         run: npm run translate
 
-      - name: Commit changes
-        uses: EndBug/add-and-commit@v9
-        with:
-          author_name: Owncast
-          author_email: owncast@owncast.online
-          message: 'Commit updated translations'
-          add: 'web/i18n/**'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Crowdin action
+      - name: Crowdin upload sources/download translations
         uses: crowdin/github-action@v1
         with:
           upload_sources: true
@@ -53,3 +43,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: Owncast
+          author_email: owncast@owncast.online
+          message: 'Commit updated translations'
+          add: 'web/i18n/**'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run API tests
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10
           max_attempts: 3

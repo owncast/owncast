@@ -58,10 +58,17 @@ export function createVideoSettingsMenuButton(
         });
       });
 
+      let clickEvent;
+      if ('ontouchstart' in window) {
+        clickEvent = 'touchend'; // Use touchend event for touch devices
+      } else {
+        clickEvent = 'click'; // Use click for all other devices
+      }
+
       for (let i = 0; i < items.length; i += 1) {
         const item = items[i];
         // Quality selected
-        item.on('click', () => {
+        item.on(clickEvent, () => {
           // If for some reason tech doesn't exist, then don't do anything
           if (!tech) {
             console.warn('Invalid attempt to access null player tech');
@@ -77,7 +84,7 @@ export function createVideoSettingsMenuButton(
         });
       }
 
-      defaultAutoItem.on('click', () => {
+      defaultAutoItem.on(clickEvent, () => {
         // Re-enable all representations.
         tech.vhs.representations().forEach(rep => {
           rep.enabled(true);

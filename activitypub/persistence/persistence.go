@@ -27,6 +27,7 @@ func Setup(datastore *data.Datastore) {
 	createFederationFollowersTable()
 	createFederationOutboxTable()
 	createFederatedActivitiesTable()
+	addFollowersFixtureData()
 }
 
 // AddFollow will save a follow to the datastore.

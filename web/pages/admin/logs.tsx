@@ -32,7 +32,7 @@ export default function Logs() {
     };
   }, []);
 
-  return <LogTable logs={logs} pageSize={20} />;
+  return <LogTable logs={logs} initialPageSize={20} />;
 }
 
 Logs.getLayout = function getLayout(page: ReactElement) {
