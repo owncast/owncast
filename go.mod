@@ -3,7 +3,7 @@ module github.com/owncast/owncast
 go 1.21
 
 require (
-	github.com/aws/aws-sdk-go v1.51.17
+	github.com/aws/aws-sdk-go v1.51.23
 	github.com/go-fed/activity v1.0.1-0.20210803212804-d866ba75dd0f
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -59,7 +59,6 @@ require (
 require github.com/SherClockHolmes/webpush-go v1.3.0
 
 require (
-	github.com/TwiN/go-away v1.6.13 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -76,6 +75,7 @@ require (
 
 require (
 	github.com/CAFxX/httpcompression v0.0.9
+	github.com/TwiN/go-away v1.6.13
 	github.com/andybalholm/cascadia v1.3.2
 	github.com/jellydator/ttlcache/v3 v3.2.0
 	github.com/mssola/user_agent v0.6.0
