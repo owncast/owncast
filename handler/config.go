@@ -158,3 +158,7 @@ func (*ServerInterfaceImpl) SetFederationActivityPrivate(w http.ResponseWriter, 
 func (*ServerInterfaceImpl) SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetFederationShowEngagement)(w, r)
 }
+
+func (*ServerInterfaceImpl) SetFederationUsername(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetFederationUsername)(w, r)
+}

@@ -98,6 +98,9 @@ type ServerInterface interface {
 	// Set if fediverse engagement appears in chat
 	// (POST /admin/config/federation/showengagement)
 	SetFederationShowEngagement(w http.ResponseWriter, r *http.Request)
+	// Set local federated username
+	// (POST /admin/config/federation/username)
+	SetFederationUsername(w http.ResponseWriter, r *http.Request)
 	// Update FFMPEG path
 	// (POST /admin/config/ffmpegpath)
 	SetFfmpegPath(w http.ResponseWriter, r *http.Request)
@@ -479,6 +482,12 @@ func (_ Unimplemented) SetFederationActivityPrivate(w http.ResponseWriter, r *ht
 // Set if fediverse engagement appears in chat
 // (POST /admin/config/federation/showengagement)
 func (_ Unimplemented) SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set local federated username
+// (POST /admin/config/federation/username)
+func (_ Unimplemented) SetFederationUsername(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1378,6 +1387,23 @@ func (siw *ServerInterfaceWrapper) SetFederationShowEngagement(w http.ResponseWr
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationShowEngagement(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetFederationUsername operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationUsername(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationUsername(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2942,6 +2968,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/showengagement", wrapper.SetFederationShowEngagement)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/federation/username", wrapper.SetFederationUsername)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/ffmpegpath", wrapper.SetFfmpegPath)
