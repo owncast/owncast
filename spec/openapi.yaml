@@ -1673,6 +1673,27 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+  /admin/config/federation/showengagement:
+    post:
+      summary: Set if fediverse engagement appears in chat
+      operationId: setFederationShowEngagement
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/AdminConfigValue"
+      responses:
+        '200':
+          description: Federation engagement set
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401BasicAuth"
+        default:
+          $ref: "#/components/responses/Default"
   /admin/webhooks:
     get:
       summary: Get all the webhooks

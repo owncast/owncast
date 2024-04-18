@@ -831,6 +831,9 @@ type SetFederationEnabledJSONRequestBody = AdminConfigValue
 // SetFederationActivityPrivateJSONRequestBody defines body for SetFederationActivityPrivate for application/json ContentType.
 type SetFederationActivityPrivateJSONRequestBody = AdminConfigValue
 
+// SetFederationShowEngagementJSONRequestBody defines body for SetFederationShowEngagement for application/json ContentType.
+type SetFederationShowEngagementJSONRequestBody = AdminConfigValue
+
 // SetFfmpegPathJSONRequestBody defines body for SetFfmpegPath for application/json ContentType.
 type SetFfmpegPathJSONRequestBody = AdminConfigValue
 

@@ -95,6 +95,9 @@ type ServerInterface interface {
 	// Set if federation activities are private
 	// (POST /admin/config/federation/private)
 	SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request)
+	// Set if fediverse engagement appears in chat
+	// (POST /admin/config/federation/showengagement)
+	SetFederationShowEngagement(w http.ResponseWriter, r *http.Request)
 	// Update FFMPEG path
 	// (POST /admin/config/ffmpegpath)
 	SetFfmpegPath(w http.ResponseWriter, r *http.Request)
@@ -470,6 +473,12 @@ func (_ Unimplemented) SetFederationEnabled(w http.ResponseWriter, r *http.Reque
 // Set if federation activities are private
 // (POST /admin/config/federation/private)
 func (_ Unimplemented) SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set if fediverse engagement appears in chat
+// (POST /admin/config/federation/showengagement)
+func (_ Unimplemented) SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1352,6 +1361,23 @@ func (siw *ServerInterfaceWrapper) SetFederationActivityPrivate(w http.ResponseW
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationActivityPrivate(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetFederationShowEngagement operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationShowEngagement(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2913,6 +2939,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/private", wrapper.SetFederationActivityPrivate)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/federation/showengagement", wrapper.SetFederationShowEngagement)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/ffmpegpath", wrapper.SetFfmpegPath)
