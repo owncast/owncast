@@ -31,12 +31,12 @@ function makeDurationString(lastConnectTime: Date): string {
 			${diff.hours} ${pluralize(HOUR_LABEL, diff.hours)}`;
   }
   if (diff.hours >= 1) {
-    return `${diff.hours} ${pluralize(HOUR_LABEL, diff.hours)} ${diff.minutes}
-			${pluralize(MINUTE_LABEL, diff.minutes)}`;
+    return `${diff.hours} ${pluralize(HOUR_LABEL, diff.hours)} ${diff.minutes > 0 ? diff.minutes : ''}
+			${diff.minutes > 0 ? pluralize(MINUTE_LABEL, diff.minutes) : ''}`;
   }
 
-  return `${diff.minutes} ${pluralize(MINUTE_LABEL, diff.minutes)}
-		${diff.seconds} ${pluralize(SECOND_LABEL, diff.seconds)}`;
+  return `${diff.minutes > 0 ? diff.minutes : ''} ${diff.minutes > 0 ? pluralize(MINUTE_LABEL, diff.minutes) : ''}
+		${diff.seconds > 0 ? diff.seconds : ''} ${diff.seconds > 0 ? pluralize(SECOND_LABEL, diff.seconds) : ''}`;
 }
 
 export const Statusbar: FC<StatusbarProps> = ({
@@ -60,7 +60,7 @@ export const Statusbar: FC<StatusbarProps> = ({
   let rightSideMessage: any;
   if (online && lastConnectTime) {
     const duration = makeDurationString(new Date(lastConnectTime));
-    onlineMessage = online ? `Live for  ${duration}` : 'Offline';
+    onlineMessage = `Live for  ${duration}`;
     rightSideMessage = viewerCount > 0 && (
       <>
         <span className={styles.viewerIcon}>

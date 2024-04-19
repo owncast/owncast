@@ -49,7 +49,7 @@ jobs:
           EARTHLY_BUILD_TAG: 'nightly'
           EARTHLY_BUILD_BRANCH: 'develop'
           EARTHLY_PUSH: true
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 20
           max_attempts: 3
