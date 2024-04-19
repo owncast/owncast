@@ -21,7 +21,7 @@ export const TitleNotifier: FC<TitleNotifierProps> = ({ name }) => {
   const [backgrounded, setBackgrounded] = useState(false);
   const [title, setTitle] = useState(name);
 
-  const { online } = serverStatus;
+  const { online, streamTitle } = serverStatus;
 
   const onBlur = () => {
     setBackgrounded(true);
@@ -65,6 +65,17 @@ export const TitleNotifier: FC<TitleNotifierProps> = ({ name }) => {
 
     setTitle(`💬 :: ${name}`);
   }, [chatMessages, name]);
+
+  useEffect(() => {
+    if (navigator.mediaSession === undefined) {
+      return;
+    }
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: streamTitle,
+      artist: name,
+      artwork: [{ src: '/logo' }],
+    });
+  }, [name, streamTitle]);
 
   useEffect(() => {
     if (!backgrounded) {
