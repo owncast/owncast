@@ -71,6 +71,12 @@ type ServerInterface interface {
 	// Enable chat for user join messages
 	// (POST /admin/config/chat/joinmessagesenabled)
 	SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request)
+	// Set slur filter enabled
+	// (POST /admin/config/chat/slurfilterenabled)
+	SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request)
+	// Set spam protection enabled
+	// (POST /admin/config/chat/spamprotectionenabled)
+	SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request)
 	// Set the suggested chat usernames that will be assigned automatically
 	// (POST /admin/config/chat/suggestedusernames)
 	SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request)
@@ -476,6 +482,18 @@ func (_ Unimplemented) SetForbiddenUsernameList(w http.ResponseWriter, r *http.R
 // Enable chat for user join messages
 // (POST /admin/config/chat/joinmessagesenabled)
 func (_ Unimplemented) SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set slur filter enabled
+// (POST /admin/config/chat/slurfilterenabled)
+func (_ Unimplemented) SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set spam protection enabled
+// (POST /admin/config/chat/spamprotectionenabled)
+func (_ Unimplemented) SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1378,6 +1396,40 @@ func (siw *ServerInterfaceWrapper) SetChatJoinMessagesEnabled(w http.ResponseWri
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatJoinMessagesEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetChatSlurFilterEnabled operation middleware
+func (siw *ServerInterfaceWrapper) SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetChatSlurFilterEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetChatSpamProtectionEnabled operation middleware
+func (siw *ServerInterfaceWrapper) SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetChatSpamProtectionEnabled(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3515,6 +3567,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/joinmessagesenabled", wrapper.SetChatJoinMessagesEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/chat/slurfilterenabled", wrapper.SetChatSlurFilterEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/chat/spamprotectionenabled", wrapper.SetChatSpamProtectionEnabled)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/suggestedusernames", wrapper.SetSuggestedUsernameList)

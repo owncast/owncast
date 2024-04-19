@@ -930,6 +930,12 @@ type SetForbiddenUsernameListJSONRequestBody SetForbiddenUsernameListJSONBody
 // SetChatJoinMessagesEnabledJSONRequestBody defines body for SetChatJoinMessagesEnabled for application/json ContentType.
 type SetChatJoinMessagesEnabledJSONRequestBody = AdminConfigValue
 
+// SetChatSlurFilterEnabledJSONRequestBody defines body for SetChatSlurFilterEnabled for application/json ContentType.
+type SetChatSlurFilterEnabledJSONRequestBody = AdminConfigValue
+
+// SetChatSpamProtectionEnabledJSONRequestBody defines body for SetChatSpamProtectionEnabled for application/json ContentType.
+type SetChatSpamProtectionEnabledJSONRequestBody = AdminConfigValue
+
 // SetSuggestedUsernameListJSONRequestBody defines body for SetSuggestedUsernameList for application/json ContentType.
 type SetSuggestedUsernameListJSONRequestBody SetSuggestedUsernameListJSONBody
 

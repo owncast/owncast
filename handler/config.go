@@ -59,6 +59,14 @@ func (*ServerInterfaceImpl) SetSuggestedUsernameList(w http.ResponseWriter, r *h
 	middleware.RequireAdminAuth(admin.SetSuggestedUsernameList)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetChatSpamProtectionEnabled)(w, r)
+}
+
+func (*ServerInterfaceImpl) SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetChatSlurFilterEnabled)(w, r)
+}
+
 func (*ServerInterfaceImpl) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetVideoCodec)(w, r)
 }
