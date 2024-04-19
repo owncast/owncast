@@ -266,6 +266,12 @@ type ServerInterface interface {
 	// Reset YP configuration
 	// (GET /admin/yp/reset)
 	ResetYPRegistration(w http.ResponseWriter, r *http.Request)
+	// Register a Fediverse OTP request
+	// (POST /auth/fediverse)
+	RegisterFediverseOTPRequest(w http.ResponseWriter, r *http.Request, params RegisterFediverseOTPRequestParams)
+	// Verify Fediverse OTP code
+	// (POST /auth/fediverse/verify)
+	VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request)
 	// Begins auth flow
 	// (POST /auth/indieauth)
 	StartIndieAuthFlow(w http.ResponseWriter, r *http.Request, params StartIndieAuthFlowParams)
@@ -860,6 +866,18 @@ func (_ Unimplemented) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 // Reset YP configuration
 // (GET /admin/yp/reset)
 func (_ Unimplemented) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Register a Fediverse OTP request
+// (POST /auth/fediverse)
+func (_ Unimplemented) RegisterFediverseOTPRequest(w http.ResponseWriter, r *http.Request, params RegisterFediverseOTPRequestParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Verify Fediverse OTP code
+// (POST /auth/fediverse/verify)
+func (_ Unimplemented) VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2521,6 +2539,56 @@ func (siw *ServerInterfaceWrapper) ResetYPRegistration(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// RegisterFediverseOTPRequest operation middleware
+func (siw *ServerInterfaceWrapper) RegisterFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RegisterFediverseOTPRequestParams
+
+	// ------------- Required query parameter "accessToken" -------------
+
+	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "accessToken", r.URL.Query(), &params.AccessToken)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "accessToken", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RegisterFediverseOTPRequest(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// VerifyFediverseOTPRequest operation middleware
+func (siw *ServerInterfaceWrapper) VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.VerifyFediverseOTPRequest(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // StartIndieAuthFlow operation middleware
 func (siw *ServerInterfaceWrapper) StartIndieAuthFlow(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -3642,6 +3710,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/yp/reset", wrapper.ResetYPRegistration)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/auth/fediverse", wrapper.RegisterFediverseOTPRequest)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/auth/fediverse/verify", wrapper.VerifyFediverseOTPRequest)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/auth/indieauth", wrapper.StartIndieAuthFlow)

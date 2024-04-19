@@ -15,8 +15,6 @@ import (
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/controllers"
-	fediverseauth "github.com/owncast/owncast/controllers/auth/fediverse"
-	"github.com/owncast/owncast/controllers/auth/indieauth"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/handler"
@@ -384,10 +382,10 @@ func Start() error {
 	// Start auth flow
 	// http.HandleFunc("/api/auth/indieauth", middleware.RequireUserAccessToken(indieauth.StartAuthFlow))
 	// http.HandleFunc("/api/auth/indieauth/callback", indieauth.HandleRedirect)
-	http.HandleFunc("/api/auth/provider/indieauth", indieauth.HandleAuthEndpoint)
+	// http.HandleFunc("/api/auth/provider/indieauth", indieauth.HandleAuthEndpoint)
 
-	http.HandleFunc("/api/auth/fediverse", middleware.RequireUserAccessToken(fediverseauth.RegisterFediverseOTPRequest))
-	http.HandleFunc("/api/auth/fediverse/verify", fediverseauth.VerifyFediverseOTPRequest)
+	// http.HandleFunc("/api/auth/fediverse", middleware.RequireUserAccessToken(fediverseauth.RegisterFediverseOTPRequest))
+	// http.HandleFunc("/api/auth/fediverse/verify", fediverseauth.VerifyFediverseOTPRequest)
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
@@ -437,14 +435,10 @@ func Start() error {
 	// websocket
 	http.HandleFunc("/ws", chat.HandleClientConnection)
 
-	port := config.WebServerPort
-	ip := config.WebServerIP
-
-	h2s := &http2.Server{}
-
 	// Create a custom mux handler to intercept the /debug/vars endpoint.
 	// This is a hack because Prometheus enables this endpoint by default
 	// due to its use of expvar and we do not want this exposed.
+	h2s := &http2.Server{}
 	http2Handler := h2c.NewHandler(r, h2s)
 	m := http.NewServeMux()
 
@@ -459,6 +453,9 @@ func Start() error {
 			http2Handler.ServeHTTP(w, r)
 		}
 	})
+
+	port := config.WebServerPort
+	ip := config.WebServerIP
 
 	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
 	server := &http.Server{

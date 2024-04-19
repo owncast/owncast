@@ -782,6 +782,21 @@ type DeleteWebhookJSONBody struct {
 	Id *int `json:"id,omitempty"`
 }
 
+// RegisterFediverseOTPRequestJSONBody defines parameters for RegisterFediverseOTPRequest.
+type RegisterFediverseOTPRequestJSONBody struct {
+	Account *string `json:"account,omitempty"`
+}
+
+// RegisterFediverseOTPRequestParams defines parameters for RegisterFediverseOTPRequest.
+type RegisterFediverseOTPRequestParams struct {
+	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
+}
+
+// VerifyFediverseOTPRequestJSONBody defines parameters for VerifyFediverseOTPRequest.
+type VerifyFediverseOTPRequestJSONBody struct {
+	Code *string `json:"code,omitempty"`
+}
+
 // StartIndieAuthFlowJSONBody defines parameters for StartIndieAuthFlow.
 type StartIndieAuthFlowJSONBody struct {
 	AuthHost *string `json:"authHost,omitempty"`
@@ -1043,6 +1058,12 @@ type CreateWebhookJSONRequestBody CreateWebhookJSONBody
 
 // DeleteWebhookJSONRequestBody defines body for DeleteWebhook for application/json ContentType.
 type DeleteWebhookJSONRequestBody DeleteWebhookJSONBody
+
+// RegisterFediverseOTPRequestJSONRequestBody defines body for RegisterFediverseOTPRequest for application/json ContentType.
+type RegisterFediverseOTPRequestJSONRequestBody RegisterFediverseOTPRequestJSONBody
+
+// VerifyFediverseOTPRequestJSONRequestBody defines body for VerifyFediverseOTPRequest for application/json ContentType.
+type VerifyFediverseOTPRequestJSONRequestBody VerifyFediverseOTPRequestJSONBody
 
 // StartIndieAuthFlowJSONRequestBody defines body for StartIndieAuthFlow for application/json ContentType.
 type StartIndieAuthFlowJSONRequestBody StartIndieAuthFlowJSONBody

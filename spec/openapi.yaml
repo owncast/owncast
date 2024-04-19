@@ -2505,6 +2505,55 @@ paths:
                   - $ref: "#/components/schemas/IndieAuthServerProfileResponse"
         '400':
           $ref: "#/components/responses/400"
+  /auth/fediverse:
+    post:
+      summary: Register a Fediverse OTP request
+      operationId: registerFediverseOTPRequest
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account:
+                  type: string
+      responses:
+        '200':
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401"
+  /auth/fediverse/verify:
+    post:
+      summary: Verify Fediverse OTP code
+      operationId: verifyFediverseOTPRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+      responses:
+        '200':
+          description: OTP Verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseAPIResponse"
+        '400':
+          $ref: "#/components/responses/400"
+        '403':
+          $ref: "#/components/responses/403"
+
 
 components:
   schemas:
@@ -3461,6 +3510,8 @@ components:
         text/plain:
           schema:
             type: string
+    '403':
+      description: Forbidden
     '404':
       description: Not found
     '500':
