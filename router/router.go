@@ -435,10 +435,10 @@ func Start() error {
 	r.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
 
 	// Return HLS video
-	http.HandleFunc("/hls/", controllers.HandleHLSRequest)
+	r.HandleFunc("/hls/*", controllers.HandleHLSRequest)
 
 	// websocket
-	http.HandleFunc("/ws", chat.HandleClientConnection)
+	r.HandleFunc("/ws", chat.HandleClientConnection)
 
 	// Create a custom mux handler to intercept the /debug/vars endpoint.
 	// This is a hack because Prometheus enables this endpoint by default
