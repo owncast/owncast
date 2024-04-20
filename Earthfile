@@ -16,7 +16,7 @@ docker-all:
 
 crosscompiler:
   # This image is missing a few platforms, so we'll add them locally
-  FROM --platform=linux/amd64 bdwyertech/go-crosscompile:1.22-2024-02-20--f6885c3
+  FROM --platform=linux/amd64 bdwyertech/go-crosscompile
   RUN apk add --update --no-cache tar gzip upx >> /dev/null
   RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/armv7l-linux-musleabihf-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
   RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/i686-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
@@ -146,13 +146,13 @@ dockerfile:
   FROM DOCKERFILE -f Dockerfile .
 
 unit-tests:
-  FROM --platform=linux/amd64 bdwyertech/go-crosscompile:1.22-2024-02-20--f6885c3
+  FROM --platform=linux/amd64 bdwyertech/go-crosscompile
   COPY . /build
 	WORKDIR /build
 	RUN go test ./...
 
 api-tests:
-	FROM --platform=linux/amd64 bdwyertech/go-crosscompile:1.22-2024-02-20--f6885c3
+	FROM --platform=linux/amd64 bdwyertech/go-crosscompile
 	RUN apk add npm font-noto && fc-cache -f
   COPY . /build
 	WORKDIR /build/test/automated/api
@@ -160,7 +160,7 @@ api-tests:
 	RUN ./run.sh
 
 hls-tests:
-	FROM --platform=linux/amd64 bdwyertech/go-crosscompile:1.22-2024-02-20--f6885c3
+	FROM --platform=linux/amd64 bdwyertech/go-crosscompile
 	RUN apk add npm font-noto && fc-cache -f
   COPY . /build
 	WORKDIR /build/test/automated/hls
