@@ -1,6 +1,7 @@
 import { Virtuoso } from 'react-virtuoso';
 import { useState, useMemo, useRef, CSSProperties, FC, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { Interweave } from 'interweave';
 import {
   ConnectedClientInfoEvent,
   FediverseEvent,
@@ -317,6 +318,24 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     }
   }
 
+  // Retrieve, clean, and attach username to newest chat message to be read out by screenreader
+  function getLastMessage() {
+    if (messages.length > 0 && typeof messages[messages.length - 1].body !== 'undefined') {
+      const lastMessage = messages[messages.length - 1];
+      const message = lastMessage.body.replace(/(<([^>]+)>)/gi, '');
+      let stringToRead = '';
+      if (typeof lastMessage.user !== 'undefined') {
+        const username = lastMessage.user.displayName;
+        stringToRead = `${username} said ${message}`;
+      } else {
+        stringToRead = `System message: ${message}`;
+      }
+      return stringToRead;
+    }
+    return '';
+  }
+  const lastMessage = getLastMessage();
+
   if (resizeWindowCallback) window.removeEventListener('resize', resizeWindowCallback);
   if (desktop) {
     window.addEventListener('resize', resize);
@@ -337,6 +356,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
       )}
     >
       <div
+        aria-live="off"
         id="chat-container"
         className={styles.chatContainer}
         style={desktop && { width: `${defaultChatWidth}px` }}
@@ -351,6 +371,9 @@ export const ChatContainer: FC<ChatContainerProps> = ({
           <div className={styles.resizeHandle} onMouseDown={startDrag} role="presentation" />
         )}
       </div>
+      <span className={styles.chatAccessibilityHidden} aria-live="polite">
+        <Interweave content={lastMessage} />
+      </span>
     </ErrorBoundary>
   );
 };

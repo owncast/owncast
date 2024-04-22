@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/owncast/owncast/core/data"
@@ -26,25 +27,28 @@ import (
 
 // S3Storage is the s3 implementation of a storage provider.
 type S3Storage struct {
-	sess     *session.Session
+	// If we try to upload a playlist but it is not yet on disk
+	// then keep a reference to it here.
+	queuedPlaylistUpdates map[string]string
+
 	s3Client *s3.S3
 
 	uploader *s3manager.Uploader
 
-	// If we try to upload a playlist but it is not yet on disk
-	// then keep a reference to it here.
-	queuedPlaylistUpdates map[string]string
+	sess     *session.Session
+	s3Secret string
 
 	s3Bucket          string
 	s3Region          string
 	s3ServingEndpoint string
 	s3AccessKey       string
-	s3Secret          string
 	s3ACL             string
 	s3PathPrefix      string
 
 	s3Endpoint string
 	host       string
+
+	lock sync.Mutex
 
 	s3ForcePathStyle bool
 }
@@ -53,6 +57,7 @@ type S3Storage struct {
 func NewS3Storage() *S3Storage {
 	return &S3Storage{
 		queuedPlaylistUpdates: make(map[string]string),
+		lock:                  sync.Mutex{},
 	}
 }
 
@@ -126,6 +131,8 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 	// We are uploading the variant playlist after uploading the segment
 	// to make sure we're not referring to files in a playlist that don't
 	// yet exist.  See SegmentWritten.
+	s.lock.Lock()
+	defer s.lock.Unlock()
 	if _, ok := s.queuedPlaylistUpdates[localFilePath]; ok {
 		if _, err := s.Save(localFilePath, 0); err != nil {
 			log.Errorln(err)
@@ -195,19 +202,23 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 			return s.Save(filePath, retryCount+1)
 		}
 
-		// Upload failure. Remove the local file.
-		s.removeLocalFile(filePath)
-
 		return "", fmt.Errorf("Giving up uploading %s to object storage %s", filePath, s.s3Endpoint)
 	}
-
-	// Upload success. Remove the local file.
-	s.removeLocalFile(filePath)
 
 	return response.Location, nil
 }
 
+// Cleanup will fire the different cleanup tasks required.
 func (s *S3Storage) Cleanup() error {
+	if err := s.RemoteCleanup(); err != nil {
+		log.Errorln(err)
+	}
+
+	return localCleanup(4)
+}
+
+// RemoteCleanup will remove old files from the remote storage provider.
+func (s *S3Storage) RemoteCleanup() error {
 	// Determine how many files we should keep on S3 storage
 	maxNumber := data.GetStreamLatencyLevel().SegmentCount
 	buffer := 20
@@ -267,14 +278,6 @@ func (s *S3Storage) getDeletableVideoSegmentsWithOffset(offset int) ([]s3object,
 	objectsToDelete = objectsToDelete[offset : len(objectsToDelete)-1]
 
 	return objectsToDelete, nil
-}
-
-func (s *S3Storage) removeLocalFile(filePath string) {
-	cleanFilepath := filepath.Clean(filePath)
-
-	if err := os.Remove(cleanFilepath); err != nil {
-		log.Errorln(err)
-	}
 }
 
 func (s *S3Storage) deleteObjects(objects []s3object) {

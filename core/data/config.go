@@ -59,6 +59,8 @@ const (
 	suggestedUsernamesKey           = "suggested_usernames"
 	chatJoinMessagesEnabledKey      = "chat_join_messages_enabled"
 	chatEstablishedUsersOnlyModeKey = "chat_established_users_only_mode"
+	chatSpamProtectionEnabledKey    = "chat_spam_protection_enabled"
+	chatSlurFilterEnabledKey        = "chat_slur_filter_enabled"
 	notificationsEnabledKey         = "notifications_enabled"
 	discordConfigurationKey         = "discord_configuration"
 	browserPushConfigurationKey     = "browser_push_configuration"
@@ -521,6 +523,36 @@ func SetChatEstablishedUsersOnlyMode(enabled bool) error {
 // GetChatEstbalishedUsersOnlyMode returns the state of established user only mode.
 func GetChatEstbalishedUsersOnlyMode() bool {
 	enabled, err := _datastore.GetBool(chatEstablishedUsersOnlyModeKey)
+	if err == nil {
+		return enabled
+	}
+
+	return false
+}
+
+// SetChatSpamProtectionEnabled will enable chat spam protection if set to true.
+func SetChatSpamProtectionEnabled(enabled bool) error {
+	return _datastore.SetBool(chatSpamProtectionEnabledKey, enabled)
+}
+
+// GetChatSpamProtectionEnabled will return if chat spam protection is enabled.
+func GetChatSpamProtectionEnabled() bool {
+	enabled, err := _datastore.GetBool(chatSpamProtectionEnabledKey)
+	if err == nil {
+		return enabled
+	}
+
+	return true
+}
+
+// SetChatSlurFilterEnabled will enable the chat slur filter.
+func SetChatSlurFilterEnabled(enabled bool) error {
+	return _datastore.SetBool(chatSlurFilterEnabledKey, enabled)
+}
+
+// GetChatSlurFilterEnabled will return if the chat slur filter is enabled.
+func GetChatSlurFilterEnabled() bool {
+	enabled, err := _datastore.GetBool(chatSlurFilterEnabledKey)
 	if err == nil {
 		return enabled
 	}
