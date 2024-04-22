@@ -872,8 +872,8 @@ type GetUserDetailsParams struct {
 	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
 }
 
-// PostNotificationsRegisterJSONBody defines parameters for PostNotificationsRegister.
-type PostNotificationsRegisterJSONBody struct {
+// RegisterForLiveNotificationsJSONBody defines parameters for RegisterForLiveNotifications.
+type RegisterForLiveNotificationsJSONBody struct {
 	// Channel Name of notification channel
 	Channel *string `json:"channel,omitempty"`
 
@@ -881,8 +881,8 @@ type PostNotificationsRegisterJSONBody struct {
 	Destination *string `json:"destination,omitempty"`
 }
 
-// PostNotificationsRegisterParams defines parameters for PostNotificationsRegister.
-type PostNotificationsRegisterParams struct {
+// RegisterForLiveNotificationsParams defines parameters for RegisterForLiveNotifications.
+type RegisterForLiveNotificationsParams struct {
 	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
 }
 
@@ -1104,11 +1104,11 @@ type SendSystemMessageToConnectedClientJSONRequestBody = SystemMessage
 // ExternalSetStreamTitleJSONRequestBody defines body for ExternalSetStreamTitle for application/json ContentType.
 type ExternalSetStreamTitleJSONRequestBody = AdminConfigValue
 
-// PostMetricsPlaybackJSONRequestBody defines body for PostMetricsPlayback for application/json ContentType.
-type PostMetricsPlaybackJSONRequestBody = PlaybackMetrics
+// ReportPlaybackMetricsJSONRequestBody defines body for ReportPlaybackMetrics for application/json ContentType.
+type ReportPlaybackMetricsJSONRequestBody = PlaybackMetrics
 
-// PostNotificationsRegisterJSONRequestBody defines body for PostNotificationsRegister for application/json ContentType.
-type PostNotificationsRegisterJSONRequestBody PostNotificationsRegisterJSONBody
+// RegisterForLiveNotificationsJSONRequestBody defines body for RegisterForLiveNotifications for application/json ContentType.
+type RegisterForLiveNotificationsJSONRequestBody RegisterForLiveNotificationsJSONBody
 
 // RemoteFollowJSONRequestBody defines body for RemoteFollow for application/json ContentType.
 type RemoteFollowJSONRequestBody RemoteFollowJSONBody

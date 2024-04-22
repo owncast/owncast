@@ -24,7 +24,7 @@ paths:
   /status:
     get:
       summary: Get the status of the server
-      operationId: getStatus
+      operationId: GetStatus
       responses:
         '200':
           description: Successful response
@@ -35,7 +35,7 @@ paths:
   /emoji:
     get:
       summary: Get list of custom emojis supported in the chat
-      operationId: getEmoji
+      operationId: GetCustomEmojiList
       responses:
         '200':
           description: List of valid emojis
@@ -48,7 +48,7 @@ paths:
   /chat:
     get:
       summary: Gets a list of chat messages
-      operationId: getChatMessages
+      operationId: GetChatMessages
       parameters:
         - $ref: "#/components/parameters/AccessToken"
       responses:
@@ -65,7 +65,7 @@ paths:
   /chat/register:
     post:
       summary: Registers an anonymous chat user
-      operationId: registerAnonymousChatUser
+      operationId: RegisterAnonymousChatUser
       parameters:
         - in: header
           name: X-Forwarded-User
@@ -91,10 +91,15 @@ paths:
                 $ref: "#/components/schemas/AnonymousUser"
         '400':
           $ref: "#/components/responses/400"
+    options:
+      operationId: RegisterAnonymousChatUserOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204Options"
   /chat/messagevisibility:
     post:
       summary: Update chat message visibility
-      operationId: updateMessageVisibility
+      operationId: UpdateMessageVisibility
       parameters:
         - $ref: "#/components/parameters/AccessToken"
       requestBody:
@@ -118,7 +123,7 @@ paths:
   /chat/users/setenabled:
     post:
       summary: Enable/disable a user
-      operationId: updateUserEnabled
+      operationId: UpdateUserEnabled
       parameters:
         - $ref: "#/components/parameters/AccessToken"
       requestBody:
@@ -147,7 +152,7 @@ paths:
   /config:
     get:
       summary: Get the web config
-      operationId: getConfig
+      operationId: GetWebConfig
       responses:
         '200':
           description: The current web config
@@ -160,7 +165,7 @@ paths:
   /yp:
     get:
       summary: Get the YP protocol data
-      operationId: getYP
+      operationId: GetYPResponse
       responses:
         '200':
           description: The current YP protocol configuration
@@ -173,7 +178,7 @@ paths:
   /socialplatforms:
     get:
       summary: Get all social platforms
-      operationId: getSocialPlatforms
+      operationId: GetAllSocialPlatforms
       responses:
         '200':
           description: The list of social platforms
@@ -188,7 +193,7 @@ paths:
   /video/variants:
     get:
       summary: Get a list of video variants available
-      operationId: getVideoVariants
+      operationId: GetVideoStreamOutputVariants
       responses:
         '200':
           description: List of available video variants
@@ -201,14 +206,14 @@ paths:
   /ping:
     get:
       summary: Tell the backend you're an active viewer
-      operationId: ping
+      operationId: Ping
       responses:
         '200':
           description: Added as an active viewer
   /remotefollow:
     post:
       summary: Request remote follow
-      operationId: remoteFollow
+      operationId: RemoteFollow
       requestBody:
         content:
           application/json:
@@ -232,6 +237,7 @@ paths:
   /followers:
     get:
       summary: Gets the list of followers
+      operationId: GetFollowers
       parameters:
         - $ref: "#/components/parameters/Offset"
         - $ref: "#/components/parameters/Limit"
@@ -247,6 +253,7 @@ paths:
   /metrics/playback:
     post:
       summary: Save video playback metrics for future video health recording
+      operationId: ReportPlaybackMetrics
       requestBody:
         description: Video metrics to record
         content:
@@ -261,6 +268,7 @@ paths:
   /notifications/register:
     post:
       summary: Register for notifications
+      operationId: RegisterForLiveNotifications
       parameters:
         - $ref: "#/components/parameters/AccessToken"
       requestBody:
@@ -286,6 +294,7 @@ paths:
   /admin/status:
     get:
       summary: Get current inboard broadcaster
+      operationId: StatusAdmin
       security:
         - BasicAuth: []
       responses:
@@ -301,10 +310,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: StatusAdminOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/disconnect:
     get:
       summary: Disconnect inbound stream
-      operationId: disconnectInboundConnection
+      operationId: DisconnectInboundConnection
       security:
         - BasicAuth: []
       responses:
@@ -320,10 +334,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: DisconnectInboundConnectionOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/serverconfig:
     get:
       summary: Get the current server config
-      operationId: getServerConfig
+      operationId: GetServerConfig
       security:
         - BasicAuth: []
       responses:
@@ -339,10 +358,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetServerConfigOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/viewersOverTime:
     get:
       summary: Get viewer count over time
-      operationId: getViewersOverTime
+      operationId: GetViewersOverTime
       security:
         - BasicAuth: []
       parameters:
@@ -366,6 +390,11 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetViewersOverTimeOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/viewers:
     get:
       summary: Get active viewers
@@ -387,10 +416,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetActiveViewersOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/hardwarestats:
     get:
       summary: Get the current hardware stats
-      operationId: getHardwareStats
+      operationId: GetHardwareStats
       security:
         - BasicAuth: []
       responses:
@@ -408,10 +442,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetHardwareStatsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/chat/clients:
     get:
       summary: Get a detailed list of currently connected chat clients
-      operationId: getConnectedChatClients
+      operationId: GetConnectedChatClients
       security:
         - BasicAuth: []
       responses:
@@ -427,10 +466,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetConnectedChatClientsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/chat/messages:
     get:
       summary: Get all chat messages for the admin, unfiltered
-      operationId: getAdminChatMessages
+      operationId: GetChatMessagesAdmin
       security:
         - BasicAuth: []
       responses:
@@ -446,10 +490,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetChatMessagesAdminOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/chat/messagevisibility:
     post:
       summary: Update visibility of chat messages
-      operationId: updateMessageVisibilityAdmin
+      operationId: UpdateMessageVisibilityAdmin
       security:
         - BasicAuth: []
       requestBody:
@@ -470,10 +519,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: UpdateMessageVisibilityAdminOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/chat/users/setenabled:
     post:
       summary: Enable or disable a user
-      operationId: updateUserEnabledAdmin
+      operationId: UpdateUserEnabledAdmin
       security:
         - BasicAuth: []
       requestBody:
@@ -499,10 +553,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: UpdateUserEnabledAdminOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/chat/users/disabled:
     get:
       summary: Get a list of disabled users
-      operationId: getDisabledUsers
+      operationId: GetDisabledUsers
       security:
         - BasicAuth: []
       responses:
@@ -518,10 +577,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetDisabledUsersOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/chat/users/ipbans/create:
     post:
       summary: Ban an IP address
-      operationId: banIPAddress
+      operationId: BanIPAddress
       security:
         - BasicAuth: []
       requestBody:
@@ -539,10 +603,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: BanIPAddressOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/chat/users/ipbans/remove:
     post:
       summary: Remove an IP ban
-      operationId: unbanIPAddress
+      operationId: UnbanIPAddress
       security:
         - BasicAuth: []
       requestBody:
@@ -563,10 +632,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: UnbanIPAddressOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/chat/users/ipbans:
     get:
       summary: Get all banned IP addresses
-      operationId: getIPAddressBans
+      operationId: GetIPAddressBans
       security:
         - BasicAuth: []
       responses:
@@ -584,10 +658,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetIPAddressBansOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/chat/users/setmoderator:
     post:
       summary: Set moderator status for a user
-      operationId: updateUserModerator
+      operationId: UpdateUserModerator
       security:
         - BasicAuth: []
       requestBody:
@@ -613,10 +692,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: UpdateUserModeratorOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/chat/users/moderators:
     get:
       summary: Get a list of moderator users
-      operationId: getModerators
+      operationId: GetModerators
       security:
         - BasicAuth: []
       responses:
@@ -632,6 +716,11 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetModeratorsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/logs:
     get:
       summary: Get all logs
@@ -660,6 +749,11 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetLogsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/logs/warnings:
     get:
       summary: Get warning/error logs
@@ -688,10 +782,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetWarningsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/followers:
     get:
       summary: Get followers
-      operationId: getFollowersAdmin
+      operationId: GetFollowersAdmin
       security:
         - BasicAuth: []
       parameters:
@@ -710,10 +809,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetFollowersAdminOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/followers/pending:
     get:
       summary: Get a list of pending follow requests
-      operationId: getPendingFollowers
+      operationId: GetPendingFollowRequests
       security:
         - BasicAuth: []
       responses:
@@ -729,10 +833,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetPendingFollowRequestsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/followers/blocked:
     get:
       summary: Get a list of rejected or blocked follows
-      operationId: getBlockedAndRejectedFollowers
+      operationId: GetBlockedAndRejectedFollowers
       security:
         - BasicAuth: []
       responses:
@@ -748,10 +857,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetBlockedAndRejectedFollowersOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/followers/approve:
     post:
       summary: Set the following state of a follower or follow request
-      operationId: approveFollower
+      operationId: ApproveFollower
       security:
         - BasicAuth: []
       requestBody:
@@ -777,10 +891,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: ApproveFollowerOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/emoji/upload:
     post:
       summary: Upload custom emoji
-      operationId: uploadCustomEmoji
+      operationId: UploadCustomEmoji
       security:
         - BasicAuth: []
       requestBody:
@@ -807,10 +926,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: UploadCustomEmojiOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/emoji/delete:
     post:
       summary: Delete custom emoji
-      operationId: deleteCustomEmoji
+      operationId: DeleteCustomEmoji
       security:
         - BasicAuth: []
       requestBody:
@@ -834,10 +958,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: DeleteCustomEmojiOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/adminpass:
     post:
       summary: Change the current admin password
-      operationId: setAdminPassword
+      operationId: SetAdminPassword
       security:
         - BasicAuth: []
       requestBody:
@@ -855,10 +984,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetAdminPasswordOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/streamkeys:
     post:
       summary: Set an array of valid stream keys
-      operationId: setStreamKeys
+      operationId: SetStreamKeys
       security:
         - BasicAuth: []
       requestBody:
@@ -884,10 +1018,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetStreamKeysOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/pagecontent:
     post:
       summary: Change the extra page content in memory
-      operationId: setExtraPageContent
+      operationId: SetExtraPageContent
       security:
         - BasicAuth: []
       requestBody:
@@ -905,10 +1044,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetExtraPageContentOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/streamtitle:
     post:
       summary: Change the stream title
-      operationId: setStreamTitle
+      operationId: SetStreamTitle
       security:
         - BasicAuth: []
       requestBody:
@@ -926,10 +1070,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetStreamTitleOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/name:
     post:
       summary: Change the server name
-      operationId: setServerName
+      operationId: SetServerName
       security:
         - BasicAuth: []
       requestBody:
@@ -947,10 +1096,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetServerNameOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/serversummary:
     post:
       summary: Change the server summary
-      operationId: setServerSummary
+      operationId: SetServerSummary
       security:
         - BasicAuth: []
       requestBody:
@@ -968,10 +1122,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetServerSummaryOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/offlinemessage:
     post:
       summary: Change the offline message
-      operationId: setCustomOfflineMessage
+      operationId: SetCustomOfflineMessage
       security:
         - BasicAuth: []
       requestBody:
@@ -989,10 +1148,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetCustomOfflineMessageOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/welcomemessage:
     post:
       summary: Change the welcome message
-      operationId: setServerWelcomeMessage
+      operationId: SetServerWelcomeMessage
       security:
         - BasicAuth: []
       requestBody:
@@ -1010,10 +1174,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetServerWelcomeMessageOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/chat/disable:
     post:
       summary: Disable chat
-      operationId: setChatDisabled
+      operationId: SetChatDisabled
       security:
         - BasicAuth: []
       requestBody:
@@ -1031,10 +1200,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetChatDisabledOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/chat/joinmessagesenabled:
     post:
       summary: Enable chat for user join messages
-      operationId: setChatJoinMessagesEnabled
+      operationId: SetChatJoinMessagesEnabled
       security:
         - BasicAuth: []
       requestBody:
@@ -1052,10 +1226,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetChatJoinMessagesEnabledOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/chat/establishedusermode:
     post:
       summary: Enable/disable chat established user mode
-      operationId: setEnableEstablishedChatUserMode
+      operationId: SetEnableEstablishedChatUserMode
       security:
         - BasicAuth: []
       requestBody:
@@ -1073,10 +1252,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetEnableEstablishedChatUserModeOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/chat/forbiddenusernames:
     post:
       summary: Set chat usernames that are not allowed
-      operationId: setForbiddenUsernameList
+      operationId: SetForbiddenUsernameList
       security:
         - BasicAuth: []
       requestBody:
@@ -1102,10 +1286,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetForbiddenUsernameListOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/chat/suggestedusernames:
     post:
       summary: Set the suggested chat usernames that will be assigned automatically
-      operationId: setSuggestedUsernameList
+      operationId: SetSuggestedUsernameList
       security:
         - BasicAuth: []
       requestBody:
@@ -1131,10 +1320,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetSuggestedUsernameListOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/chat/spamprotectionenabled:
     post:
       summary: Set spam protection enabled
-      operationId: setChatSpamProtectionEnabled
+      operationId: SetChatSpamProtectionEnabled
       security:
         - BasicAuth: []
       requestBody:
@@ -1152,10 +1346,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetChatSpamProtectionEnabledOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/chat/slurfilterenabled:
     post:
       summary: Set slur filter enabled
-      operationId: setChatSlurFilterEnabled
+      operationId: SetChatSlurFilterEnabled
       security:
         - BasicAuth: []
       requestBody:
@@ -1173,10 +1372,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetChatSlurFilterEnabledOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/video/codec:
     post:
       summary: Set video codec
-      operationId: setVideoCodec
+      operationId: SetVideoCodec
       security:
         - BasicAuth: []
       requestBody:
@@ -1194,10 +1398,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetVideoCodecOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/video/streamlatencylevel:
     post:
       summary: Set the number of video segments and duration per segment in a playlist
-      operationId: setStreamLatencyLevel
+      operationId: SetStreamLatencyLevel
       security:
         - BasicAuth: []
       requestBody:
@@ -1215,10 +1424,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetStreamLatencyLevelOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/video/streamoutputvariants:
     post:
       summary: Set an array of video output configurations
-      operationId: setStreamOutputVariants
+      operationId: SetStreamOutputVariants
       security:
         - BasicAuth: []
       requestBody:
@@ -1244,10 +1458,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetStreamOutputVariantsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/appearance:
     post:
       summary: Set style/color/css values
-      operationId: setCustomColorVariableValues
+      operationId: SetCustomColorVariableValues
       security:
         - BasicAuth: []
       requestBody:
@@ -1273,10 +1492,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetCustomColorVariableValuesOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/logo:
     post:
       summary: Update logo
-      operationId: setLogo
+      operationId: SetLogo
       security:
         - BasicAuth: []
       requestBody:
@@ -1294,10 +1518,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetLogoOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/tags:
     post:
       summary: Update server tags
-      operationId: setTags
+      operationId: SetTags
       security:
         - BasicAuth: []
       requestBody:
@@ -1315,6 +1544,11 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetTagsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/ffmpegpath:
     post:
       summary: Update FFMPEG path
@@ -1336,10 +1570,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetFfmpegPathOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/webserverport:
     post:
       summary: Update server port
-      operationId: setWebServerPort
+      operationId: SetWebServerPort
       security:
         - BasicAuth: []
       requestBody:
@@ -1357,10 +1596,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetWebServerPortOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/webserverip:
     post:
       summary: Update server IP address
-      operationId: setWebServerIP
+      operationId: SetWebServerIP
       security:
         - BasicAuth: []
       requestBody:
@@ -1378,10 +1622,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetWebServerIPOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/rtmpserverport:
     post:
       summary: Update RTMP post
-      operationId: setRTMPServerPort
+      operationId: SetRTMPServerPort
       security:
         - BasicAuth: []
       requestBody:
@@ -1399,10 +1648,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetRTMPServerPortOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/sockethostoverride:
     post:
       summary: Update websocket host override
-      operationId: setSocketHostOverride
+      operationId: SetSocketHostOverride
       security:
         - BasicAuth: []
       requestBody:
@@ -1420,10 +1674,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetSocketHostOverrideOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/videoservingendpoint:
     post:
       summary: Update custom video serving endpoint
-      operationId: setVideoServingEndpoint
+      operationId: SetVideoServingEndpoint
       security:
         - BasicAuth: []
       requestBody:
@@ -1441,10 +1700,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetVideoServingEndpointOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/nsfw:
     post:
       summary: Update NSFW marking
-      operationId: setNSFW
+      operationId: SetNSFW
       security:
         - BasicAuth: []
       requestBody:
@@ -1462,10 +1726,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetNSFWOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/directoryenabled:
     post:
       summary: Update directory enabled
-      operationId: setDirectoryEnabled
+      operationId: SetDirectoryEnabled
       security:
         - BasicAuth: []
       requestBody:
@@ -1483,10 +1752,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetDirectoryEnabledOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/socialhandles:
     post:
       summary: Update social handles
-      operationId: setSocialHandles
+      operationId: SetSocialHandles
       security:
         - BasicAuth: []
       requestBody:
@@ -1512,10 +1786,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetSocialHandlesOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/s3:
     post:
       summary: Update S3 configuration
-      operationId: setS3Configuration
+      operationId: SetS3Configuration
       security:
         - BasicAuth: []
       requestBody:
@@ -1539,10 +1818,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetS3ConfigurationOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/serverurl:
     post:
       summary: Update server url
-      operationId: setServerURL
+      operationId: SetServerURL
       security:
         - BasicAuth: []
       requestBody:
@@ -1560,10 +1844,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetServerURLOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/externalactions:
     post:
       summary: Update external action links
-      operationId: setExternalActions
+      operationId: SetExternalActions
       security:
         - BasicAuth: []
       requestBody:
@@ -1589,10 +1878,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetExternalActionsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/customstyles:
     post:
       summary: Update custom styles
-      operationId: setCustomStyles
+      operationId: SetCustomStyles
       security:
         - BasicAuth: []
       requestBody:
@@ -1610,10 +1904,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetCustomStylesOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/customjavascript:
     post:
       summary: Update custom JavaScript
-      operationId: setCustomJavascript
+      operationId: SetCustomJavascript
       security:
         - BasicAuth: []
       requestBody:
@@ -1631,10 +1930,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetCustomJavascriptOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/hideviewercount:
     post:
       summary: Update hide viewer count
-      operationId: setHideViewerCount
+      operationId: SetHideViewerCount
       security:
         - BasicAuth: []
       requestBody:
@@ -1652,10 +1956,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetHideViewerCountOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/disablesearchindexing:
     post:
       summary: Update search indexing
-      operationId: setDisableSearchIndexing
+      operationId: SetDisableSearchIndexing
       security:
         - BasicAuth: []
       requestBody:
@@ -1673,6 +1982,11 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetDisableSearchIndexingOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/federation/enable:
     post:
       summary: Enable/disable federation features
@@ -1694,6 +2008,11 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetFederationEnabledOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/federation/private:
     post:
       summary: Set if federation activities are private
@@ -1715,10 +2034,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetFederationActivityPrivateOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/federation/showengagement:
     post:
       summary: Set if fediverse engagement appears in chat
-      operationId: setFederationShowEngagement
+      operationId: SetFederationShowEngagement
       security:
         - BasicAuth: []
       requestBody:
@@ -1736,10 +2060,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetFederationShowEngagementOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/federation/username:
     post:
       summary: Set local federated username
-      operationId: setFederationUsername
+      operationId: SetFederationUsername
       security:
         - BasicAuth: []
       requestBody:
@@ -1757,10 +2086,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetFederationUsernameOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/federation/livemessage:
     post:
       summary: Set federated go live message
-      operationId: setFederationGoLiveMessage
+      operationId: SetFederationGoLiveMessage
       security:
         - BasicAuth: []
       requestBody:
@@ -1778,10 +2112,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetFederationGoLiveMessageOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/federation/blockdomains:
     post:
       summary: Set Federation blocked domains
-      operationId: setFederationBlockDomains
+      operationId: SetFederationBlockDomains
       security:
         - BasicAuth: []
       requestBody:
@@ -1799,10 +2138,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetFederationBlockDomainsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/notifications/discord:
     post:
       summary: Configure Discord notifications
-      operationId: setDiscordNotificationConfiguration
+      operationId: SetDiscordNotificationConfiguration
       security:
         - BasicAuth: []
       requestBody:
@@ -1826,10 +2170,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetDiscordNotificationConfigurationOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/config/notifications/browser:
     post:
       summary: Configure Browser notifications
-      operationId: setBrowserNotificationConfiguration
+      operationId: SetBrowserNotificationConfiguration
       security:
         - BasicAuth: []
       requestBody:
@@ -1853,10 +2202,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SetBrowserNotificationConfigurationOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/webhooks:
     get:
       summary: Get all the webhooks
-      operationId: getWebhooks
+      operationId: GetWebhooks
       security:
         - BasicAuth: []
       responses:
@@ -1874,10 +2228,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetWebhooksOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/webhooks/delete:
     post:
       summary: Delete a single webhook
-      operationId: deleteWebhook
+      operationId: DeleteWebhook
       security:
         - BasicAuth: []
       requestBody:
@@ -1901,10 +2260,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: DeleteWebhookOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/webhooks/create:
     post:
       summary: Create a single webhook
-      operationId: createWebhook
+      operationId: CreateWebhook
       security:
         - BasicAuth: []
       requestBody:
@@ -1932,10 +2296,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: CreateWebhookOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/accesstokens:
     get:
       summary: Get all access tokens
-      operationId: getExternalAPIUsers
+      operationId: GetExternalAPIUsers
       security:
         - BasicAuth: []
       responses:
@@ -1953,10 +2322,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetExternalAPIUsersOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/accesstokens/delete:
     post:
       summary: Delete a single external API user
-      operationId: deleteExternalAPIUser
+      operationId: DeleteExternalAPIUser
       security:
         - BasicAuth: []
       requestBody:
@@ -1980,10 +2354,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: DeleteExternalAPIUserOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/accesstokens/create:
     post:
       summary: Create a single access token
-      operationId: createExternalAPIUser
+      operationId: CreateExternalAPIUser
       security:
         - BasicAuth: []
       requestBody:
@@ -2011,10 +2390,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: CreateExternalAPIUserOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/update/options:
     get:
       summary: Return the auto-update features that are supported for this instance
-      operationId: autoUpdateOptions
+      operationId: AutoUpdateOptions
       security:
         - BasicAuth: []
       responses:
@@ -2035,10 +2419,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: AutoUpdateOptionsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/update/start:
     get:
       summary: Begin the auto-update
-      operationId: autoUpdateStart
+      operationId: AutoUpdateStart
       security:
         - BasicAuth: []
       responses:
@@ -2054,10 +2443,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: AutoUpdateStartOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/update/forcequit:
     get:
       summary: Force quit the server and restart it
-      operationId: autoUpdateForceQuit
+      operationId: AutoUpdateForceQuit
       security:
         - BasicAuth: []
       responses:
@@ -2073,10 +2467,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: AutoUpdateForceQuitOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/yp/reset:
     get:
       summary: Reset YP configuration
-      operationId: resetYPRegistration
+      operationId: ResetYPRegistration
       security:
         - BasicAuth: []
       responses:
@@ -2092,10 +2491,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: ResetYPRegistrationOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/metrics/video:
     get:
       summary: Get video playback metrics
-      operationId: getVideoPlaybackMetrics
+      operationId: GetVideoPlaybackMetrics
       security:
         - BasicAuth: []
       responses:
@@ -2164,6 +2568,11 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetVideoPlaybackMetricsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/prometheus:
     get:
       summary: Endpoint to interface with Prometheus
@@ -2171,32 +2580,39 @@ paths:
         This endpoint interfaces with the Prometheus metrics API.
 
         Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
-      operationId: getPrometheusAPI
+      operationId: GetPrometheusAPI
     post:
       summary: Endpoint to interface with Prometheus
       description: |-
         This endpoint interfaces with the Prometheus metrics API.
 
         Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
-      operationId: postPrometheusAPI
+      operationId: PostPrometheusAPI
     put:
       summary: Endpoint to interface with Prometheus
       description: |-
         This endpoint interfaces with the Prometheus metrics API.
 
         Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
-      operationId: putPrometheusAPI
+      operationId: PutPrometheusAPI
     delete:
       summary: Endpoint to interface with Prometheus
       description: |-
         This endpoint interfaces with the Prometheus metrics API.
 
         Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
-      operationId: deletePrometheusAPI
+      operationId: DeletePrometheusAPI
+    options:
+      summary: Endpoint to interface with Prometheus
+      description: |-
+        This endpoint interfaces with the Prometheus metrics API.
+
+        Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
+      operationId: OptionsPrometheusAPI
   /admin/federation/send:
     post:
       summary: Send a public message to the Fediverse from the server's user
-      operationId: sendFederatedMessage
+      operationId: SendFederatedMessage
       security:
         - BasicAuth: []
       requestBody:
@@ -2214,10 +2630,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SendFederatedMessageOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /admin/federation/actions:
     get:
       summary: Get a paginated list of federated activities
-      operationId: getFederatedActions
+      operationId: GetFederatedActions
       security:
         - BasicAuth: []
       parameters:
@@ -2236,10 +2657,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: GetFederatedActionsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /integrations/chat/system:
     post:
       summary: Send a system message to the chat
-      operationId: sendSystemMessage
+      operationId: SendSystemMessage
       security:
         - BearerAuth: []
       requestBody:
@@ -2266,10 +2692,15 @@ paths:
           $ref: "#/components/responses/500"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SendSystemMessageOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /integrations/chat/system/client/{clientId}:
     post:
       summary: Send a system message to a single client
-      operationId: sendSystemMessageToConnectedClient
+      operationId: SendSystemMessageToConnectedClient
       security:
         - BearerAuth: []
       parameters:
@@ -2293,20 +2724,38 @@ paths:
           $ref: "#/components/responses/500"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SendSystemMessageToConnectedClientOptions
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+          description: The ID of the specified client
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /integrations/chat/user:
     post:
       deprecated: true
       summary: Send a user message to chat
-      operationId: sendUserMessage
+      operationId: SendUserMessage
       security:
         - BearerAuth: []
       responses:
         '400':
           $ref: "#/components/responses/400"
+    options:
+      deprecated: true
+      operationId: SendUserMessageOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /integrations/chat/send:
     post:
       summary: Send a message to chat as a specific 3rd party bot/integration based on its access token
-      operationId: sendIntegrationChatMessage
+      operationId: SendIntegrationChatMessage
       security:
         - BearerAuth: []
       requestBody:
@@ -2329,10 +2778,15 @@ paths:
           $ref: "#/components/responses/500"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SendIntegrationChatMessageOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /integrations/chat/action:
     post:
       summary: Send a user action to chat
-      operationId: sendChatAction
+      operationId: SendChatAction
       security:
         - BearerAuth: []
       requestBody:
@@ -2355,10 +2809,15 @@ paths:
           $ref: "#/components/responses/500"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: SendChatActionOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /integrations/chat/messagevisibility:
     post:
       summary: Hide chat message
-      operationId: externalUpdateMessageVisibility
+      operationId: ExternalUpdateMessageVisibility
       security:
         - BearerAuth: []
       requestBody:
@@ -2379,10 +2838,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: ExternalUpdateMessageVisibilityOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /integrations/streamtitle:
     post:
       summary: Stream title
-      operationId: externalSetStreamTitle
+      operationId: ExternalSetStreamTitle
       security:
         - BearerAuth: []
       requestBody:
@@ -2400,10 +2864,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: ExternalSetStreamTitleOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /integrations/chat:
     get:
       summary: Get chat history
-      operationId: externalGetChatMessages
+      operationId: ExternalGetChatMessages
       security:
         - BearerAuth: []
       responses:
@@ -2419,10 +2888,15 @@ paths:
           $ref: "#/components/responses/501"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: ExternalGetChatMessagesOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /integrations/clients:
     get:
       summary: Connected clients
-      operationId: externalGetConnectedChatClients
+      operationId: ExternalGetConnectedChatClients
       security:
         - BearerAuth: []
       responses:
@@ -2438,10 +2912,15 @@ paths:
           $ref: "#/components/responses/401BasicAuth"
         default:
           $ref: "#/components/responses/Default"
+    options:
+      operationId: ExternalGetConnectedChatClientsOptions
+      responses:
+        '204':
+          $ref: "#/components/responses/204"
   /moderation/chat/user/{userId}:
     get:
       summary: Get a user's details
-      operationId: getUserDetails
+      operationId: GetUserDetails
       parameters:
         - in: path
           name: userId
@@ -2466,7 +2945,7 @@ paths:
   /auth/indieauth:
     post:
       summary: Begins auth flow
-      operationId: startIndieAuthFlow
+      operationId: StartIndieAuthFlow
       parameters:
         - $ref: "#/components/parameters/AccessToken"
       requestBody:
@@ -2497,7 +2976,7 @@ paths:
   /auth/indieauth/callback:
     get:
       summary: Handle the redirect from an IndieAuth server to continue the auth flow
-      operationId: handleIndieAuthRedirect
+      operationId: HandleIndieAuthRedirect
       parameters:
         - $ref: "#/components/parameters/IndieAuthState"
         - $ref: "#/components/parameters/IndieAuthCode"
@@ -2509,7 +2988,7 @@ paths:
   /auth/provider/indieauth:
     get:
       summary: Handles the IndieAuth auth endpoint
-      operationId: handleIndieAuthEndpointGet
+      operationId: HandleIndieAuthEndpointGet
       security:
         - BasicAuth: []
       parameters:
@@ -2533,7 +3012,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       summary: Handles IndieAuth from form submission
-      operationId: handleIndieAuthEndpointPost
+      operationId: HandleIndieAuthEndpointPost
       requestBody:
         $ref: "#/components/requestBodies/IndieAuthEndpointForm"
       responses:
@@ -2550,7 +3029,7 @@ paths:
   /auth/fediverse:
     post:
       summary: Register a Fediverse OTP request
-      operationId: registerFediverseOTPRequest
+      operationId: RegisterFediverseOTPRequest
       parameters:
         - $ref: "#/components/parameters/AccessToken"
       requestBody:
@@ -2575,7 +3054,7 @@ paths:
   /auth/fediverse/verify:
     post:
       summary: Verify Fediverse OTP code
-      operationId: verifyFediverseOTPRequest
+      operationId: VerifyFediverseOTPRequest
       requestBody:
         content:
           application/json:
@@ -2595,7 +3074,6 @@ paths:
           $ref: "#/components/responses/400"
         '403':
           $ref: "#/components/responses/403"
-
 
 components:
   schemas:
@@ -3519,6 +3997,8 @@ components:
           schema:
             $ref: "#/components/schemas/BaseAPIResponse"
     '204':
+      description: No Content
+    '204Options':
       description: No Content
       headers:
         'Access-Control-Allow-Origin':

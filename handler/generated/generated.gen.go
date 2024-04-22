@@ -17,222 +17,438 @@ type ServerInterface interface {
 	// Get all access tokens
 	// (GET /admin/accesstokens)
 	GetExternalAPIUsers(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/accesstokens)
+	GetExternalAPIUsersOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/accesstokens/create)
+	CreateExternalAPIUserOptions(w http.ResponseWriter, r *http.Request)
 	// Create a single access token
 	// (POST /admin/accesstokens/create)
 	CreateExternalAPIUser(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/accesstokens/delete)
+	DeleteExternalAPIUserOptions(w http.ResponseWriter, r *http.Request)
 	// Delete a single external API user
 	// (POST /admin/accesstokens/delete)
 	DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request)
 	// Get a detailed list of currently connected chat clients
 	// (GET /admin/chat/clients)
 	GetConnectedChatClients(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/chat/clients)
+	GetConnectedChatClientsOptions(w http.ResponseWriter, r *http.Request)
 	// Get all chat messages for the admin, unfiltered
 	// (GET /admin/chat/messages)
-	GetAdminChatMessages(w http.ResponseWriter, r *http.Request)
+	GetChatMessagesAdmin(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/chat/messages)
+	GetChatMessagesAdminOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/chat/messagevisibility)
+	UpdateMessageVisibilityAdminOptions(w http.ResponseWriter, r *http.Request)
 	// Update visibility of chat messages
 	// (POST /admin/chat/messagevisibility)
 	UpdateMessageVisibilityAdmin(w http.ResponseWriter, r *http.Request)
 	// Get a list of disabled users
 	// (GET /admin/chat/users/disabled)
 	GetDisabledUsers(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/chat/users/disabled)
+	GetDisabledUsersOptions(w http.ResponseWriter, r *http.Request)
 	// Get all banned IP addresses
 	// (GET /admin/chat/users/ipbans)
 	GetIPAddressBans(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/chat/users/ipbans)
+	GetIPAddressBansOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/chat/users/ipbans/create)
+	BanIPAddressOptions(w http.ResponseWriter, r *http.Request)
 	// Ban an IP address
 	// (POST /admin/chat/users/ipbans/create)
 	BanIPAddress(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/chat/users/ipbans/remove)
+	UnbanIPAddressOptions(w http.ResponseWriter, r *http.Request)
 	// Remove an IP ban
 	// (POST /admin/chat/users/ipbans/remove)
 	UnbanIPAddress(w http.ResponseWriter, r *http.Request)
 	// Get a list of moderator users
 	// (GET /admin/chat/users/moderators)
 	GetModerators(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/chat/users/moderators)
+	GetModeratorsOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/chat/users/setenabled)
+	UpdateUserEnabledAdminOptions(w http.ResponseWriter, r *http.Request)
 	// Enable or disable a user
 	// (POST /admin/chat/users/setenabled)
 	UpdateUserEnabledAdmin(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/chat/users/setmoderator)
+	UpdateUserModeratorOptions(w http.ResponseWriter, r *http.Request)
 	// Set moderator status for a user
 	// (POST /admin/chat/users/setmoderator)
 	UpdateUserModerator(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/adminpass)
+	SetAdminPasswordOptions(w http.ResponseWriter, r *http.Request)
 	// Change the current admin password
 	// (POST /admin/config/adminpass)
 	SetAdminPassword(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/appearance)
+	SetCustomColorVariableValuesOptions(w http.ResponseWriter, r *http.Request)
 	// Set style/color/css values
 	// (POST /admin/config/appearance)
 	SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/chat/disable)
+	SetChatDisabledOptions(w http.ResponseWriter, r *http.Request)
 	// Disable chat
 	// (POST /admin/config/chat/disable)
 	SetChatDisabled(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/chat/establishedusermode)
+	SetEnableEstablishedChatUserModeOptions(w http.ResponseWriter, r *http.Request)
 	// Enable/disable chat established user mode
 	// (POST /admin/config/chat/establishedusermode)
 	SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/chat/forbiddenusernames)
+	SetForbiddenUsernameListOptions(w http.ResponseWriter, r *http.Request)
 	// Set chat usernames that are not allowed
 	// (POST /admin/config/chat/forbiddenusernames)
 	SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/chat/joinmessagesenabled)
+	SetChatJoinMessagesEnabledOptions(w http.ResponseWriter, r *http.Request)
 	// Enable chat for user join messages
 	// (POST /admin/config/chat/joinmessagesenabled)
 	SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/chat/slurfilterenabled)
+	SetChatSlurFilterEnabledOptions(w http.ResponseWriter, r *http.Request)
 	// Set slur filter enabled
 	// (POST /admin/config/chat/slurfilterenabled)
 	SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/chat/spamprotectionenabled)
+	SetChatSpamProtectionEnabledOptions(w http.ResponseWriter, r *http.Request)
 	// Set spam protection enabled
 	// (POST /admin/config/chat/spamprotectionenabled)
 	SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/chat/suggestedusernames)
+	SetSuggestedUsernameListOptions(w http.ResponseWriter, r *http.Request)
 	// Set the suggested chat usernames that will be assigned automatically
 	// (POST /admin/config/chat/suggestedusernames)
 	SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/customjavascript)
+	SetCustomJavascriptOptions(w http.ResponseWriter, r *http.Request)
 	// Update custom JavaScript
 	// (POST /admin/config/customjavascript)
 	SetCustomJavascript(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/customstyles)
+	SetCustomStylesOptions(w http.ResponseWriter, r *http.Request)
 	// Update custom styles
 	// (POST /admin/config/customstyles)
 	SetCustomStyles(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/directoryenabled)
+	SetDirectoryEnabledOptions(w http.ResponseWriter, r *http.Request)
 	// Update directory enabled
 	// (POST /admin/config/directoryenabled)
 	SetDirectoryEnabled(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/disablesearchindexing)
+	SetDisableSearchIndexingOptions(w http.ResponseWriter, r *http.Request)
 	// Update search indexing
 	// (POST /admin/config/disablesearchindexing)
 	SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/externalactions)
+	SetExternalActionsOptions(w http.ResponseWriter, r *http.Request)
 	// Update external action links
 	// (POST /admin/config/externalactions)
 	SetExternalActions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/federation/blockdomains)
+	SetFederationBlockDomainsOptions(w http.ResponseWriter, r *http.Request)
 	// Set Federation blocked domains
 	// (POST /admin/config/federation/blockdomains)
 	SetFederationBlockDomains(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/federation/enable)
+	SetFederationEnabledOptions(w http.ResponseWriter, r *http.Request)
 	// Enable/disable federation features
 	// (POST /admin/config/federation/enable)
 	SetFederationEnabled(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/federation/livemessage)
+	SetFederationGoLiveMessageOptions(w http.ResponseWriter, r *http.Request)
 	// Set federated go live message
 	// (POST /admin/config/federation/livemessage)
 	SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/federation/private)
+	SetFederationActivityPrivateOptions(w http.ResponseWriter, r *http.Request)
 	// Set if federation activities are private
 	// (POST /admin/config/federation/private)
 	SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/federation/showengagement)
+	SetFederationShowEngagementOptions(w http.ResponseWriter, r *http.Request)
 	// Set if fediverse engagement appears in chat
 	// (POST /admin/config/federation/showengagement)
 	SetFederationShowEngagement(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/federation/username)
+	SetFederationUsernameOptions(w http.ResponseWriter, r *http.Request)
 	// Set local federated username
 	// (POST /admin/config/federation/username)
 	SetFederationUsername(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/ffmpegpath)
+	SetFfmpegPathOptions(w http.ResponseWriter, r *http.Request)
 	// Update FFMPEG path
 	// (POST /admin/config/ffmpegpath)
 	SetFfmpegPath(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/hideviewercount)
+	SetHideViewerCountOptions(w http.ResponseWriter, r *http.Request)
 	// Update hide viewer count
 	// (POST /admin/config/hideviewercount)
 	SetHideViewerCount(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/logo)
+	SetLogoOptions(w http.ResponseWriter, r *http.Request)
 	// Update logo
 	// (POST /admin/config/logo)
 	SetLogo(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/name)
+	SetServerNameOptions(w http.ResponseWriter, r *http.Request)
 	// Change the server name
 	// (POST /admin/config/name)
 	SetServerName(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/notifications/browser)
+	SetBrowserNotificationConfigurationOptions(w http.ResponseWriter, r *http.Request)
 	// Configure Browser notifications
 	// (POST /admin/config/notifications/browser)
 	SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/notifications/discord)
+	SetDiscordNotificationConfigurationOptions(w http.ResponseWriter, r *http.Request)
 	// Configure Discord notifications
 	// (POST /admin/config/notifications/discord)
 	SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/nsfw)
+	SetNSFWOptions(w http.ResponseWriter, r *http.Request)
 	// Update NSFW marking
 	// (POST /admin/config/nsfw)
 	SetNSFW(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/offlinemessage)
+	SetCustomOfflineMessageOptions(w http.ResponseWriter, r *http.Request)
 	// Change the offline message
 	// (POST /admin/config/offlinemessage)
 	SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/pagecontent)
+	SetExtraPageContentOptions(w http.ResponseWriter, r *http.Request)
 	// Change the extra page content in memory
 	// (POST /admin/config/pagecontent)
 	SetExtraPageContent(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/rtmpserverport)
+	SetRTMPServerPortOptions(w http.ResponseWriter, r *http.Request)
 	// Update RTMP post
 	// (POST /admin/config/rtmpserverport)
 	SetRTMPServerPort(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/s3)
+	SetS3ConfigurationOptions(w http.ResponseWriter, r *http.Request)
 	// Update S3 configuration
 	// (POST /admin/config/s3)
 	SetS3Configuration(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/serversummary)
+	SetServerSummaryOptions(w http.ResponseWriter, r *http.Request)
 	// Change the server summary
 	// (POST /admin/config/serversummary)
 	SetServerSummary(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/serverurl)
+	SetServerURLOptions(w http.ResponseWriter, r *http.Request)
 	// Update server url
 	// (POST /admin/config/serverurl)
 	SetServerURL(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/socialhandles)
+	SetSocialHandlesOptions(w http.ResponseWriter, r *http.Request)
 	// Update social handles
 	// (POST /admin/config/socialhandles)
 	SetSocialHandles(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/sockethostoverride)
+	SetSocketHostOverrideOptions(w http.ResponseWriter, r *http.Request)
 	// Update websocket host override
 	// (POST /admin/config/sockethostoverride)
 	SetSocketHostOverride(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/streamkeys)
+	SetStreamKeysOptions(w http.ResponseWriter, r *http.Request)
 	// Set an array of valid stream keys
 	// (POST /admin/config/streamkeys)
 	SetStreamKeys(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/streamtitle)
+	SetStreamTitleOptions(w http.ResponseWriter, r *http.Request)
 	// Change the stream title
 	// (POST /admin/config/streamtitle)
 	SetStreamTitle(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/tags)
+	SetTagsOptions(w http.ResponseWriter, r *http.Request)
 	// Update server tags
 	// (POST /admin/config/tags)
 	SetTags(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/video/codec)
+	SetVideoCodecOptions(w http.ResponseWriter, r *http.Request)
 	// Set video codec
 	// (POST /admin/config/video/codec)
 	SetVideoCodec(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/video/streamlatencylevel)
+	SetStreamLatencyLevelOptions(w http.ResponseWriter, r *http.Request)
 	// Set the number of video segments and duration per segment in a playlist
 	// (POST /admin/config/video/streamlatencylevel)
 	SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/video/streamoutputvariants)
+	SetStreamOutputVariantsOptions(w http.ResponseWriter, r *http.Request)
 	// Set an array of video output configurations
 	// (POST /admin/config/video/streamoutputvariants)
 	SetStreamOutputVariants(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/videoservingendpoint)
+	SetVideoServingEndpointOptions(w http.ResponseWriter, r *http.Request)
 	// Update custom video serving endpoint
 	// (POST /admin/config/videoservingendpoint)
 	SetVideoServingEndpoint(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/webserverip)
+	SetWebServerIPOptions(w http.ResponseWriter, r *http.Request)
 	// Update server IP address
 	// (POST /admin/config/webserverip)
 	SetWebServerIP(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/webserverport)
+	SetWebServerPortOptions(w http.ResponseWriter, r *http.Request)
 	// Update server port
 	// (POST /admin/config/webserverport)
 	SetWebServerPort(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/welcomemessage)
+	SetServerWelcomeMessageOptions(w http.ResponseWriter, r *http.Request)
 	// Change the welcome message
 	// (POST /admin/config/welcomemessage)
 	SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request)
 	// Disconnect inbound stream
 	// (GET /admin/disconnect)
 	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/disconnect)
+	DisconnectInboundConnectionOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/emoji/delete)
+	DeleteCustomEmojiOptions(w http.ResponseWriter, r *http.Request)
 	// Delete custom emoji
 	// (POST /admin/emoji/delete)
 	DeleteCustomEmoji(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/emoji/upload)
+	UploadCustomEmojiOptions(w http.ResponseWriter, r *http.Request)
 	// Upload custom emoji
 	// (POST /admin/emoji/upload)
 	UploadCustomEmoji(w http.ResponseWriter, r *http.Request)
 	// Get a paginated list of federated activities
 	// (GET /admin/federation/actions)
 	GetFederatedActions(w http.ResponseWriter, r *http.Request, params GetFederatedActionsParams)
+
+	// (OPTIONS /admin/federation/actions)
+	GetFederatedActionsOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/federation/send)
+	SendFederatedMessageOptions(w http.ResponseWriter, r *http.Request)
 	// Send a public message to the Fediverse from the server's user
 	// (POST /admin/federation/send)
 	SendFederatedMessage(w http.ResponseWriter, r *http.Request)
 	// Get followers
 	// (GET /admin/followers)
 	GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams)
+
+	// (OPTIONS /admin/followers)
+	GetFollowersAdminOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/followers/approve)
+	ApproveFollowerOptions(w http.ResponseWriter, r *http.Request)
 	// Set the following state of a follower or follow request
 	// (POST /admin/followers/approve)
 	ApproveFollower(w http.ResponseWriter, r *http.Request)
 	// Get a list of rejected or blocked follows
 	// (GET /admin/followers/blocked)
 	GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/followers/blocked)
+	GetBlockedAndRejectedFollowersOptions(w http.ResponseWriter, r *http.Request)
 	// Get a list of pending follow requests
 	// (GET /admin/followers/pending)
-	GetPendingFollowers(w http.ResponseWriter, r *http.Request)
+	GetPendingFollowRequests(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/followers/pending)
+	GetPendingFollowRequestsOptions(w http.ResponseWriter, r *http.Request)
 	// Get the current hardware stats
 	// (GET /admin/hardwarestats)
 	GetHardwareStats(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/hardwarestats)
+	GetHardwareStatsOptions(w http.ResponseWriter, r *http.Request)
 	// Get all logs
 	// (GET /admin/logs)
 	GetLogs(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/logs)
+	GetLogsOptions(w http.ResponseWriter, r *http.Request)
 	// Get warning/error logs
 	// (GET /admin/logs/warnings)
 	GetWarnings(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/logs/warnings)
+	GetWarningsOptions(w http.ResponseWriter, r *http.Request)
 	// Get video playback metrics
 	// (GET /admin/metrics/video)
 	GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/metrics/video)
+	GetVideoPlaybackMetricsOptions(w http.ResponseWriter, r *http.Request)
 	// Endpoint to interface with Prometheus
 	// (DELETE /admin/prometheus)
 	DeletePrometheusAPI(w http.ResponseWriter, r *http.Request)
 	// Endpoint to interface with Prometheus
 	// (GET /admin/prometheus)
 	GetPrometheusAPI(w http.ResponseWriter, r *http.Request)
+	// Endpoint to interface with Prometheus
+	// (OPTIONS /admin/prometheus)
+	OptionsPrometheusAPI(w http.ResponseWriter, r *http.Request)
 	// Endpoint to interface with Prometheus
 	// (POST /admin/prometheus)
 	PostPrometheusAPI(w http.ResponseWriter, r *http.Request)
@@ -242,36 +458,69 @@ type ServerInterface interface {
 	// Get the current server config
 	// (GET /admin/serverconfig)
 	GetServerConfig(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/serverconfig)
+	GetServerConfigOptions(w http.ResponseWriter, r *http.Request)
 	// Get current inboard broadcaster
 	// (GET /admin/status)
-	GetAdminStatus(w http.ResponseWriter, r *http.Request)
+	StatusAdmin(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/status)
+	StatusAdminOptions(w http.ResponseWriter, r *http.Request)
 	// Force quit the server and restart it
 	// (GET /admin/update/forcequit)
 	AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/update/forcequit)
+	AutoUpdateForceQuitOptions(w http.ResponseWriter, r *http.Request)
 	// Return the auto-update features that are supported for this instance
 	// (GET /admin/update/options)
 	AutoUpdateOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/update/options)
+	AutoUpdateOptionsOptions(w http.ResponseWriter, r *http.Request)
 	// Begin the auto-update
 	// (GET /admin/update/start)
 	AutoUpdateStart(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/update/start)
+	AutoUpdateStartOptions(w http.ResponseWriter, r *http.Request)
 	// Get active viewers
 	// (GET /admin/viewers)
 	GetActiveViewers(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/viewers)
+	GetActiveViewersOptions(w http.ResponseWriter, r *http.Request)
 	// Get viewer count over time
 	// (GET /admin/viewersOverTime)
 	GetViewersOverTime(w http.ResponseWriter, r *http.Request, params GetViewersOverTimeParams)
+
+	// (OPTIONS /admin/viewersOverTime)
+	GetViewersOverTimeOptions(w http.ResponseWriter, r *http.Request)
 	// Get all the webhooks
 	// (GET /admin/webhooks)
 	GetWebhooks(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/webhooks)
+	GetWebhooksOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/webhooks/create)
+	CreateWebhookOptions(w http.ResponseWriter, r *http.Request)
 	// Create a single webhook
 	// (POST /admin/webhooks/create)
 	CreateWebhook(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/webhooks/delete)
+	DeleteWebhookOptions(w http.ResponseWriter, r *http.Request)
 	// Delete a single webhook
 	// (POST /admin/webhooks/delete)
 	DeleteWebhook(w http.ResponseWriter, r *http.Request)
 	// Reset YP configuration
 	// (GET /admin/yp/reset)
 	ResetYPRegistration(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/yp/reset)
+	ResetYPRegistrationOptions(w http.ResponseWriter, r *http.Request)
 	// Register a Fediverse OTP request
 	// (POST /auth/fediverse)
 	RegisterFediverseOTPRequest(w http.ResponseWriter, r *http.Request, params RegisterFediverseOTPRequestParams)
@@ -296,6 +545,9 @@ type ServerInterface interface {
 	// Update chat message visibility
 	// (POST /chat/messagevisibility)
 	UpdateMessageVisibility(w http.ResponseWriter, r *http.Request, params UpdateMessageVisibilityParams)
+
+	// (OPTIONS /chat/register)
+	RegisterAnonymousChatUserOptions(w http.ResponseWriter, r *http.Request)
 	// Registers an anonymous chat user
 	// (POST /chat/register)
 	RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params RegisterAnonymousChatUserParams)
@@ -304,49 +556,76 @@ type ServerInterface interface {
 	UpdateUserEnabled(w http.ResponseWriter, r *http.Request, params UpdateUserEnabledParams)
 	// Get the web config
 	// (GET /config)
-	GetConfig(w http.ResponseWriter, r *http.Request)
+	GetWebConfig(w http.ResponseWriter, r *http.Request)
 	// Get list of custom emojis supported in the chat
 	// (GET /emoji)
-	GetEmoji(w http.ResponseWriter, r *http.Request)
+	GetCustomEmojiList(w http.ResponseWriter, r *http.Request)
 	// Gets the list of followers
 	// (GET /followers)
 	GetFollowers(w http.ResponseWriter, r *http.Request, params GetFollowersParams)
 	// Get chat history
 	// (GET /integrations/chat)
 	ExternalGetChatMessages(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /integrations/chat)
+	ExternalGetChatMessagesOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /integrations/chat/action)
+	SendChatActionOptions(w http.ResponseWriter, r *http.Request)
 	// Send a user action to chat
 	// (POST /integrations/chat/action)
 	SendChatAction(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /integrations/chat/messagevisibility)
+	ExternalUpdateMessageVisibilityOptions(w http.ResponseWriter, r *http.Request)
 	// Hide chat message
 	// (POST /integrations/chat/messagevisibility)
 	ExternalUpdateMessageVisibility(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /integrations/chat/send)
+	SendIntegrationChatMessageOptions(w http.ResponseWriter, r *http.Request)
 	// Send a message to chat as a specific 3rd party bot/integration based on its access token
 	// (POST /integrations/chat/send)
 	SendIntegrationChatMessage(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /integrations/chat/system)
+	SendSystemMessageOptions(w http.ResponseWriter, r *http.Request)
 	// Send a system message to the chat
 	// (POST /integrations/chat/system)
 	SendSystemMessage(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /integrations/chat/system/client/{clientId})
+	SendSystemMessageToConnectedClientOptions(w http.ResponseWriter, r *http.Request, clientId int)
 	// Send a system message to a single client
 	// (POST /integrations/chat/system/client/{clientId})
 	SendSystemMessageToConnectedClient(w http.ResponseWriter, r *http.Request, clientId int)
+
+	// (OPTIONS /integrations/chat/user)
+	SendUserMessageOptions(w http.ResponseWriter, r *http.Request)
 	// Send a user message to chat
 	// (POST /integrations/chat/user)
 	SendUserMessage(w http.ResponseWriter, r *http.Request)
 	// Connected clients
 	// (GET /integrations/clients)
 	ExternalGetConnectedChatClients(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /integrations/clients)
+	ExternalGetConnectedChatClientsOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /integrations/streamtitle)
+	ExternalSetStreamTitleOptions(w http.ResponseWriter, r *http.Request)
 	// Stream title
 	// (POST /integrations/streamtitle)
 	ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request)
 	// Save video playback metrics for future video health recording
 	// (POST /metrics/playback)
-	PostMetricsPlayback(w http.ResponseWriter, r *http.Request)
+	ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request)
 	// Get a user's details
 	// (GET /moderation/chat/user/{userId})
 	GetUserDetails(w http.ResponseWriter, r *http.Request, userId string, params GetUserDetailsParams)
 	// Register for notifications
 	// (POST /notifications/register)
-	PostNotificationsRegister(w http.ResponseWriter, r *http.Request, params PostNotificationsRegisterParams)
+	RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request, params RegisterForLiveNotificationsParams)
 	// Tell the backend you're an active viewer
 	// (GET /ping)
 	Ping(w http.ResponseWriter, r *http.Request)
@@ -355,16 +634,16 @@ type ServerInterface interface {
 	RemoteFollow(w http.ResponseWriter, r *http.Request)
 	// Get all social platforms
 	// (GET /socialplatforms)
-	GetSocialPlatforms(w http.ResponseWriter, r *http.Request)
+	GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request)
 	// Get the status of the server
 	// (GET /status)
 	GetStatus(w http.ResponseWriter, r *http.Request)
 	// Get a list of video variants available
 	// (GET /video/variants)
-	GetVideoVariants(w http.ResponseWriter, r *http.Request)
+	GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request)
 	// Get the YP protocol data
 	// (GET /yp)
-	GetYP(w http.ResponseWriter, r *http.Request)
+	GetYPResponse(w http.ResponseWriter, r *http.Request)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -377,9 +656,24 @@ func (_ Unimplemented) GetExternalAPIUsers(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/accesstokens)
+func (_ Unimplemented) GetExternalAPIUsersOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/accesstokens/create)
+func (_ Unimplemented) CreateExternalAPIUserOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Create a single access token
 // (POST /admin/accesstokens/create)
 func (_ Unimplemented) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/accesstokens/delete)
+func (_ Unimplemented) DeleteExternalAPIUserOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -395,9 +689,24 @@ func (_ Unimplemented) GetConnectedChatClients(w http.ResponseWriter, r *http.Re
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/chat/clients)
+func (_ Unimplemented) GetConnectedChatClientsOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get all chat messages for the admin, unfiltered
 // (GET /admin/chat/messages)
-func (_ Unimplemented) GetAdminChatMessages(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetChatMessagesAdmin(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/chat/messages)
+func (_ Unimplemented) GetChatMessagesAdminOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/chat/messagevisibility)
+func (_ Unimplemented) UpdateMessageVisibilityAdminOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -413,15 +722,35 @@ func (_ Unimplemented) GetDisabledUsers(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/chat/users/disabled)
+func (_ Unimplemented) GetDisabledUsersOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get all banned IP addresses
 // (GET /admin/chat/users/ipbans)
 func (_ Unimplemented) GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/chat/users/ipbans)
+func (_ Unimplemented) GetIPAddressBansOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/chat/users/ipbans/create)
+func (_ Unimplemented) BanIPAddressOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Ban an IP address
 // (POST /admin/chat/users/ipbans/create)
 func (_ Unimplemented) BanIPAddress(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/chat/users/ipbans/remove)
+func (_ Unimplemented) UnbanIPAddressOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -437,9 +766,24 @@ func (_ Unimplemented) GetModerators(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/chat/users/moderators)
+func (_ Unimplemented) GetModeratorsOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/chat/users/setenabled)
+func (_ Unimplemented) UpdateUserEnabledAdminOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Enable or disable a user
 // (POST /admin/chat/users/setenabled)
 func (_ Unimplemented) UpdateUserEnabledAdmin(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/chat/users/setmoderator)
+func (_ Unimplemented) UpdateUserModeratorOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -449,9 +793,19 @@ func (_ Unimplemented) UpdateUserModerator(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/adminpass)
+func (_ Unimplemented) SetAdminPasswordOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Change the current admin password
 // (POST /admin/config/adminpass)
 func (_ Unimplemented) SetAdminPassword(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/appearance)
+func (_ Unimplemented) SetCustomColorVariableValuesOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -461,9 +815,19 @@ func (_ Unimplemented) SetCustomColorVariableValues(w http.ResponseWriter, r *ht
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/chat/disable)
+func (_ Unimplemented) SetChatDisabledOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Disable chat
 // (POST /admin/config/chat/disable)
 func (_ Unimplemented) SetChatDisabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/chat/establishedusermode)
+func (_ Unimplemented) SetEnableEstablishedChatUserModeOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -473,9 +837,19 @@ func (_ Unimplemented) SetEnableEstablishedChatUserMode(w http.ResponseWriter, r
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/chat/forbiddenusernames)
+func (_ Unimplemented) SetForbiddenUsernameListOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Set chat usernames that are not allowed
 // (POST /admin/config/chat/forbiddenusernames)
 func (_ Unimplemented) SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/chat/joinmessagesenabled)
+func (_ Unimplemented) SetChatJoinMessagesEnabledOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -485,9 +859,19 @@ func (_ Unimplemented) SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/chat/slurfilterenabled)
+func (_ Unimplemented) SetChatSlurFilterEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Set slur filter enabled
 // (POST /admin/config/chat/slurfilterenabled)
 func (_ Unimplemented) SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/chat/spamprotectionenabled)
+func (_ Unimplemented) SetChatSpamProtectionEnabledOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -497,9 +881,19 @@ func (_ Unimplemented) SetChatSpamProtectionEnabled(w http.ResponseWriter, r *ht
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/chat/suggestedusernames)
+func (_ Unimplemented) SetSuggestedUsernameListOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Set the suggested chat usernames that will be assigned automatically
 // (POST /admin/config/chat/suggestedusernames)
 func (_ Unimplemented) SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/customjavascript)
+func (_ Unimplemented) SetCustomJavascriptOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -509,9 +903,19 @@ func (_ Unimplemented) SetCustomJavascript(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/customstyles)
+func (_ Unimplemented) SetCustomStylesOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Update custom styles
 // (POST /admin/config/customstyles)
 func (_ Unimplemented) SetCustomStyles(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/directoryenabled)
+func (_ Unimplemented) SetDirectoryEnabledOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -521,9 +925,19 @@ func (_ Unimplemented) SetDirectoryEnabled(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/disablesearchindexing)
+func (_ Unimplemented) SetDisableSearchIndexingOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Update search indexing
 // (POST /admin/config/disablesearchindexing)
 func (_ Unimplemented) SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/externalactions)
+func (_ Unimplemented) SetExternalActionsOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -533,9 +947,19 @@ func (_ Unimplemented) SetExternalActions(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/federation/blockdomains)
+func (_ Unimplemented) SetFederationBlockDomainsOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Set Federation blocked domains
 // (POST /admin/config/federation/blockdomains)
 func (_ Unimplemented) SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/federation/enable)
+func (_ Unimplemented) SetFederationEnabledOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -545,9 +969,19 @@ func (_ Unimplemented) SetFederationEnabled(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/federation/livemessage)
+func (_ Unimplemented) SetFederationGoLiveMessageOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Set federated go live message
 // (POST /admin/config/federation/livemessage)
 func (_ Unimplemented) SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/federation/private)
+func (_ Unimplemented) SetFederationActivityPrivateOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -557,9 +991,19 @@ func (_ Unimplemented) SetFederationActivityPrivate(w http.ResponseWriter, r *ht
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/federation/showengagement)
+func (_ Unimplemented) SetFederationShowEngagementOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Set if fediverse engagement appears in chat
 // (POST /admin/config/federation/showengagement)
 func (_ Unimplemented) SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/federation/username)
+func (_ Unimplemented) SetFederationUsernameOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -569,9 +1013,19 @@ func (_ Unimplemented) SetFederationUsername(w http.ResponseWriter, r *http.Requ
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/ffmpegpath)
+func (_ Unimplemented) SetFfmpegPathOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Update FFMPEG path
 // (POST /admin/config/ffmpegpath)
 func (_ Unimplemented) SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/hideviewercount)
+func (_ Unimplemented) SetHideViewerCountOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -581,9 +1035,19 @@ func (_ Unimplemented) SetHideViewerCount(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/logo)
+func (_ Unimplemented) SetLogoOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Update logo
 // (POST /admin/config/logo)
 func (_ Unimplemented) SetLogo(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/name)
+func (_ Unimplemented) SetServerNameOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -593,9 +1057,19 @@ func (_ Unimplemented) SetServerName(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/notifications/browser)
+func (_ Unimplemented) SetBrowserNotificationConfigurationOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Configure Browser notifications
 // (POST /admin/config/notifications/browser)
 func (_ Unimplemented) SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/notifications/discord)
+func (_ Unimplemented) SetDiscordNotificationConfigurationOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -605,9 +1079,19 @@ func (_ Unimplemented) SetDiscordNotificationConfiguration(w http.ResponseWriter
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/nsfw)
+func (_ Unimplemented) SetNSFWOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Update NSFW marking
 // (POST /admin/config/nsfw)
 func (_ Unimplemented) SetNSFW(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/offlinemessage)
+func (_ Unimplemented) SetCustomOfflineMessageOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -617,9 +1101,19 @@ func (_ Unimplemented) SetCustomOfflineMessage(w http.ResponseWriter, r *http.Re
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/pagecontent)
+func (_ Unimplemented) SetExtraPageContentOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Change the extra page content in memory
 // (POST /admin/config/pagecontent)
 func (_ Unimplemented) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/rtmpserverport)
+func (_ Unimplemented) SetRTMPServerPortOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -629,9 +1123,19 @@ func (_ Unimplemented) SetRTMPServerPort(w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/s3)
+func (_ Unimplemented) SetS3ConfigurationOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Update S3 configuration
 // (POST /admin/config/s3)
 func (_ Unimplemented) SetS3Configuration(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/serversummary)
+func (_ Unimplemented) SetServerSummaryOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -641,9 +1145,19 @@ func (_ Unimplemented) SetServerSummary(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/serverurl)
+func (_ Unimplemented) SetServerURLOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Update server url
 // (POST /admin/config/serverurl)
 func (_ Unimplemented) SetServerURL(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/socialhandles)
+func (_ Unimplemented) SetSocialHandlesOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -653,9 +1167,19 @@ func (_ Unimplemented) SetSocialHandles(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/sockethostoverride)
+func (_ Unimplemented) SetSocketHostOverrideOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Update websocket host override
 // (POST /admin/config/sockethostoverride)
 func (_ Unimplemented) SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/streamkeys)
+func (_ Unimplemented) SetStreamKeysOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -665,9 +1189,19 @@ func (_ Unimplemented) SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/streamtitle)
+func (_ Unimplemented) SetStreamTitleOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Change the stream title
 // (POST /admin/config/streamtitle)
 func (_ Unimplemented) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/tags)
+func (_ Unimplemented) SetTagsOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -677,9 +1211,19 @@ func (_ Unimplemented) SetTags(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/video/codec)
+func (_ Unimplemented) SetVideoCodecOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Set video codec
 // (POST /admin/config/video/codec)
 func (_ Unimplemented) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/video/streamlatencylevel)
+func (_ Unimplemented) SetStreamLatencyLevelOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -689,9 +1233,19 @@ func (_ Unimplemented) SetStreamLatencyLevel(w http.ResponseWriter, r *http.Requ
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/video/streamoutputvariants)
+func (_ Unimplemented) SetStreamOutputVariantsOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Set an array of video output configurations
 // (POST /admin/config/video/streamoutputvariants)
 func (_ Unimplemented) SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/videoservingendpoint)
+func (_ Unimplemented) SetVideoServingEndpointOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -701,15 +1255,30 @@ func (_ Unimplemented) SetVideoServingEndpoint(w http.ResponseWriter, r *http.Re
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/webserverip)
+func (_ Unimplemented) SetWebServerIPOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Update server IP address
 // (POST /admin/config/webserverip)
 func (_ Unimplemented) SetWebServerIP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/webserverport)
+func (_ Unimplemented) SetWebServerPortOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Update server port
 // (POST /admin/config/webserverport)
 func (_ Unimplemented) SetWebServerPort(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/welcomemessage)
+func (_ Unimplemented) SetServerWelcomeMessageOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -725,9 +1294,24 @@ func (_ Unimplemented) DisconnectInboundConnection(w http.ResponseWriter, r *htt
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/disconnect)
+func (_ Unimplemented) DisconnectInboundConnectionOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/emoji/delete)
+func (_ Unimplemented) DeleteCustomEmojiOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Delete custom emoji
 // (POST /admin/emoji/delete)
 func (_ Unimplemented) DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/emoji/upload)
+func (_ Unimplemented) UploadCustomEmojiOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -743,6 +1327,16 @@ func (_ Unimplemented) GetFederatedActions(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/federation/actions)
+func (_ Unimplemented) GetFederatedActionsOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/federation/send)
+func (_ Unimplemented) SendFederatedMessageOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Send a public message to the Fediverse from the server's user
 // (POST /admin/federation/send)
 func (_ Unimplemented) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
@@ -752,6 +1346,16 @@ func (_ Unimplemented) SendFederatedMessage(w http.ResponseWriter, r *http.Reque
 // Get followers
 // (GET /admin/followers)
 func (_ Unimplemented) GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/followers)
+func (_ Unimplemented) GetFollowersAdminOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/followers/approve)
+func (_ Unimplemented) ApproveFollowerOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -767,9 +1371,19 @@ func (_ Unimplemented) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/followers/blocked)
+func (_ Unimplemented) GetBlockedAndRejectedFollowersOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get a list of pending follow requests
 // (GET /admin/followers/pending)
-func (_ Unimplemented) GetPendingFollowers(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/followers/pending)
+func (_ Unimplemented) GetPendingFollowRequestsOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -779,9 +1393,19 @@ func (_ Unimplemented) GetHardwareStats(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/hardwarestats)
+func (_ Unimplemented) GetHardwareStatsOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get all logs
 // (GET /admin/logs)
 func (_ Unimplemented) GetLogs(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/logs)
+func (_ Unimplemented) GetLogsOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -791,9 +1415,19 @@ func (_ Unimplemented) GetWarnings(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/logs/warnings)
+func (_ Unimplemented) GetWarningsOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get video playback metrics
 // (GET /admin/metrics/video)
 func (_ Unimplemented) GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/metrics/video)
+func (_ Unimplemented) GetVideoPlaybackMetricsOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -806,6 +1440,12 @@ func (_ Unimplemented) DeletePrometheusAPI(w http.ResponseWriter, r *http.Reques
 // Endpoint to interface with Prometheus
 // (GET /admin/prometheus)
 func (_ Unimplemented) GetPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Endpoint to interface with Prometheus
+// (OPTIONS /admin/prometheus)
+func (_ Unimplemented) OptionsPrometheusAPI(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -827,9 +1467,19 @@ func (_ Unimplemented) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/serverconfig)
+func (_ Unimplemented) GetServerConfigOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get current inboard broadcaster
 // (GET /admin/status)
-func (_ Unimplemented) GetAdminStatus(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) StatusAdmin(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/status)
+func (_ Unimplemented) StatusAdminOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -839,9 +1489,19 @@ func (_ Unimplemented) AutoUpdateForceQuit(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/update/forcequit)
+func (_ Unimplemented) AutoUpdateForceQuitOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Return the auto-update features that are supported for this instance
 // (GET /admin/update/options)
 func (_ Unimplemented) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/update/options)
+func (_ Unimplemented) AutoUpdateOptionsOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -851,9 +1511,19 @@ func (_ Unimplemented) AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/update/start)
+func (_ Unimplemented) AutoUpdateStartOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get active viewers
 // (GET /admin/viewers)
 func (_ Unimplemented) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/viewers)
+func (_ Unimplemented) GetActiveViewersOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -863,15 +1533,35 @@ func (_ Unimplemented) GetViewersOverTime(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/viewersOverTime)
+func (_ Unimplemented) GetViewersOverTimeOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get all the webhooks
 // (GET /admin/webhooks)
 func (_ Unimplemented) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/webhooks)
+func (_ Unimplemented) GetWebhooksOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/webhooks/create)
+func (_ Unimplemented) CreateWebhookOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Create a single webhook
 // (POST /admin/webhooks/create)
 func (_ Unimplemented) CreateWebhook(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/webhooks/delete)
+func (_ Unimplemented) DeleteWebhookOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -884,6 +1574,11 @@ func (_ Unimplemented) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 // Reset YP configuration
 // (GET /admin/yp/reset)
 func (_ Unimplemented) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/yp/reset)
+func (_ Unimplemented) ResetYPRegistrationOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -935,6 +1630,11 @@ func (_ Unimplemented) UpdateMessageVisibility(w http.ResponseWriter, r *http.Re
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /chat/register)
+func (_ Unimplemented) RegisterAnonymousChatUserOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Registers an anonymous chat user
 // (POST /chat/register)
 func (_ Unimplemented) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params RegisterAnonymousChatUserParams) {
@@ -949,13 +1649,13 @@ func (_ Unimplemented) UpdateUserEnabled(w http.ResponseWriter, r *http.Request,
 
 // Get the web config
 // (GET /config)
-func (_ Unimplemented) GetConfig(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get list of custom emojis supported in the chat
 // (GET /emoji)
-func (_ Unimplemented) GetEmoji(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetCustomEmojiList(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -971,9 +1671,24 @@ func (_ Unimplemented) ExternalGetChatMessages(w http.ResponseWriter, r *http.Re
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /integrations/chat)
+func (_ Unimplemented) ExternalGetChatMessagesOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /integrations/chat/action)
+func (_ Unimplemented) SendChatActionOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Send a user action to chat
 // (POST /integrations/chat/action)
 func (_ Unimplemented) SendChatAction(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /integrations/chat/messagevisibility)
+func (_ Unimplemented) ExternalUpdateMessageVisibilityOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -983,9 +1698,19 @@ func (_ Unimplemented) ExternalUpdateMessageVisibility(w http.ResponseWriter, r 
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /integrations/chat/send)
+func (_ Unimplemented) SendIntegrationChatMessageOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Send a message to chat as a specific 3rd party bot/integration based on its access token
 // (POST /integrations/chat/send)
 func (_ Unimplemented) SendIntegrationChatMessage(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /integrations/chat/system)
+func (_ Unimplemented) SendSystemMessageOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -995,9 +1720,19 @@ func (_ Unimplemented) SendSystemMessage(w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /integrations/chat/system/client/{clientId})
+func (_ Unimplemented) SendSystemMessageToConnectedClientOptions(w http.ResponseWriter, r *http.Request, clientId int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Send a system message to a single client
 // (POST /integrations/chat/system/client/{clientId})
 func (_ Unimplemented) SendSystemMessageToConnectedClient(w http.ResponseWriter, r *http.Request, clientId int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /integrations/chat/user)
+func (_ Unimplemented) SendUserMessageOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1013,6 +1748,16 @@ func (_ Unimplemented) ExternalGetConnectedChatClients(w http.ResponseWriter, r 
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /integrations/clients)
+func (_ Unimplemented) ExternalGetConnectedChatClientsOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /integrations/streamtitle)
+func (_ Unimplemented) ExternalSetStreamTitleOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Stream title
 // (POST /integrations/streamtitle)
 func (_ Unimplemented) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request) {
@@ -1021,7 +1766,7 @@ func (_ Unimplemented) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Req
 
 // Save video playback metrics for future video health recording
 // (POST /metrics/playback)
-func (_ Unimplemented) PostMetricsPlayback(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1033,7 +1778,7 @@ func (_ Unimplemented) GetUserDetails(w http.ResponseWriter, r *http.Request, us
 
 // Register for notifications
 // (POST /notifications/register)
-func (_ Unimplemented) PostNotificationsRegister(w http.ResponseWriter, r *http.Request, params PostNotificationsRegisterParams) {
+func (_ Unimplemented) RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request, params RegisterForLiveNotificationsParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1051,7 +1796,7 @@ func (_ Unimplemented) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 
 // Get all social platforms
 // (GET /socialplatforms)
-func (_ Unimplemented) GetSocialPlatforms(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1063,13 +1808,13 @@ func (_ Unimplemented) GetStatus(w http.ResponseWriter, r *http.Request) {
 
 // Get a list of video variants available
 // (GET /video/variants)
-func (_ Unimplemented) GetVideoVariants(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get the YP protocol data
 // (GET /yp)
-func (_ Unimplemented) GetYP(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetYPResponse(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1099,6 +1844,36 @@ func (siw *ServerInterfaceWrapper) GetExternalAPIUsers(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetExternalAPIUsersOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetExternalAPIUsersOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetExternalAPIUsersOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// CreateExternalAPIUserOptions operation middleware
+func (siw *ServerInterfaceWrapper) CreateExternalAPIUserOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateExternalAPIUserOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // CreateExternalAPIUser operation middleware
 func (siw *ServerInterfaceWrapper) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1107,6 +1882,21 @@ func (siw *ServerInterfaceWrapper) CreateExternalAPIUser(w http.ResponseWriter, 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateExternalAPIUser(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// DeleteExternalAPIUserOptions operation middleware
+func (siw *ServerInterfaceWrapper) DeleteExternalAPIUserOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteExternalAPIUserOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1150,14 +1940,59 @@ func (siw *ServerInterfaceWrapper) GetConnectedChatClients(w http.ResponseWriter
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// GetAdminChatMessages operation middleware
-func (siw *ServerInterfaceWrapper) GetAdminChatMessages(w http.ResponseWriter, r *http.Request) {
+// GetConnectedChatClientsOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetConnectedChatClientsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetConnectedChatClientsOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetChatMessagesAdmin operation middleware
+func (siw *ServerInterfaceWrapper) GetChatMessagesAdmin(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetAdminChatMessages(w, r)
+		siw.Handler.GetChatMessagesAdmin(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetChatMessagesAdminOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetChatMessagesAdminOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetChatMessagesAdminOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// UpdateMessageVisibilityAdminOptions operation middleware
+func (siw *ServerInterfaceWrapper) UpdateMessageVisibilityAdminOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateMessageVisibilityAdminOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1201,6 +2036,21 @@ func (siw *ServerInterfaceWrapper) GetDisabledUsers(w http.ResponseWriter, r *ht
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetDisabledUsersOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetDisabledUsersOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetDisabledUsersOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetIPAddressBans operation middleware
 func (siw *ServerInterfaceWrapper) GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1218,6 +2068,36 @@ func (siw *ServerInterfaceWrapper) GetIPAddressBans(w http.ResponseWriter, r *ht
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetIPAddressBansOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetIPAddressBansOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetIPAddressBansOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// BanIPAddressOptions operation middleware
+func (siw *ServerInterfaceWrapper) BanIPAddressOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.BanIPAddressOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // BanIPAddress operation middleware
 func (siw *ServerInterfaceWrapper) BanIPAddress(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1226,6 +2106,21 @@ func (siw *ServerInterfaceWrapper) BanIPAddress(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.BanIPAddress(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// UnbanIPAddressOptions operation middleware
+func (siw *ServerInterfaceWrapper) UnbanIPAddressOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UnbanIPAddressOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1269,6 +2164,36 @@ func (siw *ServerInterfaceWrapper) GetModerators(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetModeratorsOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetModeratorsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetModeratorsOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// UpdateUserEnabledAdminOptions operation middleware
+func (siw *ServerInterfaceWrapper) UpdateUserEnabledAdminOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateUserEnabledAdminOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // UpdateUserEnabledAdmin operation middleware
 func (siw *ServerInterfaceWrapper) UpdateUserEnabledAdmin(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1277,6 +2202,21 @@ func (siw *ServerInterfaceWrapper) UpdateUserEnabledAdmin(w http.ResponseWriter,
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateUserEnabledAdmin(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// UpdateUserModeratorOptions operation middleware
+func (siw *ServerInterfaceWrapper) UpdateUserModeratorOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateUserModeratorOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1303,6 +2243,21 @@ func (siw *ServerInterfaceWrapper) UpdateUserModerator(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetAdminPasswordOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetAdminPasswordOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetAdminPasswordOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetAdminPassword operation middleware
 func (siw *ServerInterfaceWrapper) SetAdminPassword(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1311,6 +2266,21 @@ func (siw *ServerInterfaceWrapper) SetAdminPassword(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetAdminPassword(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetCustomColorVariableValuesOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetCustomColorVariableValuesOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetCustomColorVariableValuesOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1337,6 +2307,21 @@ func (siw *ServerInterfaceWrapper) SetCustomColorVariableValues(w http.ResponseW
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetChatDisabledOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetChatDisabledOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetChatDisabledOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetChatDisabled operation middleware
 func (siw *ServerInterfaceWrapper) SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1345,6 +2330,21 @@ func (siw *ServerInterfaceWrapper) SetChatDisabled(w http.ResponseWriter, r *htt
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatDisabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetEnableEstablishedChatUserModeOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetEnableEstablishedChatUserModeOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetEnableEstablishedChatUserModeOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1371,6 +2371,21 @@ func (siw *ServerInterfaceWrapper) SetEnableEstablishedChatUserMode(w http.Respo
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetForbiddenUsernameListOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetForbiddenUsernameListOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetForbiddenUsernameListOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetForbiddenUsernameList operation middleware
 func (siw *ServerInterfaceWrapper) SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1379,6 +2394,21 @@ func (siw *ServerInterfaceWrapper) SetForbiddenUsernameList(w http.ResponseWrite
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetForbiddenUsernameList(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetChatJoinMessagesEnabledOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetChatJoinMessagesEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetChatJoinMessagesEnabledOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1405,6 +2435,21 @@ func (siw *ServerInterfaceWrapper) SetChatJoinMessagesEnabled(w http.ResponseWri
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetChatSlurFilterEnabledOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetChatSlurFilterEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetChatSlurFilterEnabledOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetChatSlurFilterEnabled operation middleware
 func (siw *ServerInterfaceWrapper) SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1413,6 +2458,21 @@ func (siw *ServerInterfaceWrapper) SetChatSlurFilterEnabled(w http.ResponseWrite
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatSlurFilterEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetChatSpamProtectionEnabledOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetChatSpamProtectionEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetChatSpamProtectionEnabledOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1439,6 +2499,21 @@ func (siw *ServerInterfaceWrapper) SetChatSpamProtectionEnabled(w http.ResponseW
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetSuggestedUsernameListOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetSuggestedUsernameListOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetSuggestedUsernameListOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetSuggestedUsernameList operation middleware
 func (siw *ServerInterfaceWrapper) SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1447,6 +2522,21 @@ func (siw *ServerInterfaceWrapper) SetSuggestedUsernameList(w http.ResponseWrite
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetSuggestedUsernameList(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetCustomJavascriptOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetCustomJavascriptOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetCustomJavascriptOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1473,6 +2563,21 @@ func (siw *ServerInterfaceWrapper) SetCustomJavascript(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetCustomStylesOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetCustomStylesOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetCustomStylesOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetCustomStyles operation middleware
 func (siw *ServerInterfaceWrapper) SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1481,6 +2586,21 @@ func (siw *ServerInterfaceWrapper) SetCustomStyles(w http.ResponseWriter, r *htt
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetCustomStyles(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetDirectoryEnabledOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetDirectoryEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetDirectoryEnabledOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1507,6 +2627,21 @@ func (siw *ServerInterfaceWrapper) SetDirectoryEnabled(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetDisableSearchIndexingOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetDisableSearchIndexingOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetDisableSearchIndexingOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetDisableSearchIndexing operation middleware
 func (siw *ServerInterfaceWrapper) SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1515,6 +2650,21 @@ func (siw *ServerInterfaceWrapper) SetDisableSearchIndexing(w http.ResponseWrite
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetDisableSearchIndexing(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetExternalActionsOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetExternalActionsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetExternalActionsOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1541,6 +2691,21 @@ func (siw *ServerInterfaceWrapper) SetExternalActions(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetFederationBlockDomainsOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationBlockDomainsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationBlockDomainsOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetFederationBlockDomains operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1549,6 +2714,21 @@ func (siw *ServerInterfaceWrapper) SetFederationBlockDomains(w http.ResponseWrit
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationBlockDomains(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetFederationEnabledOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationEnabledOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1575,6 +2755,21 @@ func (siw *ServerInterfaceWrapper) SetFederationEnabled(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetFederationGoLiveMessageOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationGoLiveMessageOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationGoLiveMessageOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetFederationGoLiveMessage operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1583,6 +2778,21 @@ func (siw *ServerInterfaceWrapper) SetFederationGoLiveMessage(w http.ResponseWri
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationGoLiveMessage(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetFederationActivityPrivateOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationActivityPrivateOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationActivityPrivateOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1609,6 +2819,21 @@ func (siw *ServerInterfaceWrapper) SetFederationActivityPrivate(w http.ResponseW
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetFederationShowEngagementOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationShowEngagementOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationShowEngagementOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetFederationShowEngagement operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1617,6 +2842,21 @@ func (siw *ServerInterfaceWrapper) SetFederationShowEngagement(w http.ResponseWr
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationShowEngagement(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetFederationUsernameOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationUsernameOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationUsernameOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1643,6 +2883,21 @@ func (siw *ServerInterfaceWrapper) SetFederationUsername(w http.ResponseWriter, 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetFfmpegPathOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetFfmpegPathOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFfmpegPathOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetFfmpegPath operation middleware
 func (siw *ServerInterfaceWrapper) SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1651,6 +2906,21 @@ func (siw *ServerInterfaceWrapper) SetFfmpegPath(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFfmpegPath(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetHideViewerCountOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetHideViewerCountOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetHideViewerCountOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1677,6 +2947,21 @@ func (siw *ServerInterfaceWrapper) SetHideViewerCount(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetLogoOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetLogoOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetLogoOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetLogo operation middleware
 func (siw *ServerInterfaceWrapper) SetLogo(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1685,6 +2970,21 @@ func (siw *ServerInterfaceWrapper) SetLogo(w http.ResponseWriter, r *http.Reques
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetLogo(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetServerNameOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetServerNameOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetServerNameOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1711,6 +3011,21 @@ func (siw *ServerInterfaceWrapper) SetServerName(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetBrowserNotificationConfigurationOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetBrowserNotificationConfigurationOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetBrowserNotificationConfigurationOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetBrowserNotificationConfiguration operation middleware
 func (siw *ServerInterfaceWrapper) SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1719,6 +3034,21 @@ func (siw *ServerInterfaceWrapper) SetBrowserNotificationConfiguration(w http.Re
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetBrowserNotificationConfiguration(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetDiscordNotificationConfigurationOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetDiscordNotificationConfigurationOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetDiscordNotificationConfigurationOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1745,6 +3075,21 @@ func (siw *ServerInterfaceWrapper) SetDiscordNotificationConfiguration(w http.Re
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetNSFWOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetNSFWOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetNSFWOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetNSFW operation middleware
 func (siw *ServerInterfaceWrapper) SetNSFW(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1753,6 +3098,21 @@ func (siw *ServerInterfaceWrapper) SetNSFW(w http.ResponseWriter, r *http.Reques
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetNSFW(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetCustomOfflineMessageOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetCustomOfflineMessageOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetCustomOfflineMessageOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1779,6 +3139,21 @@ func (siw *ServerInterfaceWrapper) SetCustomOfflineMessage(w http.ResponseWriter
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetExtraPageContentOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetExtraPageContentOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetExtraPageContentOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetExtraPageContent operation middleware
 func (siw *ServerInterfaceWrapper) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1787,6 +3162,21 @@ func (siw *ServerInterfaceWrapper) SetExtraPageContent(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetExtraPageContent(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetRTMPServerPortOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetRTMPServerPortOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetRTMPServerPortOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1813,6 +3203,21 @@ func (siw *ServerInterfaceWrapper) SetRTMPServerPort(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetS3ConfigurationOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetS3ConfigurationOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetS3ConfigurationOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetS3Configuration operation middleware
 func (siw *ServerInterfaceWrapper) SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1821,6 +3226,21 @@ func (siw *ServerInterfaceWrapper) SetS3Configuration(w http.ResponseWriter, r *
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetS3Configuration(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetServerSummaryOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetServerSummaryOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetServerSummaryOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1847,6 +3267,21 @@ func (siw *ServerInterfaceWrapper) SetServerSummary(w http.ResponseWriter, r *ht
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetServerURLOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetServerURLOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetServerURLOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetServerURL operation middleware
 func (siw *ServerInterfaceWrapper) SetServerURL(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1855,6 +3290,21 @@ func (siw *ServerInterfaceWrapper) SetServerURL(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerURL(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetSocialHandlesOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetSocialHandlesOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetSocialHandlesOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1881,6 +3331,21 @@ func (siw *ServerInterfaceWrapper) SetSocialHandles(w http.ResponseWriter, r *ht
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetSocketHostOverrideOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetSocketHostOverrideOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetSocketHostOverrideOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetSocketHostOverride operation middleware
 func (siw *ServerInterfaceWrapper) SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1889,6 +3354,21 @@ func (siw *ServerInterfaceWrapper) SetSocketHostOverride(w http.ResponseWriter, 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetSocketHostOverride(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetStreamKeysOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetStreamKeysOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetStreamKeysOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1915,6 +3395,21 @@ func (siw *ServerInterfaceWrapper) SetStreamKeys(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetStreamTitleOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetStreamTitleOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetStreamTitleOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetStreamTitle operation middleware
 func (siw *ServerInterfaceWrapper) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1923,6 +3418,21 @@ func (siw *ServerInterfaceWrapper) SetStreamTitle(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamTitle(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetTagsOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetTagsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetTagsOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1949,6 +3459,21 @@ func (siw *ServerInterfaceWrapper) SetTags(w http.ResponseWriter, r *http.Reques
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetVideoCodecOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetVideoCodecOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetVideoCodecOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetVideoCodec operation middleware
 func (siw *ServerInterfaceWrapper) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1957,6 +3482,21 @@ func (siw *ServerInterfaceWrapper) SetVideoCodec(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetVideoCodec(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetStreamLatencyLevelOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetStreamLatencyLevelOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetStreamLatencyLevelOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1983,6 +3523,21 @@ func (siw *ServerInterfaceWrapper) SetStreamLatencyLevel(w http.ResponseWriter, 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetStreamOutputVariantsOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetStreamOutputVariantsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetStreamOutputVariantsOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetStreamOutputVariants operation middleware
 func (siw *ServerInterfaceWrapper) SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1991,6 +3546,21 @@ func (siw *ServerInterfaceWrapper) SetStreamOutputVariants(w http.ResponseWriter
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamOutputVariants(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetVideoServingEndpointOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetVideoServingEndpointOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetVideoServingEndpointOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2017,6 +3587,21 @@ func (siw *ServerInterfaceWrapper) SetVideoServingEndpoint(w http.ResponseWriter
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetWebServerIPOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetWebServerIPOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetWebServerIPOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetWebServerIP operation middleware
 func (siw *ServerInterfaceWrapper) SetWebServerIP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2034,6 +3619,21 @@ func (siw *ServerInterfaceWrapper) SetWebServerIP(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SetWebServerPortOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetWebServerPortOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetWebServerPortOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SetWebServerPort operation middleware
 func (siw *ServerInterfaceWrapper) SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2042,6 +3642,21 @@ func (siw *ServerInterfaceWrapper) SetWebServerPort(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetWebServerPort(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SetServerWelcomeMessageOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetServerWelcomeMessageOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetServerWelcomeMessageOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2085,6 +3700,36 @@ func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWr
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// DisconnectInboundConnectionOptions operation middleware
+func (siw *ServerInterfaceWrapper) DisconnectInboundConnectionOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DisconnectInboundConnectionOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// DeleteCustomEmojiOptions operation middleware
+func (siw *ServerInterfaceWrapper) DeleteCustomEmojiOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteCustomEmojiOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // DeleteCustomEmoji operation middleware
 func (siw *ServerInterfaceWrapper) DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2093,6 +3738,21 @@ func (siw *ServerInterfaceWrapper) DeleteCustomEmoji(w http.ResponseWriter, r *h
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteCustomEmoji(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// UploadCustomEmojiOptions operation middleware
+func (siw *ServerInterfaceWrapper) UploadCustomEmojiOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UploadCustomEmojiOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2157,6 +3817,36 @@ func (siw *ServerInterfaceWrapper) GetFederatedActions(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetFederatedActionsOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetFederatedActionsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetFederatedActionsOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SendFederatedMessageOptions operation middleware
+func (siw *ServerInterfaceWrapper) SendFederatedMessageOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SendFederatedMessageOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SendFederatedMessage operation middleware
 func (siw *ServerInterfaceWrapper) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2212,6 +3902,36 @@ func (siw *ServerInterfaceWrapper) GetFollowersAdmin(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetFollowersAdminOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetFollowersAdminOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetFollowersAdminOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// ApproveFollowerOptions operation middleware
+func (siw *ServerInterfaceWrapper) ApproveFollowerOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ApproveFollowerOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // ApproveFollower operation middleware
 func (siw *ServerInterfaceWrapper) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2246,14 +3966,44 @@ func (siw *ServerInterfaceWrapper) GetBlockedAndRejectedFollowers(w http.Respons
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// GetPendingFollowers operation middleware
-func (siw *ServerInterfaceWrapper) GetPendingFollowers(w http.ResponseWriter, r *http.Request) {
+// GetBlockedAndRejectedFollowersOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetBlockedAndRejectedFollowersOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetBlockedAndRejectedFollowersOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetPendingFollowRequests operation middleware
+func (siw *ServerInterfaceWrapper) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetPendingFollowers(w, r)
+		siw.Handler.GetPendingFollowRequests(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetPendingFollowRequestsOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetPendingFollowRequestsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetPendingFollowRequestsOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2280,6 +4030,21 @@ func (siw *ServerInterfaceWrapper) GetHardwareStats(w http.ResponseWriter, r *ht
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetHardwareStatsOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetHardwareStatsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetHardwareStatsOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetLogs operation middleware
 func (siw *ServerInterfaceWrapper) GetLogs(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2288,6 +4053,21 @@ func (siw *ServerInterfaceWrapper) GetLogs(w http.ResponseWriter, r *http.Reques
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetLogs(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetLogsOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetLogsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetLogsOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2314,6 +4094,21 @@ func (siw *ServerInterfaceWrapper) GetWarnings(w http.ResponseWriter, r *http.Re
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetWarningsOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetWarningsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetWarningsOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetVideoPlaybackMetrics operation middleware
 func (siw *ServerInterfaceWrapper) GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2322,6 +4117,21 @@ func (siw *ServerInterfaceWrapper) GetVideoPlaybackMetrics(w http.ResponseWriter
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetVideoPlaybackMetrics(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetVideoPlaybackMetricsOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetVideoPlaybackMetricsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetVideoPlaybackMetricsOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2352,6 +4162,21 @@ func (siw *ServerInterfaceWrapper) GetPrometheusAPI(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetPrometheusAPI(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// OptionsPrometheusAPI operation middleware
+func (siw *ServerInterfaceWrapper) OptionsPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OptionsPrometheusAPI(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2408,14 +4233,44 @@ func (siw *ServerInterfaceWrapper) GetServerConfig(w http.ResponseWriter, r *htt
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// GetAdminStatus operation middleware
-func (siw *ServerInterfaceWrapper) GetAdminStatus(w http.ResponseWriter, r *http.Request) {
+// GetServerConfigOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetServerConfigOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetServerConfigOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// StatusAdmin operation middleware
+func (siw *ServerInterfaceWrapper) StatusAdmin(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetAdminStatus(w, r)
+		siw.Handler.StatusAdmin(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// StatusAdminOptions operation middleware
+func (siw *ServerInterfaceWrapper) StatusAdminOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.StatusAdminOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2442,6 +4297,21 @@ func (siw *ServerInterfaceWrapper) AutoUpdateForceQuit(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// AutoUpdateForceQuitOptions operation middleware
+func (siw *ServerInterfaceWrapper) AutoUpdateForceQuitOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AutoUpdateForceQuitOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // AutoUpdateOptions operation middleware
 func (siw *ServerInterfaceWrapper) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2450,6 +4320,21 @@ func (siw *ServerInterfaceWrapper) AutoUpdateOptions(w http.ResponseWriter, r *h
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AutoUpdateOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// AutoUpdateOptionsOptions operation middleware
+func (siw *ServerInterfaceWrapper) AutoUpdateOptionsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AutoUpdateOptionsOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2476,6 +4361,21 @@ func (siw *ServerInterfaceWrapper) AutoUpdateStart(w http.ResponseWriter, r *htt
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// AutoUpdateStartOptions operation middleware
+func (siw *ServerInterfaceWrapper) AutoUpdateStartOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AutoUpdateStartOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetActiveViewers operation middleware
 func (siw *ServerInterfaceWrapper) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2484,6 +4384,21 @@ func (siw *ServerInterfaceWrapper) GetActiveViewers(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetActiveViewers(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetActiveViewersOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetActiveViewersOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetActiveViewersOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2523,6 +4438,21 @@ func (siw *ServerInterfaceWrapper) GetViewersOverTime(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetViewersOverTimeOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetViewersOverTimeOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetViewersOverTimeOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetWebhooks operation middleware
 func (siw *ServerInterfaceWrapper) GetWebhooks(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2540,6 +4470,36 @@ func (siw *ServerInterfaceWrapper) GetWebhooks(w http.ResponseWriter, r *http.Re
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// GetWebhooksOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetWebhooksOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetWebhooksOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// CreateWebhookOptions operation middleware
+func (siw *ServerInterfaceWrapper) CreateWebhookOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateWebhookOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // CreateWebhook operation middleware
 func (siw *ServerInterfaceWrapper) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2548,6 +4508,21 @@ func (siw *ServerInterfaceWrapper) CreateWebhook(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateWebhook(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// DeleteWebhookOptions operation middleware
+func (siw *ServerInterfaceWrapper) DeleteWebhookOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteWebhookOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2582,6 +4557,21 @@ func (siw *ServerInterfaceWrapper) ResetYPRegistration(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ResetYPRegistration(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// ResetYPRegistrationOptions operation middleware
+func (siw *ServerInterfaceWrapper) ResetYPRegistrationOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ResetYPRegistrationOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2908,6 +4898,21 @@ func (siw *ServerInterfaceWrapper) UpdateMessageVisibility(w http.ResponseWriter
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// RegisterAnonymousChatUserOptions operation middleware
+func (siw *ServerInterfaceWrapper) RegisterAnonymousChatUserOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RegisterAnonymousChatUserOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // RegisterAnonymousChatUser operation middleware
 func (siw *ServerInterfaceWrapper) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -2984,12 +4989,12 @@ func (siw *ServerInterfaceWrapper) UpdateUserEnabled(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// GetConfig operation middleware
-func (siw *ServerInterfaceWrapper) GetConfig(w http.ResponseWriter, r *http.Request) {
+// GetWebConfig operation middleware
+func (siw *ServerInterfaceWrapper) GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetConfig(w, r)
+		siw.Handler.GetWebConfig(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2999,12 +5004,12 @@ func (siw *ServerInterfaceWrapper) GetConfig(w http.ResponseWriter, r *http.Requ
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// GetEmoji operation middleware
-func (siw *ServerInterfaceWrapper) GetEmoji(w http.ResponseWriter, r *http.Request) {
+// GetCustomEmojiList operation middleware
+func (siw *ServerInterfaceWrapper) GetCustomEmojiList(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetEmoji(w, r)
+		siw.Handler.GetCustomEmojiList(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3067,6 +5072,36 @@ func (siw *ServerInterfaceWrapper) ExternalGetChatMessages(w http.ResponseWriter
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// ExternalGetChatMessagesOptions operation middleware
+func (siw *ServerInterfaceWrapper) ExternalGetChatMessagesOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExternalGetChatMessagesOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SendChatActionOptions operation middleware
+func (siw *ServerInterfaceWrapper) SendChatActionOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SendChatActionOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SendChatAction operation middleware
 func (siw *ServerInterfaceWrapper) SendChatAction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -3075,6 +5110,21 @@ func (siw *ServerInterfaceWrapper) SendChatAction(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendChatAction(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// ExternalUpdateMessageVisibilityOptions operation middleware
+func (siw *ServerInterfaceWrapper) ExternalUpdateMessageVisibilityOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExternalUpdateMessageVisibilityOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3101,6 +5151,21 @@ func (siw *ServerInterfaceWrapper) ExternalUpdateMessageVisibility(w http.Respon
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SendIntegrationChatMessageOptions operation middleware
+func (siw *ServerInterfaceWrapper) SendIntegrationChatMessageOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SendIntegrationChatMessageOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SendIntegrationChatMessage operation middleware
 func (siw *ServerInterfaceWrapper) SendIntegrationChatMessage(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -3118,6 +5183,21 @@ func (siw *ServerInterfaceWrapper) SendIntegrationChatMessage(w http.ResponseWri
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// SendSystemMessageOptions operation middleware
+func (siw *ServerInterfaceWrapper) SendSystemMessageOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SendSystemMessageOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // SendSystemMessage operation middleware
 func (siw *ServerInterfaceWrapper) SendSystemMessage(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -3126,6 +5206,32 @@ func (siw *ServerInterfaceWrapper) SendSystemMessage(w http.ResponseWriter, r *h
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendSystemMessage(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SendSystemMessageToConnectedClientOptions operation middleware
+func (siw *ServerInterfaceWrapper) SendSystemMessageToConnectedClientOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "clientId" -------------
+	var clientId int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "clientId", chi.URLParam(r, "clientId"), &clientId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clientId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SendSystemMessageToConnectedClientOptions(w, r, clientId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3154,6 +5260,21 @@ func (siw *ServerInterfaceWrapper) SendSystemMessageToConnectedClient(w http.Res
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendSystemMessageToConnectedClient(w, r, clientId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SendUserMessageOptions operation middleware
+func (siw *ServerInterfaceWrapper) SendUserMessageOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SendUserMessageOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3197,6 +5318,36 @@ func (siw *ServerInterfaceWrapper) ExternalGetConnectedChatClients(w http.Respon
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// ExternalGetConnectedChatClientsOptions operation middleware
+func (siw *ServerInterfaceWrapper) ExternalGetConnectedChatClientsOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExternalGetConnectedChatClientsOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// ExternalSetStreamTitleOptions operation middleware
+func (siw *ServerInterfaceWrapper) ExternalSetStreamTitleOptions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExternalSetStreamTitleOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // ExternalSetStreamTitle operation middleware
 func (siw *ServerInterfaceWrapper) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -3214,12 +5365,12 @@ func (siw *ServerInterfaceWrapper) ExternalSetStreamTitle(w http.ResponseWriter,
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// PostMetricsPlayback operation middleware
-func (siw *ServerInterfaceWrapper) PostMetricsPlayback(w http.ResponseWriter, r *http.Request) {
+// ReportPlaybackMetrics operation middleware
+func (siw *ServerInterfaceWrapper) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostMetricsPlayback(w, r)
+		siw.Handler.ReportPlaybackMetrics(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3273,14 +5424,14 @@ func (siw *ServerInterfaceWrapper) GetUserDetails(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// PostNotificationsRegister operation middleware
-func (siw *ServerInterfaceWrapper) PostNotificationsRegister(w http.ResponseWriter, r *http.Request) {
+// RegisterForLiveNotifications operation middleware
+func (siw *ServerInterfaceWrapper) RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params PostNotificationsRegisterParams
+	var params RegisterForLiveNotificationsParams
 
 	// ------------- Required query parameter "accessToken" -------------
 
@@ -3298,7 +5449,7 @@ func (siw *ServerInterfaceWrapper) PostNotificationsRegister(w http.ResponseWrit
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostNotificationsRegister(w, r, params)
+		siw.Handler.RegisterForLiveNotifications(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3338,12 +5489,12 @@ func (siw *ServerInterfaceWrapper) RemoteFollow(w http.ResponseWriter, r *http.R
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// GetSocialPlatforms operation middleware
-func (siw *ServerInterfaceWrapper) GetSocialPlatforms(w http.ResponseWriter, r *http.Request) {
+// GetAllSocialPlatforms operation middleware
+func (siw *ServerInterfaceWrapper) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetSocialPlatforms(w, r)
+		siw.Handler.GetAllSocialPlatforms(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3368,12 +5519,12 @@ func (siw *ServerInterfaceWrapper) GetStatus(w http.ResponseWriter, r *http.Requ
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// GetVideoVariants operation middleware
-func (siw *ServerInterfaceWrapper) GetVideoVariants(w http.ResponseWriter, r *http.Request) {
+// GetVideoStreamOutputVariants operation middleware
+func (siw *ServerInterfaceWrapper) GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetVideoVariants(w, r)
+		siw.Handler.GetVideoStreamOutputVariants(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3383,12 +5534,12 @@ func (siw *ServerInterfaceWrapper) GetVideoVariants(w http.ResponseWriter, r *ht
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// GetYP operation middleware
-func (siw *ServerInterfaceWrapper) GetYP(w http.ResponseWriter, r *http.Request) {
+// GetYPResponse operation middleware
+func (siw *ServerInterfaceWrapper) GetYPResponse(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetYP(w, r)
+		siw.Handler.GetYPResponse(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3515,7 +5666,16 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/admin/accesstokens", wrapper.GetExternalAPIUsers)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/accesstokens", wrapper.GetExternalAPIUsersOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/accesstokens/create", wrapper.CreateExternalAPIUserOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/accesstokens/create", wrapper.CreateExternalAPIUser)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/accesstokens/delete", wrapper.DeleteExternalAPIUserOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/accesstokens/delete", wrapper.DeleteExternalAPIUser)
@@ -3524,7 +5684,16 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/admin/chat/clients", wrapper.GetConnectedChatClients)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/admin/chat/messages", wrapper.GetAdminChatMessages)
+		r.Options(options.BaseURL+"/admin/chat/clients", wrapper.GetConnectedChatClientsOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/chat/messages", wrapper.GetChatMessagesAdmin)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/chat/messages", wrapper.GetChatMessagesAdminOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/chat/messagevisibility", wrapper.UpdateMessageVisibilityAdminOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/chat/messagevisibility", wrapper.UpdateMessageVisibilityAdmin)
@@ -3533,10 +5702,22 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/admin/chat/users/disabled", wrapper.GetDisabledUsers)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/chat/users/disabled", wrapper.GetDisabledUsersOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/chat/users/ipbans", wrapper.GetIPAddressBans)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/chat/users/ipbans", wrapper.GetIPAddressBansOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/chat/users/ipbans/create", wrapper.BanIPAddressOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/chat/users/ipbans/create", wrapper.BanIPAddress)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/chat/users/ipbans/remove", wrapper.UnbanIPAddressOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/chat/users/ipbans/remove", wrapper.UnbanIPAddress)
@@ -3545,142 +5726,286 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/admin/chat/users/moderators", wrapper.GetModerators)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/chat/users/moderators", wrapper.GetModeratorsOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/chat/users/setenabled", wrapper.UpdateUserEnabledAdminOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/chat/users/setenabled", wrapper.UpdateUserEnabledAdmin)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/chat/users/setmoderator", wrapper.UpdateUserModeratorOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/chat/users/setmoderator", wrapper.UpdateUserModerator)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/adminpass", wrapper.SetAdminPasswordOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/adminpass", wrapper.SetAdminPassword)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/appearance", wrapper.SetCustomColorVariableValuesOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/appearance", wrapper.SetCustomColorVariableValues)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/chat/disable", wrapper.SetChatDisabledOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/disable", wrapper.SetChatDisabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/chat/establishedusermode", wrapper.SetEnableEstablishedChatUserModeOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/establishedusermode", wrapper.SetEnableEstablishedChatUserMode)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/chat/forbiddenusernames", wrapper.SetForbiddenUsernameListOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/forbiddenusernames", wrapper.SetForbiddenUsernameList)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/chat/joinmessagesenabled", wrapper.SetChatJoinMessagesEnabledOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/joinmessagesenabled", wrapper.SetChatJoinMessagesEnabled)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/chat/slurfilterenabled", wrapper.SetChatSlurFilterEnabledOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/slurfilterenabled", wrapper.SetChatSlurFilterEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/chat/spamprotectionenabled", wrapper.SetChatSpamProtectionEnabledOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/spamprotectionenabled", wrapper.SetChatSpamProtectionEnabled)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/chat/suggestedusernames", wrapper.SetSuggestedUsernameListOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/chat/suggestedusernames", wrapper.SetSuggestedUsernameList)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/customjavascript", wrapper.SetCustomJavascriptOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/customjavascript", wrapper.SetCustomJavascript)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/customstyles", wrapper.SetCustomStylesOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/customstyles", wrapper.SetCustomStyles)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/directoryenabled", wrapper.SetDirectoryEnabledOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/directoryenabled", wrapper.SetDirectoryEnabled)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/disablesearchindexing", wrapper.SetDisableSearchIndexingOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/disablesearchindexing", wrapper.SetDisableSearchIndexing)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/externalactions", wrapper.SetExternalActionsOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/externalactions", wrapper.SetExternalActions)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/federation/blockdomains", wrapper.SetFederationBlockDomainsOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/blockdomains", wrapper.SetFederationBlockDomains)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/federation/enable", wrapper.SetFederationEnabledOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/enable", wrapper.SetFederationEnabled)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/federation/livemessage", wrapper.SetFederationGoLiveMessageOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/livemessage", wrapper.SetFederationGoLiveMessage)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/federation/private", wrapper.SetFederationActivityPrivateOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/private", wrapper.SetFederationActivityPrivate)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/federation/showengagement", wrapper.SetFederationShowEngagementOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/showengagement", wrapper.SetFederationShowEngagement)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/federation/username", wrapper.SetFederationUsernameOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/username", wrapper.SetFederationUsername)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/ffmpegpath", wrapper.SetFfmpegPathOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/ffmpegpath", wrapper.SetFfmpegPath)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/hideviewercount", wrapper.SetHideViewerCountOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/hideviewercount", wrapper.SetHideViewerCount)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/logo", wrapper.SetLogoOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/logo", wrapper.SetLogo)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/name", wrapper.SetServerNameOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/name", wrapper.SetServerName)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/notifications/browser", wrapper.SetBrowserNotificationConfigurationOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/notifications/browser", wrapper.SetBrowserNotificationConfiguration)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/notifications/discord", wrapper.SetDiscordNotificationConfigurationOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/notifications/discord", wrapper.SetDiscordNotificationConfiguration)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/nsfw", wrapper.SetNSFWOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/nsfw", wrapper.SetNSFW)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/offlinemessage", wrapper.SetCustomOfflineMessageOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/offlinemessage", wrapper.SetCustomOfflineMessage)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/pagecontent", wrapper.SetExtraPageContentOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/pagecontent", wrapper.SetExtraPageContent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/rtmpserverport", wrapper.SetRTMPServerPortOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/rtmpserverport", wrapper.SetRTMPServerPort)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/s3", wrapper.SetS3ConfigurationOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/s3", wrapper.SetS3Configuration)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/serversummary", wrapper.SetServerSummaryOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/serversummary", wrapper.SetServerSummary)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/serverurl", wrapper.SetServerURLOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/serverurl", wrapper.SetServerURL)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/socialhandles", wrapper.SetSocialHandlesOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/socialhandles", wrapper.SetSocialHandles)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/sockethostoverride", wrapper.SetSocketHostOverrideOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/sockethostoverride", wrapper.SetSocketHostOverride)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/streamkeys", wrapper.SetStreamKeysOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/streamkeys", wrapper.SetStreamKeys)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/streamtitle", wrapper.SetStreamTitleOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/streamtitle", wrapper.SetStreamTitle)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/tags", wrapper.SetTagsOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/tags", wrapper.SetTags)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/video/codec", wrapper.SetVideoCodecOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/video/codec", wrapper.SetVideoCodec)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/video/streamlatencylevel", wrapper.SetStreamLatencyLevelOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/video/streamlatencylevel", wrapper.SetStreamLatencyLevel)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/video/streamoutputvariants", wrapper.SetStreamOutputVariantsOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/video/streamoutputvariants", wrapper.SetStreamOutputVariants)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/videoservingendpoint", wrapper.SetVideoServingEndpointOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/videoservingendpoint", wrapper.SetVideoServingEndpoint)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/webserverip", wrapper.SetWebServerIPOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/webserverip", wrapper.SetWebServerIP)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/webserverport", wrapper.SetWebServerPortOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/webserverport", wrapper.SetWebServerPort)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/welcomemessage", wrapper.SetServerWelcomeMessageOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/welcomemessage", wrapper.SetServerWelcomeMessage)
@@ -3689,7 +6014,16 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnectionOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/emoji/delete", wrapper.DeleteCustomEmojiOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/emoji/delete", wrapper.DeleteCustomEmoji)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/emoji/upload", wrapper.UploadCustomEmojiOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/emoji/upload", wrapper.UploadCustomEmoji)
@@ -3698,10 +6032,22 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/admin/federation/actions", wrapper.GetFederatedActions)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/federation/actions", wrapper.GetFederatedActionsOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/federation/send", wrapper.SendFederatedMessageOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/federation/send", wrapper.SendFederatedMessage)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/followers", wrapper.GetFollowersAdmin)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/followers", wrapper.GetFollowersAdminOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/followers/approve", wrapper.ApproveFollowerOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/followers/approve", wrapper.ApproveFollower)
@@ -3710,25 +6056,46 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/admin/followers/blocked", wrapper.GetBlockedAndRejectedFollowers)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/admin/followers/pending", wrapper.GetPendingFollowers)
+		r.Options(options.BaseURL+"/admin/followers/blocked", wrapper.GetBlockedAndRejectedFollowersOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/followers/pending", wrapper.GetPendingFollowRequests)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/followers/pending", wrapper.GetPendingFollowRequestsOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/hardwarestats", wrapper.GetHardwareStats)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/hardwarestats", wrapper.GetHardwareStatsOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/logs", wrapper.GetLogs)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/logs", wrapper.GetLogsOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/logs/warnings", wrapper.GetWarnings)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/logs/warnings", wrapper.GetWarningsOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/metrics/video", wrapper.GetVideoPlaybackMetrics)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/metrics/video", wrapper.GetVideoPlaybackMetricsOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Delete(options.BaseURL+"/admin/prometheus", wrapper.DeletePrometheusAPI)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/prometheus", wrapper.GetPrometheusAPI)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/prometheus", wrapper.OptionsPrometheusAPI)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/prometheus", wrapper.PostPrometheusAPI)
@@ -3740,34 +6107,67 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/admin/serverconfig", wrapper.GetServerConfig)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/admin/status", wrapper.GetAdminStatus)
+		r.Options(options.BaseURL+"/admin/serverconfig", wrapper.GetServerConfigOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/status", wrapper.StatusAdmin)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/status", wrapper.StatusAdminOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/update/forcequit", wrapper.AutoUpdateForceQuit)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/update/forcequit", wrapper.AutoUpdateForceQuitOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/update/options", wrapper.AutoUpdateOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/update/options", wrapper.AutoUpdateOptionsOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/update/start", wrapper.AutoUpdateStart)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/update/start", wrapper.AutoUpdateStartOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/viewers", wrapper.GetActiveViewers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/viewers", wrapper.GetActiveViewersOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/viewersOverTime", wrapper.GetViewersOverTime)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/viewersOverTime", wrapper.GetViewersOverTimeOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/webhooks", wrapper.GetWebhooks)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/webhooks", wrapper.GetWebhooksOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/webhooks/create", wrapper.CreateWebhookOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/webhooks/create", wrapper.CreateWebhook)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/webhooks/delete", wrapper.DeleteWebhookOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/webhooks/delete", wrapper.DeleteWebhook)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/yp/reset", wrapper.ResetYPRegistration)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/yp/reset", wrapper.ResetYPRegistrationOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/auth/fediverse", wrapper.RegisterFediverseOTPRequest)
@@ -3794,16 +6194,19 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/chat/messagevisibility", wrapper.UpdateMessageVisibility)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/chat/register", wrapper.RegisterAnonymousChatUserOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/chat/register", wrapper.RegisterAnonymousChatUser)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/chat/users/setenabled", wrapper.UpdateUserEnabled)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/config", wrapper.GetConfig)
+		r.Get(options.BaseURL+"/config", wrapper.GetWebConfig)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/emoji", wrapper.GetEmoji)
+		r.Get(options.BaseURL+"/emoji", wrapper.GetCustomEmojiList)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/followers", wrapper.GetFollowers)
@@ -3812,19 +6215,40 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/integrations/chat", wrapper.ExternalGetChatMessages)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/integrations/chat", wrapper.ExternalGetChatMessagesOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/integrations/chat/action", wrapper.SendChatActionOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/action", wrapper.SendChatAction)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/integrations/chat/messagevisibility", wrapper.ExternalUpdateMessageVisibilityOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/messagevisibility", wrapper.ExternalUpdateMessageVisibility)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/integrations/chat/send", wrapper.SendIntegrationChatMessageOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/send", wrapper.SendIntegrationChatMessage)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/integrations/chat/system", wrapper.SendSystemMessageOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/system", wrapper.SendSystemMessage)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/integrations/chat/system/client/{clientId}", wrapper.SendSystemMessageToConnectedClientOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/system/client/{clientId}", wrapper.SendSystemMessageToConnectedClient)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/integrations/chat/user", wrapper.SendUserMessageOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/chat/user", wrapper.SendUserMessage)
@@ -3833,16 +6257,22 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/integrations/clients", wrapper.ExternalGetConnectedChatClients)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/integrations/clients", wrapper.ExternalGetConnectedChatClientsOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/integrations/streamtitle", wrapper.ExternalSetStreamTitleOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/streamtitle", wrapper.ExternalSetStreamTitle)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/metrics/playback", wrapper.PostMetricsPlayback)
+		r.Post(options.BaseURL+"/metrics/playback", wrapper.ReportPlaybackMetrics)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/moderation/chat/user/{userId}", wrapper.GetUserDetails)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/notifications/register", wrapper.PostNotificationsRegister)
+		r.Post(options.BaseURL+"/notifications/register", wrapper.RegisterForLiveNotifications)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/ping", wrapper.Ping)
@@ -3851,16 +6281,16 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/remotefollow", wrapper.RemoteFollow)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/socialplatforms", wrapper.GetSocialPlatforms)
+		r.Get(options.BaseURL+"/socialplatforms", wrapper.GetAllSocialPlatforms)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/status", wrapper.GetStatus)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/video/variants", wrapper.GetVideoVariants)
+		r.Get(options.BaseURL+"/video/variants", wrapper.GetVideoStreamOutputVariants)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/yp", wrapper.GetYP)
+		r.Get(options.BaseURL+"/yp", wrapper.GetYPResponse)
 	})
 
 	return r
