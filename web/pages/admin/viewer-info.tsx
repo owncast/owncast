@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, ReactElement } from 'react';
 import { Row, Col, Typography, MenuProps, Dropdown, Spin, Alert } from 'antd';
 import { getUnixTime, sub } from 'date-fns';
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
 import { Chart } from '../../components/admin/Chart';
 import { StatisticItem } from '../../components/admin/StatisticItem';
 import { ViewerTable } from '../../components/admin/ViewerTable';
@@ -11,8 +12,6 @@ import { ServerStatusContext } from '../../utils/server-status-context';
 import { VIEWERS_OVER_TIME, ACTIVE_VIEWER_DETAILS, fetchData } from '../../utils/apis';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
-
-import { useTranslation } from 'next-export-i18n';
 
 // Lazy loaded components
 

@@ -5,6 +5,7 @@ import { ColumnsType } from 'antd/es/table';
 import { format } from 'date-fns';
 
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
 import { MessageType } from '../../../types/chat';
 import {
   CHAT_HISTORY,
@@ -15,7 +16,6 @@ import {
 import { isEmptyObject } from '../../../utils/format';
 import { MessageVisiblityToggle } from '../../../components/admin/MessageVisiblityToggle';
 import { UserPopover } from '../../../components/admin/UserPopover';
-import { useTranslation } from 'next-export-i18n';
 
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
 
@@ -224,7 +224,9 @@ export default function Chat() {
       <Title>{t('Chat Messages')}</Title>
       <p>{t('Manage the messages from viewers that show up on your stream.')}</p>
       <div className={bulkDivClasses}>
-        <span className="label">{t('Check multiple messages to change their visibility to:')} </span>
+        <span className="label">
+          {t('Check multiple messages to change their visibility to:')}{' '}
+        </span>
 
         <Button
           type="primary"

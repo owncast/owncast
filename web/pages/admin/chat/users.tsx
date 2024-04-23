@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, ReactElement } from 'react';
 import { Tabs } from 'antd';
+import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import {
   CONNECTED_CLIENTS,
@@ -11,7 +12,6 @@ import {
 import { UserTable } from '../../../components/admin/UserTable';
 import { ClientTable } from '../../../components/admin/ClientTable';
 import { BannedIPsTable } from '../../../components/admin/BannedIPsTable';
-import { useTranslation } from 'next-export-i18n';
 
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
 
@@ -86,21 +86,37 @@ export default function ChatUsers() {
     </>
   ) : (
     <p className="description">
-      {t('When a stream is active and chat is enabled, connected chat clients will be displayed here.')}
+      {t(
+        'When a stream is active and chat is enabled, connected chat clients will be displayed here.',
+      )}
     </p>
   );
 
   const connectedUserTabTitle = (
-    <span>{t('Connected')} ({online ? clients.length : t('offline')})</span>
+    <span>
+      {t('Connected')} ({online ? clients.length : t('offline')})
+    </span>
   );
 
-  const bannedUsersTabTitle = <span>{t('Banned Users')} ({disabledUsers.length})</span>;
+  const bannedUsersTabTitle = (
+    <span>
+      {t('Banned Users')} ({disabledUsers.length})
+    </span>
+  );
   const bannedUsersTable = <UserTable data={disabledUsers} />;
 
-  const bannedIPTabTitle = <span>{t('IP Bans')} ({ipBans.length})</span>;
+  const bannedIPTabTitle = (
+    <span>
+      {t('IP Bans')} ({ipBans.length})
+    </span>
+  );
   const bannedIpTable = <BannedIPsTable data={ipBans} />;
 
-  const moderatorUsersTabTitle = <span>{t('Moderators')} ({moderators.length})</span>;
+  const moderatorUsersTabTitle = (
+    <span>
+      {t('Moderators')} ({moderators.length})
+    </span>
+  );
   const moderatorTable = <UserTable data={moderators} />;
 
   const items = [

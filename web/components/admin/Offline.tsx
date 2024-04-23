@@ -43,7 +43,7 @@ export type OfflineProps = {
 
 export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
   const serverStatusData = useContext(ServerStatusContext);
-  
+
   const { t } = useTranslation();
   const { serverConfig } = serverStatusData || {};
   const { rtmpServerPort, streamKeyOverridden } = serverConfig;
@@ -65,11 +65,13 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            {t('Learn how to point your existing software to your new server and start streaming your content.')}
+            {t(
+              'Learn how to point your existing software to your new server and start streaming your content.',
+            )}
           </a>
           <div className="stream-info-container">
             <Text strong className="stream-info-label">
-            {t('Streaming URL:')}
+              {t('Streaming URL:')}
             </Text>
             {rtmpURL && (
               <Paragraph className="stream-info-box" copyable>
@@ -136,7 +138,10 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
       title: t('Add your Owncast instance to the Fediverse'),
       content: (
         <div>
-          <Link href="/admin/config-federation/">{t('Enable Owncast social features')}</Link> {t('to have your instance join the Fediverse, allowing people to follow, share and engage with your live stream.')}
+          <Link href="/admin/config-federation/">{t('Enable Owncast social features')}</Link>{' '}
+          {t(
+            'to have your instance join the Fediverse, allowing people to follow, share and engage with your live stream.',
+          )}
         </div>
       ),
     });
