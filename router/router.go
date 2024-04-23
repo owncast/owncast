@@ -409,11 +409,11 @@ func Start() error {
 	r.Use(chiMW.Recoverer)
 	r.Mount("/api/", handler.New().Handler())
 
+	// The admin web app.
+	r.HandleFunc("/admin/*", middleware.RequireAdminAuth(controllers.IndexHandler))
+
 	// The primary web app.
 	r.HandleFunc("/*", controllers.IndexHandler)
-
-	// The admin web app.
-	r.HandleFunc("/admin", middleware.RequireAdminAuth(controllers.IndexHandler))
 
 	// Images
 	r.HandleFunc("/thumbnail.jpg", controllers.GetThumbnail)
