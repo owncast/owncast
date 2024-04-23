@@ -410,10 +410,10 @@ func Start() error {
 	r.Mount("/api/", handler.New().Handler())
 
 	// The primary web app.
-	r.HandleFunc("/", controllers.IndexHandler)
+	r.HandleFunc("/*", controllers.IndexHandler)
 
 	// The admin web app.
-	r.HandleFunc("/admin/", middleware.RequireAdminAuth(controllers.IndexHandler))
+	r.HandleFunc("/admin", middleware.RequireAdminAuth(controllers.IndexHandler))
 
 	// Images
 	r.HandleFunc("/thumbnail.jpg", controllers.GetThumbnail)
