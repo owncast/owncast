@@ -5,6 +5,7 @@ import { ColumnsType } from 'antd/es/table';
 import { format } from 'date-fns';
 
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
 import { MessageType } from '../../../types/chat';
 import {
   CHAT_HISTORY,
@@ -61,6 +62,7 @@ export default function Chat() {
   const [bulkProcessing, setBulkProcessing] = useState(false);
   const [bulkOutcome, setBulkOutcome] = useState(null);
   const [bulkAction, setBulkAction] = useState('');
+  const { t } = useTranslation();
   let outcomeTimeout = null;
   let chatReloadInterval = null;
 
@@ -153,7 +155,7 @@ export default function Chat() {
 
   const chatColumns: ColumnsType<MessageType> = [
     {
-      title: 'Time',
+      title: t('Time'),
       dataIndex: 'timestamp',
       key: 'timestamp',
       className: 'timestamp-col',
@@ -166,7 +168,7 @@ export default function Chat() {
       width: 90,
     },
     {
-      title: 'User',
+      title: t('User'),
       dataIndex: 'user',
       key: 'user',
       className: 'name-col',
@@ -182,7 +184,7 @@ export default function Chat() {
       width: 110,
     },
     {
-      title: 'Message',
+      title: t('Message'),
       dataIndex: 'body',
       key: 'body',
       className: 'message-col',
@@ -201,8 +203,8 @@ export default function Chat() {
       key: 'hiddenAt',
       className: 'toggle-col',
       filters: [
-        { text: 'Visible messages', value: true },
-        { text: 'Hidden messages', value: false },
+        { text: t('Visible messages'), value: true },
+        { text: t('Hidden messages'), value: false },
       ],
       onFilter: (value, record) => record.visible === value,
       render: (hiddenAt, record) => (
@@ -219,10 +221,12 @@ export default function Chat() {
 
   return (
     <div className="chat-messages">
-      <Title>Chat Messages</Title>
-      <p>Manage the messages from viewers that show up on your stream.</p>
+      <Title>{t('Chat Messages')}</Title>
+      <p>{t('Manage the messages from viewers that show up on your stream.')}</p>
       <div className={bulkDivClasses}>
-        <span className="label">Check multiple messages to change their visibility to: </span>
+        <span className="label">
+          {t('Check multiple messages to change their visibility to:')}{' '}
+        </span>
 
         <Button
           type="primary"
@@ -234,7 +238,7 @@ export default function Chat() {
           disabled={!selectedRowKeys.length || (bulkAction && bulkAction !== 'show')}
           onClick={handleSubmitBulkShow}
         >
-          Show
+          {t('Show')}
         </Button>
         <Button
           type="primary"
@@ -246,7 +250,7 @@ export default function Chat() {
           disabled={!selectedRowKeys.length || (bulkAction && bulkAction !== 'hide')}
           onClick={handleSubmitBulkHide}
         >
-          Hide
+          {t('Hide')}
         </Button>
       </div>
       <Table
