@@ -462,7 +462,7 @@ export const VIDEO_BITRATE_SLIDER_MARKS = {
     },
     label: `${VIDEO_BITRATE_DEFAULTS.min} ${VIDEO_BITRATE_DEFAULTS.unit}`,
   },
-  6000: 6000,
+  5000: 5000,
   10000: 10000,
   [VIDEO_BITRATE_DEFAULTS.max]: {
     style: {
