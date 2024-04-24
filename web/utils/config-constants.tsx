@@ -466,7 +466,7 @@ export const VIDEO_BITRATE_SLIDER_MARKS = {
   10000: 10000,
   [VIDEO_BITRATE_DEFAULTS.max]: {
     style: {
-      marginLeft: '-20px',
+      marginLeft: '-10px',
     },
     label: `${VIDEO_BITRATE_DEFAULTS.max} ${VIDEO_BITRATE_DEFAULTS.unit}`,
   },
