@@ -36,7 +36,7 @@ jobs:
         uses: crowdin/github-action@v1
         with:
           upload_sources: true
-          download_translations: true
+          download_translations: false
           localization_branch_name: translations
           config: crowdin.yml
         env:
