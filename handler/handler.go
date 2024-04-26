@@ -12,7 +12,7 @@ import (
 
 type ServerInterfaceImpl struct{}
 
-// ensure ServerInterfaceImpl implements ServerInterface
+// ensure ServerInterfaceImpl implements ServerInterface.
 var _ generated.ServerInterface = &ServerInterfaceImpl{}
 
 func New() *ServerInterfaceImpl {

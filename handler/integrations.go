@@ -29,12 +29,12 @@ func (*ServerInterfaceImpl) SendSystemMessageToConnectedClientOptions(w http.Res
 	middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessageToConnectedClient)(w, r)
 }
 
-// Deprecated
+// Deprecated.
 func (*ServerInterfaceImpl) SendUserMessage(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireExternalAPIAccessToken(user.ScopeCanSendChatMessages, admin.SendUserMessage)(w, r)
 }
 
-// Deprecated
+// Deprecated.
 func (*ServerInterfaceImpl) SendUserMessageOptions(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireExternalAPIAccessToken(user.ScopeCanSendChatMessages, admin.SendUserMessage)(w, r)
 }
