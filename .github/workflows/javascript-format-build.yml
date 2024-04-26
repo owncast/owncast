@@ -72,6 +72,9 @@ jobs:
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         run: npx prettier --write ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
 
+      - name: Debug changed files output
+        run: 'pwd && echo "Changed files: ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}"'
+
       - name: Commit changes
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         uses: EndBug/add-and-commit@v9
@@ -80,6 +83,7 @@ jobs:
           author_email: owncast@owncast.online
           message: 'Javascript formatting autofixes'
           add: ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
+          cwd: './web' # Ensure this is the correct relative directory
           pull: '--rebase --autostash'
 
   unused-code:
