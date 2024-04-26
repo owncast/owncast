@@ -29,7 +29,7 @@ func Start(enableVerboseLogging bool) error {
 
 	// Middlewares
 	if enableVerboseLogging {
-		r.Use(chiMW.Logger)
+		r.Use(chiMW.RequestLogger(&chiMW.DefaultLogFormatter{Logger: log.StandardLogger(), NoColor: true}))
 	}
 	r.Use(chiMW.Recoverer)
 
