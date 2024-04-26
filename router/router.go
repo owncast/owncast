@@ -58,7 +58,7 @@ func Start(enableVerboseLogging bool) error {
 	r.HandleFunc("/*", controllers.IndexHandler)
 
 	// mount the api
-	r.Mount("/api/*", handler.New().Handler())
+	r.Mount("/api/", handler.New().Handler())
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
