@@ -154,12 +154,10 @@ func (*ServerInterfaceImpl) GetWarningsOptions(w http.ResponseWriter, r *http.Re
 }
 
 func (*ServerInterfaceImpl) GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params generated.GetFollowersAdminParams) {
-	// FIXME this calls the same function as `GetFollowers` but with admin auth
 	middleware.RequireAdminAuth(middleware.HandlePagination(controllers.GetFollowers))(w, r)
 }
 
 func (*ServerInterfaceImpl) GetFollowersAdminOptions(w http.ResponseWriter, r *http.Request) {
-	// FIXME this calls the same function as `GetFollowers` but with admin auth
 	middleware.RequireAdminAuth(middleware.HandlePagination(controllers.GetFollowers))(w, r)
 }
 

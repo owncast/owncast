@@ -76,7 +76,6 @@ func (*ServerInterfaceImpl) RemoteFollow(w http.ResponseWriter, r *http.Request)
 }
 
 func (*ServerInterfaceImpl) GetFollowers(w http.ResponseWriter, r *http.Request, params generated.GetFollowersParams) {
-	// TODO instead of using the mw, we can use the params object
 	middleware.HandlePagination(controllers.GetFollowers)(w, r)
 }
 

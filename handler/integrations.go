@@ -20,8 +20,7 @@ func (*ServerInterfaceImpl) SendSystemMessageOptions(w http.ResponseWriter, r *h
 }
 
 func (*ServerInterfaceImpl) SendSystemMessageToConnectedClient(w http.ResponseWriter, r *http.Request, clientId int) {
-	// TODO doing this hack to make the new system work with the old system
-	// TODO this needs to be refactored asap
+	// doing this hack to make the new system work with the old system
 	r.Header[utils.RestURLPatternHeaderKey] = []string{`/api/integrations/chat/system/client/{clientId}`}
 	middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessageToConnectedClient)(w, r)
 }
@@ -89,35 +88,35 @@ func (*ServerInterfaceImpl) ExternalGetConnectedChatClientsOptions(w http.Respon
 }
 
 func (*ServerInterfaceImpl) GetPrometheusAPI(w http.ResponseWriter, r *http.Request) {
-	// TODO might need to bring this out of the codegen
+	// might need to bring this out of the codegen
 	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
 		promhttp.Handler()
 	})(w, r)
 }
 
 func (*ServerInterfaceImpl) PostPrometheusAPI(w http.ResponseWriter, r *http.Request) {
-	// TODO might need to bring this out of the codegen
+	// might need to bring this out of the codegen
 	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
 		promhttp.Handler()
 	})(w, r)
 }
 
 func (*ServerInterfaceImpl) PutPrometheusAPI(w http.ResponseWriter, r *http.Request) {
-	// TODO might need to bring this out of the codegen
+	// might need to bring this out of the codegen
 	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
 		promhttp.Handler()
 	})(w, r)
 }
 
 func (*ServerInterfaceImpl) DeletePrometheusAPI(w http.ResponseWriter, r *http.Request) {
-	// TODO might need to bring this out of the codegen
+	// might need to bring this out of the codegen
 	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
 		promhttp.Handler()
 	})(w, r)
 }
 
 func (*ServerInterfaceImpl) OptionsPrometheusAPI(w http.ResponseWriter, r *http.Request) {
-	// TODO might need to bring this out of the codegen
+	// might need to bring this out of the codegen
 	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
 		promhttp.Handler()
 	})(w, r)
