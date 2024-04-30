@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/CAFxX/httpcompression"
@@ -117,7 +118,11 @@ func addStaticFileEndpoints(r chi.Router) {
 	r.HandleFunc("/robots.txt", controllers.GetRobotsDotTxt)
 
 	// Return a single emoji image.
-	r.HandleFunc(config.EmojiDir, controllers.GetCustomEmojiImage)
+	emojiDir := config.EmojiDir
+	if !strings.HasSuffix(emojiDir, "*") {
+		emojiDir = emojiDir + "*"
+	}
+	r.HandleFunc(emojiDir, controllers.GetCustomEmojiImage)
 
 	// WebFinger
 	r.HandleFunc("/.well-known/webfinger", apControllers.WebfingerHandler)
