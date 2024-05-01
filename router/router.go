@@ -120,7 +120,7 @@ func addStaticFileEndpoints(r chi.Router) {
 	// Return a single emoji image.
 	emojiDir := config.EmojiDir
 	if !strings.HasSuffix(emojiDir, "*") {
-		emojiDir = emojiDir + "*"
+		emojiDir += "*"
 	}
 	r.HandleFunc(emojiDir, controllers.GetCustomEmojiImage)
 
