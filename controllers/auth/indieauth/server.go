@@ -13,18 +13,18 @@ import (
 func HandleAuthEndpoint(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		// Require the GET request for IndieAuth to be behind admin login.
-		f := middleware.RequireAdminAuth(handleAuthEndpointGet)
+		f := middleware.RequireAdminAuth(HandleAuthEndpointGet)
 		f(w, r)
 		return
 	} else if r.Method == http.MethodPost {
-		handleAuthEndpointPost(w, r)
+		HandleAuthEndpointPost(w, r)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 }
 
-func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
+func HandleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	clientID := r.URL.Query().Get("client_id")
 	redirectURI := r.URL.Query().Get("redirect_uri")
 	codeChallenge := r.URL.Query().Get("code_challenge")
@@ -57,7 +57,7 @@ func handleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect)
 }
 
-func handleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
+func HandleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
