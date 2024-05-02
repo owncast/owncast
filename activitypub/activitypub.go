@@ -17,7 +17,6 @@ func Start(datastore *data.Datastore) {
 	persistence.Setup(datastore)
 	workerpool.InitOutboundWorkerPool()
 	inbox.InitInboxWorkerPool()
-	StartRouter()
 
 	// Generate the keys for signing federated activity if needed.
 	if data.GetPrivateKey() == "" {

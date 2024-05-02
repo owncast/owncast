@@ -105,7 +105,7 @@ func main() {
 
 	go metrics.Start(core.GetStatus)
 
-	if err := router.Start(); err != nil {
+	if err := router.Start(*enableVerboseLogging); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
 }

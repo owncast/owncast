@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const restURLPatternHeaderKey = "Owncast-Resturl-Pattern"
+const RestURLPatternHeaderKey = "Owncast-Resturl-Pattern"
 
 // takes the segment pattern of an Url string and returns the segment before the first dynamic REST parameter.
 func getPatternForRestEndpoint(pattern string) string {
@@ -51,7 +51,7 @@ func readParameter(pattern string, requestURL string, paramName string) (string,
 
 // ReadRestURLParameter will return the parameter from the request of the requested name.
 func ReadRestURLParameter(r *http.Request, parameterName string) (string, error) {
-	pattern, found := r.Header[restURLPatternHeaderKey]
+	pattern, found := r.Header[RestURLPatternHeaderKey]
 	if !found {
 		return "", fmt.Errorf("this HandlerFunc is not marked as REST-Endpoint. Cannot read Parameter '%s' from Request", parameterName)
 	}
@@ -63,7 +63,7 @@ func ReadRestURLParameter(r *http.Request, parameterName string) (string, error)
 func RestEndpoint(pattern string, handler http.HandlerFunc) (string, http.HandlerFunc) {
 	baseURL := getPatternForRestEndpoint(pattern)
 	return baseURL, func(w http.ResponseWriter, r *http.Request) {
-		r.Header[restURLPatternHeaderKey] = []string{pattern}
+		r.Header[RestURLPatternHeaderKey] = []string{pattern}
 		handler(w, r)
 	}
 }
