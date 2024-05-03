@@ -1,12 +1,5 @@
 import UAParser from 'ua-parser-js';
 
-export function pluralize(string, count) {
-  if (count === 1) {
-    return string;
-  }
-  return `${string}s`;
-}
-
 export function getDiffInDaysFromNow(timestamp) {
   const time = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
   return (new Date() - time) / (24 * 3600 * 1000);
