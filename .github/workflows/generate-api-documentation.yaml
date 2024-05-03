@@ -9,19 +9,19 @@ jobs:
     name: Generate API Documentation
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout repo
-          uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-        - name: Run redoc on openapi.yaml
-          run: |
-            npx redoc-cli bundle openapi.yaml -o docs/api/index.html --options '{"hideHostname": true, "pathInMiddlePanel": true}'
+      - name: Run redoc on openapi.yaml
+        run: |
+          npx redoc-cli bundle spec/openapi.yaml -o docs/api/index.html --options '{"hideHostname": true, "pathInMiddlePanel": true}'
 
-        - name: Commit changes
-          uses: EndBug/add-and-commit@v9
-          with:
-            author_name: Owncast
-            author_email: owncast@owncast.online
-            message: "Commit updated API documentation"
-            add: "docs/api/index.html"
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: Owncast
+          author_email: owncast@owncast.online
+          message: 'Commit updated API documentation'
+          add: 'docs/api/index.html'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
