@@ -2,7 +2,7 @@ name: javascript-packages
 on:
   push:
     paths:
-      - openapi.yaml
+      - spec/openapi.yaml
 
 jobs:
   run:
