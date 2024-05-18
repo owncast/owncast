@@ -87,7 +87,7 @@ import { ErrorBoundary } from 'react-error-boundary';
   )}
 >
   <YourComponent />
-</ErrorBoundary>
+</ErrorBoundary>;
 ```
 
 ## Storybook
