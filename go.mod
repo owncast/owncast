@@ -36,7 +36,7 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 )
 
-require github.com/prometheus/client_golang v1.19.0
+require github.com/prometheus/client_golang v1.19.1
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
