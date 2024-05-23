@@ -14,6 +14,9 @@ package-all:
 docker-all:
   BUILD --platform=linux/amd64 --platform=linux/386 --platform=linux/arm64 --platform=linux/arm/v7 +docker
 
+flatpak-all:
+  BUILD +flatpak
+
 crosscompiler:
   # This image is missing a few platforms, so we'll add them locally
   FROM --platform=linux/amd64 bdwyertech/go-crosscompile
@@ -141,6 +144,36 @@ docker:
 	FOR --no-cache i IN ${images}
 		SAVE IMAGE --push "${i}"
 	END
+
+flatpak:
+  RUN apk add flatpak flatpak-builder
+  RUN flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+  RUN flatpak install flathub org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08 -y
+
+  ARG TARGETPLATFORM   # provided by Earthly
+  IF [ "$TARGETPLATFORM" = "linux/amd64" ]
+    ARG NAME=linux-64bit
+  ELSE IF [ "$TARGETPLATFORM" = "linux/386" ]
+    ARG NAME=linux-32bit
+  ELSE IF [ "$TARGETPLATFORM" = "linux/arm64" ]
+    ARG NAME=linux-arm64
+  ELSE IF [ "$TARGETPLATFORM" = "linux/arm/v7" ]
+    ARG NAME=linux-arm7
+  ELSE IF [ "$TARGETPLATFORM" = "darwin/amd64" ]
+    ARG NAME=macOS-64bit
+  ELSE IF [ "$TARGETPLATFORM" = "darwin/arm64" ]
+    ARG NAME=macOS-arm64
+  ELSE
+    ARG NAME=custom
+  END
+
+  ENV FLATPAK_NAME owncast-$version-$NAME.flatpak
+  COPY (+build/owncast --platform $TARGETPLATFORM)  /build/flatpak/owncast
+  COPY . /build
+  RUN flatpak-builder --force-clean --repo=owncast-repo build-dir online.owncast.Owncast.json # build flatpak package from JSON file
+  RUN flatpak build-bundle owncast-repo /build/flatpak/owncast.flatpak online.owncast.Owncast # create a single-file bundle of flatpak package
+
+  SAVE ARTIFACT --keep-ts /build/flatpak/owncast.flatpak owncast.flatpak AS LOCAL flatpak/$FLATPAK_NAME
 
 dockerfile:
   FROM DOCKERFILE -f Dockerfile .

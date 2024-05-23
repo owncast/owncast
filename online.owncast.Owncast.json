@@ -1,0 +1,21 @@
+{
+	"app-id": "online.owncast.Owncast",
+	"runtime": "org.freedesktop.Platform",
+	"runtime-version": "23.08",
+	"sdk": "org.freedesktop.Sdk",
+	"command": "/app/owncast",
+	"modules": [
+		{
+			"name": "Owncast",
+			"buildsystem": "simple",
+			"build-commands": ["cp ./owncast /app/"],
+			"sources": [
+				{
+					"type": "file",
+					"path": "/build/flatpak/owncast"
+				}
+			]
+		}
+	],
+	"finish-args": ["--socket=x11", "--share=network"]
+}
