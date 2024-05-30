@@ -7,7 +7,6 @@ import (
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/router/middleware"
-	"github.com/owncast/owncast/utils"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -20,8 +19,6 @@ func (*ServerInterfaceImpl) SendSystemMessageOptions(w http.ResponseWriter, r *h
 }
 
 func (*ServerInterfaceImpl) SendSystemMessageToConnectedClient(w http.ResponseWriter, r *http.Request, clientId int) {
-	// doing this hack to make the new system work with the old system
-	r.Header[utils.RestURLPatternHeaderKey] = []string{`/api/integrations/chat/system/client/{clientId}`}
 	middleware.RequireExternalAPIAccessToken(user.ScopeCanSendSystemMessages, admin.SendSystemMessageToConnectedClient)(w, r)
 }
 
