@@ -1,35 +1,48 @@
-<br />
 <p align="center">
   <a href="https://github.com/owncast/owncast" alt="Owncast">
-    <img src="https://owncast.online/images/logo.png" alt="Logo" width="200">
+    <img src="https://owncast.online/images/logo.png" alt="Owncast Logo" width="200">
+  </a>
+</p>
+
+<p align="center">
+	<strong>Take control over your content and stream it yourself.</strong>
+</p>
+
+<br/>
+
+<p align="center">
+	<a href="https://github.com/owncast/owncast/blob/develop/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
   </a>
 </p>
 
 <br/>
 
-  <p align="center">
-    <strong>Take control over your content and stream it yourself.</strong>
-    <br />
-    <a href="https://owncast.online"><strong>Explore the docs »</strong></a>
-    <br />
-    <a href="https://watch.owncast.online/">View Demo</a>
-    ·
-    <a href="https://owncast.online/faq/">FAQ</a>
-    ·
-    <a href="https://github.com/owncast/owncast/issues">Report Bug</a>
-  </p>
+<p align="center">
+	<a href="https://owncast.online"><strong>Explore the docs »</strong></a>
+	<br />
+	<a href="https://watch.owncast.online/">View Demo</a>
+	·
+	<a href="https://owncast.online/faq/">FAQ</a>
+	·
+	<a href="https://github.com/owncast/owncast/issues">Report Bug</a>
 </p>
+
 
 <!-- TABLE OF CONTENTS -->
 
 ## Table of Contents
 
-- [About the Project](#about-the-project)
-- [Getting Started](#getting-started)
-- [Use with your broadcasting software](#use-with-your-existing-broadcasting-software)
-- [Building from source](#building-from-source)
-- [Contributing](#contributing)
-- [License](#license)
+- 📒 [About the Project](#about-the-project)
+- 🚀 [Getting Started](#getting-started)
+- 👨‍💻 [Use with your broadcasting software](#use-with-your-existing-broadcasting-software)
+- 🛠 [Building from source](#building-from-source)
+  - 🚨 [Important note about source code and the develop branch](#important-note-about-source-code-and-the-develop-branch)
+  - 🗄️ [Backend](#backend)
+  - ⚛️ [Frontend](#frontend)
+- 👏 [Contributing](#contributing)
+  - 💵 [Donors](#donors)
+- 📝 [License](#license)
 - [Contact](#contact)
 
 <!-- ABOUT THE PROJECT -->
@@ -115,8 +128,20 @@ And while we have a small team of kind, talented and thoughtful volunteers, we h
 We abide by our [Code of Conduct](https://owncast.online/contribute/) and feel strongly about open, appreciative, and empathetic people joining us.
 We’ve been very lucky to have this so far, so maybe you can help us with your skills and passion, too!
 
+If you're new to the project, maybe you'd be interested in looking at [![Good First Issue](https://img.shields.io/github/issues/owncast/owncast/good%20first%20issue.svg)](https://github.com/owncast/owncast/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+
 There is a larger, more detailed, and more up-to-date [guide for helping contribute to Owncast on our website](https://owncast.online/help/).
 
+### Donors
+The Owncast project is possible thanks to the people who make a donation to support us and our work.
+Thank you to all our donors who help keep Owncast running by donating on OpenCollective. You can support this project by [becoming a backer/sponsor](https://opencollective.com/owncast#suppor).
+
+<div>
+	<a href="https://opencollective.com/owncast#support">
+		<img alt="GitHub issues by-label" src="https://opencollective.com/owncast/tiers/backers.svg?avatarHeight=36&width=600" alt="Backer button">
+	</a>
+</div>
+	
 <!-- LICENSE -->
 
 ## License
