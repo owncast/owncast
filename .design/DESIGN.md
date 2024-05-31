@@ -7,7 +7,7 @@ A collection of design contribution guidelines and resources for the Owncast int
 
 ## 👋 Welcome
 
-Owncast is a is a live streaming and chat server targeted to anybody who has live streaming needs. This means anybody from corporate events, government meetings, game streamers, musicians, churches, TV stations, and more.
+Owncast is a live streaming and chat server targeted to anybody who has live streaming needs. This means anybody from corporate events, government meetings, game streamers, musicians, churches, TV stations, and more.
 
 Read the detailed [product definition](https://github.com/owncast/owncast/blob/develop/docs/product-definition.md) to learn more.
 
@@ -25,7 +25,7 @@ Read the detailed [product definition](https://github.com/owncast/owncast/blob/d
 
 ## 🎭 Target audience
 
-Owncast is a is a live streaming and chat server targeted to anybody who has live streaming needs. This means anything from corporate events, government meetings, game streams, concerts, TV stations, and more.
+Owncast is a live streaming and chat server targeted to anybody who has live streaming needs. This means anything from corporate events, government meetings, game streams, concerts, TV stations, and more.
 
 ## 🧑‍🎨 Product design opportunities
 
@@ -57,7 +57,7 @@ https://owncast.online/components/?path=%2Fdocs%2Fowncast-styles-colors-componen
 ### Design Files, Screenshots, etc
 
 We do not currently have any design files that fully represent the state of
-the Owncast interface. However going forward it would be nice to resolve this
+the Owncast interface. However, going forward it would be nice to resolve this
 and collaborate on designs.
 
 We do have a [PenPot organization](https://design.penpot.app/#/dashboard/team/8373f780-f255-11ec-b774-f940e3befd53/projects). Please ask for access.
