@@ -167,7 +167,6 @@ test('verify default admin configuration', async (done) => {
 	expect(res.body.yp.enabled).toBe(defaultYPConfig.enabled);
 	// expect(res.body.yp.instanceUrl).toBe(defaultYPConfig.instanceUrl);
 
-	// expect(res.body.adminPassword).toBe(defaultAdminPassword);
 	bcrypt.compare(defaultAdminPassword, res.body.adminPassword, function (err, result) {
 		expect(result).toBe(true);
 	});
@@ -378,7 +377,6 @@ test('verify admin password change', async (done) => {
 		(adminPassword = newAdminPassword)
 	);
 
-	// expect(res.body.adminPassword).toBe(newAdminPassword);
 	bcrypt.compare(newAdminPassword, res.body.adminPassword, function(err, result) {
 		expect(result).toBe(true);
 	});
@@ -455,7 +453,6 @@ test('verify updated admin configuration', async (done) => {
 	expect(res.body.yp.enabled).toBe(newYPConfig.enabled);
 	// expect(res.body.yp.instanceUrl).toBe(newYPConfig.instanceUrl);
 
-	// expect(res.body.adminPassword).toBe(defaultAdminPassword);
 	bcrypt.compare(defaultAdminPassword, res.body.adminPassword, function(err, result) {
 		expect(result).toBe(true);
 	})
