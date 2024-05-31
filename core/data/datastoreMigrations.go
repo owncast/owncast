@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	datastoreValuesVersion   = 3
+	datastoreValuesVersion   = 4
 	datastoreValueVersionKey = "DATA_STORE_VERSION"
 )
 
@@ -27,6 +27,8 @@ func migrateDatastoreValues(datastore *Datastore) {
 			migrateToDatastoreValues2(datastore)
 		case 2:
 			migrateToDatastoreValues3ServingEndpoint3(datastore)
+		case 3:
+			migrateToDatastoreValues4(datastore)
 		default:
 			log.Fatalln("missing datastore values migration step")
 		}
@@ -73,4 +75,12 @@ func migrateToDatastoreValues3ServingEndpoint3(_ *Datastore) {
 	}
 
 	_ = SetVideoServingEndpoint(s3Config.ServingEndpoint)
+}
+
+func migrateToDatastoreValues4(datastore *Datastore) {
+	unhashed_pass, _ := datastore.GetString("admin_password_key")
+	err := SetAdminPassword(unhashed_pass)
+	if err != nil {
+		log.Fatalln("error migrating admin password:", err)
+	}
 }
