@@ -58,7 +58,8 @@ func migrateToDatastoreValues1(datastore *Datastore) {
 
 func migrateToDatastoreValues2(datastore *Datastore) {
 	oldAdminPassword, _ := datastore.GetString("stream_key")
-	_ = SetAdminPassword(oldAdminPassword)
+	// Avoids double hashing the password
+	_ = datastore.SetString("admin_password_key", oldAdminPassword)
 	_ = SetStreamKeys([]models.StreamKey{
 		{Key: oldAdminPassword, Comment: "Default stream key"},
 	})
