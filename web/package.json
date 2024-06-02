@@ -61,6 +61,8 @@
 	},
 	"devDependencies": {
 		"@babel/core": "7.24.6",
+		"@commitlint/cli": "^19.3.0",
+		"@commitlint/config-conventional": "^19.2.2",
 		"@mdx-js/react": "3.0.1",
 		"@storybook/addon-a11y": "7.6.19",
 		"@storybook/addon-actions": "7.6.19",
