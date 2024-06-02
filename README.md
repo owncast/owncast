@@ -148,10 +148,30 @@ Thank you to all our donors who help keep Owncast running by donating on OpenCol
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-## Supported by
+## Support
 
-- This project is tested with [BrowserStack](https://browserstack.com).
-
+<ul style="font-size:21px; color:black; ">
+<li>Browser testing via <a
+href="https://www.lambdatest.com/" target="_blank"><img
+src="https://www.lambdatest.com/support/img/logo.svg"
+style="vertical-align: middle;margin-left:5px" width="147" height="26"
+/></a></li>
+<li>Project chat provided by
+<a href="https://rocket.chat" target="_blank">
+<img src="https://owncast.online/images/sponsors/rocketchat.png" width="147" height="26" style="vertical-align: middle;margin-left:5px">
+</a>
+</li>
+<li>CDN services by
+<a href="https://fastly.com" target="_blank">
+<img src="https://owncast.online/images/sponsors/fastly.png" height="26" style="vertical-align: middle;margin-left:5px">
+</a>
+</li>
+<li>UI testing with Chromatic
+<a href="https://chromatic.com" target="_blank">
+<img src="https://owncast.online/images/sponsors/chromatic.png" height="26" style="vertical-align: middle;margin-left:5px">
+</a>
+</li>
+</ul>
 <!-- CONTACT -->
 
 ## Contact
