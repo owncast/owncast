@@ -113,7 +113,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
     'video-passthrough-enabled': videoPassthroughEnabled,
   });
   return (
-    (<div className={classes}>
+    <div className={classes}>
       <div className="video-varient-alert">
         <Alert
           type="info"
@@ -164,7 +164,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
                 value={dataState.cpuUsageLevel}
                 disabled={dataState.videoPassthrough}
                 tooltip={{
-                  formatter: value => ENCODER_PRESET_TOOLTIPS[value]
+                  formatter: value => ENCODER_PRESET_TOOLTIPS[value],
                 }}
               />
               <p className="selected-value-note">{cpuUsageNote()}</p>
@@ -203,7 +203,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
                 max={VIDEO_BITRATE_DEFAULTS.max}
                 marks={VIDEO_BITRATE_SLIDER_MARKS}
                 tooltip={{
-                  formatter: value => `${value} ${VIDEO_BITRATE_DEFAULTS.unit}`
+                  formatter: value => `${value} ${VIDEO_BITRATE_DEFAULTS.unit}`,
                 }}
               />
               <p className="selected-value-note">{selectedVideoBRnote()}</p>
@@ -327,7 +327,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
                 marks={FRAMERATE_SLIDER_MARKS}
                 disabled={dataState.videoPassthrough}
                 tooltip={{
-                  formatter: value => `${value} ${FRAMERATE_DEFAULTS.unit}`
+                  formatter: value => `${value} ${FRAMERATE_DEFAULTS.unit}`,
                 }}
               />
               <p className="selected-value-note">{selectedFramerateNote()}</p>
@@ -344,6 +344,6 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
           </div>
         </Panel>
       </Collapse>
-    </div>)
+    </div>
   );
 };
