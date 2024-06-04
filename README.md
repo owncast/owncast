@@ -22,14 +22,20 @@
 <div align="center">
 	<p>
 		<a href="https://github.com/owncast/owncast/releases">
-	    <img src="https://img.shields.io/github/v/release/owncast/owncast" alt="GitHub release"></a>
+	    <img src="https://img.shields.io/github/v/release/owncast/owncast" alt="GitHub Release"></a>
 		<a href="https://github.com/owncast/owncast/commits/develop">
-	    <img src="https://img.shields.io/github/last-commit/owncast/owncast/develop?color=5e6aef" alt="GitHub last commit"></a>
+	    <img src="https://img.shields.io/github/last-commit/owncast/owncast/develop?color=5e6aef" alt="GitHub Last Commit"></a>
 		<a href="#">
-	    <img src="https://img.shields.io/github/repo-size/owncast/owncast" alt="GitHub repo size"></a>
-		<a href="https://www.codefactor.io/repository/github/owncast/owncast">
-	    <img src="https://img.shields.io/codefactor/grade/github/owncast/owncast" alt="CodeFactor grade"></a>
-		<a href="https://crowdin.com/project/owncast">
+	    <img src="https://img.shields.io/github/repo-size/owncast/owncast" alt="GitHub Repo Size"></a>
+		<a href="https://www.codefactor.io/repository/github/owncast/owncast" rel="nofollow">
+	    <img src="https://img.shields.io/codefactor/grade/github/owncast/owncast" alt="CodeFactor Grade"></a>
+		<a href="https://github.com/owncast/owncast/actions/workflows/container.yaml">
+	    <img src="https://github.com/owncast/owncast/actions/workflows/container.yaml/badge.svg" alt="GitHub Actions Workflow Status"></a>
+		<a href="https://goreportcard.com/report/github.com/owncast/owncast" rel="nofollow">
+	    <img src="https://goreportcard.com/badge/github.com/owncast/owncast" alt="Go Report Card"></a>
+		<a href="https://pkg.go.dev/github.com/owncast/owncast/logging" rel="nofollow">
+			<img src="https://pkg.go.dev/badge/github.com/owncast/owncast/logging.svg" alt="Go Reference"></a>
+		<a href="https://crowdin.com/project/owncast" rel="nofollow">
 	    <img src="https://badges.crowdin.net/owncast/localized.svg" alt="Crowdin"></a>
 		<a href="https://github.com/owncast/owncast/blob/develop/LICENSE">
 	    <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
