@@ -6,21 +6,10 @@
 
 <p align="center">
 	<strong>Take control over your content and stream it yourself.</strong>
-</p>
-
-<br/>
-
-<p align="center">
-	<a href="https://github.com/owncast/owncast/blob/develop/LICENSE">
-    <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
-  </a>
-</p>
-
-<br/>
-
-<p align="center">
-	<a href="https://owncast.online"><strong>Explore the docs »</strong></a>
 	<br />
+	<a href="https://owncast.online"><strong>Explore the docs »</strong></a>
+	<br/>
+	<br/>
 	<a href="https://watch.owncast.online/">View Demo</a>
 	·
 	<a href="https://owncast.online/faq/">FAQ</a>
@@ -28,6 +17,24 @@
 	<a href="https://github.com/owncast/owncast/issues">Report Bug</a>
 </p>
 
+<br/>
+
+<div align="center">
+	<p>
+		<a href="https://github.com/owncast/owncast/releases">
+	    <img src="https://img.shields.io/github/v/release/owncast/owncast" alt="GitHub release"></a>
+		<a href="https://github.com/owncast/owncast/commits/develop">
+	    <img src="https://img.shields.io/github/last-commit/owncast/owncast/develop?color=5e6aef" alt="GitHub last commit"></a>
+		<a href="#">
+	    <img src="https://img.shields.io/github/repo-size/owncast/owncast" alt="GitHub repo size"></a>
+		<a href="https://www.codefactor.io/repository/github/owncast/owncast">
+	    <img src="https://img.shields.io/codefactor/grade/github/owncast/owncast" alt="CodeFactor grade"></a>
+		<a href="https://crowdin.com/project/owncast">
+	    <img src="https://badges.crowdin.net/owncast/localized.svg" alt="Crowdin"></a>
+		<a href="https://github.com/owncast/owncast/blob/develop/LICENSE">
+	    <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
+	</p>
+</div>
 
 <!-- TABLE OF CONTENTS -->
 
@@ -43,7 +50,8 @@
 - 👏 [Contributing](#contributing)
   - 💵 [Donors](#donors)
 - 📝 [License](#license)
-- [Contact](#contact)
+- ⚙️ [Support](#support)
+- 💬 [Contact](#contact)
 
 <!-- ABOUT THE PROJECT -->
 
@@ -172,6 +180,7 @@ style="vertical-align: middle;margin-left:5px" width="147" height="26"
 </a>
 </li>
 </ul>
+
 <!-- CONTACT -->
 
 ## Contact
