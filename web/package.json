@@ -117,7 +117,7 @@
 		"mermaid": "^10.0.0",
 		"npm": "^10.0.0",
 		"postcss": "^8.4.31",
-		"prettier": "3.2.5",
+		"prettier": "3.3.0",
 		"resolve-url-loader": "^5.0.0",
 		"sass": "1.77.4",
 		"sass-loader": "^14.0.0",
