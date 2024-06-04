@@ -160,7 +160,7 @@ Thank you to all our donors who help keep Owncast running by donating on OpenCol
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the [MIT License](https://github.com/owncast/owncast/blob/develop/LICENSE). Docs released under [Creative Commons CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/) license.
 
 ## Support
 
