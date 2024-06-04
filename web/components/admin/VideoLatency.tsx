@@ -95,7 +95,7 @@ export const VideoLatency: FC = () => {
   };
 
   return (
-    <div className="config-video-latency-container">
+    (<div className="config-video-latency-container">
       <Title level={3} className="section-title">
         Latency Buffer
       </Title>
@@ -115,20 +115,21 @@ export const VideoLatency: FC = () => {
           Read to learn more.
         </a>
       </p>
-
       <div className="segment-slider-container">
         <Slider
-          tipFormatter={value => SLIDER_COMMENTS[value]}
           onChange={handleChange}
           min={0}
           max={4}
           marks={SLIDER_MARKS}
           defaultValue={selectedOption}
           value={selectedOption}
+          tooltip={{
+            formatter: value => SLIDER_COMMENTS[value]
+          }}
         />
         <p className="selected-value-note">{SLIDER_COMMENTS[selectedOption]}</p>
         <FormStatusIndicator status={submitStatus} />
       </div>
-    </div>
+    </div>)
   );
 };
