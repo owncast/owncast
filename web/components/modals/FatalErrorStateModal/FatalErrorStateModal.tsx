@@ -9,7 +9,7 @@ export type FatalErrorStateModalProps = {
 export const FatalErrorStateModal: FC<FatalErrorStateModalProps> = ({ title, message }) => (
   <Modal
     title={title}
-    visible
+    open
     footer={null}
     closable={false}
     keyboard={false}

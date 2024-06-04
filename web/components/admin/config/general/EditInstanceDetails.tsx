@@ -40,7 +40,7 @@ const DirectoryInfoModal: FC<DirectoryInfoModalProps> = ({ cancelPressed, okPres
   <Modal
     width="70%"
     title="Owncast Directory"
-    visible
+    open
     onCancel={cancelPressed}
     footer={
       <div>
