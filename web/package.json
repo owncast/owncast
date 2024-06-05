@@ -57,7 +57,7 @@
 		"workbox-precaching": "^7.0.0",
 		"workbox-window": "^7.0.0",
 		"xstate": "4.38.3",
-		"yaml": "2.4.2"
+		"yaml": "2.4.3"
 	},
 	"devDependencies": {
 		"@babel/core": "7.24.6",
@@ -117,7 +117,7 @@
 		"mermaid": "^10.0.0",
 		"npm": "^10.0.0",
 		"postcss": "^8.4.31",
-		"prettier": "3.2.5",
+		"prettier": "3.3.0",
 		"resolve-url-loader": "^5.0.0",
 		"sass": "1.77.4",
 		"sass-loader": "^14.0.0",
