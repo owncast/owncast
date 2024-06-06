@@ -26,12 +26,10 @@ type AppPropsWithLayout = AppProps & {
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const layout = Component.getLayout ?? (page => page);
-
-  return layout(
+  const page = layout(
     <RecoilRoot>
-      <ConfigProvider theme={{ cssVar: true, hashed: false }}>
-        <Component {...pageProps} />
-      </ConfigProvider>
+      <Component {...pageProps} />
     </RecoilRoot>,
   );
+  return <ConfigProvider theme={{ cssVar: true, hashed: false }}>{page}</ConfigProvider>;
 }
