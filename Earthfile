@@ -170,7 +170,7 @@ flatpak:
   ENV FLATPAK_NAME owncast-$version-$NAME.flatpak
   COPY (+build/owncast --platform $TARGETPLATFORM)  /build/flatpak/owncast
   COPY . /build
-  RUN flatpak-builder --force-clean --repo=owncast-repo build-dir online.owncast.Owncast.json # build flatpak package from JSON file
+  RUN flatpak-builder --privileged --force-clean --repo=owncast-repo build-dir online.owncast.Owncast.json # build flatpak package from JSON file
   RUN flatpak build-bundle owncast-repo /build/flatpak/owncast.flatpak online.owncast.Owncast # create a single-file bundle of flatpak package
 
   SAVE ARTIFACT --keep-ts /build/flatpak/owncast.flatpak owncast.flatpak AS LOCAL flatpak/$FLATPAK_NAME
