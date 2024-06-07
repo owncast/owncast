@@ -1,0 +1,4413 @@
+openapi: 3.1.0
+
+info:
+  version: 0.2.0
+  title: Owncast APIs
+  description: |-
+    Internal
+    The APIs required to make the Owncast web interface and internal functionality work. These APIs will never reach stability and will always change as Owncast features and functionality change. This means these endpoints are not good options to build your own tooling and features on top of. You can, however, of course can if that risk is acceptable to you.
+
+    Admin
+    The APIs used to configure the Owncast server, as well as power the web admin interface. These APIs are protected by the admin password, using HTTP Basic authentication. They should not be used by external tools or integrations as it would require you to give your admin password to a third party.
+  contact:
+    name: Gabe Kangas
+    email: gabek@real-ity.com
+    url: 'http://owncast.online'
+  license:
+    url: 'https://github.com/owncast/owncast/blob/develop/LICENSE'
+    name: MIT
+servers:
+  - url: 'http://localhost:8080/api'
+    description: Localhost port 8080
+
+paths:
+  /status:
+    get:
+      summary: Get the status of the server
+      operationId: GetStatus
+      tags: ['Internal']
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /emoji:
+    get:
+      summary: Get list of custom emojis supported in the chat
+      operationId: GetCustomEmojiList
+      tags: ['Internal', 'Chat']
+      responses:
+        '200':
+          description: List of valid emojis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Emojis'
+        '500':
+          $ref: '#/components/responses/500'
+  /chat:
+    get:
+      summary: Gets a list of chat messages
+      operationId: GetChatMessages
+      tags: ['Internal', 'Chat']
+      parameters:
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: List of chat messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessages'
+        '401':
+          $ref: '#/components/responses/401'
+        '501':
+          $ref: '#/components/responses/501'
+  /chat/register:
+    post:
+      summary: Registers an anonymous chat user
+      operationId: RegisterAnonymousChatUser
+      tags: ['Internal', 'Chat']
+      parameters:
+        - in: header
+          name: X-Forwarded-User
+          schema:
+            type: string
+          required: false
+      requestBody:
+        description: The display name of the new user
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName:
+                  type: string
+      responses:
+        '200':
+          description: Anonymous user information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnonymousUser'
+        '400':
+          $ref: '#/components/responses/400'
+    options:
+      operationId: RegisterAnonymousChatUserOptions
+      tags: ['Objects', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204Options'
+  /chat/messagevisibility:
+    post:
+      summary: Update chat message visibility
+      operationId: UpdateMessageVisibility
+      tags: ['Internal', 'Chat']
+      parameters:
+        - $ref: '#/components/parameters/AccessToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageVisibilityUpdate'
+      responses:
+        '200':
+          description: Message visibility updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        default:
+          $ref: '#/components/responses/Default'
+  /chat/users/setenabled:
+    post:
+      summary: Enable/disable a user
+      operationId: UpdateUserEnabled
+      tags: ['Internal', 'Chat']
+      parameters:
+        - $ref: '#/components/parameters/AccessToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                enabled:
+                  type: boolean
+      responses:
+        '200':
+          description: User status has been updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        default:
+          $ref: '#/components/responses/Default'
+  /config:
+    get:
+      summary: Get the web config
+      operationId: GetWebConfig
+      tags: ['Internal']
+      responses:
+        '200':
+          description: The current web config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebConfig'
+        '500':
+          $ref: '#/components/responses/500'
+  /yp:
+    get:
+      summary: Get the YP protocol data
+      operationId: GetYPResponse
+      tags: ['Internal']
+      responses:
+        '200':
+          description: The current YP protocol configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/YPDetails'
+        '404':
+          $ref: '#/components/responses/404'
+  /socialplatforms:
+    get:
+      summary: Get all social platforms
+      operationId: GetAllSocialPlatforms
+      tags: ['Internal']
+      responses:
+        '200':
+          description: The list of social platforms
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/SocialHandle'
+        '500':
+          $ref: '#/components/responses/500'
+  /video/variants:
+    get:
+      summary: Get a list of video variants available
+      operationId: GetVideoStreamOutputVariants
+      tags: ['Internal', 'Video']
+      responses:
+        '200':
+          description: List of available video variants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VideoVariant'
+  /ping:
+    get:
+      summary: Tell the backend you're an active viewer
+      operationId: Ping
+      tags: ['Internal', 'Video']
+      responses:
+        '200':
+          description: Added as an active viewer
+  /remotefollow:
+    post:
+      summary: Request remote follow
+      operationId: RemoteFollow
+      tags: ['Internal', 'Social']
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account:
+                  type: string
+      responses:
+        '200':
+          description: Contains redirect URL remote follow follow
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirectUrl:
+                    type: string
+        '400':
+          $ref: '#/components/responses/400'
+  /followers:
+    get:
+      summary: Gets the list of followers
+      operationId: GetFollowers
+      tags: ['Internal', 'Social']
+      parameters:
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Paginated follower count
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFollowers'
+        '400':
+          $ref: '#/components/responses/400'
+  /metrics/playback:
+    post:
+      summary: Save video playback metrics for future video health recording
+      operationId: ReportPlaybackMetrics
+      tags: ['Internal']
+      requestBody:
+        description: Video metrics to record
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaybackMetrics'
+      responses:
+        '200':
+          description: Metrics successfully recorded
+        '400':
+          $ref: '#/components/responses/400'
+  /notifications/register:
+    post:
+      summary: Register for notifications
+      operationId: RegisterForLiveNotifications
+      tags: ['Internal']
+      parameters:
+        - $ref: '#/components/parameters/AccessToken'
+      requestBody:
+        description: Information for notification
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel:
+                  type: string
+                  description: Name of notification channel
+                destination:
+                  type: string
+                  description: Target of the notification in the channel
+      responses:
+        '200':
+          description: Successfully added notification channel
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+  /admin/status:
+    get:
+      summary: Get current inboard broadcaster
+      operationId: StatusAdmin
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Gives the status of the system
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminStatus'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: StatusAdminOptions
+      tags: ['Objects']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/disconnect:
+    get:
+      summary: Disconnect inbound stream
+      operationId: DisconnectInboundConnection
+      tags: ['Internal', 'Admin', 'Video']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Contains information about disconnection status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: DisconnectInboundConnectionOptions
+      tags: ['Objects', 'Video']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/serverconfig:
+    get:
+      summary: Get the current server config
+      operationId: GetServerConfig
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Current server config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminServerConfig'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetServerConfigOptions
+      tags: ['Objects']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/viewersOverTime:
+    get:
+      summary: Get viewer count over time
+      operationId: GetViewersOverTime
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      parameters:
+        - in: query
+          name: windowStart
+          description: Start date in unix time
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Viewer count over time
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimestampedValue'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetViewersOverTimeOptions
+      tags: ['Objects']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/viewers:
+    get:
+      summary: Get active viewers
+      operationId: GetActiveViewers
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of active viewers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Viewer'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetActiveViewersOptions
+      tags: ['Objects', 'Video']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/hardwarestats:
+    get:
+      summary: Get the current hardware stats
+      operationId: GetHardwareStats
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Current hardware stats
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/StreamHealthOverview'
+                  - $ref: '#/components/schemas/CollectedMetrics'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetHardwareStatsOptions
+      tags: ['Objects']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/chat/clients:
+    get:
+      summary: Get a detailed list of currently connected chat clients
+      operationId: GetConnectedChatClients
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of chat clients
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatClients'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetConnectedChatClientsOptions
+      tags: ['Objects', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/chat/messages:
+    get:
+      summary: Get all chat messages for the admin, unfiltered
+      operationId: GetChatMessagesAdmin
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of chat messages for the admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessages'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetChatMessagesAdminOptions
+      tags: ['Objects', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/chat/messagevisibility:
+    post:
+      summary: Update visibility of chat messages
+      operationId: UpdateMessageVisibilityAdmin
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageVisibilityUpdate'
+      responses:
+        '200':
+          description: Messages updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: UpdateMessageVisibilityAdminOptions
+      tags: ['Objects', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/chat/users/setenabled:
+    post:
+      summary: Enable or disable a user
+      operationId: UpdateUserEnabledAdmin
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                enabled:
+                  type: boolean
+      responses:
+        '200':
+          description: Successfully updated the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: UpdateUserEnabledAdminOptions
+      tags: ['Objects', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/chat/users/disabled:
+    get:
+      summary: Get a list of disabled users
+      operationId: GetDisabledUsers
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of disabled users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetDisabledUsersOptions
+      tags: ['Objects', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/chat/users/ipbans/create:
+    post:
+      summary: Ban an IP address
+      operationId: BanIPAddress
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: IP was successfully banned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: BanIPAddressOptions
+      tags: ['Objects', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/chat/users/ipbans/remove:
+    post:
+      summary: Remove an IP ban
+      operationId: UnbanIPAddress
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminConfigValue'
+      responses:
+        '200':
+          description: IP ban was successfully removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: UnbanIPAddressOptions
+      tags: ['Objects', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/chat/users/ipbans:
+    get:
+      summary: Get all banned IP addresses
+      operationId: GetIPAddressBans
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of banned IP addresses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IPAddress'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetIPAddressBansOptions
+      tags: ['Objects', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/chat/users/setmoderator:
+    post:
+      summary: Set moderator status for a user
+      operationId: UpdateUserModerator
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                isModerator:
+                  type: boolean
+      responses:
+        '200':
+          description: Successfully update the moderator status of the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: UpdateUserModeratorOptions
+      tags: ['Objects', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/chat/users/moderators:
+    get:
+      summary: Get a list of moderator users
+      operationId: GetModerators
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of moderator users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetModeratorsOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/logs:
+    get:
+      summary: Get all logs
+      operationId: GetLogs
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of logs
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            'Access-Control-Allow-Credentials':
+              $ref: '#/components/headers/Access-Control-Allow-Credentials'
+            'Access-Control-Allow-Headers':
+              $ref: '#/components/headers/Access-Control-Allow-Headers'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminLog'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetLogsOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/logs/warnings:
+    get:
+      summary: Get warning/error logs
+      operationId: GetWarnings
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of warnings and errors
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            'Access-Control-Allow-Credentials':
+              $ref: '#/components/headers/Access-Control-Allow-Credentials'
+            'Access-Control-Allow-Headers':
+              $ref: '#/components/headers/Access-Control-Allow-Headers'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminLog'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetWarningsOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/followers:
+    get:
+      summary: Get followers
+      operationId: GetFollowersAdmin
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Paginated follower count
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFollowers'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetFollowersAdminOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/followers/pending:
+    get:
+      summary: Get a list of pending follow requests
+      operationId: GetPendingFollowRequests
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of pending followers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Followers'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetPendingFollowRequestsOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/followers/blocked:
+    get:
+      summary: Get a list of rejected or blocked follows
+      operationId: GetBlockedAndRejectedFollowers
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of rejected or blocked follows
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Followers'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetBlockedAndRejectedFollowersOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/followers/approve:
+    post:
+      summary: Set the following state of a follower or follow request
+      operationId: ApproveFollower
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actorIRI:
+                  type: string
+                approved:
+                  type: boolean
+      responses:
+        '200':
+          description: List of rejected or blocked follows
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: ApproveFollowerOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/emoji/upload:
+    post:
+      summary: Upload custom emoji
+      operationId: UploadCustomEmoji
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                data:
+                  description: Base 64 encoded image data
+                  type: string
+      responses:
+        '200':
+          description: Emoji has been uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: UploadCustomEmojiOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/emoji/delete:
+    post:
+      summary: Delete custom emoji
+      operationId: DeleteCustomEmoji
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Emoji has been deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: DeleteCustomEmojiOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/adminpass:
+    post:
+      summary: Change the current admin password
+      operationId: SetAdminPassword
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Admin password has been updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetAdminPasswordOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/streamkeys:
+    post:
+      summary: Set an array of valid stream keys
+      operationId: SetStreamKeys
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StreamKey'
+      responses:
+        '200':
+          description: Stream keys have been updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetStreamKeysOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/pagecontent:
+    post:
+      summary: Change the extra page content in memory
+      operationId: SetExtraPageContent
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Page content has been changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetExtraPageContentOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/streamtitle:
+    post:
+      summary: Change the stream title
+      operationId: SetStreamTitle
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Stream title has been changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetStreamTitleOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/name:
+    post:
+      summary: Change the server name
+      operationId: SetServerName
+      tags: ['Objects', 'Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Server name has been changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetServerNameOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/serversummary:
+    post:
+      summary: Change the server summary
+      operationId: SetServerSummary
+      tags: ['Objects', 'Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Server summary has been changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetServerSummaryOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/offlinemessage:
+    post:
+      summary: Change the offline message
+      operationId: SetCustomOfflineMessage
+      tags: ['Objects', 'Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Offline message has been changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetCustomOfflineMessageOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/welcomemessage:
+    post:
+      summary: Change the welcome message
+      operationId: SetServerWelcomeMessage
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Welcome message has been changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetServerWelcomeMessageOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/chat/disable:
+    post:
+      summary: Disable chat
+      operationId: SetChatDisabled
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Chat has been disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetChatDisabledOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/chat/joinmessagesenabled:
+    post:
+      summary: Enable chat for user join messages
+      operationId: SetChatJoinMessagesEnabled
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: User join messages has been enabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetChatJoinMessagesEnabledOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/chat/establishedusermode:
+    post:
+      summary: Enable/disable chat established user mode
+      operationId: SetEnableEstablishedChatUserMode
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Chat established user mode updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetEnableEstablishedChatUserModeOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/chat/forbiddenusernames:
+    post:
+      summary: Set chat usernames that are not allowed
+      operationId: SetForbiddenUsernameList
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Forbidden usernames updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetForbiddenUsernameListOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/chat/suggestedusernames:
+    post:
+      summary: Set the suggested chat usernames that will be assigned automatically
+      operationId: SetSuggestedUsernameList
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Suggested usernames updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetSuggestedUsernameListOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/chat/spamprotectionenabled:
+    post:
+      summary: Set spam protection enabled
+      operationId: SetChatSpamProtectionEnabled
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Spam protection enabled updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetChatSpamProtectionEnabledOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/chat/slurfilterenabled:
+    post:
+      summary: Set slur filter enabled
+      operationId: SetChatSlurFilterEnabled
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Slur filter enabled updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetChatSlurFilterEnabledOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/video/codec:
+    post:
+      summary: Set video codec
+      operationId: SetVideoCodec
+      tags: ['Internal', 'Admin', 'Video']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Video codec updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetVideoCodecOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Video']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/video/streamlatencylevel:
+    post:
+      summary: Set the number of video segments and duration per segment in a playlist
+      operationId: SetStreamLatencyLevel
+      tags: ['Internal', 'Admin', 'Video']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Stream latency updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetStreamLatencyLevelOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Video']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/video/streamoutputvariants:
+    post:
+      summary: Set an array of video output configurations
+      operationId: SetStreamOutputVariants
+      tags: ['Internal', 'Admin', 'Video']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StreamOutputVariant'
+      responses:
+        '200':
+          description: Stream Output Variants updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetStreamOutputVariantsOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Video']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/appearance:
+    post:
+      summary: Set style/color/css values
+      operationId: SetCustomColorVariableValues
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: object
+                  additionalProperties:
+                    type: string
+      responses:
+        '200':
+          description: Appearance updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetCustomColorVariableValuesOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/logo:
+    post:
+      summary: Update logo
+      operationId: SetLogo
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Logo updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetLogoOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/tags:
+    post:
+      summary: Update server tags
+      operationId: SetTags
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Tags updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetTagsOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/ffmpegpath:
+    post:
+      summary: Update FFMPEG path
+      operationId: SetFfmpegPath
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Path updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetFfmpegPathOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/webserverport:
+    post:
+      summary: Update server port
+      operationId: SetWebServerPort
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Port updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetWebServerPortOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/webserverip:
+    post:
+      summary: Update server IP address
+      operationId: SetWebServerIP
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: IP Address updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetWebServerIPOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/rtmpserverport:
+    post:
+      summary: Update RTMP post
+      operationId: SetRTMPServerPort
+      tags: ['Internal', 'Admin', 'Video']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: RTMP port updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetRTMPServerPortOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Video']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/sockethostoverride:
+    post:
+      summary: Update websocket host override
+      operationId: SetSocketHostOverride
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Websocket host override updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetSocketHostOverrideOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/videoservingendpoint:
+    post:
+      summary: Update custom video serving endpoint
+      operationId: SetVideoServingEndpoint
+      tags: ['Internal', 'Admin', 'Video']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Video Serving Endpoint updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetVideoServingEndpointOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Video']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/nsfw:
+    post:
+      summary: Update NSFW marking
+      operationId: SetNSFW
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: NSFW status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetNSFWOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/directoryenabled:
+    post:
+      summary: Update directory enabled
+      operationId: SetDirectoryEnabled
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Directory Enabled updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetDirectoryEnabledOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/socialhandles:
+    post:
+      summary: Update social handles
+      operationId: SetSocialHandles
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/SocialHandle'
+      responses:
+        '200':
+          description: Social handles updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetSocialHandlesOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/s3:
+    post:
+      summary: Update S3 configuration
+      operationId: SetS3Configuration
+      tags: ['Internal', 'Admin', 'Video']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  $ref: '#/components/schemas/S3Info'
+      responses:
+        '200':
+          description: Directory Enabled updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetS3ConfigurationOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Video']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/serverurl:
+    post:
+      summary: Update server url
+      operationId: SetServerURL
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Server URL updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetServerURLOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/externalactions:
+    post:
+      summary: Update external action links
+      operationId: SetExternalActions
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ExternalAction'
+      responses:
+        '200':
+          description: External Action Links updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetExternalActionsOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/customstyles:
+    post:
+      summary: Update custom styles
+      operationId: SetCustomStyles
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Custom styles updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetCustomStylesOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/customjavascript:
+    post:
+      summary: Update custom JavaScript
+      operationId: SetCustomJavascript
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Custom JavaScript updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetCustomJavascriptOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/hideviewercount:
+    post:
+      summary: Update hide viewer count
+      operationId: SetHideViewerCount
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Hide viewer count updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetHideViewerCountOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/disablesearchindexing:
+    post:
+      summary: Update search indexing
+      operationId: SetDisableSearchIndexing
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Search Indexing updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetDisableSearchIndexingOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/federation/enable:
+    post:
+      summary: Enable/disable federation features
+      operationId: SetFederationEnabled
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Federation features enabled/disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetFederationEnabledOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/federation/private:
+    post:
+      summary: Set if federation activities are private
+      operationId: SetFederationActivityPrivate
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Private status set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetFederationActivityPrivateOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/federation/showengagement:
+    post:
+      summary: Set if fediverse engagement appears in chat
+      operationId: SetFederationShowEngagement
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Federation engagement set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetFederationShowEngagementOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/federation/username:
+    post:
+      summary: Set local federated username
+      operationId: SetFederationUsername
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Federation username set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetFederationUsernameOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/federation/livemessage:
+    post:
+      summary: Set federated go live message
+      operationId: SetFederationGoLiveMessage
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Federation username set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetFederationGoLiveMessageOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/federation/blockdomains:
+    post:
+      summary: Set Federation blocked domains
+      operationId: SetFederationBlockDomains
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Federation blocked domains set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetFederationBlockDomainsOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/notifications/discord:
+    post:
+      summary: Configure Discord notifications
+      operationId: SetDiscordNotificationConfiguration
+      tags: ['Internal', 'Admin', 'Notifications']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  $ref: '#/components/schemas/DiscordNotificationConfiguration'
+      responses:
+        '200':
+          description: Discord notification configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetDiscordNotificationConfigurationOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Notifications']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/notifications/browser:
+    post:
+      summary: Configure Browser notifications
+      operationId: SetBrowserNotificationConfiguration
+      tags: ['Internal', 'Admin', 'Notifications']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  $ref: '#/components/schemas/BrowserNotificationConfiguration'
+      responses:
+        '200':
+          description: Browser notification configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetBrowserNotificationConfigurationOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Notifications']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/webhooks:
+    get:
+      summary: Get all the webhooks
+      operationId: GetWebhooks
+      tags: ['Internal', 'Admin', 'Notifications']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: All webhooks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Webhook'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetWebhooksOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Notifications']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/webhooks/delete:
+    post:
+      summary: Delete a single webhook
+      operationId: DeleteWebhook
+      tags: ['Internal', 'Admin', 'Notifications']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+      responses:
+        '200':
+          description: Webhook successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: DeleteWebhookOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Notifications']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/webhooks/create:
+    post:
+      summary: Create a single webhook
+      operationId: CreateWebhook
+      tags: ['Internal', 'Admin', 'Notifications']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                events:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/WebhookEventType'
+      responses:
+        '200':
+          description: The new webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: CreateWebhookOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Notifications']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/accesstokens:
+    get:
+      summary: Get all access tokens
+      operationId: GetExternalAPIUsers
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of external API users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExternalAPIUser'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetExternalAPIUsersOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/accesstokens/delete:
+    post:
+      summary: Delete a single external API user
+      operationId: DeleteExternalAPIUser
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: External API user successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: DeleteExternalAPIUserOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/accesstokens/create:
+    post:
+      summary: Create a single access token
+      operationId: CreateExternalAPIUser
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                scopes:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: The new external API user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalAPIUser'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: CreateExternalAPIUserOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/update/options:
+    get:
+      summary: Return the auto-update features that are supported for this instance
+      operationId: AutoUpdateOptions
+      tags: ['Internal', 'Admin']
+      x-internal: true
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Current auto-update options
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  supportsUpdate:
+                    type: boolean
+                  canRestart:
+                    type: boolean
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: AutoUpdateOptionsOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/update/start:
+    get:
+      summary: Begin the auto-update
+      operationId: AutoUpdateStart
+      tags: ['Internal', 'Admin']
+      x-internal: true
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Console output from update
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: AutoUpdateStartOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      x-internal: true
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/update/forcequit:
+    get:
+      summary: Force quit the server and restart it
+      operationId: AutoUpdateForceQuit
+      x-internal: true
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Server force restart has been ordered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: AutoUpdateForceQuitOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      x-internal: true
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/yp/reset:
+    get:
+      summary: Reset YP configuration
+      operationId: ResetYPRegistration
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: YP Registration has been reset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: ResetYPRegistrationOptions
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/metrics/video:
+    get:
+      summary: Get video playback metrics
+      operationId: GetVideoPlaybackMetrics
+      tags: ['Internal', 'Admin', 'Video']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Video playback metrics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  qualityVariantChanges:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  highestLatency:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  medianLatency:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  lowestLatency:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  medianSegmentDownloadDuration:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  maximumSegmentDownloadDuration:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  minimumSegmentDownloadDuration:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  minPlayerBitrate:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  medianPlayerBitrate:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  maxPlayerBitrate:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimestampedValue'
+                  availableBitrates:
+                    type: array
+                    items:
+                      type: integer
+                  segmentLength:
+                    type: integer
+                  representation:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetVideoPlaybackMetricsOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Video']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/prometheus:
+    get:
+      summary: Endpoint to interface with Prometheus
+      description: |-
+        This endpoint interfaces with the Prometheus metrics API.
+
+        Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
+      operationId: GetPrometheusAPI
+      tags: ['Internal', 'Admin']
+    post:
+      summary: Endpoint to interface with Prometheus
+      description: |-
+        This endpoint interfaces with the Prometheus metrics API.
+
+        Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
+      operationId: PostPrometheusAPI
+      tags: ['Internal', 'Admin']
+    put:
+      summary: Endpoint to interface with Prometheus
+      description: |-
+        This endpoint interfaces with the Prometheus metrics API.
+
+        Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
+      operationId: PutPrometheusAPI
+      tags: ['Internal', 'Admin']
+    delete:
+      summary: Endpoint to interface with Prometheus
+      description: |-
+        This endpoint interfaces with the Prometheus metrics API.
+
+        Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
+      operationId: DeletePrometheusAPI
+      tags: ['Internal', 'Admin']
+    options:
+      summary: Endpoint to interface with Prometheus
+      description: |-
+        This endpoint interfaces with the Prometheus metrics API.
+
+        Learn more about it on the [Prometheus API docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
+      operationId: OptionsPrometheusAPI
+      tags: ['Internal', 'Admin']
+  /admin/federation/send:
+    post:
+      summary: Send a public message to the Fediverse from the server's user
+      operationId: SendFederatedMessage
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SendFederatedMessageOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/federation/actions:
+    get:
+      summary: Get a paginated list of federated activities
+      operationId: GetFederatedActions
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: A paginated list of federated activities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFederatedActivity'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetFederatedActionsOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /integrations/chat/system:
+    post:
+      summary: Send a system message to the chat
+      operationId: SendSystemMessage
+      tags: ['External', 'Chat']
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The content of the system message
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SystemMessage'
+      responses:
+        '200':
+          description: Message sent successfully
+          headers:
+            'Access-Control-Allow-Origin':
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SendSystemMessageOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /integrations/chat/system/client/{clientId}:
+    post:
+      summary: Send a system message to a single client
+      operationId: SendSystemMessageToConnectedClient
+      tags: ['External', 'Chat']
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+          description: The ID of the specified client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SystemMessage'
+      responses:
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SendSystemMessageToConnectedClientOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+          description: The ID of the specified client
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /integrations/chat/user:
+    post:
+      deprecated: true
+      summary: Send a user message to chat
+      operationId: SendUserMessage
+      tags: ['External', 'Chat']
+      security:
+        - BearerAuth: []
+      responses:
+        '400':
+          $ref: '#/components/responses/400'
+    options:
+      deprecated: true
+      operationId: SendUserMessageOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /integrations/chat/send:
+    post:
+      summary: Send a message to chat as a specific 3rd party bot/integration based on its access token
+      operationId: SendIntegrationChatMessage
+      tags: ['External', 'Chat']
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserMessage'
+      responses:
+        '200':
+          description: Message sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SendIntegrationChatMessageOptions
+      tags: ['Objects', 'External', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /integrations/chat/action:
+    post:
+      summary: Send a user action to chat
+      operationId: SendChatAction
+      tags: ['External', 'Chat']
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SystemActionEvent'
+      responses:
+        '200':
+          description: Action sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SendChatActionOptions
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /integrations/chat/messagevisibility:
+    post:
+      summary: Hide chat message
+      operationId: ExternalUpdateMessageVisibility
+      tags: ['External', 'Chat']
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageVisibilityUpdate'
+      responses:
+        '200':
+          description: Messages updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: ExternalUpdateMessageVisibilityOptions
+      tags: ['Objects', 'External', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /integrations/streamtitle:
+    post:
+      summary: Stream title
+      operationId: ExternalSetStreamTitle
+      tags: ['External']
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Stream title has been changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: ExternalSetStreamTitleOptions
+      tags: ['Objects', 'External', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /integrations/chat:
+    get:
+      summary: Get chat history
+      operationId: ExternalGetChatMessages
+      tags: ['External', 'Chat']
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of chat messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessages'
+        '401':
+          $ref: '#/components/responses/401'
+        '501':
+          $ref: '#/components/responses/501'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: ExternalGetChatMessagesOptions
+      tags: ['Objects', 'External', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /integrations/clients:
+    get:
+      summary: Connected clients
+      operationId: ExternalGetConnectedChatClients
+      tags: ['External', 'Chat']
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of chat clients
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatClients'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: ExternalGetConnectedChatClientsOptions
+      tags: ['Objects', 'External', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /moderation/chat/user/{userId}:
+    get:
+      summary: Get a user's details
+      operationId: GetUserDetails
+      tags: ['External', 'Chat']
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          description: The ID of the user to find
+          required: true
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: User information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModerationUserDetails'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        default:
+          $ref: '#/components/responses/Default'
+  /auth/indieauth:
+    post:
+      summary: Begins auth flow
+      operationId: StartIndieAuthFlow
+      tags: ['Internal', 'Auth', 'Chat']
+      parameters:
+        - $ref: '#/components/parameters/AccessToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                authHost:
+                  type: string
+      responses:
+        '200':
+          description: Authentication redirect
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirect:
+                    type: string
+                    format: url
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        default:
+          $ref: '#/components/responses/Default'
+  /auth/indieauth/callback:
+    get:
+      summary: Handle the redirect from an IndieAuth server to continue the auth flow
+      operationId: HandleIndieAuthRedirect
+      tags: ['Internal', 'Auth', 'Chat']
+      parameters:
+        - $ref: '#/components/parameters/IndieAuthState'
+        - $ref: '#/components/parameters/IndieAuthCode'
+      responses:
+        '307':
+          description: Redirected to home page
+        '400':
+          $ref: '#/components/responses/400'
+  /auth/provider/indieauth:
+    get:
+      summary: Handles the IndieAuth auth endpoint
+      operationId: HandleIndieAuthEndpointGet
+      tags: ['Internal', 'Auth', 'Chat']
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IndieAuthClientId'
+        - $ref: '#/components/parameters/IndieAuthRedirectURI'
+        - $ref: '#/components/parameters/IndieAuthCodeChallenge'
+        - $ref: '#/components/parameters/IndieAuthState'
+        - $ref: '#/components/parameters/IndieAuthCode'
+      responses:
+        '200':
+          description: IndieAuth flow concluded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndieAuthResponse'
+        '307':
+          description: Redirected to redirect URI
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+    post:
+      summary: Handles IndieAuth from form submission
+      operationId: HandleIndieAuthEndpointPost
+      tags: ['Internal', 'Auth', 'Chat']
+      requestBody:
+        $ref: '#/components/requestBodies/IndieAuthEndpointForm'
+      responses:
+        '200':
+          description: IndieAuth flow concluded
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/IndieAuthResponse'
+                  - $ref: '#/components/schemas/IndieAuthServerProfileResponse'
+        '400':
+          $ref: '#/components/responses/400'
+  /auth/fediverse:
+    post:
+      summary: Register a Fediverse OTP request
+      operationId: RegisterFediverseOTPRequest
+      tags: ['Internal', 'Auth', 'Chat']
+      parameters:
+        - $ref: '#/components/parameters/AccessToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account:
+                  type: string
+      responses:
+        '200':
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+  /auth/fediverse/verify:
+    post:
+      summary: Verify Fediverse OTP code
+      operationId: VerifyFediverseOTPRequest
+      tags: ['Internal', 'Auth', 'Chat']
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+      responses:
+        '200':
+          description: OTP Verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '403':
+          $ref: '#/components/responses/403'
+
+components:
+  schemas:
+    Error:
+      type: object
+      description: Structure for an error response
+      tags: ['Objects']
+      properties:
+        error:
+          type: string
+    BaseAPIResponse:
+      type: object
+      description: Simple API response
+      tags: ['Objects']
+      properties:
+        message:
+          type: string
+        success:
+          type: boolean
+    Status:
+      type: object
+      description: Response for status
+      tags: ['Objects']
+      properties:
+        serverTime:
+          type: string
+        lastConnectTime:
+          type: string
+        lastDisconnectTime:
+          type: string
+        versionNumber:
+          type: string
+        viewerCount:
+          type: integer
+        online:
+          type: boolean
+    Emojis:
+      type: array
+      items:
+        $ref: '#/components/schemas/Emoji'
+    Emoji:
+      type: object
+      description: Name and url for an emoji
+      tags: ['Objects']
+      properties:
+        name:
+          type: string
+          description: The name of the emoji
+        url:
+          type: string
+          description: URL for the emoji image
+    AnonymousUser:
+      type: object
+      tags: ['Objects']
+      properties:
+        id:
+          type: string
+        accessToken:
+          type: string
+        displayName:
+          type: string
+    User:
+      type: object
+      tags: ['Objects']
+      properties:
+        createdAt:
+          type: string
+        disabledAt:
+          type: string
+        nameChangedAt:
+          type: string
+        id:
+          type: string
+        displayName:
+          type: string
+        previousNames:
+          type: array
+          items:
+            type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        displayColor:
+          type: integer
+        isBot:
+          type: boolean
+        authenticated:
+          type: boolean
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    Follower:
+      type: object
+      tags: ['Objects']
+      properties:
+        link:
+          type: string
+          description: The IRI of the remote actor.
+        name:
+          type: string
+          description: The display name of the follower.
+        username:
+          type: string
+          description: The account username of the remote actor.
+        image:
+          type: string
+          description: The avatar image of the follower.
+        timestamp:
+          type: string
+          description: When this follow request was created.
+        disabledAt:
+          type: string
+          description: When this follower was rejected or disabled.
+    Followers:
+      type: array
+      tags: ['Objects']
+      items:
+        $ref: '#/components/schemas/Follower'
+    PaginatedFollowers:
+      type: object
+      tags: ['Objects']
+      properties:
+        total:
+          type: integer
+        results:
+          $ref: '#/components/schemas/Followers'
+    Event:
+      type: object
+      tags: ['Objects']
+      properties:
+        timestamp:
+          type: string
+        type:
+          type: string
+        id:
+          type: string
+    UserEvent:
+      type: object
+      tags: ['Objects']
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        hiddenAt:
+          type: string
+        clientId:
+          type: integer
+    MessageEvent:
+      type: object
+      tags: ['Objects']
+      properties:
+        body:
+          type: string
+    ChatMessages:
+      type: array
+      tags: ['Objects']
+      items:
+        anyOf:
+          - $ref: '#/components/schemas/UserMessage'
+          - $ref: '#/components/schemas/SystemMessage'
+          - $ref: '#/components/schemas/ActionMessage'
+          - $ref: '#/components/schemas/FederatedAction'
+    UserMessage:
+      type: object
+      tags: ['Objects']
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - $ref: '#/components/schemas/UserEvent'
+        - $ref: '#/components/schemas/MessageEvent'
+    SystemMessage:
+      type: object
+      tags: ['Objects']
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - $ref: '#/components/schemas/MessageEvent'
+    SystemActionEvent:
+      type: object
+      tags: ['Objects']
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - $ref: '#/components/schemas/MessageEvent'
+    ActionMessage:
+      type: object
+      tags: ['Objects']
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - $ref: '#/components/schemas/MessageEvent'
+    FederatedAction:
+      type: object
+      tags: ['Objects']
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - $ref: '#/components/schemas/MessageEvent'
+        - type: object
+          properties:
+            image:
+              type: string
+            link:
+              type: string
+            title:
+              type: string
+    WebConfig:
+      type: object
+      tags: ['Objects']
+      properties:
+        appearanceVariables:
+          type: object
+          additionalProperties:
+            type: string
+        name:
+          type: string
+        customStyles:
+          type: string
+        streamTitle:
+          type: string
+        offlineMessage:
+          type: string
+        logo:
+          type: string
+        version:
+          type: string
+        socketHostOverride:
+          type: string
+        extraPageContent:
+          type: string
+        summary:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        socialHandles:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialHandle'
+        externalActions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalAction'
+        notifications:
+          $ref: '#/components/schemas/NotificationConfig'
+        federation:
+          $ref: '#/components/schemas/FederationConfig'
+        maxSocketPayloadSize:
+          type: integer
+        hideViewerCount:
+          type: boolean
+        chatDisabled:
+          type: boolean
+        nsfw:
+          type: boolean
+        authentication:
+          $ref: '#/components/schemas/AuthenticationConfig'
+    SocialHandle:
+      type: object
+      tags: ['Objects']
+      properties:
+        platform:
+          type: string
+        url:
+          type: string
+        icon:
+          type: string
+    ExternalAction:
+      type: object
+      tags: ['Objects']
+      properties:
+        url:
+          type: string
+        html:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+        openExternally:
+          type: boolean
+    NotificationConfig:
+      type: object
+      tags: ['Objects']
+      properties:
+        browser:
+          $ref: '#/components/schemas/BrowserConfig'
+    BrowserConfig:
+      type: object
+      tags: ['Objects']
+      properties:
+        publicKey:
+          type: string
+        enabled:
+          type: boolean
+    FederationConfig:
+      type: object
+      tags: ['Objects']
+      properties:
+        account:
+          type: string
+        followerCount:
+          type: integer
+        enabled:
+          type: boolean
+    AuthenticationConfig:
+      type: object
+      tags: ['Objects']
+      properties:
+        indieAuthEnabled:
+          type: boolean
+    YPDetails:
+      type: object
+      tags: ['Objects']
+      properties:
+        lastConnectTime:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        streamTitle:
+          type: string
+        logo:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        social:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialHandle'
+        viewerCount:
+          type: integer
+        overallMaxViewerCount:
+          type: integer
+        sessionMaxViewerCount:
+          type: integer
+        nsfw:
+          type: boolean
+        online:
+          type: boolean
+    VideoVariant:
+      type: object
+      tags: ['Objects', 'Video']
+      properties:
+        index:
+          type: integer
+        name:
+          type: string
+    PlaybackMetrics:
+      type: object
+      tags: ['Objects', 'Video']
+      properties:
+        bandwidth:
+          type: number
+          format: double
+        latency:
+          type: number
+          format: double
+        errors:
+          type: number
+          format: double
+        downloadDuration:
+          type: number
+          format: double
+        qualityVariantChanges:
+          type: number
+          format: double
+    Broadcaster:
+      type: object
+      tags: ['Objects', 'Video']
+      properties:
+        time:
+          type: string
+          format: date-time
+        remoteAddr:
+          type: string
+        streamDetails:
+          $ref: '#/components/schemas/InboundStreamDetails'
+    InboundStreamDetails:
+      type: object
+      tags: ['Objects', 'Video']
+      properties:
+        videoCodec:
+          type: string
+        audioCodec:
+          type: string
+        encoder:
+          type: string
+        width:
+          type: integer
+        height:
+          type: integer
+        videoBitrate:
+          type: integer
+        audioBitrate:
+          type: integer
+        framerate:
+          type: number
+          format: float
+    CurrentBroadcast:
+      type: object
+      tags: ['Objects', 'Video']
+      properties:
+        outputSettings:
+          type: array
+          items:
+            $ref: '#/components/schemas/StreamOutputVariant'
+        latencyLevel:
+          $ref: '#/components/schemas/LatencyLevel'
+    StreamOutputVariant:
+      type: object
+      tags: ['Objects', 'Video']
+      properties:
+        name:
+          type: string
+        videoPassthrough:
+          type: boolean
+        audioPassthrough:
+          type: boolean
+        videoBitrate:
+          type: integer
+        audioBitrate:
+          type: integer
+        scaledWidth:
+          type: integer
+        scaledHeight:
+          type: integer
+        framerate:
+          type: integer
+        cpuUsageLevel:
+          type: integer
+    LatencyLevel:
+      type: object
+      properties:
+        level:
+          type: integer
+    StreamHealthOverview:
+      type: object
+      tags: ['Objects', 'Video']
+      properties:
+        message:
+          type: string
+        healthPercentage:
+          type: integer
+        representation:
+          type: integer
+        healthy:
+          type: boolean
+    BrowserNotificationConfiguration:
+      type: object
+      tags: ['Objects', 'Notifications']
+      properties:
+        goLiveMessage:
+          type: string
+        enabled:
+          type: boolean
+    DiscordNotificationConfiguration:
+      type: object
+      tags: ['Objects', 'Notifications']
+      properties:
+        webhook:
+          type: string
+        goLiveMessage:
+          type: string
+        enabled:
+          type: boolean
+    S3Info:
+      type: object
+      tags: ['Objects']
+      properties:
+        endpoint:
+          type: string
+        accessKey:
+          type: string
+        secret:
+          type: string
+        bucket:
+          type: string
+        region:
+          type: string
+        acl:
+          type: string
+        pathPrefix:
+          type: string
+        enabled:
+          type: boolean
+        forcePathStyle:
+          type: boolean
+    StreamKey:
+      type: object
+      tags: ['Objects']
+      properties:
+        key:
+          type: string
+        comment:
+          type: string
+    TimestampedValue:
+      type: object
+      tags: ['Objects']
+      properties:
+        time:
+          type: string
+          format: date-time
+        value:
+          type: number
+          format: double
+    Viewer:
+      type: object
+      tags: ['Objects', 'Video']
+      properties:
+        firstSeen:
+          type: string
+          format: date-time
+        geo:
+          $ref: '#/components/schemas/GeoDetails'
+        userAgent:
+          type: string
+        ipAddress:
+          type: string
+        clientID:
+          type: string
+    GeoDetails:
+      type: object
+      tags: ['Objects']
+      properties:
+        countryCode:
+          type: string
+        regionName:
+          type: string
+        timeZone:
+          type: string
+    CollectedMetrics:
+      tags: ['Objects']
+      type: object
+      properties:
+        disk:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimestampedValue'
+        memory:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimestampedValue'
+        cpu:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimestampedValue'
+    ChatClient:
+      type: object
+      tags: ['Objects', 'Chat']
+      properties:
+        connectedAt:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/User'
+        geo:
+          $ref: '#/components/schemas/GeoDetails'
+        userAgent:
+          type: string
+        messageCount:
+          type: integer
+    ChatClients:
+      type: array
+      tags: ['Objects', 'Chat']
+      items:
+        $ref: '#/components/schemas/ChatClient'
+    IPAddress:
+      type: object
+      tags: ['Objects', 'Chat']
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        ipAddress:
+          type: string
+        notes:
+          type: string
+    Webhook:
+      type: object
+      tags: ['Objects', 'Notifications']
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        lastUsed:
+          type: string
+          format: date-time
+        url:
+          type: string
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookEventType'
+        id:
+          type: integer
+    WebhookEventType:
+      type: string
+      tags: ['Objects', 'Notifications']
+      enum:
+        - CHAT
+        - USER_JOINED
+        - USER_PARTED
+        - NAME_CHANGE
+        - VISIBILITY-UPDATE
+        - PING
+        - PONG
+        - STREAM_STARTED
+        - STREAM_STOPPED
+        - STREAM_TITLE_UPDATED
+        - SYSTEM
+        - CHAT_ACTION
+    ExternalAPIUser:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        lastUsedAt:
+          type: string
+          format: date-time
+        id:
+          type: string
+        accessToken:
+          type: string
+        displayName:
+          type: string
+        type:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        displayColor:
+          type: integer
+        isBot:
+          type: boolean
+    MessageVisibilityUpdate:
+      type: object
+      tags: ['Objects', 'Chat']
+      properties:
+        idArray:
+          type: array
+          items:
+            type: string
+        visible:
+          type: boolean
+    ModerationUserDetails:
+      type: object
+      tags: ['Objects', 'Chat']
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        connectedClients:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModerationConnectedClient'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserMessage'
+    ModerationConnectedClient:
+      type: object
+      tags: ['Objects', 'Chat']
+      properties:
+        connectedAt:
+          type: string
+          format: date-time
+        userAgent:
+          type: string
+        geo:
+          type: string
+        id:
+          type: integer
+          format: int64
+        messageCount:
+          type: integer
+    FederatedActivity:
+      type: object
+      tags: ['Objects', 'Social']
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        iri:
+          type: string
+        actorIRI:
+          type: string
+        type:
+          type: string
+    PaginatedFederatedActivity:
+      type: object
+      tags: ['Objects', 'Social']
+      properties:
+        total:
+          type: integer
+        results:
+          $ref: '#/components/schemas/FederatedActivity'
+    AdminStatus:
+      type: object
+      tags: ['Objects']
+      properties:
+        broadcaster:
+          $ref: '#/components/schemas/Broadcaster'
+        currentBroadcast:
+          $ref: '#/components/schemas/CurrentBroadcast'
+        health:
+          $ref: '#/components/schemas/StreamHealthOverview'
+        streamTitle:
+          type: string
+        versionNumber:
+          type: string
+        viewerCount:
+          type: integer
+        overallPeakViewerCount:
+          type: integer
+        sessionPeakViewerCount:
+          type: integer
+        online:
+          type: boolean
+    AdminServerConfig:
+      type: object
+      tags: ['Objects']
+      properties:
+        instanceDetails:
+          $ref: '#/components/schemas/AdminWebConfig'
+        notifications:
+          $ref: '#/components/schemas/AdminNotificationsConfig'
+        yp:
+          $ref: '#/components/schemas/AdminYPInfo'
+        ffmpegPath:
+          type: string
+        adminPassword:
+          type: string
+        socketHostOverride:
+          type: string
+        webServerIP:
+          type: string
+        videoCodec:
+          type: string
+        videoServingEndpoint:
+          type: string
+        s3:
+          $ref: '#/components/schemas/S3Info'
+        federation:
+          $ref: '#/components/schemas/AdminFederationConfig'
+        supportedCodecs:
+          type: array
+          items:
+            type: string
+        externalActions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalAction'
+        forbiddenUsernames:
+          type: array
+          items:
+            type: string
+        suggestedUsernames:
+          type: array
+          items:
+            type: string
+        streamKeys:
+          type: array
+          items:
+            $ref: '#/components/schemas/StreamKey'
+        videoSettings:
+          $ref: '#/components/schemas/AdminVideoSettings'
+        rtmpServerPort:
+          type: integer
+        webServerPort:
+          type: integer
+        chatDisabled:
+          type: boolean
+        chatJoinMessagesEnabled:
+          type: boolean
+        chatEstablishedUserMode:
+          type: boolean
+        disableSearchIndexing:
+          type: boolean
+        streamKeyOverridden:
+          type: boolean
+        hideViewerCount:
+          type: boolean
+    AdminWebConfig:
+      type: object
+      tags: ['Objects']
+      properties:
+        appearanceVariables:
+          type: object
+          additionalProperties:
+            type: string
+        version:
+          type: string
+        welcomeMessage:
+          type: string
+        offlineMessage:
+          type: string
+        logo:
+          type: string
+        name:
+          type: string
+        extraPageContent:
+          type: string
+        streamTitle:
+          type: string
+        customStyles:
+          type: string
+        customJavascript:
+          type: string
+        summary:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        socialHandles:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialHandle'
+        nsfw:
+          type: boolean
+    AdminNotificationsConfig:
+      type: object
+      tags: ['Objects', 'Notifications']
+      properties:
+        browser:
+          $ref: '#/components/schemas/BrowserNotificationConfiguration'
+        discord:
+          $ref: '#/components/schemas/DiscordNotificationConfiguration'
+    AdminYPInfo:
+      type: object
+      tags: ['Objects']
+      properties:
+        instanceUrl:
+          type: string
+        enabled:
+          type: boolean
+    AdminFederationConfig:
+      tags: ['Objects', 'Social']
+      type: object
+      properties:
+        username:
+          type: string
+        goLiveMessage:
+          type: string
+        blockedDomains:
+          type: array
+          items:
+            type: string
+        enabled:
+          type: boolean
+        isPrivate:
+          type: boolean
+        showEngagement:
+          type: boolean
+    AdminVideoSettings:
+      type: object
+      tags: ['Objects', 'Video']
+      properties:
+        videoQualityVariants:
+          type: array
+          items:
+            $ref: '#/components/schemas/StreamOutputVariant'
+        latencyLevel:
+          type: integer
+    AdminLog:
+      type: object
+      tags: ['Objects']
+      properties:
+        time:
+          type: string
+          format: date-time
+        message:
+          type: string
+        level:
+          type: string
+    AdminConfigValue:
+      type: object
+      tags: ['Objects']
+      properties:
+        value:
+          oneOf:
+            - type: string
+            - type: boolean
+            - type: array
+              items:
+                type: string
+            - type: number
+    IndieAuthResponse:
+      type: object
+      tags: ['Objects', 'Auth']
+      properties:
+        me:
+          type: string
+        profile:
+          $ref: '#/components/schemas/IndieAuthProfile'
+        error:
+          type: string
+        errorDescription:
+          type: string
+    IndieAuthProfile:
+      type: object
+      tags: ['Objects', 'Auth']
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        photo:
+          type: string
+    IndieAuthServerProfileResponse:
+      type: object
+      tags: ['Objects', 'Auth']
+      properties:
+        me:
+          type: string
+        profile:
+          $ref: '#/components/schemas/IndieAuthServerProfile'
+        error:
+          type: string
+        errorDescription:
+          type: string
+    IndieAuthServerProfile:
+      type: object
+      tags: ['Objects', 'Auth']
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        photo:
+          type: string
+
+  headers:
+    'Access-Control-Allow-Origin':
+      schema:
+        type: string
+    'Access-Control-Allow-Credentials':
+      schema:
+        type: string
+        format: boolean
+    'Access-Control-Allow-Headers':
+      schema:
+        type: string
+    'WWW-Authenticate':
+      schema:
+        type: string
+    'X-Content-Type-Options':
+      schema:
+        type: string
+
+  requestBodies:
+    AdminConfigValue:
+      description: A single value that is used in the request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AdminConfigValue'
+    IndieAuthEndpointForm:
+      description: Form submission from IndieAuth
+      content:
+        application/x-www-form-urlencoded:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              redirect_uri:
+                type: string
+              client_id:
+                type: string
+              codeVerifier:
+                type: string
+
+  responses:
+    Default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseAPIResponse'
+    '204':
+      description: No Content
+    '204Options':
+      description: No Content
+      headers:
+        'Access-Control-Allow-Origin':
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseAPIResponse'
+    '401':
+      description: Unauthorized
+      content:
+        text/plain:
+          schema:
+            type: string
+    '401BasicAuth':
+      description: Basic auth failure
+      headers:
+        'Access-Control-Allow-Origin':
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        'Access-Control-Allow-Credentials':
+          $ref: '#/components/headers/Access-Control-Allow-Credentials'
+        'Access-Control-Allow-Headers':
+          $ref: '#/components/headers/Access-Control-Allow-Headers'
+        'WWW-Authenticate':
+          $ref: '#/components/headers/WWW-Authenticate'
+        'X-Content-Type-Options':
+          $ref: '#/components/headers/X-Content-Type-Options'
+      content:
+        text/plain:
+          schema:
+            type: string
+    '403':
+      description: Forbidden
+    '404':
+      description: Not found
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '501':
+      description: Not Implemented
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  parameters:
+    Offset:
+      in: query
+      name: offset
+      schema:
+        type: integer
+        description: The number of items to skip before starting to collect the result set
+    Limit:
+      in: query
+      name: limit
+      schema:
+        type: integer
+        description: The numbers of items to return
+    AccessToken:
+      in: query
+      name: accessToken
+      schema:
+        type: string
+      required: true
+    IndieAuthClientId:
+      in: query
+      name: client_id
+      schema:
+        type: string
+      required: true
+    IndieAuthRedirectURI:
+      in: query
+      name: redirect_uri
+      schema:
+        type: string
+      required: true
+    IndieAuthCodeChallenge:
+      in: query
+      name: code_challenge
+      schema:
+        type: string
+      required: true
+    IndieAuthState:
+      in: query
+      name: state
+      schema:
+        type: string
+      required: true
+    IndieAuthCode:
+      in: query
+      name: code
+      schema:
+        type: string
+      required: true
+    IndieAuthMe:
+      in: query
+      name: me
+      schema:
+        type: string
+      required: true
+
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+tags:
+  - name: External
+    description: |-
+      These APIs are specifically exposed for building third party applications or tooling. They use auth tokens to authenticate and are designed to be stable and reliable.
+  - name: Internal
+    description: |-
+      These APIs are used internally for the operation of the application. They should not be used by third party clients or tooling, as they may require sharing your admin password, and additionally may change at any time.
+  - name: Auth
+    description: Authentication API
+  - name: Chat
+    description: APIs related to operating the chat system.
+  - name: Objects
+    description: Object definitions
+  - name: Video
+    description: Video API
+  - name: Notifications
+    description: Notification API
+  - name: Social
+    description: Social API

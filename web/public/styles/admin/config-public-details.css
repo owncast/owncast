@@ -1,15 +1,19 @@
 .config-public-details-page {
   width: 100%;
 }
+
 .config-public-details-page .top-container {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
 }
-@media (max-width: 1200px) {
+
+/* add and your next to each other for < 1200 */
+@media (max-width: 1400px) {
   .config-public-details-page .top-container {
     flex-wrap: wrap;
   }
+
   .config-public-details-page .top-container .social-items-container {
     display: flex;
     flex-direction: row;
@@ -19,55 +23,70 @@
     width: 100%;
     max-width: none;
   }
+
   .config-public-details-page .top-container .social-items-container .tags-module {
     margin-right: 1em;
   }
+
   .config-public-details-page .top-container .social-items-container .form-module {
     max-width: none;
   }
 }
-@media (max-width: 1200px) and (max-width: 980px) {
+
+/* everything comes into a single column*/
+@media (max-width: 1400px) {
   .config-public-details-page .top-container .social-items-container {
     flex-direction: column;
   }
+
   .config-public-details-page .top-container .social-items-container .form-module {
     width: 100%;
   }
+
   .config-public-details-page .top-container .social-items-container .tags-module {
     margin-bottom: 0;
   }
 }
+
 .config-public-details-page .instance-details-container {
   width: 100%;
   border-right: 1px solid #cbd0d8;
 }
+
 .config-public-details-page .social-items-container {
   padding: 0 0.75em;
   margin-left: 1em;
   max-width: 450px;
 }
+
 .config-public-details-page .social-items-container .social-handles-container {
   min-width: 350px;
 }
+
 .config-public-details-page .instance-details-container,
 .config-public-details-page .page-content-module {
   margin: 1em 0;
 }
+
 .config-public-details-page .field-summary textarea {
   height: 6em !important;
 }
+
 .config-public-details-page .edit-custom-css #field-customStyles {
   height: 15em;
   width: 100%;
   font-family: monospace;
   resize: auto;
 }
+
 .other-field-container {
   margin: 0.5em 0;
 }
+
 .logo-upload-container .input-group {
   align-items: center;
 }
+
 .logo-upload-container img.logo-preview {
   min-height: 120px;
   min-width: 120px;
@@ -76,4 +95,10 @@
   margin-right: 1em;
   display: inline-block;
   border: 1px solid var(--theme-color-palette-5);
+}
+
+@media (min-width: 1400px) {
+  .instance-details-container {
+    width: 65% !important;
+  }
 }

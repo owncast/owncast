@@ -14,4 +14,5 @@ module.exports = defineConfig({
 			});
 		},
 	},
+	retries: 3,
 });

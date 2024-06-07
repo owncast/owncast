@@ -25,13 +25,13 @@ jobs:
         with:
           concurrent_skipping: 'same_content_newer'
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: '1.22'
           cache: true
 
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules-hls-tests
         with:
@@ -43,14 +43,14 @@ jobs:
             ${{ runner.os }}-
 
       - name: Local stroage
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10
           max_attempts: 3
           command: cd test/automated/hls && ./run.sh
 
       - name: S3 storage
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10
           max_attempts: 3

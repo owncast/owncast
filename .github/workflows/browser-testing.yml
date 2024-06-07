@@ -24,10 +24,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 18.9.0
+          node-version: latest
 
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules-browser-tests
         with:
@@ -38,16 +38,16 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: '1.22'
           cache: true
 
       - name: Install Google Chrome
         run: sudo apt-get update && sudo apt-get install google-chrome-stable
 
       - name: Run Browser tests
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 20
           max_attempts: 3
