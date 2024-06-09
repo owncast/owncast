@@ -10,6 +10,7 @@ build-all:
 
 package-all:
   BUILD --platform=linux/amd64 --platform=linux/386 --platform=linux/arm64 --platform=linux/arm/v7 --platform=darwin/amd64 --platform=darwin/arm64 +package
+  BUILD --platform=linux/amd64 --platform=linux/386 --platform=linux/arm64 --platform=linux/arm/v7 +flatpak
 
 docker-all:
   BUILD --platform=linux/amd64 --platform=linux/386 --platform=linux/arm64 --platform=linux/arm/v7 +docker
@@ -170,10 +171,10 @@ flatpak:
   ENV FLATPAK_NAME owncast-$version-$NAME.flatpak
   COPY (+build/owncast --platform $TARGETPLATFORM)  /build/flatpak/owncast
   COPY . /build
-  RUN flatpak-builder --privileged --force-clean --repo=owncast-repo build-dir online.owncast.Owncast.json # build flatpak package from JSON file
+  RUN --privileged flatpak-builder --force-clean --repo=owncast-repo build-dir online.owncast.Owncast.json # build flatpak package from JSON file
   RUN flatpak build-bundle owncast-repo /build/flatpak/owncast.flatpak online.owncast.Owncast # create a single-file bundle of flatpak package
 
-  SAVE ARTIFACT --keep-ts /build/dist/owncast.flatpak owncast.flatpak AS LOCAL dist/$FLATPAK_NAME
+  SAVE ARTIFACT --keep-ts /build/flatpak/owncast.flatpak owncast.flatpak AS LOCAL dist/$FLATPAK_NAME
 
 dockerfile:
   FROM DOCKERFILE -f Dockerfile .
