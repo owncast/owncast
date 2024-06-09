@@ -173,7 +173,7 @@ flatpak:
   RUN flatpak-builder --privileged --force-clean --repo=owncast-repo build-dir online.owncast.Owncast.json # build flatpak package from JSON file
   RUN flatpak build-bundle owncast-repo /build/flatpak/owncast.flatpak online.owncast.Owncast # create a single-file bundle of flatpak package
 
-  SAVE ARTIFACT --keep-ts /build/dist/owncast.flatpak owncast.flatpak AS LOCAL flatpak/$FLATPAK_NAME
+  SAVE ARTIFACT --keep-ts /build/dist/owncast.flatpak owncast.flatpak AS LOCAL dist/$FLATPAK_NAME
 
 dockerfile:
   FROM DOCKERFILE -f Dockerfile .
