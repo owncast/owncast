@@ -14,11 +14,16 @@ export const AntdTheme: FC<AntdThemeProps> = ({ children }) => {
   const updateToken = () => {
     setCustomToken({
       colorPrimary: readCSSVar('--primary-color'),
+      linkColor: readCSSVar('--link-color'),
     });
-    console.log(customToken);
   };
 
-  // removes the initial cache, see pages/_document.tsx
+  const updateTokenOnMutation = (_, observer: MutationObserver) => {
+    updateToken();
+    observer.disconnect();
+  };
+
+  // removes the initial cache style, see pages/_document.tsx
   const purgeInitCache = () => {
     const cache = document.getElementById('antd-init-cache');
     if (cache !== null) {
@@ -26,9 +31,21 @@ export const AntdTheme: FC<AntdThemeProps> = ({ children }) => {
     }
   };
 
+  const observeCustomThemeChanges = () => {
+    const customStyles = document.getElementById('custom-color-styles');
+    console.log(customStyles.textContent);
+    const mutObserver = new MutationObserver(updateTokenOnMutation);
+    // check if color styles have been updated by ./Theme
+    mutObserver.observe(customStyles, {
+      characterData: true,
+      subtree: true,
+    });
+  };
+
   useEffect(() => {
     updateToken();
     purgeInitCache();
+    observeCustomThemeChanges();
   }, []);
 
   return (
