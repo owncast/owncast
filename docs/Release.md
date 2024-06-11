@@ -11,12 +11,12 @@ The original Docker Hub image was [gabekangas/owncast](https://hub.docker.com/re
 
 ## Build release files
 
-1. Create the release archive files for all the different architectures. Specify the human readable version number in the `version` flag such as `v0.1.0`, `nightly`, `develop`, etc. It will be used to identify this binary when running Owncast. You'll find the archives for this release in the `dist` directory when it's complete.
+1. Create the release archive files for all the different architectures. Specify the human readable version number in the `version` flag such as `v0.1.0`, `nightly`, `develop`, etc. It will be used to identify this binary when running Owncast. You'll find the archives for this release in the `dist` directory when it's complete. The `--allow-privileged` flag is required to support [`flatpak`](https://www.flatpak.org/) building.
 
 **Run**:
 
 ```bash
-earthly +package-all --version="0.1.0"
+earthly --allow-privileged +package-all --version="0.1.0"
 ```
 
 2. Create a release on GitHub with release notes and Changelog for the version.
