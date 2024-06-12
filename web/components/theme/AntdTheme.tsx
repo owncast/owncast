@@ -41,6 +41,7 @@ export const AntdTheme: FC<AntdThemeProps> = ({ children }) => {
       // primary-$n needs mapping
       colorBgBase: readCSSVar('--component-background'),
       // body-background needs mapping
+      fontFamily: readCSSVar('--theme-text-body-font-family'),
     });
   };
 
