@@ -106,10 +106,6 @@ export const parameters = {
   },
 };
 
-const AntdConfigWrapper = (Story) => (
-  <AntdTheme>{Story()}</AntdTheme>
-);
+const AntdConfigWrapper = Story => <AntdTheme>{Story()}</AntdTheme>;
 
-export const decorators = [
-  AntdConfigWrapper,
-]
+export const decorators = [AntdConfigWrapper];
