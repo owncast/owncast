@@ -151,31 +151,31 @@ DROPDOWN
   }
 }
 
-.ant-tabs-tab {
-  padding: 0.7rem;
-  background-color: transparent;
-  border-radius: var(--theme-rounded-corners) var(--theme-rounded-corners) 0 0;
-  font-weight: 600;
+.ant-tabs {
+  height: 100%;
 
-  & + .ant-tabs-tab {
-    margin-left: var(--module-spacing);
-  }
+  .ant-tabs-tab {
+    padding: 0.7rem;
+    background-color: transparent;
+    border-radius: var(--theme-rounded-corners) var(--theme-rounded-corners) 0 0;
+    font-weight: 600;
 
-  &.ant-tabs-tab-active {
-    background-color: var(--theme-color-palette-4);
+    & + .ant-tabs-tab {
+      margin-left: var(--module-spacing);
+    }
 
-    .ant-tabs-tab-btn {
-      color: var(--theme-color-action);
+    &.ant-tabs-tab-active {
+      background-color: var(--theme-color-palette-4);
 
-      &:hover {
-        color: var(--theme-color-action-hover);
+      .ant-tabs-tab-btn {
+        color: var(--theme-color-action);
+
+        &:hover {
+          color: var(--theme-color-action-hover);
+        }
       }
     }
   }
-}
-
-.ant-tabs {
-  height: 100%;
 
   .ant-tabs-content-holder {
     height: 100%;
@@ -188,22 +188,24 @@ DROPDOWN
       height: 100%;
     }
   }
+  
+  .ant-tabs-ink-bar {
+    background-color: var(--theme-color-action);
+  }
+
+  .ant-tabs-nav::before {
+    border-bottom-color: var(--theme-color-components-menu-item-focus-bg) !important;
+  }
 }
 
-.ant-tabs-ink-bar {
-  background-color: var(--theme-color-action);
-}
+.ant-modal {
+  .ant-modal-close:hover {
+    color: var(--theme-color-components-modal-header-text);
+  }
 
-.ant-tabs-nav::before {
-  border-bottom-color: var(--theme-color-components-menu-item-focus-bg) !important;
-}
-
-.ant-modal-close:hover {
-  color: var(--theme-color-components-modal-header-text);
-}
-
-.ant-modal-title {
-  color: var(--theme-color-components-modal-header-text);
+  .ant-modal-title {
+    color: var(--theme-color-components-modal-header-text);
+  }
 }
 
 .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
@@ -242,6 +244,10 @@ th {
 
 .ant-menu-light .ant-menu-item:hover {
   color: var(--theme-color-palette-12);
+}
+
+.ant-menu-light.ant-menu-inline .ant-menu-sub.ant-menu-inline {
+  background: var(--theme-color-background-main);
 }
 
 .line-chart-container {
