@@ -1,6 +1,6 @@
 // TODO generate this file using style-definitions somehow
 
-export const AntdDefaultTokens = {
+const AntdDefaultTokens = {
   colorLink: '#6544e9',
   colorLinkHover: '#7a5cf3',
   Modal: {
@@ -23,3 +23,5 @@ export const AntdDefaultTokens = {
   colorBgBase: '#e2e8f0',
   fontFamily: '"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"',
 };
+
+export default AntdDefaultTokens;
