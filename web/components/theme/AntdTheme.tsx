@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { ConfigProvider } from 'antd';
-import { AntdDefaultTokens } from '../../styles/antd-default';
+import AntdDefaultTokens from '../../styles/antd-default';
 
 export type AntdThemeProps = {
   children: ReactNode;
