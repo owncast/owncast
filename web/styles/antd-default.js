@@ -6,11 +6,11 @@ const AntdDefaultTokens = {
   Modal: {
     headerBg: '#2d3748',
     contentBg: '#e2e8f0',
-    colorIcon: '#e2e8f0'
+    colorIcon: '#e2e8f0',
   },
   Alert: {
     colorErrorBg: '#fff',
-    colorErrorBorder: '#ff4b39'
+    colorErrorBorder: '#ff4b39',
   },
   colorBgElevated: '#e2e8f0',
   Tag: {
@@ -21,7 +21,8 @@ const AntdDefaultTokens = {
   colorPrimaryHover: '#2386e2',
   colorPrimaryActive: '#7a5cf3',
   colorBgBase: '#e2e8f0',
-  fontFamily: '"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"',
+  fontFamily:
+    '"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"',
 };
 
 export default AntdDefaultTokens;
