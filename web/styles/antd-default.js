@@ -21,4 +21,5 @@ export const AntdDefaultTokens = {
   colorPrimaryHover: '#2386e2',
   colorPrimaryActive: '#7a5cf3',
   colorBgBase: '#e2e8f0',
+  fontFamily: '"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"',
 };
