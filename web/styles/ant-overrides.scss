@@ -199,6 +199,22 @@ DROPDOWN
 }
 
 .ant-modal {
+  .ant-modal-content {
+    padding: 0px;
+  }
+
+  .ant-modal-header {
+    padding: 16px 24px;
+  }
+
+  .ant-modal-body {
+    padding: 24px;
+  }
+
+  .ant-modal-footer {
+    padding: 10px 16px;
+  }
+  
   .ant-modal-close:hover {
     color: var(--theme-color-components-modal-header-text);
   }
