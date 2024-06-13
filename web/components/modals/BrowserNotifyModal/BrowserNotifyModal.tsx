@@ -100,6 +100,16 @@ const NotificationsEnabled = () => (
   </div>
 );
 
+const NotificationsDenied = () => (
+  <div>
+    <Title level={2}>Notifications are blocked on your device</Title>
+    To enable push notifications from {window.location.hostname.toString()} access your browser
+    permissions for this site and turn on notifications. Then reload this page to apply your updated
+    settings on this site.
+    <a href="https://owncast.online/docs/notifications"> Learn more.</a>
+  </div>
+);
+
 export const BrowserNotifyModal = () => {
   const [error, setError] = useState<string>(null);
   const accessToken = useRecoilValue(accessTokenAtom);
@@ -107,7 +117,9 @@ export const BrowserNotifyModal = () => {
   const [browserPushPermissionsPending, setBrowserPushPermissionsPending] =
     useState<boolean>(false);
   const notificationsPermitted =
-    arePushNotificationSupported() && Notification.permission !== 'default';
+    arePushNotificationSupported() && Notification.permission === 'granted';
+  const notificationsDenied =
+    arePushNotificationSupported() && Notification.permission === 'denied';
 
   const { notifications } = config;
   const { browser } = notifications;
@@ -119,6 +131,10 @@ export const BrowserNotifyModal = () => {
   // If notification permissions are granted, show user info how to disable them
   if (notificationsPermitted) {
     return <NotificationsEnabled />;
+  }
+
+  if (notificationsDenied) {
+    return <NotificationsDenied />;
   }
 
   if (isMobileSafariIos() && !isMobileSafariHomeScreenApp()) {
