@@ -1,6 +1,12 @@
 // TODO generate this file using style-definitions somehow
 
-const AntdDefaultTokens = {
+const lodash = require('lodash');
+
+const AntdStaticTokens = {
+  fontFamily: 'inherit',
+}
+
+const AntdDefaultCustomTokens = {
   colorLink: '#6544e9',
   colorLinkHover: '#7a5cf3',
   Modal: {
@@ -21,8 +27,10 @@ const AntdDefaultTokens = {
   colorPrimaryHover: '#2386e2',
   colorPrimaryActive: '#7a5cf3',
   colorBgBase: '#e2e8f0',
-  fontFamily:
-    '"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"',
 };
 
-export default AntdDefaultTokens;
+const AntdCustomTokens = (customTokens = AntdDefaultCustomTokens) => {
+  return lodash.merge({}, AntdStaticTokens, customTokens);
+};
+
+export default AntdCustomTokens;
