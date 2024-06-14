@@ -17,10 +17,13 @@
 		"crypto-random": "^2.0.1"
 	},
 	"devDependencies": {
-		"jest": "^26.6.3"
+		"jest": "^29.7.0",
+		"jest-jasmine2": "^29.7.0",
+		"ws": "^7.5.9"
 	},
 	"jest": {
 		"verbose": true,
-		"maxWorkers": 1
+		"maxWorkers": 1,
+		"testRunner": "jest-jasmine2"
 	}
 }
