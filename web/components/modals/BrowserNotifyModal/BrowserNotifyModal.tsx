@@ -182,8 +182,12 @@ export const BrowserNotifyModal = () => {
       <Spin spinning={browserPushPermissionsPending}>
         <Row className={styles.description}>
           Get notified right in the browser each time this stream goes live.
-          <a href="https://owncast.online/docs/notifications/#browser-notifications">Learn more</a>
-          &nbsp; about Owncast browser notifications.
+          <span>
+            <a href="https://owncast.online/docs/notifications/#browser-notifications">
+              Learn more
+            </a>
+            &nbsp; about Owncast browser notifications.
+          </span>
         </Row>
         <Row>{error}</Row>
         <PermissionPopupPreview start={() => startBrowserPushRegistration()} />
