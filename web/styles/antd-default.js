@@ -4,7 +4,7 @@ const lodash = require('lodash');
 
 const AntdStaticTokens = {
   fontFamily: 'inherit',
-}
+};
 
 const AntdDefaultCustomTokens = {
   colorLink: '#6544e9',
