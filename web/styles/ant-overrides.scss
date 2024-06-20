@@ -246,6 +246,10 @@ th {
 /* ------------------------- //
  * SIDER MENUITEM
 // ------------------------- */
+.ant-menu-light .ant-menu-submenu-title {
+  color: inherit;
+}
+
 .ant-menu-light .ant-menu-submenu-title:active {
   background: var(--theme-color-palette-12);
 }
@@ -255,6 +259,14 @@ th {
 }
 
 .ant-menu-submenu:hover > .ant-menu-submenu-title > .ant-menu-submenu-arrow {
+  color: var(--theme-color-palette-12);
+}
+
+.ant-menu-light .ant-menu-item:not(.ant-menu-item-selected):not(.ant-menu-submenu-selected) {
+  color: inherit;
+}
+
+.ant-menu-light .ant-menu-item:not(.ant-menu-item-selected):not(.ant-menu-submenu-selected):hover {
   color: var(--theme-color-palette-12);
 }
 
