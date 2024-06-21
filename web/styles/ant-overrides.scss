@@ -7,6 +7,12 @@ HEADER
   height: auto;
 }
 
+body {
+  h1.ant-typography, h2.ant-typography, h4.ant-typography, h5.ant-typography, h6.ant-typography {
+    font-family: var(--theme-text-display-font-family);
+  }
+}
+
 /* ------------------------- //
 BUTTONS
 // ------------------------- */
