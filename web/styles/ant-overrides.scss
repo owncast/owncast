@@ -110,29 +110,30 @@ BUTTONS
 DROPDOWN
 // ------------------------- */
 
-.ant-dropdown-menu {
-  border-radius: var(--theme-rounded-corners);
-  background-color: var(--theme-color-components-menu-background);
-}
+.ant-dropdown {
+  .ant-dropdown-menu {
+    border-radius: var(--theme-rounded-corners);
+    background-color: var(--theme-color-components-menu-background);
 
-.ant-dropdown-menu-item {
-  color: var(--theme-color-components-menu-item-text);
+    .ant-dropdown-menu-item {
+      color: var(--theme-color-components-menu-item-text);
 
-  &:hover {
-    background-color: var(--theme-color-components-menu-item-hover-bg);
+      &:hover {
+        background-color: var(--theme-color-components-menu-item-hover-bg);
+      }
+
+      &:focus {
+        background-color: var(--theme-color-components-menu-item-focus-bg);
+      }
+    }
+
+    .ant-dropdown-menu-item,
+    .ant-dropdown-menu-submenu-title {
+      font-size: 0.8rem;
+      padding: 4px 15px;
+    }
   }
-
-  &:focus {
-    background-color: var(--theme-color-components-menu-item-focus-bg);
-  }
 }
-
-.ant-dropdown-menu-item,
-.ant-dropdown-menu-submenu-title {
-  font-size: 0.8rem;
-  padding: 4px 15px;
-}
-
 .ant-input-affix-wrapper {
   background-color: var(--theme-color-components-form-field-background);
 }
