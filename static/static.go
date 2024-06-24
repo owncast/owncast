@@ -71,10 +71,10 @@ func getFileSystemStaticFileOrDefault(path string, defaultData []byte) []byte {
 	fullPath := filepath.Join("static", path)
 	data, err := os.ReadFile(fullPath) //nolint: gosec
 	if err != nil {
-		return defaultData
+		return data
 	}
 
-	return data
+	return defaultData
 }
 
 //go:embed metadata.html.tmpl
