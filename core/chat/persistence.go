@@ -8,8 +8,9 @@ import (
 
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/tables"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -22,7 +23,7 @@ const (
 
 func setupPersistence() {
 	_datastore = data.GetDatastore()
-	data.CreateMessagesTable(_datastore.DB)
+	tables.CreateMessagesTable(_datastore.DB)
 	data.CreateBanIPTable(_datastore.DB)
 
 	chatDataPruner := time.NewTicker(5 * time.Minute)
@@ -104,7 +105,7 @@ func makeUserMessageEventFromRowData(row rowData) events.UserMessageEvent {
 	isBot := (row.userType != nil && *row.userType == "API")
 	scopeSlice := strings.Split(scopes, ",")
 
-	u := user.User{
+	u := models.User{
 		ID:              *row.userID,
 		DisplayName:     displayName,
 		DisplayColor:    displayColor,

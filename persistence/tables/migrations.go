@@ -1,4 +1,4 @@
-package data
+package tables
 
 import (
 	"database/sql"
@@ -12,7 +12,7 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-func migrateDatabaseSchema(db *sql.DB, from, to int) error {
+func MigrateDatabaseSchema(db *sql.DB, from, to int) error {
 	log.Printf("Migrating database from version %d to %d", from, to)
 	dbBackupFile := filepath.Join(config.BackupDirectory, fmt.Sprintf("owncast-v%d.bak", from))
 	utils.Backup(db, dbBackupFile)
@@ -94,7 +94,7 @@ func migrateToSchema6(db *sql.DB) {
 	// Fix chat messages table schema. Since chat is ephemeral we can drop
 	// the table and recreate it.
 	// Drop the old messages table
-	MustExec(`DROP TABLE messages`, db)
+	utils.MustExec(`DROP TABLE messages`, db)
 
 	// Recreate it
 	CreateMessagesTable(db)
@@ -103,7 +103,7 @@ func migrateToSchema6(db *sql.DB) {
 // nolint:cyclop
 func migrateToSchema5(db *sql.DB) {
 	// Create the access tokens table.
-	createAccessTokenTable(db)
+	CreateAccessTokenTable(db)
 
 	// 1. Authenticated bool added to the users table.
 	// 2. Access tokens are now stored in their own table.
