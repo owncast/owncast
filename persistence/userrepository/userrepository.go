@@ -49,10 +49,10 @@ type SqlUserRepository struct {
 }
 
 // NOTE: This is temporary during the transition period.
-var temporaryGlobalInstance *SqlUserRepository
+var temporaryGlobalInstance UserRepository
 
 // Get will return the user repository.
-func Get() *SqlUserRepository {
+func Get() UserRepository {
 	if temporaryGlobalInstance == nil {
 		i := New(data.GetDatastore())
 		temporaryGlobalInstance = i
@@ -61,12 +61,12 @@ func Get() *SqlUserRepository {
 }
 
 // New will create a new instance of the UserRepository.
-func New(datastore *data.Datastore) *SqlUserRepository {
-	r := &SqlUserRepository{
+func New(datastore *data.Datastore) UserRepository {
+	r := SqlUserRepository{
 		datastore: datastore,
 	}
 
-	return r
+	return &r
 }
 
 // CreateAnonymousUser will create a new anonymous user with the provided display name.
