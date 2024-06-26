@@ -79,7 +79,7 @@ func (r *SqlUserRepository) CreateAnonymousUser(displayName string) (*models.Use
 	// If name isn't available then generate a random one.
 	if available, _ := r.IsDisplayNameAvailable(displayName); !available {
 		rand, _ := utils.GenerateRandomString(3)
-		displayName = displayName + rand
+		displayName += rand
 	}
 
 	displayColor := utils.GenerateRandomDisplayColor(config.MaxUserColor)
