@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/router/middleware"
@@ -47,7 +48,9 @@ func getChatMessages(w http.ResponseWriter, r *http.Request) {
 func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 
-	if r.Method == "OPTIONS" {
+	userRepository := userrepository.Get()
+
+	if r.Method == http.MethodOptions {
 		// All OPTIONS requests should have a wildcard CORS header.
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.WriteHeader(http.StatusNoContent)
@@ -76,13 +79,15 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 		// this is fine. register a new user anyway.
 	}
 
-	if request.DisplayName == "" {
-		request.DisplayName = r.Header.Get("X-Forwarded-User")
+	proposedNewDisplayName := r.Header.Get("X-Forwarded-User")
+	if proposedNewDisplayName == "" {
+		proposedNewDisplayName = request.DisplayName
+	}
+	if proposedNewDisplayName == "" {
+		proposedNewDisplayName = generateDisplayName()
 	}
 
-	userRepository := userrepository.Get()
-
-	proposedNewDisplayName := utils.MakeSafeStringOfLength(request.DisplayName, config.MaxChatDisplayNameLength)
+	proposedNewDisplayName = utils.MakeSafeStringOfLength(proposedNewDisplayName, config.MaxChatDisplayNameLength)
 	newUser, accessToken, err := userRepository.CreateAnonymousUser(proposedNewDisplayName)
 	if err != nil {
 		WriteSimpleResponse(w, false, err.Error())
@@ -99,4 +104,16 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	middleware.DisableCache(w)
 
 	WriteResponse(w, response)
+}
+
+func generateDisplayName() string {
+	suggestedUsernamesList := data.GetSuggestedUsernamesList()
+	minSuggestedUsernamePoolLength := 10
+
+	if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {
+		index := utils.RandomIndex(len(suggestedUsernamesList))
+		return suggestedUsernamesList[index]
+	} else {
+		return utils.GeneratePhrase()
+	}
 }
