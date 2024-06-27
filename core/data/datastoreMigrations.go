@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	datastoreValuesVersion   = 3
+	datastoreValuesVersion   = 4
 	datastoreValueVersionKey = "DATA_STORE_VERSION"
 )
 
@@ -27,6 +27,8 @@ func migrateDatastoreValues(datastore *Datastore) {
 			migrateToDatastoreValues2(datastore)
 		case 2:
 			migrateToDatastoreValues3ServingEndpoint3(datastore)
+		case 3:
+			migrateToDatastoreValues4(datastore)
 		default:
 			log.Fatalln("missing datastore values migration step")
 		}
@@ -58,7 +60,8 @@ func migrateToDatastoreValues1(datastore *Datastore) {
 
 func migrateToDatastoreValues2(datastore *Datastore) {
 	oldAdminPassword, _ := datastore.GetString("stream_key")
-	_ = SetAdminPassword(oldAdminPassword)
+	// Avoids double hashing the password
+	_ = datastore.SetString("admin_password_key", oldAdminPassword)
 	_ = SetStreamKeys([]models.StreamKey{
 		{Key: oldAdminPassword, Comment: "Default stream key"},
 	})
@@ -72,4 +75,12 @@ func migrateToDatastoreValues3ServingEndpoint3(_ *Datastore) {
 	}
 
 	_ = SetVideoServingEndpoint(s3Config.ServingEndpoint)
+}
+
+func migrateToDatastoreValues4(datastore *Datastore) {
+	unhashed_pass, _ := datastore.GetString("admin_password_key")
+	err := SetAdminPassword(unhashed_pass)
+	if err != nil {
+		log.Fatalln("error migrating admin password:", err)
+	}
 }

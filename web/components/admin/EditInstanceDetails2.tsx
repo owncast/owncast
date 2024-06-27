@@ -26,7 +26,6 @@ export default function EditInstanceDetails() {
   const { serverConfig } = serverStatusData || {};
 
   const {
-    adminPassword,
     ffmpegPath,
     rtmpServerPort,
     webServerPort,
@@ -37,7 +36,6 @@ export default function EditInstanceDetails() {
 
   useEffect(() => {
     setFormDataValues({
-      adminPassword,
       ffmpegPath,
       rtmpServerPort,
       webServerPort,
@@ -81,7 +79,6 @@ export default function EditInstanceDetails() {
             fieldName="adminPassword"
             {...TEXTFIELD_PROPS_ADMIN_PASSWORD}
             value={formDataValues.adminPassword}
-            initialValue={adminPassword}
             type={TEXTFIELD_TYPE_PASSWORD}
             onChange={handleFieldChange}
             onSubmit={showStreamKeyChangeMessage}

@@ -115,7 +115,11 @@ func GetAdminPassword() string {
 
 // SetAdminPassword will set the admin password.
 func SetAdminPassword(key string) error {
-	return _datastore.SetString(adminPasswordKey, key)
+	hashed_pass, err := utils.HashPassword(key)
+	if err != nil {
+		return err
+	}
+	return _datastore.SetString(adminPasswordKey, hashed_pass)
 }
 
 // GetLogoPath will return the path for the logo, relative to webroot.

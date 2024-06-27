@@ -1,4 +1,5 @@
 var request = require('supertest');
+var bcrypt = require('bcrypt');
 
 const sendAdminRequest = require('./lib/admin').sendAdminRequest;
 const failAdminRequest = require('./lib/admin').failAdminRequest;
@@ -166,7 +167,9 @@ test('verify default admin configuration', async (done) => {
 	expect(res.body.yp.enabled).toBe(defaultYPConfig.enabled);
 	// expect(res.body.yp.instanceUrl).toBe(defaultYPConfig.instanceUrl);
 
-	expect(res.body.adminPassword).toBe(defaultAdminPassword);
+	bcrypt.compare(defaultAdminPassword, res.body.adminPassword, function (err, result) {
+		expect(result).toBe(true);
+	});
 
 	expect(res.body.s3.enabled).toBe(defaultS3Config.enabled);
 	expect(res.body.s3.forcePathStyle).toBe(defaultS3Config.forcePathStyle);
@@ -374,7 +377,9 @@ test('verify admin password change', async (done) => {
 		(adminPassword = newAdminPassword)
 	);
 
-	expect(res.body.adminPassword).toBe(newAdminPassword);
+	bcrypt.compare(newAdminPassword, res.body.adminPassword, function(err, result) {
+		expect(result).toBe(true);
+	});
 	done();
 });
 
@@ -448,7 +453,9 @@ test('verify updated admin configuration', async (done) => {
 	expect(res.body.yp.enabled).toBe(newYPConfig.enabled);
 	// expect(res.body.yp.instanceUrl).toBe(newYPConfig.instanceUrl);
 
-	expect(res.body.adminPassword).toBe(defaultAdminPassword);
+	bcrypt.compare(defaultAdminPassword, res.body.adminPassword, function(err, result) {
+		expect(result).toBe(true);
+	})
 
 	expect(res.body.s3.enabled).toBe(newS3Config.enabled);
 	expect(res.body.s3.endpoint).toBe(newS3Config.endpoint);
