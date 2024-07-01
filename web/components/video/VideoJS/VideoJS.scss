@@ -9,6 +9,12 @@
     flex-shrink: 0;
   }
 
+	.vjs-hover.vjs-volume-panel-horizontal {
+		// vjs default is 5em icon+padding + 5em slider.
+		// should match the value above.
+  	width: calc(5em + 100px) !important;
+	}
+	
   .vjs-menu li {
     color: var(--theme-color-components-text-on-dark);
   }
