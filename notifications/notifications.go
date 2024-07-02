@@ -1,11 +1,15 @@
 package notifications
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/tables"
+
 	"github.com/owncast/owncast/notifications/browser"
 	"github.com/owncast/owncast/notifications/discord"
 	"github.com/pkg/errors"
@@ -21,7 +25,7 @@ type Notifier struct {
 
 // Setup will perform any pre-use setup for the notifier.
 func Setup(datastore *data.Datastore) {
-	createNotificationsTable(datastore.DB)
+	tables.CreateNotificationsTable(datastore.DB)
 	initializeBrowserPushIfNeeded()
 }
 
@@ -149,4 +153,32 @@ func (n *Notifier) Notify() {
 	if n.discord != nil {
 		n.notifyDiscord()
 	}
+}
+
+// RemoveNotificationForChannel removes a notification destination.
+func RemoveNotificationForChannel(channel, destination string) error {
+	log.Debugln("Removing notification for channel", channel)
+	return data.GetDatastore().GetQueries().RemoveNotificationDestinationForChannel(context.Background(), db.RemoveNotificationDestinationForChannelParams{
+		Channel:     channel,
+		Destination: destination,
+	})
+}
+
+// GetNotificationDestinationsForChannel will return a collection of
+// destinations to notify for a given channel.
+func GetNotificationDestinationsForChannel(channel string) ([]string, error) {
+	result, err := data.GetDatastore().GetQueries().GetNotificationDestinationsForChannel(context.Background(), channel)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to query notification destinations for channel "+channel)
+	}
+
+	return result, nil
+}
+
+// AddNotification saves a new user notification destination.
+func AddNotification(channel, destination string) error {
+	return data.GetDatastore().GetQueries().AddNotification(context.Background(), db.AddNotificationParams{
+		Channel:     channel,
+		Destination: destination,
+	})
 }

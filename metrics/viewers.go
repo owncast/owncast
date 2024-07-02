@@ -7,6 +7,7 @@ import (
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/userrepository"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -59,7 +60,8 @@ func collectChatClientCount() {
 	currentChatMessageCount.Set(float64(cmc))
 
 	// Total user count
-	uc := data.GetUsersCount()
+	userRepository := userrepository.Get()
+	uc := userRepository.GetUsersCount()
 	// Insert user count into Prometheus collector.
 	chatUserCount.Set(float64(uc))
 

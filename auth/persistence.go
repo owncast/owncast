@@ -1,13 +1,7 @@
 package auth
 
 import (
-	"context"
-	"strings"
-
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
-
-	"github.com/owncast/owncast/db"
 )
 
 var _datastore *data.Datastore
@@ -26,42 +20,4 @@ func Setup(db *data.Datastore) {
 	);`
 	_datastore.MustExec(createTableSQL)
 	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_auth_token ON auth (token);`)
-}
-
-// AddAuth will add an external authentication token and type for a user.
-func AddAuth(userID, authToken string, authType Type) error {
-	return _datastore.GetQueries().AddAuthForUser(context.Background(), db.AddAuthForUserParams{
-		UserID: userID,
-		Token:  authToken,
-		Type:   string(authType),
-	})
-}
-
-// GetUserByAuth will return an existing user given auth details if a user
-// has previously authenticated with that method.
-func GetUserByAuth(authToken string, authType Type) *user.User {
-	u, err := _datastore.GetQueries().GetUserByAuth(context.Background(), db.GetUserByAuthParams{
-		Token: authToken,
-		Type:  string(authType),
-	})
-	if err != nil {
-		return nil
-	}
-
-	var scopes []string
-	if u.Scopes.Valid {
-		scopes = strings.Split(u.Scopes.String, ",")
-	}
-
-	return &user.User{
-		ID:              u.ID,
-		DisplayName:     u.DisplayName,
-		DisplayColor:    int(u.DisplayColor),
-		CreatedAt:       u.CreatedAt.Time,
-		DisabledAt:      &u.DisabledAt.Time,
-		PreviousNames:   strings.Split(u.PreviousNames.String, ","),
-		NameChangedAt:   &u.NamechangedAt.Time,
-		AuthenticatedAt: &u.AuthenticatedAt.Time,
-		Scopes:          scopes,
-	}
 }

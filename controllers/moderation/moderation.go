@@ -9,7 +9,8 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/userrepository"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -24,7 +25,7 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type response struct {
-		User             *user.User                `json:"user"`
+		User             *models.User              `json:"user"`
 		ConnectedClients []connectedClient         `json:"connectedClients"`
 		Messages         []events.UserMessageEvent `json:"messages"`
 	}
@@ -32,7 +33,9 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	pathComponents := strings.Split(r.URL.Path, "/")
 	uid := pathComponents[len(pathComponents)-1]
 
-	u := user.GetUserByID(uid)
+	userRepository := userrepository.Get()
+
+	u := userRepository.GetUserByID(uid)
 
 	if u == nil {
 		w.WriteHeader(http.StatusNotFound)

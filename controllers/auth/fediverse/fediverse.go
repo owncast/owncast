@@ -6,17 +6,17 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/activitypub"
-	"github.com/owncast/owncast/auth"
 	fediverseauth "github.com/owncast/owncast/auth/fediverse"
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/userrepository"
 	log "github.com/sirupsen/logrus"
 )
 
 // RegisterFediverseOTPRequest registers a new OTP request for the given access token.
-func RegisterFediverseOTPRequest(u user.User, w http.ResponseWriter, r *http.Request) {
+func RegisterFediverseOTPRequest(u models.User, w http.ResponseWriter, r *http.Request) {
 	type request struct {
 		FediverseAccount string `json:"account"`
 	}
@@ -67,14 +67,16 @@ func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userRepository := userrepository.Get()
+
 	// Check if a user with this auth already exists, if so, log them in.
-	if u := auth.GetUserByAuth(authRegistration.Account, auth.Fediverse); u != nil {
+	if u := userRepository.GetUserByAuth(authRegistration.Account, models.Fediverse); u != nil {
 		// Handle existing auth.
 		log.Debugln("user with provided fedvierse identity already exists, logging them in")
 
 		// Update the current user's access token to point to the existing user id.
 		userID := u.ID
-		if err := user.SetAccessTokenToOwner(accessToken, userID); err != nil {
+		if err := userRepository.SetAccessTokenToOwner(accessToken, userID); err != nil {
 			controllers.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
@@ -93,14 +95,14 @@ func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Otherwise, save this as new auth.
 	log.Debug("fediverse account does not already exist, saving it as a new one for the current user")
-	if err := auth.AddAuth(authRegistration.UserID, authRegistration.Account, auth.Fediverse); err != nil {
+	if err := userRepository.AddAuth(authRegistration.UserID, authRegistration.Account, models.Fediverse); err != nil {
 		controllers.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	// Update the current user's authenticated flag so we can show it in
 	// the chat UI.
-	if err := user.SetUserAsAuthenticated(authRegistration.UserID); err != nil {
+	if err := userRepository.SetUserAsAuthenticated(authRegistration.UserID); err != nil {
 		log.Errorln(err)
 	}
 

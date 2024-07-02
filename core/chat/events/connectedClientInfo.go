@@ -1,9 +1,9 @@
 package events
 
-import "github.com/owncast/owncast/core/user"
+import "github.com/owncast/owncast/models"
 
 // ConnectedClientInfo represents the information about a connected client.
 type ConnectedClientInfo struct {
-	User *user.User `json:"user"`
+	User *models.User `json:"user"`
 	Event
 }

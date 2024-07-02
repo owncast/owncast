@@ -5,13 +5,12 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/models"
 )
 
 func TestSendChatEvent(t *testing.T) {
 	timestamp := time.Unix(72, 6).UTC()
-	user := user.User{
+	user := models.User{
 		ID:              "user id",
 		DisplayName:     "display name",
 		DisplayColor:    4,
@@ -64,7 +63,7 @@ func TestSendChatEvent(t *testing.T) {
 
 func TestSendChatEventUsernameChanged(t *testing.T) {
 	timestamp := time.Unix(72, 6).UTC()
-	user := user.User{
+	user := models.User{
 		ID:              "user id",
 		DisplayName:     "display name",
 		DisplayColor:    4,
@@ -112,7 +111,7 @@ func TestSendChatEventUsernameChanged(t *testing.T) {
 
 func TestSendChatEventUserJoined(t *testing.T) {
 	timestamp := time.Unix(72, 6).UTC()
-	user := user.User{
+	user := models.User{
 		ID:              "user id",
 		DisplayName:     "display name",
 		DisplayColor:    4,
