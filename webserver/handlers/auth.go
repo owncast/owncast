@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/controllers/auth/fediverse"
-	"github.com/owncast/owncast/controllers/auth/indieauth"
+	"github.com/owncast/owncast/webserver/handlers/auth/fediverse"
+	"github.com/owncast/owncast/webserver/handlers/auth/indieauth"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
 )
