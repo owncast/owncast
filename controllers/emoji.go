@@ -8,7 +8,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/webserver/router/middleware"
 )
 
 // GetCustomEmojiList returns a list of emoji via the API.

@@ -12,8 +12,8 @@ import (
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
-	"github.com/owncast/owncast/router"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/router"
 )
 
 var (

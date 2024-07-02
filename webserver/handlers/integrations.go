@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/webserver/router/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 

@@ -1,11 +1,11 @@
-package handler
+package handlers
 
 import (
 	"net/http"
 
 	"github.com/owncast/owncast/controllers/moderation"
-	"github.com/owncast/owncast/handler/generated"
-	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/webserver/handlers/generated"
+	"github.com/owncast/owncast/webserver/router/middleware"
 )
 
 func (*ServerInterfaceImpl) GetUserDetails(w http.ResponseWriter, r *http.Request, userId string, params generated.GetUserDetailsParams) {
