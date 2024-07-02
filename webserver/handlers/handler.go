@@ -3,8 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/controllers/admin"
+	"github.com/owncast/owncast/webserver/handlers/admin"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
 
@@ -25,23 +24,23 @@ func (s *ServerInterfaceImpl) Handler() http.Handler {
 }
 
 func (*ServerInterfaceImpl) GetStatus(w http.ResponseWriter, r *http.Request) {
-	controllers.GetStatus(w, r)
+	GetStatus(w, r)
 }
 
 func (*ServerInterfaceImpl) GetCustomEmojiList(w http.ResponseWriter, r *http.Request) {
-	controllers.GetCustomEmojiList(w, r)
+	GetCustomEmojiList(w, r)
 }
 
 func (*ServerInterfaceImpl) GetChatMessages(w http.ResponseWriter, r *http.Request, params generated.GetChatMessagesParams) {
-	middleware.RequireUserAccessToken(controllers.GetChatMessages)(w, r)
+	middleware.RequireUserAccessToken(GetChatMessages)(w, r)
 }
 
 func (*ServerInterfaceImpl) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params generated.RegisterAnonymousChatUserParams) {
-	controllers.RegisterAnonymousChatUser(w, r)
+	RegisterAnonymousChatUser(w, r)
 }
 
 func (*ServerInterfaceImpl) RegisterAnonymousChatUserOptions(w http.ResponseWriter, r *http.Request) {
-	controllers.RegisterAnonymousChatUser(w, r)
+	RegisterAnonymousChatUser(w, r)
 }
 
 func (*ServerInterfaceImpl) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request, params generated.UpdateMessageVisibilityParams) {
@@ -53,7 +52,7 @@ func (*ServerInterfaceImpl) UpdateUserEnabled(w http.ResponseWriter, r *http.Req
 }
 
 func (*ServerInterfaceImpl) GetWebConfig(w http.ResponseWriter, r *http.Request) {
-	controllers.GetWebConfig(w, r)
+	GetWebConfig(w, r)
 }
 
 func (*ServerInterfaceImpl) GetYPResponse(w http.ResponseWriter, r *http.Request) {
@@ -61,29 +60,29 @@ func (*ServerInterfaceImpl) GetYPResponse(w http.ResponseWriter, r *http.Request
 }
 
 func (*ServerInterfaceImpl) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
-	controllers.GetAllSocialPlatforms(w, r)
+	GetAllSocialPlatforms(w, r)
 }
 
 func (*ServerInterfaceImpl) GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
-	controllers.GetVideoStreamOutputVariants(w, r)
+	GetVideoStreamOutputVariants(w, r)
 }
 
 func (*ServerInterfaceImpl) Ping(w http.ResponseWriter, r *http.Request) {
-	controllers.Ping(w, r)
+	Ping(w, r)
 }
 
 func (*ServerInterfaceImpl) RemoteFollow(w http.ResponseWriter, r *http.Request) {
-	controllers.RemoteFollow(w, r)
+	RemoteFollow(w, r)
 }
 
 func (*ServerInterfaceImpl) GetFollowers(w http.ResponseWriter, r *http.Request, params generated.GetFollowersParams) {
-	middleware.HandlePagination(controllers.GetFollowers)(w, r)
+	middleware.HandlePagination(GetFollowers)(w, r)
 }
 
 func (*ServerInterfaceImpl) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
-	controllers.ReportPlaybackMetrics(w, r)
+	ReportPlaybackMetrics(w, r)
 }
 
 func (*ServerInterfaceImpl) RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request, params generated.RegisterForLiveNotificationsParams) {
-	middleware.RequireUserAccessToken(controllers.RegisterForLiveNotifications)(w, r)
+	middleware.RequireUserAccessToken(RegisterForLiveNotifications)(w, r)
 }

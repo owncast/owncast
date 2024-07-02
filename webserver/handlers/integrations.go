@@ -3,9 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/controllers/admin"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/webserver/handlers/admin"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -69,11 +68,11 @@ func (*ServerInterfaceImpl) ExternalSetStreamTitleOptions(w http.ResponseWriter,
 }
 
 func (*ServerInterfaceImpl) ExternalGetChatMessages(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, controllers.ExternalGetChatMessages)(w, r)
+	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, ExternalGetChatMessages)(w, r)
 }
 
 func (*ServerInterfaceImpl) ExternalGetChatMessagesOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, controllers.ExternalGetChatMessages)(w, r)
+	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, ExternalGetChatMessages)(w, r)
 }
 
 func (*ServerInterfaceImpl) ExternalGetConnectedChatClients(w http.ResponseWriter, r *http.Request) {

@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/controllers/admin"
+	"github.com/owncast/owncast/core/rtmp"
+	"github.com/owncast/owncast/webserver/handlers/admin"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
 )
@@ -154,11 +154,11 @@ func (*ServerInterfaceImpl) GetWarningsOptions(w http.ResponseWriter, r *http.Re
 }
 
 func (*ServerInterfaceImpl) GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params generated.GetFollowersAdminParams) {
-	middleware.RequireAdminAuth(middleware.HandlePagination(controllers.GetFollowers))(w, r)
+	middleware.RequireAdminAuth(middleware.HandlePagination(GetFollowers))(w, r)
 }
 
 func (*ServerInterfaceImpl) GetFollowersAdminOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(middleware.HandlePagination(controllers.GetFollowers))(w, r)
+	middleware.RequireAdminAuth(middleware.HandlePagination(GetFollowers))(w, r)
 }
 
 func (*ServerInterfaceImpl) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
@@ -303,4 +303,10 @@ func (*ServerInterfaceImpl) GetFederatedActions(w http.ResponseWriter, r *http.R
 
 func (*ServerInterfaceImpl) GetFederatedActionsOptions(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(middleware.HandlePagination(admin.GetFederatedActions))(w, r)
+}
+
+// DisconnectInboundConnection will force-disconnect an inbound stream.
+func DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
+	rtmp.Disconnect()
+	w.WriteHeader(http.StatusOK)
 }

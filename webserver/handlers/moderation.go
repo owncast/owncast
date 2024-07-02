@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/controllers/moderation"
 	"github.com/owncast/owncast/webserver/handlers/generated"
+	"github.com/owncast/owncast/webserver/handlers/moderation"
 	"github.com/owncast/owncast/webserver/router/middleware"
 )
 

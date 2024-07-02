@@ -14,9 +14,8 @@ import (
 	"golang.org/x/net/http2/h2c"
 
 	"github.com/owncast/owncast/activitypub"
-	apControllers "github.com/owncast/owncast/activitypub/controllers"
+	aphandlers "github.com/owncast/owncast/activitypub/controllers"
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/webserver/handlers"
@@ -44,19 +43,19 @@ func Start(enableVerboseLogging bool) error {
 	r.Handle("/public/*", http.StripPrefix("/public/", fs))
 
 	// Return HLS video
-	r.HandleFunc("/hls/*", controllers.HandleHLSRequest)
+	r.HandleFunc("/hls/*", handlers.HandleHLSRequest)
 
 	// The admin web app.
-	r.HandleFunc("/admin/*", middleware.RequireAdminAuth(controllers.IndexHandler))
+	r.HandleFunc("/admin/*", middleware.RequireAdminAuth(handlers.IndexHandler))
 
 	// Single ActivityPub Actor
-	r.HandleFunc("/federation/user/*", middleware.RequireActivityPubOrRedirect(apControllers.ActorHandler))
+	r.HandleFunc("/federation/user/*", middleware.RequireActivityPubOrRedirect(aphandlers.ActorHandler))
 
 	// Single AP object
-	r.HandleFunc("/federation/*", middleware.RequireActivityPubOrRedirect(apControllers.ObjectHandler))
+	r.HandleFunc("/federation/*", middleware.RequireActivityPubOrRedirect(aphandlers.ObjectHandler))
 
 	// The primary web app.
-	r.HandleFunc("/*", controllers.IndexHandler)
+	r.HandleFunc("/*", handlers.IndexHandler)
 
 	// mount the api
 	r.Mount("/api/", handlers.New().Handler())
@@ -105,40 +104,40 @@ func Start(enableVerboseLogging bool) error {
 
 func addStaticFileEndpoints(r chi.Router) {
 	// Images
-	r.HandleFunc("/thumbnail.jpg", controllers.GetThumbnail)
-	r.HandleFunc("/preview.gif", controllers.GetPreview)
-	r.HandleFunc("/logo", controllers.GetLogo)
+	r.HandleFunc("/thumbnail.jpg", handlers.GetThumbnail)
+	r.HandleFunc("/preview.gif", handlers.GetPreview)
+	r.HandleFunc("/logo", handlers.GetLogo)
 	// return a logo that's compatible with external social networks
-	r.HandleFunc("/logo/external", controllers.GetCompatibleLogo)
+	r.HandleFunc("/logo/external", handlers.GetCompatibleLogo)
 
 	// Custom Javascript
-	r.HandleFunc("/customjavascript", controllers.ServeCustomJavascript)
+	r.HandleFunc("/customjavascript", handlers.ServeCustomJavascript)
 
 	// robots.txt
-	r.HandleFunc("/robots.txt", controllers.GetRobotsDotTxt)
+	r.HandleFunc("/robots.txt", handlers.GetRobotsDotTxt)
 
 	// Return a single emoji image.
 	emojiDir := config.EmojiDir
 	if !strings.HasSuffix(emojiDir, "*") {
 		emojiDir += "*"
 	}
-	r.HandleFunc(emojiDir, controllers.GetCustomEmojiImage)
+	r.HandleFunc(emojiDir, handlers.GetCustomEmojiImage)
 
 	// WebFinger
-	r.HandleFunc("/.well-known/webfinger", apControllers.WebfingerHandler)
+	r.HandleFunc("/.well-known/webfinger", aphandlers.WebfingerHandler)
 
 	// Host Metadata
-	r.HandleFunc("/.well-known/host-meta", apControllers.HostMetaController)
+	r.HandleFunc("/.well-known/host-meta", aphandlers.HostMetaController)
 
 	// Nodeinfo v1
-	r.HandleFunc("/.well-known/nodeinfo", apControllers.NodeInfoController)
+	r.HandleFunc("/.well-known/nodeinfo", aphandlers.NodeInfoController)
 
 	// x-nodeinfo v2
-	r.HandleFunc("/.well-known/x-nodeinfo2", apControllers.XNodeInfo2Controller)
+	r.HandleFunc("/.well-known/x-nodeinfo2", aphandlers.XNodeInfo2Controller)
 
 	// Nodeinfo v2
-	r.HandleFunc("/nodeinfo/2.0", apControllers.NodeInfoV2Controller)
+	r.HandleFunc("/nodeinfo/2.0", aphandlers.NodeInfoV2Controller)
 
 	// Instance details
-	r.HandleFunc("/api/v1/instance", apControllers.InstanceV1Controller)
+	r.HandleFunc("/api/v1/instance", aphandlers.InstanceV1Controller)
 }
