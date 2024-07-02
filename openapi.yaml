@@ -4371,6 +4371,7 @@ components:
       description: No Content
     '204Options':
       description: No Content
+      x-internal: true
       headers:
         'Access-Control-Allow-Origin':
           $ref: '#/components/headers/Access-Control-Allow-Origin'
