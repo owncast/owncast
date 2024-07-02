@@ -1,10 +1,10 @@
-package handler
+package handlers
 
 import (
 	"net/http"
 
 	"github.com/owncast/owncast/controllers/admin"
-	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/webserver/router/middleware"
 )
 
 func (*ServerInterfaceImpl) SetAdminPassword(w http.ResponseWriter, r *http.Request) {

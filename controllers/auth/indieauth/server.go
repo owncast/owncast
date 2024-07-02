@@ -6,7 +6,7 @@ import (
 
 	ia "github.com/owncast/owncast/auth/indieauth"
 	"github.com/owncast/owncast/controllers"
-	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/webserver/router/middleware"
 )
 
 // HandleAuthEndpoint will handle the IndieAuth auth endpoint.

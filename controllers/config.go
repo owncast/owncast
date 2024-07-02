@@ -10,8 +10,8 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/router/middleware"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/router/middleware"
 	log "github.com/sirupsen/logrus"
 )
 

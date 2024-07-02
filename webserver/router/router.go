@@ -19,8 +19,8 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/handler"
-	"github.com/owncast/owncast/router/middleware"
+	"github.com/owncast/owncast/webserver/handlers"
+	"github.com/owncast/owncast/webserver/router/middleware"
 )
 
 // Start starts the router for the http, ws, and rtmp.
@@ -59,7 +59,7 @@ func Start(enableVerboseLogging bool) error {
 	r.HandleFunc("/*", controllers.IndexHandler)
 
 	// mount the api
-	r.Mount("/api/", handler.New().Handler())
+	r.Mount("/api/", handlers.New().Handler())
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())
