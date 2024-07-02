@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -14,19 +15,15 @@ func SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type request struct {
-		Value map[string]string `json:"value"`
-	}
-
 	decoder := json.NewDecoder(r.Body)
-	var values request
+	var values generated.SetCustomColorVariableValuesJSONBody
 
 	if err := decoder.Decode(&values); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update appearance variable values")
 		return
 	}
 
-	if err := data.SetCustomColorVariableValues(values.Value); err != nil {
+	if err := data.SetCustomColorVariableValues(*values.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

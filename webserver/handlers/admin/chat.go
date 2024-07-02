@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -26,10 +27,10 @@ func ExternalUpdateMessageVisibility(integration models.ExternalAPIUser, w http.
 
 // UpdateMessageVisibility updates an array of message IDs to have the same visiblity.
 func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
-	type messageVisibilityUpdateRequest struct {
-		IDArray []string `json:"idArray"`
-		Visible bool     `json:"visible"`
-	}
+	// type messageVisibilityUpdateRequest struct {
+	// 	IDArray []string `json:"idArray"`
+	// 	Visible bool     `json:"visible"`
+	// }
 
 	if r.Method != http.MethodPost {
 		// nolint:goconst
@@ -38,7 +39,7 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	var request messageVisibilityUpdateRequest
+	var request generated.MessageVisibilityUpdate
 
 	if err := decoder.Decode(&request); err != nil {
 		log.Errorln(err)
@@ -46,7 +47,7 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := chat.SetMessagesVisibility(request.IDArray, request.Visible); err != nil {
+	if err := chat.SetMessagesVisibility(*request.IdArray, *request.Visible); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
