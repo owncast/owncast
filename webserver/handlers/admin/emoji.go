@@ -9,6 +9,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -18,26 +19,21 @@ func UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type postEmoji struct {
-		Name string `json:"name"`
-		Data string `json:"data"`
-	}
-
-	emoji := new(postEmoji)
+	emoji := new(generated.UploadCustomEmojiJSONBody)
 
 	if err := json.NewDecoder(r.Body).Decode(emoji); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	bytes, _, err := utils.DecodeBase64Image(emoji.Data)
+	bytes, _, err := utils.DecodeBase64Image(*emoji.Data)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	// Prevent path traversal attacks
-	emojiFileName := filepath.Base(emoji.Name)
+	emojiFileName := filepath.Base(*emoji.Name)
 	targetPath := filepath.Join(config.CustomEmojiPath, emojiFileName)
 
 	err = os.MkdirAll(config.CustomEmojiPath, 0o700)
