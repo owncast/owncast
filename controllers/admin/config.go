@@ -15,7 +15,6 @@ import (
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
@@ -83,7 +82,7 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 }
 
 // ExternalSetStreamTitle will change the stream title on behalf of an external integration API request.
-func ExternalSetStreamTitle(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func ExternalSetStreamTitle(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	SetStreamTitle(w, r)
 }
 

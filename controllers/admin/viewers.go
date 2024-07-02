@@ -8,7 +8,6 @@ import (
 
 	"github.com/owncast/owncast/controllers"
 	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
@@ -50,6 +49,6 @@ func GetActiveViewers(w http.ResponseWriter, r *http.Request) {
 }
 
 // ExternalGetActiveViewers returns currently connected clients.
-func ExternalGetActiveViewers(integration user.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func ExternalGetActiveViewers(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	GetConnectedChatClients(w, r)
 }

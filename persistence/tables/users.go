@@ -1,12 +1,18 @@
-package data
+package tables
 
 import (
 	"database/sql"
 
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
-func createAccessTokenTable(db *sql.DB) {
+func SetupUsers(db *sql.DB) {
+	CreateUsersTable(db)
+	CreateAccessTokenTable(db)
+}
+
+func CreateAccessTokenTable(db *sql.DB) {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS user_access_tokens (
     "token" TEXT NOT NULL PRIMARY KEY,
     "user_id" TEXT NOT NULL,
@@ -25,7 +31,7 @@ func createAccessTokenTable(db *sql.DB) {
 	}
 }
 
-func createUsersTable(db *sql.DB) {
+func CreateUsersTable(db *sql.DB) {
 	log.Traceln("Creating users table...")
 
 	createTableSQL := `CREATE TABLE IF NOT EXISTS users (
@@ -43,25 +49,8 @@ func createUsersTable(db *sql.DB) {
 		PRIMARY KEY (id)
 	);`
 
-	MustExec(createTableSQL, db)
-	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id ON users (id);`, db)
-	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id_disabled ON users (id, disabled_at);`, db)
-	MustExec(`CREATE INDEX IF NOT EXISTS idx_user_disabled_at ON users (disabled_at);`, db)
-}
-
-// GetUsersCount will return the number of users in the database.
-func GetUsersCount() int64 {
-	query := `SELECT COUNT(*) FROM users`
-	rows, err := _db.Query(query)
-	if err != nil || rows.Err() != nil {
-		return 0
-	}
-	defer rows.Close()
-	var count int64
-	for rows.Next() {
-		if err := rows.Scan(&count); err != nil {
-			return 0
-		}
-	}
-	return count
+	utils.MustExec(createTableSQL, db)
+	utils.MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id ON users (id);`, db)
+	utils.MustExec(`CREATE INDEX IF NOT EXISTS idx_user_id_disabled ON users (id, disabled_at);`, db)
+	utils.MustExec(`CREATE INDEX IF NOT EXISTS idx_user_disabled_at ON users (disabled_at);`, db)
 }
