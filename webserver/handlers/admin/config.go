@@ -17,6 +17,7 @@ import (
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
@@ -678,18 +679,15 @@ func SetCustomJavascript(w http.ResponseWriter, r *http.Request) {
 
 // SetForbiddenUsernameList will set the list of usernames we do not allow to use.
 func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
-	type forbiddenUsernameListRequest struct {
-		Value []string `json:"value"`
-	}
-
 	decoder := json.NewDecoder(r.Body)
-	var request forbiddenUsernameListRequest
+	var request generated.SetForbiddenUsernameListJSONBody
+
 	if err := decoder.Decode(&request); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update forbidden usernames with provided values")
 		return
 	}
 
-	if err := data.SetForbiddenUsernameList(request.Value); err != nil {
+	if err := data.SetForbiddenUsernameList(*request.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -699,19 +697,15 @@ func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
 
 // SetSuggestedUsernameList will set the list of suggested usernames that newly registered users are assigned if it isn't inferred otherwise (i.e. through a proxy).
 func SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
-	type suggestedUsernameListRequest struct {
-		Value []string `json:"value"`
-	}
-
 	decoder := json.NewDecoder(r.Body)
-	var request suggestedUsernameListRequest
+	var request generated.SetSuggestedUsernameListJSONBody
 
 	if err := decoder.Decode(&request); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update suggested usernames with provided values")
 		return
 	}
 
-	if err := data.SetSuggestedUsernamesList(request.Value); err != nil {
+	if err := data.SetSuggestedUsernamesList(*request.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

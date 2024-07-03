@@ -8,12 +8,9 @@ import (
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
-
-type deleteWebhookRequest struct {
-	ID int `json:"id"`
-}
 
 type createWebhookRequest struct {
 	URL    string             `json:"url"`
@@ -69,13 +66,13 @@ func DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	var request deleteWebhookRequest
+	var request generated.DeleteWebhookJSONBody
 	if err := decoder.Decode(&request); err != nil {
 		webutils.BadRequestHandler(w, err)
 		return
 	}
 
-	if err := data.DeleteWebhook(request.ID); err != nil {
+	if err := data.DeleteWebhook(*request.Id); err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return
 	}

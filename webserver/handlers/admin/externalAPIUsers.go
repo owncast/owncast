@@ -10,22 +10,14 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
-
-type deleteExternalAPIUserRequest struct {
-	Token string `json:"token"`
-}
-
-type createExternalAPIUserRequest struct {
-	Name   string   `json:"name"`
-	Scopes []string `json:"scopes"`
-}
 
 // CreateExternalAPIUser will generate a 3rd party access token.
 func CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var request createExternalAPIUserRequest
+	var request generated.CreateExternalAPIUserJSONBody
 	if err := decoder.Decode(&request); err != nil {
 		webutils.BadRequestHandler(w, err)
 		return
@@ -34,7 +26,7 @@ func CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 	userRepository := userrepository.Get()
 
 	// Verify all the scopes provided are valid
-	if !userRepository.HasValidScopes(request.Scopes) {
+	if !userRepository.HasValidScopes(*request.Scopes) {
 		webutils.BadRequestHandler(w, errors.New("one or more invalid scopes provided"))
 		return
 	}
@@ -47,7 +39,7 @@ func CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 
 	color := utils.GenerateRandomDisplayColor(config.MaxUserColor)
 
-	if err := userRepository.InsertExternalAPIUser(token, request.Name, color, request.Scopes); err != nil {
+	if err := userRepository.InsertExternalAPIUser(token, *request.Name, color, *request.Scopes); err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return
 	}
@@ -55,9 +47,9 @@ func CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	webutils.WriteResponse(w, models.ExternalAPIUser{
 		AccessToken:  token,
-		DisplayName:  request.Name,
+		DisplayName:  *request.Name,
 		DisplayColor: color,
-		Scopes:       request.Scopes,
+		Scopes:       *request.Scopes,
 		CreatedAt:    time.Now(),
 		LastUsedAt:   nil,
 	})
@@ -87,20 +79,20 @@ func DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	var request deleteExternalAPIUserRequest
+	var request generated.DeleteExternalAPIUserJSONBody
 	if err := decoder.Decode(&request); err != nil {
 		webutils.BadRequestHandler(w, err)
 		return
 	}
 
-	if request.Token == "" {
+	if request.Token != nil && *request.Token == "" {
 		webutils.BadRequestHandler(w, errors.New("must provide a token"))
 		return
 	}
 
 	userRepository := userrepository.Get()
 
-	if err := userRepository.DeleteExternalAPIUser(request.Token); err != nil {
+	if err := userRepository.DeleteExternalAPIUser(*request.Token); err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return
 	}
