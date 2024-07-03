@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/owncast/owncast/geoip"
+	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/utils"
 )
 

@@ -15,9 +15,9 @@ import (
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/webhooks"
-	"github.com/owncast/owncast/geoip"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/userrepository"
+	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/utils"
 )
 
