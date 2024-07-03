@@ -27,11 +27,6 @@ func ExternalUpdateMessageVisibility(integration models.ExternalAPIUser, w http.
 
 // UpdateMessageVisibility updates an array of message IDs to have the same visiblity.
 func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
-	// type messageVisibilityUpdateRequest struct {
-	// 	IDArray []string `json:"idArray"`
-	// 	Visible bool     `json:"visible"`
-	// }
-
 	if r.Method != http.MethodPost {
 		// nolint:goconst
 		webutils.WriteSimpleResponse(w, false, r.Method+" not supported")
@@ -199,18 +194,13 @@ func GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
 
 // UpdateUserModerator will set the moderator status for a user ID.
 func UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
-	type request struct {
-		UserID      string `json:"userId"`
-		IsModerator bool   `json:"isModerator"`
-	}
-
 	if r.Method != http.MethodPost {
 		webutils.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	var req request
+	var req generated.UpdateUserModeratorJSONBody
 
 	if err := decoder.Decode(&req); err != nil {
 		webutils.WriteSimpleResponse(w, false, "")
@@ -220,17 +210,17 @@ func UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 	userRepository := userrepository.Get()
 
 	// Update the user object with new moderation access.
-	if err := userRepository.SetModerator(req.UserID, req.IsModerator); err != nil {
+	if err := userRepository.SetModerator(*req.UserId, *req.IsModerator); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	// Update the clients for this user to know about the moderator access change.
-	if err := chat.SendConnectedClientInfoToUser(req.UserID); err != nil {
+	if err := chat.SendConnectedClientInfoToUser(*req.UserId); err != nil {
 		log.Debugln(err)
 	}
 
-	webutils.WriteSimpleResponse(w, true, fmt.Sprintf("%s is moderator: %t", req.UserID, req.IsModerator))
+	webutils.WriteSimpleResponse(w, true, fmt.Sprintf("%s is moderator: %t", *req.UserId, *req.IsModerator))
 }
 
 // GetModerators will return a list of moderator users.

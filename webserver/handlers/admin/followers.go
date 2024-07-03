@@ -7,6 +7,7 @@ import (
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -16,28 +17,28 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type approveFollowerRequest struct {
-		ActorIRI string `json:"actorIRI"`
-		Approved bool   `json:"approved"`
-	}
+	// type approveFollowerRequest struct {
+	// 	ActorIRI string `json:"actorIRI"`
+	// 	Approved bool   `json:"approved"`
+	// }
 
 	decoder := json.NewDecoder(r.Body)
-	var approval approveFollowerRequest
+	var approval generated.ApproveFollowerJSONBody
 	if err := decoder.Decode(&approval); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to handle follower state with provided values")
 		return
 	}
 
-	if approval.Approved {
+	if *approval.Approved {
 		// Approve a follower
-		if err := persistence.ApprovePreviousFollowRequest(approval.ActorIRI); err != nil {
+		if err := persistence.ApprovePreviousFollowRequest(*approval.ActorIRI); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 
 		localAccountName := data.GetDefaultFederationUsername()
 
-		followRequest, err := persistence.GetFollower(approval.ActorIRI)
+		followRequest, err := persistence.GetFollower(*approval.ActorIRI)
 		if err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
@@ -50,7 +51,7 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// Remove/block a follower
-		if err := persistence.BlockOrRejectFollower(approval.ActorIRI); err != nil {
+		if err := persistence.BlockOrRejectFollower(*approval.ActorIRI); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}

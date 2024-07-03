@@ -9,27 +9,24 @@ import (
 
 	"github.com/owncast/owncast/activitypub/webfinger"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
 // RemoteFollow handles a request to begin the remote follow redirect flow.
 func RemoteFollow(w http.ResponseWriter, r *http.Request) {
-	type followRequest struct {
-		Account string `json:"account"`
-	}
-
 	type followResponse struct {
 		RedirectURL string `json:"redirectUrl"`
 	}
 
-	var request followRequest
+	var request generated.RemoteFollowJSONRequestBody
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&request); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to parse request")
 		return
 	}
 
-	if request.Account == "" {
+	if request.Account != nil && *request.Account == "" {
 		webutils.WriteSimpleResponse(w, false, "Remote Fediverse account is required to follow.")
 		return
 	}
@@ -37,7 +34,7 @@ func RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	localActorPath, _ := url.Parse(data.GetServerURL())
 	localActorPath.Path = fmt.Sprintf("/federation/user/%s", data.GetDefaultFederationUsername())
 	var template string
-	links, err := webfinger.GetWebfingerLinks(request.Account)
+	links, err := webfinger.GetWebfingerLinks(*request.Account)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -53,7 +50,7 @@ func RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if localActorPath.String() == "" || template == "" {
-		webutils.WriteSimpleResponse(w, false, "unable to determine remote follow information for "+request.Account)
+		webutils.WriteSimpleResponse(w, false, "unable to determine remote follow information for "+*request.Account)
 		return
 	}
 

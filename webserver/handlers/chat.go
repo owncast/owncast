@@ -10,6 +10,7 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
 	log "github.com/sirupsen/logrus"
@@ -64,10 +65,6 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type registerAnonymousUserRequest struct {
-		DisplayName string `json:"displayName"`
-	}
-
 	type registerAnonymousUserResponse struct {
 		ID          string `json:"id"`
 		AccessToken string `json:"accessToken"`
@@ -75,14 +72,14 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	var request registerAnonymousUserRequest
-	if err := decoder.Decode(&request); err != nil { //nolint
+	var request generated.RegisterAnonymousChatUserJSONBody // registerAnonymousUserRequest
+	if err := decoder.Decode(&request); err != nil {        //nolint
 		// this is fine. register a new user anyway.
 	}
 
 	proposedNewDisplayName := r.Header.Get("X-Forwarded-User")
-	if proposedNewDisplayName == "" {
-		proposedNewDisplayName = request.DisplayName
+	if proposedNewDisplayName == "" && request.DisplayName != nil {
+		proposedNewDisplayName = *request.DisplayName
 	}
 	if proposedNewDisplayName == "" {
 		proposedNewDisplayName = generateDisplayName()
