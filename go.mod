@@ -53,7 +53,7 @@ require (
 
 require (
 	github.com/nakabonne/tstorage v0.3.6
-	github.com/shirou/gopsutil/v3 v3.24.5
+	github.com/shirou/gopsutil/v4 v4.24.6
 )
 
 require github.com/SherClockHolmes/webpush-go v1.3.0
@@ -83,6 +83,7 @@ require (
 	github.com/jellydator/ttlcache/v3 v3.2.0
 	github.com/mssola/user_agent v0.6.0
 	github.com/oapi-codegen/runtime v1.1.1
+	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/stretchr/testify v1.9.0
 	github.com/yuin/goldmark-emoji v1.0.3
 	gopkg.in/evanphx/json-patch.v5 v5.9.0
