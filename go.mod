@@ -11,7 +11,7 @@ require (
 	github.com/grafov/m3u8 v0.12.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/mattn/go-sqlite3 v1.14.22
-	github.com/microcosm-cc/bluemonday v1.0.26
+	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/nareix/joy5 v0.0.0-20210317075623-2c912ca30590
 	github.com/oschwald/geoip2-golang v1.11.0
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
@@ -66,7 +66,7 @@ require (
 	github.com/go-test/deep v1.0.4 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/google/uuid v1.5.0 // indirect
-	github.com/gorilla/css v1.0.0 // indirect
+	github.com/gorilla/css v1.0.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.13.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
