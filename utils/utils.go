@@ -303,9 +303,12 @@ func VerifyFFMpegPath(path string) error {
 	return nil
 }
 
-// CleanupDirectory removes all contents within the directory. Throws fatal error on failure.
+// CleanupDirectory removes all contents within the directory, or creates it if it does not exist. Throws fatal error on failure.
 func CleanupDirectory(path string) {
 	log.Traceln("Cleaning", path)
+	if err := os.MkdirAll(path, 0o750); err != nil {
+	    log.Fatalln("Unable to create directory. Please check the ownership and permissions", err)
+	}
 	entries, err := ioutil.ReadDir(path)
 	if err != nil {
 	    log.Fatalln("Unable to read contents of directory. Please check the ownership and permissions", err)
