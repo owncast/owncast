@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/url"
 	"os"
@@ -309,7 +308,7 @@ func CleanupDirectory(path string) {
 	if err := os.MkdirAll(path, 0o750); err != nil {
 	    log.Fatalf("Unable to create '%s'. Please check the ownership and permissions: %s\n", path, err)
 	}
-	entries, err := ioutil.ReadDir(path)
+	entries, err := os.ReadDir(path)
 	if err != nil {
 	    log.Fatalf("Unable to read contents of '%s'. Please check the ownership and permissions: %s\n", path, err)
 	}
