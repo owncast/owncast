@@ -307,16 +307,16 @@ func VerifyFFMpegPath(path string) error {
 func CleanupDirectory(path string) {
 	log.Traceln("Cleaning", path)
 	if err := os.MkdirAll(path, 0o750); err != nil {
-	    log.Fatalln("Unable to create directory. Please check the ownership and permissions", err)
+	    log.Fatalf("Unable to create '%s'. Please check the ownership and permissions: %s\n", path, err)
 	}
 	entries, err := ioutil.ReadDir(path)
 	if err != nil {
-	    log.Fatalln("Unable to read contents of directory. Please check the ownership and permissions", err)
+	    log.Fatalf("Unable to read contents of '%s'. Please check the ownership and permissions: %s\n", path, err)
 	}
 	for _, entry := range entries {
 	    entryPath := filepath.Join(path, entry.Name())
 	    if err := os.RemoveAll(entryPath); err != nil {
-	        log.Fatalln("Unable to remove directory. Please check the ownership and permissions", err)
+	        log.Fatalf("Unable to remove file or directory contained in '%s'. Please check the ownership and permissions: %s\n", path, err)
 	    }
 	}
 }
