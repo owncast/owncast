@@ -21,7 +21,7 @@ import (
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
-	"mvdan.cc/xurls"
+	"mvdan.cc/xurls/v2"
 )
 
 // DoesFileExists checks if the file exists.

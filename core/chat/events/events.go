@@ -17,7 +17,7 @@ import (
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
 	"github.com/yuin/goldmark/util"
-	"mvdan.cc/xurls"
+	"mvdan.cc/xurls/v2"
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
