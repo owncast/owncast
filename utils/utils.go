@@ -162,7 +162,7 @@ func RenderSimpleMarkdown(raw string) string {
 					[]byte("https:"),
 				}),
 				extension.WithLinkifyURLRegexp(
-					xurls.Strict,
+					xurls.Strict(),
 				),
 			),
 		),
@@ -191,7 +191,7 @@ func RenderPageContentMarkdown(raw string) string {
 					[]byte("https:"),
 				}),
 				extension.WithLinkifyURLRegexp(
-					xurls.Strict,
+					xurls.Strict(),
 				),
 			),
 		),

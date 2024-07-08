@@ -220,7 +220,7 @@ func RenderMarkdown(raw string) string {
 					[]byte("https:"),
 				}),
 				extension.WithLinkifyURLRegexp(
-					xurls.Strict,
+					xurls.Strict(),
 				),
 			),
 			emoji.New(
