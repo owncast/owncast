@@ -140,8 +140,7 @@
   text-transform: capitalize;
 }
 
-.ant-dropdown-menu-item-selected, .ant-dropdown-menu-submenu-title-selected{
-
+.ant-dropdown-menu-item-selected,
+.ant-dropdown-menu-submenu-title-selected {
   background-color: #f5f0ff;
 }
-
