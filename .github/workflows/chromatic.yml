@@ -27,8 +27,21 @@ jobs:
         uses: fkirc/skip-duplicate-actions@v5
         with:
           concurrent_skipping: 'same_content_newer'
+
+      - name: Get changed files
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v44
+        with:
+          path: 'web'
+          files_ignore: |
+            static/**
+            web/next.config.js
+          files_yaml: |
+            src:
+              - '**/*.{js,ts,tsx,jsx,md}'
+
       - name: Check out code
-        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' }}
+        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true' }}
         uses: actions/checkout@v4
         with:
           # Make sure the actual branch is checked out when running on pull requests
@@ -37,13 +50,13 @@ jobs:
           fetch-depth: 0
 
       - name: Install dependencies
-        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' }}
+        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true'}}
         run: npm install
 
       - name: Publish to Chromatic
-        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' }}
-
+        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true' }}
         uses: chromaui/action@v11
+
         # Chromatic GitHub Action options
         with:
           workingDir: web
