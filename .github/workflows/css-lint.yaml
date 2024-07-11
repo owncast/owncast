@@ -34,10 +34,13 @@ jobs:
           node-version: '16'
 
       - name: Install dependencies
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         run: npm install
 
       - name: Run Prettier
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         run: npx prettier --check ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
 
       - name: Run Stylelint
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         run: npx stylelint ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
