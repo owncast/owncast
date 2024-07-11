@@ -8,9 +8,11 @@
 .status-container.status-success {
   color: var(--ant-success);
 }
+
 .status-container.status-error {
   color: var(--ant-error);
 }
+
 .status-container.status-warning {
   color: var(--ant-warning);
 }
