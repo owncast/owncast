@@ -1,0 +1,40 @@
+name: CSS Lint and Formatting
+
+on:
+  push:
+    paths:
+      - 'web/**'
+  pull_request:
+    paths:
+      - 'web/**'
+
+jobs:
+  css_lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v44
+        with:
+          path: 'web'
+          files_yaml: |
+            src:
+              - '**/*.{css,scss}'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Prettier
+        run: npx prettier --check "web/**/*.{js,jsx,ts,tsx,css,scss}"
+
+      - name: Run Stylelint
+        run: npx stylelint "web/**/*.{css,scss}"
