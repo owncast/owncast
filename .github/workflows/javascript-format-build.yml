@@ -47,7 +47,7 @@ jobs:
             web/next.config.js
           files_yaml: |
             src:
-              - '**/*.{js,ts,tsx,jsx,css,md}'
+              - '**/*.{js,ts,tsx,jsx,md}'
 
       - name: Cache node modules
         uses: actions/cache@v4
