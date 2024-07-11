@@ -9,8 +9,11 @@ on:
       - 'web/**'
 
 jobs:
-  css_lint:
+  css-lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
 
     steps:
       - name: Checkout repository
@@ -34,7 +37,9 @@ jobs:
         run: npm install
 
       - name: Run Prettier
-        run: npx prettier --check "web/**/*.{js,jsx,ts,tsx,css,scss}"
+        run: npx prettier --check "**/*.{js,jsx,ts,tsx,css,scss}"
+        # run: npx prettier --check ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
 
       - name: Run Stylelint
-        run: npx stylelint "web/**/*.{css,scss}"
+        run: npx stylelint "**/*.{css,scss}"
+        # run: npx stylelint ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
