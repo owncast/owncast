@@ -37,9 +37,7 @@ jobs:
         run: npm install
 
       - name: Run Prettier
-        run: npx prettier --check "**/*.{js,jsx,ts,tsx,css,scss}"
-        # run: npx prettier --check ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
+        run: npx prettier --check ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
 
       - name: Run Stylelint
-        run: npx stylelint "**/*.{css,scss}"
-        # run: npx stylelint ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
+        run: npx stylelint ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
