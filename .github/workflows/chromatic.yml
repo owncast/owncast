@@ -28,6 +28,15 @@ jobs:
         with:
           concurrent_skipping: 'same_content_newer'
 
+      - name: Check out code
+        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+
       - name: Get changed files
         id: changed-files-yaml
         uses: tj-actions/changed-files@v44
@@ -39,15 +48,6 @@ jobs:
           files_yaml: |
             src:
               - '**/*.{js,ts,tsx,jsx,md}'
-
-      - name: Check out code
-        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          fetch-depth: 0
 
       - name: Install dependencies
         if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true'}}

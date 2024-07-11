@@ -18,6 +18,9 @@ jobs:
         with:
           concurrent_skipping: 'same_content_newer'
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Get changed files
         id: changed-files-yaml
         uses: tj-actions/changed-files@v44
@@ -42,9 +45,6 @@ jobs:
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
-
-      - uses: actions/checkout@v4
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
 
       - name: Run API tests
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
