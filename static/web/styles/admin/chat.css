@@ -1,9 +1,9 @@
-.chat-messages .ant-table-cell.name-col {
+.chat-messages .ant-table-cell .name-col {
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
-.chat-messages .ant-table-cell.toggle-col label {
+.chat-messages .ant-table-cell .toggle-col label {
   font-size: 0.7rem;
 }
 
@@ -138,4 +138,9 @@
 
 .block-user-button {
   text-transform: capitalize;
+}
+
+.ant-dropdown-menu-item-selected,
+.ant-dropdown-menu-submenu-title-selected {
+  background-color: #f5f0ff;
 }
