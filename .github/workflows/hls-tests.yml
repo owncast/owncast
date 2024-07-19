@@ -24,8 +24,20 @@ jobs:
         uses: fkirc/skip-duplicate-actions@v5
         with:
           concurrent_skipping: 'same_content_newer'
-      - uses: actions/checkout@v4
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v44
+        with:
+          files_yaml: |
+            src:
+              - '**/*.{go,mod,sum}'
+
       - uses: actions/setup-go@v5
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
           go-version: '1.22'
           cache: true
@@ -43,6 +55,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Local stroage
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10
@@ -50,6 +63,7 @@ jobs:
           command: cd test/automated/hls && ./run.sh
 
       - name: S3 storage
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10

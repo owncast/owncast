@@ -18,23 +18,36 @@ jobs:
         with:
           concurrent_skipping: 'same_content_newer'
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v44
+        with:
+          files_yaml: |
+            src:
+              - '**/*.{go,mod,sum}'
+
       - uses: earthly/actions-setup@v1
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
           version: 'latest' # or pin to an specific version, e.g. "v0.6.10"
 
       - name: Earthly version
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         run: earthly --version
 
       - name: Set up QEMU
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         id: qemu
         uses: docker/setup-qemu-action@v3
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
 
-      - uses: actions/checkout@v4
-
       - name: Run API tests
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10
