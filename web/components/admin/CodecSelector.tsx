@@ -93,6 +93,8 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
       title = 'OpenMax (omx) for Raspberry Pi';
     } else if (title === 'h264_videotoolbox') {
       title = 'Apple VideoToolbox (hardware)';
+    } else if (title === 'h264_rkmpp') {
+      title = 'Rockchip MPP (hardware)';
     }
 
     return (
@@ -123,6 +125,9 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
   } else if (selectedCodec === 'h264_videotoolbox') {
     description =
       'Apple VideoToolbox is a low-level framework that provides direct access to hardware encoders and decoders.';
+  } else if (selectedCodec === 'h264_rkmpp') {
+    description =
+      'Rockchip MPP is a hardware-accelerate encoder for rockchip ARM SoC chips, like orange pi etc.';
   }
 
   return (
