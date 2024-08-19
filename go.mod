@@ -33,7 +33,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	golang.org/x/crypto v0.24.0
 	golang.org/x/net v0.26.0
-	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
 )
 
 require github.com/prometheus/client_golang v1.19.1
@@ -53,7 +53,7 @@ require (
 
 require (
 	github.com/nakabonne/tstorage v0.3.6
-	github.com/shirou/gopsutil/v4 v4.24.6
+	github.com/shirou/gopsutil/v4 v4.24.7
 )
 
 require github.com/SherClockHolmes/webpush-go v1.3.0
@@ -87,7 +87,6 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/yuin/goldmark-emoji v1.0.3
 	gopkg.in/evanphx/json-patch.v5 v5.9.0
-	mvdan.cc/xurls/v2 v2.5.0
 	mvdan.cc/xurls/v2 v2.5.0
 )
 
