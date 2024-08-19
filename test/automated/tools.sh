@@ -5,7 +5,15 @@ set -e
 function install_ffmpeg() {
 	# install a specific version of ffmpeg
 
-	FFMPEG_VER="4.4.1"
+	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+		OS="linux"
+	elif [[ "$OSTYPE" == "darwin"* ]]; then
+		OS="macos"
+	else
+		exit 1
+	fi
+
+	FFMPEG_VER="5.1"
 	FFMPEG_PATH="$(pwd)/ffmpeg-$FFMPEG_VER"
 	PATH=$FFMPEG_PATH:$PATH
 
@@ -28,7 +36,7 @@ function install_ffmpeg() {
 	fi
 
 	rm -f ffmpeg.zip
-	curl -sL --fail https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v${FFMPEG_VER}/ffmpeg-${FFMPEG_VER}-linux-64.zip --output ffmpeg.zip >/dev/null
+	curl -sL --fail https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v${FFMPEG_VER}/ffmpeg-${FFMPEG_VER}-${OS}-64.zip --output ffmpeg.zip >/dev/null
 	unzip -o ffmpeg.zip >/dev/null && rm -f ffmpeg.zip
 	chmod +x ffmpeg
 	PATH=$FFMPEG_PATH:$PATH
