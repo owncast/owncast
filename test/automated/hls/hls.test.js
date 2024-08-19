@@ -51,14 +51,12 @@ describe('fetch and parse HLS', () => {
 	var masterPlaylist;
 	var mediaPlaylistUrl;
 
-	test('fetch master playlist', async (done) => {
+	test('fetch master playlist', async () => {
 		try {
 			masterPlaylist = await getPlaylist(masterPlaylistUrl);
 		} catch (e) {
 			console.error('error fetching and parsing master playlist', e);
 		}
-
-		done();
 	});
 
 	test('verify there is a media playlist', () => {
@@ -75,7 +73,7 @@ describe('fetch and parse HLS', () => {
 		}
 	});
 
-	test('verify there are segments', async (done) => {
+	test('verify there are segments', async () => {
 		let playlist;
 		try {
 			playlist = await getPlaylist(mediaPlaylistUrl);
@@ -85,8 +83,6 @@ describe('fetch and parse HLS', () => {
 
 		const segments = playlist.segments;
 		expect(segments.length).toBeGreaterThan(0);
-
-		done();
 	});
 
 	// Iterate over segments and make sure they change.
@@ -94,7 +90,7 @@ describe('fetch and parse HLS', () => {
 	// fetch another just like a real HLS player would do.
 	var lastSegmentUrl;
 	for (let i = 0; i < HLS_FETCH_ITERATIONS; i++) {
-		test('fetch and monitor media playlist segments ' + i, async (done) => {
+		test('fetch and monitor media playlist segments ' + i, async () => {
 			await new Promise((r) => setTimeout(r, 5000));
 
 			try {
@@ -115,8 +111,6 @@ describe('fetch and parse HLS', () => {
 			}
 
 			lastSegmentUrl = segment.uri;
-
-			done();
 		});
 	}
 });
