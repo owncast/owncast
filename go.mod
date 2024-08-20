@@ -26,7 +26,6 @@ require (
 require (
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/lestrrat-go/strftime v1.0.4 // indirect
-	github.com/mvdan/xurls v1.1.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
@@ -51,10 +50,7 @@ require (
 	google.golang.org/protobuf v1.34.2 // indirect
 )
 
-require (
-	github.com/nakabonne/tstorage v0.3.6
-	github.com/shirou/gopsutil/v4 v4.24.7
-)
+require github.com/nakabonne/tstorage v0.3.6
 
 require github.com/SherClockHolmes/webpush-go v1.3.0
 
