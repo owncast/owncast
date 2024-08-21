@@ -284,6 +284,12 @@ func writeResponse(payload interface{}, w http.ResponseWriter) error {
 
 // HostMetaController points to webfinger.
 func HostMetaController(w http.ResponseWriter, r *http.Request) {
+	if !data.GetFederationEnabled() {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		log.Debugln("host meta request rejected! Federation is not enabled")
+		return
+	}
+
 	serverURL := data.GetServerURL()
 	if serverURL == "" {
 		w.WriteHeader(http.StatusNotFound)
