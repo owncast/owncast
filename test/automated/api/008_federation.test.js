@@ -22,7 +22,7 @@ test('verify responses of /.well-known/webfinger when federation is disabled', a
 });
 
 test('verify responses of /.well-known/host-meta when federation is disabled', async () => {
-	await request.get('/.well-known/host-meta').expect(404);
+	await request.get('/.well-known/host-meta').expect(405);
 });
 
 test('verify responses of /.well-known/nodeinfo when federation is disabled', async () => {
