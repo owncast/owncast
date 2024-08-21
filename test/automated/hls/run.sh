@@ -5,7 +5,7 @@ set -e
 source ../tools.sh
 
 # Install the node test framework
-npm install --silent >/dev/null
+npm install --quiet --no-progress
 
 install_ffmpeg
 

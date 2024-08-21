@@ -1,19 +1,16 @@
 var request = require('supertest');
 request = request('http://127.0.0.1:8080');
 
-test('main page requires no auth', async (done) => {
+test('main page requires no auth', async () => {
 	await request.get('/').expect(200);
-	done();
 });
 
-test('admin without trailing slash redirects', async (done) => {
+test('admin without trailing slash redirects', async () => {
 	await request.get('/admin').expect(301);
-	done();
 });
 
-test('admin with trailing slash requires auth', async (done) => {
+test('admin with trailing slash requires auth', async () => {
 	await request.get('/admin/').expect(401);
-	done();
 });
 
 const paths = [
@@ -41,18 +38,16 @@ const paths = [
 // Test a bunch of paths to make sure random different pages don't slip by for some reason.
 // Technically this shouldn't be possible but it's a sanity check anyway.
 paths.forEach((path) => {
-	test(`admin path ${path} requires auth and should fail`, async (done) => {
+	test(`admin path ${path} requires auth and should fail`, async () => {
 		await request.get(path).expect(401);
-		done();
 	});
 });
 
 // Try them again with auth. Some with trailing slashes some without.
 // Allow redirects.
 paths.forEach((path) => {
-	test(`admin path ${path} requires auth and should pass`, async (done) => {
+	test(`admin path ${path} requires auth and should pass`, async () => {
 		const r = await request.get(path).auth('admin', 'abc123');
 		expect([200, 301]).toContain(r.status);
-		done();
 	});
 });
