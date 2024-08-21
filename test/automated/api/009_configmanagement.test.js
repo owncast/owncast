@@ -139,7 +139,7 @@ const overriddenWebsocketHost = 'ws://lolcalhost.biz';
 const customCSS = randomString();
 const customJavascript = randomString();
 
-test('verify default config values', async (done) => {
+test('verify default config values', async () => {
 	const res = await request.get('/api/config');
 	expect(res.body.name).toBe(defaultServerName);
 	expect(res.body.streamTitle).toBe(defaultStreamTitle);
@@ -148,10 +148,9 @@ test('verify default config values', async (done) => {
 	expect(res.body.offlineMessage).toBe(defaultOfflineMessage);
 	expect(res.body.logo).toBe(defaultLogo);
 	expect(res.body.socialHandles).toStrictEqual(defaultSocialHandles);
-	done();
 });
 
-test('verify default admin configuration', async (done) => {
+test('verify default admin configuration', async () => {
 	const res = await getAdminResponse('serverconfig');
 
 	expect(res.body.instanceDetails.name).toBe(defaultServerName);
@@ -167,9 +166,13 @@ test('verify default admin configuration', async (done) => {
 	expect(res.body.yp.enabled).toBe(defaultYPConfig.enabled);
 	// expect(res.body.yp.instanceUrl).toBe(defaultYPConfig.instanceUrl);
 
-	bcrypt.compare(defaultAdminPassword, res.body.adminPassword, function (err, result) {
-		expect(result).toBe(true);
-	});
+	bcrypt.compare(
+		defaultAdminPassword,
+		res.body.adminPassword,
+		function (err, result) {
+			expect(result).toBe(true);
+		}
+	);
 
 	expect(res.body.s3.enabled).toBe(defaultS3Config.enabled);
 	expect(res.body.s3.forcePathStyle).toBe(defaultS3Config.forcePathStyle);
@@ -187,217 +190,177 @@ test('verify default admin configuration', async (done) => {
 	expect(res.body.federation.blockedDomains).toStrictEqual(
 		defaultFederationConfig.blockedDomains
 	);
-	done();
 });
 
-test('verify stream key validation', async (done) => {
+test('verify stream key validation', async () => {
 	const badPayload = { id: 'zz', comment: 'ouch' };
 	const url = '/api/admin/config/streamkeys';
-	const res = await request
+	await request
 		.post(url)
 		.auth('admin', defaultAdminPassword)
 		.send(badPayload)
 		.expect(400);
-
-	done();
 });
 
-test('set server name', async (done) => {
-	const res = await sendAdminRequest('config/name', newServerName);
-	done();
+test('set server name', async () => {
+	await sendAdminRequest('config/name', newServerName);
 });
 
-test('set stream title', async (done) => {
-	const res = await sendAdminRequest('config/streamtitle', newStreamTitle);
-	done();
+test('set stream title', async () => {
+	await sendAdminRequest('config/streamtitle', newStreamTitle);
 });
 
-test('set server summary', async (done) => {
-	const res = await sendAdminRequest('config/serversummary', newServerSummary);
-	done();
+test('set server summary', async () => {
+	await sendAdminRequest('config/serversummary', newServerSummary);
 });
 
-test('set extra page content', async (done) => {
-	const res = await sendAdminRequest('config/pagecontent', newPageContent);
-	done();
+test('set extra page content', async () => {
+	await sendAdminRequest('config/pagecontent', newPageContent);
 });
 
-test('set tags', async (done) => {
-	const res = await sendAdminRequest('config/tags', newTags);
-	done();
+test('set tags', async () => {
+	await sendAdminRequest('config/tags', newTags);
 });
 
-test('set stream keys', async (done) => {
-	const res = await sendAdminRequest('config/streamkeys', newStreamKeys);
-	done();
+test('set stream keys', async () => {
+	await sendAdminRequest('config/streamkeys', newStreamKeys);
 });
 
-test('set latency level', async (done) => {
-	const res = await sendAdminRequest(
-		'config/video/streamlatencylevel',
-		latencyLevel
-	);
-	done();
+test('set latency level', async () => {
+	await sendAdminRequest('config/video/streamlatencylevel', latencyLevel);
 });
 
-test('set video stream output variants', async (done) => {
-	const res = await sendAdminRequest('config/video/streamoutputvariants', [
+test('set video stream output variants', async () => {
+	await sendAdminRequest('config/video/streamoutputvariants', [
 		streamOutputVariants,
 	]);
-	done();
 });
 
-test('set social handles', async (done) => {
-	const res = await sendAdminRequest('config/socialhandles', newSocialHandles);
-	done();
+test('set social handles', async () => {
+	await sendAdminRequest('config/socialhandles', newSocialHandles);
 });
 
-test('set s3 configuration', async (done) => {
-	const res = await sendAdminRequest('config/s3', newS3Config);
-	done();
+test('set s3 configuration', async () => {
+	await sendAdminRequest('config/s3', newS3Config);
 });
 
-test('set forbidden usernames', async (done) => {
-	const res = await sendAdminRequest(
+test('set forbidden usernames', async () => {
+	await sendAdminRequest(
 		'config/chat/forbiddenusernames',
 		newForbiddenUsernames
 	);
-	done();
 });
 
-test('set server url', async (done) => {
-	const resBadURL = await failAdminRequest('config/serverurl', 'not.valid.url');
-	const res = await sendAdminRequest(
-		'config/serverurl',
-		newYPConfig.instanceUrl
-	);
-	done();
+test('set server url', async () => {
+	await failAdminRequest('config/serverurl', 'not.valid.url');
+	await sendAdminRequest('config/serverurl', newYPConfig.instanceUrl);
 });
 
-test('set federation username', async (done) => {
-	const res = await sendAdminRequest(
+test('set federation username', async () => {
+	await sendAdminRequest(
 		'config/federation/username',
 		newFederationConfig.username
 	);
-	done();
 });
 
-test('set federation goLiveMessage', async (done) => {
-	const res = await sendAdminRequest(
+test('set federation goLiveMessage', async () => {
+	await sendAdminRequest(
 		'config/federation/livemessage',
 		newFederationConfig.goLiveMessage
 	);
-	done();
 });
 
-test('toggle private federation mode', async (done) => {
-	const res = await sendAdminRequest(
+test('toggle private federation mode', async () => {
+	await sendAdminRequest(
 		'config/federation/private',
 		newFederationConfig.isPrivate
 	);
-	done();
 });
 
-test('toggle federation engagement', async (done) => {
+test('toggle federation engagement', async () => {
 	const res = await sendAdminRequest(
 		'config/federation/showengagement',
 		newFederationConfig.showEngagement
 	);
-	done();
 });
 
-test('set federation blocked domains', async (done) => {
-	const res = await sendAdminRequest(
+test('set federation blocked domains', async () => {
+	await sendAdminRequest(
 		'config/federation/blockdomains',
 		newFederationConfig.blockedDomains
 	);
-	done();
 });
 
-test('set offline message', async (done) => {
-	const res = await sendAdminRequest(
-		'config/offlinemessage',
-		newOfflineMessage
-	);
-	done();
+test('set offline message', async () => {
+	await sendAdminRequest('config/offlinemessage', newOfflineMessage);
 });
 
-test('set hide viewer count', async (done) => {
-	const res = await sendAdminRequest(
-		'config/hideviewercount',
-		newHideViewerCount
-	);
-	done();
+test('set hide viewer count', async () => {
+	await sendAdminRequest('config/hideviewercount', newHideViewerCount);
 });
 
-test('set custom style values', async (done) => {
-	const res = await sendAdminRequest('config/appearance', appearanceValues);
-	done();
+test('set custom style values', async () => {
+	await sendAdminRequest('config/appearance', appearanceValues);
 });
 
-test('set custom css', async (done) => {
+test('set custom css', async () => {
 	await sendAdminRequest('config/customstyles', customCSS);
-	done();
 });
 
-test('set custom javascript', async (done) => {
+test('set custom javascript', async () => {
 	await sendAdminRequest('config/customjavascript', customJavascript);
-	done();
 });
 
-test('enable directory', async (done) => {
-	const res = await sendAdminRequest('config/directoryenabled', true);
-	done();
+test('enable directory', async () => {
+	await sendAdminRequest('config/directoryenabled', true);
 });
 
-test('enable federation', async (done) => {
-	const res = await sendAdminRequest(
+test('enable federation', async () => {
+	await sendAdminRequest(
 		'config/federation/enable',
 		newFederationConfig.enabled
 	);
-	done();
 });
 
-test('disable search indexing', async (done) => {
+test('disable search indexing', async () => {
 	await sendAdminRequest(
 		'config/disablesearchindexing',
 		newDisableSearchIndexing
 	);
-	done();
 });
 
-test('change admin password', async (done) => {
-	const res = await sendAdminRequest('config/adminpass', newAdminPassword);
-	done();
+test('change admin password', async () => {
+	await sendAdminRequest('config/adminpass', newAdminPassword);
 });
 
-test('verify admin password change', async (done) => {
+test('verify admin password change', async () => {
 	const res = await getAdminResponse(
 		'serverconfig',
 		(adminPassword = newAdminPassword)
 	);
 
-	bcrypt.compare(newAdminPassword, res.body.adminPassword, function(err, result) {
-		expect(result).toBe(true);
-	});
-	done();
+	bcrypt.compare(
+		newAdminPassword,
+		res.body.adminPassword,
+		function (err, result) {
+			expect(result).toBe(true);
+		}
+	);
 });
 
-test('reset admin password', async (done) => {
-	const res = await sendAdminRequest(
+test('reset admin password', async () => {
+	await sendAdminRequest(
 		'config/adminpass',
 		defaultAdminPassword,
 		(adminPassword = newAdminPassword)
 	);
-	done();
 });
 
-test('set override websocket host', async (done) => {
+test('set override websocket host', async () => {
 	await sendAdminRequest('config/sockethostoverride', overriddenWebsocketHost);
-	done();
 });
 
-test('verify updated config values', async (done) => {
+test('verify updated config values', async () => {
 	const res = await request.get('/api/config');
 
 	expect(res.body.name).toBe(newServerName);
@@ -409,11 +372,10 @@ test('verify updated config values', async (done) => {
 	expect(res.body.socialHandles).toStrictEqual(newSocialHandles);
 	expect(res.body.socketHostOverride).toBe(overriddenWebsocketHost);
 	expect(res.body.customStyles).toBe(customCSS);
-	done();
 });
 
 // Test that the raw video details being broadcasted are coming through
-test('verify admin stream details', async (done) => {
+test('verify admin stream details', async () => {
 	const res = await getAdminResponse('status');
 
 	expect(res.body.broadcaster.streamDetails.width).toBe(1280);
@@ -422,10 +384,9 @@ test('verify admin stream details', async (done) => {
 	expect(res.body.broadcaster.streamDetails.videoCodec).toBe('H.264');
 	expect(res.body.broadcaster.streamDetails.audioCodec).toBe('AAC');
 	expect(res.body.online).toBe(true);
-	done();
 });
 
-test('verify updated admin configuration', async (done) => {
+test('verify updated admin configuration', async () => {
 	const res = await getAdminResponse('serverconfig');
 
 	expect(res.body.instanceDetails.name).toBe(newServerName);
@@ -453,9 +414,13 @@ test('verify updated admin configuration', async (done) => {
 	expect(res.body.yp.enabled).toBe(newYPConfig.enabled);
 	// expect(res.body.yp.instanceUrl).toBe(newYPConfig.instanceUrl);
 
-	bcrypt.compare(defaultAdminPassword, res.body.adminPassword, function(err, result) {
-		expect(result).toBe(true);
-	})
+	bcrypt.compare(
+		defaultAdminPassword,
+		res.body.adminPassword,
+		function (err, result) {
+			expect(result).toBe(true);
+		}
+	);
 
 	expect(res.body.s3.enabled).toBe(newS3Config.enabled);
 	expect(res.body.s3.endpoint).toBe(newS3Config.endpoint);
@@ -478,28 +443,25 @@ test('verify updated admin configuration', async (done) => {
 	expect(res.body.federation.blockedDomains).toStrictEqual(
 		newFederationConfig.blockedDomains
 	);
-	done();
 });
 
-test('verify updated frontend configuration', (done) => {
-	request
+test('verify updated frontend configuration', async () => {
+	await request
 		.get('/api/config')
 		.expect(200)
 		.then((res) => {
 			expect(res.body.name).toBe(newServerName);
 			expect(res.body.logo).toBe('/logo');
 			expect(res.body.socialHandles).toStrictEqual(newSocialHandles);
-			done();
 		});
 });
 
-test('verify frontend status', (done) => {
-	request
+test('verify frontend status', async () => {
+	await request
 		.get('/api/status')
 		.expect(200)
 		.then((res) => {
 			expect(res.body.viewerCount).toBe(undefined);
-			done();
 		});
 });
 
