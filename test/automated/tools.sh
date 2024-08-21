@@ -5,8 +5,6 @@ set -e
 function install_ffmpeg() {
 	# install a specific version of ffmpeg
 
-	echo $OSTYPE
-
 	if [[ "$OSTYPE" == "linux-"* ]]; then
 		OS="linux"
 	elif [[ "$OSTYPE" == "darwin"* ]]; then
