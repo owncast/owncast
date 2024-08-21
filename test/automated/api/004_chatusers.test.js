@@ -21,34 +21,30 @@ const testVisibilityMessage = {
 
 var userId;
 var accessToken;
-test('register a user', async (done) => {
+test('register a user', async () => {
 	const registration = await registerChat();
 	userId = registration.id;
 	accessToken = registration.accessToken;
-	done();
 });
 
-test('send a chat message', async (done) => {
-	sendChatMessage(testVisibilityMessage, accessToken, done);
+test('send a chat message', async () => {
+	await sendChatMessage(testVisibilityMessage, accessToken);
 });
 
-test('set the user as moderator', async (done) => {
+test('set the user as moderator', async () => {
 	const res = await sendAdminPayload('chat/users/setmoderator', {
 		userId: userId,
 		isModerator: true,
 	});
-	done();
 });
 
-test('verify user is a moderator', async (done) => {
+test('verify user is a moderator', async () => {
 	const response = await getAdminResponse('chat/users/moderators');
 	const tokenCheck = response.body.filter((user) => user.id === userId);
 	expect(tokenCheck).toHaveLength(1);
-
-	done();
 });
 
-test('verify user list is populated', async (done) => {
+test('verify user list is populated', async () => {
 	const ws = new WebSocket(
 		`ws://localhost:8080/ws?accessToken=${accessToken}`,
 		{
@@ -74,12 +70,10 @@ test('verify user list is populated', async (done) => {
 		ws.close();
 	});
 
-	ws.on('close', function incoming(data) {
-		done();
-	});
+	ws.on('close', function incoming(data) {});
 });
 
-test('disable a user by admin', async (done) => {
+test('disable a user by admin', async () => {
 	// To allow for visually being able to see the test hiding the
 	// message add a short delay.
 	await new Promise((r) => setTimeout(r, 1500));
@@ -97,42 +91,36 @@ test('disable a user by admin', async (done) => {
 	});
 
 	await new Promise((r) => setTimeout(r, 1500));
-	done();
 });
 
-test('verify user is disabled', async (done) => {
+test('verify user is disabled', async () => {
 	const response = await getAdminResponse('chat/users/disabled');
 	const tokenCheck = response.body.filter((user) => user.id === userId);
 	expect(tokenCheck).toHaveLength(1);
-	done();
 });
 
-test('verify messages from user are hidden', async (done) => {
+test('verify messages from user are hidden', async () => {
 	const response = await getAdminResponse('chat/messages');
 	const message = response.body.filter((obj) => {
 		return obj.user.id === userId;
 	});
 	expect(message[0].user.disabledAt).toBeTruthy();
-	done();
 });
 
-test('re-enable a user by admin', async (done) => {
+test('re-enable a user by admin', async () => {
 	const res = await sendAdminPayload('chat/users/setenabled', {
 		userId: userId,
 		enabled: true,
 	});
-	done();
 });
 
-test('verify user is enabled', async (done) => {
+test('verify user is enabled', async () => {
 	const response = await getAdminResponse('chat/users/disabled');
 	const tokenCheck = response.body.filter((user) => user.id === userId);
 	expect(tokenCheck).toHaveLength(0);
-
-	done();
 });
 
-test('ban an ip address by admin', async (done) => {
+test('ban an ip address by admin', async () => {
 	const resIPv4 = await sendAdminRequest(
 		'chat/users/ipbans/create',
 		localIPAddressV4
@@ -141,23 +129,20 @@ test('ban an ip address by admin', async (done) => {
 		'chat/users/ipbans/create',
 		localIPAddressV6
 	);
-	done();
 });
 
-test('verify IP address is blocked from the ban', async (done) => {
+test('verify IP address is blocked from the ban', async () => {
 	const response = await getAdminResponse('chat/users/ipbans');
 
 	expect(response.body).toHaveLength(2);
 	expect(onlyLocalIPAddress(response.body)).toBe(true);
-	done();
 });
 
-test('verify access is denied', async (done) => {
+test('verify access is denied', async () => {
 	await request.get(`/api/chat?accessToken=${accessToken}`).expect(401);
-	done();
 });
 
-test('remove an ip address ban by admin', async (done) => {
+test('remove an ip address ban by admin', async () => {
 	const resIPv4 = await sendAdminRequest(
 		'chat/users/ipbans/remove',
 		localIPAddressV4
@@ -166,19 +151,16 @@ test('remove an ip address ban by admin', async (done) => {
 		'chat/users/ipbans/remove',
 		localIPAddressV6
 	);
-	done();
 });
 
-test('verify IP address is no longer banned', async (done) => {
+test('verify IP address is no longer banned', async () => {
 	const response = await getAdminResponse('chat/users/ipbans');
 
 	expect(response.body).toHaveLength(0);
-	done();
 });
 
-test('verify access is allowed after unban', async (done) => {
+test('verify access is allowed after unban', async () => {
 	await request.get(`/api/chat?accessToken=${accessToken}`).expect(200);
-	done();
 });
 
 // This function expects the local address to be localIPAddressV4 & localIPAddressV6

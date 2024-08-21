@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"test": "jest --runInBand *.test.js"
+		"test": "jest *.test.js"
 	},
 	"author": "",
 	"license": "ISC",
@@ -23,7 +23,7 @@
 		"ws": "^7.5.9"
 	},
 	"jest": {
-		"verbose": true,
+		"verbose": false,
 		"maxWorkers": 1,
 		"testRunner": "jest-jasmine2"
 	}

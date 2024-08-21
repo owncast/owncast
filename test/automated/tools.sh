@@ -5,13 +5,16 @@ set -e
 function install_ffmpeg() {
 	# install a specific version of ffmpeg
 
-	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+	if [[ "$OSTYPE" == "linux-"* ]]; then
 		OS="linux"
 	elif [[ "$OSTYPE" == "darwin"* ]]; then
 		OS="macos"
 	else
+		echo "Exiting!!!"
 		exit 1
 	fi
+
+	OS="linux"
 
 	FFMPEG_VER="5.1"
 	FFMPEG_PATH="$(pwd)/ffmpeg-$FFMPEG_VER"
@@ -48,7 +51,7 @@ function start_owncast() {
 	# Build and run owncast from source
 	echo "Building owncast..."
 	pushd "$(git rev-parse --show-toplevel)" >/dev/null
-	go build -o owncast main.go
+	CGO_ENABLED=1 go build -o owncast main.go
 
 	echo "Running owncast..."
 	./owncast -database "$TEMP_DB" &
