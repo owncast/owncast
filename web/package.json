@@ -84,7 +84,7 @@
 		"@types/classnames": "2.3.1",
 		"@types/jest": "^29.5.0",
 		"@types/markdown-it": "14.1.2",
-		"@types/node": "20.16.0",
+		"@types/node": "20.16.1",
 		"@types/prop-types": "15.7.12",
 		"@types/react": "18.3.3",
 		"@types/react-linkify": "1.0.4",
