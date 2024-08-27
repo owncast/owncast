@@ -77,7 +77,7 @@ require (
 	github.com/TwiN/go-away v1.6.13
 	github.com/andybalholm/cascadia v1.3.2
 	github.com/go-chi/chi/v5 v5.1.0
-	github.com/jellydator/ttlcache/v3 v3.2.0
+	github.com/jellydator/ttlcache/v3 v3.3.0
 	github.com/mssola/user_agent v0.6.0
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/shirou/gopsutil/v3 v3.24.5
