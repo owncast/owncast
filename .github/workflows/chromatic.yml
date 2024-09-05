@@ -30,7 +30,7 @@ jobs:
 
       - name: Check out pull request code
         uses: actions/checkout@v4
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
