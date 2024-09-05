@@ -28,14 +28,15 @@ jobs:
           cancel_others: 'true'
           skip_after_successful_duplicate: 'true'
 
-      - name: Checkout
+      - name: Check out pull request code
         uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
         with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-          fetch-depth: 0
-          persist-credentials: true
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        if: github.event_name == 'push'
 
       - name: Get changed files
         id: changed-files-yaml
@@ -101,13 +102,15 @@ jobs:
           cancel_others: 'true'
           skip_after_successful_duplicate: 'true'
 
-      - name: Checkout
+      - name: Check out pull request code
         uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
         with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-          fetch-depth: 0
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        if: github.event_name == 'push'
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -155,13 +158,15 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Checkout
+      - name: Check out pull request code
         uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
         with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-          fetch-depth: 0
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        if: github.event_name == 'push'
 
       - name: Bundle web app (next.js build)
         run: build/web/bundleWeb.sh

@@ -9,8 +9,15 @@ jobs:
     name: Generate API Documentation
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Check out pull request code
         uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        if: github.event_name == 'push'
 
       - name: Run redoc on openapi.yaml
         run: |

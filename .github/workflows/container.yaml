@@ -37,10 +37,15 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: all
 
-      - name: Checkout repo
+      - name: Check out pull request code
         uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
         with:
-          fetch-depth: 0
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        if: github.event_name == 'push'
 
       - name: Build and push
         if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}

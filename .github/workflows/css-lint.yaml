@@ -16,8 +16,15 @@ jobs:
         working-directory: ./web
 
     steps:
-      - name: Checkout repository
+      - name: Check out pull request code
         uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        if: github.event_name == 'push'
 
       - name: Get changed files
         id: changed-files-yaml
