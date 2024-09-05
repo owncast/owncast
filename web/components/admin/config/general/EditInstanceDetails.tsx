@@ -241,7 +241,10 @@ export default function EditInstanceDetails() {
             onChange={value => {
               handleFieldChange({ fieldName: 'offlineMessage', value });
             }}
-            extensions={[markdown({ base: markdownLanguage, codeLanguages: languages }), EditorView.lineWrapping]}
+            extensions={[
+              markdown({ base: markdownLanguage, codeLanguages: languages }),
+              EditorView.lineWrapping,
+            ]}
           />
         </div>
         <div className="field-tip">
