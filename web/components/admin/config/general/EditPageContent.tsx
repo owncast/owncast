@@ -103,7 +103,10 @@ export default function EditPageContent() {
         theme={bbedit}
         height="200px"
         onChange={handleEditorChange}
-        extensions={[markdown({ base: markdownLanguage, codeLanguages: languages }), EditorView.lineWrapping]}
+        extensions={[
+          markdown({ base: markdownLanguage, codeLanguages: languages }),
+          EditorView.lineWrapping,
+        ]}
       />
 
       <br />
