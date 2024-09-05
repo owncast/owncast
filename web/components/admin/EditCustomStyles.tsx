@@ -1,7 +1,7 @@
 // EDIT CUSTOM CSS STYLES
 import React, { useState, useEffect, useContext, FC } from 'react';
 import { Typography, Button } from 'antd';
-import CodeMirror from '@uiw/react-codemirror';
+import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { css } from '@codemirror/lang-css';
 
@@ -101,7 +101,7 @@ export const EditCustomStyles: FC = () => {
         placeholder="/* Enter custom CSS here */"
         theme={bbedit}
         height="200px"
-        extensions={[css()]}
+        extensions={[css(), EditorView.lineWrapping]}
         onChange={onCSSValueChange}
       />
 
