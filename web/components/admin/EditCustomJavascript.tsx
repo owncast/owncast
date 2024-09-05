@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, FC } from 'react';
 import { Typography, Button } from 'antd';
-import CodeMirror from '@uiw/react-codemirror';
+import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { javascript } from '@codemirror/lang-javascript';
 
@@ -98,7 +98,7 @@ export const EditCustomJavascript: FC = () => {
         placeholder="/* Enter custom Javascript here */"
         theme={bbedit}
         height="200px"
-        extensions={[javascript()]}
+        extensions={[javascript(), EditorView.lineWrapping]}
         onChange={onValueChange}
       />
 
