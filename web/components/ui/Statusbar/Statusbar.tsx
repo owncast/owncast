@@ -22,12 +22,12 @@ function makeDurationString(lastConnectTime: Date): string {
   const diff = intervalToDuration({ start: lastConnectTime, end: new Date() });
   
   // fallback values in case undefined or null is passed to diff values
-  diff.years ?? 0;
-  diff.weeks ?? 0;
-  diff.days ?? 0;
-  diff.hours ?? 0;
-  diff.minutes ?? 0;
-  diff.seconds ?? 0;
+  diff.years = diff.years ?? 0;
+  diff.weeks = diff.weeks ?? 0;
+  diff.days = diff.days ?? 0;
+  diff.hours = diff.hours ?? 0;
+  diff.minutes = diff.minutes ?? 0;
+  diff.seconds = diff.seconds ?? 0;
   
   if (diff.days >= 1) {
     return formatDuration({
