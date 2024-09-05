@@ -237,7 +237,7 @@ func GetOutbox(limit int, offset int) (vocab.ActivityStreamsOrderedCollection, e
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
 	rows, err := _datastore.GetQueries().GetOutboxWithOffset(
 		context.Background(),
-		db.GetOutboxWithOffsetParams{Limit: int32(limit), Offset: int32(offset)},
+		db.GetOutboxWithOffsetParams{Limit: limit, Offset: offset},
 	)
 	if err != nil {
 		return collection, err
@@ -309,8 +309,8 @@ func SaveInboundFediverseActivity(objectIRI string, actorIRI string, eventType s
 func GetInboundActivities(limit int, offset int) ([]models.FederatedActivity, int, error) {
 	ctx := context.Background()
 	rows, err := _datastore.GetQueries().GetInboundActivitiesWithOffset(ctx, db.GetInboundActivitiesWithOffsetParams{
-		Limit:  int32(limit),
-		Offset: int32(offset),
+		Limit:  limit,
+		Offset: offset,
 	})
 	if err != nil {
 		return nil, 0, err

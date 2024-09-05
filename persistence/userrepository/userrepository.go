@@ -144,7 +144,7 @@ func (r *SqlUserRepository) ChangeUserColor(userID string, color int) error {
 	defer r.datastore.DbLock.Unlock()
 
 	if err := r.datastore.GetQueries().ChangeDisplayColor(context.Background(), db.ChangeDisplayColorParams{
-		DisplayColor: int32(color),
+		DisplayColor: color,
 		ID:           userID,
 	}); err != nil {
 		return errors.Wrap(err, "unable to change display color")

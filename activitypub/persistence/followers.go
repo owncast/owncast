@@ -45,8 +45,8 @@ func GetFederationFollowers(limit int, offset int) ([]models.Follower, int, erro
 	}
 
 	followersResult, err := _datastore.GetQueries().GetFederationFollowersWithOffset(ctx, db.GetFederationFollowersWithOffsetParams{
-		Limit:  int32(limit),
-		Offset: int32(offset),
+		Limit:  limit,
+		Offset: offset,
 	})
 	if err != nil {
 		return nil, 0, err

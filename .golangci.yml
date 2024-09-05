@@ -28,7 +28,6 @@ linters:
     - bodyclose
     - dupl
     - errcheck
-    - exportloopref
     - goconst
     - godot
     - godox
@@ -49,7 +48,7 @@ linters:
     - cyclop
     - gosimple
     - unused
-    - exportloopref
+    - copyloopvar
     - gocritic
     - forbidigo
     - unparam
@@ -66,12 +65,6 @@ linters-settings:
     package-average: 0.0
     # should ignore tests
     skip-tests: true
-
-  gosimple:
-    # Select the Go version to target. The default is '1.13'.
-    go: '1.22'
-    # https://staticcheck.io/docs/options#checks
-    checks: ['all']
 
   gocritic:
     disabled-checks:

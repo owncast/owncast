@@ -158,7 +158,7 @@ UPDATE users SET display_color = $1 WHERE id = $2
 `
 
 type ChangeDisplayColorParams struct {
-	DisplayColor int32
+	DisplayColor int
 	ID           string
 }
 
@@ -253,8 +253,8 @@ SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE app
 `
 
 type GetFederationFollowersWithOffsetParams struct {
-	Limit  int32
-	Offset int32
+	Limit  int
+	Offset int
 }
 
 type GetFederationFollowersWithOffsetRow struct {
@@ -365,8 +365,8 @@ SELECT iri, actor, type, timestamp FROM ap_accepted_activities ORDER BY timestam
 `
 
 type GetInboundActivitiesWithOffsetParams struct {
-	Limit  int32
-	Offset int32
+	Limit  int
+	Offset int
 }
 
 type GetInboundActivitiesWithOffsetRow struct {
@@ -514,8 +514,8 @@ SELECT value FROM ap_outbox LIMIT $1 OFFSET $2
 `
 
 type GetOutboxWithOffsetParams struct {
-	Limit  int32
-	Offset int32
+	Limit  int
+	Offset int
 }
 
 func (q *Queries) GetOutboxWithOffset(ctx context.Context, arg GetOutboxWithOffsetParams) ([][]byte, error) {
