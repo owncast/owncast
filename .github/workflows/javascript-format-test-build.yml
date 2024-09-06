@@ -130,6 +130,10 @@ jobs:
       - name: Check for unused JS code and dependencies
         run: npx knip --include dependencies,files,exports
 
+      - name: Run tests
+        working-directory: ./web
+        run: npm test
+
   # After any formatting and linting is complete we can run the build
   # and bundle step. This both will verify that the build is successful as
   # well as commiting the updated static files into the repository for use.
