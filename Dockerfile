@@ -22,7 +22,7 @@ ENV NAME=${NAME}
 RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags "-extldflags \"-static\" -s -w -X github.com/owncast/owncast/config.GitCommit=$GIT_COMMIT -X github.com/owncast/owncast/config.VersionNumber=$VERSION -X github.com/owncast/owncast/config.BuildPlatform=$NAME" -o owncast .
 
 # Create the image by copying the result of the build into a new alpine image
-FROM alpine:3.20.2
+FROM alpine:3.20.3
 RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates && update-ca-certificates
 
 RUN addgroup -g 101 -S owncast && adduser -u 101 -S owncast -G owncast
