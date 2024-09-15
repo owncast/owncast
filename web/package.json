@@ -102,7 +102,7 @@
 		"eslint-config-next": "14.2.5",
 		"eslint-config-prettier": "9.1.0",
 		"eslint-plugin-import": "^2.27.5",
-		"eslint-plugin-jsx-a11y": "6.9.0",
+		"eslint-plugin-jsx-a11y": "6.10.0",
 		"eslint-plugin-prettier": "^5.0.0",
 		"eslint-plugin-react": "7.35.0",
 		"eslint-plugin-react-hooks": "4.6.2",
