@@ -52,6 +52,7 @@ module.exports = {
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
     'no-restricted-exports': 'off',
+    'no-plusplus': 'off',
     'react/jsx-no-target-blank': [
       1,
       {
