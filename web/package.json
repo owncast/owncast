@@ -35,7 +35,7 @@
 		"interweave": "^13.0.0",
 		"interweave-autolink": "^5.1.0",
 		"lodash": "4.17.21",
-		"next": "14.2.5",
+		"next": "14.2.11",
 		"next-pwa": "^5.6.0",
 		"next-with-less": "3.0.1",
 		"picmo": "5.8.5",
@@ -57,7 +57,7 @@
 		"workbox-precaching": "^7.0.0",
 		"workbox-window": "^7.0.0",
 		"xstate": "4.38.3",
-		"yaml": "2.5.0"
+		"yaml": "2.5.1"
 	},
 	"devDependencies": {
 		"@babel/core": "7.25.2",
@@ -84,7 +84,7 @@
 		"@types/classnames": "2.3.1",
 		"@types/jest": "^29.5.0",
 		"@types/markdown-it": "14.1.2",
-		"@types/node": "20.16.3",
+		"@types/node": "20.16.5",
 		"@types/prop-types": "15.7.12",
 		"@types/react": "18.3.5",
 		"@types/react-linkify": "1.0.4",
@@ -102,7 +102,7 @@
 		"eslint-config-next": "14.2.5",
 		"eslint-config-prettier": "9.1.0",
 		"eslint-plugin-import": "^2.27.5",
-		"eslint-plugin-jsx-a11y": "6.9.0",
+		"eslint-plugin-jsx-a11y": "6.10.0",
 		"eslint-plugin-prettier": "^5.0.0",
 		"eslint-plugin-react": "7.35.0",
 		"eslint-plugin-react-hooks": "4.6.2",
