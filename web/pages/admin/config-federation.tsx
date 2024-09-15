@@ -205,7 +205,7 @@ const ConfigFederation = () => {
     try {
       const u = new URL(domain);
       newDomain = u.host;
-    } catch (_) {
+    } catch {
       newDomain = domain;
     }
 
