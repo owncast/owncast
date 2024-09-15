@@ -27,6 +27,7 @@ module.exports = {
     'react/prop-types': 0,
     'react/react-in-jsx-scope': 'off',
     'react/require-default-props': 'off',
+    'react/no-is-mounted': 'off',
     'react/jsx-filename-extension': [
       1,
       {
