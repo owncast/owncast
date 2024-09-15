@@ -37,7 +37,7 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '22.1.0'
+          node-version: '18.19.1'
 
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -120,7 +120,7 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '22.1.0'
+          node-version: '18.19.1'
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -163,7 +163,7 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '22.1.0'
+          node-version: '18.19.1'
 
       - name: Cache node modules
         uses: actions/cache@v4
