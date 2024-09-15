@@ -28,14 +28,20 @@ jobs:
           cancel_others: 'true'
           skip_after_successful_duplicate: 'true'
 
-      - name: Checkout
+      - name: Check out pull request code
         uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
         with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-          fetch-depth: 0
-          persist-credentials: true
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.19.1'
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        if: github.event_name == 'push'
 
       - name: Get changed files
         id: changed-files-yaml
@@ -101,13 +107,20 @@ jobs:
           cancel_others: 'true'
           skip_after_successful_duplicate: 'true'
 
-      - name: Checkout
+      - name: Check out pull request code
         uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
         with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-          fetch-depth: 0
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        if: github.event_name == 'push'
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.19.1'
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -127,6 +140,10 @@ jobs:
       - name: Check for unused JS code and dependencies
         run: npx knip --include dependencies,files,exports
 
+      - name: Run tests
+        working-directory: ./web
+        run: npm test
+
   # After any formatting and linting is complete we can run the build
   # and bundle step. This both will verify that the build is successful as
   # well as commiting the updated static files into the repository for use.
@@ -143,6 +160,11 @@ jobs:
           cancel_others: 'true'
           skip_after_successful_duplicate: 'true'
 
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.19.1'
+
       - name: Cache node modules
         uses: actions/cache@v4
         env:
@@ -155,13 +177,15 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Checkout
+      - name: Check out pull request code
         uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
         with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-          fetch-depth: 0
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        if: github.event_name == 'push'
 
       - name: Bundle web app (next.js build)
         run: build/web/bundleWeb.sh

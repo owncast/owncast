@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, FC } from 'react';
 import { Button, Modal, Typography } from 'antd';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
-import CodeMirror from '@uiw/react-codemirror';
+import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { languages } from '@codemirror/language-data';
 import {
@@ -241,7 +241,10 @@ export default function EditInstanceDetails() {
             onChange={value => {
               handleFieldChange({ fieldName: 'offlineMessage', value });
             }}
-            extensions={[markdown({ base: markdownLanguage, codeLanguages: languages })]}
+            extensions={[
+              markdown({ base: markdownLanguage, codeLanguages: languages }),
+              EditorView.lineWrapping,
+            ]}
           />
         </div>
         <div className="field-tip">

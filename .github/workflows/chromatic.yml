@@ -28,13 +28,15 @@ jobs:
         with:
           concurrent_skipping: 'same_content_newer'
 
-      - name: Check out code
+      - name: Check out pull request code
         uses: actions/checkout@v4
+        if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
         with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-          fetch-depth: 0
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        if: github.event_name == 'push'
 
       - name: Get changed files
         id: changed-files-yaml
