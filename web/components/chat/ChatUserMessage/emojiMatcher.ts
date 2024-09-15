@@ -23,7 +23,7 @@ const regexSupportsUnicodeSets = (() => {
   let regexp = null;
   try {
     regexp = new RegExp(emojiPattern, regexpFlags);
-  } catch (_) {
+  } catch {
     return false;
   }
 
