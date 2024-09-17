@@ -3,4 +3,4 @@
 
 package chat
 
-func setSystemConcurrentConnectionLimit(limit int64) {}
+func setSystemConcurrentConnectionLimit(limit uint64) {}
