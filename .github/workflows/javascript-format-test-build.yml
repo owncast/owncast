@@ -72,26 +72,26 @@ jobs:
         run: npm install
 
       - name: Lint and fix
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.repository == 'owncast/owncast'
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.event_name != 'pull_request'
         run: npx eslint --fix ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
 
       - name: Lint
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.repository != 'owncast/owncast'
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.event_name == 'pull_request'
         run: npx eslint --fix ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
 
       - name: Prettier formatting
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.repository == 'owncast/owncast'
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.event_name == 'pull_request'
         run: npx prettier --write ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
 
       - name: Prettier check
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.repository != 'owncast/owncast'
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.event_name != 'pull_request'
         run: npx prettier ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
 
       - name: Debug changed files output
         run: 'pwd && echo "Changed files: ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}"'
 
       - name: Commit changes
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.repository == 'owncast/owncast'
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.event_name != 'pull_request'
         uses: EndBug/add-and-commit@v9
         with:
           author_name: Owncast
