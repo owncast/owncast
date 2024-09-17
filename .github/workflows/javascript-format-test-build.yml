@@ -77,7 +77,7 @@ jobs:
 
       - name: Lint
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.event_name == 'pull_request'
-        run: npx eslint --fix ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
+        run: npx eslint ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
 
       - name: Prettier formatting
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.event_name == 'pull_request'
