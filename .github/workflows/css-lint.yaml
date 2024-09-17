@@ -28,7 +28,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files-yaml
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           path: 'web'
           files_yaml: |
