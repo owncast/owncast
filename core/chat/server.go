@@ -41,7 +41,7 @@ type Server struct {
 	// a map of user IDs and timers that fire for chat part messages.
 	userPartedTimers         map[string]*time.Ticker
 	seq                      uint
-	maxSocketConnectionLimit int64
+	maxSocketConnectionLimit uint64
 
 	mu sync.RWMutex
 }
@@ -215,7 +215,7 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Limit concurrent chat connections
-	if int64(len(s.clients)) >= s.maxSocketConnectionLimit {
+	if uint64(len(s.clients)) >= s.maxSocketConnectionLimit {
 		log.Warnln("rejecting incoming client connection as it exceeds the max client count of", s.maxSocketConnectionLimit)
 		_, _ = w.Write([]byte(events.ErrorMaxConnectionsExceeded))
 		return

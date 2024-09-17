@@ -33,6 +33,12 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{github.event.pull_request.head.ref}}
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.19.1'
 
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -40,7 +46,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files-yaml
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           path: 'web'
           files_ignore: |
@@ -112,6 +118,11 @@ jobs:
         uses: actions/checkout@v4
         if: github.event_name == 'push'
 
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.19.1'
+
       - name: Cache node modules
         uses: actions/cache@v4
         env:
@@ -149,6 +160,11 @@ jobs:
           concurrent_skipping: 'same_content_newer'
           cancel_others: 'true'
           skip_after_successful_duplicate: 'true'
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.19.1'
 
       - name: Cache node modules
         uses: actions/cache@v4
