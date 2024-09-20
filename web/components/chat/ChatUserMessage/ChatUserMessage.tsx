@@ -96,7 +96,8 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
           [styles.ownMessage]: sentBySelf,
         })}
         style={{ borderColor: color }}
-        title={formattedTimestamp}>
+        title={formattedTimestamp}
+      >
         <div className={styles.background} style={{ color }} />
 
         <UserTooltip user={user}>
