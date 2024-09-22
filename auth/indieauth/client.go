@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -47,6 +47,8 @@ func setupExpiredRequestPruner() {
 
 // StartAuthFlow will begin the IndieAuth flow by generating an auth request.
 func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
+	configRepository := configrepository.Get()
+
 	// Limit the number of pending requests
 	if len(pendingAuthRequests) >= maxPendingRequests {
 		return nil, errors.New("Please try again later. Too many pending requests.")
@@ -68,7 +70,7 @@ func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL,
 		return nil, errors.New("only servers secured with https are supported")
 	}
 
-	serverURL := data.GetServerURL()
+	serverURL := configRepository.GetServerURL()
 	if serverURL == "" {
 		return nil, errors.New("Owncast server URL must be set when using auth")
 	}

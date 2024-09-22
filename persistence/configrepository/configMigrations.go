@@ -1,8 +1,9 @@
-package data
+package configrepository
 
 import (
 	"strings"
 
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -12,8 +13,8 @@ const (
 	datastoreValueVersionKey = "DATA_STORE_VERSION"
 )
 
-func migrateDatastoreValues(datastore *Datastore) {
-	currentVersion, _ := _datastore.GetNumber(datastoreValueVersionKey)
+func migrateDatastoreValues(datastore *data.Datastore) {
+	currentVersion, _ := datastore.GetNumber(datastoreValueVersionKey)
 	if currentVersion == 0 {
 		currentVersion = datastoreValuesVersion
 	}
@@ -33,12 +34,12 @@ func migrateDatastoreValues(datastore *Datastore) {
 			log.Fatalln("missing datastore values migration step")
 		}
 	}
-	if err := _datastore.SetNumber(datastoreValueVersionKey, datastoreValuesVersion); err != nil {
+	if err := datastore.SetNumber(datastoreValueVersionKey, datastoreValuesVersion); err != nil {
 		log.Errorln("error setting datastore value version:", err)
 	}
 }
 
-func migrateToDatastoreValues1(datastore *Datastore) {
+func migrateToDatastoreValues1(datastore *data.Datastore) {
 	// Migrate the forbidden usernames to be a slice instead of a string.
 	forbiddenUsernamesString, _ := datastore.GetString(blockedUsernamesKey)
 	if forbiddenUsernamesString != "" {
@@ -58,28 +59,32 @@ func migrateToDatastoreValues1(datastore *Datastore) {
 	}
 }
 
-func migrateToDatastoreValues2(datastore *Datastore) {
+func migrateToDatastoreValues2(datastore *data.Datastore) {
+	configRepository := Get()
+
 	oldAdminPassword, _ := datastore.GetString("stream_key")
 	// Avoids double hashing the password
 	_ = datastore.SetString("admin_password_key", oldAdminPassword)
-	_ = SetStreamKeys([]models.StreamKey{
+	_ = configRepository.SetStreamKeys([]models.StreamKey{
 		{Key: oldAdminPassword, Comment: "Default stream key"},
 	})
 }
 
-func migrateToDatastoreValues3ServingEndpoint3(_ *Datastore) {
-	s3Config := GetS3Config()
+func migrateToDatastoreValues3ServingEndpoint3(_ *data.Datastore) {
+	configRepository := Get()
+	s3Config := configRepository.GetS3Config()
 
 	if !s3Config.Enabled {
 		return
 	}
 
-	_ = SetVideoServingEndpoint(s3Config.ServingEndpoint)
+	_ = configRepository.SetVideoServingEndpoint(s3Config.ServingEndpoint)
 }
 
-func migrateToDatastoreValues4(datastore *Datastore) {
+func migrateToDatastoreValues4(datastore *data.Datastore) {
+	configRepository := Get()
 	unhashed_pass, _ := datastore.GetString("admin_password_key")
-	err := SetAdminPassword(unhashed_pass)
+	err := configRepository.SetAdminPassword(unhashed_pass)
 	if err != nil {
 		log.Fatalln("error migrating admin password:", err)
 	}

@@ -13,9 +13,9 @@ import (
 
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -44,7 +44,8 @@ func SetTags(w http.ResponseWriter, r *http.Request) {
 		tagStrings = append(tagStrings, strings.TrimLeft(tag.Value.(string), "#"))
 	}
 
-	if err := data.SetServerMetadataTags(tagStrings); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetServerMetadataTags(tagStrings); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -70,8 +71,9 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	value := configValue.Value.(string)
+	configRepository := configrepository.Get()
 
-	if err := data.SetStreamTitle(value); err != nil {
+	if err := configRepository.SetStreamTitle(value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -104,7 +106,8 @@ func SetServerName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetServerName(configValue.Value.(string)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetServerName(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -129,7 +132,8 @@ func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetServerSummary(configValue.Value.(string)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetServerSummary(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -154,7 +158,8 @@ func SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetCustomOfflineMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetCustomOfflineMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -173,7 +178,8 @@ func SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetServerWelcomeMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetServerWelcomeMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -192,7 +198,8 @@ func SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetExtraPageBodyContent(configValue.Value.(string)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetExtraPageBodyContent(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -211,7 +218,8 @@ func SetAdminPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetAdminPassword(configValue.Value.(string)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetAdminPassword(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -247,12 +255,14 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetLogoPath("logo" + extension); err != nil {
+	configRepository := configrepository.Get()
+
+	if err := configRepository.SetLogoPath("logo" + extension); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	if err := data.SetLogoUniquenessString(shortid.MustGenerate()); err != nil {
+	if err := configRepository.SetLogoUniquenessString(shortid.MustGenerate()); err != nil {
 		log.Error("Error saving logo uniqueness string: ", err)
 	}
 
@@ -276,7 +286,8 @@ func SetNSFW(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetNSFW(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetNSFW(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -301,7 +312,8 @@ func SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetFfmpegPath(configValue.Value.(string)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetFfmpegPath(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -320,12 +332,13 @@ func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	configRepository := configrepository.Get()
 	if port, ok := configValue.Value.(float64); ok {
 		if (port < 1) || (port > 65535) {
 			webutils.WriteSimpleResponse(w, false, "Port number must be between 1 and 65535")
 			return
 		}
-		if err := data.SetHTTPPortNumber(port); err != nil {
+		if err := configRepository.SetHTTPPortNumber(port); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
@@ -348,9 +361,10 @@ func SetWebServerIP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	configRepository := configrepository.Get()
 	if input, ok := configValue.Value.(string); ok {
 		if ip := net.ParseIP(input); ip != nil {
-			if err := data.SetHTTPListenAddress(ip.String()); err != nil {
+			if err := configRepository.SetHTTPListenAddress(ip.String()); err != nil {
 				webutils.WriteSimpleResponse(w, false, err.Error())
 				return
 			}
@@ -376,7 +390,8 @@ func SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetRTMPPortNumber(configValue.Value.(float64)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetRTMPPortNumber(configValue.Value.(float64)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -415,10 +430,12 @@ func SetServerURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	configRepository := configrepository.Get()
+
 	// Trim any trailing slash
 	serverURL := strings.TrimRight(rawValue, "/")
 
-	if err := data.SetServerURL(serverURL); err != nil {
+	if err := configRepository.SetServerURL(serverURL); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -437,7 +454,9 @@ func SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetWebsocketOverrideHost(configValue.Value.(string)); err != nil {
+	configRepository := configrepository.Get()
+
+	if err := configRepository.SetWebsocketOverrideHost(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -456,7 +475,9 @@ func SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetDirectoryEnabled(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+
+	if err := configRepository.SetDirectoryEnabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -474,7 +495,9 @@ func SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetStreamLatencyLevel(configValue.Value.(float64)); err != nil {
+	configRepository := configrepository.Get()
+
+	if err := configRepository.SetStreamLatencyLevel(configValue.Value.(float64)); err != nil {
 		webutils.WriteSimpleResponse(w, false, "error setting stream latency "+err.Error())
 		return
 	}
@@ -521,7 +544,8 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := data.SetS3Config(newS3Config.Value); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetS3Config(newS3Config.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -545,7 +569,8 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetStreamOutputVariants(videoVariants.Value); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetStreamOutputVariants(videoVariants.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update video config with provided values "+err.Error())
 		return
 	}
@@ -570,7 +595,8 @@ func SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetSocialHandles(socialHandles.Value); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetSocialHandles(socialHandles.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update social handles with provided values")
 		return
 	}
@@ -596,7 +622,8 @@ func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetChatDisabled(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetChatDisabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -616,7 +643,8 @@ func SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetVideoCodec(configValue.Value.(string)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetVideoCodec(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update codec")
 		return
 	}
@@ -637,7 +665,8 @@ func SetExternalActions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetExternalActions(actions.Value); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetExternalActions(actions.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update external actions with provided values")
 		return
 	}
@@ -653,7 +682,8 @@ func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetCustomStyles(customStyles.Value.(string)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetCustomStyles(customStyles.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -669,7 +699,8 @@ func SetCustomJavascript(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetCustomJavascript(customJavascript.Value.(string)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetCustomJavascript(customJavascript.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -687,7 +718,8 @@ func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetForbiddenUsernameList(*request.Value); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetForbiddenUsernameList(*request.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -705,7 +737,8 @@ func SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetSuggestedUsernamesList(*request.Value); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetSuggestedUsernamesList(*request.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -725,7 +758,8 @@ func SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetChatJoinMessagesEnabled(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetChatJoinMessagesEnabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -745,7 +779,8 @@ func SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetHideViewerCount(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetHideViewerCount(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -765,7 +800,8 @@ func SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetDisableSearchIndexing(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetDisableSearchIndexing(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -787,7 +823,8 @@ func SetVideoServingEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetVideoServingEndpoint(value); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetVideoServingEndpoint(value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -806,7 +843,8 @@ func SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetChatSpamProtectionEnabled(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetChatSpamProtectionEnabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -824,7 +862,8 @@ func SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetChatSlurFilterEnabled(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetChatSlurFilterEnabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -900,7 +939,8 @@ func SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := data.SetStreamKeys(streamKeys.Value); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetStreamKeys(streamKeys.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

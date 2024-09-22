@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 // GetRobotsDotTxt returns the contents of our robots.txt.
@@ -16,7 +16,8 @@ func GetRobotsDotTxt(w http.ResponseWriter, r *http.Request) {
 		"Disallow: /api",
 	}
 
-	if data.GetDisableSearchIndexing() {
+	configRepository := configrepository.Get()
+	if configRepository.GetDisableSearchIndexing() {
 		contents = append(contents, "Disallow: /")
 	}
 

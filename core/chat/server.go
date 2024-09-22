@@ -13,9 +13,10 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/authrepository"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/utils"
@@ -95,7 +96,9 @@ func (s *Server) Addclient(conn *websocket.Conn, user *models.User, accessToken 
 		ConnectedAt: time.Now(),
 	}
 
-	shouldSendJoinedMessages := data.GetChatJoinPartMessagesEnabled()
+	configRepository := configrepository.Get()
+
+	shouldSendJoinedMessages := configRepository.GetChatJoinPartMessagesEnabled()
 
 	// If there are existing clients connected for this user do not send
 	// a user joined message. Do not put this under a mutex, as
@@ -186,8 +189,10 @@ func (s *Server) sendUserPartedMessage(c *Client) {
 	userPartEvent.User = c.User
 	userPartEvent.ClientID = c.Id
 
+	configRepository := configrepository.Get()
+
 	// If part messages are disabled.
-	if data.GetChatJoinPartMessagesEnabled() {
+	if configRepository.GetChatJoinPartMessagesEnabled() {
 		if err := s.Broadcast(userPartEvent.GetBroadcastPayload()); err != nil {
 			log.Errorln("error sending chat part message", err)
 		}
@@ -198,14 +203,17 @@ func (s *Server) sendUserPartedMessage(c *Client) {
 
 // HandleClientConnection is fired when a single client connects to the websocket.
 func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
-	if data.GetChatDisabled() {
+	configRepository := configrepository.Get()
+	authRepository := authrepository.Get()
+
+	if configRepository.GetChatDisabled() {
 		_, _ = w.Write([]byte(events.ChatDisabled))
 		return
 	}
 
 	ipAddress := utils.GetIPAddressFromRequest(r)
 	// Check if this client's IP address is banned. If so send a rejection.
-	if blocked, err := data.IsIPAddressBanned(ipAddress); blocked {
+	if blocked, err := authRepository.IsIPAddressBanned(ipAddress); blocked {
 		log.Debugln("Client ip address has been blocked. Rejecting.")
 
 		w.WriteHeader(http.StatusForbidden)
@@ -377,12 +385,14 @@ func SendActionToUser(userID string, text string) error {
 }
 
 func (s *Server) eventReceived(event chatClientEvent) {
+	configRepository := configrepository.Get()
+
 	c := event.client
 	u := c.User
 
 	// If established chat user only mode is enabled and the user is not old
 	// enough then reject this event and send them an informative message.
-	if u != nil && data.GetChatEstbalishedUsersOnlyMode() && time.Since(event.client.User.CreatedAt) < config.GetDefaults().ChatEstablishedUserModeTimeDuration && !u.IsModerator() {
+	if u != nil && configRepository.GetChatEstbalishedUsersOnlyMode() && time.Since(event.client.User.CreatedAt) < config.GetDefaults().ChatEstablishedUserModeTimeDuration && !u.IsModerator() {
 		s.sendActionToClient(c, "You have not been an established chat participant long enough to take part in chat. Please enjoy the stream and try again later.")
 		return
 	}
@@ -409,10 +419,12 @@ func (s *Server) eventReceived(event chatClientEvent) {
 }
 
 func (s *Server) sendWelcomeMessageToClient(c *Client) {
+	configRepository := configrepository.Get()
+
 	// Add an artificial delay so people notice this message come in.
 	time.Sleep(7 * time.Second)
 
-	welcomeMessage := utils.RenderSimpleMarkdown(data.GetServerWelcomeMessage())
+	welcomeMessage := utils.RenderSimpleMarkdown(configRepository.GetServerWelcomeMessage())
 
 	if welcomeMessage != "" {
 		s.sendSystemMessageToClient(c, welcomeMessage)
@@ -420,7 +432,9 @@ func (s *Server) sendWelcomeMessageToClient(c *Client) {
 }
 
 func (s *Server) sendAllWelcomeMessage() {
-	welcomeMessage := utils.RenderSimpleMarkdown(data.GetServerWelcomeMessage())
+	configRepository := configrepository.Get()
+
+	welcomeMessage := utils.RenderSimpleMarkdown(configRepository.GetServerWelcomeMessage())
 
 	if welcomeMessage != "" {
 		clientMessage := events.SystemMessageEvent{

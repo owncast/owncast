@@ -5,14 +5,16 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 func TestSendStreamStatusEvent(t *testing.T) {
-	data.SetServerName("my server")
-	data.SetServerSummary("my server where I stream")
-	data.SetStreamTitle("my stream")
+	configRepository := configrepository.Get()
+
+	configRepository.SetServerName("my server")
+	configRepository.SetServerSummary("my server where I stream")
+	configRepository.SetStreamTitle("my stream")
 
 	checkPayload(t, models.StreamStarted, func() {
 		sendStreamStatusEvent(events.StreamStarted, "id", time.Unix(72, 6).UTC())

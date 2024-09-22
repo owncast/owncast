@@ -16,7 +16,7 @@ import (
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 const (
@@ -145,7 +145,9 @@ func getFollowersPage(page string, r *http.Request) (vocab.ActivityStreamsOrdere
 }
 
 func createPageURL(r *http.Request, page *string) (*url.URL, error) {
-	domain := data.GetServerURL()
+	configRepository := configrepository.Get()
+
+	domain := configRepository.GetServerURL()
 	if domain == "" {
 		return nil, errors.New("unable to get server URL")
 	}

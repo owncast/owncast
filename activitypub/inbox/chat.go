@@ -7,17 +7,19 @@ import (
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 func handleEngagementActivity(eventType events.EventType, isLiveNotification bool, actorReference vocab.ActivityStreamsActorProperty, action string) error {
+	configRepository := configrepository.Get()
+
 	// Do nothing if displaying engagement actions has been turned off.
-	if !data.GetFederationShowEngagement() {
+	if !configRepository.GetFederationShowEngagement() {
 		return nil
 	}
 
 	// Do nothing if chat is disabled
-	if data.GetChatDisabled() {
+	if configRepository.GetChatDisabled() {
 		return nil
 	}
 
@@ -36,11 +38,11 @@ func handleEngagementActivity(eventType events.EventType, isLiveNotification boo
 	if isLiveNotification && action == events.FediverseEngagementLike {
 		suffix = "liked that this stream went live."
 	} else if action == events.FediverseEngagementLike {
-		suffix = fmt.Sprintf("liked a post from %s.", data.GetServerName())
+		suffix = fmt.Sprintf("liked a post from %s.", configRepository.GetServerName())
 	} else if isLiveNotification && action == events.FediverseEngagementRepost {
 		suffix = "shared this stream with their followers."
 	} else if action == events.FediverseEngagementRepost {
-		suffix = fmt.Sprintf("shared a post from %s.", data.GetServerName())
+		suffix = fmt.Sprintf("shared a post from %s.", configRepository.GetServerName())
 	} else if action == events.FediverseEngagementFollow {
 		suffix = "followed this stream."
 	} else {

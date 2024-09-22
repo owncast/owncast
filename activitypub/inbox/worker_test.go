@@ -9,6 +9,7 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 func makeFakePerson() vocab.ActivityStreamsPerson {
@@ -49,21 +50,24 @@ func makeFakePerson() vocab.ActivityStreamsPerson {
 
 func TestMain(m *testing.M) {
 	data.SetupPersistence(":memory:")
-	data.SetServerURL("https://my.cool.site.biz")
+	configRepository := configrepository.Get()
+	configRepository.SetServerURL("https://my.cool.site.biz")
 	persistence.Setup(data.GetDatastore())
 	m.Run()
 }
 
 func TestBlockedDomains(t *testing.T) {
+	configRepository := configrepository.Get()
+
 	person := makeFakePerson()
 
-	data.SetBlockedFederatedDomains([]string{"freedom.eagle", "guns.life"})
+	configRepository.SetBlockedFederatedDomains([]string{"freedom.eagle", "guns.life"})
 
-	if len(data.GetBlockedFederatedDomains()) != 2 {
+	if len(configRepository.GetBlockedFederatedDomains()) != 2 {
 		t.Error("Blocked federated domains is not set correctly")
 	}
 
-	for _, domain := range data.GetBlockedFederatedDomains() {
+	for _, domain := range configRepository.GetBlockedFederatedDomains() {
 		if domain == person.GetJSONLDId().GetIRI().Host {
 			return
 		}

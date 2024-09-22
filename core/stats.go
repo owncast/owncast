@@ -7,8 +7,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/geoip"
 )
 
@@ -48,7 +48,8 @@ func IsStreamConnected() bool {
 	// Kind of a hack.  It takes a handful of seconds between a RTMP connection and when HLS data is available.
 	// So account for that with an artificial buffer of four segments.
 	timeSinceLastConnected := time.Since(_stats.LastConnectTime.Time).Seconds()
-	waitTime := math.Max(float64(data.GetStreamLatencyLevel().SecondsPerSegment)*3.0, 7)
+	configRepository := configrepository.Get()
+	waitTime := math.Max(float64(configRepository.GetStreamLatencyLevel().SecondsPerSegment)*3.0, 7)
 	if timeSinceLastConnected < waitTime {
 		return false
 	}
@@ -75,7 +76,7 @@ func SetViewerActive(viewer *models.Viewer) {
 	l.Lock()
 	defer l.Unlock()
 
-	// Asynchronously, optionally, fetch GeoIP data.
+	// Asynchronously, optionally, fetch GeoIP configRepository.
 	go func(viewer *models.Viewer) {
 		viewer.Geo = _geoIPClient.GetGeoFromIP(viewer.IPAddress)
 	}(viewer)
@@ -111,27 +112,29 @@ func pruneViewerCount() {
 }
 
 func saveStats() {
-	if err := data.SetPeakOverallViewerCount(_stats.OverallMaxViewerCount); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetPeakOverallViewerCount(_stats.OverallMaxViewerCount); err != nil {
 		log.Errorln("error saving viewer count", err)
 	}
-	if err := data.SetPeakSessionViewerCount(_stats.SessionMaxViewerCount); err != nil {
+	if err := configRepository.SetPeakSessionViewerCount(_stats.SessionMaxViewerCount); err != nil {
 		log.Errorln("error saving viewer count", err)
 	}
 	if _stats.LastDisconnectTime != nil && _stats.LastDisconnectTime.Valid {
-		if err := data.SetLastDisconnectTime(_stats.LastDisconnectTime.Time); err != nil {
+		if err := configRepository.SetLastDisconnectTime(_stats.LastDisconnectTime.Time); err != nil {
 			log.Errorln("error saving disconnect time", err)
 		}
 	}
 }
 
 func getSavedStats() models.Stats {
-	savedLastDisconnectTime, _ := data.GetLastDisconnectTime()
+	configRepository := configrepository.Get()
+	savedLastDisconnectTime, _ := configRepository.GetLastDisconnectTime()
 
 	result := models.Stats{
 		ChatClients:           make(map[string]models.Client),
 		Viewers:               make(map[string]*models.Viewer),
-		SessionMaxViewerCount: data.GetPeakSessionViewerCount(),
-		OverallMaxViewerCount: data.GetPeakOverallViewerCount(),
+		SessionMaxViewerCount: configRepository.GetPeakSessionViewerCount(),
+		OverallMaxViewerCount: configRepository.GetPeakOverallViewerCount(),
 		LastDisconnectTime:    savedLastDisconnectTime,
 	}
 

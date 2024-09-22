@@ -9,8 +9,8 @@ import (
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/crypto"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -101,11 +101,13 @@ func MakeActorPropertyWithID(idIRI *url.URL) vocab.ActivityStreamsActorProperty 
 
 // MakeServiceForAccount will create a new local actor service with the the provided username.
 func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
+	configRepository := configrepository.Get()
+
 	actorIRI := MakeLocalIRIForAccount(accountName)
 
 	person := streams.NewActivityStreamsService()
 	nameProperty := streams.NewActivityStreamsNameProperty()
-	nameProperty.AppendXMLSchemaString(data.GetServerName())
+	nameProperty.AppendXMLSchemaString(configRepository.GetServerName())
 	person.SetActivityStreamsName(nameProperty)
 
 	preferredUsernameProperty := streams.NewActivityStreamsPreferredUsernameProperty()
@@ -119,7 +121,7 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	person.SetActivityStreamsInbox(inboxProp)
 
 	needsFollowApprovalProperty := streams.NewActivityStreamsManuallyApprovesFollowersProperty()
-	needsFollowApprovalProperty.Set(data.GetFederationIsPrivate())
+	needsFollowApprovalProperty.Set(configRepository.GetFederationIsPrivate())
 	person.SetActivityStreamsManuallyApprovesFollowers(needsFollowApprovalProperty)
 
 	outboxIRI := MakeLocalIRIForResource("/user/" + accountName + "/outbox")
@@ -152,7 +154,7 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	publicKeyProp.AppendW3IDSecurityV1PublicKey(publicKeyType)
 	person.SetW3IDSecurityV1PublicKey(publicKeyProp)
 
-	if t, err := data.GetServerInitTime(); t != nil {
+	if t, err := configRepository.GetServerInitTime(); t != nil {
 		publishedDateProp := streams.NewActivityStreamsPublishedProperty()
 		publishedDateProp.Set(t.Time)
 		person.SetActivityStreamsPublished(publishedDateProp)
@@ -163,8 +165,8 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	// Profile properties
 
 	// Avatar
-	uniquenessString := data.GetLogoUniquenessString()
-	userAvatarURLString := data.GetServerURL() + "/logo/external"
+	uniquenessString := configRepository.GetLogoUniquenessString()
+	userAvatarURLString := configRepository.GetServerURL() + "/logo/external"
 	userAvatarURL, err := url.Parse(userAvatarURLString)
 	userAvatarURL.RawQuery = "uc=" + uniquenessString
 	if err != nil {
@@ -195,14 +197,14 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 
 	// Profile bio
 	summaryProperty := streams.NewActivityStreamsSummaryProperty()
-	summaryProperty.AppendXMLSchemaString(data.GetServerSummary())
+	summaryProperty.AppendXMLSchemaString(configRepository.GetServerSummary())
 	person.SetActivityStreamsSummary(summaryProperty)
 
 	// Links
-	if serverURL := data.GetServerURL(); serverURL != "" {
+	if serverURL := configRepository.GetServerURL(); serverURL != "" {
 		addMetadataLinkToProfile(person, "Stream", serverURL)
 	}
-	for _, link := range data.GetSocialHandles() {
+	for _, link := range configRepository.GetSocialHandles() {
 		addMetadataLinkToProfile(person, link.Platform, link.URL)
 	}
 
@@ -220,7 +222,7 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 
 	// Tags
 	tagProp := streams.NewActivityStreamsTagProperty()
-	for _, tagString := range data.GetServerMetadataTags() {
+	for _, tagString := range configRepository.GetServerMetadataTags() {
 		hashtag := MakeHashtag(tagString)
 		tagProp.AppendTootHashtag(hashtag)
 	}
@@ -229,7 +231,7 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 
 	// Work around an issue where a single attachment will not serialize
 	// as an array, so add another item to the mix.
-	if len(data.GetSocialHandles()) == 1 {
+	if len(configRepository.GetSocialHandles()) == 1 {
 		addMetadataLinkToProfile(person, "Owncast", "https://owncast.online")
 	}
 

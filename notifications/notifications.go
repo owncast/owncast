@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/tables"
 
 	"github.com/owncast/owncast/notifications/browser"
@@ -18,9 +19,10 @@ import (
 
 // Notifier is an instance of the live stream notifier.
 type Notifier struct {
-	datastore *data.Datastore
-	browser   *browser.Browser
-	discord   *discord.Discord
+	datastore        *data.Datastore
+	browser          *browser.Browser
+	discord          *discord.Discord
+	configRepository configrepository.ConfigRepository
 }
 
 // Setup will perform any pre-use setup for the notifier.
@@ -30,8 +32,10 @@ func Setup(datastore *data.Datastore) {
 }
 
 func initializeBrowserPushIfNeeded() {
-	pubKey, _ := data.GetBrowserPushPublicKey()
-	privKey, _ := data.GetBrowserPushPrivateKey()
+	configRepository := configrepository.Get()
+
+	pubKey, _ := configRepository.GetBrowserPushPublicKey()
+	privKey, _ := configRepository.GetBrowserPushPrivateKey()
 
 	// We need browser push keys so people can register for pushes.
 	if pubKey == "" || privKey == "" {
@@ -40,26 +44,27 @@ func initializeBrowserPushIfNeeded() {
 			log.Errorln("unable to initialize browser push notification keys", err)
 		}
 
-		if err := data.SetBrowserPushPrivateKey(browserPrivateKey); err != nil {
+		if err := configRepository.SetBrowserPushPrivateKey(browserPrivateKey); err != nil {
 			log.Errorln("unable to set browser push private key", err)
 		}
 
-		if err := data.SetBrowserPushPublicKey(browserPublicKey); err != nil {
+		if err := configRepository.SetBrowserPushPublicKey(browserPublicKey); err != nil {
 			log.Errorln("unable to set browser push public key", err)
 		}
 	}
 
 	// Enable browser push notifications by default.
-	if !data.GetHasPerformedInitialNotificationsConfig() {
-		_ = data.SetBrowserPushConfig(models.BrowserNotificationConfiguration{Enabled: true, GoLiveMessage: config.GetDefaults().FederationGoLiveMessage})
-		_ = data.SetHasPerformedInitialNotificationsConfig(true)
+	if !configRepository.GetHasPerformedInitialNotificationsConfig() {
+		_ = configRepository.SetBrowserPushConfig(models.BrowserNotificationConfiguration{Enabled: true, GoLiveMessage: config.GetDefaults().FederationGoLiveMessage})
+		_ = configRepository.SetHasPerformedInitialNotificationsConfig(true)
 	}
 }
 
 // New creates a new instance of the Notifier.
 func New(datastore *data.Datastore) (*Notifier, error) {
 	notifier := Notifier{
-		datastore: datastore,
+		datastore:        datastore,
+		configRepository: configrepository.Get(),
 	}
 
 	if err := notifier.setupBrowserPush(); err != nil {
@@ -73,13 +78,13 @@ func New(datastore *data.Datastore) (*Notifier, error) {
 }
 
 func (n *Notifier) setupBrowserPush() error {
-	if data.GetBrowserPushConfig().Enabled {
-		publicKey, err := data.GetBrowserPushPublicKey()
+	if n.configRepository.GetBrowserPushConfig().Enabled {
+		publicKey, err := n.configRepository.GetBrowserPushPublicKey()
 		if err != nil || publicKey == "" {
 			return errors.Wrap(err, "browser notifier disabled, failed to get browser push public key")
 		}
 
-		privateKey, err := data.GetBrowserPushPrivateKey()
+		privateKey, err := n.configRepository.GetBrowserPushPrivateKey()
 		if err != nil || privateKey == "" {
 			return errors.Wrap(err, "browser notifier disabled, failed to get browser push private key")
 		}
@@ -99,7 +104,7 @@ func (n *Notifier) notifyBrowserPush() {
 		log.Errorln("error getting browser push notification destinations", err)
 	}
 	for _, destination := range destinations {
-		unsubscribed, err := n.browser.Send(destination, data.GetServerName(), data.GetBrowserPushConfig().GoLiveMessage)
+		unsubscribed, err := n.browser.Send(destination, n.configRepository.GetServerName(), n.configRepository.GetBrowserPushConfig().GoLiveMessage)
 		if unsubscribed {
 			// If the error is "unsubscribed", then remove the destination from the database.
 			if err := RemoveNotificationForChannel(BrowserPushNotification, destination); err != nil {
@@ -112,14 +117,14 @@ func (n *Notifier) notifyBrowserPush() {
 }
 
 func (n *Notifier) setupDiscord() error {
-	discordConfig := data.GetDiscordConfig()
+	discordConfig := n.configRepository.GetDiscordConfig()
 	if discordConfig.Enabled && discordConfig.Webhook != "" {
 		var image string
-		if serverURL := data.GetServerURL(); serverURL != "" {
+		if serverURL := n.configRepository.GetServerURL(); serverURL != "" {
 			image = serverURL + "/logo"
 		}
 		discordNotifier, err := discord.New(
-			data.GetServerName(),
+			n.configRepository.GetServerName(),
 			image,
 			discordConfig.Webhook,
 		)
@@ -132,12 +137,12 @@ func (n *Notifier) setupDiscord() error {
 }
 
 func (n *Notifier) notifyDiscord() {
-	goLiveMessage := data.GetDiscordConfig().GoLiveMessage
-	streamTitle := data.GetStreamTitle()
+	goLiveMessage := n.configRepository.GetDiscordConfig().GoLiveMessage
+	streamTitle := n.configRepository.GetStreamTitle()
 	if streamTitle != "" {
 		goLiveMessage += "\n" + streamTitle
 	}
-	message := fmt.Sprintf("%s\n\n%s", goLiveMessage, data.GetServerURL())
+	message := fmt.Sprintf("%s\n\n%s", goLiveMessage, n.configRepository.GetServerURL())
 
 	if err := n.discord.Send(message); err != nil {
 		log.Errorln("error sending discord message", err)
@@ -158,6 +163,7 @@ func (n *Notifier) Notify() {
 // RemoveNotificationForChannel removes a notification destination.
 func RemoveNotificationForChannel(channel, destination string) error {
 	log.Debugln("Removing notification for channel", channel)
+
 	return data.GetDatastore().GetQueries().RemoveNotificationDestinationForChannel(context.Background(), db.RemoveNotificationDestinationForChannelParams{
 		Channel:     channel,
 		Destination: destination,

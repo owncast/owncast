@@ -9,6 +9,7 @@ import (
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 func makeFakeService() vocab.ActivityStreamsService {
@@ -56,8 +57,10 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
+	configRepository := configrepository.Get()
+
 	data.SetupPersistence(dbFile.Name())
-	data.SetServerURL("https://my.cool.site.biz")
+	configRepository.SetServerURL("https://my.cool.site.biz")
 
 	m.Run()
 }

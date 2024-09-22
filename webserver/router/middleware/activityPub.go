@@ -4,15 +4,16 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 )
 
 // RequireActivityPubOrRedirect will validate the requested content types and
 // redirect to the main Owncast page if it doesn't match.
 func RequireActivityPubOrRedirect(handler http.HandlerFunc) http.HandlerFunc {
+	configRepository := configrepository.Get()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !data.GetFederationEnabled() {
+		if !configRepository.GetFederationEnabled() {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}

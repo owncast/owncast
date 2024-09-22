@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	log "github.com/sirupsen/logrus"
@@ -15,12 +15,13 @@ import (
 
 // GetServerConfig gets the config details of the server.
 func GetServerConfig(w http.ResponseWriter, r *http.Request) {
-	ffmpeg := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
-	usernameBlocklist := data.GetForbiddenUsernameList()
-	usernameSuggestions := data.GetSuggestedUsernamesList()
+	configRepository := configrepository.Get()
+	ffmpeg := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
+	usernameBlocklist := configRepository.GetForbiddenUsernameList()
+	usernameSuggestions := configRepository.GetSuggestedUsernamesList()
 
 	videoQualityVariants := make([]models.StreamOutputVariant, 0)
-	for _, variant := range data.GetStreamOutputVariants() {
+	for _, variant := range configRepository.GetStreamOutputVariants() {
 		videoQualityVariants = append(videoQualityVariants, models.StreamOutputVariant{
 			Name:               variant.GetName(),
 			IsAudioPassthrough: variant.GetIsAudioPassthrough(),
@@ -35,61 +36,61 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	}
 	response := serverConfigAdminResponse{
 		InstanceDetails: webConfigResponse{
-			Name:                data.GetServerName(),
-			Summary:             data.GetServerSummary(),
-			Tags:                data.GetServerMetadataTags(),
-			ExtraPageContent:    data.GetExtraPageBodyContent(),
-			StreamTitle:         data.GetStreamTitle(),
-			WelcomeMessage:      data.GetServerWelcomeMessage(),
-			OfflineMessage:      data.GetCustomOfflineMessage(),
-			Logo:                data.GetLogoPath(),
-			SocialHandles:       data.GetSocialHandles(),
-			NSFW:                data.GetNSFW(),
-			CustomStyles:        data.GetCustomStyles(),
-			CustomJavascript:    data.GetCustomJavascript(),
-			AppearanceVariables: data.GetCustomColorVariableValues(),
+			Name:                configRepository.GetServerName(),
+			Summary:             configRepository.GetServerSummary(),
+			Tags:                configRepository.GetServerMetadataTags(),
+			ExtraPageContent:    configRepository.GetExtraPageBodyContent(),
+			StreamTitle:         configRepository.GetStreamTitle(),
+			WelcomeMessage:      configRepository.GetServerWelcomeMessage(),
+			OfflineMessage:      configRepository.GetCustomOfflineMessage(),
+			Logo:                configRepository.GetLogoPath(),
+			SocialHandles:       configRepository.GetSocialHandles(),
+			NSFW:                configRepository.GetNSFW(),
+			CustomStyles:        configRepository.GetCustomStyles(),
+			CustomJavascript:    configRepository.GetCustomJavascript(),
+			AppearanceVariables: configRepository.GetCustomColorVariableValues(),
 		},
 		FFmpegPath:                ffmpeg,
-		AdminPassword:             data.GetAdminPassword(),
-		StreamKeys:                data.GetStreamKeys(),
+		AdminPassword:             configRepository.GetAdminPassword(),
+		StreamKeys:                configRepository.GetStreamKeys(),
 		StreamKeyOverridden:       config.TemporaryStreamKey != "",
 		WebServerPort:             config.WebServerPort,
 		WebServerIP:               config.WebServerIP,
-		RTMPServerPort:            data.GetRTMPPortNumber(),
-		ChatDisabled:              data.GetChatDisabled(),
-		ChatJoinMessagesEnabled:   data.GetChatJoinPartMessagesEnabled(),
-		SocketHostOverride:        data.GetWebsocketOverrideHost(),
-		VideoServingEndpoint:      data.GetVideoServingEndpoint(),
-		ChatEstablishedUserMode:   data.GetChatEstbalishedUsersOnlyMode(),
-		ChatSpamProtectionEnabled: data.GetChatSpamProtectionEnabled(),
-		ChatSlurFilterEnabled:     data.GetChatSlurFilterEnabled(),
-		HideViewerCount:           data.GetHideViewerCount(),
-		DisableSearchIndexing:     data.GetDisableSearchIndexing(),
+		RTMPServerPort:            configRepository.GetRTMPPortNumber(),
+		ChatDisabled:              configRepository.GetChatDisabled(),
+		ChatJoinMessagesEnabled:   configRepository.GetChatJoinPartMessagesEnabled(),
+		SocketHostOverride:        configRepository.GetWebsocketOverrideHost(),
+		VideoServingEndpoint:      configRepository.GetVideoServingEndpoint(),
+		ChatEstablishedUserMode:   configRepository.GetChatEstbalishedUsersOnlyMode(),
+		ChatSpamProtectionEnabled: configRepository.GetChatSpamProtectionEnabled(),
+		ChatSlurFilterEnabled:     configRepository.GetChatSlurFilterEnabled(),
+		HideViewerCount:           configRepository.GetHideViewerCount(),
+		DisableSearchIndexing:     configRepository.GetDisableSearchIndexing(),
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
-			LatencyLevel:         data.GetStreamLatencyLevel().Level,
+			LatencyLevel:         configRepository.GetStreamLatencyLevel().Level,
 		},
 		YP: yp{
-			Enabled:     data.GetDirectoryEnabled(),
-			InstanceURL: data.GetServerURL(),
+			Enabled:     configRepository.GetDirectoryEnabled(),
+			InstanceURL: configRepository.GetServerURL(),
 		},
-		S3:                 data.GetS3Config(),
-		ExternalActions:    data.GetExternalActions(),
+		S3:                 configRepository.GetS3Config(),
+		ExternalActions:    configRepository.GetExternalActions(),
 		SupportedCodecs:    transcoder.GetCodecs(ffmpeg),
-		VideoCodec:         data.GetVideoCodec(),
+		VideoCodec:         configRepository.GetVideoCodec(),
 		ForbiddenUsernames: usernameBlocklist,
 		SuggestedUsernames: usernameSuggestions,
 		Federation: federationConfigResponse{
-			Enabled:        data.GetFederationEnabled(),
-			IsPrivate:      data.GetFederationIsPrivate(),
-			Username:       data.GetFederationUsername(),
-			GoLiveMessage:  data.GetFederationGoLiveMessage(),
-			ShowEngagement: data.GetFederationShowEngagement(),
-			BlockedDomains: data.GetBlockedFederatedDomains(),
+			Enabled:        configRepository.GetFederationEnabled(),
+			IsPrivate:      configRepository.GetFederationIsPrivate(),
+			Username:       configRepository.GetFederationUsername(),
+			GoLiveMessage:  configRepository.GetFederationGoLiveMessage(),
+			ShowEngagement: configRepository.GetFederationShowEngagement(),
+			BlockedDomains: configRepository.GetBlockedFederatedDomains(),
 		},
 		Notifications: notificationsConfigResponse{
-			Discord: data.GetDiscordConfig(),
-			Browser: data.GetBrowserPushConfig(),
+			Discord: configRepository.GetDiscordConfig(),
+			Browser: configRepository.GetBrowserPushConfig(),
 		},
 	}
 

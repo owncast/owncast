@@ -13,8 +13,8 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/cache"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
@@ -86,11 +86,12 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 		return
 	}
 
+	configRepository := configrepository.Get()
 	content := serverSideContent{
-		Name:             data.GetServerName(),
-		Summary:          data.GetServerSummary(),
-		RequestedURL:     fmt.Sprintf("%s%s", data.GetServerURL(), "/"),
-		TagsString:       strings.Join(data.GetServerMetadataTags(), ","),
+		Name:             configRepository.GetServerName(),
+		Summary:          configRepository.GetServerSummary(),
+		RequestedURL:     fmt.Sprintf("%s%s", configRepository.GetServerURL(), "/"),
+		TagsString:       strings.Join(configRepository.GetServerMetadataTags(), ","),
 		ThumbnailURL:     "thumbnail.jpg",
 		Thumbnail:        "thumbnail.jpg",
 		Image:            "logo/external",
@@ -145,8 +146,8 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	scheme := "http"
-
-	if siteURL := data.GetServerURL(); siteURL != "" {
+	configRepository := configrepository.Get()
+	if siteURL := configRepository.GetServerURL(); siteURL != "" {
 		if parsed, err := url.Parse(siteURL); err == nil && parsed.Scheme != "" {
 			scheme = parsed.Scheme
 		}
@@ -177,16 +178,16 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 		thumbnailURL = imageURL.String()
 	}
 
-	tagsString := strings.Join(data.GetServerMetadataTags(), ",")
+	tagsString := strings.Join(configRepository.GetServerMetadataTags(), ",")
 	metadata := MetadataPage{
-		Name:          data.GetServerName(),
+		Name:          configRepository.GetServerName(),
 		RequestedURL:  fullURL.String(),
 		Image:         imageURL.String(),
-		Summary:       data.GetServerSummary(),
+		Summary:       configRepository.GetServerSummary(),
 		Thumbnail:     thumbnailURL,
 		TagsString:    tagsString,
-		Tags:          data.GetServerMetadataTags(),
-		SocialHandles: data.GetSocialHandles(),
+		Tags:          configRepository.GetServerMetadataTags(),
+		SocialHandles: configRepository.GetSocialHandles(),
 	}
 
 	// Cache the rendered HTML

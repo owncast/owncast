@@ -16,6 +16,7 @@ import (
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/notifications"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -39,9 +40,11 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 	_stats.LastConnectTime = &now
 	_stats.SessionMaxViewerCount = 0
 
+	configRepository := configrepository.Get()
+
 	_currentBroadcast = &models.CurrentBroadcast{
-		LatencyLevel:   data.GetStreamLatencyLevel(),
-		OutputSettings: data.GetStreamOutputVariants(),
+		LatencyLevel:   configRepository.GetStreamLatencyLevel(),
+		OutputSettings: configRepository.GetStreamOutputVariants(),
 	}
 
 	StopOfflineCleanupTimer()
@@ -69,7 +72,7 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 	}()
 
 	go webhooks.SendStreamStatusEvent(models.StreamStarted)
-	selectedThumbnailVideoQualityIndex, isVideoPassthrough := data.FindHighestVideoQualityIndex(_currentBroadcast.OutputSettings)
+	selectedThumbnailVideoQualityIndex, isVideoPassthrough := configRepository.FindHighestVideoQualityIndex(_currentBroadcast.OutputSettings)
 	transcoder.StartThumbnailGenerator(segmentPath, selectedThumbnailVideoQualityIndex, isVideoPassthrough)
 
 	_ = chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
@@ -176,8 +179,9 @@ func startLiveStreamNotificationsTimer() context.CancelFunc {
 				return
 			}
 
+			configRepository := configrepository.Get()
 			// Send Fediverse message.
-			if data.GetFederationEnabled() {
+			if configRepository.GetFederationEnabled() {
 				log.Traceln("Sending Federated Go Live message.")
 				if err := activitypub.SendLive(); err != nil {
 					log.Errorln(err)

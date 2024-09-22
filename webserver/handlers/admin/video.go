@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/persistence/configrepository"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -40,8 +40,9 @@ func GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 			availableBitrates = append(availableBitrates, variants.VideoBitrate)
 		}
 	} else {
-		segmentLength = data.GetStreamLatencyLevel().SecondsPerSegment
-		for _, variants := range data.GetStreamOutputVariants() {
+		configRepository := configrepository.Get()
+		segmentLength = configRepository.GetStreamLatencyLevel().SecondsPerSegment
+		for _, variants := range configRepository.GetStreamOutputVariants() {
 			availableBitrates = append(availableBitrates, variants.VideoBitrate)
 		}
 	}
