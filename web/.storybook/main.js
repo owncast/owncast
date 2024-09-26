@@ -3,7 +3,7 @@ module.exports = {
     previewMdx2: true,
   },
 
-  stories: ['../.storybook/stories-category-doc-pages/**/*.@(mdx|js)', '../stories/**/*.stories.@(js|jsx|ts|tsx)', '../components/**/*.stories.@(js|jsx|ts|tsx)', '../pages/**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: ['../.storybook/stories-category-doc-pages/**/*.@(mdx|stories.js)', '../stories/**/*.stories.@(js|jsx|ts|tsx)', '../components/**/*.stories.@(js|jsx|ts|tsx)', '../pages/**/*.stories.@(js|jsx|ts|tsx)'],
 
   addons: [
     '@storybook/addon-links',
