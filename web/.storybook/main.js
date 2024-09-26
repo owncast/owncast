@@ -117,7 +117,5 @@ module.exports = {
 
   staticDirs: ['../public', '../../static', './story-assets'],
 
-  docs: {
-    autodocs: false,
-  },
+  docs: {},
 };
