@@ -18,7 +18,7 @@
 	"major": {
 		"dependencyDashboardApproval": true
 	},
-	"docker": {
+	"dockerfile": {
 		"fileMatch": [
 			"(^|/)Earthfile$",
 			"(^|/|\\.)Dockerfile$",
