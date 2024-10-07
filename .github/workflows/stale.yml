@@ -17,11 +17,12 @@ jobs:
           stale-issue-message: >
             This issue has been automatically marked as stale because it has not had
             recent activity. It will be closed if no further activity occurs. If this
-            was a feature request that others have shown no interest in then it's
-            likely to not get implemented due to lack of interest. If others also
-            want to see this feature then now is the time to say something! Feel free
-            to drop by [our chat](https://owncast.rocket.chat) if you'd like to discuss
-            in real-time with people.
+            was a feature request that others have shown no interest in, then it's
+            unlikely to get implemented due to lack of interest. If others also
+            want to see this feature then now is the time to say something! If this
+            is a bug report or you have questions that still need answering, please say
+            something. Feel free to drop by [our chat](https://owncast.rocket.chat) if
+            you'd like to discuss in real-time with people.
           close-issue-message: >
             This issue has been automatically closed due to inactivity. This isn't done
             to be a jerk, or because the project doesn't care. But simply to keep the focus
