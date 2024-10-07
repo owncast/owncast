@@ -13,7 +13,6 @@ jobs:
 
           days-before-issue-stale: 60
           days-before-issue-close: 67
-          close-issue-reason: stale
           exempt-issue-labels: backlog,long-lived,bot
           stale-issue-message: >
             This issue has been automatically marked as stale because it has not had
