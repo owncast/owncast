@@ -33,6 +33,11 @@ $p-v-size: 2px;
     display: none;
   }
 
+  .userName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .userBadges {
     margin-left: 3px;
     display: flex;
