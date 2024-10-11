@@ -37,7 +37,7 @@ const FederationInfoModal: FC<FederationInfoModalProps> = ({ cancelPressed, okPr
   <Modal
     width="70%"
     title="Enable Social Features"
-    visible
+    open
     onCancel={cancelPressed}
     footer={
       <div>
