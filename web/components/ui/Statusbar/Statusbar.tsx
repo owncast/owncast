@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import styles from './Statusbar.module.scss';
 
 // Lazy loaded components
-
 const EyeFilled = dynamic(() => import('@ant-design/icons/EyeFilled'), {
   ssr: false,
 });
@@ -40,8 +39,8 @@ function makeDurationString(lastConnectTime: Date): string {
 
 export const Statusbar: FC<StatusbarProps> = ({
   online,
-  lastConnectTime,
-  lastDisconnectTime,
+  lastConnectTime = null,
+  lastDisconnectTime = null,
   viewerCount,
   className,
 }) => {
@@ -83,9 +82,4 @@ export const Statusbar: FC<StatusbarProps> = ({
       <span className={styles.viewerCount}>{rightSideMessage}</span>
     </div>
   );
-};
-
-Statusbar.defaultProps = {
-  lastConnectTime: null,
-  lastDisconnectTime: null,
 };

@@ -21,8 +21,8 @@ export const CrossfadeImage: FC<CrossfadeImageProps> = ({
   src = '',
   width,
   height,
-  objectFit = 'fill',
-  duration = '1s',
+  objectFit = 'fill', // default value for objectFit
+  duration = '3s', // default value for duration
   className,
 }) => {
   const spanStyle: React.CSSProperties = useMemo(
@@ -69,9 +69,4 @@ export const CrossfadeImage: FC<CrossfadeImageProps> = ({
       )}
     </span>
   );
-};
-
-CrossfadeImage.defaultProps = {
-  objectFit: 'fill',
-  duration: '3s',
 };
