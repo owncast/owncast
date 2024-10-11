@@ -87,7 +87,7 @@ build:
 	  RUN upx -t owncast
   END
 
-  SAVE ARTIFACT owncast owncast
+  SAVE ARTIFACT --keep-ts owncast owncast
 
 package:
   RUN apk add --update --no-cache zip >> /dev/null
@@ -109,7 +109,7 @@ package:
     ARG NAME=custom
   END
 
-  COPY (+build/owncast --platform $TARGETPLATFORM) /build/dist/owncast
+  COPY --keep-ts (+build/owncast --platform $TARGETPLATFORM) /build/dist/owncast
   ENV ZIPNAME owncast-$version-$NAME.zip
   RUN cd /build/dist && zip -r -q -8 /build/dist/owncast.zip .
   SAVE ARTIFACT --keep-ts /build/dist/owncast.zip owncast.zip AS LOCAL dist/$ZIPNAME
@@ -123,7 +123,7 @@ docker:
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
   RUN addgroup -g 101 -S owncast && adduser -u 101 -S owncast -G owncast
   WORKDIR /app
-  COPY --platform=$TARGETPLATFORM +package/owncast.zip /app
+  COPY --keep-ts --platform=$TARGETPLATFORM +package/owncast.zip /app
   RUN unzip -x owncast.zip && mkdir data
 
 	# temporarily disable until we figure out how to move forward
