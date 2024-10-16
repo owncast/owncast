@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+	"regexp"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -29,6 +30,7 @@ var supportedCodecs = map[string]string{
 	(&VaapiCodec{}).Name():        "vaapi",
 	(&NvencCodec{}).Name():        "NVIDIA nvenc",
 	(&VideoToolboxCodec{}).Name(): "videotoolbox",
+	(&RockchipMPPCodec{}).Name():  "Rockchip MPP",
 }
 
 // Libx264Codec represents an instance of the Libx264 Codec.
@@ -302,6 +304,71 @@ func (c *NvencCodec) GetPresetForLevel(l int) string {
 	return preset
 }
 
+// RockchipMPPCodec represents an instance of the MPP codec.
+type RockchipMPPCodec struct{}
+
+// Name returns the codec name.
+func (c *RockchipMPPCodec) Name() string {
+	return "h264_rkmpp"
+}
+
+// DisplayName returns the human readable name of the codec.
+func (c *RockchipMPPCodec) DisplayName() string {
+	return "Rockchip MPP (mpp)"
+}
+
+// GlobalFlags are the global flags used with this codec in the transcoder.
+func (c *RockchipMPPCodec) GlobalFlags() string {
+	return ""
+}
+
+// PixelFormat is the pixel format required for this codec.
+func (c *RockchipMPPCodec) PixelFormat() string {
+	return "yuv420p"
+}
+
+// Scaler is the scaler used for resizing the video in the transcoder.
+func (c *RockchipMPPCodec) Scaler() string {
+	return ""
+}
+
+// ExtraArguments are the extra arguments used with this codec in the transcoder.
+func (c *RockchipMPPCodec) ExtraArguments() string {
+	return strings.Join([]string{
+		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
+	}, " ")
+}
+
+// ExtraFilters are the extra filters required for this codec in the transcoder.
+func (c *RockchipMPPCodec) ExtraFilters() string {
+	return ""
+}
+
+// VariantFlags returns a string representing a single variant processed by this codec.
+func (c *RockchipMPPCodec) VariantFlags(v *HLSVariant) string {
+	return ""
+}
+
+// GetPresetForLevel returns the string preset for this codec given an integer level.
+func (c *RockchipMPPCodec) GetPresetForLevel(l int) string {
+	presetMapping := map[int]string{
+		0: "ultrafast",
+		1: "superfast",
+		2: "veryfast",
+		3: "faster",
+		4: "fast",
+	}
+
+	preset, ok := presetMapping[l]
+	if !ok {
+		defaultPreset := presetMapping[1]
+		log.Errorf("Invalid level for mpp preset %d, defaulting to %s", l, defaultPreset)
+		return defaultPreset
+	}
+
+	return preset
+}
+
 // QuicksyncCodec represents an instance of the Intel Quicksync Codec.
 type QuicksyncCodec struct{}
 
@@ -513,10 +580,11 @@ func GetCodecs(ffmpegPath string) []string {
 		return codecs
 	}
 
+	re := regexp.MustCompile(`H\.?264`)
 	response := string(out)
 	lines := strings.Split(response, "\n")
 	for _, line := range lines {
-		if strings.Contains(line, "H.264") {
+		if re.MatchString(line) {
 			fields := strings.Fields(line)
 			codec := fields[1]
 			if _, supported := supportedCodecs[codec]; supported {
@@ -542,6 +610,8 @@ func getCodec(name string) Codec {
 		return &Video4Linux{}
 	case (&VideoToolboxCodec{}).Name():
 		return &VideoToolboxCodec{}
+	case (&RockchipMPPCodec{}).Name():
+		return &RockchipMPPCodec{}
 	default:
 		return &Libx264Codec{}
 	}
