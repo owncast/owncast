@@ -33,7 +33,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
 	github.com/yuin/goldmark v1.7.7
-	github.com/yuin/goldmark-emoji v1.0.3
+	github.com/yuin/goldmark-emoji v1.0.4
 	golang.org/x/crypto v0.27.0
 	golang.org/x/mod v0.21.0
 	golang.org/x/net v0.29.0
