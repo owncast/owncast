@@ -14,6 +14,7 @@ import { AppProps } from 'next/app';
 import { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import { RecoilRoot } from 'recoil';
+import { AntdTheme } from '../components/theme/AntdTheme';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -25,10 +26,10 @@ type AppPropsWithLayout = AppProps & {
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const layout = Component.getLayout ?? (page => page);
-
-  return layout(
+  const page = layout(
     <RecoilRoot>
       <Component {...pageProps} />
     </RecoilRoot>,
   );
+  return <AntdTheme>{page}</AntdTheme>;
 }

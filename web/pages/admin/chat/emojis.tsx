@@ -176,7 +176,7 @@ const Emoji = () => {
                     </Tooltip>
                     <Button
                       size="small"
-                      type="ghost"
+                      ghost
                       title="Delete emoji"
                       style={{
                         position: 'absolute',

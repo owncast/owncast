@@ -135,7 +135,7 @@ export const Chart: FC<ChartProps> = ({
       <Button
         size="small"
         onClick={downloadChart}
-        type="ghost"
+        ghost
         icon={<DownloadOutlined />}
         className="download-btn"
       />
