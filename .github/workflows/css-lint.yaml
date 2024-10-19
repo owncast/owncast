@@ -38,7 +38,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: '22.9.0'
 
       - name: Install dependencies
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
