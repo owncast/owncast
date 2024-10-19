@@ -2,6 +2,9 @@
 	"name": "owncast-web",
 	"version": "0.1.0",
 	"private": true,
+	"resolutions": {
+		"babel-preset-current-node-syntax": "1.0.0"
+	},
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
@@ -28,6 +31,7 @@
 		"@xstate/react": "3.2.2",
 		"antd": "4.24.16",
 		"autoprefixer": "^10.4.14",
+		"babel-plugin-dynamic-import-node": "^2.3.3",
 		"chart.js": "^4.2.0",
 		"classnames": "2.5.1",
 		"date-fns": "^3.0.0",
@@ -35,7 +39,7 @@
 		"interweave": "^13.0.0",
 		"interweave-autolink": "^5.1.0",
 		"lodash": "4.17.21",
-		"next": "14.2.14",
+		"next": "14.2.15",
 		"next-pwa": "^5.6.0",
 		"next-with-less": "3.0.1",
 		"picmo": "5.8.5",
@@ -57,10 +61,11 @@
 		"workbox-precaching": "^7.0.0",
 		"workbox-window": "^7.0.0",
 		"xstate": "4.38.3",
-		"yaml": "2.5.1"
+		"yaml": "2.6.0"
 	},
 	"devDependencies": {
-		"@babel/core": "7.25.7",
+		"@babel/core": "7.25.8",
+		"@babel/preset-react": "^7.25.7",
 		"@commitlint/cli": "^19.3.0",
 		"@commitlint/config-conventional": "^19.2.2",
 		"@mdx-js/react": "3.0.1",
@@ -84,22 +89,22 @@
 		"@types/classnames": "2.3.1",
 		"@types/jest": "^29.5.0",
 		"@types/markdown-it": "14.1.2",
-		"@types/node": "20.16.10",
+		"@types/node": "20.16.11",
 		"@types/prop-types": "15.7.13",
 		"@types/react": "18.3.11",
 		"@types/react-linkify": "1.0.4",
 		"@types/sanitize-html": "^2.9.0",
 		"@types/ua-parser-js": "0.7.39",
 		"@types/video.js": "^7.3.50",
-		"@typescript-eslint/eslint-plugin": "8.8.0",
-		"@typescript-eslint/parser": "8.8.0",
+		"@typescript-eslint/eslint-plugin": "8.8.1",
+		"@typescript-eslint/parser": "8.8.1",
 		"babel-loader": "9.2.1",
-		"chromatic": "11.11.0",
+		"chromatic": "11.12.5",
 		"css-loader": "7.1.2",
 		"cypress": "^13.2.0",
 		"eslint": "8.57.1",
 		"eslint-config-airbnb": "19.0.4",
-		"eslint-config-next": "14.2.14",
+		"eslint-config-next": "14.2.15",
 		"eslint-config-prettier": "9.1.0",
 		"eslint-plugin-import": "^2.27.5",
 		"eslint-plugin-jsx-a11y": "6.10.0",
@@ -119,7 +124,7 @@
 		"postcss": "^8.4.31",
 		"prettier": "3.3.3",
 		"resolve-url-loader": "^5.0.0",
-		"sass": "1.79.4",
+		"sass": "1.79.5",
 		"sass-loader": "^14.0.0",
 		"storybook": "^7.5.1",
 		"storybook-addon-fetch-mock": "2.0.0",
@@ -130,6 +135,6 @@
 		"stylelint-config-standard": "^36.0.0",
 		"stylelint-config-standard-scss": "^13.0.0",
 		"ts-jest": "^29.1.0",
-		"typescript": "5.6.2"
+		"typescript": "5.6.3"
 	}
 }
