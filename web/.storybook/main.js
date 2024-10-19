@@ -116,6 +116,9 @@ module.exports = {
   },
 
   staticDirs: ['../public', '../../static', './story-assets'],
-
   docs: {},
+
+  typescript: {
+    reactDocgen: 'react-docgen-typescript'
+  }
 };
