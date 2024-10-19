@@ -44,6 +44,8 @@
 		"@storybook/cli",
 		"@storybook/mdx2-csf",
 		"@commitlint/cli",
-		"@commitlint/config-conventional"
+		"@commitlint/config-conventional",
+		"babel-plugin-dynamic-import-node",
+		"@babel/preset-react"
 	]
 }
