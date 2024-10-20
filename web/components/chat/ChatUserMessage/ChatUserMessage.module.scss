@@ -4,6 +4,12 @@ $p-h-size: 8px;
 $p-v-size: 2px;
 
 .root {
+  border-left: $border-style;
+  position: relative;
+  font-size: var(--chat-message-text-size);
+  padding: $p-v-size $p-h-size;
+  color: var(--theme-color-components-chat-text);
+
   * {
     z-index: 100;
   }
@@ -13,12 +19,6 @@ $p-v-size: 2px;
   p:nth-of-type(1) {
     margin: initial;
   }
-
-  border-left: $border-style;
-  position: relative;
-  font-size: var(--chat-message-text-size);
-  padding: $p-v-size $p-h-size;
-  color: var(--theme-color-components-chat-text);
 
   .user {
     display: flex;
