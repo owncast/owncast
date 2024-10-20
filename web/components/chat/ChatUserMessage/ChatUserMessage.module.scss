@@ -4,7 +4,7 @@ $p-h-size: 8px;
 $p-v-size: 2px;
 
 .root {
-	border-left: $border-style;
+  border-left: $border-style;
   position: relative;
   font-size: var(--chat-message-text-size);
   padding: $p-v-size $p-h-size;
@@ -19,7 +19,6 @@ $p-v-size: 2px;
   p:nth-of-type(1) {
     margin: initial;
   }
-
 
   .user {
     display: flex;
