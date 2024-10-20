@@ -120,7 +120,7 @@
     "less": "4.2.0",
     "less-loader": "12.2.0",
     "mdx-mermaid": "^2.0.0",
-    "mermaid": "^10.0.0",
+    "mermaid": "^11.0.0",
     "npm": "^10.0.0",
     "postcss": "^8.4.31",
     "prettier": "3.3.3",
