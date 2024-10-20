@@ -2,6 +2,7 @@ import '../styles/variables.css';
 import '../styles/global.less';
 import '../styles/theme.less';
 import './preview.scss';
+import { AntdTheme } from '../components/theme/AntdTheme';
 import { themes } from '@storybook/theming';
 import { DocsContainer } from './storybook-theme';
 import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
@@ -104,3 +105,7 @@ export const parameters = {
     viewports: flatMapObject(INITIAL_VIEWPORTS, convertToLandscapeAndPortraitEntries),
   },
 };
+
+const AntdConfigWrapper = Story => <AntdTheme>{Story()}</AntdTheme>;
+
+export const decorators = [AntdConfigWrapper];

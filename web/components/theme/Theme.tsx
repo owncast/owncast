@@ -28,6 +28,7 @@ export const Theme: FC = () => {
         <meta name="theme-color" content={themeColor} />
       </Head>
       <style
+        id="custom-color-styles"
         dangerouslySetInnerHTML={{
           __html: `
 				:root {
