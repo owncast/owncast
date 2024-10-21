@@ -31,7 +31,7 @@ emojiCollectionDirs.forEach(collection => {
   emojiCollections[collection] = { name: collection, images: emojiCollection };
 });
 
-const template = fs.readFileSync('./Emoji.stories.mdx', 'utf8');
+const template = fs.readFileSync('./Emoji.template', 'utf8');
 let t = handlebars.compile(template);
 let output = t({ emojiCollections });
 console.log(output);
