@@ -1,7 +1,7 @@
 import fs from 'fs';
 import handlebars from 'handlebars';
 
-const template = fs.readFileSync('./Document.stories.mdx', 'utf8');
+const template = fs.readFileSync('./Document.template', 'utf8');
 let t = handlebars.compile(template, { noEscape: true });
 
 const documents = [
@@ -30,5 +30,5 @@ documents.forEach(doc => {
 
   const document = fs.readFileSync(doc.path, 'utf8');
   const output = t({ name: doc.name, title: doc.title, content: document });
-  fs.writeFileSync(`../stories-category-doc-pages/${doc.name}.stories.mdx`, output);
+  fs.writeFileSync(`../stories-category-doc-pages/${doc.name}.mdx`, output);
 });
