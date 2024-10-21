@@ -68,7 +68,7 @@
     "@babel/preset-react": "^7.25.7",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
-    "@mdx-js/react": "3.0.1",
+    "@mdx-js/react": "3.1.0",
     "@storybook/addon-a11y": "^8.3.6",
     "@storybook/addon-actions": "^8.3.6",
     "@storybook/addon-docs": "^8.3.6",
