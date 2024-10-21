@@ -5,6 +5,7 @@ import Title from 'antd/lib/typography/Title';
 import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 
+import { useTranslation } from 'next-export-i18n';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 // Lazy loaded components
@@ -50,10 +51,12 @@ const SlidersTwoTone = dynamic(() => import('@ant-design/icons/SlidersTwoTone'),
 });
 
 export default function Help() {
+  const { t } = useTranslation();
+
   const questions = [
     {
       icon: <SettingTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I want to configure my owncast instance',
+      title: t('I want to configure my owncast instance'),
       content: (
         <div>
           <a
@@ -61,14 +64,14 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> Learn more
+            <LinkOutlined /> {t('Learn more')}
           </a>
         </div>
       ),
     },
     {
       icon: <CameraTwoTone style={{ fontSize: '24px' }} />,
-      title: 'Help configuring my broadcasting software',
+      title: t('Help configuring my broadcasting software'),
       content: (
         <div>
           <a
@@ -76,14 +79,14 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> Learn more
+            <LinkOutlined /> {t('Learn more')}
           </a>
         </div>
       ),
     },
     {
       icon: <Html5TwoTone style={{ fontSize: '24px' }} />,
-      title: 'I want to embed my stream into another site',
+      title: t('I want to embed my stream into another site'),
       content: (
         <div>
           <a
@@ -91,14 +94,14 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> Learn more
+            <LinkOutlined /> {t('Learn more')}
           </a>
         </div>
       ),
     },
     {
       icon: <EditTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I want to customize my website',
+      title: t('I want to customize my website'),
       content: (
         <div>
           <a
@@ -106,14 +109,14 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> Learn more
+            <LinkOutlined /> {t('Learn more')}
           </a>
         </div>
       ),
     },
     {
       icon: <SlidersTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I want to tweak my video output',
+      title: t('I want to tweak my video output'),
       content: (
         <div>
           <a
@@ -121,14 +124,14 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> Learn more
+            <LinkOutlined /> {t('Learn more')}
           </a>
         </div>
       ),
     },
     {
       icon: <DatabaseTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I want to use an external storage provider',
+      title: t('I want to use an external storage provider'),
       content: (
         <div>
           <a
@@ -136,7 +139,7 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> Learn more
+            <LinkOutlined /> {t('Learn more')}
           </a>
         </div>
       ),
@@ -146,58 +149,58 @@ export default function Help() {
   const otherResources = [
     {
       icon: <BugTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I found a bug',
+      title: t('I found a bug'),
       content: (
         <div>
-          If you found a bug, then please
+          {t('If you found a bug, then please')}
           <a
             href="https://github.com/owncast/owncast/issues/new/choose"
             target="_blank"
             rel="noopener noreferrer"
           >
             {' '}
-            let us know
+            {t('let us know')}
           </a>
         </div>
       ),
     },
     {
       icon: <QuestionCircleTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I have a general question',
+      title: t('I have a general question'),
       content: (
         <div>
-          Most general questions are answered in our
+          {t('Most general questions are answered in our')}
           <a
             href="https://owncast.online/faq/?source=admin"
             target="_blank"
             rel="noopener noreferrer"
           >
             {' '}
-            FAQ
+            {t('FAQ')}
           </a>{' '}
-          or exist in our{' '}
+          {t('or exist in our')}{' '}
           <a
             href="https://github.com/owncast/owncast/discussions"
             target="_blank"
             rel="noopener noreferrer"
           >
-            discussions
+            {t('discussions')}
           </a>
         </div>
       ),
     },
     {
       icon: <ApiTwoTone style={{ fontSize: '24px' }} />,
-      title: 'I want to build add-ons for Owncast',
+      title: t('I want to build add-ons for Owncast'),
       content: (
         <div>
-          You can build your own bots, overlays, tools and add-ons with our
+          {t('You can build your own bots, overlays, tools and add-ons with our')}
           <a
             href="https://owncast.online/thirdparty?source=admin"
             target="_blank"
             rel="noopener noreferrer"
           >
-            &nbsp;developer APIs.&nbsp;
+            &nbsp;{t('developer APIs.')}&nbsp;
           </a>
         </div>
       ),
@@ -206,11 +209,11 @@ export default function Help() {
 
   return (
     <div className="help-page">
-      <Title style={{ textAlign: 'center' }}>How can we help you?</Title>
+      <Title style={{ textAlign: 'center' }}>{t('How can we help you?')}</Title>
       <Row gutter={[16, 16]} justify="space-around" align="middle">
         <Col xs={24} lg={12} style={{ textAlign: 'center' }}>
           <Result status="500" />
-          <Title level={2}>Troubleshooting</Title>
+          <Title level={2}>{t('Troubleshooting')}</Title>
           <Button
             target="_blank"
             rel="noopener noreferrer"
@@ -218,12 +221,12 @@ export default function Help() {
             icon={<LinkOutlined />}
             type="primary"
           >
-            Fix your problems
+            {t('Fix your problems')}
           </Button>
         </Col>
         <Col xs={24} lg={12} style={{ textAlign: 'center' }}>
           <Result status="404" />
-          <Title level={2}>Documentation</Title>
+          <Title level={2}>{t('Documentation')}</Title>
           <Button
             target="_blank"
             rel="noopener noreferrer"
@@ -231,12 +234,12 @@ export default function Help() {
             icon={<LinkOutlined />}
             type="primary"
           >
-            Read the Docs
+            {t('Read the Docs')}
           </Button>
         </Col>
       </Row>
       <Divider />
-      <Title level={2}>Common tasks</Title>
+      <Title level={2}>{t('Common tasks')}</Title>
       <Row gutter={[16, 16]}>
         {questions.map(question => (
           <Col xs={24} lg={12} key={question.title}>
@@ -247,7 +250,7 @@ export default function Help() {
         ))}
       </Row>
       <Divider />
-      <Title level={2}>Other</Title>
+      <Title level={2}>{t('Other')}</Title>
       <Row gutter={[16, 16]}>
         {otherResources.map(question => (
           <Col xs={24} lg={12} key={question.title}>

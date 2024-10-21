@@ -1,6 +1,7 @@
 import { Row, Col, Typography, Alert, Spin } from 'antd';
 import React, { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
 import { fetchData, FETCH_INTERVAL, HARDWARE_STATS } from '../../utils/apis';
 import { Chart } from '../../components/admin/Chart';
 import { StatisticItem } from '../../components/admin/StatisticItem';
@@ -22,6 +23,7 @@ const SaveOutlined = dynamic(() => import('@ant-design/icons/SaveOutlined'), {
 });
 
 export default function HardwareInfo() {
+  const { t } = useTranslation();
   const [hardwareStatus, setHardwareStatus] = useState({
     cpu: [], // Array<TimedValue>(),
     memory: [], // Array<TimedValue>(),
@@ -53,13 +55,13 @@ export default function HardwareInfo() {
   if (!hardwareStatus.cpu) {
     return (
       <div>
-        <Typography.Title>Hardware Info</Typography.Title>
+        <Typography.Title>{t('Hardware Info')}</Typography.Title>
 
         <Alert
           style={{ marginTop: '10px' }}
           banner
-          message="Please wait"
-          description="No hardware details have been collected yet."
+          message={t('Please wait')}
+          description={t('No hardware details have been collected yet.')}
           type="info"
         />
         <Spin spinning style={{ width: '100%', margin: '10px' }} />
@@ -73,19 +75,19 @@ export default function HardwareInfo() {
 
   const series = [
     {
-      name: 'CPU',
+      name: t('CPU'),
       color: '#B63FFF',
       data: hardwareStatus.cpu,
       pointStyle: 'rect',
     },
     {
-      name: 'Memory',
+      name: t('Memory'),
       color: '#2087E2',
       data: hardwareStatus.memory,
       pointStyle: 'circle',
     },
     {
-      name: 'Disk',
+      name: t('Disk'),
       color: '#FF7700',
       data: hardwareStatus.disk,
       pointStyle: 'rectRounded',
@@ -94,7 +96,7 @@ export default function HardwareInfo() {
 
   return (
     <>
-      <Typography.Title>Hardware Info</Typography.Title>
+      <Typography.Title>{t('Hardware Info')}</Typography.Title>
       <br />
       <div>
         <Row gutter={[16, 16]} justify="space-around">
@@ -130,7 +132,7 @@ export default function HardwareInfo() {
           </Col>
         </Row>
 
-        <Chart title="% used" dataCollections={series} color="#FF7700" unit="%" />
+        <Chart title={`% ${t('used')}`} dataCollections={series} color="#FF7700" unit="%" />
       </div>
     </>
   );
