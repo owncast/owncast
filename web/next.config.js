@@ -8,31 +8,8 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   runtimeCaching: [
     {
-      urlPattern: /.+offline-.+\.ts$/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'stream-offline-assets',
-      },
-    },
-    {
-      urlPattern: /.+\.ts$/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'stream-assets',
-        expiration: {
-          maxEntries: 32,
-        },
-      },
-    },
-    {
-      urlPattern: '/hls/stream.m3u8',
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'stream-output-variant',
-        expiration: {
-          maxAgeSeconds: 24 * 60 * 60, // 24 hours
-        },
-      },
+      urlPattern: /\.(?:ts|m3u8)$/i,
+      handler: 'NetworkOnly',
     },
     {
       urlPattern: /^https:\/\/fonts\.(?:gstatic)\.com\/.*/i,
