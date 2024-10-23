@@ -14,9 +14,13 @@
     "build-storybook": "storybook build",
     "build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -",
     "test": "jest",
-    "format": "prettier --write  **/*.{js,ts,jsx,tsx,css,md}"
+    "format": "prettier --write  **/*.{js,ts,jsx,tsx,css,md}",
+    "translate": "i18next -c i18next-parser.config.mjs"
   },
   "dependencies": {
+    "i18next-parser": "^8.9.0",
+    "i18next-scanner": "^4.4.0",
+    "next-export-i18n": "^2.1.0",
     "@ant-design/icons": "4.8.3",
     "@codemirror/lang-css": "6.3.0",
     "@codemirror/lang-html": "^6.4.2",
