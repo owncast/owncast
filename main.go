@@ -12,8 +12,8 @@ import (
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
-	"github.com/owncast/owncast/router"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/router"
 )
 
 var (
@@ -105,7 +105,7 @@ func main() {
 
 	go metrics.Start(core.GetStatus)
 
-	if err := router.Start(); err != nil {
+	if err := router.Start(*enableVerboseLogging); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
 }

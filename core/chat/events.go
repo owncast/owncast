@@ -9,8 +9,8 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/core/webhooks"
+	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -46,12 +46,14 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 		}
 	}
 
+	userRepository := userrepository.Get()
+
 	// Check if the name is not already assigned to a registered user.
-	if available, err := user.IsDisplayNameAvailable(proposedUsername); err != nil {
+	if available, err := userRepository.IsDisplayNameAvailable(proposedUsername); err != nil {
 		log.Errorln("error checking if name is available", err)
 		return
 	} else if !available {
-		message := fmt.Sprintf("The name **%s** has been already registered. If this is your name, please authenticate.", proposedUsername)
+		message := fmt.Sprintf("The name **%s** has already been registered. If this is your name, please authenticate.", proposedUsername)
 		s.sendActionToClient(eventData.client, message)
 
 		// Resend the client's user so their username is in sync.
@@ -60,7 +62,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 		return
 	}
 
-	savedUser := user.GetUserByToken(eventData.client.accessToken)
+	savedUser := userRepository.GetUserByToken(eventData.client.accessToken)
 	oldName := savedUser.DisplayName
 
 	// Check that the new name is different from old.
@@ -70,7 +72,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	}
 
 	// Save the new name
-	if err := user.ChangeUsername(eventData.client.User.ID, proposedUsername); err != nil {
+	if err := userRepository.ChangeUsername(eventData.client.User.ID, proposedUsername); err != nil {
 		log.Errorln("error changing username", err)
 	}
 
@@ -103,6 +105,8 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 }
 
 func (s *Server) userColorChanged(eventData chatClientEvent) {
+	userRepository := userrepository.Get()
+
 	var receivedEvent events.ColorChangeEvent
 	if err := json.Unmarshal(eventData.data, &receivedEvent); err != nil {
 		log.Errorln("error unmarshalling to ColorChangeEvent", err)
@@ -116,7 +120,7 @@ func (s *Server) userColorChanged(eventData chatClientEvent) {
 	}
 
 	// Save the new color
-	if err := user.ChangeUserColor(eventData.client.User.ID, receivedEvent.NewColor); err != nil {
+	if err := userRepository.ChangeUserColor(eventData.client.User.ID, receivedEvent.NewColor); err != nil {
 		log.Errorln("error changing user display color", err)
 	}
 
@@ -126,6 +130,8 @@ func (s *Server) userColorChanged(eventData chatClientEvent) {
 }
 
 func (s *Server) userMessageSent(eventData chatClientEvent) {
+	userRepository := userrepository.Get()
+
 	var event events.UserMessageEvent
 	if err := json.Unmarshal(eventData.data, &event); err != nil {
 		log.Errorln("error unmarshalling to UserMessageEvent", err)
@@ -148,7 +154,7 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 		}
 	}
 
-	event.User = user.GetUserByToken(eventData.client.accessToken)
+	event.User = userRepository.GetUserByToken(eventData.client.accessToken)
 
 	// Guard against nil users
 	if event.User == nil {

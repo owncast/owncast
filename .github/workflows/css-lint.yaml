@@ -1,0 +1,53 @@
+name: CSS Lint and Formatting
+
+on:
+  push:
+    paths:
+      - 'web/**'
+  pull_request:
+    paths:
+      - 'web/**'
+
+jobs:
+  css-lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+
+    steps:
+      - name: Check out pull request code
+        uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        if: github.event_name == 'push'
+
+      - name: Get changed files
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v45
+        with:
+          path: 'web'
+          files_yaml: |
+            src:
+              - '**/*.{css,scss}'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.9.0'
+
+      - name: Install dependencies
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        run: npm install
+
+      - name: Run Prettier
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        run: npx prettier --check ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
+
+      - name: Run Stylelint
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        run: npx stylelint ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
