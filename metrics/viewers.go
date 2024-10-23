@@ -31,6 +31,7 @@ func startViewerCollectionMetrics() {
 func collectViewerCount() {
 	// Don't collect metrics for viewers if there's no stream active.
 	if !core.GetStatus().Online {
+		activeViewerCount.Set(0)
 		return
 	}
 

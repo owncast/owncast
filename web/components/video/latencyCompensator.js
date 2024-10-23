@@ -306,7 +306,7 @@ class LatencyCompensator {
         'rebuffer events: ',
         this.bufferingCounter,
       );
-    } catch (err) {
+    } catch {
       // console.error(err);
     }
   }

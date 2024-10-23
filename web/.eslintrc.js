@@ -27,6 +27,7 @@ module.exports = {
     'react/prop-types': 0,
     'react/react-in-jsx-scope': 'off',
     'react/require-default-props': 'off',
+    'react/no-is-mounted': 'off',
     'react/jsx-filename-extension': [
       1,
       {
@@ -51,6 +52,7 @@ module.exports = {
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
     'no-restricted-exports': 'off',
+    'no-plusplus': 'off',
     'react/jsx-no-target-blank': [
       1,
       {

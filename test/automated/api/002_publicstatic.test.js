@@ -8,13 +8,11 @@ const publicPath = path.resolve(__dirname, '../../../data/public');
 const filename = randomString() + '.txt';
 const fileContent = randomString();
 
-test('random public static file does not exist', async (done) => {
-	request.get('/public/' + filename).expect(404);
-
-	done();
+test('random public static file does not exist', async () => {
+	await request.get('/public/' + filename).expect(404);
 });
 
-test('public directory is writable', async (done) => {
+test('public directory is writable', async () => {
 	try {
 		writeFileToPublic();
 	} catch (err) {
@@ -28,27 +26,23 @@ test('public directory is writable', async (done) => {
 			}
 		}
 	}
-
-	done();
 });
 
-test('public static file is accessible', async (done) => {
-	request
+test('public static file is accessible', async () => {
+	await request
 		.get('/public/' + filename)
 		.expect(200)
 		.then((res) => {
 			expect(res.text).toEqual(fileContent);
-			done();
 		});
 });
 
-test('public static file is persistent and not locked', async (done) => {
+test('public static file is persistent and not locked', async () => {
 	fs.unlink(path.join(publicPath, filename), (err) => {
 		if (err) {
 			throw err;
 		}
 	});
-	done();
 });
 
 function writeFileToPublic() {

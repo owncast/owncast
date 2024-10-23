@@ -96,6 +96,7 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
           [styles.ownMessage]: sentBySelf,
         })}
         style={{ borderColor: color }}
+        title={formattedTimestamp}
       >
         <div className={styles.background} style={{ color }} />
 
@@ -105,7 +106,7 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
             <span className={styles.userBadges}>{badgeNodes}</span>
           </div>
         </UserTooltip>
-        <Tooltip title={formattedTimestamp} mouseEnterDelay={1}>
+        <Tooltip mouseEnterDelay={1}>
           <Interweave
             className={styles.message}
             content={body}
