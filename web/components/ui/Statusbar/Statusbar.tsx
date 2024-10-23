@@ -18,8 +18,9 @@ export type StatusbarProps = {
   className?: string;
 };
 
-function makeDurationString(lastConnectTime: Date): string {
+export function makeDurationString(lastConnectTime: Date): string {
   const diff = intervalToDuration({ start: lastConnectTime, end: new Date() });
+  
   if (diff.days >= 1) {
     return formatDuration({
       days: diff.days,
