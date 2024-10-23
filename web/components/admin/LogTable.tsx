@@ -30,15 +30,15 @@ export type LogTableProps = {
 
 export const LogTable: FC<LogTableProps> = ({ logs, initialPageSize }) => {
   const { t } = useTranslation();
+  const [pageSize, setPageSize] = useState(initialPageSize);
+
+  const handleTableChange = (pagination: TablePaginationConfig) => {
+    setPageSize(pagination.pageSize);
+  };
 
   if (!logs?.length) {
     return null;
   }
-
-  const [pageSize, setPageSize] = useState(initialPageSize);
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    setPageSize(pagination.pageSize);
-  };
 
   const columns = [
     {
