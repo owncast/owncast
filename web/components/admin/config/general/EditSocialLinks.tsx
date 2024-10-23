@@ -290,6 +290,9 @@ export default function EditSocialLinks() {
   ];
 
   const isValid = (url: string, platform: string) => {
+    if (platform === '') {
+      return false;
+    }
     if (platform === 'xmpp') {
       return isValidAccount(url, 'xmpp');
     }

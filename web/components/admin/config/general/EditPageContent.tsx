@@ -1,7 +1,7 @@
 // EDIT CUSTOM DETAILS ON YOUR PAGE
 import React, { useState, useEffect, useContext } from 'react';
 import { Typography, Button } from 'antd';
-import CodeMirror from '@uiw/react-codemirror';
+import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
@@ -103,7 +103,10 @@ export default function EditPageContent() {
         theme={bbedit}
         height="200px"
         onChange={handleEditorChange}
-        extensions={[markdown({ base: markdownLanguage, codeLanguages: languages })]}
+        extensions={[
+          markdown({ base: markdownLanguage, codeLanguages: languages }),
+          EditorView.lineWrapping,
+        ]}
       />
 
       <br />

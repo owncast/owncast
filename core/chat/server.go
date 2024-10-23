@@ -14,9 +14,10 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
 	"github.com/owncast/owncast/core/webhooks"
-	"github.com/owncast/owncast/geoip"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/userrepository"
+	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -40,7 +41,7 @@ type Server struct {
 	// a map of user IDs and timers that fire for chat part messages.
 	userPartedTimers         map[string]*time.Ticker
 	seq                      uint
-	maxSocketConnectionLimit int64
+	maxSocketConnectionLimit uint64
 
 	mu sync.RWMutex
 }
@@ -82,7 +83,7 @@ func (s *Server) Run() {
 }
 
 // Addclient registers new connection as a User.
-func (s *Server) Addclient(conn *websocket.Conn, user *user.User, accessToken string, userAgent string, ipAddress string) *Client {
+func (s *Server) Addclient(conn *websocket.Conn, user *models.User, accessToken string, userAgent string, ipAddress string) *Client {
 	client := &Client{
 		server:      s,
 		conn:        conn,
@@ -214,7 +215,7 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Limit concurrent chat connections
-	if int64(len(s.clients)) >= s.maxSocketConnectionLimit {
+	if uint64(len(s.clients)) >= s.maxSocketConnectionLimit {
 		log.Warnln("rejecting incoming client connection as it exceeds the max client count of", s.maxSocketConnectionLimit)
 		_, _ = w.Write([]byte(events.ErrorMaxConnectionsExceeded))
 		return
@@ -239,8 +240,11 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	userRepository := userrepository.Get()
+
 	// A user is required to use the websocket
-	user := user.GetUserByToken(accessToken)
+	user := userRepository.GetUserByToken(accessToken)
+
 	if user == nil {
 		// Send error that registration is required
 		_ = conn.WriteJSON(events.EventPayload{
@@ -335,8 +339,10 @@ func SendConnectedClientInfoToUser(userID string) error {
 		return err
 	}
 
+	userRepository := userrepository.Get()
+
 	// Get an updated reference to the user.
-	user := user.GetUserByID(userID)
+	user := userRepository.GetUserByID(userID)
 	if user == nil {
 		return fmt.Errorf("user not found")
 	}

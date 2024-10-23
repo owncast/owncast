@@ -1,0 +1,21 @@
+🩺 The doctor is checking the health of your Storybook..
+╭ Incompatible packages found ───────────────────────────────────────────────────╮
+│                                                                                │
+│   The following packages are incompatible with Storybook 8.0.8 as they         │
+│   depend on different major versions of Storybook packages:                    │
+│   - @storybook/addon-postcss@2.0.0                                             │
+│   - @storybook/addon-styling-webpack@0.0.6                                     │
+│                                                                                │
+│                                                                                │
+│   Please consider updating your packages or contacting the maintainers for     │
+│   compatibility details.                                                       │
+│   For more on Storybook 8 compatibility, see the linked GitHub issue:          │
+│   https://github.com/storybookjs/storybook/issues/26031                        │
+│                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────╯
+
+You can always recheck the health of your project by running:
+npx storybook doctor
+
+Full logs are available in /home/gabek/src/webv2-merge/owncast/web/doctor-storybook.log
+

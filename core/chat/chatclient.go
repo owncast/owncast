@@ -14,8 +14,8 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
-	"github.com/owncast/owncast/geoip"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/geoip"
 )
 
 // Client represents a single chat client.
@@ -25,7 +25,7 @@ type Client struct {
 	rateLimiter   *rate.Limiter
 	messageFilter *ChatMessageFilter
 	conn          *websocket.Conn
-	User          *user.User `json:"user"`
+	User          *models.User `json:"user"`
 	server        *Server
 	Geo           *geoip.GeoDetails `json:"geo"`
 	// Buffered channel of outbound messages.

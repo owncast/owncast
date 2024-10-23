@@ -56,7 +56,7 @@ export default class WebsocketService {
 
     const ws = new WebSocket(url.toString());
     ws.onopen = this.onOpen.bind(this);
-    ws.onerror = this.onError.bind(this);
+    ws.onclose = this.onClose.bind(this);
     ws.onmessage = this.onMessage.bind(this);
 
     this.websocket = ws;
@@ -70,12 +70,10 @@ export default class WebsocketService {
     this.backOff = 0;
   }
 
-  // On ws error just close the socket and let it re-connect again for now.
-  onError() {
-    handleNetworkingError();
-    this.socketDisconnected();
-    this.websocket.close();
+  onClose() {
     if (!this.isShutdown) {
+      handleNetworkingError();
+      this.socketDisconnected();
       this.scheduleReconnect();
     }
   }

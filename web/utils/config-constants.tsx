@@ -237,7 +237,7 @@ export const FIELD_PROPS_DISABLE_SEARCH_INDEXING = {
   apiPath: API_DISABLE_SEARCH_INDEXING,
   configPath: '',
   label: 'Disable search engine indexing',
-  tip: 'Turn this ON to to tell search engines not to index this site.',
+  tip: 'Turn this ON to ask search engines to not index this site.',
 };
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {

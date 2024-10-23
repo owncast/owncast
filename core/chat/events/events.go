@@ -17,10 +17,10 @@ import (
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
 	"github.com/yuin/goldmark/util"
-	"mvdan.cc/xurls"
+	"mvdan.cc/xurls/v2"
 
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/user"
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -30,21 +30,21 @@ type EventPayload map[string]interface{}
 // OutboundEvent represents an event that is sent out to all listeners of the chat server.
 type OutboundEvent interface {
 	GetBroadcastPayload() EventPayload
-	GetMessageType() EventType
+	GetMessageType() models.EventType
 }
 
 // Event is any kind of event.  A type is required to be specified.
 type Event struct {
-	Timestamp time.Time `json:"timestamp"`
-	Type      EventType `json:"type,omitempty"`
-	ID        string    `json:"id"`
+	Timestamp time.Time        `json:"timestamp"`
+	Type      models.EventType `json:"type,omitempty"`
+	ID        string           `json:"id"`
 }
 
 // UserEvent is an event with an associated user.
 type UserEvent struct {
-	User     *user.User `json:"user"`
-	HiddenAt *time.Time `json:"hiddenAt,omitempty"`
-	ClientID uint       `json:"clientId,omitempty"`
+	User     *models.User `json:"user"`
+	HiddenAt *time.Time   `json:"hiddenAt,omitempty"`
+	ClientID uint         `json:"clientId,omitempty"`
 }
 
 // MessageEvent is an event that has a message body.
@@ -220,7 +220,7 @@ func RenderMarkdown(raw string) string {
 					[]byte("https:"),
 				}),
 				extension.WithLinkifyURLRegexp(
-					xurls.Strict,
+					xurls.Strict(),
 				),
 			),
 			emoji.New(

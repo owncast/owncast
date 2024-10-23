@@ -105,7 +105,7 @@ func GetAllSocialHandles() map[string]SocialHandle {
 			Icon:     "/img/platformlogos/twitch.svg",
 		},
 		"twitter": {
-			Platform: "Twitter",
+			Platform: "X",
 			Icon:     "/img/platformlogos/twitter.svg",
 		},
 		"youtube": {
