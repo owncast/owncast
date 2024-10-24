@@ -36,14 +36,14 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
     ) {
       (
         videojs.getPlayer(videoRef.current).tech({ IWillNotUseThisInPlugins: true }) as any
-      ).vhs.xhr.beforeRequest = o => {
+      ).vhs.xhr.onRequest = (xhr, o) => {
         if (o.uri.match('m3u8')) {
-          const cachebuster = Math.random().toString(16).substr(2, 8);
+          const cachebuster = Math.random().toString(16).slice(2, 8);
           // eslint-disable-next-line no-param-reassign
           o.uri = `${o.uri}?cachebust=${cachebuster}`;
         }
 
-        return o;
+        return xhr;
       };
     }
   }, [options, videoRef]);
