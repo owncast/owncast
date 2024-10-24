@@ -2,6 +2,7 @@ import { Alert, Button, Card, Col, Row, Statistic, Typography } from 'antd';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { FC, useContext } from 'react';
+import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../utils/server-status-context';
 
 // Lazy loaded components
@@ -22,6 +23,7 @@ export type StreamHealthOverviewProps = {
 };
 
 export const StreamHealthOverview: FC<StreamHealthOverviewProps> = ({ showTroubleshootButton }) => {
+  const { t } = useTranslation();
   const serverStatusData = useContext(ServerStatusContext);
   const { health } = serverStatusData;
   if (!health) {
@@ -45,15 +47,15 @@ export const StreamHealthOverview: FC<StreamHealthOverviewProps> = ({ showTroubl
         <Row gutter={8}>
           <Col span={12}>
             <Statistic
-              title="Healthy Stream"
-              value={healthy ? 'Yes' : 'No'}
+              title={t('Healthy Stream')}
+              value={healthy ? t('Yes') : t('No')}
               valueStyle={{ color }}
               prefix={healthy ? <CheckCircleOutlined /> : <ExclamationCircleOutlined />}
             />
           </Col>
           <Col span={12}>
             <Statistic
-              title="Playback Health"
+              title={t('Playback Health')}
               value={healthPercentage}
               valueStyle={{ color }}
               suffix="%"
@@ -65,8 +67,7 @@ export const StreamHealthOverview: FC<StreamHealthOverviewProps> = ({ showTroubl
             type="secondary"
             style={{ textAlign: 'center', fontSize: '0.7em', opacity: '0.3' }}
           >
-            Stream health represents {representation}% of all known players. Other player status is
-            unknown.
+            {`${t('Stream health represents')} ${representation}% ${t('of all known players. Other player status is unknown.')}`}
           </Typography.Text>
         </Row>
         <Row
@@ -82,7 +83,7 @@ export const StreamHealthOverview: FC<StreamHealthOverviewProps> = ({ showTroubl
                 showTroubleshootButton && (
                   <Link passHref href="/admin/stream-health">
                     <Button size="small" type="text" style={{ color: 'black' }}>
-                      TROUBLESHOOT
+                      {t('TROUBLESHOOT')}
                     </Button>
                   </Link>
                 )

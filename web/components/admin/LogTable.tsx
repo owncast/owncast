@@ -3,6 +3,7 @@ import { Table, Tag, Typography } from 'antd';
 import Linkify from 'react-linkify';
 import { SortOrder, TablePaginationConfig } from 'antd/lib/table/interface';
 import { format } from 'date-fns';
+import { useTranslation } from 'next-export-i18n';
 
 const { Title } = Typography;
 
@@ -28,39 +29,41 @@ export type LogTableProps = {
 };
 
 export const LogTable: FC<LogTableProps> = ({ logs, initialPageSize }) => {
-  if (!logs?.length) {
-    return null;
-  }
-
+  const { t } = useTranslation();
   const [pageSize, setPageSize] = useState(initialPageSize);
+
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPageSize(pagination.pageSize);
   };
 
+  if (!logs?.length) {
+    return null;
+  }
+
   const columns = [
     {
-      title: 'Level',
+      title: t('Level'),
       dataIndex: 'level',
       key: 'level',
       filters: [
         {
-          text: 'Info',
+          text: t('Info'),
           value: 'info',
         },
         {
-          text: 'Warning',
+          text: t('Warning'),
           value: 'warning',
         },
         {
-          text: 'Error',
-          value: 'error',
+          text: t('Error'),
+          value: 'Error',
         },
       ],
       onFilter: (level, row) => row.level.indexOf(level) === 0,
       render: renderColumnLevel,
     },
     {
-      title: 'Timestamp',
+      title: t('Timestamp'),
       dataIndex: 'time',
       key: 'time',
       render: timestamp => {
@@ -72,7 +75,7 @@ export const LogTable: FC<LogTableProps> = ({ logs, initialPageSize }) => {
       defaultSortOrder: 'descend' as SortOrder,
     },
     {
-      title: 'Message',
+      title: t('Message'),
       dataIndex: 'message',
       key: 'message',
       render: renderMessage,
@@ -81,7 +84,7 @@ export const LogTable: FC<LogTableProps> = ({ logs, initialPageSize }) => {
 
   return (
     <div className="logs-section">
-      <Title>Logs</Title>
+      <Title>{t('Logs')}</Title>
       <Table
         size="middle"
         dataSource={logs}
