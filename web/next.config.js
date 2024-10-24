@@ -3,7 +3,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 const { PHASE_DEVELOPMENT_SERVER } = require('next/constants');
-const runtimeCaching = require('next-pwa/cache');
 
 const withPWA = require('next-pwa')({
   dest: 'public',
@@ -13,17 +12,61 @@ const withPWA = require('next-pwa')({
       handler: 'NetworkOnly',
     },
     {
-      urlPattern: (url) => { return url.pathname.startsWith("/admin/"); },
-      handler: 'NetworkOnly',
+      urlPattern: /\.(?:eot|otf|ttc|ttf|woff|woff2)$/i,
+      handler: 'StaleWhileRevalidate',
       options: {
-        fetchOptions: { credentials: 'same-origin' }
-      }
+        cacheName: 'static-font-assets',
+        expiration: {
+          maxEntries: 4,
+          maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+        },
+      },
     },
     {
-      urlPattern: (url) => { return url.pathname.startsWith("/api/"); },
-      handler: 'NetworkOnly',
+      urlPattern: /\.(?:jpg|jpeg|gif|png|svg|ico|webp)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-image-assets',
+        expiration: {
+          maxEntries: 64,
+          maxAgeSeconds: 24 * 60 * 60, // 24 hours
+        },
+      },
     },
-    ...runtimeCaching,
+    {
+      urlPattern: /\.(?:mp4)$/i,
+      handler: 'CacheFirst',
+      options: {
+        rangeRequests: true,
+        cacheName: 'static-video-assets',
+        expiration: {
+          maxEntries: 32,
+          maxAgeSeconds: 24 * 60 * 60, // 24 hours
+        },
+      },
+    },
+    {
+      urlPattern: /\.(?:js)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-js-assets',
+        expiration: {
+          maxEntries: 32,
+          maxAgeSeconds: 24 * 60 * 60, // 24 hours
+        },
+      },
+    },
+    {
+      urlPattern: /\.(?:css)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-style-assets',
+        expiration: {
+          maxEntries: 32,
+          maxAgeSeconds: 24 * 60 * 60, // 24 hours
+        },
+      },
+    },
   ],
   register: true,
   skipWaiting: true,
