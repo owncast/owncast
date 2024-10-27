@@ -3414,6 +3414,8 @@ components:
           type: integer
         online:
           type: boolean
+        streamTitle:
+          type: string
     Emojis:
       type: array
       items:
