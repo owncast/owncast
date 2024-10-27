@@ -3387,14 +3387,12 @@ components:
     Error:
       type: object
       description: Structure for an error response
-      tags: ['Objects']
       properties:
         error:
           type: string
     BaseAPIResponse:
       type: object
       description: Simple API response
-      tags: ['Objects']
       properties:
         message:
           type: string
@@ -3403,7 +3401,6 @@ components:
     Status:
       type: object
       description: Response for status
-      tags: ['Objects']
       properties:
         serverTime:
           type: string
@@ -3417,6 +3414,8 @@ components:
           type: integer
         online:
           type: boolean
+        streamTitle:
+          type: string
     Emojis:
       type: array
       items:
@@ -3424,7 +3423,6 @@ components:
     Emoji:
       type: object
       description: Name and url for an emoji
-      tags: ['Objects']
       properties:
         name:
           type: string
@@ -3434,7 +3432,6 @@ components:
           description: URL for the emoji image
     AnonymousUser:
       type: object
-      tags: ['Objects']
       properties:
         id:
           type: string
@@ -3444,7 +3441,6 @@ components:
           type: string
     User:
       type: object
-      tags: ['Objects']
       properties:
         createdAt:
           type: string
@@ -3476,7 +3472,6 @@ components:
         $ref: '#/components/schemas/User'
     Follower:
       type: object
-      tags: ['Objects']
       properties:
         link:
           type: string
@@ -3498,12 +3493,10 @@ components:
           description: When this follower was rejected or disabled.
     Followers:
       type: array
-      tags: ['Objects']
       items:
         $ref: '#/components/schemas/Follower'
     PaginatedFollowers:
       type: object
-      tags: ['Objects']
       properties:
         total:
           type: integer
@@ -3511,7 +3504,6 @@ components:
           $ref: '#/components/schemas/Followers'
     Event:
       type: object
-      tags: ['Objects']
       properties:
         timestamp:
           type: string
@@ -3521,7 +3513,6 @@ components:
           type: string
     UserEvent:
       type: object
-      tags: ['Objects']
       properties:
         user:
           $ref: '#/components/schemas/User'
@@ -3531,13 +3522,11 @@ components:
           type: integer
     MessageEvent:
       type: object
-      tags: ['Objects']
       properties:
         body:
           type: string
     ChatMessages:
       type: array
-      tags: ['Objects']
       items:
         anyOf:
           - $ref: '#/components/schemas/UserMessage'
@@ -3546,32 +3535,27 @@ components:
           - $ref: '#/components/schemas/FederatedAction'
     UserMessage:
       type: object
-      tags: ['Objects']
       allOf:
         - $ref: '#/components/schemas/Event'
         - $ref: '#/components/schemas/UserEvent'
         - $ref: '#/components/schemas/MessageEvent'
     SystemMessage:
       type: object
-      tags: ['Objects']
       allOf:
         - $ref: '#/components/schemas/Event'
         - $ref: '#/components/schemas/MessageEvent'
     SystemActionEvent:
       type: object
-      tags: ['Objects']
       allOf:
         - $ref: '#/components/schemas/Event'
         - $ref: '#/components/schemas/MessageEvent'
     ActionMessage:
       type: object
-      tags: ['Objects']
       allOf:
         - $ref: '#/components/schemas/Event'
         - $ref: '#/components/schemas/MessageEvent'
     FederatedAction:
       type: object
-      tags: ['Objects']
       allOf:
         - $ref: '#/components/schemas/Event'
         - $ref: '#/components/schemas/MessageEvent'
@@ -3585,7 +3569,6 @@ components:
               type: string
     WebConfig:
       type: object
-      tags: ['Objects']
       properties:
         appearanceVariables:
           type: object
@@ -3637,7 +3620,6 @@ components:
           $ref: '#/components/schemas/AuthenticationConfig'
     SocialHandle:
       type: object
-      tags: ['Objects']
       properties:
         platform:
           type: string
@@ -3647,7 +3629,6 @@ components:
           type: string
     ExternalAction:
       type: object
-      tags: ['Objects']
       properties:
         url:
           type: string
@@ -3665,13 +3646,11 @@ components:
           type: boolean
     NotificationConfig:
       type: object
-      tags: ['Objects']
       properties:
         browser:
           $ref: '#/components/schemas/BrowserConfig'
     BrowserConfig:
       type: object
-      tags: ['Objects']
       properties:
         publicKey:
           type: string
@@ -3679,7 +3658,6 @@ components:
           type: boolean
     FederationConfig:
       type: object
-      tags: ['Objects']
       properties:
         account:
           type: string
@@ -3689,13 +3667,11 @@ components:
           type: boolean
     AuthenticationConfig:
       type: object
-      tags: ['Objects']
       properties:
         indieAuthEnabled:
           type: boolean
     YPDetails:
       type: object
-      tags: ['Objects']
       properties:
         lastConnectTime:
           type: string
@@ -3727,7 +3703,6 @@ components:
           type: boolean
     VideoVariant:
       type: object
-      tags: ['Objects', 'Video']
       properties:
         index:
           type: integer
@@ -3735,7 +3710,6 @@ components:
           type: string
     PlaybackMetrics:
       type: object
-      tags: ['Objects', 'Video']
       properties:
         bandwidth:
           type: number
@@ -3754,7 +3728,6 @@ components:
           format: double
     Broadcaster:
       type: object
-      tags: ['Objects', 'Video']
       properties:
         time:
           type: string
@@ -3765,7 +3738,6 @@ components:
           $ref: '#/components/schemas/InboundStreamDetails'
     InboundStreamDetails:
       type: object
-      tags: ['Objects', 'Video']
       properties:
         videoCodec:
           type: string
@@ -3786,7 +3758,6 @@ components:
           format: float
     CurrentBroadcast:
       type: object
-      tags: ['Objects', 'Video']
       properties:
         outputSettings:
           type: array
@@ -3796,7 +3767,6 @@ components:
           $ref: '#/components/schemas/LatencyLevel'
     StreamOutputVariant:
       type: object
-      tags: ['Objects', 'Video']
       properties:
         name:
           type: string
@@ -3823,7 +3793,6 @@ components:
           type: integer
     StreamHealthOverview:
       type: object
-      tags: ['Objects', 'Video']
       properties:
         message:
           type: string
@@ -3835,7 +3804,6 @@ components:
           type: boolean
     BrowserNotificationConfiguration:
       type: object
-      tags: ['Objects', 'Notifications']
       properties:
         goLiveMessage:
           type: string
@@ -3843,7 +3811,6 @@ components:
           type: boolean
     DiscordNotificationConfiguration:
       type: object
-      tags: ['Objects', 'Notifications']
       properties:
         webhook:
           type: string
@@ -3853,7 +3820,6 @@ components:
           type: boolean
     S3Info:
       type: object
-      tags: ['Objects']
       properties:
         endpoint:
           type: string
@@ -3875,7 +3841,6 @@ components:
           type: boolean
     StreamKey:
       type: object
-      tags: ['Objects']
       properties:
         key:
           type: string
@@ -3883,7 +3848,6 @@ components:
           type: string
     TimestampedValue:
       type: object
-      tags: ['Objects']
       properties:
         time:
           type: string
@@ -3893,7 +3857,6 @@ components:
           format: double
     Viewer:
       type: object
-      tags: ['Objects', 'Video']
       properties:
         firstSeen:
           type: string
@@ -3908,7 +3871,6 @@ components:
           type: string
     GeoDetails:
       type: object
-      tags: ['Objects']
       properties:
         countryCode:
           type: string
@@ -3917,7 +3879,6 @@ components:
         timeZone:
           type: string
     CollectedMetrics:
-      tags: ['Objects']
       type: object
       properties:
         disk:
@@ -3934,7 +3895,6 @@ components:
             $ref: '#/components/schemas/TimestampedValue'
     ChatClient:
       type: object
-      tags: ['Objects', 'Chat']
       properties:
         connectedAt:
           type: string
@@ -3949,12 +3909,10 @@ components:
           type: integer
     ChatClients:
       type: array
-      tags: ['Objects', 'Chat']
       items:
         $ref: '#/components/schemas/ChatClient'
     IPAddress:
       type: object
-      tags: ['Objects', 'Chat']
       properties:
         createdAt:
           type: string
@@ -3965,7 +3923,6 @@ components:
           type: string
     Webhook:
       type: object
-      tags: ['Objects', 'Notifications']
       properties:
         timestamp:
           type: string
@@ -3983,7 +3940,6 @@ components:
           type: integer
     WebhookEventType:
       type: string
-      tags: ['Objects', 'Notifications']
       enum:
         - CHAT
         - USER_JOINED
@@ -4024,7 +3980,6 @@ components:
           type: boolean
     MessageVisibilityUpdate:
       type: object
-      tags: ['Objects', 'Chat']
       properties:
         idArray:
           type: array
@@ -4034,7 +3989,6 @@ components:
           type: boolean
     ModerationUserDetails:
       type: object
-      tags: ['Objects', 'Chat']
       properties:
         user:
           $ref: '#/components/schemas/User'
@@ -4048,7 +4002,6 @@ components:
             $ref: '#/components/schemas/UserMessage'
     ModerationConnectedClient:
       type: object
-      tags: ['Objects', 'Chat']
       properties:
         connectedAt:
           type: string
@@ -4064,7 +4017,6 @@ components:
           type: integer
     FederatedActivity:
       type: object
-      tags: ['Objects', 'Social']
       properties:
         timestamp:
           type: string
@@ -4077,7 +4029,6 @@ components:
           type: string
     PaginatedFederatedActivity:
       type: object
-      tags: ['Objects', 'Social']
       properties:
         total:
           type: integer
@@ -4085,7 +4036,6 @@ components:
           $ref: '#/components/schemas/FederatedActivity'
     AdminStatus:
       type: object
-      tags: ['Objects']
       properties:
         broadcaster:
           $ref: '#/components/schemas/Broadcaster'
@@ -4107,7 +4057,6 @@ components:
           type: boolean
     AdminServerConfig:
       type: object
-      tags: ['Objects']
       properties:
         instanceDetails:
           $ref: '#/components/schemas/AdminWebConfig'
@@ -4171,7 +4120,6 @@ components:
           type: boolean
     AdminWebConfig:
       type: object
-      tags: ['Objects']
       properties:
         appearanceVariables:
           type: object
@@ -4209,7 +4157,6 @@ components:
           type: boolean
     AdminNotificationsConfig:
       type: object
-      tags: ['Objects', 'Notifications']
       properties:
         browser:
           $ref: '#/components/schemas/BrowserNotificationConfiguration'
@@ -4217,14 +4164,12 @@ components:
           $ref: '#/components/schemas/DiscordNotificationConfiguration'
     AdminYPInfo:
       type: object
-      tags: ['Objects']
       properties:
         instanceUrl:
           type: string
         enabled:
           type: boolean
     AdminFederationConfig:
-      tags: ['Objects', 'Social']
       type: object
       properties:
         username:
@@ -4243,7 +4188,6 @@ components:
           type: boolean
     AdminVideoSettings:
       type: object
-      tags: ['Objects', 'Video']
       properties:
         videoQualityVariants:
           type: array
@@ -4253,7 +4197,6 @@ components:
           type: integer
     AdminLog:
       type: object
-      tags: ['Objects']
       properties:
         time:
           type: string
@@ -4264,7 +4207,6 @@ components:
           type: string
     AdminConfigValue:
       type: object
-      tags: ['Objects']
       properties:
         value:
           oneOf:
@@ -4276,7 +4218,6 @@ components:
             - type: number
     IndieAuthResponse:
       type: object
-      tags: ['Objects', 'Auth']
       properties:
         me:
           type: string
@@ -4288,7 +4229,6 @@ components:
           type: string
     IndieAuthProfile:
       type: object
-      tags: ['Objects', 'Auth']
       properties:
         name:
           type: string
@@ -4298,7 +4238,6 @@ components:
           type: string
     IndieAuthServerProfileResponse:
       type: object
-      tags: ['Objects', 'Auth']
       properties:
         me:
           type: string
@@ -4310,7 +4249,6 @@ components:
           type: string
     IndieAuthServerProfile:
       type: object
-      tags: ['Objects', 'Auth']
       properties:
         name:
           type: string
