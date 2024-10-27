@@ -125,7 +125,7 @@
     "postcss": "^8.4.31",
     "prettier": "3.3.3",
     "resolve-url-loader": "^5.0.0",
-    "sass": "1.80.3",
+    "sass": "1.80.4",
     "sass-loader": "^14.0.0",
     "storybook": "^8.3.6",
     "storybook-addon-fetch-mock": "^2.0.1",
