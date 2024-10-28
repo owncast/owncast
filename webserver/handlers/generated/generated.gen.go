@@ -4593,6 +4593,7 @@ func (siw *ServerInterfaceWrapper) RegisterFediverseOTPRequest(w http.ResponseWr
 	// ------------- Required query parameter "accessToken" -------------
 
 	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
 		return
@@ -4642,6 +4643,7 @@ func (siw *ServerInterfaceWrapper) StartIndieAuthFlow(w http.ResponseWriter, r *
 	// ------------- Required query parameter "accessToken" -------------
 
 	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
 		return
@@ -4676,6 +4678,7 @@ func (siw *ServerInterfaceWrapper) HandleIndieAuthRedirect(w http.ResponseWriter
 	// ------------- Required query parameter "state" -------------
 
 	if paramValue := r.URL.Query().Get("state"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "state"})
 		return
@@ -4690,6 +4693,7 @@ func (siw *ServerInterfaceWrapper) HandleIndieAuthRedirect(w http.ResponseWriter
 	// ------------- Required query parameter "code" -------------
 
 	if paramValue := r.URL.Query().Get("code"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "code"})
 		return
@@ -4726,6 +4730,7 @@ func (siw *ServerInterfaceWrapper) HandleIndieAuthEndpointGet(w http.ResponseWri
 	// ------------- Required query parameter "client_id" -------------
 
 	if paramValue := r.URL.Query().Get("client_id"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "client_id"})
 		return
@@ -4740,6 +4745,7 @@ func (siw *ServerInterfaceWrapper) HandleIndieAuthEndpointGet(w http.ResponseWri
 	// ------------- Required query parameter "redirect_uri" -------------
 
 	if paramValue := r.URL.Query().Get("redirect_uri"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "redirect_uri"})
 		return
@@ -4754,6 +4760,7 @@ func (siw *ServerInterfaceWrapper) HandleIndieAuthEndpointGet(w http.ResponseWri
 	// ------------- Required query parameter "code_challenge" -------------
 
 	if paramValue := r.URL.Query().Get("code_challenge"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "code_challenge"})
 		return
@@ -4768,6 +4775,7 @@ func (siw *ServerInterfaceWrapper) HandleIndieAuthEndpointGet(w http.ResponseWri
 	// ------------- Required query parameter "state" -------------
 
 	if paramValue := r.URL.Query().Get("state"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "state"})
 		return
@@ -4782,6 +4790,7 @@ func (siw *ServerInterfaceWrapper) HandleIndieAuthEndpointGet(w http.ResponseWri
 	// ------------- Required query parameter "code" -------------
 
 	if paramValue := r.URL.Query().Get("code"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "code"})
 		return
@@ -4831,6 +4840,7 @@ func (siw *ServerInterfaceWrapper) GetChatMessages(w http.ResponseWriter, r *htt
 	// ------------- Required query parameter "accessToken" -------------
 
 	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
 		return
@@ -4865,6 +4875,7 @@ func (siw *ServerInterfaceWrapper) UpdateMessageVisibility(w http.ResponseWriter
 	// ------------- Required query parameter "accessToken" -------------
 
 	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
 		return
@@ -4955,6 +4966,7 @@ func (siw *ServerInterfaceWrapper) UpdateUserEnabled(w http.ResponseWriter, r *h
 	// ------------- Required query parameter "accessToken" -------------
 
 	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
 		return
@@ -5389,6 +5401,7 @@ func (siw *ServerInterfaceWrapper) GetUserDetails(w http.ResponseWriter, r *http
 	// ------------- Required query parameter "accessToken" -------------
 
 	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
 		return
@@ -5423,6 +5436,7 @@ func (siw *ServerInterfaceWrapper) RegisterForLiveNotifications(w http.ResponseW
 	// ------------- Required query parameter "accessToken" -------------
 
 	if paramValue := r.URL.Query().Get("accessToken"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "accessToken"})
 		return
