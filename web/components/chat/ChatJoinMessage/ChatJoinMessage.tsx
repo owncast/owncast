@@ -35,8 +35,8 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
             <ModerationBadge userColor={userColor} />
           </span>
         )}
+        <span className={styles.joinMessage}>joined the chat.</span>
       </span>
-      joined the chat.
     </div>
   );
 };
