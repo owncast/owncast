@@ -1,6 +1,6 @@
 // TODO generate this file using style-definitions somehow
 
-const lodash = require('lodash');
+const { merge } = require('lodash');
 
 const AntdStaticTokens = {
   fontFamily:
@@ -31,7 +31,7 @@ const AntdDefaultCustomTokens = {
 };
 
 const AntdCustomTokens = (customTokens = AntdDefaultCustomTokens) => {
-  return lodash.merge({}, AntdStaticTokens, customTokens);
+  return merge({}, AntdStaticTokens, customTokens);
 };
 
 export default AntdCustomTokens;
