@@ -60,6 +60,7 @@ BUTTONS
 
   background-color: var(--theme-color-components-primary-button-background);
   color: var(--theme-color-components-primary-button-text);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
 
   &:hover {
     background-color: var(--theme-color-action-hover);
