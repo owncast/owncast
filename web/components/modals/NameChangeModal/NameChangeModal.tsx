@@ -19,7 +19,7 @@ const UserColor: FC<UserColorProps> = ({ color }) => {
     width: '100%',
     height: '100%',
   };
-  return <div style={style} />;
+  return <div style={style}>&nbsp;</div>;
 };
 
 type NameChangeModalProps = {
