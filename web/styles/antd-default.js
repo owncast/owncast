@@ -15,6 +15,9 @@ const AntdDefaultCustomTokens = {
     contentBg: '#e2e8f0',
     colorIcon: '#e2e8f0',
   },
+  Menu: {
+    itemActiveBg: '#6544e9',
+  },
   Alert: {
     colorErrorBg: '#fff',
     colorErrorBorder: '#ff4b39',

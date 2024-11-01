@@ -25,6 +25,9 @@ export const AntdTheme: FC<AntdThemeProps> = ({ children }) => {
           contentBg: readCSSVar('--modal-content-bg'),
           colorIcon: readCSSVar('--modal-close-color'),
         },
+        Menu: {
+          itemActiveBg: readCSSVar('--primary-color-active'),
+        },
         Alert: {
           colorErrorBg: readCSSVar('--alert-error-bg-color'),
           colorErrorBorder: readCSSVar('--alert-error-border-color'),
