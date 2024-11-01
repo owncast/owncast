@@ -331,7 +331,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
                 icon={<EditOutlined />}
                 size="small"
                 onClick={handleCreatePostButtonPressed}
-                style={{ display: federationEnabled ? 'block' : 'none', margin: '10px' }}
+                style={{ display: federationEnabled ? 'flex' : 'none', margin: '10px' }}
               >
                 Compose Post
               </Button>
