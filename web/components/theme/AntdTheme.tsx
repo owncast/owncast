@@ -43,6 +43,11 @@ export const AntdTheme: FC<AntdThemeProps> = ({ children }) => {
         Tag: {
           defaultBg: readCSSVar('--tag-default-color'),
         },
+        Slider: {
+          trackBg: readCSSVar('--theme-color-action-hover'),
+          handleColor: readCSSVar('--theme-color-action-hover'),
+          handleActiveColor: readCSSVar('--primary-color'),
+        },
         borderRadius: parseInt(readCSSVar('--border-radius-base'), 10),
         // background-color-light needs mapping
 

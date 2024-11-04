@@ -33,6 +33,11 @@ const AntdDefaultCustomTokens = {
   Tag: {
     defaultBg: '#6544e9',
   },
+  Slider: {
+    trackBg: '#7a5cf3',
+    handleColor: '#7a5cf3',
+    handleActiveColor: '#6544e9',
+  },
   borderRadius: 5,
   colorPrimary: '#6544e9',
   colorPrimaryHover: '#6544e9',
