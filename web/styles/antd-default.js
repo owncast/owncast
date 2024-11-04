@@ -35,7 +35,7 @@ const AntdDefaultCustomTokens = {
   },
   borderRadius: 5,
   colorPrimary: '#6544e9',
-  colorPrimaryHover: '#2386e2',
+  colorPrimaryHover: '#6544e9',
   colorPrimaryActive: '#7a5cf3',
   colorBgBase: '#e2e8f0',
 };

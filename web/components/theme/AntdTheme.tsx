@@ -47,7 +47,7 @@ export const AntdTheme: FC<AntdThemeProps> = ({ children }) => {
         // background-color-light needs mapping
 
         colorPrimary: readCSSVar('--primary-color'),
-        colorPrimaryHover: readCSSVar('--primary-color-hover'),
+        colorPrimaryHover: readCSSVar('--theme-color-action-hover'),
         colorPrimaryActive: readCSSVar('--primary-color-active'),
         // primary-$n needs mapping
         colorBgBase: readCSSVar('--component-background'),
