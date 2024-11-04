@@ -130,12 +130,12 @@ DROPDOWN
     }
   }
 }
-.ant-input-affix-wrapper {
+.ant-input-affix-wrapper, .ant-input-outlined:hover, .ant-input-outlined:focus, .ant-input-outlined:focus-within {
   background-color: var(--theme-color-components-form-field-background);
 }
 
 .ant-input,
-.ant-input-number-input {
+.ant-input-number .ant-input-number-input {
   background-color: var(--theme-color-components-form-field-background);
   color: var(--theme-color-components-form-field-text);
 
