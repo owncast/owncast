@@ -15,6 +15,13 @@ const AntdDefaultCustomTokens = {
     contentBg: '#e2e8f0',
     colorIcon: '#e2e8f0',
   },
+  Table: {
+    rowSelectedBg: '#6544e9',
+    rowSelectedHoverBg: '#7a5cf3',
+  },
+  Select: {
+    optionSelectedBg: '#6544e9',
+  },
   Menu: {
     itemActiveBg: '#6544e9',
   },

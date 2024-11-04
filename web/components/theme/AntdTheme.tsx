@@ -25,6 +25,13 @@ export const AntdTheme: FC<AntdThemeProps> = ({ children }) => {
           contentBg: readCSSVar('--modal-content-bg'),
           colorIcon: readCSSVar('--modal-close-color'),
         },
+        Table: {
+          rowSelectedBg: readCSSVar('--primary-color-active'),
+          rowSelectedHoverBg: readCSSVar('--primary-color-hover'),
+        },
+        Select: {
+          optionSelectedBg: readCSSVar('--primary-color-active'),
+        },
         Menu: {
           itemActiveBg: readCSSVar('--primary-color-active'),
         },
