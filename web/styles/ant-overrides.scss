@@ -130,6 +130,7 @@ DROPDOWN
     }
   }
 }
+
 .ant-input-affix-wrapper, .ant-input-outlined:hover, .ant-input-outlined:focus, .ant-input-outlined:focus-within {
   background-color: var(--theme-color-components-form-field-background);
 }
@@ -207,12 +208,12 @@ DROPDOWN
 
 .ant-modal {
   .ant-modal-content {
-    padding: 0px;
+    padding: 0;
   }
 
   .ant-modal-header {
     padding: 16px 24px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
 
   .ant-modal-body {

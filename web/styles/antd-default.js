@@ -38,8 +38,7 @@ const AntdDefaultCustomTokens = {
   colorBgBase: '#e2e8f0',
 };
 
-const AntdCustomTokens = (customTokens = AntdDefaultCustomTokens) => {
-  return merge({}, AntdStaticTokens, customTokens);
-};
+const AntdCustomTokens = (customTokens = AntdDefaultCustomTokens) =>
+  merge({}, AntdStaticTokens, customTokens);
 
 export default AntdCustomTokens;
