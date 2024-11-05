@@ -13,8 +13,8 @@
   "Stay updated!": "Stay updated!",
   "Click and never miss future streams!": "Click and never miss future streams!",
   "This stream is offline": "This stream is offline.",
-  "the next time goes live": "the next time goes live",
+  "the next time goes live": "the next time {{streamer}} goes live",
   "Follow": "Follow",
   "on the Fediverse to see the next time goes live": "on the Fediverse to see the next time goes live",
-  "Last live ago": "Last live ago"
+  "Last live ago": "Last live {{timeAgo}} ago"
 }

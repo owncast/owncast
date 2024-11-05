@@ -102,7 +102,7 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
         {lastLive && (
           <div className={styles.lastLiveDate}>
             <ClockCircleOutlined className={styles.clockIcon} />
-            {`${(t('Last live ago'), { timeAgo: formatDistanceToNow(new Date(lastLive)) })}`}
+            {`${t('Last live ago', { timeAgo: formatDistanceToNow(new Date(lastLive)) })}`}
           </div>
         )}
       </div>
