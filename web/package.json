@@ -100,7 +100,7 @@
     "@typescript-eslint/eslint-plugin": "8.12.2",
     "@typescript-eslint/parser": "8.12.2",
     "babel-loader": "9.2.1",
-    "chromatic": "11.16.3",
+    "chromatic": "11.16.4",
     "css-loader": "7.1.2",
     "cypress": "^13.2.0",
     "eslint": "8.57.1",
