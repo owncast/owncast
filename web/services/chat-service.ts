@@ -23,6 +23,7 @@ class ChatService {
       const response = await getUnauthedData(`${ENDPOINT}?accessToken=${accessToken}`);
       return response;
     } catch (e) {
+      console.error(e);
       return [];
     }
   }
