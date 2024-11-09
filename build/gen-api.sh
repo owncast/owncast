@@ -8,8 +8,8 @@ folderPath="webserver/handlers/generated"
 specPath="openapi.yaml"
 
 # validate scripts are installed
-if ! command -v swagger-cli &>/dev/null; then
-	echo "Please install \`swagger-cli\` before running this script"
+if ! command -v redocly &>/dev/null; then
+	echo "Please install \`redocly cli\` before running this script: npm install -g @redocly/cli"
 	exit 1
 fi
 
@@ -20,7 +20,7 @@ if ! command -v oapi-codegen &>/dev/null; then
 fi
 
 # validate schema
-swagger-cli validate $specPath
+npx redocly lint $specPath
 if [ $? -ne 0 ]; then
 	echo "Open API specification is not valid"
 	exit 1

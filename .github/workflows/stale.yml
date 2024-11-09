@@ -1,0 +1,46 @@
+name: 'Close stale issues and PRs'
+on:
+  schedule:
+    - cron: '30 */2 * * *'
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          exempt-all-milestones: true
+
+          days-before-issue-stale: 60
+          days-before-issue-close: 67
+          exempt-issue-labels: backlog,long-lived,bot
+          stale-issue-message: >
+            This issue has been automatically marked as stale because it has not had
+            recent activity. It will be closed if no further activity occurs. If this
+            was a feature request that others have shown no interest in, then it's
+            unlikely to get implemented due to lack of interest. If others also
+            want to see this feature then now is the time to say something! If this
+            is a bug report or you have questions that still need answering, please say
+            something. Feel free to drop by [our chat](https://owncast.rocket.chat) if
+            you'd like to discuss in real-time with people.
+          close-issue-message: >
+            This issue has been automatically closed due to inactivity. This isn't done
+            to be a jerk, or because the project doesn't care. But simply to keep the focus
+            on things that are actively discussed, and has continued interest from the community and
+            Owncast developers. Feel free to to comment if there is still discussion to be
+            had, or if you plan to work on it. Feel free to drop by [our chat](https://owncast.rocket.chat)
+            if you'd like to discuss in real-time with people. Thank you for being involved!
+
+          days-before-pr-stale: 30
+          days-before-pr-close: 37
+          stale-pr-message: >
+            This pull request has not had any activity in 30 days. If it has been abandoned
+            no future actions are necessary, it will be automatically closed. If this is a PR
+            with no clear plan on how to move forward on it getting into the project, then
+            further discussion is needed. Now is a good time to discuss if this is still
+            something that should be worked on. If this PR is idle simply because nobody
+            has reviewed it, then feel free to ping somebody. However, if this PR is not linked to an
+            existing issue regarding something that was previously determined to be important, then even
+            more discussion needs to take place before it can get anywhere.
+            This PR will be closed if no further activity occurs. Thank you for your contributions!
+          close-pr-message: 'This PR was closed because it has been stalled for 10 days with no activity.'

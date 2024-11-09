@@ -18,6 +18,13 @@
 	"major": {
 		"dependencyDashboardApproval": true
 	},
+	"dockerfile": {
+		"fileMatch": [
+			"(^|/)Earthfile$",
+			"(^|/|\\.)Dockerfile$",
+			"(^|/)Dockerfile[^/]*$"
+		]
+	},
 	"packageRules": [
 		{
 			"description": "Automatically merge minor and patch-level updates",

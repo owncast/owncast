@@ -53,7 +53,7 @@ export const LogTable: FC<LogTableProps> = ({ logs, initialPageSize }) => {
         },
         {
           text: 'Error',
-          value: 'Error',
+          value: 'error',
         },
       ],
       onFilter: (level, row) => row.level.indexOf(level) === 0,

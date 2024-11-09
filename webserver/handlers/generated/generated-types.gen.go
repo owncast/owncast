@@ -471,6 +471,7 @@ type Status struct {
 	LastDisconnectTime *string `json:"lastDisconnectTime,omitempty"`
 	Online             *bool   `json:"online,omitempty"`
 	ServerTime         *string `json:"serverTime,omitempty"`
+	StreamTitle        *string `json:"streamTitle,omitempty"`
 	VersionNumber      *string `json:"versionNumber,omitempty"`
 	ViewerCount        *int    `json:"viewerCount,omitempty"`
 }

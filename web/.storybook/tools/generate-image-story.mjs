@@ -31,7 +31,7 @@ const images = readdirSync(dir)
   })
   .filter(Boolean);
 
-const templateFile = useLarge ? './ImagesLarge.stories.mdx' : './Images.stories.mdx';
+const templateFile = useLarge ? './ImagesLarge.template' : './Images.template';
 const template = fs.readFileSync(templateFile, 'utf8');
 let t = handlebars.compile(template);
 let output = t({ images, title, category });
