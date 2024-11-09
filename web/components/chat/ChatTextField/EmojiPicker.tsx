@@ -1,42 +1,44 @@
-import React, { FC, useEffect, useRef } from 'react';
-import { createPicker } from 'picmo';
+import React, { FC, useEffect, useState } from 'react';
+import Picker from '@emoji-mart/react';
+import data from '@emoji-mart/data';
 
 export type EmojiPickerProps = {
-  onEmojiSelect: (emoji: string) => void;
-  onCustomEmojiSelect: (name: string, url: string) => void;
+  onEmojiSelect: (emoji) => void;
   customEmoji: any[];
 };
 
-export const EmojiPicker: FC<EmojiPickerProps> = ({
-  onEmojiSelect,
-  onCustomEmojiSelect,
-  customEmoji,
-}) => {
-  const ref = useRef();
-
+export const EmojiPicker: FC<EmojiPickerProps> = ({ onEmojiSelect, customEmoji }) => {
+  const [custom, setCustom] = useState({});
+  const categories = [
+    'frequent',
+    'custom', // same id as in the setCustom call below
+    'people',
+    'nature',
+    'foods',
+    'activity',
+    'places',
+    'objects',
+    'symbols',
+    'flags',
+  ];
   // Recreate the emoji picker when the custom emoji changes.
   useEffect(() => {
     const e = customEmoji.map(emoji => ({
-      emoji: emoji.name,
-      label: emoji.name,
-      url: emoji.url,
+      id: emoji.name,
+      name: emoji.name,
+      skins: [{ src: emoji.url }],
     }));
 
-    const picker = createPicker({
-      rootElement: ref.current,
-      custom: e,
-      initialCategory: 'custom',
-      showPreview: false,
-      showRecents: true,
-    });
-    picker.addEventListener('emoji:select', event => {
-      if (event.url) {
-        onCustomEmojiSelect(event.label, event.url);
-      } else {
-        onEmojiSelect(event.emoji);
-      }
-    });
+    setCustom([{ id: 'custom', name: 'Custom', emojis: e }]);
+
+    // hack to make the picker work with viewbox only svgs, 24px is default size
+    const shadow = document.querySelector('em-emoji-picker').shadowRoot;
+    const pickerStyles = new CSSStyleSheet();
+    pickerStyles.replaceSync('.emoji-mart-emoji {width: 24px;}');
+    shadow.adoptedStyleSheets = [pickerStyles];
   }, []);
 
-  return <div ref={ref} />;
+  return (
+    <Picker data={data} custom={custom} onEmojiSelect={onEmojiSelect} categories={categories} />
+  );
 };

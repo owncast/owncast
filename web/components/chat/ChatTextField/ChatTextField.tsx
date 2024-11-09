@@ -152,15 +152,14 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     contentEditable.innerHTML += textToInsert;
   };
 
-  // Native emoji
-  const onEmojiSelect = (emoji: string) => {
-    insertTextAtEnd(emoji);
-  };
-
-  // Custom emoji images
-  const onCustomEmojiSelect = (name: string, emoji: string) => {
-    const html = `<img src="${emoji}" alt=":${name}:" title=":${name}:" class="emoji" />`;
-    insertTextAtEnd(html);
+  const onEmojiSelect = emoji => {
+    if (emoji.native) {
+      insertTextAtEnd(emoji.native);
+    } else {
+      // Custom emoji images
+      const html = `<img src="${emoji.src}" alt=":${emoji.name}:" title=":${emoji.name}:" class="emoji" />`;
+      insertTextAtEnd(html);
+    }
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -277,13 +276,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
         {enabled && (
           <div style={{ display: 'flex', paddingLeft: '5px' }}>
             <Popover
-              content={
-                <EmojiPicker
-                  customEmoji={customEmoji}
-                  onEmojiSelect={onEmojiSelect}
-                  onCustomEmojiSelect={onCustomEmojiSelect}
-                />
-              }
+              content={<EmojiPicker customEmoji={customEmoji} onEmojiSelect={onEmojiSelect} />}
               trigger="click"
               placement="topRight"
             >
