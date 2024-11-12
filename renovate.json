@@ -1,6 +1,6 @@
 {
 	"extends": [
-		"config:base"
+		"config:recommended"
 	],
 	"baseBranches": [
 		"develop"
@@ -12,7 +12,7 @@
 		"platformAutomerge": true
 	},
 	"npm": {
-		"stabilityDays": 3
+		"minimumReleaseAge": "3 days"
 	},
 	"dependencyDashboard": true,
 	"major": {
