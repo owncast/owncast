@@ -49,7 +49,9 @@
 				"postcss-cli",
 				"@videojs/themes",
 				"@joeattardi/emoji-button",
-				"preact"
+				"preact",
+				"github.com/go-fed/activity",
+				"go"
 			],
 			"enabled": false
 		},
