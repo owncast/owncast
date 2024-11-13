@@ -60,7 +60,7 @@
 			"matchManagers": [
 				"npm"
 			],
-			"matchCurrentVersion": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+			"matchCurrentVersion": "/^[0-9]+\\.[0-9]+\\.[0-9]+$/",
 			"automerge": false,
 			"platformAutomerge": false,
 			"dependencyDashboardApproval": true
