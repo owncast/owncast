@@ -3221,7 +3221,7 @@ paths:
     get:
       summary: Get a user's details
       operationId: GetUserDetails
-      tags: ['External', 'Chat']
+      tags: ['Chat']
       parameters:
         - in: path
           name: userId
