@@ -29,23 +29,31 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
       player.autoplay(options.autoplay);
       player.src(options.sources);
     }
+  }, [options, videoRef]);
 
+  React.useEffect(() => {
     videojs.getPlayer(videoRef.current).on('xhr-hooks-ready', () => {
       const cachebusterRequestHook = o => {
-        let { uri } = o;
+        const { uri } = o;
+        let updatedURI = uri;
         if (o.uri.match('m3u8')) {
+          const u = uri.startsWith('http')
+            ? new URL(uri)
+            : new URL(uri, window.location.protocol + window.location.host);
           const cachebuster = Math.random().toString(16).slice(2, 8);
-          uri = `${o.uri}?cachebust=${cachebuster}`;
+          u.searchParams.append('cachebust', cachebuster);
+          updatedURI = u.toString();
         }
         return {
-          uri,
+          ...o,
+          uri: updatedURI,
         };
       };
       (
         videojs.getPlayer(videoRef.current).tech({ IWillNotUseThisInPlugins: true }) as any
       )?.vhs.xhr.onRequest(cachebusterRequestHook);
     });
-  }, [options, videoRef]);
+  }, []);
 
   return (
     <div data-vjs-player>
