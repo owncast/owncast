@@ -30,22 +30,21 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
       player.src(options.sources);
     }
 
-    // Add a cachebuster param to playlist URLs.
-    if (
-      (videojs.getPlayer(videoRef.current).tech({ IWillNotUseThisInPlugins: true }) as any)?.vhs
-    ) {
+    videojs.getPlayer(videoRef.current).on('xhr-hooks-ready', () => {
+      const cachebusterRequestHook = o => {
+        let { uri } = o;
+        if (o.uri.match('m3u8')) {
+          const cachebuster = Math.random().toString(16).slice(2, 8);
+          uri = `${o.uri}?cachebust=${cachebuster}`;
+        }
+        return {
+          uri,
+        };
+      };
       (
         videojs.getPlayer(videoRef.current).tech({ IWillNotUseThisInPlugins: true }) as any
-      ).vhs.xhr.beforeRequest = o => {
-        if (o.uri.match('m3u8')) {
-          const cachebuster = Math.random().toString(16).substr(2, 8);
-          // eslint-disable-next-line no-param-reassign
-          o.uri = `${o.uri}?cachebust=${cachebuster}`;
-        }
-
-        return o;
-      };
-    }
+      )?.vhs.xhr.onRequest(cachebusterRequestHook);
+    });
   }, [options, videoRef]);
 
   return (

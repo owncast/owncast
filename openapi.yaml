@@ -2948,7 +2948,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SystemMessage'
+              $ref: '#/components/schemas/MessageEvent'
       responses:
         '200':
           description: Message sent successfully
@@ -3045,7 +3045,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserMessage'
+              $ref: '#/components/schemas/MessageEvent'
       responses:
         '200':
           description: Message sent successfully
@@ -3079,7 +3079,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SystemActionEvent'
+              $ref: '#/components/schemas/MessageEvent'
       responses:
         '200':
           description: Action sent successfully
@@ -3221,7 +3221,7 @@ paths:
     get:
       summary: Get a user's details
       operationId: GetUserDetails
-      tags: ['External', 'Chat']
+      tags: ['Chat']
       parameters:
         - in: path
           name: userId
