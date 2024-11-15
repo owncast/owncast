@@ -23,6 +23,7 @@ class ChatService {
       const response = await getUnauthedData(`${ENDPOINT}?accessToken=${accessToken}`);
       return response;
     } catch (e) {
+      console.error(e);
       return [];
     }
   }
@@ -33,7 +34,7 @@ class ChatService {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ displayName: username }),
+      data: { displayName: username },
     };
 
     const response = await getUnauthedData(URL_CHAT_REGISTRATION, options);
