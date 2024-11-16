@@ -1,5 +1,5 @@
 import { setup } from '../../support/setup.js';
-import filterTests from '../../support/filterTests';
+import filterTests from '../../support/filterTests.js';
 
 setup();
 

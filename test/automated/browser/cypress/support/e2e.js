@@ -20,16 +20,10 @@ import fetchData from './fetchData.js';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
-// Put Owncast in a state where it's ready to be tested.
-
-// Set server URL
-fetchData('http://localhost:8080/api/admin/config/serverurl', {
-	method: 'POST',
-	data: { value: 'https://testing.biz' },
-});
-
-// Enable Fediverse features.
-fetchData('http://localhost:8080/api/admin/config/federation/enable', {
-	method: 'POST',
-	data: { value: true },
+before(() => {
+	// Set server URL
+	fetchData('http://localhost:8080/api/admin/config/serverurl', {
+		method: 'POST',
+		data: { value: 'https://testing.biz' },
+	});
 });

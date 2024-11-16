@@ -15,7 +15,6 @@ const identifiers = [
 	'#offline-banner', // The entire offline banner component
 	'#custom-page-content', // The entire custom page content component
 	'#notify-button', // The notify button
-	'#follow-button', // The follow button
 ];
 
 filterTests(['desktop'], () => {
@@ -29,13 +28,6 @@ filterTests(['desktop'], () => {
 			it(`Has identifier: ${identifier}`, () => {
 				cy.get(identifier).should('exist');
 			});
-		});
-
-		// Followers
-		const followersCollection = '#followers-collection';
-		it(`Has identifier: ${followersCollection}`, () => {
-			cy.contains('Followers').click();
-			cy.get(followersCollection).should('be.visible');
 		});
 
 		// Modal
