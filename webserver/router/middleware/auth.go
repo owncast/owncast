@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/authrepository"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -21,9 +22,10 @@ type UserAccessTokenHandlerFunc func(models.User, http.ResponseWriter, *http.Req
 // RequireAdminAuth wraps a handler requiring HTTP basic auth for it using the given
 // the stream key as the password and and a hardcoded "admin" for username.
 func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
+	configRepository := configrepository.Get()
 	return func(w http.ResponseWriter, r *http.Request) {
 		username := "admin"
-		password := data.GetAdminPassword()
+		password := configRepository.GetAdminPassword()
 		realm := "Owncast Authenticated Request"
 
 		// Alow CORS only for localhost:3000 to support Owncast development.
@@ -102,6 +104,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 // RequireUserAccessToken will validate a provided user's access token and make sure the associated user is enabled.
 // Not to be used for validating 3rd party access.
 func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc {
+	authRepository := authrepository.Get()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accessToken := r.URL.Query().Get("accessToken")
 		if accessToken == "" {
@@ -111,7 +114,7 @@ func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc
 
 		ipAddress := utils.GetIPAddressFromRequest(r)
 		// Check if this client's IP address is banned.
-		if blocked, err := data.IsIPAddressBanned(ipAddress); blocked {
+		if blocked, err := authRepository.IsIPAddressBanned(ipAddress); blocked {
 			log.Debugln("Client ip address has been blocked. Rejecting.")
 			accessDenied(w)
 			return

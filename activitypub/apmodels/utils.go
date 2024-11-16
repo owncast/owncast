@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -27,7 +27,9 @@ func MakeRemoteIRIForResource(resourcePath string, host string) (*url.URL, error
 
 // MakeLocalIRIForResource will create an IRI for the local server.
 func MakeLocalIRIForResource(resourcePath string) *url.URL {
-	host := data.GetServerURL()
+	configRepository := configrepository.Get()
+
+	host := configRepository.GetServerURL()
 	u, err := url.Parse(host)
 	if err != nil {
 		log.Errorln("unable to parse local IRI url", host, err)
@@ -41,7 +43,9 @@ func MakeLocalIRIForResource(resourcePath string) *url.URL {
 
 // MakeLocalIRIForAccount will return a full IRI for the local server account username.
 func MakeLocalIRIForAccount(account string) *url.URL {
-	host := data.GetServerURL()
+	configRepository := configrepository.Get()
+
+	host := configRepository.GetServerURL()
 	u, err := url.Parse(host)
 	if err != nil {
 		log.Errorln("unable to parse local IRI account server url", err)
@@ -64,7 +68,9 @@ func Serialize(obj vocab.Type) ([]byte, error) {
 
 // MakeLocalIRIForStreamURL will return a full IRI for the local server stream url.
 func MakeLocalIRIForStreamURL() *url.URL {
-	host := data.GetServerURL()
+	configRepository := configrepository.Get()
+
+	host := configRepository.GetServerURL()
 	u, err := url.Parse(host)
 	if err != nil {
 		log.Errorln("unable to parse local IRI stream url", err)
@@ -78,7 +84,9 @@ func MakeLocalIRIForStreamURL() *url.URL {
 
 // MakeLocalIRIforLogo will return a full IRI for the local server logo.
 func MakeLocalIRIforLogo() *url.URL {
-	host := data.GetServerURL()
+	configRepository := configrepository.Get()
+
+	host := configRepository.GetServerURL()
 	u, err := url.Parse(host)
 	if err != nil {
 		log.Errorln("unable to parse local IRI stream url", err)
@@ -93,7 +101,9 @@ func MakeLocalIRIforLogo() *url.URL {
 // GetLogoType will return the rel value for the webfinger response and
 // the default static image is of type png.
 func GetLogoType() string {
-	imageFilename := data.GetLogoPath()
+	configRepository := configrepository.Get()
+
+	imageFilename := configRepository.GetLogoPath()
 	if imageFilename == "" {
 		return "image/png"
 	}

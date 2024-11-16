@@ -12,8 +12,8 @@ import (
 
 	"github.com/nareix/joy5/format/rtmp"
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 var _hasInboundRTMPConnection = false
@@ -33,7 +33,9 @@ func Start(setStreamAsConnected func(*io.PipeReader), setBroadcaster func(models
 	_setStreamAsConnected = setStreamAsConnected
 	_setBroadcaster = setBroadcaster
 
-	port := data.GetRTMPPortNumber()
+	configRepository := configrepository.Get()
+
+	port := configRepository.GetRTMPPortNumber()
 	s := rtmp.NewServer()
 	var lis net.Listener
 	var err error
@@ -78,8 +80,10 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 		return
 	}
 
+	configRepository := configrepository.Get()
+
 	accessGranted := false
-	validStreamingKeys := data.GetStreamKeys()
+	validStreamingKeys := configRepository.GetStreamKeys()
 
 	// If a stream key override was specified then use that instead.
 	if config.TemporaryStreamKey != "" {

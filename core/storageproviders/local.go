@@ -5,9 +5,8 @@ import (
 	"path/filepath"
 	"sort"
 
+	"github.com/owncast/owncast/persistence/configrepository"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/owncast/owncast/core/data"
 )
 
 // LocalStorage represents an instance of the local storage provider for HLS video.
@@ -22,7 +21,8 @@ func NewLocalStorage() *LocalStorage {
 
 // Setup configures this storage provider.
 func (s *LocalStorage) Setup() error {
-	s.host = data.GetVideoServingEndpoint()
+	configRepository := configrepository.Get()
+	s.host = configRepository.GetVideoServingEndpoint()
 	return nil
 }
 
@@ -63,7 +63,8 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 // Cleanup will remove old files from the storage provider.
 func (s *LocalStorage) Cleanup() error {
 	// Determine how many files we should keep on disk
-	maxNumber := data.GetStreamLatencyLevel().SegmentCount
+	configRepository := configrepository.Get()
+	maxNumber := configRepository.GetStreamLatencyLevel().SegmentCount
 	buffer := 10
 	return localCleanup(maxNumber + buffer)
 }

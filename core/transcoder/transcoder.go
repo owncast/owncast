@@ -12,9 +12,9 @@ import (
 	"github.com/teris-io/shortid"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/logging"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -275,15 +275,16 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 
 // NewTranscoder will return a new Transcoder, populated by the config.
 func NewTranscoder() *Transcoder {
-	ffmpegPath := utils.ValidatedFfmpegPath(data.GetFfMpegPath())
+	configRepository := configrepository.Get()
+	ffmpegPath := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
 
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = ffmpegPath
 	transcoder.internalListenerPort = config.InternalHLSListenerPort
 
-	transcoder.currentStreamOutputSettings = data.GetStreamOutputVariants()
-	transcoder.currentLatencyLevel = data.GetStreamLatencyLevel()
-	transcoder.codec = getCodec(data.GetVideoCodec())
+	transcoder.currentStreamOutputSettings = configRepository.GetStreamOutputVariants()
+	transcoder.currentLatencyLevel = configRepository.GetStreamLatencyLevel()
+	transcoder.codec = getCodec(configRepository.GetVideoCodec())
 	transcoder.segmentOutputPath = config.HLSStoragePath
 	transcoder.playlistOutputPath = config.HLSStoragePath
 

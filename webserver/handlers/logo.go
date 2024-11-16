@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
@@ -17,7 +17,8 @@ var _hasWarnedSVGLogo = false
 
 // GetLogo will return the logo image as a response.
 func GetLogo(w http.ResponseWriter, r *http.Request) {
-	imageFilename := data.GetLogoPath()
+	configRepository := configrepository.Get()
+	imageFilename := configRepository.GetLogoPath()
 	if imageFilename == "" {
 		returnDefault(w)
 		return
@@ -47,7 +48,8 @@ func GetLogo(w http.ResponseWriter, r *http.Request) {
 // Used for sharing to external social networks that generally
 // don't support SVG.
 func GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
-	imageFilename := data.GetLogoPath()
+	configRepository := configrepository.Get()
+	imageFilename := configRepository.GetLogoPath()
 
 	// If the logo image is not a SVG then we can return it
 	// without any problems.

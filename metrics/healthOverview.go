@@ -5,8 +5,8 @@ import (
 	"sort"
 
 	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -68,8 +68,8 @@ func networkSpeedHealthOverviewMessage() string {
 		isVideoPassthrough bool
 		bitrate            int
 	}
-
-	outputVariants := data.GetStreamOutputVariants()
+	configRepository := configrepository.Get()
+	outputVariants := configRepository.GetStreamOutputVariants()
 
 	streamSortVariants := make([]singleVariant, len(outputVariants))
 	for i, variant := range outputVariants {
@@ -155,7 +155,8 @@ func wastefulBitrateOverviewMessage() string {
 		return ""
 	}
 
-	outputVariants := data.GetStreamOutputVariants()
+	configRepository := configrepository.Get()
+	outputVariants := configRepository.GetStreamOutputVariants()
 
 	type singleVariant struct {
 		isVideoPassthrough bool
@@ -229,7 +230,8 @@ func errorCountHealthOverviewMessage() string {
 		healthyPercentage := utils.IntPercentage(clientsWithErrors, totalNumberOfClients)
 
 		isUsingPassthrough := false
-		outputVariants := data.GetStreamOutputVariants()
+		configRepository := configrepository.Get()
+		outputVariants := configRepository.GetStreamOutputVariants()
 		for _, variant := range outputVariants {
 			if variant.IsVideoPassthrough {
 				isUsingPassthrough = true

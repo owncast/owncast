@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -61,7 +61,9 @@ func (yp *YP) Stop() {
 }
 
 func (yp *YP) ping() {
-	if !data.GetDirectoryEnabled() {
+	configRepository := configrepository.Get()
+
+	if !configRepository.GetDirectoryEnabled() {
 		return
 	}
 
@@ -71,7 +73,7 @@ func (yp *YP) ping() {
 		return
 	}
 
-	myInstanceURL := data.GetServerURL()
+	myInstanceURL := configRepository.GetServerURL()
 	if myInstanceURL == "" {
 		log.Warnln("Server URL not set in the configuration. Directory access is disabled until this is set.")
 		return
@@ -85,9 +87,9 @@ func (yp *YP) ping() {
 		return
 	}
 
-	key := data.GetDirectoryRegistrationKey()
+	key := configRepository.GetDirectoryRegistrationKey()
 
-	log.Traceln("Pinging YP as: ", data.GetServerName(), "with key", key)
+	log.Traceln("Pinging YP as: ", configRepository.GetServerName(), "with key", key)
 
 	request := ypPingRequest{
 		Key: key,
@@ -129,7 +131,7 @@ func (yp *YP) ping() {
 	_inErrorState = false
 
 	if pingResponse.Key != key {
-		if err := data.SetDirectoryRegistrationKey(key); err != nil {
+		if err := configRepository.SetDirectoryRegistrationKey(key); err != nil {
 			log.Errorln("unable to save directory key:", err)
 		}
 	}

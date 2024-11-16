@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
@@ -23,7 +23,8 @@ func SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetCustomColorVariableValues(*values.Value); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetCustomColorVariableValues(*values.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

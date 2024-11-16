@@ -10,13 +10,15 @@ import (
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
 )
 
 func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
+	configRepository := configrepository.Get()
+
 	follow, err := resolvers.MakeFollowRequest(c, activity)
 	if err != nil {
 		log.Errorln("unable to create follow inbox request", err)
@@ -27,7 +29,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		return fmt.Errorf("unable to handle request")
 	}
 
-	approved := !data.GetFederationIsPrivate()
+	approved := !configRepository.GetFederationIsPrivate()
 
 	followRequest := *follow
 
@@ -36,7 +38,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		return err
 	}
 
-	localAccountName := data.GetDefaultFederationUsername()
+	localAccountName := configRepository.GetDefaultFederationUsername()
 
 	if approved {
 		if err := requests.SendFollowAccept(follow.Inbox, activity, localAccountName); err != nil {

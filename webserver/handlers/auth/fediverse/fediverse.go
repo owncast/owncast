@@ -8,8 +8,8 @@ import (
 	"github.com/owncast/owncast/activitypub"
 	fediverseauth "github.com/owncast/owncast/auth/fediverse"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	webutils "github.com/owncast/owncast/webserver/utils"
 	log "github.com/sirupsen/logrus"
@@ -39,7 +39,8 @@ func RegisterFediverseOTPRequest(u models.User, w http.ResponseWriter, r *http.R
 		return
 	}
 
-	msg := fmt.Sprintf("<p>One-time code from %s: %s. If you did not request this message please ignore or block.</p>", data.GetServerName(), reg.Code)
+	configRepository := configrepository.Get()
+	msg := fmt.Sprintf("<p>One-time code from %s: %s. If you did not request this message please ignore or block.</p>", configRepository.GetServerName(), reg.Code)
 	if err := activitypub.SendDirectFederatedMessage(msg, reg.Account); err != nil {
 		webutils.WriteSimpleResponse(w, false, "Could not send code to fediverse: "+err.Error())
 		return

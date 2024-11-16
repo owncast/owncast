@@ -11,8 +11,9 @@ import (
 
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/authrepository"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
@@ -62,7 +63,9 @@ func BanIPAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.BanIPAddress(configValue.Value.(string), "manually added"); err != nil {
+	authRepository := authrepository.Get()
+
+	if err := authRepository.BanIPAddress(configValue.Value.(string), "manually added"); err != nil {
 		webutils.WriteSimpleResponse(w, false, "error saving IP address ban")
 		return
 	}
@@ -82,7 +85,9 @@ func UnBanIPAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.RemoveIPAddressBan(configValue.Value.(string)); err != nil {
+	authRepository := authrepository.Get()
+
+	if err := authRepository.RemoveIPAddressBan(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, "error removing IP address ban")
 		return
 	}
@@ -92,7 +97,9 @@ func UnBanIPAddress(w http.ResponseWriter, r *http.Request) {
 
 // GetIPAddressBans will return all the banned IP addresses.
 func GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
-	bans, err := data.GetIPAddressBans()
+	authRepository := authrepository.Get()
+
+	bans, err := authRepository.GetIPAddressBans()
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -168,11 +175,13 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 		localIP6Address := "::1"
 
 		// Ban this user's IP address.
+		authRepository := authrepository.Get()
+
 		for _, client := range clients {
 			ipAddress := client.IPAddress
 			if ipAddress != localIP4Address && ipAddress != localIP6Address {
 				reason := fmt.Sprintf("Banning of %s", disconnectedUser.DisplayName)
-				if err := data.BanIPAddress(ipAddress, reason); err != nil {
+				if err := authRepository.BanIPAddress(ipAddress, reason); err != nil {
 					log.Errorln("error banning IP address: ", err)
 				}
 			}
@@ -366,7 +375,8 @@ func SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetChatEstablishedUsersOnlyMode(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetChatEstablishedUsersOnlyMode(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

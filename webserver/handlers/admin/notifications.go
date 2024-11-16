@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -19,6 +19,8 @@ func SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 		Value models.DiscordConfiguration `json:"value"`
 	}
 
+	configRepository := configrepository.Get()
+
 	decoder := json.NewDecoder(r.Body)
 	var config request
 	if err := decoder.Decode(&config); err != nil {
@@ -26,7 +28,7 @@ func SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := data.SetDiscordConfig(config.Value); err != nil {
+	if err := configRepository.SetDiscordConfig(config.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update discord config with provided values")
 		return
 	}
@@ -44,6 +46,7 @@ func SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 		Value models.BrowserNotificationConfiguration `json:"value"`
 	}
 
+	configRepository := configrepository.Get()
 	decoder := json.NewDecoder(r.Body)
 	var config request
 	if err := decoder.Decode(&config); err != nil {
@@ -51,7 +54,7 @@ func SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := data.SetBrowserPushConfig(config.Value); err != nil {
+	if err := configRepository.SetBrowserPushConfig(config.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update browser push config with provided values")
 		return
 	}

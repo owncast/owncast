@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/owncast/owncast/logging"
+	"github.com/owncast/owncast/persistence/configrepository"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
@@ -111,8 +112,10 @@ func main() {
 }
 
 func handleCommandLineFlags() {
+	configRepository := configrepository.Get()
+
 	if *newAdminPassword != "" {
-		if err := data.SetAdminPassword(*newAdminPassword); err != nil {
+		if err := configRepository.SetAdminPassword(*newAdminPassword); err != nil {
 			log.Errorln("Error setting your admin password.", err)
 			log.Exit(1)
 		} else {
@@ -134,25 +137,25 @@ func handleCommandLineFlags() {
 		}
 
 		log.Println("Saving new web server port number to", portNumber)
-		if err := data.SetHTTPPortNumber(float64(portNumber)); err != nil {
+		if err := configRepository.SetHTTPPortNumber(float64(portNumber)); err != nil {
 			log.Errorln(err)
 		}
 	}
-	config.WebServerPort = data.GetHTTPPortNumber()
+	config.WebServerPort = configRepository.GetHTTPPortNumber()
 
 	// Set the web server ip
 	if *webServerIPOverride != "" {
 		log.Println("Saving new web server listen IP address to", *webServerIPOverride)
-		if err := data.SetHTTPListenAddress(*webServerIPOverride); err != nil {
+		if err := configRepository.SetHTTPListenAddress(*webServerIPOverride); err != nil {
 			log.Errorln(err)
 		}
 	}
-	config.WebServerIP = data.GetHTTPListenAddress()
+	config.WebServerIP = configRepository.GetHTTPListenAddress()
 
 	// Set the rtmp server port
 	if *rtmpPortOverride > 0 {
 		log.Println("Saving new RTMP server port number to", *rtmpPortOverride)
-		if err := data.SetRTMPPortNumber(float64(*rtmpPortOverride)); err != nil {
+		if err := configRepository.SetRTMPPortNumber(float64(*rtmpPortOverride)); err != nil {
 			log.Errorln(err)
 		}
 	}

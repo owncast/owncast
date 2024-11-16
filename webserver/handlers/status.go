@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -34,7 +34,8 @@ func getStatusResponse() webStatusResponse {
 		VersionNumber:      status.VersionNumber,
 		StreamTitle:        status.StreamTitle,
 	}
-	if !data.GetHideViewerCount() {
+	configRepository := configrepository.Get()
+	if !configRepository.GetHideViewerCount() {
 		response.ViewerCount = status.ViewerCount
 	}
 	return response

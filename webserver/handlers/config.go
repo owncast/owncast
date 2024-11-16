@@ -8,8 +8,8 @@ import (
 
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -73,9 +73,10 @@ func GetWebConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 func getConfigResponse() webConfigResponse {
-	pageContent := utils.RenderPageContentMarkdown(data.GetExtraPageBodyContent())
-	offlineMessage := utils.RenderSimpleMarkdown(data.GetCustomOfflineMessage())
-	socialHandles := data.GetSocialHandles()
+	configRepository := configrepository.Get()
+	pageContent := utils.RenderPageContentMarkdown(configRepository.GetExtraPageBodyContent())
+	offlineMessage := utils.RenderSimpleMarkdown(configRepository.GetCustomOfflineMessage())
+	socialHandles := configRepository.GetSocialHandles()
 	for i, handle := range socialHandles {
 		platform := models.GetSocialHandle(handle.Platform)
 		if platform != nil {
@@ -84,16 +85,16 @@ func getConfigResponse() webConfigResponse {
 		}
 	}
 
-	serverSummary := data.GetServerSummary()
+	serverSummary := configRepository.GetServerSummary()
 
 	var federationResponse federationConfigResponse
-	federationEnabled := data.GetFederationEnabled()
+	federationEnabled := configRepository.GetFederationEnabled()
 
 	followerCount, _ := activitypub.GetFollowerCount()
 	if federationEnabled {
-		serverURLString := data.GetServerURL()
+		serverURLString := configRepository.GetServerURL()
 		serverURL, _ := url.Parse(serverURLString)
-		account := fmt.Sprintf("%s@%s", data.GetDefaultFederationUsername(), serverURL.Host)
+		account := fmt.Sprintf("%s@%s", configRepository.GetDefaultFederationUsername(), serverURL.Host)
 		federationResponse = federationConfigResponse{
 			Enabled:       federationEnabled,
 			FollowerCount: int(followerCount),
@@ -101,8 +102,8 @@ func getConfigResponse() webConfigResponse {
 		}
 	}
 
-	browserPushEnabled := data.GetBrowserPushConfig().Enabled
-	browserPushPublicKey, err := data.GetBrowserPushPublicKey()
+	browserPushEnabled := configRepository.GetBrowserPushConfig().Enabled
+	browserPushPublicKey, err := configRepository.GetBrowserPushPublicKey()
 	if err != nil {
 		log.Errorln("unable to fetch browser push notifications public key", err)
 		browserPushEnabled = false
@@ -116,31 +117,31 @@ func getConfigResponse() webConfigResponse {
 	}
 
 	authenticationResponse := authenticationConfigResponse{
-		IndieAuthEnabled: data.GetServerURL() != "",
+		IndieAuthEnabled: configRepository.GetServerURL() != "",
 	}
 
 	return webConfigResponse{
-		Name:                       data.GetServerName(),
+		Name:                       configRepository.GetServerName(),
 		Summary:                    serverSummary,
 		OfflineMessage:             offlineMessage,
 		Logo:                       "/logo",
-		Tags:                       data.GetServerMetadataTags(),
+		Tags:                       configRepository.GetServerMetadataTags(),
 		Version:                    config.GetReleaseString(),
-		NSFW:                       data.GetNSFW(),
-		SocketHostOverride:         data.GetWebsocketOverrideHost(),
+		NSFW:                       configRepository.GetNSFW(),
+		SocketHostOverride:         configRepository.GetWebsocketOverrideHost(),
 		ExtraPageContent:           pageContent,
-		StreamTitle:                data.GetStreamTitle(),
+		StreamTitle:                configRepository.GetStreamTitle(),
 		SocialHandles:              socialHandles,
-		ChatDisabled:               data.GetChatDisabled(),
-		ChatSpamProtectionDisabled: data.GetChatSpamProtectionEnabled(),
-		ExternalActions:            data.GetExternalActions(),
-		CustomStyles:               data.GetCustomStyles(),
+		ChatDisabled:               configRepository.GetChatDisabled(),
+		ChatSpamProtectionDisabled: configRepository.GetChatSpamProtectionEnabled(),
+		ExternalActions:            configRepository.GetExternalActions(),
+		CustomStyles:               configRepository.GetCustomStyles(),
 		MaxSocketPayloadSize:       config.MaxSocketPayloadSize,
 		Federation:                 federationResponse,
 		Notifications:              notificationsResponse,
 		Authentication:             authenticationResponse,
-		AppearanceVariables:        data.GetCustomColorVariableValues(),
-		HideViewerCount:            data.GetHideViewerCount(),
+		AppearanceVariables:        configRepository.GetCustomColorVariableValues(),
+		HideViewerCount:            configRepository.GetHideViewerCount(),
 	}
 }
 

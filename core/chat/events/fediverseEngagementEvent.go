@@ -1,6 +1,8 @@
 package events
 
-import "github.com/owncast/owncast/core/data"
+import (
+	"github.com/owncast/owncast/persistence/configrepository"
+)
 
 // FediverseEngagementEvent is a message displayed in chat on representing an action on the Fediverse.
 type FediverseEngagementEvent struct {
@@ -13,6 +15,8 @@ type FediverseEngagementEvent struct {
 
 // GetBroadcastPayload will return the object to send to all chat users.
 func (e *FediverseEngagementEvent) GetBroadcastPayload() EventPayload {
+	configRepository := configrepository.Get()
+
 	return EventPayload{
 		"id":        e.ID,
 		"timestamp": e.Timestamp,
@@ -22,7 +26,7 @@ func (e *FediverseEngagementEvent) GetBroadcastPayload() EventPayload {
 		"title":     e.UserAccountName,
 		"link":      e.Link,
 		"user": EventPayload{
-			"displayName": data.GetServerName(),
+			"displayName": configRepository.GetServerName(),
 		},
 	}
 }

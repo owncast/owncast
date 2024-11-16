@@ -6,8 +6,8 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
@@ -105,7 +105,8 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func generateDisplayName() string {
-	suggestedUsernamesList := data.GetSuggestedUsernamesList()
+	configRepository := configrepository.Get()
+	suggestedUsernamesList := configRepository.GetSuggestedUsernamesList()
 	minSuggestedUsernamePoolLength := 10
 
 	if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {

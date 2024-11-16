@@ -9,12 +9,14 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/requests"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 // ActorHandler handles requests for a single actor.
 func ActorHandler(w http.ResponseWriter, r *http.Request) {
-	if !data.GetFederationEnabled() {
+	configRepository := configrepository.Get()
+
+	if !configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
@@ -22,7 +24,7 @@ func ActorHandler(w http.ResponseWriter, r *http.Request) {
 	pathComponents := strings.Split(r.URL.Path, "/")
 	accountName := pathComponents[3]
 
-	if _, valid := data.GetFederatedInboxMap()[accountName]; !valid {
+	if _, valid := configRepository.GetFederatedInboxMap()[accountName]; !valid {
 		// User is not valid
 		w.WriteHeader(http.StatusNotFound)
 		return

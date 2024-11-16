@@ -1,4 +1,4 @@
-package data
+package models
 
 import (
 	"bytes"
@@ -12,48 +12,48 @@ type ConfigEntry struct {
 	Key   string
 }
 
-func (c *ConfigEntry) getStringSlice() ([]string, error) {
-	decoder := c.getDecoder()
+func (c *ConfigEntry) GetStringSlice() ([]string, error) {
+	decoder := c.GetDecoder()
 	var result []string
 	err := decoder.Decode(&result)
 	return result, err
 }
 
-func (c *ConfigEntry) getStringMap() (map[string]string, error) {
-	decoder := c.getDecoder()
+func (c *ConfigEntry) GetStringMap() (map[string]string, error) {
+	decoder := c.GetDecoder()
 	var result map[string]string
 	err := decoder.Decode(&result)
 	return result, err
 }
 
-func (c *ConfigEntry) getString() (string, error) {
-	decoder := c.getDecoder()
+func (c *ConfigEntry) GetString() (string, error) {
+	decoder := c.GetDecoder()
 	var result string
 	err := decoder.Decode(&result)
 	return result, err
 }
 
-func (c *ConfigEntry) getNumber() (float64, error) {
-	decoder := c.getDecoder()
+func (c *ConfigEntry) GetNumber() (float64, error) {
+	decoder := c.GetDecoder()
 	var result float64
 	err := decoder.Decode(&result)
 	return result, err
 }
 
-func (c *ConfigEntry) getBool() (bool, error) {
-	decoder := c.getDecoder()
+func (c *ConfigEntry) GetBool() (bool, error) {
+	decoder := c.GetDecoder()
 	var result bool
 	err := decoder.Decode(&result)
 	return result, err
 }
 
-func (c *ConfigEntry) getObject(result interface{}) error {
-	decoder := c.getDecoder()
+func (c *ConfigEntry) GetObject(result interface{}) error {
+	decoder := c.GetDecoder()
 	err := decoder.Decode(result)
 	return err
 }
 
-func (c *ConfigEntry) getDecoder() *gob.Decoder {
+func (c *ConfigEntry) GetDecoder() *gob.Decoder {
 	valueBytes := c.Value.([]byte)
 	decoder := gob.NewDecoder(bytes.NewBuffer(valueBytes))
 	return decoder

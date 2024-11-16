@@ -15,7 +15,7 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/resolvers"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -131,7 +131,9 @@ func Verify(request *http.Request) (bool, error) {
 }
 
 func isBlockedDomain(domain string) bool {
-	blockedDomains := data.GetBlockedFederatedDomains()
+	configRepository := configrepository.Get()
+
+	blockedDomains := configRepository.GetBlockedFederatedDomains()
 
 	for _, blockedDomain := range blockedDomains {
 		if strings.Contains(domain, blockedDomain) {

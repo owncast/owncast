@@ -3,8 +3,8 @@ package webhooks
 import (
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/teris-io/shortid"
 )
 
@@ -14,13 +14,15 @@ func SendStreamStatusEvent(eventType models.EventType) {
 }
 
 func sendStreamStatusEvent(eventType models.EventType, id string, timestamp time.Time) {
+	configRepository := configrepository.Get()
+
 	SendEventToWebhooks(WebhookEvent{
 		Type: eventType,
 		EventData: map[string]interface{}{
 			"id":          id,
-			"name":        data.GetServerName(),
-			"summary":     data.GetServerSummary(),
-			"streamTitle": data.GetStreamTitle(),
+			"name":        configRepository.GetServerName(),
+			"summary":     configRepository.GetServerSummary(),
+			"streamTitle": configRepository.GetStreamTitle(),
 			"status":      getStatus(),
 			"timestamp":   timestamp,
 		},

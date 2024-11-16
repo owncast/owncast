@@ -9,6 +9,7 @@ import (
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/tables"
 
 	log "github.com/sirupsen/logrus"
@@ -24,7 +25,9 @@ const (
 func setupPersistence() {
 	_datastore = data.GetDatastore()
 	tables.CreateMessagesTable(_datastore.DB)
-	data.CreateBanIPTable(_datastore.DB)
+
+	authRepository := authrepository.Get()
+	authRepository.CreateBanIPTable(_datastore.DB)
 
 	chatDataPruner := time.NewTicker(5 * time.Minute)
 	go func() {

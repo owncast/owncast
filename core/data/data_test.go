@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/owncast/owncast/models"
 )
 
 func TestMain(m *testing.M) {
@@ -89,7 +91,7 @@ func TestCustomType(t *testing.T) {
 	}
 
 	// Save config entry to the database
-	if err := _datastore.Save(ConfigEntry{&testStruct, testKey}); err != nil {
+	if err := _datastore.Save(models.ConfigEntry{&testStruct, testKey}); err != nil {
 		t.Error(err)
 	}
 
@@ -101,7 +103,7 @@ func TestCustomType(t *testing.T) {
 
 	// Get a typed struct out of it
 	var testResult TestStruct
-	if err := entryResult.getObject(&testResult); err != nil {
+	if err := entryResult.GetObject(&testResult); err != nil {
 		t.Error(err)
 	}
 
@@ -121,7 +123,7 @@ func TestStringMap(t *testing.T) {
 	}
 
 	// Save config entry to the database
-	if err := _datastore.Save(ConfigEntry{&testMap, testKey}); err != nil {
+	if err := _datastore.Save(models.ConfigEntry{Value: &testMap, Key: testKey}); err != nil {
 		t.Error(err)
 	}
 
@@ -131,7 +133,7 @@ func TestStringMap(t *testing.T) {
 		t.Error(err)
 	}
 
-	testResult, err := entryResult.getStringMap()
+	testResult, err := entryResult.GetStringMap()
 	if err != nil {
 		t.Error(err)
 	}

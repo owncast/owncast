@@ -6,7 +6,7 @@ import (
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -46,7 +46,9 @@ func SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetFederationEnabled(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+
+	if err := configRepository.SetFederationEnabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -64,7 +66,9 @@ func SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetFederationIsPrivate(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+
+	if err := configRepository.SetFederationIsPrivate(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -89,7 +93,8 @@ func SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetFederationShowEngagement(configValue.Value.(bool)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetFederationShowEngagement(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -107,7 +112,8 @@ func SetFederationUsername(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetFederationUsername(configValue.Value.(string)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetFederationUsername(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -126,7 +132,8 @@ func SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.SetFederationGoLiveMessage(configValue.Value.(string)); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetFederationGoLiveMessage(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -151,7 +158,8 @@ func SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 		domainStrings = append(domainStrings, domain.Value.(string))
 	}
 
-	if err := data.SetBlockedFederatedDomains(domainStrings); err != nil {
+	configRepository := configrepository.Get()
+	if err := configRepository.SetBlockedFederatedDomains(domainStrings); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

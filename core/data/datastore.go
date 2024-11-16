@@ -5,12 +5,11 @@ import (
 	"database/sql"
 	"encoding/gob"
 	"sync"
-	"time"
 
 	// sqlite requires a blank import.
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/db"
+	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -21,7 +20,8 @@ type Datastore struct {
 	DbLock *sync.Mutex
 }
 
-func (ds *Datastore) warmCache() {
+// WarmCache pre-caches all configuration values in memory.
+func (ds *Datastore) WarmCache() {
 	log.Traceln("Warming config value cache")
 
 	res, err := ds.DB.Query("SELECT key, value FROM datastore")
@@ -46,10 +46,10 @@ func (ds *Datastore) GetQueries() *db.Queries {
 }
 
 // Get will query the database for the key and return the entry.
-func (ds *Datastore) Get(key string) (ConfigEntry, error) {
+func (ds *Datastore) Get(key string) (models.ConfigEntry, error) {
 	cachedValue, err := ds.GetCachedValue(key)
 	if err == nil {
-		return ConfigEntry{
+		return models.ConfigEntry{
 			Key:   key,
 			Value: cachedValue,
 		}, nil
@@ -60,10 +60,10 @@ func (ds *Datastore) Get(key string) (ConfigEntry, error) {
 
 	row := ds.DB.QueryRow("SELECT key, value FROM datastore WHERE key = ? LIMIT 1", key)
 	if err := row.Scan(&resultKey, &resultValue); err != nil {
-		return ConfigEntry{}, err
+		return models.ConfigEntry{}, err
 	}
 
-	result := ConfigEntry{
+	result := models.ConfigEntry{
 		Key:   resultKey,
 		Value: resultValue,
 	}
@@ -73,7 +73,7 @@ func (ds *Datastore) Get(key string) (ConfigEntry, error) {
 }
 
 // Save will save the ConfigEntry to the database.
-func (ds *Datastore) Save(e ConfigEntry) error {
+func (ds *Datastore) Save(e models.ConfigEntry) error {
 	ds.DbLock.Lock()
 	defer ds.DbLock.Unlock()
 
@@ -93,7 +93,6 @@ func (ds *Datastore) Save(e ConfigEntry) error {
 		return err
 	}
 	_, err = stmt.Exec(e.Key, dataGob.Bytes())
-
 	if err != nil {
 		return err
 	}
@@ -121,26 +120,6 @@ func (ds *Datastore) Setup() {
 	);`
 
 	ds.MustExec(createTableSQL)
-
-	if !HasPopulatedDefaults() {
-		PopulateDefaults()
-	}
-
-	if !hasPopulatedFederationDefaults() {
-		if err := SetFederationGoLiveMessage(config.GetDefaults().FederationGoLiveMessage); err != nil {
-			log.Errorln(err)
-		}
-		if err := _datastore.SetBool("HAS_POPULATED_FEDERATION_DEFAULTS", true); err != nil {
-			log.Errorln(err)
-		}
-	}
-
-	// Set the server initialization date if needed.
-	if hasSetInitDate, _ := GetServerInitTime(); hasSetInitDate == nil || !hasSetInitDate.Valid {
-		_ = SetServerInitTime(time.Now())
-	}
-
-	migrateDatastoreValues(_datastore)
 }
 
 // Reset will delete all config entries in the datastore and start over.
@@ -156,8 +135,6 @@ func (ds *Datastore) Reset() {
 	if _, err = stmt.Exec(); err != nil {
 		log.Fatalln(err)
 	}
-
-	PopulateDefaults()
 }
 
 // GetDatastore returns the shared instance of the owncast datastore.

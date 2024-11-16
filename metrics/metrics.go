@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 // How often we poll for updates.
@@ -56,8 +56,9 @@ var _getStatus func() models.Status
 
 // Start will begin the metrics collection and alerting.
 func Start(getStatus func() models.Status) {
+	configRepository := configrepository.Get()
 	_getStatus = getStatus
-	host := data.GetServerURL()
+	host := configRepository.GetServerURL()
 	if host == "" {
 		host = "unknown"
 	}

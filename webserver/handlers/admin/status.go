@@ -5,15 +5,17 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	log "github.com/sirupsen/logrus"
 )
 
 // Status gets the details of the inbound broadcaster.
 func Status(w http.ResponseWriter, r *http.Request) {
+	configRepository := configrepository.Get()
+
 	broadcaster := core.GetBroadcaster()
 	status := core.GetStatus()
 	currentBroadcast := core.GetCurrentBroadcast()
@@ -27,7 +29,7 @@ func Status(w http.ResponseWriter, r *http.Request) {
 		OverallPeakViewerCount: status.OverallMaxViewerCount,
 		SessionPeakViewerCount: status.SessionMaxViewerCount,
 		VersionNumber:          status.VersionNumber,
-		StreamTitle:            data.GetStreamTitle(),
+		StreamTitle:            configRepository.GetStreamTitle(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

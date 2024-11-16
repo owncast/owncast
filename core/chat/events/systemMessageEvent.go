@@ -1,6 +1,8 @@
 package events
 
-import "github.com/owncast/owncast/core/data"
+import (
+	"github.com/owncast/owncast/persistence/configrepository"
+)
 
 // SystemMessageEvent is a message displayed in chat on behalf of the server.
 type SystemMessageEvent struct {
@@ -10,13 +12,15 @@ type SystemMessageEvent struct {
 
 // GetBroadcastPayload will return the object to send to all chat users.
 func (e *SystemMessageEvent) GetBroadcastPayload() EventPayload {
+	configRepository := configrepository.Get()
+
 	return EventPayload{
 		"id":        e.ID,
 		"timestamp": e.Timestamp,
 		"body":      e.Body,
 		"type":      SystemMessageSent,
 		"user": EventPayload{
-			"displayName": data.GetServerName(),
+			"displayName": configRepository.GetServerName(),
 		},
 	}
 }

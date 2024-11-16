@@ -2,8 +2,8 @@ package core
 
 import (
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 // GetStatus gets the status of the system.
@@ -17,6 +17,7 @@ func GetStatus() models.Status {
 		viewerCount = len(_stats.Viewers)
 	}
 
+	configRepository := configrepository.Get()
 	return models.Status{
 		Online:                IsStreamConnected(),
 		ViewerCount:           viewerCount,
@@ -25,7 +26,7 @@ func GetStatus() models.Status {
 		LastDisconnectTime:    _stats.LastDisconnectTime,
 		LastConnectTime:       _stats.LastConnectTime,
 		VersionNumber:         config.VersionNumber,
-		StreamTitle:           data.GetStreamTitle(),
+		StreamTitle:           configRepository.GetStreamTitle(),
 	}
 }
 

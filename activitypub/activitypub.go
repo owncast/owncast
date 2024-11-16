@@ -6,6 +6,7 @@ import (
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/workerpool"
+	"github.com/owncast/owncast/persistence/configrepository"
 
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
@@ -14,15 +15,16 @@ import (
 
 // Start will initialize and start the federation support.
 func Start(datastore *data.Datastore) {
+	configRepository := configrepository.Get()
 	persistence.Setup(datastore)
 	workerpool.InitOutboundWorkerPool()
 	inbox.InitInboxWorkerPool()
 
 	// Generate the keys for signing federated activity if needed.
-	if data.GetPrivateKey() == "" {
+	if configRepository.GetPrivateKey() == "" {
 		privateKey, publicKey, err := crypto.GenerateKeys()
-		_ = data.SetPrivateKey(string(privateKey))
-		_ = data.SetPublicKey(string(publicKey))
+		_ = configRepository.SetPrivateKey(string(privateKey))
+		_ = configRepository.SetPublicKey(string(publicKey))
 		if err != nil {
 			log.Errorln("Unable to get private key", err)
 		}

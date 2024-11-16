@@ -10,7 +10,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -47,11 +47,12 @@ func Resolve(c context.Context, data []byte, callbacks ...interface{}) error {
 
 // ResolveIRI will resolve an IRI ahd call the correct callback for the resolved type.
 func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
+	configRepository := configrepository.Get()
 	log.Debugln("Resolving", iri)
 
 	req, _ := http.NewRequest(http.MethodGet, iri, nil)
 
-	actor := apmodels.MakeLocalIRIForAccount(data.GetDefaultFederationUsername())
+	actor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 	if err := crypto.SignRequest(req, nil, actor); err != nil {
 		return err
 	}
