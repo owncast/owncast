@@ -3217,6 +3217,34 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /integrations/moderation/chat/user/{userId}:
+    get:
+      summary: Get a user's details
+      operationId: ExternalGetUserDetails
+      tags: ['External', 'Chat']
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          description: The ID of the user to find
+          required: true
+      responses:
+        '200':
+          description: User information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModerationUserDetails'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        '404':
+          $ref: '#/components/responses/404'
+        default:
+          $ref: '#/components/responses/Default'
+
   /moderation/chat/user/{userId}:
     get:
       summary: Get a user's details
