@@ -3,6 +3,7 @@ request = request('http://127.0.0.1:8080');
 
 const getAdminResponse = require('./lib/admin').getAdminResponse;
 const sendAdminPayload = require('./lib/admin').sendAdminPayload;
+const registerChat = require('./lib/chat').registerChat;
 
 var accessToken = '';
 var webhookID;
@@ -124,6 +125,16 @@ test('test fetch chat history OPTIONS request', async () => {
 		.options('/api/integrations/chat')
 		.set('Authorization', 'Bearer ' + accessToken)
 		.expect(204);
+});
+
+test('get user details', async () => {
+	const registration = await registerChat();
+	const userId = registration.id;
+
+	await request
+		.get(`/api/integrations/moderation/chat/user/${userId}`)
+		.set('Authorization', 'Bearer ' + accessToken)
+		.expect(200);
 });
 
 test('delete access token', async () => {

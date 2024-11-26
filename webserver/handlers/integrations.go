@@ -5,6 +5,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/webserver/handlers/admin"
+	"github.com/owncast/owncast/webserver/handlers/moderation"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -65,6 +66,10 @@ func (*ServerInterfaceImpl) ExternalSetStreamTitle(w http.ResponseWriter, r *htt
 
 func (*ServerInterfaceImpl) ExternalSetStreamTitleOptions(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, admin.ExternalSetStreamTitle)(w, r)
+}
+
+func (*ServerInterfaceImpl) ExternalGetUserDetails(w http.ResponseWriter, r *http.Request, userId string) {
+	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, moderation.ExternalGetUserDetails)(w, r)
 }
 
 func (*ServerInterfaceImpl) ExternalGetChatMessages(w http.ResponseWriter, r *http.Request) {

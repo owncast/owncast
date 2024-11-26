@@ -74,3 +74,7 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 		utils.InternalErrorHandler(w, err)
 	}
 }
+
+func ExternalGetUserDetails(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	GetUserDetails(w, r)
+}
