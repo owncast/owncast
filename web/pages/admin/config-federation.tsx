@@ -129,7 +129,7 @@ const ConfigFederation = () => {
 				apiPath: FIELD_PROPS_ENABLE_FEDERATION.apiPath,
 				data: { value: false },
 				onSuccess: () => {
-					setFieldInConfigState({ fieldName: "enabled", value: false, path: "federation" });
+					setFieldInConfigState({ fieldName: "enabled", value: false, path: FIELD_PROPS_ENABLE_FEDERATION.configPath });
 				},
 			});
       setFormDataValues({
@@ -164,7 +164,7 @@ const ConfigFederation = () => {
 			apiPath: FIELD_PROPS_ENABLE_FEDERATION.apiPath,
 			data: { value: false },
 			onSuccess: () => {
-				setFieldInConfigState({ fieldName: "enabled", value: false, path: "federation" });
+				setFieldInConfigState({ fieldName: "enabled", value: false, path: FIELD_PROPS_ENABLE_FEDERATION.configPath });
 			},
 		});
     setFormDataValues({
