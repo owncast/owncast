@@ -175,13 +175,17 @@ const ConfigFederation = () => {
 
   function federationInfoModalOkPressed() {
     setIsInfoModalOpen(false);
-		postConfigUpdateToAPI({
-			apiPath: FIELD_PROPS_ENABLE_FEDERATION.apiPath,
-			data: { value: false },
-			onSuccess: () => {
-				setFieldInConfigState({ fieldName: "enabled", value: true, path: FIELD_PROPS_ENABLE_FEDERATION.configPath });
-			},
-		});
+    postConfigUpdateToAPI({
+      apiPath: FIELD_PROPS_ENABLE_FEDERATION.apiPath,
+      data: { value: false },
+      onSuccess: () => {
+        setFieldInConfigState({
+          fieldName: 'enabled',
+          value: true,
+          path: FIELD_PROPS_ENABLE_FEDERATION.configPath,
+        });
+      },
+    });
     setFormDataValues({
       ...formDataValues,
       enabled: true,
