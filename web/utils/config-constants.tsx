@@ -313,7 +313,7 @@ export const FIELD_PROPS_ENABLE_FEDERATION = {
   configPath: 'federation',
   label: 'Enable Social Features',
   tip: 'Send and receive activities on the Fediverse.',
-  useSubmit: true,
+  useSubmit: false,
 };
 
 export const FIELD_PROPS_FEDERATION_IS_PRIVATE = {
