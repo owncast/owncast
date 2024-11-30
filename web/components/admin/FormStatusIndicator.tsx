@@ -12,7 +12,7 @@ export const FormStatusIndicator: FC<FormStatusIndicatorProps> = ({ status }) =>
   const classes = classNames({
     'status-container': true,
     [`status-${type}`]: type,
-    empty: !message,
+    empty: !message && !icon,
   });
   return (
     <span className={classes}>
