@@ -13,7 +13,7 @@ const (
 	datastoreValueVersionKey = "DATA_STORE_VERSION"
 )
 
-func migrateDatastoreValues(datastore *data.Datastore) {
+func migrateDatastoreValues(datastore *data.Datastore, configRepository ConfigRepository) {
 	currentVersion, _ := datastore.GetNumber(datastoreValueVersionKey)
 	if currentVersion == 0 {
 		currentVersion = datastoreValuesVersion
@@ -25,11 +25,11 @@ func migrateDatastoreValues(datastore *data.Datastore) {
 		case 0:
 			migrateToDatastoreValues1(datastore)
 		case 1:
-			migrateToDatastoreValues2(datastore)
+			migrateToDatastoreValues2(datastore, configRepository)
 		case 2:
-			migrateToDatastoreValues3ServingEndpoint3(datastore)
+			migrateToDatastoreValues3ServingEndpoint3(configRepository)
 		case 3:
-			migrateToDatastoreValues4(datastore)
+			migrateToDatastoreValues4(datastore, configRepository)
 		default:
 			log.Fatalln("missing datastore values migration step")
 		}
@@ -59,9 +59,7 @@ func migrateToDatastoreValues1(datastore *data.Datastore) {
 	}
 }
 
-func migrateToDatastoreValues2(datastore *data.Datastore) {
-	configRepository := Get()
-
+func migrateToDatastoreValues2(datastore *data.Datastore, configRepository ConfigRepository) {
 	oldAdminPassword, _ := datastore.GetString("stream_key")
 	// Avoids double hashing the password
 	_ = datastore.SetString("admin_password_key", oldAdminPassword)
@@ -70,8 +68,7 @@ func migrateToDatastoreValues2(datastore *data.Datastore) {
 	})
 }
 
-func migrateToDatastoreValues3ServingEndpoint3(_ *data.Datastore) {
-	configRepository := Get()
+func migrateToDatastoreValues3ServingEndpoint3(configRepository ConfigRepository) {
 	s3Config := configRepository.GetS3Config()
 
 	if !s3Config.Enabled {
@@ -81,8 +78,7 @@ func migrateToDatastoreValues3ServingEndpoint3(_ *data.Datastore) {
 	_ = configRepository.SetVideoServingEndpoint(s3Config.ServingEndpoint)
 }
 
-func migrateToDatastoreValues4(datastore *data.Datastore) {
-	configRepository := Get()
+func migrateToDatastoreValues4(datastore *data.Datastore, configRepository ConfigRepository) {
 	unhashed_pass, _ := datastore.GetString("admin_password_key")
 	err := configRepository.SetAdminPassword(unhashed_pass)
 	if err != nil {

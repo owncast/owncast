@@ -38,7 +38,7 @@ func New(datastore *data.Datastore) ConfigRepository {
 		datastore: datastore,
 	}
 
-	migrateDatastoreValues(datastore)
+	migrateDatastoreValues(datastore, &r)
 
 	// Set the server initialization date if needed.
 	if hasSetInitDate, _ := r.GetServerInitTime(); hasSetInitDate == nil || !hasSetInitDate.Valid {
