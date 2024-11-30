@@ -37,7 +37,7 @@ const FederationInfoModal: FC<FederationInfoModalProps> = ({ cancelPressed, okPr
   <Modal
     width="70%"
     title="Enable Social Features"
-    visible
+    open
     onCancel={cancelPressed}
     footer={
       <div>
@@ -125,6 +125,17 @@ const ConfigFederation = () => {
 
   const handleEnabledSwitchChange = (value: boolean) => {
     if (!value) {
+      postConfigUpdateToAPI({
+        apiPath: FIELD_PROPS_ENABLE_FEDERATION.apiPath,
+        data: { value: false },
+        onSuccess: () => {
+          setFieldInConfigState({
+            fieldName: 'enabled',
+            value: false,
+            path: FIELD_PROPS_ENABLE_FEDERATION.configPath,
+          });
+        },
+      });
       setFormDataValues({
         ...formDataValues,
         enabled: false,
@@ -153,6 +164,17 @@ const ConfigFederation = () => {
 
   function federationInfoModalCancelPressed() {
     setIsInfoModalOpen(false);
+    postConfigUpdateToAPI({
+      apiPath: FIELD_PROPS_ENABLE_FEDERATION.apiPath,
+      data: { value: false },
+      onSuccess: () => {
+        setFieldInConfigState({
+          fieldName: 'enabled',
+          value: false,
+          path: FIELD_PROPS_ENABLE_FEDERATION.configPath,
+        });
+      },
+    });
     setFormDataValues({
       ...formDataValues,
       enabled: false,
@@ -161,6 +183,17 @@ const ConfigFederation = () => {
 
   function federationInfoModalOkPressed() {
     setIsInfoModalOpen(false);
+    postConfigUpdateToAPI({
+      apiPath: FIELD_PROPS_ENABLE_FEDERATION.apiPath,
+      data: { value: false },
+      onSuccess: () => {
+        setFieldInConfigState({
+          fieldName: 'enabled',
+          value: true,
+          path: FIELD_PROPS_ENABLE_FEDERATION.configPath,
+        });
+      },
+    });
     setFormDataValues({
       ...formDataValues,
       enabled: true,
