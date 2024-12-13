@@ -57,7 +57,7 @@ export default function FediverseFollowers() {
   const [followersBlocked, setFollowersBlocked] = useState<Follower[]>([]);
   const [followers, setFollowers] = useState<Follower[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
-  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig } = serverStatusData || {};
@@ -67,7 +67,7 @@ export default function FediverseFollowers() {
   const getFollowers = async () => {
     try {
       const limit = 25;
-      const offset = currentPage * limit;
+      const offset = (currentPage - 1) * limit;
       const u = `${FOLLOWERS}?offset=${offset}&limit=${limit}`;
 
       // Active followers
