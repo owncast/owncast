@@ -185,7 +185,7 @@ const ConfigFederation = () => {
     setIsInfoModalOpen(false);
     postConfigUpdateToAPI({
       apiPath: FIELD_PROPS_ENABLE_FEDERATION.apiPath,
-      data: { value: false },
+      data: { value: true },
       onSuccess: () => {
         setFieldInConfigState({
           fieldName: 'enabled',
