@@ -39,6 +39,8 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
   useEffect(() => {
     if (!supportsFollows) {
       setCurrentMode(EmbedMode.CannotFollow);
+    } else if (currentMode === EmbedMode.CannotFollow) {
+      setCurrentMode(EmbedMode.CanFollow);
     }
   }, [supportsFollows]);
 
