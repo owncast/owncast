@@ -1,6 +1,8 @@
 package activitypub
 
 import (
+	"math"
+
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/inbox"
 	"github.com/owncast/owncast/activitypub/outbox"
@@ -17,7 +19,9 @@ import (
 func Start(datastore *data.Datastore) {
 	configRepository := configrepository.Get()
 	persistence.Setup(datastore)
-	workerpool.InitOutboundWorkerPool()
+
+	outboundWorkerPoolSize := getOutboundWorkerPoolSize()
+	workerpool.InitOutboundWorkerPool(outboundWorkerPoolSize)
 	inbox.InitInboxWorkerPool()
 
 	// Generate the keys for signing federated activity if needed.
@@ -29,6 +33,17 @@ func Start(datastore *data.Datastore) {
 			log.Errorln("Unable to get private key", err)
 		}
 	}
+}
+
+func getOutboundWorkerPoolSize() int {
+	var followerCount int64
+	fc, err := persistence.GetFollowerCount()
+	if err != nil {
+		log.Errorln("Unable to get follower count", err)
+		fc = 50 // Arbitrary fallback value.
+	}
+	followerCount = int64(math.Max(float64(fc), 50))
+	return int(followerCount * 5)
 }
 
 // SendLive will send a "Go Live" message to followers.
