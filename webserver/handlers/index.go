@@ -128,7 +128,7 @@ type MetadataPage struct {
 // to give to Opengraph clients and web scrapers (bots, web crawlers, etc).
 func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	cacheKey := "bot-scraper-html"
-	cacheHtmlExpiration := time.Duration(10) * time.Second
+	cacheHtmlExpiration := time.Duration(60) * time.Second
 	c := gc.GetOrCreateCache(cacheKey, cacheHtmlExpiration)
 
 	cachedHtml := c.GetValueForKey(cacheKey)
