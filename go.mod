@@ -8,7 +8,7 @@ require (
 	github.com/CAFxX/httpcompression v0.0.9
 	github.com/SherClockHolmes/webpush-go v1.3.0
 	github.com/TwiN/go-away v1.6.14
-	github.com/andybalholm/cascadia v1.3.2
+	github.com/andybalholm/cascadia v1.3.3
 	github.com/aws/aws-sdk-go v1.55.5
 	github.com/go-chi/chi/v5 v5.2.0
 	github.com/go-fed/activity v1.0.1-0.20220119073622-b14b50eecad0
