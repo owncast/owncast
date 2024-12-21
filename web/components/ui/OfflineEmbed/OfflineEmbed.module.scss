@@ -88,7 +88,7 @@ $short-container-min-height: 320px;
       text-transform: none;
 			display: block;
 
-			margin: 8px auto 0;
+			margin: 8px auto;
 
 			@include screen(desktop) {
 				width: 80%;

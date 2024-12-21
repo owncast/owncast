@@ -30,7 +30,6 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
   image,
   supportsFollows,
 }) => {
-	// const supportsFollows = false;
   const [currentMode, setCurrentMode] = useState(EmbedMode.CanFollow);
   const [remoteAccount, setRemoteAccount] = useState(null);
   const [valid, setValid] = useState(false);
