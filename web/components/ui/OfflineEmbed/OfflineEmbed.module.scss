@@ -39,13 +39,12 @@ $short-container-min-height: 320px;
 		height: 100vh;
 		max-width: 1024px;
 		max-height: 576px;
-		justify-content: space-evenly;
-
+		justify-content: center;
 
 		.headerContainer {
 			display: flex;
 			align-items: center;
-			justify-content: flex-start;
+			justify-content: center;
 			width: 100%;
 			gap: 8px;
 			margin: 0;
@@ -54,6 +53,27 @@ $short-container-min-height: 320px;
 
 		.messageContainer {
 			margin: 1.25em 0;
+			width: 100%;
+
+			--description-height: auto;
+			@media (height <= $short-container-min-height) {
+				--description-height: 30vh;
+				margin: 0;
+			}
+			min-height: var(--description-height);
+			--gradient-mask: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1) 17%);
+			overflow: hidden;
+			overflow-y: auto;
+
+			max-height: var(--description-height);
+			mask-image: var(--gradient-mask);
+			mask-repeat: repeat-x;
+			mask-size: auto var(--description-height);
+			mask-position: top;
+			-webkit-mask-image: var(--gradient-mask);
+			-webkit-mask-repeat: repeat-x;
+			-webkit-mask-size: auto var(--description-height);
+			-webkit-mask-position: top;
 		}
 
     /* Message */
@@ -66,21 +86,12 @@ $short-container-min-height: 320px;
       letter-spacing: 0;
       text-decoration: none;
       text-transform: none;
+			display: block;
 
-			margin: auto;
+			margin: 8px auto 0;
+
 			@include screen(desktop) {
 				width: 80%;
-			}
-
-			@media (height <= $short-container-max-height) {
-				display: -webkit-box;
-				-webkit-box-orient: vertical;
-				-webkit-line-clamp: 3;
-				overflow: hidden;
-			}
-
-			@media (height <= $short-container-min-height) {
-				display: none;
 			}
     }
 
@@ -131,11 +142,29 @@ $short-container-min-height: 320px;
       text-transform: none;
 			text-align: left;
     }
+
+
+		&.followable {
+			justify-content: space-evenly;
+			.headerContainer {
+				justify-content: flex-start;
+			}
+		}
   }
 
-  .submitButton {
-    margin-top: 10px;
-  }
+	.followFormContainer {
+		width: 80%;
+	}
+	.followForm {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.followInput {
+		width: 300px;
+	}
 
   .footer {
     color: var(--body-background);

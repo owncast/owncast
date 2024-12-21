@@ -30,6 +30,7 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
   image,
   supportsFollows,
 }) => {
+	// const supportsFollows = false;
   const [currentMode, setCurrentMode] = useState(EmbedMode.CanFollow);
   const [remoteAccount, setRemoteAccount] = useState(null);
   const [valid, setValid] = useState(false);
@@ -101,7 +102,9 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
       </Head>
       <div className={classNames(styles.offlineContainer)}>
         <Spin spinning={loading}>
-          <div className={styles.content}>
+          <div className={classNames(styles.content, {
+						[styles.followable]: supportsFollows,
+					})}>
             <Title level={1} className={styles.headerContainer}>
               <div className={styles.pageLogo} style={{ backgroundImage: `url(${image})` }} />
               <div className={styles.streamName}>{streamName}</div>
@@ -138,27 +141,28 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
             )}
 
             {currentMode === EmbedMode.FollowPrompt && (
-              <div>
-                <Input
-                  value={remoteAccount}
-                  onChange={e => handleAccountChange(e.target.value)}
-                  placeholder="Your fediverse account @account@server"
-                  defaultValue={remoteAccount}
-                />
-                <div className={styles.footer}>
-                  You&apos;ll be redirected to your Fediverse server and asked to confirm the
-                  action.
-                </div>
-                <Space className={styles.buttons}>
-                  <Button
-                    className={styles.submitButton}
-                    disabled={!valid}
-                    type="primary"
-                    onClick={remoteFollowButtonPressed}
-                  >
-                    Submit and Follow
-                  </Button>
-                </Space>
+              <div className={styles.followFormContainer}>
+								<div className={styles.followForm}>
+									<Input
+										value={remoteAccount}
+										onChange={e => handleAccountChange(e.target.value)}
+										placeholder="Your fediverse account @account@server"
+										defaultValue={remoteAccount}
+										className={styles.followInput}
+									/>
+									<Button
+										className={styles.submitButton}
+										disabled={!valid}
+										type="primary"
+										onClick={remoteFollowButtonPressed}
+									>
+										Submit and Follow
+									</Button>
+								</div>
+								<div className={styles.footer}>
+									You&apos;ll be redirected to your Fediverse server and asked to confirm the
+									action.
+								</div>
               </div>
             )}
           </div>
