@@ -102,15 +102,17 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
       <div className={classNames(styles.offlineContainer)}>
         <Spin spinning={loading}>
           <div className={styles.content}>
-						<Title level={1} className={styles.headerContainer}>
-							<div className={styles.pageLogo} style={{ backgroundImage: `url(${image})` }} />
-							<div className={styles.streamName}>{streamName}</div>
-						</Title>
+            <Title level={1} className={styles.headerContainer}>
+              <div className={styles.pageLogo} style={{ backgroundImage: `url(${image})` }} />
+              <div className={styles.streamName}>{streamName}</div>
+            </Title>
 
-						<div className={styles.messageContainer}>
-							<Title level={2} className={styles.offlineTitle}>This stream is not currently live.</Title>
-							<div className={styles.message} dangerouslySetInnerHTML={{ __html: subtitle }} />
-						</div>
+            <div className={styles.messageContainer}>
+              <Title level={2} className={styles.offlineTitle}>
+                This stream is not currently live.
+              </Title>
+              <div className={styles.message} dangerouslySetInnerHTML={{ __html: subtitle }} />
+            </div>
 
             {errorMessage && (
               <Alert
