@@ -141,7 +141,6 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
               <div>
                 <Input
                   value={remoteAccount}
-                  // size="large"
                   onChange={e => handleAccountChange(e.target.value)}
                   placeholder="Your fediverse account @account@server"
                   defaultValue={remoteAccount}
