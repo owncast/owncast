@@ -68,7 +68,7 @@ export const FollowForm: FC<FollowFormProps> = ({ handleClose }: FollowFormProps
   return (
 		<Spin spinning={loading}>
 			{errorMessage && (
-				<Alert message="Follow Error" description={errorMessage} type="error" showIcon />
+				<Alert message="Follow Error" description={errorMessage} type="error" closable className={styles.errorAlert} />
 			)}
 
 

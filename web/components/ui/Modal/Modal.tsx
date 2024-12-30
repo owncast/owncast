@@ -95,11 +95,3 @@ export const Modal: FC<ModalProps> = ({
     </AntModal>
   );
 };
-
-Modal.defaultProps = {
-  url: undefined,
-  children: undefined,
-  handleOk: undefined,
-  handleCancel: undefined,
-  afterClose: undefined,
-};

@@ -3,7 +3,7 @@
 import { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import Head from 'next/head';
-import { Button, Spin, Alert, Typography } from 'antd';
+import { Button, Typography } from 'antd';
 import styles from './OfflineEmbed.module.scss';
 import { Modal } from '../Modal/Modal';
 import { FollowForm } from '../../modals/FollowModal/FollowForm';
@@ -20,8 +20,6 @@ export type OfflineEmbedProps = {
 enum EmbedMode {
   CannotFollow = 1,
   CanFollow,
-  // FollowPrompt,
-  // InProgress,
 }
 
 export const OfflineEmbed: FC<OfflineEmbedProps> = ({
@@ -31,8 +29,6 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
   supportsFollows,
 }) => {
   const [currentMode, setCurrentMode] = useState(EmbedMode.CanFollow);
-  // const [loading, setLoading] = useState(false);
-  // const [errorMessage, setErrorMessage] = useState(null);
 	const [showFollowModal, setShowFollowModal] = useState(false);
 
   useEffect(() => {
@@ -44,14 +40,8 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
   }, [supportsFollows]);
 
   const followButtonPressed = async () => {
-    // setCurrentMode(EmbedMode.FollowPrompt);
 		setShowFollowModal(true);
   };
-
-  // const handleErrorClose = () => {
-  //   setErrorMessage('');
-  //   setCurrentMode(EmbedMode.FollowPrompt);
-  // };
 
   return (
     <div>
@@ -74,17 +64,6 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
 						<div className={styles.message} dangerouslySetInnerHTML={{ __html: subtitle }} />
 					</div>
 
-					{/* {errorMessage && (
-						<Alert
-							message="Follow Error"
-							description={errorMessage}
-							type="error"
-							showIcon
-							closable
-							onClose={handleErrorClose}
-						/>
-					)} */}
-
 					{currentMode === EmbedMode.CanFollow && (
 						<>
 							<Button className={styles.submitButton} type="primary" onClick={followButtonPressed}>
@@ -99,12 +78,6 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
 							</Modal>
 						</>
 					)}
-
-					{/* {currentMode === EmbedMode.InProgress && (
-						<Title level={4} className={styles.heading}>
-							Follow the instructions on your Fediverse server to complete the follow.
-						</Title>
-					)} */}
 				</div>
       </div>
     </div>
