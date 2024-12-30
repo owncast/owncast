@@ -29,7 +29,7 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
   supportsFollows,
 }) => {
   const [currentMode, setCurrentMode] = useState(EmbedMode.CanFollow);
-	const [showFollowModal, setShowFollowModal] = useState(false);
+  const [showFollowModal, setShowFollowModal] = useState(false);
 
   useEffect(() => {
     if (!supportsFollows) {
@@ -40,7 +40,7 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
   }, [supportsFollows]);
 
   const followButtonPressed = async () => {
-		setShowFollowModal(true);
+    setShowFollowModal(true);
   };
 
   return (
@@ -49,36 +49,38 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
         <title>{streamName}</title>
       </Head>
       <div className={classNames(styles.offlineContainer)}>
-				<div className={classNames(styles.content, {
-					[styles.followable]: supportsFollows,
-				})}>
-					<Title level={1} className={styles.headerContainer}>
-						<div className={styles.pageLogo} style={{ backgroundImage: `url(${image})` }} />
-						<div className={styles.streamName}>{streamName}</div>
-					</Title>
+        <div
+          className={classNames(styles.content, {
+            [styles.followable]: supportsFollows,
+          })}
+        >
+          <Title level={1} className={styles.headerContainer}>
+            <div className={styles.pageLogo} style={{ backgroundImage: `url(${image})` }} />
+            <div className={styles.streamName}>{streamName}</div>
+          </Title>
 
-					<div className={styles.messageContainer}>
-						<Title level={2} className={styles.offlineTitle}>
-							This stream is not currently live.
-						</Title>
-						<div className={styles.message} dangerouslySetInnerHTML={{ __html: subtitle }} />
-					</div>
+          <div className={styles.messageContainer}>
+            <Title level={2} className={styles.offlineTitle}>
+              This stream is not currently live.
+            </Title>
+            <div className={styles.message} dangerouslySetInnerHTML={{ __html: subtitle }} />
+          </div>
 
-					{currentMode === EmbedMode.CanFollow && (
-						<>
-							<Button className={styles.submitButton} type="primary" onClick={followButtonPressed}>
-								Follow Server
-							</Button>
-							<Modal
-								title={`Follow ${name}`}
-								open={showFollowModal}
-								handleCancel={() => setShowFollowModal(false)}
-							>
-								<FollowForm  />
-							</Modal>
-						</>
-					)}
-				</div>
+          {currentMode === EmbedMode.CanFollow && (
+            <>
+              <Button className={styles.followButton} type="primary" onClick={followButtonPressed}>
+                Follow Server
+              </Button>
+              <Modal
+                title={`Follow ${streamName}`}
+                open={showFollowModal}
+                handleCancel={() => setShowFollowModal(false)}
+              >
+                <FollowForm />
+              </Modal>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

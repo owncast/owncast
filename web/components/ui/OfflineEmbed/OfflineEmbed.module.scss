@@ -2,6 +2,7 @@
 
 $short-container-max-height: 480px;
 $short-container-min-height: 320px;
+$follow-modal-width: 300px;
 
 .offlineContainer {
 	--text-color: rgb(255 255 255 / 100%);
@@ -143,6 +144,13 @@ $short-container-min-height: 320px;
 			text-align: left;
     }
 
+		.followButton {
+			display: none;
+			@media (width > $follow-modal-width) {
+				display: block;
+			}
+		}
+
 
 		&.followable {
 			justify-content: space-evenly;
@@ -150,25 +158,5 @@ $short-container-min-height: 320px;
 				justify-content: flex-start;
 			}
 		}
-  }
-
-	.followFormContainer {
-		width: 80%;
-	}
-	.followForm {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-wrap: wrap;
-		gap: 8px;
-	}
-	.followInput {
-		width: 300px;
-	}
-
-  .footer {
-    color: var(--body-background);
-    padding: .25em 0;
-		font-size: .85em;
   }
 }

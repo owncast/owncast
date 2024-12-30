@@ -66,33 +66,38 @@ export const FollowForm: FC<FollowFormProps> = ({ handleClose }: FollowFormProps
   };
 
   return (
-		<Spin spinning={loading}>
-			{errorMessage && (
-				<Alert message="Follow Error" description={errorMessage} type="error" closable className={styles.errorAlert} />
-			)}
+    <Spin spinning={loading}>
+      {errorMessage && (
+        <Alert
+          message="Follow Error"
+          description={errorMessage}
+          type="error"
+          closable
+          className={styles.errorAlert}
+        />
+      )}
 
-
-			<div>
-				<div className={styles.instructions}>Enter your username @server to follow</div>
-				<Input
-					value={remoteAccount}
-					size="large"
-					onChange={e => handleAccountChange(e.target.value)}
-					placeholder="Your fediverse account @account@server"
-					defaultValue={remoteAccount}
-				/>
-				<div className={styles.footer}>
-					You'll be redirected to your Fediverse server and asked to confirm the action.
-				</div>
-			</div>
-			<Space className={styles.buttons}>
-				<Button onClick={joinButtonPressed} type="text">
-					Join the Fediverse
-				</Button>
-				<Button disabled={!valid} type="primary" onClick={remoteFollowButtonPressed}>
-					Follow
-				</Button>
-			</Space>
-		</Spin>
+      <div className={styles.inputContainer}>
+        <div className={styles.instructions}>Enter your username @server to follow</div>
+        <Input
+          value={remoteAccount}
+          size="large"
+          onChange={e => handleAccountChange(e.target.value)}
+          placeholder="Your fediverse account @account@server"
+          defaultValue={remoteAccount}
+        />
+        <div className={styles.footer}>
+          You'll be redirected to your Fediverse server and asked to confirm the action.
+        </div>
+      </div>
+      <Space className={styles.buttons}>
+        <Button onClick={joinButtonPressed} type="text">
+          Join the Fediverse
+        </Button>
+        <Button disabled={!valid} type="primary" onClick={remoteFollowButtonPressed}>
+          Follow
+        </Button>
+      </Space>
+    </Spin>
   );
 };
