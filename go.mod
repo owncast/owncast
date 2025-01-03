@@ -6,7 +6,7 @@ toolchain go1.23.1
 
 require (
 	github.com/CAFxX/httpcompression v0.0.9
-	github.com/SherClockHolmes/webpush-go v1.3.0
+	github.com/SherClockHolmes/webpush-go v1.4.0
 	github.com/TwiN/go-away v1.6.14
 	github.com/andybalholm/cascadia v1.3.3
 	github.com/aws/aws-sdk-go v1.55.5
@@ -53,6 +53,7 @@ require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-test/deep v1.0.4 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
