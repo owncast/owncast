@@ -1,11 +1,11 @@
-@mixin flexCenter {
+@mixin flex-center {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-@mixin screen($breakpoint) { 
-    @if $breakpoint == desktop {    
+@mixin screen($breakpoint) {
+  @if $breakpoint == desktop {
     @media only screen and (width >= 768px) {
       @content;
     }

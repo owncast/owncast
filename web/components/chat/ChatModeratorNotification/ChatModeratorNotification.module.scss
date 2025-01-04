@@ -6,7 +6,7 @@
   padding: 10px;
 	font-size: var(--chat-message-text-size);
 
-  @include flexCenter;
+  @include flex-center;
 
   .icon {
     margin-right: 10px;
