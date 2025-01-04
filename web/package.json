@@ -42,7 +42,7 @@
 		"interweave": "^13.0.0",
 		"interweave-autolink": "^5.1.0",
 		"lodash": "4.17.21",
-		"next": "14.2.17",
+		"next": "14.2.21",
 		"next-pwa": "^5.6.0",
 		"next-with-less": "3.0.1",
 		"postcss-flexbugs-fixes": "5.0.2",
