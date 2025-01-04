@@ -14,6 +14,7 @@ BUTTONS
 .ant-btn {
   font-size: 0.85rem;
 }
+
 .ant-btn[disabled] {
   background-color: var(--theme-color-components-secondary-button-background-disabled);
   color: var(--theme-color-components-secondary-button-text-disabled);
@@ -46,17 +47,6 @@ BUTTONS
   border-width: 2px;
   border-radius: var(--theme-rounded-corners);
   border-color: var(--theme-color-components-primary-button-border);
-
-  &:hover,
-  &:focus {
-    border-color: var(--theme-color-action-hover);
-    color: var(--theme-color-action-hover);
-    background-color: var(--theme-color-components-secondary-button-background);
-  }
-
-  &:focus {
-    border-color: var(--theme-color-components-secondary-button-text);
-  }
 
   &[ant-click-animating-without-extra-node]::after {
     animation: 0s !important;
