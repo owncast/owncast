@@ -12,6 +12,7 @@
 .inputContainer {
   font-family: var(--theme-text-display-font-family);
   margin-bottom: 10px;
+
   .instructions {
     font-size: 14px;
     font-weight: 600;
@@ -54,12 +55,15 @@
     }
   }
 }
+
 .errorAlert {
   margin-bottom: 1.25rem;
   font-family: var(--theme-text-display-font-family);
+
   :global(.ant-alert-message) {
     font-size: 14px;
   }
+
   :global(.ant-alert-description) {
     font-size: 12px;
     font-family: monospace;
