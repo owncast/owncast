@@ -11,18 +11,18 @@
 
 .inputContainer {
   font-family: var(--theme-text-display-font-family);
-	margin-bottom: 10px;
-	.instructions {
-		font-size: 14px;
-		font-weight: 600;
-		margin: 5px 2px;
-	}
+  margin-bottom: 10px;
+  .instructions {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 5px 2px;
+  }
 
-	.footer {
-		font-size: 10px;
-		margin: 2px;
-		color: var(--theme-color-components-primary-button-text-disabled)
-	}
+  .footer {
+    font-size: 10px;
+    margin: 2px;
+    color: var(--theme-color-components-primary-button-text-disabled);
+  }
 }
 
 .account {
@@ -55,13 +55,13 @@
   }
 }
 .errorAlert {
-	margin-bottom: 1.25rem;
-	font-family: var(--theme-text-display-font-family);
-	:global(.ant-alert-message) {
-		font-size: 14px;
-	}
-	:global(.ant-alert-description) {
-		font-size: 12px;
-		font-family: monospace;
-	}
+  margin-bottom: 1.25rem;
+  font-family: var(--theme-text-display-font-family);
+  :global(.ant-alert-message) {
+    font-size: 14px;
+  }
+  :global(.ant-alert-description) {
+    font-size: 12px;
+    font-family: monospace;
+  }
 }
