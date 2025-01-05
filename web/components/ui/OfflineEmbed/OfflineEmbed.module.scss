@@ -35,7 +35,7 @@ $follow-modal-width: 300px;
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-    gap: 16px;
+    gap: 2rem;
     padding: 24px;
     text-align: center;
     width: 100vw;
@@ -50,13 +50,11 @@ $follow-modal-width: 300px;
       justify-content: center;
 			gap: 8px;
       width: 100%;
-      gap: 8px;
       margin: 0;
       font-size: 1em;
     }
 
     .messageContainer {
-      margin: 1.25em 0;
       width: 100%;
 
       --description-height: auto;
@@ -78,6 +76,7 @@ $follow-modal-width: 300px;
       mask-repeat: repeat-x;
       mask-size: auto var(--description-height);
       mask-position: top;
+      padding-bottom: 0.5rem;
     }
 
     /* Message */
