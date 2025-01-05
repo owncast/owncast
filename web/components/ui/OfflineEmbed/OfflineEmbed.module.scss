@@ -48,6 +48,7 @@ $follow-modal-width: 300px;
       display: flex;
       align-items: center;
       justify-content: center;
+			gap: 8px;
       width: 100%;
       gap: 8px;
       margin: 0;
@@ -90,7 +91,7 @@ $follow-modal-width: 300px;
       text-decoration: none;
       text-transform: none;
       display: block;
-      margin: 8px auto;
+      margin: auto;
 
       @include screen(desktop) {
         width: 80%;
