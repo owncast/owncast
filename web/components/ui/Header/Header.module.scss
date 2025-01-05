@@ -59,17 +59,23 @@
 
 .skipLink {
   position: absolute;
+  z-index: 2;
   left: -10000px;
-  top: auto;
+  top: var(--header-height);
   width: 1px;
   height: 1px;
   overflow: hidden;
+  background-color: var(--theme-color-background-header);
+  color: var(--theme-color-components-text-on-dark);
+  padding: 8px;
+  border-radius: var(--theme-rounded-corners);
 }
 
 .skipLink:focus {
-  position: static;
   width: auto;
   height: auto;
+  left: var(--content-padding);
+  outline: var(--theme-color-components-text-on-dark) solid 2px;
 }
 
 .offlineTag {
