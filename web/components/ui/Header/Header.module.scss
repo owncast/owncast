@@ -65,7 +65,8 @@
   width: 1px;
   height: 1px;
   overflow: hidden;
-  background-color: var(--component-background);
+  background-color: var(--theme-color-background-header);
+  color: var(--theme-color-components-text-on-dark);
   padding: 8px;
   border-radius: var(--theme-rounded-corners);
 }
