@@ -49,11 +49,7 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
         <title>{streamName}</title>
       </Head>
       <div className={classNames(styles.offlineContainer)}>
-        <div
-          className={classNames(styles.content, {
-            [styles.followable]: supportsFollows,
-          })}
-        >
+        <div className={styles.content}>
           <Title level={1} className={styles.headerContainer}>
             <div className={styles.pageLogo} style={{ backgroundImage: `url(${image})` }} />
             <div className={styles.streamName}>{streamName}</div>

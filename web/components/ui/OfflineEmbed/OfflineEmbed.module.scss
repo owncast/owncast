@@ -35,7 +35,7 @@ $follow-modal-width: 300px;
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-    gap: 8px;
+    gap: 16px;
     padding: 24px;
     text-align: center;
     width: 100vw;
@@ -150,14 +150,6 @@ $follow-modal-width: 300px;
 
       @media (width > $follow-modal-width) {
         display: block;
-      }
-    }
-
-    &.followable {
-      justify-content: space-evenly;
-
-      .headerContainer {
-        justify-content: flex-start;
       }
     }
   }
