@@ -4,9 +4,9 @@
   background-color: var(--theme-background-primary);
   color: var(--theme-color-components-chat-text);
   padding: 10px;
-	font-size: var(--chat-message-text-size);
+  font-size: var(--chat-message-text-size);
 
-  @include flexCenter;
+  @include flex-center;
 
   .icon {
     margin-right: 10px;

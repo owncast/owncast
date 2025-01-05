@@ -18,18 +18,18 @@
   --chat-notification-icon-padding: 6px;
   --chat-message-padding: 10px;
   --chat-text-highlight-border-radius: 3px;
-	--player-container-height: 75vh;
-	--status-bar-height: 2rem;
-	--footer-padding-x: 1rem;
+  --player-container-height: 75vh;
+  --status-bar-height: 2rem;
+  --footer-padding-x: 1rem;
 
   @include screen(tablet) {
     --header-height: 3.85rem;
-		--player-container-height: 400px;
+    --player-container-height: 400px;
   }
 
-	@include screen(mobile) {
-		--player-container-height: 250px;
-	}
+  @include screen(mobile) {
+    --player-container-height: 250px;
+  }
 }
 
 ::selection {
