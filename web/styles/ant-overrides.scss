@@ -11,6 +11,10 @@ HEADER
 BUTTONS
 // ------------------------- */
 
+.ant-btn {
+  font-size: 0.85rem;
+}
+
 .ant-btn[disabled] {
   background-color: var(--theme-color-components-secondary-button-background-disabled);
   color: var(--theme-color-components-secondary-button-text-disabled);
@@ -40,8 +44,6 @@ BUTTONS
 }
 
 .ant-btn-primary {
-  height: 2rem;
-  font-size: 0.85rem;
   border-width: 2px;
   border-radius: var(--theme-rounded-corners);
   border-color: var(--theme-color-components-primary-button-border);

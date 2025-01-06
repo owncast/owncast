@@ -3,12 +3,12 @@
 import { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import Head from 'next/head';
-import { Button, Input, Space, Spin, Alert, Typography } from 'antd';
+import { Button, Typography } from 'antd';
 import styles from './OfflineEmbed.module.scss';
-import { isValidFediverseAccount } from '../../../utils/validators';
+import { Modal } from '../Modal/Modal';
+import { FollowForm } from '../../modals/FollowModal/FollowForm';
 
 const { Title } = Typography;
-const ENDPOINT = '/api/remotefollow';
 
 export type OfflineEmbedProps = {
   streamName: string;
@@ -20,8 +20,6 @@ export type OfflineEmbedProps = {
 enum EmbedMode {
   CannotFollow = 1,
   CanFollow,
-  FollowPrompt,
-  InProgress,
 }
 
 export const OfflineEmbed: FC<OfflineEmbedProps> = ({
@@ -31,10 +29,7 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
   supportsFollows,
 }) => {
   const [currentMode, setCurrentMode] = useState(EmbedMode.CanFollow);
-  const [remoteAccount, setRemoteAccount] = useState(null);
-  const [valid, setValid] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [showFollowModal, setShowFollowModal] = useState(false);
 
   useEffect(() => {
     if (!supportsFollows) {
@@ -45,53 +40,7 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
   }, [supportsFollows]);
 
   const followButtonPressed = async () => {
-    setCurrentMode(EmbedMode.FollowPrompt);
-  };
-
-  const remoteFollowButtonPressed = async () => {
-    setLoading(true);
-    setCurrentMode(EmbedMode.CannotFollow);
-
-    try {
-      const sanitizedAccount = remoteAccount.replace(/^@+/, '');
-      const request = { account: sanitizedAccount };
-      const rawResponse = await fetch(ENDPOINT, {
-        method: 'POST',
-        body: JSON.stringify(request),
-      });
-      const result = await rawResponse.json();
-
-      if (result.redirectUrl) {
-        window.open(result.redirectUrl, '_blank');
-      }
-      if (!result.success) {
-        setErrorMessage(result.message);
-        setLoading(false);
-        return;
-      }
-      if (!result.redirectUrl) {
-        setErrorMessage('Unable to follow.');
-        setLoading(false);
-        return;
-      }
-    } catch (e) {
-      setErrorMessage(e.message);
-    }
-    setLoading(false);
-  };
-
-  const handleErrorClose = () => {
-    setErrorMessage('');
-    setCurrentMode(EmbedMode.FollowPrompt);
-  };
-
-  const handleAccountChange = a => {
-    setRemoteAccount(a);
-    if (isValidFediverseAccount(a)) {
-      setValid(true);
-    } else {
-      setValid(false);
-    }
+    setShowFollowModal(true);
   };
 
   return (
@@ -100,64 +49,34 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
         <title>{streamName}</title>
       </Head>
       <div className={classNames(styles.offlineContainer)}>
-        <Spin spinning={loading}>
-          <div className={styles.content}>
-            <div className={styles.heading}>This stream is not currently live.</div>
-            <div className={styles.message} dangerouslySetInnerHTML={{ __html: subtitle }} />
-
+        <div className={styles.content}>
+          <Title level={1} className={styles.headerContainer}>
             <div className={styles.pageLogo} style={{ backgroundImage: `url(${image})` }} />
-            <div className={styles.pageName}>{streamName}</div>
+            <div className={styles.streamName}>{streamName}</div>
+          </Title>
 
-            {errorMessage && (
-              <Alert
-                message="Follow Error"
-                description={errorMessage}
-                type="error"
-                showIcon
-                closable
-                onClose={handleErrorClose}
-              />
-            )}
+          <div className={styles.messageContainer}>
+            <Title level={2} className={styles.offlineTitle}>
+              This stream is not currently live.
+            </Title>
+            <div className={styles.message} dangerouslySetInnerHTML={{ __html: subtitle }} />
+          </div>
 
-            {currentMode === EmbedMode.CanFollow && (
-              <Button className={styles.submitButton} type="primary" onClick={followButtonPressed}>
+          {currentMode === EmbedMode.CanFollow && (
+            <>
+              <Button className={styles.followButton} type="primary" onClick={followButtonPressed}>
                 Follow Server
               </Button>
-            )}
-
-            {currentMode === EmbedMode.InProgress && (
-              <Title level={4} className={styles.heading}>
-                Follow the instructions on your Fediverse server to complete the follow.
-              </Title>
-            )}
-
-            {currentMode === EmbedMode.FollowPrompt && (
-              <div>
-                <Input
-                  value={remoteAccount}
-                  size="large"
-                  onChange={e => handleAccountChange(e.target.value)}
-                  placeholder="Your fediverse account @account@server"
-                  defaultValue={remoteAccount}
-                />
-                <div className={styles.footer}>
-                  You&apos;ll be redirected to your Fediverse server and asked to confirm the
-                  action.
-                </div>
-                <Space className={styles.buttons}>
-                  <Button
-                    className={styles.submitButton}
-                    disabled={!valid}
-                    type="primary"
-                    onClick={remoteFollowButtonPressed}
-                  >
-                    Submit and Follow
-                  </Button>
-                </Space>
-              </div>
-            )}
-          </div>
-        </Spin>
+              <Modal
+                title={`Follow ${streamName}`}
+                open={showFollowModal}
+                handleCancel={() => setShowFollowModal(false)}
+              >
+                <FollowForm />
+              </Modal>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
