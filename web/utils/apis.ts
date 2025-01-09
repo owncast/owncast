@@ -1,3 +1,5 @@
+const semverGt = require('semver/functions/gt');
+
 /* eslint-disable prefer-destructuring */
 const ADMIN_USERNAME = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
 const ADMIN_STREAMKEY = process.env.NEXT_PUBLIC_ADMIN_STREAMKEY;
@@ -181,7 +183,6 @@ export async function getGithubRelease() {
 }
 
 function upToDate(local, remote) {
-  const semverGt = require('semver/functions/gt');
   return !semverGt(remote, local);
 }
 
