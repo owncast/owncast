@@ -27,6 +27,7 @@ var supportedCodecs = map[string]string{
 	(&Libx264Codec{}).Name():      "libx264",
 	(&OmxCodec{}).Name():          "omx",
 	(&VaapiCodec{}).Name():        "vaapi",
+	(&QuicksyncCodec{}).Name():    "qsv",
 	(&NvencCodec{}).Name():        "NVIDIA nvenc",
 	(&VideoToolboxCodec{}).Name(): "videotoolbox",
 }
@@ -317,17 +318,22 @@ func (c *QuicksyncCodec) DisplayName() string {
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
 func (c *QuicksyncCodec) GlobalFlags() string {
-	return ""
+	flags := []string{
+		"-init_hw_device", "qsv=hw",
+		"-filter_hw_device", "hw",
+	}
+
+	return strings.Join(flags, " ")
 }
 
 // PixelFormat is the pixel format required for this codec.
 func (c *QuicksyncCodec) PixelFormat() string {
-	return "nv12"
+	return "qsv"
 }
 
 // Scaler is the scaler used for resizing the video in the transcoder.
 func (c *QuicksyncCodec) Scaler() string {
-	return ""
+	return "scale_qsv"
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
@@ -337,7 +343,7 @@ func (c *QuicksyncCodec) ExtraArguments() string {
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
 func (c *QuicksyncCodec) ExtraFilters() string {
-	return ""
+	return "hwupload=extra_hw_frames=64,format=qsv"
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
@@ -348,16 +354,16 @@ func (c *QuicksyncCodec) VariantFlags(v *HLSVariant) string {
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *QuicksyncCodec) GetPresetForLevel(l int) string {
 	presetMapping := map[int]string{
-		0: "ultrafast",
-		1: "superfast",
-		2: "veryfast",
-		3: "faster",
-		4: "fast",
+		0: "veryfast",
+		1: "fast",
+		2: "medium",
+		3: "slow",
+		4: "veryslow",
 	}
 
 	preset, ok := presetMapping[l]
 	if !ok {
-		defaultPreset := presetMapping[1]
+		defaultPreset := presetMapping[2]
 		log.Errorf("Invalid level for quicksync preset %d, defaulting to %s", l, defaultPreset)
 		return defaultPreset
 	}
