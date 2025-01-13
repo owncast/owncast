@@ -59,6 +59,8 @@ var ignoredErrors = []string{
 	"Non-monotonous DTS in output",
 	"frames duplicated",
 	"To ignore this",
+	"Driver does not support some wanted packed headers (wanted 0xd, found 0x1)",
+	"Failed to allocate a vaapi/nv12 frame from a fixed pool of hardware frames.",
 }
 
 func handleTranscoderMessage(message string) {
