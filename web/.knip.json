@@ -70,6 +70,7 @@
 		"@storybook/nextjs",
 		"@storybook/react",
 		"resolve-url-loader",
+		"i18next-parser",
 		"i18next-scanner"
 	]
 }
