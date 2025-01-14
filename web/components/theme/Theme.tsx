@@ -27,26 +27,22 @@ export const Theme: FC = () => {
       <Head>
         <meta name="theme-color" content={themeColor} />
       </Head>
-      {(appearanceVariables?.keys?.length || 0) > 0 && (
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
 				:root {
 					${appearanceVars.join(';\n')}
 				}
 			`,
-          }}
-        />
-      )}
-      {customStyles !== '' && (
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
+        }}
+      />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
 				${customStyles}
 			`,
-          }}
-        />
-      )}
+        }}
+      />
     </>
   );
 };
