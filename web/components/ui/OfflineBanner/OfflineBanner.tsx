@@ -5,6 +5,7 @@ import { FC } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
+import { useTranslation } from 'next-export-i18n';
 import styles from './OfflineBanner.module.scss';
 
 // Lazy loaded components
@@ -36,13 +37,15 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
   onFollowClick,
   className,
 }) => {
+  const { t } = useTranslation();
+
   let text;
   if (customText) {
     text = customText;
   } else if (!customText && notificationsEnabled && fediverseAccount) {
     text = (
       <span>
-        This stream is offline. You can{' '}
+        {t('This stream is offline. You can')}{' '}
         <span role="link" tabIndex={0} className={styles.actionLink} onClick={onNotifyClick}>
           be notified
         </span>{' '}
@@ -56,21 +59,25 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
   } else if (!customText && notificationsEnabled) {
     text = (
       <span>
-        This stream is offline.{' '}
+        {t('This stream is offline')}.{' '}
         <span role="link" tabIndex={0} className={styles.actionLink} onClick={onNotifyClick}>
           Be notified
         </span>{' '}
-        the next time {streamName} goes live.
+        {t('the next time goes live', { streamer: streamName })}.
       </span>
     );
   } else if (!customText && fediverseAccount) {
     text = (
       <span>
-        This stream is offline.{' '}
+        {t('This stream is offline.')}{' '}
         <span role="link" tabIndex={0} className={styles.actionLink} onClick={onFollowClick}>
-          Follow
+          {t('Follow')}
         </span>{' '}
-        {fediverseAccount} on the Fediverse to see the next time {streamName} goes live.
+        {t('on the Fediverse to see the next time goes live', {
+          fediverseAccount,
+          streamer: streamName,
+        })}
+        .
       </span>
     );
   } else {
@@ -95,7 +102,7 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
         {lastLive && (
           <div className={styles.lastLiveDate}>
             <ClockCircleOutlined className={styles.clockIcon} />
-            {`Last live ${formatDistanceToNow(new Date(lastLive))} ago.`}
+            {`${t('Last live ago', { timeAgo: formatDistanceToNow(new Date(lastLive)) })}`}
           </div>
         )}
       </div>

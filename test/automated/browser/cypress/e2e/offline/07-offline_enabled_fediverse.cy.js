@@ -1,10 +1,10 @@
-// TODO: Fire API call to enable federation and set domain, and stream username.
-
 import fetchData from '../../support/fetchData.js';
+import { setup } from '../../support/setup.js';
+setup();
 
 describe('Fediverse tests', () => {
 	// Enable Fediverse features.
-	before(() => {
+	it('Can visit the page', () => {
 		fetchData('http://localhost:8080/api/admin/config/serverurl', {
 			method: 'POST',
 			data: { value: 'https://testing.biz' },
@@ -13,11 +13,10 @@ describe('Fediverse tests', () => {
 			method: 'POST',
 			data: { value: true },
 		});
-	});
+		cy.wait(1500);
 
-	it('Can visit the page', () => {
 		cy.visit('http://localhost:8080/');
-		cy.reload(true);
+		// cy.reload(true, { timeout: 10000 });
 	});
 
 	// Offline banner

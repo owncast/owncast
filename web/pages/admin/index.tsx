@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext, ReactElement } from 'react';
 import { Skeleton, Card, Statistic, Row, Col } from 'antd';
 import { formatDistanceToNow, formatRelative } from 'date-fns';
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { LogTable } from '../../components/admin/LogTable';
 import { Offline } from '../../components/admin/Offline';
@@ -39,6 +40,8 @@ function streamDetailsFormatter(streamDetails) {
 }
 
 export default function Home() {
+  const { t } = useTranslation();
+
   const serverStatusData = useContext(ServerStatusContext);
   const { broadcaster, serverConfig: configData } = serverStatusData || {};
   const { remoteAddr, streamDetails } = broadcaster || {};
@@ -101,12 +104,12 @@ export default function Home() {
       <div className="stream-details-item-container">
         <Statistic
           className="stream-details-item"
-          title="Outbound Video Stream"
+          title={t('Outbound Video Stream')}
           value={videoSetting}
         />
         <Statistic
           className="stream-details-item"
-          title="Outbound Audio Stream"
+          title={t('Outbound Audio Stream')}
           value={audioSetting}
         />
       </div>
@@ -130,17 +133,17 @@ export default function Home() {
             <Row gutter={[16, 16]} align="middle">
               <Col span={8} sm={24} md={8}>
                 <Statistic
-                  title={`Stream started ${formatRelative(broadcastDate, Date.now())}`}
+                  title={`${t('Stream started')} ${formatRelative(broadcastDate, Date.now())}`}
                   value={formatDistanceToNow(broadcastDate)}
                   prefix={<ClockCircleOutlined />}
                 />
               </Col>
               <Col span={8} sm={24} md={8}>
-                <Statistic title="Viewers" value={viewerCount} prefix={<UserOutlined />} />
+                <Statistic title={t('Viewers')} value={viewerCount} prefix={<UserOutlined />} />
               </Col>
               <Col span={8} sm={24} md={8}>
                 <Statistic
-                  title="Peak viewer count"
+                  title={t('Peak viewer count')}
                   value={sessionPeakViewerCount}
                   prefix={<UserOutlined />}
                 />
@@ -154,28 +157,28 @@ export default function Home() {
           <Col className="stream-details" span={12} sm={24} md={24} lg={12}>
             <Card
               size="small"
-              title="Outbound Stream Details"
+              title={t('Outbound Stream Details')}
               type="inner"
               className="outbound-details"
             >
               {videoQualitySettings}
             </Card>
 
-            <Card size="small" title="Inbound Stream Details" type="inner">
+            <Card size="small" title={t('Inbound Stream Details')} type="inner">
               <Statistic
                 className="stream-details-item"
-                title="Input"
+                title={t('Input')}
                 value={`${encoder} ${formatIPAddress(remoteAddr)}`}
               />
               <Statistic
                 className="stream-details-item"
-                title="Inbound Video Stream"
+                title={t('Inbound Video Stream')}
                 value={streamDetails}
                 formatter={streamDetailsFormatter}
               />
               <Statistic
                 className="stream-details-item"
-                title="Inbound Audio Stream"
+                title={t('Inbound Audio Stream')}
                 value={streamAudioDetailString}
               />
             </Card>

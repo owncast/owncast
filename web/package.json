@@ -15,7 +15,8 @@
 		"build-storybook": "storybook build",
 		"build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -",
 		"test": "jest",
-		"format": "prettier --write  **/*.{js,ts,jsx,tsx,css,md,scss}"
+		"format": "prettier --write  **/*.{js,ts,jsx,tsx,css,md,scss}",
+		"translate": "i18next -c i18next-parser.config.mjs"
 	},
 	"dependencies": {
 		"@ant-design/icons": "4.8.3",
@@ -39,10 +40,13 @@
 		"classnames": "2.5.1",
 		"date-fns": "^4.0.0",
 		"graphemer": "^1.4.0",
+		"i18next-parser": "^9.1.0",
+		"i18next-scanner": "^4.6.0",
 		"interweave": "^13.0.0",
 		"interweave-autolink": "^5.1.0",
 		"lodash": "4.17.21",
 		"next": "14.2.21",
+		"next-export-i18n": "^3.0.0",
 		"next-pwa": "^5.6.0",
 		"next-with-less": "3.0.1",
 		"postcss-flexbugs-fixes": "5.0.2",

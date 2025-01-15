@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, ReactElement } from 'react';
 import { Tabs } from 'antd';
+import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import {
   CONNECTED_CLIENTS,
@@ -24,6 +25,7 @@ export default function ChatUsers() {
   const [ipBans, setIPBans] = useState([]);
   const [clients, setClients] = useState([]);
   const [moderators, setModerators] = useState([]);
+  const { t } = useTranslation();
 
   const getInfo = async () => {
     try {
@@ -71,34 +73,50 @@ export default function ChatUsers() {
     <>
       <ClientTable data={clients} />
       <p className="description">
-        Visit the{' '}
+        {t('Visit the')}{' '}
         <a
           href="https://owncast.online/docs/viewers/?source=admin"
           target="_blank"
           rel="noopener noreferrer"
         >
-          documentation
+          {t('documentation')}
         </a>{' '}
-        to configure additional details about your viewers.
+        {t('to configure additional details about your viewers.')}
       </p>
     </>
   ) : (
     <p className="description">
-      When a stream is active and chat is enabled, connected chat clients will be displayed here.
+      {t(
+        'When a stream is active and chat is enabled, connected chat clients will be displayed here.',
+      )}
     </p>
   );
 
   const connectedUserTabTitle = (
-    <span>Connected {online ? `(${clients.length})` : '(offline)'}</span>
+    <span>
+      {t('Connected')} ({online ? clients.length : t('offline')})
+    </span>
   );
 
-  const bannedUsersTabTitle = <span>Banned Users ({disabledUsers.length})</span>;
+  const bannedUsersTabTitle = (
+    <span>
+      {t('Banned Users')} ({disabledUsers.length})
+    </span>
+  );
   const bannedUsersTable = <UserTable data={disabledUsers} />;
 
-  const bannedIPTabTitle = <span>IP Bans ({ipBans.length})</span>;
+  const bannedIPTabTitle = (
+    <span>
+      {t('IP Bans')} ({ipBans.length})
+    </span>
+  );
   const bannedIpTable = <BannedIPsTable data={ipBans} />;
 
-  const moderatorUsersTabTitle = <span>Moderators ({moderators.length})</span>;
+  const moderatorUsersTabTitle = (
+    <span>
+      {t('Moderators')} ({moderators.length})
+    </span>
+  );
   const moderatorTable = <UserTable data={moderators} />;
 
   const items = [

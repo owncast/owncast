@@ -1,0 +1,20 @@
+{
+  "Notify": "Avertir",
+  "Powered by Owncast": "Propulsé par Owncast",
+  "Documentation": "Documentation",
+  "Contribute": "Contribuer",
+  "Source": "Source",
+  "Skip to player": "Passer au joueur",
+  "Skip to offline message": "Aller au message d'absence",
+  "Skip to page content": "Aller au contenu principal",
+  "Skip to footer": "Aller au pied de page",
+  "Chat will be available when the stream is live": "Le chat sera disponible quand le direct débutera.",
+  "Chat is offline": "Le chat est hors ligne",
+  "Stay updated!": "Restez à jour !",
+  "Click and never miss future streams!": "Cliquez et ne manquez jamais les futurs diffusions !",
+  "This stream is offline": "Ce serveur est hors-ligne.",
+  "the next time goes live": "la prochaine fois que diffuse en direct",
+  "Follow": "Suivre",
+  "on the Fediverse to see the next time goes live": "sur le Fédiverse pour voir la prochaine fois que lance un direct",
+  "Last live ago": "Dernière diffusion il y a"
+}

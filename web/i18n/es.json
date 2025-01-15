@@ -1,0 +1,20 @@
+{
+  "Notify": "Notificar",
+  "Powered by Owncast": "Desarrollado por Owncast",
+  "Documentation": "Documentación",
+  "Contribute": "Contribuir",
+  "Source": "Fuente",
+  "Skip to player": "Skip to player",
+  "Skip to offline message": "Skip to offline message",
+  "Skip to page content": "Skip to page content",
+  "Skip to footer": "Skip to footer",
+  "Chat will be available when the stream is live": "Chat will be available when the stream is live.",
+  "Chat is offline": "Chat is offline",
+  "Stay updated!": "Stay updated!",
+  "Click and never miss future streams!": "Click and never miss future streams!",
+  "This stream is offline": "This stream is offline.",
+  "the next time goes live": "the next time {{streamer}} goes live",
+  "Follow": "Follow",
+  "on the Fediverse to see the next time goes live": "on the Fediverse to see the next time goes live",
+  "Last live ago": "Last live {{timeAgo}} ago"
+}
