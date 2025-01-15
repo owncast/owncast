@@ -3,7 +3,7 @@ name: Translation job
 on:
   push:
     paths:
-      - 'web/i18n/strings.json'
+      - 'web/i18n/en/translation.json'
       - 'web/**/*.tsx'
       - 'web/**/*.js'
       - 'crowdin.yml'
@@ -37,7 +37,10 @@ jobs:
         with:
           upload_sources: true
           download_translations: false
+          create_pull_request: true
+          pull_request_title: 'New Translations'
           localization_branch_name: translations
+          pull_request_base_branch_name: 'develop'
           config: crowdin.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

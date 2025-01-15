@@ -1,3 +1,5 @@
+/* eslint-disable import/no-unused-modules */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // i18next-parser.config.js
 
 export default {
@@ -10,7 +12,7 @@ export default {
   defaultNamespace: 'translation',
   // Default namespace used in your i18next config
 
-  defaultValue: function (locale, namespace, key, value) {
+  defaultValue(locale, namespace, key, value) {
     return `${key}`;
   }, // Default value to give to keys with no value
   // You may also specify a function accepting the locale, namespace, key, and value as arguments
@@ -55,8 +57,9 @@ export default {
   // Namespace separator used in your translation keys
   // If you want to use plain english keys, separators such as `.` and `:` will conflict. You might want to set `keySeparator: false` and `namespaceSeparator: false`. That way, `t('Status: Loading...')` will not think that there are a namespace and three separator dots for instance.
 
-  output: 'i18n/strings.json',
-  // Supports $LOCALE and $NAMESPACE injection
+  // output: 'i18n/strings.json',
+  output: 'i18n/$LOCALE/$NAMESPACE.json', // Output file structure
+  //   // Supports $LOCALE and $NAMESPACE injection
   // Supports JSON (.json) and YAML (.yml) file formats
   // Where to write the locale files relative to process.cwd()
 
@@ -72,7 +75,7 @@ export default {
   sort: false,
   // Whether or not to sort the catalog. Can also be a [compareFunction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#parameters)
 
-  verbose: false,
+  verbose: true,
   // Display info about the parsing including some stats
 
   failOnWarnings: false,
