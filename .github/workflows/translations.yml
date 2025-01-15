@@ -1,6 +1,9 @@
 name: Translation job
 
 on:
+  schedule:
+    # Run the workflow every hour
+    - cron: "0 * * * *"
   push:
     paths:
       - 'web/i18n/en/translation.json'
@@ -36,11 +39,12 @@ jobs:
         uses: crowdin/github-action@v1
         with:
           upload_sources: true
-          download_translations: false
+          download_translations: true
           create_pull_request: true
           pull_request_title: 'New Translations'
           localization_branch_name: translations
           pull_request_base_branch_name: 'develop'
+          commit_message: 'Updated translations'
           config: crowdin.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
