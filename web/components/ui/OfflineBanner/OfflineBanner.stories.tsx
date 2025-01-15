@@ -17,6 +17,12 @@ const meta = {
         component: `When the stream is offline the player should be replaced by this banner that can support custom text and notify actions.`,
       },
     },
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        searchParams: {},
+      },
+    },
   },
 } satisfies Meta<typeof OfflineBanner>;
 

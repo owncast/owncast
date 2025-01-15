@@ -5,7 +5,14 @@ import { Footer } from './Footer';
 const meta = {
   title: 'owncast/Layout/Footer',
   component: Footer,
-  parameters: {},
+  parameters: {
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        searchParams: {},
+      },
+    },
+  },
 } satisfies Meta<typeof Footer>;
 
 export default meta;

@@ -34,6 +34,12 @@ const meta = {
   title: 'owncast/Layout/Main',
   parameters: {
     layout: 'fullscreen',
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        searchParams: {},
+      },
+    },
   },
 } satisfies Meta<typeof Main>;
 
