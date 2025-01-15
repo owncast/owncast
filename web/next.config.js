@@ -3,7 +3,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 const { PHASE_DEVELOPMENT_SERVER } = require('next/constants');
-const runtimeCaching = require('next-pwa/cache');
 
 const withPWA = require('next-pwa')({
   dest: 'public',
