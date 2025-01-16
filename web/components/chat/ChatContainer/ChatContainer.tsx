@@ -79,8 +79,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   usernameToHighlight,
   chatUserId,
   isModerator,
-  showInput=true,
-  height='auto',
+  showInput = true,
+  height = 'auto',
   chatAvailable: chatEnabled,
   desktop,
   focusInput = true,
@@ -377,4 +377,3 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     </ErrorBoundary>
   );
 };
-
