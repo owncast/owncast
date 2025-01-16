@@ -1,7 +1,7 @@
 openapi: 3.1.0
 
 info:
-  version: 0.2.1
+  version: 0.2.2
   title: Owncast APIs
   description: |-
     Internal
