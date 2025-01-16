@@ -18,14 +18,14 @@ export type ModalProps = {
 
 export const Modal: FC<ModalProps> = ({
   title,
-  url,
+  url = undefined,
   open,
-  handleOk,
-  handleCancel,
-  afterClose,
+  handleOk = undefined,
+  handleCancel = undefined,
+  afterClose = undefined,
   height,
   width,
-  children,
+  children = undefined,
 }) => {
   const [loading, setLoading] = useState(!!url);
 
