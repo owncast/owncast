@@ -88,6 +88,9 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
 
   const [upgradeVersion, setUpgradeVersion] = useState('');
   const checkForUpgrade = async () => {
+    if (versionNumber === '0.0.0') {
+      return;
+    }
     try {
       const result = await upgradeVersionAvailable(versionNumber);
       setUpgradeVersion(result);
