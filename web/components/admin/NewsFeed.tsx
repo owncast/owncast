@@ -63,7 +63,7 @@ export const NewsFeed = () => {
         setFeed(result.items);
       }
     } catch (error) {
-      console.log('==== error', error);
+      console.debug('==== error', error);
     }
   };
 
