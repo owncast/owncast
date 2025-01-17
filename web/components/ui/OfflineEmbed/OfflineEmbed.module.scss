@@ -35,7 +35,7 @@ $follow-modal-width: 300px;
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-    gap: 2rem;
+    gap: clamp(15px, 7vh, 50px);
     padding: 24px;
     text-align: center;
     width: 100vw;
@@ -51,7 +51,7 @@ $follow-modal-width: 300px;
       gap: 8px;
       width: 100%;
       margin: 0;
-      font-size: 1em;
+      font-size: clamp(1em, 1.5em, 5vh);
     }
 
     .messageContainer {
@@ -84,13 +84,14 @@ $follow-modal-width: 300px;
       color: var(--text-color);
       font-family: var(--theme-text-body-font-family);
       font-style: normal;
-      font-size: 1em;
-      line-height: 1.375;
+      font-size: clamp(1em, 4.8vh, 20px);
+      line-height: clamp(1.3em, 8vh, 35px);
       letter-spacing: 0;
       text-decoration: none;
       text-transform: none;
       display: block;
       margin: auto;
+      margin-top: 2vh;
 
       @include screen(desktop) {
         width: 80%;
@@ -102,7 +103,7 @@ $follow-modal-width: 300px;
       color: var(--text-color);
       font-family: var(--theme-text-display-font-family);
       font-style: normal;
-      font-size: 1.375em;
+      font-size: clamp(1.3em, 5vh, 2em);
       font-weight: 600;
       line-height: 1.125;
       letter-spacing: -0.125px;
