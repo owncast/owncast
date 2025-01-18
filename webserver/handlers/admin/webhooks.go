@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
@@ -32,7 +32,8 @@ func CreateWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newWebhookID, err := data.InsertWebhook(request.URL, request.Events)
+	webhooksrepo := webhookrepository.Get()
+	newWebhookID, err := webhooksrepo.InsertWebhook(request.URL, request.Events)
 	if err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return
@@ -49,7 +50,8 @@ func CreateWebhook(w http.ResponseWriter, r *http.Request) {
 
 // GetWebhooks will return all webhooks.
 func GetWebhooks(w http.ResponseWriter, r *http.Request) {
-	webhooks, err := data.GetWebhooks()
+	webhooksrepo := webhookrepository.Get()
+	webhooks, err := webhooksrepo.GetWebhooks()
 	if err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return
@@ -72,7 +74,8 @@ func DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := data.DeleteWebhook(*request.Id); err != nil {
+	webhooksrepo := webhookrepository.Get()
+	if err := webhooksrepo.DeleteWebhook(*request.Id); err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return
 	}

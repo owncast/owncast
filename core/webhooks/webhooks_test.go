@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/webhookrepository"
 	jsonpatch "gopkg.in/evanphx/json-patch.v5"
 )
 
@@ -62,12 +63,14 @@ func TestPublicSend(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	hook, err := data.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
+	webhooksRepo := webhookrepository.Get()
+
+	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
-		if err := data.DeleteWebhook(hook); err != nil {
+		if err := webhooksRepo.DeleteWebhook(hook); err != nil {
 			t.Error(err)
 		}
 	}()
@@ -107,13 +110,15 @@ func TestRouting(t *testing.T) {
 	}))
 	defer svr.Close()
 
+	webhooksRepo := webhookrepository.Get()
+
 	for _, eventType := range eventTypes {
-		hook, err := data.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
+		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
 		if err != nil {
 			t.Fatal(err)
 		}
 		defer func() {
-			if err := data.DeleteWebhook(hook); err != nil {
+			if err := webhooksRepo.DeleteWebhook(hook); err != nil {
 				t.Error(err)
 			}
 		}()
@@ -148,13 +153,15 @@ func TestMultiple(t *testing.T) {
 	}))
 	defer svr.Close()
 
+	webhooksRepo := webhookrepository.Get()
+
 	for i := 0; i < times; i++ {
-		hook, err := data.InsertWebhook(fmt.Sprintf("%v/%v", svr.URL, i), []models.EventType{models.MessageSent})
+		hook, err := webhooksRepo.InsertWebhook(fmt.Sprintf("%v/%v", svr.URL, i), []models.EventType{models.MessageSent})
 		if err != nil {
 			t.Fatal(err)
 		}
 		defer func() {
-			if err := data.DeleteWebhook(hook); err != nil {
+			if err := webhooksRepo.DeleteWebhook(hook); err != nil {
 				t.Error(err)
 			}
 		}()
@@ -186,14 +193,16 @@ func TestTimestamps(t *testing.T) {
 	}))
 	defer svr.Close()
 
+	webhooksRepo := webhookrepository.Get()
+
 	for i, eventType := range eventTypes {
-		hook, err := data.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
+		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
 		if err != nil {
 			t.Fatal(err)
 		}
 		handlerIds[i] = hook
 		defer func() {
-			if err := data.DeleteWebhook(hook); err != nil {
+			if err := webhooksRepo.DeleteWebhook(hook); err != nil {
 				t.Error(err)
 			}
 		}()
@@ -209,7 +218,7 @@ func TestTimestamps(t *testing.T) {
 
 	wg.Wait()
 
-	hooks, err := data.GetWebhooks()
+	hooks, err := webhooksRepo.GetWebhooks()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -285,12 +294,14 @@ func TestParallel(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	hook, err := data.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
+	webhooksRepo := webhookrepository.Get()
+
+	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
-		if err := data.DeleteWebhook(hook); err != nil {
+		if err := webhooksRepo.DeleteWebhook(hook); err != nil {
 			t.Error(err)
 		}
 	}()
@@ -320,13 +331,15 @@ func checkPayload(t *testing.T, eventType models.EventType, send func(), expecte
 	}))
 	defer svr.Close()
 
+	webhooksRepo := webhookrepository.Get()
+
 	// Subscribe to the webhook.
-	hook, err := data.InsertWebhook(svr.URL, []models.EventType{eventType})
+	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{eventType})
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
-		if err := data.DeleteWebhook(hook); err != nil {
+		if err := webhooksRepo.DeleteWebhook(hook); err != nil {
 			t.Error(err)
 		}
 	}()

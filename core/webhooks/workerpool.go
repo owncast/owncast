@@ -9,8 +9,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/webhookrepository"
 )
 
 // webhookWorkerPoolSize defines the number of concurrent HTTP webhook requests.
@@ -87,7 +87,8 @@ func sendWebhook(job Job) error {
 
 	defer resp.Body.Close()
 
-	if err := data.SetWebhookAsUsed(job.webhook); err != nil {
+	webhooksRepo := webhookrepository.Get()
+	if err := webhooksRepo.SetWebhookAsUsed(job.webhook); err != nil {
 		log.Warnln(err)
 	}
 

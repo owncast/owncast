@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/webhookrepository"
 )
 
 // WebhookEvent represents an event sent as a webhook.
@@ -31,7 +31,8 @@ func SendEventToWebhooks(payload WebhookEvent) {
 }
 
 func sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
-	webhooks := data.GetWebhooksForEvent(payload.Type)
+	webhooksRepo := webhookrepository.Get()
+	webhooks := webhooksRepo.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {
 		// Use wg to track the number of notifications to be sent.
