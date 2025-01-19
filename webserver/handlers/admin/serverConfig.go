@@ -9,6 +9,7 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	log "github.com/sirupsen/logrus"
 )
@@ -118,7 +119,7 @@ type serverConfigAdminResponse struct {
 	ExternalActions           []models.ExternalAction     `json:"externalActions"`
 	ForbiddenUsernames        []string                    `json:"forbiddenUsernames"`
 	SuggestedUsernames        []string                    `json:"suggestedUsernames"`
-	StreamKeys                []models.StreamKey          `json:"streamKeys"`
+	StreamKeys                []generated.StreamKey       `json:"streamKeys"`
 	VideoSettings             videoSettings               `json:"videoSettings"`
 	RTMPServerPort            int                         `json:"rtmpServerPort"`
 	WebServerPort             int                         `json:"webServerPort"`

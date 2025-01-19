@@ -916,31 +916,27 @@ func SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type streamKeysRequest struct {
-		Value []models.StreamKey `json:"value"`
-	}
-
 	decoder := json.NewDecoder(r.Body)
-	var streamKeys streamKeysRequest
+	var streamKeys generated.SetStreamKeysJSONRequestBody
 	if err := decoder.Decode(&streamKeys); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update stream keys with provided values")
 		return
 	}
 
-	if len(streamKeys.Value) == 0 {
+	if streamKeys.Value == nil || len(*streamKeys.Value) == 0 {
 		webutils.WriteSimpleResponse(w, false, "must provide at least one valid stream key")
 		return
 	}
 
-	for _, streamKey := range streamKeys.Value {
-		if streamKey.Key == "" {
+	for _, streamKey := range *streamKeys.Value {
+		if *streamKey.Key == "" {
 			webutils.WriteSimpleResponse(w, false, "stream key cannot be empty")
 			return
 		}
 	}
 
 	configRepository := configrepository.Get()
-	if err := configRepository.SetStreamKeys(streamKeys.Value); err != nil {
+	if err := configRepository.SetStreamKeys(*streamKeys.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

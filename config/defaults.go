@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 )
 
 // Defaults will hold default configuration values.
@@ -25,7 +26,7 @@ type Defaults struct {
 	WebServerIP        string
 	Name               string
 	AdminPassword      string
-	StreamKeys         []models.StreamKey
+	StreamKeys         []generated.StreamKey
 
 	StreamVariants []models.StreamOutputVariant
 
@@ -43,14 +44,16 @@ type Defaults struct {
 
 // GetDefaults will return default configuration values.
 func GetDefaults() Defaults {
+	defaultStreamKey := "abc123"
+	defaultStreamKeyComment := "Default stream key"
 	return Defaults{
 		Name:                 "New Owncast Server",
 		Summary:              "This is a new live video streaming server powered by Owncast.",
 		ServerWelcomeMessage: "",
 		Logo:                 "logo.svg",
 		AdminPassword:        "abc123",
-		StreamKeys: []models.StreamKey{
-			{Key: "abc123", Comment: "Default stream key"},
+		StreamKeys: []generated.StreamKey{
+			{Key: &defaultStreamKey, Comment: &defaultStreamKeyComment},
 		},
 		Tags: []string{
 			"owncast",

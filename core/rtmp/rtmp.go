@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 )
 
 var _hasInboundRTMPConnection = false
@@ -87,11 +88,11 @@ func HandleConn(c *rtmp.Conn, nc net.Conn) {
 
 	// If a stream key override was specified then use that instead.
 	if config.TemporaryStreamKey != "" {
-		validStreamingKeys = []models.StreamKey{{Key: config.TemporaryStreamKey}}
+		validStreamingKeys = []generated.StreamKey{{Key: &config.TemporaryStreamKey}}
 	}
 
 	for _, key := range validStreamingKeys {
-		if secretMatch(key.Key, c.URL.Path) {
+		if key.Key != nil && secretMatch(*key.Key, c.URL.Path) {
 			accessGranted = true
 			break
 		}

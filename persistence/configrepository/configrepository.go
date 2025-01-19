@@ -5,6 +5,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 )
 
 type ConfigRepository interface {
@@ -114,8 +115,8 @@ type ConfigRepository interface {
 	SetCustomOfflineMessage(message string) error
 	SetCustomColorVariableValues(variables map[string]string) error
 	GetCustomColorVariableValues() map[string]string
-	GetStreamKeys() []models.StreamKey
-	SetStreamKeys(actions []models.StreamKey) error
+	GetStreamKeys() []generated.StreamKey
+	SetStreamKeys(actions []generated.StreamKey) error
 	SetDisableSearchIndexing(disableSearchIndexing bool) error
 	GetDisableSearchIndexing() bool
 	GetVideoServingEndpoint() string

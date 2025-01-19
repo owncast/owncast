@@ -12,6 +12,7 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -957,22 +958,22 @@ func (r *SqlConfigRepository) GetCustomColorVariableValues() map[string]string {
 }
 
 // GetStreamKeys will return valid stream keys.
-func (r *SqlConfigRepository) GetStreamKeys() []models.StreamKey {
+func (r *SqlConfigRepository) GetStreamKeys() []generated.StreamKey {
 	configEntry, err := r.datastore.Get(streamKeysKey)
 	if err != nil {
-		return []models.StreamKey{}
+		return []generated.StreamKey{}
 	}
 
-	var streamKeys []models.StreamKey
+	var streamKeys []generated.StreamKey
 	if err := configEntry.GetObject(&streamKeys); err != nil {
-		return []models.StreamKey{}
+		return []generated.StreamKey{}
 	}
 
 	return streamKeys
 }
 
 // SetStreamKeys will set valid stream keys.
-func (r *SqlConfigRepository) SetStreamKeys(actions []models.StreamKey) error {
+func (r *SqlConfigRepository) SetStreamKeys(actions []generated.StreamKey) error {
 	configEntry := models.ConfigEntry{Key: streamKeysKey, Value: actions}
 	return r.datastore.Save(configEntry)
 }
