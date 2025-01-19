@@ -8,6 +8,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -103,7 +104,8 @@ func SendSystemMessage(text string, ephemeral bool) error {
 	}
 
 	if !ephemeral {
-		saveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
+		chatMessageRepository := chatmessagerepository.Get()
+		chatMessageRepository.SaveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
 	}
 
 	return nil
@@ -131,7 +133,8 @@ func SendFediverseAction(eventType string, userAccountName string, image *string
 		return err
 	}
 
-	saveFederatedAction(message)
+	chatMessageRepository := chatmessagerepository.Get()
+	chatMessageRepository.SaveFederatedAction(message)
 
 	return nil
 }
@@ -152,7 +155,8 @@ func SendSystemAction(text string, ephemeral bool) error {
 	}
 
 	if !ephemeral {
-		saveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
+		chatMessageRepository := chatmessagerepository.Get()
+		chatMessageRepository.SaveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
 	}
 
 	return nil

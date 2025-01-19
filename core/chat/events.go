@@ -9,6 +9,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/webhooks"
+	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
@@ -172,8 +173,8 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 	// Send chat message sent webhook
 	webhooks.SendChatEvent(&event)
 	chatMessagesSentCounter.Inc()
-
-	SaveUserMessage(event)
+	chatMessageRepository := chatmessagerepository.Get()
+	chatMessageRepository.SaveUserMessage(event)
 	eventData.client.MessageCount++
 }
 

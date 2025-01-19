@@ -75,6 +75,7 @@ func SetupPersistence(file string) error {
 	_, _ = db.Exec("pragma temp_store = memory")
 	_, _ = db.Exec("pragma wal_checkpoint(full)")
 
+	tables.CreateConfigTable(db)
 	tables.CreateWebhooksTable(db)
 	tables.CreateUsersTable(db)
 	tables.CreateAccessTokenTable(db)

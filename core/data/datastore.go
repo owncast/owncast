@@ -107,19 +107,11 @@ func (ds *Datastore) Save(e models.ConfigEntry) error {
 	return nil
 }
 
-// Setup will create the datastore table and perform initial initialization.
+// Setup will perform initial initialization.
 func (ds *Datastore) Setup() {
 	ds.cache = make(map[string][]byte)
 	ds.DB = GetDatabase()
 	ds.DbLock = &sync.Mutex{}
-
-	createTableSQL := `CREATE TABLE IF NOT EXISTS datastore (
-		"key" string NOT NULL PRIMARY KEY,
-		"value" BLOB,
-		"timestamp" DATE DEFAULT CURRENT_TIMESTAMP NOT NULL
-	);`
-
-	ds.MustExec(createTableSQL)
 }
 
 // Reset will delete all config entries in the datastore and start over.
