@@ -110,18 +110,13 @@ func GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
 
 // UpdateUserEnabled enable or disable a single user by ID.
 func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
-	type blockUserRequest struct {
-		UserID  string `json:"userId"`
-		Enabled bool   `json:"enabled"`
-	}
-
 	if r.Method != http.MethodPost {
 		webutils.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	var request blockUserRequest
+	var request generated.UpdateUserEnabledJSONBody
 
 	if err := decoder.Decode(&request); err != nil {
 		log.Errorln(err)
@@ -129,66 +124,72 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if request.UserID == "" {
-		webutils.WriteSimpleResponse(w, false, "must provide userId")
+	if request.UserId == nil || *request.UserId == "" || request.Enabled == nil {
+		webutils.WriteSimpleResponse(w, false, "must provide userId and enabled state")
 		return
 	}
 
-	userRepository := userrepository.Get()
-
-	// Disable/enable the user
-	if err := userRepository.SetEnabled(request.UserID, request.Enabled); err != nil {
-		log.Errorln("error changing user enabled status", err)
+	if err := updateUserStatus(request); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
-	// Hide/show the user's chat messages if disabling.
-	// Leave hidden messages hidden to be safe.
-	if !request.Enabled {
-		if err := chat.SetMessageVisibilityForUserID(request.UserID, request.Enabled); err != nil {
-			log.Errorln("error changing user messages visibility", err)
+	if !*request.Enabled {
+		if err := handleUserDisabling(*request.UserId); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 	}
 
-	// Forcefully disconnect the user from the chat
-	if !request.Enabled {
-		clients, err := chat.GetClientsForUser(request.UserID)
-		if len(clients) == 0 {
-			// Nothing to do
-			return
+	webutils.WriteSimpleResponse(w, true, fmt.Sprintf("%s enabled: %t", *request.UserId, *request.Enabled))
+}
+
+func updateUserStatus(request generated.UpdateUserEnabledJSONBody) error {
+	userRepository := userrepository.Get()
+	if err := userRepository.SetEnabled(*request.UserId, *request.Enabled); err != nil {
+		log.Errorln("error changing user enabled status", err)
+		return err
+	}
+
+	if !*request.Enabled {
+		if err := chat.SetMessageVisibilityForUserID(*request.UserId, *request.Enabled); err != nil {
+			log.Errorln("error changing user messages visibility", err)
+			return err
 		}
+	}
+	return nil
+}
 
-		if err != nil {
-			log.Errorln("error fetching clients for user: ", err)
-			webutils.WriteSimpleResponse(w, false, err.Error())
-			return
-		}
+func handleUserDisabling(userID string) error {
+	clients, err := chat.GetClientsForUser(userID)
+	if len(clients) == 0 {
+		return nil
+	}
 
-		chat.DisconnectClients(clients)
-		disconnectedUser := userRepository.GetUserByID(request.UserID)
-		_ = chat.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
+	if err != nil {
+		log.Errorln("error fetching clients for user: ", err)
+		return err
+	}
 
-		localIP4Address := "127.0.0.1"
-		localIP6Address := "::1"
+	chat.DisconnectClients(clients)
+	userRepository := userrepository.Get()
+	disconnectedUser := userRepository.GetUserByID(userID)
+	_ = chat.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
 
-		// Ban this user's IP address.
-		authRepository := authrepository.Get()
+	localIP4Address := "127.0.0.1"
+	localIP6Address := "::1"
 
-		for _, client := range clients {
-			ipAddress := client.IPAddress
-			if ipAddress != localIP4Address && ipAddress != localIP6Address {
-				reason := fmt.Sprintf("Banning of %s", disconnectedUser.DisplayName)
-				if err := authRepository.BanIPAddress(ipAddress, reason); err != nil {
-					log.Errorln("error banning IP address: ", err)
-				}
+	authRepository := authrepository.Get()
+	for _, client := range clients {
+		ipAddress := client.IPAddress
+		if ipAddress != localIP4Address && ipAddress != localIP6Address {
+			reason := fmt.Sprintf("Banning of %s", disconnectedUser.DisplayName)
+			if err := authRepository.BanIPAddress(ipAddress, reason); err != nil {
+				log.Errorln("error banning IP address: ", err)
 			}
 		}
 	}
-
-	webutils.WriteSimpleResponse(w, true, fmt.Sprintf("%s enabled: %t", request.UserID, request.Enabled))
+	return nil
 }
 
 // GetDisabledUsers will return all the disabled users.
@@ -282,13 +283,19 @@ func SendSystemMessageToConnectedClient(integration models.ExternalAPIUser, w ht
 		return
 	}
 
-	var message events.SystemMessageEvent
+	// var message events.SystemMessageEvent
+	var message generated.SendSystemMessageJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return
 	}
 
-	chat.SendSystemMessageToClient(uint(clientIDNumeric), message.Body)
+	if message.Body == nil {
+		webutils.WriteSimpleResponse(w, false, "no message body provided")
+		return
+	}
+
+	chat.SendSystemMessageToClient(uint(clientIDNumeric), *message.Body)
 	webutils.WriteSimpleResponse(w, true, "sent")
 }
 

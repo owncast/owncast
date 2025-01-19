@@ -11,6 +11,7 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -51,18 +52,20 @@ func RegisterFediverseOTPRequest(u models.User, w http.ResponseWriter, r *http.R
 
 // VerifyFediverseOTPRequest verifies the given OTP code for the given access token.
 func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
-	type request struct {
-		Code string `json:"code"`
+	var req generated.VerifyFediverseOTPRequestJSONBody
+
+	if req.Code == nil {
+		webutils.WriteSimpleResponse(w, false, "Could not decode request: code is required")
+		return
 	}
 
-	var req request
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&req); err != nil {
 		webutils.WriteSimpleResponse(w, false, "Could not decode request: "+err.Error())
 		return
 	}
 	accessToken := r.URL.Query().Get("accessToken")
-	valid, authRegistration := fediverseauth.ValidateFediverseOTP(accessToken, req.Code)
+	valid, authRegistration := fediverseauth.ValidateFediverseOTP(accessToken, *req.Code)
 	if !valid {
 		w.WriteHeader(http.StatusForbidden)
 		return
