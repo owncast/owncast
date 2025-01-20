@@ -5,7 +5,7 @@ pull_request_labels:
   - crowdin
   - i18n
   - translation
-commit_message: Updated translations
+commit_message: 'Updated translations for %language%'
 files:
   - source: /web/i18n/en/translation.json
     translation: /web/i18n/%two_letters_code%/translation.json

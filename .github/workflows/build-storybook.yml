@@ -3,7 +3,12 @@ on:
   push:
     branches:
       - develop
-    paths: ['web/stories/**', 'web/components/**', 'web/.storybook/**'] # Trigger the action only when files change in the folders defined here
+    paths: [
+        'web/stories/**',
+        'web/components/**',
+        'web/.storybook/**',
+        'web/i18n/**',
+      ] # Trigger the action only when files change in the folders defined here
 
 jobs:
   build-and-deploy:
