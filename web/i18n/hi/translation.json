@@ -53,7 +53,7 @@
   "the next time goes live": "the next time goes live",
   "Follow": "Follow",
   "on the Fediverse to see the next time goes live": "on the Fediverse to see the next time goes live",
-  "Last live ago": "Last live {{timeAgo}} ago",
+  "Last live ago": "पिछली बार लाइव {{timeAgo}} पहले",
   "Time": "Time",
   "User": "User",
   "Visible messages": "Visible messages",
