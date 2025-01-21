@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
@@ -33,7 +33,8 @@ func getChatMessages(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		messages := chat.GetChatHistory()
+		chatMessageRepository := chatmessagerepository.Get()
+		messages := chatMessageRepository.GetChatHistory()
 
 		if err := json.NewEncoder(w).Encode(messages); err != nil {
 			log.Debugln(err)

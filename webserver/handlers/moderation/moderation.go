@@ -9,6 +9,7 @@ import (
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/webserver/utils"
 	log "github.com/sirupsen/logrus"
@@ -58,7 +59,8 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 		clients[i] = client
 	}
 
-	messages, err := chat.GetMessagesFromUser(uid)
+	chatMessagesRepository := chatmessagerepository.Get()
+	messages, err := chatMessagesRepository.GetMessagesFromUser(uid)
 	if err != nil {
 		log.Errorln(err)
 	}

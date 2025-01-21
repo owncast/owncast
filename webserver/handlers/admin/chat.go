@@ -4,7 +4,6 @@ package admin
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -13,11 +12,13 @@ import (
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/authrepository"
+	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -146,13 +147,20 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 
 func updateUserStatus(request generated.UpdateUserEnabledJSONBody) error {
 	userRepository := userrepository.Get()
+	chatMessageRepository := chatmessagerepository.Get()
+
 	if err := userRepository.SetEnabled(*request.UserId, *request.Enabled); err != nil {
 		log.Errorln("error changing user enabled status", err)
 		return err
 	}
 
-	if !*request.Enabled {
-		if err := chat.SetMessageVisibilityForUserID(*request.UserId, *request.Enabled); err != nil {
+	messageIDs, err := chatMessageRepository.GetMessageIdsForUserID(*request.UserId)
+	if err != nil {
+		return errors.Wrap(err, "error fetching user messages")
+	}
+
+	if !*request.Enabled && len(messageIDs) > 0 {
+		if err := chat.SetMessagesVisibility(messageIDs, *request.Enabled); err != nil {
 			log.Errorln("error changing user messages visibility", err)
 			return err
 		}
@@ -247,7 +255,8 @@ func GetModerators(w http.ResponseWriter, r *http.Request) {
 func GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	messages := chat.GetChatModerationHistory()
+	chatMessageRepository := chatmessagerepository.Get()
+	messages := chatMessageRepository.GetChatModerationHistory()
 	webutils.WriteResponse(w, messages)
 }
 
@@ -343,7 +352,8 @@ func SendIntegrationChatMessage(integration models.ExternalAPIUser, w http.Respo
 		return
 	}
 
-	chat.SaveUserMessage(event)
+	chatMessageRepository := chatmessagerepository.Get()
+	chatMessageRepository.SaveUserMessage(event)
 
 	webutils.WriteSimpleResponse(w, true, "sent")
 }
