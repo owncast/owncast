@@ -3310,7 +3310,6 @@ paths:
       tags: ['Internal', 'Auth', 'Chat']
       parameters:
         - $ref: '#/components/parameters/IndieAuthState'
-        - $ref: '#/components/parameters/IndieAuthCode'
       responses:
         '307':
           description: Redirected to home page
@@ -3328,7 +3327,6 @@ paths:
         - $ref: '#/components/parameters/IndieAuthRedirectURI'
         - $ref: '#/components/parameters/IndieAuthCodeChallenge'
         - $ref: '#/components/parameters/IndieAuthState'
-        - $ref: '#/components/parameters/IndieAuthCode'
       responses:
         '200':
           description: IndieAuth flow concluded
@@ -4427,12 +4425,6 @@ components:
     IndieAuthState:
       in: query
       name: state
-      schema:
-        type: string
-      required: true
-    IndieAuthCode:
-      in: query
-      name: code
       schema:
         type: string
       required: true
