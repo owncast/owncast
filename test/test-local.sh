@@ -14,7 +14,7 @@ PORT="${PORT:=8080}"
 HOST="localhost"
 
 # Using nc (netcat) to check if the port is open
-if nc -zv $HOST $PORT 2>/dev/null; then
+if nc -zv $HOST "$PORT" 2>/dev/null; then
 	echo "Your web server is running on port $PORT. Good."
 else
 	echo "Please make sure your Owncast server is running on port $PORT."
@@ -23,9 +23,9 @@ fi
 
 if [ -n "$DOMAIN" ]; then
 	echo "Attempting to use custom domain: $DOMAIN"
-	ssh -R $DOMAIN:80:localhost:$PORT localhost.run
+	ssh -R "$DOMAIN":80:localhost:"$PORT" localhost.run
 
 else
 	echo "Using auto-generated hostname for tunnel."
-	ssh -R 80:localhost:$PORT localhost.run
+	ssh -R 80:localhost:"$PORT" localhost.run
 fi
