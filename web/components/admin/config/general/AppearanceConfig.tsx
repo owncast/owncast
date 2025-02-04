@@ -301,7 +301,7 @@ export default function Appearance() {
           <Button type="primary" onClick={save}>
             Save Colors
           </Button>
-          <Button ghost onClick={reset}>
+          <Button ghost type="text" onClick={reset}>
             Reset to Defaults
           </Button>
         </Space>
