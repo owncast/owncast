@@ -1,10 +1,11 @@
 .link {
   width: 30px;
-  margin-right: 16px;
 }
 
 .links {
   display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   align-items: center;
   justify-content: flex-start;
   margin-top: 5px;
