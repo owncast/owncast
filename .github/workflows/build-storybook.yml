@@ -21,6 +21,7 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -48,6 +49,7 @@ jobs:
           npm run build-storybook -- -o ../docs/components
 
       - name: Commit changes
+        if: github.repository == 'owncast/owncast'
         uses: EndBug/add-and-commit@v9
         with:
           author_name: Owncast
@@ -59,6 +61,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Dispatch event to web site
+        if: github.repository == 'owncast/owncast'
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.BUNDLE_STORYBOOK_OWNCAST_ONLINE }}
