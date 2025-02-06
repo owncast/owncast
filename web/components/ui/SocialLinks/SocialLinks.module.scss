@@ -2,6 +2,12 @@
   width: 30px;
 }
 
+.linkBackground {
+	background-color: var(--theme-color-components-content-background);
+	border-radius: 50%;
+	padding: 8px;
+}
+
 .links {
   display: flex;
   flex-wrap: wrap;
