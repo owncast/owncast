@@ -25,12 +25,6 @@ const meta = {
 Clicking it will make the notification modal display. Clicking the "X" will hide the modal and make it never show again.`,
       },
     },
-    nextjs: {
-      appDirectory: true,
-      navigation: {
-        searchParams: {},
-      },
-    },
   },
 } satisfies Meta<typeof NotifyReminderPopup>;
 
