@@ -31,7 +31,7 @@ export const SocialLinks: FC<SocialLinksProps> = ({ links }) => {
             key={link.platform}
             href={link.url}
             className={styles.linkBackground}
-						title={link.platform}
+            title={link.platform}
             target="_blank"
             // eslint-disable-next-line react/no-invalid-html-attribute
             rel="noreferrer me"
