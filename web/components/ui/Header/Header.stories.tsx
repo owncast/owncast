@@ -7,12 +7,6 @@ const meta = {
   component: Header,
   parameters: {
     chromatic: { diffThreshold: 0.75 },
-    nextjs: {
-      appDirectory: true,
-      navigation: {
-        searchParams: {},
-      },
-    },
   },
 } satisfies Meta<typeof Header>;
 
