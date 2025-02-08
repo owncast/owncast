@@ -101,9 +101,9 @@ const mocks = {
               disabledAt: null,
             },
             {
-              link: 'https://gamethattune.club/users/thelinkfloyd',
-              name: 'thelinkfloyd',
-              username: 'thelinkfloyd@gamethattune.club',
+              link: 'https://gamethattune.club/users/fourthwall',
+              name: ':fourthwall: █████ :fourthwall: (( MagmaSys ))',
+              username: 'EnlightenmentSurrealX@gamethattune.club',
               image: '',
               timestamp: '2022-04-05T12:23:32Z',
               disabledAt: null,
