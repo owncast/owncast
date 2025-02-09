@@ -20,13 +20,13 @@
     }
   }
 
-  @media (width >= 640px) {
+  @media (640px <= width < 960px) {
     .followerRow {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  @media (width >= 960px) {
+  @media (960px <= width < 1280px) {
     .followerRow {
       grid-template-columns: repeat(3, 1fr);
     }
