@@ -20,19 +20,19 @@
     }
   }
 
-  @media (min-width: 640px) {
+  @media (width >= 640px) {
     .followerRow {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  @media (min-width: 960px) {
+  @media (width >= 960px) {
     .followerRow {
       grid-template-columns: repeat(3, 1fr);
     }
   }
 
-  @media (min-width: 1280px) {
+  @media (width >= 1280px) {
     .followerRow {
       grid-template-columns: repeat(4, 1fr);
     }
