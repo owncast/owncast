@@ -326,7 +326,7 @@ export const FIELD_PROPS_FEDERATION_IS_PRIVATE = {
 
 export const FIELD_PROPS_SHOW_FEDERATION_ENGAGEMENT = {
   apiPath: API_FEDERATION_SHOW_ENGAGEMENT,
-  configPath: 'showEngagement',
+  configPath: 'federation',
   label: 'Show engagement',
   tip: 'Following, liking and sharing will appear in the chat feed.',
   useSubmit: true,

@@ -108,9 +108,15 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 		return
 	}
 
-	if err := index.Execute(w, content); err != nil {
+	// Use a buffer to ensure that we do not write a partial response header before checking for errors
+	var buf bytes.Buffer
+	if err := index.Execute(&buf, content); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(buf.Bytes())
 }
 
 // MetadataPage represents a server-rendered web page for bots and web scrapers.
