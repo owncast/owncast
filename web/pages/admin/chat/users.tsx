@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext, ReactElement } from 'react';
 import { Tabs } from 'antd';
 import { useTranslation } from 'next-export-i18n';
+import Link from 'antd/lib/typography/Link';
+import Text from 'antd/lib/typography/Text';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import {
   CONNECTED_CLIENTS,
@@ -117,7 +119,21 @@ export default function ChatUsers() {
       {t('Moderators')} ({moderators.length})
     </span>
   );
-  const moderatorTable = <UserTable data={moderators} />;
+  const moderatorTable = (
+    <>
+      <p>
+        <Text type="secondary"> {t('Bring in moderators to help keep your chat in order.')} </Text>
+        <Link
+          href="https://owncast.online/docs/chat/moderation/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {t('Learn more about chat moderation here.')}
+        </Link>
+      </p>
+      <UserTable data={moderators} />
+    </>
+  );
 
   const items = [
     { label: connectedUserTabTitle, key: '1', children: connectedUsers },
