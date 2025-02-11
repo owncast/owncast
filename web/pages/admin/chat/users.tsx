@@ -121,7 +121,7 @@ export default function ChatUsers() {
   );
   const moderatorTable = (
     <>
-      <div>
+      <p>
         <Text type="secondary"> {t('Bring in moderators to help keep your chat in order.')} </Text>
         <Link
           href="https://owncast.online/docs/chat/moderation/"
@@ -130,7 +130,7 @@ export default function ChatUsers() {
         >
           {t('Learn more about chat moderation here.')}
         </Link>
-      </div>
+      </p>
       <UserTable data={moderators} />
     </>
   );
