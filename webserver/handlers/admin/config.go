@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/activitypub/outbox"
+	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
@@ -87,6 +88,12 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 // ExternalSetStreamTitle will change the stream title on behalf of an external integration API request.
 func ExternalSetStreamTitle(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	SetStreamTitle(w, r)
+}
+
+// ExternalGetStatus will return the status of the server.
+func ExternalGetStatus(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	status := core.GetStatus()
+	webutils.WriteResponse(w, status)
 }
 
 func sendSystemChatAction(messageText string, ephemeral bool) {

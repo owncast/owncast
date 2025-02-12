@@ -88,6 +88,10 @@ func (*ServerInterfaceImpl) ExternalGetConnectedChatClientsOptions(w http.Respon
 	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, admin.ExternalGetConnectedChatClients)(w, r)
 }
 
+func (*ServerInterfaceImpl) ExternalGetStatus(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, admin.ExternalGetStatus)(w, r)
+}
+
 func (*ServerInterfaceImpl) GetPrometheusAPI(w http.ResponseWriter, r *http.Request) {
 	// might need to bring this out of the codegen
 	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {

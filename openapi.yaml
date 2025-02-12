@@ -3134,6 +3134,26 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /integrations/status:
+    get:
+      summary: Get the server's status
+      operationId: ExternalGetStatus
+      tags: ['External']
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        '404':
+          $ref: '#/components/responses/404'
+        default:
+          $ref: '#/components/responses/Default'
   /integrations/streamtitle:
     post:
       summary: Stream title

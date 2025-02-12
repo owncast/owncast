@@ -614,6 +614,9 @@ type ServerInterface interface {
 	// Get a user's details
 	// (GET /integrations/moderation/chat/user/{userId})
 	ExternalGetUserDetails(w http.ResponseWriter, r *http.Request, userId string)
+	// Get the server's status
+	// (GET /integrations/status)
+	ExternalGetStatus(w http.ResponseWriter, r *http.Request)
 
 	// (OPTIONS /integrations/streamtitle)
 	ExternalSetStreamTitleOptions(w http.ResponseWriter, r *http.Request)
@@ -1759,6 +1762,12 @@ func (_ Unimplemented) ExternalGetConnectedChatClientsOptions(w http.ResponseWri
 // Get a user's details
 // (GET /integrations/moderation/chat/user/{userId})
 func (_ Unimplemented) ExternalGetUserDetails(w http.ResponseWriter, r *http.Request, userId string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get the server's status
+// (GET /integrations/status)
+func (_ Unimplemented) ExternalGetStatus(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -5149,8 +5158,6 @@ func (siw *ServerInterfaceWrapper) SendIntegrationChatMessageOptions(w http.Resp
 func (siw *ServerInterfaceWrapper) SendIntegrationChatMessage(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendIntegrationChatMessage(w, r)
 	}))
@@ -5331,6 +5338,23 @@ func (siw *ServerInterfaceWrapper) ExternalGetUserDetails(w http.ResponseWriter,
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ExternalGetUserDetails(w, r, userId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// ExternalGetStatus operation middleware
+func (siw *ServerInterfaceWrapper) ExternalGetStatus(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExternalGetStatus(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6268,6 +6292,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/integrations/moderation/chat/user/{userId}", wrapper.ExternalGetUserDetails)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/integrations/status", wrapper.ExternalGetStatus)
 	})
 	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/integrations/streamtitle", wrapper.ExternalSetStreamTitleOptions)

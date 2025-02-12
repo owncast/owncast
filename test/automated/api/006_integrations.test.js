@@ -68,9 +68,19 @@ test('create access token', async () => {
 test('check access tokens', async () => {
 	const res = await getAdminResponse('accesstokens');
 	const tokenCheck = res.body.filter(
-		(token) => token.accessToken === accessToken
+		(token) => token.accessToken === accessToken,
 	);
 	expect(tokenCheck).toHaveLength(1);
+});
+
+test('test status request', async () => {
+	const res = await request
+		.get('/api/integrations/status')
+		.set('Authorization', 'Bearer ' + accessToken)
+		.expect(200);
+
+	expect(res.body).toHaveProperty('online');
+	expect(res.body).toHaveProperty('versionNumber');
 });
 
 test('send a system message using access token', async () => {
@@ -147,7 +157,7 @@ test('delete access token', async () => {
 test('check token delete was successful', async () => {
 	const res = await getAdminResponse('accesstokens');
 	const tokenCheck = res.body.filter(
-		(token) => token.accessToken === accessToken
+		(token) => token.accessToken === accessToken,
 	);
 	expect(tokenCheck).toHaveLength(0);
 });
