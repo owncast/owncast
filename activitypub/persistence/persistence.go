@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"time"
@@ -74,6 +75,27 @@ func GetFollower(iri string) (*apmodels.ActivityPubActor, error) {
 		return nil, errors.Wrap(err, "error parsing acting inbox")
 	}
 
+	requestObjectBytes := result.RequestObject
+	var followRequestObject vocab.ActivityStreamsFollow
+
+	resolver, err := streams.NewJSONResolver(func(c context.Context, followObject vocab.ActivityStreamsFollow) error {
+		followRequestObject = followObject
+		return nil
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "error creating JSON resolver")
+	}
+	jsonMap := make(map[string]interface{})
+	err = json.Unmarshal(requestObjectBytes, &jsonMap)
+	if err != nil {
+		return nil, errors.Wrap(err, "error unmarshaling follow request object")
+	}
+
+	err = resolver.Resolve(context.Background(), jsonMap)
+	if err != nil {
+		return nil, errors.Wrap(err, "error resolving follow request object")
+	}
+
 	image, _ := url.Parse(result.Image.String)
 
 	var disabledAt *time.Time
@@ -89,6 +111,7 @@ func GetFollower(iri string) (*apmodels.ActivityPubActor, error) {
 		Image:            image,
 		FollowRequestIri: followIRI,
 		DisabledAt:       disabledAt,
+		RequestObject:    followRequestObject,
 	}
 
 	return &follower, nil
