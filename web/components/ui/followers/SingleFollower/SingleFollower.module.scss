@@ -10,6 +10,9 @@
   margin: 0.5em;
   font-size: 1rem;
   line-height: 1.5rem;
+  height: 100%;
+  align-items: center;
+  transition: border-color 0.2s ease-in-out;
 
   &:hover {
     border-color: var(--theme-text-link);
