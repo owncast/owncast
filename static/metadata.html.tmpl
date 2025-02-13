@@ -18,6 +18,10 @@
 		<meta property="og:image:url" content="{{.Thumbnail}}">
 		<meta property="og:image:alt" content="{{.Image}}">
 
+		<meta property="og:video" content="{{.RequestedURL}}hls/stream.m3u8" />
+		<meta property="og:video:secure_url" content="{{.RequestedURL}}hls/stream.m3u8" />
+		<meta property="og:video:type" content="application/x-mpegURL" />
+
 		<meta property="og:video" content='{{.RequestedURL}}embed/video' />
 		<meta property="og:video:secure_url" content='{{.RequestedURL}}embed/video' />
 		<meta property="og:video:height" content="315" />

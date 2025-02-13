@@ -113,6 +113,10 @@ export const Main: FC = () => {
           <meta property="og:image:url" content="{{.RequestedURL}}{{.Thumbnail}}" />
           <meta property="og:image:alt" content="{{.RequestedURL}}{{.Image}}" />
 
+          <meta property="og:video" content="{{.RequestedURL}}hls/stream.m3u8" />
+          <meta property="og:video:secure_url" content="{{.RequestedURL}}hls/stream.m3u8" />
+          <meta property="og:video:type" content="application/x-mpegURL" />
+
           <meta property="og:video" content="{{.RequestedURL}}{{.EmbedVideo}}" />
           <meta property="og:video:secure_url" content="{{.RequestedURL}}{{.EmbedVideo}}" />
           <meta property="og:video:height" content="315" />
