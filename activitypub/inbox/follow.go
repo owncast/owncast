@@ -47,7 +47,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 		}
 	}
 
-	// Save as an accepted activity
+	// Save as an activity
 	actorReference := activity.GetActivityStreamsActor()
 	object := activity.GetActivityStreamsObject()
 	objectIRI := object.At(0).GetIRI().String()
