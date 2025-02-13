@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/owncast/owncast/db"
-	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 )
 
 // CreateBanIPTable will create the IP ban table if needed.
@@ -42,18 +42,18 @@ func (r *SqlAuthRepository) IsIPAddressBanned(address string) (bool, error) {
 }
 
 // GetIPAddressBans will return all the banned IP addresses.
-func (r *SqlAuthRepository) GetIPAddressBans() ([]models.IPAddress, error) {
+func (r *SqlAuthRepository) GetIPAddressBans() ([]generated.IPAddress, error) {
 	result, err := r.datastore.GetQueries().GetIPAddressBans(context.Background())
 	if err != nil {
 		return nil, err
 	}
 
-	response := []models.IPAddress{}
+	response := []generated.IPAddress{}
 	for _, ip := range result {
-		response = append(response, models.IPAddress{
-			IPAddress: ip.IpAddress,
-			Notes:     ip.Notes.String,
-			CreatedAt: ip.CreatedAt.Time,
+		response = append(response, generated.IPAddress{
+			IpAddress: &ip.IpAddress,
+			Notes:     &ip.Notes.String,
+			CreatedAt: &ip.CreatedAt.Time,
 		})
 	}
 	return response, err

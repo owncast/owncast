@@ -162,9 +162,9 @@ func loadEmoji() {
 			if err != nil {
 				return
 			}
-			emojiHTML[strings.ToLower(emojiList[i].Name)] = buf.String()
+			emojiHTML[strings.ToLower(*emojiList[i].Name)] = buf.String()
 
-			emoji := emojiDef.NewEmoji(emojiList[i].Name, nil, strings.ToLower(emojiList[i].Name))
+			emoji := emojiDef.NewEmoji(*emojiList[i].Name, nil, strings.ToLower(*emojiList[i].Name))
 			emojiArr = append(emojiArr, emoji)
 		}
 

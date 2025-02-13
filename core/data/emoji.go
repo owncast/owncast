@@ -10,16 +10,16 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
 var (
 	emojiCacheMu      sync.Mutex
-	emojiCacheData    = make([]models.CustomEmoji, 0)
+	emojiCacheData    = make([]generated.Emoji, 0)
 	emojiCacheModTime time.Time
 )
 
@@ -51,7 +51,7 @@ func UpdateEmojiList(force bool) (time.Time, error) {
 				return modTime, fmt.Errorf("unable to open custom emoji directory")
 			}
 
-			emojiCacheData = make([]models.CustomEmoji, 0)
+			emojiCacheData = make([]generated.Emoji, 0)
 
 			walkFunction := func(path string, d os.DirEntry, err error) error {
 				if d == nil || d.IsDir() {
@@ -61,7 +61,7 @@ func UpdateEmojiList(force bool) (time.Time, error) {
 				emojiPath := filepath.Join(config.EmojiDir, path)
 				fileName := d.Name()
 				fileBase := fileName[:len(fileName)-len(filepath.Ext(fileName))]
-				singleEmoji := models.CustomEmoji{Name: fileBase, URL: emojiPath}
+				singleEmoji := generated.Emoji{Name: &fileBase, Url: &emojiPath}
 				emojiCacheData = append(emojiCacheData, singleEmoji)
 				return nil
 			}
@@ -76,7 +76,7 @@ func UpdateEmojiList(force bool) (time.Time, error) {
 }
 
 // GetEmojiList returns a list of custom emoji from the emoji directory.
-func GetEmojiList() []models.CustomEmoji {
+func GetEmojiList() []generated.Emoji {
 	_, err := UpdateEmojiList(false)
 	if err != nil {
 		return nil
@@ -88,7 +88,7 @@ func GetEmojiList() []models.CustomEmoji {
 
 	// return a copy of cache data, ensures underlying slice isn't affected
 	// by future update
-	emojiData := make([]models.CustomEmoji, len(emojiCacheData))
+	emojiData := make([]generated.Emoji, len(emojiCacheData))
 	copy(emojiData, emojiCacheData)
 
 	return emojiData
