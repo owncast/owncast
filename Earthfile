@@ -1,6 +1,6 @@
 VERSION --new-platform 0.6
 
-FROM --platform=linux/amd64 alpine:3.21.2
+FROM --platform=linux/amd64 alpine:3.21.3
 ARG version=develop
 
 WORKDIR /build
@@ -119,7 +119,7 @@ docker:
 	# in as space separated strings using the full account/repo:tag format.
 	# https://github.com/earthly/earthly/blob/aea38448fa9c0064b1b70d61be717ae740689fb9/docs/earthfile/earthfile.md#assigning-multiple-image-names
   ARG TARGETPLATFORM
-  FROM --platform=$TARGETPLATFORM alpine:3.21.2
+  FROM --platform=$TARGETPLATFORM alpine:3.21.3
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
   RUN addgroup -g 101 -S owncast && adduser -u 101 -S owncast -G owncast
   WORKDIR /app
