@@ -35,8 +35,8 @@ export const ChatPartMessage: FC<ChatPartMessageProps> = ({
             <ModerationBadge userColor={userColor} />
           </span>
         )}
+        <span className={styles.partMessage}>left the chat.</span>
       </span>
-      left the chat.
     </div>
   );
 };
