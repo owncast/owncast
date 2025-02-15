@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  activitypubtestserver:
+    build: .
+    container_name: activitypubtestserver
+    environment:
+      - USERNAME=gabek
+    volumes:
+      - ~/.ssh:/root/.ssh:ro
