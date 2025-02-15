@@ -147,7 +147,7 @@
 	},
 	"overrides": {
 		"@emoji-mart/react": {
-			"emoji-mart": "5.6.0"
+			"emoji-mart": "5.2.2"
 		}
 	}
 }
