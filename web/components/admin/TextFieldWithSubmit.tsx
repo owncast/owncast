@@ -27,7 +27,7 @@ export type TextFieldWithSubmitProps = TextFieldProps & {
 export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
   apiPath,
   configPath = '',
-  initialValue,
+  initialValue = '',
   useTrim,
   useTrimLead,
   ...textFieldProps // rest of props
@@ -151,9 +151,4 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
       </div>
     </div>
   );
-};
-
-TextFieldWithSubmit.defaultProps = {
-  configPath: '',
-  initialValue: '',
 };
