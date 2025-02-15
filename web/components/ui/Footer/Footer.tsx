@@ -12,7 +12,8 @@ export const Footer: FC = () => {
   return (
     <footer className={styles.footer} id="footer">
       <span>
-        {t('Powered by Owncast')} <a href="https://owncast.online">v{versionNumber}</a>
+        {t('Powered by Owncast')}
+        <a href="https://owncast.online">v{versionNumber}</a>
       </span>
       <span className={styles.links}>
         <a href="https://owncast.online/docs" target="_blank" rel="noreferrer">
