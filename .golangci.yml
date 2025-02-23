@@ -54,10 +54,6 @@ linters:
     - unparam
     - wastedassign
 linters-settings:
-  govet:
-    disable:
-      - composite
-
   cyclop:
     # the maximal code complexity to report. default is 10. eventually work our way to that.
     max-complexity: 15
