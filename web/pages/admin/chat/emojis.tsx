@@ -13,6 +13,7 @@ import {
 } from '../../../utils/input-statuses';
 import { RESET_TIMEOUT } from '../../../utils/config-constants';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
+import { useTranslation } from 'next-export-i18n';
 
 const URL_CUSTOM_EMOJIS = `/api/emoji`;
 
@@ -35,6 +36,7 @@ const Emoji = () => {
   const [loading, setLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [uploadFile, setUploadFile] = useState<RcFile>(null);
+  const { t } = useTranslation();
 
   let resetTimer = null;
   const resetStates = () => {
@@ -138,6 +140,10 @@ const Emoji = () => {
         Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the
         filename without extension will be used as emoji name. Additionally, emoji names are
         case-insensitive. For best results, ensure all emoji have unique names.
+      </Paragraph>
+      <Paragraph>
+        {t("Want to upload custom emojis in bulk? Check out our")}{' '}
+        <a href="https://owncast.online/docs/chat/emoji" rel="noopener noreferrer" target="_blank">{t("Emoji guide")}</a>.
       </Paragraph>
       <br />
       <Upload
