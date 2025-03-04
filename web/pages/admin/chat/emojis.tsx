@@ -2,6 +2,7 @@ import { Avatar, Button, Card, Col, Row, Tooltip, Typography } from 'antd';
 import Upload, { RcFile } from 'antd/lib/upload';
 import React, { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
 import FormStatusIndicator from '../../../components/admin/FormStatusIndicator';
 import { DELETE_EMOJI, fetchData, UPLOAD_EMOJI } from '../../../utils/apis';
 import { ACCEPTED_IMAGE_TYPES, getBase64 } from '../../../utils/images';
@@ -13,7 +14,6 @@ import {
 } from '../../../utils/input-statuses';
 import { RESET_TIMEOUT } from '../../../utils/config-constants';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
-import { useTranslation } from 'next-export-i18n';
 
 const URL_CUSTOM_EMOJIS = `/api/emoji`;
 
@@ -142,8 +142,8 @@ const Emoji = () => {
         case-insensitive. For best results, ensure all emoji have unique names.
       </Paragraph>
       <Paragraph>
-        {t("Want to upload custom emojis in bulk? Check out our")}{' '}
-        <a href="https://owncast.online/docs/chat/emoji" rel="noopener noreferrer" target="_blank">{t("Emoji guide")}</a>.
+        {t('Want to upload custom emojis in bulk? Check out our')}{' '}
+        <a href="https://owncast.online/docs/chat/emoji" rel="noopener noreferrer" target="_blank">{t('Emoji guide')}</a>.
       </Paragraph>
       <br />
       <Upload
