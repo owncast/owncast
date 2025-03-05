@@ -171,6 +171,11 @@ style="vertical-align: middle;margin-left:5px" width="147" height="26"
 <img src="https://owncast.online/images/sponsors/chromatic.png" height="26" style="vertical-align: middle;margin-left:5px">
 </a>
 </li>
+<li>Infrastructure and hosting by
+<a href="https://digitalocean.com?utm_medium=opensource&utm_source=owncast" target="_blank">
+<img src="https://owncast.online/images/sponsors/digitalocean.svg" height="26" style="vertical-align: middle;margin-left:5px">
+</a>
+</li>
 </ul>
 <!-- CONTACT -->
 
