@@ -36,6 +36,8 @@ github.com/SherClockHolmes/webpush-go v1.4.0 h1:ocnzNKWN23T9nvHi6IfyrQjkIc0oJWv1
 github.com/SherClockHolmes/webpush-go v1.4.0/go.mod h1:XSq8pKX11vNV8MJEMwjrlTkxhAj1zKfxmyhdV7Pd6UA=
 github.com/TwiN/go-away v1.6.14 h1:gjFP+6/A36gmj0NpYX0Sz9hrdU0KtHwtNWYnsJgV4fo=
 github.com/TwiN/go-away v1.6.14/go.mod h1:d+Gv3XuqjIeFqXYuAIzlyNoDzr1vNsP5B/hRY3u/VLs=
+github.com/TwiN/go-away v1.6.15 h1:pm1UvsteYNnOWl4bcbhAXQnebR5UcqfcuCi3kl6LJhE=
+github.com/TwiN/go-away v1.6.15/go.mod h1:cgCIChHZZU7u9QjVuGAf3X95MPoMPuceCwnvj8+JDB0=
 github.com/alecthomas/assert/v2 v2.11.0 h1:2Q9r3ki8+JYXvGsDyBXwH3LcJ+WK5D0gc5E8vS6K3D0=
 github.com/alecthomas/assert/v2 v2.11.0/go.mod h1:Bze95FyfUr7x34QZrjL+XP+0qgp/zg8yS+TtBj1WA3k=
 github.com/alecthomas/go-check-sumtype v0.3.1 h1:u9aUvbGINJxLVXiFvHUlPEaD7VDULsrxJb4Aq31NLkU=
