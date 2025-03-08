@@ -143,7 +143,10 @@ const Emoji = () => {
       </Paragraph>
       <Paragraph>
         {t('Want to upload custom emojis in bulk? Check out our')}{' '}
-        <a href="https://owncast.online/docs/chat/emoji" rel="noopener noreferrer" target="_blank">{t('Emoji guide')}</a>.
+        <a href="https://owncast.online/docs/chat/emoji" rel="noopener noreferrer" target="_blank">
+          {t('Emoji guide')}
+        </a>
+        .
       </Paragraph>
       <br />
       <Upload
