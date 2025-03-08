@@ -13,12 +13,6 @@ if ! command -v redocly &>/dev/null; then
 	exit 1
 fi
 
-if ! command -v oapi-codegen &>/dev/null; then
-	echo "Please install \`oapi-codegen\` before running this script"
-	echo "Hint: run \`go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest\` to install"
-	exit 1
-fi
-
 # validate schema
 npx redocly lint $specPath
 if [ $? -ne 0 ]; then
@@ -31,8 +25,8 @@ rm -r $folderPath
 mkdir -p $folderPath
 
 # codegen
-oapi-codegen -generate types -o $folderPath/$package-types.gen.go -package $package $specPath
-oapi-codegen -generate "chi-server" -o $folderPath/$package.gen.go -package $package $specPath
+go tool oapi-codegen -generate types -o $folderPath/$package-types.gen.go -package $package $specPath
+go tool oapi-codegen -generate "chi-server" -o $folderPath/$package.gen.go -package $package $specPath
 
 # go
 go mod tidy
