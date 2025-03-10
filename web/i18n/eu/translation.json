@@ -54,6 +54,8 @@
   "Follow": "Jarraitu",
   "on the Fediverse to see the next time goes live": "fedibertsoan hurrengo zuzenekoaren berri izan dezazun",
   "Last live ago": "Azken zuzenekoa duela {{timeAgo}}",
+  "Want to upload custom emojis in bulk? Check out our": "Want to upload custom emojis in bulk? Check out our",
+  "Emoji guide": "Emoji guide",
   "Time": "Denbora",
   "User": "Erabiltzailea",
   "Visible messages": "Ikus daitezkeen mezuak",
@@ -126,7 +128,5 @@
   "Max viewers this stream": "Igorpen honek izan duen gehiengo ikus-entzule kopurua",
   "Max viewers last stream": "Azken igorpenak izan duen gehiengo ikus-entzule kopurua",
   "max viewers": "gehiengo ikus-entzule kopurua",
-  "No viewer data has been collected yet": "Oraindik ez da ikus-entzuleei buruzko daturik jaso.",
-  "Emoji guide": "Emoji guide",
-  "Want to upload custom emojis in bulk? Check out our": "Want to upload custom emojis in bulk? Check out our"
+  "No viewer data has been collected yet": "Oraindik ez da ikus-entzuleei buruzko daturik jaso."
 }

@@ -54,6 +54,8 @@
   "Follow": "Segui",
   "on the Fediverse to see the next time goes live": "sul Fediverso per vedere la prossima volta che andrà in diretta",
   "Last live ago": "Ultima diretta {{timeAgo}} fa",
+  "Want to upload custom emojis in bulk? Check out our": "Want to upload custom emojis in bulk? Check out our",
+  "Emoji guide": "Emoji guide",
   "Time": "Tempo",
   "User": "Utente",
   "Visible messages": "Messaggi visibili",
@@ -126,7 +128,5 @@
   "Max viewers this stream": "Massimo spettatori di questo flusso",
   "Max viewers last stream": "Massimo spettatori ultimo flusso",
   "max viewers": "massimo spettatori",
-  "No viewer data has been collected yet": "Non sono stati ancora raccolti dati degli spettatori.",
-  "Emoji guide": "Emoji guide",
-  "Want to upload custom emojis in bulk? Check out our": "Want to upload custom emojis in bulk? Check out our"
+  "No viewer data has been collected yet": "Non sono stati ancora raccolti dati degli spettatori."
 }

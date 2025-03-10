@@ -54,6 +54,8 @@
   "Follow": "Theo dõi",
   "on the Fediverse to see the next time goes live": "trên Fediverse để xem lần tiếp theo phát trực tiếp",
   "Last live ago": "Lần phát trực tiếp cuối cùng {{timeAgo}} trước",
+  "Want to upload custom emojis in bulk? Check out our": "Want to upload custom emojis in bulk? Check out our",
+  "Emoji guide": "Emoji guide",
   "Time": "Thời gian",
   "User": "Người dùng",
   "Visible messages": "Tin nhắn hiển thị",
@@ -126,7 +128,5 @@
   "Max viewers this stream": "Số người xem tối đa stream này",
   "Max viewers last stream": "Số người xem tối đa stream trước",
   "max viewers": "người xem tối đa",
-  "No viewer data has been collected yet": "Chưa có dữ liệu người xem nào được thu thập",
-  "Emoji guide": "Emoji guide",
-  "Want to upload custom emojis in bulk? Check out our": "Want to upload custom emojis in bulk? Check out our"
+  "No viewer data has been collected yet": "Chưa có dữ liệu người xem nào được thu thập"
 }

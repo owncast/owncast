@@ -54,6 +54,8 @@
   "Follow": "Follow",
   "on the Fediverse to see the next time goes live": "on the Fediverse to see the next time goes live",
   "Last live ago": "Τελευταία ζωντανή σύνδεση {{timeAgo}} πριν",
+  "Want to upload custom emojis in bulk? Check out our": "Θέλετε να ανεβάσετε προσαρμοσμένα emojis στο χύμα? Δείτε έξω μας",
+  "Emoji guide": "Οδηγός Emoji",
   "Time": "Time",
   "User": "User",
   "Visible messages": "Visible messages",
@@ -126,7 +128,5 @@
   "Max viewers this stream": "Max viewers this stream",
   "Max viewers last stream": "Max viewers last stream",
   "max viewers": "max viewers",
-  "No viewer data has been collected yet": "No viewer data has been collected yet.",
-  "Emoji guide": "Emoji guide",
-  "Want to upload custom emojis in bulk? Check out our": "Want to upload custom emojis in bulk? Check out our"
+  "No viewer data has been collected yet": "No viewer data has been collected yet."
 }

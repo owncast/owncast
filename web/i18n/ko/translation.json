@@ -54,6 +54,8 @@
   "Follow": "Follow",
   "on the Fediverse to see the next time goes live": "on the Fediverse to see the next time goes live",
   "Last live ago": "마지막 라이브 {{timeAgo}} 전",
+  "Want to upload custom emojis in bulk? Check out our": "사용자 지정 이모티콘을 대량으로 업로드하고 싶으신가요? 저희의",
+  "Emoji guide": "이모티콘 가이드",
   "Time": "Time",
   "User": "User",
   "Visible messages": "Visible messages",
@@ -126,7 +128,5 @@
   "Max viewers this stream": "Max viewers this stream",
   "Max viewers last stream": "Max viewers last stream",
   "max viewers": "max viewers",
-  "No viewer data has been collected yet": "No viewer data has been collected yet.",
-  "Emoji guide": "Emoji guide",
-  "Want to upload custom emojis in bulk? Check out our": "Want to upload custom emojis in bulk? Check out our"
+  "No viewer data has been collected yet": "No viewer data has been collected yet."
 }

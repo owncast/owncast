@@ -54,6 +54,8 @@
   "Follow": "Подписаться",
   "on the Fediverse to see the next time goes live": "на Fediverse, чтобы увидеть следующее время в прямом эфире",
   "Last live ago": "Последний раз в прямом эфире {{timeAgo}} назад",
+  "Want to upload custom emojis in bulk? Check out our": "Want to upload custom emojis in bulk? Check out our",
+  "Emoji guide": "Emoji guide",
   "Time": "Время",
   "User": "Пользователь",
   "Visible messages": "Visible messages",
@@ -126,7 +128,5 @@
   "Max viewers this stream": "Максимальное количество зрителей в этом стриме",
   "Max viewers last stream": "Максимальное количество зрителей на последнем стриме",
   "max viewers": "Максимум зрителей",
-  "No viewer data has been collected yet": "Данные о зрителях еще не собраны.",
-  "Emoji guide": "Emoji guide",
-  "Want to upload custom emojis in bulk? Check out our": "Want to upload custom emojis in bulk? Check out our"
+  "No viewer data has been collected yet": "Данные о зрителях еще не собраны."
 }

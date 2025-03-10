@@ -54,6 +54,8 @@
   "Follow": "Suivre",
   "on the Fediverse to see the next time goes live": "sur le fédivers pour voir la prochaine diffusion",
   "Last live ago": "Dernière diffusion il y a {{timeAgo}}",
+  "Want to upload custom emojis in bulk? Check out our": "Vous voulez télécharger des émoticônes personnalisés en vrac ? Consultez notre",
+  "Emoji guide": "Guide d'Emoji",
   "Time": "Date et heure",
   "User": "Utilisateur",
   "Visible messages": "Messages visibles",
@@ -126,7 +128,5 @@
   "Max viewers this stream": "Max spectateurs pour cette diffusion",
   "Max viewers last stream": "Max spectateurs pour la dernière diffusion",
   "max viewers": "max spectateurs",
-  "No viewer data has been collected yet": "Aucune donnée sur les spectateurs n'a encore été recueillie.",
-  "Emoji guide": "Emoji guide",
-  "Want to upload custom emojis in bulk? Check out our": "Want to upload custom emojis in bulk? Check out our"
+  "No viewer data has been collected yet": "Aucune donnée sur les spectateurs n'a encore été recueillie."
 }
