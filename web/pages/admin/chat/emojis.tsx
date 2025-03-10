@@ -2,6 +2,7 @@ import { Avatar, Button, Card, Col, Row, Tooltip, Typography } from 'antd';
 import Upload, { RcFile } from 'antd/lib/upload';
 import React, { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
 import FormStatusIndicator from '../../../components/admin/FormStatusIndicator';
 import { DELETE_EMOJI, fetchData, UPLOAD_EMOJI } from '../../../utils/apis';
 import { ACCEPTED_IMAGE_TYPES, getBase64 } from '../../../utils/images';
@@ -35,6 +36,7 @@ const Emoji = () => {
   const [loading, setLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [uploadFile, setUploadFile] = useState<RcFile>(null);
+  const { t } = useTranslation();
 
   let resetTimer = null;
   const resetStates = () => {
@@ -138,6 +140,13 @@ const Emoji = () => {
         Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the
         filename without extension will be used as emoji name. Additionally, emoji names are
         case-insensitive. For best results, ensure all emoji have unique names.
+      </Paragraph>
+      <Paragraph>
+        {t('Want to upload custom emojis in bulk? Check out our')}{' '}
+        <a href="https://owncast.online/docs/chat/emoji" rel="noopener noreferrer" target="_blank">
+          {t('Emoji guide')}
+        </a>
+        .
       </Paragraph>
       <br />
       <Upload
