@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/microcosm-cc/bluemonday"
+	"golang.org/x/net/html"
 )
 
 // StripHTML will strip HTML tags from a string.
@@ -17,6 +18,7 @@ func StripHTML(s string) string {
 func MakeSafeStringOfLength(s string, length int) string {
 	newString := s
 	newString = StripHTML(newString)
+	newString = htmlUnescape(newString)
 
 	// Convert utf-8 string into Unicode code points.
 	codePoints := []rune(newString)
@@ -30,4 +32,20 @@ func MakeSafeStringOfLength(s string, length int) string {
 	newString = strings.TrimSpace(newString)
 
 	return newString
+}
+
+func htmlUnescape(input string) string {
+	token := html.NewTokenizer(strings.NewReader(input))
+	var output strings.Builder
+
+	for {
+		tt := token.Next()
+		switch tt {
+		case html.ErrorToken:
+			return output.String()
+		case html.TextToken:
+			text := string(token.Text())
+			output.WriteString(text)
+		}
+	}
 }
