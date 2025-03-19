@@ -44,7 +44,13 @@ func GetWebfingerLinks(account string) ([]map[string]interface{}, error) {
 		},
 	}
 
-	response, err := client.Get(requestURL.String())
+	req, err := http.NewRequest("GET", requestURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Accept", "application/json")
+
+	response, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
