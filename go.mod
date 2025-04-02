@@ -15,7 +15,7 @@ require (
 	github.com/grafov/m3u8 v0.12.1
 	github.com/jellydator/ttlcache/v3 v3.3.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
-	github.com/mattn/go-sqlite3 v1.14.26
+	github.com/mattn/go-sqlite3 v1.14.27
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/mssola/user_agent v0.6.0
 	github.com/nakabonne/tstorage v0.3.6
