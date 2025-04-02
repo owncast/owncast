@@ -1,0 +1,72 @@
+# This is the configuration file for pre-push and pre-commit hooks that can
+# be optionally run to assist in Owncast development.
+# This file should be placed in the root of the Owncast repository.
+# It will perform code linting, formatting, run tests, and other checks.
+# To enable this, you need to enable to enable the hooks by running:
+# go tool lefthook install
+#
+# To learn more: https://lefthook.dev/usage/commands.html#lefthook-install
+#
+# To test the install run: go tool lefthook run test
+# And you should see the Go and JS tests run.
+
+pre-push:
+  parallel: true
+  commands:
+    web-build:
+      root: web/
+      run: npm run build
+
+pre-commit:
+  parallel: true
+  commands:
+    js-linter:
+      glob: '*.{js,ts,jsx,tsx}'
+      root: web/
+      run: npx eslint --fix --ext {staged_files}
+      stage_fixed: true
+    prettier:
+      glob: '*.{js,ts,jsx,tsx,css,scss}'
+      run: npx prettier --write {staged_files}
+      staged_fixed: true
+    css-linter:
+      glob: '*.{css,scss}'
+      root: web/
+      run: npx stylelint --fix {staged_files}
+      stage_fixed: true
+    js-unused:
+      glob: '*.{js,ts,jsx,tsx}'
+      root: web/
+      run: npx knip --include dependencies,files,exports
+    go-fmt:
+      glob: '*.go'
+      run: go tool gofumpt -l -w {staged_files}
+      stage_fixed: true
+    golangci-lint:
+      glob: '*.go'
+      run: go tool golangci-lint run ./...
+      stage_fixed: true
+    go-test:
+      glob: '*.go'
+      run: go test ./... > /dev/null
+    js-test:
+      glob: '*.{js,ts,jsx}'
+      root: web/
+      run: npm test
+
+test:
+  parallel: true
+  commands:
+    web:
+      root: web/
+      run: npm test
+    go:
+      run: go test ./... > /dev/null
+
+# Validate commit messages per https://www.conventionalcommits.org/en/v1.0.0/
+# Install commitlint into your global npm path if you want to use it.
+# npm install -g @commitlint/{config-conventional,cli}
+commit-msg:
+  commands:
+    'lint commit message':
+      run: command -v commitlint >/dev/null 2>&1 && commitlint --edit {1}
