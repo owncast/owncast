@@ -154,6 +154,7 @@ github.com/ettle/strcase v0.2.0/go.mod h1:DajmHElDSaX76ITe3/VHVyMin4LWSJN5Z909Wp
 github.com/evilmartians/lefthook v1.11.6 h1:21mgXlwefxdCRFW+3E99HljaZwVme4BXz0Amvr2+JxU=
 github.com/evilmartians/lefthook v1.11.6/go.mod h1:e8Ic4u+M/RDEtHy+nXCjbekDSz7CQvLpVjVDuXNr9CY=
 github.com/evilmartians/lefthook v1.11.8/go.mod h1:e8Ic4u+M/RDEtHy+nXCjbekDSz7CQvLpVjVDuXNr9CY=
+github.com/evilmartians/lefthook v1.11.9/go.mod h1:QIBRmoFT3bmUN1sP63BcpTbyH37KmPE9bzN2jkFkhuE=
 github.com/fatih/color v1.18.0 h1:S8gINlzdQ840/4pfAwic/ZE0djQEH3wM94VfqLTZcOM=
 github.com/fatih/color v1.18.0/go.mod h1:4FelSpRwEGDpQ12mAdzqdOukCy4u8WUtOY6lkT/6HfU=
 github.com/fatih/structtag v1.2.0 h1:/OdNE99OxoI/PqaW/SuSK9uxxT3f/tcSZgon/ssNSx4=
@@ -378,6 +379,7 @@ github.com/klauspost/compress v1.18.0/go.mod h1:2Pp+KzxcywXVXMr50+X0Q/Lsb43OQHYW
 github.com/klauspost/pgzip v1.2.6/go.mod h1:Ch1tH69qFZu15pkjo5kYi6mth2Zzwzt50oCQKQE9RUs=
 github.com/knadh/koanf/maps v0.1.1 h1:G5TjmUh2D7G2YWf5SQQqSiHRJEjaicvU0KpypqB3NIs=
 github.com/knadh/koanf/maps v0.1.1/go.mod h1:npD/QZY3V6ghQDdcQzl1W4ICNVTkohC8E73eI2xW4yI=
+github.com/knadh/koanf/maps v0.1.2/go.mod h1:npD/QZY3V6ghQDdcQzl1W4ICNVTkohC8E73eI2xW4yI=
 github.com/knadh/koanf/parsers/json v0.1.0 h1:dzSZl5pf5bBcW0Acnu20Djleto19T0CfHcvZ14NJ6fU=
 github.com/knadh/koanf/parsers/json v0.1.0/go.mod h1:ll2/MlXcZ2BfXD6YJcjVFzhG9P0TdJ207aIBKQhV2hY=
 github.com/knadh/koanf/parsers/toml/v2 v2.1.0 h1:EUdIKIeezfDj6e1ABDhIjhbURUpyrP1HToqW6tz8R0I=
