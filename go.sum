@@ -155,6 +155,7 @@ github.com/evilmartians/lefthook v1.11.6 h1:21mgXlwefxdCRFW+3E99HljaZwVme4BXz0Am
 github.com/evilmartians/lefthook v1.11.6/go.mod h1:e8Ic4u+M/RDEtHy+nXCjbekDSz7CQvLpVjVDuXNr9CY=
 github.com/evilmartians/lefthook v1.11.8/go.mod h1:e8Ic4u+M/RDEtHy+nXCjbekDSz7CQvLpVjVDuXNr9CY=
 github.com/evilmartians/lefthook v1.11.9/go.mod h1:QIBRmoFT3bmUN1sP63BcpTbyH37KmPE9bzN2jkFkhuE=
+github.com/evilmartians/lefthook v1.11.10/go.mod h1:cJkB/k0OHLuZiLFgwC+DBAeDj6xOFGT3j9Y0Ip3Z/tA=
 github.com/fatih/color v1.18.0 h1:S8gINlzdQ840/4pfAwic/ZE0djQEH3wM94VfqLTZcOM=
 github.com/fatih/color v1.18.0/go.mod h1:4FelSpRwEGDpQ12mAdzqdOukCy4u8WUtOY6lkT/6HfU=
 github.com/fatih/structtag v1.2.0 h1:/OdNE99OxoI/PqaW/SuSK9uxxT3f/tcSZgon/ssNSx4=
@@ -539,6 +540,7 @@ github.com/pelletier/go-toml v1.9.5 h1:4yBQzkHv+7BHq2PQUZF3Mx0IYxG7LsP222s7Agd3v
 github.com/pelletier/go-toml v1.9.5/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pelletier/go-toml/v2 v2.2.3 h1:YmeHyLY8mFWbdkNWwpr+qIL2bEqT0o95WSdkNHvL12M=
 github.com/pelletier/go-toml/v2 v2.2.3/go.mod h1:MfCQTFTvCcUyyvvwm1+G6H/jORL20Xlb6rzQu9GuUkc=
+github.com/pelletier/go-toml/v2 v2.2.4/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=
 github.com/perimeterx/marshmallow v1.1.5 h1:a2LALqQ1BlHM8PZblsDdidgv1mWi1DgC2UmX50IvK2s=
 github.com/perimeterx/marshmallow v1.1.5/go.mod h1:dsXbUu8CRzfYP5a87xpp0xq9S3u0Vchtcl8we9tYaXw=
 github.com/pganalyze/pg_query_go/v5 v5.1.0 h1:MlxQqHZnvA3cbRQYyIrjxEjzo560P6MyTgtlaf3pmXg=
