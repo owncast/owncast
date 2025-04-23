@@ -28,7 +28,7 @@
 		"@emoji-mart/data": "^1.2.1",
 		"@emoji-mart/react": "^1.1.1",
 		"@fontsource/inter": "^5.0.0",
-		"@fontsource/poppins": "5.1.1",
+		"@fontsource/poppins": "5.2.5",
 		"@next/bundle-analyzer": "^14.0.0",
 		"@uiw/codemirror-theme-bbedit": "4.23.7",
 		"@uiw/react-codemirror": "4.23.7",
