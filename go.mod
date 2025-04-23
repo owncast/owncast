@@ -7,7 +7,7 @@ require (
 	github.com/SherClockHolmes/webpush-go v1.4.0
 	github.com/TwiN/go-away v1.6.15
 	github.com/andybalholm/cascadia v1.3.3
-	github.com/aws/aws-sdk-go v1.55.6
+	github.com/aws/aws-sdk-go v1.55.7
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-fed/activity v1.0.1-0.20220119073622-b14b50eecad0
 	github.com/go-fed/httpsig v1.1.0
