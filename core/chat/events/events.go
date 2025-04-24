@@ -137,7 +137,7 @@ var (
 	emojiDefs         = newEmojis()
 	emojiHTML         = make(map[string]string)
 	emojiModTime      time.Time
-	emojiHTMLFormat   = `<img src="{{ .URL }}" class="emoji" alt=":{{ .Name }}:" title=":{{ .Name }}:">`
+	emojiHTMLFormat   = `<img src="{{ .Url }}" class="emoji" alt=":{{ .Name }}:" title=":{{ .Name }}:">`
 	emojiHTMLTemplate = template.Must(template.New("emojiHTML").Parse(emojiHTMLFormat))
 )
 
