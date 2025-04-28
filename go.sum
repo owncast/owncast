@@ -148,6 +148,7 @@ github.com/ettle/strcase v0.2.0 h1:fGNiVF21fHXpX1niBgk0aROov1LagYsOwV/xqKDKR/Q=
 github.com/ettle/strcase v0.2.0/go.mod h1:DajmHElDSaX76ITe3/VHVyMin4LWSJN5Z909Wp+ED1A=
 github.com/evilmartians/lefthook v1.11.11 h1:QxItswPpxJyd1VXTht1uacweiB/LFGJ3Q7Gnr9gUm9c=
 github.com/evilmartians/lefthook v1.11.11/go.mod h1:UzYAtM92g7fTYUuweFhtRto8+uPVKmUNGbCMtgI8ht4=
+github.com/evilmartians/lefthook v1.11.12/go.mod h1:UzYAtM92g7fTYUuweFhtRto8+uPVKmUNGbCMtgI8ht4=
 github.com/fatih/color v1.18.0 h1:S8gINlzdQ840/4pfAwic/ZE0djQEH3wM94VfqLTZcOM=
 github.com/fatih/color v1.18.0/go.mod h1:4FelSpRwEGDpQ12mAdzqdOukCy4u8WUtOY6lkT/6HfU=
 github.com/fatih/structtag v1.2.0 h1:/OdNE99OxoI/PqaW/SuSK9uxxT3f/tcSZgon/ssNSx4=
