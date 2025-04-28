@@ -1,5 +1,6 @@
 import React from 'react';
 import { FC } from 'react';
+import { background } from 'storybook/internal/theming';
 
 export type ImageAssetProps = {
   name: string;
@@ -18,6 +19,7 @@ export const ImageAsset: FC<ImageAssetProps> = ({ name, src }) => {
     borderColor: 'lightgray',
     overflow: 'hidden',
     margin: '0.3vw',
+    backgroundColor: 'lightgray',
   };
 
   const colorDescriptionStyle = {
