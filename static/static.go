@@ -11,10 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-//go:embed web/*
-//go:embed web/_next/static
-//go:embed web/_next/static/chunks/pages/*.js
-//go:embed web/_next/static/*/*.js
+//go:embed all:web/*
 var webFiles embed.FS
 
 // GetWeb will return an embedded filesystem reference to the admin web app.
