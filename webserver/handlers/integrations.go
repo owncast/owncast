@@ -95,34 +95,34 @@ func (*ServerInterfaceImpl) ExternalGetStatus(w http.ResponseWriter, r *http.Req
 func (*ServerInterfaceImpl) GetPrometheusAPI(w http.ResponseWriter, r *http.Request) {
 	// might need to bring this out of the codegen
 	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
-		promhttp.Handler()
+		promhttp.Handler().ServeHTTP(w, r)
 	})(w, r)
 }
 
 func (*ServerInterfaceImpl) PostPrometheusAPI(w http.ResponseWriter, r *http.Request) {
 	// might need to bring this out of the codegen
 	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
-		promhttp.Handler()
+		promhttp.Handler().ServeHTTP(w, r)
 	})(w, r)
 }
 
 func (*ServerInterfaceImpl) PutPrometheusAPI(w http.ResponseWriter, r *http.Request) {
 	// might need to bring this out of the codegen
 	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
-		promhttp.Handler()
+		promhttp.Handler().ServeHTTP(w, r)
 	})(w, r)
 }
 
 func (*ServerInterfaceImpl) DeletePrometheusAPI(w http.ResponseWriter, r *http.Request) {
 	// might need to bring this out of the codegen
 	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
-		promhttp.Handler()
+		promhttp.Handler().ServeHTTP(w, r)
 	})(w, r)
 }
 
 func (*ServerInterfaceImpl) OptionsPrometheusAPI(w http.ResponseWriter, r *http.Request) {
 	// might need to bring this out of the codegen
 	middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
-		promhttp.Handler()
+		promhttp.Handler().ServeHTTP(w, r)
 	})(w, r)
 }
