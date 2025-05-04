@@ -198,8 +198,7 @@ func SendPublicMessage(textContent string) error {
 	return nil
 }
 
-// if public, cc the followers and to the Public uri
-// if private, address followers directly
+// if public, cc the followers and to the Public uri, else private, address followers directly.
 func getAddressingToFollowers() (vocab.ActivityStreamsToProperty, vocab.ActivityStreamsCcProperty) {
 	configRepository := configrepository.Get()
 	server_url := configRepository.GetServerURL()
