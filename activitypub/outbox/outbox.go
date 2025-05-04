@@ -66,11 +66,11 @@ func SendLive() error {
 
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 
-	// To the public if we're not treating ActivityPub as "private".
-	if !configRepository.GetFederationIsPrivate() {
-		note = apmodels.MakeNotePublic(note)
-		activity = apmodels.MakeActivityPublic(activity)
-	}
+	to, cc := getAddressingToFollowers()
+	note.SetActivityStreamsTo(to)
+	note.SetActivityStreamsCc(cc)
+	activity.SetActivityStreamsTo(to)
+	activity.SetActivityStreamsCc(cc)
 
 	note.SetActivityStreamsTag(tagProp)
 
@@ -153,8 +153,6 @@ func SendDirectMessageToAccount(textContent, account string) error {
 
 // SendPublicMessage will send a public message to all followers.
 func SendPublicMessage(textContent string) error {
-	// configRepository := configrepository.Get()
-
 	originalContent := textContent
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
@@ -177,10 +175,6 @@ func SendPublicMessage(textContent string) error {
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 	note.SetActivityStreamsTag(tagProp)
 
-	// if !configRepository.GetFederationIsPrivate() {
-	// 	note = apmodels.MakeNotePublic(note)
-	// 	activity = apmodels.MakeActivityPublic(activity)
-	// }
 	to, cc := getAddressingToFollowers()
 	note.SetActivityStreamsTo(to)
 	note.SetActivityStreamsCc(cc)
