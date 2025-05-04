@@ -153,7 +153,7 @@ func SendDirectMessageToAccount(textContent, account string) error {
 
 // SendPublicMessage will send a public message to all followers.
 func SendPublicMessage(textContent string) error {
-	configRepository := configrepository.Get()
+	// configRepository := configrepository.Get()
 
 	originalContent := textContent
 	textContent = utils.RenderSimpleMarkdown(textContent)
@@ -177,10 +177,15 @@ func SendPublicMessage(textContent string) error {
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 	note.SetActivityStreamsTag(tagProp)
 
-	if !configRepository.GetFederationIsPrivate() {
-		note = apmodels.MakeNotePublic(note)
-		activity = apmodels.MakeActivityPublic(activity)
-	}
+	// if !configRepository.GetFederationIsPrivate() {
+	// 	note = apmodels.MakeNotePublic(note)
+	// 	activity = apmodels.MakeActivityPublic(activity)
+	// }
+	to, cc := getAddressingToFollowers()
+	note.SetActivityStreamsTo(to)
+	note.SetActivityStreamsCc(cc)
+	activity.SetActivityStreamsTo(to)
+	activity.SetActivityStreamsCc(cc)
 
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
@@ -197,6 +202,20 @@ func SendPublicMessage(textContent string) error {
 	}
 
 	return nil
+}
+
+// if public, cc the followers and to the Public uri
+// if private, address followers directly
+func getAddressingToFollowers() (vocab.ActivityStreamsToProperty, vocab.ActivityStreamsCcProperty) {
+	configRepository := configrepository.Get()
+	server_url := configRepository.GetServerURL()
+	followers_iri, _ := url.Parse(server_url)
+	username := configRepository.GetDefaultFederationUsername()
+
+	followers_iri = followers_iri.JoinPath("federation", "user", username, "followers")
+
+	return apmodels.MakeAddressingToFollowers(followers_iri, !configRepository.GetFederationIsPrivate())
+
 }
 
 // nolint: unparam
