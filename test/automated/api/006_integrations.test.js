@@ -172,3 +172,8 @@ test('send an external integration action using access token expecting failure',
 		.send(payload)
 		.expect(401);
 });
+
+test('test prometheus metrics', async() => {
+	const res = await getAdminResponse('prometheus');
+	expect(res.text).toMatch(/owncast_instance_cpu_usage/);
+});
