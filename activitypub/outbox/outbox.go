@@ -208,7 +208,6 @@ func getAddressingToFollowers() (vocab.ActivityStreamsToProperty, vocab.Activity
 	followers_iri = followers_iri.JoinPath("federation", "user", username, "followers")
 
 	return apmodels.MakeAddressingToFollowers(followers_iri, !configRepository.GetFederationIsPrivate())
-
 }
 
 // nolint: unparam
