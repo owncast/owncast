@@ -54,16 +54,17 @@ func RegisterFediverseOTPRequest(u models.User, w http.ResponseWriter, r *http.R
 func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 	var req generated.VerifyFediverseOTPRequestJSONBody
 
-	if req.Code == nil {
-		webutils.WriteSimpleResponse(w, false, "Could not decode request: code is required")
-		return
-	}
-
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&req); err != nil {
 		webutils.WriteSimpleResponse(w, false, "Could not decode request: "+err.Error())
 		return
 	}
+
+	if req.Code == nil {
+		webutils.WriteSimpleResponse(w, false, "Could not decode request: code is required")
+		return
+	}
+
 	accessToken := r.URL.Query().Get("accessToken")
 	valid, authRegistration := fediverseauth.ValidateFediverseOTP(accessToken, *req.Code)
 	if !valid {
