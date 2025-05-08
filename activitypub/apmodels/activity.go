@@ -31,6 +31,20 @@ func MakeNotePublic(note vocab.ActivityStreamsNote) vocab.ActivityStreamsNote {
 	return note
 }
 
+func MakeAddressingToFollowers(followers_iri *url.URL, public bool) (vocab.ActivityStreamsToProperty, vocab.ActivityStreamsCcProperty) {
+	to := streams.NewActivityStreamsToProperty()
+	cc := streams.NewActivityStreamsCcProperty()
+
+	if public {
+		public, _ := url.Parse(PUBLIC)
+		to.AppendIRI(public)
+		cc.AppendIRI(followers_iri)
+	} else {
+		to.AppendIRI(followers_iri)
+	}
+	return to, cc
+}
+
 // MakeNoteDirect sets the required properties to make this note seen as a
 // direct message.
 func MakeNoteDirect(note vocab.ActivityStreamsNote, toIRI *url.URL) vocab.ActivityStreamsNote {
