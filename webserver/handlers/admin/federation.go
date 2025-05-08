@@ -16,6 +16,13 @@ func SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	configRepository := configrepository.Get()
+
+	if !configRepository.GetFederationEnabled() {
+		webutils.WriteSimpleResponse(w, false, "Federation is disabled")
+		return
+	}
+
 	configValue, success := getValueFromRequest(w, r)
 	if !success {
 		return
