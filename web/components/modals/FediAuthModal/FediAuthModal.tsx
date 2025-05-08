@@ -70,8 +70,8 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
 
     const content = await rawResponse.json();
     if (content.message) {
-      setErrorMessage(content.message);
       setLoading(false);
+      throw new Error(content.message); // let the callers handle setting error message since they already are
     }
   };
 
@@ -87,7 +87,7 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
       window.location.href = '/';
     } catch (e) {
       console.error(e);
-      setErrorMessage(e);
+      setErrorMessage(e.toString());
     }
     setLoading(false);
   };
@@ -108,7 +108,7 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
       setVerifyingCode(true);
     } catch (e) {
       console.error(e);
-      setErrorMessage(e);
+      setErrorMessage(e.toString());
     }
     setLoading(false);
   };
