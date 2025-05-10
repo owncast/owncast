@@ -55,12 +55,16 @@ func GetWebfingerLinks(account string) ([]map[string]interface{}, error) {
 		return nil, err
 	}
 
+	if response.StatusCode != http.StatusOK {
+		return nil, errors.New("webfinger request returned bad status code: " + http.StatusText(response.StatusCode) + ", check account details")
+	}
+
 	defer response.Body.Close()
 
 	var links webfingerResponse
 	decoder := json.NewDecoder(response.Body)
 	if err := decoder.Decode(&links); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error decoding webfinger response: %s", err)
 	}
 
 	return links.Links, nil
