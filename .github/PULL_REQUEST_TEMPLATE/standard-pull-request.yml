@@ -1,0 +1,83 @@
+name: Pull Request
+description: Submit a pull request to contribute code changes to Owncast.
+title: ''
+labels: ['pull request']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ⚠️ Please Read First
+
+        We manage everything through issues, not PRs. A PR is a **solution**, and a solution without a **problem** breaks release notes.
+
+        ➡️ **If this change is unsolicited or doesn't have an issue yet, please [file an issue](../../issues/new) before continuing.**
+
+        We use issues to:
+        - Planning
+        - Attribute contributions in release notes in the correct versions
+        - Discuss different approaches before implementation
+
+        Mark this as a Draft or WIP and write up some details later and start a conversation, even if your PR is not ready for review or you haven't yet provided all the information.
+
+  - type: input
+    id: related-issue
+    attributes:
+      label: Related Issue Number
+      description: Provide the issue number this pull request resolves (e.g., #123).
+      placeholder: '#123'
+    validations:
+      required: false
+
+  - type: textarea
+    id: change-summary
+    attributes:
+      label: Summary of the Change
+      description: Describe what this pull request changes. Include context, motivations, how to test, and why the change is needed.
+      render: markdown
+    placeholder: |
+      ## Why it's needed:
+      1. I did this because of X.
+      2. And because of Y.
+      3. A little bit of Z for good measure.
+
+      ## How to test:
+      1. Do this
+      2. Do that
+      3. Check it by looking at this
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots-logs
+    attributes:
+      label: Screenshots or Logs
+      description: Provide any logs/examples (for backend changes).
+      render: bash
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: code-confirmation
+    attributes:
+      label: Submission Confirmation
+      description: "There's a few things that will make all of our lives easier. Please confirm that you have done the following:"
+      options:
+        - label: I merged in the latest changes from the develop branch.
+          required: true
+        - label: 'I ran my code through the appropriate linters and formatters. (js: eslint, prettier, go: gofmt, golangci-lint, etc., css: stylelint, etc.)'
+          required: true
+        - label: Red
+        - label: Yellow
+    validations:
+      required: false
+
+  - type: dropdown
+    id: issue-confirmation
+    attributes:
+      label: Issue Acknowledgment
+      description: We manage all of our TODOs, bugs, and discussion of changes through issues. If you didn't open an issue, or one didn't already exist, please confirm that you discussed this change with the team or there was some other reason.
+      options:
+        - 'There was an existing issue, or I opened a new one to facilitate discussion around the change.'
+        - "I didn't open an issue and no discussion took about what should be changed."
+    validations:
+      required: true
