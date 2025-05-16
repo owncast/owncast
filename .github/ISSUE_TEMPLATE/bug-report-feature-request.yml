@@ -6,7 +6,7 @@ body:
       value: |
         Thanks for helping by reporting issues and sharing ideas you might have!
         While no idea is a bad idea, some might make more sense for Owncast than others.
-        Take a look at the [Owncast product definition](https://github.com/owncast/owncast/blob/develop/docs/product-definition.md) to see what our focus is and how your requests might align.
+        Take a look at the [Owncast product definition](https://docs.owncast.dev/project-definition) to see what our focus is and how your requests might align.
 
   - type: textarea
     id: issue-body
