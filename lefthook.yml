@@ -23,21 +23,21 @@ pre-commit:
     js-linter:
       glob: '*.{js,ts,jsx,tsx}'
       root: web/
-      run: npx eslint --fix --ext {staged_files}
+      run: npx --yes eslint --fix --ext {staged_files}
       stage_fixed: true
     prettier:
       glob: '*.{js,ts,jsx,tsx,css,scss}'
-      run: npx prettier --write {staged_files}
+      run: npx --yes prettier --write {staged_files}
       staged_fixed: true
     css-linter:
       glob: '*.{css,scss}'
       root: web/
-      run: npx stylelint --fix {staged_files}
+      run: npx --yes stylelint --fix {staged_files}
       stage_fixed: true
     js-unused:
       glob: '*.{js,ts,jsx,tsx}'
       root: web/
-      run: npx knip --include dependencies,files,exports
+      run: npx --yes knip --include dependencies,files,exports
     go-fmt:
       glob: '*.go'
       run: go tool gofumpt -l -w {staged_files}
