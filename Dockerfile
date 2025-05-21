@@ -25,14 +25,14 @@ RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags "-extldflag
 FROM ubuntu:noble
 RUN apt update && apt upgrade -y && apt install -y ffmpeg ca-certificates && update-ca-certificates
 
-RUN addgroup --gid 1001 owncast 
-RUN adduser --uid 1001 --gid 1001 owncast
+#RUN addgroup --gid 1001 owncast 
+#RUN adduser --uid 1001 --gid 1001 owncast
 
 # Copy owncast assets
 WORKDIR /app
 COPY --from=build /build/owncast /app/owncast
 RUN mkdir /app/data
-RUN chown -R owncast:owncast /app
-USER owncast
+RUN chown -R ubuntu:ubuntu /app
+USER ubuntu
 ENTRYPOINT ["/app/owncast"]
 EXPOSE 8080 1935
