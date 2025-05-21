@@ -94,7 +94,7 @@ export function createVideoSettingsMenuButton(
         defaultAutoItem.selected(true);
       });
 
-      const supportsLatencyCompensator = !!tech && !!tech.vhs;
+      const supportsLatencyCompensator = false; //! !tech && !!tech.vhs;
 
       // Only show the quality selector if there is more than one option.
       if (qualities.length < 2 && supportsLatencyCompensator) {
