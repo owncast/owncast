@@ -25,7 +25,7 @@ RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags "-extldflag
 FROM ubuntu:noble
 RUN apt update && apt upgrade -y && apt install -y ffmpeg ca-certificates && update-ca-certificates
 
-RUN adduser --uid 101 --gid 101 owncast
+RUN addgroup --gid 101 owncast && adduser --uid 101 --gid 101 owncast
 
 # Copy owncast assets
 WORKDIR /app
