@@ -23,7 +23,7 @@ RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags "-extldflag
 
 # Create the image by copying the result of the build into a new alpine image
 FROM ubuntu:noble
-RUN apt update && apt install ffmpeg ca-certificates && update-ca-certificates
+RUN apt update && apt install -y ffmpeg ca-certificates && update-ca-certificates
 
 RUN addgroup -g 101 -S owncast && adduser -u 101 -S owncast -G owncast
 
