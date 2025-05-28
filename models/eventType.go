@@ -12,6 +12,9 @@ const (
 	UserParted EventType = "USER_PARTED"
 	// UserNameChanged is the event sent when a chat username change takes place.
 	UserNameChanged EventType = "NAME_CHANGE"
+	// UserFollowed is the event sent when a user follows the stream on the
+	// fediverse
+	FediverseEngagementFollow EventType = "FEDIVERSE_ENGAGEMENT_FOLLOW"
 	// VisibiltyToggled is the event sent when a chat message's visibility changes.
 	VisibiltyToggled EventType = "VISIBILITY-UPDATE"
 	// PING is a ping message.
