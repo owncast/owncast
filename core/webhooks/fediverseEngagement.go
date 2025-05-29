@@ -6,8 +6,9 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
-// SendFediverseEventFollow will send a user followed event to webhook destinations
-func SendUserFollowedEvent(iri string) {
+// SendFediverseEventFollow will send a user followed event to webhook
+// destinations.
+func SendFediverseEngagementFollowEvent(iri string) {
 	follower, err := persistence.GetFollower(iri)
 	if err != nil {
 		return
@@ -18,10 +19,10 @@ func SendUserFollowedEvent(iri string) {
 	userFollowedEvent.Username = follower.Username
 	userFollowedEvent.Image = follower.Image.String()
 
-	sendFediverseEventFollow(userFollowedEvent)
+	sendFediverseEngagementEventFollow(userFollowedEvent)
 }
 
-func sendFediverseEventFollow(event events.FediverseEngagementFollowEvent) {
+func sendFediverseEngagementEventFollow(event events.FediverseEngagementFollowEvent) {
 	webhookEvent := WebhookEvent{
 		Type:      models.FediverseEngagementFollow,
 		EventData: event,

@@ -37,8 +37,8 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Fire fediverse engagement follow event
-		go webhooks.SendUserFollowedEvent(*approval.ActorIRI)
+		// Fire fediverse engagement follow event.
+		go webhooks.SendFediverseEngagementFollowEvent(*approval.ActorIRI)
 
 		configRepository := configrepository.Get()
 		localAccountName := configRepository.GetDefaultFederationUsername()

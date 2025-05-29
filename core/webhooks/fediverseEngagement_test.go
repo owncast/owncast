@@ -8,15 +8,14 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
-func TestSendFediverseEventFollow(t *testing.T) {
+func TestSendFediverseEngagementEventFollow(t *testing.T) {
 	checkPayload(t, models.FediverseEngagementFollow, func() {
-		sendFediverseEventFollow(events.FediverseEngagementFollowEvent{
+		sendFediverseEngagementEventFollow(events.FediverseEngagementFollowEvent{
 			Event: events.Event{
 				Timestamp: time.Unix(72, 6).UTC(),
-				ID: "id",
-				Type: models.FediverseEngagementFollow,
+				ID:        "id",
 			},
-			Name: "be",
+			Name:     "be",
 			Username: "be@witch.me",
 		})
 	}, `{
