@@ -23,7 +23,6 @@ func TestSendFediverseEngagementEventFollow(t *testing.T) {
 		"image": "",
 		"name": "be",
 		"timestamp": "1970-01-01T00:01:12.000000006Z",
-		"type": "FEDIVERSE_ENGAGEMENT_FOLLOW",
 		"username": "be@witch.me"
 		}`)
 }
