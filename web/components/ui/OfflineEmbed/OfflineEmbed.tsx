@@ -1,12 +1,11 @@
 /* eslint-disable react/no-danger */
-
-import { FC, useEffect, useState } from 'react';
-import classNames from 'classnames';
+import React, { useContext, useState } from 'react';
 import Head from 'next/head';
-import { Button, Typography } from 'antd';
 import styles from './OfflineEmbed.module.scss';
+import { Typography } from 'antd';
 import { Modal } from '../Modal/Modal';
 import { FollowForm } from '../../modals/FollowModal/FollowForm';
+import { ServerStatusContext } from '../../../utils/server-status-context';
 
 const { Title } = Typography;
 
@@ -17,56 +16,56 @@ export type OfflineEmbedProps = {
   supportsFollows: boolean;
 };
 
-enum EmbedMode {
-  CannotFollow = 1,
-  CanFollow,
-}
-
-export const OfflineEmbed: FC<OfflineEmbedProps> = ({
+export const OfflineEmbed = ({
   streamName,
-  subtitle,
   image,
   supportsFollows,
-}) => {
-  const [currentMode, setCurrentMode] = useState(EmbedMode.CanFollow);
+  subtitle,
+}: OfflineEmbedProps) => {
   const [showFollowModal, setShowFollowModal] = useState(false);
 
-  useEffect(() => {
-    if (!supportsFollows) {
-      setCurrentMode(EmbedMode.CannotFollow);
-    } else if (currentMode === EmbedMode.CannotFollow) {
-      setCurrentMode(EmbedMode.CanFollow);
-    }
-  }, [supportsFollows]);
+  const { serverConfig } = useContext(ServerStatusContext);
 
-  const followButtonPressed = async () => {
-    setShowFollowModal(true);
-  };
+  const Header = ({ instanceUrl }) =>
+    instanceUrl ? (
+      <a href={serverConfig.yp.instanceUrl} className={styles.header}>
+        <div className={styles.logo} style={{ backgroundImage: `url(${image})` }} />
+        <div className={styles.title}>
+          <Title level={1} className={styles.text} ellipsis={{ rows: 2 }}>
+            {streamName}
+          </Title>
+        </div>
+      </a>
+    ) : (
+      <div className={styles.header}>
+        <div className={styles.logo} style={{ backgroundImage: `url(${image})` }} />
+        <div className={styles.title}>
+          <Title level={1} className={styles.text} ellipsis={{ rows: 2 }}>
+            {streamName}
+          </Title>
+        </div>
+      </div>
+    );
 
   return (
-    <div>
+    <div className={styles.canvas}>
       <Head>
         <title>{streamName}</title>
       </Head>
-      <div className={classNames(styles.offlineContainer)}>
-        <div className={styles.content}>
-          <Title level={1} className={styles.headerContainer}>
-            <div className={styles.pageLogo} style={{ backgroundImage: `url(${image})` }} />
-            <div className={styles.streamName}>{streamName}</div>
+      <div className={styles.content}>
+        <Header instanceUrl={serverConfig.yp.instanceUrl} />
+        <div className={styles.body}>
+          <Title level={2} className={styles.text}>
+            This stream is not currently live.
           </Title>
-
-          <div className={styles.messageContainer}>
-            <Title level={2} className={styles.offlineTitle}>
-              This stream is not currently live.
-            </Title>
-            <div className={styles.message} dangerouslySetInnerHTML={{ __html: subtitle }} />
-          </div>
-
-          {currentMode === EmbedMode.CanFollow && (
+          {subtitle && (
+            <div className={styles.message}>
+              <div className={styles.text}>{subtitle}</div>
+            </div>
+          )}
+          {supportsFollows && (
             <>
-              <Button className={styles.followButton} type="primary" onClick={followButtonPressed}>
-                Follow Server
-              </Button>
+              <button onClick={() => setShowFollowModal(true)}>Follow</button>
               <Modal
                 title={`Follow ${streamName}`}
                 open={showFollowModal}

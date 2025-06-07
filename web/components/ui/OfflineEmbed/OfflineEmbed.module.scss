@@ -1,157 +1,180 @@
-@import '../../../styles/mixins';
+.canvas {
+	container-type: inline-size;
+	container-name: wrapper;
+}
 
-$short-container-max-height: 480px;
-$short-container-min-height: 320px;
-$follow-modal-width: 300px;
+.content {
+	// Should be able to set width: 100% and let aspect ration determine height,
+	// but then somehow doesn't come out 16:9.
+	// However setting height: 100% seems to work.
+	// Idk why, but it works so... ¯\_(ツ)_/¯
+	height: 100%;
+	aspect-ratio: 16 / 9;
 
-.offlineContainer {
-  --text-color: rgb(255 255 255 / 100%);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 
-  position: absolute;
-  width: 100%;
-  height: 100%;
   background-image: linear-gradient(to bottom, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 75%) 100%),
     radial-gradient(circle, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 50%) 100%),
-    linear-gradient(to bottom, rgb(122 92 243 / 100%) 0%, rgb(35 134 226 / 100%) 100%),
+    linear-gradient(to bottom, var(--theme-color-primary) 0%,
+		var(--theme-color-primary) 100%),
     linear-gradient(rgb(240 243 248 / 100%), rgb(240 243 248 / 100%));
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  font-size: 16px;
+	color: white;
+	padding: 1em 1em;
 
-  @include screen(mobile) {
-    font-size: 12px;
-  }
-
-  @media (height <= $short-container-max-height) {
-    font-size: 12px;
-  }
-
-  /* Content */
-  .content {
-    color: var(--text-color);
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    gap: clamp(15px, 7vh, 50px);
-    padding: 24px;
-    text-align: center;
-    width: 100vw;
-    height: 100vh;
-    max-width: 1024px;
-    max-height: 576px;
-    justify-content: center;
-
-    .headerContainer {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      margin: 0;
-      font-size: clamp(1em, 1.5em, 5vh);
-    }
-
-    .messageContainer {
-      width: 100%;
-
-      --description-height: auto;
-
-      @media (height <= $short-container-min-height) {
-        --description-height: 30vh;
-
-        margin: 0;
-      }
-
-      min-height: var(--description-height);
-
-      --gradient-mask: linear-gradient(to top, rgb(0 0 0 / 0%), rgb(0 0 0 / 100%) 17%);
-
-      overflow: hidden;
-      overflow-y: auto;
-      max-height: var(--description-height);
-      mask-image: var(--gradient-mask);
-      mask-repeat: repeat-x;
-      mask-size: auto var(--description-height);
-      mask-position: top;
-      padding-bottom: 0.5rem;
-    }
-
-    /* Message */
-    .message {
-      color: var(--text-color);
-      font-family: var(--theme-text-body-font-family);
-      font-style: normal;
-      font-size: clamp(1.5em, 4.8vh, 30px);
-      line-height: clamp(1.3em, 8vh, 35px);
-      letter-spacing: 0;
-      text-decoration: none;
-      text-transform: none;
-      display: block;
-      margin: auto;
-      margin-top: 2vh;
-
-      @include screen(desktop) {
-        width: 80%;
-      }
-    }
-
-    /* Heading */
-    .offlineTitle {
-      color: var(--text-color);
-      font-family: var(--theme-text-display-font-family);
-      font-style: normal;
-      font-size: clamp(1.3em, 5vh, 2em);
-      font-weight: 600;
-      line-height: 1.125;
-      letter-spacing: -0.125px;
-      text-decoration: none;
-      text-transform: none;
-      margin: 0;
-    }
-
-    /* Page Logo */
-    .pageLogo {
-      position: relative;
-      min-height: 3em;
-      min-width: 3em;
-      max-height: 100px;
-      max-width: 100px;
-      border-radius: 96px;
-      background-color: rgb(255 255 255 / 100%);
-      border: 2px solid rgb(18 22 29 / 100%);
-      display: flex;
-      flex-flow: row nowrap;
-      align-items: flex-start;
-      justify-content: flex-start;
-      gap: 0;
-      padding: 10px;
-      background-size: cover;
-      background-position: center;
-    }
-
-    /* Stream Name */
-    .streamName {
-      color: var(--text-color);
-      font-family: var(--theme-text-display-font-family);
-      font-style: normal;
-      font-size: 2.5em;
-      font-weight: 500;
-      line-height: 1.1875;
-      letter-spacing: -0.0625px;
-      text-decoration: none;
-      text-transform: none;
-      text-align: left;
-    }
-
-    .followButton {
-      display: none;
-
-      @media (width > $follow-modal-width) {
-        display: block;
-      }
-    }
-  }
+	// Base font size
+	font-size: 1rem;
 }
+
+.header {
+	display: flex;
+	width: 95%;
+	justify-content: center;
+	gap: 0.5em;
+
+	&:link,
+	&:visited,
+	&:hover,
+	&:active,
+	&:focus {
+		color: inherit;
+		text-decoration: none;
+		outline: none;
+	}
+
+	.title {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.logo {
+		height: 100%;
+		aspect-ratio: 1 / 1;
+		border-radius: 200px;
+		background-color: rgb(255 255 255 / 100%);
+		border: 2px solid rgb(18 22 29 / 100%);
+		background-size: cover;
+		background-position: center;
+		max-width: 100%;
+		max-height: 100%;
+	}
+}
+
+.body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	overflow: hidden;
+
+	&:has(> *:only-child) {
+		justify-content: center;
+	}
+
+	.message {
+		margin: 0 1em 0em 1em;
+		line-height: 0.7em;
+		max-height: 2.1em;
+		overflow: auto;
+
+		--description-height: auto;
+		--gradient-mask: linear-gradient(to top, rgb(0 0 0 / 0%), rgb(0 0 0 / 100%) 17%);
+		mask-image: var(--gradient-mask);
+		mask-repeat: repeat-x;
+		mask-size: auto var(--description-height);
+		mask-position: top;
+	}
+
+	button {
+		border: none;
+		border-radius: 0.5em;
+		padding: 0 2em;
+		font-size: 0.4em;
+		background: var(--theme-color-action);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+
+		&:hover {
+			filter: brightness(110%);
+		}
+
+		* + & {
+			margin-top: 1em;
+		}
+	}
+}
+
+.text {
+	font-family: var(--theme-text-display-font-family);
+	// Enforce rule for <Title /> components
+	color: var(--text-color) !important;
+}
+
+.title .text {
+	font-size: 1em;
+}
+
+.body .text {
+	font-size: 0.6em;
+}
+
+.body .message .text {
+	font-size: 0.5em;
+	text-align: center;
+}
+
+// iPhone 6 (portrait)
+@container wrapper (min-width: 315px) {
+	.content {
+		font-size: 1rem;
+		padding: 2em 2em;
+	}
+}
+
+// iPhone 5 (landscape)
+@container wrapper (min-width: 430px) {
+	.content {
+		font-size: 1.5rem;
+		padding: 2em 2em; }
+}
+
+// iPhone 6, 6 Plus, 8 Plus (landscape)
+@container wrapper (min-width: 637px) {
+	.content {
+		font-size: 1.8rem;
+		padding: 2em 2em;
+	}
+}
+
+// iPad (landscape) and larger
+@container wrapper (min-width: 850px) {
+	.content {
+		font-size: 2.5rem;
+		padding: 2em 2em;
+	}
+}
+
+// iPad 10.5 (landscape)
+@container wrapper (min-width: 1000px) {
+	.header {
+		// Reduce the oversized gap between the logo and the title
+		width: 85%;
+	}
+
+	.content {
+		font-size: 2.5rem;
+		padding: 3em 2em;
+	}
+}
+
+// Wider than iPad 11 (landscape)
+@container wrapper (min-width: 1300px) {
+	.content {
+		font-size: 3rem;
+		padding: 3em 2em;
+	}
+}
+
