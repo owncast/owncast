@@ -1,180 +1,180 @@
 .canvas {
-	container-type: inline-size;
-	container-name: wrapper;
+  container-type: inline-size;
+  container-name: wrapper;
 }
 
 .content {
-	// Should be able to set width: 100% and let aspect ration determine height,
-	// but then somehow doesn't come out 16:9.
-	// However setting height: 100% seems to work.
-	// Idk why, but it works so... ¯\_(ツ)_/¯
-	height: 100%;
-	aspect-ratio: 16 / 9;
+  // Should be able to set width: 100% and let aspect ration determine height,
+  // but then somehow doesn't come out 16:9.
+  // However setting height: 100% seems to work.
+  // Idk why, but it works so... ¯\_(ツ)_/¯
+  height: 100%;
+  aspect-ratio: 16 / 9;
 
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-  background-image: linear-gradient(to bottom, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 75%) 100%),
+  background-image:
+    linear-gradient(to bottom, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 75%) 100%),
     radial-gradient(circle, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 50%) 100%),
-    linear-gradient(to bottom, var(--theme-color-primary) 0%,
-		var(--theme-color-primary) 100%),
+    linear-gradient(to bottom, var(--theme-color-primary) 0%, var(--theme-color-primary) 100%),
     linear-gradient(rgb(240 243 248 / 100%), rgb(240 243 248 / 100%));
-	color: white;
-	padding: 1em 1em;
+  color: white;
+  padding: 1em 1em;
 
-	// Base font size
-	font-size: 1rem;
+  // Base font size
+  font-size: 1rem;
 }
 
 .header {
-	display: flex;
-	width: 95%;
-	justify-content: center;
-	gap: 0.5em;
+  display: flex;
+  width: 95%;
+  justify-content: center;
+  gap: 0.5em;
 
-	&:link,
-	&:visited,
-	&:hover,
-	&:active,
-	&:focus {
-		color: inherit;
-		text-decoration: none;
-		outline: none;
-	}
+  &:link,
+  &:visited,
+  &:hover,
+  &:active,
+  &:focus {
+    color: inherit;
+    text-decoration: none;
+    outline: none;
+  }
 
-	.title {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-	.logo {
-		height: 100%;
-		aspect-ratio: 1 / 1;
-		border-radius: 200px;
-		background-color: rgb(255 255 255 / 100%);
-		border: 2px solid rgb(18 22 29 / 100%);
-		background-size: cover;
-		background-position: center;
-		max-width: 100%;
-		max-height: 100%;
-	}
+  .logo {
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 200px;
+    background-color: rgb(255 255 255 / 100%);
+    border: 2px solid rgb(18 22 29 / 100%);
+    background-size: cover;
+    background-position: center;
+    max-width: 100%;
+    max-height: 100%;
+  }
 }
 
 .body {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
 
-	&:has(> *:only-child) {
-		justify-content: center;
-	}
+  &:has(> *:only-child) {
+    justify-content: center;
+  }
 
-	.message {
-		margin: 0 1em 0em 1em;
-		line-height: 0.7em;
-		max-height: 2.1em;
-		overflow: auto;
+  .message {
+    margin: 0 1em 0em 1em;
+    line-height: 0.7em;
+    max-height: 2.1em;
+    overflow: auto;
 
-		--description-height: auto;
-		--gradient-mask: linear-gradient(to top, rgb(0 0 0 / 0%), rgb(0 0 0 / 100%) 17%);
-		mask-image: var(--gradient-mask);
-		mask-repeat: repeat-x;
-		mask-size: auto var(--description-height);
-		mask-position: top;
-	}
+    --description-height: auto;
+    --gradient-mask: linear-gradient(to top, rgb(0 0 0 / 0%), rgb(0 0 0 / 100%) 17%);
+    mask-image: var(--gradient-mask);
+    mask-repeat: repeat-x;
+    mask-size: auto var(--description-height);
+    mask-position: top;
+  }
 
-	button {
-		border: none;
-		border-radius: 0.5em;
-		padding: 0 2em;
-		font-size: 0.4em;
-		background: var(--theme-color-action);
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
+  button {
+    border: none;
+    border-radius: 0.5em;
+    padding: 0 2em;
+    font-size: 0.4em;
+    background: var(--theme-color-action);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-		&:hover {
-			filter: brightness(110%);
-		}
+    &:hover {
+      filter: brightness(110%);
+    }
 
-		* + & {
-			margin-top: 1em;
-		}
-	}
+    * + & {
+      margin-top: 1em;
+    }
+  }
 }
 
 .text {
-	font-family: var(--theme-text-display-font-family);
-	// Enforce rule for <Title /> components
-	color: var(--text-color) !important;
+  font-family: var(--theme-text-display-font-family);
+  // Enforce rule for <Title /> components
+  color: var(--text-color) !important;
 }
 
 .title .text {
-	font-size: 1em;
+  font-size: 1em;
 }
 
 .body .text {
-	font-size: 0.6em;
+  font-size: 0.6em;
 }
 
 .body .message .text {
-	font-size: 0.5em;
-	text-align: center;
+  font-size: 0.5em;
+  text-align: center;
 }
 
 // iPhone 6 (portrait)
 @container wrapper (min-width: 315px) {
-	.content {
-		font-size: 1rem;
-		padding: 2em 2em;
-	}
+  .content {
+    font-size: 1rem;
+    padding: 2em 2em;
+  }
 }
 
 // iPhone 5 (landscape)
 @container wrapper (min-width: 430px) {
-	.content {
-		font-size: 1.5rem;
-		padding: 2em 2em; }
+  .content {
+    font-size: 1.5rem;
+    padding: 2em 2em;
+  }
 }
 
 // iPhone 6, 6 Plus, 8 Plus (landscape)
 @container wrapper (min-width: 637px) {
-	.content {
-		font-size: 1.8rem;
-		padding: 2em 2em;
-	}
+  .content {
+    font-size: 1.8rem;
+    padding: 2em 2em;
+  }
 }
 
 // iPad (landscape) and larger
 @container wrapper (min-width: 850px) {
-	.content {
-		font-size: 2.5rem;
-		padding: 2em 2em;
-	}
+  .content {
+    font-size: 2.5rem;
+    padding: 2em 2em;
+  }
 }
 
 // iPad 10.5 (landscape)
 @container wrapper (min-width: 1000px) {
-	.header {
-		// Reduce the oversized gap between the logo and the title
-		width: 85%;
-	}
+  .header {
+    // Reduce the oversized gap between the logo and the title
+    width: 85%;
+  }
 
-	.content {
-		font-size: 2.5rem;
-		padding: 3em 2em;
-	}
+  .content {
+    font-size: 2.5rem;
+    padding: 3em 2em;
+  }
 }
 
 // Wider than iPad 11 (landscape)
 @container wrapper (min-width: 1300px) {
-	.content {
-		font-size: 3rem;
-		padding: 3em 2em;
-	}
+  .content {
+    font-size: 3rem;
+    padding: 3em 2em;
+  }
 }
-
