@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/notifications"
+	notificationsrepo "github.com/owncast/owncast/persistence/notificationsrepository"
 
 	"github.com/owncast/owncast/utils"
 
@@ -37,7 +38,7 @@ func RegisterForLiveNotifications(u models.User, w http.ResponseWriter, r *http.
 	}
 
 	// Make sure the requested channel is one we want to handle.
-	validTypes := []string{notifications.BrowserPushNotification}
+	validTypes := []string{notificationsrepo.BrowserPushNotification}
 	_, validChannel := utils.FindInSlice(validTypes, req.Channel)
 	if !validChannel {
 		webutils.WriteSimpleResponse(w, false, "invalid notification channel: "+req.Channel)
