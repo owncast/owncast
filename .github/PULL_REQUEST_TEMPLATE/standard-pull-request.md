@@ -1,3 +1,14 @@
+
+## Double check
+
+- [ ] I included a screenshot, logs, or example payload to demonstrate the change.
+- [ ] This is a frontend change and it supports [translations](https://docs.owncast.dev/web-translations), or it's not a frontend change.
+- [ ] This change has actually been tested.
+- [ ] There is an issue discussing this change and it's assigned to me.
+- [ ] I read the "Read first" details about filing this PR.
+
+---
+
 # Read first
 
 ## We manage everything through issues, not PRs.
@@ -12,7 +23,8 @@ Additionally, when attributing credit in releases, we use issues to determine wh
 
 - [Developing Owncast](https://docs.owncast.dev/development)
 - [How We Develop Frontend React Components](https://docs.owncast.dev/develop-frontend-components)
-- [Supporting Translations](https://owncast.notion.site/web-translations)
+- [Supporting Translations](https://docs.owncast.dev/web-translations)
+
 ## Description
 
 Once there is an issue filed, a PR can be linked to it.
