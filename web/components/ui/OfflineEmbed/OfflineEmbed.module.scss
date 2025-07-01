@@ -17,8 +17,7 @@
   background-image:
     linear-gradient(to bottom, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 75%) 100%),
     radial-gradient(circle, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 50%) 100%),
-    linear-gradient(to bottom, var(--theme-color-action) 0%,
-		var(--theme-color-action) 100%),
+    linear-gradient(to bottom, var(--theme-color-action) 0%, var(--theme-color-action) 100%),
     linear-gradient(rgb(240 243 248 / 100%), rgb(240 243 248 / 100%));
   color: white;
   padding: 1em;
@@ -67,7 +66,7 @@
   flex-direction: column;
   align-items: center;
   overflow: hidden;
-	padding-bottom: 0.5em;
+  padding-bottom: 0.5em;
 
   &:has(> *:only-child) {
     justify-content: center;
@@ -99,7 +98,7 @@
     justify-content: center;
 
     &:hover {
-			background: var(--theme-color-action-hover);
+      background: var(--theme-color-action-hover);
     }
 
     * + & {
