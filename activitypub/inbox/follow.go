@@ -10,6 +10,7 @@ import (
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/chat/events"
+	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/pkg/errors"
 
@@ -52,6 +53,10 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	object := activity.GetActivityStreamsObject()
 	objectIRI := object.At(0).GetIRI().String()
 	actorIRI := actorReference.At(0).GetIRI().String()
+
+	if approved {
+		go webhooks.SendFediverseEngagementFollowEvent(actorIRI)
+	}
 
 	// If this request is approved and we have not previously sent an action to
 	// chat due to a previous follow request, then do so.
