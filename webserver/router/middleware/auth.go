@@ -139,7 +139,18 @@ func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc
 // and has "MODERATOR" scope assigned to the user.
 func RequireUserModerationScopeAccesstoken(handler http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		accessToken := r.URL.Query().Get("accessToken")
+		// First check for token in Authorization header (Bearer format)
+		accessToken := ""
+		authHeader := r.Header.Get("Authorization")
+		if strings.HasPrefix(strings.ToLower(authHeader), "bearer ") {
+			accessToken = authHeader[len("bearer "):]
+		}
+
+		// If not found in header, fall back to query parameter for backward compatibility
+		if accessToken == "" {
+			accessToken = r.URL.Query().Get("accessToken")
+		}
+
 		if accessToken == "" {
 			accessDenied(w)
 			return
