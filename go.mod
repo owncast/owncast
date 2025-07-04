@@ -101,7 +101,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/ebitengine/purego v0.8.4 // indirect
 	github.com/ettle/strcase v0.2.0 // indirect
-	github.com/evilmartians/lefthook v1.11.13 // indirect
+	github.com/evilmartians/lefthook v1.11.16 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/firefart/nonamedreturns v1.0.6 // indirect
@@ -125,7 +125,7 @@ require (
 	github.com/go-xmlfmt/xmlfmt v1.1.3 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
-	github.com/goccy/go-yaml v1.17.1 // indirect
+	github.com/goccy/go-yaml v1.18.0 // indirect
 	github.com/gofrs/flock v0.12.1 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
 	github.com/golangci/dupl v0.0.0-20250308024227-f665c8d69b32 // indirect
@@ -165,8 +165,8 @@ require (
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/julz/importas v0.2.0 // indirect
-	github.com/kaptinlin/go-i18n v0.1.3 // indirect
-	github.com/kaptinlin/jsonschema v0.2.3 // indirect
+	github.com/kaptinlin/go-i18n v0.1.4 // indirect
+	github.com/kaptinlin/jsonschema v0.4.5 // indirect
 	github.com/karamaru-alpha/copyloopvar v1.2.1 // indirect
 	github.com/kisielk/errcheck v1.9.0 // indirect
 	github.com/kkHAIKE/contextcheck v1.1.6 // indirect
@@ -174,9 +174,9 @@ require (
 	github.com/knadh/koanf/maps v0.1.2 // indirect
 	github.com/knadh/koanf/parsers/json v1.0.0 // indirect
 	github.com/knadh/koanf/parsers/toml/v2 v2.2.0 // indirect
-	github.com/knadh/koanf/parsers/yaml v1.0.0 // indirect
+	github.com/knadh/koanf/parsers/yaml v1.1.0 // indirect
 	github.com/knadh/koanf/providers/fs v1.0.0 // indirect
-	github.com/knadh/koanf/v2 v2.2.0 // indirect
+	github.com/knadh/koanf/v2 v2.2.1 // indirect
 	github.com/kulti/thelper v0.6.3 // indirect
 	github.com/kunwardeep/paralleltest v1.0.14 // indirect
 	github.com/lasiar/canonicalheader v1.1.2 // indirect
