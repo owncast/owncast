@@ -35,5 +35,9 @@ This is a repository consisting of a Go backend and a React frontend. It support
 5. For UI component changes, a before and after screenshot of the component should be added to the pull request to help with review. Additionally a link to the PR's Storybook on Chromatic via the PR's Chromatic job should be included to help with review.
 6. For API changes a before and after example of the API response should be added to the pull request to help with review.
 7. For backend changes, a before and after example of logs to demonstrate the change should be added to the pull request to help with review.
-8. When taking a screenshot of the web frontend or the admin web application, an instance of the Owncast backend service needs to be running locally by running `go run main.go` in the root of the repository as well. The credentials for the development backend are username: admin and password: abc123.
-9. If a live stream video is needed to run, you can run `./test/ocTestStream.sh` to start an actual stream that will begin streaming from the local development server.
+8. For frontend changes run the frontend development server using `npm run dev` in the `web` directory to test changes locally and access it at `http://localhost:3000`. It is not required to build the web project or copy the files to the `static/web` directory for local development.
+9. When running the frontend development server, the local backend service must also be running. You can run the backend service using `go run main.go` in the root of the repository.
+10. When taking a screenshot of the web frontend or the admin web application, an instance of the Owncast backend service needs to be running locally by running `go run main.go` in the root of the repository as well.
+11. The credentials for the backend development backend are username: admin and password: abc123 and uses HTTP Basic Auth. This is used for the admin web application and the admin APIs.
+12. The admin is found at `/admin`.
+13. If a live stream video is needed to run, you can run `./test/ocTestStream.sh` to start an actual stream that will begin streaming from the local development server.
