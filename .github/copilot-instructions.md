@@ -32,3 +32,8 @@ This is a repository consisting of a Go backend and a React frontend. It support
 2. Write API tests for all new endpoints in the `test/automated/api` directory.
 3. Use the `test/automated/browser` directory for browser-based tests for new functionality that simulate user interactions.
 4. All user-facing frontend UI strings need to support localization. Use the `next-export-i18n` package for wrapping strings to enable this. Read https://docs.owncast.dev/web-translations for more details.
+5. For UI component changes, a before and after screenshot of the component should be added to the pull request to help with review. Additionally a link to the PR's Storybook on Chromatic via the PR's Chromatic job should be included to help with review.
+6. For API changes a before and after example of the API response should be added to the pull request to help with review.
+7. For backend changes, a before and after example of logs to demonstrate the change should be added to the pull request to help with review.
+8. When taking a screenshot of the web frontend or the admin web application, an instance of the Owncast backend service needs to be running locally by running `go run main.go` in the root of the repository as well. The credentials for the development backend are username: admin and password: abc123.
+9. If a live stream video is needed to run, you can run `./test/ocTestStream.sh` to start an actual stream that will begin streaming from the local development server.
