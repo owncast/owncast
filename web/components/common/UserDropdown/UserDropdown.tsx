@@ -166,7 +166,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
       'aria-expanded': chatState === ChatState.VISIBLE,
       className: styles.chatToggle, // TODO why do we hide this button on tablets?
       icon: <MessageOutlined />,
-      label: chatState === ChatState.VISIBLE ? 'Hide Chat' : 'Show Chat',
+      label: chatState === ChatState.VISIBLE ? 'Hide Chat (c)' : 'Show Chat (c)',
       onClick: toggleChatVisibility,
     } as MenuProps['items'][0]);
   if (canShowChatPopup)
