@@ -3,11 +3,11 @@ import { StoryFn, Meta } from '@storybook/react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { UserDropdown } from './UserDropdown';
 import { CurrentUser } from '../../../interfaces/current-user';
-import { 
+import {
   currentUserAtom,
   appStateAtom,
   chatStateAtom,
-  ChatState
+  ChatState,
 } from '../../stores/ClientConfigStore';
 
 const meta = {
@@ -24,26 +24,23 @@ const Example = args => {
   const setAppState = useSetRecoilState(appStateAtom);
   const setChatState = useSetRecoilState(chatStateAtom);
 
-  useEffect(
-    () => {
-      setCurrentUser({
-        id: '1',
-        displayName: 'Test User',
-        displayColor: 3,
-        isModerator: false,
-      });
-      
-      setAppState({
-        chatAvailable: true,
-        chatLoading: false,
-        videoAvailable: true,
-        appLoading: false,
-      });
-      
-      setChatState(ChatState.VISIBLE);
-    },
-    [],
-  );
+  useEffect(() => {
+    setCurrentUser({
+      id: '1',
+      displayName: 'Test User',
+      displayColor: 3,
+      isModerator: false,
+    });
+
+    setAppState({
+      chatAvailable: true,
+      chatLoading: false,
+      videoAvailable: true,
+      appLoading: false,
+    });
+
+    setChatState(ChatState.VISIBLE);
+  }, []);
 
   return <UserDropdown id="user-menu" {...args} />;
 };
