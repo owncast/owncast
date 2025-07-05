@@ -198,10 +198,14 @@
 
 /* Custom upgrade menu divider - partial width */
 .menu-container .ant-menu-item-divider,
-.menu-container li.ant-menu-item-divider,
-.ant-menu-inline .ant-menu-item-divider {
-  margin: 8px 16px !important;
-  width: calc(100% - 32px) !important;
+  .app-container .menu-container .ant-menu-item-divider,
+  .app-container .menu-container li.ant-menu-item-divider,
+  .app-container .ant-menu-inline .ant-menu-item-divider {
+    margin: 8px 16px;
+    width: calc(100% - 32px);
+    background-color: rgba(255, 255, 255, 0.2);
+    box-sizing: border-box;
+  }
   background-color: rgba(255, 255, 255, 0.2) !important;
   box-sizing: border-box !important;
 }
