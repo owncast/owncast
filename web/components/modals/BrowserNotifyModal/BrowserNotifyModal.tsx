@@ -1,4 +1,4 @@
-import { Row, Spin, Typography, Button } from 'antd';
+import { Row, Spin, Typography, Button, Alert } from 'antd';
 import React, { FC, useState } from 'react';
 import UploadOutlined from '@ant-design/icons/lib/icons/UploadOutlined';
 import PlusSquareOutlined from '@ant-design/icons/lib/icons/PlusSquareOutlined';
@@ -189,7 +189,18 @@ export const BrowserNotifyModal = () => {
             &nbsp; about Owncast browser notifications.
           </span>
         </Row>
-        <Row>{error}</Row>
+        <Row>
+          {error && (
+            <Alert
+              message="Browser Notification Error"
+              description={error}
+              type="error"
+              closable
+              className={styles.errorAlert}
+              onClose={() => setError(null)}
+            />
+          )}
+        </Row>
         <PermissionPopupPreview start={() => startBrowserPushRegistration()} />
       </Spin>
     </ErrorBoundary>
