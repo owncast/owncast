@@ -26,23 +26,34 @@ This is a repository consisting of a Go backend and a React frontend. It support
 - `test/automated/browser`: A series of automated browser UI tests for actual real-world browser interaction.
 - `build/web`: Script to build and bundle the web application.
 
+## Testing web frontend
+
+Testing the web frontend requires running the frontend development server and the backend service together. The frontend development server must be started using `npm run dev` in the `web` directory, which will serve the web application at `http://localhost:3000`. The backend service can be started using `go run main.go` in the root of the repository.
+
+Do not access the web application via http://localhost:8080 or build the web project to copy files to the `static/web` directory for local development.
+
 ## Key Guidelines
 
 1. All APIs are to be documented using OpenAPI specifications and code is to be generated using `build/gen-api.sh`. Additional details can be found at https://docs.owncast.dev/api-web-routing.
 2. Write API tests for all new endpoints in the `test/automated/api` directory.
 3. Use the `test/automated/browser` directory for browser-based tests for new functionality that simulate user interactions.
 4. All user-facing frontend UI strings need to support localization. Use the `next-export-i18n` package for wrapping strings to enable this. Read https://docs.owncast.dev/web-translations for more details.
-5. For UI component changes, a before and after screenshot of the component should be added to the pull request to help with review. Additionally a link to the PR's Storybook on Chromatic via the PR's Chromatic job should be included to help with review.
+5. For UI component changes, a before and after screenshot of the component should always be added to the pull request to help with review. Additionally a link to the PR's Storybook on Chromatic via the PR's Chromatic job should be included to help with review.
 6. For API changes a before and after example of the API response should be added to the pull request to help with review.
 7. For backend changes, a before and after example of logs to demonstrate the change should be added to the pull request to help with review.
-8. For frontend changes run the frontend development server using `npm run dev` in the `web` directory to test changes locally and access it at `http://localhost:3000`. It is not required to build the web project or copy the files to the `static/web` directory for local development.
+8. Do not build the web project or copy the files to the `static/web` directory for local development.
 9. When running the frontend development server, the local backend service must also be running. You can run the backend service using `go run main.go` in the root of the repository.
 10. The credentials for the backend development backend are username: admin and password: abc123 and uses HTTP Basic Auth. This is used for the admin web application and the admin APIs.
 11. The admin is found at `/admin`.
 12. If a live stream video is needed to run, you can run `./test/ocTestStream.sh` to start an actual stream that will begin streaming from the local development server.
+13. You should never commit the `static/web` directory to the repository. It is generated from the `web` directory and should be ignored in your commits.
 
 ## Screenshots
 
+Take a screenshot after every UI change without being asked. Screenshots should be automatically taken after every code change that affects UI.
+After every UI change we should be able to see in the PR comments, visually, exactly what the change is. This helps with code review and ensures that the UI changes are clear and understandable. This should happen every time, automatically, without being asked, and never fail or be skipped.
+
 - When taking a screenshot of the web frontend or the admin web application, an instance of the Owncast backend service needs to be running locally by running `go run main.go` in the root of the repository as well.
 - When taking screenshots for PR documentation, create temporary files in /tmp directory or use patterns like _screenshot_.js and _screenshot_.png that are excluded by .gitignore.
+- Screnshots should be taken using the web dev server at `http://localhost:3000` and not the production build at `http://localhost:8080`.
 - Never commit temporary screenshot scripts or image files to the repository - they should only be used locally and uploaded directly to GitHub for PR comments.
