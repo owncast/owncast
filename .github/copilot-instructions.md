@@ -53,6 +53,12 @@ Do not access the web application via http://localhost:8080 or build the web pro
 Take a screenshot after every UI change without being asked. Screenshots should be automatically taken after every code change that affects UI.
 After every UI change we should be able to see in the PR comments, visually, exactly what the change is. This helps with code review and ensures that the UI changes are clear and understandable. This should happen every time, automatically, without being asked, and never fail or be skipped.
 
+These screenshots should be displayed inline in the PR comments, and not as attachments. This allows reviewers to see the changes without having to download or open files separately.
+
+- If it is a standalone UI component, take a screenshot of the component in Storybook if it is available.
+- When taking a screenshot of a component in Storybook, make sure to hide all the controls that are not relevant to the component itself. This means hiding the knobs, actions, and any other controls that are not part of the component's visual representation and would get in the way of the screenshot.
+- If it is something that doesn't exist in Storybook, take a screenshot of the component in the live web application using the local development server.
+- Most things in the admin do not exist in Storybook, so screenshots should be taken of the admin web application.
 - When taking a screenshot of the web frontend or the admin web application, an instance of the Owncast backend service needs to be running locally by running `go run main.go` in the root of the repository as well.
 - When taking screenshots for PR documentation, create temporary files in /tmp directory or use patterns like _screenshot_.js and _screenshot_.png that are excluded by .gitignore.
 - Screnshots should be taken using the web dev server at `http://localhost:3000` and not the production build at `http://localhost:8080`.
