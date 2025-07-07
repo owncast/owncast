@@ -21,7 +21,7 @@ require (
 	github.com/nakabonne/tstorage v0.3.6
 	github.com/nareix/joy5 v0.0.0-20210317075623-2c912ca30590
 	github.com/oapi-codegen/runtime v1.1.1
-	github.com/oschwald/geoip2-golang v1.11.0
+	github.com/oschwald/geoip2-golang v1.13.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.22.0
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
