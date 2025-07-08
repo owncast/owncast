@@ -32,6 +32,12 @@ Testing the web frontend requires running the frontend development server and th
 
 Do not access the web application via http://localhost:8080 or build the web project to copy files to the `static/web` directory for local development.
 
+## Code Reviews
+
+- When performing a code review for a UI component take a screenshot and attach it to your comments to make the review more detailed.
+- When performing a code review for an API provide the payload for the API and attach it to the code review comment.
+- When performing a code review check for all linters and formatters for in code and put in the code review comment a suggestion on how to fix each line.
+
 ## Key Guidelines
 
 1. All APIs are to be documented using OpenAPI specifications and code is to be generated using `build/gen-api.sh`. Additional details can be found at https://docs.owncast.dev/api-web-routing.
