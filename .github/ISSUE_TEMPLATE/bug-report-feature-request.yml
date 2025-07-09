@@ -7,6 +7,7 @@ body:
         Thanks for helping by reporting issues and sharing ideas you might have!
         While no idea is a bad idea, some might make more sense for Owncast than others.
         Take a look at the [Owncast product definition](https://docs.owncast.dev/project-definition) to see what our focus is and how your requests might align.
+        Note: Please file issues in English so your message can be interpreted as you intended.
 
   - type: textarea
     id: issue-body

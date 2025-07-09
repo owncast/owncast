@@ -90,7 +90,6 @@
 		"@storybook/nextjs": "^8.3.6",
 		"@storybook/preset-scss": "^1.0.3",
 		"@storybook/react": "^8.3.6",
-		"@storybook/test": "^8.3.6",
 		"@storybook/theming": "^8.3.6",
 		"@svgr/webpack": "8.1.0",
 		"@types/chart.js": "2.9.41",

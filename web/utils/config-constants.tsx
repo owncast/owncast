@@ -619,9 +619,13 @@ export const PASSWORD_COMPLEXITY_RULES = [
     message: '- at least one digit',
   },
   {
-    pattern: /^(?=.*?[#?!@$%^&*-])/,
+    pattern: /^(?=.*?[#?!@$%^&*])/,
     message: '- at least one special character: !@#$%^&*',
+  },
+  {
+    pattern: /^[^-]+$/,
+    message: '- must NOT contain a dash: -',
   },
 ];
 
-export const REGEX_PASSWORD = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*]).{8,192}$/;
+export const REGEX_PASSWORD = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])[^-]{8,192}$/;

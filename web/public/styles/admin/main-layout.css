@@ -86,7 +86,6 @@
 }
 
 .app-container .online-status-indicator .status-label {
-  color: var(--theme-color-palette-4);
   text-transform: uppercase;
   font-size: 0.75rem;
   display: inline-block;
@@ -121,7 +120,9 @@
   align-items: center;
   width: 100%;
   padding-top: 1em;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 10%),
+    0 1px 2px -1px rgb(0 0 0 / 10%);
 }
 
 .global-stream-title-container ::placeholder {
@@ -137,11 +138,11 @@
 
 .global-stream-title-container .textfield-with-submit-container .input-side {
   width: 400px;
-  border: 1px solid rgba(120, 113, 255, 0.5);
+  border: 1px solid rgb(120 113 255 / 50%);
   border-radius: 0.75rem;
 }
 
-@media (max-width: 800px) {
+@media (width <= 800px) {
   .global-stream-title-container .textfield-with-submit-container .input-side {
     width: auto;
   }
@@ -192,4 +193,14 @@
 
 .ant-modal-title {
   color: var(--theme-color-components-modal-header-text);
+}
+
+/* Custom upgrade menu divider - partial width */
+.menu-container .ant-menu-item-divider,
+.menu-container li.ant-menu-item-divider,
+.menu-container .ant-menu-inline .ant-menu-item-divider {
+  margin: 8px 16px !important;
+  width: calc(100% - 32px) !important;
+  background-color: rgb(255 255 255 / 20%) !important;
+  box-sizing: border-box !important;
 }

@@ -26,7 +26,12 @@ func RemoteFollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if request.Account != nil && *request.Account == "" {
+	if request.Account == nil {
+		webutils.WriteSimpleResponse(w, false, "account field is required")
+		return
+	}
+
+	if *request.Account == "" {
 		webutils.WriteSimpleResponse(w, false, "Remote Fediverse account is required to follow.")
 		return
 	}
