@@ -1,4 +1,3 @@
-
 ## Double check
 
 - [ ] I included a screenshot, logs, or example payload to demonstrate the change.
@@ -46,5 +45,5 @@ Some things you might want to mention:
 3. If you're fixing something, what was wrong? How should we stop from having this issue happen again?
 4. If this is a new feature or addition to functionality, why should it be added? What are the use cases? Who was asking for this functionality?
 5. If this is a frontend change, does the text support [translation](https://owncast.notion.site/web-translations)?
-   
+
 Thank you so much for contributing to Owncast! 🎉

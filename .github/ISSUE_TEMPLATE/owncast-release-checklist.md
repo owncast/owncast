@@ -4,7 +4,6 @@ about: Use when planning a new public release of Owncast.
 title: Owncast release 0.0.x
 labels: documentation, Testing
 assignees: gabek
-
 ---
 
 ## Owncast release 0.0.x
