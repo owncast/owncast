@@ -128,5 +128,8 @@
   "Max viewers this stream": "Maximale Anzahl von Zuschauern in diesem Stream",
   "Max viewers last stream": "Maximale Zuschauerzahl beim letzten Stream",
   "max viewers": "Max. Zuschauer",
-  "No viewer data has been collected yet": "Bisher wurden noch keine Daten von Zuschauern gesammelt."
+  "No viewer data has been collected yet": "Bisher wurden noch keine Daten von Zuschauern gesammelt.",
+  "hello_world": "Hallo <strong>{{name}}</strong>, willkommen in der Welt!",
+  "notification_message": "Sie können <a href=\"#\">hier klicken</a>, um Benachrichtigungen zu erhalten, wenn {{streamer}} live geht.",
+  "complex_message": "Dies ist eine <em>komplexe</em> Nachricht mit <strong>{{count}}</strong> Zuschauern und <code>{{status}}</code> Status."
 }
