@@ -73,13 +73,15 @@ export const Statusbar: FC<StatusbarProps> = ({
       rightSideMessage = `Last live ${formatDistanceToNow(new Date(lastDisconnectTime))} ago.`;
     }
   }
-
+ 
+  // removed aria 
+  // Updated formatting and cleaned up aria attributes
   return (
-    <div className={classNames(styles.statusbar, className)} role="status">
-      <span aria-live="off" className={styles.onlineMessage}>
-        {onlineMessage}
-      </span>
+    <div className={classNames(styles.statusbar, className)}>
+      <span className={styles.onlineMessage}>{onlineMessage}</span>
       <span className={styles.viewerCount}>{rightSideMessage}</span>
     </div>
+
   );
+
 };
