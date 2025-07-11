@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { Translation } from '../components/ui/Translation/Translation';
+import { Localization } from '../types/localization';
 
 const meta: Meta<typeof Translation> = {
   title: 'owncast/Components/Translation',
@@ -28,13 +29,13 @@ type Story = StoryObj<typeof Translation>;
 
 export const SimpleTranslation: Story = {
   args: {
-    translationKey: 'Chat is offline',
+    translationKey: Localization.chatOffline,
   },
 };
 
 export const TranslationWithVariable: Story = {
   args: {
-    translationKey: 'Last live ago',
+    translationKey: Localization.lastLiveAgo,
     vars: {
       timeAgo: '2 hours',
     },
@@ -43,7 +44,7 @@ export const TranslationWithVariable: Story = {
 
 export const ComplexHTMLTranslation: Story = {
   args: {
-    translationKey: 'hello_world',
+    translationKey: Localization.helloWorld,
     vars: {
       name: 'Gabe',
     },
@@ -52,7 +53,7 @@ export const ComplexHTMLTranslation: Story = {
 
 export const NotificationMessage: Story = {
   args: {
-    translationKey: 'notification_message',
+    translationKey: Localization.notificationMessage,
     vars: {
       streamer: 'MyAwesomeStream',
     },
@@ -61,7 +62,7 @@ export const NotificationMessage: Story = {
 
 export const ComplexMessage: Story = {
   args: {
-    translationKey: 'complex_message',
+    translationKey: Localization.complexMessage,
     vars: {
       count: 42,
       status: 'live',
@@ -71,7 +72,7 @@ export const ComplexMessage: Story = {
 
 export const WithCustomClass: Story = {
   args: {
-    translationKey: 'hello_world',
+    translationKey: Localization.helloWorld,
     vars: {
       name: 'Styled User',
     },
@@ -81,7 +82,7 @@ export const WithCustomClass: Story = {
 
 export const TestDifferentLanguages: Story = {
   args: {
-    translationKey: 'hello_world',
+    translationKey: Localization.helloWorld,
     vars: {
       name: 'Test User',
     },

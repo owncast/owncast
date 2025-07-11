@@ -1,5 +1,6 @@
 import React from 'react';
 import { Translation } from '../components/ui/Translation/Translation';
+import { Localization } from '../types/localization';
 
 // Mock the next-export-i18n hook
 jest.mock('next-export-i18n', () => ({
@@ -31,7 +32,7 @@ jest.mock('next-export-i18n', () => ({
 describe('Translation Component', () => {
   test('should render with translationKey prop', () => {
     const props = {
-      translationKey: 'simple_key',
+      translationKey: Localization.simpleKey,
     };
 
     // Test that the component accepts the required props
@@ -40,7 +41,7 @@ describe('Translation Component', () => {
 
   test('should accept vars prop for variable interpolation', () => {
     const props = {
-      translationKey: 'hello_world',
+      translationKey: Localization.helloWorld,
       vars: { name: 'TestUser' },
     };
 
@@ -50,7 +51,7 @@ describe('Translation Component', () => {
 
   test('should accept className prop', () => {
     const props = {
-      translationKey: 'simple_key',
+      translationKey: Localization.simpleKey,
       className: 'custom-class',
     };
 
@@ -60,12 +61,26 @@ describe('Translation Component', () => {
 
   test('should accept all props together', () => {
     const props = {
-      translationKey: 'notification_message',
+      translationKey: Localization.notificationMessage,
       vars: { streamer: 'TestStreamer' },
       className: 'notification-style',
     };
 
     // Test that the component accepts all props together
     expect(() => <Translation {...props} />).not.toThrow();
+  });
+
+  test('should only accept valid LocalizationKey values', () => {
+    // This test demonstrates type safety - these should work
+    const validProps = {
+      translationKey: Localization.chatOffline,
+    };
+    expect(() => <Translation {...validProps} />).not.toThrow();
+
+    const anotherValidProps = {
+      translationKey: Localization.helloWorld,
+      vars: { name: 'Test' },
+    };
+    expect(() => <Translation {...anotherValidProps} />).not.toThrow();
   });
 });

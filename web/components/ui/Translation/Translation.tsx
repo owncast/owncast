@@ -1,9 +1,10 @@
 /* eslint-disable react/no-danger */
 import { FC } from 'react';
 import { useTranslation } from 'next-export-i18n';
+import { LocalizationKey } from '../../../types/localization';
 
 export interface TranslationProps {
-  translationKey: string;
+  translationKey: LocalizationKey;
   vars?: Record<string, any>;
   className?: string;
 }
