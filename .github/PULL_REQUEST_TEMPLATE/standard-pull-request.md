@@ -4,6 +4,7 @@
 - [ ] I included a screenshot, logs, or example payload to demonstrate the change.
 - [ ] This is a frontend change and it supports [translations](https://docs.owncast.dev/web-translations), or it's not a frontend change.
 - [ ] This change has actually been tested.
+- [ ] The code has been run through the proper linters and/or formatters for the language.
 - [ ] There is an issue discussing this change and it's assigned to me.
 - [ ] I read the "Read first" details about filing this PR.
 
