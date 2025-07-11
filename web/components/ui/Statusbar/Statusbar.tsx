@@ -74,8 +74,7 @@ export const Statusbar: FC<StatusbarProps> = ({
     }
   }
  
-  // removed aria 
-  // Updated formatting and cleaned up aria attributes
+
   return (
     <div className={classNames(styles.statusbar, className)}>
       <span className={styles.onlineMessage}>{onlineMessage}</span>
