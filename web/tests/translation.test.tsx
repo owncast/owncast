@@ -1,4 +1,5 @@
 import React from 'react';
+import { render, screen } from '@testing-library/react';
 import { Translation } from '../components/ui/Translation/Translation';
 import { Localization } from '../types/localization';
 
@@ -30,57 +31,94 @@ jest.mock('next-export-i18n', () => ({
 }));
 
 describe('Translation Component', () => {
-  test('should render with translationKey prop', () => {
-    const props = {
-      translationKey: Localization.simpleKey,
-    };
-
-    // Test that the component accepts the required props
-    expect(() => <Translation {...props} />).not.toThrow();
+  test('should render simple translation text', () => {
+    render(<Translation translationKey={Localization.simpleKey} />);
+    
+    expect(screen.getByText('Simple translation text')).toBeInTheDocument();
   });
 
-  test('should accept vars prop for variable interpolation', () => {
-    const props = {
-      translationKey: Localization.helloWorld,
-      vars: { name: 'TestUser' },
-    };
-
-    // Test that the component accepts vars prop
-    expect(() => <Translation {...props} />).not.toThrow();
+  test('should render translation with variable interpolation', () => {
+    render(
+      <Translation 
+        translationKey={Localization.helloWorld} 
+        vars={{ name: 'TestUser' }} 
+      />
+    );
+    
+    // Check that the text contains the interpolated variable
+    // Use a function matcher to handle text across multiple elements, targeting the span
+    const element = screen.getByText((content, element) => {
+      const hasText = element?.textContent === 'Hello TestUser, welcome to the world!';
+      const isSpan = element?.tagName === 'SPAN';
+      return hasText && isSpan;
+    });
+    expect(element).toBeInTheDocument();
   });
 
-  test('should accept className prop', () => {
-    const props = {
-      translationKey: Localization.simpleKey,
-      className: 'custom-class',
-    };
-
-    // Test that the component accepts className prop
-    expect(() => <Translation {...props} />).not.toThrow();
+  test('should render HTML content correctly', () => {
+    render(
+      <Translation 
+        translationKey={Localization.helloWorld} 
+        vars={{ name: 'TestUser' }} 
+      />
+    );
+    
+    // Check that HTML tags are rendered (strong tag in this case)
+    const strongElement = screen.getByText('TestUser');
+    expect(strongElement.tagName).toBe('STRONG');
   });
 
-  test('should accept all props together', () => {
-    const props = {
-      translationKey: Localization.notificationMessage,
-      vars: { streamer: 'TestStreamer' },
-      className: 'notification-style',
-    };
-
-    // Test that the component accepts all props together
-    expect(() => <Translation {...props} />).not.toThrow();
+  test('should apply className prop', () => {
+    render(
+      <Translation 
+        translationKey={Localization.simpleKey} 
+        className="custom-class" 
+      />
+    );
+    
+    const element = screen.getByText('Simple translation text');
+    expect(element).toHaveClass('custom-class');
   });
 
-  test('should only accept valid LocalizationKey values', () => {
-    // This test demonstrates type safety - these should work
-    const validProps = {
-      translationKey: Localization.chatOffline,
-    };
-    expect(() => <Translation {...validProps} />).not.toThrow();
+  test('should render notification message with HTML link', () => {
+    render(
+      <Translation 
+        translationKey={Localization.notificationMessage} 
+        vars={{ streamer: 'TestStreamer' }} 
+      />
+    );
+    
+    // Check that the link is rendered
+    const linkElement = screen.getByText('click here');
+    expect(linkElement.tagName).toBe('A');
+    expect(linkElement).toHaveAttribute('href', '#');
+    
+    // Check that the variable is interpolated
+    expect(screen.getByText(/TestStreamer/)).toBeInTheDocument();
+  });
 
-    const anotherValidProps = {
-      translationKey: Localization.helloWorld,
-      vars: { name: 'Test' },
-    };
-    expect(() => <Translation {...anotherValidProps} />).not.toThrow();
+  test('should render with all props combined', () => {
+    render(
+      <Translation 
+        translationKey={Localization.notificationMessage} 
+        vars={{ streamer: 'TestStreamer' }} 
+        className="notification-style" 
+      />
+    );
+    
+    // Check that the content is rendered correctly
+    const element = screen.getByText((content, element) => {
+      const hasText = element?.textContent === 'You can click here to receive notifications when TestStreamer goes live.';
+      const isSpan = element?.tagName === 'SPAN';
+      return hasText && isSpan;
+    });
+    expect(element).toBeInTheDocument();
+    expect(element).toHaveClass('notification-style');
+  });
+
+  test('should handle translation without variables', () => {
+    render(<Translation translationKey={Localization.chatOffline} />);
+    
+    expect(screen.getByText('Chat is offline')).toBeInTheDocument();
   });
 });
