@@ -33,18 +33,13 @@ jest.mock('next-export-i18n', () => ({
 describe('Translation Component', () => {
   test('should render simple translation text', () => {
     render(<Translation translationKey={Localization.simpleKey} />);
-    
+
     expect(screen.getByText('Simple translation text')).toBeInTheDocument();
   });
 
   test('should render translation with variable interpolation', () => {
-    render(
-      <Translation 
-        translationKey={Localization.helloWorld} 
-        vars={{ name: 'TestUser' }} 
-      />
-    );
-    
+    render(<Translation translationKey={Localization.helloWorld} vars={{ name: 'TestUser' }} />);
+
     // Check that the text contains the interpolated variable
     // Use a function matcher to handle text across multiple elements, targeting the span
     const element = screen.getByText((content, element) => {
@@ -56,59 +51,51 @@ describe('Translation Component', () => {
   });
 
   test('should render HTML content correctly', () => {
-    render(
-      <Translation 
-        translationKey={Localization.helloWorld} 
-        vars={{ name: 'TestUser' }} 
-      />
-    );
-    
+    render(<Translation translationKey={Localization.helloWorld} vars={{ name: 'TestUser' }} />);
+
     // Check that HTML tags are rendered (strong tag in this case)
     const strongElement = screen.getByText('TestUser');
     expect(strongElement.tagName).toBe('STRONG');
   });
 
   test('should apply className prop', () => {
-    render(
-      <Translation 
-        translationKey={Localization.simpleKey} 
-        className="custom-class" 
-      />
-    );
-    
+    render(<Translation translationKey={Localization.simpleKey} className="custom-class" />);
+
     const element = screen.getByText('Simple translation text');
     expect(element).toHaveClass('custom-class');
   });
 
   test('should render notification message with HTML link', () => {
     render(
-      <Translation 
-        translationKey={Localization.notificationMessage} 
-        vars={{ streamer: 'TestStreamer' }} 
-      />
+      <Translation
+        translationKey={Localization.notificationMessage}
+        vars={{ streamer: 'TestStreamer' }}
+      />,
     );
-    
+
     // Check that the link is rendered
     const linkElement = screen.getByText('click here');
     expect(linkElement.tagName).toBe('A');
     expect(linkElement).toHaveAttribute('href', '#');
-    
+
     // Check that the variable is interpolated
     expect(screen.getByText(/TestStreamer/)).toBeInTheDocument();
   });
 
   test('should render with all props combined', () => {
     render(
-      <Translation 
-        translationKey={Localization.notificationMessage} 
-        vars={{ streamer: 'TestStreamer' }} 
-        className="notification-style" 
-      />
+      <Translation
+        translationKey={Localization.notificationMessage}
+        vars={{ streamer: 'TestStreamer' }}
+        className="notification-style"
+      />,
     );
-    
+
     // Check that the content is rendered correctly
     const element = screen.getByText((content, element) => {
-      const hasText = element?.textContent === 'You can click here to receive notifications when TestStreamer goes live.';
+      const hasText =
+        element?.textContent ===
+        'You can click here to receive notifications when TestStreamer goes live.';
       const isSpan = element?.tagName === 'SPAN';
       return hasText && isSpan;
     });
@@ -118,7 +105,7 @@ describe('Translation Component', () => {
 
   test('should handle translation without variables', () => {
     render(<Translation translationKey={Localization.chatOffline} />);
-    
+
     expect(screen.getByText('Chat is offline')).toBeInTheDocument();
   });
 });
