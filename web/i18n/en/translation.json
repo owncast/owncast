@@ -128,8 +128,5 @@
   "Max viewers this stream": "Max viewers this stream",
   "Max viewers last stream": "Max viewers last stream",
   "max viewers": "max viewers",
-  "No viewer data has been collected yet": "No viewer data has been collected yet.",
-  "hello_world": "Hello <strong>{{name}}</strong>, welcome to the world!",
-  "notification_message": "You can <a href=\"#\">click here</a> to receive notifications when {{streamer}} goes live.",
-  "complex_message": "This is a <em>complex</em> message with <strong>{{count}}</strong> viewers and <code>{{status}}</code> status."
+  "No viewer data has been collected yet": "No viewer data has been collected yet."
 }

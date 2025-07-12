@@ -1,0 +1,5 @@
+{
+  "hello_world": "Hello <strong>{{name}}</strong>, welcome to the world!",
+  "notification_message": "You can <a href=\"#\">click here</a> to receive notifications when {{streamer}} goes live.",
+  "complex_message": "This is a <em>complex</em> message with <strong>{{count}}</strong> viewers and <code>{{status}}</code> status."
+}
