@@ -1,6 +1,7 @@
 .root {
   display: inline-flex;
   padding: 10px 0;
+  
 
   .moderatorBadge,
   .user {
@@ -20,7 +21,7 @@
 }
 
 @media screen and (max-width: 350px) {
-  .icon {
-    padding-left: 0;
+    .icon {
+      padding-left: 0;
+    }
   }
-}
