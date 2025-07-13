@@ -152,7 +152,7 @@ describe('Translation Component', () => {
     // Check that HTML tags are rendered correctly
     const strongElement = screen.getByText('bold');
     expect(strongElement.tagName).toBe('STRONG');
-    
+
     const emElement = screen.getByText('emphasis');
     expect(emElement.tagName).toBe('EM');
   });
