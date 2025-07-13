@@ -26,11 +26,17 @@ export const Translation: FC<TranslationProps> = ({
   let translatedText;
 
   if (count !== undefined) {
-    const pluralKey = count === 1 ? `${translationKey}_one` : `${translationKey}_other`;
-    translatedText = t(pluralKey, allVars);
+    if (count === 1) {
+      // For singular, try _one key first, fall back to original key
+      const singularKey = `${translationKey}_one`;
+      translatedText = t(singularKey, allVars);
 
-    // Fall back to singular translation if plural translation is missing
-    if (translatedText === pluralKey) {
+      // Fall back to original key if _one key doesn't exist
+      if (translatedText === singularKey) {
+        translatedText = t(translationKey, allVars);
+      }
+    } else {
+      // For plural, always use the original key (no _other suffix needed)
       translatedText = t(translationKey, allVars);
     }
   } else {

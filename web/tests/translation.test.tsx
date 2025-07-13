@@ -17,9 +17,9 @@ jest.mock('next-export-i18n', () => ({
 
         // Pluralization test keys
         item_count_one: 'You have {{count}} item',
-        item_count_other: 'You have {{count}} items',
+        item_count: 'You have {{count}} items', // Original key serves as plural form
         message_count_one: 'You have {{count}} message from {{sender}}',
-        message_count_other: 'You have {{count}} messages from {{sender}}',
+        message_count: 'You have {{count}} messages from {{sender}}', // Original key serves as plural form
 
         // Keys without pluralization variants
         no_plural_key: 'This key has no plural variants - {{count}} things',

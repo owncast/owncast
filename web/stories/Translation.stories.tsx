@@ -23,7 +23,8 @@ const meta: Meta<typeof Translation> = {
     },
     count: {
       control: 'number',
-      description: 'Count for pluralization support (1 = singular, others = plural)',
+      description:
+        'Count for pluralization support (1 = singular with _one key, others = plural with original key)',
     },
     defaultText: {
       control: 'text',
@@ -112,7 +113,8 @@ export const PluralizationSingular: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Pluralization example with singular form (count = 1)',
+        story:
+          'Pluralization example with singular form (count = 1) - looks for _one key first, falls back to original key',
       },
     },
   },
@@ -126,7 +128,7 @@ export const PluralizationPlural: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Pluralization example with plural form (count > 1)',
+        story: 'Pluralization example with plural form (count > 1) - uses original key directly',
       },
     },
   },
@@ -157,7 +159,8 @@ export const PluralizationFallback: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Pluralization fallback when no plural variants exist',
+        story:
+          'Pluralization fallback when no _one key exists (uses original key for both singular and plural)',
       },
     },
   },
