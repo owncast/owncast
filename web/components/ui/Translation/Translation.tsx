@@ -7,7 +7,7 @@ export interface TranslationProps {
   translationKey: LocalizationKey;
   vars?: Record<string, any>;
   className?: string;
-  defaultText?: string; // ✅ Add default text support
+  defaultText?: string;
 }
 
 export const Translation: FC<TranslationProps> = ({
@@ -20,11 +20,11 @@ export const Translation: FC<TranslationProps> = ({
 
   let translatedText = t(translationKey, vars);
 
-  // ✅ Use fallback if translation is missing (returns the key itself)
+  // Use fallback if translation is missing (returns the key itself)
   if (translatedText === translationKey && defaultText) {
     translatedText = defaultText;
 
-    // 🧠 Interpolate variables manually into defaultText
+    // Interpolate variables manually into defaultText
     // eslint-disable-next-line no-restricted-syntax
     for (const [k, v] of Object.entries(vars || {})) {
       const regex = new RegExp(`{{\\s*${k}\\s*}}`, 'g');
