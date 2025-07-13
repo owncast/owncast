@@ -17,7 +17,7 @@
 		"test": "jest",
 		"format": "prettier --write  **/*.{js,ts,jsx,tsx,css,md,scss}",
 		"translate": "i18next -c i18next-parser.config.mjs",
-		"i18n:extract": "ts-node scripts/i18n-extract.js"
+		"i18n:extract": "node scripts/i18n-extract.js"
 	},
 	"dependencies": {
 		"@ant-design/icons": "4.8.3",

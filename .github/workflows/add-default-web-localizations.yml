@@ -1,4 +1,4 @@
-name: Update Translations
+name: Extract Default Translations
 
 on:
   push:

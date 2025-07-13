@@ -69,3 +69,4 @@ These screenshots should be displayed inline in the PR comments, and not as atta
 - When taking screenshots for PR documentation, create temporary files in /tmp directory or use patterns like _screenshot_.js and _screenshot_.png that are excluded by .gitignore.
 - Screnshots should be taken using the web dev server at `http://localhost:3000` and not the production build at `http://localhost:8080`.
 - Never commit temporary screenshot scripts or image files to the repository - they should only be used locally and uploaded directly to GitHub for PR comments.
+- Double check that the screenshots are attached to the PR comments. Copilot often forgets to do this or says it did it but doesn't actually do it. If it doesn't do it, it should continue to try until it succeeds.
