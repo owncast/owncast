@@ -69,7 +69,8 @@
 		"workbox-window": "^7.0.0",
 		"xstate": "4.38.3",
 		"yaml": "2.7.0",
-		"@testing-library/jest-dom": "^6.6.3"
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.3.0"
 	},
 	"devDependencies": {
 		"@babel/core": "7.26.10",

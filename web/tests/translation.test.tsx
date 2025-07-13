@@ -42,9 +42,9 @@ describe('Translation Component', () => {
 
     // Check that the text contains the interpolated variable
     // Use a function matcher to handle text across multiple elements, targeting the span
-    const element = screen.getByText((content, element) => {
-      const hasText = element?.textContent === 'Hello TestUser, welcome to the world!';
-      const isSpan = element?.tagName === 'SPAN';
+    const element = screen.getByText((content, e) => {
+      const hasText = e?.textContent === 'Hello TestUser, welcome to the world!';
+      const isSpan = e?.tagName === 'SPAN';
       return hasText && isSpan;
     });
     expect(element).toBeInTheDocument();
@@ -92,11 +92,11 @@ describe('Translation Component', () => {
     );
 
     // Check that the content is rendered correctly
-    const element = screen.getByText((content, element) => {
+    const element = screen.getByText((content, e) => {
       const hasText =
-        element?.textContent ===
+        e?.textContent ===
         'You can click here to receive notifications when TestStreamer goes live.';
-      const isSpan = element?.tagName === 'SPAN';
+      const isSpan = e?.tagName === 'SPAN';
       return hasText && isSpan;
     });
     expect(element).toBeInTheDocument();
