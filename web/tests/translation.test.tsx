@@ -14,13 +14,13 @@ jest.mock('next-export-i18n', () => ({
         notification_message:
           'You can <a href="#">click here</a> to receive notifications when {{streamer}} goes live.',
         simple_key: 'Simple translation text',
-        
+
         // Pluralization test keys
         item_count_one: 'You have {{count}} item',
         item_count_other: 'You have {{count}} items',
         message_count_one: 'You have {{count}} message from {{sender}}',
         message_count_other: 'You have {{count}} messages from {{sender}}',
-        
+
         // Keys without pluralization variants
         no_plural_key: 'This key has no plural variants - {{count}} things',
       };
@@ -215,11 +215,11 @@ describe('Translation Component', () => {
 
     test('should interpolate count and other variables in pluralized text', () => {
       render(
-        <Translation 
-          translationKey={Localization.Testing.messageCount} 
-          count={3} 
-          vars={{ sender: 'Alice' }} 
-        />
+        <Translation
+          translationKey={Localization.Testing.messageCount}
+          count={3}
+          vars={{ sender: 'Alice' }}
+        />,
       );
 
       expect(screen.getByText('You have 3 messages from Alice')).toBeInTheDocument();
@@ -227,11 +227,11 @@ describe('Translation Component', () => {
 
     test('should interpolate count and other variables in singular text', () => {
       render(
-        <Translation 
-          translationKey={Localization.Testing.messageCount} 
-          count={1} 
-          vars={{ sender: 'Bob' }} 
-        />
+        <Translation
+          translationKey={Localization.Testing.messageCount}
+          count={1}
+          vars={{ sender: 'Bob' }}
+        />,
       );
 
       expect(screen.getByText('You have 1 message from Bob')).toBeInTheDocument();
@@ -251,11 +251,11 @@ describe('Translation Component', () => {
 
     test('should use defaultText with count interpolation when translation is missing', () => {
       render(
-        <Translation 
-          translationKey={'missing_plural_key' as any} 
-          count={3} 
+        <Translation
+          translationKey={'missing_plural_key' as any}
+          count={3}
           defaultText="Default text with {{count}} items"
-        />
+        />,
       );
 
       expect(screen.getByText('Default text with 3 items')).toBeInTheDocument();
@@ -263,12 +263,12 @@ describe('Translation Component', () => {
 
     test('should use defaultText with count and other vars when translation is missing', () => {
       render(
-        <Translation 
-          translationKey={'missing_plural_key' as any} 
-          count={1} 
+        <Translation
+          translationKey={'missing_plural_key' as any}
+          count={1}
           vars={{ name: 'John' }}
           defaultText="{{name}} has {{count}} item"
-        />
+        />,
       );
 
       expect(screen.getByText('John has 1 item')).toBeInTheDocument();
@@ -288,11 +288,11 @@ describe('Translation Component', () => {
 
     test('should work with className and pluralization', () => {
       render(
-        <Translation 
-          translationKey={Localization.Testing.itemCount} 
-          count={2} 
+        <Translation
+          translationKey={Localization.Testing.itemCount}
+          count={2}
           className="count-display"
-        />
+        />,
       );
 
       const element = screen.getByText('You have 2 items');
