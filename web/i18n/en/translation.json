@@ -88,6 +88,10 @@
   "No viewer data has been collected yet": "No viewer data has been collected yet.",
   "notification_message": "You can <a href=\"#\">click here</a> to receive notifications when {{streamer}} goes live.",
   "Notify": "Notify",
+  "offline_basic": "This stream is offline. Check back soon!",
+  "offline_notify_only": "This stream is offline. <span class='notify-link'>Be notified</span> the next time {{streamer}} goes live.",
+  "offline_fediverse_only": "This stream is offline. <span class='follow-link'>Follow</span> {{fediverseAccount}} on the Fediverse to see the next time {{streamer}} goes live.",
+  "offline_notify_and_fediverse": "This stream is offline. You can <span class='notify-link'>be notified</span> the next time {{streamer}} goes live or <span class='follow-link'>follow</span> {{fediverseAccount}} on the Fediverse.",
   "of all known players": {
     " Other player status is unknown": "of all known players. Other player status is unknown."
   },

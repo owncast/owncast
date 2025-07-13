@@ -47,6 +47,12 @@ export const Localization = {
 
     // Errors
     componentError: 'component_error',
+
+    // Offline banner messages
+    offlineBasic: 'offline_basic',
+    offlineNotifyOnly: 'offline_notify_only',
+    offlineFediverseOnly: 'offline_fediverse_only',
+    offlineNotifyAndFediverse: 'offline_notify_and_fediverse',
   },
 
   /**

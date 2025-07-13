@@ -61,3 +61,17 @@
     color: var(--color-owncast-palette-7);
   }
 }
+
+// Styles for Translation component generated spans
+.bodyText {
+  :global(.notify-link),
+  :global(.follow-link) {
+    color: var(--theme-color-action);
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--color-owncast-palette-7);
+    }
+  }
+}
