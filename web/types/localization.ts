@@ -69,6 +69,13 @@ export const Localization = {
   useBroadcastingSoftware: 'Use your broadcasting software',
   embedVideo: 'Embed your video onto other sites',
 
+  // Emoji admin page
+  emojis: 'Emojis',
+  emojiPageDescription: 'Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the filename without extension will be used as emoji name. Additionally, emoji names are case-insensitive. For best results, ensure all emoji have unique names.',
+  emojiUploadBulkGuide: 'Want to upload custom emojis in bulk? Check out our <a href="https://owncast.online/docs/chat/emoji" rel="noopener noreferrer" target="_blank">Emoji guide</a>.',
+  uploadNewEmoji: 'Upload new emoji',
+  deleteEmoji: 'Delete emoji',
+
   // Placeholder for future translations
   simpleKey: 'simple_key',
 } as const;

@@ -131,5 +131,10 @@
   "No viewer data has been collected yet": "No viewer data has been collected yet.",
   "hello_world": "Hello <strong>{{name}}</strong>, welcome to the world!",
   "notification_message": "You can <a href=\"#\">click here</a> to receive notifications when {{streamer}} goes live.",
-  "complex_message": "This is a <em>complex</em> message with <strong>{{count}}</strong> viewers and <code>{{status}}</code> status."
+  "complex_message": "This is a <em>complex</em> message with <strong>{{count}}</strong> viewers and <code>{{status}}</code> status.",
+  "Emojis": "Emojis",
+  "Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the filename without extension will be used as emoji name. Additionally, emoji names are case-insensitive. For best results, ensure all emoji have unique names.": "Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the filename without extension will be used as emoji name. Additionally, emoji names are case-insensitive. For best results, ensure all emoji have unique names.",
+  "Want to upload custom emojis in bulk? Check out our <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji guide</a>.": "Want to upload custom emojis in bulk? Check out our <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji guide</a>.",
+  "Upload new emoji": "Upload new emoji",
+  "Delete emoji": "Delete emoji"
 }
