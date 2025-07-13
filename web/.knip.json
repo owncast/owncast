@@ -12,7 +12,8 @@
 		"tests/**",
 		"i18n/index.js",
 		"i18next-parser.config.mjs",
-		"types/index.ts"
+		"types/index.ts",
+		"scripts/i18n-extract.js"
 	],
 	"ignoreDependencies": [
 		"@fontsource/inter",
@@ -56,6 +57,9 @@
 		"@types/video.js",
 		"@testing-library/jest-dom",
 		"@testing-library/react",
-		"jest-environment-jsdom"
+		"jest-environment-jsdom",
+		"@babel/parser",
+		"@babel/traverse",
+		"glob"
 	]
 }
