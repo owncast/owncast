@@ -20,11 +20,6 @@
   }
 }
 
-.bodyText {
-  line-height: 2rem;
-  font-size: 1.2rem;
-}
-
 .separator {
   margin-top: 15px;
   margin-bottom: 15px;
@@ -74,4 +69,7 @@
       color: var(--color-owncast-palette-7);
     }
   }
+
+  line-height: 2rem;
+  font-size: 1.2rem;
 }
