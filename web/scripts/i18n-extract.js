@@ -44,8 +44,8 @@ function scanTranslationKeys() {
     }
 
     traverse(ast, {
-      JSXElement(path) {
-        const opening = path.node.openingElement;
+      JSXElement(p) {
+        const opening = p.node.openingElement;
         const tagName = opening.name;
 
         if (tagName.type !== 'JSXIdentifier' || tagName.name !== 'Translation') return;
