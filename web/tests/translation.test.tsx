@@ -195,7 +195,6 @@ describe('Translation Component', () => {
       expect(screen.getByText('You have 1 item')).toBeInTheDocument();
     });
 
-
     test('should use plural form when count is greater than 1', () => {
       render(<Translation translationKey={Localization.Testing.itemCount} count={5} />);
 
