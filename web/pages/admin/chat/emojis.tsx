@@ -138,13 +138,13 @@ const Emoji = () => {
   return (
     <div>
       <Title>
-        <Translation translationKey={Localization.emojis} />
+        <Translation translationKey={Localization.Admin.emojis} />
       </Title>
       <Paragraph>
-        <Translation translationKey={Localization.emojiPageDescription} />
+        <Translation translationKey={Localization.Admin.emojiPageDescription} />
       </Paragraph>
       <Paragraph>
-        <Translation translationKey={Localization.emojiUploadBulkGuide} />
+        <Translation translationKey={Localization.Admin.emojiUploadBulkGuide} />
       </Paragraph>
       <br />
       <Upload
@@ -158,7 +158,7 @@ const Emoji = () => {
         disabled={loading}
       >
         <Button type="primary" disabled={loading}>
-          <Translation translationKey={Localization.uploadNewEmoji} />
+          <Translation translationKey={Localization.Admin.uploadNewEmoji} />
         </Button>
       </Upload>
       <FormStatusIndicator status={submitStatus} />
@@ -184,7 +184,7 @@ const Emoji = () => {
                     <Button
                       size="small"
                       type="ghost"
-                      title={t(Localization.deleteEmoji)}
+                      title={t(Localization.Admin.deleteEmoji)}
                       style={{
                         position: 'absolute',
                         right: 0,

@@ -29,13 +29,13 @@ type Story = StoryObj<typeof Translation>;
 
 export const SimpleTranslation: Story = {
   args: {
-    translationKey: Localization.chatOffline,
+    translationKey: Localization.Frontend.chatOffline,
   },
 };
 
 export const TranslationWithVariable: Story = {
   args: {
-    translationKey: Localization.lastLiveAgo,
+    translationKey: Localization.Frontend.lastLiveAgo,
     vars: {
       timeAgo: '2 hours',
     },
@@ -44,7 +44,7 @@ export const TranslationWithVariable: Story = {
 
 export const ComplexHTMLTranslation: Story = {
   args: {
-    translationKey: Localization.helloWorld,
+    translationKey: Localization.Frontend.helloWorld,
     vars: {
       name: 'Gabe',
     },
@@ -53,7 +53,7 @@ export const ComplexHTMLTranslation: Story = {
 
 export const NotificationMessage: Story = {
   args: {
-    translationKey: Localization.notificationMessage,
+    translationKey: Localization.Frontend.notificationMessage,
     vars: {
       streamer: 'MyAwesomeStream',
     },
@@ -62,7 +62,7 @@ export const NotificationMessage: Story = {
 
 export const ComplexMessage: Story = {
   args: {
-    translationKey: Localization.complexMessage,
+    translationKey: Localization.Frontend.complexMessage,
     vars: {
       count: 42,
       status: 'live',
@@ -72,7 +72,7 @@ export const ComplexMessage: Story = {
 
 export const WithCustomClass: Story = {
   args: {
-    translationKey: Localization.helloWorld,
+    translationKey: Localization.Frontend.helloWorld,
     vars: {
       name: 'Styled User',
     },
@@ -82,7 +82,7 @@ export const WithCustomClass: Story = {
 
 export const TestDifferentLanguages: Story = {
   args: {
-    translationKey: Localization.helloWorld,
+    translationKey: Localization.Frontend.helloWorld,
     vars: {
       name: 'Test User',
     },

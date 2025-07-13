@@ -32,13 +32,13 @@ jest.mock('next-export-i18n', () => ({
 
 describe('Translation Component', () => {
   test('should render simple translation text', () => {
-    render(<Translation translationKey={Localization.simpleKey} />);
+    render(<Translation translationKey={Localization.Testing.simpleKey} />);
 
     expect(screen.getByText('Simple translation text')).toBeInTheDocument();
   });
 
   test('should render translation with variable interpolation', () => {
-    render(<Translation translationKey={Localization.helloWorld} vars={{ name: 'TestUser' }} />);
+    render(<Translation translationKey={Localization.Frontend.helloWorld} vars={{ name: 'TestUser' }} />);
 
     // Check that the text contains the interpolated variable
     // Use a function matcher to handle text across multiple elements, targeting the span
@@ -51,7 +51,7 @@ describe('Translation Component', () => {
   });
 
   test('should render HTML content correctly', () => {
-    render(<Translation translationKey={Localization.helloWorld} vars={{ name: 'TestUser' }} />);
+    render(<Translation translationKey={Localization.Frontend.helloWorld} vars={{ name: 'TestUser' }} />);
 
     // Check that HTML tags are rendered (strong tag in this case)
     const strongElement = screen.getByText('TestUser');
@@ -59,7 +59,7 @@ describe('Translation Component', () => {
   });
 
   test('should apply className prop', () => {
-    render(<Translation translationKey={Localization.simpleKey} className="custom-class" />);
+    render(<Translation translationKey={Localization.Testing.simpleKey} className="custom-class" />);
 
     const element = screen.getByText('Simple translation text');
     expect(element).toHaveClass('custom-class');
@@ -68,7 +68,7 @@ describe('Translation Component', () => {
   test('should render notification message with HTML link', () => {
     render(
       <Translation
-        translationKey={Localization.notificationMessage}
+        translationKey={Localization.Frontend.notificationMessage}
         vars={{ streamer: 'TestStreamer' }}
       />,
     );
@@ -85,7 +85,7 @@ describe('Translation Component', () => {
   test('should render with all props combined', () => {
     render(
       <Translation
-        translationKey={Localization.notificationMessage}
+        translationKey={Localization.Frontend.notificationMessage}
         vars={{ streamer: 'TestStreamer' }}
         className="notification-style"
       />,
@@ -104,7 +104,7 @@ describe('Translation Component', () => {
   });
 
   test('should handle translation without variables', () => {
-    render(<Translation translationKey={Localization.chatOffline} />);
+    render(<Translation translationKey={Localization.Frontend.chatOffline} />);
 
     expect(screen.getByText('Chat is offline')).toBeInTheDocument();
   });
