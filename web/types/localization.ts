@@ -44,6 +44,9 @@ export const Localization = {
     helloWorld: 'hello_world',
     notificationMessage: 'notification_message',
     complexMessage: 'complex_message',
+
+    // Errors
+    componentError: 'component_error',
   },
 
   /**

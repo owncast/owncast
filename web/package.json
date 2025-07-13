@@ -16,10 +16,13 @@
 		"build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -",
 		"test": "jest",
 		"format": "prettier --write  **/*.{js,ts,jsx,tsx,css,md,scss}",
-		"translate": "i18next -c i18next-parser.config.mjs"
+		"translate": "i18next -c i18next-parser.config.mjs",
+		"i18n:extract": "ts-node scripts/i18n-extract.js"
 	},
 	"dependencies": {
 		"@ant-design/icons": "4.8.3",
+		"@babel/parser": "^7.28.0",
+		"@babel/traverse": "^7.28.0",
 		"@codemirror/lang-css": "6.3.1",
 		"@codemirror/lang-html": "^6.4.2",
 		"@codemirror/lang-javascript": "^6.1.2",
@@ -30,6 +33,8 @@
 		"@fontsource/inter": "^5.0.0",
 		"@fontsource/poppins": "5.2.5",
 		"@next/bundle-analyzer": "^14.0.0",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.3.0",
 		"@uiw/codemirror-theme-bbedit": "4.23.7",
 		"@uiw/react-codemirror": "4.23.7",
 		"@xstate/react": "3.2.2",
@@ -39,6 +44,7 @@
 		"chart.js": "^4.2.0",
 		"classnames": "2.5.1",
 		"date-fns": "^4.0.0",
+		"glob": "^11.0.3",
 		"graphemer": "^1.4.0",
 		"i18next-parser": "^9.1.0",
 		"i18next-scanner": "^4.6.0",
@@ -68,9 +74,7 @@
 		"workbox-precaching": "^7.0.0",
 		"workbox-window": "^7.0.0",
 		"xstate": "4.38.3",
-		"yaml": "2.7.0",
-		"@testing-library/jest-dom": "^6.6.3",
-		"@testing-library/react": "^16.3.0"
+		"yaml": "2.7.0"
 	},
 	"devDependencies": {
 		"@babel/core": "7.26.10",
@@ -146,7 +150,8 @@
 		"stylelint-config-standard": "^36.0.0",
 		"stylelint-config-standard-scss": "^14.0.0",
 		"ts-jest": "^29.1.0",
-		"typescript": "5.7.3"
+		"ts-node": "^10.9.2",
+		"typescript": "^5.7.3"
 	},
 	"overrides": {
 		"@emoji-mart/react": {
