@@ -73,9 +73,9 @@ export const Localization = {
     overriddenViaCommandLine: 'Overridden via command line',
 
     // Instance details configuration
-    offlineMessageDescription: 'offline_message_description',
-    directoryDescription: 'directory_description',
-    serverUrlRequiredForDirectory: 'server_url_required_for_directory',
+    offlineMessageDescription: 'Admin.offlineMessageDescription',
+    directoryDescription: 'Admin.directoryDescription',
+    serverUrlRequiredForDirectory: 'Admin.serverUrlRequiredForDirectory',
 
     // Logging and monitoring
     info: 'Info',
