@@ -23,17 +23,18 @@ export const Translation: FC<TranslationProps> = ({
   // Include count in vars for interpolation
   const allVars = count !== undefined ? { ...vars, count } : vars;
 
-  let translatedText = t(translationKey, allVars);
+  let translatedText;
 
-  // Handle pluralization if count is provided
   if (count !== undefined) {
     const pluralKey = count === 1 ? `${translationKey}_one` : `${translationKey}_other`;
-    const pluralTranslation = t(pluralKey, allVars);
+    translatedText = t(pluralKey, allVars);
 
-    // Use plural translation if it exists (not returning the key itself)
-    if (pluralTranslation !== pluralKey) {
-      translatedText = pluralTranslation;
+    // Fall back to singular translation if plural translation is missing
+    if (translatedText === pluralKey) {
+      translatedText = t(translationKey, allVars);
     }
+  } else {
+    translatedText = t(translationKey, allVars);
   }
 
   // Use fallback if translation is missing (returns the key itself)
