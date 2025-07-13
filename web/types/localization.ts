@@ -72,6 +72,13 @@ export const Localization = {
     settings: 'settings',
     overriddenViaCommandLine: 'Overridden via command line',
 
+    // EditInstanceDetails component specific keys
+    EditInstanceDetails: {
+      offlineMessageDescription: 'Admin.EditInstanceDetails.offlineMessageDescription',
+      directoryDescription: 'Admin.EditInstanceDetails.directoryDescription',
+      serverUrlRequiredForDirectory: 'Admin.EditInstanceDetails.serverUrlRequiredForDirectory',
+    },
+
     // Logging and monitoring
     info: 'Info',
     warning: 'Warning',

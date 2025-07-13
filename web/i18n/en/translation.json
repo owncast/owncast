@@ -1,5 +1,11 @@
 {
   "Add your Owncast instance to the Fediverse": "Add your Owncast instance to the Fediverse",
+  "Admin.directoryDescription": "Increase your audience by appearing in the <a href=\"https://directory.owncast.online\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Learn more</a>.",
+  "Admin.EditInstanceDetails.directoryDescription": "Increase your audience by appearing in the <a href=\"https://directory.owncast.online\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Learn more</a>.",
+  "Admin.EditInstanceDetails.offlineMessageDescription": "The offline message is displayed to your page visitors when you're not streaming. Markdown is supported.",
+  "Admin.EditInstanceDetails.serverUrlRequiredForDirectory": "You must set your <strong>Server URL</strong> above to enable the directory.",
+  "Admin.offlineMessageDescription": "The offline message is displayed to your page visitors when you're not streaming. Markdown is supported.",
+  "Admin.serverUrlRequiredForDirectory": "You must set your <strong>Server URL</strong> above to enable the directory.",
   "Banned Users": "Banned Users",
   "Bring in moderators to help keep your chat in order": "Bring in moderators to help keep your chat in order.",
   "Chat is disabled": "Chat is disabled",

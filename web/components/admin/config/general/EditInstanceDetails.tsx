@@ -28,6 +28,8 @@ import { ToggleSwitch } from '../../ToggleSwitch';
 import { EditLogo } from '../../EditLogo';
 import FormStatusIndicator from '../../FormStatusIndicator';
 import { createInputStatus, STATUS_SUCCESS } from '../../../../utils/input-statuses';
+import { Translation } from '../../../ui/Translation/Translation';
+import { Localization } from '../../../../types/localization';
 
 const { Title } = Typography;
 
@@ -248,8 +250,10 @@ export default function EditInstanceDetails() {
           />
         </div>
         <div className="field-tip">
-          The offline message is displayed to your page visitors when you&apos;re not streaming.
-          Markdown is supported.
+          <Translation
+            translationKey={Localization.Admin.EditInstanceDetails.offlineMessageDescription}
+            defaultText="The offline message is displayed to your page visitors when you're not streaming. Markdown is supported."
+          />
         </div>
 
         <Button
@@ -283,23 +287,17 @@ export default function EditInstanceDetails() {
 
       <br />
       <p className="description">
-        Increase your audience by appearing in the{' '}
-        <a href="https://directory.owncast.online" target="_blank" rel="noreferrer">
-          <strong>Owncast Directory</strong>
-        </a>
-        . This is an external service run by the Owncast project.{' '}
-        <a
-          href="https://owncast.online/docs/directory/?source=admin"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn more
-        </a>
-        .
+        <Translation
+          translationKey={Localization.Admin.EditInstanceDetails.directoryDescription}
+          defaultText='Increase your audience by appearing in the <a href="https://directory.owncast.online" target="_blank" rel="noreferrer"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href="https://owncast.online/docs/directory/?source=admin" target="_blank" rel="noopener noreferrer">Learn more</a>.'
+        />
       </p>
       {!yp.instanceUrl && (
         <p className="description">
-          You must set your <strong>Server URL</strong> above to enable the directory.
+          <Translation
+            translationKey={Localization.Admin.EditInstanceDetails.serverUrlRequiredForDirectory}
+            defaultText="You must set your <strong>Server URL</strong> above to enable the directory."
+          />
         </p>
       )}
 
