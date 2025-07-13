@@ -114,4 +114,67 @@ describe('Translation Component', () => {
 
     expect(screen.getByText('Chat is offline')).toBeInTheDocument();
   });
+
+  test('should render defaultText when translation key is missing', () => {
+    // Use a key that doesn't exist in our mock translations
+    render(
+      <Translation
+        translationKey={'non_existent_key' as any}
+        defaultText="This is the default text"
+      />,
+    );
+
+    expect(screen.getByText('This is the default text')).toBeInTheDocument();
+  });
+
+  test('should render defaultText with variable interpolation when translation key is missing', () => {
+    // Use a key that doesn't exist in our mock translations
+    render(
+      <Translation
+        translationKey={'non_existent_key' as any}
+        defaultText="Hello {{name}}, this is default text with {{count}} items"
+        vars={{ name: 'John', count: 5 }}
+      />,
+    );
+
+    expect(screen.getByText('Hello John, this is default text with 5 items')).toBeInTheDocument();
+  });
+
+  test('should render defaultText with HTML content when translation key is missing', () => {
+    // Use a key that doesn't exist in our mock translations
+    render(
+      <Translation
+        translationKey={'non_existent_key' as any}
+        defaultText="This is <strong>bold</strong> default text with <em>emphasis</em>"
+      />,
+    );
+
+    // Check that HTML tags are rendered correctly
+    const strongElement = screen.getByText('bold');
+    expect(strongElement.tagName).toBe('STRONG');
+    
+    const emElement = screen.getByText('emphasis');
+    expect(emElement.tagName).toBe('EM');
+  });
+
+  test('should use actual translation when key exists, ignoring defaultText', () => {
+    render(
+      <Translation
+        translationKey={Localization.Testing.simpleKey}
+        defaultText="This default text should be ignored"
+      />,
+    );
+
+    // Should render the actual translation, not the default text
+    expect(screen.getByText('Simple translation text')).toBeInTheDocument();
+    expect(screen.queryByText('This default text should be ignored')).not.toBeInTheDocument();
+  });
+
+  test('should render translation key as fallback when no defaultText is provided and key is missing', () => {
+    // Use a key that doesn't exist in our mock translations
+    render(<Translation translationKey={'missing_key' as any} />);
+
+    // Should render the key itself as fallback
+    expect(screen.getByText('missing_key')).toBeInTheDocument();
+  });
 });
