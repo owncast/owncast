@@ -114,6 +114,9 @@ export const Localization = {
     testing: 'testing_string',
     another: 'another_test',
     simpleKey: 'simple_key',
+    itemCount: 'item_count',
+    messageCount: 'message_count',
+    noPluralKey: 'no_plural_key',
   },
 } as const;
 
