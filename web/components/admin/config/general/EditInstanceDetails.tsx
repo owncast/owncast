@@ -251,7 +251,7 @@ export default function EditInstanceDetails() {
         </div>
         <div className="field-tip">
           <Translation
-            translationKey={Localization.Admin.offlineMessageDescription}
+            translationKey={Localization.Admin.EditInstanceDetails.offlineMessageDescription}
             defaultText="The offline message is displayed to your page visitors when you're not streaming. Markdown is supported."
           />
         </div>
@@ -288,14 +288,14 @@ export default function EditInstanceDetails() {
       <br />
       <p className="description">
         <Translation
-          translationKey={Localization.Admin.directoryDescription}
+          translationKey={Localization.Admin.EditInstanceDetails.directoryDescription}
           defaultText='Increase your audience by appearing in the <a href="https://directory.owncast.online" target="_blank" rel="noreferrer"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href="https://owncast.online/docs/directory/?source=admin" target="_blank" rel="noopener noreferrer">Learn more</a>.'
         />
       </p>
       {!yp.instanceUrl && (
         <p className="description">
           <Translation
-            translationKey={Localization.Admin.serverUrlRequiredForDirectory}
+            translationKey={Localization.Admin.EditInstanceDetails.serverUrlRequiredForDirectory}
             defaultText="You must set your <strong>Server URL</strong> above to enable the directory."
           />
         </p>
