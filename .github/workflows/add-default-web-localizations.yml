@@ -33,8 +33,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run i18n:extract
-        run: npm run i18n:extract
+      - name: Run translation extraction
+        run: npm run translate
 
       - name: Commit and push changes
         run: |
