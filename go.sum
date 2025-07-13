@@ -150,6 +150,7 @@ github.com/evilmartians/lefthook v1.11.16 h1:QJ3yTQN/X31+z1xL48NrwMzBpulkbicTE1q
 github.com/evilmartians/lefthook v1.11.16/go.mod h1:yQCQNPGxi0sn9+kH6O1T1VF45shbnvmt7F9xKCfTZok=
 github.com/evilmartians/lefthook v1.12.0/go.mod h1:yQCQNPGxi0sn9+kH6O1T1VF45shbnvmt7F9xKCfTZok=
 github.com/evilmartians/lefthook v1.12.1/go.mod h1:yQCQNPGxi0sn9+kH6O1T1VF45shbnvmt7F9xKCfTZok=
+github.com/evilmartians/lefthook v1.12.2 h1:pKncsv6tUjPyAZa/Hec90SNxxgybB++Xc4o+soV29hg=
 github.com/evilmartians/lefthook v1.12.2/go.mod h1:yQCQNPGxi0sn9+kH6O1T1VF45shbnvmt7F9xKCfTZok=
 github.com/fatih/color v1.18.0 h1:S8gINlzdQ840/4pfAwic/ZE0djQEH3wM94VfqLTZcOM=
 github.com/fatih/color v1.18.0/go.mod h1:4FelSpRwEGDpQ12mAdzqdOukCy4u8WUtOY6lkT/6HfU=
@@ -902,6 +903,7 @@ golang.org/x/term v0.20.0/go.mod h1:8UkIAJTvZgivsXaD6/pH6U9ecQzZ45awqEOzuCvwpFY=
 golang.org/x/term v0.27.0/go.mod h1:iMsnZpn0cago0GOrHO2+Y7u7JPn5AylBrcoWkElMTSM=
 golang.org/x/term v0.32.0 h1:DR4lr0TjUs3epypdhTOkMmuF5CDFJ/8pOnbzMZPQ7bg=
 golang.org/x/term v0.32.0/go.mod h1:uZG1FhGx848Sqfsq4/DlJr3xGGsYMu/L5GW4abiaEPQ=
+golang.org/x/term v0.33.0 h1:NuFncQrRcaRvVmgRkvM3j/F00gWIAlcmlB8ACEKmGIg=
 golang.org/x/term v0.33.0/go.mod h1:s18+ql9tYWp1IfpV9DmCtQDDSRBUjKaw9M1eAv5UeF0=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.2/go.mod h1:bEr9sfX3Q8Zfm5fL9x+3itogRgK3+ptLWKqgva+5dAk=

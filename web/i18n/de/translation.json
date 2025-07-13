@@ -53,6 +53,10 @@
   "the next time goes live": "das nächste Mal geht live",
   "Follow": "Folgen",
   "on the Fediverse to see the next time goes live": "auf dem Fediverse zu sehen, wann das nächste Mal live geht",
+  "offline_basic": "Dieser Stream ist offline. Schauen Sie bald wieder vorbei!",
+  "offline_notify_only": "Dieser Stream ist offline. <span class='notify-link'>Lassen Sie sich benachrichtigen</span>, wenn {{streamer}} das nächste Mal live geht.",
+  "offline_fediverse_only": "Dieser Stream ist offline. <span class='follow-link'>Folgen</span> Sie {{fediverseAccount}} auf dem Fediverse, um zu sehen, wann {{streamer}} das nächste Mal live geht.",
+  "offline_notify_and_fediverse": "Dieser Stream ist offline. Sie können <span class='notify-link'>sich benachrichtigen lassen</span>, wenn {{streamer}} das nächste Mal live geht oder <span class='follow-link'>folgen</span> Sie {{fediverseAccount}} auf dem Fediverse.",
   "Last live ago": "Letzter Live- {{timeAgo}} vor",
   "Want to upload custom emojis in bulk? Check out our": "Willst du benutzerdefinierte Emojis in großen Mengen hochladen? Schau in unseren",
   "Emoji guide": "Emoji-Guide",
@@ -128,5 +132,13 @@
   "Max viewers this stream": "Maximale Anzahl von Zuschauern in diesem Stream",
   "Max viewers last stream": "Maximale Zuschauerzahl beim letzten Stream",
   "max viewers": "Max. Zuschauer",
-  "No viewer data has been collected yet": "Bisher wurden noch keine Daten von Zuschauern gesammelt."
+  "No viewer data has been collected yet": "Bisher wurden noch keine Daten von Zuschauern gesammelt.",
+  "hello_world": "Hallo <strong>{{name}}</strong>, willkommen in der Welt!",
+  "notification_message": "Sie können <a href=\"#\">hier klicken</a>, um Benachrichtigungen zu erhalten, wenn {{streamer}} live geht.",
+  "complex_message": "Dies ist eine <em>komplexe</em> Nachricht mit <strong>{{count}}</strong> Zuschauern und <code>{{status}}</code> Status.",
+  "Emojis": "Emojis",
+  "Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the filename without extension will be used as emoji name. Additionally, emoji names are case-insensitive. For best results, ensure all emoji have unique names.": "Hier können Sie neue benutzerdefinierte Emojis für die Verwendung im Chat hochladen. Beim Hochladen eines neuen Emojis wird der Dateiname ohne Erweiterung als Emoji-Name verwendet. Zusätzlich sind Emoji-Namen nicht groß-/kleinschreibungsempfindlich. Für beste Ergebnisse sollten alle Emojis eindeutige Namen haben.",
+  "Want to upload custom emojis in bulk? Check out our <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji guide</a>.": "Möchten Sie benutzerdefinierte Emojis in großen Mengen hochladen? Schauen Sie sich unseren <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji-Guide</a> an.",
+  "Upload new emoji": "Neues Emoji hochladen",
+  "Delete emoji": "Emoji löschen"
 }

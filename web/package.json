@@ -16,10 +16,13 @@
 		"build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -",
 		"test": "jest",
 		"format": "prettier --write  **/*.{js,ts,jsx,tsx,css,md,scss}",
-		"translate": "i18next -c i18next-parser.config.mjs"
+		"translate": "i18next -c i18next-parser.config.mjs",
+		"i18n:extract": "node scripts/i18n-extract.js"
 	},
 	"dependencies": {
 		"@ant-design/icons": "4.8.3",
+		"@babel/parser": "^7.28.0",
+		"@babel/traverse": "^7.28.0",
 		"@codemirror/lang-css": "6.3.1",
 		"@codemirror/lang-html": "^6.4.2",
 		"@codemirror/lang-javascript": "^6.1.2",
@@ -30,6 +33,8 @@
 		"@fontsource/inter": "^5.0.0",
 		"@fontsource/poppins": "5.2.5",
 		"@next/bundle-analyzer": "^14.0.0",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.3.0",
 		"@uiw/codemirror-theme-bbedit": "4.23.7",
 		"@uiw/react-codemirror": "4.23.7",
 		"@xstate/react": "3.2.2",
@@ -39,6 +44,7 @@
 		"chart.js": "^4.2.0",
 		"classnames": "2.5.1",
 		"date-fns": "^4.0.0",
+		"glob": "^11.0.3",
 		"graphemer": "^1.4.0",
 		"i18next-parser": "^9.1.0",
 		"i18next-scanner": "^4.6.0",
@@ -92,6 +98,7 @@
 		"@storybook/react": "^8.3.6",
 		"@storybook/theming": "^8.3.6",
 		"@svgr/webpack": "8.1.0",
+		"@testing-library/react": "^16.3.0",
 		"@types/chart.js": "2.9.41",
 		"@types/classnames": "2.3.4",
 		"@types/jest": "^29.5.0",
@@ -122,6 +129,7 @@
 		"handlebars": "^4.7.7",
 		"html-webpack-plugin": "5.6.3",
 		"install": "^0.13.0",
+		"jest-environment-jsdom": "^30.0.4",
 		"knip": "^5.0.0",
 		"less": "4.2.1",
 		"less-loader": "12.2.0",
@@ -142,7 +150,7 @@
 		"stylelint-config-standard": "^36.0.0",
 		"stylelint-config-standard-scss": "^14.0.0",
 		"ts-jest": "^29.1.0",
-		"typescript": "5.7.3"
+		"typescript": "^5.7.3"
 	},
 	"overrides": {
 		"@emoji-mart/react": {

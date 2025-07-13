@@ -43,7 +43,7 @@ Do not access the web application via http://localhost:8080 or build the web pro
 1. All APIs are to be documented using OpenAPI specifications and code is to be generated using `build/gen-api.sh`. Additional details can be found at https://docs.owncast.dev/api-web-routing.
 2. Write API tests for all new endpoints in the `test/automated/api` directory.
 3. Use the `test/automated/browser` directory for browser-based tests for new functionality that simulate user interactions.
-4. All user-facing frontend UI strings need to support localization. Use the `next-export-i18n` package for wrapping strings to enable this. Read https://docs.owncast.dev/web-translations for more details. Test localization by adding "?lang=XX" with XX being a country code, such as "de" for German. Strings that have not yet been translated will not show as changed, but it's good to test anyway to make sure that previously translated strings have not been broken or regressed in any way. Screenshots with some additional languages can be helpful in showing this.
+4. All user-facing frontend UI strings need to support localization. Use the `Translation` component to show most displayable strings. To create dynamic translated strings use the `next-export-i18n` library and the `t()` function. But use the `Translation` component unless there is a reason not to as it allows you to set default text. Read https://docs.owncast.dev/web-translations for more details. Test localization by adding "?lang=XX" with XX being a country code, such as "de" for German. Strings that have not yet been translated will not show as changed, but it's good to test anyway to make sure that previously translated strings have not been broken or regressed in any way. Screenshots with some additional languages can be helpful in showing this.
 5. For UI component changes, a before and after screenshot of the component should always be added to the pull request to help with review. Additionally a link to the PR's Storybook on Chromatic via the PR's Chromatic job should be included to help with review.
 6. For API changes a before and after example of the API response should be added to the pull request to help with review.
 7. For backend changes, a before and after example of logs to demonstrate the change should be added to the pull request to help with review.
@@ -53,6 +53,7 @@ Do not access the web application via http://localhost:8080 or build the web pro
 11. The admin is found at `/admin`.
 12. If a live stream video is needed to run, you can run `./test/ocTestStream.sh` to start an actual stream that will begin streaming from the local development server.
 13. You should never commit the `static/web` directory to the repository. It is generated from the `web` directory and should be ignored in your commits.
+14. Don't use emoji in code comments or commit messages. That's lame.
 
 ## Screenshots
 
@@ -69,3 +70,4 @@ These screenshots should be displayed inline in the PR comments, and not as atta
 - When taking screenshots for PR documentation, create temporary files in /tmp directory or use patterns like _screenshot_.js and _screenshot_.png that are excluded by .gitignore.
 - Screnshots should be taken using the web dev server at `http://localhost:3000` and not the production build at `http://localhost:8080`.
 - Never commit temporary screenshot scripts or image files to the repository - they should only be used locally and uploaded directly to GitHub for PR comments.
+- Double check that the screenshots are attached to the PR comments. Copilot often forgets to do this or says it did it but doesn't actually do it. If it doesn't do it, it should continue to try until it succeeds.

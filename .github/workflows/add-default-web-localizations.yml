@@ -1,0 +1,50 @@
+name: Extract Default Translations
+
+on:
+  push:
+    paths:
+      - 'web/**/*.ts'
+      - 'web/**/*.tsx'
+      - 'web/**/*.js'
+      - 'web/**/*.jsx'
+
+jobs:
+  extract-and-commit:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0 # Required to push back to same branch
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run i18n:extract
+        run: npm run i18n:extract
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "Owncast default web localizations"
+          git config --global user.email "owncast@owncast.online"
+
+          if [ -n "$(git status --porcelain i18n/)" ]; then
+            git add i18n/
+            git commit -m "chore: update extracted translations"
+            git push origin HEAD
+          else
+            echo "No translation changes to commit."
+          fi
