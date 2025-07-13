@@ -97,6 +97,7 @@ export const Localization = {
 
     // Branding
     poweredByOwncast: 'Powered by Owncast',
+    poweredByOwncastVersion: 'powered_by_owncast_version',
   },
 
   /**
