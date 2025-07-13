@@ -38,7 +38,9 @@ describe('Translation Component', () => {
   });
 
   test('should render translation with variable interpolation', () => {
-    render(<Translation translationKey={Localization.Frontend.helloWorld} vars={{ name: 'TestUser' }} />);
+    render(
+      <Translation translationKey={Localization.Frontend.helloWorld} vars={{ name: 'TestUser' }} />,
+    );
 
     // Check that the text contains the interpolated variable
     // Use a function matcher to handle text across multiple elements, targeting the span
@@ -51,7 +53,9 @@ describe('Translation Component', () => {
   });
 
   test('should render HTML content correctly', () => {
-    render(<Translation translationKey={Localization.Frontend.helloWorld} vars={{ name: 'TestUser' }} />);
+    render(
+      <Translation translationKey={Localization.Frontend.helloWorld} vars={{ name: 'TestUser' }} />,
+    );
 
     // Check that HTML tags are rendered (strong tag in this case)
     const strongElement = screen.getByText('TestUser');
@@ -59,7 +63,9 @@ describe('Translation Component', () => {
   });
 
   test('should apply className prop', () => {
-    render(<Translation translationKey={Localization.Testing.simpleKey} className="custom-class" />);
+    render(
+      <Translation translationKey={Localization.Testing.simpleKey} className="custom-class" />,
+    );
 
     const element = screen.getByText('Simple translation text');
     expect(element).toHaveClass('custom-class');
