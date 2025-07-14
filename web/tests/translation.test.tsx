@@ -30,13 +30,10 @@ jest.mock('next-export-i18n', () => ({
       if (!result && key.includes('.')) {
         const [ns, k] = key.split('.');
         // Try snake_case
-        const snakeKey =
-          ns +
-          '.' +
-          k
-            .replace(/([A-Z])/g, '_$1')
-            .toLowerCase()
-            .replace(/^_/, '');
+        const snakeKey = `${ns}.${k
+          .replace(/([A-Z])/g, '_$1')
+          .toLowerCase()
+          .replace(/^_/, '')}`;
         result = translations[snakeKey];
       }
 
