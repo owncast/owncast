@@ -22,6 +22,23 @@ function getDotPath(node) {
   return null;
 }
 
+function sortObjectKeys(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(sortObjectKeys);
+  }
+
+  if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj)
+      .sort()
+      .reduce((sorted, key) => {
+        sorted[key] = sortObjectKeys(obj[key]);
+        return sorted;
+      }, {});
+  }
+
+  return obj;
+}
+
 function scanTranslationKeys() {
   const files = glob.sync('**/*.{ts,tsx,js,jsx}', {
     ignore: ['node_modules/**', '.next/**', 'out/**'],
