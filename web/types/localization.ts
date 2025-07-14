@@ -118,10 +118,10 @@ export const Localization = {
   Testing: {
     testing: 'testing_string',
     another: 'another_test',
-    simpleKey: 'simple_key',
-    itemCount: 'item_count',
-    messageCount: 'message_count',
-    noPluralKey: 'no_plural_key',
+    simpleKey: 'Testing.simpleKey',
+    itemCount: 'Testing.itemCount',
+    messageCount: 'Testing.messageCount',
+    noPluralKey: 'Testing.noPluralKey',
   },
 } as const;
 

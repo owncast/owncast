@@ -7,30 +7,48 @@ import { Localization } from '../types/localization';
 jest.mock('next-export-i18n', () => ({
   useTranslation: () => ({
     t: (key: string, vars?: Record<string, any>) => {
-      // Mock translations for testing
+      // Use the actual keys as in localization.ts and translation.json
       const translations: Record<string, string> = {
         hello_world: 'Hello <strong>{{name}}</strong>, welcome to the world!',
-        'Chat is offline': 'Chat is offline',
+        chat_offline: 'Chat is offline',
         notification_message:
           'You can <a href="#">click here</a> to receive notifications when {{streamer}} goes live.',
-        simple_key: 'Simple translation text',
-
-        // Pluralization test keys
-        item_count_one: 'You have {{count}} item',
-        item_count: 'You have {{count}} items', // Original key serves as plural form
-        message_count_one: 'You have {{count}} message from {{sender}}',
-        message_count: 'You have {{count}} messages from {{sender}}', // Original key serves as plural form
-
-        // Keys without pluralization variants
-        no_plural_key: 'This key has no plural variants - {{count}} things',
+        component_error: 'Error: {{message}}',
+        offline_basic: 'This stream is offline. Check back soon!',
+        // Testing keys
+        'Testing.simpleKey': 'Simple translation text',
+        'Testing.itemCount_one': 'You have {{count}} item',
+        'Testing.itemCount': 'You have {{count}} items',
+        'Testing.messageCount_one': 'You have {{count}} message from {{sender}}',
+        'Testing.messageCount': 'You have {{count}} messages from {{sender}}',
+        'Testing.noPluralKey': 'This key has no plural variants - {{count}} things',
       };
 
-      let result = translations[key] || key;
+      let result = translations[key];
+
+      // If not found, try to fallback to a snake_case version (for legacy or fallback)
+      if (!result && key.includes('.')) {
+        const [ns, k] = key.split('.');
+        // Try snake_case
+        const snakeKey =
+          ns +
+          '.' +
+          k
+            .replace(/([A-Z])/g, '_$1')
+            .toLowerCase()
+            .replace(/^_/, '');
+        result = translations[snakeKey];
+      }
+
+      // If still not found, return the key itself
+      if (!result) {
+        result = key;
+      }
 
       // Simple variable replacement for testing
       if (vars) {
         Object.keys(vars).forEach(varKey => {
-          result = result.replace(`{{${varKey}}}`, vars[varKey]);
+          result = result.replace(new RegExp(`{{${varKey}}}`, 'g'), vars[varKey]);
         });
       }
 
