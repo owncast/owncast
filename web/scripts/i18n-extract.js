@@ -149,7 +149,7 @@ function updateTranslationFile(flatTranslations) {
   }
 
   if (changed) {
-    const merged = mergeDeep(existing, newNestedTranslations);
+    const merged = sortObjectKeys(mergeDeep(existing, newNestedTranslations));
     fs.writeFileSync(TRANSLATIONS_PATH, JSON.stringify(merged, null, 2));
     console.log(`[i18n] Updated ${TRANSLATIONS_PATH}`);
   } else {
