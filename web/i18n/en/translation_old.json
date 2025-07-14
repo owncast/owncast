@@ -1,9 +1,11 @@
 {
   "Testing": {
-    "simpleKey": "<strong><em>Missing translation Testing.simpleKey: Please report</em></strong>",
-    "itemCount": "<strong><em>Missing translation Testing.itemCount: Please report</em></strong>",
-    "messageCount": "<strong><em>Missing translation Testing.messageCount: Please report</em></strong>",
-    "noPluralKey": "<strong><em>Missing translation Testing.noPluralKey: Please report</em></strong>"
+    "simpleKey": "Simple translation text",
+    "itemCount": "You have {{count}} items",
+    "messageCount": "{{sender}} has sent {{count}} messages",
+    "noPluralKey": "This has no singular key (_one).",
+    "itemCount_one": "You have {{count}} item",
+    "messageCount_one": "{{sender}} has sent one message"
   },
   "Frontend": {
     "helloWorld": "<strong><em>Missing translation Frontend.helloWorld: Please report</em></strong>",
