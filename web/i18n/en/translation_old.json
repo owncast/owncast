@@ -1,0 +1,32 @@
+{
+  "Testing": {
+    "simpleKey": "<strong><em>Missing translation Testing.simpleKey: Please report</em></strong>",
+    "itemCount": "<strong><em>Missing translation Testing.itemCount: Please report</em></strong>",
+    "messageCount": "<strong><em>Missing translation Testing.messageCount: Please report</em></strong>",
+    "noPluralKey": "<strong><em>Missing translation Testing.noPluralKey: Please report</em></strong>"
+  },
+  "Frontend": {
+    "helloWorld": "<strong><em>Missing translation Frontend.helloWorld: Please report</em></strong>",
+    "notificationMessage": "<strong><em>Missing translation Frontend.notificationMessage: Please report</em></strong>",
+    "chatOffline": "<strong><em>Missing translation Frontend.chatOffline: Please report</em></strong>",
+    "offlineNotifyAndFediverse": "This stream is offline. You can <span class='notify-link'>be notified</span> the next time {{streamer}} goes live or <span class='follow-link'>follow</span> {{fediverseAccount}} on the Fediverse.",
+    "offlineNotifyOnly": "This stream is offline. <span class='notify-link'>Be notified</span> the next time {{streamer}} goes live.",
+    "offlineFediverseOnly": "This stream is offline. <span class='follow-link'>Follow</span> {{fediverseAccount}} on the Fediverse to see the next time {{streamer}} goes live.",
+    "offlineBasic": "This stream is offline. Check back soon!",
+    "componentError": "Error: {{message}}"
+  },
+  "Admin": {
+    "emojis": "<strong><em>Missing translation Admin.emojis: Please report</em></strong>",
+    "emojiPageDescription": "<strong><em>Missing translation Admin.emojiPageDescription: Please report</em></strong>",
+    "emojiUploadBulkGuide": "<strong><em>Missing translation Admin.emojiUploadBulkGuide: Please report</em></strong>",
+    "uploadNewEmoji": "<strong><em>Missing translation Admin.uploadNewEmoji: Please report</em></strong>",
+    "EditInstanceDetails": {
+      "offlineMessageDescription": "The offline message is displayed to your page visitors when you're not streaming. Markdown is supported.",
+      "directoryDescription": "Increase your audience by appearing in the <a href=\"https://directory.owncast.online\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Learn more</a>.",
+      "serverUrlRequiredForDirectory": "You must set your <strong>Server URL</strong> above to enable the directory."
+    }
+  },
+  "Common": {
+    "poweredByOwncastVersion": "Powered by <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+  }
+}

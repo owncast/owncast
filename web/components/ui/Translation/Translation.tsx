@@ -8,6 +8,7 @@ export interface TranslationProps {
   vars?: Record<string, any>;
   className?: string;
   defaultText?: string;
+  count?: number;
 }
 
 export const Translation: FC<TranslationProps> = ({
@@ -15,10 +16,32 @@ export const Translation: FC<TranslationProps> = ({
   vars,
   className,
   defaultText,
+  count,
 }) => {
   const { t } = useTranslation();
 
-  let translatedText = t(translationKey, vars);
+  // Include count in vars for interpolation
+  const allVars = count !== undefined ? { ...vars, count } : vars;
+
+  let translatedText;
+
+  if (count !== undefined) {
+    if (count === 1) {
+      // For singular, try _one key first, fall back to original key
+      const singularKey = `${translationKey}_one`;
+      translatedText = t(singularKey, allVars);
+
+      // Fall back to original key if _one key doesn't exist
+      if (translatedText === singularKey) {
+        translatedText = t(translationKey, allVars);
+      }
+    } else {
+      // For plural, always use the original key (no _other suffix needed)
+      translatedText = t(translationKey, allVars);
+    }
+  } else {
+    translatedText = t(translationKey, allVars);
+  }
 
   // Use fallback if translation is missing (returns the key itself)
   if (translatedText === translationKey && defaultText) {
@@ -26,7 +49,7 @@ export const Translation: FC<TranslationProps> = ({
 
     // Interpolate variables manually into defaultText
     // eslint-disable-next-line no-restricted-syntax
-    for (const [k, v] of Object.entries(vars || {})) {
+    for (const [k, v] of Object.entries(allVars || {})) {
       const regex = new RegExp(`{{\\s*${k}\\s*}}`, 'g');
       translatedText = translatedText.replace(regex, String(v));
     }

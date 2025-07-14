@@ -14,6 +14,15 @@ jest.mock('next-export-i18n', () => ({
         notification_message:
           'You can <a href="#">click here</a> to receive notifications when {{streamer}} goes live.',
         simple_key: 'Simple translation text',
+
+        // Pluralization test keys
+        item_count_one: 'You have {{count}} item',
+        item_count: 'You have {{count}} items', // Original key serves as plural form
+        message_count_one: 'You have {{count}} message from {{sender}}',
+        message_count: 'You have {{count}} messages from {{sender}}', // Original key serves as plural form
+
+        // Keys without pluralization variants
+        no_plural_key: 'This key has no plural variants - {{count}} things',
       };
 
       let result = translations[key] || key;
@@ -176,5 +185,112 @@ describe('Translation Component', () => {
 
     // Should render the key itself as fallback
     expect(screen.getByText('missing_key')).toBeInTheDocument();
+  });
+
+  // Pluralization tests
+  describe('Pluralization Support', () => {
+    test('should use singular form when count is 1', () => {
+      render(<Translation translationKey={Localization.Testing.itemCount} count={1} />);
+
+      expect(screen.getByText('You have 1 item')).toBeInTheDocument();
+    });
+
+    test('should use plural form when count is greater than 1', () => {
+      render(<Translation translationKey={Localization.Testing.itemCount} count={5} />);
+
+      expect(screen.getByText('You have 5 items')).toBeInTheDocument();
+    });
+
+    test('should use plural form when count is negative', () => {
+      render(<Translation translationKey={Localization.Testing.itemCount} count={-3} />);
+
+      expect(screen.getByText('You have -3 items')).toBeInTheDocument();
+    });
+
+    test('should interpolate count and other variables in pluralized text', () => {
+      render(
+        <Translation
+          translationKey={Localization.Testing.messageCount}
+          count={3}
+          vars={{ sender: 'Alice' }}
+        />,
+      );
+
+      expect(screen.getByText('You have 3 messages from Alice')).toBeInTheDocument();
+    });
+
+    test('should interpolate count and other variables in singular text', () => {
+      render(
+        <Translation
+          translationKey={Localization.Testing.messageCount}
+          count={1}
+          vars={{ sender: 'Bob' }}
+        />,
+      );
+
+      expect(screen.getByText('You have 1 message from Bob')).toBeInTheDocument();
+    });
+
+    test('should fallback to original key when pluralization keys do not exist', () => {
+      render(<Translation translationKey={Localization.Testing.noPluralKey} count={2} />);
+
+      expect(screen.getByText('This key has no plural variants - 2 things')).toBeInTheDocument();
+    });
+
+    test('should work without count prop (backward compatibility)', () => {
+      render(<Translation translationKey={Localization.Testing.simpleKey} />);
+
+      expect(screen.getByText('Simple translation text')).toBeInTheDocument();
+    });
+
+    test('should use defaultText with count interpolation when translation is missing', () => {
+      render(
+        <Translation
+          translationKey={'missing_plural_key' as any}
+          count={3}
+          defaultText="Default text with {{count}} items"
+        />,
+      );
+
+      expect(screen.getByText('Default text with 3 items')).toBeInTheDocument();
+    });
+
+    test('should use defaultText with count and other vars when translation is missing', () => {
+      render(
+        <Translation
+          translationKey={'missing_plural_key' as any}
+          count={1}
+          vars={{ name: 'John' }}
+          defaultText="{{name}} has {{count}} item"
+        />,
+      );
+
+      expect(screen.getByText('John has 1 item')).toBeInTheDocument();
+    });
+
+    test('should handle count of 0 as plural form', () => {
+      render(<Translation translationKey={Localization.Testing.itemCount} count={0} />);
+
+      expect(screen.getByText('You have 0 items')).toBeInTheDocument();
+    });
+
+    test('should handle fractional count as plural form', () => {
+      render(<Translation translationKey={Localization.Testing.itemCount} count={1.5} />);
+
+      expect(screen.getByText('You have 1.5 items')).toBeInTheDocument();
+    });
+
+    test('should work with className and pluralization', () => {
+      render(
+        <Translation
+          translationKey={Localization.Testing.itemCount}
+          count={2}
+          className="count-display"
+        />,
+      );
+
+      const element = screen.getByText('You have 2 items');
+      expect(element).toHaveClass('count-display');
+    });
   });
 });

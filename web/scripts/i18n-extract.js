@@ -14,12 +14,26 @@ function getDotPath(node) {
     const prop = node.property.name || node.property.value;
 
     if (objectPath !== null && prop) {
-      return objectPath ? `${objectPath}.${prop}` : prop; // skip base if empty
+      return objectPath ? `${objectPath}.${prop}` : prop;
     }
   } else if (node.type === 'Identifier' && node.name === 'Localization') {
-    return ''; // treat as base, skip
+    return '';
   }
   return null;
+}
+
+function sortObjectKeys(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(sortObjectKeys);
+  }
+
+  if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj)
+      .sort()
+      .reduce((acc, key) => ({ ...acc, [key]: sortObjectKeys(obj[key]) }), {});
+  }
+
+  return obj;
 }
 
 function scanTranslationKeys() {
@@ -77,8 +91,14 @@ function scanTranslationKeys() {
           }
         }
 
-        if (key && defaultText && !results[key]) {
-          results[key] = defaultText;
+        if (key) {
+          // Eventually enable this to not allow empty strings.
+          // Then remove the 'missing translation' fallback below.
+          // if (!defaultText || defaultText.trim() === '') {
+          //   process.exit(1);
+          // }
+          results[key] =
+            defaultText || `<strong><em>Missing translation ${key}: Please report</em></strong>`;
         }
       },
     });
@@ -87,7 +107,37 @@ function scanTranslationKeys() {
   return results;
 }
 
-function updateTranslationFile(newTranslations) {
+// Recursively sets a nested value using a dot-notated key
+function setNestedKey(obj, keyPath, value) {
+  const keys = keyPath.split('.');
+  let current = obj;
+
+  keys.forEach((key, index) => {
+    if (index === keys.length - 1) {
+      current[key] = value;
+    } else {
+      if (!current[key] || typeof current[key] !== 'object') {
+        current[key] = {};
+      }
+      current = current[key];
+    }
+  });
+}
+
+// Deep merge of two objects
+function mergeDeep(target, source) {
+  const output = { ...target };
+  for (const key of Object.keys(source)) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      output[key] = mergeDeep(output[key] || {}, source[key]);
+    } else {
+      output[key] = source[key];
+    }
+  }
+  return output;
+}
+
+function updateTranslationFile(flatTranslations) {
   let existing = {};
 
   if (fs.existsSync(TRANSLATIONS_PATH)) {
@@ -95,20 +145,26 @@ function updateTranslationFile(newTranslations) {
   }
 
   let changed = false;
+  let newNestedTranslations = {};
 
-  for (const [key, value] of Object.entries(newTranslations)) {
-    if (!(key in existing)) {
-      existing[key] = value;
+  for (const [flatKey, value] of Object.entries(flatTranslations)) {
+    const tempObj = {};
+    setNestedKey(tempObj, flatKey, value);
+
+    // Detect if this key is already present
+    const flatKeyParts = flatKey.split('.');
+    const alreadyExists = flatKeyParts.reduce((acc, part) => acc && acc[part], existing);
+
+    if (!alreadyExists) {
+      newNestedTranslations = mergeDeep(newNestedTranslations, tempObj);
       changed = true;
-      console.log(`[i18n] Added: ${key}`);
+      console.log(`[i18n] Added: ${flatKey}`);
     }
   }
 
   if (changed) {
-    const sorted = Object.fromEntries(
-      Object.entries(existing).sort(([a], [b]) => a.localeCompare(b)),
-    );
-    fs.writeFileSync(TRANSLATIONS_PATH, JSON.stringify(sorted, null, 2));
+    const merged = sortObjectKeys(mergeDeep(existing, newNestedTranslations));
+    fs.writeFileSync(TRANSLATIONS_PATH, JSON.stringify(merged, null, 2));
     console.log(`[i18n] Updated ${TRANSLATIONS_PATH}`);
   } else {
     console.log('[i18n] No new keys to add.');

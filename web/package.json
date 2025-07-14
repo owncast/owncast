@@ -16,8 +16,7 @@
 		"build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -",
 		"test": "jest",
 		"format": "prettier --write  **/*.{js,ts,jsx,tsx,css,md,scss}",
-		"translate": "i18next -c i18next-parser.config.mjs",
-		"i18n:extract": "node scripts/i18n-extract.js"
+		"translate": "i18next -c i18next-parser.config.mjs && node scripts/i18n-extract.js"
 	},
 	"dependencies": {
 		"@ant-design/icons": "4.8.3",

@@ -72,6 +72,11 @@ export const Localization = {
     settings: 'settings',
     overriddenViaCommandLine: 'Overridden via command line',
 
+    Chat: {
+      moderationMessagesSent: 'Admin.Chat.moderationMessagesSent',
+      moderationMessagesSent_one: 'Admin.Chat.moderationMessagesSent_one',
+    },
+
     // EditInstanceDetails component specific keys
     EditInstanceDetails: {
       offlineMessageDescription: 'Admin.EditInstanceDetails.offlineMessageDescription',
@@ -114,6 +119,9 @@ export const Localization = {
     testing: 'testing_string',
     another: 'another_test',
     simpleKey: 'simple_key',
+    itemCount: 'item_count',
+    messageCount: 'message_count',
+    noPluralKey: 'no_plural_key',
   },
 } as const;
 
