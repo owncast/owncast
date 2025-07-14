@@ -30,10 +30,7 @@ function sortObjectKeys(obj) {
   if (obj !== null && typeof obj === 'object') {
     return Object.keys(obj)
       .sort()
-      .reduce((sorted, key) => {
-        sorted[key] = sortObjectKeys(obj[key]);
-        return sorted;
-      }, {});
+      .reduce((acc, key) => ({ ...acc, [key]: sortObjectKeys(obj[key]) }), {});
   }
 
   return obj;
