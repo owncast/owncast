@@ -112,15 +112,15 @@ function setNestedKey(obj, keyPath, value) {
 
 // Deep merge of two objects
 function mergeDeep(target, source) {
+  const output = { ...target };
   for (const key of Object.keys(source)) {
     if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-      if (!target[key]) target[key] = {};
-      mergeDeep(target[key], source[key]);
+      output[key] = mergeDeep(output[key] || {}, source[key]);
     } else {
-      target[key] = source[key];
+      output[key] = source[key];
     }
   }
-  return target;
+  return output;
 }
 
 function updateTranslationFile(flatTranslations) {
@@ -131,7 +131,7 @@ function updateTranslationFile(flatTranslations) {
   }
 
   let changed = false;
-  const newNestedTranslations = {};
+  let newNestedTranslations = {};
 
   for (const [flatKey, value] of Object.entries(flatTranslations)) {
     const tempObj = {};
@@ -139,23 +139,18 @@ function updateTranslationFile(flatTranslations) {
 
     // Detect if this key is already present
     const flatKeyParts = flatKey.split('.');
-    const finalKey = flatKeyParts[flatKeyParts.length - 1];
-    const topKey = flatKeyParts[0];
-
-    const alreadyExists = flatKeyParts.reduce((acc, part) => {
-      return acc && acc[part];
-    }, existing);
+    const alreadyExists = flatKeyParts.reduce((acc, part) => acc && acc[part], existing);
 
     if (!alreadyExists) {
-      mergeDeep(newNestedTranslations, tempObj);
+      newNestedTranslations = mergeDeep(newNestedTranslations, tempObj);
       changed = true;
       console.log(`[i18n] Added: ${flatKey}`);
     }
   }
 
   if (changed) {
-    mergeDeep(existing, newNestedTranslations);
-    fs.writeFileSync(TRANSLATIONS_PATH, JSON.stringify(existing, null, 2));
+    const merged = mergeDeep(existing, newNestedTranslations);
+    fs.writeFileSync(TRANSLATIONS_PATH, JSON.stringify(merged, null, 2));
     console.log(`[i18n] Updated ${TRANSLATIONS_PATH}`);
   } else {
     console.log('[i18n] No new keys to add.');
