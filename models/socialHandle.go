@@ -136,6 +136,10 @@ func GetAllSocialHandles() map[string]SocialHandle {
 			Platform: "Follow",
 			Icon:     "/img/platformlogos/follow.svg",
 		},
+		"peertube": {
+			Platform: "Peertube",
+			Icon:     "/img/platformlogos/peertube.svg",
+		},
 	}
 
 	return socialHandlePlatforms
