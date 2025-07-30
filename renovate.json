@@ -6,6 +6,8 @@
     "develop"
   ],
   "timezone": "America/Los_Angeles",
+  "prConcurrentLimit": 30,
+  "prHourlyLimit": 10,
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true,
