@@ -1,69 +1,70 @@
 {
-	"extends": [
-		"config:recommended"
-	],
-	"baseBranches": [
-		"develop"
-	],
-	"timezone": "America/Los_Angeles",
-	"lockFileMaintenance": {
-		"enabled": true,
-		"automerge": true,
-		"platformAutomerge": true
-	},
-	"npm": {
-		"minimumReleaseAge": "3 days"
-	},
-	"dependencyDashboard": true,
-	"major": {
-		"dependencyDashboardApproval": true
-	},
-	"dockerfile": {
-		"fileMatch": [
-			"(^|/)Earthfile$",
-			"(^|/|\\.)Dockerfile$",
-			"(^|/)Dockerfile[^/]*$"
-		]
-	},
-	"packageRules": [
-		{
-			"description": "Automatically merge minor and patch-level updates",
-			"matchUpdateTypes": [
-				"minor",
-				"patch",
-				"digest"
-			],
-			"automerge": true,
-			"automergeType": "branch",
-			"platformAutomerge": true,
-			"dependencyDashboardApproval": false
-		},
-		{
-			"description": "Ignore the old pre-0.1.0 web packages",
-			"matchPackageNames": [
-				"postcss",
-				"tailwindcss",
-				"cssnano",
-				"htm",
-				"mark.js",
-				"postcss-cli",
-				"@videojs/themes",
-				"@joeattardi/emoji-button",
-				"preact",
-				"github.com/go-fed/activity",
-				"go"
-			],
-			"enabled": false
-		},
-		{
-			"description": "Do not auto-merge statically assigned versions in npm",
-			"matchManagers": [
-				"npm"
-			],
-			"matchCurrentVersion": "/^[0-9]+\\.[0-9]+\\.[0-9]+$/",
-			"automerge": false,
-			"platformAutomerge": false,
-			"dependencyDashboardApproval": true
-		}
-	]
+  "extends": [
+    "config:recommended"
+  ],
+  "baseBranches": [
+    "develop"
+  ],
+  "timezone": "America/Los_Angeles",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "platformAutomerge": true
+  },
+  "npm": {
+    "minimumReleaseAge": "3 days"
+  },
+  "dependencyDashboard": true,
+  "major": {
+    "dependencyDashboardApproval": true
+  },
+  "dockerfile": {
+    "fileMatch": [
+      "(^|/)Earthfile$",
+      "(^|/|\\.)Dockerfile$",
+      "(^|/)Dockerfile[^/]*$"
+    ]
+  },
+  "packageRules": [
+    {
+      "description": "Automatically merge minor and patch-level updates",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest"
+      ],
+      "automerge": true,
+      "automergeType": "branch",
+      "platformAutomerge": true,
+      "dependencyDashboardApproval": false
+    },
+    {
+      "description": "Ignore the old pre-0.1.0 web packages",
+      "matchPackageNames": [
+        "postcss",
+        "tailwindcss",
+        "cssnano",
+        "htm",
+        "mark.js",
+        "postcss-cli",
+        "@videojs/themes",
+        "@joeattardi/emoji-button",
+        "preact",
+        "github.com/go-fed/activity",
+        "go"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Do not auto-merge statically assigned versions in npm",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchCurrentVersion": "/^[0-9]+\\.[0-9]+\\.[0-9]+$/",
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "platformAutomerge": false,
+      "dependencyDashboardApproval": true
+    }
+  ]
 }
