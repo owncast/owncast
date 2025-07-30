@@ -103,7 +103,7 @@
 		"@types/jest": "^29.5.0",
 		"@types/markdown-it": "14.1.2",
 		"@types/node": "22.10.7",
-		"@types/prop-types": "15.7.14",
+		"@types/prop-types": "15.7.15",
 		"@types/react": "18.3.20",
 		"@types/react-linkify": "1.0.4",
 		"@types/sanitize-html": "^2.9.0",
