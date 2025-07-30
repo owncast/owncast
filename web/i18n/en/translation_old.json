@@ -1,9 +1,9 @@
 {
   "Testing": {
-    "simpleKey": "This is a simple key for testing purposes.",
-    "itemCount": "You have {{count}} items.",
-    "messageCount": "{{sender}} has sent {{count}} messages.",
-    "noPluralKey": "This key does not support pluralization.",
+    "simpleKey": "<strong><em>Missing translation Testing.simpleKey: Please report</em></strong>",
+    "itemCount": "<strong><em>Missing translation Testing.itemCount: Please report</em></strong>",
+    "messageCount": "<strong><em>Missing translation Testing.messageCount: Please report</em></strong>",
+    "noPluralKey": "<strong><em>Missing translation Testing.noPluralKey: Please report</em></strong>",
     "itemCount_one": "You have {{count}} item",
     "messageCount_one": "{{sender}} has sent one message"
   },
@@ -37,7 +37,30 @@
     "browser_notify_main_description": "Get notified right in the browser each time this stream goes live.",
     "browser_notify_learn_more": "Learn more",
     "browser_notify_error_title": "Browser Notification Error",
-    "browser_notify_error_message": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream."
+    "browser_notify_error_message": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+    "BrowserNotifyModal": {
+      "allowButton": "Allow",
+      "blockButton": "Block",
+      "deniedDescription": "To enable push notifications from {{hostname}} access your browser permissions for this site and turn on notifications. Then reload this page to apply your updated settings on this site. <a href='https://owncast.online/docs/notifications'>Learn more.</a>",
+      "deniedTitle": "Notifications are blocked on your device",
+      "enabledDescription": "To disable push notifications from {{hostname}} access your browser permissions for this site and turn off notifications. <a href='https://owncast.online/docs/notifications'>Learn more.</a>",
+      "enabledTitle": "Notifications are enabled",
+      "errorTitle": "Browser Notification Error",
+      "iosAddButton": "Add",
+      "iosAddToHomeScreen": "Add to Home Screen",
+      "iosAllowPrompt": "Allow",
+      "iosComeBack": "Come back to this screen and enable notifications.",
+      "iosDescription": "It takes a couple extra steps to make sure you get notified when your favorite streams go live.",
+      "iosNameAndTap": "Give this link a name and tap the new icon on your home screen",
+      "iosShareButton": "share",
+      "iosTitle": "Get notified on iOS",
+      "learnMore": "Learn more",
+      "mainDescription": "Get notified right in the browser each time this stream goes live.",
+      "permissionWantsTo": "{{hostname}} wants to",
+      "showNotifications": "Show notifications",
+      "unsupported": "Browser notifications are not supported in your browser.",
+      "unsupportedLocal": "Browser notifications are not supported for local servers."
+    }
   },
   "Admin": {
     "emojis": "<strong><em>Missing translation Admin.emojis: Please report</em></strong>",
