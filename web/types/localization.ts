@@ -48,6 +48,32 @@ export const Localization = {
     // Errors
     componentError: 'component_error',
 
+    // Browser notifications - organized by component
+    BrowserNotifyModal: {
+      unsupported: 'browser_notify_unsupported',
+      unsupportedLocal: 'browser_notify_unsupported_local',
+      iosTitle: 'browser_notify_ios_title',
+      iosDescription: 'browser_notify_ios_description',
+      iosShareButton: 'browser_notify_ios_share_button',
+      iosAddToHomeScreen: 'browser_notify_ios_add_to_home_screen',
+      iosAddButton: 'browser_notify_ios_add_button',
+      iosNameAndTap: 'browser_notify_ios_name_and_tap',
+      iosComeBack: 'browser_notify_ios_come_back',
+      iosAllowPrompt: 'browser_notify_ios_allow_prompt',
+      permissionWantsTo: 'browser_notify_permission_wants_to',
+      showNotifications: 'browser_notify_show_notifications',
+      allowButton: 'browser_notify_allow_button',
+      blockButton: 'browser_notify_block_button',
+      enabledTitle: 'browser_notify_enabled_title',
+      enabledDescription: 'browser_notify_enabled_description',
+      deniedTitle: 'browser_notify_denied_title',
+      deniedDescription: 'browser_notify_denied_description',
+      mainDescription: 'browser_notify_main_description',
+      learnMore: 'browser_notify_learn_more',
+      errorTitle: 'browser_notify_error_title',
+      errorMessage: 'browser_notify_error_message',
+    },
+
     // Offline banner messages
     offlineBasic: 'offline_basic',
     offlineNotifyOnly: 'offline_notify_only',
