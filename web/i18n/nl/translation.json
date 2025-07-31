@@ -40,7 +40,7 @@
     "BrowserNotifyModal": {
       "allowButton": "Toestaan",
       "blockButton": "Blokkeren",
-      "deniedDescription": "Om pushmeldingen van {{hostname}} in te schakelen, krijgt u toegang tot uw browsermachtigingen voor deze site en schakelt u de meldingen in. Laad vervolgens deze pagina opnieuw om uw bijgewerkte instellingen op deze site toe te passen. <a href='https://owncast.online/docs/notifications'>Meer informatie.</a>",
+      "deniedDescription": "Om pushmeldingen van {{hostname}} in te schakelen, gaat u naar de browsermachtigingen voor deze site en schakelt u de meldingen in. Laad vervolgens deze pagina opnieuw om uw bijgewerkte instellingen op deze site toe te passen. <a href='https://owncast.online/docs/notifications'>Meer informatie.</a>",
       "deniedTitle": "Meldingen worden geblokkeerd op uw apparaat",
       "enabledDescription": "Om push-meldingen van {{hostname}} uit te schakelen, krijg je toegang tot je browserrechten voor deze site en schakel je meldingen uit. <a href='https://owncast.online/docs/notifications'>Meer informatie.</a>",
       "enabledTitle": "Meldingen zijn ingeschakeld",
