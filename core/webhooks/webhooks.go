@@ -25,46 +25,45 @@ type WebhookChatMessage struct {
 	ClientID  uint          `json:"clientId,omitempty"`
 	Visible   bool          `json:"visible"`
 	Status    models.Status `json:"status"`
-	ServerURL string        `json:"serverURL,omitempty"`
 }
 
 // WebhookUserJoinedEventData represents user joined event data sent as a webhook payload.
 type WebhookUserJoinedEventData struct {
+	BaseWebhookData
 	ID        string        `json:"id"`
 	Timestamp time.Time     `json:"timestamp"`
 	User      *models.User  `json:"user"`
 	Status    models.Status `json:"status"`
-	ServerURL string        `json:"serverURL,omitempty"`
 }
 
 // WebhookUserPartEventData represents user parted event data sent as a webhook payload.
 type WebhookUserPartEventData struct {
+	BaseWebhookData
 	ID        string        `json:"id"`
 	Timestamp time.Time     `json:"timestamp"`
 	User      *models.User  `json:"user"`
 	Status    models.Status `json:"status"`
-	ServerURL string        `json:"serverURL,omitempty"`
 }
 
 // WebhookNameChangeEventData represents name change event data sent as a webhook payload.
 type WebhookNameChangeEventData struct {
+	BaseWebhookData
 	ID        string        `json:"id"`
 	Timestamp time.Time     `json:"timestamp"`
 	User      *models.User  `json:"user"`
 	NewName   string        `json:"newName"`
 	Status    models.Status `json:"status"`
-	ServerURL string        `json:"serverURL,omitempty"`
 }
 
 // WebhookVisibilityToggleEventData represents message visibility toggle event data sent as a webhook payload.
 type WebhookVisibilityToggleEventData struct {
+	BaseWebhookData
 	ID         string        `json:"id"`
 	Timestamp  time.Time     `json:"timestamp"`
 	User       *models.User  `json:"user"`
 	Visible    bool          `json:"visible"`
 	MessageIDs []string      `json:"ids"`
 	Status     models.Status `json:"status"`
-	ServerURL  string        `json:"serverURL,omitempty"`
 }
 
 // SendEventToWebhooks will send a single webhook event to all webhook destinations.
