@@ -10,6 +10,10 @@ func SendChatEvent(chatEvent *events.UserMessageEvent) {
 	webhookEvent := WebhookEvent{
 		Type: chatEvent.GetMessageType(),
 		EventData: &WebhookChatMessage{
+			BaseWebhookData: BaseWebhookData{
+				Status:    getStatus(),
+				ServerURL: getServerURL(),
+			},
 			User:      chatEvent.User,
 			Body:      chatEvent.Body,
 			ClientID:  chatEvent.ClientID,
@@ -17,8 +21,6 @@ func SendChatEvent(chatEvent *events.UserMessageEvent) {
 			ID:        chatEvent.ID,
 			Visible:   chatEvent.HiddenAt == nil,
 			Timestamp: &chatEvent.Timestamp,
-			Status:    getStatus(),
-			ServerURL: getServerURL(),
 		},
 	}
 
@@ -30,12 +32,14 @@ func SendChatEventUsernameChanged(event events.NameChangeEvent) {
 	webhookEvent := WebhookEvent{
 		Type: models.UserNameChanged,
 		EventData: &WebhookNameChangeEventData{
+			BaseWebhookData: BaseWebhookData{
+				Status:    getStatus(),
+				ServerURL: getServerURL(),
+			},
 			ID:        event.ID,
 			Timestamp: event.Timestamp,
 			User:      event.User,
 			NewName:   event.NewName,
-			Status:    getStatus(),
-			ServerURL: getServerURL(),
 		},
 	}
 
@@ -47,11 +51,13 @@ func SendChatEventUserJoined(event events.UserJoinedEvent) {
 	webhookEvent := WebhookEvent{
 		Type: models.UserJoined,
 		EventData: &WebhookUserJoinedEventData{
+			BaseWebhookData: BaseWebhookData{
+				Status:    getStatus(),
+				ServerURL: getServerURL(),
+			},
 			ID:        event.ID,
 			Timestamp: event.Timestamp,
 			User:      event.User,
-			Status:    getStatus(),
-			ServerURL: getServerURL(),
 		},
 	}
 
@@ -63,11 +69,13 @@ func SendChatEventUserParted(event events.UserPartEvent) {
 	webhookEvent := WebhookEvent{
 		Type: events.UserParted,
 		EventData: &WebhookUserPartEventData{
+			BaseWebhookData: BaseWebhookData{
+				Status:    getStatus(),
+				ServerURL: getServerURL(),
+			},
 			ID:        event.ID,
 			Timestamp: event.Timestamp,
 			User:      event.User,
-			Status:    getStatus(),
-			ServerURL: getServerURL(),
 		},
 	}
 
@@ -80,13 +88,15 @@ func SendChatEventSetMessageVisibility(event events.SetMessageVisibilityEvent) {
 	webhookEvent := WebhookEvent{
 		Type: models.VisibiltyToggled,
 		EventData: &WebhookVisibilityToggleEventData{
+			BaseWebhookData: BaseWebhookData{
+				Status:    getStatus(),
+				ServerURL: getServerURL(),
+			},
 			ID:         event.ID,
 			Timestamp:  event.Timestamp,
 			User:       event.User,
 			Visible:    event.Visible,
 			MessageIDs: event.MessageIDs,
-			Status:     getStatus(),
-			ServerURL:  getServerURL(),
 		},
 	}
 
