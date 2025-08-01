@@ -2,7 +2,7 @@
   "extends": [
     "config:recommended"
   ],
-  "baseBranches": [
+  "baseBranchPatterns": [
     "develop"
   ],
   "timezone": "America/Los_Angeles",
@@ -21,10 +21,10 @@
     "dependencyDashboardApproval": true
   },
   "dockerfile": {
-    "fileMatch": [
-      "(^|/)Earthfile$",
-      "(^|/|\\.)Dockerfile$",
-      "(^|/)Dockerfile[^/]*$"
+    "managerFilePatterns": [
+      "/(^|/)Earthfile$/",
+      "/(^|/|\\.)Dockerfile$/",
+      "/(^|/)Dockerfile[^/]*$/"
     ]
   },
   "packageRules": [
@@ -63,7 +63,9 @@
         "npm"
       ],
       "matchCurrentVersion": "/^[0-9]+\\.[0-9]+\\.[0-9]+$/",
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "automerge": false,
       "platformAutomerge": false,
       "dependencyDashboardApproval": true
