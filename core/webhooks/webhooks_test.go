@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 	jsonpatch "gopkg.in/evanphx/json-patch.v5"
 )
@@ -41,6 +42,10 @@ func TestMain(m *testing.M) {
 	if err := data.SetupPersistence(dbFile.Name()); err != nil {
 		panic(err)
 	}
+
+	// Set up server URL for tests
+	configRepo := configrepository.Get()
+	configRepo.SetServerURL("http://localhost:8080")
 
 	SetupWebhooks(fakeGetStatus)
 
