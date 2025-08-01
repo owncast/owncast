@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"resolutions": {
-		"babel-preset-current-node-syntax": "1.0.0"
+		"babel-preset-current-node-syntax": "1.1.1"
 	},
 	"scripts": {
 		"dev": "next dev",
