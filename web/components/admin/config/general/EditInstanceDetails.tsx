@@ -56,9 +56,9 @@ const DirectoryInfoModal: FC<DirectoryInfoModalProps> = ({ cancelPressed, okPres
     <Typography.Title level={3}>What is the Owncast Directory?</Typography.Title>
     <Typography.Paragraph>
       Owncast operates a public directory at{' '}
-      <a href="https://directory.owncast.online">directory.owncast.online</a> to share your video
-      streams with more people, while also using these as examples for others. Live streams and
-      servers listed on the directory may optionally be shared on other platforms and applications.
+      <a href="https://owncast.directory">owncast.directory</a> to share your video streams with
+      more people, while also using these as examples for others. Live streams and servers listed on
+      the directory may optionally be shared on other platforms and applications.
     </Typography.Paragraph>
 
     <Typography.Title level={3}>Disclaimers and Responsibility</Typography.Title>
@@ -289,7 +289,7 @@ export default function EditInstanceDetails() {
       <p className="description">
         <Translation
           translationKey={Localization.Admin.EditInstanceDetails.directoryDescription}
-          defaultText='Increase your audience by appearing in the <a href="https://directory.owncast.online" target="_blank" rel="noreferrer"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href="https://owncast.online/docs/directory/?source=admin" target="_blank" rel="noopener noreferrer">Learn more</a>.'
+          defaultText='Increase your audience by appearing in the <a href="https://owncast.directory" target="_blank" rel="noreferrer"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href="https://owncast.online/docs/directory/?source=admin" target="_blank" rel="noopener noreferrer">Learn more</a>.'
         />
       </p>
       {!yp.instanceUrl && (
