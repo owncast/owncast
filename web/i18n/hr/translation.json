@@ -2,7 +2,7 @@
   "Add your Owncast instance to the Fediverse": "Add your Owncast instance to the Fediverse",
   "Admin": {
     "EditInstanceDetails": {
-      "directoryDescription": "Povećajte svoju publiku pojavljujući se u <a href=\"https://directory.owncast.online\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. Ovo je vanjska usluga koju vodi projekt Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Saznajte više</a>.",
+      "directoryDescription": "Povećajte svoju publiku pojavljujući se u <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast direktoriju</strong></a>. Ovo je vanjska usluga koju vodi projekt Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Saznajte više</a>.",
       "offlineMessageDescription": "Poruka izvan mreže prikazuje se vašim posjetiteljima stranice kada ne prenosite. Markdown je podržan.",
       "serverUrlRequiredForDirectory": "Morate postaviti svoj <strong>Server URL</strong> iznad kako biste omogućili direktorij."
     },

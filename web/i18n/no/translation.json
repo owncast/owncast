@@ -2,7 +2,7 @@
   "Add your Owncast instance to the Fediverse": "Add your Owncast instance to the Fediverse",
   "Admin": {
     "EditInstanceDetails": {
-      "directoryDescription": "Øk tilhørerne ved å dukke opp i <a href=\"https://directory.owncast.online\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. Dette er en ekstern tjeneste som kjører av Owncast prosjektet. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Lær mer</a>.",
+      "directoryDescription": "Øk tilhørerne ved å dukke opp i <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. Dette er en ekstern tjeneste som kjører av Owncast prosjektet. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Lær mer</a>.",
       "offlineMessageDescription": "Denne offline-meldingen vises til besøkende når du ikke strømmer. Markdown støttes",
       "serverUrlRequiredForDirectory": "Du må angi <strong>server-URL</strong> ovenfor for å aktivere mappen."
     },

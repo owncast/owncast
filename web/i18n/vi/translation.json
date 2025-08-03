@@ -2,7 +2,7 @@
   "Add your Owncast instance to the Fediverse": "Thêm phiên bản Owncast của bạn vào Fediverse",
   "Admin": {
     "EditInstanceDetails": {
-      "directoryDescription": "Tăng lượng người xem của bạn bằng cách xuất hiện trong <a href=\"https://directory.owncast.online\" target=\"_blank\" rel=\"noreferrer\"><strong>Thư mục Owncast</strong></a>. Đây là một dịch vụ bên ngoài do dự án Owncast điều hành. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Tìm hiểu thêm</a>.",
+      "directoryDescription": "Tăng cường khán giả của bạn bằng cách xuất hiện trong <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Danh bạ Owncast</strong></a>. Đây là một dịch vụ bên ngoài do dự án Owncast vận hành. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Tìm hiểu thêm</a>.",
       "offlineMessageDescription": "Thông điệp ngoại tuyến sẽ được hiển thị cho khách truy cập trang của bạn khi bạn không phát sóng. Markdown được hỗ trợ.",
       "serverUrlRequiredForDirectory": "Bạn phải thiết lập <strong>URL máy chủ</strong> của mình ở trên để kích hoạt thư mục."
     },
