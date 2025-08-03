@@ -94,12 +94,12 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 
 	thumbnailCmdFlags := []string{
 		ffmpegPath,
-		"-y",                 // Overwrite file
-		"-threads 1",         // Low priority processing
-		"-t 1",               // Pull from frame 1
+		"-y",            // Overwrite file
+		"-threads", "1", // Low priority processing
+		"-t", "1", // Pull from frame 1
 		"-i", mostRecentFile, // Input
-		"-f image2",  // format
-		"-vframes 1", // Single frame
+		"-f", "image2", // format
+		"-vframes", "1", // Single frame
 		outputFileTemp,
 	}
 
@@ -125,11 +125,11 @@ func makeAnimatedGifPreview(sourceFile string, outputFile string) {
 	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
 	animatedGifFlags := []string{
 		ffmpegPath,
-		"-y",             // Overwrite file
-		"-threads 1",     // Low priority processing
+		"-y",            // Overwrite file
+		"-threads", "1", // Low priority processing
 		"-i", sourceFile, // Input
-		"-t 1", // Output is one second in length
-		"-filter_complex", "\"[0:v] fps=8,scale=w=480:h=-1:flags=lanczos,split [a][b];[a] palettegen=stats_mode=full [p];[b][p] paletteuse=new=1\"",
+		"-t", "1", // Output is one second in length
+		"-filter_complex", "[0:v] fps=8,scale=w=480:h=-1:flags=lanczos,split [a][b];[a] palettegen=stats_mode=full [p];[b][p] paletteuse=new=1",
 		outputFileTemp,
 	}
 
