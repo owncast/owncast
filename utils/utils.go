@@ -39,7 +39,7 @@ func DoesFileExists(name string) bool {
 
 // GetRelativePathFromAbsolutePath gets the relative path from the provided absolute path.
 func GetRelativePathFromAbsolutePath(path string) string {
-	pathComponents := strings.Split(path, "/")
+	pathComponents := strings.Split(path, string(os.PathSeparator))
 	variant := pathComponents[len(pathComponents)-2]
 	file := pathComponents[len(pathComponents)-1]
 
@@ -48,7 +48,7 @@ func GetRelativePathFromAbsolutePath(path string) string {
 
 // GetIndexFromFilePath is a utility that will return the index/key/variant name in a full path.
 func GetIndexFromFilePath(path string) string {
-	pathComponents := strings.Split(path, "/")
+	pathComponents := strings.Split(path, string(os.PathSeparator))
 	variant := pathComponents[len(pathComponents)-2]
 
 	return variant

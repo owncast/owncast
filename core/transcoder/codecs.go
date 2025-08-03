@@ -14,7 +14,7 @@ import (
 type Codec interface {
 	Name() string
 	DisplayName() string
-	GlobalFlags() string
+	GlobalFlags() []string
 	PixelFormat() string
 	Scaler() string
 	ExtraArguments() string
@@ -46,8 +46,8 @@ func (c *Libx264Codec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *Libx264Codec) GlobalFlags() string {
-	return ""
+func (c *Libx264Codec) GlobalFlags() []string {
+	return nil
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -116,8 +116,8 @@ func (c *OmxCodec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *OmxCodec) GlobalFlags() string {
-	return ""
+func (c *OmxCodec) GlobalFlags() []string {
+	return nil
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -181,14 +181,14 @@ func (c *VaapiCodec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *VaapiCodec) GlobalFlags() string {
+func (c *VaapiCodec) GlobalFlags() []string {
 	flags := []string{
 		"-hwaccel", "vaapi",
 		"-hwaccel_output_format", "vaapi",
 		"-vaapi_device", "/dev/dri/renderD128",
 	}
 
-	return strings.Join(flags, " ")
+	return flags
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -250,12 +250,12 @@ func (c *NvencCodec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *NvencCodec) GlobalFlags() string {
+func (c *NvencCodec) GlobalFlags() []string {
 	flags := []string{
 		"-hwaccel", "cuda",
 	}
 
-	return strings.Join(flags, " ")
+	return flags
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -320,13 +320,13 @@ func (c *QuicksyncCodec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *QuicksyncCodec) GlobalFlags() string {
+func (c *QuicksyncCodec) GlobalFlags() []string {
 	flags := []string{
 		"-init_hw_device", "qsv=hw",
 		"-filter_hw_device", "hw",
 	}
 
-	return strings.Join(flags, " ")
+	return flags
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -388,8 +388,8 @@ func (c *Video4Linux) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *Video4Linux) GlobalFlags() string {
-	return ""
+func (c *Video4Linux) GlobalFlags() []string {
+	return nil
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -450,10 +450,8 @@ func (c *VideoToolboxCodec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *VideoToolboxCodec) GlobalFlags() string {
-	var flags []string
-
-	return strings.Join(flags, " ")
+func (c *VideoToolboxCodec) GlobalFlags() []string {
+	return nil
 }
 
 // PixelFormat is the pixel format required for this codec.

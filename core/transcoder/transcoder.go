@@ -229,7 +229,7 @@ func (t *Transcoder) getFlags() *execInfo {
 		"-hide_banner",
 		"-loglevel", "warning",
 	}
-	ffmpegFlags = append(ffmpegFlags, strings.Split(t.codec.GlobalFlags(), " ")...)
+	ffmpegFlags = append(ffmpegFlags, t.codec.GlobalFlags()...)
 	ffmpegFlags = append(ffmpegFlags, []string{
 		"-fflags", "+genpts", // Generate presentation time stamp if missing
 		"-flags", "+cgop", // Force closed GOPs
