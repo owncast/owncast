@@ -104,6 +104,5 @@ func saveOfflineClipToDisk(offlineFilename string) (string, error) {
 	}
 
 	offlineFilePath := offlineTmpFile.Name()
-
-	return offlineFilePath, nil
+	return filepath.Abs(offlineFilePath)
 }

@@ -5,7 +5,6 @@ import (
 	"os/exec"
 	"path"
 	"strconv"
-	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -104,8 +103,7 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 		outputFileTemp,
 	}
 
-	ffmpegCmd := strings.Join(thumbnailCmdFlags, " ")
-	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
+	if _, err := exec.Command(thumbnailCmdFlags[0], thumbnailCmdFlags[1:]...).Output(); err != nil {
 		return err
 	}
 
@@ -135,8 +133,7 @@ func makeAnimatedGifPreview(sourceFile string, outputFile string) {
 		outputFileTemp,
 	}
 
-	ffmpegCmd := strings.Join(animatedGifFlags, " ")
-	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
+	if _, err := exec.Command(animatedGifFlags[0], animatedGifFlags[1:]...).Output(); err != nil {
 		log.Errorln(err)
 		// rename temp file
 	} else if err := utils.Move(outputFileTemp, outputFile); err != nil {

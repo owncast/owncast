@@ -19,7 +19,7 @@ type Codec interface {
 	Scaler() string
 	ExtraArguments() string
 	ExtraFilters() string
-	VariantFlags(v *HLSVariant) string
+	VariantFlags(v *HLSVariant) []string
 	GetPresetForLevel(l int) string
 }
 
@@ -73,12 +73,13 @@ func (c *Libx264Codec) ExtraFilters() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *Libx264Codec) VariantFlags(v *HLSVariant) string {
-	return strings.Join([]string{
-		fmt.Sprintf("-x264-params:v:%d \"scenecut=0:open_gop=0\"", v.index), // How often the encoder checks the bitrate in order to meet average/max values
-		fmt.Sprintf("-bufsize:v:%d %dk", v.index, v.getBufferSize()),
-		fmt.Sprintf("-profile:v:%d %s", v.index, "high"), // Encoding profile
-	}, " ")
+func (c *Libx264Codec) VariantFlags(v *HLSVariant) []string {
+	return []string{
+		fmt.Sprintf("-x264-params:v:%d", v.index),
+		"scenecut=0:open_gop=0", // How often the encoder checks the bitrate in order to meet average/max values
+		fmt.Sprintf("-bufsize:v:%d", v.index), fmt.Sprintf("%dk", v.getBufferSize()),
+		fmt.Sprintf("-profile:v:%d", v.index), "high", // Encoding profile
+	}
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -142,8 +143,8 @@ func (c *OmxCodec) ExtraFilters() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *OmxCodec) VariantFlags(v *HLSVariant) string {
-	return ""
+func (c *OmxCodec) VariantFlags(v *HLSVariant) []string {
+	return nil
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -211,8 +212,8 @@ func (c *VaapiCodec) ExtraArguments() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *VaapiCodec) VariantFlags(v *HLSVariant) string {
-	return ""
+func (c *VaapiCodec) VariantFlags(v *HLSVariant) []string {
+	return nil
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -278,9 +279,11 @@ func (c *NvencCodec) ExtraFilters() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *NvencCodec) VariantFlags(v *HLSVariant) string {
+func (c *NvencCodec) VariantFlags(v *HLSVariant) []string {
 	tuning := "ll" // low latency
-	return fmt.Sprintf("-tune:v:%d %s", v.index, tuning)
+	return []string{
+		fmt.Sprintf("-tune:v:%d", v.index), tuning,
+	}
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -347,8 +350,8 @@ func (c *QuicksyncCodec) ExtraFilters() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *QuicksyncCodec) VariantFlags(v *HLSVariant) string {
-	return ""
+func (c *QuicksyncCodec) VariantFlags(v *HLSVariant) []string {
+	return nil
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -410,8 +413,8 @@ func (c *Video4Linux) ExtraFilters() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *Video4Linux) VariantFlags(v *HLSVariant) string {
-	return ""
+func (c *Video4Linux) VariantFlags(v *HLSVariant) []string {
+	return nil
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -474,18 +477,12 @@ func (c *VideoToolboxCodec) ExtraArguments() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *VideoToolboxCodec) VariantFlags(v *HLSVariant) string {
-	arguments := []string{
-		"-realtime true",
-		"-realtime true",
-		"-realtime true",
+func (c *VideoToolboxCodec) VariantFlags(v *HLSVariant) []string {
+	if v.cpuUsageLevel >= 3 {
+		return nil
 	}
 
-	if v.cpuUsageLevel >= len(arguments) {
-		return ""
-	}
-
-	return arguments[v.cpuUsageLevel]
+	return []string{"-realtime", "true"}
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
