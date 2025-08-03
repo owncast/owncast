@@ -93,7 +93,6 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	outputFileTemp := path.Join(config.TempDir, "tempthumbnail.jpg")
 
 	thumbnailCmdFlags := []string{
-		ffmpegPath,
 		"-y",            // Overwrite file
 		"-threads", "1", // Low priority processing
 		"-t", "1", // Pull from frame 1
@@ -103,7 +102,7 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 		outputFileTemp,
 	}
 
-	if _, err := exec.Command(thumbnailCmdFlags[0], thumbnailCmdFlags[1:]...).Output(); err != nil {
+	if _, err := exec.Command(ffmpegPath, thumbnailCmdFlags...).Output(); err != nil {
 		return err
 	}
 
@@ -124,7 +123,6 @@ func makeAnimatedGifPreview(sourceFile string, outputFile string) {
 
 	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
 	animatedGifFlags := []string{
-		ffmpegPath,
 		"-y",            // Overwrite file
 		"-threads", "1", // Low priority processing
 		"-i", sourceFile, // Input
@@ -133,7 +131,7 @@ func makeAnimatedGifPreview(sourceFile string, outputFile string) {
 		outputFileTemp,
 	}
 
-	if _, err := exec.Command(animatedGifFlags[0], animatedGifFlags[1:]...).Output(); err != nil {
+	if _, err := exec.Command(ffmpegPath, animatedGifFlags...).Output(); err != nil {
 		log.Errorln(err)
 		// rename temp file
 	} else if err := utils.Move(outputFileTemp, outputFile); err != nil {

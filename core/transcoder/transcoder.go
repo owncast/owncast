@@ -22,12 +22,13 @@ import (
 var _commandExec *exec.Cmd
 
 type execInfo struct {
+	binPath string
 	command []string
 	environ []string
 }
 
 func (e *execInfo) String() string {
-	return strings.Join(e.environ, " ") + " " + strings.Join(e.command, " ")
+	return strings.Join(e.environ, " ") + " " + e.binPath + " " + strings.Join(e.command, " ")
 }
 
 // Transcoder is a single instance of a video transcoder.
@@ -135,7 +136,7 @@ func (t *Transcoder) Start(shouldLog bool) {
 		log.Println(command)
 	}
 
-	_commandExec = exec.Command(flags.command[0], flags.command[1:]...)
+	_commandExec = exec.Command(flags.binPath, flags.command...) // nolint: gosec
 	_commandExec.Env = flags.environ
 
 	if t.stdin != nil {
@@ -180,7 +181,7 @@ func (t *Transcoder) SetIsEvent(isEvent bool) {
 	t.isEvent = isEvent
 }
 
-func (t *Transcoder) getString() string {
+func (t *Transcoder) GetString() string {
 	ffmpegFlags := t.getFlags()
 	return ffmpegFlags.String()
 }
@@ -225,7 +226,6 @@ func (t *Transcoder) getFlags() *execInfo {
 		reportEnv,
 	}
 	ffmpegFlags := []string{
-		t.ffmpegPath,
 		"-hide_banner",
 		"-loglevel", "warning",
 	}
@@ -268,6 +268,7 @@ func (t *Transcoder) getFlags() *execInfo {
 	}...)
 
 	return &execInfo{
+		binPath: t.ffmpegPath,
 		command: ffmpegFlags,
 		environ: environ,
 	}
