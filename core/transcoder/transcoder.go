@@ -216,7 +216,7 @@ func (t *Transcoder) getFlags() *execInfo {
 	}
 
 	logPath := logging.GetTranscoderLogFilePath()
-	reportEnv := fmt.Sprintf(`FFREPORT=file="%s":level=32`, logPath)
+	reportEnv := fmt.Sprintf(`FFREPORT=file=%s:level=32`, logPath)
 	if runtime.GOOS == "windows" {
 		logPath = strings.ReplaceAll(logPath, "\\", "/")
 		reportEnv = fmt.Sprintf(`FFREPORT=file=%s:level=32`, logPath)
