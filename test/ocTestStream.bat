@@ -93,9 +93,9 @@ if !FILE_COUNT! == 0 (
     echo Streaming internal test video loop to !DESTINATION_HOST!
     echo ...press ctrl+c to exit
     
-    "!ffmpeg_exec!" -hide_banner -loglevel warning -nostdin -re -f lavfi ^
+    "!ffmpeg_exec!" -hide_banner -loglevel panic -nostdin -re -f lavfi ^
         -i "testsrc=size=1280x720:rate=60[out0];sine=frequency=400:sample_rate=48000[out1]" ^
-        -vf "[in]drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/-2): text='Owncast Test Stream', drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/2): text='%%{gmtime\:%%H-%%M-%%S} UTC'[out]" ^
+        -vf "[in]drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontfile=C\\:/Windows/fonts/Arial.ttf: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/-2): text='Owncast Test Stream', drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontfile=C\\:/Windows/fonts/Arial.ttf: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/2): text='%%{gmtime\:%%H-%%M-%%S} UTC'[out]" ^
         -nal-hrd cbr ^
         -metadata:s:v encoder=test ^
         -vcodec libx264 ^
