@@ -17,7 +17,7 @@ type Codec interface {
 	GlobalFlags() []string
 	PixelFormat() string
 	Scaler() string
-	ExtraArguments() string
+	ExtraArguments() []string
 	ExtraFilters() string
 	VariantFlags(v *HLSVariant) []string
 	GetPresetForLevel(l int) string
@@ -61,10 +61,10 @@ func (c *Libx264Codec) Scaler() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *Libx264Codec) ExtraArguments() string {
-	return strings.Join([]string{
+func (c *Libx264Codec) ExtraArguments() []string {
+	return []string{
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
-	}, " ")
+	}
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
@@ -131,10 +131,10 @@ func (c *OmxCodec) Scaler() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *OmxCodec) ExtraArguments() string {
-	return strings.Join([]string{
+func (c *OmxCodec) ExtraArguments() []string {
+	return []string{
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
-	}, " ")
+	}
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
@@ -207,8 +207,8 @@ func (c *VaapiCodec) ExtraFilters() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *VaapiCodec) ExtraArguments() string {
-	return ""
+func (c *VaapiCodec) ExtraArguments() []string {
+	return nil
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
@@ -269,8 +269,8 @@ func (c *NvencCodec) Scaler() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *NvencCodec) ExtraArguments() string {
-	return ""
+func (c *NvencCodec) ExtraArguments() []string {
+	return nil
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
@@ -340,8 +340,8 @@ func (c *QuicksyncCodec) Scaler() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *QuicksyncCodec) ExtraArguments() string {
-	return ""
+func (c *QuicksyncCodec) ExtraArguments() []string {
+	return nil
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
@@ -403,8 +403,8 @@ func (c *Video4Linux) Scaler() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *Video4Linux) ExtraArguments() string {
-	return ""
+func (c *Video4Linux) ExtraArguments() []string {
+	return nil
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
@@ -470,8 +470,8 @@ func (c *VideoToolboxCodec) ExtraFilters() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *VideoToolboxCodec) ExtraArguments() string {
-	return ""
+func (c *VideoToolboxCodec) ExtraArguments() []string {
+	return nil
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.

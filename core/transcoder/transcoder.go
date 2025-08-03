@@ -249,7 +249,7 @@ func (t *Transcoder) getFlags() *execInfo {
 	ffmpegFlags = append(ffmpegFlags, []string{
 		"-segment_format_options", "mpegts_flags=mpegts_copyts=1",
 	}...)
-	ffmpegFlags = append(ffmpegFlags, strings.Split(t.codec.ExtraArguments(), " ")...)
+	ffmpegFlags = append(ffmpegFlags, t.codec.ExtraArguments()...)
 
 	ffmpegFlags = append(ffmpegFlags, []string{
 		// Video settings
