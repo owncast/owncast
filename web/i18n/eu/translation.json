@@ -2,7 +2,7 @@
   "Add your Owncast instance to the Fediverse": "Gehitu zure Owncast instantzia fedibertsora",
   "Admin": {
     "EditInstanceDetails": {
-      "directoryDescription": "Handitu zure ikusleen kopurua <a href=\"https://directory.owncast.online\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Direktorioan</strong></a> agertuz. Hori Owncast proiektuak kudeatzen duen zerbitzu kanpoa da. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Gehiago ikasi</a>.",
+      "directoryDescription": "Handitu zure ikusleak <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>-n agerita. Hau Owncast proiektua kudeatutako zerbitzu kanpoa da. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Gehiago ikasi</a>.",
       "offlineMessageDescription": "Offlain mezua zure orri bisitariei erakusten zaie zu ez bazaude irratian. Markdown babesten da.",
       "serverUrlRequiredForDirectory": "<strong>Server URL</strong> goian ezarri behar duzu direktorioa ahalbidetzeko."
     },

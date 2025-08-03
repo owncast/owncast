@@ -2,7 +2,7 @@
   "Add your Owncast instance to the Fediverse": "Add your Owncast instance to the Fediverse",
   "Admin": {
     "EditInstanceDetails": {
-      "directoryDescription": "زيادة جمهورك عن طريق الظهور في <a href=\"https://directory.owncast.online\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast directory</strong></a>. هذه خدمة خارجية يديرها مشروع Owncast . <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">تعرف على</a> أكثر.",
+      "directoryDescription": "زيادة جمهورك عن طريق الظهور في <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast directory</strong></a>. هذه خدمة خارجية يديرها مشروع Owncast . <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">تعرف على</a> أكثر.",
       "offlineMessageDescription": "يتم عرض الرسالة دون اتصال على زوار الصفحة الخاصة بك عندما لا تذيل. يتم دعم Markdown.",
       "serverUrlRequiredForDirectory": "يجب عليك تعيين رابط الخادم <strong></strong> أعلاه لتمكين الدليل."
     },

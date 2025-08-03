@@ -2,7 +2,7 @@
   "Add your Owncast instance to the Fediverse": "Adicione sua instância do Owncast ao Fediverso",
   "Admin": {
     "EditInstanceDetails": {
-      "directoryDescription": "Aumente o seu público aparecendo no <a href=\"https://directory.owncast.online\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. Este é um serviço externo executado pelo projeto Owncasty. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Saiba mais</a>.",
+      "directoryDescription": "Aumente o seu público aparecendo no <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. Este é um serviço externo executado pelo projeto Owncasty. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Saiba mais</a>.",
       "offlineMessageDescription": "A mensagem offline é exibida aos visitantes da página quando você não está transmitindo. Markdown é suportado.",
       "serverUrlRequiredForDirectory": "Você deve definir a URL <strong>do servidor</strong> acima para habilitar o diretório."
     },

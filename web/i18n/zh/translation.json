@@ -2,7 +2,7 @@
   "Add your Owncast instance to the Fediverse": "Add your Owncast instance to the Fediverse",
   "Admin": {
     "EditInstanceDetails": {
-      "directoryDescription": "出現在 <a href=\"https://directory.owncast.online\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast 目錄</strong></a>.這是由 Owncast 計畫執行的外部服務。<a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">瞭解更多資訊</a>。",
+      "directoryDescription": "透過出現在<a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast 目錄</strong></a>來增加您的觀眾。這是由 Owncast 專案運營的外部服務。<a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">了解更多</a>。",
       "offlineMessageDescription": "當您不在串流時，離線訊息會顯示給您的頁面訪客。支援 Markdown。",
       "serverUrlRequiredForDirectory": "您必須在上方設定<strong>伺服器 URL</strong>，才能啟用目錄。"
     },
