@@ -2,7 +2,7 @@
   "Add your Owncast instance to the Fediverse": "Add your Owncast instance to the Fediverse",
   "Admin": {
     "EditInstanceDetails": {
-      "directoryDescription": "Treisiú do lucht féachana trí bheith i láthair sa <a href=\"https://directory.owncast.online\" target=\"_blank\" rel=\"noreferrer\"><strong>Cláraithe Owncast</strong></a>. Is seirbhís sheachtrach í a rialaíonn an tionscadal Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Foghlaim níos mó</a>.",
+      "directoryDescription": "Méadaigh do lucht féachana trí bheith le feiceáil san <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Clár Owncast</strong></a>. Is seirbhís sheachtrach í a reáchtálann an tionscadal Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Faigh tuilleadh eolais</a>.",
       "offlineMessageDescription": "Taispeántar an teachtaireacht as líne do chuairteoirí do leathanach nuair nach bhfuil tú ag sruthú. Tacaítear le Markdown.",
       "serverUrlRequiredForDirectory": "Caithfidh tú do <strong>URL freastalaí</strong> a shocrú thuas chun an cláraithe a chumasú."
     },
