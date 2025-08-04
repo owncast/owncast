@@ -70,13 +70,13 @@ if "!ffmpeg_exec!"=="" (
     exit /b 1
 ) else (
     REM Get ffmpeg version
-    for /f "tokens=3" %%i in ('"!ffmpeg_exec!" -version 2^>nul ^| findstr "ffmpeg version"') do (
+    for /f "tokens=3" %%i in ('!ffmpeg_exec! -version 2^>nul ^| findstr "ffmpeg version"') do (
         set "ffmpeg_version=%%i"
         goto :got_version
     )
     :got_version
     echo ffmpeg executable: !ffmpeg_exec! (!ffmpeg_version!)
-    
+
     REM Get ffmpeg path
     where "!ffmpeg_exec!" >nul 2>&1
     if !ERRORLEVEL! == 0 (
@@ -88,15 +88,18 @@ if "!ffmpeg_exec!"=="" (
     :got_path
 )
 
+set BASEDIR=%WINDIR:\=/%
+set FONT=%BASEDIR::=\\:%/fonts/arial.ttf
+
+
 REM If no files specified, stream test pattern
 if !FILE_COUNT! == 0 (
     echo Streaming internal test video loop to !DESTINATION_HOST!
     echo ...press ctrl+c to exit
-    
-    "!ffmpeg_exec!" -hide_banner -loglevel panic -nostdin -re -f lavfi ^
+
+    "!ffmpeg_exec!" -hide_banner -loglevel warning -nostdin -re -f lavfi ^
         -i "testsrc=size=1280x720:rate=60[out0];sine=frequency=400:sample_rate=48000[out1]" ^
-        -vf "[in]drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontfile=C\\:/Windows/fonts/Arial.ttf: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/-2): text='Owncast Test Stream', drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontfile=C\\:/Windows/fonts/Arial.ttf: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/2): text='%%{gmtime\:%%H-%%M-%%S} UTC'[out]" ^
-        -nal-hrd cbr ^
+				-vf "[in]drawtext=fontsize=96:box=1:boxcolor=black@0.75:boxborderw=5:fontfile=%FONT%:fontcolor=white: x=(w-text_w)/2:y=((h-text_h)/2)+((h-text_h)/-2):text='Owncast Test Stream', drawtext=fontsize=96:box=1:boxcolor=black@0.75:boxborderw=5:fontfile=%FONT%:fontcolor=white: x=(w-text_w)/2:y=((h-text_h)/2)+((h-text_h)/2):text='%%{gmtime\:%%H-%%M-%%S} UTC'[out]"        -nal-hrd cbr ^
         -metadata:s:v encoder=test ^
         -vcodec libx264 ^
         -acodec aac ^
@@ -123,14 +126,14 @@ if !FILE_COUNT! == 0 (
 ) else (
     REM Handle video files
     if exist list.txt del list.txt
-    
+
     set "file_index=0"
     set "valid_files=0"
-    
+
     REM Process each argument (except the last one if it's RTMP URL)
     for %%i in (%*) do (
         set /a file_index+=1
-        
+
         REM Skip last argument if it's RTMP URL
         if !file_index! lss !args_count! (
             if exist "%%i" (
@@ -159,19 +162,19 @@ if !FILE_COUNT! == 0 (
             )
         )
     )
-    
+
     if !valid_files! == 0 (
         echo ERROR: No valid video files found
         if exist list.txt del list.txt
         exit /b 1
     )
-    
+
     echo Streaming a loop of !valid_files! video^(s^) to !DESTINATION_HOST!
     if !valid_files! gtr 1 (
         echo Warning: If these files differ greatly in formats, transitioning from one to another may not always work correctly.
     )
     echo ...press ctrl+c to exit
-    
+
     "!ffmpeg_exec!" -hide_banner -loglevel panic -nostdin -stream_loop -1 -re -f concat ^
         -safe 0 ^
         -i list.txt ^
@@ -183,9 +186,9 @@ if !FILE_COUNT! == 0 (
         -b:v 1300k ^
         -preset veryfast ^
         -acodec copy ^
-        -vf drawtext="fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/4): text='%%{gmtime\:%%H-%%M-%%S}'" ^
+        -vf drawtext="fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontfile=%FONT%: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/4): text='%%{gmtime\:%%H-%%M-%%S}'" ^
         -f flv "!DESTINATION_HOST!"
-    
+
     REM Cleanup
     if exist list.txt del list.txt
 )
