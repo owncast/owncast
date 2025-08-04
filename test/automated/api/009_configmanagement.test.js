@@ -1,5 +1,6 @@
 var request = require('supertest');
 var bcrypt = require('bcrypt');
+var shajs = require("sha.js");
 
 const sendAdminRequest = require('./lib/admin').sendAdminRequest;
 const failAdminRequest = require('./lib/admin').failAdminRequest;
@@ -353,6 +354,35 @@ test('reset admin password', async () => {
 		'config/adminpass',
 		defaultAdminPassword,
 		(adminPassword = newAdminPassword),
+	);
+});
+
+let newAdminPasswordLong = randomString(80);
+
+test('change admin password >72 bytes', async () => {
+	await sendAdminRequest('config/adminpass', newAdminPasswordLong);
+});
+
+test('verify admin password change (>72 bytes)', async () => {
+	const res = await getAdminResponse(
+		'serverconfig',
+		(adminPassword = newAdminPasswordLong)
+	);
+
+	bcrypt.compare(
+		shajs('SHA512').update(newAdminPasswordLong).digest(),
+		res.body.adminPassword,
+		function (err, result) {
+			expect(result).toBe(true);
+		}
+	);
+});
+
+test('reset admin password (>72)', async () => {
+	await sendAdminRequest(
+		'config/adminpass',
+		defaultAdminPassword,
+		(adminPassword = newAdminPasswordLong)
 	);
 });
 
