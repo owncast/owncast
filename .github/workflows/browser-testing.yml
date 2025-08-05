@@ -32,7 +32,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.9.0'
+          node-version: '22.18.0'
 
       - name: Cache node modules
         uses: actions/cache@v4
