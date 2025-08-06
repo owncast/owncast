@@ -67,7 +67,7 @@
 		"regexpu-core": "^5.3.2",
 		"sanitize-html": "^2.11.0",
 		"semver": "^7.6.3",
-		"sharp": "0.33.5",
+		"sharp": "0.34.3",
 		"ua-parser-js": "1.0.40",
 		"video.js": "^8.3.0",
 		"workbox-precaching": "^7.0.0",
