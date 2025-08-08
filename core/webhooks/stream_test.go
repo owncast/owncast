@@ -21,9 +21,7 @@ func TestSendStreamStatusEvent(t *testing.T) {
 	}, `{
 		"id": "id",
 		"name": "my server",
-		"streamTitle": "my stream",
-		"summary": "my server where I stream",
-		"timestamp": "1970-01-01T00:01:12.000000006Z",
+		"serverURL": "http://localhost:8080",
 		"status": {
 			"lastConnectTime": null,
 			"lastDisconnectTime": null,
@@ -33,6 +31,9 @@ func TestSendStreamStatusEvent(t *testing.T) {
 			"streamTitle": "my stream",
 			"versionNumber": "1.2.3",
 			"viewerCount": 5
-		}
+		},
+		"streamTitle": "my stream",
+		"summary": "my server where I stream",
+		"timestamp": "1970-01-01T00:01:12.000000006Z"
 	}`)
 }

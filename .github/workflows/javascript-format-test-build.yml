@@ -38,7 +38,7 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '22.9.0'
+          node-version: '22.18.0'
 
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -46,7 +46,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files-yaml
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v46
         with:
           path: 'web'
           files_ignore: |
@@ -130,7 +130,7 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '22.9.0'
+          node-version: '22.18.0'
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -173,7 +173,7 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '22.9.0'
+          node-version: '22.18.0'
 
       - name: Cache node modules
         uses: actions/cache@v4

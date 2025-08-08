@@ -20,11 +20,6 @@
   }
 }
 
-.bodyText {
-  line-height: 2rem;
-  font-size: 1.2rem;
-}
-
 .separator {
   margin-top: 15px;
   margin-bottom: 15px;
@@ -60,4 +55,21 @@
   &:hover {
     color: var(--color-owncast-palette-7);
   }
+}
+
+// Styles for Translation component generated spans
+.bodyText {
+  :global(.notify-link),
+  :global(.follow-link) {
+    color: var(--theme-color-action);
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--color-owncast-palette-7);
+    }
+  }
+
+  line-height: 2rem;
+  font-size: 1.2rem;
 }

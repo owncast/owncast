@@ -4,6 +4,7 @@ import UploadOutlined from '@ant-design/icons/lib/icons/UploadOutlined';
 import PlusSquareOutlined from '@ant-design/icons/lib/icons/PlusSquareOutlined';
 import { useRecoilValue } from 'recoil';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useTranslation } from 'next-export-i18n';
 import { accessTokenAtom, clientConfigStateAtom } from '../../stores/ClientConfigStore';
 import {
   registerWebPushNotifications,
@@ -11,6 +12,8 @@ import {
 } from '../../../services/notifications-service';
 import styles from './BrowserNotifyModal.module.scss';
 import { ComponentError } from '../../ui/ComponentError/ComponentError';
+import { Translation } from '../../ui/Translation/Translation';
+import { Localization } from '../../../types/localization';
 
 import { isMobileSafariHomeScreenApp, isMobileSafariIos } from '../../../utils/helpers';
 import { arePushNotificationSupported } from '../../../utils/browserPushNotifications';
@@ -18,33 +21,94 @@ import { arePushNotificationSupported } from '../../../utils/browserPushNotifica
 const { Title } = Typography;
 
 const NotificationsNotSupported = () => (
-  <div>Browser notifications are not supported in your browser.</div>
+  <div>
+    <Translation
+      translationKey={Localization.Frontend.BrowserNotifyModal.unsupported}
+      defaultText="Browser notifications are not supported in your browser."
+    />
+  </div>
 );
 
 const NotificationsNotSupportedLocal = () => (
-  <div>Browser notifications are not supported for local servers.</div>
+  <div>
+    <Translation
+      translationKey={Localization.Frontend.BrowserNotifyModal.unsupportedLocal}
+      defaultText="Browser notifications are not supported for local servers."
+    />
+  </div>
 );
 
 const MobileSafariInstructions = () => (
   <div>
-    <Title level={3}>Get notified on iOS</Title>
-    It takes a couple extra steps to make sure you get notified when your favorite streams go live.
+    <Title level={3}>
+      <Translation
+        translationKey={Localization.Frontend.BrowserNotifyModal.iosTitle}
+        defaultText="Get notified on iOS"
+      />
+    </Title>
+    <Translation
+      translationKey={Localization.Frontend.BrowserNotifyModal.iosDescription}
+      defaultText="It takes a couple extra steps to make sure you get notified when your favorite streams go live."
+    />
     <ol>
       <li>
-        Tap the <strong>share</strong> button <UploadOutlined /> in Safari.
+        Tap the{' '}
+        <strong>
+          <Translation
+            translationKey={Localization.Frontend.BrowserNotifyModal.iosShareButton}
+            defaultText="share"
+          />
+        </strong>{' '}
+        button <UploadOutlined /> in Safari.
       </li>
       <li>
-        Scroll down and tap <strong>&ldquo;Add to Home Screen&rdquo;</strong> <PlusSquareOutlined />
+        Scroll down and tap{' '}
+        <strong>
+          &ldquo;
+          <Translation
+            translationKey={Localization.Frontend.BrowserNotifyModal.iosAddToHomeScreen}
+            defaultText="Add to Home Screen"
+          />
+          &rdquo;
+        </strong>{' '}
+        <PlusSquareOutlined />.
+      </li>
+      <li>
+        Tap{' '}
+        <strong>
+          &ldquo;
+          <Translation
+            translationKey={Localization.Frontend.BrowserNotifyModal.iosAddButton}
+            defaultText="Add"
+          />
+          &rdquo;
+        </strong>
         .
       </li>
       <li>
-        Tap <strong>&ldquo;Add&rdquo;</strong>.
+        <Translation
+          translationKey={Localization.Frontend.BrowserNotifyModal.iosNameAndTap}
+          defaultText="Give this link a name and tap the new icon on your home screen"
+        />
       </li>
-      <li>Give this link a name and tap the new icon on your home screen</li>
 
-      <li>Come back to this screen and enable notifications.</li>
       <li>
-        Tap <strong>&ldquo;Allow&rdquo;</strong> when prompted.
+        <Translation
+          translationKey={Localization.Frontend.BrowserNotifyModal.iosComeBack}
+          defaultText="Come back to this screen and enable notifications."
+        />
+      </li>
+      <li>
+        Tap{' '}
+        <strong>
+          &ldquo;
+          <Translation
+            translationKey={Localization.Frontend.BrowserNotifyModal.iosAllowPrompt}
+            defaultText="Allow"
+          />
+          &rdquo;
+        </strong>{' '}
+        when prompted.
       </li>
     </ol>
   </div>
@@ -57,7 +121,13 @@ export type PermissionPopupPreviewProps = {
 const PermissionPopupPreview: FC<PermissionPopupPreviewProps> = ({ start }) => (
   <div id="browser-push-preview-box" className={styles.pushPreview}>
     <div className={styles.inner}>
-      <div className={styles.title}>{window.location.toString()} wants to</div>
+      <div className={styles.title}>
+        <Translation
+          translationKey={Localization.Frontend.BrowserNotifyModal.permissionWantsTo}
+          defaultText="{{hostname}} wants to"
+          vars={{ hostname: window.location.hostname }}
+        />
+      </div>
       <div className={styles.permissionLine}>
         <svg
           className={styles.bell}
@@ -72,7 +142,12 @@ const PermissionPopupPreview: FC<PermissionPopupPreviewProps> = ({ start }) => (
             fill="#676670"
           />
         </svg>
-        <span className={styles.showNotificationsText}>Show notifications</span>
+        <span className={styles.showNotificationsText}>
+          <Translation
+            translationKey={Localization.Frontend.BrowserNotifyModal.showNotifications}
+            defaultText="Show notifications"
+          />
+        </span>
       </div>
       <div className={styles.buttonRow}>
         <Button
@@ -81,10 +156,16 @@ const PermissionPopupPreview: FC<PermissionPopupPreviewProps> = ({ start }) => (
             start();
           }}
         >
-          Allow
+          <Translation
+            translationKey={Localization.Frontend.BrowserNotifyModal.allowButton}
+            defaultText="Allow"
+          />
         </Button>
         <button type="button" className={styles.disabled}>
-          Block
+          <Translation
+            translationKey={Localization.Frontend.BrowserNotifyModal.blockButton}
+            defaultText="Block"
+          />
         </button>
       </div>
     </div>
@@ -93,24 +174,38 @@ const PermissionPopupPreview: FC<PermissionPopupPreviewProps> = ({ start }) => (
 
 const NotificationsEnabled = () => (
   <div>
-    <Title level={2}>Notifications are enabled</Title>
-    To disable push notifications from {window.location.hostname.toString()} access your browser
-    permissions for this site and turn off notifications.
-    <a href="https://owncast.online/docs/notifications"> Learn more.</a>
+    <Title level={2}>
+      <Translation
+        translationKey={Localization.Frontend.BrowserNotifyModal.enabledTitle}
+        defaultText="Notifications are enabled"
+      />
+    </Title>
+    <Translation
+      translationKey={Localization.Frontend.BrowserNotifyModal.enabledDescription}
+      defaultText="To disable push notifications from {{hostname}} access your browser permissions for this site and turn off notifications. <a href='https://owncast.online/docs/notifications'>Learn more.</a>"
+      vars={{ hostname: window.location.hostname.toString() }}
+    />
   </div>
 );
 
 const NotificationsDenied = () => (
   <div>
-    <Title level={2}>Notifications are blocked on your device</Title>
-    To enable push notifications from {window.location.hostname.toString()} access your browser
-    permissions for this site and turn on notifications. Then reload this page to apply your updated
-    settings on this site.
-    <a href="https://owncast.online/docs/notifications"> Learn more.</a>
+    <Title level={2}>
+      <Translation
+        translationKey={Localization.Frontend.BrowserNotifyModal.deniedTitle}
+        defaultText="Notifications are blocked on your device"
+      />
+    </Title>
+    <Translation
+      translationKey={Localization.Frontend.BrowserNotifyModal.deniedDescription}
+      defaultText="To enable push notifications from {{hostname}} access your browser permissions for this site and turn on notifications. Then reload this page to apply your updated settings on this site. <a href='https://owncast.online/docs/notifications'>Learn more.</a>"
+      vars={{ hostname: window.location.hostname.toString() }}
+    />
   </div>
 );
 
 export const BrowserNotifyModal = () => {
+  const { t } = useTranslation();
   const [error, setError] = useState<string>(null);
   const accessToken = useRecoilValue(accessTokenAtom);
   const config = useRecoilValue(clientConfigStateAtom);
@@ -154,7 +249,9 @@ export const BrowserNotifyModal = () => {
       setError(null);
     } catch (e) {
       setError(
-        `Error registering for live notifications: ${e.message}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.`,
+        t(Localization.Frontend.BrowserNotifyModal.errorMessage, {
+          message: e.message,
+        }),
       );
     }
     setBrowserPushPermissionsPending(false);
@@ -181,10 +278,16 @@ export const BrowserNotifyModal = () => {
     >
       <Spin spinning={browserPushPermissionsPending}>
         <Row className={styles.description}>
-          Get notified right in the browser each time this stream goes live.
+          <Translation
+            translationKey={Localization.Frontend.BrowserNotifyModal.mainDescription}
+            defaultText="Get notified right in the browser each time this stream goes live."
+          />
           <span>
             <a href="https://owncast.online/docs/notifications/#browser-notifications">
-              Learn more
+              <Translation
+                translationKey={Localization.Frontend.BrowserNotifyModal.learnMore}
+                defaultText="Learn more"
+              />
             </a>
             &nbsp; about Owncast browser notifications.
           </span>
@@ -192,7 +295,12 @@ export const BrowserNotifyModal = () => {
         <Row>
           {error && (
             <Alert
-              message="Browser Notification Error"
+              message={
+                <Translation
+                  translationKey={Localization.Frontend.BrowserNotifyModal.errorTitle}
+                  defaultText="Browser Notification Error"
+                />
+              }
               description={error}
               type="error"
               closable
