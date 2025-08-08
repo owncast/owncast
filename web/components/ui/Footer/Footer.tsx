@@ -13,7 +13,7 @@ export const Footer: FC = () => {
   const { t } = useTranslation();
   return (
     <footer className={styles.footer} id="footer">
-      <span>
+      <span id="owncast-powered-by-text">
         <Translation
           translationKey={Localization.Common.poweredByOwncastVersion}
           vars={{ versionNumber }}

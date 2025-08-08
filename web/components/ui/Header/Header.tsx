@@ -64,7 +64,9 @@ export const Header: FC<HeaderComponentProps> = ({ name, chatAvailable, chatDisa
           title={t('Chat will be available when the stream is live.')}
           placement="left"
         >
-          <span className={styles.chatOfflineText}>{t('Chat is offline')}</span>
+          <span className={styles.chatOfflineText} id="owncast-chat-offline-text">
+            {t('Chat is offline')}
+          </span>
         </Tooltip>
       )}
     </header>

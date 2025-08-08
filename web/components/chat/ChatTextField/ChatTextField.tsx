@@ -283,6 +283,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
               <button
                 type="button"
                 aria-label="Emoji picker"
+                id="owncast-emoji-picker-button"
                 className={styles.emojiButton}
                 title="Emoji picker button"
               >
@@ -292,6 +293,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
             <button
               type="button"
               aria-label="Send message"
+              id="owncast-send-message-button"
               className={styles.sendButton}
               title="Send message Button"
               onClick={sendMessage}
