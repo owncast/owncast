@@ -36,7 +36,7 @@ jobs:
         run: npm run translate
 
       - name: Crowdin upload sources/download translations
-        uses: crowdin/github-action@v1
+        uses: crowdin/github-action@v2
         with:
           upload_sources: true
           download_translations: true
