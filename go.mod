@@ -34,7 +34,7 @@ require (
 	github.com/yuin/goldmark-emoji v1.0.6
 	golang.org/x/crypto v0.41.0
 	golang.org/x/mod v0.27.0
-	golang.org/x/net v0.42.0
+	golang.org/x/net v0.43.0
 	golang.org/x/time v0.12.0
 	gopkg.in/evanphx/json-patch.v5 v5.9.11
 	mvdan.cc/xurls/v2 v2.6.0
