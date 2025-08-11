@@ -1,84 +1,76 @@
+version: "2"
 run:
-  tests: false
+  go: "1.24"
   modules-download-mode: readonly
-
-  # Define the Go version limit.
-  # Mainly related to generics support in go1.18.
-  # Default: use Go version from the go.mod file, fallback on the env var `GOVERSION`, fallback on 1.18
-  go: '1.24'
-
-issues:
-  # The linter has a default list of ignorable errors. Turning this on will enable that list.
-  exclude-use-default: false
-
-  # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
-  max-issues-per-linter: 0
-
-  # Maximum count of issues with the same text. Set to 0 to disable. Default is 3.
-  max-same-issues: 0
-
-  exclude:
-    - Subprocess launch(ed with variable|ing should be audited)
-    - Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*print(f|ln)?|os\.(Un)?Setenv). is not checked
-    - G307 # Allow closing files as a defer without checking error.
-    - composite literal uses unkeyed fields
-
+  tests: false
 linters:
   enable:
     - bodyclose
+    - copyloopvar
+    - cyclop
     - dupl
-    - errcheck
+    - forbidigo
     - goconst
+    - gocritic
     - godot
     - godox
-    - goimports
     - goprintffuncname
     - gosec
-    - govet
     - misspell
+    - nakedret
     - prealloc
     - revive
     - rowserrcheck
     - sqlclosecheck
-    - staticcheck
     - unconvert
     - unparam
-    - whitespace
-    - nakedret
-    - cyclop
-    - gosimple
-    - unused
-    - copyloopvar
-    - gocritic
-    - forbidigo
-    - unparam
     - wastedassign
-linters-settings:
-  cyclop:
-    # the maximal code complexity to report. default is 10. eventually work our way to that.
-    max-complexity: 15
-    # the max average package complexity. If it's higher than 0.0 (float) the check is enabled (default 0.0)
-    package-average: 0.0
-    # should ignore tests
-    skip-tests: true
-
-  gocritic:
-    disabled-checks:
-      - ifElseChain
-      - exitAfterDefer
-
-  revive:
+    - whitespace
+  settings:
+    cyclop:
+      max-complexity: 15
+      package-average: 0
+    dupl:
+      threshold: 200
+    forbidigo:
+      forbid:
+        - pattern: ^(fmt\.Print(|f|ln)|print|println)
+        - pattern: ^panic.*$
+    gocritic:
+      disabled-checks:
+        - ifElseChain
+        - exitAfterDefer
+    revive:
+      rules:
+        - name: package-comments
+          disabled: true
+  exclusions:
+    generated: lax
     rules:
-      - name: package-comments
-        disabled: true
-
-  forbidigo:
-    # Forbid the following identifiers (identifiers are written using regexp):
-    forbid:
-      # Logging via Print bypasses our logging framework.
-      - ^(fmt\.Print(|f|ln)|print|println)
-      - ^panic.*$
-
-  dupl:
-    # tokens count to trigger issue, 150 by default
-    threshold: 200
+      - path: (.+)\.go$
+        text: Subprocess launch(ed with variable|ing should be audited)
+      - path: (.+)\.go$
+        text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*print(f|ln)?|os\.(Un)?Setenv). is not checked
+      - path: (.+)\.go$
+        text: G307
+      - path: (.+)\.go$
+        text: composite literal uses unkeyed fields
+      - linters:
+          - cyclop
+        path: (.+)_test\.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+formatters:
+  enable:
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
