@@ -32,8 +32,8 @@ jobs:
           cache: true
       - uses: actions/checkout@v4
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: v1.64.5
+          version: v2.3.1
           only-new-issues: true
           args: --timeout=3m
