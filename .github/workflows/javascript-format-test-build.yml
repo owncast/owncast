@@ -29,7 +29,7 @@ jobs:
           skip_after_successful_duplicate: 'true'
 
       - name: Check out pull request code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -41,7 +41,7 @@ jobs:
           node-version: '22.18.0'
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'push'
 
       - name: Get changed files
@@ -117,14 +117,14 @@ jobs:
           skip_after_successful_duplicate: 'true'
 
       - name: Check out pull request code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'push'
 
       - name: Setup Nodejs
@@ -188,14 +188,14 @@ jobs:
             ${{ runner.os }}-
 
       - name: Check out pull request code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'push'
 
       - name: Bundle web app (next.js build)
