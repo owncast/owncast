@@ -22,7 +22,7 @@ jobs:
         with:
           concurrent_skipping: 'same_content_newer'
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -30,7 +30,7 @@ jobs:
         with:
           go-version: '1.24'
           cache: true
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
