@@ -29,7 +29,6 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Install dependencies
-        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' }}
         run: npm install
 
       - name: Generate translation files
