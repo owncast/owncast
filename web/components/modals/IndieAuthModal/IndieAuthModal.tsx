@@ -148,8 +148,8 @@ export const IndieAuthModal: FC<IndieAuthModalProps> = ({
 
             <p>
               If you run an Owncast instance, you can use that domain here. Otherwise,{' '}
-              <Link href="https://indieauth.net/#providers">
-                learn more about how you can support IndieAuth
+              <Link href="https://indieauth.spec.indieweb.org/">
+                learn more about the IndieAuth specification
               </Link>
               .
             </p>
