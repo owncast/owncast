@@ -19,9 +19,9 @@
   "Chat is offline": "Chat ist offline",
   "Chat will be available when the stream is live": "Chat ist verfügbar, wenn der Stream live ist.",
   "Chat will continue to be disabled until you begin a live stream": "Der Chat ist weiterhin deaktiviert, bis Sie einen Live-Stream starten.",
-  "Click and never miss future streams!": "Klicke und werde über zukünftige Streams informiert!",
+  "Click and never miss future streams!": "Klicke hier, um über zukünftige Streams informiert zu werden!",
   "Common": {
-    "poweredByOwncastVersion": "Unterstützt von <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+    "poweredByOwncastVersion": "Unterstützt durch <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
   },
   "Common tasks": "Häufige Aufgaben",
   "Connected": "Verbunden",
@@ -96,7 +96,7 @@
   "Last 30 days": "Letzten 30 Tage",
   "Last 6 months": "Letzten 6 Monate",
   "Last 7 days": "Letzte 7 Tage",
-  "Last live ago": "Letzter Live- {{timeAgo}} vor",
+  "Last live ago": "Zuletzt live: vor {{timeAgo}}",
   "Learn how to point your existing software to your new server and start streaming your content": "Erfahren Sie, wie Sie Ihre vorhandene Software auf Ihren neuen Server verweisen und mit dem Streaming Ihrer Inhalte beginnen können.",
   "Learn how you can add your Owncast stream to other sites you control": "Erfahren Sie, wie Sie Ihren Owncast Stream zu anderen Websites hinzufügen können, die Sie kontrollieren.",
   "Learn more": "Mehr erfahren",
@@ -127,7 +127,7 @@
   "Outbound Video Stream": "Ausgehender Video-Stream",
   "Overridden via command line": "Wird über die Befehlszeile überschrieben.",
   "Peak viewer count": "Höchste Zuschauerzahl",
-  "Playback Health": "Playback Gesundheit",
+  "Playback Health": "Playback Zustand",
   "Please wait": "Bitte warten",
   "Read the Docs": "Lese die Dokumentation",
   "Show": "Zeigen",
