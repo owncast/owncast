@@ -18,14 +18,14 @@ const geoIPDatabasePath = "data/GeoLite2-City.mmdb"
 // Client can look up geography information for IP addresses.
 type Client struct {
 	cache   sync.Map
-	enabled int32
+	enabled atomic.Int32
 }
 
 // NewClient creates a new Client.
 func NewClient() *Client {
-	return &Client{
-		enabled: 1, // Try to use GeoIP support by default.
-	}
+	c := &Client{}
+	c.enabled.Store(1)
+	return c
 }
 
 // GeoDetails stores details about a location.
@@ -56,14 +56,14 @@ func (c *Client) GetGeoFromIP(ip string) *GeoDetails {
 // fetchGeoForIP makes an API call to get geo details for an IP address.
 func (c *Client) fetchGeoForIP(ip string) *GeoDetails {
 	// If GeoIP has been disabled then don't try to access it.
-	if atomic.LoadInt32(&c.enabled) == 0 {
+	if c.enabled.Load() == 0 {
 		return nil
 	}
 
 	db, err := geoip2.Open(geoIPDatabasePath)
 	if err != nil {
 		log.Traceln("GeoIP support is disabled. visit https://owncast.online/docs/geoip to learn how to enable.", err)
-		atomic.StoreInt32(&c.enabled, 0)
+		c.enabled.Store(0)
 		return nil
 	}
 	defer db.Close()
