@@ -50,7 +50,7 @@
 		"interweave": "^13.0.0",
 		"interweave-autolink": "^5.1.0",
 		"lodash": "4.17.21",
-		"next": "14.2.30",
+		"next": "14.2.32",
 		"next-export-i18n": "^2.0.0",
 		"next-pwa": "^5.6.0",
 		"next-with-less": "3.0.1",
