@@ -53,7 +53,6 @@
 		"@babel/core",
 		"i18next-scanner",
 		"@types/chart.js",
-		"@types/classnames",
 		"@types/video.js",
 		"@testing-library/jest-dom",
 		"@testing-library/react",
