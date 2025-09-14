@@ -90,13 +90,13 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
       .map(key => parseInt(key, 10))
       .filter(value => !Number.isNaN(value))
       .sort((a, b) => a - b);
-    
+
     // Current marks: [400, 3000, 6000, 9000, 13000]
     // Use the second mark (3000) as low threshold and second-to-last (9000) as high threshold
     // This excludes min/max values and uses intermediate marks for quality categories
     const lowThreshold = marks.length >= 3 ? marks[1] : marks[0];
     const highThreshold = marks.length >= 4 ? marks[marks.length - 2] : marks[marks.length - 1];
-    
+
     return { lowThreshold, highThreshold };
   };
 
@@ -105,9 +105,9 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
     if (videoPassthroughEnabled) {
       return t(Localization.Admin.VideoVariantForm.bitrateDisabledPassthrough);
     }
-    
+
     const { lowThreshold, highThreshold } = getBitrateThresholds();
-    
+
     let note = t(Localization.Admin.VideoVariantForm.bitrateValueKbps, {
       bitrate: dataState.videoBitrate,
     });
