@@ -110,6 +110,15 @@ export const Localization = {
       serverUrlRequiredForDirectory: 'Admin.EditInstanceDetails.serverUrlRequiredForDirectory',
     },
 
+    // VideoVariantForm component specific keys
+    VideoVariantForm: {
+      bitrateDisabledPassthrough: 'Admin.VideoVariantForm.bitrateDisabledPassthrough',
+      bitrateValueKbps: 'Admin.VideoVariantForm.bitrateValueKbps',
+      bitrateGoodForSlow: 'Admin.VideoVariantForm.bitrateGoodForSlow',
+      bitrateGoodForMost: 'Admin.VideoVariantForm.bitrateGoodForMost',
+      bitrateGoodForHigh: 'Admin.VideoVariantForm.bitrateGoodForHigh',
+    },
+
     // Logging and monitoring
     info: 'Info',
     warning: 'Warning',
