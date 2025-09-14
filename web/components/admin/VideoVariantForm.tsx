@@ -3,6 +3,8 @@ import React, { FC } from 'react';
 import { Popconfirm, Row, Col, Slider, Collapse, Typography, Alert, Button } from 'antd';
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
+import { Localization } from '../../types/localization';
 import { FieldUpdaterFunc, VideoVariant, UpdateArgs } from '../../types/config-section';
 import { TextField } from './TextField';
 import {
@@ -36,6 +38,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
   dataState = DEFAULT_VARIANT_STATE,
   onUpdateField,
 }) => {
+  const { t } = useTranslation();
   const videoPassthroughEnabled = dataState.videoPassthrough;
 
   const handleFramerateChange = (value: number) => {
@@ -80,18 +83,40 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
     onUpdateField({ fieldName: 'name', value: args.value });
   };
 
+  // Extract threshold values dynamically from slider marks
+  const getBitrateThresholds = () => {
+    // Get all numeric keys from slider marks and sort them
+    const marks = Object.keys(VIDEO_BITRATE_SLIDER_MARKS)
+      .map(key => parseInt(key, 10))
+      .filter(value => !Number.isNaN(value))
+      .sort((a, b) => a - b);
+
+    // Current marks: [400, 3000, 6000, 9000, 13000]
+    // Use the second mark (3000) as low threshold and second-to-last (9000) as high threshold
+    // This excludes min/max values and uses intermediate marks for quality categories
+    const lowThreshold = marks.length >= 3 ? marks[1] : marks[0];
+    const highThreshold = marks.length >= 4 ? marks[marks.length - 2] : marks[marks.length - 1];
+
+    return { lowThreshold, highThreshold };
+  };
+
   // Slider notes
   const selectedVideoBRnote = () => {
     if (videoPassthroughEnabled) {
-      return 'Bitrate selection is disabled when Video Passthrough is enabled.';
+      return t(Localization.Admin.VideoVariantForm.bitrateDisabledPassthrough);
     }
-    let note = `${dataState.videoBitrate}${VIDEO_BITRATE_DEFAULTS.unit}`;
-    if (dataState.videoBitrate < 2000) {
-      note = `${note} - Good for low bandwidth environments.`;
-    } else if (dataState.videoBitrate < 3500) {
-      note = `${note} - Good for most bandwidth environments.`;
+
+    const { lowThreshold, highThreshold } = getBitrateThresholds();
+
+    let note = t(Localization.Admin.VideoVariantForm.bitrateValueKbps, {
+      bitrate: dataState.videoBitrate,
+    });
+    if (dataState.videoBitrate < lowThreshold) {
+      note = `${note} - ${t(Localization.Admin.VideoVariantForm.bitrateGoodForSlow)}`;
+    } else if (dataState.videoBitrate < highThreshold) {
+      note = `${note} - ${t(Localization.Admin.VideoVariantForm.bitrateGoodForMost)}`;
     } else {
-      note = `${note} - Good for high bandwidth environments.`;
+      note = `${note} - ${t(Localization.Admin.VideoVariantForm.bitrateGoodForHigh)}`;
     }
     return note;
   };
@@ -203,7 +228,7 @@ export const VideoVariantForm: FC<VideoVariantFormProps> = ({
                 max={VIDEO_BITRATE_DEFAULTS.max}
                 marks={VIDEO_BITRATE_SLIDER_MARKS}
               />
-              <p className="selected-value-note">{selectedVideoBRnote()}</p>
+              <p style={{ marginTop: '40px' }}>{selectedVideoBRnote()}</p>
             </div>
             <p className="read-more-subtext">
               <a

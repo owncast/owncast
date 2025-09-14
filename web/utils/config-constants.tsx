@@ -435,12 +435,12 @@ export const FRAMERATE_TOOLTIPS = {
   50: '50fps - Good for fast/action games, sports, HD video.',
   60: '60fps - Good for fast/action games, sports, HD video.',
   90: '90fps - Good for newer fast games and hardware.',
-  [FRAMERATE_DEFAULTS.max]: `${FRAMERATE_DEFAULTS.max}fps - Experimental, use at your own risk!`,
+  [FRAMERATE_DEFAULTS.max]: `${FRAMERATE_DEFAULTS.max}fps - Use at your own risk!`,
 };
 // VIDEO VARIANT FORM - bitrate
 export const VIDEO_BITRATE_DEFAULTS = {
   min: 400,
-  max: 6000,
+  max: 13000,
   defaultValue: 1200,
   unit: 'kbps',
   incrementBy: 100,
@@ -463,7 +463,8 @@ export const VIDEO_BITRATE_SLIDER_MARKS = {
     label: `${VIDEO_BITRATE_DEFAULTS.min} ${VIDEO_BITRATE_DEFAULTS.unit}`,
   },
   3000: 3000,
-  4500: 4500,
+  6000: 6000,
+  9000: 9000,
   [VIDEO_BITRATE_DEFAULTS.max]: {
     style: {
       marginLeft: '-10px',
