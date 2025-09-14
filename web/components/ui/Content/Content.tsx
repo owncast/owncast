@@ -274,7 +274,6 @@ export const Content: FC = () => {
             setShowNotifyModal={setShowNotifyModal}
             disableNotifyReminderPopup={disableNotifyReminderPopup}
             externalActions={externalActions || []}
-            setExternalActionToDisplay={setExternalActionToDisplay}
             setShowFollowModal={setShowFollowModal}
             externalActionSelected={externalActionSelected}
           />
