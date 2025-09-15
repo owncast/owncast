@@ -84,6 +84,23 @@ export const Localization = {
       overLimit: 'Frontend.NameChangeModal.overLimit',
     },
 
+    // Header component
+    Header: {
+      skipToPlayer: 'Frontend.Header.skipToPlayer',
+      skipToOfflineMessage: 'Frontend.Header.skipToOfflineMessage',
+      skipToContent: 'Frontend.Header.skipToContent',
+      skipToFooter: 'Frontend.Header.skipToFooter',
+      chatWillBeAvailable: 'Frontend.Header.chatWillBeAvailable',
+      chatOffline: 'Frontend.Header.chatOffline',
+    },
+
+    // Footer component
+    Footer: {
+      documentation: 'Frontend.Footer.documentation',
+      contribute: 'Frontend.Footer.contribute',
+      source: 'Frontend.Footer.source',
+    },
+
     // Offline banner messages
     offlineBasic: 'Frontend.offlineBasic',
     offlineNotifyOnly: 'Frontend.offlineNotifyOnly',
@@ -127,6 +144,83 @@ export const Localization = {
       bitrateGoodForHigh: 'Admin.VideoVariantForm.bitrateGoodForHigh',
     },
 
+    // Hardware monitoring page
+    HardwareInfo: {
+      title: 'Admin.HardwareInfo.title',
+      pleaseWait: 'Admin.HardwareInfo.pleaseWait',
+      noDetails: 'Admin.HardwareInfo.noDetails',
+      cpu: 'Admin.HardwareInfo.cpu',
+      memory: 'Admin.HardwareInfo.memory',
+      disk: 'Admin.HardwareInfo.disk',
+      used: 'Admin.HardwareInfo.used',
+    },
+
+    // Help page
+    Help: {
+      title: 'Admin.Help.title',
+      configureInstance: 'Admin.Help.configureInstance',
+      learnMore: 'Admin.Help.learnMore',
+      configureBroadcasting: 'Admin.Help.configureBroadcasting',
+      embedStream: 'Admin.Help.embedStream',
+      customizeWebsite: 'Admin.Help.customizeWebsite',
+      tweakVideo: 'Admin.Help.tweakVideo',
+      useStorage: 'Admin.Help.useStorage',
+      foundBug: 'Admin.Help.foundBug',
+      bugPlease: 'Admin.Help.bugPlease',
+      letUsKnow: 'Admin.Help.letUsKnow',
+      generalQuestion: 'Admin.Help.generalQuestion',
+      generalAnswered: 'Admin.Help.generalAnswered',
+      faq: 'Admin.Help.faq',
+      orExist: 'Admin.Help.orExist',
+      discussions: 'Admin.Help.discussions',
+      buildAddons: 'Admin.Help.buildAddons',
+      buildTools: 'Admin.Help.buildTools',
+      developerApis: 'Admin.Help.developerApis',
+      troubleshooting: 'Admin.Help.troubleshooting',
+      fixProblems: 'Admin.Help.fixProblems',
+      documentation: 'Admin.Help.documentation',
+      readDocs: 'Admin.Help.readDocs',
+      commonTasks: 'Admin.Help.commonTasks',
+      other: 'Admin.Help.other',
+    },
+
+    // Log table component
+    LogTable: {
+      level: 'Admin.LogTable.level',
+      info: 'Admin.LogTable.info',
+      warning: 'Admin.LogTable.warning',
+      error: 'Admin.LogTable.error',
+      timestamp: 'Admin.LogTable.timestamp',
+      message: 'Admin.LogTable.message',
+      logs: 'Admin.LogTable.logs',
+    },
+
+    // News feed component
+    NewsFeed: {
+      link: 'Admin.NewsFeed.link',
+      noNews: 'Admin.NewsFeed.noNews',
+      title: 'Admin.NewsFeed.title',
+    },
+
+    // Viewer info page
+    ViewerInfo: {
+      title: 'Admin.ViewerInfo.title',
+      currentStream: 'Admin.ViewerInfo.currentStream',
+      last12Hours: 'Admin.ViewerInfo.last12Hours',
+      last24Hours: 'Admin.ViewerInfo.last24Hours',
+      last7Days: 'Admin.ViewerInfo.last7Days',
+      last30Days: 'Admin.ViewerInfo.last30Days',
+      last3Months: 'Admin.ViewerInfo.last3Months',
+      last6Months: 'Admin.ViewerInfo.last6Months',
+      currentViewers: 'Admin.ViewerInfo.currentViewers',
+      maxViewersThisStream: 'Admin.ViewerInfo.maxViewersThisStream',
+      maxViewersLastStream: 'Admin.ViewerInfo.maxViewersLastStream',
+      maxViewers: 'Admin.ViewerInfo.maxViewers',
+      pleaseWait: 'Admin.ViewerInfo.pleaseWait',
+      noData: 'Admin.ViewerInfo.noData',
+      viewers: 'Admin.ViewerInfo.viewers',
+    },
+
     // Logging and monitoring
     info: 'Admin.info',
     warning: 'Admin.warning',
@@ -141,17 +235,7 @@ export const Localization = {
    * Common keys shared across both frontend and admin interfaces
    */
   Common: {
-    // Basic UI elements
-    yes: 'Common.yes',
-    no: 'Common.no',
-
-    // Documentation and help
-    documentation: 'Common.documentation',
-    contribute: 'Common.contribute',
-    source: 'Common.source',
-
     // Branding
-    poweredByOwncast: 'Common.poweredByOwncast',
     poweredByOwncastVersion: 'Common.poweredByOwncastVersion',
   },
 

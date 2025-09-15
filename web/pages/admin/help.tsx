@@ -6,6 +6,7 @@ import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 
 import { useTranslation } from 'next-export-i18n';
+import { Localization } from '../../types/localization';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
 // Lazy loaded components
@@ -56,7 +57,7 @@ export default function Help() {
   const questions = [
     {
       icon: <SettingTwoTone style={{ fontSize: '24px' }} />,
-      title: t('I want to configure my owncast instance'),
+      title: t(Localization.Admin.Help.configureInstance),
       content: (
         <div>
           <a
@@ -64,14 +65,14 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> {t('Learn more')}
+            <LinkOutlined /> {t(Localization.Admin.Help.learnMore)}
           </a>
         </div>
       ),
     },
     {
       icon: <CameraTwoTone style={{ fontSize: '24px' }} />,
-      title: t('Help configuring my broadcasting software'),
+      title: t(Localization.Admin.Help.configureBroadcasting),
       content: (
         <div>
           <a
@@ -79,14 +80,14 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> {t('Learn more')}
+            <LinkOutlined /> {t(Localization.Admin.Help.learnMore)}
           </a>
         </div>
       ),
     },
     {
       icon: <Html5TwoTone style={{ fontSize: '24px' }} />,
-      title: t('I want to embed my stream into another site'),
+      title: t(Localization.Admin.Help.embedStream),
       content: (
         <div>
           <a
@@ -94,14 +95,14 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> {t('Learn more')}
+            <LinkOutlined /> {t(Localization.Admin.Help.learnMore)}
           </a>
         </div>
       ),
     },
     {
       icon: <EditTwoTone style={{ fontSize: '24px' }} />,
-      title: t('I want to customize my website'),
+      title: t(Localization.Admin.Help.customizeWebsite),
       content: (
         <div>
           <a
@@ -109,14 +110,14 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> {t('Learn more')}
+            <LinkOutlined /> {t(Localization.Admin.Help.learnMore)}
           </a>
         </div>
       ),
     },
     {
       icon: <SlidersTwoTone style={{ fontSize: '24px' }} />,
-      title: t('I want to tweak my video output'),
+      title: t(Localization.Admin.Help.tweakVideo),
       content: (
         <div>
           <a
@@ -124,14 +125,14 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> {t('Learn more')}
+            <LinkOutlined /> {t(Localization.Admin.Help.learnMore)}
           </a>
         </div>
       ),
     },
     {
       icon: <DatabaseTwoTone style={{ fontSize: '24px' }} />,
-      title: t('I want to use an external storage provider'),
+      title: t(Localization.Admin.Help.useStorage),
       content: (
         <div>
           <a
@@ -139,7 +140,7 @@ export default function Help() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <LinkOutlined /> {t('Learn more')}
+            <LinkOutlined /> {t(Localization.Admin.Help.learnMore)}
           </a>
         </div>
       ),
@@ -149,58 +150,58 @@ export default function Help() {
   const otherResources = [
     {
       icon: <BugTwoTone style={{ fontSize: '24px' }} />,
-      title: t('I found a bug'),
+      title: t(Localization.Admin.Help.foundBug),
       content: (
         <div>
-          {t('If you found a bug, then please')}
+          {t(Localization.Admin.Help.bugPlease)}
           <a
             href="https://github.com/owncast/owncast/issues/new/choose"
             target="_blank"
             rel="noopener noreferrer"
           >
             {' '}
-            {t('let us know')}
+            {t(Localization.Admin.Help.letUsKnow)}
           </a>
         </div>
       ),
     },
     {
       icon: <QuestionCircleTwoTone style={{ fontSize: '24px' }} />,
-      title: t('I have a general question'),
+      title: t(Localization.Admin.Help.generalQuestion),
       content: (
         <div>
-          {t('Most general questions are answered in our')}
+          {t(Localization.Admin.Help.generalAnswered)}
           <a
             href="https://owncast.online/faq/?source=admin"
             target="_blank"
             rel="noopener noreferrer"
           >
             {' '}
-            {t('FAQ')}
+            {t(Localization.Admin.Help.faq)}
           </a>{' '}
-          {t('or exist in our')}{' '}
+          {t(Localization.Admin.Help.orExist)}{' '}
           <a
             href="https://github.com/owncast/owncast/discussions"
             target="_blank"
             rel="noopener noreferrer"
           >
-            {t('discussions')}
+            {t(Localization.Admin.Help.discussions)}
           </a>
         </div>
       ),
     },
     {
       icon: <ApiTwoTone style={{ fontSize: '24px' }} />,
-      title: t('I want to build add-ons for Owncast'),
+      title: t(Localization.Admin.Help.buildAddons),
       content: (
         <div>
-          {t('You can build your own bots, overlays, tools and add-ons with our')}
+          {t(Localization.Admin.Help.buildTools)}
           <a
             href="https://owncast.online/thirdparty?source=admin"
             target="_blank"
             rel="noopener noreferrer"
           >
-            &nbsp;{t('developer APIs.')}&nbsp;
+            &nbsp;{t(Localization.Admin.Help.developerApis)}&nbsp;
           </a>
         </div>
       ),
@@ -209,11 +210,11 @@ export default function Help() {
 
   return (
     <div className="help-page">
-      <Title style={{ textAlign: 'center' }}>{t('How can we help you?')}</Title>
+      <Title style={{ textAlign: 'center' }}>{t(Localization.Admin.Help.title)}</Title>
       <Row gutter={[16, 16]} justify="space-around" align="middle">
         <Col xs={24} lg={12} style={{ textAlign: 'center' }}>
           <Result status="500" />
-          <Title level={2}>{t('Troubleshooting')}</Title>
+          <Title level={2}>{t(Localization.Admin.Help.troubleshooting)}</Title>
           <Button
             target="_blank"
             rel="noopener noreferrer"
@@ -221,12 +222,12 @@ export default function Help() {
             icon={<LinkOutlined />}
             type="primary"
           >
-            {t('Fix your problems')}
+            {t(Localization.Admin.Help.fixProblems)}
           </Button>
         </Col>
         <Col xs={24} lg={12} style={{ textAlign: 'center' }}>
           <Result status="404" />
-          <Title level={2}>{t('Documentation')}</Title>
+          <Title level={2}>{t(Localization.Admin.Help.documentation)}</Title>
           <Button
             target="_blank"
             rel="noopener noreferrer"
@@ -234,12 +235,12 @@ export default function Help() {
             icon={<LinkOutlined />}
             type="primary"
           >
-            {t('Read the Docs')}
+            {t(Localization.Admin.Help.readDocs)}
           </Button>
         </Col>
       </Row>
       <Divider />
-      <Title level={2}>{t('Common tasks')}</Title>
+      <Title level={2}>{t(Localization.Admin.Help.commonTasks)}</Title>
       <Row gutter={[16, 16]}>
         {questions.map(question => (
           <Col xs={24} lg={12} key={question.title}>
@@ -250,7 +251,7 @@ export default function Help() {
         ))}
       </Row>
       <Divider />
-      <Title level={2}>{t('Other')}</Title>
+      <Title level={2}>{t(Localization.Admin.Help.other)}</Title>
       <Row gutter={[16, 16]}>
         {otherResources.map(question => (
           <Col xs={24} lg={12} key={question.title}>
