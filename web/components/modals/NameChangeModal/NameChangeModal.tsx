@@ -30,7 +30,7 @@ type NameChangeModalProps = {
 export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
   const currentUser = useRecoilValue(currentUserAtom);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
-  const [newName, setNewName] = useState<string>(currentUser?.displayName);
+  const [newName, setNewName] = useState<string>(currentUser?.displayName || '');
 
   const characterLimit = 30;
 
@@ -42,7 +42,7 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
 
   // Memoize validation result to avoid duplicate computation
   const validation = useMemo(
-    () => validateDisplayName(newName, displayName, characterLimit),
+    () => validateDisplayName(newName || '', displayName || '', characterLimit),
     [newName, displayName, characterLimit],
   );
 
