@@ -60,6 +60,14 @@
       "unsupported": "Browser notifications are not supported in your browser.",
       "unsupportedLocal": "Browser notifications are not supported for local servers."
     },
+    "NameChangeModal": {
+      "authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
+      "buttonText": "Change name",
+      "colorLabel": "Your Color",
+      "description": "Your chat display name is what people see when you send chat messages.",
+      "overLimit": "Over limit",
+      "placeholder": "Your chat display name"
+    },
     "chatOffline": "<strong><em>Missing translation Frontend.chatOffline: Please report</em></strong>",
     "componentError": "Error: {{message}}",
     "helloWorld": "<strong><em>Missing translation Frontend.helloWorld: Please report</em></strong>",
