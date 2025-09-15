@@ -16,12 +16,16 @@ export interface DisplayNameValidationResult {
  * This includes ASCII whitespace plus Unicode space characters and invisible characters
  */
 // Unicode whitespace character class used for trimming (matches Go's strings.TrimSpace)
-const UNICODE_WHITESPACE_CLASS = '[\\s\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u200B-\\u200D\\u2028\\u2029\\u202F\\u205F\\u3000\\uFEFF]';
+const UNICODE_WHITESPACE_CLASS =
+  '[\\s\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u200B-\\u200D\\u2028\\u2029\\u202F\\u205F\\u3000\\uFEFF]';
 
 export function trimUnicodeWhitespace(str: string): string {
   // Unicode whitespace regex that matches what Go's strings.TrimSpace() removes
   // This pattern matches all relevant Unicode whitespace at start/end of string
-  const unicodeWhitespacePattern = new RegExp(`^${UNICODE_WHITESPACE_CLASS}+|${UNICODE_WHITESPACE_CLASS}+$`, 'g');
+  const unicodeWhitespacePattern = new RegExp(
+    `^${UNICODE_WHITESPACE_CLASS}+|${UNICODE_WHITESPACE_CLASS}+$`,
+    'g',
+  );
   return str.replace(unicodeWhitespacePattern, '');
 }
 
