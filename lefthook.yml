@@ -44,7 +44,7 @@ pre-commit:
       stage_fixed: true
     golangci-lint:
       glob: '*.go'
-      run: go get -tool github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.3.1 && go tool golangci-lint run ./...
+      run: go get -tool github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.3.1 && go tool golangci-lint run {staged_files}
       stage_fixed: true
     go-test:
       glob: '*.go'
