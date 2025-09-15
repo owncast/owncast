@@ -110,7 +110,7 @@ body {
 
   a {
     color: var(--theme-color-action);
-    word-break: break-word;
+    overflow-wrap: break-word;
 
     &:hover {
       color: var(--theme-color-action-hover);

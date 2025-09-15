@@ -52,7 +52,6 @@
 		"@babel/preset-react",
 		"@babel/core",
 		"i18next-scanner",
-		"@types/chart.js",
 		"@types/video.js",
 		"@testing-library/jest-dom",
 		"@testing-library/react",

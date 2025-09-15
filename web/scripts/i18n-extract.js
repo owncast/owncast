@@ -130,7 +130,7 @@ function scanTranslationKeys() {
         }
         // Handle t("some.string.key") - but only if it looks like a translation key
         else if (firstArg.type === 'StringLiteral') {
-          const value = firstArg.value;
+          const { value } = firstArg;
           // Only include string literals that follow our translation key pattern:
           // - Must have dots for hierarchy (e.g., Frontend.Component.key)
           // - Must start with a capital letter (namespace convention)

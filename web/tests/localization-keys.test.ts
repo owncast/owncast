@@ -11,12 +11,11 @@ describe('Localization Keys Cross-Language Validation', () => {
   const i18nDir = path.join(__dirname, '../i18n');
 
   // Get all available language directories
-  const getAvailableLanguages = (): string[] => {
-    return fs.readdirSync(i18nDir).filter(item => {
+  const getAvailableLanguages = (): string[] =>
+    fs.readdirSync(i18nDir).filter(item => {
       const itemPath = path.join(i18nDir, item);
       return fs.statSync(itemPath).isDirectory() && item !== 'en'; // Exclude English as it's our reference
     });
-  };
 
   // Load translation file for a specific language
   const loadTranslationFile = (language: string): Record<string, any> => {
@@ -24,22 +23,23 @@ describe('Localization Keys Cross-Language Validation', () => {
       const translationPath = path.join(i18nDir, language, 'translation.json');
       const content = fs.readFileSync(translationPath, 'utf-8');
       return JSON.parse(content);
-    } catch (error) {
+    } catch {
       return {};
     }
   };
 
   // Helper function to get nested value from object using dot notation
-  const getNestedValue = (obj: Record<string, any>, key: string): any => {
-    return key.split('.').reduce((current, prop) => {
-      return current && current[prop] !== undefined ? current[prop] : undefined;
-    }, obj);
-  };
+  const getNestedValue = (obj: Record<string, any>, key: string): any =>
+    key
+      .split('.')
+      .reduce(
+        (current, prop) => (current && current[prop] !== undefined ? current[prop] : undefined),
+        obj,
+      );
 
   // Helper function to check if a key exists in a translation object
-  const keyExists = (translations: Record<string, any>, key: string): boolean => {
-    return getNestedValue(translations, key) !== undefined;
-  };
+  const keyExists = (translations: Record<string, any>, key: string): boolean =>
+    getNestedValue(translations, key) !== undefined;
 
   // Load English translations as reference
   const englishTranslations = loadTranslationFile('en');
@@ -128,14 +128,11 @@ describe('Localization Keys Cross-Language Validation', () => {
     ];
 
     test('should verify all test keys exist in English translation file', () => {
-      testKeys.forEach(({ key, name }) => {
+      testKeys.forEach(({ key }) => {
         const value = getNestedValue(englishTranslations, key);
         expect(keyExists(englishTranslations, key)).toBe(true);
         expect(value).toBeDefined();
         expect(typeof value).toBe('string');
-
-        // Log for debugging
-        // console.log(`✓ ${name}: "${value}"`);
       });
     });
 
@@ -352,19 +349,19 @@ describe('Localization Keys Cross-Language Validation', () => {
         },
       ];
 
-      // missingAdminKeys.forEach(({ key, name }) => {
-      //   const englishValue = getNestedValue(englishTranslations, key);
+      missingAdminKeys.forEach(({ key, name }) => {
+        const englishValue = getNestedValue(englishTranslations, key);
 
-      //   if (!englishValue) {
-      //     console.warn(
-      //       `⚠️  Admin key "${name}" (${key}) is not present in translation files - consider adding it or removing from localization.ts`,
-      //     );
-      //   } else if (englishValue.includes('Missing translation')) {
-      //     console.warn(
-      //       `⚠️  Admin key "${name}" (${key}) has placeholder translation: ${englishValue}`,
-      //     );
-      //   }
-      // });
+        if (!englishValue) {
+          console.warn(
+            `⚠️  Admin key "${name}" (${key}) is not present in translation files - consider adding it or removing from localization.ts`,
+          );
+        } else if (englishValue.includes('Missing translation')) {
+          console.warn(
+            `⚠️  Admin key "${name}" (${key}) has placeholder translation: ${englishValue}`,
+          );
+        }
+      });
 
       // This test always passes but generates useful warnings
       expect(true).toBe(true);
@@ -613,7 +610,7 @@ describe('Localization Keys Cross-Language Validation', () => {
         },
       ];
 
-      interpolationTests.forEach(({ key, expectedVars, description }) => {
+      interpolationTests.forEach(({ key, expectedVars }) => {
         const value = getNestedValue(englishTranslations, key);
         expect(value).toBeDefined();
 
@@ -621,8 +618,6 @@ describe('Localization Keys Cross-Language Validation', () => {
           const hasVariable = value.includes(`{{${varName}}}`);
           expect(hasVariable).toBe(true);
         });
-
-        // console.log(`✓ ${description}: "${value}"`);
       });
     });
   });
@@ -646,9 +641,9 @@ describe('Localization Keys Cross-Language Validation', () => {
     });
 
     test('should verify all localization keys are strings', () => {
-      const validateKeys = (obj: any, path = ''): void => {
+      const validateKeys = (obj: any, keyPath = ''): void => {
         Object.entries(obj).forEach(([key, value]) => {
-          const currentPath = path ? `${path}.${key}` : key;
+          const currentPath = keyPath ? `${keyPath}.${key}` : key;
 
           if (typeof value === 'object' && value !== null) {
             validateKeys(value, currentPath);
