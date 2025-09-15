@@ -1,4 +1,4 @@
-import { validateDisplayName } from '../utils/displayNameValidation';
+import { validateDisplayName, trimUnicodeWhitespace } from '../utils/displayNameValidation';
 
 describe('Display Name Validation', () => {
   const currentName = 'CurrentUser';
@@ -14,6 +14,16 @@ describe('Display Name Validation', () => {
 
     test('should trim whitespace and accept valid name', () => {
       const result = validateDisplayName('  NewUser  ', currentName, characterLimit);
+      expect(result.isValid).toBe(true);
+      expect(result.trimmedName).toBe('NewUser');
+    });
+
+    test('should trim Unicode whitespace and accept valid name', () => {
+      const result = validateDisplayName(
+        '\u00A0\u2000 NewUser \u2001\u00A0',
+        currentName,
+        characterLimit,
+      );
       expect(result.isValid).toBe(true);
       expect(result.trimmedName).toBe('NewUser');
     });
@@ -71,6 +81,18 @@ describe('Display Name Validation', () => {
 
     test('should reject Unicode whitespace', () => {
       const result = validateDisplayName('\u00A0\u2000\u2001\u2002', currentName, characterLimit);
+      expect(result.isValid).toBe(false);
+      expect(result.errorMessage).toBe('Display name cannot be empty or contain only whitespace');
+    });
+
+    test('should reject mixed ASCII and Unicode whitespace', () => {
+      const result = validateDisplayName(' \t\u00A0\u2000\n\u2001 ', currentName, characterLimit);
+      expect(result.isValid).toBe(false);
+      expect(result.errorMessage).toBe('Display name cannot be empty or contain only whitespace');
+    });
+
+    test('should reject zero-width spaces and invisible characters', () => {
+      const result = validateDisplayName('\u200B\u200C\u200D\uFEFF', currentName, characterLimit);
       expect(result.isValid).toBe(false);
       expect(result.errorMessage).toBe('Display name cannot be empty or contain only whitespace');
     });
@@ -135,12 +157,23 @@ describe('Display Name Validation - Real-world test cases', () => {
     { input: 'John', expected: true, description: 'Simple name' },
     { input: 'John Doe', expected: true, description: 'Name with space' },
     { input: '  John  ', expected: true, description: 'Name with padding spaces' },
+    {
+      input: '\u00A0\u2000 John \u2001\u00A0',
+      expected: true,
+      description: 'Name with Unicode whitespace padding',
+    },
     { input: '', expected: false, description: 'Empty string' },
     { input: '   ', expected: false, description: 'Only spaces' },
     { input: '\t', expected: false, description: 'Only tab' },
     { input: '\n', expected: false, description: 'Only newline' },
+    { input: '\u00A0\u2000\u2001', expected: false, description: 'Only Unicode whitespace' },
     { input: 'TestUser', expected: false, description: 'Same as current' },
     { input: '  TestUser  ', expected: false, description: 'Same as current with spaces' },
+    {
+      input: '\u00A0 TestUser \u2000',
+      expected: false,
+      description: 'Same as current with Unicode whitespace',
+    },
     { input: 'A'.repeat(31), expected: false, description: 'Too long (31 chars)' },
     { input: 'A'.repeat(30), expected: true, description: 'At limit (30 chars)' },
     { input: '用户', expected: true, description: 'Chinese characters' },
@@ -151,7 +184,7 @@ describe('Display Name Validation - Real-world test cases', () => {
     const result = validateDisplayName(input, currentName, 30);
     expect(result.isValid).toBe(expected);
     if (expected && result.isValid) {
-      expect(result.trimmedName).toBe(input.trim());
+      expect(result.trimmedName).toBe(trimUnicodeWhitespace(input));
     }
   });
 });
