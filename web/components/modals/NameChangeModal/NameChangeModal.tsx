@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useState, useMemo } from 'react';
+import React, { CSSProperties, FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Input, Button, Select, Form } from 'antd';
 import { MessageType } from '../../../interfaces/socket-events';
@@ -40,15 +40,16 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
 
   const { displayName, displayColor } = currentUser;
 
-  // Memoize validation result to avoid duplicate computation
-  const validation = useMemo(
-    () => validateDisplayName(newName || '', displayName || '', characterLimit),
-    [newName, displayName, characterLimit],
-  );
-
-  const saveEnabled = () => validation.isValid && websocketService?.isConnected();
+  const saveEnabled = () => {
+    if (!newName || !displayName) return false;
+    const validation = validateDisplayName(newName, displayName, characterLimit);
+    return validation.isValid && websocketService?.isConnected();
+  };
 
   const handleNameChange = () => {
+    if (!newName || !displayName) return;
+    const validation = validateDisplayName(newName, displayName, characterLimit);
+
     if (!validation.isValid || !websocketService?.isConnected()) {
       return;
     }
@@ -73,6 +74,8 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
 
   const maxColor = 8; // 0...n
   const colorOptions = [...Array(maxColor)].map((_, i) => i);
+
+  const validation = validateDisplayName(newName, displayName, characterLimit);
 
   const saveButton = (
     <Button
@@ -102,6 +105,9 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
           defaultValue={displayName}
           className={styles.inputGroup}
         />
+        {!validation.isValid && validation.errorMessage && (
+          <div className={styles.error}>{validation.errorMessage}</div>
+        )}
       </Form>
       <Form.Item label="Your Color" className={styles.colorChange}>
         <Select
