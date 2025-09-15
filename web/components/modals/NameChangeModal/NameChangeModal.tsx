@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useState } from 'react';
+import React, { CSSProperties, FC, useState, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Input, Button, Select, Form } from 'antd';
 import { MessageType } from '../../../interfaces/socket-events';
@@ -40,14 +40,15 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
 
   const { displayName, displayColor } = currentUser;
 
-  const saveEnabled = () => {
-    const validation = validateDisplayName(newName, displayName, characterLimit);
-    return validation.isValid && websocketService?.isConnected();
-  };
+  // Memoize validation result to avoid duplicate computation
+  const validation = useMemo(
+    () => validateDisplayName(newName, displayName, characterLimit),
+    [newName, displayName, characterLimit],
+  );
+
+  const saveEnabled = () => validation.isValid && websocketService?.isConnected();
 
   const handleNameChange = () => {
-    const validation = validateDisplayName(newName, displayName, characterLimit);
-
     if (!validation.isValid || !websocketService?.isConnected()) {
       return;
     }
