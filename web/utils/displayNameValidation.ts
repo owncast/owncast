@@ -31,7 +31,7 @@ export function validateDisplayName(
   characterLimit: number = 30,
 ): DisplayNameValidationResult {
   // Check if name is provided
-  if (name === undefined || name === null) {
+  if (name === undefined) {
     return {
       isValid: false,
       errorMessage: 'Display name is required',
