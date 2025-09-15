@@ -70,8 +70,8 @@
     },
     "chatOffline": "<strong><em>Missing translation Frontend.chatOffline: Please report</em></strong>",
     "componentError": "Error: {{message}}",
-    "helloWorld": "<strong><em>Missing translation Frontend.helloWorld: Please report</em></strong>",
-    "notificationMessage": "<strong><em>Missing translation Frontend.notificationMessage: Please report</em></strong>",
+    "helloWorld": "Hello <strong>{{name}}</strong>, welcome to the world!",
+    "notificationMessage": "You can <a href=\"#\">click here</a> to receive notifications when {{streamer}} goes live.",
     "offlineBasic": "This stream is offline. Check back soon!",
     "offlineFediverseOnly": "This stream is offline. <span class='follow-link'>Follow</span> {{fediverseAccount}} on the Fediverse to see the next time {{streamer}} goes live.",
     "offlineNotifyAndFediverse": "This stream is offline. You can <span class='notify-link'>be notified</span> the next time {{streamer}} goes live or <span class='follow-link'>follow</span> {{fediverseAccount}} on the Fediverse.",
@@ -149,10 +149,12 @@
   "Stream started": "Stream started",
   "TROUBLESHOOT": "TROUBLESHOOT",
   "Testing": {
-    "itemCount": "<strong><em>Missing translation Testing.itemCount: Please report</em></strong>",
-    "messageCount": "<strong><em>Missing translation Testing.messageCount: Please report</em></strong>",
-    "noPluralKey": "<strong><em>Missing translation Testing.noPluralKey: Please report</em></strong>",
-    "simpleKey": "<strong><em>Missing translation Testing.simpleKey: Please report</em></strong>"
+    "itemCount": "You have {{count}} items",
+    "itemCount_one": "You have {{count}} item", 
+    "messageCount": "You have {{count}} messages from {{sender}}",
+    "messageCount_one": "You have {{count}} message from {{sender}}",
+    "noPluralKey": "This key has no plural variants - {{count}} things",
+    "simpleKey": "Simple translation text"
   },
   "Time": "Time",
   "Timestamp": "Timestamp",

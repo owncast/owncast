@@ -41,54 +41,54 @@ export const Localization = {
     embedVideo: 'Embed your video onto other sites',
 
     // Complex HTML translations with variables
-    helloWorld: 'hello_world',
-    notificationMessage: 'notification_message',
-    complexMessage: 'complex_message',
+    helloWorld: 'Frontend.helloWorld',
+    notificationMessage: 'Frontend.notificationMessage',
+    complexMessage: 'Frontend.complexMessage',
 
     // Errors
-    componentError: 'component_error',
+    componentError: 'Frontend.componentError',
 
     // Browser notifications - organized by component
     BrowserNotifyModal: {
-      unsupported: 'browser_notify_unsupported',
-      unsupportedLocal: 'browser_notify_unsupported_local',
-      iosTitle: 'browser_notify_ios_title',
-      iosDescription: 'browser_notify_ios_description',
-      iosShareButton: 'browser_notify_ios_share_button',
-      iosAddToHomeScreen: 'browser_notify_ios_add_to_home_screen',
-      iosAddButton: 'browser_notify_ios_add_button',
-      iosNameAndTap: 'browser_notify_ios_name_and_tap',
-      iosComeBack: 'browser_notify_ios_come_back',
-      iosAllowPrompt: 'browser_notify_ios_allow_prompt',
-      permissionWantsTo: 'browser_notify_permission_wants_to',
-      showNotifications: 'browser_notify_show_notifications',
-      allowButton: 'browser_notify_allow_button',
-      blockButton: 'browser_notify_block_button',
-      enabledTitle: 'browser_notify_enabled_title',
-      enabledDescription: 'browser_notify_enabled_description',
-      deniedTitle: 'browser_notify_denied_title',
-      deniedDescription: 'browser_notify_denied_description',
-      mainDescription: 'browser_notify_main_description',
-      learnMore: 'browser_notify_learn_more',
-      errorTitle: 'browser_notify_error_title',
-      errorMessage: 'browser_notify_error_message',
+      unsupported: 'Frontend.BrowserNotifyModal.unsupported',
+      unsupportedLocal: 'Frontend.BrowserNotifyModal.unsupportedLocal',
+      iosTitle: 'Frontend.BrowserNotifyModal.iosTitle',
+      iosDescription: 'Frontend.BrowserNotifyModal.iosDescription',
+      iosShareButton: 'Frontend.BrowserNotifyModal.iosShareButton',
+      iosAddToHomeScreen: 'Frontend.BrowserNotifyModal.iosAddToHomeScreen',
+      iosAddButton: 'Frontend.BrowserNotifyModal.iosAddButton',
+      iosNameAndTap: 'Frontend.BrowserNotifyModal.iosNameAndTap',
+      iosComeBack: 'Frontend.BrowserNotifyModal.iosComeBack',
+      iosAllowPrompt: 'Frontend.BrowserNotifyModal.iosAllowPrompt',
+      permissionWantsTo: 'Frontend.BrowserNotifyModal.permissionWantsTo',
+      showNotifications: 'Frontend.BrowserNotifyModal.showNotifications',
+      allowButton: 'Frontend.BrowserNotifyModal.allowButton',
+      blockButton: 'Frontend.BrowserNotifyModal.blockButton',
+      enabledTitle: 'Frontend.BrowserNotifyModal.enabledTitle',
+      enabledDescription: 'Frontend.BrowserNotifyModal.enabledDescription',
+      deniedTitle: 'Frontend.BrowserNotifyModal.deniedTitle',
+      deniedDescription: 'Frontend.BrowserNotifyModal.deniedDescription',
+      mainDescription: 'Frontend.BrowserNotifyModal.mainDescription',
+      learnMore: 'Frontend.BrowserNotifyModal.learnMore',
+      errorTitle: 'Frontend.BrowserNotifyModal.errorTitle',
+      errorMessage: 'Frontend.BrowserNotifyModal.errorMessage',
     },
 
     // Name change modal - organized by component
     NameChangeModal: {
-      description: 'name_change_description',
-      placeholder: 'name_change_placeholder',
-      buttonText: 'name_change_button_text',
-      colorLabel: 'name_change_color_label',
-      authInfo: 'name_change_auth_info',
-      overLimit: 'name_change_over_limit',
+      description: 'Frontend.NameChangeModal.description',
+      placeholder: 'Frontend.NameChangeModal.placeholder',
+      buttonText: 'Frontend.NameChangeModal.buttonText',
+      colorLabel: 'Frontend.NameChangeModal.colorLabel',
+      authInfo: 'Frontend.NameChangeModal.authInfo',
+      overLimit: 'Frontend.NameChangeModal.overLimit',
     },
 
     // Offline banner messages
-    offlineBasic: 'offline_basic',
-    offlineNotifyOnly: 'offline_notify_only',
-    offlineFediverseOnly: 'offline_fediverse_only',
-    offlineNotifyAndFediverse: 'offline_notify_and_fediverse',
+    offlineBasic: 'Frontend.offlineBasic',
+    offlineNotifyOnly: 'Frontend.offlineNotifyOnly',
+    offlineFediverseOnly: 'Frontend.offlineFediverseOnly',
+    offlineNotifyAndFediverse: 'Frontend.offlineNotifyAndFediverse',
   },
 
   /**
@@ -96,17 +96,15 @@ export const Localization = {
    */
   Admin: {
     // Emoji management
-    emojis: 'Emojis',
-    emojiPageDescription:
-      'Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the filename without extension will be used as emoji name. Additionally, emoji names are case-insensitive. For best results, ensure all emoji have unique names.',
-    emojiUploadBulkGuide:
-      'Want to upload custom emojis in bulk? Check out our <a href="https://owncast.online/docs/chat/emoji" rel="noopener noreferrer" target="_blank">Emoji guide</a>.',
-    uploadNewEmoji: 'Upload new emoji',
-    deleteEmoji: 'Delete emoji',
+    emojis: 'Admin.emojis',
+    emojiPageDescription: 'Admin.emojiPageDescription',
+    emojiUploadBulkGuide: 'Admin.emojiUploadBulkGuide',
+    uploadNewEmoji: 'Admin.uploadNewEmoji',
+    deleteEmoji: 'Admin.deleteEmoji',
 
     // Settings and configuration
-    settings: 'settings',
-    overriddenViaCommandLine: 'Overridden via command line',
+    settings: 'Admin.settings',
+    overriddenViaCommandLine: 'Admin.overriddenViaCommandLine',
 
     Chat: {
       moderationMessagesSent: 'Admin.Chat.moderationMessagesSent',
@@ -130,13 +128,13 @@ export const Localization = {
     },
 
     // Logging and monitoring
-    info: 'Info',
-    warning: 'Warning',
-    error: 'Error',
-    level: 'Level',
-    timestamp: 'Timestamp',
-    message: 'Message',
-    logs: 'Logs',
+    info: 'Admin.info',
+    warning: 'Admin.warning',
+    error: 'Admin.error',
+    level: 'Admin.level',
+    timestamp: 'Admin.timestamp',
+    message: 'Admin.message',
+    logs: 'Admin.logs',
   },
 
   /**
@@ -144,17 +142,17 @@ export const Localization = {
    */
   Common: {
     // Basic UI elements
-    yes: 'Yes',
-    no: 'No',
+    yes: 'Common.yes',
+    no: 'Common.no',
 
     // Documentation and help
-    documentation: 'Documentation',
-    contribute: 'Contribute',
-    source: 'Source',
+    documentation: 'Common.documentation',
+    contribute: 'Common.contribute',
+    source: 'Common.source',
 
     // Branding
-    poweredByOwncast: 'Powered by Owncast',
-    poweredByOwncastVersion: 'powered_by_owncast_version',
+    poweredByOwncast: 'Common.poweredByOwncast',
+    poweredByOwncastVersion: 'Common.poweredByOwncastVersion',
   },
 
   /**
