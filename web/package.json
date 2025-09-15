@@ -16,7 +16,7 @@
 		"build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -",
 		"test": "jest",
 		"format": "prettier --write  **/*.{js,ts,jsx,tsx,css,md,scss}",
-		"translate": "i18next -c i18next-parser.config.mjs && node scripts/i18n-extract.js"
+		"translate": "node scripts/i18n-extract.js"
 	},
 	"dependencies": {
 		"@ant-design/icons": "4.8.3",
@@ -98,7 +98,6 @@
 		"@storybook/theming": "^8.3.6",
 		"@svgr/webpack": "8.1.0",
 		"@testing-library/react": "^16.3.0",
-
 		"@types/jest": "^30.0.0",
 		"@types/markdown-it": "14.1.2",
 		"@types/node": "22.17.2",
