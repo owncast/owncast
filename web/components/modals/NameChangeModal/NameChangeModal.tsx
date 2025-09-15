@@ -4,6 +4,7 @@ import { Input, Button, Select, Form } from 'antd';
 import { MessageType } from '../../../interfaces/socket-events';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom, currentUserAtom } from '../../stores/ClientConfigStore';
+import { validateDisplayName } from '../../../utils/displayNameValidation';
 import styles from './NameChangeModal.module.scss';
 
 const { Option } = Select;
@@ -29,7 +30,7 @@ type NameChangeModalProps = {
 export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
   const currentUser = useRecoilValue(currentUserAtom);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
-  const [newName, setNewName] = useState<string>(currentUser?.displayName);
+  const [newName, setNewName] = useState<string>(currentUser?.displayName || '');
 
   const characterLimit = 30;
 
@@ -40,21 +41,22 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
   const { displayName, displayColor } = currentUser;
 
   const saveEnabled = () => {
-    const count = newName !== undefined ? Array.from(newName).length : 0;
-    return (
-      newName !== displayName &&
-      count > 0 &&
-      count <= characterLimit &&
-      websocketService?.isConnected()
-    );
+    if (!newName || !displayName) return false;
+    const validation = validateDisplayName(newName, displayName, characterLimit);
+    return validation.isValid && websocketService?.isConnected();
   };
 
   const handleNameChange = () => {
-    if (!saveEnabled()) return;
+    if (!newName || !displayName) return;
+    const validation = validateDisplayName(newName, displayName, characterLimit);
+
+    if (!validation.isValid || !websocketService?.isConnected()) {
+      return;
+    }
 
     const nameChange = {
       type: MessageType.NAME_CHANGE,
-      newName,
+      newName: validation.trimmedName,
     };
     websocketService.send(nameChange);
     closeModal();
@@ -72,6 +74,8 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
 
   const maxColor = 8; // 0...n
   const colorOptions = [...Array(maxColor)].map((_, i) => i);
+
+  const validation = validateDisplayName(newName, displayName, characterLimit);
 
   const saveButton = (
     <Button
@@ -101,6 +105,9 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
           defaultValue={displayName}
           className={styles.inputGroup}
         />
+        {!validation.isValid && validation.errorMessage && (
+          <div className={styles.error}>{validation.errorMessage}</div>
+        )}
       </Form>
       <Form.Item label="Your Color" className={styles.colorChange}>
         <Select

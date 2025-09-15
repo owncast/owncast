@@ -33,6 +33,18 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	// Names have a max length
 	proposedUsername = utils.MakeSafeStringOfLength(proposedUsername, config.MaxChatDisplayNameLength)
 
+	// Check if the sanitized name is empty or just whitespace
+	if strings.TrimSpace(proposedUsername) == "" {
+		log.Debugln(logSanitize(eventData.client.User.DisplayName), "attempted to change name to empty or whitespace-only name")
+		message := "Display name cannot be empty or contain only whitespace."
+		s.sendActionToClient(eventData.client, message)
+
+		// Resend the client's user so their username is in sync.
+		eventData.client.sendConnectedClientInfo()
+
+		return
+	}
+
 	for _, blockedName := range blocklist {
 		normalizedName := strings.TrimSpace(blockedName)
 		normalizedName = strings.ToLower(normalizedName)
