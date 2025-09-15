@@ -4,6 +4,7 @@ import { Input, Button, Select, Form } from 'antd';
 import { MessageType } from '../../../interfaces/socket-events';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom, currentUserAtom } from '../../stores/ClientConfigStore';
+import { validateDisplayName } from '../../../utils/displayNameValidation';
 import styles from './NameChangeModal.module.scss';
 
 const { Option } = Select;
@@ -40,21 +41,20 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
   const { displayName, displayColor } = currentUser;
 
   const saveEnabled = () => {
-    const count = newName !== undefined ? Array.from(newName).length : 0;
-    return (
-      newName !== displayName &&
-      count > 0 &&
-      count <= characterLimit &&
-      websocketService?.isConnected()
-    );
+    const validation = validateDisplayName(newName, displayName, characterLimit);
+    return validation.isValid && websocketService?.isConnected();
   };
 
   const handleNameChange = () => {
-    if (!saveEnabled()) return;
+    const validation = validateDisplayName(newName, displayName, characterLimit);
+
+    if (!validation.isValid || !websocketService?.isConnected()) {
+      return;
+    }
 
     const nameChange = {
       type: MessageType.NAME_CHANGE,
-      newName,
+      newName: validation.trimmedName,
     };
     websocketService.send(nameChange);
     closeModal();
