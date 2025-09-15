@@ -18,7 +18,8 @@ export interface DisplayNameValidationResult {
 export function trimUnicodeWhitespace(str: string): string {
   // Unicode whitespace regex that matches what Go's strings.TrimSpace() removes
   // This pattern matches all relevant Unicode whitespace at start/end of string
-  const unicodeWhitespacePattern = /^[\s\u00A0\u1680\u180E\u2000-\u200A\u200B-\u200D\u2028\u2029\u202F\u205F\u3000\uFEFF]+|[\s\u00A0\u1680\u180E\u2000-\u200A\u200B-\u200D\u2028\u2029\u202F\u205F\u3000\uFEFF]+$/g;
+  const unicodeWhitespacePattern =
+    /^[\s\u00A0\u1680\u180E\u2000-\u200A\u200B-\u200D\u2028\u2029\u202F\u205F\u3000\uFEFF]+|[\s\u00A0\u1680\u180E\u2000-\u200A\u200B-\u200D\u2028\u2029\u202F\u205F\u3000\uFEFF]+$/g;
   return str.replace(unicodeWhitespacePattern, '');
 }
 
