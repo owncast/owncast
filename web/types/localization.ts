@@ -74,6 +74,16 @@ export const Localization = {
       errorMessage: 'browser_notify_error_message',
     },
 
+    // Name change modal - organized by component
+    NameChangeModal: {
+      description: 'name_change_description',
+      placeholder: 'name_change_placeholder',
+      buttonText: 'name_change_button_text',
+      colorLabel: 'name_change_color_label',
+      authInfo: 'name_change_auth_info',
+      overLimit: 'name_change_over_limit',
+    },
+
     // Offline banner messages
     offlineBasic: 'offline_basic',
     offlineNotifyOnly: 'offline_notify_only',
