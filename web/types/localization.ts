@@ -100,6 +100,14 @@ export const Localization = {
       source: 'Frontend.Footer.source',
     },
 
+    // Chat message components
+    Chat: {
+      userJoined: 'Frontend.Chat.userJoined',
+      userLeft: 'Frontend.Chat.userLeft',
+      nameChangeText: 'Frontend.Chat.nameChangeText',
+      moderatorNotification: 'Frontend.Chat.moderatorNotification',
+    },
+
     // Follow modal component
     FollowModal: {
       description: 'Frontend.FollowModal.description',

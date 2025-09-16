@@ -118,6 +118,12 @@
 			"contribute": "Contribute",
 			"source": "Source"
 		},
+		"Chat": {
+			"userJoined": "joined the chat.",
+			"userLeft": "left the chat.",
+			"nameChangeText": "is now known as",
+			"moderatorNotification": "You are now a moderator."
+    ,
 		"FollowModal": {
 			"description": "By following this stream you'll get notified on the Fediverse when it goes live. Now is a great time to",
 			"learnFediverse": "learn about the Fediverse",
