@@ -1,8 +1,11 @@
 /* eslint-disable react/no-unescaped-entities */
-import { Input, Button, Alert, Spin, Space } from 'antd';
 import { FC, useState } from 'react';
+import { Input, Button, Alert, Spin, Space } from 'antd';
+import { useTranslation } from 'next-export-i18n';
 import styles from './FollowModal.module.scss';
 import { isValidFediverseAccount } from '../../../utils/validators';
+import { Translation } from '../../ui/Translation/Translation';
+import { Localization } from '../../../types/localization';
 
 const ENDPOINT = '/api/remotefollow';
 
@@ -15,6 +18,7 @@ export const FollowForm: FC<FollowFormProps> = ({ handleClose }: FollowFormProps
   const [valid, setValid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const { t } = useTranslation();
 
   const handleAccountChange = a => {
     setRemoteAccount(a);
@@ -55,7 +59,7 @@ export const FollowForm: FC<FollowFormProps> = ({ handleClose }: FollowFormProps
         return;
       }
       if (!result.redirectUrl) {
-        setErrorMessage('Unable to follow.');
+        setErrorMessage(t(Localization.Frontend.FollowModal.unableToFollow) || 'Unable to follow.');
         setLoading(false);
         return;
       }
@@ -69,7 +73,12 @@ export const FollowForm: FC<FollowFormProps> = ({ handleClose }: FollowFormProps
     <Spin spinning={loading}>
       {errorMessage && (
         <Alert
-          message="Follow Error"
+          message={
+            <Translation
+              translationKey={Localization.Frontend.FollowModal.followError}
+              defaultText="Follow Error"
+            />
+          }
           description={errorMessage}
           type="error"
           closable
@@ -78,24 +87,41 @@ export const FollowForm: FC<FollowFormProps> = ({ handleClose }: FollowFormProps
       )}
 
       <div className={styles.inputContainer}>
-        <div className={styles.instructions}>Enter your username @server to follow</div>
+        <div className={styles.instructions}>
+          <Translation
+            translationKey={Localization.Frontend.FollowModal.instructions}
+            defaultText="Enter your username @server to follow"
+          />
+        </div>
         <Input
           value={remoteAccount}
           size="large"
           onChange={e => handleAccountChange(e.target.value)}
-          placeholder="Your fediverse account @account@server"
+          placeholder={
+            t(Localization.Frontend.FollowModal.placeholder) ||
+            'Your fediverse account @account@server'
+          }
           defaultValue={remoteAccount}
         />
         <div className={styles.footer}>
-          You'll be redirected to your Fediverse server and asked to confirm the action.
+          <Translation
+            translationKey={Localization.Frontend.FollowModal.redirectMessage}
+            defaultText="You'll be redirected to your Fediverse server and asked to confirm the action."
+          />
         </div>
       </div>
       <Space className={styles.buttons}>
         <Button onClick={joinButtonPressed} type="text">
-          Join the Fediverse
+          <Translation
+            translationKey={Localization.Frontend.FollowModal.joinFediverse}
+            defaultText="Join the Fediverse"
+          />
         </Button>
         <Button disabled={!valid} type="primary" onClick={remoteFollowButtonPressed}>
-          Follow
+          <Translation
+            translationKey={Localization.Frontend.FollowModal.followButton}
+            defaultText="Follow"
+          />
         </Button>
       </Space>
     </Spin>

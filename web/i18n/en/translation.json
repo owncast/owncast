@@ -118,6 +118,18 @@
 			"contribute": "Contribute",
 			"source": "Source"
 		},
+		"FollowModal": {
+			"description": "By following this stream you'll get notified on the Fediverse when it goes live. Now is a great time to",
+			"learnFediverse": "learn about the Fediverse",
+			"newToYou": "if it's new to you.",
+			"instructions": "Enter your username @server to follow",
+			"placeholder": "Your fediverse account @account@server",
+			"redirectMessage": "You'll be redirected to your Fediverse server and asked to confirm the action.",
+			"joinFediverse": "Join the Fediverse",
+			"followButton": "Follow",
+			"followError": "Follow Error",
+			"unableToFollow": "Unable to follow."
+		},
 		"Header": {
 			"skipToPlayer": "Skip to player",
 			"skipToOfflineMessage": "Skip to offline message",

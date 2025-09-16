@@ -100,6 +100,20 @@ export const Localization = {
       source: 'Frontend.Footer.source',
     },
 
+    // Follow modal component
+    FollowModal: {
+      description: 'Frontend.FollowModal.description',
+      learnFediverse: 'Frontend.FollowModal.learnFediverse',
+      newToYou: 'Frontend.FollowModal.newToYou',
+      instructions: 'Frontend.FollowModal.instructions',
+      placeholder: 'Frontend.FollowModal.placeholder',
+      redirectMessage: 'Frontend.FollowModal.redirectMessage',
+      joinFediverse: 'Frontend.FollowModal.joinFediverse',
+      followButton: 'Frontend.FollowModal.followButton',
+      followError: 'Frontend.FollowModal.followError',
+      unableToFollow: 'Frontend.FollowModal.unableToFollow',
+    },
+
     // Offline banner messages
     offlineBasic: 'Frontend.offlineBasic',
     offlineNotifyOnly: 'Frontend.offlineNotifyOnly',
