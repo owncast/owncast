@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { Input, Button, Alert, Spin, Space } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import styles from './FollowModal.module.scss';
