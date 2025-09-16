@@ -101,7 +101,7 @@
 		"@types/markdown-it": "14.1.2",
 		"@types/node": "22.17.2",
 		"@types/prop-types": "15.7.15",
-		"@types/react": "18.3.23",
+		"@types/react": "18.3.24",
 		"@types/react-linkify": "1.0.4",
 		"@types/sanitize-html": "^2.9.0",
 		"@types/ua-parser-js": "0.7.39",
