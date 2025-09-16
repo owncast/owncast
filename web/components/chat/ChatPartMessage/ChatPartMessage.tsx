@@ -31,7 +31,6 @@ export const ChatPartMessage: FC<ChatPartMessageProps> = ({
         <span className={styles.icon}>
           <UsergroupDeleteOutlined />
         </span>
-        <span className={styles.user}>{displayName}</span>
         {isAuthorModerator && (
           <span className={styles.moderatorBadge}>
             <ModerationBadge userColor={userColor} />
@@ -40,7 +39,8 @@ export const ChatPartMessage: FC<ChatPartMessageProps> = ({
         <span className={styles.partMessage}>
           <Translation
             translationKey={Localization.Frontend.Chat.userLeft}
-            defaultText="left the chat."
+            vars={{ name: displayName }}
+            defaultText="{{name}} left the chat."
           />
         </span>
       </span>

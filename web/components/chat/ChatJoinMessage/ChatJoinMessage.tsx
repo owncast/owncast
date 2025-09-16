@@ -31,7 +31,6 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
         <span className={styles.icon}>
           <UsergroupAddOutlined />
         </span>
-        <span className={styles.user}>{displayName}</span>
         {isAuthorModerator && (
           <span className={styles.moderatorBadge}>
             <ModerationBadge userColor={userColor} />
@@ -40,7 +39,8 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
         <span className={styles.joinMessage}>
           <Translation
             translationKey={Localization.Frontend.Chat.userJoined}
-            defaultText="joined the chat."
+            vars={{ name: displayName }}
+            defaultText="{{name}} joined the chat."
           />
         </span>
       </span>
