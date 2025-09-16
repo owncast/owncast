@@ -73,17 +73,17 @@
 			"viewers": "Viewers"
 		},
 		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "<strong><em>Missing translation Admin.VideoVariantForm.bitrateDisabledPassthrough: Please report</em></strong>",
-			"bitrateGoodForHigh": "<strong><em>Missing translation Admin.VideoVariantForm.bitrateGoodForHigh: Please report</em></strong>",
-			"bitrateGoodForMost": "<strong><em>Missing translation Admin.VideoVariantForm.bitrateGoodForMost: Please report</em></strong>",
-			"bitrateGoodForSlow": "<strong><em>Missing translation Admin.VideoVariantForm.bitrateGoodForSlow: Please report</em></strong>",
-			"bitrateValueKbps": "<strong><em>Missing translation Admin.VideoVariantForm.bitrateValueKbps: Please report</em></strong>"
+			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
+			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
+			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
+			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
+			"bitrateValueKbps": "{{bitrate}} kbps"
 		},
-		"deleteEmoji": "<strong><em>Missing translation Admin.deleteEmoji: Please report</em></strong>",
-		"emojiPageDescription": "<strong><em>Missing translation Admin.emojiPageDescription: Please report</em></strong>",
-		"emojiUploadBulkGuide": "<strong><em>Missing translation Admin.emojiUploadBulkGuide: Please report</em></strong>",
-		"emojis": "<strong><em>Missing translation Admin.emojis: Please report</em></strong>",
-		"uploadNewEmoji": "<strong><em>Missing translation Admin.uploadNewEmoji: Please report</em></strong>"
+		"deleteEmoji": "Delete emoji",
+		"emojiPageDescription": "Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the filename without extension will be used as emoji name. Additionally, emoji names are case-insensitive. For best results, ensure all emoji have unique names.",
+		"emojiUploadBulkGuide": "Want to upload custom emojis in bulk? Check out our <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji guide</a>.",
+		"emojis": "Emojis",
+		"uploadNewEmoji": "Upload new emoji"
 	},
 	"Common": {
 		"poweredByOwncastVersion": "Powered by <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
@@ -96,7 +96,7 @@
 			"deniedTitle": "Notifications are blocked on your device",
 			"enabledDescription": "To disable push notifications from {{hostname}} access your browser permissions for this site and turn off notifications. <a href='https://owncast.online/docs/notifications'>Learn more.</a>",
 			"enabledTitle": "Notifications are enabled",
-			"errorMessage": "<strong><em>Missing translation Frontend.BrowserNotifyModal.errorMessage: Please report</em></strong>",
+			"errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
 			"errorTitle": "Browser Notification Error",
 			"iosAddButton": "Add",
 			"iosAddToHomeScreen": "Add to Home Screen",
@@ -132,21 +132,20 @@
 			"colorLabel": "Your Color",
 			"description": "Your chat display name is what people see when you send chat messages.",
 			"overLimit": "Over limit",
-			"placeholder": "<strong><em>Missing translation Frontend.NameChangeModal.placeholder: Please report</em></strong>"
+			"placeholder": "Your chat display name"
 		},
-		"chatOffline": "<strong><em>Missing translation Frontend.chatOffline: Please report</em></strong>",
+		"chatOffline": "Chat is offline",
 		"componentError": "Error: {{message}}",
-		"helloWorld": "<strong><em>Missing translation Frontend.helloWorld: Please report</em></strong>",
-		"notificationMessage": "<strong><em>Missing translation Frontend.notificationMessage: Please report</em></strong>",
+		"helloWorld": "Hello world",
 		"offlineBasic": "This stream is offline. Check back soon!",
 		"offlineFediverseOnly": "This stream is offline. <span class='follow-link'>Follow</span> {{fediverseAccount}} on the Fediverse to see the next time {{streamer}} goes live.",
 		"offlineNotifyAndFediverse": "This stream is offline. You can <span class='notify-link'>be notified</span> the next time {{streamer}} goes live or <span class='follow-link'>follow</span> {{fediverseAccount}} on the Fediverse.",
 		"offlineNotifyOnly": "This stream is offline. <span class='notify-link'>Be notified</span> the next time {{streamer}} goes live."
 	},
 	"Testing": {
-		"itemCount": "<strong><em>Missing translation Testing.itemCount: Please report</em></strong>",
-		"messageCount": "<strong><em>Missing translation Testing.messageCount: Please report</em></strong>",
-		"noPluralKey": "<strong><em>Missing translation Testing.noPluralKey: Please report</em></strong>",
-		"simpleKey": "<strong><em>Missing translation Testing.simpleKey: Please report</em></strong>"
+		"itemCount": "You have {{count}} items",
+		"messageCount": "You have {{count}} messages from {{sender}}",
+		"noPluralKey": "This key has no plural variants - {{count}} things",
+		"simpleKey": "Simple translation text"
 	}
 }

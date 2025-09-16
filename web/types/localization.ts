@@ -42,7 +42,6 @@ export const Localization = {
 
     // Complex HTML translations with variables
     helloWorld: 'Frontend.helloWorld',
-    notificationMessage: 'Frontend.notificationMessage',
     complexMessage: 'Frontend.complexMessage',
 
     // Errors

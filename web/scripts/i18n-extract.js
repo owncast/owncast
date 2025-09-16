@@ -222,7 +222,7 @@ function updateTranslationFile(flatTranslations) {
 
   if (changed) {
     const merged = sortObjectKeys(mergeDeep(existing, newNestedTranslations));
-    fs.writeFileSync(TRANSLATIONS_PATH, JSON.stringify(merged, null, 2));
+    fs.writeFileSync(TRANSLATIONS_PATH, JSON.stringify(merged, null, '\t'));
     console.log(`[i18n] Updated ${TRANSLATIONS_PATH}`);
   } else {
     console.log('[i18n] No new keys to add.');

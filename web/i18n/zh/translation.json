@@ -1,152 +1,151 @@
 {
-  "Admin": {
-    "EditInstanceDetails": {
-      "directoryDescription": "透過出現在<a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast 目錄</strong></a>來增加您的觀眾。這是由 Owncast 專案運營的外部服務。<a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">了解更多</a>。",
-      "offlineMessageDescription": "當您不在串流時，離線訊息會顯示給您的頁面訪客。支援 Markdown。",
-      "serverUrlRequiredForDirectory": "您必須在上方設定<strong>伺服器 URL</strong>，才能啟用目錄。"
-    },
-    "HardwareInfo": {
-      "cpu": "中央處理器",
-      "disk": "磁碟",
-      "memory": "記憶體",
-      "noDetails": "No hardware details have been collected yet.",
-      "pleaseWait": "請稍後",
-      "title": "硬體資訊",
-      "used": "使用情況"
-    },
-    "Help": {
-      "bugPlease": "如果您發現 Bug，請",
-      "buildAddons": "I want to build add-ons for Owncast",
-      "buildTools": "You can build your own bots, overlays, tools and add-ons with our",
-      "commonTasks": "Common tasks",
-      "configureBroadcasting": "Help configuring my broadcasting software",
-      "configureInstance": "I want to configure my owncast instance",
-      "customizeWebsite": "I want to customize my website",
-      "developerApis": "developer APIs.",
-      "discussions": "discussions",
-      "documentation": "文件",
-      "embedStream": "I want to embed my stream into another site",
-      "faq": "常見問題",
-      "fixProblems": "Fix your problems",
-      "foundBug": "报告 Bug",
-      "generalAnswered": "Most general questions are answered in our",
-      "generalQuestion": "我有一個一般性問題",
-      "learnMore": "了解更多",
-      "letUsKnow": "告知我們",
-      "orExist": "or exist in our",
-      "other": "其他",
-      "readDocs": "閱讀文件",
-      "title": "我們該怎樣幫助你？",
-      "troubleshooting": "疑難排解",
-      "tweakVideo": "I want to tweak my video output",
-      "useStorage": "I want to use an external storage provider"
-    },
-    "LogTable": {
-      "error": "錯誤",
-      "info": "資訊",
-      "level": "水平",
-      "logs": "紀錄",
-      "message": "訊息",
-      "timestamp": "時間戳記",
-      "warning": "警告"
-    },
-    "NewsFeed": {
-      "link": "Link",
-      "noNews": "No news.",
-      "title": "News & Updates from Owncast"
-    },
-    "VideoVariantForm": {
-      "bitrateDisabledPassthrough": "<strong><em>Missing translation Admin.VideoVariantForm.bitrateDisabledPassthrough: Please report</em></strong>",
-      "bitrateGoodForHigh": "<strong><em>Missing translation Admin.VideoVariantForm.bitrateGoodForHigh: Please report</em></strong>",
-      "bitrateGoodForMost": "<strong><em>Missing translation Admin.VideoVariantForm.bitrateGoodForMost: Please report</em></strong>",
-      "bitrateGoodForSlow": "<strong><em>Missing translation Admin.VideoVariantForm.bitrateGoodForSlow: Please report</em></strong>",
-      "bitrateValueKbps": "<strong><em>Missing translation Admin.VideoVariantForm.bitrateValueKbps: Please report</em></strong>"
-    },
-    "ViewerInfo": {
-      "currentStream": "Current stream",
-      "currentViewers": "目前收看人數",
-      "last12Hours": "Last 12 hours",
-      "last24Hours": "Last 24 hours",
-      "last30Days": "Last 30 days",
-      "last3Months": "Last 3 months",
-      "last6Months": "Last 6 months",
-      "last7Days": "Last 7 days",
-      "maxViewers": "max viewers",
-      "maxViewersLastStream": "Max viewers last stream",
-      "maxViewersThisStream": "Max viewers this stream",
-      "noData": "No viewer data has been collected yet.",
-      "pleaseWait": "請稍後",
-      "title": "觀看人訊息",
-      "viewers": "瀏覽者"
-    },
-    "deleteEmoji": "<strong><em>Missing translation Admin.deleteEmoji: Please report</em></strong>",
-    "emojiPageDescription": "<strong><em>缺少翻譯 Admin.emojiPageDescription：請報告</em></strong>",
-    "emojiUploadBulkGuide": "<strong><em>缺少翻譯 Admin.emojiUploadBulkGuide：請報告</em></strong>",
-    "emojis": "<strong><em>缺少翻譯 Admin.emojis：請報告</em></strong>",
-    "uploadNewEmoji": "<strong><em>缺少翻譯 Admin.uploadNewEmoji：請報告</em></strong>"
-  },
-  "Common": {
-    "poweredByOwncastVersion": "Powered by<a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
-  },
-  "Frontend": {
-    "BrowserNotifyModal": {
-      "allowButton": "允許",
-      "blockButton": "阻止",
-      "deniedDescription": "要啟用來自{{hostname}}的推送通知，請訪問您對此網站的瀏覽器許可權並開啟通知。然後重新載入此頁面以應用您在此網站上的更新設置。<a href='https://owncast.online/docs/notifications'>了解更多。</a>",
-      "deniedTitle": "您的設備已阻止通知",
-      "enabledDescription": "要禁用來自{{hostname}}的推送通知，請訪問您對此網站的瀏覽器許可權並關閉通知。<a href='https://owncast.online/docs/notifications'>了解更多。</a>",
-      "enabledTitle": "通知已啟用",
-      "errorMessage": "<strong><em>Missing translation Frontend.BrowserNotifyModal.errorMessage: Please report</em></strong>",
-      "errorTitle": "瀏覽器通知錯誤",
-      "iosAddButton": "新增",
-      "iosAddToHomeScreen": "加入主畫面",
-      "iosAllowPrompt": "允許",
-      "iosComeBack": "回到這個畫面並啟用通知。",
-      "iosDescription": "需要額外幾個步驟，以確保您能夠在您喜愛的直播節目上線時接收到通知。",
-      "iosNameAndTap": "給這個連結命名，然後輕觸主畫面上的新圖標",
-      "iosShareButton": "分享",
-      "iosTitle": "在iOS上接收通知",
-      "learnMore": "了解更多",
-      "mainDescription": "每次這個直播節目上線時，您可以在瀏覽器中立即接收到通知。",
-      "permissionWantsTo": "{{hostname}} 想要",
-      "showNotifications": "顯示通知",
-      "unsupported": "您的瀏覽器不支援瀏覽器通知。",
-      "unsupportedLocal": "您的瀏覽器不支援本地伺服器的瀏覽器通知。"
-    },
-    "Footer": {
-      "contribute": "Contribute",
-      "documentation": "文件",
-      "source": "源導"
-    },
-    "Header": {
-      "chatOffline": "聊天室已離線。",
-      "chatWillBeAvailable": "Chat will be available when the stream is live.",
-      "skipToContent": "Skip to page content",
-      "skipToFooter": "跳到至頁腳",
-      "skipToOfflineMessage": "跳到至離線訊息",
-      "skipToPlayer": "Skip to player"
-    },
-    "NameChangeModal": {
-      "authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
-      "buttonText": "Change name",
-      "colorLabel": "Your Color",
-      "description": "Your chat display name is what people see when you send chat messages.",
-      "overLimit": "Over limit",
-      "placeholder": "<strong><em>Missing translation Frontend.NameChangeModal.placeholder: Please report</em></strong>"
-    },
-    "chatOffline": "<strong><em>缺少翻譯 Frontend.chatOffline：請報告</em></strong>",
-    "componentError": "錯誤： {{message}}",
-    "helloWorld": "<strong><em>缺少翻譯 Frontend.helloWorld：請報告</em></strong>",
-    "notificationMessage": "<strong><em>缺少翻譯 Frontend.notificationMessage：請報告</em></strong>",
-    "offlineBasic": "此串流已離線。請稍後再回來查看！",
-    "offlineFediverseOnly": "此串流已離線。請在 Fediverse<span class='follow-link'>上追</span>蹤 {{fediverseAccount}} ，以查看 {{streamer}} 的下次直播時間。",
-    "offlineNotifyAndFediverse": "此串流已離線。您可以在 {{streamer}} 上線時<span class='notify-link'>收到通知，</span>或在 Fediverse<span class='follow-link'>上追蹤</span> {{fediverseAccount}}。",
-    "offlineNotifyOnly": "此串流已離線。下次 {{streamer}} 上線時，您<span class='notify-link'>將會收到通知</span>。"
-  },
-  "Testing": {
-    "itemCount": "<strong><em>遺失翻譯 Testing.itemCount：請報告</em></strong>",
-    "messageCount": "<strong><em>遺失翻譯 Testing.messageCount：請報告</em></strong>",
-    "noPluralKey": "<strong><em>遺失翻譯 Testing.noPluralKey：請報告</em></strong>",
-    "simpleKey": "<strong><em>遺失翻譯 Testing.simpleKey：請報告</em></strong>"
-  }
+	"Admin": {
+		"EditInstanceDetails": {
+			"directoryDescription": "透過出現在<a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast 目錄</strong></a>來增加您的觀眾。這是由 Owncast 專案運營的外部服務。<a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">了解更多</a>。",
+			"offlineMessageDescription": "當您不在串流時，離線訊息會顯示給您的頁面訪客。支援 Markdown。",
+			"serverUrlRequiredForDirectory": "您必須在上方設定<strong>伺服器 URL</strong>，才能啟用目錄。"
+		},
+		"HardwareInfo": {
+			"cpu": "中央處理器",
+			"disk": "磁碟",
+			"memory": "記憶體",
+			"noDetails": "No hardware details have been collected yet.",
+			"pleaseWait": "請稍後",
+			"title": "硬體資訊",
+			"used": "使用情況"
+		},
+		"Help": {
+			"bugPlease": "如果您發現 Bug，請",
+			"buildAddons": "I want to build add-ons for Owncast",
+			"buildTools": "You can build your own bots, overlays, tools and add-ons with our",
+			"commonTasks": "Common tasks",
+			"configureBroadcasting": "Help configuring my broadcasting software",
+			"configureInstance": "I want to configure my owncast instance",
+			"customizeWebsite": "I want to customize my website",
+			"developerApis": "developer APIs.",
+			"discussions": "discussions",
+			"documentation": "文件",
+			"embedStream": "I want to embed my stream into another site",
+			"faq": "常見問題",
+			"fixProblems": "Fix your problems",
+			"foundBug": "报告 Bug",
+			"generalAnswered": "Most general questions are answered in our",
+			"generalQuestion": "我有一個一般性問題",
+			"learnMore": "了解更多",
+			"letUsKnow": "告知我們",
+			"orExist": "or exist in our",
+			"other": "其他",
+			"readDocs": "閱讀文件",
+			"title": "我們該怎樣幫助你？",
+			"troubleshooting": "疑難排解",
+			"tweakVideo": "I want to tweak my video output",
+			"useStorage": "I want to use an external storage provider"
+		},
+		"LogTable": {
+			"error": "錯誤",
+			"info": "資訊",
+			"level": "水平",
+			"logs": "紀錄",
+			"message": "訊息",
+			"timestamp": "時間戳記",
+			"warning": "警告"
+		},
+		"NewsFeed": {
+			"link": "Link",
+			"noNews": "No news.",
+			"title": "News & Updates from Owncast"
+		},
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
+			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
+			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
+			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
+			"bitrateValueKbps": "{{bitrate}} kbps"
+		},
+		"ViewerInfo": {
+			"currentStream": "Current stream",
+			"currentViewers": "目前收看人數",
+			"last12Hours": "Last 12 hours",
+			"last24Hours": "Last 24 hours",
+			"last30Days": "Last 30 days",
+			"last3Months": "Last 3 months",
+			"last6Months": "Last 6 months",
+			"last7Days": "Last 7 days",
+			"maxViewers": "max viewers",
+			"maxViewersLastStream": "Max viewers last stream",
+			"maxViewersThisStream": "Max viewers this stream",
+			"noData": "No viewer data has been collected yet.",
+			"pleaseWait": "請稍後",
+			"title": "觀看人訊息",
+			"viewers": "瀏覽者"
+		},
+		"deleteEmoji": "Delete emoji",
+		"emojiPageDescription": "<strong><em>缺少翻譯 Admin.emojiPageDescription：請報告</em></strong>",
+		"emojiUploadBulkGuide": "<strong><em>缺少翻譯 Admin.emojiUploadBulkGuide：請報告</em></strong>",
+		"emojis": "<strong><em>缺少翻譯 Admin.emojis：請報告</em></strong>",
+		"uploadNewEmoji": "<strong><em>缺少翻譯 Admin.uploadNewEmoji：請報告</em></strong>"
+	},
+	"Common": {
+		"poweredByOwncastVersion": "Powered by<a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+	},
+	"Frontend": {
+		"BrowserNotifyModal": {
+			"allowButton": "允許",
+			"blockButton": "阻止",
+			"deniedDescription": "要啟用來自{{hostname}}的推送通知，請訪問您對此網站的瀏覽器許可權並開啟通知。然後重新載入此頁面以應用您在此網站上的更新設置。<a href='https://owncast.online/docs/notifications'>了解更多。</a>",
+			"deniedTitle": "您的設備已阻止通知",
+			"enabledDescription": "要禁用來自{{hostname}}的推送通知，請訪問您對此網站的瀏覽器許可權並關閉通知。<a href='https://owncast.online/docs/notifications'>了解更多。</a>",
+			"enabledTitle": "通知已啟用",
+			"errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+			"errorTitle": "瀏覽器通知錯誤",
+			"iosAddButton": "新增",
+			"iosAddToHomeScreen": "加入主畫面",
+			"iosAllowPrompt": "允許",
+			"iosComeBack": "回到這個畫面並啟用通知。",
+			"iosDescription": "需要額外幾個步驟，以確保您能夠在您喜愛的直播節目上線時接收到通知。",
+			"iosNameAndTap": "給這個連結命名，然後輕觸主畫面上的新圖標",
+			"iosShareButton": "分享",
+			"iosTitle": "在iOS上接收通知",
+			"learnMore": "了解更多",
+			"mainDescription": "每次這個直播節目上線時，您可以在瀏覽器中立即接收到通知。",
+			"permissionWantsTo": "{{hostname}} 想要",
+			"showNotifications": "顯示通知",
+			"unsupported": "您的瀏覽器不支援瀏覽器通知。",
+			"unsupportedLocal": "您的瀏覽器不支援本地伺服器的瀏覽器通知。"
+		},
+		"Footer": {
+			"contribute": "Contribute",
+			"documentation": "文件",
+			"source": "源導"
+		},
+		"Header": {
+			"chatOffline": "聊天室已離線。",
+			"chatWillBeAvailable": "Chat will be available when the stream is live.",
+			"skipToContent": "Skip to page content",
+			"skipToFooter": "跳到至頁腳",
+			"skipToOfflineMessage": "跳到至離線訊息",
+			"skipToPlayer": "Skip to player"
+		},
+		"NameChangeModal": {
+			"authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
+			"buttonText": "Change name",
+			"colorLabel": "Your Color",
+			"description": "Your chat display name is what people see when you send chat messages.",
+			"overLimit": "Over limit",
+			"placeholder": "Your chat display name"
+		},
+		"chatOffline": "<strong><em>缺少翻譯 Frontend.chatOffline：請報告</em></strong>",
+		"componentError": "錯誤： {{message}}",
+		"helloWorld": "<strong><em>缺少翻譯 Frontend.helloWorld：請報告</em></strong>",
+		"offlineBasic": "此串流已離線。請稍後再回來查看！",
+		"offlineFediverseOnly": "此串流已離線。請在 Fediverse<span class='follow-link'>上追</span>蹤 {{fediverseAccount}} ，以查看 {{streamer}} 的下次直播時間。",
+		"offlineNotifyAndFediverse": "此串流已離線。您可以在 {{streamer}} 上線時<span class='notify-link'>收到通知，</span>或在 Fediverse<span class='follow-link'>上追蹤</span> {{fediverseAccount}}。",
+		"offlineNotifyOnly": "此串流已離線。下次 {{streamer}} 上線時，您<span class='notify-link'>將會收到通知</span>。"
+	},
+	"Testing": {
+		"itemCount": "<strong><em>遺失翻譯 Testing.itemCount：請報告</em></strong>",
+		"messageCount": "<strong><em>遺失翻譯 Testing.messageCount：請報告</em></strong>",
+		"noPluralKey": "<strong><em>遺失翻譯 Testing.noPluralKey：請報告</em></strong>",
+		"simpleKey": "<strong><em>遺失翻譯 Testing.simpleKey：請報告</em></strong>"
+	}
 }

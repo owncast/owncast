@@ -11,8 +11,6 @@ jest.mock('next-export-i18n', () => ({
       const translations: Record<string, any> = {
         // Frontend translations
         'Frontend.helloWorld': 'Hello <strong>{{name}}</strong>, welcome to the world!',
-        'Frontend.notificationMessage':
-          'You can <a href="#">click here</a> to receive notifications when {{streamer}} goes live.',
         'Frontend.componentError': 'Error: {{message}}',
         'Frontend.offlineBasic': 'This stream is offline. Check back soon!',
         'Frontend.offlineNotifyOnly':
@@ -95,18 +93,18 @@ describe('Translation Component', () => {
     expect(element).toHaveClass('custom-class');
   });
 
-  test('should render notification message with HTML link', () => {
+  test('should render notification message with HTML content', () => {
     render(
       <Translation
-        translationKey={Localization.Frontend.notificationMessage}
+        translationKey={Localization.Frontend.offlineNotifyOnly}
         vars={{ streamer: 'TestStreamer' }}
       />,
     );
 
-    // Check that the link is rendered
-    const linkElement = screen.getByText('click here');
-    expect(linkElement.tagName).toBe('A');
-    expect(linkElement).toHaveAttribute('href', '#');
+    // Check that the HTML content is rendered
+    const linkElement = screen.getByText('Be notified');
+    expect(linkElement.tagName).toBe('SPAN');
+    expect(linkElement).toHaveClass('notify-link');
 
     // Check that the variable is interpolated
     expect(screen.getByText(/TestStreamer/)).toBeInTheDocument();
@@ -115,7 +113,7 @@ describe('Translation Component', () => {
   test('should render with all props combined', () => {
     render(
       <Translation
-        translationKey={Localization.Frontend.notificationMessage}
+        translationKey={Localization.Frontend.offlineNotifyOnly}
         vars={{ streamer: 'TestStreamer' }}
         className="notification-style"
       />,
@@ -125,7 +123,7 @@ describe('Translation Component', () => {
     const element = screen.getByText((_, e) => {
       const hasText =
         e?.textContent ===
-        'You can click here to receive notifications when TestStreamer goes live.';
+        'This stream is offline. Be notified the next time TestStreamer goes live.';
       const isSpan = e?.tagName === 'SPAN';
       return hasText && isSpan;
     });

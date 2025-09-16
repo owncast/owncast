@@ -60,9 +60,9 @@ export const ComplexHTMLTranslation: Story = {
   },
 };
 
-export const NotificationMessage: Story = {
+export const ComplexHTMLMessage: Story = {
   args: {
-    translationKey: Localization.Frontend.notificationMessage,
+    translationKey: Localization.Frontend.offlineNotifyOnly,
     vars: {
       streamer: 'MyAwesomeStream',
     },
