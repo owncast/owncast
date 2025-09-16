@@ -1,6 +1,7 @@
 import { Button } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'next-export-i18n';
 import { UpdateArgs } from '../../types/config-section';
 import { postConfigUpdateToAPI, RESET_TIMEOUT } from '../../utils/config-constants';
 import {
@@ -13,6 +14,7 @@ import {
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { FormStatusIndicator } from './FormStatusIndicator';
 import { TextField, TextFieldProps } from './TextField';
+import { Localization } from '../../types/localization';
 
 export const TEXTFIELD_TYPE_TEXTAREA = 'textarea';
 export const TEXTFIELD_TYPE_URL = 'url';
@@ -33,8 +35,8 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
   ...textFieldProps // rest of props
 }) => {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
-
   const [hasChanged, setHasChanged] = useState(false);
+  const { t } = useTranslation();
 
   const serverStatusData = useContext(ServerStatusContext);
   const { setFieldInConfigState } = serverStatusData || {};
@@ -98,10 +100,15 @@ export const TextFieldWithSubmit: FC<TextFieldWithSubmitProps> = ({
         data: { value },
         onSuccess: () => {
           setFieldInConfigState({ fieldName, value, path: configPath });
-          setSubmitStatus(createInputStatus(STATUS_SUCCESS));
+          setSubmitStatus(createInputStatus(STATUS_SUCCESS, t(Localization.Admin.Status.success)));
         },
         onError: (message: string) => {
-          setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${message}`));
+          setSubmitStatus(
+            createInputStatus(
+              STATUS_ERROR,
+              t(Localization.Admin.Status.errorWithMessage, { message }),
+            ),
+          );
         },
       });
       resetTimer = setTimeout(resetStates, RESET_TIMEOUT);

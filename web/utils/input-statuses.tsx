@@ -78,3 +78,26 @@ export function createInputStatus(type: InputStatusTypes, message?: string): Sta
     message,
   };
 }
+
+// Helper function to create localized status messages using translation keys
+export function createLocalizedInputStatus(
+  type: InputStatusTypes,
+  t?: (key: string, options?: any) => string,
+  translationKey?: string,
+  options?: any,
+): StatusState {
+  if (!type || !INPUT_STATES[type]) {
+    return null;
+  }
+
+  // If no translation function provided, fall back to default messages
+  if (!t || !translationKey) {
+    return INPUT_STATES[type];
+  }
+
+  return {
+    type,
+    icon: INPUT_STATES[type].icon,
+    message: t(translationKey, options),
+  };
+}

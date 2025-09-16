@@ -3,11 +3,13 @@
 import { Row, Col, Typography, Space, Statistic, Card, Alert, Spin } from 'antd';
 import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
 import { fetchData, FETCH_INTERVAL, API_STREAM_HEALTH_METRICS } from '../../utils/apis';
 import { Chart } from '../../components/admin/Chart';
 import { StreamHealthOverview } from '../../components/admin/StreamHealthOverview';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
+import { Localization } from '../../types/localization';
 
 // Lazy loaded components
 
@@ -43,6 +45,7 @@ const DescriptionBox = ({ title, description }: DescriptionBoxProps) => (
 const StreamHealth = () => {
   const [errors, setErrors] = useState<TimedValue[]>([]);
   const [qualityVariantChanges, setQualityVariantChanges] = useState<TimedValue[]>([]);
+  const { t } = useTranslation();
 
   const [lowestLatency, setLowestLatency] = useState<TimedValue[]>();
   const [highestLatency, setHighestLatency] = useState<TimedValue[]>();
@@ -350,7 +353,12 @@ const StreamHealth = () => {
             }
           />
           {speedError && (
-            <Alert message="Slow downloads" description={speedError} type="error" showIcon />
+            <Alert
+              message={t(Localization.Admin.Alerts.slowDownloads)}
+              description={speedError}
+              type="error"
+              showIcon
+            />
           )}
           <Chart
             title="Seconds"
@@ -380,7 +388,7 @@ const StreamHealth = () => {
           />
           {bitrateError && (
             <Alert
-              message="Low bandwidth viewers"
+              message={t(Localization.Admin.Alerts.lowBandwidth)}
               description={bitrateError}
               type="error"
               showIcon

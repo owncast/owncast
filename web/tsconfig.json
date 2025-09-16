@@ -14,9 +14,15 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-		"noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/constants.js", "scripts/i18n-extract.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "utils/constants.js",
+    "scripts/i18n-extract.js"
+  ],
   "exclude": ["node_modules"]
 }

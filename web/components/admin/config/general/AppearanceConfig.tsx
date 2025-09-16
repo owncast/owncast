@@ -3,6 +3,7 @@ import React, { FC, useContext, useCallback, useEffect, useState } from 'react';
 import { Button, Col, Collapse, Row, Slider, Space } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Title from 'antd/lib/typography/Title';
+import { useTranslation } from 'next-export-i18n';
 import { EditCustomStyles } from '../../EditCustomStyles';
 import s from './appearance.module.scss';
 import { postConfigUpdateToAPI, RESET_TIMEOUT } from '../../../../utils/config-constants';
@@ -14,6 +15,7 @@ import {
 } from '../../../../utils/input-statuses';
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 import { FormStatusIndicator } from '../../FormStatusIndicator';
+import { Localization } from '../../../../types/localization';
 
 const { Panel } = Collapse;
 
@@ -126,6 +128,7 @@ export default function Appearance() {
   const { serverConfig, setFieldInConfigState } = serverStatusData;
   const { instanceDetails } = serverConfig;
   const { appearanceVariables } = instanceDetails;
+  const { t } = useTranslation();
 
   const [defaultValues, setDefaultValues] = useState<Record<string, AppearanceVariable>>();
   const [customValues, setCustomValues] = useState<Record<string, AppearanceVariable>>();
@@ -223,7 +226,7 @@ export default function Appearance() {
   };
 
   if (!defaultValues) {
-    return <div>Loading...</div>;
+    return <div>{t(Localization.Admin.Status.loading)}</div>;
   }
 
   const transformToColorMap = variables =>
@@ -237,8 +240,8 @@ export default function Appearance() {
   return (
     <>
       <Space direction="vertical">
-        <Title>Customize Appearance</Title>
-        <Paragraph>The following colors are used across the user interface.</Paragraph>
+        <Title>{t(Localization.Admin.Config.customizeAppearance)}</Title>
+        <Paragraph>{t(Localization.Admin.Config.appearanceDescription)}</Paragraph>
         <div>
           <Collapse defaultActiveKey={['1']}>
             <Panel header={<strong>Section Colors</strong>} key="1">
@@ -262,7 +265,7 @@ export default function Appearance() {
               </Row>
             </Panel>
             <Panel header={<strong>Other Settings</strong>} key="4">
-              How rounded should corners be?
+              {t(Localization.Admin.Config.cornersLabel)}
               <Row gutter={[16, 16]}>
                 <Col span={12}>
                   <Slider
@@ -299,10 +302,10 @@ export default function Appearance() {
 
         <Space direction="horizontal">
           <Button type="primary" onClick={save}>
-            Save Colors
+            {t(Localization.Admin.Forms.saveColors)}
           </Button>
           <Button type="ghost" onClick={reset}>
-            Reset to Defaults
+            {t(Localization.Admin.Forms.resetToDefaults)}
           </Button>
         </Space>
         <FormStatusIndicator status={submitStatus} />

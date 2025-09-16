@@ -1,6 +1,9 @@
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
-<Meta title="owncast/Documentation/Building Frontend Components" parameters={{previewTabs: { canvas: { hidden: true } }, chromatic: { disableSnapshot: true }}}/>
+<Meta
+  title="owncast/Documentation/Building Frontend Components"
+  parameters={{ previewTabs: { canvas: { hidden: true } }, chromatic: { disableSnapshot: true } }}
+/>
 
 # How we develop components
 
@@ -91,7 +94,7 @@ import { ErrorBoundary } from 'react-error-boundary';
   )}
 >
   <YourComponent />
-</ErrorBoundary>
+</ErrorBoundary>;
 ```
 
 ## Storybook
@@ -101,4 +104,3 @@ We use [Storybook](https://storybook.js.org/) to create a component library wher
 Make sure to include a `.stories.tsx` file with each (exported) component you create, and to update the stories file when making changes to existing components.
 
 You can run the Storybook server locally with `npm run storybook`.
-

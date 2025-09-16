@@ -1,9 +1,9 @@
 {
-	"extends": "stylelint-config-standard-scss",
-	"rules": {
-		"selector-class-pattern": null,
-		"no-descending-specificity": null,
-		"selector-pseudo-class-no-unknown": null,
-		"scss/at-extend-no-missing-placeholder": null
-	}
+  "extends": "stylelint-config-standard-scss",
+  "rules": {
+    "selector-class-pattern": null,
+    "no-descending-specificity": null,
+    "selector-pseudo-class-no-unknown": null,
+    "scss/at-extend-no-missing-placeholder": null
+  }
 }

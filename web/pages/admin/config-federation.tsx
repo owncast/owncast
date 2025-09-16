@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Typography, Modal, Button, Row, Col, Alert } from 'antd';
 import React, { ReactElement, useContext, useEffect, useState, FC } from 'react';
+import { useTranslation } from 'next-export-i18n';
 import {
   TEXTFIELD_TYPE_TEXT,
   TEXTFIELD_TYPE_TEXTAREA,
@@ -23,6 +24,7 @@ import {
   API_FEDERATION_BLOCKED_DOMAINS,
   FIELD_PROPS_FEDERATION_NSFW,
 } from '../../utils/config-constants';
+import { Localization } from '../../types/localization';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 
@@ -98,6 +100,7 @@ const ConfigFederation = () => {
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const [blockedDomainSaveState, setBlockedDomainSaveState] = useState(null);
+  const { t } = useTranslation();
 
   const { federation, yp, instanceDetails } = serverConfig;
   const { enabled, isPrivate, username, goLiveMessage, showEngagement, blockedDomains } =
@@ -271,11 +274,7 @@ const ConfigFederation = () => {
   const isInstanceUrlSecure = instanceUrl.startsWith('https://');
   const configurationWarning = !isInstanceUrlSecure && (
     <>
-      <Alert
-        message="You must set your server URL before you can enable this feature."
-        type="warning"
-        showIcon
-      />
+      <Alert message={t(Localization.Admin.Alerts.serverUrlRequired)} type="warning" showIcon />
       <br />
       <TextFieldWithSubmit
         fieldName="instanceUrl"
@@ -291,11 +290,7 @@ const ConfigFederation = () => {
   );
 
   const invalidPortWarning = (
-    <Alert
-      message="Only Owncast instances available on the default SSL port 443 support this feature."
-      type="warning"
-      showIcon
-    />
+    <Alert message={t(Localization.Admin.Alerts.sslPortRequired)} type="warning" showIcon />
   );
 
   const hasInvalidPort =

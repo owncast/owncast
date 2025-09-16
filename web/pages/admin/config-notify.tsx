@@ -1,6 +1,7 @@
 import { Alert, Button, Col, Row, Typography } from 'antd';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'next-export-i18n';
 
 import { DiscordNotify as Discord } from '../../components/admin/notification/discord';
 import { BrowserNotify as Browser } from '../../components/admin/notification/browser';
@@ -15,6 +16,7 @@ import { UpdateArgs } from '../../types/config-section';
 import { isValidUrl } from '../../utils/validators';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
+import { Localization } from '../../types/localization';
 
 const { Title } = Typography;
 
@@ -25,6 +27,7 @@ export default function ConfigNotify() {
   const { yp } = serverConfig;
   const { instanceUrl } = yp;
   const [urlValid, setUrlValid] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setFormDataValues({
@@ -55,11 +58,7 @@ export default function ConfigNotify() {
   const enabled = instanceUrl !== '';
   const configurationWarning = !enabled && (
     <>
-      <Alert
-        message="You must set your server URL before you can enable this feature."
-        type="warning"
-        showIcon
-      />
+      <Alert message={t(Localization.Admin.Alerts.serverUrlRequired)} type="warning" showIcon />
       <br />
       <TextFieldWithSubmit
         fieldName="instanceUrl"
@@ -76,15 +75,15 @@ export default function ConfigNotify() {
 
   return (
     <>
-      <Title>Notifications</Title>
+      <Title>{t(Localization.Admin.Config.notifications)}</Title>
       <p className="description">
-        Let your viewers know when you go live by supporting any of the below notification channels.{' '}
+        {t(Localization.Admin.Config.notificationsDescription)}{' '}
         <a
           href="https://owncast.online/docs/notifications/?source=admin"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn more about live notifications.
+          {t(Localization.Admin.Config.notificationsLearnMore)}
         </a>
       </p>
 

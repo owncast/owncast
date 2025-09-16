@@ -1,151 +1,151 @@
 {
-	"Admin": {
-		"EditInstanceDetails": {
-			"directoryDescription": "Handitu zure ikusleak <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>-n agerita. Hau Owncast proiektua kudeatutako zerbitzu kanpoa da. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Gehiago ikasi</a>.",
-			"offlineMessageDescription": "Offlain mezua zure orri bisitariei erakusten zaie zu ez bazaude irratian. Markdown babesten da.",
-			"serverUrlRequiredForDirectory": "<strong>Server URL</strong> goian ezarri behar duzu direktorioa ahalbidetzeko."
-		},
-		"HardwareInfo": {
-			"cpu": "PUZ",
-			"disk": "Biltegiratzea",
-			"memory": "Memoria",
-			"noDetails": "No hardware details have been collected yet.",
-			"pleaseWait": "Itxaron mesedez",
-			"title": "Hardware-ari buruzko informazioa",
-			"used": "erabilita"
-		},
-		"Help": {
-			"bugPlease": "Arazo bat topatu baduzu, mesedez,",
-			"buildAddons": "Owncast-erako gehigarriak sortu nahi ditut",
-			"buildTools": "Zure bot-ak, gainjartzeak, tresnak eta gehigarriak eraiki ditzakezu gure",
-			"commonTasks": "Ataza arruntak",
-			"configureBroadcasting": "Laguntza emanaldietarako software-a konfiguratzen",
-			"configureInstance": "Nire Owncast instantzia konfiguratu nahi dut",
-			"customizeWebsite": "Nire webgunea pertsonalizatu nahi dut",
-			"developerApis": "developer APIs.",
-			"discussions": "eztabaidak",
-			"documentation": "Dokumentazioa",
-			"embedStream": "Nire zuzenekoa beste gune batean txertatu nahi dut",
-			"faq": "FAQ (Maiz Egindako Galderak)",
-			"fixProblems": "Arazoak konpondu",
-			"foundBug": "Arazo bat topatu dut",
-			"generalAnswered": "Galdera orokor gehienak erantzuten dira gure",
-			"generalQuestion": "Galdera orokor bat daukat",
-			"learnMore": "Ikasi gehiago",
-			"letUsKnow": "jakinaraziguzu",
-			"orExist": "edo existitzen dira gure",
-			"other": "Beste edozein",
-			"readDocs": "Irakurri dokumentazioa",
-			"title": "Nola lagun zaitzakegu?",
-			"troubleshooting": "Arazoen konponketa",
-			"tweakVideo": "Nire bideo irteera aldatu nahi dut",
-			"useStorage": "Kanpoko biltegiratze hornitzaile bat erabili nahi dut"
-		},
-		"LogTable": {
-			"error": "Errorea",
-			"info": "Informazioa",
-			"level": "Maila",
-			"logs": "Erregistroak",
-			"message": "Mezua",
-			"timestamp": "Denbora-zigilua",
-			"warning": "Abisua"
-		},
-		"NewsFeed": {
-			"link": "Esteka",
-			"noNews": "No news.",
-			"title": "Owncast-en albiste eta eguneraketak"
-		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
-			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
-			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
-			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
-		},
-		"ViewerInfo": {
-			"currentStream": "Oraingo igorpena",
-			"currentViewers": "Uneko ikusleak",
-			"last12Hours": "Azken 12 orduetan",
-			"last24Hours": "Azken 24 orduetan",
-			"last30Days": "Azken 30 egunetan",
-			"last3Months": "Azken 3 hilabeteetan",
-			"last6Months": "Azken 6 hilabeteetan",
-			"last7Days": "Azken 7 egunetan",
-			"maxViewers": "gehiengo ikus-entzule kopurua",
-			"maxViewersLastStream": "Azken igorpenak izan duen gehiengo ikus-entzule kopurua",
-			"maxViewersThisStream": "Igorpen honek izan duen gehiengo ikus-entzule kopurua",
-			"noData": "No viewer data has been collected yet.",
-			"pleaseWait": "Itxaron mesedez",
-			"title": "Ikus-entzuleen informazioa",
-			"viewers": "Ikusleak"
-		},
-		"deleteEmoji": "Delete emoji",
-		"emojiPageDescription": "<strong><em>Itzulpen faltak Admin.emojiPageDescription: Mesedez, jakinarazi</em></strong>",
-		"emojiUploadBulkGuide": "<strong><em>Itzulpen faltak Admin.emojiUploadBulkGuide: Mesedez, jakinarazi</em></strong>",
-		"emojis": "<strong><em>Itzulpen faltak Admin.emojis: Mesedez, jakinarazi</em></strong>",
-		"uploadNewEmoji": "<strong><em>Itzulpen faltak Admin.uploadNewEmoji: Mesedez, jakinarazi</em></strong>"
-	},
-	"Common": {
-		"poweredByOwncastVersion": "<a href='https://owncast.online'>Owncast v{{versionNumber}}</a> -k martxan"
-	},
-	"Frontend": {
-		"BrowserNotifyModal": {
-			"allowButton": "Baimendu",
-			"blockButton": "Blokeatu",
-			"deniedDescription": "{{hostname}}-tik push jakinarazpenak aktibatzeko, sartu zure nabigatzailearen baimenak gune honetarako eta aktibatu jakinarazpenak. Gero, birkargatu orri hau gune honetarako ezarpen eguneratuak aplikatzeko. <a href='https://owncast.online/docs/notifications'>Gehiago ikusi.</a>",
-			"deniedTitle": "Jakinarazpenak blokeatuak daude zure gailuan",
-			"enabledDescription": "{{hostname}}-tik push jakinarazpenak desgaitzeko, sartu zure nabigatzailearen baimenak gune honetarako eta itzali jakinarazpenak. <a href='https://owncast.online/docs/notifications'>Gehiago ikusi.</a>",
-			"enabledTitle": "Jakinarazpenak aktibatuta daude",
-			"errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
-			"errorTitle": "Nabigatzailearen Jakinarazpen Akatsa",
-			"iosAddButton": "Gehitu",
-			"iosAddToHomeScreen": "Etxeko Pantaila Gehitu",
-			"iosAllowPrompt": "Utzi",
-			"iosComeBack": "Itzuli pantaila honetara eta aktibatu abisuak.",
-			"iosDescription": "Pauso gehigarri batzuk behar dira zure gustuko irteerak zuzenean abisatuak izateko.",
-			"iosNameAndTap": "Emango diotzu lotura honi izena eta sakatuko duzu berria etxeko pantailan",
-			"iosShareButton": "partekatu",
-			"iosTitle": "Abisatu iOS-en",
-			"learnMore": "Ikasi gehiago",
-			"mainDescription": "Abisatu zuzenean nabigatzailean irteera hau zuzenean abiarazi bakoitzean.",
-			"permissionWantsTo": "{{hostname}} nahi du",
-			"showNotifications": "Erakutsi abisuak",
-			"unsupported": "Nabigatzailean abisuak ez dira onartu zure nabigatzailean.",
-			"unsupportedLocal": "Nabigatzailean abisuak ez dira onartu lokaleko zerbitzarietan."
-		},
-		"Footer": {
-			"contribute": "Egin ekarpena",
-			"documentation": "Dokumentazioa",
-			"source": "Iturria"
-		},
-		"Header": {
-			"chatOffline": "Txata lineaz kanpo dago",
-			"chatWillBeAvailable": "Chat will be available when the stream is live.",
-			"skipToContent": "Joan orriaren edukira",
-			"skipToFooter": "Joan orriaren oinera",
-			"skipToOfflineMessage": "Joan lineaz kanpoko mezura",
-			"skipToPlayer": "Joan erreproduktorera"
-		},
-		"NameChangeModal": {
-			"authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
-			"buttonText": "Change name",
-			"colorLabel": "Your Color",
-			"description": "Your chat display name is what people see when you send chat messages.",
-			"overLimit": "Over limit",
-			"placeholder": "Your chat display name"
-		},
-		"chatOffline": "<strong><em>Itzulpen falta Frontend.chatOffline: Mesedez, jakinarazi</em></strong>",
-		"componentError": "Errorea: {{message}}",
-		"helloWorld": "<strong><em>Itzulpen falta Frontend.helloWorld: Mesedez, jakinarazi</em></strong>",
-		"offlineBasic": "Torrente hau offline dago. Itzuli laster!",
-		"offlineFediverseOnly": "Torrente hau offline dago. <span class='follow-link'>Jarraitzaile</span> {{fediverseAccount}} Fediversen hurrengoa {{streamer}} zuzenean joan denean ikusteko.",
-		"offlineNotifyAndFediverse": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean edo <span class='follow-link'>jarraitu</span> {{fediverseAccount}} Fediversen.",
-		"offlineNotifyOnly": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean."
-	},
-	"Testing": {
-		"itemCount": "<strong><em>Itzulpen falta Testing.itemCount: Mesedez, jakinarazi</em></strong>",
-		"messageCount": "<strong><em>Itzulpen falta Testing.messageCount: Mesedez, jakinarazi</em></strong>",
-		"noPluralKey": "<strong><em>Itzulpen falta Testing.noPluralKey: Mesedez, jakinarazi</em></strong>",
-		"simpleKey": "<strong><em>Itzulpen falta Testing.simpleKey: Mesedez, jakinarazi</em></strong>"
-	}
+  "Admin": {
+    "EditInstanceDetails": {
+      "directoryDescription": "Handitu zure ikusleak <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>-n agerita. Hau Owncast proiektua kudeatutako zerbitzu kanpoa da. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Gehiago ikasi</a>.",
+      "offlineMessageDescription": "Offlain mezua zure orri bisitariei erakusten zaie zu ez bazaude irratian. Markdown babesten da.",
+      "serverUrlRequiredForDirectory": "<strong>Server URL</strong> goian ezarri behar duzu direktorioa ahalbidetzeko."
+    },
+    "HardwareInfo": {
+      "cpu": "PUZ",
+      "disk": "Biltegiratzea",
+      "memory": "Memoria",
+      "noDetails": "No hardware details have been collected yet.",
+      "pleaseWait": "Itxaron mesedez",
+      "title": "Hardware-ari buruzko informazioa",
+      "used": "erabilita"
+    },
+    "Help": {
+      "bugPlease": "Arazo bat topatu baduzu, mesedez,",
+      "buildAddons": "Owncast-erako gehigarriak sortu nahi ditut",
+      "buildTools": "Zure bot-ak, gainjartzeak, tresnak eta gehigarriak eraiki ditzakezu gure",
+      "commonTasks": "Ataza arruntak",
+      "configureBroadcasting": "Laguntza emanaldietarako software-a konfiguratzen",
+      "configureInstance": "Nire Owncast instantzia konfiguratu nahi dut",
+      "customizeWebsite": "Nire webgunea pertsonalizatu nahi dut",
+      "developerApis": "developer APIs.",
+      "discussions": "eztabaidak",
+      "documentation": "Dokumentazioa",
+      "embedStream": "Nire zuzenekoa beste gune batean txertatu nahi dut",
+      "faq": "FAQ (Maiz Egindako Galderak)",
+      "fixProblems": "Arazoak konpondu",
+      "foundBug": "Arazo bat topatu dut",
+      "generalAnswered": "Galdera orokor gehienak erantzuten dira gure",
+      "generalQuestion": "Galdera orokor bat daukat",
+      "learnMore": "Ikasi gehiago",
+      "letUsKnow": "jakinaraziguzu",
+      "orExist": "edo existitzen dira gure",
+      "other": "Beste edozein",
+      "readDocs": "Irakurri dokumentazioa",
+      "title": "Nola lagun zaitzakegu?",
+      "troubleshooting": "Arazoen konponketa",
+      "tweakVideo": "Nire bideo irteera aldatu nahi dut",
+      "useStorage": "Kanpoko biltegiratze hornitzaile bat erabili nahi dut"
+    },
+    "LogTable": {
+      "error": "Errorea",
+      "info": "Informazioa",
+      "level": "Maila",
+      "logs": "Erregistroak",
+      "message": "Mezua",
+      "timestamp": "Denbora-zigilua",
+      "warning": "Abisua"
+    },
+    "NewsFeed": {
+      "link": "Esteka",
+      "noNews": "No news.",
+      "title": "Owncast-en albiste eta eguneraketak"
+    },
+    "VideoVariantForm": {
+      "bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
+      "bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
+      "bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
+      "bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
+      "bitrateValueKbps": "{{bitrate}} kbps"
+    },
+    "ViewerInfo": {
+      "currentStream": "Oraingo igorpena",
+      "currentViewers": "Uneko ikusleak",
+      "last12Hours": "Azken 12 orduetan",
+      "last24Hours": "Azken 24 orduetan",
+      "last30Days": "Azken 30 egunetan",
+      "last3Months": "Azken 3 hilabeteetan",
+      "last6Months": "Azken 6 hilabeteetan",
+      "last7Days": "Azken 7 egunetan",
+      "maxViewers": "gehiengo ikus-entzule kopurua",
+      "maxViewersLastStream": "Azken igorpenak izan duen gehiengo ikus-entzule kopurua",
+      "maxViewersThisStream": "Igorpen honek izan duen gehiengo ikus-entzule kopurua",
+      "noData": "No viewer data has been collected yet.",
+      "pleaseWait": "Itxaron mesedez",
+      "title": "Ikus-entzuleen informazioa",
+      "viewers": "Ikusleak"
+    },
+    "deleteEmoji": "Delete emoji",
+    "emojiPageDescription": "<strong><em>Itzulpen faltak Admin.emojiPageDescription: Mesedez, jakinarazi</em></strong>",
+    "emojiUploadBulkGuide": "<strong><em>Itzulpen faltak Admin.emojiUploadBulkGuide: Mesedez, jakinarazi</em></strong>",
+    "emojis": "<strong><em>Itzulpen faltak Admin.emojis: Mesedez, jakinarazi</em></strong>",
+    "uploadNewEmoji": "<strong><em>Itzulpen faltak Admin.uploadNewEmoji: Mesedez, jakinarazi</em></strong>"
+  },
+  "Common": {
+    "poweredByOwncastVersion": "<a href='https://owncast.online'>Owncast v{{versionNumber}}</a> -k martxan"
+  },
+  "Frontend": {
+    "BrowserNotifyModal": {
+      "allowButton": "Baimendu",
+      "blockButton": "Blokeatu",
+      "deniedDescription": "{{hostname}}-tik push jakinarazpenak aktibatzeko, sartu zure nabigatzailearen baimenak gune honetarako eta aktibatu jakinarazpenak. Gero, birkargatu orri hau gune honetarako ezarpen eguneratuak aplikatzeko. <a href='https://owncast.online/docs/notifications'>Gehiago ikusi.</a>",
+      "deniedTitle": "Jakinarazpenak blokeatuak daude zure gailuan",
+      "enabledDescription": "{{hostname}}-tik push jakinarazpenak desgaitzeko, sartu zure nabigatzailearen baimenak gune honetarako eta itzali jakinarazpenak. <a href='https://owncast.online/docs/notifications'>Gehiago ikusi.</a>",
+      "enabledTitle": "Jakinarazpenak aktibatuta daude",
+      "errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+      "errorTitle": "Nabigatzailearen Jakinarazpen Akatsa",
+      "iosAddButton": "Gehitu",
+      "iosAddToHomeScreen": "Etxeko Pantaila Gehitu",
+      "iosAllowPrompt": "Utzi",
+      "iosComeBack": "Itzuli pantaila honetara eta aktibatu abisuak.",
+      "iosDescription": "Pauso gehigarri batzuk behar dira zure gustuko irteerak zuzenean abisatuak izateko.",
+      "iosNameAndTap": "Emango diotzu lotura honi izena eta sakatuko duzu berria etxeko pantailan",
+      "iosShareButton": "partekatu",
+      "iosTitle": "Abisatu iOS-en",
+      "learnMore": "Ikasi gehiago",
+      "mainDescription": "Abisatu zuzenean nabigatzailean irteera hau zuzenean abiarazi bakoitzean.",
+      "permissionWantsTo": "{{hostname}} nahi du",
+      "showNotifications": "Erakutsi abisuak",
+      "unsupported": "Nabigatzailean abisuak ez dira onartu zure nabigatzailean.",
+      "unsupportedLocal": "Nabigatzailean abisuak ez dira onartu lokaleko zerbitzarietan."
+    },
+    "Footer": {
+      "contribute": "Egin ekarpena",
+      "documentation": "Dokumentazioa",
+      "source": "Iturria"
+    },
+    "Header": {
+      "chatOffline": "Txata lineaz kanpo dago",
+      "chatWillBeAvailable": "Chat will be available when the stream is live.",
+      "skipToContent": "Joan orriaren edukira",
+      "skipToFooter": "Joan orriaren oinera",
+      "skipToOfflineMessage": "Joan lineaz kanpoko mezura",
+      "skipToPlayer": "Joan erreproduktorera"
+    },
+    "NameChangeModal": {
+      "authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
+      "buttonText": "Change name",
+      "colorLabel": "Your Color",
+      "description": "Your chat display name is what people see when you send chat messages.",
+      "overLimit": "Over limit",
+      "placeholder": "Your chat display name"
+    },
+    "chatOffline": "<strong><em>Itzulpen falta Frontend.chatOffline: Mesedez, jakinarazi</em></strong>",
+    "componentError": "Errorea: {{message}}",
+    "helloWorld": "<strong><em>Itzulpen falta Frontend.helloWorld: Mesedez, jakinarazi</em></strong>",
+    "offlineBasic": "Torrente hau offline dago. Itzuli laster!",
+    "offlineFediverseOnly": "Torrente hau offline dago. <span class='follow-link'>Jarraitzaile</span> {{fediverseAccount}} Fediversen hurrengoa {{streamer}} zuzenean joan denean ikusteko.",
+    "offlineNotifyAndFediverse": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean edo <span class='follow-link'>jarraitu</span> {{fediverseAccount}} Fediversen.",
+    "offlineNotifyOnly": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean."
+  },
+  "Testing": {
+    "itemCount": "<strong><em>Itzulpen falta Testing.itemCount: Mesedez, jakinarazi</em></strong>",
+    "messageCount": "<strong><em>Itzulpen falta Testing.messageCount: Mesedez, jakinarazi</em></strong>",
+    "noPluralKey": "<strong><em>Itzulpen falta Testing.noPluralKey: Mesedez, jakinarazi</em></strong>",
+    "simpleKey": "<strong><em>Itzulpen falta Testing.simpleKey: Mesedez, jakinarazi</em></strong>"
+  }
 }

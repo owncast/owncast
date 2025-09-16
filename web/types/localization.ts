@@ -234,6 +234,47 @@ export const Localization = {
       viewers: 'Admin.ViewerInfo.viewers',
     },
 
+    // Status and error messages
+    Status: {
+      success: 'Admin.Status.success',
+      error: 'Admin.Status.error',
+      errorWithMessage: 'Admin.Status.errorWithMessage',
+      processing: 'Admin.Status.processing',
+      loading: 'Admin.Status.loading',
+    },
+
+    // Alert messages
+    Alerts: {
+      serverUrlRequired: 'Admin.Alerts.serverUrlRequired',
+      sslPortRequired: 'Admin.Alerts.sslPortRequired',
+      slowDownloads: 'Admin.Alerts.slowDownloads',
+      lowBandwidth: 'Admin.Alerts.lowBandwidth',
+    },
+
+    // Form elements
+    Forms: {
+      save: 'Admin.Forms.save',
+      saveColors: 'Admin.Forms.saveColors',
+      reset: 'Admin.Forms.reset',
+      resetToDefaults: 'Admin.Forms.resetToDefaults',
+      cancel: 'Admin.Forms.cancel',
+      delete: 'Admin.Forms.delete',
+      update: 'Admin.Forms.update',
+    },
+
+    // Configuration pages
+    Config: {
+      general: 'Admin.Config.general',
+      appearance: 'Admin.Config.appearance',
+      customScripting: 'Admin.Config.customScripting',
+      customizeAppearance: 'Admin.Config.customizeAppearance',
+      appearanceDescription: 'Admin.Config.appearanceDescription',
+      cornersLabel: 'Admin.Config.cornersLabel',
+      notifications: 'Admin.Config.notifications',
+      notificationsDescription: 'Admin.Config.notificationsDescription',
+      notificationsLearnMore: 'Admin.Config.notificationsLearnMore',
+    },
+
     // Logging and monitoring
     info: 'Admin.info',
     warning: 'Admin.warning',

@@ -4,6 +4,7 @@
 
 import React, { useState, useContext, FC } from 'react';
 import { Switch } from 'antd';
+import { useTranslation } from 'next-export-i18n';
 import {
   createInputStatus,
   StatusState,
@@ -15,6 +16,7 @@ import { FormStatusIndicator } from './FormStatusIndicator';
 
 import { RESET_TIMEOUT, postConfigUpdateToAPI } from '../../utils/config-constants';
 import { ServerStatusContext } from '../../utils/server-status-context';
+import { Localization } from '../../types/localization';
 
 export type ToggleSwitchProps = {
   fieldName: string;
@@ -43,6 +45,7 @@ export const ToggleSwitch: FC<ToggleSwitchProps> = ({
   onChange,
 }) => {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
+  const { t } = useTranslation();
 
   let resetTimer = null;
 
@@ -65,10 +68,15 @@ export const ToggleSwitch: FC<ToggleSwitchProps> = ({
         data: { value: isCheckedSend },
         onSuccess: () => {
           setFieldInConfigState({ fieldName, value: isCheckedSend, path: configPath });
-          setSubmitStatus(createInputStatus(STATUS_SUCCESS));
+          setSubmitStatus(createInputStatus(STATUS_SUCCESS, t(Localization.Admin.Status.success)));
         },
         onError: (message: string) => {
-          setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${message}`));
+          setSubmitStatus(
+            createInputStatus(
+              STATUS_ERROR,
+              t(Localization.Admin.Status.errorWithMessage, { message }),
+            ),
+          );
         },
       });
       resetTimer = setTimeout(resetStates, RESET_TIMEOUT);

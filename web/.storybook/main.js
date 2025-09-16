@@ -3,7 +3,12 @@ module.exports = {
     previewMdx2: true,
   },
 
-  stories: ['../.storybook/stories-category-doc-pages/**/*.@(mdx|stories.js)', '../stories/**/*.stories.@(js|jsx|ts|tsx)', '../components/**/*.stories.@(js|jsx|ts|tsx)', '../pages/**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: [
+    '../.storybook/stories-category-doc-pages/**/*.@(mdx|stories.js)',
+    '../stories/**/*.stories.@(js|jsx|ts|tsx)',
+    '../components/**/*.stories.@(js|jsx|ts|tsx)',
+    '../pages/**/*.stories.@(js|jsx|ts|tsx)',
+  ],
 
   addons: [
     '@storybook/addon-links',
@@ -45,7 +50,7 @@ module.exports = {
                   // Want to add more CSS Modules options? Read more here: https://github.com/webpack-contrib/css-loader#modules
                   modules: {
                     auto: true,
-		    namedExport: false,
+                    namedExport: false,
                   },
                   importLoaders: 2,
                 },
@@ -93,7 +98,7 @@ module.exports = {
         ],
       },
     },
-    '@chromatic-com/storybook'
+    '@chromatic-com/storybook',
   ],
 
   webpackFinal: async (config, { configType }) => {
@@ -119,6 +124,6 @@ module.exports = {
   docs: {},
 
   typescript: {
-    reactDocgen: 'react-docgen-typescript'
-  }
+    reactDocgen: 'react-docgen-typescript',
+  },
 };
