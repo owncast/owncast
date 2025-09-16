@@ -417,7 +417,7 @@ describe('Localization Keys Cross-Language Validation', () => {
       {
         key: Localization.Frontend.lastLiveAgo,
         name: 'lastLiveAgo',
-        expectedValue: 'Last live ago',
+        expectedValue: 'Last live {{timeAgo}} ago',
       },
       {
         key: Localization.Frontend.maxViewers,
