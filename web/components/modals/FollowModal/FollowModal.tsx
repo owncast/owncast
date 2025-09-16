@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Space } from 'antd';
 import styles from './FollowModal.module.scss';
 import { FollowForm } from './FollowForm';
