@@ -107,7 +107,7 @@ export const Localization = {
       nameChangeText: 'Frontend.Chat.nameChangeText',
       moderatorNotification: 'Frontend.Chat.moderatorNotification',
     },
-    
+
     // Follow modal component
     FollowModal: {
       description: 'Frontend.FollowModal.description',
