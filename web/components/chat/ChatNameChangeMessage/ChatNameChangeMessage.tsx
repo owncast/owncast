@@ -26,15 +26,14 @@ export const ChatNameChangeMessage: FC<ChatNameChangeMessageProps> = ({ message 
         <EditFilled />
       </div>
       <div className={styles.nameChangeText}>
+        <span style={{ color }}>{oldName}</span>
+        <span> </span>
         <Translation
           translationKey={Localization.Frontend.Chat.nameChangeText}
-          vars={{
-            name: oldName,
-            newName: displayName,
-            userColor: color,
-          }}
-          defaultText='<span style="color: {{userColor}}">{{name}}</span> is now known as <span style="color: {{userColor}}">{{newName}}</span>'
+          defaultText="is now known as"
         />
+        <span> </span>
+        <span style={{ color }}>{displayName}</span>
       </div>
     </div>
   );
