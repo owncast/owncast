@@ -1,6 +1,8 @@
 import { FC } from 'react';
 import dynamic from 'next/dynamic';
 import { ModerationBadge } from '../ChatUserBadge/ModerationBadge';
+import { Translation } from '../../ui/Translation/Translation';
+import { Localization } from '../../../types/localization';
 
 import styles from './ChatJoinMessage.module.scss';
 
@@ -35,7 +37,12 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
             <ModerationBadge userColor={userColor} />
           </span>
         )}
-        <span className={styles.joinMessage}>joined the chat.</span>
+        <span className={styles.joinMessage}>
+          <Translation
+            translationKey={Localization.Frontend.Chat.userJoined}
+            defaultText="joined the chat."
+          />
+        </span>
       </span>
     </div>
   );

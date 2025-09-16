@@ -118,6 +118,12 @@
 			"contribute": "Contribute",
 			"source": "Source"
 		},
+		"Chat": {
+			"userJoined": "joined the chat.",
+			"userLeft": "left the chat.",
+			"nameChangeText": "is now known as",
+			"moderatorNotification": "You are now a moderator."
+		},
 		"Header": {
 			"skipToPlayer": "Skip to player",
 			"skipToOfflineMessage": "Skip to offline message",

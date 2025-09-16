@@ -1,6 +1,8 @@
 import { FC } from 'react';
 import dynamic from 'next/dynamic';
 import { ModerationBadge } from '../ChatUserBadge/ModerationBadge';
+import { Translation } from '../../ui/Translation/Translation';
+import { Localization } from '../../../types/localization';
 
 import styles from './ChatPartMessage.module.scss';
 
@@ -35,7 +37,12 @@ export const ChatPartMessage: FC<ChatPartMessageProps> = ({
             <ModerationBadge userColor={userColor} />
           </span>
         )}
-        <span className={styles.partMessage}>left the chat.</span>
+        <span className={styles.partMessage}>
+          <Translation
+            translationKey={Localization.Frontend.Chat.userLeft}
+            defaultText="left the chat."
+          />
+        </span>
       </span>
     </div>
   );

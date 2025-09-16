@@ -1,8 +1,8 @@
-// export const ChatSocialMessage: FC<ChatSocialMessageProps> = ({ message }) => {
-
 import dynamic from 'next/dynamic';
 import { FC } from 'react';
 import { NameChangeEvent } from '../../../interfaces/socket-events';
+import { Translation } from '../../ui/Translation/Translation';
+import { Localization } from '../../../types/localization';
 import styles from './ChatNameChangeMessage.module.scss';
 
 export interface ChatNameChangeMessageProps {
@@ -29,7 +29,10 @@ export const ChatNameChangeMessage: FC<ChatNameChangeMessageProps> = ({ message 
         <span style={{ color }}>{oldName}</span>
         <span className={styles.plain} id="owncast-name-change-is-now-known-text">
           {' '}
-          is now known as{' '}
+          <Translation
+            translationKey={Localization.Frontend.Chat.nameChangeText}
+            defaultText="is now known as"
+          />{' '}
         </span>
         <span style={{ color }}>{displayName}</span>
       </div>
