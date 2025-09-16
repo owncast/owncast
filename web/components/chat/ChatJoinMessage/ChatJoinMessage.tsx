@@ -39,7 +39,9 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
         <span className={styles.joinMessage}>
           <Translation
             translationKey={Localization.Frontend.Chat.userJoined}
-            vars={{ name: displayName }}
+            vars={{
+              name: `<span class="${styles.user}">${displayName}</span>`,
+            }}
             defaultText="{{name}} joined the chat."
           />
         </span>

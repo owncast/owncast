@@ -17,7 +17,8 @@ const EditFilled = dynamic(() => import('@ant-design/icons/EditFilled'), {
 
 export const ChatNameChangeMessage: FC<ChatNameChangeMessageProps> = ({ message }) => {
   const { oldName, user } = message;
-  const { displayName } = user;
+  const { displayName, displayColor } = user;
+  const color = `var(--theme-color-users-${displayColor})`;
 
   return (
     <div className={styles.nameChangeView}>
@@ -27,7 +28,10 @@ export const ChatNameChangeMessage: FC<ChatNameChangeMessageProps> = ({ message 
       <div className={styles.nameChangeText}>
         <Translation
           translationKey={Localization.Frontend.Chat.nameChangeText}
-          vars={{ name: oldName, newName: displayName }}
+          vars={{
+            name: `<span style="color: ${color}">${oldName}</span>`,
+            newName: `<span style="color: ${color}">${displayName}</span>`,
+          }}
           defaultText="{{name}} is now known as {{newName}}"
         />
       </div>

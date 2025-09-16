@@ -39,7 +39,9 @@ export const ChatPartMessage: FC<ChatPartMessageProps> = ({
         <span className={styles.partMessage}>
           <Translation
             translationKey={Localization.Frontend.Chat.userLeft}
-            vars={{ name: displayName }}
+            vars={{
+              name: `<span class="${styles.user}">${displayName}</span>`,
+            }}
             defaultText="{{name}} left the chat."
           />
         </span>
