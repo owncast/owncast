@@ -119,9 +119,9 @@
 			"source": "Source"
 		},
 		"Chat": {
-			"userJoined": "{{name}} joined the chat.",
-			"userLeft": "{{name}} left the chat.",
-			"nameChangeText": "{{name}} is now known as {{newName}}",
+			"userJoined": "<span class=\"{{userClass}}\">{{name}}</span> joined the chat.",
+			"userLeft": "<span class=\"{{userClass}}\">{{name}}</span> left the chat.",
+			"nameChangeText": "<span style=\"color: {{userColor}}\">{{name}}</span> is now known as <span style=\"color: {{userColor}}\">{{newName}}</span>",
 			"moderatorNotification": "You are now a moderator."
 		},
 		"Header": {
