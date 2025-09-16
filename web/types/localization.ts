@@ -14,7 +14,7 @@ export const Localization = {
     chatWillBeAvailable: 'Chat will be available when the stream is live',
 
     // Stream information and statistics
-    lastLiveAgo: 'Last live ago',
+    lastLiveAgo: 'Last live {{timeAgo}} ago',
     currentViewers: 'Current viewers',
     maxViewers: 'Max viewers this stream',
     noStreamActive: 'No stream is active',
@@ -41,44 +41,70 @@ export const Localization = {
     embedVideo: 'Embed your video onto other sites',
 
     // Complex HTML translations with variables
-    helloWorld: 'hello_world',
-    notificationMessage: 'notification_message',
-    complexMessage: 'complex_message',
+    helloWorld: 'Frontend.helloWorld',
+    complexMessage: 'Frontend.complexMessage',
 
     // Errors
-    componentError: 'component_error',
+    componentError: 'Frontend.componentError',
 
     // Browser notifications - organized by component
     BrowserNotifyModal: {
-      unsupported: 'browser_notify_unsupported',
-      unsupportedLocal: 'browser_notify_unsupported_local',
-      iosTitle: 'browser_notify_ios_title',
-      iosDescription: 'browser_notify_ios_description',
-      iosShareButton: 'browser_notify_ios_share_button',
-      iosAddToHomeScreen: 'browser_notify_ios_add_to_home_screen',
-      iosAddButton: 'browser_notify_ios_add_button',
-      iosNameAndTap: 'browser_notify_ios_name_and_tap',
-      iosComeBack: 'browser_notify_ios_come_back',
-      iosAllowPrompt: 'browser_notify_ios_allow_prompt',
-      permissionWantsTo: 'browser_notify_permission_wants_to',
-      showNotifications: 'browser_notify_show_notifications',
-      allowButton: 'browser_notify_allow_button',
-      blockButton: 'browser_notify_block_button',
-      enabledTitle: 'browser_notify_enabled_title',
-      enabledDescription: 'browser_notify_enabled_description',
-      deniedTitle: 'browser_notify_denied_title',
-      deniedDescription: 'browser_notify_denied_description',
-      mainDescription: 'browser_notify_main_description',
-      learnMore: 'browser_notify_learn_more',
-      errorTitle: 'browser_notify_error_title',
-      errorMessage: 'browser_notify_error_message',
+      unsupported: 'Frontend.BrowserNotifyModal.unsupported',
+      unsupportedLocal: 'Frontend.BrowserNotifyModal.unsupportedLocal',
+      iosTitle: 'Frontend.BrowserNotifyModal.iosTitle',
+      iosDescription: 'Frontend.BrowserNotifyModal.iosDescription',
+      iosShareButton: 'Frontend.BrowserNotifyModal.iosShareButton',
+      iosAddToHomeScreen: 'Frontend.BrowserNotifyModal.iosAddToHomeScreen',
+      iosAddButton: 'Frontend.BrowserNotifyModal.iosAddButton',
+      iosNameAndTap: 'Frontend.BrowserNotifyModal.iosNameAndTap',
+      iosComeBack: 'Frontend.BrowserNotifyModal.iosComeBack',
+      iosAllowPrompt: 'Frontend.BrowserNotifyModal.iosAllowPrompt',
+      permissionWantsTo: 'Frontend.BrowserNotifyModal.permissionWantsTo',
+      showNotifications: 'Frontend.BrowserNotifyModal.showNotifications',
+      allowButton: 'Frontend.BrowserNotifyModal.allowButton',
+      blockButton: 'Frontend.BrowserNotifyModal.blockButton',
+      enabledTitle: 'Frontend.BrowserNotifyModal.enabledTitle',
+      enabledDescription: 'Frontend.BrowserNotifyModal.enabledDescription',
+      deniedTitle: 'Frontend.BrowserNotifyModal.deniedTitle',
+      deniedDescription: 'Frontend.BrowserNotifyModal.deniedDescription',
+      mainDescription: 'Frontend.BrowserNotifyModal.mainDescription',
+      learnMore: 'Frontend.BrowserNotifyModal.learnMore',
+      errorTitle: 'Frontend.BrowserNotifyModal.errorTitle',
+      errorMessage: 'Frontend.BrowserNotifyModal.errorMessage',
+    },
+
+    // Name change modal - organized by component
+    NameChangeModal: {
+      description: 'Frontend.NameChangeModal.description',
+      placeholder: 'Frontend.NameChangeModal.placeholder',
+      buttonText: 'Frontend.NameChangeModal.buttonText',
+      colorLabel: 'Frontend.NameChangeModal.colorLabel',
+      authInfo: 'Frontend.NameChangeModal.authInfo',
+      overLimit: 'Frontend.NameChangeModal.overLimit',
+    },
+
+    // Header component
+    Header: {
+      skipToPlayer: 'Frontend.Header.skipToPlayer',
+      skipToOfflineMessage: 'Frontend.Header.skipToOfflineMessage',
+      skipToContent: 'Frontend.Header.skipToContent',
+      skipToFooter: 'Frontend.Header.skipToFooter',
+      chatWillBeAvailable: 'Frontend.Header.chatWillBeAvailable',
+      chatOffline: 'Frontend.Header.chatOffline',
+    },
+
+    // Footer component
+    Footer: {
+      documentation: 'Frontend.Footer.documentation',
+      contribute: 'Frontend.Footer.contribute',
+      source: 'Frontend.Footer.source',
     },
 
     // Offline banner messages
-    offlineBasic: 'offline_basic',
-    offlineNotifyOnly: 'offline_notify_only',
-    offlineFediverseOnly: 'offline_fediverse_only',
-    offlineNotifyAndFediverse: 'offline_notify_and_fediverse',
+    offlineBasic: 'Frontend.offlineBasic',
+    offlineNotifyOnly: 'Frontend.offlineNotifyOnly',
+    offlineFediverseOnly: 'Frontend.offlineFediverseOnly',
+    offlineNotifyAndFediverse: 'Frontend.offlineNotifyAndFediverse',
   },
 
   /**
@@ -86,17 +112,15 @@ export const Localization = {
    */
   Admin: {
     // Emoji management
-    emojis: 'Emojis',
-    emojiPageDescription:
-      'Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the filename without extension will be used as emoji name. Additionally, emoji names are case-insensitive. For best results, ensure all emoji have unique names.',
-    emojiUploadBulkGuide:
-      'Want to upload custom emojis in bulk? Check out our <a href="https://owncast.online/docs/chat/emoji" rel="noopener noreferrer" target="_blank">Emoji guide</a>.',
-    uploadNewEmoji: 'Upload new emoji',
-    deleteEmoji: 'Delete emoji',
+    emojis: 'Admin.emojis',
+    emojiPageDescription: 'Admin.emojiPageDescription',
+    emojiUploadBulkGuide: 'Admin.emojiUploadBulkGuide',
+    uploadNewEmoji: 'Admin.uploadNewEmoji',
+    deleteEmoji: 'Admin.deleteEmoji',
 
     // Settings and configuration
-    settings: 'settings',
-    overriddenViaCommandLine: 'Overridden via command line',
+    settings: 'Admin.settings',
+    overriddenViaCommandLine: 'Admin.overriddenViaCommandLine',
 
     Chat: {
       moderationMessagesSent: 'Admin.Chat.moderationMessagesSent',
@@ -119,32 +143,99 @@ export const Localization = {
       bitrateGoodForHigh: 'Admin.VideoVariantForm.bitrateGoodForHigh',
     },
 
+    // Hardware monitoring page
+    HardwareInfo: {
+      title: 'Admin.HardwareInfo.title',
+      pleaseWait: 'Admin.HardwareInfo.pleaseWait',
+      noDetails: 'Admin.HardwareInfo.noDetails',
+      cpu: 'Admin.HardwareInfo.cpu',
+      memory: 'Admin.HardwareInfo.memory',
+      disk: 'Admin.HardwareInfo.disk',
+      used: 'Admin.HardwareInfo.used',
+    },
+
+    // Help page
+    Help: {
+      title: 'Admin.Help.title',
+      configureInstance: 'Admin.Help.configureInstance',
+      learnMore: 'Admin.Help.learnMore',
+      configureBroadcasting: 'Admin.Help.configureBroadcasting',
+      embedStream: 'Admin.Help.embedStream',
+      customizeWebsite: 'Admin.Help.customizeWebsite',
+      tweakVideo: 'Admin.Help.tweakVideo',
+      useStorage: 'Admin.Help.useStorage',
+      foundBug: 'Admin.Help.foundBug',
+      bugPlease: 'Admin.Help.bugPlease',
+      letUsKnow: 'Admin.Help.letUsKnow',
+      generalQuestion: 'Admin.Help.generalQuestion',
+      generalAnswered: 'Admin.Help.generalAnswered',
+      faq: 'Admin.Help.faq',
+      orExist: 'Admin.Help.orExist',
+      discussions: 'Admin.Help.discussions',
+      buildAddons: 'Admin.Help.buildAddons',
+      buildTools: 'Admin.Help.buildTools',
+      developerApis: 'Admin.Help.developerApis',
+      troubleshooting: 'Admin.Help.troubleshooting',
+      fixProblems: 'Admin.Help.fixProblems',
+      documentation: 'Admin.Help.documentation',
+      readDocs: 'Admin.Help.readDocs',
+      commonTasks: 'Admin.Help.commonTasks',
+      other: 'Admin.Help.other',
+    },
+
+    // Log table component
+    LogTable: {
+      level: 'Admin.LogTable.level',
+      info: 'Admin.LogTable.info',
+      warning: 'Admin.LogTable.warning',
+      error: 'Admin.LogTable.error',
+      timestamp: 'Admin.LogTable.timestamp',
+      message: 'Admin.LogTable.message',
+      logs: 'Admin.LogTable.logs',
+    },
+
+    // News feed component
+    NewsFeed: {
+      link: 'Admin.NewsFeed.link',
+      noNews: 'Admin.NewsFeed.noNews',
+      title: 'Admin.NewsFeed.title',
+    },
+
+    // Viewer info page
+    ViewerInfo: {
+      title: 'Admin.ViewerInfo.title',
+      currentStream: 'Admin.ViewerInfo.currentStream',
+      last12Hours: 'Admin.ViewerInfo.last12Hours',
+      last24Hours: 'Admin.ViewerInfo.last24Hours',
+      last7Days: 'Admin.ViewerInfo.last7Days',
+      last30Days: 'Admin.ViewerInfo.last30Days',
+      last3Months: 'Admin.ViewerInfo.last3Months',
+      last6Months: 'Admin.ViewerInfo.last6Months',
+      currentViewers: 'Admin.ViewerInfo.currentViewers',
+      maxViewersThisStream: 'Admin.ViewerInfo.maxViewersThisStream',
+      maxViewersLastStream: 'Admin.ViewerInfo.maxViewersLastStream',
+      maxViewers: 'Admin.ViewerInfo.maxViewers',
+      pleaseWait: 'Admin.ViewerInfo.pleaseWait',
+      noData: 'Admin.ViewerInfo.noData',
+      viewers: 'Admin.ViewerInfo.viewers',
+    },
+
     // Logging and monitoring
-    info: 'Info',
-    warning: 'Warning',
-    error: 'Error',
-    level: 'Level',
-    timestamp: 'Timestamp',
-    message: 'Message',
-    logs: 'Logs',
+    info: 'Admin.info',
+    warning: 'Admin.warning',
+    error: 'Admin.error',
+    level: 'Admin.level',
+    timestamp: 'Admin.timestamp',
+    message: 'Admin.message',
+    logs: 'Admin.logs',
   },
 
   /**
    * Common keys shared across both frontend and admin interfaces
    */
   Common: {
-    // Basic UI elements
-    yes: 'Yes',
-    no: 'No',
-
-    // Documentation and help
-    documentation: 'Documentation',
-    contribute: 'Contribute',
-    source: 'Source',
-
     // Branding
-    poweredByOwncast: 'Powered by Owncast',
-    poweredByOwncastVersion: 'powered_by_owncast_version',
+    poweredByOwncastVersion: 'Common.poweredByOwncastVersion',
   },
 
   /**

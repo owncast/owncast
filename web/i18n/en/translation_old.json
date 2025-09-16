@@ -5,7 +5,7 @@
     "messageCount": "<strong><em>Missing translation Testing.messageCount: Please report</em></strong>",
     "noPluralKey": "<strong><em>Missing translation Testing.noPluralKey: Please report</em></strong>",
     "itemCount_one": "You have {{count}} item",
-    "messageCount_one": "{{sender}} has sent one message"
+    "messageCount_one": "You have {{count}} message from {{sender}}"
   },
   "Frontend": {
     "helloWorld": "<strong><em>Missing translation Frontend.helloWorld: Please report</em></strong>",
@@ -60,6 +60,14 @@
       "showNotifications": "Show notifications",
       "unsupported": "Browser notifications are not supported in your browser.",
       "unsupportedLocal": "Browser notifications are not supported for local servers."
+    },
+    "NameChangeModal": {
+      "authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
+      "buttonText": "Change name",
+      "colorLabel": "Your Color",
+      "description": "Your chat display name is what people see when you send chat messages.",
+      "overLimit": "Over limit",
+      "placeholder": "Your chat display name"
     }
   },
   "Admin": {

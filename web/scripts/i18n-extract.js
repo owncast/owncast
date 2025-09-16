@@ -38,7 +38,14 @@ function sortObjectKeys(obj) {
 
 function scanTranslationKeys() {
   const files = glob.sync('**/*.{ts,tsx,js,jsx}', {
-    ignore: ['node_modules/**', '.next/**', 'out/**'],
+    ignore: [
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'storybook-static/**',
+      'coverage/**',
+      '.storybook/**',
+    ],
   });
 
   const results = {};
@@ -99,6 +106,57 @@ function scanTranslationKeys() {
           // }
           results[key] =
             defaultText || `<strong><em>Missing translation ${key}: Please report</em></strong>`;
+        }
+      },
+
+      CallExpression(p) {
+        const { node } = p;
+
+        // Check if this is a call to t() function
+        if (node.callee.type !== 'Identifier' || node.callee.name !== 't') return;
+
+        // Check if the first argument is a Localization key
+        if (node.arguments.length === 0) return;
+
+        const firstArg = node.arguments[0];
+        let key = null;
+
+        // Handle t(Localization.Frontend.NameChangeModal.placeholder)
+        if (firstArg.type === 'MemberExpression') {
+          const dotPath = getDotPath(firstArg);
+          if (dotPath) {
+            key = dotPath;
+          }
+        }
+        // Handle t("some.string.key") - but only if it looks like a translation key
+        else if (firstArg.type === 'StringLiteral') {
+          const { value } = firstArg;
+          // Only include string literals that follow our translation key pattern:
+          // - Must have dots for hierarchy (e.g., Frontend.Component.key)
+          // - Must start with a capital letter (namespace convention)
+          // - Must not contain spaces (translation keys shouldn't have spaces)
+          // - Must not be common JS patterns like prototype methods
+          if (
+            value.includes('.') &&
+            /^[A-Z][a-zA-Z0-9]*\./.test(value) &&
+            !value.includes(' ') &&
+            !value.includes('prototype') &&
+            !value.includes('()') &&
+            value.split('.').length >= 2 &&
+            value.split('.').length <= 5
+          ) {
+            // Reasonable depth for translation keys
+            key = value;
+          }
+        }
+
+        if (key) {
+          // For t() calls, we don't have defaultText, so use the fallback
+          if (!results[key]) {
+            console.log(`[i18n] Found t() call with key: ${key} in ${file}`);
+          }
+          results[key] =
+            results[key] || `<strong><em>Missing translation ${key}: Please report</em></strong>`;
         }
       },
     });
@@ -164,7 +222,7 @@ function updateTranslationFile(flatTranslations) {
 
   if (changed) {
     const merged = sortObjectKeys(mergeDeep(existing, newNestedTranslations));
-    fs.writeFileSync(TRANSLATIONS_PATH, JSON.stringify(merged, null, 2));
+    fs.writeFileSync(TRANSLATIONS_PATH, JSON.stringify(merged, null, '\t'));
     console.log(`[i18n] Updated ${TRANSLATIONS_PATH}`);
   } else {
     console.log('[i18n] No new keys to add.');

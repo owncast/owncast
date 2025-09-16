@@ -5,6 +5,7 @@ import { useTranslation } from 'next-export-i18n';
 import { fetchData, FETCH_INTERVAL, HARDWARE_STATS } from '../../utils/apis';
 import { Chart } from '../../components/admin/Chart';
 import { StatisticItem } from '../../components/admin/StatisticItem';
+import { Localization } from '../../types/localization';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
@@ -55,13 +56,13 @@ export default function HardwareInfo() {
   if (!hardwareStatus.cpu) {
     return (
       <div>
-        <Typography.Title>{t('Hardware Info')}</Typography.Title>
+        <Typography.Title>{t(Localization.Admin.HardwareInfo.title)}</Typography.Title>
 
         <Alert
           style={{ marginTop: '10px' }}
           banner
-          message={t('Please wait')}
-          description={t('No hardware details have been collected yet.')}
+          message={t(Localization.Admin.HardwareInfo.pleaseWait)}
+          description={t(Localization.Admin.HardwareInfo.noDetails)}
           type="info"
         />
         <Spin spinning style={{ width: '100%', margin: '10px' }} />
@@ -75,19 +76,19 @@ export default function HardwareInfo() {
 
   const series = [
     {
-      name: t('CPU'),
+      name: t(Localization.Admin.HardwareInfo.cpu),
       color: '#B63FFF',
       data: hardwareStatus.cpu,
       pointStyle: 'rect',
     },
     {
-      name: t('Memory'),
+      name: t(Localization.Admin.HardwareInfo.memory),
       color: '#2087E2',
       data: hardwareStatus.memory,
       pointStyle: 'circle',
     },
     {
-      name: t('Disk'),
+      name: t(Localization.Admin.HardwareInfo.disk),
       color: '#FF7700',
       data: hardwareStatus.disk,
       pointStyle: 'rectRounded',
@@ -96,7 +97,7 @@ export default function HardwareInfo() {
 
   return (
     <>
-      <Typography.Title>{t('Hardware Info')}</Typography.Title>
+      <Typography.Title>{t(Localization.Admin.HardwareInfo.title)}</Typography.Title>
       <br />
       <div>
         <Row gutter={[16, 16]} justify="space-around">
@@ -132,7 +133,12 @@ export default function HardwareInfo() {
           </Col>
         </Row>
 
-        <Chart title={`% ${t('used')}`} dataCollections={series} color="#FF7700" unit="%" />
+        <Chart
+          title={`% ${t(Localization.Admin.HardwareInfo.used)}`}
+          dataCollections={series}
+          color="#FF7700"
+          unit="%"
+        />
       </div>
     </>
   );

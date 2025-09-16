@@ -1,0 +1,60 @@
+{
+    "Admin": {
+        "EditInstanceDetails": {
+            "directoryDescription": "Increase your audience by appearing in the <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Learn more</a>.",
+            "offlineMessageDescription": "The offline message is displayed to your page visitors when you're not streaming. Markdown is supported.",
+            "serverUrlRequiredForDirectory": "You must set your <strong>Server URL</strong> above to enable the directory."
+        }
+    },
+    "Common": {
+        "poweredByOwncastVersion": "Powered by <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+    },
+    "Frontend": {
+        "BrowserNotifyModal": {
+            "allowButton": "Allow",
+            "blockButton": "Block",
+            "deniedDescription": "To enable push notifications from {{hostname}} access your browser permissions for this site and turn on notifications. Then reload this page to apply your updated settings on this site. <a href='https://owncast.online/docs/notifications'>Learn more.</a>",
+            "deniedTitle": "Notifications are blocked on your device",
+            "enabledDescription": "To disable push notifications from {{hostname}} access your browser permissions for this site and turn off notifications. <a href='https://owncast.online/docs/notifications'>Learn more.</a>",
+            "enabledTitle": "Notifications are enabled",
+            "errorTitle": "Browser Notification Error",
+            "iosAddButton": "Add",
+            "iosAddToHomeScreen": "Add to Home Screen",
+            "iosAllowPrompt": "Allow",
+            "iosComeBack": "Come back to this screen and enable notifications.",
+            "iosDescription": "It takes a couple extra steps to make sure you get notified when your favorite streams go live.",
+            "iosNameAndTap": "Give this link a name and tap the new icon on your home screen",
+            "iosShareButton": "share",
+            "iosTitle": "Get notified on iOS",
+            "learnMore": "Learn more",
+            "mainDescription": "Get notified right in the browser each time this stream goes live.",
+            "permissionWantsTo": "{{hostname}} wants to",
+            "showNotifications": "Show notifications",
+            "unsupported": "Browser notifications are not supported in your browser.",
+            "unsupportedLocal": "Browser notifications are not supported for local servers."
+        },
+        "NameChangeModal": {
+            "authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
+            "buttonText": "Change name",
+            "colorLabel": "Your Color",
+            "description": "Your chat display name is what people see when you send chat messages.",
+            "overLimit": "Over limit",
+            "placeholder": "Your chat display name"
+        },
+        "componentError": "Error: {{message}}",
+        "helloWorld": "Hello <strong>{{name}}</strong>, welcome to the world!",
+        "notificationMessage": "You can <a href=\"#\">click here</a> to receive notifications when {{streamer}} goes live.",
+        "offlineBasic": "This stream is offline. Check back soon!",
+        "offlineFediverseOnly": "This stream is offline. <span class='follow-link'>Follow</span> {{fediverseAccount}} on the Fediverse to see the next time {{streamer}} goes live.",
+        "offlineNotifyAndFediverse": "This stream is offline. You can <span class='notify-link'>be notified</span> the next time {{streamer}} goes live or <span class='follow-link'>follow</span> {{fediverseAccount}} on the Fediverse.",
+        "offlineNotifyOnly": "This stream is offline. <span class='notify-link'>Be notified</span> the next time {{streamer}} goes live."
+    },
+    "Testing": {
+        "itemCount": "You have {{count}} items",
+        "itemCount_one": "You have {{count}} item",
+        "messageCount": "You have {{count}} messages from {{sender}}",
+        "messageCount_one": "You have {{count}} message from {{sender}}",
+        "noPluralKey": "This key has no plural variants - {{count}} things",
+        "simpleKey": "Simple translation text"
+    }
+}

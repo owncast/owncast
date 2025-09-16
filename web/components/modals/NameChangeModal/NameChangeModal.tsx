@@ -1,10 +1,13 @@
 import React, { CSSProperties, FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Input, Button, Select, Form } from 'antd';
+import { useTranslation } from 'next-export-i18n';
 import { MessageType } from '../../../interfaces/socket-events';
 import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom, currentUserAtom } from '../../stores/ClientConfigStore';
 import { validateDisplayName } from '../../../utils/displayNameValidation';
+import { Translation } from '../../ui/Translation/Translation';
+import { Localization } from '../../../types/localization';
 import styles from './NameChangeModal.module.scss';
 
 const { Option } = Select;
@@ -28,6 +31,7 @@ type NameChangeModalProps = {
 };
 
 export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
+  const { t } = useTranslation();
   const currentUser = useRecoilValue(currentUserAtom);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const [newName, setNewName] = useState<string>(currentUser?.displayName || '');
@@ -70,10 +74,21 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
     websocketService.send(colorChange);
   };
 
-  const showCount = info => (info.count > characterLimit ? 'Over limit' : '');
+  const showCount = info =>
+    info.count > characterLimit ? (
+      <Translation
+        translationKey={Localization.Frontend.NameChangeModal.overLimit}
+        defaultText="Over limit"
+      />
+    ) : (
+      ''
+    );
 
   const maxColor = 8; // 0...n
   const colorOptions = [...Array(maxColor)].map((_, i) => i);
+
+  const placeholderText =
+    t(Localization.Frontend.NameChangeModal.placeholder) || 'Your chat display name';
 
   const validation = validateDisplayName(newName, displayName, characterLimit);
 
@@ -84,14 +99,20 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
       onClick={handleNameChange}
       disabled={!saveEnabled()}
     >
-      Change name
+      <Translation
+        translationKey={Localization.Frontend.NameChangeModal.buttonText}
+        defaultText="Change name"
+      />
     </Button>
   );
 
   return (
     <div>
       <div id="owncast-name-change-description-text">
-        Your chat display name is what people see when you send chat messages.
+        <Translation
+          translationKey={Localization.Frontend.NameChangeModal.description}
+          defaultText="Your chat display name is what people see when you send chat messages."
+        />
       </div>
       <Form onSubmitCapture={handleNameChange} className={styles.form}>
         <Input.Search
@@ -99,8 +120,8 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
           id="name-change-field"
           value={newName}
           onChange={e => setNewName(e.target.value)}
-          placeholder="Your chat display name"
-          aria-label="Your chat display name"
+          placeholder={placeholderText}
+          aria-label={placeholderText}
           showCount={{ formatter: showCount }}
           defaultValue={displayName}
           className={styles.inputGroup}
@@ -109,7 +130,15 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
           <div className={styles.error}>{validation.errorMessage}</div>
         )}
       </Form>
-      <Form.Item label="Your Color" className={styles.colorChange}>
+      <Form.Item
+        label={
+          <Translation
+            translationKey={Localization.Frontend.NameChangeModal.colorLabel}
+            defaultText="Your Color"
+          />
+        }
+        className={styles.colorChange}
+      >
         <Select
           style={{ width: 120 }}
           onChange={handleColorChange}
@@ -124,8 +153,10 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
         </Select>
       </Form.Item>
       <div id="owncast-name-change-auth-info-text">
-        You can also authenticate an IndieAuth or Fediverse account via the &quot;Authenticate&quot;
-        menu.
+        <Translation
+          translationKey={Localization.Frontend.NameChangeModal.authInfo}
+          defaultText='You can also authenticate an IndieAuth or Fediverse account via the "Authenticate" menu.'
+        />
       </div>
     </div>
   );

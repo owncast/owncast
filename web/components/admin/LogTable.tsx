@@ -4,6 +4,7 @@ import Linkify from 'react-linkify';
 import { SortOrder, TablePaginationConfig } from 'antd/lib/table/interface';
 import { format } from 'date-fns';
 import { useTranslation } from 'next-export-i18n';
+import { Localization } from '../../types/localization';
 
 const { Title } = Typography;
 
@@ -17,10 +18,6 @@ function renderColumnLevel(text, entry) {
   }
 
   return <Tag color={color}>{text}</Tag>;
-}
-
-function renderMessage(text) {
-  return <Linkify>{text}</Linkify>;
 }
 
 export type LogTableProps = {
@@ -42,49 +39,50 @@ export const LogTable: FC<LogTableProps> = ({ logs, initialPageSize }) => {
 
   const columns = [
     {
-      title: t('Level'),
+      title: t(Localization.Admin.LogTable.level),
       dataIndex: 'level',
       key: 'level',
       filters: [
         {
-          text: t('Info'),
+          text: t(Localization.Admin.LogTable.info),
           value: 'info',
         },
         {
-          text: t('Warning'),
+          text: t(Localization.Admin.LogTable.warning),
           value: 'warning',
         },
         {
-          text: t('Error'),
-          value: 'Error',
+          text: t(Localization.Admin.LogTable.error),
+          value: 'error',
         },
       ],
-      onFilter: (level, row) => row.level.indexOf(level) === 0,
+      onFilter: (level, row) => row.level === level,
       render: renderColumnLevel,
     },
     {
-      title: t('Timestamp'),
+      title: t(Localization.Admin.LogTable.timestamp),
       dataIndex: 'time',
       key: 'time',
-      render: timestamp => {
+      render: (timestamp: Date) => {
         const dateObject = new Date(timestamp);
-        return format(dateObject, 'pp P');
+        return format(dateObject, 'p P');
       },
-      sorter: (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+      sorter: (a: any, b: any) => new Date(a.time).getTime() - new Date(b.time).getTime(),
       sortDirections: ['descend', 'ascend'] as SortOrder[],
       defaultSortOrder: 'descend' as SortOrder,
     },
+
     {
-      title: t('Message'),
+      title: t(Localization.Admin.LogTable.message),
       dataIndex: 'message',
       key: 'message',
-      render: renderMessage,
+      render: (message: string) => <Linkify>{message}</Linkify>,
     },
   ];
 
   return (
     <div className="logs-section">
-      <Title>{t('Logs')}</Title>
+      <Title>{t(Localization.Admin.LogTable.logs)}</Title>
       <Table
         size="middle"
         dataSource={logs}
