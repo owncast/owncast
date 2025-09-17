@@ -8,7 +8,7 @@ require (
 	github.com/TwiN/go-away v1.7.0
 	github.com/andybalholm/cascadia v1.3.3
 	github.com/aws/aws-sdk-go v1.55.7
-	github.com/go-chi/chi/v5 v5.2.2
+	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-fed/activity v1.0.1-0.20220119073622-b14b50eecad0
 	github.com/go-fed/httpsig v1.1.0
 	github.com/gorilla/websocket v1.5.3

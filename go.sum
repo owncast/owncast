@@ -188,6 +188,8 @@ github.com/ghostiam/protogetter v0.3.15 h1:1KF5sXel0HE48zh1/vn0Loiw25A9ApyseLzQu
 github.com/ghostiam/protogetter v0.3.15/go.mod h1:WZ0nw9pfzsgxuRsPOFQomgDVSWtDLJRfQJEhsGbmQMA=
 github.com/go-chi/chi/v5 v5.2.2 h1:CMwsvRVTbXVytCk1Wd72Zy1LAsAh9GxMmSNWLHCG618=
 github.com/go-chi/chi/v5 v5.2.2/go.mod h1:L2yAIGWB3H+phAw1NxKwWM+7eUH/lU8pOMm5hHcoops=
+github.com/go-chi/chi/v5 v5.2.3 h1:WQIt9uxdsAbgIYgid+BpYc+liqQZGMHRaUwp0JUcvdE=
+github.com/go-chi/chi/v5 v5.2.3/go.mod h1:L2yAIGWB3H+phAw1NxKwWM+7eUH/lU8pOMm5hHcoops=
 github.com/go-critic/go-critic v0.13.0 h1:kJzM7wzltQasSUXtYyTl6UaPVySO6GkaR1thFnJ6afY=
 github.com/go-critic/go-critic v0.13.0/go.mod h1:M/YeuJ3vOCQDnP2SU+ZhjgRzwzcBW87JqLpMJLrZDLI=
 github.com/go-fed/httpsig v0.1.1-0.20190914113940-c2de3672e5b5/go.mod h1:T56HUNYZUQ1AGUzhAYPugZfp36sKApVnGBgKlIY+aIE=
