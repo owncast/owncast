@@ -13,16 +13,15 @@ import (
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/owncast/owncast/utils"
 	"github.com/rifflock/lfshook"
-	"github.com/sirupsen/logrus"
-	logger "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 const maxLogEntries = 500
 
 // OCLogger represents the owncast internal logging.
 type OCLogger struct {
-	Entries  []logrus.Entry
-	Warnings []logrus.Entry
+	Entries  []log.Entry
+	Warnings []log.Entry
 	mu       sync.RWMutex
 }
 
@@ -35,7 +34,7 @@ func Setup(enableDebugOptions bool, enableVerboseLogging bool) {
 	loggingDirectory := filepath.Dir(getLogFilePath())
 	if !utils.DoesFileExists(loggingDirectory) {
 		if err := os.Mkdir(loggingDirectory, 0o700); err != nil {
-			logger.Errorln("unable to create logs directory", loggingDirectory, err)
+			log.Errorln("unable to create logs directory", loggingDirectory, err)
 		}
 	}
 
@@ -49,41 +48,41 @@ func Setup(enableDebugOptions bool, enableVerboseLogging bool) {
 	)
 
 	logMapping := lfshook.WriterMap{
-		logrus.InfoLevel:  writer,
-		logrus.DebugLevel: writer,
-		logrus.TraceLevel: writer,
-		logrus.WarnLevel:  writer,
-		logrus.ErrorLevel: writer,
-		logrus.FatalLevel: writer,
+		log.InfoLevel:  writer,
+		log.DebugLevel: writer,
+		log.TraceLevel: writer,
+		log.WarnLevel:  writer,
+		log.ErrorLevel: writer,
+		log.FatalLevel: writer,
 	}
 
-	logger.AddHook(lfshook.NewHook(
+	log.AddHook(lfshook.NewHook(
 		logMapping,
-		&logger.TextFormatter{},
+		&log.TextFormatter{},
 	))
 
 	if enableVerboseLogging {
-		logrus.SetLevel(logrus.TraceLevel)
+		log.SetLevel(log.TraceLevel)
 	} else {
-		logrus.SetLevel(logrus.InfoLevel)
+		log.SetLevel(log.InfoLevel)
 	}
 
 	// Write to stdout console
-	logger.SetOutput(os.Stdout)
+	log.SetOutput(os.Stdout)
 
 	// Write to our custom logging hook for the log API
 	_logger := new(OCLogger)
-	logger.AddHook(_logger)
+	log.AddHook(_logger)
 
 	if enableDebugOptions {
-		logrus.SetReportCaller(true)
+		log.SetReportCaller(true)
 	}
 
 	Logger = _logger
 }
 
 // Fire runs for every logging request.
-func (l *OCLogger) Fire(e *logger.Entry) error {
+func (l *OCLogger) Fire(e *log.Entry) error {
 	// Store all log messages to return back in the logging API
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -94,7 +93,7 @@ func (l *OCLogger) Fire(e *logger.Entry) error {
 	}
 	l.Entries = append(l.Entries, *e)
 
-	if e.Level <= logger.WarnLevel {
+	if e.Level <= log.WarnLevel {
 		if len(l.Warnings) > maxLogEntries {
 			l.Warnings = l.Warnings[1:]
 		}
@@ -105,18 +104,18 @@ func (l *OCLogger) Fire(e *logger.Entry) error {
 }
 
 // Levels specifies what log levels we care about.
-func (l *OCLogger) Levels() []logrus.Level {
-	return logrus.AllLevels
+func (l *OCLogger) Levels() []log.Level {
+	return log.AllLevels
 }
 
 // AllEntries returns all entries that were logged.
-func (l *OCLogger) AllEntries() []*logrus.Entry {
+func (l *OCLogger) AllEntries() []*log.Entry {
 	l.mu.RLock()
 	defer l.mu.RUnlock()
 
 	// Make a copy so the returned value won't race with future log requests
 	logCount := int(math.Min(float64(len(l.Entries)), maxLogEntries))
-	entries := make([]*logrus.Entry, logCount)
+	entries := make([]*log.Entry, logCount)
 	for i := 0; i < len(entries); i++ {
 		// Make a copy, for safety
 		entries[len(entries)-logCount:][i] = &l.Entries[i]
@@ -126,13 +125,13 @@ func (l *OCLogger) AllEntries() []*logrus.Entry {
 }
 
 // WarningEntries returns all warning or greater that were logged.
-func (l *OCLogger) WarningEntries() []*logrus.Entry {
+func (l *OCLogger) WarningEntries() []*log.Entry {
 	l.mu.RLock()
 	defer l.mu.RUnlock()
 
 	// Make a copy so the returned value won't race with future log requests
 	logCount := int(math.Min(float64(len(l.Warnings)), maxLogEntries))
-	entries := make([]*logrus.Entry, logCount)
+	entries := make([]*log.Entry, logCount)
 	for i := 0; i < len(entries); i++ {
 		// Make a copy, for safety
 		entries[len(entries)-logCount:][i] = &l.Warnings[i]

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/logging"
-	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -49,7 +48,7 @@ type logsResponse struct {
 	Level   string    `json:"level"`
 }
 
-func fromEntry(e *logrus.Entry) logsResponse {
+func fromEntry(e *log.Entry) logsResponse {
 	return logsResponse{
 		Message: e.Message,
 		Level:   e.Level.String(),

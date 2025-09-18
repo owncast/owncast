@@ -11,14 +11,15 @@ import (
 
 // HandleAuthEndpoint will handle the IndieAuth auth endpoint.
 func HandleAuthEndpoint(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
+	switch r.Method {
+	case http.MethodGet:
 		// Require the GET request for IndieAuth to be behind admin login.
 		f := middleware.RequireAdminAuth(HandleAuthEndpointGet)
 		f(w, r)
 		return
-	} else if r.Method == http.MethodPost {
+	case http.MethodPost:
 		HandleAuthEndpointPost(w, r)
-	} else {
+	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}

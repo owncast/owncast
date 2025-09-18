@@ -100,13 +100,13 @@ func newEmojis(emotes ...emojiDef.Emoji) emojiDef.Emojis {
 	return self
 }
 
-func (self *emojis) Get(shortName string) (*emojiDef.Emoji, bool) {
-	v, ok := self.names[strings.ToLower(shortName)]
+func (e *emojis) Get(shortName string) (*emojiDef.Emoji, bool) {
+	v, ok := e.names[strings.ToLower(shortName)]
 	if ok {
 		return v, ok
 	}
 
-	for _, child := range self.children {
+	for _, child := range e.children {
 		v, ok := child.Get(shortName)
 		if ok {
 			return v, ok
@@ -116,18 +116,18 @@ func (self *emojis) Get(shortName string) (*emojiDef.Emoji, bool) {
 	return nil, false
 }
 
-func (self *emojis) Add(emotes emojiDef.Emojis) {
-	self.children = append(self.children, emotes)
+func (e *emojis) Add(emotes emojiDef.Emojis) {
+	e.children = append(e.children, emotes)
 }
 
-func (self *emojis) Clone() emojiDef.Emojis {
+func (e *emojis) Clone() emojiDef.Emojis {
 	clone := &emojis{
-		list:     self.list,
-		names:    self.names,
-		children: make([]emojiDef.Emojis, len(self.children)),
+		list:     e.list,
+		names:    e.names,
+		children: make([]emojiDef.Emojis, len(e.children)),
 	}
 
-	copy(clone.children, self.children)
+	copy(clone.children, e.children)
 
 	return clone
 }
