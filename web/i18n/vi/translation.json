@@ -6,84 +6,84 @@
 			"serverUrlRequiredForDirectory": "Bạn phải thiết lập <strong>URL máy chủ</strong> của mình ở trên để kích hoạt thư mục."
 		},
 		"HardwareInfo": {
-			"cpu": "CPU",
-			"disk": "Ổ đĩa",
-			"memory": "Bộ nhớ",
-			"noDetails": "No hardware details have been collected yet.",
-			"pleaseWait": "Vui lòng đợi",
 			"title": "Thông tin phần cứng",
+			"pleaseWait": "Vui lòng đợi",
+			"noDetails": "Chưa có thông tin phần cứng nào được thu thập",
+			"cpu": "CPU",
+			"memory": "Bộ nhớ",
+			"disk": "Ổ đĩa",
 			"used": "đã sử dụng"
 		},
 		"Help": {
+			"title": "Chúng tôi có thể giúp gì cho bạn?",
+			"configureInstance": "Tôi muốn cấu hình phiên bản Owncast của mình",
+			"learnMore": "Tìm hiểu thêm",
+			"configureBroadcasting": "Trợ giúp cấu hình phần mềm phát sóng của tôi",
+			"embedStream": "Tôi muốn nhúng stream của mình vào trang web khác",
+			"customizeWebsite": "Tôi muốn tùy chỉnh trang web của mình",
+			"tweakVideo": "Tôi muốn điều chỉnh đầu ra video",
+			"useStorage": "Tôi muốn sử dụng nhà cung cấp lưu trữ bên ngoài",
+			"foundBug": "Tôi phát hiện lỗi",
 			"bugPlease": "Nếu bạn phát hiện lỗi, vui lòng",
+			"letUsKnow": "cho chúng tôi biết",
+			"generalQuestion": "Tôi có câu hỏi chung",
+			"generalAnswered": "Hầu hết các câu hỏi chung được trả lời trong",
+			"faq": "FAQ",
+			"orExist": "hoặc có trong",
+			"discussions": "thảo luận",
 			"buildAddons": "Tôi muốn xây dựng tiện ích mở rộng cho Owncast",
 			"buildTools": "Bạn có thể xây dựng bot, lớp phủ, công cụ và tiện ích mở rộng riêng với",
-			"commonTasks": "Tác vụ thông dụng",
-			"configureBroadcasting": "Trợ giúp cấu hình phần mềm phát sóng của tôi",
-			"configureInstance": "Tôi muốn cấu hình phiên bản Owncast của mình",
-			"customizeWebsite": "Tôi muốn tùy chỉnh trang web của mình",
-			"developerApis": "developer APIs.",
-			"discussions": "thảo luận",
-			"documentation": "Tài liệu",
-			"embedStream": "Tôi muốn nhúng stream của mình vào trang web khác",
-			"faq": "FAQ",
-			"fixProblems": "Giải quyết vấn đề của bạn",
-			"foundBug": "Tôi phát hiện lỗi",
-			"generalAnswered": "Hầu hết các câu hỏi chung được trả lời trong",
-			"generalQuestion": "Tôi có câu hỏi chung",
-			"learnMore": "Tìm hiểu thêm",
-			"letUsKnow": "cho chúng tôi biết",
-			"orExist": "hoặc có trong",
-			"other": "Khác",
-			"readDocs": "Đọc tài liệu",
-			"title": "Chúng tôi có thể giúp gì cho bạn?",
+			"developerApis": "API cho nhà phát triển của chúng tôi",
 			"troubleshooting": "Xử lý sự cố",
-			"tweakVideo": "Tôi muốn điều chỉnh đầu ra video",
-			"useStorage": "Tôi muốn sử dụng nhà cung cấp lưu trữ bên ngoài"
+			"fixProblems": "Giải quyết vấn đề của bạn",
+			"documentation": "Tài liệu",
+			"readDocs": "Đọc tài liệu",
+			"commonTasks": "Tác vụ thông dụng",
+			"other": "Khác"
 		},
 		"LogTable": {
-			"error": "Lỗi",
-			"info": "Thông tin",
 			"level": "Mức độ",
-			"logs": "Nhật ký",
-			"message": "Tin nhắn",
+			"info": "Thông tin",
+			"warning": "Cảnh báo",
+			"error": "Lỗi",
 			"timestamp": "Thời gian",
-			"warning": "Cảnh báo"
+			"message": "Tin nhắn",
+			"logs": "Nhật ký"
 		},
 		"NewsFeed": {
 			"link": "Liên kết",
-			"noNews": "No news.",
+			"noNews": "Không có tin tức",
 			"title": "Tin tức & Cập nhật từ Owncast"
 		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
-			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
-			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
-			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
-		},
 		"ViewerInfo": {
+			"title": "Thông tin người xem",
 			"currentStream": "Stream hiện tại",
-			"currentViewers": "Số người xem hiện tại",
 			"last12Hours": "12 giờ qua",
 			"last24Hours": "24 giờ qua",
+			"last7Days": "7 ngày qua",
 			"last30Days": "30 ngày qua",
 			"last3Months": "3 tháng qua",
 			"last6Months": "6 tháng qua",
-			"last7Days": "7 ngày qua",
-			"maxViewers": "người xem tối đa",
-			"maxViewersLastStream": "Số người xem tối đa stream trước",
+			"currentViewers": "Số người xem hiện tại",
 			"maxViewersThisStream": "Số người xem tối đa stream này",
-			"noData": "No viewer data has been collected yet.",
+			"maxViewersLastStream": "Số người xem tối đa stream trước",
+			"maxViewers": "người xem tối đa",
 			"pleaseWait": "Vui lòng đợi",
-			"title": "Thông tin người xem",
+			"noData": "Chưa có dữ liệu người xem nào được thu thập",
 			"viewers": "Người xem"
 		},
-		"deleteEmoji": "Delete emoji",
-		"emojiPageDescription": "<strong><em>Thiếu bản dịch Admin.emojiPageDescription: Vui lòng báo cáo</em></strong>",
-		"emojiUploadBulkGuide": "<strong><em>Thiếu bản dịch Admin.emojiUploadBulkGuide: Vui lòng báo cáo</em></strong>",
-		"emojis": "<strong><em>Thiếu bản dịch Admin.emojis: Vui lòng báo cáo</em></strong>",
-		"uploadNewEmoji": "<strong><em>Thiếu bản dịch Admin.uploadNewEmoji: Vui lòng báo cáo</em></strong>"
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "Lựa chọn bitrate bị vô hiệu hóa khi Video Passthrough được bật.",
+			"bitrateGoodForHigh": "Tốt cho người xem tốc độ cao & bitrate cao.",
+			"bitrateGoodForMost": "Tốt cho hầu hết người xem, băng thông và độ phân giải.",
+			"bitrateGoodForSlow": "Tốt cho người xem chậm, di động và bitrate thấp.",
+			"bitrateValueKbps": "{{bitrate}} kbps"
+		},
+		"deleteEmoji": "Xóa emoji",
+		"emojiPageDescription": "Tại đây bạn có thể tải lên các emoji tùy chỉnh mới để sử dụng trong chat. Khi tải lên một emoji mới, tên tệp không có đuôi sẽ được sử dụng làm tên emoji. Thêm vào đó, tên emoji không phân biệt chữ hoa chữ thường. Để có kết quả tốt nhất, hãy đảm bảo tất cả emoji có tên gọi độc nhất.",
+		"emojiUploadBulkGuide": "Bạn muốn tải lên emoji tùy chỉnh hàng loạt? Xem hướng dẫn <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji</a>.",
+		"emojis": "Emoji",
+		"uploadNewEmoji": "Tải lên emoji mới"
 	},
 	"Common": {
 		"poweredByOwncastVersion": "Được cung cấp bởi <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
@@ -96,7 +96,7 @@
 			"deniedTitle": "Thông báo đã bị chặn trên thiết bị của bạn",
 			"enabledDescription": "Để vô hiệu hóa thông báo đẩy từ {{hostname}}, hãy truy cập quyền trình duyệt của bạn cho trang web này và tắt thông báo. <a href='https://owncast.online/docs/notifications'>Tìm hiểu thêm.</a>",
 			"enabledTitle": "Thông báo đã được bật",
-			"errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+			"errorMessage": "Lỗi đăng ký thông báo trực tiếp: {{message}}. Hãy chắc chắn rằng bạn không ở trong môi trường trình duyệt riêng tư hoặc đã vô hiệu hóa thông báo cho stream này trước đó.",
 			"errorTitle": "Lỗi thông báo trình duyệt",
 			"iosAddButton": "Thêm",
 			"iosAddToHomeScreen": "Thêm vào màn hình chính",
@@ -114,38 +114,57 @@
 			"unsupportedLocal": "Thông báo trình duyệt không được hỗ trợ cho các máy chủ cục bộ."
 		},
 		"Footer": {
-			"contribute": "Đóng góp",
 			"documentation": "Tài liệu",
+			"contribute": "Đóng góp",
 			"source": "Mã nguồn"
 		},
+		"Chat": {
+			"userJoined": "đã tham gia trò chuyện.",
+			"userLeft": "đã rời khỏi trò chuyện.",
+			"nameChangeText": "hiện được biết đến với tên",
+			"moderatorNotification": "Bạn hiện là một người điều hành."
+		},
+		"FollowModal": {
+			"description": "Bằng cách theo dõi dòng này, bạn sẽ nhận được thông báo trên Fediverse khi nó hoạt động. Bây giờ là thời điểm tuyệt vời để",
+			"learnFediverse": "tìm hiểu về Fediverse",
+			"newToYou": "nếu đây là lần đầu tiên bạn biết đến.",
+			"instructions": "Nhập tên người dùng của bạn @server để theo dõi",
+			"placeholder": "Tài khoản Fediverse của bạn @account@server",
+			"redirectMessage": "Bạn sẽ được chuyển hướng đến máy chủ Fediverse của bạn và được yêu cầu xác nhận hành động.",
+			"joinFediverse": "Tham gia Fediverse",
+			"followButton": "Theo dõi",
+			"followError": "Lỗi theo dõi",
+			"unableToFollow": "Không thể theo dõi."
+		},
 		"Header": {
-			"chatOffline": "Trò chuyện đang ngoại tuyến",
-			"chatWillBeAvailable": "Chat will be available when the stream is live.",
+			"skipToPlayer": "Chuyển đến trình phát",
+			"skipToOfflineMessage": "Chuyển đến tin nhắn ngoại tuyến",
 			"skipToContent": "Chuyển đến nội dung trang",
 			"skipToFooter": "Chuyển đến chân trang",
-			"skipToOfflineMessage": "Chuyển đến tin nhắn ngoại tuyến",
-			"skipToPlayer": "Chuyển đến trình phát"
+			"chatWillBeAvailable": "Trò chuyện sẽ khả dụng khi stream trực tiếp",
+			"chatOffline": "Trò chuyện đang ngoại tuyến"
 		},
 		"NameChangeModal": {
-			"authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
-			"buttonText": "Change name",
-			"colorLabel": "Your Color",
-			"description": "Your chat display name is what people see when you send chat messages.",
-			"overLimit": "Over limit",
-			"placeholder": "Your chat display name"
+			"authInfo": "Bạn cũng có thể xác thực tài khoản IndieAuth hoặc Fediverse thông qua menu \"Xác thực\".",
+			"buttonText": "Thay đổi tên",
+			"colorLabel": "Màu sắc của bạn",
+			"description": "Tên hiển thị của bạn trong chat là những gì mọi người thấy khi bạn gửi tin nhắn chat.",
+			"overLimit": "Vượt quá giới hạn",
+			"placeholder": "Tên hiển thị của bạn trong chat"
 		},
-		"chatOffline": "<strong><em>Thiếu bản dịch Frontend.chatOffline: Vui lòng báo cáo</em></strong>",
+		"chatOffline": "Trò chuyện đang ngoại tuyến",
 		"componentError": "Lỗi: {{message}}",
-		"helloWorld": "<strong><em>Thiếu bản dịch Frontend.helloWorld: Vui lòng báo cáo</em></strong>",
+		"helloWorld": "Xin chào thế giới",
 		"offlineBasic": "Luồng này đang ngoại tuyến. Hãy quay lại sau!",
 		"offlineFediverseOnly": "Luồng này đang ngoại tuyến. <span class='follow-link'>Theo dõi</span> {{fediverseAccount}} trên Fediverse để xem lần tới {{streamer}} trực tiếp.",
 		"offlineNotifyAndFediverse": "Luồng này đang ngoại tuyến. Bạn có thể <span class='notify-link'>được thông báo</span> khi {{streamer}} trực tiếp hoặc <span class='follow-link'>theo dõi</span> {{fediverseAccount}} trên Fediverse.",
-		"offlineNotifyOnly": "Luồng này đang ngoại tuyến. <span class='notify-link'>Được thông báo</span> khi {{streamer}} trực tiếp."
+		"offlineNotifyOnly": "Luồng này đang ngoại tuyến. <span class='notify-link'>Được thông báo</span> khi {{streamer}} trực tiếp.",
+		"lastLiveAgo": "Lần phát trực tiếp cuối cùng cách đây {{timeAgo}}"
 	},
 	"Testing": {
-		"itemCount": "<strong><em>Thiếu bản dịch Testing.itemCount: Vui lòng báo cáo</em></strong>",
-		"messageCount": "<strong><em>Thiếu bản dịch Testing.messageCount: Vui lòng báo cáo</em></strong>",
-		"noPluralKey": "<strong><em>Thiếu bản dịch Testing.noPluralKey: Vui lòng báo cáo</em></strong>",
-		"simpleKey": "<strong><em>Thiếu bản dịch Testing.simpleKey: Vui lòng báo cáo</em></strong>"
+		"itemCount": "Bạn có {{count}} mục",
+		"messageCount": "Bạn có {{count}} tin nhắn từ {{sender}}",
+		"noPluralKey": "Khóa này không có biến số số nhiều - {{count}} thứ",
+		"simpleKey": "Văn bản dịch đơn giản"
 	}
 }

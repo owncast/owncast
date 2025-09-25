@@ -1,89 +1,89 @@
 {
 	"Admin": {
 		"EditInstanceDetails": {
-			"directoryDescription": "Verhoog je publiek door in de <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>te verschijnen. Dit is een externe dienst die wordt uitgevoerd door het Owncast project. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Leer meer</a>.",
-			"offlineMessageDescription": "Het offline bericht wordt getoond aan uw bezoekers van uw pagina wanneer u niet aan het streamen. Markdown wordt ondersteund.",
+			"directoryDescription": "Vergroot je publiek door in de <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>te verschijnen. Dit is een externe dienst die wordt uitgevoerd door het Owncast project. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Leer meer</a>.",
+			"offlineMessageDescription": "Het offline-bericht wordt getoond aan de bezoekers van je pagina wanneer er geen stream live is. Markdown wordt ondersteund.",
 			"serverUrlRequiredForDirectory": "U moet uw <strong>Server URL</strong> hierboven instellen om de map in te schakelen."
 		},
 		"HardwareInfo": {
+			"title": "Hardware Info",
+			"pleaseWait": "Een ogenblik geduld",
+			"noDetails": "Er zijn nog geen hardwaregegevens verzameld.",
 			"cpu": "CPU",
-			"disk": "Schijfruimte",
 			"memory": "Geheugen",
-			"noDetails": "No hardware details have been collected yet.",
-			"pleaseWait": "Even geduld...",
-			"title": "Hardware-info",
+			"disk": "Schijf",
 			"used": "gebruikt"
 		},
 		"Help": {
-			"bugPlease": "Als je een bug hebt gevonden,",
-			"buildAddons": "I want to build add-ons for Owncast",
-			"buildTools": "You can build your own bots, overlays, tools and add-ons with our",
-			"commonTasks": "Common tasks",
-			"configureBroadcasting": "Hulp bij het configureren van mijn streamsoftware",
-			"configureInstance": "Ik wil mijn Owncast-exemplaar configureren",
-			"customizeWebsite": "Ik wil mijn website aanpassen",
-			"developerApis": "developer APIs.",
-			"discussions": "discussions",
-			"documentation": "Documentatie",
-			"embedStream": "Ik wil mijn stream insluiten op een andere site",
-			"faq": "FAQ",
-			"fixProblems": "Fix your problems",
-			"foundBug": "Ik heb een bug gevonden",
-			"generalAnswered": "Most general questions are answered in our",
-			"generalQuestion": "Ik heb een algemene vraag",
-			"learnMore": "Lees meer",
-			"letUsKnow": "laat het ons weten",
-			"orExist": "or exist in our",
-			"other": "Other",
-			"readDocs": "Lees de documentatie",
 			"title": "Hoe kunnen we je helpen?",
-			"troubleshooting": "Troubleshooting",
-			"tweakVideo": "I want to tweak my video output",
-			"useStorage": "I want to use an external storage provider"
+			"configureInstance": "Ik wil mijn eigen cast instantie configureren",
+			"learnMore": "Meer informatie",
+			"configureBroadcasting": "Help met het configureren van mijn uitzendingssoftware",
+			"embedStream": "Ik wil mijn stream insluiten op een andere site",
+			"customizeWebsite": "Ik wil mijn website aanpassen",
+			"tweakVideo": "Ik wil mijn video-uitvoer aanpassen",
+			"useStorage": "Ik wil een externe opslagprovider gebruiken",
+			"foundBug": "Ik heb een bug gevonden",
+			"bugPlease": "Als je een bug hebt gevonden, gelieve",
+			"letUsKnow": "Laat het ons weten",
+			"generalQuestion": "Ik heb een algemene vraag",
+			"generalAnswered": "Meest algemene vragen worden beantwoord in onze",
+			"faq": "FAQ",
+			"orExist": "of bestaan in onze",
+			"discussions": "Discussies",
+			"buildAddons": "Ik wil add-ons voor Owncast bouwen",
+			"buildTools": "Je kunt je eigen bots, overlays, tools en add-ons bouwen met onze",
+			"developerApis": "ontwikkelaar API's.",
+			"troubleshooting": "Probleemoplossing",
+			"fixProblems": "Problemen oplossen",
+			"documentation": "Documentatie",
+			"readDocs": "Lees de documenten",
+			"commonTasks": "Gemeenschappelijke taken",
+			"other": "anders"
 		},
 		"LogTable": {
-			"error": "Fout",
-			"info": "Info",
 			"level": "Niveau",
-			"logs": "Logs",
-			"message": "Bericht",
-			"timestamp": "Tijdstempel",
-			"warning": "Waarschuwing"
+			"info": "Informatie",
+			"warning": "Waarschuwing",
+			"error": "Foutmelding",
+			"timestamp": "Artikeldatering",
+			"message": "bericht",
+			"logs": "Logboeken"
 		},
 		"NewsFeed": {
-			"link": "Link",
-			"noNews": "No news.",
+			"link": "Koppeling",
+			"noNews": "Geen nieuws.",
 			"title": "Nieuws en updates van Owncast"
 		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
-			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
-			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
-			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
-		},
 		"ViewerInfo": {
-			"currentStream": "Huidige stream",
-			"currentViewers": "Current viewers",
-			"last12Hours": "Laatste 12 uur",
-			"last24Hours": "Laatste 24 uur",
-			"last30Days": "Afgelopen 30 dagen",
-			"last3Months": "Afgelopen 3 maanden",
-			"last6Months": "Afgelopen 6 maanden",
-			"last7Days": "Afgelopen 7 dagen",
-			"maxViewers": "max viewers",
-			"maxViewersLastStream": "Max viewers last stream",
-			"maxViewersThisStream": "Max viewers this stream",
-			"noData": "No viewer data has been collected yet.",
-			"pleaseWait": "Even geduld...",
 			"title": "Viewer Info",
+			"currentStream": "Huidige stream",
+			"last12Hours": "Afgelopen 12 uur",
+			"last24Hours": "Afgelopen 24 uur",
+			"last7Days": "Afgelopen 7 dagen",
+			"last30Days": "Laatste 30 dagen",
+			"last3Months": "Afgelopen 3 maanden",
+			"last6Months": "Laatste 6 maanden",
+			"currentViewers": "Huidige kijkers",
+			"maxViewersThisStream": "Maximaal aantal kijkers deze stream",
+			"maxViewersLastStream": "Maximaal aantal kijkers laatste stream",
+			"maxViewers": "maximale kijkers",
+			"pleaseWait": "Een ogenblik geduld",
+			"noData": "Er zijn nog geen gegevens van de kijker verzameld.",
 			"viewers": "Kijkers"
 		},
-		"deleteEmoji": "Delete emoji",
-		"emojiPageDescription": "<strong><em>Ontbrekende vertaling Admin.emojiPagedescription: Rapporteer</em></strong>",
-		"emojiUploadBulkGuide": "<strong><em>Ontbrekende vertaling Admin.emojiUploadBulkGuide: Rapporteer</em></strong>",
-		"emojis": "<strong><em>Ontbrekende vertaling Admin.emojis: Rapporteer</em></strong>",
-		"uploadNewEmoji": "<strong><em>Ontbrekende vertaling Admin.uploadNewEmoji: Rapporteer</em></strong>"
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "Bitrate selectie is uitgeschakeld als Video Passthrough is ingeschakeld.",
+			"bitrateGoodForHigh": "Goed voor hoge snelheid & hoge bitrate kijkers.",
+			"bitrateGoodForMost": "Goed voor de meeste kijkers, bandbreedtes en resoluties.",
+			"bitrateGoodForSlow": "Goed voor langzame, mobiele en lage bitrate kijkers.",
+			"bitrateValueKbps": "{{bitrate}} kbps"
+		},
+		"deleteEmoji": "Verwijder emoji",
+		"emojiPageDescription": "Hier kunt u nieuwe aangepaste emojis uploaden voor gebruik in de chat. Bij het uploaden van een nieuwe emoji zal de bestandsnaam zonder extensie gebruikt worden als emoji naam. Daarnaast zijn emojinamen hoofdletterongevoelig. Voor de beste resultaten hebben alle emoji unieke namen.",
+		"emojiUploadBulkGuide": "Wil je aangepaste emojis uploaden in bulk? Bekijk onze <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji gids</a>.",
+		"emojis": "Emojis",
+		"uploadNewEmoji": "Nieuwe emoji uploaden"
 	},
 	"Common": {
 		"poweredByOwncastVersion": "Mogelijk gemaakt door <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
@@ -96,7 +96,7 @@
 			"deniedTitle": "Meldingen worden geblokkeerd op uw apparaat",
 			"enabledDescription": "Om push-meldingen van {{hostname}} uit te schakelen, krijg je toegang tot je browserrechten voor deze site en schakel je meldingen uit. <a href='https://owncast.online/docs/notifications'>Meer informatie.</a>",
 			"enabledTitle": "Meldingen zijn ingeschakeld",
-			"errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+			"errorMessage": "Fout bij het registreren voor live meldingen: {{message}}. Zorg ervoor dat je niet in een privé browser omgeving bent of eerder geen meldingen hebt voor deze stream.",
 			"errorTitle": "Browser Notificatie Fout",
 			"iosAddButton": "Toevoegen",
 			"iosAddToHomeScreen": "Toevoegen aan Beginscherm",
@@ -114,38 +114,57 @@
 			"unsupportedLocal": "Browsermeldingen worden niet ondersteund voor lokale servers."
 		},
 		"Footer": {
-			"contribute": "Contribute",
 			"documentation": "Documentatie",
-			"source": "Source"
+			"contribute": "Meedoen",
+			"source": "Bron"
+		},
+		"Chat": {
+			"userJoined": "ging de chat binnen.",
+			"userLeft": "verliet de chat.",
+			"nameChangeText": "staat nu bekend als",
+			"moderatorNotification": "Je bent nu een moderator."
+		},
+		"FollowModal": {
+			"description": "Door het volgen van deze stream krijg je een melding op de Fediverse wanneer het live gaat. Nu is een geweldig moment om",
+			"learnFediverse": "meer informatie over de Fediverse",
+			"newToYou": "als het nieuw is voor jou.",
+			"instructions": "Voer je gebruikersnaam @server in om te volgen",
+			"placeholder": "Uw fediverse account @account@server",
+			"redirectMessage": "Je wordt doorgestuurd naar je Fediverse server en gevraagd om de actie te bevestigen.",
+			"joinFediverse": "Doe mee met de Fediverse",
+			"followButton": "Volgen",
+			"followError": "Volg fout",
+			"unableToFollow": "Kan niet volgen."
 		},
 		"Header": {
-			"chatOffline": "Chat is offline",
-			"chatWillBeAvailable": "Chat will be available when the stream is live.",
-			"skipToContent": "Skip to page content",
-			"skipToFooter": "Skip to footer",
-			"skipToOfflineMessage": "Skip to offline message",
-			"skipToPlayer": "Skip to player"
+			"skipToPlayer": "Ga naar speler",
+			"skipToOfflineMessage": "Ga naar offline bericht",
+			"skipToContent": "Ga naar pagina-inhoud",
+			"skipToFooter": "Ga naar voettekst",
+			"chatWillBeAvailable": "Chat zal beschikbaar zijn wanneer de stream live is.",
+			"chatOffline": "Chat is offline"
 		},
 		"NameChangeModal": {
-			"authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
-			"buttonText": "Change name",
-			"colorLabel": "Your Color",
-			"description": "Your chat display name is what people see when you send chat messages.",
-			"overLimit": "Over limit",
-			"placeholder": "Your chat display name"
+			"authInfo": "U kunt ook een IndieAuth of Fediverse account verifiëren via het \"Authenticeren\" menu.",
+			"buttonText": "Naam wijzigen",
+			"colorLabel": "Jouw kleur",
+			"description": "Je chatscherm is wat mensen zien bij het versturen van chatberichten.",
+			"overLimit": "Limiet overschreden",
+			"placeholder": "Jouw weergavenaam van je chat"
 		},
-		"chatOffline": "<strong><em>Ontbrekende vertaling Frontend.chatOffline: Rapporteer</em></strong>",
+		"chatOffline": "Chat is offline",
 		"componentError": "Fout: {{message}}",
-		"helloWorld": "<strong><em>Ontbrekende vertaling Frontend.helloWorld: Rapporteer</em></strong>",
+		"helloWorld": "Hallo wereld",
 		"offlineBasic": "Deze stream is offline. Kom snel terug!",
 		"offlineFediverseOnly": "Deze stream is offline. <span class='follow-link'>Volg</span> {{fediverseAccount}} op de Fediverse om de volgende keer dat {{streamer}} live gaat te zien.",
 		"offlineNotifyAndFediverse": "Deze stream is offline. U kunt <span class='notify-link'>een bericht ontvangen</span> wanneer {{streamer}} weer live gaat of {{fediverseAccount}} <span class='follow-link'>volgen</span> op de Fediverse.",
-		"offlineNotifyOnly": "Deze stream is offline. <span class='notify-link'>Krijg een melding</span> de volgende keer dat {{streamer}} live gaat."
+		"offlineNotifyOnly": "Deze stream is offline. <span class='notify-link'>Krijg een melding</span> de volgende keer dat {{streamer}} live gaat.",
+		"lastLiveAgo": "Laatste live {{timeAgo}} geleden"
 	},
 	"Testing": {
-		"itemCount": "<strong><em>Ontbrekende vertaling Testing.itemCount: Rapporteer</em></strong>",
-		"messageCount": "<strong><em>Ontbrekende vertaling Testing.messageCount: Rapporteer</em></strong>",
-		"noPluralKey": "<strong><em>Ontbrekende vertaling Testing.noPluralKey: Gelieve rapporteren</em></strong>",
-		"simpleKey": "<strong><em>Ontbrekende vertaling Testing.simpleKey: Rapporteer</em></strong>"
+		"itemCount": "Je hebt {{count}} items",
+		"messageCount": "Je hebt {{count}} berichten van {{sender}}",
+		"noPluralKey": "Deze sleutel heeft geen meervoudsvarianten - {{count}} dingen",
+		"simpleKey": "Eenvoudige vertaling tekst"
 	}
 }

@@ -6,84 +6,84 @@
 			"serverUrlRequiredForDirectory": "디렉토리를 활성화하려면 위에서 <strong>서버 URL을</strong> 설정해야 합니다."
 		},
 		"HardwareInfo": {
+			"title": "하드웨어 정보",
+			"pleaseWait": "잠시만 기다려 주세요",
+			"noDetails": "하드웨어 세부사항이 아직 수집되지 않았습니다.",
 			"cpu": "CPU",
-			"disk": "Disk",
-			"memory": "Memory",
-			"noDetails": "No hardware details have been collected yet.",
-			"pleaseWait": "Please wait",
-			"title": "Hardware Info",
-			"used": "used"
+			"memory": "메모리",
+			"disk": "디스크",
+			"used": "사용됨"
 		},
 		"Help": {
-			"bugPlease": "If you found a bug, then please",
-			"buildAddons": "I want to build add-ons for Owncast",
-			"buildTools": "You can build your own bots, overlays, tools and add-ons with our",
-			"commonTasks": "Common tasks",
-			"configureBroadcasting": "Help configuring my broadcasting software",
-			"configureInstance": "I want to configure my owncast instance",
-			"customizeWebsite": "I want to customize my website",
-			"developerApis": "developer APIs.",
-			"discussions": "discussions",
-			"documentation": "Documentation",
-			"embedStream": "I want to embed my stream into another site",
+			"title": "어떻게 도와드릴까요?",
+			"configureInstance": "자신의 Owncast 인스턴스를 구성하고 싶습니다.",
+			"learnMore": "더 알아보기",
+			"configureBroadcasting": "방송 소프트웨어 구성 도움",
+			"embedStream": "다른 사이트에 제 스트림을 삽입하고 싶습니다.",
+			"customizeWebsite": "내 웹사이트를 사용자 정의하고 싶습니다.",
+			"tweakVideo": "비디오 출력을 조정하고 싶습니다.",
+			"useStorage": "외부 저장소 공급자를 사용하고 싶습니다.",
+			"foundBug": "버그를 발견했습니다.",
+			"bugPlease": "버그를 발견하셨다면, 아래를 부탁드립니다.",
+			"letUsKnow": "알려주세요",
+			"generalQuestion": "일반적인 질문이 있습니다.",
+			"generalAnswered": "대부분의 일반적인 질문은 우리의",
 			"faq": "FAQ",
-			"fixProblems": "Fix your problems",
-			"foundBug": "I found a bug",
-			"generalAnswered": "Most general questions are answered in our",
-			"generalQuestion": "I have a general question",
-			"learnMore": "Learn more",
-			"letUsKnow": "let us know",
-			"orExist": "or exist in our",
-			"other": "Other",
-			"readDocs": "Read the Docs",
-			"title": "How can we help you?",
-			"troubleshooting": "Troubleshooting",
-			"tweakVideo": "I want to tweak my video output",
-			"useStorage": "I want to use an external storage provider"
+			"orExist": "또는 우리의",
+			"discussions": "토론에서",
+			"buildAddons": "Owncast를 위한 애드온을 만들고 싶습니다.",
+			"buildTools": "우리의",
+			"developerApis": "개발자 API입니다.",
+			"troubleshooting": "문제 해결",
+			"fixProblems": "문제를 해결하십시오",
+			"documentation": "문서",
+			"readDocs": "문서 읽기",
+			"commonTasks": "일반적인 작업",
+			"other": "기타"
 		},
 		"LogTable": {
-			"error": "Error",
-			"info": "Info",
-			"level": "Level",
-			"logs": "Logs",
-			"message": "Message",
-			"timestamp": "Timestamp",
-			"warning": "Warning"
+			"level": "수준",
+			"info": "정보",
+			"warning": "경고",
+			"error": "오류",
+			"timestamp": "타임스탬프",
+			"message": "메시지",
+			"logs": "로그"
 		},
 		"NewsFeed": {
-			"link": "Link",
-			"noNews": "No news.",
-			"title": "News & Updates from Owncast"
-		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
-			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
-			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
-			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
+			"link": "링크",
+			"noNews": "뉴스가 없습니다.",
+			"title": "Owncast의 뉴스 및 업데이트"
 		},
 		"ViewerInfo": {
-			"currentStream": "Current stream",
-			"currentViewers": "Current viewers",
-			"last12Hours": "Last 12 hours",
-			"last24Hours": "Last 24 hours",
-			"last30Days": "Last 30 days",
-			"last3Months": "Last 3 months",
-			"last6Months": "Last 6 months",
-			"last7Days": "Last 7 days",
-			"maxViewers": "max viewers",
-			"maxViewersLastStream": "Max viewers last stream",
-			"maxViewersThisStream": "Max viewers this stream",
-			"noData": "No viewer data has been collected yet.",
-			"pleaseWait": "Please wait",
-			"title": "Viewer Info",
-			"viewers": "Viewers"
+			"title": "조회수 정보",
+			"currentStream": "현재 스트림",
+			"last12Hours": "지난 12시간",
+			"last24Hours": "지난 24시간",
+			"last7Days": "지난 7일",
+			"last30Days": "지난 30일",
+			"last3Months": "지난 3개월",
+			"last6Months": "지난 6개월",
+			"currentViewers": "현재 시청자",
+			"maxViewersThisStream": "이번 스트림 최대 시청자",
+			"maxViewersLastStream": "지난 스트림 최대 시청자",
+			"maxViewers": "최대 시청자",
+			"pleaseWait": "기다려 주십시오",
+			"noData": "아직 수집된 시청자 데이터가 없습니다.",
+			"viewers": "시청자"
 		},
-		"deleteEmoji": "Delete emoji",
-		"emojiPageDescription": "<strong><em>번역이 누락되었습니다 관리자.이모티콘 페이지 설명: 신고하세요</em></strong>",
-		"emojiUploadBulkGuide": "<strong><em>번역이 누락되었습니다 Admin.emojiUploadBulkGuide: 신고하세요</em></strong>",
-		"emojis": "<strong><em>번역이 누락된 관리자 이모티콘: 신고하세요</em></strong>",
-		"uploadNewEmoji": "<strong><em>번역이 누락되었습니다 Admin.uploadNewEmoji: 신고하세요</em></strong>"
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "비디오 패스스루가 활성화되면 비트 전송률 선택이 비활성화됩니다.",
+			"bitrateGoodForHigh": "고속 및 고비트 전송률 시청자에게 좋습니다.",
+			"bitrateGoodForMost": "대부분의 시청자, 대역폭 및 해상도에 좋습니다.",
+			"bitrateGoodForSlow": "느린, 모바일 및 저비트 전송률 시청자에게 좋습니다.",
+			"bitrateValueKbps": "{{bitrate}} kbps"
+		},
+		"deleteEmoji": "이모지 삭제",
+		"emojiPageDescription": "여기에서 채팅에 사용할 새로운 맞춤 이모지를 업로드할 수 있습니다. 새 이모지를 업로드할 때 확장자가 없는 파일 이름이 이모지 이름으로 사용됩니다. 추가로, 이모지 이름은 대소문자를 구분하지 않습니다. 최상의 결과를 위해 모든 이모지에 고유한 이름을 지정하세요.",
+		"emojiUploadBulkGuide": "이모지를 한 번에 여러 개 업로드하고 싶으신가요? 우리의 <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">이모지 가이드</a>를 확인하세요.",
+		"emojis": "이모지",
+		"uploadNewEmoji": "새 이모지 업로드"
 	},
 	"Common": {
 		"poweredByOwncastVersion": "<a href='https://owncast.online'>Owncast v 제공{{versionNumber}}</a>"
@@ -96,7 +96,7 @@
 			"deniedTitle": "귀하의 기기에서 알림이 차단되었습니다",
 			"enabledDescription": "{{hostname}}에서 푸시 알림을 비활성화하려면 이 사이트의 브라우저 권한에 접근하여 알림을 끄십시오. <a href='https://owncast.online/docs/notifications'>자세히 알아보기.</a>",
 			"enabledTitle": "알림이 활성화되었습니다",
-			"errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+			"errorMessage": "실시간 알림 등록 오류: {{message}}. 개인 브라우저 환경 내에 있지 않거나 이전에 이 스트림에 대한 알림을 비활성화하지 않았는지 확인하세요.",
 			"errorTitle": "브라우저 알림 오류",
 			"iosAddButton": "추가",
 			"iosAddToHomeScreen": "홈 화면에 추가",
@@ -114,38 +114,57 @@
 			"unsupportedLocal": "로컬 서버에 대한 브라우저 알림은 지원되지 않습니다."
 		},
 		"Footer": {
-			"contribute": "Contribute",
-			"documentation": "Documentation",
-			"source": "Source"
+			"documentation": "문서",
+			"contribute": "기여",
+			"source": "출처"
+		},
+		"Chat": {
+			"userJoined": "채팅에 참여했습니다.",
+			"userLeft": "채팅을 나갔습니다.",
+			"nameChangeText": "이제 이름이 다음과 같습니다.",
+			"moderatorNotification": "이제 당신은 중재자입니다."
+		},
+		"FollowModal": {
+			"description": "이 스트림을 따르면, 라이브가 시작될 때 페디버스에서 알림을 받을 수 있습니다. 지금은 좋은 시간입니다.",
+			"learnFediverse": "페디버스에 대해 배우다",
+			"newToYou": "처음이라면.",
+			"instructions": "팔로우할 @server에 사용자 이름을 입력하세요",
+			"placeholder": "당신의 페디버스 계정 @account@server",
+			"redirectMessage": "페디버스 서버로 리디렉션되며, 작업을 확인할 것인지 요청받게 됩니다.",
+			"joinFediverse": "페디버스에 가입하기",
+			"followButton": "팔로우",
+			"followError": "팔로우 오류",
+			"unableToFollow": "팔로우할 수 없습니다."
 		},
 		"Header": {
-			"chatOffline": "Chat is offline",
-			"chatWillBeAvailable": "Chat will be available when the stream is live.",
-			"skipToContent": "Skip to page content",
-			"skipToFooter": "Skip to footer",
-			"skipToOfflineMessage": "Skip to offline message",
-			"skipToPlayer": "Skip to player"
+			"skipToPlayer": "플레이어로 건너뛰기",
+			"skipToOfflineMessage": "오프라인 메시지로 건너뛰기",
+			"skipToContent": "페이지 콘텐츠로 건너뛰기",
+			"skipToFooter": "바닥글로 건너뛰기",
+			"chatWillBeAvailable": "스트림이 라이브일 때 채팅을 사용할 수 있습니다.",
+			"chatOffline": "채팅이 오프라인입니다"
 		},
 		"NameChangeModal": {
-			"authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
-			"buttonText": "Change name",
-			"colorLabel": "Your Color",
-			"description": "Your chat display name is what people see when you send chat messages.",
-			"overLimit": "Over limit",
-			"placeholder": "Your chat display name"
+			"authInfo": "\"인증\" 메뉴를 통해 IndieAuth 또는 Fediverse 계정을 인증할 수도 있습니다.",
+			"buttonText": "이름 변경",
+			"colorLabel": "귀하의 색상",
+			"description": "채팅 표시 이름은 채팅 메시지를 보낼 때 사람들이 보는 것입니다.",
+			"overLimit": "제한 초과",
+			"placeholder": "귀하의 채팅 표시 이름"
 		},
-		"chatOffline": "<strong><em>번역이 누락되었습니다 Frontend.chatOffline: 신고하세요</em></strong>",
+		"chatOffline": "채팅이 오프라인입니다",
 		"componentError": "오류: {{message}}",
-		"helloWorld": "<strong><em>번역이 누락되었습니다 Frontend.helloWorld: 보고해 주세요</em></strong>",
+		"helloWorld": "헬로 월드",
 		"offlineBasic": "이 스트림은 오프라인 상태입니다. 곧 다시 확인해주세요!",
 		"offlineFediverseOnly": "이 스트림은 오프라인 상태입니다. 다음 번 {{streamer}} 라이브 방송을 보려면 Fediverse에서 {{fediverseAccount}} <span class='follow-link'>팔로우하세요</span>.",
 		"offlineNotifyAndFediverse": "이 스트림은 오프라인 상태입니다. 다음 번에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받거나 페디버스에서 {{fediverseAccount}} 을 <span class='follow-link'>팔로우하세요</span>.",
-		"offlineNotifyOnly": "이 스트림은 오프라인 상태입니다. 다음에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받으세요."
+		"offlineNotifyOnly": "이 스트림은 오프라인 상태입니다. 다음에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받으세요.",
+		"lastLiveAgo": "마지막으로 {{timeAgo}} 전 라이브"
 	},
 	"Testing": {
-		"itemCount": "<strong><em>누락된 번역 Testing.itemCount: 보고해 주세요</em></strong>",
-		"messageCount": "<strong><em>누락된 번역 Testing.messageCount: 보고해 주세요</em></strong>",
-		"noPluralKey": "<strong><em>누락된 번역 Testing.noPluralKey: 보고해 주세요</em></strong>",
-		"simpleKey": "<strong><em>누락된 번역 Testing.simpleKey: 보고해 주세요</em></strong>"
+		"itemCount": "귀하는 {{count}} 개 항목이 있습니다",
+		"messageCount": "귀하는 {{sender}}로부터 {{count}} 개 메시지가 있습니다",
+		"noPluralKey": "이 키에는 복수형 변형이 없습니다 - {{count}} 개 항목",
+		"simpleKey": "간단한 번역 텍스트"
 	}
 }

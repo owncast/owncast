@@ -6,84 +6,84 @@
 			"serverUrlRequiredForDirectory": "Debe configurar la <strong>URL de</strong> su servidor para habilitar el directorio."
 		},
 		"HardwareInfo": {
+			"title": "Info de hardware",
+			"pleaseWait": "Por favor espere",
+			"noDetails": "Aún no se han recopilado detalles de hardware.",
 			"cpu": "CPU",
-			"disk": "Disco",
 			"memory": "Memoria",
-			"noDetails": "No hardware details have been collected yet.",
-			"pleaseWait": "Por favor, espera",
-			"title": "Información del Hardware",
-			"used": "utilizado"
+			"disk": "Disco",
+			"used": "usado"
 		},
 		"Help": {
-			"bugPlease": "Si encuentras un error, entonces por favor",
-			"buildAddons": "Quiero crear complementos para Owncast",
-			"buildTools": "Puedes construir tus propios bots, superposiciones, herramientas y complementos con nuestra",
-			"commonTasks": "Tareas habituales",
-			"configureBroadcasting": "Ayuda a configurar mi software de emisión",
-			"configureInstance": "Quiero configurar mi instancia de owncast",
-			"customizeWebsite": "Quiero personalizar mi página web",
-			"developerApis": "developer APIs.",
-			"discussions": "debates",
-			"documentation": "Documentación",
-			"embedStream": "Quiero incrustar mi emisión en otro sitio",
-			"faq": "preguntas frecuentes (FAQ)",
-			"fixProblems": "Solucione sus problemas",
-			"foundBug": "Encontré un error",
-			"generalAnswered": "Las preguntas más generales se responden en nuestras",
-			"generalQuestion": "Tengo una pregunta de carácter general",
-			"learnMore": "Más información",
-			"letUsKnow": "háznoslo saber",
-			"orExist": "o existe en nuestros",
-			"other": "Otros",
-			"readDocs": "Leer la documentación",
 			"title": "¿Cómo podemos ayudarte?",
-			"troubleshooting": "Resolución de problemas",
+			"configureInstance": "Quiero configurar mi propia instancia",
+			"learnMore": "Aprende más",
+			"configureBroadcasting": "Ayuda a configurar mi software de difusión",
+			"embedStream": "Quiero incrustar mi flujo en otro sitio",
+			"customizeWebsite": "Quiero personalizar mi sitio web",
 			"tweakVideo": "Quiero ajustar mi salida de vídeo",
-			"useStorage": "Quiero usar un proveedor de almacenamiento externo"
+			"useStorage": "Quiero usar un proveedor de almacenamiento externo",
+			"foundBug": "He encontrado un error",
+			"bugPlease": "Si encontraste un error, entonces por favor",
+			"letUsKnow": "háganoslo saber",
+			"generalQuestion": "Tengo una pregunta general",
+			"generalAnswered": "La mayoría de las preguntas generales son contestadas en nuestro",
+			"faq": "FAQ",
+			"orExist": "o existe en nuestro",
+			"discussions": "discusiones",
+			"buildAddons": "Quiero construir complementos para Owncast",
+			"buildTools": "Puedes construir tus propios bots, superposiciones, herramientas y complementos con nuestros",
+			"developerApis": "APIs de desarrolladores.",
+			"troubleshooting": "Solución de problemas",
+			"fixProblems": "Soluciona tus problemas",
+			"documentation": "Documentación",
+			"readDocs": "Leer los documentos",
+			"commonTasks": "Tareas comunes",
+			"other": "Otro"
 		},
 		"LogTable": {
-			"error": "Error",
-			"info": "Información",
 			"level": "Nivel",
-			"logs": "Registros",
+			"info": "Info",
+			"warning": "Advertencia",
+			"error": "Error",
+			"timestamp": "Timestamp",
 			"message": "Mensaje",
-			"timestamp": "Marca de tiempo",
-			"warning": "Advertencia"
+			"logs": "Registros"
 		},
 		"NewsFeed": {
 			"link": "Enlace",
-			"noNews": "No news.",
+			"noNews": "No hay noticias.",
 			"title": "Noticias y actualizaciones de Owncast"
 		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
-			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
-			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
-			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
-		},
 		"ViewerInfo": {
-			"currentStream": "Emisión actual",
-			"currentViewers": "Espectadores Actuales",
+			"title": "Información del Visor",
+			"currentStream": "Flujo actual",
 			"last12Hours": "Últimas 12 horas",
 			"last24Hours": "Últimas 24 horas",
+			"last7Days": "Últimos 7 días",
 			"last30Days": "Últimos 30 días",
 			"last3Months": "Últimos 3 meses",
 			"last6Months": "Últimos 6 meses",
-			"last7Days": "Últimos 7 días",
-			"maxViewers": "Máximo de espectadores",
-			"maxViewersLastStream": "Máximo de espectadores de la última emisión",
-			"maxViewersThisStream": "Máximo de espectadores en esta emisión",
-			"noData": "No viewer data has been collected yet.",
-			"pleaseWait": "Por favor, espera",
-			"title": "Datos de Audiencia",
-			"viewers": "Espectadores"
+			"currentViewers": "Visores actuales",
+			"maxViewersThisStream": "Máximo de espectadores de este flujo",
+			"maxViewersLastStream": "Última transmisión máxima",
+			"maxViewers": "máximos espectadores",
+			"pleaseWait": "Por favor espere",
+			"noData": "Aún no se han recopilado datos del visor.",
+			"viewers": "Visores"
 		},
-		"deleteEmoji": "Delete emoji",
-		"emojiPageDescription": "<strong><em>Falta traducción Admin.emojiPageDescription: Por favor, informe</em></strong>",
-		"emojiUploadBulkGuide": "<strong><em>Falta la traducción de Admin.emojiUploadBulkGuide: Por favor, informe</em></strong>",
-		"emojis": "<strong><em>Falta traducción Admin.emojis: por favor reporta</em></strong>",
-		"uploadNewEmoji": "<strong><em>Falta traducción Admin.uploadNewEmoji: Por favor reporta</em></strong>"
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "La selección de tasa de bits está desactivada cuando se habilita la contraseña de vídeo.",
+			"bitrateGoodForHigh": "Bueno para televidentes de alta velocidad y alta tasa de bits.",
+			"bitrateGoodForMost": "Bueno para la mayoría de los televidentes, ancho de banda y resoluciones.",
+			"bitrateGoodForSlow": "Es bueno para espectadores lentos, móviles y de baja tasa de bits.",
+			"bitrateValueKbps": "{{bitrate}} kbps"
+		},
+		"deleteEmoji": "Eliminar emoji",
+		"emojiPageDescription": "Aquí puedes subir nuevos emojis personalizados para su uso en el chat. Al subir un nuevo emoji, el nombre del archivo sin extensión se utilizará como nombre de emoji. Además, los nombres de los emojis son insensibles mayúsculas y minúsculas. Para obtener mejores resultados, asegúrate de que todos los emojis tengan nombres únicos.",
+		"emojiUploadBulkGuide": "¿Quieres subir emojis personalizados a granel? Echa un vistazo a nuestra guía <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji</a>.",
+		"emojis": "Emojis",
+		"uploadNewEmoji": "Subir nuevos emoji"
 	},
 	"Common": {
 		"poweredByOwncastVersion": "Powered by <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
@@ -96,7 +96,7 @@
 			"deniedTitle": "Las notificaciones están bloqueadas en tu dispositivo",
 			"enabledDescription": "Para desactivar las notificaciones push de {{hostname}} accede a los permisos de tu navegador para este sitio y desactiva las notificaciones. <a href='https://owncast.online/docs/notifications'>Más información</a>",
 			"enabledTitle": "Las notificaciones están habilitadas",
-			"errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+			"errorMessage": "Error al registrar las notificaciones en vivo: {{message}}. Asegúrate de que no estás dentro de un entorno privado del navegador o de que has deshabilitado las notificaciones de esta secuencia.",
 			"errorTitle": "Error de notificación del navegador",
 			"iosAddButton": "Añadir",
 			"iosAddToHomeScreen": "Añadir a la pantalla de inicio",
@@ -114,38 +114,57 @@
 			"unsupportedLocal": "Las notificaciones del navegador no son compatibles con los servidores locales."
 		},
 		"Footer": {
-			"contribute": "Contribuir",
 			"documentation": "Documentación",
-			"source": "Código fuente"
+			"contribute": "Contribuir",
+			"source": "Fuente"
+		},
+		"Chat": {
+			"userJoined": "se unió al chat.",
+			"userLeft": "dejó el chat.",
+			"nameChangeText": "ahora es conocido como",
+			"moderatorNotification": "Ahora eres un moderador."
+		},
+		"FollowModal": {
+			"description": "Al seguir este flujo serás notificado en el Fediverso cuando se vaya en vivo. Ahora es un buen momento para",
+			"learnFediverse": "aprender sobre el Fediverso",
+			"newToYou": "si es nuevo para ti.",
+			"instructions": "Introduce tu nombre de usuario @server para seguir",
+			"placeholder": "Tu cuenta de fediverse @account@server",
+			"redirectMessage": "Serás redirigido a tu servidor Fediverse y te pedirá que confirmes la acción.",
+			"joinFediverse": "Únete al Fediverso",
+			"followButton": "Seguir",
+			"followError": "Error de seguimiento",
+			"unableToFollow": "No se puede seguir."
 		},
 		"Header": {
-			"chatOffline": "Chat desconectado",
-			"chatWillBeAvailable": "Chat will be available when the stream is live.",
+			"skipToPlayer": "Saltar al jugador",
+			"skipToOfflineMessage": "Saltar al mensaje sin conexión",
 			"skipToContent": "Ir al contenido de la página",
-			"skipToFooter": "Ir al pie de página",
-			"skipToOfflineMessage": "Ir a mensaje sin conexión",
-			"skipToPlayer": "Ir al reproductor"
+			"skipToFooter": "Saltar al pie",
+			"chatWillBeAvailable": "El chat estará disponible cuando el flujo esté en vivo.",
+			"chatOffline": "Chat desconectado"
 		},
 		"NameChangeModal": {
-			"authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
-			"buttonText": "Change name",
-			"colorLabel": "Your Color",
-			"description": "Your chat display name is what people see when you send chat messages.",
-			"overLimit": "Over limit",
-			"placeholder": "Your chat display name"
+			"authInfo": "También puede autenticar una cuenta IndieAuth o Fediverse a través del menú \"Autenticar\".",
+			"buttonText": "Cambiar nombre",
+			"colorLabel": "Tu color",
+			"description": "El nombre de la pantalla del chat es lo que la gente ve cuando envía mensajes del chat.",
+			"overLimit": "Límite de superación",
+			"placeholder": "Nombre de la pantalla de chat"
 		},
-		"chatOffline": "<strong><em>Falta traducción Frontend.chatOffline: Por favor, informe</em></strong>",
+		"chatOffline": "Chat desconectado",
 		"componentError": "Error: {{message}}",
-		"helloWorld": "<strong><em>Falta traducción Frontend.helloWorld: por favor informe</em></strong>",
+		"helloWorld": "Hola mundo",
 		"offlineBasic": "Esta corriente está fuera de línea. ¡Vuelve pronto!",
 		"offlineFediverseOnly": "Este stream está fuera de línea. <span class='follow-link'>Sigue</span> {{fediverseAccount}} en el Fediverso para ver la próxima vez que {{streamer}} se ponga en directo.",
 		"offlineNotifyAndFediverse": "Esta transmisión está desconectada. Puede <span class='notify-link'>recibir una notificación</span> la próxima vez que {{streamer}} salga en directo o <span class='follow-link'>seguir</span> {{fediverseAccount}} en Fediverse.",
-		"offlineNotifyOnly": "Este stream está desconectado. <span class='notify-link'>Ser notificado</span> la próxima vez que {{streamer}} vaya en directo."
+		"offlineNotifyOnly": "Este stream está desconectado. <span class='notify-link'>Ser notificado</span> la próxima vez que {{streamer}} vaya en directo.",
+		"lastLiveAgo": "Última versión de {{timeAgo}} hace"
 	},
 	"Testing": {
-		"itemCount": "<strong><em>Falta traducción Testing.itemCount: Por favor reporte</em></strong>",
-		"messageCount": "<strong><em>Falta traducción Testing.messageCount: Por favor, informe</em></strong>",
-		"noPluralKey": "<strong><em>Falta traducción Testing.noPluralKey: por favor reporta</em></strong>",
-		"simpleKey": "<strong><em>Falta traducción Testing.simpleKey: Por favor reporte</em></strong>"
+		"itemCount": "Tienes {{count}} elementos",
+		"messageCount": "Tienes {{count}} mensajes de {{sender}}",
+		"noPluralKey": "Esta clave no tiene variantes en plural - {{count}} cosas",
+		"simpleKey": "Texto de traducción simple"
 	}
 }

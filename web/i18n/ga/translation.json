@@ -6,84 +6,84 @@
 			"serverUrlRequiredForDirectory": "Caithfidh tú do <strong>URL freastalaí</strong> a shocrú thuas chun an cláraithe a chumasú."
 		},
 		"HardwareInfo": {
+			"title": "Eolas Crua",
+			"pleaseWait": "Gnáth fan",
+			"noDetails": "Ní bhailíodh aon sonraí crua go fóill.",
 			"cpu": "CPU",
-			"disk": "Disk",
-			"memory": "Memory",
-			"noDetails": "No hardware details have been collected yet.",
-			"pleaseWait": "Please wait",
-			"title": "Hardware Info",
-			"used": "used"
+			"memory": "Cuimhne",
+			"disk": "Diosca",
+			"used": "úsáidte"
 		},
 		"Help": {
-			"bugPlease": "If you found a bug, then please",
-			"buildAddons": "I want to build add-ons for Owncast",
-			"buildTools": "You can build your own bots, overlays, tools and add-ons with our",
-			"commonTasks": "Common tasks",
-			"configureBroadcasting": "Help configuring my broadcasting software",
-			"configureInstance": "I want to configure my owncast instance",
-			"customizeWebsite": "I want to customize my website",
-			"developerApis": "developer APIs.",
-			"discussions": "discussions",
-			"documentation": "Documentation",
-			"embedStream": "I want to embed my stream into another site",
-			"faq": "FAQ",
-			"fixProblems": "Fix your problems",
-			"foundBug": "I found a bug",
-			"generalAnswered": "Most general questions are answered in our",
-			"generalQuestion": "I have a general question",
-			"learnMore": "Learn more",
-			"letUsKnow": "let us know",
-			"orExist": "or exist in our",
-			"other": "Other",
-			"readDocs": "Read the Docs",
-			"title": "How can we help you?",
-			"troubleshooting": "Troubleshooting",
-			"tweakVideo": "I want to tweak my video output",
-			"useStorage": "I want to use an external storage provider"
+			"title": "Conas is féidir linn cabhrú leat?",
+			"configureInstance": "Ba mhaith liom mo chuntas Owncast a chur ar aghaidh.",
+			"learnMore": "Foghlaim tuilleadh",
+			"configureBroadcasting": "Cabhrú le mo chórais craoladh a chur ar bun",
+			"embedStream": "Ba mhaith liom mo shruth a chur isteach i suíomh eile",
+			"customizeWebsite": "Ba mhaith liom mo shuíomh gréasáin a shaincheapadh",
+			"tweakVideo": "Ba mhaith liom mo tháirgeadh físe a choigeartú",
+			"useStorage": "Ba mhaith liom soláthraí stórála seachtrach a úsáid",
+			"foundBug": "Fuair ​​mé fabht",
+			"bugPlease": "Má fuair tú fabht, le do thoil",
+			"letUsKnow": "informed us",
+			"generalQuestion": "Tá ceist ghinearálta agam",
+			"generalAnswered": "Freagraítear go leor ceisteanna ginearálta inár",
+			"faq": "CCG",
+			"orExist": "nó tá siad ann inár",
+			"discussions": "plé",
+			"buildAddons": "Ba mhaith liom breiseanna a thógáil do Owncast",
+			"buildTools": "Is féidir leat do botáin, comhoiriúnachtaí, uirlisí agus breiseanna a thógáil le ár",
+			"developerApis": "APIs forbróirí.",
+			"troubleshooting": "Fadhbanna a réiteach",
+			"fixProblems": "Deisigh do fhadhbanna",
+			"documentation": "Doiciméadacht",
+			"readDocs": "Léigh na Doiciméid",
+			"commonTasks": "Tascanna coitianta",
+			"other": "Eile"
 		},
 		"LogTable": {
-			"error": "Error",
-			"info": "Info",
-			"level": "Level",
-			"logs": "Logs",
-			"message": "Message",
-			"timestamp": "Timestamp",
-			"warning": "Warning"
+			"level": "Leibhéal",
+			"info": "Eolas",
+			"warning": "Rabhadh",
+			"error": "Earráid",
+			"timestamp": "Am a chaitheamh",
+			"message": "Teachtaire",
+			"logs": "Loga"
 		},
 		"NewsFeed": {
-			"link": "Link",
-			"noNews": "No news.",
-			"title": "News & Updates from Owncast"
-		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
-			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
-			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
-			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
+			"link": "Conas",
+			"noNews": "Níl nuacht ann.",
+			"title": "Nuacht agus Nuashonruithe ó Owncast"
 		},
 		"ViewerInfo": {
-			"currentStream": "Current stream",
-			"currentViewers": "Current viewers",
-			"last12Hours": "Last 12 hours",
-			"last24Hours": "Last 24 hours",
-			"last30Days": "Last 30 days",
-			"last3Months": "Last 3 months",
-			"last6Months": "Last 6 months",
-			"last7Days": "Last 7 days",
-			"maxViewers": "max viewers",
-			"maxViewersLastStream": "Max viewers last stream",
-			"maxViewersThisStream": "Max viewers this stream",
-			"noData": "No viewer data has been collected yet.",
-			"pleaseWait": "Please wait",
-			"title": "Viewer Info",
-			"viewers": "Viewers"
+			"title": "Eolas lucht féachana",
+			"currentStream": "Sruth reatha",
+			"last12Hours": "An 12 uair atá seo caite",
+			"last24Hours": "An 24 uair atá seo caite",
+			"last7Days": "An 7 lá atá seo caite",
+			"last30Days": "An 30 lá atá seo caite",
+			"last3Months": "An 3 mhí atá seo caite",
+			"last6Months": "An 6 mhí atá seo caite",
+			"currentViewers": "Lucht féachana reatha",
+			"maxViewersThisStream": "Méid is mó lucht féachana ar an sruth seo",
+			"maxViewersLastStream": "Méid is mó lucht féachana ar an sruth deireanach",
+			"maxViewers": "méid is mó lucht féachana",
+			"pleaseWait": "Fan go raibh",
+			"noData": "Níl aon sonraí lucht féachana bailithe go fóill.",
+			"viewers": "Lucht féachana"
 		},
-		"deleteEmoji": "Delete emoji",
-		"emojiPageDescription": "<strong><em>Spreagadh aistriú Admin.emojiPageDescription: Tuiscint le do thoil</em></strong>",
-		"emojiUploadBulkGuide": "<strong><em>Spreagadh aistriú Admin.emojiUploadBulkGuide: Tuiscint le do thoil</em></strong>",
-		"emojis": "<strong><em>Spreagadh aistriú Admin.emojis: Tuiscint le do thoil</em></strong>",
-		"uploadNewEmoji": "<strong><em>Spreagadh aistriú Admin.uploadNewEmoji: Tuiscint le do thoil</em></strong>"
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "Tá rogha bitrate díláraithe nuair a tháinig Passthrough Video ar fáil.",
+			"bitrateGoodForHigh": "Deas le haghaidh lucht féachana ar luas ard agus bitrate ard.",
+			"bitrateGoodForMost": "Deas do lucht féachana, bandwidths agus réitigh éagsúla.",
+			"bitrateGoodForSlow": "Deas do lucht féachana mall, guthán soghluaiste agus bitrate íseal.",
+			"bitrateValueKbps": "{{bitrate}} kbps"
+		},
+		"deleteEmoji": "Scrios emoji",
+		"emojiPageDescription": "Anseo is féidir leat emojis saincheaptha nua a uaslódáil le húsáid sa chomhrá. Nuair a bhíonn emoji nua á uaslódáil, úsáidfear ainm an chomhoibrithe gan comhoiriúnacht mar ainm an emoji. Ina theannta sin, tá ainmneacha emoji indéanta. Le haghaidh na torthaí is fearr, déan cinnte go bhfuil na hainmneacha emoji go hiomlán difriúil.",
+		"emojiUploadBulkGuide": "Ba mhaith leat emojis saincheaptha a uaslódáil i mór? Féach ar ár <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Treoir emoji</a>.",
+		"emojis": "Emojis",
+		"uploadNewEmoji": "Uaslódáil emoji nua"
 	},
 	"Common": {
 		"poweredByOwncastVersion": "Fuarthas ó <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
@@ -96,7 +96,7 @@
 			"deniedTitle": "Tá fógraí blocáilte ar do ghléas",
 			"enabledDescription": "Chun fógraí piocála a dhíchumasú ó {{hostname}} gabh chuig do cheaduithe brabhsála do shuíomh seo agus cas as fógraí. <a href='https://owncast.online/docs/notifications'>Tuilleadh eolais.</a>",
 			"enabledTitle": "Tá fógraí cumasaithe",
-			"errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+			"errorMessage": "Earráid ag clárú le haghaidh foláireamh beo: {{message}}. Déan cinnte nach bhfuil tú i dtimpeallacht bhrabhsála príobháideach nó nach bhfuil tú d'fhág tú foláireamh as do sruth roimhe seo.",
 			"errorTitle": "Earráid Fógra Brabhsála",
 			"iosAddButton": "Cuir le hUimh",
 			"iosAddToHomeScreen": "Cuir chuig an scáileán baile",
@@ -114,38 +114,57 @@
 			"unsupportedLocal": "Ní tacaítear le fógraí brabhsálaí do shailéain áitiúla."
 		},
 		"Footer": {
-			"contribute": "Contribute",
-			"documentation": "Documentation",
-			"source": "Source"
+			"documentation": "Doiciméadacht",
+			"contribute": "Cuir isteach",
+			"source": "Foinse"
+		},
+		"Chat": {
+			"userJoined": "d'olinaigh an comhrá.",
+			"userLeft": "d'fhág an comhrá.",
+			"nameChangeText": "tá anois ar a dtugtar",
+			"moderatorNotification": "Tá tú anois mar mhodaróir."
+		},
+		"FollowModal": {
+			"description": "Trí leanúint ar an sruth seo gheobhaidh tú foláireamh ar an Fediverse nuair a théann sé beo. Is aoibhinn an t-am anois chun",
+			"learnFediverse": "foghlaim faoi na Fediverse",
+			"newToYou": "má tá sé nua duit.",
+			"instructions": "Cuir isteach do ainm úsáideora @server chun leanúint",
+			"placeholder": "Do chuntas fediverse @account@server",
+			"redirectMessage": "Beidh tú dírithe chuig do bhóthar Fediverse agus iarrfar ort an gníomh a dhaingniú.",
+			"joinFediverse": "Bí páirteach sa Fediverse",
+			"followButton": "Lean",
+			"followError": "Earráid leanúna",
+			"unableToFollow": "Ní féidir leanúint."
 		},
 		"Header": {
-			"chatOffline": "Chat is offline",
-			"chatWillBeAvailable": "Chat will be available when the stream is live.",
+			"skipToPlayer": "Skip to player",
+			"skipToOfflineMessage": "Skip to offline message",
 			"skipToContent": "Skip to page content",
 			"skipToFooter": "Skip to footer",
-			"skipToOfflineMessage": "Skip to offline message",
-			"skipToPlayer": "Skip to player"
+			"chatWillBeAvailable": "Beidh comhrá ar fáil nuair a bhíonn an sruth beo.",
+			"chatOffline": "Tá comhrá díchumasaithe"
 		},
 		"NameChangeModal": {
-			"authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
-			"buttonText": "Change name",
-			"colorLabel": "Your Color",
-			"description": "Your chat display name is what people see when you send chat messages.",
-			"overLimit": "Over limit",
-			"placeholder": "Your chat display name"
+			"authInfo": "Is féidir leat comhoiriúnacht IndieAuth nó cuntas Fediverse a dheimhniú trí na \"Déanaigh\" menú.",
+			"buttonText": "Athraigh ainm",
+			"colorLabel": "Do Dath",
+			"description": "Is é do shainainm comhoiriúnacht an rud a fheiceann daoine nuair a sheolann tú teachtaireachtaí comhoiriúnachta.",
+			"overLimit": "Os cionn theorainne",
+			"placeholder": "Do shainainm comhoiriúnachta"
 		},
-		"chatOffline": "<strong><em>Tá an aistriúchan Frontend.chatOffline ar iarraidh: Tuairiscigh le do thoil</em></strong>",
+		"chatOffline": "Tá comhrá díchumasaithe",
 		"componentError": "Earráid: {{message}}",
-		"helloWorld": "<strong><em>Tá an aistriúchan Frontend.helloWorld ar iarraidh: Tuairiscigh le do thoil</em></strong>",
+		"helloWorld": "Dia duit, a dhuine.",
 		"offlineBasic": "Tá an sruth seo as líne. Seiceáil arís go luath!",
 		"offlineFediverseOnly": "Tá an sruth seo as líne. <span class='follow-link'>Lean</span> {{fediverseAccount}} ar an Fediverse chun a fheiceáil an uair a bhíonn {{streamer}} ar líne.",
 		"offlineNotifyAndFediverse": "Tá an sruth seo as líne. Is féidir leat <span class='notify-link'>a bheith rabhaidh</span> an uair a bhíonn {{streamer}} ar líne nó <span class='follow-link'>lean</span> {{fediverseAccount}} ar an Fediverse.",
-		"offlineNotifyOnly": "Tá an sruth seo as líne. <span class='notify-link'>Bí rabhaidh</span> an uair a bhíonn {{streamer}} ar líne."
+		"offlineNotifyOnly": "Tá an sruth seo as líne. <span class='notify-link'>Bí rabhaidh</span> an uair a bhíonn {{streamer}} ar líne.",
+		"lastLiveAgo": "Le feiceáil {{timeAgo}} ó shin"
 	},
 	"Testing": {
-		"itemCount": "<strong><em>Tá an aistriúchan Testing.itemCount ar iarraidh: Tuairiscigh le do thoil</em></strong>",
-		"messageCount": "<strong><em>Tá an aistriúchan Testing.messageCount ar iarraidh: Tuairiscigh le do thoil</em></strong>",
-		"noPluralKey": "<strong><em>Tá an aistriúchan Testing.noPluralKey ar iarraidh: Tuairiscigh le do thoil</em></strong>",
-		"simpleKey": "<strong><em>Tá an aistriúchan Testing.simpleKey ar iarraidh: Tuairiscigh le do thoil</em></strong>"
+		"itemCount": "Tá {{count}} réadanna agat",
+		"messageCount": "Tá {{count}} teachtaireachtaí agat ó {{sender}}",
+		"noPluralKey": "Níl aon éagsúlachtaí ilóige ag an eochair seo - {{count}} rudaí",
+		"simpleKey": "Teanga aistriúcháin shimplí"
 	}
 }
