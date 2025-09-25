@@ -16,6 +16,7 @@ export type DesktopContentProps = {
   extraPageContent: string;
   setShowFollowModal: (show: boolean) => void;
   supportFediverseFeatures: boolean;
+  federatedServers?: any[]; // Will be properly typed when API is implemented
 };
 
 // lazy loaded components
@@ -34,6 +35,10 @@ const FollowerCollection = dynamic(
   },
 );
 
+const StreamsTab = dynamic(() => import('../StreamsTab/StreamsTab').then(mod => mod.StreamsTab), {
+  ssr: false,
+});
+
 export const DesktopContent: FC<DesktopContentProps> = ({
   name,
   summary,
@@ -42,6 +47,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
   extraPageContent,
   setShowFollowModal,
   supportFediverseFeatures,
+  federatedServers = [],
 }) => {
   const aboutTabContent = (
     <div className={styles.bottomPageContentContainer}>
@@ -54,9 +60,20 @@ export const DesktopContent: FC<DesktopContentProps> = ({
       <FollowerCollection name={name} onFollowButtonClick={() => setShowFollowModal(true)} />
     </div>
   );
+
+  const streamsTabContent = (
+    <div className={styles.bottomPageContentContainer}>
+      <StreamsTab servers={federatedServers} />
+    </div>
+  );
+
   const items = [!!extraPageContent && { label: 'About', key: '2', children: aboutTabContent }];
   if (supportFediverseFeatures) {
     items.push({ label: 'Followers', key: '3', children: followersTabContent });
+  }
+  // Add Featured tab if there are featured streams
+  if (federatedServers && federatedServers.length > 0) {
+    items.push({ label: 'Featured Streams', key: '4', children: streamsTabContent });
   }
 
   return (

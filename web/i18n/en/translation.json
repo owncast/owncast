@@ -5,6 +5,14 @@
 			"offlineMessageDescription": "The offline message is displayed to your page visitors when you're not streaming. Markdown is supported.",
 			"serverUrlRequiredForDirectory": "You must set your <strong>Server URL</strong> above to enable the directory."
 		},
+		"FeaturedStreams": {
+			"streamUrlPlaceholder": "stream.example.com",
+			"onlyHttpsSupported": "Only HTTPS URLs are supported",
+			"onlyDefaultPortSupported": "Only the default HTTPS port (443) is supported",
+			"enterValidUrl": "Please enter a valid URL",
+			"failedToFeature": "Failed to feature stream",
+			"enterStreamUrl": "Please enter a stream URL"
+		},
 		"HardwareInfo": {
 			"title": "Hardware Info",
 			"pleaseWait": "Please wait",

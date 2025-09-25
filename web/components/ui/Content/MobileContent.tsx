@@ -18,6 +18,7 @@ export type MobileContentProps = {
   setShowFollowModal: (show: boolean) => void;
   supportFediverseFeatures: boolean;
   online: boolean;
+  federatedServers?: any[]; // Will be properly typed when API is implemented
 };
 
 // lazy loaded components
@@ -36,6 +37,10 @@ const FollowerCollection = dynamic(
   },
 );
 
+const StreamsTab = dynamic(() => import('../StreamsTab/StreamsTab').then(mod => mod.StreamsTab), {
+  ssr: false,
+});
+
 const ComponentErrorFallback = ({ error, resetErrorBoundary }) => (
   <ComponentError
     message={error}
@@ -53,6 +58,7 @@ export const MobileContent: FC<MobileContentProps> = ({
   setShowFollowModal,
   supportFediverseFeatures,
   online,
+  federatedServers = [],
 }) => {
   const aboutTabContent = (
     <>
@@ -70,11 +76,21 @@ export const MobileContent: FC<MobileContentProps> = ({
     </div>
   );
 
+  const streamsTabContent = (
+    <div className={styles.bottomPageContentContainer}>
+      <StreamsTab servers={federatedServers} />
+    </div>
+  );
+
   const items = [];
 
   items.push({ label: 'About', key: '0', children: aboutTabContent });
   if (supportFediverseFeatures) {
     items.push({ label: 'Followers', key: '1', children: followersTabContent });
+  }
+  // Add Featured tab if there are featured streams
+  if (federatedServers && federatedServers.length > 0) {
+    items.push({ label: 'Featured', key: '2', children: streamsTabContent });
   }
 
   return (
