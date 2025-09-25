@@ -6,84 +6,84 @@
 			"serverUrlRequiredForDirectory": "يجب عليك تعيين رابط الخادم <strong></strong> أعلاه لتمكين الدليل."
 		},
 		"HardwareInfo": {
-			"cpu": "CPU",
-			"disk": "Disk",
-			"memory": "Memory",
-			"noDetails": "No hardware details have been collected yet.",
-			"pleaseWait": "Please wait",
-			"title": "Hardware Info",
-			"used": "used"
+			"title": "معلومات الجهاز",
+			"pleaseWait": "الرجاء الانتظار",
+			"noDetails": "لم يتم جمع أي تفاصيل عن الأجهزة بعد.",
+			"cpu": "المعالج",
+			"memory": "الذاكرة",
+			"disk": "قرص",
+			"used": "مستعمل"
 		},
 		"Help": {
-			"bugPlease": "If you found a bug, then please",
-			"buildAddons": "I want to build add-ons for Owncast",
-			"buildTools": "You can build your own bots, overlays, tools and add-ons with our",
-			"commonTasks": "Common tasks",
-			"configureBroadcasting": "Help configuring my broadcasting software",
-			"configureInstance": "I want to configure my owncast instance",
-			"customizeWebsite": "I want to customize my website",
-			"developerApis": "developer APIs.",
-			"discussions": "discussions",
-			"documentation": "Documentation",
-			"embedStream": "I want to embed my stream into another site",
-			"faq": "FAQ",
-			"fixProblems": "Fix your problems",
-			"foundBug": "I found a bug",
-			"generalAnswered": "Most general questions are answered in our",
-			"generalQuestion": "I have a general question",
-			"learnMore": "Learn more",
-			"letUsKnow": "let us know",
-			"orExist": "or exist in our",
-			"other": "Other",
-			"readDocs": "Read the Docs",
-			"title": "How can we help you?",
-			"troubleshooting": "Troubleshooting",
-			"tweakVideo": "I want to tweak my video output",
-			"useStorage": "I want to use an external storage provider"
+			"title": "كيف يمكننا مساعدتك؟",
+			"configureInstance": "أريد تكوين مثيل خاص بي",
+			"learnMore": "اعرف المزيد",
+			"configureBroadcasting": "المساعدة في تكوين برنامج البث الخاص بي",
+			"embedStream": "أريد أن أدمج دفعي في موقع آخر",
+			"customizeWebsite": "أريد تخصيص موقع الويب الخاص بي",
+			"tweakVideo": "أريد تعديل إخراج الفيديو الخاص بي",
+			"useStorage": "أريد استخدام موفر تخزين خارجي",
+			"foundBug": "وجدت خلل",
+			"bugPlease": "إذا وجدت خطأ، الرجاء",
+			"letUsKnow": "دعونا نعرف",
+			"generalQuestion": "لدي سؤال عام",
+			"generalAnswered": "يتم الرد على معظم الأسئلة العامة في منطقتنا",
+			"faq": "أسئلة متكررة",
+			"orExist": "أو موجود في بلدنا",
+			"discussions": "المناقشات",
+			"buildAddons": "أريد بناء إضافات للبث",
+			"buildTools": "يمكنك بناء الروبوتات الخاصة بك ، الإضافات ، الأدوات و الإضافات الخاصة بنا",
+			"developerApis": "واجهة برمجة تطبيقات المطور.",
+			"troubleshooting": "استكشاف الأخطاء",
+			"fixProblems": "اصلاح مشاكلك",
+			"documentation": "الوثائق",
+			"readDocs": "اقرأ الوثائق",
+			"commonTasks": "المهام المشتركة",
+			"other": "اخرى"
 		},
 		"LogTable": {
-			"error": "Error",
-			"info": "Info",
-			"level": "Level",
-			"logs": "Logs",
-			"message": "Message",
-			"timestamp": "Timestamp",
-			"warning": "Warning"
+			"level": "المستوى",
+			"info": "معلومات",
+			"warning": "تحذير",
+			"error": "خطأ",
+			"timestamp": "الطابع الزمني",
+			"message": "رسالة",
+			"logs": "السجلات"
 		},
 		"NewsFeed": {
-			"link": "Link",
-			"noNews": "No news.",
-			"title": "News & Updates from Owncast"
-		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
-			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
-			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
-			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
+			"link": "رابط",
+			"noNews": "لا توجد أخبار.",
+			"title": "الأخبار والتحديثات من Owncast"
 		},
 		"ViewerInfo": {
-			"currentStream": "Current stream",
-			"currentViewers": "Current viewers",
-			"last12Hours": "Last 12 hours",
-			"last24Hours": "Last 24 hours",
-			"last30Days": "Last 30 days",
-			"last3Months": "Last 3 months",
-			"last6Months": "Last 6 months",
-			"last7Days": "Last 7 days",
-			"maxViewers": "max viewers",
-			"maxViewersLastStream": "Max viewers last stream",
-			"maxViewersThisStream": "Max viewers this stream",
-			"noData": "No viewer data has been collected yet.",
-			"pleaseWait": "Please wait",
-			"title": "Viewer Info",
-			"viewers": "Viewers"
+			"title": "معلومات العارض",
+			"currentStream": "التدفق الحالي",
+			"last12Hours": "آخر 12 ساعة",
+			"last24Hours": "آخر 24 ساعة",
+			"last7Days": "آخر 7 أيام",
+			"last30Days": "آخر 30 يوما",
+			"last3Months": "آخر 3 أشهر",
+			"last6Months": "آخر 6 أشهر",
+			"currentViewers": "المشاهدون الحاليون",
+			"maxViewersThisStream": "الحد الأقصى للمشاهدين في هذا البث",
+			"maxViewersLastStream": "الحد الأقصى للمشاهدين في البث الأخير",
+			"maxViewers": "الحد الأقصى للمشاهدين",
+			"pleaseWait": "الرجاء الانتظار",
+			"noData": "لم يتم جمع بيانات المشاهدين حتى الآن.",
+			"viewers": "المشاهدون"
 		},
-		"deleteEmoji": "Delete emoji",
-		"emojiPageDescription": "<strong><em>مفقود الترجمة Admin.emojiPageDescription: الرجاء الإبلاغ</em></strong>",
-		"emojiUploadBulkGuide": "<strong><em>مفقود الترجمة Admin.emojiUploadBulkGuide: الرجاء الإبلاغ</em></strong>",
-		"emojis": "<strong><em>مفقودة Admin.emojis: الرجاء الإبلاغ</em></strong>",
-		"uploadNewEmoji": "<strong><em>مفقودة Admin.uploadNewEmoji: الرجاء الإبلاغ</em></strong>"
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "يتم تعطيل اختيار البيت عند تمكين مرور الفيديو.",
+			"bitrateGoodForHigh": "جيد لمستخدمي المشاهدين ذوي السرعة العالية و معدل البت.",
+			"bitrateGoodForMost": "جيد لمعظم المشاهدين وعرض النطاق الترددي والاستقرارات.",
+			"bitrateGoodForSlow": "جيد لمشاهدي البتات البطيئين والمحمولين والمنخفضين.",
+			"bitrateValueKbps": "{{bitrate}} كيلوبايت"
+		},
+		"deleteEmoji": "حذف الرمز التعبيري",
+		"emojiPageDescription": "هنا يمكنك رفع رمز تعبيري مخصص جديد للاستخدام في الدردشة. عند تحميل رمز تعبيري جديد، سيتم استخدام اسم الملف بدون إضافة اسم تعبيري. بالإضافة إلى ذلك، فإن أسماء الرموز التعبيرية حساسة لحالة الأحرف. لتحقيق أفضل النتائج، تأكد من أن جميع الرموز التعبيرية لها أسماء فريدة.",
+		"emojiUploadBulkGuide": "هل ترغب في تحميل الرموز التعبيرية المخصصة بالجملة؟ شاهد دليل الرموز التعبيرية <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Amoji</a>.",
+		"emojis": "Emojis",
+		"uploadNewEmoji": "تحميل إيموجي جديد"
 	},
 	"Common": {
 		"poweredByOwncastVersion": "مدعوم من <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
@@ -96,7 +96,7 @@
 			"deniedTitle": "تم حظر الإشعارات على جهازك",
 			"enabledDescription": "لتعطيل دفع الإشعارات من {{hostname}} الوصول إلى أذونات المتصفح لهذا الموقع وإيقاف الإشعارات. <a href='https://owncast.online/docs/notifications'>اعرف المزيد.</a>",
 			"enabledTitle": "الإشعارات مفعلة",
-			"errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+			"errorMessage": "خطأ في التسجيل للإشعارات المباشرة: {{message}}. تأكد من أنك لست داخل بيئة المتصفح الخاص أو قمت مسبقاً بتعطيل الإشعارات لهذا البث.",
 			"errorTitle": "خطأ في إشعار المتصفح",
 			"iosAddButton": "إضافة",
 			"iosAddToHomeScreen": "إضافة إلى الشاشة الرئيسية",
@@ -114,38 +114,57 @@
 			"unsupportedLocal": "إشعارات المتصفح غير مدعومة للخوادم المحلية."
 		},
 		"Footer": {
-			"contribute": "Contribute",
-			"documentation": "Documentation",
-			"source": "Source"
+			"documentation": "الوثائق",
+			"contribute": "المساهمة",
+			"source": "المصدر"
+		},
+		"Chat": {
+			"userJoined": "انضم إلى الدردشة.",
+			"userLeft": "غادر الدردشة",
+			"nameChangeText": "معروف الآن باسم",
+			"moderatorNotification": "أنت الآن مشرف."
+		},
+		"FollowModal": {
+			"description": "من خلال متابعة هذا البث سوف يتم إعلامك على فيديفيرس عندما يبدأ الحياة. الآن وقت عظيم",
+			"learnFediverse": "تعلم عن فيديفرس",
+			"newToYou": "إذا كانت جديدة بالنسبة لك.",
+			"instructions": "أدخل اسم المستخدم الخاص بك @server للمتابعة",
+			"placeholder": "حسابك fediverse @account@server",
+			"redirectMessage": "سيتم إعادة توجيهك إلى سيرفر فيديفرس الخاص بك وطلب تأكيد الإجراء.",
+			"joinFediverse": "الانضمام إلى فيديفرس",
+			"followButton": "اتبع",
+			"followError": "خطأ في المتابعة",
+			"unableToFollow": "غير قادر على المتابعة."
 		},
 		"Header": {
-			"chatOffline": "Chat is offline",
-			"chatWillBeAvailable": "Chat will be available when the stream is live.",
-			"skipToContent": "Skip to page content",
-			"skipToFooter": "Skip to footer",
-			"skipToOfflineMessage": "Skip to offline message",
-			"skipToPlayer": "Skip to player"
+			"skipToPlayer": "تخطي للاعب",
+			"skipToOfflineMessage": "تخطي الرسالة دون اتصال",
+			"skipToContent": "تخطي إلى محتوى الصفحة",
+			"skipToFooter": "تخطي إلى تذييل الصفحة",
+			"chatWillBeAvailable": "ستكون الدردشة متاحة عندما يكون البث على قيد الحياة.",
+			"chatOffline": "الدردشة غير متصل"
 		},
 		"NameChangeModal": {
-			"authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
-			"buttonText": "Change name",
-			"colorLabel": "Your Color",
-			"description": "Your chat display name is what people see when you send chat messages.",
-			"overLimit": "Over limit",
-			"placeholder": "Your chat display name"
+			"authInfo": "يمكنك أيضا المصادقة على حساب IndieAuth أو Fediverse من خلال قائمة \"المصادقة\".",
+			"buttonText": "تغيير الاسم",
+			"colorLabel": "لونك",
+			"description": "اسم عرض الدردشة الخاص بك هو ما يراه الناس عندما ترسل رسائل الدردشة.",
+			"overLimit": "تجاوز الحد",
+			"placeholder": "اسم عرض المحادثة"
 		},
-		"chatOffline": "<strong><em>الترجمة المفقودة Frontend.chatOffline: الرجاء الإبلاغ</em></strong>",
+		"chatOffline": "الدردشة غير متصل",
 		"componentError": "خطأ: {{message}}",
-		"helloWorld": "<strong><em>الترجمة المفقودة Frontend.helloWorldd: يرجى الإبلاغ</em></strong>",
+		"helloWorld": "مرحبا بالعالم",
 		"offlineBasic": "هذا البث غير متصل. تحقق قريباً!",
 		"offlineFediverseOnly": "هذا البث غير متصل. <span class='follow-link'>تابع</span> {{fediverseAccount}} على فيديفيرس لرؤية المرة القادمة التي يذهب فيها {{streamer}} للحياة.",
 		"offlineNotifyAndFediverse": "هذا البث غير متصل بالإنترنت. يمكنك أن تتلقى <span class='notify-link'>إشعارًا</span> في المرة القادمة {{streamer}} أو <span class='follow-link'>متابعة</span> {{fediverseAccount}} على موقع Fediverse.",
-		"offlineNotifyOnly": "هذا البث غير متصل بالإنترنت. <span class='notify-link'>كن على علم</span> في المرة القادمة التي يتم فيها البث المباشر {{streamer}} ."
+		"offlineNotifyOnly": "هذا البث غير متصل بالإنترنت. <span class='notify-link'>كن على علم</span> في المرة القادمة التي يتم فيها البث المباشر {{streamer}} .",
+		"lastLiveAgo": "آخر بث مباشر {{timeAgo}}"
 	},
 	"Testing": {
-		"itemCount": "<strong><em>الترجمة المفقودة Testing.itemCount: الرجاء الإبلاغ</em></strong>",
-		"messageCount": "<strong><em>إختبار الترجمة مفقودة: الرجاء الإبلاغ</em></strong>",
-		"noPluralKey": "<strong><em>الترجمة المفقودة Testing.noPluralKey: الرجاء الإبلاغ</em></strong>",
-		"simpleKey": "<strong><em>اختبار.simpleKey: من فضلك أبلغ عن</em></strong>"
+		"itemCount": "لديك عناصر {{count}}",
+		"messageCount": "لديك رسائل {{count}} من {{sender}}",
+		"noPluralKey": "هذا المفتاح لا يحتوي على متغيرات تعبيرية - {{count}} أشياء",
+		"simpleKey": "نص ترجمة بسيط"
 	}
 }

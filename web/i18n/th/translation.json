@@ -6,84 +6,84 @@
 			"serverUrlRequiredForDirectory": "คุณต้องตั้งค่า <strong>URL เซิร์ฟเวอร์</strong> ข้างต้นเพื่อเปิดใช้งานไดเรกทอรี."
 		},
 		"HardwareInfo": {
+			"title": "ข้อมูลฮาร์ดแวร์",
+			"pleaseWait": "กรุณารอสักครู่",
+			"noDetails": "ยังไม่มีรายละเอียดฮาร์ดแวร์ถูกเก็บรวบรวม",
 			"cpu": "CPU",
-			"disk": "Disk",
-			"memory": "Memory",
-			"noDetails": "No hardware details have been collected yet.",
-			"pleaseWait": "Please wait",
-			"title": "Hardware Info",
-			"used": "used"
+			"memory": "หน่วยความจำ",
+			"disk": "ดิสก์",
+			"used": "ที่ถูกใช้"
 		},
 		"Help": {
-			"bugPlease": "If you found a bug, then please",
-			"buildAddons": "I want to build add-ons for Owncast",
-			"buildTools": "You can build your own bots, overlays, tools and add-ons with our",
-			"commonTasks": "Common tasks",
-			"configureBroadcasting": "Help configuring my broadcasting software",
-			"configureInstance": "I want to configure my owncast instance",
-			"customizeWebsite": "I want to customize my website",
-			"developerApis": "developer APIs.",
-			"discussions": "discussions",
-			"documentation": "Documentation",
-			"embedStream": "I want to embed my stream into another site",
-			"faq": "FAQ",
-			"fixProblems": "Fix your problems",
-			"foundBug": "I found a bug",
-			"generalAnswered": "Most general questions are answered in our",
-			"generalQuestion": "I have a general question",
-			"learnMore": "Learn more",
-			"letUsKnow": "let us know",
-			"orExist": "or exist in our",
-			"other": "Other",
-			"readDocs": "Read the Docs",
-			"title": "How can we help you?",
-			"troubleshooting": "Troubleshooting",
-			"tweakVideo": "I want to tweak my video output",
-			"useStorage": "I want to use an external storage provider"
+			"title": "เราสามารถช่วยคุณได้อย่างไร?",
+			"configureInstance": "ฉันต้องการปรับแต่งอินสแตนซ์ Owncast ของฉัน",
+			"learnMore": "เรียนรู้เพิ่มเติม",
+			"configureBroadcasting": "ช่วยในการกำหนดค่าซอฟต์แวร์การออกอากาศของฉัน",
+			"embedStream": "ฉันต้องการฝังสตรีมของฉันในเว็บไซต์อื่น",
+			"customizeWebsite": "ฉันต้องการปรับแต่งเว็บไซต์ของฉัน",
+			"tweakVideo": "ฉันต้องการปรับแต่งเอาต์พุตวิดีโอของฉัน",
+			"useStorage": "ฉันต้องการใช้ผู้ให้บริการจัดเก็บข้อมูลภายนอก",
+			"foundBug": "ฉันพบข้อบกพร่อง",
+			"bugPlease": "หากคุณพบข้อบกพร่อง โปรด",
+			"letUsKnow": "แจ้งให้เราทราบ",
+			"generalQuestion": "ฉันมีคำถามทั่วไป",
+			"generalAnswered": "คำถามทั่วไปส่วนใหญ่ได้รับคำตอบใน",
+			"faq": "คำถามที่พบบ่อย",
+			"orExist": "หรือมีอยู่ใน",
+			"discussions": "การสนทนา",
+			"buildAddons": "ฉันต้องการสร้างส่วนเสริมสำหรับ Owncast",
+			"buildTools": "คุณสามารถสร้างบอท, โอเวอร์เลย์, เครื่องมือ และส่วนเสริมของคุณเองด้วย",
+			"developerApis": "API สำหรับนักพัฒนา.",
+			"troubleshooting": "การแก้ไขปัญหา",
+			"fixProblems": "แก้ไขปัญหาของคุณ",
+			"documentation": "เอกสาร",
+			"readDocs": "อ่านเอกสาร",
+			"commonTasks": "งานทั่วไป",
+			"other": "อื่นๆ"
 		},
 		"LogTable": {
-			"error": "Error",
-			"info": "Info",
-			"level": "Level",
-			"logs": "Logs",
-			"message": "Message",
-			"timestamp": "Timestamp",
-			"warning": "Warning"
+			"level": "ระดับ",
+			"info": "ข้อมูล",
+			"warning": "คำเตือน",
+			"error": "ข้อผิดพลาด",
+			"timestamp": "วันที่และเวลา",
+			"message": "ข้อความ",
+			"logs": "บันทึก"
 		},
 		"NewsFeed": {
-			"link": "Link",
-			"noNews": "No news.",
-			"title": "News & Updates from Owncast"
-		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
-			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
-			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
-			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
+			"link": "ลิงค์",
+			"noNews": "ไม่มีข่าวสาร.",
+			"title": "ข่าวสาร & การอัปเดตจาก Owncast"
 		},
 		"ViewerInfo": {
-			"currentStream": "Current stream",
-			"currentViewers": "Current viewers",
-			"last12Hours": "Last 12 hours",
-			"last24Hours": "Last 24 hours",
-			"last30Days": "Last 30 days",
-			"last3Months": "Last 3 months",
-			"last6Months": "Last 6 months",
-			"last7Days": "Last 7 days",
-			"maxViewers": "max viewers",
-			"maxViewersLastStream": "Max viewers last stream",
-			"maxViewersThisStream": "Max viewers this stream",
-			"noData": "No viewer data has been collected yet.",
-			"pleaseWait": "Please wait",
-			"title": "Viewer Info",
-			"viewers": "Viewers"
+			"title": "ข้อมูลผู้ชม",
+			"currentStream": "สตรีมปัจจุบัน",
+			"last12Hours": "12 ชั่วโมงที่ผ่านมา",
+			"last24Hours": "24 ชั่วโมงที่ผ่านมา",
+			"last7Days": "7 วันที่ผ่านมา",
+			"last30Days": "30 วันที่ผ่านมา",
+			"last3Months": "3 เดือนที่ผ่านมา",
+			"last6Months": "6 เดือนที่ผ่านมา",
+			"currentViewers": "ผู้ชมปัจจุบัน",
+			"maxViewersThisStream": "จำนวนผู้ชมสูงสุดในสตรีมนี้",
+			"maxViewersLastStream": "จำนวนผู้ชมสูงสุดในสตรีมล่าสุด",
+			"maxViewers": "ผู้ชมสูงสุด",
+			"pleaseWait": "กรุณารอสักครู่",
+			"noData": "ยังไม่มีข้อมูลผู้ชมถูกเก็บรวบรวม.",
+			"viewers": "ผู้ชม"
 		},
-		"deleteEmoji": "Delete emoji",
-		"emojiPageDescription": "<strong><em>การแปลที่ขาดหายไป Admin.emojiPageDescription: กรุณาแจ้งให้ทราบ</em></strong>",
-		"emojiUploadBulkGuide": "<strong><em>การแปลที่ขาดหายไป Admin.emojiUploadBulkGuide: กรุณาแจ้งให้ทราบ</em></strong>",
-		"emojis": "<strong><em>การแปลที่ขาดหายไป Admin.emojis: กรุณาแจ้งให้ทราบ</em></strong>",
-		"uploadNewEmoji": "<strong><em>การแปลที่ขาดหายไป Admin.uploadNewEmoji: กรุณาแจ้งให้ทราบ</em></strong>"
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "การเลือกบิตเรทถูกปิดใช้งานเมื่อเปิดใช้งานการส่งผ่านวิดีโอ.",
+			"bitrateGoodForHigh": "เหมาะสำหรับผู้ชมที่มีความเร็วสูงและบิตเรทสูง.",
+			"bitrateGoodForMost": "เหมาะสำหรับผู้ชมส่วนใหญ่, แบนด์วิธ และความละเอียดต่างๆ.",
+			"bitrateGoodForSlow": "เหมาะสำหรับผู้ชมที่ช้า, มือถือ และบิตเรทต่ำ.",
+			"bitrateValueKbps": "{{bitrate}} kbps"
+		},
+		"deleteEmoji": "ลบอีโมจิ",
+		"emojiPageDescription": "ที่นี่คุณสามารถอัปโหลดอีโมจิแบบกำหนดเองใหม่สำหรับใช้งานในแชท เมื่ออัปโหลดอีโมจิใหม่ ชื่อไฟล์โดยไม่มีนามสกุลจะถูกใช้เป็นชื่ออีโมจิ นอกจากนี้ ชื่ออีโมจิจะไม่แยกตัวพิมพ์ใหญ่และตัวพิมพ์เล็ก สำหรับผลลัพธ์ที่ดีที่สุด ให้แน่ใจว่าอีโมจิทั้งหมดมีชื่อที่ไม่ซ้ำกัน.",
+		"emojiUploadBulkGuide": "ต้องการอัปโหลดอีโมจิแบบกำหนดเองจำนวนมาก? ตรวจสอบคู่มือ <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">อีโมจิ</a> ของเรา.",
+		"emojis": "อีโมจิ",
+		"uploadNewEmoji": "อัปโหลดอีโมจิใหม่"
 	},
 	"Common": {
 		"poweredByOwncastVersion": "Powered by <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
@@ -96,7 +96,7 @@
 			"deniedTitle": "การแจ้งเตือนถูกบล็อกบนอุปกรณ์ของคุณ",
 			"enabledDescription": "เพื่อปิดการแจ้งเตือนแบบพุชจาก {{hostname}} ให้เข้าถึงการอนุญาตในเบราว์เซอร์ของคุณสำหรับเว็บไซต์นี้และปิดการแจ้งเตือน <a href='https://owncast.online/docs/notifications'>เรียนรู้เพิ่มเติม.</a>",
 			"enabledTitle": "การแจ้งเตือนเปิดใช้งานแล้ว",
-			"errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+			"errorMessage": "เกิดข้อผิดพลาดในการลงทะเบียนสำหรับการแจ้งเตือนสด: {{message}}. โปรดตรวจสอบว่าคุณไม่ได้อยู่ในสภาพแวดล้อมเบราว์เซอร์ส่วนตัวหรือปิดการแจ้งเตือนสำหรับสตรีมนี้ไว้ก่อนหน้านี้.",
 			"errorTitle": "ข้อผิดพลาดการแจ้งเตือนบนเบราว์เซอร์",
 			"iosAddButton": "เพิ่ม",
 			"iosAddToHomeScreen": "เพิ่มไปที่หน้าจอหลัก",
@@ -114,38 +114,57 @@
 			"unsupportedLocal": "เบราว์เซอร์ไม่รองรับการแจ้งเตือนสำหรับเซิร์ฟเวอร์ท้องถิ่น"
 		},
 		"Footer": {
-			"contribute": "Contribute",
-			"documentation": "Documentation",
-			"source": "Source"
+			"documentation": "เอกสาร",
+			"contribute": "สนับสนุน",
+			"source": "แหล่งที่มา"
+		},
+		"Chat": {
+			"userJoined": "เข้าร่วมการสนทนาแล้ว.",
+			"userLeft": "ออกจากการสนทนาแล้ว.",
+			"nameChangeText": "ตอนนี้รู้จักในชื่อ",
+			"moderatorNotification": "คุณตอนนี้เป็นผู้ดูแลระบบ."
+		},
+		"FollowModal": {
+			"description": "เมื่อคุณติดตามสตรีมนี้ คุณจะได้รับการแจ้งเตือนในเครือข่าย Fediverse เมื่อมันเริ่มใช้งาน ถ้านี่คือเวลาที่ดีในการ",
+			"learnFediverse": "เรียนรู้เกี่ยวกับเครือข่าย Fediverse",
+			"newToYou": "ถ้านี่เป็นสิ่งใหม่สำหรับคุณ",
+			"instructions": "กรุณาใส่ชื่อผู้ใช้ของคุณ @server เพื่อทำการติดตาม",
+			"placeholder": "บัญชี Fediverse ของคุณ @account@server",
+			"redirectMessage": "คุณจะถูกส่งต่อไปยังเซิร์ฟเวอร์ Fediverse ของคุณและจะถูกขอให้ยืนยันการกระทำนี้",
+			"joinFediverse": "เข้าร่วมกับ Fediverse",
+			"followButton": "ติดตาม",
+			"followError": "ความผิดพลาดในการติดตาม",
+			"unableToFollow": "ไม่สามารถติดตามได้."
 		},
 		"Header": {
-			"chatOffline": "Chat is offline",
-			"chatWillBeAvailable": "Chat will be available when the stream is live.",
-			"skipToContent": "Skip to page content",
-			"skipToFooter": "Skip to footer",
-			"skipToOfflineMessage": "Skip to offline message",
-			"skipToPlayer": "Skip to player"
+			"skipToPlayer": "ข้ามไปยังผู้เล่น",
+			"skipToOfflineMessage": "ข้ามไปยังข้อความออฟไลน์",
+			"skipToContent": "ข้ามไปยังเนื้อหาหน้า",
+			"skipToFooter": "ข้ามไปยังฟุตเตอร์",
+			"chatWillBeAvailable": "แชทจะพร้อมใช้งานเมื่อสตรีมอยู่ในสถานะสด.",
+			"chatOffline": "แชทออฟไลน์"
 		},
 		"NameChangeModal": {
-			"authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
-			"buttonText": "Change name",
-			"colorLabel": "Your Color",
-			"description": "Your chat display name is what people see when you send chat messages.",
-			"overLimit": "Over limit",
-			"placeholder": "Your chat display name"
+			"authInfo": "คุณสามารถยืนยันบัญชี IndieAuth หรือ Fediverse ผ่านเมนู \"ยืนยันตัวตน\" ได้.",
+			"buttonText": "เปลี่ยนชื่อ",
+			"colorLabel": "สีของคุณ",
+			"description": "ชื่อแสดงในแชทของคุณคือสิ่งที่ผู้คนเห็นเมื่อคุณส่งข้อความในแชท.",
+			"overLimit": "เกินขีดจำกัด",
+			"placeholder": "ชื่อแสดงในแชทของคุณ"
 		},
-		"chatOffline": "Chat is offline",
+		"chatOffline": "แชทออฟไลน์",
 		"componentError": "Error: {{message}}",
-		"helloWorld": "Hello world",
+		"helloWorld": "สวัสดีโลก",
 		"offlineBasic": "สตรีมนี้ออฟไลน์ กรุณาตรวจสอบอีกครั้งในภายหลัง!",
 		"offlineFediverseOnly": "สตรีมนี้ออฟไลน์ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse เพื่อดูเมื่อ {{streamer}} เริ่มถ่ายทอดสดครั้งต่อไป",
 		"offlineNotifyAndFediverse": "สตรีมนี้ออฟไลน์ คุณสามารถ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสดอีกครั้งหรือ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse",
-		"offlineNotifyOnly": "สตรีมนี้ออฟไลน์ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสด"
+		"offlineNotifyOnly": "สตรีมนี้ออฟไลน์ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสด",
+		"lastLiveAgo": "ถ่ายทอดสดล่าสุดเมื่อ {{timeAgo}} ที่ผ่านมา"
 	},
 	"Testing": {
-		"itemCount": "You have {{count}} items",
-		"messageCount": "You have {{count}} messages from {{sender}}",
-		"noPluralKey": "This key has no plural variants - {{count}} things",
-		"simpleKey": "Simple translation text"
+		"itemCount": "คุณมี {{count}} รายการ",
+		"messageCount": "คุณมี {{count}} ข้อความจาก {{sender}}",
+		"noPluralKey": "กุญแจนี้ไม่มีรูปแบบพหูพจน์ - {{count}} สิ่งของ",
+		"simpleKey": "ข้อความแปลง่ายๆ"
 	}
 }

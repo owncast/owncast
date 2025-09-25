@@ -6,84 +6,84 @@
 			"serverUrlRequiredForDirectory": "Du måste ställa in din <strong>Server-URL</strong> ovan för att aktivera katalogen."
 		},
 		"HardwareInfo": {
+			"title": "Hårdvaruinformation",
+			"pleaseWait": "Vänligen vänta",
+			"noDetails": "Inga hårdvarudetaljer har samlats in.",
 			"cpu": "CPU",
-			"disk": "Disk",
-			"memory": "Memory",
-			"noDetails": "No hardware details have been collected yet.",
-			"pleaseWait": "Please wait",
-			"title": "Hardware Info",
-			"used": "used"
+			"memory": "Minne",
+			"disk": "Diskett",
+			"used": "använd"
 		},
 		"Help": {
-			"bugPlease": "If you found a bug, then please",
-			"buildAddons": "I want to build add-ons for Owncast",
-			"buildTools": "You can build your own bots, overlays, tools and add-ons with our",
-			"commonTasks": "Common tasks",
-			"configureBroadcasting": "Help configuring my broadcasting software",
-			"configureInstance": "I want to configure my owncast instance",
-			"customizeWebsite": "I want to customize my website",
-			"developerApis": "developer APIs.",
-			"discussions": "discussions",
-			"documentation": "Documentation",
-			"embedStream": "I want to embed my stream into another site",
-			"faq": "FAQ",
-			"fixProblems": "Fix your problems",
-			"foundBug": "I found a bug",
-			"generalAnswered": "Most general questions are answered in our",
-			"generalQuestion": "I have a general question",
-			"learnMore": "Learn more",
-			"letUsKnow": "let us know",
-			"orExist": "or exist in our",
-			"other": "Other",
-			"readDocs": "Read the Docs",
-			"title": "How can we help you?",
-			"troubleshooting": "Troubleshooting",
-			"tweakVideo": "I want to tweak my video output",
-			"useStorage": "I want to use an external storage provider"
+			"title": "Hur kan vi hjälpa dig?",
+			"configureInstance": "Jag vill konfigurera min egen instans",
+			"learnMore": "Läs mer",
+			"configureBroadcasting": "Hjälp till att konfigurera min sändningsprogramvara",
+			"embedStream": "Jag vill bädda in min ström till en annan webbplats",
+			"customizeWebsite": "Jag vill anpassa min webbplats",
+			"tweakVideo": "Jag vill justera min video utdata",
+			"useStorage": "Jag vill använda en extern lagringsleverantör",
+			"foundBug": "Jag hittade en bugg",
+			"bugPlease": "Om du hittade en bugg, vänligen",
+			"letUsKnow": "låt oss veta",
+			"generalQuestion": "Jag har en allmän fråga",
+			"generalAnswered": "De flesta allmänna frågor besvaras i vår",
+			"faq": "Vanliga frågor",
+			"orExist": "eller finns i vår",
+			"discussions": "diskussioner",
+			"buildAddons": "Jag vill bygga tillägg för Owncast",
+			"buildTools": "Du kan bygga dina egna robotar, overlays, verktyg och tillägg med vår",
+			"developerApis": "utvecklare API:er.",
+			"troubleshooting": "Felsökning",
+			"fixProblems": "Fixa dina problem",
+			"documentation": "Dokumentation",
+			"readDocs": "Läs dokumenten",
+			"commonTasks": "Vanliga uppgifter",
+			"other": "Annat"
 		},
 		"LogTable": {
-			"error": "Error",
-			"info": "Info",
-			"level": "Level",
-			"logs": "Logs",
-			"message": "Message",
-			"timestamp": "Timestamp",
-			"warning": "Warning"
+			"level": "Nivå",
+			"info": "Information",
+			"warning": "Varning",
+			"error": "Fel",
+			"timestamp": "Tidsstämpel",
+			"message": "Meddelande",
+			"logs": "Loggar"
 		},
 		"NewsFeed": {
-			"link": "Link",
-			"noNews": "No news.",
-			"title": "News & Updates from Owncast"
-		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
-			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
-			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
-			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
+			"link": "Länk",
+			"noNews": "Inga nyheter.",
+			"title": "Nyheter & uppdateringar från Owncast"
 		},
 		"ViewerInfo": {
-			"currentStream": "Current stream",
-			"currentViewers": "Current viewers",
-			"last12Hours": "Last 12 hours",
-			"last24Hours": "Last 24 hours",
-			"last30Days": "Last 30 days",
-			"last3Months": "Last 3 months",
-			"last6Months": "Last 6 months",
-			"last7Days": "Last 7 days",
-			"maxViewers": "max viewers",
-			"maxViewersLastStream": "Max viewers last stream",
-			"maxViewersThisStream": "Max viewers this stream",
-			"noData": "No viewer data has been collected yet.",
-			"pleaseWait": "Please wait",
-			"title": "Viewer Info",
-			"viewers": "Viewers"
+			"title": "Viewer Information",
+			"currentStream": "Nuvarande ström",
+			"last12Hours": "Senaste 12 timmarna",
+			"last24Hours": "Senaste 24 timmarna",
+			"last7Days": "Senaste 7 dagarna",
+			"last30Days": "Senaste 30 dagarna",
+			"last3Months": "Senaste 3 månaderna",
+			"last6Months": "Senaste 6 månaderna",
+			"currentViewers": "Nuvarande tittare",
+			"maxViewersThisStream": "Max antal tittare denna ström",
+			"maxViewersLastStream": "Max antal tittare senaste strömmen",
+			"maxViewers": "max tittare",
+			"pleaseWait": "Vänligen vänta",
+			"noData": "Ingen läsardata har samlats in än.",
+			"viewers": "Tittare"
 		},
-		"deleteEmoji": "Delete emoji",
-		"emojiPageDescription": "<strong><em>Saknad översättning Admin.emojiPageBeskrivning: Vänligen rapportera</em></strong>",
-		"emojiUploadBulkGuide": "<strong><em>Saknad översättning Admin.emojiUploadBulkGuide: Vänligen rapportera</em></strong>",
-		"emojis": "<strong><em>Saknad översättning Admin.emojis: Vänligen rapportera</em></strong>",
-		"uploadNewEmoji": "<strong><em>Saknad översättning Admin.uploadNewEmoji: Vänligen rapportera</em></strong>"
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "val av bithastighet är inaktiverat när videogenomströmningen är aktiverad.",
+			"bitrateGoodForHigh": "Bra för hög hastighet och hög bitrate tittare.",
+			"bitrateGoodForMost": "Bra för de flesta tittare, bandbredder och upplösningar.",
+			"bitrateGoodForSlow": "Bra för långsam, mobil och låg bitrate tittare.",
+			"bitrateValueKbps": "{{bitrate}} kbps"
+		},
+		"deleteEmoji": "Ta bort emoji",
+		"emojiPageDescription": "Här kan du ladda upp nya anpassade emojis för användning i chatten. När du laddar upp en ny emoji kommer filnamnet utan tillägg att användas som emoji-namn. Dessutom är emoji namn fall-okänsliga. För bästa resultat, se till att alla emoji har unika namn.",
+		"emojiUploadBulkGuide": "Vill du ladda upp anpassade emojis i bulk? Kolla in vår <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji guide</a>.",
+		"emojis": "Emojis",
+		"uploadNewEmoji": "Ladda upp ny emoji"
 	},
 	"Common": {
 		"poweredByOwncastVersion": "Drivs av <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
@@ -96,7 +96,7 @@
 			"deniedTitle": "Aviseringar är blockerade på din enhet",
 			"enabledDescription": "För att inaktivera push-meddelanden från {{hostname}} åtkomst till din webbläsares behörigheter för denna webbplats och stänga av meddelanden. <a href='https://owncast.online/docs/notifications'>Läs mer.</a>",
 			"enabledTitle": "Aviseringar är aktiverade",
-			"errorMessage": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+			"errorMessage": "Fel vid registrering av live-meddelanden: {{message}}. Se till att du inte är inne i en privat webbläsarmiljö eller har tidigare inaktiverat meddelanden för denna ström.",
 			"errorTitle": "Fel vid avisering i webbläsaren",
 			"iosAddButton": "Lägg till",
 			"iosAddToHomeScreen": "Lägg till på startskärmen",
@@ -114,38 +114,57 @@
 			"unsupportedLocal": "Webbläsaraviseringar stöds inte för lokala servrar."
 		},
 		"Footer": {
-			"contribute": "Contribute",
-			"documentation": "Documentation",
-			"source": "Source"
+			"documentation": "Dokumentation",
+			"contribute": "Bidra",
+			"source": "Källa"
+		},
+		"Chat": {
+			"userJoined": "gick med i chatten.",
+			"userLeft": "lämnade chatten.",
+			"nameChangeText": "är nu känd som",
+			"moderatorNotification": "Du är nu moderator."
+		},
+		"FollowModal": {
+			"description": "Genom att följa denna ström får du meddelande om Fediverse när det går live. Nu är en bra tid att",
+			"learnFediverse": "lära sig om Fediverse",
+			"newToYou": "om det är nytt för dig.",
+			"instructions": "Ange ditt användarnamn @server att följa",
+			"placeholder": "Ditt fediverse-konto @account@server",
+			"redirectMessage": "Du kommer att omdirigeras till din Fedivers-server och uppmanas att bekräfta åtgärden.",
+			"joinFediverse": "Gå med i Fediverse",
+			"followButton": "Följ",
+			"followError": "Följa fel",
+			"unableToFollow": "Kan inte följa."
 		},
 		"Header": {
-			"chatOffline": "Chat is offline",
-			"chatWillBeAvailable": "Chat will be available when the stream is live.",
-			"skipToContent": "Skip to page content",
-			"skipToFooter": "Skip to footer",
-			"skipToOfflineMessage": "Skip to offline message",
-			"skipToPlayer": "Skip to player"
+			"skipToPlayer": "Hoppa till spelare",
+			"skipToOfflineMessage": "Hoppa till offline-meddelande",
+			"skipToContent": "Hoppa till sidans innehåll",
+			"skipToFooter": "Hoppa till sidfot",
+			"chatWillBeAvailable": "Chatten kommer att vara tillgänglig när strömmen är live.",
+			"chatOffline": "Chatten är offline"
 		},
 		"NameChangeModal": {
-			"authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
-			"buttonText": "Change name",
-			"colorLabel": "Your Color",
-			"description": "Your chat display name is what people see when you send chat messages.",
-			"overLimit": "Over limit",
-			"placeholder": "Your chat display name"
+			"authInfo": "Du kan också autentisera ett IndieAuth- eller Fedivers-konto via \"Authenticate\"-menyn.",
+			"buttonText": "Ändra namn",
+			"colorLabel": "Din färg",
+			"description": "Ditt chattvisningsnamn är vad folk ser när du skickar chattmeddelanden.",
+			"overLimit": "Över gräns",
+			"placeholder": "Ditt visningsnamn på chatten"
 		},
-		"chatOffline": "<strong><em>Saknad översättning Frontend.chatOffline: Vänligen rapportera</em></strong>",
+		"chatOffline": "Chatten är offline",
 		"componentError": "Fel: {{message}}",
-		"helloWorld": "<strong><em>Saknad översättning Frontend.helloWorld: Please report</em></strong>",
+		"helloWorld": "Hej världen",
 		"offlineBasic": "Denna ström är offline. Kom tillbaka snart!",
 		"offlineFediverseOnly": "Denna ström är offline. <span class='follow-link'>Följ</span> {{fediverseAccount}} på Fediverse för att se nästa gång {{streamer}} går live.",
 		"offlineNotifyAndFediverse": "Denna ström är offline. Du kan <span class='notify-link'>meddelas</span> nästa gång {{streamer}} går live eller <span class='follow-link'>följ</span> {{fediverseAccount}} på Fediverse.",
-		"offlineNotifyOnly": "Denna ström är offline. <span class='notify-link'>meddelas</span> nästa gång {{streamer}} går live."
+		"offlineNotifyOnly": "Denna ström är offline. <span class='notify-link'>meddelas</span> nästa gång {{streamer}} går live.",
+		"lastLiveAgo": "Senast live {{timeAgo}} sedan"
 	},
 	"Testing": {
-		"itemCount": "<strong><em>Saknad översättning Testing.itemCount: Please report</em></strong>",
-		"messageCount": "<strong><em>Saknad översättning Testing.messageCount: Please report</em></strong>",
-		"noPluralKey": "<strong><em>Saknad översättning Testing.noPluralKey: Vänligen rapportera</em></strong>",
-		"simpleKey": "<strong><em>Saknad översättning Testing.simpleKey: Vänligen rapportera</em></strong>"
+		"itemCount": "Du har {{count}} objekt",
+		"messageCount": "Du har {{count}} meddelanden från {{sender}}",
+		"noPluralKey": "Denna nyckel har inga pluralvarianter - {{count}} saker",
+		"simpleKey": "Enkel översättningstext"
 	}
 }
