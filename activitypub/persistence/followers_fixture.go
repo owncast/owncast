@@ -31,6 +31,6 @@ func addFollowersFixtureData() {
 
 	// Iterate over the followers array
 	for _, follower := range followers {
-		createFollow(follower.ActorIRI, follower.Inbox, "", follower.Name, follower.Username, follower.Image, nil, true)
+		createFollow(follower.ActorIRI, follower.Inbox, "", follower.Name, follower.Username, follower.Image, nil, true, false)
 	}
 }

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/owncast/owncast/activitypub/outbox"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/federatedserversrepository"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	log "github.com/sirupsen/logrus"
@@ -18,6 +20,11 @@ func GetFederatedServers(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeSimpleResponse(w, false, "Failed to get federated servers: "+err.Error())
 		return
+	}
+
+	// Ensure we return an empty array instead of null
+	if servers == nil {
+		servers = []models.FederatedServer{}
 	}
 
 	response := struct {
@@ -49,8 +56,13 @@ func AddFederatedServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if serverURL.Scheme != "https" && serverURL.Scheme != "http" {
-		writeSimpleResponse(w, false, "Server URL must use http or https protocol")
+	// Normalize the URL to ensure consistency
+	if serverURL.Scheme == "" {
+		serverURL.Scheme = "https"
+	}
+
+	if serverURL.Scheme != "https" {
+		writeSimpleResponse(w, false, "Server URL must use https protocol for federation")
 		return
 	}
 
@@ -63,16 +75,16 @@ func AddFederatedServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Add the server (name and logo will be populated when we receive activities)
-	err = repo.AddFederatedServer(serverURL.String(), "", "")
-	if err != nil {
-		log.Errorf("Failed to add federated server %s: %v", serverURL.String(), err)
-		writeSimpleResponse(w, false, "Failed to add federated server: "+err.Error())
+	// Send the follow request via ActivityPub
+	// This will fetch nodeinfo, validate it's an Owncast server, and send the Follow activity
+	if err := outbox.SendFollowRequest(serverURL.String()); err != nil {
+		log.Errorf("Failed to send follow request to %s: %v", serverURL.String(), err)
+		writeSimpleResponse(w, false, "Failed to send follow request: "+err.Error())
 		return
 	}
 
-	log.Infof("Added federated server: %s", serverURL.String())
-	writeSimpleResponse(w, true, "Federated server added successfully")
+	log.Infof("Sent follow request to federated server: %s", serverURL.String())
+	writeSimpleResponse(w, true, "Follow request sent successfully. The server will appear in your list once they accept the follow.")
 }
 
 // RemoveFederatedServer removes a federated server by ID.

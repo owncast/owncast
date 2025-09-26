@@ -130,7 +130,9 @@ func handleOwncastServerFollow(activity vocab.ActivityStreamsFollow, followReque
 			logoURL = followRequest.Image.String()
 		}
 
-		err = repo.AddFederatedServer(actorIRI, name, logoURL)
+		// This is an inbound follow from another server following us
+		// We don't track these as pending - they're already following us
+		err = repo.AddFederatedServer(actorIRI, name, logoURL, time.Now(), false, "", "accepted")
 		if err != nil {
 			return err
 		}

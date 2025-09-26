@@ -65,17 +65,17 @@ func (r *SqlFederatedServersRepository) GetFederatedServer(iri string) (*models.
 }
 
 // AddFederatedServer adds a new federated server to follow.
-func (r *SqlFederatedServersRepository) AddFederatedServer(iri, name, logoURL string) error {
+func (r *SqlFederatedServersRepository) AddFederatedServer(iri, name, logoURL string, followedAt time.Time, pending bool, username, followStatus string) error {
 	queries := db.New(r.datastore.DB)
 
-	now := time.Now()
-	followedAt := &now
-
 	params := db.AddFederatedServerParams{
-		Iri:        iri,
-		Name:       models.PointerToNullString(&name),
-		LogoUrl:    models.PointerToNullString(&logoURL),
-		FollowedAt: models.PointerToNullTime(followedAt),
+		Iri:          iri,
+		Name:         models.PointerToNullString(&name),
+		LogoUrl:      models.PointerToNullString(&logoURL),
+		FollowedAt:   models.TimeToNullTime(followedAt),
+		Pending:      models.BoolToNullBool(pending),
+		Username:     models.PointerToNullString(&username),
+		FollowStatus: models.PointerToNullString(&followStatus),
 	}
 
 	return queries.AddFederatedServer(context.Background(), params)
@@ -122,4 +122,65 @@ func (r *SqlFederatedServersRepository) UpdateServerStatus(iri string, isOnline 
 func (r *SqlFederatedServersRepository) RemoveFederatedServer(id int32) error {
 	queries := db.New(r.datastore.DB)
 	return queries.RemoveFederatedServer(context.Background(), id)
+}
+
+// RemoveFederatedServerByIRI removes a federated server by IRI.
+func (r *SqlFederatedServersRepository) RemoveFederatedServerByIRI(iri string) error {
+	// First get the server to find its ID
+	server, err := r.GetFederatedServer(iri)
+	if err != nil {
+		return err
+	}
+	if server == nil {
+		return nil // Server doesn't exist, nothing to remove
+	}
+	return r.RemoveFederatedServer(server.ID)
+}
+
+// UpdateFollowStatus updates the follow status of a federated server.
+func (r *SqlFederatedServersRepository) UpdateFollowStatus(iri, followStatus string, pending bool, acceptedAt, rejectedAt *time.Time) error {
+	queries := db.New(r.datastore.DB)
+
+	params := db.UpdateFederatedServerFollowStatusParams{
+		FollowStatus: models.PointerToNullString(&followStatus),
+		Pending:      models.BoolToNullBool(pending),
+		AcceptedAt:   models.PointerToNullTime(acceptedAt),
+		RejectedAt:   models.PointerToNullTime(rejectedAt),
+		Iri:          iri,
+	}
+
+	return queries.UpdateFederatedServerFollowStatus(context.Background(), params)
+}
+
+// UpdateServerMetadata updates the metadata of a federated server.
+func (r *SqlFederatedServersRepository) UpdateServerMetadata(iri, name, displayName, summary, logoURL string) error {
+	queries := db.New(r.datastore.DB)
+
+	params := db.UpdateFederatedServerMetadataParams{
+		Name:        models.PointerToNullString(&name),
+		DisplayName: models.PointerToNullString(&displayName),
+		Summary:     models.PointerToNullString(&summary),
+		LogoUrl:     models.PointerToNullString(&logoURL),
+		Iri:         iri,
+	}
+
+	return queries.UpdateFederatedServerMetadata(context.Background(), params)
+}
+
+// GetPendingFederatedServers returns all federated servers with pending follow status.
+func (r *SqlFederatedServersRepository) GetPendingFederatedServers() ([]models.FederatedServer, error) {
+	queries := db.New(r.datastore.DB)
+	dbServers, err := queries.GetPendingFederatedServers(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	var servers []models.FederatedServer
+	for _, dbServer := range dbServers {
+		var apiServer models.FederatedServer
+		apiServer.FromDatabaseModel(dbServer)
+		servers = append(servers, apiServer)
+	}
+
+	return servers, nil
 }

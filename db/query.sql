@@ -112,13 +112,13 @@ UPDATE users SET display_color = $1 WHERE id = $2;
 -- Federated servers queries
 
 -- name: GetFederatedServers :many
-SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at FROM federated_servers ORDER BY added_at DESC;
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers ORDER BY added_at DESC;
 
 -- name: GetFederatedServer :one
-SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at FROM federated_servers WHERE iri = $1;
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE iri = $1;
 
 -- name: AddFederatedServer :exec
-INSERT INTO federated_servers(iri, name, logo_url, followed_at) values($1, $2, $3, $4);
+INSERT INTO federated_servers(iri, name, logo_url, followed_at, pending, username, follow_status) values($1, $2, $3, $4, $5, $6, $7);
 
 -- name: UpdateFederatedServerStatus :exec
 UPDATE federated_servers SET is_online = $1, stream_title = $2, stream_description = $3, stream_tags = $4, thumbnail_url = $5, last_status_update = $6 WHERE iri = $7;
@@ -128,3 +128,12 @@ UPDATE federated_servers SET is_online = $1, last_seen_online = $2, last_status_
 
 -- name: RemoveFederatedServer :exec
 DELETE FROM federated_servers WHERE id = $1;
+
+-- name: UpdateFederatedServerFollowStatus :exec
+UPDATE federated_servers SET follow_status = $1, pending = $2, accepted_at = $3, rejected_at = $4 WHERE iri = $5;
+
+-- name: UpdateFederatedServerMetadata :exec
+UPDATE federated_servers SET name = $1, display_name = $2, summary = $3, logo_url = $4 WHERE iri = $5;
+
+-- name: GetPendingFederatedServers :many
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE pending = true ORDER BY added_at DESC;

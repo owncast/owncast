@@ -2364,7 +2364,7 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
-  /api/federation/servers:
+  /federation/servers:
     get:
       summary: Get list of federated servers
       operationId: GetFederatedServers

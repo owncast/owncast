@@ -112,7 +112,14 @@ CREATE TABLE IF NOT EXISTS federated_servers (
     "last_seen_online" TIMESTAMP,
     "last_status_update" TIMESTAMP,
     "added_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "followed_at" TIMESTAMP
+    "followed_at" TIMESTAMP,
+    "pending" BOOLEAN DEFAULT TRUE,
+    "username" TEXT,
+    "display_name" TEXT,
+    "summary" TEXT,
+    "accepted_at" TIMESTAMP,
+    "rejected_at" TIMESTAMP,
+    "follow_status" TEXT DEFAULT 'pending'
 );
 CREATE INDEX federated_servers_iri ON federated_servers (iri);
 CREATE INDEX federated_servers_is_online ON federated_servers (is_online);

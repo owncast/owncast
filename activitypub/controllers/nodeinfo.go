@@ -61,8 +61,12 @@ func NodeInfoController(w http.ResponseWriter, r *http.Request) {
 
 // NodeInfoV2Controller returns the V2 node info response.
 func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
+	type federation struct {
+		Username string `json:"username"`
+	}
 	type metadata struct {
-		ChatEnabled bool `json:"chat_enabled"`
+		ChatEnabled bool       `json:"chat_enabled"`
+		Federation  federation `json:"federation"`
 	}
 	type services struct {
 		Outbound []string `json:"outbound"`
@@ -122,6 +126,9 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 		Protocols:         []string{"activitypub"},
 		Metadata: metadata{
 			ChatEnabled: !configRepository.GetChatDisabled(),
+			Federation: federation{
+				Username: configRepository.GetFederationUsername(),
+			},
 		},
 	}
 

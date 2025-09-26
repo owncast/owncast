@@ -25,7 +25,7 @@ func setup() {
 	number := 100
 	for i := 0; i < number; i++ {
 		u := createFakeFollower()
-		createFollow(u.ActorIRI, u.Inbox, "https://fake.fediverse.server/some/request", u.Name, u.Username, u.Image, nil, true)
+		createFollow(u.ActorIRI, u.Inbox, "https://fake.fediverse.server/some/request", u.Name, u.Username, u.Image, nil, true, false)
 		followers = append(followers, u)
 	}
 }

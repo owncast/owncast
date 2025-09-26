@@ -29,7 +29,7 @@ func handle(request apmodels.InboxRequest) {
 		return
 	}
 
-	if err := resolvers.Resolve(context.Background(), request.Body, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest, handleCreateRequest, handleAcceptInboxRequest); err != nil {
+	if err := resolvers.Resolve(context.Background(), request.Body, handleUpdateRequest, handleFollowInboxRequest, handleLikeRequest, handleAnnounceRequest, handleUndoInboxRequest, handleCreateRequest, handleAcceptInboxRequest, handleRejectInboxRequest); err != nil {
 		log.Debugln("resolver error:", err)
 	}
 }

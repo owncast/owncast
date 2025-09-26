@@ -23,6 +23,13 @@ type FederatedServer struct {
 	LastStatusUpdate  *time.Time `json:"lastStatusUpdate,omitempty"`
 	AddedAt           time.Time  `json:"addedAt"`
 	FollowedAt        *time.Time `json:"followedAt,omitempty"`
+	Pending           bool       `json:"pending"`
+	Username          *string    `json:"username,omitempty"`
+	DisplayName       *string    `json:"displayName,omitempty"`
+	Summary           *string    `json:"summary,omitempty"`
+	AcceptedAt        *time.Time `json:"acceptedAt,omitempty"`
+	RejectedAt        *time.Time `json:"rejectedAt,omitempty"`
+	FollowStatus      string     `json:"followStatus"`
 }
 
 // FederatedStreamUpdate represents stream metadata for ActivityPub handlers.
@@ -48,6 +55,19 @@ func (f *FederatedServer) FromDatabaseModel(dbServer db.FederatedServer) {
 	f.LastStatusUpdate = nullTimeToPointer(dbServer.LastStatusUpdate)
 	f.AddedAt = dbServer.AddedAt.Time
 	f.FollowedAt = nullTimeToPointer(dbServer.FollowedAt)
+	f.Pending = dbServer.Pending.Bool
+	f.Username = nullStringToPointer(dbServer.Username)
+	f.DisplayName = nullStringToPointer(dbServer.DisplayName)
+	f.Summary = nullStringToPointer(dbServer.Summary)
+	f.AcceptedAt = nullTimeToPointer(dbServer.AcceptedAt)
+	f.RejectedAt = nullTimeToPointer(dbServer.RejectedAt)
+
+	// Default follow status to "pending" if not set
+	if dbServer.FollowStatus.Valid {
+		f.FollowStatus = dbServer.FollowStatus.String
+	} else {
+		f.FollowStatus = "pending"
+	}
 
 	// Parse tags from JSON string
 	if dbServer.StreamTags.Valid && dbServer.StreamTags.String != "" {

@@ -2,7 +2,6 @@ package inbox
 
 import (
 	"context"
-	"net/url"
 	"time"
 
 	"github.com/go-fed/activity/streams/vocab"
@@ -44,12 +43,6 @@ func handleNoteActivity(c context.Context, activity vocab.ActivityStreamsCreate,
 		return nil
 	}
 
-	// Parse actor IRI to get host
-	actorURL, err := url.Parse(actorIRI)
-	if err != nil {
-		return nil
-	}
-
 	// Check for Owncast custom properties in the note
 	unknownProps := note.GetUnknownProperties()
 	streamStatus, hasStreamStatus := unknownProps["https://owncast.online/ns#streamStatus"]
@@ -69,20 +62,16 @@ func handleNoteActivity(c context.Context, activity vocab.ActivityStreamsCreate,
 	// Get or create the federated server
 	repo := federatedserversrepository.Get()
 	server, err := repo.GetFederatedServer(actorIRI)
-	if err != nil {
-		// Server doesn't exist, create it
-		server = &models.FederatedServer{
-			IRI:      actorIRI,
-			IsOnline: false,
-			AddedAt:  time.Now(),
-		}
+	if err != nil || server == nil {
+		// Server doesn't exist in our database - we're not following them
+		log.Debugf("Ignoring Note activity from unfollowed server: %s", actorIRI)
+		return nil
+	}
 
-		// Try to get server name from actor
-		if nameProp := note.GetActivityStreamsAttributedTo(); nameProp != nil {
-			// This is a simplified approach - in reality you'd need to resolve the actor
-			// to get the name, but for now we'll use the hostname
-			server.Name = &actorURL.Host
-		}
+	// Check if we're actually following this server (not pending or rejected)
+	if server.Pending || server.FollowStatus == "rejected" || server.FollowStatus == "none" {
+		log.Debugf("Ignoring Note activity from server we're not actively following: %s (status: %s)", actorIRI, server.FollowStatus)
+		return nil
 	}
 
 	now := time.Now()
@@ -126,33 +115,17 @@ func handleNoteActivity(c context.Context, activity vocab.ActivityStreamsCreate,
 		log.Infof("Federated server %s is now offline", actorIRI)
 	}
 
-	// Save or update the server
-	if server.ID == 0 {
-		var name string
-		if server.Name != nil {
-			name = *server.Name
-		}
-		err = repo.AddFederatedServer(server.IRI, name, "")
-		if err != nil {
-			log.Errorf("Failed to add federated server %s: %v", actorIRI, err)
-			return nil
-		}
-		// Reload to get the ID
-		server, _ = repo.GetFederatedServer(actorIRI)
+	// Update the server status (we know server exists and we're following them)
+	update := &models.FederatedStreamUpdate{
+		Title:        server.StreamTitle,
+		Description:  server.StreamDescription,
+		ThumbnailURL: server.ThumbnailURL,
+		Tags:         server.Tags,
 	}
 
-	if server != nil {
-		update := &models.FederatedStreamUpdate{
-			Title:        server.StreamTitle,
-			Description:  server.StreamDescription,
-			ThumbnailURL: server.ThumbnailURL,
-			Tags:         server.Tags,
-		}
-
-		err = repo.UpdateServerStatus(server.IRI, server.IsOnline, update)
-		if err != nil {
-			log.Errorf("Failed to update federated server %s: %v", actorIRI, err)
-		}
+	err = repo.UpdateServerStatus(server.IRI, server.IsOnline, update)
+	if err != nil {
+		log.Errorf("Failed to update federated server status %s: %v", actorIRI, err)
 	}
 
 	return nil
