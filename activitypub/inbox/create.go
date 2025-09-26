@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/federatedserversrepository"
 	log "github.com/sirupsen/logrus"
@@ -45,7 +46,7 @@ func handleNoteActivity(c context.Context, activity vocab.ActivityStreamsCreate,
 
 	// Check for Owncast custom properties in the note
 	unknownProps := note.GetUnknownProperties()
-	streamStatus, hasStreamStatus := unknownProps["https://owncast.online/ns#streamStatus"]
+	streamStatus, hasStreamStatus := unknownProps[config.APOwncastNamespaceStreamStatus]
 
 	if !hasStreamStatus {
 		// Not an Owncast stream status update, ignore
