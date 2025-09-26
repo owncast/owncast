@@ -7,6 +7,7 @@ import (
 
 	"github.com/owncast/owncast/activitypub"
 	fediverseauth "github.com/owncast/owncast/auth/fediverse"
+	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -42,7 +43,7 @@ func RegisterFediverseOTPRequest(u models.User, w http.ResponseWriter, r *http.R
 
 	configRepository := configrepository.Get()
 	msg := fmt.Sprintf("<p>One-time code from %s: %s. If you did not request this message please ignore or block.</p>", configRepository.GetServerName(), reg.Code)
-	if err := activitypub.SendDirectFederatedMessage(msg, reg.Account); err != nil {
+	if err := activitypub.SendDirectFederatedMessage(msg, reg.Account, core.IsStreamConnected()); err != nil {
 		webutils.WriteSimpleResponse(w, false, "Could not send code to fediverse: "+err.Error())
 		return
 	}

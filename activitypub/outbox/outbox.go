@@ -64,11 +64,11 @@ func SendLive() error {
 	}
 	textContent = fmt.Sprintf("<p>%s</p>%s<p>%s</p><p><a href=\"%s\">%s</a></p>", textContent, streamTitle, tagsString, configRepository.GetServerURL(), configRepository.GetServerURL())
 
-	activity, _, note, noteID := createBaseOutboundMessage(textContent)
+	activity, _, note, noteID := createBaseOutboundNoteMessage(textContent, true)
 
 	// Add custom Owncast stream status and metadata properties
 	unknownProps := note.GetUnknownProperties()
-	apmodels.SetOwncastMetadata(unknownProps, configRepository, true, "live")
+	apmodels.SetOwncastMetadata(unknownProps, configRepository, true)
 
 	to, cc := getAddressingToFollowers()
 	note.SetActivityStreamsTo(to)
@@ -110,7 +110,7 @@ func SendLive() error {
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
 		log.Errorln("unable to serialize go live message activity", err)
-		return errors.New("unable to serialize go live message activity " + err.Error())
+		return errors.Wrap(err, "unable to serialize go live message activity")
 	}
 
 	if err := SendToFollowers(b); err != nil {
@@ -124,8 +124,68 @@ func SendLive() error {
 	return nil
 }
 
+// SendOffline will send all followers the message saying the stream has ended.
+func SendOffline() error {
+	configRepository := configrepository.Get()
+
+	// Create Leave activity
+	id := shortid.MustGenerate()
+	activityID := apmodels.MakeLocalIRIForResource(id)
+	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
+	serverURL := configRepository.GetServerURL()
+
+	// Create the Leave activity
+	activity := streams.NewActivityStreamsLeave()
+
+	// Set the activity ID
+	idProperty := streams.NewJSONLDIdProperty()
+	idProperty.Set(activityID)
+	activity.SetJSONLDId(idProperty)
+
+	// Set the actor (the Owncast server)
+	actorProperty := streams.NewActivityStreamsActorProperty()
+	actorProperty.AppendIRI(localActor)
+	activity.SetActivityStreamsActor(actorProperty)
+
+	// Set the object (the server URL)
+	objectProperty := streams.NewActivityStreamsObjectProperty()
+	serverIRI, err := url.Parse(serverURL)
+	if err != nil {
+		return errors.Wrap(err, "unable to parse server URL for Leave activity")
+	}
+	objectProperty.AppendIRI(serverIRI)
+	activity.SetActivityStreamsObject(objectProperty)
+
+	// Add custom Owncast metadata
+	unknownProps := activity.GetUnknownProperties()
+	apmodels.SetOwncastMetadata(unknownProps, configRepository, false)
+
+	// Set addressing to followers
+	to, cc := getAddressingToFollowers()
+	activity.SetActivityStreamsTo(to)
+	activity.SetActivityStreamsCc(cc)
+
+	// Serialize and send
+	b, err := apmodels.Serialize(activity)
+	if err != nil {
+		log.Errorln("unable to serialize stream offline message activity", err)
+		return errors.Wrap(err, "unable to serialize stream offline message activity")
+	}
+
+	if err := SendToFollowers(b); err != nil {
+		return err
+	}
+
+	// Add to outbox
+	if err := Add(activity, id, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // SendDirectMessageToAccount will send a direct message to a single account.
-func SendDirectMessageToAccount(textContent, account string) error {
+func SendDirectMessageToAccount(textContent, account string, isStreamConnected bool) error {
 	links, err := webfinger.GetWebfingerLinks(account)
 	if err != nil {
 		return errors.Wrap(err, "unable to get webfinger links when sending private message")
@@ -138,7 +198,7 @@ func SendDirectMessageToAccount(textContent, account string) error {
 		return errors.Wrap(err, "unable to resolve actor to send message to")
 	}
 
-	activity, _, note, _ := createBaseOutboundMessage(textContent)
+	activity, _, note, _ := createBaseOutboundNoteMessage(textContent, isStreamConnected)
 
 	// Set direct message visibility
 	activity = apmodels.MakeActivityDirect(activity, actor.ActorIri)
@@ -156,7 +216,7 @@ func SendDirectMessageToAccount(textContent, account string) error {
 }
 
 // SendPublicMessage will send a public message to all followers.
-func SendPublicMessage(textContent string) error {
+func SendPublicMessage(textContent string, isStreamConnected bool) error {
 	originalContent := textContent
 	textContent = utils.RenderSimpleMarkdown(textContent)
 
@@ -176,7 +236,7 @@ func SendPublicMessage(textContent string) error {
 		tagProp.AppendTootHashtag(hashtag)
 	}
 
-	activity, _, note, noteID := createBaseOutboundMessage(textContent)
+	activity, _, note, noteID := createBaseOutboundNoteMessage(textContent, isStreamConnected)
 	note.SetActivityStreamsTag(tagProp)
 
 	to, cc := getAddressingToFollowers()
@@ -188,7 +248,7 @@ func SendPublicMessage(textContent string) error {
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
 		log.Errorln("unable to serialize custom fediverse message activity", err)
-		return errors.New("unable to serialize custom fediverse message activity " + err.Error())
+		return errors.Wrap(err, "unable to serialize custom fediverse message activity")
 	}
 
 	if err := SendToFollowers(b); err != nil {
@@ -215,7 +275,7 @@ func getAddressingToFollowers() (vocab.ActivityStreamsToProperty, vocab.Activity
 }
 
 // nolint: unparam
-func createBaseOutboundMessage(textContent string) (vocab.ActivityStreamsCreate, string, vocab.ActivityStreamsNote, string) {
+func createBaseOutboundNoteMessage(textContent string, isStreamConnected bool) (vocab.ActivityStreamsCreate, string, vocab.ActivityStreamsNote, string) {
 	configRepository := configrepository.Get()
 	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 	noteID := shortid.MustGenerate()
@@ -226,6 +286,8 @@ func createBaseOutboundMessage(textContent string) (vocab.ActivityStreamsCreate,
 	activity.SetActivityStreamsObject(object)
 
 	note := apmodels.MakeNote(textContent, noteIRI, localActor)
+	unknownProps := note.GetUnknownProperties()
+	apmodels.SetOwncastMetadata(unknownProps, configRepository, isStreamConnected)
 	object.AppendActivityStreamsNote(note)
 
 	return activity, id, note, noteID
@@ -252,7 +314,7 @@ func SendToFollowers(payload []byte) error {
 		req, err := crypto.CreateSignedRequest(payload, inbox, localActor)
 		if err != nil {
 			log.Errorln("unable to create outbox request", follower.Inbox, err)
-			return errors.New("unable to create outbox request: " + follower.Inbox)
+			return errors.Wrapf(err, "unable to create outbox request for inbox: %s", follower.Inbox)
 		}
 
 		workerpool.AddToOutboundQueue(req)
@@ -317,7 +379,7 @@ func Add(item vocab.Type, id string, isLiveNotification bool) error {
 
 	if iri == "" {
 		log.Errorln("Unable to get iri from item")
-		return errors.New("Unable to get iri from item " + id)
+		return errors.Errorf("unable to get iri from item %s", id)
 	}
 
 	b, err := apmodels.Serialize(item)

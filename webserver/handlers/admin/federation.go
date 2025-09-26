@@ -6,6 +6,7 @@ import (
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/persistence/configrepository"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
@@ -34,7 +35,7 @@ func SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := activitypub.SendPublicFederatedMessage(message); err != nil {
+	if err := activitypub.SendPublicFederatedMessage(message, core.IsStreamConnected()); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

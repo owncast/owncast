@@ -10,7 +10,7 @@
 
 
 ffmpeg_execs=( 'ffmpeg' 'ffmpeg.exe' )
-ffmpeg_paths=( './' '../' '' )
+ffmpeg_paths=( '' )
 
 for _ffmpeg_exec in "${ffmpeg_execs[@]}"; do
   for _ffmpeg_path in "${ffmpeg_paths[@]}"; do
@@ -43,7 +43,7 @@ if [[ -z "$ffmpeg_exec" ]]; then
 else
   ffmpeg_version=$("$ffmpeg_exec" -version | awk -F 'ffmpeg version' '{print $2}' | awk 'NR==1{print $1}')
   echo "ffmpeg executable: $ffmpeg_exec ($ffmpeg_version)"
-  echo "ffmpeg path: $(readlink -f "$(which "$ffmpeg_exec")")" 
+  echo "ffmpeg path: $(readlink -f "$(which "$ffmpeg_exec")")"
 fi
 
 if [[ ${FILE_COUNT} -eq 0 ]]; then
@@ -91,7 +91,7 @@ else
       echo "ERROR: File not found: $file"
       exit 1
     fi
-    
+
   done
 
   function finish {

@@ -96,15 +96,17 @@ func ParseOwncastMetadata(unknownProps map[string]interface{}) *OwncastMetadata 
 }
 
 // SetOwncastMetadata sets Owncast metadata properties in unknownProps map from ConfigRepository.
-// It includes standard server information and optionally stream status and additional metadata.
-func SetOwncastMetadata(unknownProps map[string]interface{}, repo configrepository.ConfigRepository, includeStreamStatus bool, streamStatus string) {
+// It always includes stream status.
+func SetOwncastMetadata(unknownProps map[string]interface{}, repo configrepository.ConfigRepository, isStreamConnected bool) {
 	// Always include server identification
 	unknownProps[config.APOwncastNamespaceServerName] = repo.GetServerName()
 	unknownProps[config.APOwncastNamespaceStreamDescription] = repo.GetServerSummary()
 
-	// Add stream status if requested
-	if includeStreamStatus && streamStatus != "" {
-		unknownProps[config.APOwncastNamespaceStreamStatus] = streamStatus
+	// Always include current stream status
+	if isStreamConnected {
+		unknownProps[config.APOwncastNamespaceStreamStatus] = "live"
+	} else {
+		unknownProps[config.APOwncastNamespaceStreamStatus] = "offline"
 	}
 
 	// Add stream title if available
@@ -126,6 +128,15 @@ func SetOwncastMetadata(unknownProps map[string]interface{}, repo configreposito
 
 // SetBasicOwncastMetadata sets only the basic server identification metadata.
 // This is useful for responses that don't need full stream information.
-func SetBasicOwncastMetadata(unknownProps map[string]interface{}, repo configrepository.ConfigRepository) {
-	SetOwncastMetadata(unknownProps, repo, false, "")
+func SetBasicOwncastMetadata(unknownProps map[string]interface{}, repo configrepository.ConfigRepository, isStreamConnected bool) {
+	// Always include server identification
+	unknownProps[config.APOwncastNamespaceServerName] = repo.GetServerName()
+	unknownProps[config.APOwncastNamespaceStreamDescription] = repo.GetServerSummary()
+
+	// Always include current stream status
+	if isStreamConnected {
+		unknownProps[config.APOwncastNamespaceStreamStatus] = "live"
+	} else {
+		unknownProps[config.APOwncastNamespaceStreamStatus] = "offline"
+	}
 }

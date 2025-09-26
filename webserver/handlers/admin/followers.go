@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
+	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -46,7 +47,7 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send the approval to the follow requestor.
-		if err := requests.SendFollowAccept(followRequest.Inbox, followRequest.RequestObject, localAccountName); err != nil {
+		if err := requests.SendFollowAccept(followRequest.Inbox, followRequest.RequestObject, localAccountName, core.IsStreamConnected()); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}

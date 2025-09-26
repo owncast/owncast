@@ -15,8 +15,8 @@ import (
 )
 
 // SendFollowAccept will send an accept activity to a follow request from a specified local user.
-func SendFollowAccept(inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string) error {
-	followAccept := makeAcceptFollow(originalFollowActivity, fromLocalAccountName)
+func SendFollowAccept(inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, isStreamConnected bool) error {
+	followAccept := makeAcceptFollow(originalFollowActivity, fromLocalAccountName, isStreamConnected)
 	localAccountIRI := apmodels.MakeLocalIRIForAccount(fromLocalAccountName)
 
 	var jsonmap map[string]interface{}
@@ -32,7 +32,7 @@ func SendFollowAccept(inbox *url.URL, originalFollowActivity vocab.ActivityStrea
 	return nil
 }
 
-func makeAcceptFollow(originalFollowActivity vocab.ActivityStreamsFollow, fromAccountName string) vocab.ActivityStreamsAccept {
+func makeAcceptFollow(originalFollowActivity vocab.ActivityStreamsFollow, fromAccountName string, isStreamConnected bool) vocab.ActivityStreamsAccept {
 	acceptIDString := shortid.MustGenerate()
 	acceptID := apmodels.MakeLocalIRIForResource(acceptIDString)
 	actorID := apmodels.MakeLocalIRIForAccount(fromAccountName)
@@ -54,8 +54,8 @@ func makeAcceptFollow(originalFollowActivity vocab.ActivityStreamsFollow, fromAc
 	unknownProps := accept.GetUnknownProperties()
 
 	// Use the utility function to set basic Owncast metadata
-	// We don't include stream status in accept messages, just basic server info
-	apmodels.SetBasicOwncastMetadata(unknownProps, configRepository)
+	// We include stream status in accept messages to inform the requester about our current status
+	apmodels.SetBasicOwncastMetadata(unknownProps, configRepository, isStreamConnected)
 
 	return accept
 }

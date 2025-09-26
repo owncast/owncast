@@ -52,7 +52,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	localAccountName := configRepository.GetDefaultFederationUsername()
 
 	if approved {
-		if err := requests.SendFollowAccept(follow.Inbox, activity, localAccountName); err != nil {
+		if err := requests.SendFollowAccept(follow.Inbox, activity, localAccountName, false); err != nil {
 			log.Errorln("unable to send follow accept", err)
 			return err
 		}

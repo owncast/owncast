@@ -67,14 +67,19 @@ func SendLive() error {
 	return outbox.SendLive()
 }
 
+// SendOffline will send a "Stream Ended" message to followers.
+func SendOffline() error {
+	return outbox.SendOffline()
+}
+
 // SendPublicFederatedMessage will send an arbitrary provided message to followers.
-func SendPublicFederatedMessage(message string) error {
-	return outbox.SendPublicMessage(message)
+func SendPublicFederatedMessage(message string, isStreamConnected bool) error {
+	return outbox.SendPublicMessage(message, isStreamConnected)
 }
 
 // SendDirectFederatedMessage will send a direct message to a single account.
-func SendDirectFederatedMessage(message, account string) error {
-	return outbox.SendDirectMessageToAccount(message, account)
+func SendDirectFederatedMessage(message, account string, isStreamConnected bool) error {
+	return outbox.SendDirectMessageToAccount(message, account, isStreamConnected)
 }
 
 // GetFollowerCount will return the local tracked follower count.

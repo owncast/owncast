@@ -96,6 +96,15 @@ func SetStreamAsDisconnected() {
 	_stats.LastConnectTime = nil
 	_broadcaster = nil
 
+	// Send Fediverse offline notification
+	configRepository := configrepository.Get()
+	if configRepository.GetFederationEnabled() {
+		log.Traceln("Sending Federated Stream Offline message.")
+		if err := activitypub.SendOffline(); err != nil {
+			log.Errorln(err)
+		}
+	}
+
 	offlineFilename := "offline-v2.ts"
 
 	offlineFilePath, err := saveOfflineClipToDisk(offlineFilename)

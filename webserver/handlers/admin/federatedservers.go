@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/owncast/owncast/activitypub/outbox"
+	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/federatedserversrepository"
 	"github.com/owncast/owncast/webserver/handlers/generated"
@@ -77,7 +78,7 @@ func AddFederatedServer(w http.ResponseWriter, r *http.Request) {
 
 	// Send the follow request via ActivityPub
 	// This will fetch nodeinfo, validate it's an Owncast server, and send the Follow activity
-	if err := outbox.SendFollowRequest(serverURL.String()); err != nil {
+	if err := outbox.SendFollowRequestToOwncastServerURL(serverURL.String(), core.IsStreamConnected()); err != nil {
 		log.Errorf("Failed to send follow request to %s: %v", serverURL.String(), err)
 		writeSimpleResponse(w, false, "Failed to send follow request: "+err.Error())
 		return
