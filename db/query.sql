@@ -24,7 +24,7 @@ UPDATE ap_followers SET approved_at = $1, disabled_at = null WHERE iri = $2;
 UPDATE ap_followers SET approved_at = null, disabled_at = $1 WHERE iri = $2;
 
 -- name: GetFollowerByIRI :one
-SELECT iri, inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = $1;
+SELECT iri, inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at, owncast_server FROM ap_followers WHERE iri = $1;
 
 -- name: GetOutboxWithOffset :many
 SELECT value FROM ap_outbox LIMIT $1 OFFSET $2;
@@ -37,7 +37,7 @@ SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = $1;
 DELETE FROM ap_followers WHERE iri = $1;
 
 -- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, request, request_object, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6, $7, $8);
+INSERT INTO ap_followers(iri, inbox, request, request_object, name, username, image, approved_at, owncast_server) values($1, $2, $3, $4, $5, $6, $7, $8, $9);
 
 -- name: AddToOutbox :exec
 INSERT INTO ap_outbox(iri, value, type, live_notification) values($1, $2, $3, $4);
@@ -108,3 +108,23 @@ UPDATE users SET display_name = $1, previous_names = previous_names || $2, namec
 
 -- name: ChangeDisplayColor :exec
 UPDATE users SET display_color = $1 WHERE id = $2;
+
+-- Federated servers queries
+
+-- name: GetFederatedServers :many
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at FROM federated_servers ORDER BY added_at DESC;
+
+-- name: GetFederatedServer :one
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at FROM federated_servers WHERE iri = $1;
+
+-- name: AddFederatedServer :exec
+INSERT INTO federated_servers(iri, name, logo_url, followed_at) values($1, $2, $3, $4);
+
+-- name: UpdateFederatedServerStatus :exec
+UPDATE federated_servers SET is_online = $1, stream_title = $2, stream_description = $3, stream_tags = $4, thumbnail_url = $5, last_status_update = $6 WHERE iri = $7;
+
+-- name: UpdateFederatedServerOnlineStatus :exec
+UPDATE federated_servers SET is_online = $1, last_seen_online = $2, last_status_update = $3 WHERE iri = $4;
+
+-- name: RemoveFederatedServer :exec
+DELETE FROM federated_servers WHERE id = $1;

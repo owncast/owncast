@@ -25,6 +25,10 @@ func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) 
 	username := person.Username
 	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
 
+	// Check if this is an Owncast server by looking for custom properties in the follow request
+	unknownProps := activity.GetUnknownProperties()
+	metadata := apmodels.ParseOwncastMetadata(unknownProps)
+
 	followRequest := apmodels.ActivityPubActor{
 		ActorIri:         person.ActorIri,
 		FollowRequestIri: activity.GetJSONLDId().Get(),
@@ -33,6 +37,7 @@ func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) 
 		Username:         fullUsername,
 		Image:            person.Image,
 		RequestObject:    activity,
+		IsOwncastServer:  metadata.IsOwncastServer,
 	}
 
 	return &followRequest, nil

@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS ap_followers (
 		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		"approved_at" TIMESTAMP,
     "disabled_at" TIMESTAMP,
+    "owncast_server" BOOLEAN DEFAULT FALSE,
 		PRIMARY KEY (iri));
 		CREATE INDEX iri_index ON ap_followers (iri);
     CREATE INDEX approved_at_index ON ap_followers (approved_at);
@@ -97,3 +98,22 @@ CREATE TABLE IF NOT EXISTS messages (
 	CREATE INDEX user_id ON messages (user_id);
 	CREATE INDEX hidden_at ON messages (hidden_at);
 	CREATE INDEX timestamp ON messages (timestamp);
+
+CREATE TABLE IF NOT EXISTS federated_servers (
+    "id" INTEGER NOT NULL PRIMARY KEY,
+    "iri" TEXT NOT NULL UNIQUE,
+    "name" TEXT,
+    "logo_url" TEXT,
+    "is_online" BOOLEAN DEFAULT FALSE,
+    "stream_title" TEXT,
+    "stream_description" TEXT,
+    "stream_tags" TEXT,
+    "thumbnail_url" TEXT,
+    "last_seen_online" TIMESTAMP,
+    "last_status_update" TIMESTAMP,
+    "added_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "followed_at" TIMESTAMP
+);
+CREATE INDEX federated_servers_iri ON federated_servers (iri);
+CREATE INDEX federated_servers_is_online ON federated_servers (is_online);
+CREATE INDEX federated_servers_last_seen ON federated_servers (last_seen_online);

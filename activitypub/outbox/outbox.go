@@ -66,6 +66,24 @@ func SendLive() error {
 
 	activity, _, note, noteID := createBaseOutboundMessage(textContent)
 
+	// Add custom Owncast stream status and metadata properties
+	unknownProps := note.GetUnknownProperties()
+	unknownProps["https://owncast.online/ns#streamStatus"] = "live"
+	unknownProps["https://owncast.online/ns#streamTitle"] = configRepository.GetStreamTitle()
+	unknownProps["https://owncast.online/ns#serverName"] = configRepository.GetServerName()
+	unknownProps["https://owncast.online/ns#streamDescription"] = configRepository.GetServerSummary()
+
+	// Add logo/server image if available
+	if logoPath := configRepository.GetLogoPath(); logoPath != "" {
+		logoURL := fmt.Sprintf("%s/%s", configRepository.GetServerURL(), logoPath)
+		unknownProps["https://owncast.online/ns#logoUrl"] = logoURL
+	}
+
+	// Add tags
+	if tags := configRepository.GetServerMetadataTags(); len(tags) > 0 {
+		unknownProps["https://owncast.online/ns#streamTags"] = tags
+	}
+
 	to, cc := getAddressingToFollowers()
 	note.SetActivityStreamsTo(to)
 	note.SetActivityStreamsCc(cc)

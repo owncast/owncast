@@ -44,7 +44,7 @@ func AddFollow(follow apmodels.ActivityPubActor, approved bool) error {
 		return errors.Wrap(err, "error serializing follow request object")
 	}
 
-	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.FollowRequestIri.String(), follow.Name, follow.Username, image, followRequestObject, approved)
+	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.FollowRequestIri.String(), follow.Name, follow.Username, image, followRequestObject, approved, follow.IsOwncastServer)
 }
 
 // RemoveFollow will remove a follow from the datastore.
@@ -139,7 +139,7 @@ func BlockOrRejectFollower(iri string) error {
 	})
 }
 
-func createFollow(actor, inbox, request, name, username, image string, requestObject []byte, approved bool) error {
+func createFollow(actor, inbox, request, name, username, image string, requestObject []byte, approved bool, owncastServer bool) error {
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
 		log.Debugln(err)
@@ -165,6 +165,7 @@ func createFollow(actor, inbox, request, name, username, image string, requestOb
 		ApprovedAt:    approvedAt,
 		Request:       request,
 		RequestObject: requestObject,
+		OwncastServer: sql.NullBool{Bool: owncastServer, Valid: true},
 	}); err != nil {
 		log.Errorln("error creating new federation follow: ", err)
 	}
@@ -260,7 +261,7 @@ func GetOutbox(limit int, offset int) (vocab.ActivityStreamsOrderedCollection, e
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
 	rows, err := _datastore.GetQueries().GetOutboxWithOffset(
 		context.Background(),
-		db.GetOutboxWithOffsetParams{Limit: limit, Offset: offset},
+		db.GetOutboxWithOffsetParams{Limit: int32(limit), Offset: int32(offset)},
 	)
 	if err != nil {
 		return collection, err
@@ -332,8 +333,8 @@ func SaveInboundFediverseActivity(objectIRI string, actorIRI string, eventType s
 func GetInboundActivities(limit int, offset int) ([]models.FederatedActivity, int, error) {
 	ctx := context.Background()
 	rows, err := _datastore.GetQueries().GetInboundActivitiesWithOffset(ctx, db.GetInboundActivitiesWithOffsetParams{
-		Limit:  limit,
-		Offset: offset,
+		Limit:  int32(limit),
+		Offset: int32(offset),
 	})
 	if err != nil {
 		return nil, 0, err
