@@ -78,23 +78,23 @@ func Move(source, destination string) error {
 func moveFallback(source, destination string) error {
 	inputFile, err := os.Open(source) // nolint: gosec
 	if err != nil {
-		return fmt.Errorf("Couldn't open source file: %s", err)
+		return fmt.Errorf("couldn't open source file: %s", err)
 	}
 	outputFile, err := os.Create(destination) // nolint: gosec
 	if err != nil {
 		_ = inputFile.Close()
-		return fmt.Errorf("Couldn't open dest file: %s", err)
+		return fmt.Errorf("couldn't open dest file: %s", err)
 	}
 	defer outputFile.Close()
 	_, err = io.Copy(outputFile, inputFile)
 	_ = inputFile.Close()
 	if err != nil {
-		return fmt.Errorf("Writing to output file failed: %s", err)
+		return fmt.Errorf("writing to output file failed: %s", err)
 	}
 	// The copy was successful, so now delete the original file
 	err = os.Remove(source)
 	if err != nil {
-		return fmt.Errorf("Failed removing original file: %s", err)
+		return fmt.Errorf("failed removing original file: %s", err)
 	}
 	return nil
 }
@@ -438,13 +438,14 @@ func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
 
 	contentType := strings.Split(splitHeader[1], ";")[0]
 
-	if contentType == "image/svg+xml" {
+	switch contentType {
+	case "image/svg+xml":
 		extension = ".svg"
-	} else if contentType == "image/gif" {
+	case "image/gif":
 		extension = ".gif"
-	} else if contentType == "image/png" {
+	case "image/png":
 		extension = ".png"
-	} else if contentType == "image/jpeg" {
+	case "image/jpeg":
 		extension = ".jpeg"
 	}
 

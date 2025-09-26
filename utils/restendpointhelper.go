@@ -11,7 +11,7 @@ import (
 func GetURLParam(r *http.Request, key string) (value string, err error) {
 	value = chi.URLParam(r, key)
 	if value == "" {
-		err = errors.New("Request does not contain requested URL param")
+		err = errors.New("request does not contain requested URL param")
 	}
 	return
 }

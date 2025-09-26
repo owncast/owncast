@@ -22,7 +22,7 @@ func (e *FediverseEngagementEvent) GetBroadcastPayload() EventPayload {
 		"timestamp": e.Timestamp,
 		"body":      e.Body,
 		"image":     e.Image,
-		"type":      e.Event.Type,
+		"type":      e.Type,
 		"title":     e.UserAccountName,
 		"link":      e.Link,
 		"user": EventPayload{
@@ -33,5 +33,5 @@ func (e *FediverseEngagementEvent) GetBroadcastPayload() EventPayload {
 
 // GetMessageType will return the event type for this message.
 func (e *FediverseEngagementEvent) GetMessageType() EventType {
-	return e.Event.Type
+	return e.Type
 }
