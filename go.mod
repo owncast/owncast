@@ -325,7 +325,7 @@ require (
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	modernc.org/sqlite v1.38.2 // indirect
-	mvdan.cc/gofumpt v0.8.0 // indirect
+	mvdan.cc/gofumpt v0.9.1 // indirect
 	mvdan.cc/unparam v0.0.0-20250301125049-0df0534333a4 // indirect
 )
 
