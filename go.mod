@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/CAFxX/httpcompression v0.0.9
 	github.com/SherClockHolmes/webpush-go v1.4.0
-	github.com/TwiN/go-away v1.7.0
+	github.com/TwiN/go-away v1.8.0
 	github.com/andybalholm/cascadia v1.3.3
 	github.com/aws/aws-sdk-go v1.55.7
 	github.com/go-chi/chi/v5 v5.2.3
