@@ -1,3 +1,14 @@
+# This workflow manages internationalization (i18n) with Crowdin
+# Triggers:
+#   - Hourly schedule to sync translations
+#   - Push with changes to translation files or config
+# Process:
+#   1. Extracts translatable strings from source code
+#   2. Uploads source strings to Crowdin
+#   3. Downloads translated strings from Crowdin
+#   4. Creates PR with updated translations
+# Note: Uses concurrency control to prevent overlapping runs
+
 name: Translation job
 
 on:

@@ -1,3 +1,13 @@
+# This workflow tests HLS video streaming functionality
+# Triggers:
+#   - Push/PR with Go file changes
+# Skips:
+#   - Web-only changes
+# Tests:
+#   - Local storage backend
+#   - S3 storage backend (when secrets available)
+#   - Retries up to 3 times for flaky network tests
+
 name: HLS tests
 
 on:

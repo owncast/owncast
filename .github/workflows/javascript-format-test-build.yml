@@ -1,6 +1,16 @@
+# This workflow handles Javascript formatting, linting, testing, and building
+# Triggers:
+#   - Push/PR with changes to web/ directory
+# Skips:
+#   - Markdown files
+# Jobs:
+#   1. formatting: ESLint and Prettier formatting
+#   2. unused-code: Knip checks for unused code and dependencies
+#   3. web-bundle: Builds and bundles the web app (only on develop branch)
+# Note: Auto-fixes and commits formatting issues on push events
+
 name: Javascript
 
-# This action works with pull requests and pushes
 on:
   push:
     paths:

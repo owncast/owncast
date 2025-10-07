@@ -1,3 +1,11 @@
+# This workflow checks CSS/SCSS code quality and formatting
+# Triggers:
+#   - Push/PR with changes to web/ directory
+# Checks:
+#   - Prettier formatting for CSS/SCSS files
+#   - Stylelint rules for code quality
+# Note: Only runs when CSS or SCSS files are changed
+
 name: CSS Lint and Formatting
 
 on:

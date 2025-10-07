@@ -1,6 +1,16 @@
 # .github/workflows/chromatic.yml
 
-# Workflow name
+# This workflow publishes Storybook to Chromatic for visual regression testing
+# Triggers:
+#   - Push/PR with changes to web/ directory
+# Skips:
+#   - Static files
+#   - next.config.js changes
+#   - Renovate bot PRs
+# Features:
+#   - Uses onlyChanged for efficient testing
+#   - Publishes visual diffs for review
+
 name: 'Chromatic'
 
 on:

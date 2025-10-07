@@ -1,6 +1,14 @@
 # See https://docs.earthly.dev/ci-integration/vendor-specific-guides/gh-actions-integration
 # for details.
 
+# This workflow builds the development container image
+# Triggers:
+#   - Nightly scheduled builds (2 AM UTC)
+#   - Push/PR to develop with relevant file changes
+# Skips:
+#   - Documentation-only changes
+#   - Web-only changes (web/** without Go changes)
+
 name: Build development container
 
 on:
@@ -9,9 +17,25 @@ on:
   push:
     branches:
       - develop
+    paths:
+      - '**/*.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'Dockerfile'
+      - 'Earthfile'
+      - 'build/**'
+      - '.github/workflows/container.yaml'
   pull_request:
     branches:
       - develop
+    paths:
+      - '**/*.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'Dockerfile'
+      - 'Earthfile'
+      - 'build/**'
+      - '.github/workflows/container.yaml'
 
 jobs:
   Earthly:

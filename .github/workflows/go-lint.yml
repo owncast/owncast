@@ -1,3 +1,11 @@
+# This workflow runs golangci-lint to check Go code quality
+# Triggers:
+#   - Push/PR with Go file changes
+# Skips:
+#   - Web-only changes
+#   - Dependabot PRs (separate workflow)
+# Note: Only reports on new issues to reduce noise
+
 name: Lint
 on:
   push:
