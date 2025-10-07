@@ -1,8 +1,9 @@
 # This workflow handles Javascript formatting, linting, testing, and building
 # Triggers:
-#   - Push/PR with changes to web/ directory
+#   - Push/PR with changes to web/ directory source code
 # Skips:
 #   - Markdown files
+#   - Static/generated files
 # Jobs:
 #   1. formatting: ESLint and Prettier formatting
 #   2. unused-code: Knip checks for unused code and dependencies
@@ -14,13 +15,25 @@ name: Javascript
 on:
   push:
     paths:
-      - web/**
-      - '!**.md'
+      - 'web/**/*.{js,ts,tsx,jsx,json,css,scss}'
+      - 'web/package.json'
+      - 'web/package-lock.json'
+      - 'web/.eslintrc.js'
+      - 'web/.prettierrc.js'
+      - 'web/tsconfig.json'
+      - 'web/next.config.js'
+      - '.github/workflows/javascript-format-test-build.yml'
 
   pull_request:
     paths:
-      - web/**
-      - '!**.md'
+      - 'web/**/*.{js,ts,tsx,jsx,json,css,scss}'
+      - 'web/package.json'
+      - 'web/package-lock.json'
+      - 'web/.eslintrc.js'
+      - 'web/.prettierrc.js'
+      - 'web/tsconfig.json'
+      - 'web/next.config.js'
+      - '.github/workflows/javascript-format-test-build.yml'
 
 jobs:
   formatting:

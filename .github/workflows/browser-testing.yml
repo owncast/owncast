@@ -1,9 +1,7 @@
 # This workflow runs browser-based tests using Cypress
 # Triggers:
-#   - Push/PR with web or browser test changes
-# Skips:
-#   - Documentation-only changes in web/
-#   - Configuration-only changes
+#   - Push/PR with web, Go backend, or browser test changes
+# Note: Browser tests require both frontend and backend
 
 name: Browser Tests
 
@@ -11,11 +9,19 @@ on:
   push:
     paths:
       - 'web/**'
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
       - 'test/automated/browser/**'
+      - '.github/workflows/browser-testing.yml'
   pull_request:
     paths:
       - 'web/**'
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
       - 'test/automated/browser/**'
+      - '.github/workflows/browser-testing.yml'
 
 jobs:
   cypress-run:

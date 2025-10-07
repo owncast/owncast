@@ -2,10 +2,9 @@
 
 # This workflow publishes Storybook to Chromatic for visual regression testing
 # Triggers:
-#   - Push/PR with changes to web/ directory
+#   - Push/PR with changes to web components, stories, or styles
 # Skips:
 #   - Static files
-#   - next.config.js changes
 #   - Renovate bot PRs
 # Features:
 #   - Uses onlyChanged for efficient testing
@@ -16,10 +15,24 @@ name: 'Chromatic'
 on:
   push:
     paths:
-      - web/**
+      - 'web/components/**'
+      - 'web/stories/**'
+      - 'web/.storybook/**'
+      - 'web/**/*.{css,scss}'
+      - 'web/i18n/**'
+      - 'web/package.json'
+      - 'web/package-lock.json'
+      - '.github/workflows/chromatic.yml'
   pull_request:
     paths:
-      - web/**
+      - 'web/components/**'
+      - 'web/stories/**'
+      - 'web/.storybook/**'
+      - 'web/**/*.{css,scss}'
+      - 'web/i18n/**'
+      - 'web/package.json'
+      - 'web/package-lock.json'
+      - '.github/workflows/chromatic.yml'
 
 # List of jobs
 jobs:

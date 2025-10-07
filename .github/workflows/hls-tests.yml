@@ -1,8 +1,6 @@
 # This workflow tests HLS video streaming functionality
 # Triggers:
-#   - Push/PR with Go file changes
-# Skips:
-#   - Web-only changes
+#   - Push/PR with Go file changes or HLS test changes
 # Tests:
 #   - Local storage backend
 #   - S3 storage backend (when secrets available)
@@ -12,11 +10,19 @@ name: HLS tests
 
 on:
   push:
-    paths-ignore:
-      - 'web/**'
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'test/automated/hls/**'
+      - '.github/workflows/hls-tests.yml'
   pull_request:
-    paths-ignore:
-      - 'web/**'
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'test/automated/hls/**'
+      - '.github/workflows/hls-tests.yml'
 
 env:
   S3_BUCKET: ${{ secrets.S3_BUCKET }}

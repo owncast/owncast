@@ -9,11 +9,19 @@
 name: Lint
 on:
   push:
-    paths-ignore:
-      - 'web/**'
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - '.golangci.yml'
+      - '.github/workflows/go-lint.yml'
   pull_request:
-    paths-ignore:
-      - 'web/**'
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - '.golangci.yml'
+      - '.github/workflows/go-lint.yml'
 
 permissions:
   contents: read
