@@ -5,12 +5,7 @@
 
 .chatSystemMessage {
   background: var(--theme-color-background-main);
-  background: linear-gradient(
-    70deg,
-    rgb(87 51 141) 0%,
-    rgb(65 28 139) 40%,
-    rgb(71 50 133) 80%
-  );
+  background: linear-gradient(70deg, rgb(87 51 141) 0%, rgb(65 28 139) 40%, rgb(71 50 133) 80%);
   border-radius: 5px;
   border-width: 1px;
   border-style: solid;

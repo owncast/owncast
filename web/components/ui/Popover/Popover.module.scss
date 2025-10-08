@@ -1,4 +1,3 @@
-
 .anchor {
   position: relative;
   left: 50%;
@@ -15,12 +14,12 @@
   width: max-content;
 }
 
-.popover>.title {
+.popover > .title {
   padding: 10px;
   padding-bottom: 0;
 }
 
-.popover>.content {
+.popover > .content {
   padding: 10px;
   padding-top: 0;
 }
@@ -33,5 +32,3 @@
   right: 10px;
   position: absolute;
 }
-
-
