@@ -2,3 +2,5 @@
 node_modules
 out
 styles/variables.css
+public/sw.js
+public/workbox-*.js
