@@ -3,4 +3,5 @@ node_modules
 out
 ../static/web
 public/styles/admin/config-public-details.css
+# Markdown files - ESLint can't parse them without a plugin, but Prettier handles them
 **/*.md
