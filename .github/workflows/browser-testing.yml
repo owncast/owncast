@@ -57,7 +57,7 @@ jobs:
             docs:
               - '**/*.md'
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         with:
           node-version: '22.20.0'
