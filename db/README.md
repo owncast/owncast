@@ -9,20 +9,32 @@ sqlc generates **type-safe code** from SQL. Here's how it works:
 
 Only those who need to create or update SQL queries will need to have `sqlc` installed on their system. **It is not a dependency required to build the codebase.**
 
-## Install sqlc
+## Using sqlc
 
-### Snap
+This project uses Go 1.24's native tool management. The `sqlc` tool is already defined in `go.mod`.
 
-`sudo snap install sqlc`
+After cloning the repository, ensure tools are downloaded:
 
-### Go install
+```bash
+go mod download
+```
 
-`go install github.com/kyleconroy/sqlc/cmd/sqlc@latest`
+Then run sqlc:
 
-### macOS
+```bash
+go tool sqlc generate
+```
 
-`brew install sqlc`
+## Managing Tool Versions
 
-### Download a release
+To upgrade sqlc to a specific version:
 
-Visit <https://github.com/kyleconroy/sqlc/releases> to download a release for your environment.
+```bash
+go get -tool github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+```
+
+To check the current version:
+
+```bash
+go list -m github.com/sqlc-dev/sqlc
+```
