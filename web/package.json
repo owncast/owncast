@@ -87,7 +87,7 @@
 		"@storybook/addon-links": "^8.3.6",
 		"@storybook/addon-mdx-gfm": "^8.3.6",
 		"@storybook/addon-postcss": "2.0.0",
-		"@storybook/addon-styling-webpack": "^1.0.0",
+		"@storybook/addon-styling-webpack": "^2.0.0",
 		"@storybook/addon-viewport": "^8.3.6",
 		"@storybook/cli": "^8.3.6",
 		"@storybook/mdx2-csf": "1.1.0",
