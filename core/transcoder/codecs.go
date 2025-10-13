@@ -14,12 +14,12 @@ import (
 type Codec interface {
 	Name() string
 	DisplayName() string
-	GlobalFlags() string
+	GlobalFlags() []string
 	PixelFormat() string
 	Scaler() string
-	ExtraArguments() string
+	ExtraArguments() []string
 	ExtraFilters() string
-	VariantFlags(v *HLSVariant) string
+	VariantFlags(v *HLSVariant) []string
 	GetPresetForLevel(l int) string
 }
 
@@ -46,8 +46,8 @@ func (c *Libx264Codec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *Libx264Codec) GlobalFlags() string {
-	return ""
+func (c *Libx264Codec) GlobalFlags() []string {
+	return nil
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -61,10 +61,10 @@ func (c *Libx264Codec) Scaler() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *Libx264Codec) ExtraArguments() string {
-	return strings.Join([]string{
+func (c *Libx264Codec) ExtraArguments() []string {
+	return []string{
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
-	}, " ")
+	}
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
@@ -73,12 +73,13 @@ func (c *Libx264Codec) ExtraFilters() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *Libx264Codec) VariantFlags(v *HLSVariant) string {
-	return strings.Join([]string{
-		fmt.Sprintf("-x264-params:v:%d \"scenecut=0:open_gop=0\"", v.index), // How often the encoder checks the bitrate in order to meet average/max values
-		fmt.Sprintf("-bufsize:v:%d %dk", v.index, v.getBufferSize()),
-		fmt.Sprintf("-profile:v:%d %s", v.index, "high"), // Encoding profile
-	}, " ")
+func (c *Libx264Codec) VariantFlags(v *HLSVariant) []string {
+	return []string{
+		fmt.Sprintf("-x264-params:v:%d", v.index),
+		"scenecut=0:open_gop=0", // How often the encoder checks the bitrate in order to meet average/max values
+		fmt.Sprintf("-bufsize:v:%d", v.index), fmt.Sprintf("%dk", v.getBufferSize()),
+		fmt.Sprintf("-profile:v:%d", v.index), "high", // Encoding profile
+	}
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -115,8 +116,8 @@ func (c *OmxCodec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *OmxCodec) GlobalFlags() string {
-	return ""
+func (c *OmxCodec) GlobalFlags() []string {
+	return nil
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -130,10 +131,10 @@ func (c *OmxCodec) Scaler() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *OmxCodec) ExtraArguments() string {
-	return strings.Join([]string{
+func (c *OmxCodec) ExtraArguments() []string {
+	return []string{
 		"-tune", "zerolatency", // Option used for good for fast encoding and low-latency streaming (always includes iframes in each segment)
-	}, " ")
+	}
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
@@ -142,8 +143,8 @@ func (c *OmxCodec) ExtraFilters() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *OmxCodec) VariantFlags(v *HLSVariant) string {
-	return ""
+func (c *OmxCodec) VariantFlags(v *HLSVariant) []string {
+	return nil
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -180,14 +181,14 @@ func (c *VaapiCodec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *VaapiCodec) GlobalFlags() string {
+func (c *VaapiCodec) GlobalFlags() []string {
 	flags := []string{
 		"-hwaccel", "vaapi",
 		"-hwaccel_output_format", "vaapi",
 		"-vaapi_device", "/dev/dri/renderD128",
 	}
 
-	return strings.Join(flags, " ")
+	return flags
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -206,13 +207,13 @@ func (c *VaapiCodec) ExtraFilters() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *VaapiCodec) ExtraArguments() string {
-	return ""
+func (c *VaapiCodec) ExtraArguments() []string {
+	return nil
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *VaapiCodec) VariantFlags(v *HLSVariant) string {
-	return ""
+func (c *VaapiCodec) VariantFlags(v *HLSVariant) []string {
+	return nil
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -249,12 +250,12 @@ func (c *NvencCodec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *NvencCodec) GlobalFlags() string {
+func (c *NvencCodec) GlobalFlags() []string {
 	flags := []string{
 		"-hwaccel", "cuda",
 	}
 
-	return strings.Join(flags, " ")
+	return flags
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -268,8 +269,8 @@ func (c *NvencCodec) Scaler() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *NvencCodec) ExtraArguments() string {
-	return ""
+func (c *NvencCodec) ExtraArguments() []string {
+	return nil
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
@@ -278,9 +279,11 @@ func (c *NvencCodec) ExtraFilters() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *NvencCodec) VariantFlags(v *HLSVariant) string {
+func (c *NvencCodec) VariantFlags(v *HLSVariant) []string {
 	tuning := "ll" // low latency
-	return fmt.Sprintf("-tune:v:%d %s", v.index, tuning)
+	return []string{
+		fmt.Sprintf("-tune:v:%d", v.index), tuning,
+	}
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -317,13 +320,13 @@ func (c *QuicksyncCodec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *QuicksyncCodec) GlobalFlags() string {
+func (c *QuicksyncCodec) GlobalFlags() []string {
 	flags := []string{
 		"-init_hw_device", "qsv=hw",
 		"-filter_hw_device", "hw",
 	}
 
-	return strings.Join(flags, " ")
+	return flags
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -337,8 +340,8 @@ func (c *QuicksyncCodec) Scaler() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *QuicksyncCodec) ExtraArguments() string {
-	return ""
+func (c *QuicksyncCodec) ExtraArguments() []string {
+	return nil
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
@@ -347,8 +350,8 @@ func (c *QuicksyncCodec) ExtraFilters() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *QuicksyncCodec) VariantFlags(v *HLSVariant) string {
-	return ""
+func (c *QuicksyncCodec) VariantFlags(v *HLSVariant) []string {
+	return nil
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -385,8 +388,8 @@ func (c *Video4Linux) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *Video4Linux) GlobalFlags() string {
-	return ""
+func (c *Video4Linux) GlobalFlags() []string {
+	return nil
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -400,8 +403,8 @@ func (c *Video4Linux) Scaler() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *Video4Linux) ExtraArguments() string {
-	return ""
+func (c *Video4Linux) ExtraArguments() []string {
+	return nil
 }
 
 // ExtraFilters are the extra filters required for this codec in the transcoder.
@@ -410,8 +413,8 @@ func (c *Video4Linux) ExtraFilters() string {
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *Video4Linux) VariantFlags(v *HLSVariant) string {
-	return ""
+func (c *Video4Linux) VariantFlags(v *HLSVariant) []string {
+	return nil
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.
@@ -447,10 +450,8 @@ func (c *VideoToolboxCodec) DisplayName() string {
 }
 
 // GlobalFlags are the global flags used with this codec in the transcoder.
-func (c *VideoToolboxCodec) GlobalFlags() string {
-	var flags []string
-
-	return strings.Join(flags, " ")
+func (c *VideoToolboxCodec) GlobalFlags() []string {
+	return nil
 }
 
 // PixelFormat is the pixel format required for this codec.
@@ -469,23 +470,17 @@ func (c *VideoToolboxCodec) ExtraFilters() string {
 }
 
 // ExtraArguments are the extra arguments used with this codec in the transcoder.
-func (c *VideoToolboxCodec) ExtraArguments() string {
-	return ""
+func (c *VideoToolboxCodec) ExtraArguments() []string {
+	return nil
 }
 
 // VariantFlags returns a string representing a single variant processed by this codec.
-func (c *VideoToolboxCodec) VariantFlags(v *HLSVariant) string {
-	arguments := []string{
-		"-realtime true",
-		"-realtime true",
-		"-realtime true",
+func (c *VideoToolboxCodec) VariantFlags(v *HLSVariant) []string {
+	if v.cpuUsageLevel >= 3 {
+		return nil
 	}
 
-	if v.cpuUsageLevel >= len(arguments) {
-		return ""
-	}
-
-	return arguments[v.cpuUsageLevel]
+	return []string{"-realtime", "true"}
 }
 
 // GetPresetForLevel returns the string preset for this codec given an integer level.

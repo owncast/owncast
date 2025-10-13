@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -19,6 +20,16 @@ import (
 )
 
 var _commandExec *exec.Cmd
+
+type execInfo struct {
+	binPath string
+	command []string
+	environ []string
+}
+
+func (e *execInfo) String() string {
+	return strings.Join(e.environ, " ") + " " + e.binPath + " " + strings.Join(e.command, " ")
+}
 
 // Transcoder is a single instance of a video transcoder.
 type Transcoder struct {
@@ -114,17 +125,19 @@ func (t *Transcoder) Stop() {
 func (t *Transcoder) Start(shouldLog bool) {
 	_lastTranscoderLogMessage = ""
 
-	command := t.getString()
+	flags := t.getFlags()
 	if shouldLog {
 		log.Infof("Processing video using codec %s with %d output qualities configured.", t.codec.DisplayName(), len(t.variants))
 	}
 	createVariantDirectories()
+	command := flags.String()
 
 	if config.EnableDebugFeatures {
 		log.Println(command)
 	}
 
-	_commandExec = exec.Command("sh", "-c", command)
+	_commandExec = exec.Command(flags.binPath, flags.command...) // nolint: gosec
+	_commandExec.Env = flags.environ
 
 	if t.stdin != nil {
 		_commandExec.Stdin = t.stdin
@@ -168,7 +181,12 @@ func (t *Transcoder) SetIsEvent(isEvent bool) {
 	t.isEvent = isEvent
 }
 
-func (t *Transcoder) getString() string {
+func (t *Transcoder) GetString() string {
+	ffmpegFlags := t.getFlags()
+	return ffmpegFlags.String()
+}
+
+func (t *Transcoder) getFlags() *execInfo {
 	port := t.internalListenerPort
 	localListenerAddress := "http://127.0.0.1:" + port
 
@@ -185,41 +203,56 @@ func (t *Transcoder) getString() string {
 		t.segmentIdentifier = shortid.MustGenerate()
 	}
 
-	hlsEventString := ""
+	hlsEventString := make([]string, 0, 2)
 	if t.isEvent {
-		hlsEventString = "-hls_playlist_type event"
+		hlsEventString = append(hlsEventString, "-hls_playlist_type", "event")
 	} else {
 		// Don't let the transcoder close the playlist. We do it manually.
 		hlsOptionFlags = append(hlsOptionFlags, "omit_endlist")
 	}
 
-	hlsOptionsString := ""
+	hlsOptionsString := make([]string, 0, len(hlsOptionFlags))
 	if len(hlsOptionFlags) > 0 {
-		hlsOptionsString = "-hls_flags " + strings.Join(hlsOptionFlags, "+")
+		hlsOptionsString = append(hlsOptionsString, "-hls_flags", strings.Join(hlsOptionFlags, "+"))
+	}
+
+	logPath := logging.GetTranscoderLogFilePath()
+	reportEnv := fmt.Sprintf(`FFREPORT=file=%s:level=32`, logPath)
+	if runtime.GOOS == "windows" {
+		logPath = strings.ReplaceAll(logPath, "\\", "/")
+		reportEnv = fmt.Sprintf(`FFREPORT=file=%s:level=32`, logPath)
+	}
+	environ := []string{
+		reportEnv,
 	}
 	ffmpegFlags := []string{
-		fmt.Sprintf(`FFREPORT=file="%s":level=32`, logging.GetTranscoderLogFilePath()),
-		t.ffmpegPath,
 		"-hide_banner",
-		"-loglevel warning",
-		t.codec.GlobalFlags(),
-		"-fflags +genpts", // Generate presentation time stamp if missing
-		"-flags +cgop",    // Force closed GOPs
-		"-i ", t.input,
+		"-loglevel", "warning",
+	}
+	ffmpegFlags = append(ffmpegFlags, t.codec.GlobalFlags()...)
+	ffmpegFlags = append(ffmpegFlags, []string{
+		"-fflags", "+genpts", // Generate presentation time stamp if missing
+		"-flags", "+cgop", // Force closed GOPs
+		"-i", t.input,
+	}...)
 
-		t.getVariantsString(),
-
+	ffmpegFlags = append(ffmpegFlags, t.getVariantsString()...)
+	ffmpegFlags = append(ffmpegFlags, []string{
 		// HLS Output
 		"-f", "hls",
 
 		"-hls_time", strconv.Itoa(t.currentLatencyLevel.SecondsPerSegment), // Length of each segment
 		"-hls_list_size", strconv.Itoa(t.currentLatencyLevel.SegmentCount), // Max # in variant playlist
-		hlsOptionsString,
-		hlsEventString,
+	}...)
+	ffmpegFlags = append(ffmpegFlags, hlsOptionsString...)
+	ffmpegFlags = append(ffmpegFlags, hlsEventString...)
+	ffmpegFlags = append(ffmpegFlags, []string{
 		"-segment_format_options", "mpegts_flags=mpegts_copyts=1",
+	}...)
+	ffmpegFlags = append(ffmpegFlags, t.codec.ExtraArguments()...)
 
+	ffmpegFlags = append(ffmpegFlags, []string{
 		// Video settings
-		t.codec.ExtraArguments(),
 		"-pix_fmt", t.codec.PixelFormat(),
 		"-sc_threshold", "0", // Disable scene change detection for creating segments
 
@@ -229,12 +262,16 @@ func (t *Transcoder) getString() string {
 		"-hls_segment_filename", localListenerAddress + "/%v/stream-" + t.segmentIdentifier + "-%d.ts", // Send HLS segments back to us over HTTP
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 
-		"-method PUT", // HLS results sent back to us will be over PUTs
+		"-method", "PUT", // HLS results sent back to us will be over PUTs
 
 		localListenerAddress + "/%v/stream.m3u8", // Send HLS playlists back to us over HTTP
-	}
+	}...)
 
-	return strings.Join(ffmpegFlags, " ")
+	return &execInfo{
+		binPath: t.ffmpegPath,
+		command: ffmpegFlags,
+		environ: environ,
+	}
 }
 
 func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) HLSVariant {
@@ -298,11 +335,9 @@ func NewTranscoder() *Transcoder {
 }
 
 // Uses `map` https://www.ffmpeg.org/ffmpeg-all.html#Stream-specifiers-1 https://www.ffmpeg.org/ffmpeg-all.html#Advanced-options
-func (v *HLSVariant) getVariantString(t *Transcoder) string {
-	variantEncoderCommands := []string{
-		v.getVideoQualityString(t),
-		v.getAudioQualityString(),
-	}
+func (v *HLSVariant) getVariantString(t *Transcoder) []string {
+	variantEncoderCommands := v.getVideoQualityString(t)
+	variantEncoderCommands = append(variantEncoderCommands, v.getAudioQualityString()...)
 
 	if (v.videoSize.Width != 0 || v.videoSize.Height != 0) && !v.isVideoPassthrough {
 		// Order here matters, you must scale before changing hardware formats
@@ -313,33 +348,36 @@ func (v *HLSVariant) getVariantString(t *Transcoder) string {
 			filters = append(filters, t.codec.ExtraFilters())
 		}
 		scalingAlgorithm := "bilinear"
-		filterString := fmt.Sprintf("-sws_flags %s -filter:v:%d \"%s\"", scalingAlgorithm, v.index, strings.Join(filters, ","))
-		variantEncoderCommands = append(variantEncoderCommands, filterString)
+		variantEncoderCommands = append(variantEncoderCommands, []string{
+			"-sws_flags", scalingAlgorithm,
+			"-filter:v:" + strconv.Itoa(v.index), strings.Join(filters, ","),
+		}...)
 	} else if t.codec.ExtraFilters() != "" && !v.isVideoPassthrough {
-		filterString := fmt.Sprintf("-filter:v:%d \"%s\"", v.index, t.codec.ExtraFilters())
-		variantEncoderCommands = append(variantEncoderCommands, filterString)
+		variantEncoderCommands = append(variantEncoderCommands, []string{
+			"-filter:v:" + strconv.Itoa(v.index), t.codec.ExtraFilters(),
+		}...)
 	}
 
 	preset := t.codec.GetPresetForLevel(v.cpuUsageLevel)
 	if preset != "" {
-		variantEncoderCommands = append(variantEncoderCommands, fmt.Sprintf("-preset %s", preset))
+		variantEncoderCommands = append(variantEncoderCommands, []string{
+			"-preset", preset,
+		}...)
 	}
 
-	return strings.Join(variantEncoderCommands, " ")
+	return variantEncoderCommands
 }
 
 // Get the command flags for the variants.
-func (t *Transcoder) getVariantsString() string {
-	variantsCommandFlags := ""
-	variantsStreamMaps := " -var_stream_map \""
+func (t *Transcoder) getVariantsString() []string {
+	var variantsCommandFlags []string
+	streamMap := make([]string, 0, len(t.variants))
 
 	for _, variant := range t.variants {
-		variantsCommandFlags = variantsCommandFlags + " " + variant.getVariantString(t)
-		singleVariantMap := fmt.Sprintf("v:%d,a:%d ", variant.index, variant.index)
-		variantsStreamMaps += singleVariantMap
+		variantsCommandFlags = append(variantsCommandFlags, variant.getVariantString(t)...)
+		streamMap = append(streamMap, fmt.Sprintf("v:%d,a:%d", variant.index, variant.index))
 	}
-	variantsCommandFlags = variantsCommandFlags + " " + variantsStreamMaps + "\""
-
+	variantsCommandFlags = append(variantsCommandFlags, "-var_stream_map", strings.Join(streamMap, " "))
 	return variantsCommandFlags
 }
 
@@ -372,24 +410,26 @@ func (v *HLSVariant) SetVideoBitrate(bitrate int) {
 	v.videoBitrate = bitrate
 }
 
-func (v *HLSVariant) getVideoQualityString(t *Transcoder) string {
+func (v *HLSVariant) getVideoQualityString(t *Transcoder) []string {
 	if v.isVideoPassthrough {
-		return fmt.Sprintf("-map v:0 -c:v:%d copy", v.index)
+		return []string{
+			"-map", "v:0", fmt.Sprintf("-c:v:%d", v.index), "copy",
+		}
 	}
 
 	gop := v.framerate * t.currentLatencyLevel.SecondsPerSegment // force an i-frame every segment
 	cmd := []string{
-		"-map v:0",
-		fmt.Sprintf("-c:v:%d %s", v.index, t.codec.Name()),                // Video codec used for this variant
-		fmt.Sprintf("-b:v:%d %dk", v.index, v.getAllocatedVideoBitrate()), // The average bitrate for this variant allowing space for audio
-		fmt.Sprintf("-maxrate:v:%d %dk", v.index, v.getMaxVideoBitrate()), // The max bitrate allowed for this variant
-		fmt.Sprintf("-g:v:%d %d", v.index, gop),                           // Suggested interval where i-frames are encoded into the segments
-		fmt.Sprintf("-keyint_min:v:%d %d", v.index, gop),                  // minimum i-keyframe interval
-		fmt.Sprintf("-r:v:%d %d", v.index, v.framerate),
-		t.codec.VariantFlags(v),
+		"-map", "v:0",
+		fmt.Sprintf("-c:v:%d", v.index), t.codec.Name(), // Video codec used for this variant
+		fmt.Sprintf("-b:v:%d", v.index), fmt.Sprintf("%dk", v.getAllocatedVideoBitrate()), // The average bitrate for this variant allowing space for audio
+		fmt.Sprintf("-maxrate:v:%d", v.index), fmt.Sprintf("%dk", v.getMaxVideoBitrate()), // The max bitrate allowed for this variant
+		fmt.Sprintf("-g:v:%d", v.index), fmt.Sprintf("%d", gop), // Suggested interval where i-frames are encoded into the segments
+		fmt.Sprintf("-keyint_min:v:%d", v.index), fmt.Sprintf("%d", gop), // minimum i-keyframe interval
+		fmt.Sprintf("-r:v:%d", v.index), fmt.Sprintf("%d", v.framerate),
 	}
+	cmd = append(cmd, t.codec.VariantFlags(v)...)
 
-	return strings.Join(cmd, " ")
+	return cmd
 }
 
 // SetVideoFramerate will set the output framerate of this variant's video.
@@ -409,14 +449,20 @@ func (v *HLSVariant) SetAudioBitrate(bitrate string) {
 	v.audioBitrate = bitrate
 }
 
-func (v *HLSVariant) getAudioQualityString() string {
+func (v *HLSVariant) getAudioQualityString() []string {
 	if v.isAudioPassthrough {
-		return fmt.Sprintf("-map a:0? -c:a:%d copy", v.index)
+		return []string{
+			"-map", "a:0?", fmt.Sprintf("-c:a:%d", v.index), "copy",
+		}
 	}
 
 	// libfdk_aac is not a part of every ffmpeg install, so use "aac" instead
 	encoderCodec := "aac"
-	return fmt.Sprintf("-map a:0? -c:a:%d %s -b:a:%d %s", v.index, encoderCodec, v.index, v.audioBitrate)
+	return []string{
+		"-map", "a:0?",
+		fmt.Sprintf("-c:a:%d", v.index), encoderCodec,
+		fmt.Sprintf("-b:a:%d", v.index), v.audioBitrate,
+	}
 }
 
 // AddVariant adds a new HLS variant to include in the output.
