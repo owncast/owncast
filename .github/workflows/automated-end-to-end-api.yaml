@@ -1,3 +1,13 @@
+# This workflow runs automated API integration tests using Earthly
+# Triggers:
+#   - Push/PR with Go file changes
+# Skips:
+#   - Web-only changes
+# Uses:
+#   - Earthly for reproducible builds
+#   - QEMU for cross-platform testing
+#   - Retries up to 3 times for flaky tests
+
 name: Automated API tests
 
 on:
@@ -31,7 +41,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files-yaml
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files_yaml: |
             src:

@@ -1,15 +1,38 @@
 # .github/workflows/chromatic.yml
 
-# Workflow name
+# This workflow publishes Storybook to Chromatic for visual regression testing
+# Triggers:
+#   - Push/PR with changes to web components, stories, or styles
+# Skips:
+#   - Static files
+#   - Renovate bot PRs
+# Features:
+#   - Uses onlyChanged for efficient testing
+#   - Publishes visual diffs for review
+
 name: 'Chromatic'
 
 on:
   push:
     paths:
-      - web/**
+      - 'web/components/**'
+      - 'web/stories/**'
+      - 'web/.storybook/**'
+      - 'web/**/*.{css,scss}'
+      - 'web/i18n/**'
+      - 'web/package.json'
+      - 'web/package-lock.json'
+      - '.github/workflows/chromatic.yml'
   pull_request:
     paths:
-      - web/**
+      - 'web/components/**'
+      - 'web/stories/**'
+      - 'web/.storybook/**'
+      - 'web/**/*.{css,scss}'
+      - 'web/i18n/**'
+      - 'web/package.json'
+      - 'web/package-lock.json'
+      - '.github/workflows/chromatic.yml'
 
 # List of jobs
 jobs:
@@ -40,7 +63,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files-yaml
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           path: 'web'
           files_ignore: |

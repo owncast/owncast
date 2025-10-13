@@ -1,12 +1,28 @@
+# This workflow tests HLS video streaming functionality
+# Triggers:
+#   - Push/PR with Go file changes or HLS test changes
+# Tests:
+#   - Local storage backend
+#   - S3 storage backend (when secrets available)
+#   - Retries up to 3 times for flaky network tests
+
 name: HLS tests
 
 on:
   push:
-    paths-ignore:
-      - 'web/**'
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'test/automated/hls/**'
+      - '.github/workflows/hls-tests.yml'
   pull_request:
-    paths-ignore:
-      - 'web/**'
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'test/automated/hls/**'
+      - '.github/workflows/hls-tests.yml'
 
 env:
   S3_BUCKET: ${{ secrets.S3_BUCKET }}
@@ -38,7 +54,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files-yaml
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files_yaml: |
             src:

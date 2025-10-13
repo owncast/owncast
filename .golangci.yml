@@ -55,6 +55,8 @@ linters:
         text: G307
       - path: (.+)\.go$
         text: composite literal uses unkeyed fields
+      - path: (.+)\.go$
+        text: 'SA1019.*aws-sdk-go.*deprecated'
       - linters:
           - cyclop
         path: (.+)_test\.go

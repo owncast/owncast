@@ -7,6 +7,7 @@ export interface TranslationProps {
   translationKey: LocalizationKey;
   vars?: Record<string, any>;
   className?: string;
+  id?: string;
   defaultText?: string;
   count?: number;
 }
@@ -15,6 +16,7 @@ export const Translation: FC<TranslationProps> = ({
   translationKey,
   vars,
   className,
+  id,
   defaultText,
   count,
 }) => {
@@ -55,7 +57,9 @@ export const Translation: FC<TranslationProps> = ({
     }
   }
 
-  return <span className={className} dangerouslySetInnerHTML={{ __html: translatedText }} />;
+  return (
+    <span className={className} id={id} dangerouslySetInnerHTML={{ __html: translatedText }} />
+  );
 };
 
 export default Translation;

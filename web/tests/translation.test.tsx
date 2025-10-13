@@ -7,43 +7,41 @@ import { Localization } from '../types/localization';
 jest.mock('next-export-i18n', () => ({
   useTranslation: () => ({
     t: (key: string, vars?: Record<string, any>) => {
-      // Use the actual keys as in localization.ts and translation.json
-      const translations: Record<string, string> = {
+      // Simulate the actual translation structure from the JSON files
+      const translations: Record<string, any> = {
+        // Frontend translations
+        'Frontend.helloWorld': 'Hello <strong>{{name}}</strong>, welcome to the world!',
+        'Frontend.componentError': 'Error: {{message}}',
+        'Frontend.offlineBasic': 'This stream is offline. Check back soon!',
+        'Frontend.offlineNotifyOnly':
+          "This stream is offline. <span class='notify-link'>Be notified</span> the next time {{streamer}} goes live.",
+
+        // Testing translations
+        'Testing.simpleKey': 'Simple translation text',
+        'Testing.itemCount': 'You have {{count}} items',
+        'Testing.itemCount_one': 'You have {{count}} item',
+        'Testing.messageCount': 'You have {{count}} messages from {{sender}}',
+        'Testing.messageCount_one': 'You have {{count}} message from {{sender}}',
+        'Testing.noPluralKey': 'This key has no plural variants - {{count}} things',
+
+        // Legacy flat keys for backwards compatibility
         hello_world: 'Hello <strong>{{name}}</strong>, welcome to the world!',
         chat_offline: 'Chat is offline',
         notification_message:
           'You can <a href="#">click here</a> to receive notifications when {{streamer}} goes live.',
         component_error: 'Error: {{message}}',
         offline_basic: 'This stream is offline. Check back soon!',
-        // Testing keys
-        'Testing.simpleKey': 'Simple translation text',
-        'Testing.itemCount_one': 'You have {{count}} item',
-        'Testing.itemCount': 'You have {{count}} items',
-        'Testing.messageCount_one': 'You have {{count}} message from {{sender}}',
-        'Testing.messageCount': 'You have {{count}} messages from {{sender}}',
-        'Testing.noPluralKey': 'This key has no plural variants - {{count}} things',
       };
 
       let result = translations[key];
 
-      // If not found, try to fallback to a snake_case version (for legacy or fallback)
-      if (!result && key.includes('.')) {
-        const [ns, k] = key.split('.');
-        // Try snake_case
-        const snakeKey = `${ns}.${k
-          .replace(/([A-Z])/g, '_$1')
-          .toLowerCase()
-          .replace(/^_/, '')}`;
-        result = translations[snakeKey];
-      }
-
-      // If still not found, return the key itself
+      // If not found, return the key itself (as real i18n would do)
       if (!result) {
         result = key;
       }
 
       // Simple variable replacement for testing
-      if (vars) {
+      if (vars && typeof result === 'string') {
         Object.keys(vars).forEach(varKey => {
           result = result.replace(new RegExp(`{{${varKey}}}`, 'g'), vars[varKey]);
         });
@@ -95,18 +93,18 @@ describe('Translation Component', () => {
     expect(element).toHaveClass('custom-class');
   });
 
-  test('should render notification message with HTML link', () => {
+  test('should render notification message with HTML content', () => {
     render(
       <Translation
-        translationKey={Localization.Frontend.notificationMessage}
+        translationKey={Localization.Frontend.offlineNotifyOnly}
         vars={{ streamer: 'TestStreamer' }}
       />,
     );
 
-    // Check that the link is rendered
-    const linkElement = screen.getByText('click here');
-    expect(linkElement.tagName).toBe('A');
-    expect(linkElement).toHaveAttribute('href', '#');
+    // Check that the HTML content is rendered
+    const linkElement = screen.getByText('Be notified');
+    expect(linkElement.tagName).toBe('SPAN');
+    expect(linkElement).toHaveClass('notify-link');
 
     // Check that the variable is interpolated
     expect(screen.getByText(/TestStreamer/)).toBeInTheDocument();
@@ -115,7 +113,7 @@ describe('Translation Component', () => {
   test('should render with all props combined', () => {
     render(
       <Translation
-        translationKey={Localization.Frontend.notificationMessage}
+        translationKey={Localization.Frontend.offlineNotifyOnly}
         vars={{ streamer: 'TestStreamer' }}
         className="notification-style"
       />,
@@ -125,7 +123,7 @@ describe('Translation Component', () => {
     const element = screen.getByText((_, e) => {
       const hasText =
         e?.textContent ===
-        'You can click here to receive notifications when TestStreamer goes live.';
+        'This stream is offline. Be notified the next time TestStreamer goes live.';
       const isSpan = e?.tagName === 'SPAN';
       return hasText && isSpan;
     });

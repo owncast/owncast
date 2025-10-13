@@ -1,6 +1,6 @@
 VERSION --new-platform 0.6
 
-FROM --platform=linux/amd64 alpine:3.22.1
+FROM --platform=linux/amd64 alpine:3.22.2
 ARG version=develop
 
 WORKDIR /build
@@ -21,6 +21,7 @@ crosscompiler:
   RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/armv7l-linux-musleabihf-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
   RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/i686-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
   RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/x86_64-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
+	RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/aarch64-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
 
 code:
   FROM --platform=linux/amd64 +crosscompiler
@@ -119,7 +120,7 @@ docker:
 	# in as space separated strings using the full account/repo:tag format.
 	# https://github.com/earthly/earthly/blob/aea38448fa9c0064b1b70d61be717ae740689fb9/docs/earthfile/earthfile.md#assigning-multiple-image-names
   ARG TARGETPLATFORM
-  FROM --platform=$TARGETPLATFORM alpine:3.22.1
+  FROM --platform=$TARGETPLATFORM alpine:3.22.2
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
   RUN addgroup -g 101 -S owncast && adduser -u 101 -S owncast -G owncast
   WORKDIR /app
