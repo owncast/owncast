@@ -14,8 +14,11 @@ import {
 } from 'antd';
 import dynamic from 'next/dynamic';
 import React, { ReactElement, useEffect, useState } from 'react';
+import { useTranslation } from 'next-export-i18n';
 import { CREATE_WEBHOOK, DELETE_WEBHOOK, fetchData, WEBHOOKS } from '../../utils/apis';
 import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/validators';
+import { Localization } from '../../types/localization';
+import { Translation } from '../../components/ui/Translation/Translation';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
@@ -71,6 +74,7 @@ interface Props {
 
 const NewWebhookModal = (props: Props) => {
   const { onOk, onCancel, open } = props;
+  const { t } = useTranslation();
 
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [webhookUrl, setWebhookUrl] = useState('');
@@ -108,7 +112,7 @@ const NewWebhookModal = (props: Props) => {
 
   return (
     <Modal
-      title="Create New Webhook"
+      title={t(Localization.Admin.Webhooks.createNewWebhook)}
       open={open}
       onOk={save}
       onCancel={onCancel}
@@ -117,20 +121,22 @@ const NewWebhookModal = (props: Props) => {
       <div>
         <Input
           value={webhookUrl}
-          placeholder="https://myserver.com/webhook"
+          placeholder={t(Localization.Admin.Webhooks.webhookUrlPlaceholder)}
           onChange={input => setWebhookUrl(input.currentTarget.value.trim())}
           type="url"
           pattern={DEFAULT_TEXTFIELD_URL_PATTERN}
         />
       </div>
 
-      <p>Select the events that will be sent to this webhook.</p>
+      <p>
+        <Translation translationKey={Localization.Admin.Webhooks.selectEvents} />
+      </p>
       <Checkbox.Group style={{ width: '100%' }} value={selectedEvents} onChange={onChange}>
         <Row>{checkboxes}</Row>
       </Checkbox.Group>
       <p>
         <Button type="primary" onClick={selectAll}>
-          Select all
+          <Translation translationKey={Localization.Admin.Webhooks.selectAll} />
         </Button>
       </p>
     </Modal>

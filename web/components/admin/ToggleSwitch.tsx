@@ -4,6 +4,7 @@
 
 import React, { useState, useContext, FC } from 'react';
 import { Switch } from 'antd';
+import { useTranslation } from 'next-export-i18n';
 import {
   createInputStatus,
   StatusState,
@@ -11,6 +12,7 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
+import { Localization } from '../../types/localization';
 import { FormStatusIndicator } from './FormStatusIndicator';
 
 import { RESET_TIMEOUT, postConfigUpdateToAPI } from '../../utils/config-constants';
@@ -42,6 +44,7 @@ export const ToggleSwitch: FC<ToggleSwitchProps> = ({
   useSubmit,
   onChange,
 }) => {
+  const { t } = useTranslation();
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
   let resetTimer = null;
@@ -68,7 +71,12 @@ export const ToggleSwitch: FC<ToggleSwitchProps> = ({
           setSubmitStatus(createInputStatus(STATUS_SUCCESS));
         },
         onError: (message: string) => {
-          setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${message}`));
+          setSubmitStatus(
+            createInputStatus(
+              STATUS_ERROR,
+              t(Localization.Admin.StatusMessages.thereWasAnError, { message }),
+            ),
+          );
         },
       });
       resetTimer = setTimeout(resetStates, RESET_TIMEOUT);

@@ -1,5 +1,6 @@
 import { Button, Typography } from 'antd';
 import React, { useState, useContext, useEffect } from 'react';
+import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { TextField } from '../TextField';
 import { FormStatusIndicator } from '../FormStatusIndicator';
@@ -15,11 +16,13 @@ import {
   STATUS_ERROR,
   STATUS_SUCCESS,
 } from '../../../utils/input-statuses';
+import { Localization } from '../../../types/localization';
 import { UpdateArgs } from '../../../types/config-section';
 
 const { Title } = Typography;
 
 export const DiscordNotify = () => {
+  const { t } = useTranslation();
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { notifications } = serverConfig || {};
@@ -77,7 +80,9 @@ export const DiscordNotify = () => {
           value: postValue,
           path: 'notifications',
         });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
       onError: (message: string) => {

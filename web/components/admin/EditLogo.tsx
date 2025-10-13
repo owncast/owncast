@@ -2,6 +2,7 @@ import { Button, Upload } from 'antd';
 import { RcFile } from 'antd/lib/upload/interface';
 import React, { useState, useContext, FC } from 'react';
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
 import { FormStatusIndicator } from './FormStatusIndicator';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import {
@@ -17,6 +18,7 @@ import {
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
 import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
+import { Localization } from '../../types/localization';
 
 import {
   ACCEPTED_IMAGE_TYPES,
@@ -37,6 +39,7 @@ const UploadOutlined = dynamic(() => import('@ant-design/icons/UploadOutlined'),
 
 // eslint-disable-next-line import/prefer-default-export
 export const EditLogo: FC = () => {
+  const { t } = useTranslation();
   const [logoUrl, setlogoUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [logoCachedbuster, setLogoCacheBuster] = useState(0);
@@ -64,16 +67,28 @@ export const EditLogo: FC = () => {
     // eslint-disable-next-line consistent-return
     return new Promise<void>((res, rej) => {
       if (file.size > MAX_IMAGE_FILESIZE) {
-        const msg = `File size is too big: ${readableBytes(file.size)}`;
-        setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${msg}`));
+        const msg = t(Localization.Admin.StatusMessages.fileSizeTooBig, {
+          size: readableBytes(file.size),
+        });
+        setSubmitStatus(
+          createInputStatus(
+            STATUS_ERROR,
+            t(Localization.Admin.StatusMessages.thereWasAnError, { message: msg }),
+          ),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         setLoading(false);
         // eslint-disable-next-line no-promise-executor-return
         return rej();
       }
       if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-        const msg = `File type is not supported: ${file.type}`;
-        setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${msg}`));
+        const msg = t(Localization.Admin.StatusMessages.fileTypeNotSupported, { type: file.type });
+        setSubmitStatus(
+          createInputStatus(
+            STATUS_ERROR,
+            t(Localization.Admin.StatusMessages.thereWasAnError, { message: msg }),
+          ),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         setLoading(false);
         // eslint-disable-next-line no-promise-executor-return
@@ -101,7 +116,12 @@ export const EditLogo: FC = () => {
           setLogoCacheBuster(Math.floor(Math.random() * 100)); // Force logo to re-load
         },
         onError: (msg: string) => {
-          setSubmitStatus(createInputStatus(STATUS_ERROR, `There was an error: ${msg}`));
+          setSubmitStatus(
+            createInputStatus(
+              STATUS_ERROR,
+              t(Localization.Admin.StatusMessages.thereWasAnError, { message: msg }),
+            ),
+          );
           setLoading(false);
         },
       });

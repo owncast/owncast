@@ -1,6 +1,7 @@
 import { Button, Collapse } from 'antd';
 import classNames from 'classnames';
 import React, { useContext, useState, useEffect } from 'react';
+import { useTranslation } from 'next-export-i18n';
 import { UpdateArgs } from '../../../../types/config-section';
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 import { AlertMessageContext } from '../../../../utils/alert-message-context';
@@ -18,6 +19,7 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../../../utils/input-statuses';
+import { Localization } from '../../../../types/localization';
 import { TextField } from '../../TextField';
 import { FormStatusIndicator } from '../../FormStatusIndicator';
 import { isValidUrl } from '../../../../utils/validators';
@@ -56,6 +58,7 @@ function checkSaveable(formValues: any, currentValues: any) {
 
 // eslint-disable-next-line react/function-component-definition
 export default function EditStorage() {
+  const { t } = useTranslation();
   const [formDataValues, setFormDataValues] = useState(null);
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
@@ -125,7 +128,9 @@ export default function EditStorage() {
       data: { value: postValue },
       onSuccess: () => {
         setFieldInConfigState({ fieldName: 's3', value: postValue, path: '' });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         setAlertMessage(
           'Changing your storage configuration will take place the next time you start a new stream.',

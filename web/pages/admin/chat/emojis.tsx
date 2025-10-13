@@ -67,7 +67,9 @@ const Emoji = () => {
 
     setLoading(true);
 
-    setSubmitStatus(createInputStatus(STATUS_PROCESSING, 'Deleting emoji...'));
+    setSubmitStatus(
+      createInputStatus(STATUS_PROCESSING, t(Localization.Admin.StatusMessages.deletingEmoji)),
+    );
 
     try {
       const response = await fetchData(DELETE_EMOJI, {
@@ -79,7 +81,9 @@ const Emoji = () => {
         throw response;
       }
 
-      setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Emoji deleted'));
+      setSubmitStatus(
+        createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.emojiDeleted)),
+      );
       resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
     } catch (error) {
       setSubmitStatus(createInputStatus(STATUS_ERROR, `${error}`));
@@ -93,7 +97,9 @@ const Emoji = () => {
   async function handleEmojiUpload() {
     setLoading(true);
     try {
-      setSubmitStatus(createInputStatus(STATUS_PROCESSING, 'Converting emoji...'));
+      setSubmitStatus(
+        createInputStatus(STATUS_PROCESSING, t(Localization.Admin.StatusMessages.convertingEmoji)),
+      );
 
       // eslint-disable-next-line consistent-return
       const emojiData = await new Promise<CustomEmoji>((res, rej) => {
@@ -111,7 +117,9 @@ const Emoji = () => {
         );
       });
 
-      setSubmitStatus(createInputStatus(STATUS_PROCESSING, 'Uploading emoji...'));
+      setSubmitStatus(
+        createInputStatus(STATUS_PROCESSING, t(Localization.Admin.StatusMessages.uploadingEmoji)),
+      );
 
       const response = await fetchData(UPLOAD_EMOJI, {
         method: 'POST',
@@ -125,7 +133,12 @@ const Emoji = () => {
         throw response;
       }
 
-      setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Emoji uploaded successfully!'));
+      setSubmitStatus(
+        createInputStatus(
+          STATUS_SUCCESS,
+          t(Localization.Admin.StatusMessages.emojiUploadedSuccessfully),
+        ),
+      );
       getEmojis();
     } catch (error) {
       setSubmitStatus(createInputStatus(STATUS_ERROR, `${error}`));

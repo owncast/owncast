@@ -3,6 +3,7 @@ import React, { FC, useContext, useCallback, useEffect, useState } from 'react';
 import { Button, Col, Collapse, Row, Slider, Space } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Title from 'antd/lib/typography/Title';
+import { useTranslation } from 'next-export-i18n';
 import { EditCustomStyles } from '../../EditCustomStyles';
 import s from './appearance.module.scss';
 import { postConfigUpdateToAPI, RESET_TIMEOUT } from '../../../../utils/config-constants';
@@ -12,6 +13,7 @@ import {
   STATUS_ERROR,
   STATUS_SUCCESS,
 } from '../../../../utils/input-statuses';
+import { Localization } from '../../../../types/localization';
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 import { FormStatusIndicator } from '../../FormStatusIndicator';
 
@@ -122,6 +124,7 @@ const ColorCollection: FC<ColorCollectionProps> = ({ variables, updateColor }) =
 
 // eslint-disable-next-line react/function-component-definition
 export default function Appearance() {
+  const { t } = useTranslation();
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData;
   const { instanceDetails } = serverConfig;
@@ -179,7 +182,9 @@ export default function Appearance() {
       apiPath: ENDPOINT,
       data: { value: {} },
       onSuccess: () => {
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         setCustomValues({});
       },
@@ -200,7 +205,9 @@ export default function Appearance() {
       apiPath: ENDPOINT,
       data: { value: c },
       onSuccess: () => {
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
 
         setFieldInConfigState({
