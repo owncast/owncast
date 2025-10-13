@@ -24,6 +24,7 @@ import {
   CREATE_ACCESS_TOKEN,
 } from '../../utils/apis';
 import { Localization } from '../../types/localization';
+import { Translation } from '../../components/ui/Translation/Translation';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
@@ -117,7 +118,9 @@ const NewTokenModal = (props: Props) => {
       okButtonProps={okButtonProps}
     >
       <p>
-        <p>{t(Localization.Admin.AccessTokens.nameDescription)}</p>
+        <p>
+          <Translation translationKey={Localization.Admin.AccessTokens.nameDescription} />
+        </p>
         <Input
           value={name}
           placeholder={t(Localization.Admin.AccessTokens.namePlaceholder)}
@@ -125,14 +128,16 @@ const NewTokenModal = (props: Props) => {
         />
       </p>
 
-      <p>{t(Localization.Admin.AccessTokens.selectPermissions)}</p>
+      <p>
+        <Translation translationKey={Localization.Admin.AccessTokens.selectPermissions} />
+      </p>
       <Checkbox.Group style={{ width: '100%' }} value={selectedScopes} onChange={onChange}>
         <Row>{checkboxes}</Row>
       </Checkbox.Group>
 
       <p>
         <Button type="primary" onClick={selectAll}>
-          {t(Localization.Admin.AccessTokens.selectAll)}
+          <Translation translationKey={Localization.Admin.AccessTokens.selectAll} />
         </Button>
       </p>
     </Modal>

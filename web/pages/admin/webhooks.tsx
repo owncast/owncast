@@ -18,6 +18,7 @@ import { useTranslation } from 'next-export-i18n';
 import { CREATE_WEBHOOK, DELETE_WEBHOOK, fetchData, WEBHOOKS } from '../../utils/apis';
 import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/validators';
 import { Localization } from '../../types/localization';
+import { Translation } from '../../components/ui/Translation/Translation';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
@@ -127,13 +128,15 @@ const NewWebhookModal = (props: Props) => {
         />
       </div>
 
-      <p>{t(Localization.Admin.Webhooks.selectEvents)}</p>
+      <p>
+        <Translation translationKey={Localization.Admin.Webhooks.selectEvents} />
+      </p>
       <Checkbox.Group style={{ width: '100%' }} value={selectedEvents} onChange={onChange}>
         <Row>{checkboxes}</Row>
       </Checkbox.Group>
       <p>
         <Button type="primary" onClick={selectAll}>
-          {t(Localization.Admin.Webhooks.selectAll)}
+          <Translation translationKey={Localization.Admin.Webhooks.selectAll} />
         </Button>
       </p>
     </Modal>

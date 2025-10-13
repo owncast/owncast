@@ -16,6 +16,7 @@ import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/inp
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/validators';
 import { Localization } from '../../types/localization';
+import { Translation } from '../../components/ui/Translation/Translation';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
@@ -134,15 +135,17 @@ const ActionModal = (props: Props) => {
       okButtonProps={okButtonProps}
     >
       <Form initialValues={action}>
-        {t(Localization.Admin.Actions.modalDescription)}{' '}
-        <strong>{t(Localization.Admin.Actions.onlyHttpsSupported)}</strong>
+        <Translation translationKey={Localization.Admin.Actions.modalDescription} />{' '}
+        <strong>
+          <Translation translationKey={Localization.Admin.Actions.onlyHttpsSupported} />
+        </strong>
         <p>
           <a
             href="https://owncast.online/thirdparty/actions/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            {t(Localization.Admin.Actions.readMoreAboutActions)}
+            <Translation translationKey={Localization.Admin.Actions.readMoreAboutActions} />
           </a>
         </p>
         <Form.Item>
@@ -208,7 +211,7 @@ const ActionModal = (props: Props) => {
               onChange={input => setActionColor(input.currentTarget.value)}
             />
           </Form.Item>
-          {t(Localization.Admin.Actions.optionalBackgroundColor)}
+          <Translation translationKey={Localization.Admin.Actions.optionalBackgroundColor} />
         </div>
         {actionType === 'html' ? null : (
           <Form.Item name="openExternally">
@@ -217,7 +220,7 @@ const ActionModal = (props: Props) => {
               defaultChecked={openExternally}
               onChange={onOpenExternallyChanged}
             >
-              {t(Localization.Admin.Actions.openExternally)}
+              <Translation translationKey={Localization.Admin.Actions.openExternally} />
             </Checkbox>
           </Form.Item>
         )}
@@ -411,10 +414,14 @@ const Actions = () => {
 
   return (
     <div>
-      <Title>{t(Localization.Admin.Actions.title)}</Title>
-      <Paragraph>{t(Localization.Admin.Actions.description)}</Paragraph>
+      <Title>
+        <Translation translationKey={Localization.Admin.Actions.title} />
+      </Title>
       <Paragraph>
-        {t(Localization.Admin.Actions.readMoreLink)}{' '}
+        <Translation translationKey={Localization.Admin.Actions.description} />
+      </Paragraph>
+      <Paragraph>
+        <Translation translationKey={Localization.Admin.Actions.readMoreLink} />{' '}
         <a
           href="https://owncast.online/thirdparty/?source=admin"
           target="_blank"
@@ -433,7 +440,7 @@ const Actions = () => {
       />
       <br />
       <Button type="primary" onClick={showCreateModal}>
-        {t(Localization.Admin.Actions.createNewAction)}
+        <Translation translationKey={Localization.Admin.Actions.createNewAction} />
       </Button>
       <FormStatusIndicator status={submitStatus} />
 
