@@ -133,7 +133,6 @@
       "nameDescription": "The name will be displayed as the chat user when sending messages with this access token.",
       "namePlaceholder": "Name of bot, service, or integration",
       "selectPermissions": "Select the permissions this access token will have. It cannot be edited after it's created.",
-      "cannotEditAfterCreated": "It cannot be edited after it's created.",
       "selectAll": "Select all"
     }
   },
