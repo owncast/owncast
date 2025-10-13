@@ -36,7 +36,10 @@ export const ResetYP: FC = () => {
       resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
     } catch (error) {
       setSubmitStatus(
-        createInputStatus(STATUS_ERROR, t(Localization.Admin.StatusMessages.thereWasAnError, { message: `${error}` })),
+        createInputStatus(
+          STATUS_ERROR,
+          t(Localization.Admin.StatusMessages.thereWasAnError, { message: `${error}` }),
+        ),
       );
       resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
     }

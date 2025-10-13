@@ -128,7 +128,9 @@ export default function EditStorage() {
       data: { value: postValue },
       onSuccess: () => {
         setFieldInConfigState({ fieldName: 's3', value: postValue, path: '' });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         setAlertMessage(
           'Changing your storage configuration will take place the next time you start a new stream.',

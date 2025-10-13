@@ -253,7 +253,9 @@ const Actions = () => {
       data: { value: actionsData },
       onSuccess: () => {
         setFieldInConfigState({ fieldName: 'externalActions', value: actionsData, path: '' });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
       onError: (message: string) => {

@@ -90,7 +90,9 @@ export const CurrentVariantsTable: FC = () => {
         setModalProcessing(false);
         handleModalCancel();
 
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.variantsUpdated)));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.variantsUpdated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
 
         if (serverStatusData.online) {

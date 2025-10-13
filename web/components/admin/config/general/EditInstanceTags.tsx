@@ -61,7 +61,9 @@ export default function EditInstanceTags() {
       data: { value: postValue },
       onSuccess: () => {
         setFieldInConfigState({ fieldName: 'tags', value: postValue, path: configPath });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.tagsUpdated)));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.tagsUpdated)),
+        );
         setNewTagInput('');
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
@@ -84,11 +86,15 @@ export default function EditInstanceTags() {
     resetStates();
     const newTag = newTagInput.trim();
     if (newTag === '') {
-      setSubmitStatus(createInputStatus(STATUS_WARNING, t(Localization.Admin.StatusMessages.pleaseEnterTag)));
+      setSubmitStatus(
+        createInputStatus(STATUS_WARNING, t(Localization.Admin.StatusMessages.pleaseEnterTag)),
+      );
       return;
     }
     if (tags.some(tag => tag.toLowerCase() === newTag.toLowerCase())) {
-      setSubmitStatus(createInputStatus(STATUS_WARNING, t(Localization.Admin.StatusMessages.tagAlreadyUsed)));
+      setSubmitStatus(
+        createInputStatus(STATUS_WARNING, t(Localization.Admin.StatusMessages.tagAlreadyUsed)),
+      );
       return;
     }
 

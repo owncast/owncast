@@ -71,7 +71,10 @@ export const EditLogo: FC = () => {
           size: readableBytes(file.size),
         });
         setSubmitStatus(
-          createInputStatus(STATUS_ERROR, t(Localization.Admin.StatusMessages.thereWasAnError, { message: msg })),
+          createInputStatus(
+            STATUS_ERROR,
+            t(Localization.Admin.StatusMessages.thereWasAnError, { message: msg }),
+          ),
         );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         setLoading(false);
@@ -81,7 +84,10 @@ export const EditLogo: FC = () => {
       if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
         const msg = t(Localization.Admin.StatusMessages.fileTypeNotSupported, { type: file.type });
         setSubmitStatus(
-          createInputStatus(STATUS_ERROR, t(Localization.Admin.StatusMessages.thereWasAnError, { message: msg })),
+          createInputStatus(
+            STATUS_ERROR,
+            t(Localization.Admin.StatusMessages.thereWasAnError, { message: msg }),
+          ),
         );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         setLoading(false);
@@ -111,7 +117,10 @@ export const EditLogo: FC = () => {
         },
         onError: (msg: string) => {
           setSubmitStatus(
-            createInputStatus(STATUS_ERROR, t(Localization.Admin.StatusMessages.thereWasAnError, { message: msg })),
+            createInputStatus(
+              STATUS_ERROR,
+              t(Localization.Admin.StatusMessages.thereWasAnError, { message: msg }),
+            ),
           );
           setLoading(false);
         },

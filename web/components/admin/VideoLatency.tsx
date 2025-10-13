@@ -76,7 +76,12 @@ export const VideoLatency: FC = () => {
           value: postValue,
           path: 'videoSettings',
         });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.latencyBufferUpdated)));
+        setSubmitStatus(
+          createInputStatus(
+            STATUS_SUCCESS,
+            t(Localization.Admin.StatusMessages.latencyBufferUpdated),
+          ),
+        );
 
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         if (serverStatusData.online) {

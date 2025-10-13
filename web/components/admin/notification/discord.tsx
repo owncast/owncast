@@ -80,7 +80,9 @@ export const DiscordNotify = () => {
           value: postValue,
           path: 'notifications',
         });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
       onError: (message: string) => {

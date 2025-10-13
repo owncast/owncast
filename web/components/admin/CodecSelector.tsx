@@ -63,7 +63,9 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
           value: pendingSaveCodec,
           path: 'videoSettings',
         });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.videoCodecUpdated)));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.videoCodecUpdated)),
+        );
 
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         if (serverStatusData.online) {

@@ -182,7 +182,9 @@ export default function Appearance() {
       apiPath: ENDPOINT,
       data: { value: {} },
       onSuccess: () => {
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         setCustomValues({});
       },
@@ -203,7 +205,9 @@ export default function Appearance() {
       apiPath: ENDPOINT,
       data: { value: c },
       onSuccess: () => {
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
 
         setFieldInConfigState({

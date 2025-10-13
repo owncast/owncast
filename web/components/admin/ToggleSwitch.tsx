@@ -72,7 +72,10 @@ export const ToggleSwitch: FC<ToggleSwitchProps> = ({
         },
         onError: (message: string) => {
           setSubmitStatus(
-            createInputStatus(STATUS_ERROR, t(Localization.Admin.StatusMessages.thereWasAnError, { message })),
+            createInputStatus(
+              STATUS_ERROR,
+              t(Localization.Admin.StatusMessages.thereWasAnError, { message }),
+            ),
           );
         },
       });
