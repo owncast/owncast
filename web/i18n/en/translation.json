@@ -83,7 +83,59 @@
 		"emojiPageDescription": "Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the filename without extension will be used as emoji name. Additionally, emoji names are case-insensitive. For best results, ensure all emoji have unique names.",
 		"emojiUploadBulkGuide": "Want to upload custom emojis in bulk? Check out our <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji guide</a>.",
 		"emojis": "Emojis",
-		"uploadNewEmoji": "Upload new emoji"
+		"uploadNewEmoji": "Upload new emoji",
+		"StatusMessages": {
+			"updated": "Updated.",
+			"tagsUpdated": "Tags updated.",
+			"variantsUpdated": "Variants updated",
+			"videoCodecUpdated": "Video codec updated.",
+			"latencyBufferUpdated": "Latency buffer level updated.",
+			"deletingEmoji": "Deleting emoji...",
+			"emojiDeleted": "Emoji deleted",
+			"convertingEmoji": "Converting emoji...",
+			"uploadingEmoji": "Uploading emoji...",
+			"emojiUploadedSuccessfully": "Emoji uploaded successfully!",
+			"thereWasAnError": "There was an error: {{message}}",
+			"fileSizeTooBig": "File size is too big: {{size}}",
+			"fileTypeNotSupported": "File type is not supported: {{type}}",
+			"pleaseEnterTag": "Please enter a tag",
+			"tagAlreadyUsed": "This tag is already used!"
+		},
+		"Actions": {
+			"title": "External Actions",
+			"description": "External action URLs are 3rd party UI you can display, embedded, into your Owncast page when a user clicks on a button to launch your action.",
+			"readMoreLink": "Read more about how to use actions, with examples, at",
+			"createNewAction": "Create New Action",
+			"createNewActionTitle": "Create New Action",
+			"editActionTitle": "Edit Action",
+			"modalDescription": "Add the URL for the external action you want to present.",
+			"onlyHttpsSupported": "Only HTTPS URLs and embeds are supported.",
+			"readMoreAboutActions": "Read more about external actions.",
+			"selectActionType": "Select an action type",
+			"linkOrEmbedUrl": "Link or embed an URL",
+			"customHtml": "Custom HTML",
+			"htmlEmbedPlaceholder": "HTML embed code (required)",
+			"urlPlaceholder": "https://myserver.com/action (required)",
+			"titlePlaceholder": "Your action title (required)",
+			"descriptionPlaceholder": "Optional description",
+			"iconPlaceholder": "https://myserver.com/action/icon.png (optional)",
+			"optionalBackgroundColor": "Optional background color of the action button.",
+			"openExternally": "Open in a new tab instead of within your page."
+		},
+		"Webhooks": {
+			"createNewWebhook": "Create New Webhook",
+			"webhookUrlPlaceholder": "https://myserver.com/webhook",
+			"selectEvents": "Select the events that will be sent to this webhook.",
+			"selectAll": "Select all"
+		},
+		"AccessTokens": {
+			"createNewAccessToken": "Create New Access token",
+			"nameDescription": "The name will be displayed as the chat user when sending messages with this access token.",
+			"namePlaceholder": "Name of bot, service, or integration",
+			"selectPermissions": "Select the permissions this access token will have. It cannot be edited after it's created.",
+			"cannotEditAfterCreated": "It cannot be edited after it's created.",
+			"selectAll": "Select all"
+		}
 	},
 	"Common": {
 		"poweredByOwncastVersion": "Powered by <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
