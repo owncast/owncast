@@ -1,170 +1,221 @@
 {
-	"Admin": {
-		"EditInstanceDetails": {
-			"directoryDescription": "Увеличьте свою аудиторию, появляясь в <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Каталоге Owncast</strong></a>. Это внешний сервис, управляемый проектом Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Узнайте больше</a>.",
-			"offlineMessageDescription": "Оффлайн сообщение отображается посетителям ваших страниц, когда вы не транслируете. Поддерживается Markdown.",
-			"serverUrlRequiredForDirectory": "Вы должны установить <strong>сервер URL</strong> выше, чтобы включить каталог."
-		},
-		"HardwareInfo": {
-			"title": "Информация об оборудовании",
-			"pleaseWait": "Пожалуйста, подождите",
-			"noDetails": "Данные об оборудовании еще не собраны.",
-			"cpu": "ЦП",
-			"memory": "Память",
-			"disk": "Диск",
-			"used": "использовано"
-		},
-		"Help": {
-			"title": "Как мы можем Вам помочь?",
-			"configureInstance": "Я хочу настроить свой собственный экземпляр",
-			"learnMore": "Узнать больше",
-			"configureBroadcasting": "Помогите настроить программное обеспечение для трансляции",
-			"embedStream": "Я хочу вставить мой поток на другой сайт",
-			"customizeWebsite": "Я хочу настроить мой сайт",
-			"tweakVideo": "Я хочу настроить видеовыход",
-			"useStorage": "Я хочу использовать внешнего провайдера",
-			"foundBug": "Я нашел ошибку",
-			"bugPlease": "Если вы нашли ошибку, пожалуйста,",
-			"letUsKnow": "дайте нам знать",
-			"generalQuestion": "У меня есть общий вопрос",
-			"generalAnswered": "В нашем ответе на основные вопросы",
-			"faq": "ЧАВО",
-			"orExist": "или существует в нашей",
-			"discussions": "обсуждения",
-			"buildAddons": "Я хочу создать дополнения для Owncast",
-			"buildTools": "Вы можете создавать своих ботов, наслоений, инструментов и дополнений с помощью нашей",
-			"developerApis": "API разработчика.",
-			"troubleshooting": "Устранение проблем",
-			"fixProblems": "Устранение проблем",
-			"documentation": "Документация",
-			"readDocs": "Читать документацию",
-			"commonTasks": "Общие задачи",
-			"other": "Прочие вопросы"
-		},
-		"LogTable": {
-			"level": "Уровень",
-			"info": "Инфо",
-			"warning": "Предупреждение",
-			"error": "Ошибка",
-			"timestamp": "Отметка времени",
-			"message": "Сообщение",
-			"logs": "Логи"
-		},
-		"NewsFeed": {
-			"link": "Ссылка",
-			"noNews": "Нет новостей.",
-			"title": "Новости и обновления от Owncast"
-		},
-		"ViewerInfo": {
-			"title": "Информация о просмотре",
-			"currentStream": "Текущий поток",
-			"last12Hours": "Последние 12 часов",
-			"last24Hours": "Последние 24 часа",
-			"last7Days": "Последние 7 дней",
-			"last30Days": "Последние 30 дней",
-			"last3Months": "Последние 3 месяца",
-			"last6Months": "Последние 6 месяцев",
-			"currentViewers": "Текущие зрители",
-			"maxViewersThisStream": "Максимальное количество зрителей этого потока",
-			"maxViewersLastStream": "Максимальное количество просмотров последнего потока",
-			"maxViewers": "макс. зрителей",
-			"pleaseWait": "Пожалуйста, подождите",
-			"noData": "Данные о средстве просмотра еще не собраны.",
-			"viewers": "Просмотры"
-		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "Выбор битрейта отключен, когда включена передача видео.",
-			"bitrateGoodForHigh": "Отлично подходит для высокоскоростных и высоких битрейтов.",
-			"bitrateGoodForMost": "Хорошо для большинства зрителей, полосы пропускания и разрешения.",
-			"bitrateGoodForSlow": "Хорошо для медленных, мобильных и низких битрейтов зрителей.",
-			"bitrateValueKbps": "{{bitrate}} кбит/с"
-		},
-		"deleteEmoji": "Удалить эмодзи",
-		"emojiPageDescription": "Здесь вы можете загрузить новые пользовательские эмодзи для использования в чате. При загрузке новых emoji, имя файла без расширения будет использоваться как имя эмодзи. Кроме того, имена эмодзи не чувствительны к регистру. Для получения наилучших результатов убедитесь, что все эмодзи имеют уникальные имена.",
-		"emojiUploadBulkGuide": "Хотите загружать пользовательские эмодзи оптом? Ознакомьтесь с нашим <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">руководством по эмодзи</a>.",
-		"emojis": "Emojis",
-		"uploadNewEmoji": "Загрузить новые эмодзи"
-	},
-	"Common": {
-		"poweredByOwncastVersion": "При поддержке <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
-	},
-	"Frontend": {
-		"BrowserNotifyModal": {
-			"allowButton": "Разрешить",
-			"blockButton": "Блок",
-			"deniedDescription": "Чтобы включить push-уведомления от {{hostname}}, перейдите в настройки браузера для этого сайта и включите уведомления. Затем перезагрузите эту страницу, чтобы применить ваши обновленные настройки для этого сайта. <a href='https://owncast.online/docs/notifications'>Узнать больше.</a>",
-			"deniedTitle": "Уведомления заблокированы на вашем устройстве",
-			"enabledDescription": "Чтобы отключить push-уведомления от {{hostname}}, перейдите в настройки браузера для этого сайта и отключите уведомления. <a href='https://owncast.online/docs/notifications'>Узнать больше.</a>",
-			"enabledTitle": "Уведомления включены",
-			"errorMessage": "Ошибка при регистрации уведомлений: {{message}}. Убедитесь, что вы не в приватном окружении браузера или ранее отключили уведомления для этого потока.",
-			"errorTitle": "Ошибка уведомления браузера",
-			"iosAddButton": "Добавить",
-			"iosAddToHomeScreen": "Добавить на главный экран",
-			"iosAllowPrompt": "Разрешить",
-			"iosComeBack": "Вернитесь на этот экран и включите уведомления.",
-			"iosDescription": "Мы предпринимаем несколько дополнительных шагов, чтобы быть в курсе того, что ваши любимые потоки будут в прямом эфире.",
-			"iosNameAndTap": "Дайте эту ссылку имени и нажмите на новую иконку на домашнем экране",
-			"iosShareButton": "поделиться",
-			"iosTitle": "Получать уведомления на iOS",
-			"learnMore": "Узнать больше",
-			"mainDescription": "Получайте уведомления прямо в браузере каждый раз, когда этот поток будет работать.",
-			"permissionWantsTo": "{{hostname}} хочет",
-			"showNotifications": "Показать уведомления",
-			"unsupported": "Уведомления браузера не поддерживаются в браузере.",
-			"unsupportedLocal": "Уведомления браузера не поддерживаются для локальных серверов."
-		},
-		"Footer": {
-			"documentation": "Документация",
-			"contribute": "Внести вклад",
-			"source": "Источник"
-		},
-		"Chat": {
-			"userJoined": "присоединился к чату.",
-			"userLeft": "покинул чат.",
-			"nameChangeText": "теперь известен как",
-			"moderatorNotification": "Теперь вы модератор."
-		},
-		"FollowModal": {
-			"description": "Следуя за этим потоком, вы будете получать уведомления о Fediverse когда он идёт в жизни. Теперь самое время",
-			"learnFediverse": "узнать о Fediverse",
-			"newToYou": "если это новое для вас.",
-			"instructions": "Введите имя пользователя @server",
-			"placeholder": "Ваш fediverse аккаунт @account@server",
-			"redirectMessage": "Вы будете перенаправлены на ваш сервер Fediverse и попросили подтвердить действие.",
-			"joinFediverse": "Присоединиться к Fediverse",
-			"followButton": "Подписаться",
-			"followError": "Ошибка подписки",
-			"unableToFollow": "Не удалось подписаться."
-		},
-		"Header": {
-			"skipToPlayer": "Перейти к игроку",
-			"skipToOfflineMessage": "Перейти к сообщению оффлайн",
-			"skipToContent": "Перейти к содержимому страницы",
-			"skipToFooter": "Перейти к нижнему колонтитулу",
-			"chatWillBeAvailable": "Чат будет доступен, когда он будет жить.",
-			"chatOffline": "Чат не в сети"
-		},
-		"NameChangeModal": {
-			"authInfo": "Вы также можете аутентифицировать аккаунт IndieAuth или Fediverse через меню \"Authenticate\".",
-			"buttonText": "Изменить имя",
-			"colorLabel": "Ваш цвет",
-			"description": "Ваше имя в чате - это то, что видят люди при отправке сообщений.",
-			"overLimit": "Превышен предел",
-			"placeholder": "Отображаемое имя чата"
-		},
-		"chatOffline": "Чат не в сети",
-		"componentError": "Ошибка: {{message}}",
-		"helloWorld": "Здравствуй, мир",
-		"offlineBasic": "Этот поток оффлайн. Возвращайтесь в ближайшее время!",
-		"offlineFediverseOnly": "Этот поток отключен. <span class='follow-link'>Следите за</span> {{fediverseAccount}} на Fediverse, чтобы узнать, когда {{streamer}} выйдет в эфир в следующий раз.",
-		"offlineNotifyAndFediverse": "Этот поток отключен. Вы можете <span class='notify-link'>получить уведомление о</span> следующем выходе {{streamer}} в прямой эфир или <span class='follow-link'>следить за</span> {{fediverseAccount}} на Fediverse.",
-		"offlineNotifyOnly": "Этот поток отключен. <span class='notify-link'>Получите уведомление</span>, когда {{streamer}} появится в следующий раз.",
-		"lastLiveAgo": "Последняя живая {{timeAgo}} назад"
-	},
-	"Testing": {
-		"itemCount": "У вас есть {{count}} элементов",
-		"messageCount": "У вас есть сообщения {{count}} от {{sender}}",
-		"noPluralKey": "Этот ключ не имеет множественных вариантов - {{count}} вещи",
-		"simpleKey": "Простой текст перевода"
-	}
+  "Admin": {
+    "EditInstanceDetails": {
+      "directoryDescription": "Увеличьте свою аудиторию, появляясь в <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Каталоге Owncast</strong></a>. Это внешний сервис, управляемый проектом Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Узнайте больше</a>.",
+      "offlineMessageDescription": "Оффлайн сообщение отображается посетителям ваших страниц, когда вы не транслируете. Поддерживается Markdown.",
+      "serverUrlRequiredForDirectory": "Вы должны установить <strong>сервер URL</strong> выше, чтобы включить каталог."
+    },
+    "HardwareInfo": {
+      "title": "Информация об оборудовании",
+      "pleaseWait": "Пожалуйста, подождите",
+      "noDetails": "Данные об оборудовании еще не собраны.",
+      "cpu": "ЦП",
+      "memory": "Память",
+      "disk": "Диск",
+      "used": "использовано"
+    },
+    "Help": {
+      "title": "Как мы можем Вам помочь?",
+      "configureInstance": "Я хочу настроить свой собственный экземпляр",
+      "learnMore": "Узнать больше",
+      "configureBroadcasting": "Помогите настроить программное обеспечение для трансляции",
+      "embedStream": "Я хочу вставить мой поток на другой сайт",
+      "customizeWebsite": "Я хочу настроить мой сайт",
+      "tweakVideo": "Я хочу настроить видеовыход",
+      "useStorage": "Я хочу использовать внешнего провайдера",
+      "foundBug": "Я нашел ошибку",
+      "bugPlease": "Если вы нашли ошибку, пожалуйста,",
+      "letUsKnow": "дайте нам знать",
+      "generalQuestion": "У меня есть общий вопрос",
+      "generalAnswered": "В нашем ответе на основные вопросы",
+      "faq": "ЧАВО",
+      "orExist": "или существует в нашей",
+      "discussions": "обсуждения",
+      "buildAddons": "Я хочу создать дополнения для Owncast",
+      "buildTools": "Вы можете создавать своих ботов, наслоений, инструментов и дополнений с помощью нашей",
+      "developerApis": "API разработчика.",
+      "troubleshooting": "Устранение проблем",
+      "fixProblems": "Устранение проблем",
+      "documentation": "Документация",
+      "readDocs": "Читать документацию",
+      "commonTasks": "Общие задачи",
+      "other": "Прочие вопросы"
+    },
+    "LogTable": {
+      "level": "Уровень",
+      "info": "Инфо",
+      "warning": "Предупреждение",
+      "error": "Ошибка",
+      "timestamp": "Отметка времени",
+      "message": "Сообщение",
+      "logs": "Логи"
+    },
+    "NewsFeed": {
+      "link": "Ссылка",
+      "noNews": "Нет новостей.",
+      "title": "Новости и обновления от Owncast"
+    },
+    "ViewerInfo": {
+      "title": "Информация о просмотре",
+      "currentStream": "Текущий поток",
+      "last12Hours": "Последние 12 часов",
+      "last24Hours": "Последние 24 часа",
+      "last7Days": "Последние 7 дней",
+      "last30Days": "Последние 30 дней",
+      "last3Months": "Последние 3 месяца",
+      "last6Months": "Последние 6 месяцев",
+      "currentViewers": "Текущие зрители",
+      "maxViewersThisStream": "Максимальное количество зрителей этого потока",
+      "maxViewersLastStream": "Максимальное количество просмотров последнего потока",
+      "maxViewers": "макс. зрителей",
+      "pleaseWait": "Пожалуйста, подождите",
+      "noData": "Данные о средстве просмотра еще не собраны.",
+      "viewers": "Просмотры"
+    },
+    "VideoVariantForm": {
+      "bitrateDisabledPassthrough": "Выбор битрейта отключен, когда включена передача видео.",
+      "bitrateGoodForHigh": "Отлично подходит для высокоскоростных и высоких битрейтов.",
+      "bitrateGoodForMost": "Хорошо для большинства зрителей, полосы пропускания и разрешения.",
+      "bitrateGoodForSlow": "Хорошо для медленных, мобильных и низких битрейтов зрителей.",
+      "bitrateValueKbps": "{{bitrate}} кбит/с"
+    },
+    "deleteEmoji": "Удалить эмодзи",
+    "emojiPageDescription": "Здесь вы можете загрузить новые пользовательские эмодзи для использования в чате. При загрузке новых emoji, имя файла без расширения будет использоваться как имя эмодзи. Кроме того, имена эмодзи не чувствительны к регистру. Для получения наилучших результатов убедитесь, что все эмодзи имеют уникальные имена.",
+    "emojiUploadBulkGuide": "Хотите загружать пользовательские эмодзи оптом? Ознакомьтесь с нашим <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">руководством по эмодзи</a>.",
+    "emojis": "Emojis",
+    "uploadNewEmoji": "Загрузить новые эмодзи",
+    "StatusMessages": {
+      "updated": "Обновлено.",
+      "tagsUpdated": "Теги обновлены.",
+      "variantsUpdated": "Варианты обновлены",
+      "videoCodecUpdated": "Видео кодек обновлен.",
+      "latencyBufferUpdated": "Уровень буфера задержки обновлен.",
+      "deletingEmoji": "Удаление эмодзи...",
+      "emojiDeleted": "Эмодзи удалены",
+      "convertingEmoji": "Конвертация эмодзи...",
+      "uploadingEmoji": "Загрузка эмодзи...",
+      "emojiUploadedSuccessfully": "Эмодзи успешно загружены!",
+      "thereWasAnError": "Произошла ошибка: {{message}}",
+      "fileSizeTooBig": "Размер файла слишком большой: {{size}}",
+      "fileTypeNotSupported": "Тип файла не поддерживается: {{type}}",
+      "pleaseEnterTag": "Пожалуйста, введите тег",
+      "tagAlreadyUsed": "Этот тег уже используется!"
+    },
+    "Actions": {
+      "title": "Внешние действия",
+      "description": "URL-адреса внешних действий являются сторонним интерфейсом, который вы можете отображать, встроен, на вашу страницу Owncast когда пользователь нажимает на кнопку, чтобы запустить ваше действие.",
+      "readMoreLink": "Подробнее о том, как использовать действия с примерами, в",
+      "createNewAction": "Создать новое действие",
+      "createNewActionTitle": "Создать новое действие",
+      "editActionTitle": "Изменить действие",
+      "modalDescription": "Добавьте URL для внешнего действия, которое вы хотите сделать.",
+      "onlyHttpsSupported": "Поддерживаются только HTTPS URL-адреса и встраивания.",
+      "readMoreAboutActions": "Подробнее о внешних действиях.",
+      "selectActionType": "Выберите тип действия",
+      "linkOrEmbedUrl": "Link or embed an URL",
+      "customHtml": "Пользовательский HTML",
+      "htmlEmbedPlaceholder": "HTML код вставки (обязательно)",
+      "urlPlaceholder": "https://myserver.com/action (обязательно)",
+      "titlePlaceholder": "Название действия (обязательно)",
+      "descriptionPlaceholder": "Дополнительное описание",
+      "iconPlaceholder": "https://myserver.com/action/icon.png (необязательно)",
+      "optionalBackgroundColor": "Дополнительный цвет фона кнопки действия.",
+      "openExternally": "Открыть в новой вкладке вместо вашей страницы."
+    },
+    "Webhooks": {
+      "createNewWebhook": "Создать новый вебхук",
+      "webhookUrlPlaceholder": "https://myserver.com/webhook",
+      "selectEvents": "Выберите события, которые будут отправлены на этот вебхук.",
+      "selectAll": "Выбрать все"
+    },
+    "AccessTokens": {
+      "createNewAccessToken": "Создать новый токен доступа",
+      "nameDescription": "Имя будет отображаться в качестве пользователя чата при отправке сообщений с этим маркером доступа.",
+      "namePlaceholder": "Имя бота, услуги или интеграция",
+      "selectPermissions": "Выберите разрешения для этого токена доступа. Его нельзя редактировать после его создания.",
+      "selectAll": "Выбрать все"
+    }
+  },
+  "Common": {
+    "poweredByOwncastVersion": "При поддержке <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+  },
+  "Frontend": {
+    "BrowserNotifyModal": {
+      "allowButton": "Разрешить",
+      "blockButton": "Блок",
+      "deniedDescription": "Чтобы включить push-уведомления от {{hostname}}, перейдите в настройки браузера для этого сайта и включите уведомления. Затем перезагрузите эту страницу, чтобы применить ваши обновленные настройки для этого сайта. <a href='https://owncast.online/docs/notifications'>Узнать больше.</a>",
+      "deniedTitle": "Уведомления заблокированы на вашем устройстве",
+      "enabledDescription": "Чтобы отключить push-уведомления от {{hostname}}, перейдите в настройки браузера для этого сайта и отключите уведомления. <a href='https://owncast.online/docs/notifications'>Узнать больше.</a>",
+      "enabledTitle": "Уведомления включены",
+      "errorMessage": "Ошибка при регистрации уведомлений: {{message}}. Убедитесь, что вы не в приватном окружении браузера или ранее отключили уведомления для этого потока.",
+      "errorTitle": "Ошибка уведомления браузера",
+      "iosAddButton": "Добавить",
+      "iosAddToHomeScreen": "Добавить на главный экран",
+      "iosAllowPrompt": "Разрешить",
+      "iosComeBack": "Вернитесь на этот экран и включите уведомления.",
+      "iosDescription": "Мы предпринимаем несколько дополнительных шагов, чтобы быть в курсе того, что ваши любимые потоки будут в прямом эфире.",
+      "iosNameAndTap": "Дайте эту ссылку имени и нажмите на новую иконку на домашнем экране",
+      "iosShareButton": "поделиться",
+      "iosTitle": "Получать уведомления на iOS",
+      "learnMore": "Узнать больше",
+      "mainDescription": "Получайте уведомления прямо в браузере каждый раз, когда этот поток будет работать.",
+      "permissionWantsTo": "{{hostname}} хочет",
+      "showNotifications": "Показать уведомления",
+      "unsupported": "Уведомления браузера не поддерживаются в браузере.",
+      "unsupportedLocal": "Уведомления браузера не поддерживаются для локальных серверов."
+    },
+    "Footer": {
+      "documentation": "Документация",
+      "contribute": "Внести вклад",
+      "source": "Источник"
+    },
+    "Chat": {
+      "userJoined": "присоединился к чату.",
+      "userLeft": "покинул чат.",
+      "nameChangeText": "теперь известен как",
+      "moderatorNotification": "Теперь вы модератор."
+    },
+    "FollowModal": {
+      "description": "Следуя за этим потоком, вы будете получать уведомления о Fediverse когда он идёт в жизни. Теперь самое время",
+      "learnFediverse": "узнать о Fediverse",
+      "newToYou": "если это новое для вас.",
+      "instructions": "Введите имя пользователя @server",
+      "placeholder": "Ваш fediverse аккаунт @account@server",
+      "redirectMessage": "Вы будете перенаправлены на ваш сервер Fediverse и попросили подтвердить действие.",
+      "joinFediverse": "Присоединиться к Fediverse",
+      "followButton": "Подписаться",
+      "followError": "Ошибка подписки",
+      "unableToFollow": "Не удалось подписаться."
+    },
+    "Header": {
+      "skipToPlayer": "Перейти к игроку",
+      "skipToOfflineMessage": "Перейти к сообщению оффлайн",
+      "skipToContent": "Перейти к содержимому страницы",
+      "skipToFooter": "Перейти к нижнему колонтитулу",
+      "chatWillBeAvailable": "Чат будет доступен, когда он будет жить.",
+      "chatOffline": "Чат не в сети"
+    },
+    "NameChangeModal": {
+      "authInfo": "Вы также можете аутентифицировать аккаунт IndieAuth или Fediverse через меню \"Authenticate\".",
+      "buttonText": "Изменить имя",
+      "colorLabel": "Ваш цвет",
+      "description": "Ваше имя в чате - это то, что видят люди при отправке сообщений.",
+      "overLimit": "Превышен предел",
+      "placeholder": "Отображаемое имя чата"
+    },
+    "chatOffline": "Чат не в сети",
+    "componentError": "Ошибка: {{message}}",
+    "helloWorld": "Здравствуй, мир",
+    "offlineBasic": "Этот поток оффлайн. Возвращайтесь в ближайшее время!",
+    "offlineFediverseOnly": "Этот поток отключен. <span class='follow-link'>Следите за</span> {{fediverseAccount}} на Fediverse, чтобы узнать, когда {{streamer}} выйдет в эфир в следующий раз.",
+    "offlineNotifyAndFediverse": "Этот поток отключен. Вы можете <span class='notify-link'>получить уведомление о</span> следующем выходе {{streamer}} в прямой эфир или <span class='follow-link'>следить за</span> {{fediverseAccount}} на Fediverse.",
+    "offlineNotifyOnly": "Этот поток отключен. <span class='notify-link'>Получите уведомление</span>, когда {{streamer}} появится в следующий раз.",
+    "lastLiveAgo": "Последняя живая {{timeAgo}} назад"
+  },
+  "Testing": {
+    "itemCount": "У вас есть {{count}} элементов",
+    "messageCount": "У вас есть сообщения {{count}} от {{sender}}",
+    "noPluralKey": "Этот ключ не имеет множественных вариантов - {{count}} вещи",
+    "simpleKey": "Простой текст перевода"
+  }
 }

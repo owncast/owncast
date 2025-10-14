@@ -1,170 +1,221 @@
 {
-	"Admin": {
-		"EditInstanceDetails": {
-			"directoryDescription": "Augmentez votre audience en apparaissant dans le Répertoire <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast</strong></a>. Ceci est un service externe géré par le projet Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">En savoir plus</a>.",
-			"offlineMessageDescription": "Le message hors ligne est affiché aux visiteurs de votre page lorsque vous ne diffusez pas. Markdown est pris en charge.",
-			"serverUrlRequiredForDirectory": "Vous devez définir l'URL <strong>du serveur</strong> ci-dessus pour activer le répertoire."
-		},
-		"HardwareInfo": {
-			"title": "Informations sur le matériel",
-			"pleaseWait": "Veuillez patienter",
-			"noDetails": "Aucun détail matériel n'a encore été collecté.",
-			"cpu": "UC",
-			"memory": "Mémoire",
-			"disk": "Disque",
-			"used": "utilisé"
-		},
-		"Help": {
-			"title": "Comment pouvons-nous vous aider?",
-			"configureInstance": "Je veux configurer mon instance owncast",
-			"learnMore": "En savoir plus",
-			"configureBroadcasting": "Aide à la configuration de mon logiciel de diffusion",
-			"embedStream": "Je veux intégrer mon flux dans un autre site",
-			"customizeWebsite": "Je veux personnaliser mon site web",
-			"tweakVideo": "Je veux modifier ma sortie vidéo",
-			"useStorage": "Je veux utiliser un fournisseur de stockage externe",
-			"foundBug": "J'ai trouvé un bug",
-			"bugPlease": "Si vous avez trouvé un bug, s'il vous plaît",
-			"letUsKnow": "faites-nous savoir",
-			"generalQuestion": "J'ai une question générale",
-			"generalAnswered": "La plupart des questions générales reçoivent des réponses dans notre",
-			"faq": "Foire Aux Questions",
-			"orExist": "ou existe dans notre",
-			"discussions": "discussions",
-			"buildAddons": "Je veux construire des modules pour Owncast",
-			"buildTools": "Vous pouvez construire vos propres bots, superpositions, outils et modules avec notre",
-			"developerApis": "API développeur.",
-			"troubleshooting": "Dépannage",
-			"fixProblems": "Corriger vos problèmes",
-			"documentation": "Documentation",
-			"readDocs": "Lire la documentation",
-			"commonTasks": "Tâches communes",
-			"other": "Autres"
-		},
-		"LogTable": {
-			"level": "Niveau",
-			"info": "Infos",
-			"warning": "Avertissement",
-			"error": "Erreur",
-			"timestamp": "Horodatage",
-			"message": "Message",
-			"logs": "Journaux"
-		},
-		"NewsFeed": {
-			"link": "Lier",
-			"noNews": "Aucune nouvelle.",
-			"title": "Nouvelles et mises à jour de Owncast"
-		},
-		"ViewerInfo": {
-			"title": "Infos de la visionneuse",
-			"currentStream": "Flux actuel",
-			"last12Hours": "Les 12 dernières heures",
-			"last24Hours": "Dernières 24 heures",
-			"last7Days": "Les 7 derniers jours",
-			"last30Days": "Les 30 derniers jours",
-			"last3Months": "Les 3 derniers mois",
-			"last6Months": "Les 6 derniers mois",
-			"currentViewers": "Visionneurs actuels",
-			"maxViewersThisStream": "Nombre maximum de spectateurs de ce flux",
-			"maxViewersLastStream": "Nombre maximum de spectateurs du dernier flux",
-			"maxViewers": "nombre maximum de spectateurs",
-			"pleaseWait": "Veuillez patienter",
-			"noData": "Aucune donnée de visionneuse n'a encore été collectée.",
-			"viewers": "Visionneurs"
-		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "La sélection de débit est désactivée lorsque le passage vidéo est activé.",
-			"bitrateGoodForHigh": "Idéal pour les visionneuses haute vitesse et haute vitesse.",
-			"bitrateGoodForMost": "Idéal pour la plupart des spectateurs, des bandes passantes et des résolutions.",
-			"bitrateGoodForSlow": "Bon pour les téléspectateurs lents, mobiles et à faible débit.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
-		},
-		"deleteEmoji": "Supprimer l'émoji",
-		"emojiPageDescription": "Ici vous pouvez télécharger de nouveaux emojis personnalisés pour une utilisation dans le chat. Lors du téléchargement d'un nouvel emoji, le nom de fichier sans extension sera utilisé comme nom d'émoji. De plus, les noms d'émoji sont insensibles à la casse. Pour de meilleurs résultats, assurez-vous que tous les emoji aient des noms uniques.",
-		"emojiUploadBulkGuide": "Vous voulez envoyer des émoticônes personnalisées en vrac ? Consultez notre <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">guide des émoticônes</a>.",
-		"emojis": "Emojis",
-		"uploadNewEmoji": "Télécharger un nouvel emoji"
-	},
-	"Common": {
-		"poweredByOwncastVersion": "Propulsé par <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
-	},
-	"Frontend": {
-		"BrowserNotifyModal": {
-			"allowButton": "Autoriser",
-			"blockButton": "Bloquer",
-			"deniedDescription": "Pour activer les notifications push de {{hostname}} , accédez aux autorisations de votre navigateur pour ce site et activez les notifications. Puis rechargez cette page pour appliquer vos paramètres mis à jour sur ce site. <a href='https://owncast.online/docs/notifications'>En savoir plus.</a>",
-			"deniedTitle": "Les notifications sont bloquées sur votre appareil",
-			"enabledDescription": "Pour désactiver les notifications push de {{hostname}} accédez aux autorisations de votre navigateur pour ce site et désactivez les notifications. <a href='https://owncast.online/docs/notifications'>En savoir plus.</a>",
-			"enabledTitle": "Les notifications sont activées",
-			"errorMessage": "Erreur lors de l'enregistrement des notifications en direct : {{message}}. Assurez-vous que vous n'êtes pas dans un environnement de navigateur privé ou que vous avez précédemment désactivé les notifications pour ce flux.",
-			"errorTitle": "Erreur de notification du navigateur",
-			"iosAddButton": "Ajouter",
-			"iosAddToHomeScreen": "Ajouter à l'écran d'accueil",
-			"iosAllowPrompt": "Autoriser",
-			"iosComeBack": "Revenir à cet écran et activer les notifications.",
-			"iosDescription": "Il faut quelques étapes supplémentaires pour vous assurer d'être notifié lorsque vos flux favoris seront en direct.",
-			"iosNameAndTap": "Donnez un nom à ce lien et appuyez sur la nouvelle icône sur votre écran d'accueil",
-			"iosShareButton": "partager",
-			"iosTitle": "Recevez des notifications sur iOS",
-			"learnMore": "En savoir plus",
-			"mainDescription": "Soyez notifié directement dans le navigateur chaque fois que ce flux est en ligne.",
-			"permissionWantsTo": "{{hostname}} veut",
-			"showNotifications": "Afficher les notifications",
-			"unsupported": "Les notifications du navigateur ne sont pas prises en charge dans votre navigateur.",
-			"unsupportedLocal": "Les notifications du navigateur ne sont pas prises en charge par les serveurs locaux."
-		},
-		"Footer": {
-			"documentation": "Documentation",
-			"contribute": "Contribuer",
-			"source": "Source"
-		},
-		"Chat": {
-			"userJoined": "a rejoint le chat.",
-			"userLeft": "a quitté le chat.",
-			"nameChangeText": "est maintenant connu comme",
-			"moderatorNotification": "Vous êtes maintenant modérateur."
-		},
-		"FollowModal": {
-			"description": "En suivant ce stream, vous serez notifié sur le Fediverse quand il sera en ligne. C'est maintenant un moment formidable pour",
-			"learnFediverse": "en savoir plus sur le Fédiverse",
-			"newToYou": "si c'est nouveau pour vous.",
-			"instructions": "Entrez votre nom d'utilisateur @server à suivre",
-			"placeholder": "Votre compte fediverse @account@server",
-			"redirectMessage": "Vous serez redirigé vers votre serveur Fediverse et vous serez invité à confirmer l'action.",
-			"joinFediverse": "Rejoignez le Fédiverse",
-			"followButton": "Suivre",
-			"followError": "Erreur de suivi",
-			"unableToFollow": "Impossible de suivre."
-		},
-		"Header": {
-			"skipToPlayer": "Passer au joueur",
-			"skipToOfflineMessage": "Passer au message hors ligne",
-			"skipToContent": "Passer au contenu de la page",
-			"skipToFooter": "Passer au pied de page",
-			"chatWillBeAvailable": "Le chat sera disponible quand le flux est en direct.",
-			"chatOffline": "Le chat est hors ligne"
-		},
-		"NameChangeModal": {
-			"authInfo": "Vous pouvez également authentifier un compte IndieAuth ou Fediverse via le menu \"Authentifier\".",
-			"buttonText": "Changer de nom",
-			"colorLabel": "Votre couleur",
-			"description": "Le nom d'affichage de votre chat est ce que les gens voient quand vous envoyez des messages de chat.",
-			"overLimit": "Limite dépassée",
-			"placeholder": "Nom d'affichage de votre chat"
-		},
-		"chatOffline": "Le chat est hors ligne",
-		"componentError": "Erreur: {{message}}",
-		"helloWorld": "Bonjour le monde",
-		"offlineBasic": "Ce flux est hors ligne. Revenez bientôt !",
-		"offlineFediverseOnly": "Ce flux est hors ligne. <span class='follow-link'>Suivez</span> {{fediverseAccount}} sur le Fédiverse pour voir la prochaine fois que {{streamer}} sera en live.",
-		"offlineNotifyAndFediverse": "Ce flux est hors ligne. Vous pouvez <span class='notify-link'>être notifié</span> la prochaine fois que {{streamer}} sera en direct ou <span class='follow-link'>suivre</span> {{fediverseAccount}} sur le Fediverse.",
-		"offlineNotifyOnly": "Ce flux est hors ligne. <span class='notify-link'>Être notifié</span> la prochaine fois que {{streamer}} sera en ligne.",
-		"lastLiveAgo": "Dernière diffusion il y a {{timeAgo}}"
-	},
-	"Testing": {
-		"itemCount": "Vous avez des objets {{count}}",
-		"messageCount": "Vous avez des messages {{count}} de {{sender}}",
-		"noPluralKey": "Cette clé n'a pas de variantes plurielles - {{count}} choses",
-		"simpleKey": "Texte de traduction simple"
-	}
+  "Admin": {
+    "EditInstanceDetails": {
+      "directoryDescription": "Augmentez votre audience en apparaissant dans le Répertoire <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast</strong></a>. Ceci est un service externe géré par le projet Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">En savoir plus</a>.",
+      "offlineMessageDescription": "Le message hors ligne est affiché aux visiteurs de votre page lorsque vous ne diffusez pas. Markdown est pris en charge.",
+      "serverUrlRequiredForDirectory": "Vous devez définir l'URL <strong>du serveur</strong> ci-dessus pour activer le répertoire."
+    },
+    "HardwareInfo": {
+      "title": "Informations sur le matériel",
+      "pleaseWait": "Veuillez patienter",
+      "noDetails": "Aucun détail matériel n'a encore été collecté.",
+      "cpu": "UC",
+      "memory": "Mémoire",
+      "disk": "Disque",
+      "used": "utilisé"
+    },
+    "Help": {
+      "title": "Comment pouvons-nous vous aider?",
+      "configureInstance": "Je veux configurer mon instance owncast",
+      "learnMore": "En savoir plus",
+      "configureBroadcasting": "Aide à la configuration de mon logiciel de diffusion",
+      "embedStream": "Je veux intégrer mon flux dans un autre site",
+      "customizeWebsite": "Je veux personnaliser mon site web",
+      "tweakVideo": "Je veux modifier ma sortie vidéo",
+      "useStorage": "Je veux utiliser un fournisseur de stockage externe",
+      "foundBug": "J'ai trouvé un bug",
+      "bugPlease": "Si vous avez trouvé un bug, s'il vous plaît",
+      "letUsKnow": "faites-nous savoir",
+      "generalQuestion": "J'ai une question générale",
+      "generalAnswered": "La plupart des questions générales reçoivent des réponses dans notre",
+      "faq": "Foire Aux Questions",
+      "orExist": "ou existe dans notre",
+      "discussions": "discussions",
+      "buildAddons": "Je veux construire des modules pour Owncast",
+      "buildTools": "Vous pouvez construire vos propres bots, superpositions, outils et modules avec notre",
+      "developerApis": "API développeur.",
+      "troubleshooting": "Dépannage",
+      "fixProblems": "Corriger vos problèmes",
+      "documentation": "Documentation",
+      "readDocs": "Lire la documentation",
+      "commonTasks": "Tâches communes",
+      "other": "Autres"
+    },
+    "LogTable": {
+      "level": "Niveau",
+      "info": "Infos",
+      "warning": "Avertissement",
+      "error": "Erreur",
+      "timestamp": "Horodatage",
+      "message": "Message",
+      "logs": "Journaux"
+    },
+    "NewsFeed": {
+      "link": "Lier",
+      "noNews": "Aucune nouvelle.",
+      "title": "Nouvelles et mises à jour de Owncast"
+    },
+    "ViewerInfo": {
+      "title": "Infos de la visionneuse",
+      "currentStream": "Flux actuel",
+      "last12Hours": "Les 12 dernières heures",
+      "last24Hours": "Dernières 24 heures",
+      "last7Days": "Les 7 derniers jours",
+      "last30Days": "Les 30 derniers jours",
+      "last3Months": "Les 3 derniers mois",
+      "last6Months": "Les 6 derniers mois",
+      "currentViewers": "Visionneurs actuels",
+      "maxViewersThisStream": "Nombre maximum de spectateurs de ce flux",
+      "maxViewersLastStream": "Nombre maximum de spectateurs du dernier flux",
+      "maxViewers": "nombre maximum de spectateurs",
+      "pleaseWait": "Veuillez patienter",
+      "noData": "Aucune donnée de visionneuse n'a encore été collectée.",
+      "viewers": "Visionneurs"
+    },
+    "VideoVariantForm": {
+      "bitrateDisabledPassthrough": "La sélection de débit est désactivée lorsque le passage vidéo est activé.",
+      "bitrateGoodForHigh": "Idéal pour les visionneuses haute vitesse et haute vitesse.",
+      "bitrateGoodForMost": "Idéal pour la plupart des spectateurs, des bandes passantes et des résolutions.",
+      "bitrateGoodForSlow": "Bon pour les téléspectateurs lents, mobiles et à faible débit.",
+      "bitrateValueKbps": "{{bitrate}} kbps"
+    },
+    "deleteEmoji": "Supprimer l'émoji",
+    "emojiPageDescription": "Ici vous pouvez télécharger de nouveaux emojis personnalisés pour une utilisation dans le chat. Lors du téléchargement d'un nouvel emoji, le nom de fichier sans extension sera utilisé comme nom d'émoji. De plus, les noms d'émoji sont insensibles à la casse. Pour de meilleurs résultats, assurez-vous que tous les emoji aient des noms uniques.",
+    "emojiUploadBulkGuide": "Vous voulez envoyer des émoticônes personnalisées en vrac ? Consultez notre <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">guide des émoticônes</a>.",
+    "emojis": "Emojis",
+    "uploadNewEmoji": "Télécharger un nouvel emoji",
+    "StatusMessages": {
+      "updated": "Mis à jour.",
+      "tagsUpdated": "Tags mis à jour.",
+      "variantsUpdated": "Variantes mises à jour",
+      "videoCodecUpdated": "Codec vidéo mis à jour.",
+      "latencyBufferUpdated": "Niveau de tampon de latence mis à jour.",
+      "deletingEmoji": "Suppression de l'émoji...",
+      "emojiDeleted": "Emoji supprimé",
+      "convertingEmoji": "Conversion d'émoticônes...",
+      "uploadingEmoji": "Envoi de l'émoji...",
+      "emojiUploadedSuccessfully": "Emoji téléchargé avec succès!",
+      "thereWasAnError": "Il y a eu une erreur : {{message}}",
+      "fileSizeTooBig": "La taille du fichier est trop grande : {{size}}",
+      "fileTypeNotSupported": "Le type de fichier n'est pas pris en charge : {{type}}",
+      "pleaseEnterTag": "Veuillez entrer un tag",
+      "tagAlreadyUsed": "Ce tag est déjà utilisé !"
+    },
+    "Actions": {
+      "title": "Actions Externes",
+      "description": "Les URL de l'action externe sont des interfaces utilisateur tierces que vous pouvez afficher, intégrées, dans votre page Owncast lorsqu'un utilisateur clique sur un bouton pour lancer votre action.",
+      "readMoreLink": "En savoir plus sur la façon d'utiliser des actions, avec des exemples, à",
+      "createNewAction": "Créer une nouvelle action",
+      "createNewActionTitle": "Créer une nouvelle action",
+      "editActionTitle": "Modifier l'action",
+      "modalDescription": "Ajoutez l'URL de l'action externe que vous voulez présenter.",
+      "onlyHttpsSupported": "Seules les URLs et les embeds HTTPS sont pris en charge.",
+      "readMoreAboutActions": "En savoir plus sur les actions extérieures.",
+      "selectActionType": "Sélectionnez un type d'action",
+      "linkOrEmbedUrl": "Link or embed an URL",
+      "customHtml": "HTML personnalisé",
+      "htmlEmbedPlaceholder": "Code HTML intégré (obligatoire)",
+      "urlPlaceholder": "https://myserver.com/action (obligatoire)",
+      "titlePlaceholder": "Titre de votre action (obligatoire)",
+      "descriptionPlaceholder": "Description facultative",
+      "iconPlaceholder": "https://myserver.com/action/icon.png (facultatif)",
+      "optionalBackgroundColor": "Couleur d'arrière-plan optionnelle du bouton d'action.",
+      "openExternally": "Ouvrir dans un nouvel onglet au lieu de dans votre page."
+    },
+    "Webhooks": {
+      "createNewWebhook": "Créer un nouveau Webhook",
+      "webhookUrlPlaceholder": "https://myserver.com/webhook",
+      "selectEvents": "Sélectionnez les événements qui seront envoyés à ce webhook.",
+      "selectAll": "Tout sélectionner"
+    },
+    "AccessTokens": {
+      "createNewAccessToken": "Créer un nouveau jeton d'accès",
+      "nameDescription": "Le nom sera affiché en tant qu'utilisateur du chat lors de l'envoi de messages avec ce jeton d'accès.",
+      "namePlaceholder": "Nom du bot, du service ou de l'intégration",
+      "selectPermissions": "Sélectionnez les permissions que ce jeton d'accès aura. Il ne peut pas être modifié après sa création.",
+      "selectAll": "Tout sélectionner"
+    }
+  },
+  "Common": {
+    "poweredByOwncastVersion": "Propulsé par <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+  },
+  "Frontend": {
+    "BrowserNotifyModal": {
+      "allowButton": "Autoriser",
+      "blockButton": "Bloquer",
+      "deniedDescription": "Pour activer les notifications push de {{hostname}} , accédez aux autorisations de votre navigateur pour ce site et activez les notifications. Puis rechargez cette page pour appliquer vos paramètres mis à jour sur ce site. <a href='https://owncast.online/docs/notifications'>En savoir plus.</a>",
+      "deniedTitle": "Les notifications sont bloquées sur votre appareil",
+      "enabledDescription": "Pour désactiver les notifications push de {{hostname}} accédez aux autorisations de votre navigateur pour ce site et désactivez les notifications. <a href='https://owncast.online/docs/notifications'>En savoir plus.</a>",
+      "enabledTitle": "Les notifications sont activées",
+      "errorMessage": "Erreur lors de l'enregistrement des notifications en direct : {{message}}. Assurez-vous que vous n'êtes pas dans un environnement de navigateur privé ou que vous avez précédemment désactivé les notifications pour ce flux.",
+      "errorTitle": "Erreur de notification du navigateur",
+      "iosAddButton": "Ajouter",
+      "iosAddToHomeScreen": "Ajouter à l'écran d'accueil",
+      "iosAllowPrompt": "Autoriser",
+      "iosComeBack": "Revenir à cet écran et activer les notifications.",
+      "iosDescription": "Il faut quelques étapes supplémentaires pour vous assurer d'être notifié lorsque vos flux favoris seront en direct.",
+      "iosNameAndTap": "Donnez un nom à ce lien et appuyez sur la nouvelle icône sur votre écran d'accueil",
+      "iosShareButton": "partager",
+      "iosTitle": "Recevez des notifications sur iOS",
+      "learnMore": "En savoir plus",
+      "mainDescription": "Soyez notifié directement dans le navigateur chaque fois que ce flux est en ligne.",
+      "permissionWantsTo": "{{hostname}} veut",
+      "showNotifications": "Afficher les notifications",
+      "unsupported": "Les notifications du navigateur ne sont pas prises en charge dans votre navigateur.",
+      "unsupportedLocal": "Les notifications du navigateur ne sont pas prises en charge par les serveurs locaux."
+    },
+    "Footer": {
+      "documentation": "Documentation",
+      "contribute": "Contribuer",
+      "source": "Source"
+    },
+    "Chat": {
+      "userJoined": "a rejoint le chat.",
+      "userLeft": "a quitté le chat.",
+      "nameChangeText": "est maintenant connu comme",
+      "moderatorNotification": "Vous êtes maintenant modérateur."
+    },
+    "FollowModal": {
+      "description": "En suivant ce stream, vous serez notifié sur le Fediverse quand il sera en ligne. C'est maintenant un moment formidable pour",
+      "learnFediverse": "en savoir plus sur le Fédiverse",
+      "newToYou": "si c'est nouveau pour vous.",
+      "instructions": "Entrez votre nom d'utilisateur @server à suivre",
+      "placeholder": "Votre compte fediverse @account@server",
+      "redirectMessage": "Vous serez redirigé vers votre serveur Fediverse et vous serez invité à confirmer l'action.",
+      "joinFediverse": "Rejoignez le Fédiverse",
+      "followButton": "Suivre",
+      "followError": "Erreur de suivi",
+      "unableToFollow": "Impossible de suivre."
+    },
+    "Header": {
+      "skipToPlayer": "Passer au joueur",
+      "skipToOfflineMessage": "Passer au message hors ligne",
+      "skipToContent": "Passer au contenu de la page",
+      "skipToFooter": "Passer au pied de page",
+      "chatWillBeAvailable": "Le chat sera disponible quand le flux est en direct.",
+      "chatOffline": "Le chat est hors ligne"
+    },
+    "NameChangeModal": {
+      "authInfo": "Vous pouvez également authentifier un compte IndieAuth ou Fediverse via le menu \"Authentifier\".",
+      "buttonText": "Changer de nom",
+      "colorLabel": "Votre couleur",
+      "description": "Le nom d'affichage de votre chat est ce que les gens voient quand vous envoyez des messages de chat.",
+      "overLimit": "Limite dépassée",
+      "placeholder": "Nom d'affichage de votre chat"
+    },
+    "chatOffline": "Le chat est hors ligne",
+    "componentError": "Erreur: {{message}}",
+    "helloWorld": "Bonjour le monde",
+    "offlineBasic": "Ce flux est hors ligne. Revenez bientôt !",
+    "offlineFediverseOnly": "Ce flux est hors ligne. <span class='follow-link'>Suivez</span> {{fediverseAccount}} sur le Fédiverse pour voir la prochaine fois que {{streamer}} sera en live.",
+    "offlineNotifyAndFediverse": "Ce flux est hors ligne. Vous pouvez <span class='notify-link'>être notifié</span> la prochaine fois que {{streamer}} sera en direct ou <span class='follow-link'>suivre</span> {{fediverseAccount}} sur le Fediverse.",
+    "offlineNotifyOnly": "Ce flux est hors ligne. <span class='notify-link'>Être notifié</span> la prochaine fois que {{streamer}} sera en ligne.",
+    "lastLiveAgo": "Dernière diffusion il y a {{timeAgo}}"
+  },
+  "Testing": {
+    "itemCount": "Vous avez des objets {{count}}",
+    "messageCount": "Vous avez des messages {{count}} de {{sender}}",
+    "noPluralKey": "Cette clé n'a pas de variantes plurielles - {{count}} choses",
+    "simpleKey": "Texte de traduction simple"
+  }
 }

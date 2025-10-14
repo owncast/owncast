@@ -1,170 +1,221 @@
 {
-	"Admin": {
-		"EditInstanceDetails": {
-			"directoryDescription": "अपने दर्शकों को <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast निर्देशिका</strong></a> में दिखाई देकर बढ़ाएं। यह एक बाहरी सेवा है जिसे Owncast प्रोजेक्ट द्वारा संचालित किया जाता है। <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">अधिक जानें</a>.",
-			"offlineMessageDescription": "ऑफलाइन संदेश आपके पृष्ठ के आगंतुकों को तब दिखाया जाता है जब आप स्ट्रीमिंग नहीं कर रहे होते हैं। मार्कडाउन समर्थित है।",
-			"serverUrlRequiredForDirectory": "आपको निर्देशिका को सक्षम करने के लिए अपने <strong>सर्वर URL</strong> को ऊपर सेट करना होगा।"
-		},
-		"HardwareInfo": {
-			"title": "हार्डवेयर जानकारी",
-			"pleaseWait": "कृपया प्रतीक्षा करें",
-			"noDetails": "कोई हार्डवेयर विवरण अभी तक एकत्रित नहीं किए गए हैं।",
-			"cpu": "सीपीयू",
-			"memory": "मेमोरी",
-			"disk": "डिस्क",
-			"used": "उपयोग में"
-		},
-		"Help": {
-			"title": "हम आपकी कैसे मदद कर सकते हैं?",
-			"configureInstance": "मैं अपने Owncast उदाहरण को कॉन्फ़िगर करना चाहता हूँ",
-			"learnMore": "अधिक जानें",
-			"configureBroadcasting": "मेरे प्रसारण सॉफ़्टवेयर को कॉन्फ़िगर करने में सहायता करें",
-			"embedStream": "मैं अपनी धारा को किसी अन्य साइट में एम्बेड करना चाहता हूँ",
-			"customizeWebsite": "मैं अपनी वेबसाइट को अनुकूलित करना चाहता हूँ",
-			"tweakVideo": "मैं अपना वीडियो आउटपुट ट्वीक करना चाहता हूँ",
-			"useStorage": "मैं एक बाहरी भंडारण प्रदाता का उपयोग करना चाहता हूँ",
-			"foundBug": "मुझे एक बग मिला है",
-			"bugPlease": "अगर आपको एक बग मिला है, तो कृपया",
-			"letUsKnow": "हमें बताएं",
-			"generalQuestion": "मेरे पास एक सामान्य प्रश्न है",
-			"generalAnswered": "अधिकांश सामान्य प्रश्नों के उत्तर हमारे",
-			"faq": "अक्सर पूछे जाने वाले प्रश्न",
-			"orExist": "या हमारे में हैं",
-			"discussions": "चर्चाएँ",
-			"buildAddons": "मैं Owncast के लिए ऐड-ऑन बनाना चाहता हूँ",
-			"buildTools": "आप हमारे साथ अपने खुद के बॉट्स, ओवरले, उपकरण और ऐड-ऑन बना सकते हैं",
-			"developerApis": "डेवलपर एपीआई।",
-			"troubleshooting": "समस्या निवारण",
-			"fixProblems": "आपकी समस्याओं को हल करें",
-			"documentation": "दस्तावेज़ीकरण",
-			"readDocs": "दस्तावेज़ पढ़ें",
-			"commonTasks": "सामान्य कार्य",
-			"other": "अन्य"
-		},
-		"LogTable": {
-			"level": "स्तर",
-			"info": "जानकारी",
-			"warning": "चेतावनी",
-			"error": "त्रुटि",
-			"timestamp": "टाइमस्टैम्प",
-			"message": "संदेश",
-			"logs": "लॉग"
-		},
-		"NewsFeed": {
-			"link": "लिंक",
-			"noNews": "कोई समाचार नहीं।",
-			"title": "Owncast से समाचार और अपडेट"
-		},
-		"ViewerInfo": {
-			"title": "दर्शक जानकारी",
-			"currentStream": "वर्तमान धारा",
-			"last12Hours": "पिछले 12 घंटे",
-			"last24Hours": "पिछले 24 घंटे",
-			"last7Days": "पिछले 7 दिन",
-			"last30Days": "पिछले 30 दिन",
-			"last3Months": "पिछले 3 महीने",
-			"last6Months": "पिछले 6 महीने",
-			"currentViewers": "वर्तमान दर्शक",
-			"maxViewersThisStream": "इस धारा के लिए अधिकतम दर्शक",
-			"maxViewersLastStream": "पिछली धारा के लिए अधिकतम दर्शक",
-			"maxViewers": "अधिकतम दर्शक",
-			"pleaseWait": "कृपया प्रतीक्षा करें",
-			"noData": "अभी तक कोई दर्शक डेटा एकत्र नहीं किया गया है।",
-			"viewers": "दर्शक"
-		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "जब वीडियो पासथ्रू सक्षम है तो बिटरेट चयन अक्षम है।",
-			"bitrateGoodForHigh": "उच्च गति और उच्च बिटरेट दर्शकों के लिए अच्छा।",
-			"bitrateGoodForMost": "अधिकांश दर्शकों, बैंडविड्थ और संकल्पों के लिए अच्छा।",
-			"bitrateGoodForSlow": "धीमे, मोबाइल और कम बिटरेट दर्शकों के लिए अच्छा।",
-			"bitrateValueKbps": "{{bitrate}} kbps"
-		},
-		"deleteEmoji": "इमोजी हटाएँ",
-		"emojiPageDescription": "यहां आप चैट में उपयोग के लिए नए कस्टम इमोजी अपलोड कर सकते हैं। जब आप एक नया इमोजी अपलोड करते हैं, तो फ़ाइल नाम बिना एक्सटेंशन के इमोजी नाम के रूप में उपयोग किया जाएगा। इसके अलावा, इमोजी नाम बड़े और छोटे अक्षरों के प्रति संवेदनशील नहीं हैं। सर्वश्रेष्ठ परिणामों के लिए, सुनिश्चित करें कि सभी इमोजी के पास अद्वितीय नाम हैं।",
-		"emojiUploadBulkGuide": "क्या आप कस्टम इमोजी का सामूहिक रूप से अपलोड करना चाहते हैं? हमारा <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">इमोजी गाइड</a> देखें।",
-		"emojis": "इमोजी",
-		"uploadNewEmoji": "नया इमोजी अपलोड करें"
-	},
-	"Common": {
-		"poweredByOwncastVersion": "<a href='https://owncast.online'>Owncast व{{versionNumber}}</a> द्वारा शक्ति प्राप्त है"
-	},
-	"Frontend": {
-		"BrowserNotifyModal": {
-			"allowButton": "अनुमति दें",
-			"blockButton": "अवरोध",
-			"deniedDescription": "{{hostname}} से पुश सूचनाओं को सक्षम करने के लिए, कृपया इस साइट के लिए अपने ब्राउज़र अनुमति सेटिंग्स तक पहुँचें और सूचनाएँ चालू करें। फिर, इस पृष्ठ को पुनः लोड करें ताकि आपकी अद्यतन सेटिंग्स इस साइट पर लागू हो सकें। <a href='https://owncast.online/docs/notifications'>और जानें।</a>",
-			"deniedTitle": "आपके डिवाइस पर सूचनाएँ अवरुद्ध हैं",
-			"enabledDescription": "{{hostname}} से पुश सूचनाओं को निष्क्रिय करने के लिए, कृपया इस साइट के लिए अपने ब्राउज़र अनुमति सेटिंग्स तक पहुँचें और सूचनाएँ बंद करें। <a href='https://owncast.online/docs/notifications'>और जानें।</a>",
-			"enabledTitle": "सूचनाएँ सक्रिय हैं",
-			"errorMessage": "सीधे सूचनाओं के लिए पंजीकरण करते समय त्रुटि: {{message}}। सुनिश्चित करें कि आप किसी निजी ब्राउज़र वातावरण में नहीं हैं या आपने पहले इस धारा के लिए सूचनाएं अक्षम नहीं की हैं।",
-			"errorTitle": "ब्राउज़र सूचना त्रुटि",
-			"iosAddButton": "जोड़ें",
-			"iosAddToHomeScreen": "होम स्क्रीन पर जोड़ें",
-			"iosAllowPrompt": "अनुमति दें",
-			"iosComeBack": "इस स्क्रीन पर वापस आएं और सूचनाएँ सक्षम करें।",
-			"iosDescription": "यह सुनिश्चित करने के लिए कुछ अतिरिक्त कदम उठाने की आवश्यकता है कि जब आपके पसंदीदा स्ट्रीम लाइव होते हैं, तो आपको सूचित किया जाए।",
-			"iosNameAndTap": "इस लिंक को एक नाम दें और अपने होम स्क्रीन पर नए आइकन पर टैप करें",
-			"iosShareButton": "शेयर करें",
-			"iosTitle": "iOS पर सूचनाएं प्राप्त करें",
-			"learnMore": "और जानें",
-			"mainDescription": "जब भी यह स्ट्रीम लाइव होती है, तो आपको ब्राउज़र में सूचित किया जाता है।",
-			"permissionWantsTo": "{{hostname}} चाहता है",
-			"showNotifications": "सूचनाएँ दिखाएं",
-			"unsupported": "ब्राउज़र में ब्राउज़र सूचनाएँ समर्थित नहीं हैं।",
-			"unsupportedLocal": "स्थानीय सर्वरों के लिए ब्राउज़र सूचनाएँ समर्थित नहीं हैं।"
-		},
-		"Footer": {
-			"documentation": "दस्तावेज़ीकरण",
-			"contribute": "योगदान करें",
-			"source": "स्रोत"
-		},
-		"Chat": {
-			"userJoined": "चैट में शामिल हुआ।",
-			"userLeft": "चैट छोड़ी।",
-			"nameChangeText": "अब जाना जाता है",
-			"moderatorNotification": "आप अब एक moderator हैं।"
-		},
-		"FollowModal": {
-			"description": "इस स्ट्रीम का पालन करने पर आपको Fediverse पर सूचना मिलेगी जब यह लाइव हो जाएगा। अब इसका पालन करने का एक बेहतरीन समय है",
-			"learnFediverse": "Fediverse के बारे में जानें",
-			"newToYou": "यदि यह आपके लिए नया है।",
-			"instructions": "अनुसरण करने के लिए अपना उपयोगकर्ता नाम @server दर्ज करें",
-			"placeholder": "आपका Fediverse खाता @account@server",
-			"redirectMessage": "आपको आपके Fediverse सर्वर पर पुनर्निर्देशित किया जाएगा और क्रिया की पुष्टि करने के लिए पूछा जाएगा।",
-			"joinFediverse": "Fediverse में शामिल हों",
-			"followButton": "अनुसरण करें",
-			"followError": "अनुसरण त्रुटि",
-			"unableToFollow": "अनुसरण करने में असमर्थ।"
-		},
-		"Header": {
-			"skipToPlayer": "खिलाड़ी पर जाएं",
-			"skipToOfflineMessage": "ऑफ़लाइन संदेश पर जाएं",
-			"skipToContent": "पृष्ठ सामग्री पर जाएं",
-			"skipToFooter": "पाद लेख पर जाएं",
-			"chatWillBeAvailable": "जब धारा लाइव होगी, तो चैट उपलब्ध होगी।",
-			"chatOffline": "चैट ऑफ़लाइन है"
-		},
-		"NameChangeModal": {
-			"authInfo": "आप \"प्रमाणित करें\" मेनू के माध्यम से एक IndieAuth या Fediverse खाता भी प्रमाणित कर सकते हैं।",
-			"buttonText": "नाम बदलें",
-			"colorLabel": "आपका रंग",
-			"description": "आपका चैट डिस्प्ले नाम वह है जो लोग जब आप चैट संदेश भेजते हैं तब देखते हैं।",
-			"overLimit": "सीमा से परे",
-			"placeholder": "आपका चैट डिस्प्ले नाम"
-		},
-		"chatOffline": "चैट ऑफ़लाइन है",
-		"componentError": "त्रुटि: {{message}}",
-		"helloWorld": "नमस्ते दुनिया",
-		"offlineBasic": "यह स्ट्रीम ऑफ़लाइन है। कृपया जल्द ही वापस आएं!",
-		"offlineFediverseOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='follow-link'>अनुसरण करें</span> {{fediverseAccount}} Fediverse पर अगली बार देखने के लिए जब {{streamer}} लाइव जाएं।",
-		"offlineNotifyAndFediverse": "यह स्ट्रीम ऑफ़लाइन है। आप अगले बार जब {{streamer}} लाइव जाएं तो <span class='notify-link'>सूचित</span> हो सकते हैं या <span class='follow-link'>अनुसरण</span> कर सकते हैं {{fediverseAccount}} को Fediverse पर।",
-		"offlineNotifyOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='notify-link'>सूचित हों</span> अगली बार जब {{streamer}} लाइव जाएं।",
-		"lastLiveAgo": "अंतिम जीवित {{timeAgo}} पहले"
-	},
-	"Testing": {
-		"itemCount": "आपके पास {{count}} आइटम हैं",
-		"messageCount": "आपके पास {{count}} संदेश हैं {{sender}} से",
-		"noPluralKey": "इस कुंजी के पास कोई बहुवचन रूप नहीं है - {{count}} चीज़ें",
-		"simpleKey": "सरल अनुवाद पाठ"
-	}
+  "Admin": {
+    "EditInstanceDetails": {
+      "directoryDescription": "अपने दर्शकों को <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast निर्देशिका</strong></a> में दिखाई देकर बढ़ाएं। यह एक बाहरी सेवा है जिसे Owncast प्रोजेक्ट द्वारा संचालित किया जाता है। <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">अधिक जानें</a>.",
+      "offlineMessageDescription": "ऑफलाइन संदेश आपके पृष्ठ के आगंतुकों को तब दिखाया जाता है जब आप स्ट्रीमिंग नहीं कर रहे होते हैं। मार्कडाउन समर्थित है।",
+      "serverUrlRequiredForDirectory": "आपको निर्देशिका को सक्षम करने के लिए अपने <strong>सर्वर URL</strong> को ऊपर सेट करना होगा।"
+    },
+    "HardwareInfo": {
+      "title": "हार्डवेयर जानकारी",
+      "pleaseWait": "कृपया प्रतीक्षा करें",
+      "noDetails": "कोई हार्डवेयर विवरण अभी तक एकत्रित नहीं किए गए हैं।",
+      "cpu": "सीपीयू",
+      "memory": "मेमोरी",
+      "disk": "डिस्क",
+      "used": "उपयोग में"
+    },
+    "Help": {
+      "title": "हम आपकी कैसे मदद कर सकते हैं?",
+      "configureInstance": "मैं अपने Owncast उदाहरण को कॉन्फ़िगर करना चाहता हूँ",
+      "learnMore": "अधिक जानें",
+      "configureBroadcasting": "मेरे प्रसारण सॉफ़्टवेयर को कॉन्फ़िगर करने में सहायता करें",
+      "embedStream": "मैं अपनी धारा को किसी अन्य साइट में एम्बेड करना चाहता हूँ",
+      "customizeWebsite": "मैं अपनी वेबसाइट को अनुकूलित करना चाहता हूँ",
+      "tweakVideo": "मैं अपना वीडियो आउटपुट ट्वीक करना चाहता हूँ",
+      "useStorage": "मैं एक बाहरी भंडारण प्रदाता का उपयोग करना चाहता हूँ",
+      "foundBug": "मुझे एक बग मिला है",
+      "bugPlease": "अगर आपको एक बग मिला है, तो कृपया",
+      "letUsKnow": "हमें बताएं",
+      "generalQuestion": "मेरे पास एक सामान्य प्रश्न है",
+      "generalAnswered": "अधिकांश सामान्य प्रश्नों के उत्तर हमारे",
+      "faq": "अक्सर पूछे जाने वाले प्रश्न",
+      "orExist": "या हमारे में हैं",
+      "discussions": "चर्चाएँ",
+      "buildAddons": "मैं Owncast के लिए ऐड-ऑन बनाना चाहता हूँ",
+      "buildTools": "आप हमारे साथ अपने खुद के बॉट्स, ओवरले, उपकरण और ऐड-ऑन बना सकते हैं",
+      "developerApis": "डेवलपर एपीआई।",
+      "troubleshooting": "समस्या निवारण",
+      "fixProblems": "आपकी समस्याओं को हल करें",
+      "documentation": "दस्तावेज़ीकरण",
+      "readDocs": "दस्तावेज़ पढ़ें",
+      "commonTasks": "सामान्य कार्य",
+      "other": "अन्य"
+    },
+    "LogTable": {
+      "level": "स्तर",
+      "info": "जानकारी",
+      "warning": "चेतावनी",
+      "error": "त्रुटि",
+      "timestamp": "टाइमस्टैम्प",
+      "message": "संदेश",
+      "logs": "लॉग"
+    },
+    "NewsFeed": {
+      "link": "लिंक",
+      "noNews": "कोई समाचार नहीं।",
+      "title": "Owncast से समाचार और अपडेट"
+    },
+    "ViewerInfo": {
+      "title": "दर्शक जानकारी",
+      "currentStream": "वर्तमान धारा",
+      "last12Hours": "पिछले 12 घंटे",
+      "last24Hours": "पिछले 24 घंटे",
+      "last7Days": "पिछले 7 दिन",
+      "last30Days": "पिछले 30 दिन",
+      "last3Months": "पिछले 3 महीने",
+      "last6Months": "पिछले 6 महीने",
+      "currentViewers": "वर्तमान दर्शक",
+      "maxViewersThisStream": "इस धारा के लिए अधिकतम दर्शक",
+      "maxViewersLastStream": "पिछली धारा के लिए अधिकतम दर्शक",
+      "maxViewers": "अधिकतम दर्शक",
+      "pleaseWait": "कृपया प्रतीक्षा करें",
+      "noData": "अभी तक कोई दर्शक डेटा एकत्र नहीं किया गया है।",
+      "viewers": "दर्शक"
+    },
+    "VideoVariantForm": {
+      "bitrateDisabledPassthrough": "जब वीडियो पासथ्रू सक्षम है तो बिटरेट चयन अक्षम है।",
+      "bitrateGoodForHigh": "उच्च गति और उच्च बिटरेट दर्शकों के लिए अच्छा।",
+      "bitrateGoodForMost": "अधिकांश दर्शकों, बैंडविड्थ और संकल्पों के लिए अच्छा।",
+      "bitrateGoodForSlow": "धीमे, मोबाइल और कम बिटरेट दर्शकों के लिए अच्छा।",
+      "bitrateValueKbps": "{{bitrate}} kbps"
+    },
+    "deleteEmoji": "इमोजी हटाएँ",
+    "emojiPageDescription": "यहां आप चैट में उपयोग के लिए नए कस्टम इमोजी अपलोड कर सकते हैं। जब आप एक नया इमोजी अपलोड करते हैं, तो फ़ाइल नाम बिना एक्सटेंशन के इमोजी नाम के रूप में उपयोग किया जाएगा। इसके अलावा, इमोजी नाम बड़े और छोटे अक्षरों के प्रति संवेदनशील नहीं हैं। सर्वश्रेष्ठ परिणामों के लिए, सुनिश्चित करें कि सभी इमोजी के पास अद्वितीय नाम हैं।",
+    "emojiUploadBulkGuide": "क्या आप कस्टम इमोजी का सामूहिक रूप से अपलोड करना चाहते हैं? हमारा <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">इमोजी गाइड</a> देखें।",
+    "emojis": "इमोजी",
+    "uploadNewEmoji": "नया इमोजी अपलोड करें",
+    "StatusMessages": {
+      "updated": "अपडेट किया गया।",
+      "tagsUpdated": "टैग अपडेट किया गया।",
+      "variantsUpdated": "वैरियंट अपडेट किए गए।",
+      "videoCodecUpdated": "वीडियो कोडेक अपडेट किया गया।",
+      "latencyBufferUpdated": "लेटेंसी बफर स्तर अपडेट किया गया।",
+      "deletingEmoji": "इमोजी हटा रहे हैं...",
+      "emojiDeleted": "इमोजी हटा दिया गया।",
+      "convertingEmoji": "इमोजी को बदलना...",
+      "uploadingEmoji": "इमोजी को अपलोड करना...",
+      "emojiUploadedSuccessfully": "इमोजी सफलतापूर्वक अपलोड किया गया!",
+      "thereWasAnError": "एक त्रुटि थी: {{message}}",
+      "fileSizeTooBig": "फ़ाइल का आकार बहुत बड़ा है: {{size}}",
+      "fileTypeNotSupported": "फ़ाइल का प्रकार समर्थित नहीं है: {{type}}",
+      "pleaseEnterTag": "कृपया एक टैग दर्ज करें",
+      "tagAlreadyUsed": "यह टैग पहले से ही उपयोग में है!"
+    },
+    "Actions": {
+      "title": "बाह्य क्रियाएँ",
+      "description": "बाह्य क्रिया यूआरएल 3rd पार्टी UI हैं जिन्हें आप अपनी Owncast पृष्ठ पर प्रदर्शित, एम्बेड कर सकते हैं जब उपयोगकर्ता अपने क्रिया को लॉन्च करने के लिए बटन पर क्लिक करता है।",
+      "readMoreLink": "क्रियाओं का उपयोग कैसे करें, इसके बारे में अधिक पढ़ें, उदाहरणों के साथ,",
+      "createNewAction": "नई क्रिया बनाएं",
+      "createNewActionTitle": "नई क्रिया बनाएं",
+      "editActionTitle": "क्रिया संपादित करें",
+      "modalDescription": "जिस बाह्य क्रिया का आप प्रतिनिधित्व करना चाहते हैं, उसके लिए URL जोड़ें।",
+      "onlyHttpsSupported": "केवल HTTPS यूआरएल और एम्बेड का समर्थन किया जाता है।",
+      "readMoreAboutActions": "बाह्य क्रियाओं के बारे में अधिक पढ़ें।",
+      "selectActionType": "एक क्रिया प्रकार चुनें",
+      "linkOrEmbedUrl": "एक यूआरएल लिंक या एम्बेड करें",
+      "customHtml": "कस्टम HTML",
+      "htmlEmbedPlaceholder": "HTML एम्बेड कोड (अनिवार्य)",
+      "urlPlaceholder": "https://myserver.com/action (अनिवार्य)",
+      "titlePlaceholder": "आपकी क्रिया शीर्षक (अनिवार्य)",
+      "descriptionPlaceholder": "वैकल्पिक वर्णन",
+      "iconPlaceholder": "https://myserver.com/action/icon.png (वैकल्पिक)",
+      "optionalBackgroundColor": "क्रिया बटन का वैकल्पिक पृष्ठभूमि रंग।",
+      "openExternally": "आपकी पृष्ठ के भीतर के बजाय एक नई टैब में खोलें।"
+    },
+    "Webhooks": {
+      "createNewWebhook": "नई वेबहुक बनाएं",
+      "webhookUrlPlaceholder": "https://myserver.com/webhook",
+      "selectEvents": "उन घटनाओं का चयन करें जो इस वेबहुक को भेजी जाएँगी।",
+      "selectAll": "सभी चयनित करें"
+    },
+    "AccessTokens": {
+      "createNewAccessToken": "नई एक्सेस टोकन बनाएं",
+      "nameDescription": "यह नाम इस एक्सेस टोकन के साथ संदेश भेजने पर चैट उपयोगकर्ता के रूप में प्रदर्शित होगा।",
+      "namePlaceholder": "बॉट, सेवा, या एकीकरण का नाम",
+      "selectPermissions": "चुनें कि इस एक्सेस टोकन के पास कौन से अनुमतियाँ होंगी। इसे बनाने के बाद संपादित नहीं किया जा सकता।",
+      "selectAll": "सभी चयनित करें"
+    }
+  },
+  "Common": {
+    "poweredByOwncastVersion": "<a href='https://owncast.online'>Owncast व{{versionNumber}}</a> द्वारा शक्ति प्राप्त है"
+  },
+  "Frontend": {
+    "BrowserNotifyModal": {
+      "allowButton": "अनुमति दें",
+      "blockButton": "अवरोध",
+      "deniedDescription": "{{hostname}} से पुश सूचनाओं को सक्षम करने के लिए, कृपया इस साइट के लिए अपने ब्राउज़र अनुमति सेटिंग्स तक पहुँचें और सूचनाएँ चालू करें। फिर, इस पृष्ठ को पुनः लोड करें ताकि आपकी अद्यतन सेटिंग्स इस साइट पर लागू हो सकें। <a href='https://owncast.online/docs/notifications'>और जानें।</a>",
+      "deniedTitle": "आपके डिवाइस पर सूचनाएँ अवरुद्ध हैं",
+      "enabledDescription": "{{hostname}} से पुश सूचनाओं को निष्क्रिय करने के लिए, कृपया इस साइट के लिए अपने ब्राउज़र अनुमति सेटिंग्स तक पहुँचें और सूचनाएँ बंद करें। <a href='https://owncast.online/docs/notifications'>और जानें।</a>",
+      "enabledTitle": "सूचनाएँ सक्रिय हैं",
+      "errorMessage": "सीधे सूचनाओं के लिए पंजीकरण करते समय त्रुटि: {{message}}। सुनिश्चित करें कि आप किसी निजी ब्राउज़र वातावरण में नहीं हैं या आपने पहले इस धारा के लिए सूचनाएं अक्षम नहीं की हैं।",
+      "errorTitle": "ब्राउज़र सूचना त्रुटि",
+      "iosAddButton": "जोड़ें",
+      "iosAddToHomeScreen": "होम स्क्रीन पर जोड़ें",
+      "iosAllowPrompt": "अनुमति दें",
+      "iosComeBack": "इस स्क्रीन पर वापस आएं और सूचनाएँ सक्षम करें।",
+      "iosDescription": "यह सुनिश्चित करने के लिए कुछ अतिरिक्त कदम उठाने की आवश्यकता है कि जब आपके पसंदीदा स्ट्रीम लाइव होते हैं, तो आपको सूचित किया जाए।",
+      "iosNameAndTap": "इस लिंक को एक नाम दें और अपने होम स्क्रीन पर नए आइकन पर टैप करें",
+      "iosShareButton": "शेयर करें",
+      "iosTitle": "iOS पर सूचनाएं प्राप्त करें",
+      "learnMore": "और जानें",
+      "mainDescription": "जब भी यह स्ट्रीम लाइव होती है, तो आपको ब्राउज़र में सूचित किया जाता है।",
+      "permissionWantsTo": "{{hostname}} चाहता है",
+      "showNotifications": "सूचनाएँ दिखाएं",
+      "unsupported": "ब्राउज़र में ब्राउज़र सूचनाएँ समर्थित नहीं हैं।",
+      "unsupportedLocal": "स्थानीय सर्वरों के लिए ब्राउज़र सूचनाएँ समर्थित नहीं हैं।"
+    },
+    "Footer": {
+      "documentation": "दस्तावेज़ीकरण",
+      "contribute": "योगदान करें",
+      "source": "स्रोत"
+    },
+    "Chat": {
+      "userJoined": "चैट में शामिल हुआ।",
+      "userLeft": "चैट छोड़ी।",
+      "nameChangeText": "अब जाना जाता है",
+      "moderatorNotification": "आप अब एक moderator हैं।"
+    },
+    "FollowModal": {
+      "description": "इस स्ट्रीम का पालन करने पर आपको Fediverse पर सूचना मिलेगी जब यह लाइव हो जाएगा। अब इसका पालन करने का एक बेहतरीन समय है",
+      "learnFediverse": "Fediverse के बारे में जानें",
+      "newToYou": "यदि यह आपके लिए नया है।",
+      "instructions": "अनुसरण करने के लिए अपना उपयोगकर्ता नाम @server दर्ज करें",
+      "placeholder": "आपका Fediverse खाता @account@server",
+      "redirectMessage": "आपको आपके Fediverse सर्वर पर पुनर्निर्देशित किया जाएगा और क्रिया की पुष्टि करने के लिए पूछा जाएगा।",
+      "joinFediverse": "Fediverse में शामिल हों",
+      "followButton": "अनुसरण करें",
+      "followError": "अनुसरण त्रुटि",
+      "unableToFollow": "अनुसरण करने में असमर्थ।"
+    },
+    "Header": {
+      "skipToPlayer": "खिलाड़ी पर जाएं",
+      "skipToOfflineMessage": "ऑफ़लाइन संदेश पर जाएं",
+      "skipToContent": "पृष्ठ सामग्री पर जाएं",
+      "skipToFooter": "पाद लेख पर जाएं",
+      "chatWillBeAvailable": "जब धारा लाइव होगी, तो चैट उपलब्ध होगी।",
+      "chatOffline": "चैट ऑफ़लाइन है"
+    },
+    "NameChangeModal": {
+      "authInfo": "आप \"प्रमाणित करें\" मेनू के माध्यम से एक IndieAuth या Fediverse खाता भी प्रमाणित कर सकते हैं।",
+      "buttonText": "नाम बदलें",
+      "colorLabel": "आपका रंग",
+      "description": "आपका चैट डिस्प्ले नाम वह है जो लोग जब आप चैट संदेश भेजते हैं तब देखते हैं।",
+      "overLimit": "सीमा से परे",
+      "placeholder": "आपका चैट डिस्प्ले नाम"
+    },
+    "chatOffline": "चैट ऑफ़लाइन है",
+    "componentError": "त्रुटि: {{message}}",
+    "helloWorld": "नमस्ते दुनिया",
+    "offlineBasic": "यह स्ट्रीम ऑफ़लाइन है। कृपया जल्द ही वापस आएं!",
+    "offlineFediverseOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='follow-link'>अनुसरण करें</span> {{fediverseAccount}} Fediverse पर अगली बार देखने के लिए जब {{streamer}} लाइव जाएं।",
+    "offlineNotifyAndFediverse": "यह स्ट्रीम ऑफ़लाइन है। आप अगले बार जब {{streamer}} लाइव जाएं तो <span class='notify-link'>सूचित</span> हो सकते हैं या <span class='follow-link'>अनुसरण</span> कर सकते हैं {{fediverseAccount}} को Fediverse पर।",
+    "offlineNotifyOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='notify-link'>सूचित हों</span> अगली बार जब {{streamer}} लाइव जाएं।",
+    "lastLiveAgo": "अंतिम जीवित {{timeAgo}} पहले"
+  },
+  "Testing": {
+    "itemCount": "आपके पास {{count}} आइटम हैं",
+    "messageCount": "आपके पास {{count}} संदेश हैं {{sender}} से",
+    "noPluralKey": "इस कुंजी के पास कोई बहुवचन रूप नहीं है - {{count}} चीज़ें",
+    "simpleKey": "सरल अनुवाद पाठ"
+  }
 }

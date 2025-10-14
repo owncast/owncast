@@ -1,170 +1,221 @@
 {
-	"Admin": {
-		"EditInstanceDetails": {
-			"directoryDescription": "เพิ่มผู้ชมของคุณโดยการปรากฏใน <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a> นี่เป็นบริการภายนอกที่ดำเนินการโดยโครงการ Owncast <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">เรียนรู้เพิ่มเติม</a>",
-			"offlineMessageDescription": "ข้อความออฟไลน์จะแสดงให้ผู้เข้าชมหน้าของคุณเมื่อคุณไม่ได้สตรีม มาร์กอัปได้รับการสนับสนุน.",
-			"serverUrlRequiredForDirectory": "คุณต้องตั้งค่า <strong>URL เซิร์ฟเวอร์</strong> ข้างต้นเพื่อเปิดใช้งานไดเรกทอรี."
-		},
-		"HardwareInfo": {
-			"title": "ข้อมูลฮาร์ดแวร์",
-			"pleaseWait": "กรุณารอสักครู่",
-			"noDetails": "ยังไม่มีรายละเอียดฮาร์ดแวร์ถูกเก็บรวบรวม",
-			"cpu": "CPU",
-			"memory": "หน่วยความจำ",
-			"disk": "ดิสก์",
-			"used": "ที่ถูกใช้"
-		},
-		"Help": {
-			"title": "เราสามารถช่วยคุณได้อย่างไร?",
-			"configureInstance": "ฉันต้องการปรับแต่งอินสแตนซ์ Owncast ของฉัน",
-			"learnMore": "เรียนรู้เพิ่มเติม",
-			"configureBroadcasting": "ช่วยในการกำหนดค่าซอฟต์แวร์การออกอากาศของฉัน",
-			"embedStream": "ฉันต้องการฝังสตรีมของฉันในเว็บไซต์อื่น",
-			"customizeWebsite": "ฉันต้องการปรับแต่งเว็บไซต์ของฉัน",
-			"tweakVideo": "ฉันต้องการปรับแต่งเอาต์พุตวิดีโอของฉัน",
-			"useStorage": "ฉันต้องการใช้ผู้ให้บริการจัดเก็บข้อมูลภายนอก",
-			"foundBug": "ฉันพบข้อบกพร่อง",
-			"bugPlease": "หากคุณพบข้อบกพร่อง โปรด",
-			"letUsKnow": "แจ้งให้เราทราบ",
-			"generalQuestion": "ฉันมีคำถามทั่วไป",
-			"generalAnswered": "คำถามทั่วไปส่วนใหญ่ได้รับคำตอบใน",
-			"faq": "คำถามที่พบบ่อย",
-			"orExist": "หรือมีอยู่ใน",
-			"discussions": "การสนทนา",
-			"buildAddons": "ฉันต้องการสร้างส่วนเสริมสำหรับ Owncast",
-			"buildTools": "คุณสามารถสร้างบอท, โอเวอร์เลย์, เครื่องมือ และส่วนเสริมของคุณเองด้วย",
-			"developerApis": "API สำหรับนักพัฒนา.",
-			"troubleshooting": "การแก้ไขปัญหา",
-			"fixProblems": "แก้ไขปัญหาของคุณ",
-			"documentation": "เอกสาร",
-			"readDocs": "อ่านเอกสาร",
-			"commonTasks": "งานทั่วไป",
-			"other": "อื่นๆ"
-		},
-		"LogTable": {
-			"level": "ระดับ",
-			"info": "ข้อมูล",
-			"warning": "คำเตือน",
-			"error": "ข้อผิดพลาด",
-			"timestamp": "วันที่และเวลา",
-			"message": "ข้อความ",
-			"logs": "บันทึก"
-		},
-		"NewsFeed": {
-			"link": "ลิงค์",
-			"noNews": "ไม่มีข่าวสาร.",
-			"title": "ข่าวสาร & การอัปเดตจาก Owncast"
-		},
-		"ViewerInfo": {
-			"title": "ข้อมูลผู้ชม",
-			"currentStream": "สตรีมปัจจุบัน",
-			"last12Hours": "12 ชั่วโมงที่ผ่านมา",
-			"last24Hours": "24 ชั่วโมงที่ผ่านมา",
-			"last7Days": "7 วันที่ผ่านมา",
-			"last30Days": "30 วันที่ผ่านมา",
-			"last3Months": "3 เดือนที่ผ่านมา",
-			"last6Months": "6 เดือนที่ผ่านมา",
-			"currentViewers": "ผู้ชมปัจจุบัน",
-			"maxViewersThisStream": "จำนวนผู้ชมสูงสุดในสตรีมนี้",
-			"maxViewersLastStream": "จำนวนผู้ชมสูงสุดในสตรีมล่าสุด",
-			"maxViewers": "ผู้ชมสูงสุด",
-			"pleaseWait": "กรุณารอสักครู่",
-			"noData": "ยังไม่มีข้อมูลผู้ชมถูกเก็บรวบรวม.",
-			"viewers": "ผู้ชม"
-		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "การเลือกบิตเรทถูกปิดใช้งานเมื่อเปิดใช้งานการส่งผ่านวิดีโอ.",
-			"bitrateGoodForHigh": "เหมาะสำหรับผู้ชมที่มีความเร็วสูงและบิตเรทสูง.",
-			"bitrateGoodForMost": "เหมาะสำหรับผู้ชมส่วนใหญ่, แบนด์วิธ และความละเอียดต่างๆ.",
-			"bitrateGoodForSlow": "เหมาะสำหรับผู้ชมที่ช้า, มือถือ และบิตเรทต่ำ.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
-		},
-		"deleteEmoji": "ลบอีโมจิ",
-		"emojiPageDescription": "ที่นี่คุณสามารถอัปโหลดอีโมจิแบบกำหนดเองใหม่สำหรับใช้งานในแชท เมื่ออัปโหลดอีโมจิใหม่ ชื่อไฟล์โดยไม่มีนามสกุลจะถูกใช้เป็นชื่ออีโมจิ นอกจากนี้ ชื่ออีโมจิจะไม่แยกตัวพิมพ์ใหญ่และตัวพิมพ์เล็ก สำหรับผลลัพธ์ที่ดีที่สุด ให้แน่ใจว่าอีโมจิทั้งหมดมีชื่อที่ไม่ซ้ำกัน.",
-		"emojiUploadBulkGuide": "ต้องการอัปโหลดอีโมจิแบบกำหนดเองจำนวนมาก? ตรวจสอบคู่มือ <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">อีโมจิ</a> ของเรา.",
-		"emojis": "อีโมจิ",
-		"uploadNewEmoji": "อัปโหลดอีโมจิใหม่"
-	},
-	"Common": {
-		"poweredByOwncastVersion": "Powered by <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
-	},
-	"Frontend": {
-		"BrowserNotifyModal": {
-			"allowButton": "อนุญาต",
-			"blockButton": "บล็อก",
-			"deniedDescription": "เพื่อเปิดใช้งานการแจ้งเตือนแบบพุชจาก {{hostname}} ให้เข้าถึงการอนุญาตในเบราว์เซอร์ของคุณสำหรับเว็บไซต์นี้และเปิดการแจ้งเตือน จากนั้นโหลดหน้านี้ใหม่เพื่อใช้การตั้งค่าที่อัปเดตของคุณสำหรับเว็บไซต์นี้ <a href='https://owncast.online/docs/notifications'>เรียนรู้เพิ่มเติม.</a>",
-			"deniedTitle": "การแจ้งเตือนถูกบล็อกบนอุปกรณ์ของคุณ",
-			"enabledDescription": "เพื่อปิดการแจ้งเตือนแบบพุชจาก {{hostname}} ให้เข้าถึงการอนุญาตในเบราว์เซอร์ของคุณสำหรับเว็บไซต์นี้และปิดการแจ้งเตือน <a href='https://owncast.online/docs/notifications'>เรียนรู้เพิ่มเติม.</a>",
-			"enabledTitle": "การแจ้งเตือนเปิดใช้งานแล้ว",
-			"errorMessage": "เกิดข้อผิดพลาดในการลงทะเบียนสำหรับการแจ้งเตือนสด: {{message}}. โปรดตรวจสอบว่าคุณไม่ได้อยู่ในสภาพแวดล้อมเบราว์เซอร์ส่วนตัวหรือปิดการแจ้งเตือนสำหรับสตรีมนี้ไว้ก่อนหน้านี้.",
-			"errorTitle": "ข้อผิดพลาดการแจ้งเตือนบนเบราว์เซอร์",
-			"iosAddButton": "เพิ่ม",
-			"iosAddToHomeScreen": "เพิ่มไปที่หน้าจอหลัก",
-			"iosAllowPrompt": "อนุญาต",
-			"iosComeBack": "กลับมาที่หน้าจอนี้และเปิดการแจ้งเตือน",
-			"iosDescription": "ต้องใช้ขั้นตอนเพิ่มเติมเพื่อให้แน่ใจว่าคุณจะได้รับการแจ้งเตือนเมื่อช่องที่คุณชื่นชอบถ่ายทอดสด",
-			"iosNameAndTap": "ให้ลิงค์นี้ชื่อและกดที่ไอคอนใหม่บนหน้าจอหลักของคุณ",
-			"iosShareButton": "แชร์",
-			"iosTitle": "รับการแจ้งเตือนบน iOS",
-			"learnMore": "เรียนรู้เพิ่มเติม",
-			"mainDescription": "รับการแจ้งเตือนในเบราว์เซอร์ทุกครั้งที่ช่องนี้ถ่ายทอดสด",
-			"permissionWantsTo": "{{hostname}} ต้องการที่จะ",
-			"showNotifications": "แสดงการแจ้งเตือน",
-			"unsupported": "เบราว์เซอร์ของคุณไม่รองรับการแจ้งเตือนในเบราว์เซอร์",
-			"unsupportedLocal": "เบราว์เซอร์ไม่รองรับการแจ้งเตือนสำหรับเซิร์ฟเวอร์ท้องถิ่น"
-		},
-		"Footer": {
-			"documentation": "เอกสาร",
-			"contribute": "สนับสนุน",
-			"source": "แหล่งที่มา"
-		},
-		"Chat": {
-			"userJoined": "เข้าร่วมการสนทนาแล้ว.",
-			"userLeft": "ออกจากการสนทนาแล้ว.",
-			"nameChangeText": "ตอนนี้รู้จักในชื่อ",
-			"moderatorNotification": "คุณตอนนี้เป็นผู้ดูแลระบบ."
-		},
-		"FollowModal": {
-			"description": "เมื่อคุณติดตามสตรีมนี้ คุณจะได้รับการแจ้งเตือนในเครือข่าย Fediverse เมื่อมันเริ่มใช้งาน ถ้านี่คือเวลาที่ดีในการ",
-			"learnFediverse": "เรียนรู้เกี่ยวกับเครือข่าย Fediverse",
-			"newToYou": "ถ้านี่เป็นสิ่งใหม่สำหรับคุณ",
-			"instructions": "กรุณาใส่ชื่อผู้ใช้ของคุณ @server เพื่อทำการติดตาม",
-			"placeholder": "บัญชี Fediverse ของคุณ @account@server",
-			"redirectMessage": "คุณจะถูกส่งต่อไปยังเซิร์ฟเวอร์ Fediverse ของคุณและจะถูกขอให้ยืนยันการกระทำนี้",
-			"joinFediverse": "เข้าร่วมกับ Fediverse",
-			"followButton": "ติดตาม",
-			"followError": "ความผิดพลาดในการติดตาม",
-			"unableToFollow": "ไม่สามารถติดตามได้."
-		},
-		"Header": {
-			"skipToPlayer": "ข้ามไปยังผู้เล่น",
-			"skipToOfflineMessage": "ข้ามไปยังข้อความออฟไลน์",
-			"skipToContent": "ข้ามไปยังเนื้อหาหน้า",
-			"skipToFooter": "ข้ามไปยังฟุตเตอร์",
-			"chatWillBeAvailable": "แชทจะพร้อมใช้งานเมื่อสตรีมอยู่ในสถานะสด.",
-			"chatOffline": "แชทออฟไลน์"
-		},
-		"NameChangeModal": {
-			"authInfo": "คุณสามารถยืนยันบัญชี IndieAuth หรือ Fediverse ผ่านเมนู \"ยืนยันตัวตน\" ได้.",
-			"buttonText": "เปลี่ยนชื่อ",
-			"colorLabel": "สีของคุณ",
-			"description": "ชื่อแสดงในแชทของคุณคือสิ่งที่ผู้คนเห็นเมื่อคุณส่งข้อความในแชท.",
-			"overLimit": "เกินขีดจำกัด",
-			"placeholder": "ชื่อแสดงในแชทของคุณ"
-		},
-		"chatOffline": "แชทออฟไลน์",
-		"componentError": "Error: {{message}}",
-		"helloWorld": "สวัสดีโลก",
-		"offlineBasic": "สตรีมนี้ออฟไลน์ กรุณาตรวจสอบอีกครั้งในภายหลัง!",
-		"offlineFediverseOnly": "สตรีมนี้ออฟไลน์ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse เพื่อดูเมื่อ {{streamer}} เริ่มถ่ายทอดสดครั้งต่อไป",
-		"offlineNotifyAndFediverse": "สตรีมนี้ออฟไลน์ คุณสามารถ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสดอีกครั้งหรือ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse",
-		"offlineNotifyOnly": "สตรีมนี้ออฟไลน์ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสด",
-		"lastLiveAgo": "ถ่ายทอดสดล่าสุดเมื่อ {{timeAgo}} ที่ผ่านมา"
-	},
-	"Testing": {
-		"itemCount": "คุณมี {{count}} รายการ",
-		"messageCount": "คุณมี {{count}} ข้อความจาก {{sender}}",
-		"noPluralKey": "กุญแจนี้ไม่มีรูปแบบพหูพจน์ - {{count}} สิ่งของ",
-		"simpleKey": "ข้อความแปลง่ายๆ"
-	}
+  "Admin": {
+    "EditInstanceDetails": {
+      "directoryDescription": "เพิ่มผู้ชมของคุณโดยการปรากฏใน <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a> นี่เป็นบริการภายนอกที่ดำเนินการโดยโครงการ Owncast <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">เรียนรู้เพิ่มเติม</a>",
+      "offlineMessageDescription": "ข้อความออฟไลน์จะแสดงให้ผู้เข้าชมหน้าของคุณเมื่อคุณไม่ได้สตรีม มาร์กอัปได้รับการสนับสนุน.",
+      "serverUrlRequiredForDirectory": "คุณต้องตั้งค่า <strong>URL เซิร์ฟเวอร์</strong> ข้างต้นเพื่อเปิดใช้งานไดเรกทอรี."
+    },
+    "HardwareInfo": {
+      "title": "ข้อมูลฮาร์ดแวร์",
+      "pleaseWait": "กรุณารอสักครู่",
+      "noDetails": "ยังไม่มีรายละเอียดฮาร์ดแวร์ถูกเก็บรวบรวม",
+      "cpu": "CPU",
+      "memory": "หน่วยความจำ",
+      "disk": "ดิสก์",
+      "used": "ที่ถูกใช้"
+    },
+    "Help": {
+      "title": "เราสามารถช่วยคุณได้อย่างไร?",
+      "configureInstance": "ฉันต้องการปรับแต่งอินสแตนซ์ Owncast ของฉัน",
+      "learnMore": "เรียนรู้เพิ่มเติม",
+      "configureBroadcasting": "ช่วยในการกำหนดค่าซอฟต์แวร์การออกอากาศของฉัน",
+      "embedStream": "ฉันต้องการฝังสตรีมของฉันในเว็บไซต์อื่น",
+      "customizeWebsite": "ฉันต้องการปรับแต่งเว็บไซต์ของฉัน",
+      "tweakVideo": "ฉันต้องการปรับแต่งเอาต์พุตวิดีโอของฉัน",
+      "useStorage": "ฉันต้องการใช้ผู้ให้บริการจัดเก็บข้อมูลภายนอก",
+      "foundBug": "ฉันพบข้อบกพร่อง",
+      "bugPlease": "หากคุณพบข้อบกพร่อง โปรด",
+      "letUsKnow": "แจ้งให้เราทราบ",
+      "generalQuestion": "ฉันมีคำถามทั่วไป",
+      "generalAnswered": "คำถามทั่วไปส่วนใหญ่ได้รับคำตอบใน",
+      "faq": "คำถามที่พบบ่อย",
+      "orExist": "หรือมีอยู่ใน",
+      "discussions": "การสนทนา",
+      "buildAddons": "ฉันต้องการสร้างส่วนเสริมสำหรับ Owncast",
+      "buildTools": "คุณสามารถสร้างบอท, โอเวอร์เลย์, เครื่องมือ และส่วนเสริมของคุณเองด้วย",
+      "developerApis": "API สำหรับนักพัฒนา.",
+      "troubleshooting": "การแก้ไขปัญหา",
+      "fixProblems": "แก้ไขปัญหาของคุณ",
+      "documentation": "เอกสาร",
+      "readDocs": "อ่านเอกสาร",
+      "commonTasks": "งานทั่วไป",
+      "other": "อื่นๆ"
+    },
+    "LogTable": {
+      "level": "ระดับ",
+      "info": "ข้อมูล",
+      "warning": "คำเตือน",
+      "error": "ข้อผิดพลาด",
+      "timestamp": "วันที่และเวลา",
+      "message": "ข้อความ",
+      "logs": "บันทึก"
+    },
+    "NewsFeed": {
+      "link": "ลิงค์",
+      "noNews": "ไม่มีข่าวสาร.",
+      "title": "ข่าวสาร & การอัปเดตจาก Owncast"
+    },
+    "ViewerInfo": {
+      "title": "ข้อมูลผู้ชม",
+      "currentStream": "สตรีมปัจจุบัน",
+      "last12Hours": "12 ชั่วโมงที่ผ่านมา",
+      "last24Hours": "24 ชั่วโมงที่ผ่านมา",
+      "last7Days": "7 วันที่ผ่านมา",
+      "last30Days": "30 วันที่ผ่านมา",
+      "last3Months": "3 เดือนที่ผ่านมา",
+      "last6Months": "6 เดือนที่ผ่านมา",
+      "currentViewers": "ผู้ชมปัจจุบัน",
+      "maxViewersThisStream": "จำนวนผู้ชมสูงสุดในสตรีมนี้",
+      "maxViewersLastStream": "จำนวนผู้ชมสูงสุดในสตรีมล่าสุด",
+      "maxViewers": "ผู้ชมสูงสุด",
+      "pleaseWait": "กรุณารอสักครู่",
+      "noData": "ยังไม่มีข้อมูลผู้ชมถูกเก็บรวบรวม.",
+      "viewers": "ผู้ชม"
+    },
+    "VideoVariantForm": {
+      "bitrateDisabledPassthrough": "การเลือกบิตเรทถูกปิดใช้งานเมื่อเปิดใช้งานการส่งผ่านวิดีโอ.",
+      "bitrateGoodForHigh": "เหมาะสำหรับผู้ชมที่มีความเร็วสูงและบิตเรทสูง.",
+      "bitrateGoodForMost": "เหมาะสำหรับผู้ชมส่วนใหญ่, แบนด์วิธ และความละเอียดต่างๆ.",
+      "bitrateGoodForSlow": "เหมาะสำหรับผู้ชมที่ช้า, มือถือ และบิตเรทต่ำ.",
+      "bitrateValueKbps": "{{bitrate}} kbps"
+    },
+    "deleteEmoji": "ลบอีโมจิ",
+    "emojiPageDescription": "ที่นี่คุณสามารถอัปโหลดอีโมจิแบบกำหนดเองใหม่สำหรับใช้งานในแชท เมื่ออัปโหลดอีโมจิใหม่ ชื่อไฟล์โดยไม่มีนามสกุลจะถูกใช้เป็นชื่ออีโมจิ นอกจากนี้ ชื่ออีโมจิจะไม่แยกตัวพิมพ์ใหญ่และตัวพิมพ์เล็ก สำหรับผลลัพธ์ที่ดีที่สุด ให้แน่ใจว่าอีโมจิทั้งหมดมีชื่อที่ไม่ซ้ำกัน.",
+    "emojiUploadBulkGuide": "ต้องการอัปโหลดอีโมจิแบบกำหนดเองจำนวนมาก? ตรวจสอบคู่มือ <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">อีโมจิ</a> ของเรา.",
+    "emojis": "อีโมจิ",
+    "uploadNewEmoji": "อัปโหลดอีโมจิใหม่",
+    "StatusMessages": {
+      "updated": "อัปเดตแล้ว.",
+      "tagsUpdated": "แท็กอัปเดตแล้ว.",
+      "variantsUpdated": "อัปเดตตัวแปรแล้ว",
+      "videoCodecUpdated": "อัปเดตโค้ดวิดีโอแล้ว.",
+      "latencyBufferUpdated": "อัปเดตระดับบัฟเฟอร์ความหน่วง.",
+      "deletingEmoji": "กำลังลบอีโมจิ...",
+      "emojiDeleted": "อีโมจิลบแล้ว",
+      "convertingEmoji": "กำลังแปลงอีโมจิ...",
+      "uploadingEmoji": "กำลังอัปโหลดอีโมจิ...",
+      "emojiUploadedSuccessfully": "อีโมจิเสร็จสิ้นการอัปโหลดแล้ว!",
+      "thereWasAnError": "มีข้อผิดพลาดเกิดขึ้น: {{message}}",
+      "fileSizeTooBig": "ขนาดไฟล์ใหญ่เกินไป: {{size}}",
+      "fileTypeNotSupported": "ประเภทไฟล์ไม่รองรับ: {{type}}",
+      "pleaseEnterTag": "โปรดป้อนแท็ก",
+      "tagAlreadyUsed": "แท็กนี้ถูกใช้ไปแล้ว!"
+    },
+    "Actions": {
+      "title": "การกระทำภายนอก",
+      "description": "URL การกระทำภายนอกเป็น UI ของบุคคลที่สามที่คุณสามารถแสดงซึ่งฝังลงในหน้า Owncast ของคุณเมื่อผู้ใช้คลิกปุ่มเพื่อเริ่มการกระทำของคุณ.",
+      "readMoreLink": "อ่านเพิ่มเติมเกี่ยวกับวิธีการใช้การกระทำ พร้อมตัวอย่างที่",
+      "createNewAction": "สร้างการกระทำใหม่",
+      "createNewActionTitle": "สร้างการกระทำใหม่",
+      "editActionTitle": "แก้ไขการกระทำ",
+      "modalDescription": "เพิ่ม URL สำหรับการกระทำภายนอกที่คุณต้องการเสนอ",
+      "onlyHttpsSupported": "เฉพาะ URL และการฝัง HTTPS เท่านั้นที่ได้รับการสนับสนุน",
+      "readMoreAboutActions": "อ่านเพิ่มเติมเกี่ยวกับการกระทำภายนอก",
+      "selectActionType": "เลือกประเภทการกระทำ",
+      "linkOrEmbedUrl": "แนบหรือติดตั้ง URL",
+      "customHtml": "HTML ที่กำหนดเอง",
+      "htmlEmbedPlaceholder": "โค้ดฝัง HTML (ต้องกรอก)",
+      "urlPlaceholder": "https://myserver.com/action (ต้องกรอก)",
+      "titlePlaceholder": "ชื่อการกระทำของคุณ (ต้องกรอก)",
+      "descriptionPlaceholder": "คำอธิบายตัวเลือก",
+      "iconPlaceholder": "https://myserver.com/action/icon.png (อาจระบุ)",
+      "optionalBackgroundColor": "สีพื้นหลังตัวเลือกของปุ่มการกระทำ",
+      "openExternally": "เปิดในแท็บใหม่แทนที่จะอยู่ในหน้าเว็บของคุณ"
+    },
+    "Webhooks": {
+      "createNewWebhook": "สร้าง Webhook ใหม่",
+      "webhookUrlPlaceholder": "https://myserver.com/webhook",
+      "selectEvents": "เลือกเหตุการณ์ที่จะส่งไปยัง webhook นี้",
+      "selectAll": "เลือกทั้งหมด"
+    },
+    "AccessTokens": {
+      "createNewAccessToken": "สร้างโทเค็นการเข้าถึงใหม่",
+      "nameDescription": "ชื่อจะถูกแสดงเป็นผู้ใช้แชทเมื่อส่งข้อความด้วยโทเค็นการเข้าถึงนี้",
+      "namePlaceholder": "ชื่อของบอท, บริการ หรือการเชื่อมต่อ",
+      "selectPermissions": "เลือกสิทธิ์ที่โทเค็นการเข้าถึงนี้จะมี ไม่สามารถแก้ไขได้หลังจากสร้างแล้ว",
+      "selectAll": "เลือกทั้งหมด"
+    }
+  },
+  "Common": {
+    "poweredByOwncastVersion": "Powered by <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+  },
+  "Frontend": {
+    "BrowserNotifyModal": {
+      "allowButton": "อนุญาต",
+      "blockButton": "บล็อก",
+      "deniedDescription": "เพื่อเปิดใช้งานการแจ้งเตือนแบบพุชจาก {{hostname}} ให้เข้าถึงการอนุญาตในเบราว์เซอร์ของคุณสำหรับเว็บไซต์นี้และเปิดการแจ้งเตือน จากนั้นโหลดหน้านี้ใหม่เพื่อใช้การตั้งค่าที่อัปเดตของคุณสำหรับเว็บไซต์นี้ <a href='https://owncast.online/docs/notifications'>เรียนรู้เพิ่มเติม.</a>",
+      "deniedTitle": "การแจ้งเตือนถูกบล็อกบนอุปกรณ์ของคุณ",
+      "enabledDescription": "เพื่อปิดการแจ้งเตือนแบบพุชจาก {{hostname}} ให้เข้าถึงการอนุญาตในเบราว์เซอร์ของคุณสำหรับเว็บไซต์นี้และปิดการแจ้งเตือน <a href='https://owncast.online/docs/notifications'>เรียนรู้เพิ่มเติม.</a>",
+      "enabledTitle": "การแจ้งเตือนเปิดใช้งานแล้ว",
+      "errorMessage": "เกิดข้อผิดพลาดในการลงทะเบียนสำหรับการแจ้งเตือนสด: {{message}}. โปรดตรวจสอบว่าคุณไม่ได้อยู่ในสภาพแวดล้อมเบราว์เซอร์ส่วนตัวหรือปิดการแจ้งเตือนสำหรับสตรีมนี้ไว้ก่อนหน้านี้.",
+      "errorTitle": "ข้อผิดพลาดการแจ้งเตือนบนเบราว์เซอร์",
+      "iosAddButton": "เพิ่ม",
+      "iosAddToHomeScreen": "เพิ่มไปที่หน้าจอหลัก",
+      "iosAllowPrompt": "อนุญาต",
+      "iosComeBack": "กลับมาที่หน้าจอนี้และเปิดการแจ้งเตือน",
+      "iosDescription": "ต้องใช้ขั้นตอนเพิ่มเติมเพื่อให้แน่ใจว่าคุณจะได้รับการแจ้งเตือนเมื่อช่องที่คุณชื่นชอบถ่ายทอดสด",
+      "iosNameAndTap": "ให้ลิงค์นี้ชื่อและกดที่ไอคอนใหม่บนหน้าจอหลักของคุณ",
+      "iosShareButton": "แชร์",
+      "iosTitle": "รับการแจ้งเตือนบน iOS",
+      "learnMore": "เรียนรู้เพิ่มเติม",
+      "mainDescription": "รับการแจ้งเตือนในเบราว์เซอร์ทุกครั้งที่ช่องนี้ถ่ายทอดสด",
+      "permissionWantsTo": "{{hostname}} ต้องการที่จะ",
+      "showNotifications": "แสดงการแจ้งเตือน",
+      "unsupported": "เบราว์เซอร์ของคุณไม่รองรับการแจ้งเตือนในเบราว์เซอร์",
+      "unsupportedLocal": "เบราว์เซอร์ไม่รองรับการแจ้งเตือนสำหรับเซิร์ฟเวอร์ท้องถิ่น"
+    },
+    "Footer": {
+      "documentation": "เอกสาร",
+      "contribute": "สนับสนุน",
+      "source": "แหล่งที่มา"
+    },
+    "Chat": {
+      "userJoined": "เข้าร่วมการสนทนาแล้ว.",
+      "userLeft": "ออกจากการสนทนาแล้ว.",
+      "nameChangeText": "ตอนนี้รู้จักในชื่อ",
+      "moderatorNotification": "คุณตอนนี้เป็นผู้ดูแลระบบ."
+    },
+    "FollowModal": {
+      "description": "เมื่อคุณติดตามสตรีมนี้ คุณจะได้รับการแจ้งเตือนในเครือข่าย Fediverse เมื่อมันเริ่มใช้งาน ถ้านี่คือเวลาที่ดีในการ",
+      "learnFediverse": "เรียนรู้เกี่ยวกับเครือข่าย Fediverse",
+      "newToYou": "ถ้านี่เป็นสิ่งใหม่สำหรับคุณ",
+      "instructions": "กรุณาใส่ชื่อผู้ใช้ของคุณ @server เพื่อทำการติดตาม",
+      "placeholder": "บัญชี Fediverse ของคุณ @account@server",
+      "redirectMessage": "คุณจะถูกส่งต่อไปยังเซิร์ฟเวอร์ Fediverse ของคุณและจะถูกขอให้ยืนยันการกระทำนี้",
+      "joinFediverse": "เข้าร่วมกับ Fediverse",
+      "followButton": "ติดตาม",
+      "followError": "ความผิดพลาดในการติดตาม",
+      "unableToFollow": "ไม่สามารถติดตามได้."
+    },
+    "Header": {
+      "skipToPlayer": "ข้ามไปยังผู้เล่น",
+      "skipToOfflineMessage": "ข้ามไปยังข้อความออฟไลน์",
+      "skipToContent": "ข้ามไปยังเนื้อหาหน้า",
+      "skipToFooter": "ข้ามไปยังฟุตเตอร์",
+      "chatWillBeAvailable": "แชทจะพร้อมใช้งานเมื่อสตรีมอยู่ในสถานะสด.",
+      "chatOffline": "แชทออฟไลน์"
+    },
+    "NameChangeModal": {
+      "authInfo": "คุณสามารถยืนยันบัญชี IndieAuth หรือ Fediverse ผ่านเมนู \"ยืนยันตัวตน\" ได้.",
+      "buttonText": "เปลี่ยนชื่อ",
+      "colorLabel": "สีของคุณ",
+      "description": "ชื่อแสดงในแชทของคุณคือสิ่งที่ผู้คนเห็นเมื่อคุณส่งข้อความในแชท.",
+      "overLimit": "เกินขีดจำกัด",
+      "placeholder": "ชื่อแสดงในแชทของคุณ"
+    },
+    "chatOffline": "แชทออฟไลน์",
+    "componentError": "Error: {{message}}",
+    "helloWorld": "สวัสดีโลก",
+    "offlineBasic": "สตรีมนี้ออฟไลน์ กรุณาตรวจสอบอีกครั้งในภายหลัง!",
+    "offlineFediverseOnly": "สตรีมนี้ออฟไลน์ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse เพื่อดูเมื่อ {{streamer}} เริ่มถ่ายทอดสดครั้งต่อไป",
+    "offlineNotifyAndFediverse": "สตรีมนี้ออฟไลน์ คุณสามารถ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสดอีกครั้งหรือ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse",
+    "offlineNotifyOnly": "สตรีมนี้ออฟไลน์ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสด",
+    "lastLiveAgo": "ถ่ายทอดสดล่าสุดเมื่อ {{timeAgo}} ที่ผ่านมา"
+  },
+  "Testing": {
+    "itemCount": "คุณมี {{count}} รายการ",
+    "messageCount": "คุณมี {{count}} ข้อความจาก {{sender}}",
+    "noPluralKey": "กุญแจนี้ไม่มีรูปแบบพหูพจน์ - {{count}} สิ่งของ",
+    "simpleKey": "ข้อความแปลง่ายๆ"
+  }
 }
