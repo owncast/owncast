@@ -1,170 +1,221 @@
 {
-	"Admin": {
-		"EditInstanceDetails": {
-			"directoryDescription": "Erhöhe dein Publikum, indem es im <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Eigenes Verzeichnis</strong></a>erscheint. Dies ist ein externer Dienst, der vom Owncast Projekt ausgeführt wird. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Erfahre mehr</a>.",
-			"offlineMessageDescription": "Die Offline-Nachricht wird Ihren Seitenbesuchern angezeigt, wenn Sie nicht streamen. Markdown wird unterstützt.",
-			"serverUrlRequiredForDirectory": "Sie müssen Ihre <strong>Server URL</strong> oben setzen, um das Verzeichnis zu aktivieren."
-		},
-		"HardwareInfo": {
-			"title": "Hardware-Info",
-			"pleaseWait": "Bitte warten",
-			"noDetails": "Es wurden noch keine Hardware-Details erfasst.",
-			"cpu": "CPU",
-			"memory": "Speicher",
-			"disk": "Platte",
-			"used": "verwendet"
-		},
-		"Help": {
-			"title": "Wie können wir Ihnen helfen?",
-			"configureInstance": "Ich möchte meine eigene Cast-Instanz konfigurieren",
-			"learnMore": "Mehr erfahren",
-			"configureBroadcasting": "Hilfe beim Konfigurieren meiner Broadcast-Software",
-			"embedStream": "Ich möchte meinen Stream in eine andere Site einbetten",
-			"customizeWebsite": "Ich möchte meine Website anpassen",
-			"tweakVideo": "Ich möchte meine Videoausgabe anpassen",
-			"useStorage": "Ich möchte einen externen Speicheranbieter verwenden",
-			"foundBug": "Ich habe einen Fehler gefunden",
-			"bugPlease": "Wenn du einen Fehler gefunden hast, dann bitte",
-			"letUsKnow": "lass uns wissen",
-			"generalQuestion": "Ich habe eine allgemeine Frage",
-			"generalAnswered": "Die meisten allgemeinen Fragen werden in unseren",
-			"faq": "FAQ",
-			"orExist": "oder existieren in unserer",
-			"discussions": "diskussionen",
-			"buildAddons": "Ich möchte Add-ons für Owncast erstellen",
-			"buildTools": "Sie können Ihre eigenen Bots, Overlays, Werkzeuge und Add-ons mit unseren",
-			"developerApis": "Entwickler APIs.",
-			"troubleshooting": "Fehlerbehebung",
-			"fixProblems": "Probleme beheben",
-			"documentation": "Dokumentation",
-			"readDocs": "Lesen Sie die Docs",
-			"commonTasks": "Gemeinsame Aufgaben",
-			"other": "Andere"
-		},
-		"LogTable": {
-			"level": "Level",
-			"info": "Info",
-			"warning": "Warnung",
-			"error": "Fehler",
-			"timestamp": "Zeitstempel",
-			"message": "Nachricht",
-			"logs": "Logs"
-		},
-		"NewsFeed": {
-			"link": "Link",
-			"noNews": "Keine Nachrichten.",
-			"title": "News & Updates von Owncast"
-		},
-		"ViewerInfo": {
-			"title": "Viewer Info",
-			"currentStream": "Aktueller Stream",
-			"last12Hours": "Letzte 12 Stunden",
-			"last24Hours": "Letzte 24 Stunden",
-			"last7Days": "Letzte 7 Tage",
-			"last30Days": "Letzte 30 Tage",
-			"last3Months": "Letzten 3 Monate",
-			"last6Months": "Letzte 6 Monate",
-			"currentViewers": "Aktuelle Zuschauer",
-			"maxViewersThisStream": "Maximale Zuschauer in diesem Stream",
-			"maxViewersLastStream": "Max. Zuschauer letzten Stream",
-			"maxViewers": "max. Zuschauer",
-			"pleaseWait": "Bitte warten",
-			"noData": "Es wurden noch keine Viewer-Daten gesammelt.",
-			"viewers": "Zuschauer"
-		},
-		"VideoVariantForm": {
-			"bitrateDisabledPassthrough": "Bitratenauswahl ist deaktiviert, wenn Video-Durchlauf aktiviert ist.",
-			"bitrateGoodForHigh": "Gut für hohe Geschwindigkeit und hohe Bitraten-Viewer.",
-			"bitrateGoodForMost": "Gut für die meisten Zuschauer, Bandbreiten und Auflösungen.",
-			"bitrateGoodForSlow": "Gut für langsame, mobile und niedrige Bitraten-Viewer.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
-		},
-		"deleteEmoji": "Emoji löschen",
-		"emojiPageDescription": "Hier kannst du neue benutzerdefinierte Emojis für den Chat hochladen. Beim Hochladen eines neuen Emojis wird der Dateiname ohne Erweiterung als Emoji-Name verwendet. Darüber hinaus sind Emoji-Namen ohne Groß- und Kleinschreibung zu beachten. Für beste Ergebnisse stellen Sie sicher, dass alle Emoji-Namen eindeutige Namen haben.",
-		"emojiUploadBulkGuide": "Willst du benutzerdefinierte Emojis in großen Mengen hochladen? Schau dir unsere <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji-Anleitung</a> an.",
-		"emojis": "Emojis",
-		"uploadNewEmoji": "Neue Emoji hochladen"
-	},
-	"Common": {
-		"poweredByOwncastVersion": "Unterstützt von <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
-	},
-	"Frontend": {
-		"BrowserNotifyModal": {
-			"allowButton": "Erlauben",
-			"blockButton": "Blockieren",
-			"deniedDescription": "Um Push-Benachrichtigungen von {{hostname}} zu aktivieren, greifen Sie auf Ihre Browser-Berechtigungen für diese Seite und schalten Sie Benachrichtigungen ein. Laden Sie diese Seite dann neu, um Ihre aktualisierten Einstellungen auf dieser Seite anzuwenden. <a href='https://owncast.online/docs/notifications'>Mehr erfahren.</a>",
-			"deniedTitle": "Benachrichtigungen sind auf deinem Gerät gesperrt",
-			"enabledDescription": "Um Push-Benachrichtigungen von {{hostname}} zu deaktivieren, greifen Sie auf Ihre Browser-Berechtigungen für diese Seite zu und deaktivieren Sie die Benachrichtigungen. <a href='https://owncast.online/docs/notifications'>Erfahre mehr.</a>",
-			"enabledTitle": "Benachrichtigungen sind aktiviert",
-			"errorMessage": "Fehler beim Registrieren für Live-Benachrichtigungen: {{message}}. Vergewissern Sie sich, dass Sie nicht in einer privaten Browserumgebung sind oder zuvor die Benachrichtigungen für diesen Stream deaktiviert haben.",
-			"errorTitle": "Browser-Benachrichtigungsfehler",
-			"iosAddButton": "Neu",
-			"iosAddToHomeScreen": "Zum Startbildschirm hinzufügen",
-			"iosAllowPrompt": "Erlauben",
-			"iosComeBack": "Kommen Sie zurück zu diesem Bildschirm und aktivieren Sie Benachrichtigungen.",
-			"iosDescription": "Es dauert ein paar zusätzliche Schritte, um sicherzustellen, dass Sie benachrichtigt werden, wenn Ihre Lieblings-Streams live gehen.",
-			"iosNameAndTap": "Geben Sie diesem Link einen Namen und tippen Sie auf das neue Symbol auf Ihrem Startbildschirm",
-			"iosShareButton": "teilen",
-			"iosTitle": "Auf iOS benachrichtigen",
-			"learnMore": "Mehr erfahren",
-			"mainDescription": "Werde jedes Mal, wenn dieser Stream live geht, direkt im Browser benachrichtigt.",
-			"permissionWantsTo": "{{hostname}} möchte",
-			"showNotifications": "Benachrichtigungen anzeigen",
-			"unsupported": "Browserbenachrichtigungen werden in Ihrem Browser nicht unterstützt.",
-			"unsupportedLocal": "Browserbenachrichtigungen werden für lokale Server nicht unterstützt."
-		},
-		"Footer": {
-			"documentation": "Dokumentation",
-			"contribute": "Mitwirken",
-			"source": "Quelle"
-		},
-		"Chat": {
-			"userJoined": "ist dem Chat beigetreten.",
-			"userLeft": "hat den Chat verlassen.",
-			"nameChangeText": "ist jetzt bekannt als",
-			"moderatorNotification": "Du bist jetzt Moderator."
-		},
-		"FollowModal": {
-			"description": "Wenn du diesem Stream folgst, wirst du über die Feiche benachrichtigt, wenn er live wird. Jetzt ist eine tolle Zeit für",
-			"learnFediverse": "erfahre mehr über die Feiche",
-			"newToYou": "wenn es neu für dich ist.",
-			"instructions": "Gib deinen Benutzernamen @server ein",
-			"placeholder": "Dein fettartiger Account @account@server",
-			"redirectMessage": "Du wirst zu deinem Fediverse-Server weitergeleitet und aufgefordert, die Aktion zu bestätigen.",
-			"joinFediverse": "Trete der Feuchte bei",
-			"followButton": "Folgen",
-			"followError": "Folgefehler",
-			"unableToFollow": "Unfähig zu folgen."
-		},
-		"Header": {
-			"skipToPlayer": "Zum Spieler springen",
-			"skipToOfflineMessage": "Zur Offline-Nachricht springen",
-			"skipToContent": "Zum Seiteninhalt springen",
-			"skipToFooter": "Zur Fußzeile springen",
-			"chatWillBeAvailable": "Der Chat wird verfügbar sein, wenn der Stream live ist.",
-			"chatOffline": "Chat ist offline"
-		},
-		"NameChangeModal": {
-			"authInfo": "Sie können auch einen IndieAuth oder Fediverse Account über das \"Authentifizieren\" Menü authentifizieren.",
-			"buttonText": "Name ändern",
-			"colorLabel": "Ihre Farbe",
-			"description": "Ihr Chatanzeigename ist das, was die Leute sehen, wenn Sie Chat-Nachrichten senden.",
-			"overLimit": "Übergrenze",
-			"placeholder": "Name der Chatanzeige"
-		},
-		"chatOffline": "Chat ist offline",
-		"componentError": "Fehler: {{message}}",
-		"helloWorld": "Hallo Welt",
-		"offlineBasic": "Dieser Stream ist offline. Schauen Sie bald wieder!",
-		"offlineFediverseOnly": "Dieser Stream ist offline. <span class='follow-link'>Folgen Sie</span> {{fediverseAccount}} auf der Feier, um das nächste Mal {{streamer}} live zu sehen.",
-		"offlineNotifyAndFediverse": "Dieser Stream ist offline. Sie können <span class='notify-link'>benachrichtigt werden,</span> wenn {{streamer}} das nächste Mal live geht, oder <span class='follow-link'>folgen Sie</span> {{fediverseAccount}} auf dem Fediverse.",
-		"offlineNotifyOnly": "Dieser Stream ist offline. <span class='notify-link'>Werde benachrichtigt</span> wenn {{streamer}} das nächste Mal live geht.",
-		"lastLiveAgo": "Letzter Live- {{timeAgo}} vor"
-	},
-	"Testing": {
-		"itemCount": "Sie haben {{count}} Elemente",
-		"messageCount": "Sie haben {{count}} Nachrichten von {{sender}}",
-		"noPluralKey": "Dieser Schlüssel hat keine Pluralvarianten - {{count}} Dinge",
-		"simpleKey": "Einfacher Text der Übersetzung"
-	}
+  "Admin": {
+    "EditInstanceDetails": {
+      "directoryDescription": "Erhöhe dein Publikum, indem es im <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Eigenes Verzeichnis</strong></a>erscheint. Dies ist ein externer Dienst, der vom Owncast Projekt ausgeführt wird. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Erfahre mehr</a>.",
+      "offlineMessageDescription": "Die Offline-Nachricht wird Ihren Seitenbesuchern angezeigt, wenn Sie nicht streamen. Markdown wird unterstützt.",
+      "serverUrlRequiredForDirectory": "Sie müssen Ihre <strong>Server URL</strong> oben setzen, um das Verzeichnis zu aktivieren."
+    },
+    "HardwareInfo": {
+      "title": "Hardware-Info",
+      "pleaseWait": "Bitte warten",
+      "noDetails": "Es wurden noch keine Hardware-Details erfasst.",
+      "cpu": "CPU",
+      "memory": "Speicher",
+      "disk": "Platte",
+      "used": "verwendet"
+    },
+    "Help": {
+      "title": "Wie können wir Ihnen helfen?",
+      "configureInstance": "Ich möchte meine eigene Cast-Instanz konfigurieren",
+      "learnMore": "Mehr erfahren",
+      "configureBroadcasting": "Hilfe beim Konfigurieren meiner Broadcast-Software",
+      "embedStream": "Ich möchte meinen Stream in eine andere Site einbetten",
+      "customizeWebsite": "Ich möchte meine Website anpassen",
+      "tweakVideo": "Ich möchte meine Videoausgabe anpassen",
+      "useStorage": "Ich möchte einen externen Speicheranbieter verwenden",
+      "foundBug": "Ich habe einen Fehler gefunden",
+      "bugPlease": "Wenn du einen Fehler gefunden hast, dann bitte",
+      "letUsKnow": "lass uns wissen",
+      "generalQuestion": "Ich habe eine allgemeine Frage",
+      "generalAnswered": "Die meisten allgemeinen Fragen werden in unseren",
+      "faq": "FAQ",
+      "orExist": "oder existieren in unserer",
+      "discussions": "diskussionen",
+      "buildAddons": "Ich möchte Add-ons für Owncast erstellen",
+      "buildTools": "Sie können Ihre eigenen Bots, Overlays, Werkzeuge und Add-ons mit unseren",
+      "developerApis": "Entwickler APIs.",
+      "troubleshooting": "Fehlerbehebung",
+      "fixProblems": "Probleme beheben",
+      "documentation": "Dokumentation",
+      "readDocs": "Lesen Sie die Docs",
+      "commonTasks": "Gemeinsame Aufgaben",
+      "other": "Andere"
+    },
+    "LogTable": {
+      "level": "Level",
+      "info": "Info",
+      "warning": "Warnung",
+      "error": "Fehler",
+      "timestamp": "Zeitstempel",
+      "message": "Nachricht",
+      "logs": "Logs"
+    },
+    "NewsFeed": {
+      "link": "Link",
+      "noNews": "Keine Nachrichten.",
+      "title": "News & Updates von Owncast"
+    },
+    "ViewerInfo": {
+      "title": "Viewer Info",
+      "currentStream": "Aktueller Stream",
+      "last12Hours": "Letzte 12 Stunden",
+      "last24Hours": "Letzte 24 Stunden",
+      "last7Days": "Letzte 7 Tage",
+      "last30Days": "Letzte 30 Tage",
+      "last3Months": "Letzten 3 Monate",
+      "last6Months": "Letzte 6 Monate",
+      "currentViewers": "Aktuelle Zuschauer",
+      "maxViewersThisStream": "Maximale Zuschauer in diesem Stream",
+      "maxViewersLastStream": "Max. Zuschauer letzten Stream",
+      "maxViewers": "max. Zuschauer",
+      "pleaseWait": "Bitte warten",
+      "noData": "Es wurden noch keine Viewer-Daten gesammelt.",
+      "viewers": "Zuschauer"
+    },
+    "VideoVariantForm": {
+      "bitrateDisabledPassthrough": "Bitratenauswahl ist deaktiviert, wenn Video-Durchlauf aktiviert ist.",
+      "bitrateGoodForHigh": "Gut für hohe Geschwindigkeit und hohe Bitraten-Viewer.",
+      "bitrateGoodForMost": "Gut für die meisten Zuschauer, Bandbreiten und Auflösungen.",
+      "bitrateGoodForSlow": "Gut für langsame, mobile und niedrige Bitraten-Viewer.",
+      "bitrateValueKbps": "{{bitrate}} kbps"
+    },
+    "deleteEmoji": "Emoji löschen",
+    "emojiPageDescription": "Hier kannst du neue benutzerdefinierte Emojis für den Chat hochladen. Beim Hochladen eines neuen Emojis wird der Dateiname ohne Erweiterung als Emoji-Name verwendet. Darüber hinaus sind Emoji-Namen ohne Groß- und Kleinschreibung zu beachten. Für beste Ergebnisse stellen Sie sicher, dass alle Emoji-Namen eindeutige Namen haben.",
+    "emojiUploadBulkGuide": "Willst du benutzerdefinierte Emojis in großen Mengen hochladen? Schau dir unsere <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji-Anleitung</a> an.",
+    "emojis": "Emojis",
+    "uploadNewEmoji": "Neue Emoji hochladen",
+    "StatusMessages": {
+      "updated": "Aktualisiert.",
+      "tagsUpdated": "Tags aktualisiert.",
+      "variantsUpdated": "Varianten aktualisiert",
+      "videoCodecUpdated": "Video Codec aktualisiert.",
+      "latencyBufferUpdated": "Latenzpufferlevel aktualisiert.",
+      "deletingEmoji": "Emoji wird gelöscht...",
+      "emojiDeleted": "Emoji gelöscht",
+      "convertingEmoji": "Konvertiere Emoji...",
+      "uploadingEmoji": "Emoji wird hochgeladen...",
+      "emojiUploadedSuccessfully": "Emoji erfolgreich hochgeladen!",
+      "thereWasAnError": "Es gab einen Fehler: {{message}}",
+      "fileSizeTooBig": "Dateigröße ist zu groß: {{size}}",
+      "fileTypeNotSupported": "Dateityp wird nicht unterstützt: {{type}}",
+      "pleaseEnterTag": "Bitte geben Sie einen Tag ein",
+      "tagAlreadyUsed": "Dieses Tag wird bereits verwendet!"
+    },
+    "Actions": {
+      "title": "Externe Aktionen",
+      "description": "Externe Aktions-URLs sind UI von Drittanbietern, die Sie anzeigen können, eingebettet, auf deine Owncast-Seite, wenn ein Benutzer auf einen Button klickt, um deine Aktion zu starten.",
+      "readMoreLink": "Lesen Sie mehr über die Verwendung von Aktionen mit Beispielen unter",
+      "createNewAction": "Neue Aktion erstellen",
+      "createNewActionTitle": "Neue Aktion erstellen",
+      "editActionTitle": "Aktion bearbeiten",
+      "modalDescription": "Fügen Sie die URL für die externe Aktion hinzu, die Sie präsentieren möchten.",
+      "onlyHttpsSupported": "Nur HTTPS-URLs und Einbettungen werden unterstützt.",
+      "readMoreAboutActions": "Lesen Sie mehr über externe Aktionen.",
+      "selectActionType": "Wählen Sie einen Aktionstyp",
+      "linkOrEmbedUrl": "Link or embed an URL",
+      "customHtml": "Eigener HTML",
+      "htmlEmbedPlaceholder": "HTML-Einbettungscode (erforderlich)",
+      "urlPlaceholder": "https://myserver.com/action (erforderlich)",
+      "titlePlaceholder": "Ihr Action-Titel (erforderlich)",
+      "descriptionPlaceholder": "Optionale Beschreibung",
+      "iconPlaceholder": "https://myserver.com/action/icon.png (optional)",
+      "optionalBackgroundColor": "Optionale Hintergrundfarbe der Aktionsschaltfläche.",
+      "openExternally": "Öffnen Sie in einem neuen Tab statt innerhalb Ihrer Seite."
+    },
+    "Webhooks": {
+      "createNewWebhook": "Neuen Webhook erstellen",
+      "webhookUrlPlaceholder": "https://myserver.com/webhook",
+      "selectEvents": "Wählen Sie die Ereignisse, die an diesen Webhook gesendet werden sollen.",
+      "selectAll": "Alles auswählen"
+    },
+    "AccessTokens": {
+      "createNewAccessToken": "Neues Zugriffstoken erstellen",
+      "nameDescription": "Der Name wird als Chat-Benutzer angezeigt, wenn Nachrichten mit diesem Zugangs-Token gesendet werden.",
+      "namePlaceholder": "Name des Bots, Service oder Integration",
+      "selectPermissions": "Wählen Sie die Berechtigungen, die dieses Zugriffstoken haben soll. Es kann nicht bearbeitet werden, nachdem es erstellt wurde.",
+      "selectAll": "Alles auswählen"
+    }
+  },
+  "Common": {
+    "poweredByOwncastVersion": "Unterstützt von <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+  },
+  "Frontend": {
+    "BrowserNotifyModal": {
+      "allowButton": "Erlauben",
+      "blockButton": "Blockieren",
+      "deniedDescription": "Um Push-Benachrichtigungen von {{hostname}} zu aktivieren, greifen Sie auf Ihre Browser-Berechtigungen für diese Seite und schalten Sie Benachrichtigungen ein. Laden Sie diese Seite dann neu, um Ihre aktualisierten Einstellungen auf dieser Seite anzuwenden. <a href='https://owncast.online/docs/notifications'>Mehr erfahren.</a>",
+      "deniedTitle": "Benachrichtigungen sind auf deinem Gerät gesperrt",
+      "enabledDescription": "Um Push-Benachrichtigungen von {{hostname}} zu deaktivieren, greifen Sie auf Ihre Browser-Berechtigungen für diese Seite zu und deaktivieren Sie die Benachrichtigungen. <a href='https://owncast.online/docs/notifications'>Erfahre mehr.</a>",
+      "enabledTitle": "Benachrichtigungen sind aktiviert",
+      "errorMessage": "Fehler beim Registrieren für Live-Benachrichtigungen: {{message}}. Vergewissern Sie sich, dass Sie nicht in einer privaten Browserumgebung sind oder zuvor die Benachrichtigungen für diesen Stream deaktiviert haben.",
+      "errorTitle": "Browser-Benachrichtigungsfehler",
+      "iosAddButton": "Neu",
+      "iosAddToHomeScreen": "Zum Startbildschirm hinzufügen",
+      "iosAllowPrompt": "Erlauben",
+      "iosComeBack": "Kommen Sie zurück zu diesem Bildschirm und aktivieren Sie Benachrichtigungen.",
+      "iosDescription": "Es dauert ein paar zusätzliche Schritte, um sicherzustellen, dass Sie benachrichtigt werden, wenn Ihre Lieblings-Streams live gehen.",
+      "iosNameAndTap": "Geben Sie diesem Link einen Namen und tippen Sie auf das neue Symbol auf Ihrem Startbildschirm",
+      "iosShareButton": "teilen",
+      "iosTitle": "Auf iOS benachrichtigen",
+      "learnMore": "Mehr erfahren",
+      "mainDescription": "Werde jedes Mal, wenn dieser Stream live geht, direkt im Browser benachrichtigt.",
+      "permissionWantsTo": "{{hostname}} möchte",
+      "showNotifications": "Benachrichtigungen anzeigen",
+      "unsupported": "Browserbenachrichtigungen werden in Ihrem Browser nicht unterstützt.",
+      "unsupportedLocal": "Browserbenachrichtigungen werden für lokale Server nicht unterstützt."
+    },
+    "Footer": {
+      "documentation": "Dokumentation",
+      "contribute": "Mitwirken",
+      "source": "Quelle"
+    },
+    "Chat": {
+      "userJoined": "ist dem Chat beigetreten.",
+      "userLeft": "hat den Chat verlassen.",
+      "nameChangeText": "ist jetzt bekannt als",
+      "moderatorNotification": "Du bist jetzt Moderator."
+    },
+    "FollowModal": {
+      "description": "Wenn du diesem Stream folgst, wirst du über die Feiche benachrichtigt, wenn er live wird. Jetzt ist eine tolle Zeit für",
+      "learnFediverse": "erfahre mehr über die Feiche",
+      "newToYou": "wenn es neu für dich ist.",
+      "instructions": "Gib deinen Benutzernamen @server ein",
+      "placeholder": "Dein fettartiger Account @account@server",
+      "redirectMessage": "Du wirst zu deinem Fediverse-Server weitergeleitet und aufgefordert, die Aktion zu bestätigen.",
+      "joinFediverse": "Trete der Feuchte bei",
+      "followButton": "Folgen",
+      "followError": "Folgefehler",
+      "unableToFollow": "Unfähig zu folgen."
+    },
+    "Header": {
+      "skipToPlayer": "Zum Spieler springen",
+      "skipToOfflineMessage": "Zur Offline-Nachricht springen",
+      "skipToContent": "Zum Seiteninhalt springen",
+      "skipToFooter": "Zur Fußzeile springen",
+      "chatWillBeAvailable": "Der Chat wird verfügbar sein, wenn der Stream live ist.",
+      "chatOffline": "Chat ist offline"
+    },
+    "NameChangeModal": {
+      "authInfo": "Sie können auch einen IndieAuth oder Fediverse Account über das \"Authentifizieren\" Menü authentifizieren.",
+      "buttonText": "Name ändern",
+      "colorLabel": "Ihre Farbe",
+      "description": "Ihr Chatanzeigename ist das, was die Leute sehen, wenn Sie Chat-Nachrichten senden.",
+      "overLimit": "Übergrenze",
+      "placeholder": "Name der Chatanzeige"
+    },
+    "chatOffline": "Chat ist offline",
+    "componentError": "Fehler: {{message}}",
+    "helloWorld": "Hallo Welt",
+    "offlineBasic": "Dieser Stream ist offline. Schauen Sie bald wieder!",
+    "offlineFediverseOnly": "Dieser Stream ist offline. <span class='follow-link'>Folgen Sie</span> {{fediverseAccount}} auf der Feier, um das nächste Mal {{streamer}} live zu sehen.",
+    "offlineNotifyAndFediverse": "Dieser Stream ist offline. Sie können <span class='notify-link'>benachrichtigt werden,</span> wenn {{streamer}} das nächste Mal live geht, oder <span class='follow-link'>folgen Sie</span> {{fediverseAccount}} auf dem Fediverse.",
+    "offlineNotifyOnly": "Dieser Stream ist offline. <span class='notify-link'>Werde benachrichtigt</span> wenn {{streamer}} das nächste Mal live geht.",
+    "lastLiveAgo": "Letzter Live- {{timeAgo}} vor"
+  },
+  "Testing": {
+    "itemCount": "Sie haben {{count}} Elemente",
+    "messageCount": "Sie haben {{count}} Nachrichten von {{sender}}",
+    "noPluralKey": "Dieser Schlüssel hat keine Pluralvarianten - {{count}} Dinge",
+    "simpleKey": "Einfacher Text der Übersetzung"
+  }
 }
