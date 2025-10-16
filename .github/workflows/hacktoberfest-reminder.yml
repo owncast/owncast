@@ -32,9 +32,6 @@ jobs:
             ### Resources:
             
             - Hacktoberfest website: https://hacktoberfest.com/
-            - Previous updates:
-              - https://github.com/owncast/owncast.github.io/pull/203
-              - https://github.com/owncast/owncast.github.io/pull/212
             
             ### Action Items:
             
@@ -47,4 +44,4 @@ jobs:
             ---
             
             _This issue was automatically created by a scheduled GitHub Action._
-          labels: hacktoberfest,website,help wanted
+          labels: hacktoberfest,good first issue,help wanted,documentation
