@@ -64,12 +64,12 @@
       "last30Days": "Laatste 30 dagen",
       "last3Months": "Afgelopen 3 maanden",
       "last6Months": "Laatste 6 maanden",
-      "currentViewers": "Huidige kijkers",
+      "currentViewers": "Huidig aantal kijkers",
       "maxViewersThisStream": "Maximaal aantal kijkers deze stream",
       "maxViewersLastStream": "Maximaal aantal kijkers laatste stream",
-      "maxViewers": "maximale kijkers",
+      "maxViewers": "Maximaal aantal kijkers",
       "pleaseWait": "Een ogenblik geduld",
-      "noData": "Er zijn nog geen gegevens van de kijker verzameld.",
+      "noData": "Er is nog geen kijkersdata verzameld.",
       "viewers": "Kijkers"
     },
     "VideoVariantForm": {

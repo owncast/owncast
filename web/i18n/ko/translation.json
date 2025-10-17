@@ -67,7 +67,7 @@
       "currentViewers": "현재 시청자",
       "maxViewersThisStream": "이번 스트림 최대 시청자",
       "maxViewersLastStream": "지난 스트림 최대 시청자",
-      "maxViewers": "최대 시청자",
+      "maxViewers": "최대 시청자 수",
       "pleaseWait": "기다려 주십시오",
       "noData": "아직 수집된 시청자 데이터가 없습니다.",
       "viewers": "시청자"
