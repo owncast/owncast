@@ -67,7 +67,7 @@
       "currentViewers": "現在の視聴者数",
       "maxViewersThisStream": "このストリームの視聴者を最大にする",
       "maxViewersLastStream": "視聴者の最後のストリームの最大数",
-      "maxViewers": "最大の視聴者数",
+      "maxViewers": "視聴者数の上限",
       "pleaseWait": "お待ちください",
       "noData": "ビューアデータはまだ収集されていません。",
       "viewers": "閲覧者"
