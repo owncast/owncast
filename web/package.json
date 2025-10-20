@@ -124,6 +124,8 @@
     "less-loader": "12.3.0",
     "mdx-mermaid": "^2.0.0",
     "mermaid": "^11.10.0",
+    "msw": "^2.11.6",
+    "msw-storybook-addon": "^2.0.6",
     "npm": "^11.0.0",
     "postcss": "^8.4.31",
     "prettier": "3.5.3",
@@ -144,5 +146,10 @@
     "@emoji-mart/react": {
       "emoji-mart": "5.2.2"
     }
+  },
+  "msw": {
+    "workerDirectory": [
+      "public/"
+    ]
   }
 }

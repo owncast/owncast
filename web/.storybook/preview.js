@@ -6,6 +6,7 @@ import { themes } from 'storybook/theming';
 import { DocsContainer } from './storybook-theme';
 import { INITIAL_VIEWPORTS } from 'storybook/viewport';
 import _ from 'lodash';
+import { initialize, mswLoader } from 'msw-storybook-addon';
 
 /**
  * Takes an entry of a viewport (from Object.entries()) and converts it
@@ -67,6 +68,9 @@ const convertToLandscapeAndPortraitEntries = ([objectKey, viewport]) => {
  */
 const flatMapObject = (obj, f) => Object.fromEntries(Object.entries(obj).flatMap(f));
 
+// Initialize MSW
+initialize();
+
 export const parameters = {
   // actions: { argTypesRegex: '^on[A-Z].*' },
   docs: {
@@ -98,3 +102,5 @@ export const parameters = {
     viewports: flatMapObject(INITIAL_VIEWPORTS, convertToLandscapeAndPortraitEntries),
   },
 };
+
+export const loaders = [mswLoader];
