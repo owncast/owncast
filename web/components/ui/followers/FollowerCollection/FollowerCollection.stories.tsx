@@ -1,6 +1,6 @@
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot } from 'recoil';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 import { FollowerCollection } from './FollowerCollection';
 
 const mocks = {

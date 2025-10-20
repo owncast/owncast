@@ -1,5 +1,5 @@
-import { StoryFn, Meta } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { StoryFn, Meta } from '@storybook/nextjs';
+import { action } from 'storybook/actions';
 import { ActionButtonMenu } from './ActionButtonMenu';
 
 const meta = {

@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot } from 'recoil';
 import { ChatTextField } from './ChatTextField';
 import Mockup from '../../../stories/assets/mocks/chatinput-mock.png';
