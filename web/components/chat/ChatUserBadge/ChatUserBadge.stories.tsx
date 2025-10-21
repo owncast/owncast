@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { ChatUserBadge } from './ChatUserBadge';
 import { ModerationBadge } from './ModerationBadge';
 import { AuthedUserBadge } from './AuthedUserBadge';

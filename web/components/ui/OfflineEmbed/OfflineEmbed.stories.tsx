@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot } from 'recoil';
 import { OfflineEmbed } from './OfflineEmbed';
 import OfflineState from '../../../stories/assets/mocks/offline-state.png';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot } from 'recoil';
 import { ChatContainer } from './ChatContainer';
 import { ChatMessage } from '../../../interfaces/chat-message.model';

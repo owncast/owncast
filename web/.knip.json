@@ -22,7 +22,6 @@
 		"sharp",
 		"workbox-precaching",
 		"workbox-window",
-		"@storybook/addon-postcss",
 		"@storybook/cli",
 		"@storybook/mdx2-csf",
 		"@mdx-js/react",
@@ -37,20 +36,15 @@
 		"install",
 		"mdx-mermaid",
 		"mermaid",
-		"storybook-preset-less",
 		"ts-jest",
 		"stylelint-config-standard",
 		"@babel/core",
 		"npm",
 		"eslint-config-next",
-		"@storybook/addon-postcss",
-		"@storybook/cli",
-		"@storybook/mdx2-csf",
 		"@commitlint/cli",
 		"@commitlint/config-conventional",
 		"babel-plugin-dynamic-import-node",
 		"@babel/preset-react",
-		"@babel/core",
 		"i18next-scanner",
 		"@types/video.js",
 		"@testing-library/jest-dom",
@@ -58,6 +52,8 @@
 		"jest-environment-jsdom",
 		"@babel/parser",
 		"@babel/traverse",
-		"glob"
+		"glob",
+		"style-loader",
+		"css-loader"
 	]
 }

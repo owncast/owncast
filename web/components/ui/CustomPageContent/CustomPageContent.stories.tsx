@@ -1,5 +1,5 @@
 /* eslint-disable no-useless-escape */
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot } from 'recoil';
 import { CustomPageContent } from './CustomPageContent';
 

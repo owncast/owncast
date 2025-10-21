@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/react';
+import { Meta } from '@storybook/nextjs';
 import { FediAuthModal } from './FediAuthModal';
 import FediAuthModalMock from '../../../stories/assets/mocks/fediauth-modal.png';
 

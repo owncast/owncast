@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { FollowModal } from './FollowModal';
 import FollowModalMock from '../../../stories/assets/mocks/follow-modal.png';
 

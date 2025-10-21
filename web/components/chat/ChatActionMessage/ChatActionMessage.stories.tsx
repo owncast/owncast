@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/react';
+import { Meta } from '@storybook/nextjs';
 import { ChatActionMessage } from './ChatActionMessage';
 import Mock from '../../../stories/assets/mocks/chatmessage-action.png';
 

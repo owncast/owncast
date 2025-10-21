@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/react';
+import { Meta } from '@storybook/nextjs';
 import { SingleFollower } from './SingleFollower';
 import SingleFollowerMock from '../../../../stories/assets/mocks/single-follower.png';
 

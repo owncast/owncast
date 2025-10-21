@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/react';
+import { Meta } from '@storybook/nextjs';
 import { Logo } from '../components/ui/Logo/Logo';
 
 const meta = {

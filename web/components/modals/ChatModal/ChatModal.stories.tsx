@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { ChatModal, ChatModalProps } from './ChatModal';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
