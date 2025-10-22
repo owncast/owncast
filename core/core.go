@@ -18,6 +18,7 @@ import (
 	"github.com/owncast/owncast/notifications"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/tables"
+	"github.com/owncast/owncast/services/stalefeaturedcheckservice"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
 )
@@ -84,6 +85,9 @@ func Start() error {
 	webhooks.SetupWebhooks(GetStatus)
 
 	notifications.Setup(data.GetStore())
+
+	// Start the stale featured server checker
+	stalefeaturedcheckservice.Start()
 
 	return nil
 }

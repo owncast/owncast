@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/activitypub"
+	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
@@ -80,6 +81,11 @@ func setStreamAsConnected(rtmpOut *io.PipeReader) {
 
 	// Send delayed notification messages.
 	_onlineTimerCancelFunc = startLiveStreamNotificationsTimer()
+
+	// Start the stream ping ticker for federated servers
+	if configRepository.GetFederationEnabled() {
+		outbox.StartStreamPingTicker()
+	}
 }
 
 // SetStreamAsDisconnected sets the stream as disconnected.
@@ -104,6 +110,9 @@ func SetStreamAsDisconnected() {
 			log.Errorln(err)
 		}
 	}
+
+	// Stop the stream ping ticker
+	outbox.StopStreamPingTicker()
 
 	offlineFilename := "offline-v2.ts"
 
