@@ -85,5 +85,6 @@
 .emojiPickerContainer {
   max-height: 70vh;
   max-width: 90vw;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
