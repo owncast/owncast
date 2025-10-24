@@ -276,7 +276,11 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
         {enabled && (
           <div style={{ display: 'flex', paddingLeft: '5px' }}>
             <Popover
-              content={<EmojiPicker customEmoji={customEmoji} onEmojiSelect={onEmojiSelect} />}
+              content={
+                <div className={styles.emojiPickerContainer}>
+                  <EmojiPicker customEmoji={customEmoji} onEmojiSelect={onEmojiSelect} />
+                </div>
+              }
               trigger="click"
               placement="topRight"
             >
