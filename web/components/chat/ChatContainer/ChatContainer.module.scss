@@ -12,7 +12,9 @@
   button {
     background-color: var(--theme-color-background-light);
     z-index: 9999;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+    box-shadow:
+      0 1px 2px 0 rgb(0 0 0 / 10%),
+      0 1px 5px 0 rgb(0 0 0 / 12%);
     display: flex;
     align-items: center;
     opacity: 0;
@@ -32,7 +34,22 @@
 }
 
 .resizeHandle {
-  background: linear-gradient(45deg, transparent 0px,transparent 4px, var(--color-owncast-palette-6) 4px, var(--color-owncast-palette-6) 5px, transparent 5px, transparent 9px, var(--color-owncast-palette-6) 9px, var(--color-owncast-palette-6) 10px, transparent 10px, transparent 14px, var(--color-owncast-palette-6) 14px, var(--color-owncast-palette-6) 15px, transparent 15px);
+  background: linear-gradient(
+    45deg,
+    transparent 0px,
+    transparent 4px,
+    var(--color-owncast-palette-6) 4px,
+    var(--color-owncast-palette-6) 5px,
+    transparent 5px,
+    transparent 9px,
+    var(--color-owncast-palette-6) 9px,
+    var(--color-owncast-palette-6) 10px,
+    transparent 10px,
+    transparent 14px,
+    var(--color-owncast-palette-6) 14px,
+    var(--color-owncast-palette-6) 15px,
+    transparent 15px
+  );
   position: absolute;
   bottom: 0;
   width: 30px;
@@ -73,10 +90,10 @@
 }
 
 .chatAccessibilityHidden {
-  top:0;
-  left:-2px;
-  width:1px;
-  height:1px;
-  position:absolute;
-  overflow:hidden;
+  top: 0;
+  left: -2px;
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
 }
