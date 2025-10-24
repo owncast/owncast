@@ -1,4 +1,4 @@
-@import '../../../styles/mixins';
+@use '../../../styles/mixins' as *;
 
 $short-container-max-height: 480px;
 $short-container-min-height: 320px;

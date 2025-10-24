@@ -1,4 +1,4 @@
-@import '../../../../../web/styles/mixins';
+@use '../../../../../web/styles/mixins' as *;
 
 .follower {
   border-color: rgb(0 0 0 / 30%);
