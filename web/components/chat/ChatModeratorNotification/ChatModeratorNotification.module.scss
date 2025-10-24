@@ -1,4 +1,4 @@
-@import '../../../styles/mixins';
+@use '../../../styles/mixins' as *;
 
 .chatModerationNotification {
   background-color: var(--theme-background-primary);
