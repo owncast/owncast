@@ -36,7 +36,7 @@
 .resizeHandle {
   background: linear-gradient(
     45deg,
-    transparent 0px,
+    transparent 0,
     transparent 4px,
     var(--color-owncast-palette-6) 4px,
     var(--color-owncast-palette-6) 5px,
@@ -60,8 +60,7 @@
 .virtuoso {
   width: auto;
   flex-grow: 1;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  overflow: hidden scroll;
   overscroll-behavior: contain;
 }
 
