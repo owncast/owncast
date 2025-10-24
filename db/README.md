@@ -11,7 +11,7 @@ Only those who need to create or update SQL queries will need to have `sqlc` ins
 
 ## Using sqlc
 
-This project uses Go 1.24's native tool management. The `sqlc` tool is already defined in `go.mod`.
+This project uses Go 1.24+'s native tool management. The `sqlc` tool is already defined in `go.mod`.
 
 After cloning the repository, ensure tools are downloaded:
 
