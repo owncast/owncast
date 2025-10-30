@@ -1,0 +1,46 @@
+# Web folder
+web/
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Test files
+test/
+
+# Build artifacts
+build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# CI/CD
+.github/
+lefthook.yml
+
+# Docker files
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Other config files
+.editorconfig
+crowdin.yml
+renovate.json
+redocly.yaml
+openapi.yaml
+Earthfile
+
+# Data and logs
+data/
+*.log
+
