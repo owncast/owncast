@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} chce",
       "showNotifications": "Pokaż powiadomienia",
       "unsupported": "Powiadomienia przeglądarki nie są obsługiwane w przeglądarce.",
-      "unsupportedLocal": "Powiadomienia przeglądarki nie są obsługiwane dla serwerów lokalnych."
+      "unsupportedLocal": "Powiadomienia przeglądarki nie są obsługiwane dla serwerów lokalnych.",
+      "learnMoreSentence": "<a>Poznaj więcej</a> o Owncast powiadomieniach przeglądarki."
     },
     "Footer": {
       "documentation": "Dokumentacja",

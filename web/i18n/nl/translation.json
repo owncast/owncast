@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} wil",
       "showNotifications": "Meldingen weergeven",
       "unsupported": "Browsermeldingen worden niet ondersteund in je browser.",
-      "unsupportedLocal": "Browsermeldingen worden niet ondersteund voor lokale servers."
+      "unsupportedLocal": "Browsermeldingen worden niet ondersteund voor lokale servers.",
+      "learnMoreSentence": "<a>Meer informatie</a> over Owncast browsermeldingen."
     },
     "Footer": {
       "documentation": "Documentatie",

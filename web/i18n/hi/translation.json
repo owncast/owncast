@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} चाहता है",
       "showNotifications": "सूचनाएँ दिखाएं",
       "unsupported": "ब्राउज़र में ब्राउज़र सूचनाएँ समर्थित नहीं हैं।",
-      "unsupportedLocal": "स्थानीय सर्वरों के लिए ब्राउज़र सूचनाएँ समर्थित नहीं हैं।"
+      "unsupportedLocal": "स्थानीय सर्वरों के लिए ब्राउज़र सूचनाएँ समर्थित नहीं हैं।",
+      "learnMoreSentence": "<a>और जानें</a> Owncast ब्राउज़र सूचनाओं के बारे में।"
     },
     "Footer": {
       "documentation": "दस्तावेज़ीकरण",

@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} ਚਾਹੁੰਦਾ ਹੈ ਕਿ",
       "showNotifications": "ਸੂਚਨਾਵਾਂ ਦਿਖਾਓ",
       "unsupported": "ਤੁਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਬ੍ਰਾਊਜ਼ਰ ਸੂਚਨਾਵਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਹੈ।",
-      "unsupportedLocal": "ਸਥਾਨਕ ਸਰਵਰ ਲਈ ਬ੍ਰਾਊਜ਼ਰ ਸੂਚਨਾਵਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਹੈ।"
+      "unsupportedLocal": "ਸਥਾਨਕ ਸਰਵਰ ਲਈ ਬ੍ਰਾਊਜ਼ਰ ਸੂਚਨਾਵਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਹੈ।",
+      "learnMoreSentence": "<a>ਹੋਰ ਜਾਣੋ</a> Owncast ਬ੍ਰਾਊਜ਼ਰ ਸੂਚਨਾਵਾਂ ਬਾਰੇ।"
     },
     "Footer": {
       "documentation": "ਦਸਤਾਵੇਜ਼",

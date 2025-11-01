@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} vill",
       "showNotifications": "Visa aviseringar",
       "unsupported": "Webbläsaraviseringar stöds inte i din webbläsare.",
-      "unsupportedLocal": "Webbläsaraviseringar stöds inte för lokala servrar."
+      "unsupportedLocal": "Webbläsaraviseringar stöds inte för lokala servrar.",
+      "learnMoreSentence": "<a>Läs mer</a> om Owncast webbläsaraviseringar."
     },
     "Footer": {
       "documentation": "Dokumentation",

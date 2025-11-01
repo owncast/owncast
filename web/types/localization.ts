@@ -71,6 +71,7 @@ export const Localization = {
       learnMore: 'Frontend.BrowserNotifyModal.learnMore',
       errorTitle: 'Frontend.BrowserNotifyModal.errorTitle',
       errorMessage: 'Frontend.BrowserNotifyModal.errorMessage',
+      learnMoreSentence: 'Frontend.BrowserNotifyModal.learnMoreSentence',
     },
 
     // Name change modal - organized by component

@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} vil",
       "showNotifications": "Vis notifikasjoner",
       "unsupported": "Nettleservarsler støttes ikke i nettleseren.",
-      "unsupportedLocal": "Nettleservarsler støttes ikke for lokale servere."
+      "unsupportedLocal": "Nettleservarsler støttes ikke for lokale servere.",
+      "learnMoreSentence": "<a>Lær mer</a> om Owncast nettleservarsler."
     },
     "Footer": {
       "documentation": "Dokumentasjon",

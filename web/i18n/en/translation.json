@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} wants to",
       "showNotifications": "Show notifications",
       "unsupported": "Browser notifications are not supported in your browser.",
-      "unsupportedLocal": "Browser notifications are not supported for local servers."
+      "unsupportedLocal": "Browser notifications are not supported for local servers.",
+      "learnMoreSentence": "<a>Learn more</a> about Owncast browser notifications."
     },
     "Footer": {
       "documentation": "Documentation",

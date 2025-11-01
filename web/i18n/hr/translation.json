@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} želi",
       "showNotifications": "Prikaži obavijesti",
       "unsupported": "Obavijesti preglednika nisu podržane u vašem pregledniku.",
-      "unsupportedLocal": "Obavijesti preglednika nisu podržane za lokalne poslužitelje."
+      "unsupportedLocal": "Obavijesti preglednika nisu podržane za lokalne poslužitelje.",
+      "learnMoreSentence": "<a>Saznajte više</a> o Owncast obavijestima preglednika."
     },
     "Footer": {
       "documentation": "Dokumentacija",

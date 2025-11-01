@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} möchte",
       "showNotifications": "Benachrichtigungen anzeigen",
       "unsupported": "Browserbenachrichtigungen werden in Ihrem Browser nicht unterstützt.",
-      "unsupportedLocal": "Browserbenachrichtigungen werden für lokale Server nicht unterstützt."
+      "unsupportedLocal": "Browserbenachrichtigungen werden für lokale Server nicht unterstützt.",
+      "learnMoreSentence": "<a>Erfahre mehr</a> über Owncast-Browser-Benachrichtigungen."
     },
     "Footer": {
       "documentation": "Dokumentation",

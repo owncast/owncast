@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} ingin",
       "showNotifications": "Tunjukkan pemberitahuan",
       "unsupported": "Pemberitahuan pelayar tidak disokong dalam pelayar anda.",
-      "unsupportedLocal": "Pemberitahuan pelayar tidak disokong untuk pelayan tempatan."
+      "unsupportedLocal": "Pemberitahuan pelayar tidak disokong untuk pelayan tempatan.",
+      "learnMoreSentence": "<a>Ketahui lebih lanjut</a> tentang pemberitahuan pelayar Owncast."
     },
     "Footer": {
       "documentation": "Dokumentasi",

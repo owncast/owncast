@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} 想要",
       "showNotifications": "顯示通知",
       "unsupported": "您的瀏覽器不支援瀏覽器通知。",
-      "unsupportedLocal": "您的瀏覽器不支援本地伺服器的瀏覽器通知。"
+      "unsupportedLocal": "您的瀏覽器不支援本地伺服器的瀏覽器通知。",
+      "learnMoreSentence": "<a>了解更多</a> 有關 Owncast 瀏覽器通知的資訊。"
     },
     "Footer": {
       "documentation": "文件",

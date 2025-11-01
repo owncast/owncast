@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} が望んでいます",
       "showNotifications": "通知を表示",
       "unsupported": "ブラウザ通知はお使いのブラウザではサポートされていません。",
-      "unsupportedLocal": "ブラウザー通知はローカルサーバーではサポートされていません。"
+      "unsupportedLocal": "ブラウザー通知はローカルサーバーではサポートされていません。",
+      "learnMoreSentence": "<a>詳細はこちら</a> Owncast ブラウザー通知について。"
     },
     "Footer": {
       "documentation": "ドキュメント",

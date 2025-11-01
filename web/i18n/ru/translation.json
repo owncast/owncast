@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} хочет",
       "showNotifications": "Показать уведомления",
       "unsupported": "Уведомления браузера не поддерживаются в браузере.",
-      "unsupportedLocal": "Уведомления браузера не поддерживаются для локальных серверов."
+      "unsupportedLocal": "Уведомления браузера не поддерживаются для локальных серверов.",
+      "learnMoreSentence": "<a>Узнайте больше</a> о уведомлениях браузера Owncast."
     },
     "Footer": {
       "documentation": "Документация",

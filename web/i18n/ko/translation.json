@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}}가 원합니다",
       "showNotifications": "알림 표시",
       "unsupported": "브라우저에서 브라우저 알림이 지원되지 않습니다.",
-      "unsupportedLocal": "로컬 서버에 대한 브라우저 알림은 지원되지 않습니다."
+      "unsupportedLocal": "로컬 서버에 대한 브라우저 알림은 지원되지 않습니다.",
+      "learnMoreSentence": "<a>자세히 알아보기</a> Owncast 브라우저 알림에 대해."
     },
     "Footer": {
       "documentation": "문서",

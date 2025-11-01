@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} nahi du",
       "showNotifications": "Erakutsi abisuak",
       "unsupported": "Nabigatzailean abisuak ez dira onartu zure nabigatzailean.",
-      "unsupportedLocal": "Nabigatzailean abisuak ez dira onartu lokaleko zerbitzarietan."
+      "unsupportedLocal": "Nabigatzailean abisuak ez dira onartu lokaleko zerbitzarietan.",
+      "learnMoreSentence": "<a>Ikasi gehiago</a> Owncast nabigatzaileen abisuak buruz."
     },
     "Footer": {
       "documentation": "Dokumentazioa",

@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} muốn",
       "showNotifications": "Hiển thị thông báo",
       "unsupported": "Thông báo trình duyệt không được hỗ trợ trong trình duyệt của bạn.",
-      "unsupportedLocal": "Thông báo trình duyệt không được hỗ trợ cho các máy chủ cục bộ."
+      "unsupportedLocal": "Thông báo trình duyệt không được hỗ trợ cho các máy chủ cục bộ.",
+      "learnMoreSentence": "<a>Tìm hiểu thêm</a> về thông báo trình duyệt Owncast."
     },
     "Footer": {
       "documentation": "Tài liệu",

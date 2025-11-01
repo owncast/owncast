@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} يريد أن",
       "showNotifications": "إظهار الإشعارات",
       "unsupported": "إشعارات المتصفح غير مدعومة في المتصفح الخاص بك.",
-      "unsupportedLocal": "إشعارات المتصفح غير مدعومة للخوادم المحلية."
+      "unsupportedLocal": "إشعارات المتصفح غير مدعومة للخوادم المحلية.",
+      "learnMoreSentence": "<a>تعرّف على المزيد</a> حول إشعارات متصفح Owncast"
     },
     "Footer": {
       "documentation": "الوثائق",

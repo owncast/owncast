@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} veut",
       "showNotifications": "Afficher les notifications",
       "unsupported": "Les notifications du navigateur ne sont pas prises en charge dans votre navigateur.",
-      "unsupportedLocal": "Les notifications du navigateur ne sont pas prises en charge par les serveurs locaux."
+      "unsupportedLocal": "Les notifications du navigateur ne sont pas prises en charge par les serveurs locaux.",
+      "learnMoreSentence": "<a>En savoir plus</a> sur les notifications du navigateur Owncast."
     },
     "Footer": {
       "documentation": "Documentation",

@@ -162,7 +162,8 @@
       "permissionWantsTo": "Tá {{hostname}} ag iarraidh",
       "showNotifications": "Taispeáin fógraí",
       "unsupported": "Ní tacaítear le fógraí brabhsálaí i do bhrabhsálaí.",
-      "unsupportedLocal": "Ní tacaítear le fógraí brabhsálaí do shailéain áitiúla."
+      "unsupportedLocal": "Ní tacaítear le fógraí brabhsálaí do shailéain áitiúla.",
+      "learnMoreSentence": "<a>Foghlaim níos mó</a> faoi fógraí brabhsálaí Owncast."
     },
     "Footer": {
       "documentation": "Doiciméadacht",

@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} quiere",
       "showNotifications": "Mostrar notificaciones",
       "unsupported": "Las notificaciones del navegador no están soportadas en su navegador.",
-      "unsupportedLocal": "Las notificaciones del navegador no son compatibles con los servidores locales."
+      "unsupportedLocal": "Las notificaciones del navegador no son compatibles con los servidores locales.",
+      "learnMoreSentence": "<a>Aprende más</a> sobre las notificaciones del navegador Owncast."
     },
     "Footer": {
       "documentation": "Documentación",

@@ -162,7 +162,8 @@
       "permissionWantsTo": "{{hostname}} চান",
       "showNotifications": "বিজ্ঞপ্তি দেখান",
       "unsupported": "আপনার ব্রাউজারে ব্রাউজার বিজ্ঞপ্তি সমর্থিত নয়।",
-      "unsupportedLocal": "লোকাল সার্ভারের জন্য ব্রাউজার বিজ্ঞপ্তি সমর্থিত নয়।"
+      "unsupportedLocal": "লোকাল সার্ভারের জন্য ব্রাউজার বিজ্ঞপ্তি সমর্থিত নয়।",
+      "learnMoreSentence": "<a>আরও জানুন</a> Owncast ব্রাউজার বিজ্ঞপ্তি সম্পর্কে।"
     },
     "Footer": {
       "documentation": "তথ্যপত্র",
