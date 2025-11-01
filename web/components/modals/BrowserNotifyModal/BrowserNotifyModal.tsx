@@ -289,7 +289,7 @@ export const BrowserNotifyModal = () => {
                 defaultText="Learn more"
               />
             </a>
-            &nbsp; about Owncast browser notifications.
+            &nbsp;about Owncast browser notifications.
           </span>
         </Row>
         <Row>
