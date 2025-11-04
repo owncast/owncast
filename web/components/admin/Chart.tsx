@@ -45,13 +45,22 @@ export type ChartProps = {
   dataCollections?: any[];
   minYValue?: number;
   yStepSize?: number;
+  timeWindowKey?: number; 
 };
 
-function createGraphDataset(dataArray) {
+function getLabelFormat(timeWindowKey?: number) {
+  // 0: current stream, 1: 12h, 2: 24h, 3: 7d, 4: 30d, 5: 3mo, 6: 6mo
+  if (timeWindowKey === 1 || timeWindowKey === 2) return 'H:mm'; // 12/24h: hour
+  if (timeWindowKey === 3 || timeWindowKey === 4) return 'MMM d'; // 7/30d: day
+  if (timeWindowKey === 5 || timeWindowKey === 6) return 'MMM'; // 3/6mo: month
+  return 'H:mm'; 
+}
+
+function createGraphDataset(dataArray, labelFormat) {
   const dataValues = {};
   dataArray.forEach(item => {
     const dateObject = new Date(item.time);
-    const dateString = format(dateObject, 'H:mma');
+    const dateString = format(dateObject, labelFormat);
     dataValues[dateString] = item.value;
   });
   return dataValues;
@@ -67,10 +76,13 @@ export const Chart: FC<ChartProps> = ({
   yLogarithmic,
   minYValue,
   yStepSize = 0,
+  timeWindowKey, 
 }) => {
   const renderData = [];
-
   const chartRef = useRef(null);
+
+  const labelFormat = getLabelFormat(timeWindowKey);
+
   const downloadChart = () => {
     if (chartRef.current) {
       const link = document.createElement('a');
@@ -87,7 +99,7 @@ export const Chart: FC<ChartProps> = ({
       backgroundColor: color,
       borderColor: color,
       borderWidth: 3,
-      data: createGraphDataset(data),
+      data: createGraphDataset(data, labelFormat),
     });
   }
 
@@ -95,7 +107,7 @@ export const Chart: FC<ChartProps> = ({
     renderData.push({
       id: collection.name,
       label: collection.name,
-      data: createGraphDataset(collection.data),
+      data: createGraphDataset(collection.data, labelFormat),
       backgroundColor: collection.color,
       borderColor: collection.color,
       borderWidth: 3,
@@ -107,8 +119,14 @@ export const Chart: FC<ChartProps> = ({
   const options = {
     responsive: true,
     clip: false,
-
     scales: {
+      x: {
+        title: { display: false },
+        ticks: {
+          autoSkip: true,
+          maxTicksLimit: 10,
+        },
+      },
       y: {
         type: yLogarithmic ? ('logarithmic' as const) : ('linear' as const),
         reverse: yFlipped,
