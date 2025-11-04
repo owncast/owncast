@@ -1,0 +1,5 @@
+admin:
+  enabled: true
+  password: Dravid@2001
+webserver:
+  port: 8080
