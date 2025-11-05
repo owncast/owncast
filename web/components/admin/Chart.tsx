@@ -28,6 +28,15 @@ ChartJS.register(
   Legend,
 );
 
+export enum TimeWindow {
+  Hour12 = 1,
+  Hour24 = 2,
+  Day7 = 3,
+  Day30 = 4,
+  Month3 = 5,
+  Month6 = 6,
+}
+
 interface TimedValue {
   time: Date;
   value: number;
@@ -45,15 +54,26 @@ export type ChartProps = {
   dataCollections?: any[];
   minYValue?: number;
   yStepSize?: number;
-  timeWindowKey?: number; 
+  timeWindowKey?: TimeWindow; 
 };
 
-function getLabelFormat(timeWindowKey?: number) {
-  // 0: current stream, 1: 12h, 2: 24h, 3: 7d, 4: 30d, 5: 3mo, 6: 6mo
-  if (timeWindowKey === 1 || timeWindowKey === 2) return 'H:mm'; // 12/24h: hour
-  if (timeWindowKey === 3 || timeWindowKey === 4) return 'MMM d'; // 7/30d: day
-  if (timeWindowKey === 5 || timeWindowKey === 6) return 'MMM'; // 3/6mo: month
-  return 'H:mm'; 
+function getLabelFormat(timeWindowKey?: TimeWindow) {
+  switch (timeWindowKey) {
+    case TimeWindow.Hour12:
+    case TimeWindow.Hour24:
+      return 'H:mm'; // 12/24h: hour
+
+    case TimeWindow.Day7:
+    case TimeWindow.Day30:
+      return 'MMM d'; // 7/30d: day
+
+    case TimeWindow.Month3:
+    case TimeWindow.Month6:
+      return 'MMM'; // 3/6mo: month
+
+    default:
+      return 'H:mm';
+  }
 }
 
 function createGraphDataset(dataArray, labelFormat) {
@@ -76,7 +96,7 @@ export const Chart: FC<ChartProps> = ({
   yLogarithmic,
   minYValue,
   yStepSize = 0,
-  timeWindowKey, 
+  timeWindowKey,
 }) => {
   const renderData = [];
   const chartRef = useRef(null);
