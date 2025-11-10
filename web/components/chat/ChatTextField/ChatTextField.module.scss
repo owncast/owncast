@@ -80,3 +80,10 @@
   cursor: pointer;
   padding: 0 1rem;
 }
+
+// Constrain the emoji picker popover to the viewport and allow scrolling.
+.emojiPickerContainer {
+  max-height: 70vh;
+  max-width: 90vw;
+  overflow: auto hidden;
+}
