@@ -50,6 +50,7 @@ export default function ViewersOverTime() {
   const [viewerInfo, setViewerInfo] = useState([]);
   const [viewerDetails, setViewerDetails] = useState([]);
   const [timeWindowStart, setTimeWindowStart] = useState(times[1]);
+  const [timeWindowKey, setTimeWindowKey] = useState(1);
 
   const getInfo = async () => {
     try {
@@ -86,6 +87,7 @@ export default function ViewersOverTime() {
 
   const onTimeWindowSelect = ({ key }) => {
     setTimeWindowStart(times[key]);
+    setTimeWindowKey(Number(key));
   };
 
   const offset: number = online && streamStart ? 0 : 1;
@@ -147,6 +149,7 @@ export default function ViewersOverTime() {
             unit="viewers"
             minYValue={0}
             yStepSize={1}
+            timeWindowKey={timeWindowKey}
           />
         )}
 
