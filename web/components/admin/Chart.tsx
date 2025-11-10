@@ -54,7 +54,7 @@ export type ChartProps = {
   dataCollections?: any[];
   minYValue?: number;
   yStepSize?: number;
-  timeWindowKey?: TimeWindow; 
+  timeWindowKey?: TimeWindow;
 };
 
 function getLabelFormat(timeWindowKey?: TimeWindow) {
