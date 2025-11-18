@@ -44,7 +44,7 @@
     "classnames": "2.5.1",
     "date-fns": "^4.0.0",
     "emoji-mart": "^5.2.2",
-    "glob": "^11.0.3",
+    "glob": "^12.0.0",
     "graphemer": "^1.4.0",
     "i18next-scanner": "^4.6.0",
     "interweave": "^13.0.0",
