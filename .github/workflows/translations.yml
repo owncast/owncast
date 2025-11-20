@@ -38,6 +38,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "Owncast"
+          git config --global user.email "owncast@owncast.online"
 
       - name: Install dependencies
         run: npm install
@@ -50,23 +58,40 @@ jobs:
         with:
           upload_sources: true
           download_translations: true
-          create_pull_request: true
-          pull_request_title: 'New Translations'
-          localization_branch_name: translations
-          pull_request_base_branch_name: 'develop'
-          commit_message: 'Updated translations'
+          create_pull_request: false
           config: crowdin.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
-      # - name: Commit changes
-      #   uses: EndBug/add-and-commit@v9
-      #   with:
-      #     author_name: Owncast
-      #     author_email: owncast@owncast.online
-      #     message: 'Commit updated translations'
-      #     add: 'web/i18n/**'
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Pull Request
+        id: create_pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: translations
+          base: develop
+          title: 'New Translations from Crowdin'
+          body: |
+            This PR contains updated translations downloaded from Crowdin.
+
+            **Changes include:**
+            - Updated translation files in `web/i18n/`
+            - Translations synchronized from Crowdin project
+
+            Please review the changes and merge if they look correct.
+
+            ---
+            *This PR was created automatically by the translation workflow.*
+          commit-message: 'Updated translations from Crowdin'
+          author: 'Owncast <owncast@owncast.online>'
+          add-paths: |
+            web/i18n/**
+          delete-branch: true
+
+      - name: Log PR creation result
+        if: steps.create_pr.outputs.pull-request-number
+        run: |
+          echo "Created PR #${{ steps.create_pr.outputs.pull-request-number }}"
+          echo "PR URL: ${{ steps.create_pr.outputs.pull-request-url }}"
