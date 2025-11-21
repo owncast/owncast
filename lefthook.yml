@@ -44,7 +44,7 @@ pre-commit:
       stage_fixed: true
     golangci-lint:
       glob: '*.go'
-      run: go tool golangci-lint run ./...
+      run: go tool golangci-lint run {staged_files}
       stage_fixed: true
     go-test:
       glob: '*.go'

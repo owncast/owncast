@@ -1,14 +1,27 @@
+# This workflow runs browser-based tests using Cypress
+# Triggers:
+#   - Push/PR with web, Go backend, or browser test changes
+# Note: Browser tests require both frontend and backend
+
 name: Browser Tests
 
 on:
   push:
     paths:
       - 'web/**'
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
       - 'test/automated/browser/**'
+      - '.github/workflows/browser-testing.yml'
   pull_request:
     paths:
       - 'web/**'
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
       - 'test/automated/browser/**'
+      - '.github/workflows/browser-testing.yml'
 
 jobs:
   cypress-run:
@@ -20,21 +33,37 @@ jobs:
           concurrent_skipping: 'same_content_newer'
 
       - name: Check out pull request code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'push'
 
-      - uses: actions/setup-node@v4
+      - name: Get changed files
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v47
         with:
-          node-version: '22.9.0'
+          files_yaml: |
+            testable:
+              - 'web/**/*.{tsx,ts,jsx,js,css,scss}'
+              - 'test/automated/browser/**'
+              - '**/*.go'
+              - 'go.mod'
+              - 'go.sum'
+            docs:
+              - '**/*.md'
+
+      - uses: actions/setup-node@v4
+        if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
+        with:
+          node-version: '24.11.1'
 
       - name: Cache node modules
+        if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         uses: actions/cache@v4
         env:
           cache-name: cache-node-modules-browser-tests
@@ -47,14 +76,17 @@ jobs:
             ${{ runner.os }}-
 
       - uses: actions/setup-go@v5
+        if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         with:
-          go-version: '1.24'
+          go-version: '1.25.4'
           cache: true
 
       - name: Install Google Chrome
+        if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         run: sudo apt-get update && sudo apt-get install google-chrome-stable
 
       - name: Run Browser tests
+        if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 20

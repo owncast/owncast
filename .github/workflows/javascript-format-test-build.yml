@@ -1,16 +1,39 @@
+# This workflow handles Javascript formatting, linting, testing, and building
+# Triggers:
+#   - Push/PR with changes to web/ directory source code
+# Skips:
+#   - Markdown files
+#   - Static/generated files
+# Jobs:
+#   1. formatting: ESLint and Prettier formatting
+#   2. unused-code: Knip checks for unused code and dependencies
+#   3. web-bundle: Builds and bundles the web app (only on develop branch)
+# Note: Auto-fixes and commits formatting issues on push events
+
 name: Javascript
 
-# This action works with pull requests and pushes
 on:
   push:
     paths:
-      - web/**
-      - '!**.md'
+      - 'web/**/*.{js,ts,tsx,jsx,json,css,scss}'
+      - 'web/package.json'
+      - 'web/package-lock.json'
+      - 'web/.eslintrc.js'
+      - 'web/.prettierrc.js'
+      - 'web/tsconfig.json'
+      - 'web/next.config.js'
+      - '.github/workflows/javascript-format-test-build.yml'
 
   pull_request:
     paths:
-      - web/**
-      - '!**.md'
+      - 'web/**/*.{js,ts,tsx,jsx,json,css,scss}'
+      - 'web/package.json'
+      - 'web/package-lock.json'
+      - 'web/.eslintrc.js'
+      - 'web/.prettierrc.js'
+      - 'web/tsconfig.json'
+      - 'web/next.config.js'
+      - '.github/workflows/javascript-format-test-build.yml'
 
 jobs:
   formatting:
@@ -29,7 +52,7 @@ jobs:
           skip_after_successful_duplicate: 'true'
 
       - name: Check out pull request code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -38,15 +61,15 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '22.9.0'
+          node-version: '24.11.1'
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'push'
 
       - name: Get changed files
         id: changed-files-yaml
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v47
         with:
           path: 'web'
           files_ignore: |
@@ -117,20 +140,20 @@ jobs:
           skip_after_successful_duplicate: 'true'
 
       - name: Check out pull request code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'push'
 
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '22.9.0'
+          node-version: '24.11.1'
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -173,7 +196,7 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '22.9.0'
+          node-version: '24.11.1'
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -188,14 +211,14 @@ jobs:
             ${{ runner.os }}-
 
       - name: Check out pull request code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'push'
 
       - name: Bundle web app (next.js build)

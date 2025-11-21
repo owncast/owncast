@@ -44,6 +44,11 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if request.IdArray == nil || request.Visible == nil {
+		webutils.WriteSimpleResponse(w, false, "missing required fields: idArray and visible are required")
+		return
+	}
+
 	if err := chat.SetMessagesVisibility(*request.IdArray, *request.Visible); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return

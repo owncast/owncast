@@ -13,6 +13,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"time"
 
@@ -38,7 +39,7 @@ func DoesFileExists(name string) bool {
 
 // GetRelativePathFromAbsolutePath gets the relative path from the provided absolute path.
 func GetRelativePathFromAbsolutePath(path string) string {
-	pathComponents := strings.Split(path, "/")
+	pathComponents := strings.Split(path, string(os.PathSeparator))
 	variant := pathComponents[len(pathComponents)-2]
 	file := pathComponents[len(pathComponents)-1]
 
@@ -47,7 +48,7 @@ func GetRelativePathFromAbsolutePath(path string) string {
 
 // GetIndexFromFilePath is a utility that will return the index/key/variant name in a full path.
 func GetIndexFromFilePath(path string) string {
-	pathComponents := strings.Split(path, "/")
+	pathComponents := strings.Split(path, string(os.PathSeparator))
 	variant := pathComponents[len(pathComponents)-2]
 
 	return variant
@@ -78,23 +79,23 @@ func Move(source, destination string) error {
 func moveFallback(source, destination string) error {
 	inputFile, err := os.Open(source) // nolint: gosec
 	if err != nil {
-		return fmt.Errorf("Couldn't open source file: %s", err)
+		return fmt.Errorf("couldn't open source file: %s", err)
 	}
 	outputFile, err := os.Create(destination) // nolint: gosec
 	if err != nil {
 		_ = inputFile.Close()
-		return fmt.Errorf("Couldn't open dest file: %s", err)
+		return fmt.Errorf("couldn't open dest file: %s", err)
 	}
 	defer outputFile.Close()
 	_, err = io.Copy(outputFile, inputFile)
 	_ = inputFile.Close()
 	if err != nil {
-		return fmt.Errorf("Writing to output file failed: %s", err)
+		return fmt.Errorf("writing to output file failed: %s", err)
 	}
 	// The copy was successful, so now delete the original file
 	err = os.Remove(source)
 	if err != nil {
-		return fmt.Errorf("Failed removing original file: %s", err)
+		return fmt.Errorf("failed removing original file: %s", err)
 	}
 	return nil
 }
@@ -259,22 +260,18 @@ func ValidatedFfmpegPath(ffmpegPath string) string {
 		log.Warnln(ffmpegPath, "is an invalid path to ffmpeg will try to use a copy in your path, if possible")
 	}
 
-	// First look to see if ffmpeg is in the current working directory
-	localCopy := "./ffmpeg"
-	hasLocalCopyError := VerifyFFMpegPath(localCopy)
-	if hasLocalCopyError == nil {
-		// No error, so all is good.  Use the local copy.
-		return localCopy
-	}
-
-	cmd := exec.Command("which", "ffmpeg")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
+	// Look for ffmpeg in the system path or in the current working directory.
+	ffmpegPath, err := exec.LookPath("ffmpeg")
+	if ffmpegPath == "" || (err != nil && !errors.Is(err, exec.ErrDot)) || VerifyFFMpegPath(ffmpegPath) != nil {
 		log.Fatalln("Unable to locate ffmpeg. Either install it globally on your system or put the ffmpeg binary in the same directory as Owncast. The binary must be named ffmpeg.")
 	}
 
-	path := strings.TrimSpace(string(out))
-	return path
+	// Resolve to an absolute path.
+	absPath, err := filepath.Abs(ffmpegPath)
+	if err != nil {
+		return ffmpegPath
+	}
+	return absPath
 }
 
 // VerifyFFMpegPath verifies that the path exists, is a file, and is executable.
@@ -293,9 +290,12 @@ func VerifyFFMpegPath(path string) error {
 		return errors.New("ffmpeg path can not be a folder")
 	}
 
-	mode := stat.Mode()
+	mode := stat.Mode().Perm()
+
 	// source: https://stackoverflow.com/a/60128480
-	if mode&0o111 == 0 {
+	// On Windows, Perm() omits the executable bit, only check on Unix-like systems.
+	// https://github.com/golang/go/issues/41809
+	if runtime.GOOS != "windows" && mode&0o111 == 0 {
 		return errors.New("ffmpeg path is not executable")
 	}
 
@@ -438,13 +438,14 @@ func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
 
 	contentType := strings.Split(splitHeader[1], ";")[0]
 
-	if contentType == "image/svg+xml" {
+	switch contentType {
+	case "image/svg+xml":
 		extension = ".svg"
-	} else if contentType == "image/gif" {
+	case "image/gif":
 		extension = ".gif"
-	} else if contentType == "image/png" {
+	case "image/png":
 		extension = ".png"
-	} else if contentType == "image/jpeg" {
+	case "image/jpeg":
 		extension = ".jpeg"
 	}
 

@@ -26,6 +26,16 @@ func UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if emoji.Data == nil {
+		webutils.WriteSimpleResponse(w, false, "data field is required")
+		return
+	}
+
+	if emoji.Name == nil {
+		webutils.WriteSimpleResponse(w, false, "name field is required")
+		return
+	}
+
 	bytes, _, err := utils.DecodeBase64Image(*emoji.Data)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())

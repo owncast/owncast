@@ -14,6 +14,8 @@ import {
 } from '../../../utils/input-statuses';
 import { RESET_TIMEOUT } from '../../../utils/config-constants';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
+import { Translation } from '../../../components/ui/Translation/Translation';
+import { Localization } from '../../../types/localization';
 
 const URL_CUSTOM_EMOJIS = `/api/emoji`;
 
@@ -65,7 +67,9 @@ const Emoji = () => {
 
     setLoading(true);
 
-    setSubmitStatus(createInputStatus(STATUS_PROCESSING, 'Deleting emoji...'));
+    setSubmitStatus(
+      createInputStatus(STATUS_PROCESSING, t(Localization.Admin.StatusMessages.deletingEmoji)),
+    );
 
     try {
       const response = await fetchData(DELETE_EMOJI, {
@@ -77,7 +81,9 @@ const Emoji = () => {
         throw response;
       }
 
-      setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Emoji deleted'));
+      setSubmitStatus(
+        createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.emojiDeleted)),
+      );
       resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
     } catch (error) {
       setSubmitStatus(createInputStatus(STATUS_ERROR, `${error}`));
@@ -91,7 +97,9 @@ const Emoji = () => {
   async function handleEmojiUpload() {
     setLoading(true);
     try {
-      setSubmitStatus(createInputStatus(STATUS_PROCESSING, 'Converting emoji...'));
+      setSubmitStatus(
+        createInputStatus(STATUS_PROCESSING, t(Localization.Admin.StatusMessages.convertingEmoji)),
+      );
 
       // eslint-disable-next-line consistent-return
       const emojiData = await new Promise<CustomEmoji>((res, rej) => {
@@ -109,7 +117,9 @@ const Emoji = () => {
         );
       });
 
-      setSubmitStatus(createInputStatus(STATUS_PROCESSING, 'Uploading emoji...'));
+      setSubmitStatus(
+        createInputStatus(STATUS_PROCESSING, t(Localization.Admin.StatusMessages.uploadingEmoji)),
+      );
 
       const response = await fetchData(UPLOAD_EMOJI, {
         method: 'POST',
@@ -123,7 +133,12 @@ const Emoji = () => {
         throw response;
       }
 
-      setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Emoji uploaded successfully!'));
+      setSubmitStatus(
+        createInputStatus(
+          STATUS_SUCCESS,
+          t(Localization.Admin.StatusMessages.emojiUploadedSuccessfully),
+        ),
+      );
       getEmojis();
     } catch (error) {
       setSubmitStatus(createInputStatus(STATUS_ERROR, `${error}`));
@@ -135,18 +150,14 @@ const Emoji = () => {
 
   return (
     <div>
-      <Title>Emojis</Title>
+      <Title>
+        <Translation translationKey={Localization.Admin.emojis} />
+      </Title>
       <Paragraph>
-        Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the
-        filename without extension will be used as emoji name. Additionally, emoji names are
-        case-insensitive. For best results, ensure all emoji have unique names.
+        <Translation translationKey={Localization.Admin.emojiPageDescription} />
       </Paragraph>
       <Paragraph>
-        {t('Want to upload custom emojis in bulk? Check out our')}{' '}
-        <a href="https://owncast.online/docs/chat/emoji" rel="noopener noreferrer" target="_blank">
-          {t('Emoji guide')}
-        </a>
-        .
+        <Translation translationKey={Localization.Admin.emojiUploadBulkGuide} />
       </Paragraph>
       <br />
       <Upload
@@ -160,7 +171,7 @@ const Emoji = () => {
         disabled={loading}
       >
         <Button type="primary" disabled={loading}>
-          Upload new emoji
+          <Translation translationKey={Localization.Admin.uploadNewEmoji} />
         </Button>
       </Upload>
       <FormStatusIndicator status={submitStatus} />
@@ -186,7 +197,7 @@ const Emoji = () => {
                     <Button
                       size="small"
                       type="ghost"
-                      title="Delete emoji"
+                      title={t(Localization.Admin.deleteEmoji)}
                       style={{
                         position: 'absolute',
                         right: 0,

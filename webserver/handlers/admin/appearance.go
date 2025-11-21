@@ -23,6 +23,11 @@ func SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if values.Value == nil {
+		webutils.WriteSimpleResponse(w, false, "value field is required")
+		return
+	}
+
 	configRepository := configrepository.Get()
 	if err := configRepository.SetCustomColorVariableValues(*values.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())

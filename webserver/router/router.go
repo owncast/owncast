@@ -71,13 +71,14 @@ func Start(enableVerboseLogging bool) error {
 	m := http.NewServeMux()
 
 	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/debug/vars" {
+		switch r.URL.Path {
+		case "/debug/vars":
 			w.WriteHeader(http.StatusNotFound)
 			return
-		} else if r.URL.Path == "/embed/chat/" || r.URL.Path == "/embed/chat" {
+		case "/embed/chat/", "/embed/chat":
 			// Redirect /embed/chat
 			http.Redirect(w, r, "/embed/chat/readonly", http.StatusTemporaryRedirect)
-		} else {
+		default:
 			http2Handler.ServeHTTP(w, r)
 		}
 	})

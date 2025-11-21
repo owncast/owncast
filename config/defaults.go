@@ -65,7 +65,7 @@ func GetDefaults() Defaults {
 
 - This is a live stream powered by [Owncast](https://owncast.online), a free and open source live streaming server.
 
-- To discover more examples of streams, visit [Owncast's directory](https://directory.owncast.online).
+- To discover more examples of streams, visit [Owncast's directory](https://owncast.directory).
 
 - If you're the owner of this server you should visit the admin and customize the content on this page.
 
@@ -79,7 +79,7 @@ func GetDefaults() Defaults {
 		DatabaseFilePath: "data/owncast.db",
 
 		YPEnabled: false,
-		YPServer:  "https://directory.owncast.online",
+		YPServer:  "https://owncast.directory",
 
 		WebServerPort:  8080,
 		WebServerIP:    "0.0.0.0",

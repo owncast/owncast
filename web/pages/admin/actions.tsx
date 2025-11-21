@@ -4,6 +4,7 @@ import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { html as codeMirrorHTML } from '@codemirror/lang-html';
 import dynamic from 'next/dynamic';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'next-export-i18n';
 import { FormStatusIndicator } from '../../components/admin/FormStatusIndicator';
 import { ExternalAction } from '../../interfaces/external-action';
 import {
@@ -14,6 +15,8 @@ import {
 import { createInputStatus, STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/validators';
+import { Localization } from '../../types/localization';
+import { Translation } from '../../components/ui/Translation/Translation';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
@@ -54,6 +57,7 @@ type ActionType = 'url' | 'html';
 
 const ActionModal = (props: Props) => {
   const { onOk, onCancel, open, action } = props;
+  const { t } = useTranslation();
 
   const [actionType, setActionType] = useState<ActionType>('url');
 
@@ -120,32 +124,38 @@ const ActionModal = (props: Props) => {
   return (
     <Modal
       destroyOnClose
-      title={action == null ? 'Create New Action' : 'Edit Action'}
+      title={
+        action == null
+          ? t(Localization.Admin.Actions.createNewActionTitle)
+          : t(Localization.Admin.Actions.editActionTitle)
+      }
       open={open}
       onOk={save}
       onCancel={onCancel}
       okButtonProps={okButtonProps}
     >
       <Form initialValues={action}>
-        Add the URL for the external action you want to present.{' '}
-        <strong>Only HTTPS URLs and embeds are supported.</strong>
+        <Translation translationKey={Localization.Admin.Actions.modalDescription} />{' '}
+        <strong>
+          <Translation translationKey={Localization.Admin.Actions.onlyHttpsSupported} />
+        </strong>
         <p>
           <a
             href="https://owncast.online/thirdparty/actions/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Read more about external actions.
+            <Translation translationKey={Localization.Admin.Actions.readMoreAboutActions} />
           </a>
         </p>
         <Form.Item>
           <Select
             value={actionType}
             onChange={setActionType}
-            placeholder="Select an action type"
+            placeholder={t(Localization.Admin.Actions.selectActionType)}
             options={[
-              { label: 'Link or embed an URL', value: 'url' },
-              { label: 'Custom HTML', value: 'html' },
+              { label: t(Localization.Admin.Actions.linkOrEmbedUrl), value: 'url' },
+              { label: t(Localization.Admin.Actions.customHtml), value: 'html' },
             ]}
           />
         </Form.Item>
@@ -153,7 +163,7 @@ const ActionModal = (props: Props) => {
           <Form.Item name="html">
             <CodeMirror
               value={actionHTML}
-              placeholder="HTML embed code (required)"
+              placeholder={t(Localization.Admin.Actions.htmlEmbedPlaceholder)}
               theme={bbedit}
               height="200px"
               extensions={[codeMirrorHTML()]}
@@ -164,7 +174,7 @@ const ActionModal = (props: Props) => {
           <Form.Item name="url">
             <Input
               required
-              placeholder="https://myserver.com/action (required)"
+              placeholder={t(Localization.Admin.Actions.urlPlaceholder)}
               onChange={input => setActionUrl(input.currentTarget.value.trim())}
               type="url"
               pattern={DEFAULT_TEXTFIELD_URL_PATTERN}
@@ -175,21 +185,21 @@ const ActionModal = (props: Props) => {
           <Input
             value={actionTitle}
             required
-            placeholder="Your action title (required)"
+            placeholder={t(Localization.Admin.Actions.titlePlaceholder)}
             onChange={input => setActionTitle(input.currentTarget.value)}
           />
         </Form.Item>
         <Form.Item name="description">
           <Input
             value={actionDescription}
-            placeholder="Optional description"
+            placeholder={t(Localization.Admin.Actions.descriptionPlaceholder)}
             onChange={input => setActionDescription(input.currentTarget.value)}
           />
         </Form.Item>
         <Form.Item name="icon">
           <Input
             value={actionIcon}
-            placeholder="https://myserver.com/action/icon.png (optional)"
+            placeholder={t(Localization.Admin.Actions.iconPlaceholder)}
             onChange={input => setActionIcon(input.currentTarget.value)}
           />
         </Form.Item>
@@ -201,7 +211,7 @@ const ActionModal = (props: Props) => {
               onChange={input => setActionColor(input.currentTarget.value)}
             />
           </Form.Item>
-          Optional background color of the action button.
+          <Translation translationKey={Localization.Admin.Actions.optionalBackgroundColor} />
         </div>
         {actionType === 'html' ? null : (
           <Form.Item name="openExternally">
@@ -210,7 +220,7 @@ const ActionModal = (props: Props) => {
               defaultChecked={openExternally}
               onChange={onOpenExternallyChanged}
             >
-              Open in a new tab instead of within your page.
+              <Translation translationKey={Localization.Admin.Actions.openExternally} />
             </Checkbox>
           </Form.Item>
         )}
@@ -220,6 +230,7 @@ const ActionModal = (props: Props) => {
 };
 
 const Actions = () => {
+  const { t } = useTranslation();
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { externalActions } = serverConfig;
@@ -245,7 +256,9 @@ const Actions = () => {
       data: { value: actionsData },
       onSuccess: () => {
         setFieldInConfigState({ fieldName: 'externalActions', value: actionsData, path: '' });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Updated.'));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.updated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
       onError: (message: string) => {
@@ -401,13 +414,14 @@ const Actions = () => {
 
   return (
     <div>
-      <Title>External Actions</Title>
+      <Title>
+        <Translation translationKey={Localization.Admin.Actions.title} />
+      </Title>
       <Paragraph>
-        External action URLs are 3rd party UI you can display, embedded, into your Owncast page when
-        a user clicks on a button to launch your action.
+        <Translation translationKey={Localization.Admin.Actions.description} />
       </Paragraph>
       <Paragraph>
-        Read more about how to use actions, with examples, at{' '}
+        <Translation translationKey={Localization.Admin.Actions.readMoreLink} />{' '}
         <a
           href="https://owncast.online/thirdparty/?source=admin"
           target="_blank"
@@ -426,7 +440,7 @@ const Actions = () => {
       />
       <br />
       <Button type="primary" onClick={showCreateModal}>
-        Create New Action
+        <Translation translationKey={Localization.Admin.Actions.createNewAction} />
       </Button>
       <FormStatusIndicator status={submitStatus} />
 

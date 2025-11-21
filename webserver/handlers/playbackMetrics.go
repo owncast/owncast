@@ -29,7 +29,12 @@ func ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 
 	clientID := utils.GenerateClientIDFromRequest(r)
 
+	if request.Errors == nil {
+		webutils.WriteSimpleResponse(w, false, "errors field is required")
+		return
+	}
 	metrics.RegisterPlaybackErrorCount(clientID, *request.Errors)
+
 	if request.Bandwidth != nil && *request.Bandwidth != 0.0 {
 		metrics.RegisterPlayerBandwidth(clientID, *request.Bandwidth)
 	}
@@ -42,5 +47,9 @@ func ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 		metrics.RegisterPlayerSegmentDownloadDuration(clientID, *request.DownloadDuration)
 	}
 
+	if request.QualityVariantChanges == nil {
+		webutils.WriteSimpleResponse(w, false, "qualityVariantChanges field is required")
+		return
+	}
 	metrics.RegisterQualityVariantChangesCount(clientID, *request.QualityVariantChanges)
 }

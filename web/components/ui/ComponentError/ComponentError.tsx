@@ -1,5 +1,7 @@
 import { Alert, Button } from 'antd';
 import { FC } from 'react';
+import Translation from '../Translation/Translation';
+import { Localization } from '../../../types/localization';
 
 export type ComponentErrorProps = {
   message?: string;
@@ -35,7 +37,15 @@ const ErrorContent = ({
       <p>You may optionally retry, however functionality might not work as expected.</p>
     )}
     <code>
-      <div>{message && `Error: ${message}`}</div>
+      <div>
+        {message && (
+          <Translation
+            translationKey={Localization.Frontend.componentError}
+            defaultText="Error: {{message}}"
+            vars={{ message }}
+          />
+        )}
+      </div>
       <div>Component: {componentName}</div>
       <div>{details && details}</div>
     </code>

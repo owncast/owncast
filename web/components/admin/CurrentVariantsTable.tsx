@@ -4,6 +4,7 @@ import React, { FC, useContext, useState } from 'react';
 import { Typography, Table, Modal, Button, Alert } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
 import { UpdateArgs, VideoVariant } from '../../types/config-section';
@@ -24,6 +25,7 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
+import { Localization } from '../../types/localization';
 import { FormStatusIndicator } from './FormStatusIndicator';
 
 const { Title } = Typography;
@@ -36,6 +38,7 @@ const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'),
 
 // eslint-disable-next-line import/prefer-default-export
 export const CurrentVariantsTable: FC = () => {
+  const { t } = useTranslation();
   const [displayModal, setDisplayModal] = useState(false);
   const [modalProcessing, setModalProcessing] = useState(false);
   const [editId, setEditId] = useState(0);
@@ -87,7 +90,9 @@ export const CurrentVariantsTable: FC = () => {
         setModalProcessing(false);
         handleModalCancel();
 
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Variants updated'));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.variantsUpdated)),
+        );
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
 
         if (serverStatusData.online) {

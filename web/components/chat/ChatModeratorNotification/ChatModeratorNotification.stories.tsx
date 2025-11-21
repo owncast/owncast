@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/react';
+import { Meta } from '@storybook/nextjs';
 import { ChatModeratorNotification } from './ChatModeratorNotification';
 
 const meta = {

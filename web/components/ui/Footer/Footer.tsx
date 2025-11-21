@@ -4,6 +4,8 @@ import { useTranslation } from 'next-export-i18n';
 import styles from './Footer.module.scss';
 import { ServerStatus } from '../../../interfaces/server-status.model';
 import { serverStatusState } from '../../stores/ClientConfigStore';
+import { Localization } from '../../../types';
+import Translation from '../Translation/Translation';
 
 export const Footer: FC = () => {
   const clientStatus = useRecoilValue<ServerStatus>(serverStatusState);
@@ -11,19 +13,22 @@ export const Footer: FC = () => {
   const { t } = useTranslation();
   return (
     <footer className={styles.footer} id="footer">
-      <span>
-        {t('Powered by Owncast')}
-        <a href="https://owncast.online">&nbsp;v{versionNumber}</a>
+      <span id="owncast-powered-by-text">
+        <Translation
+          translationKey={Localization.Common.poweredByOwncastVersion}
+          vars={{ versionNumber }}
+          defaultText="Powered by <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+        />
       </span>
       <span className={styles.links}>
         <a href="https://owncast.online/docs" target="_blank" rel="noreferrer">
-          {t('Documentation')}
+          {t(Localization.Frontend.Footer.documentation)}
         </a>
         <a href="https://owncast.online/help" target="_blank" rel="noreferrer">
-          {t('Contribute')}
+          {t(Localization.Frontend.Footer.contribute)}
         </a>
         <a href="https://github.com/owncast/owncast" target="_blank" rel="noreferrer">
-          {t('Source')}
+          {t(Localization.Frontend.Footer.source)}
         </a>
       </span>
     </footer>
