@@ -102,7 +102,7 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: translations-${{ github.run_number }}
+          branch: crowdin-translations
           base: develop
           title: 'chore(i18n): update translations from Crowdin'
           body: |
