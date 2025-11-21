@@ -1,3 +1,11 @@
+# This workflow checks CSS/SCSS code quality and formatting
+# Triggers:
+#   - Push/PR with changes to web/ directory
+# Checks:
+#   - Prettier formatting for CSS/SCSS files
+#   - Stylelint rules for code quality
+# Note: Only runs when CSS or SCSS files are changed
+
 name: CSS Lint and Formatting
 
 on:
@@ -17,19 +25,19 @@ jobs:
 
     steps:
       - name: Check out pull request code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'push'
 
       - name: Get changed files
         id: changed-files-yaml
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v47
         with:
           path: 'web'
           files_yaml: |
@@ -39,7 +47,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.9.0'
+          node-version: '24.11.1'
 
       - name: Install dependencies
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'

@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction } from 'react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from 'antd';
-import { ExternalAction } from '../../../interfaces/external-action';
+import { ExternalAction, ExternalActionUtils } from '../../../interfaces/external-action';
 import { ActionButtonMenu } from '../../action-buttons/ActionButtonMenu/ActionButtonMenu';
 import { ActionButtonRow } from '../../action-buttons/ActionButtonRow/ActionButtonRow';
 import { FollowButton } from '../../action-buttons/FollowButton';
@@ -17,7 +17,6 @@ interface ActionButtonProps {
   setShowFollowModal: Dispatch<SetStateAction<boolean>>;
   setShowNotifyModal: Dispatch<SetStateAction<boolean>>;
   disableNotifyReminderPopup: () => void;
-  setExternalActionToDisplay: any;
   externalActionSelected: (action: ExternalAction) => void;
 }
 
@@ -37,12 +36,11 @@ const ActionButtons: FC<ActionButtonProps> = ({
   setShowNotifyModal,
   disableNotifyReminderPopup,
   externalActions,
-  setExternalActionToDisplay,
   externalActionSelected,
 }) => {
   const externalActionButtons = externalActions.map(action => (
     <ActionButton
-      key={action.url || action.html}
+      key={ExternalActionUtils.generateKey(action)}
       action={action}
       externalActionSelected={externalActionSelected}
     />
@@ -70,13 +68,12 @@ const ActionButtons: FC<ActionButtonProps> = ({
       <div className={styles.mobileActionButtons}>
         {(supportsBrowserNotifications ||
           supportsBrowserNotifications ||
-          externalActionButtons.length > 0) && (
+          externalActions.length > 0) && (
           <ActionButtonMenu
-            className={styles.actionButtonMenu}
+            actions={externalActions}
             showFollowItem={supportFediverseFeatures}
             showNotifyItem={supportsBrowserNotifications}
-            actions={externalActions}
-            externalActionSelected={setExternalActionToDisplay}
+            externalActionSelected={externalActionSelected}
             notifyItemSelected={() => setShowNotifyModal(true)}
             followItemSelected={() => setShowFollowModal(true)}
           />

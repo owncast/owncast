@@ -24,6 +24,7 @@ func sendStreamStatusEvent(eventType models.EventType, id string, timestamp time
 			"summary":     configRepository.GetServerSummary(),
 			"streamTitle": configRepository.GetStreamTitle(),
 			"status":      getStatus(),
+			"serverURL":   getServerURL(),
 			"timestamp":   timestamp,
 		},
 	})

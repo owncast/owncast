@@ -68,7 +68,7 @@ func RegisterFediverseOTP(accessToken, userID, userDisplayName, account string) 
 	defer lock.Unlock()
 
 	if len(pendingAuthRequests)+1 > maxPendingRequests {
-		return request, false, errors.New("Please try again later. Too many pending requests.")
+		return request, false, errors.New("please try again later, too many pending requests")
 	}
 
 	code, _ := createCode()

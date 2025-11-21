@@ -1,0 +1,47 @@
+name: Hacktoberfest Reminder
+
+on:
+  schedule:
+    # Run on September 15th at 9:00 AM UTC every year
+    - cron: '0 9 15 9 *'
+  workflow_dispatch: # Allow manual triggering for testing
+
+jobs:
+  create-reminder-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Create Hacktoberfest reminder issue
+        uses: dacbd/create-issue-action@v2
+        with:
+          token: ${{ github.token }}
+          title: 'Reminder: Update Hacktoberfest branding for this year'
+          body: |
+            ## Hacktoberfest Update Reminder
+            
+            It's time to review and update the Hacktoberfest page on the Owncast website!
+            
+            ### What needs to be updated:
+            
+            - **Branding/Images**: Hacktoberfest releases new branding each year. Check the official [Hacktoberfest website](https://hacktoberfest.com/) for current year branding assets.
+            - **Year**: Update any references to the year (e.g., "Hacktoberfest 2024" → "Hacktoberfest 2025")
+            - **Links**: Verify all links point to the current year's Hacktoberfest pages
+            - **Text/Copy**: Review any text for accuracy and updates from Hacktoberfest organizers
+            
+            ### Resources:
+            
+            - Hacktoberfest website: https://hacktoberfest.com/
+            
+            ### Action Items:
+            
+            - [ ] Download new Hacktoberfest branding assets
+            - [ ] Update images on the website
+            - [ ] Update year references
+            - [ ] Verify all links are working
+            - [ ] Test the updated page
+            
+            ---
+            
+            _This issue was automatically created by a scheduled GitHub Action._
+          labels: hacktoberfest,good first issue,help wanted,documentation

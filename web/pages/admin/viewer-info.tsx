@@ -12,6 +12,7 @@ import { ServerStatusContext } from '../../utils/server-status-context';
 import { VIEWERS_OVER_TIME, ACTIVE_VIEWER_DETAILS, fetchData } from '../../utils/apis';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
+import { Localization } from '../../types/localization';
 
 // Lazy loaded components
 
@@ -36,19 +37,20 @@ export default function ViewersOverTime() {
   }
 
   const times = [
-    { title: t('Current stream'), start: streamStart },
-    { title: t('Last 12 hours'), start: sub(new Date(), { hours: 12 }) },
-    { title: t('Last 24 hours'), start: sub(new Date(), { hours: 24 }) },
-    { title: t('Last 7 days'), start: sub(new Date(), { days: 7 }) },
-    { title: t('Last 30 days'), start: sub(new Date(), { days: 30 }) },
-    { title: t('Last 3 months'), start: sub(new Date(), { months: 3 }) },
-    { title: t('Last 6 months'), start: sub(new Date(), { months: 6 }) },
+    { title: t(Localization.Admin.ViewerInfo.currentStream), start: streamStart },
+    { title: t(Localization.Admin.ViewerInfo.last12Hours), start: sub(new Date(), { hours: 12 }) },
+    { title: t(Localization.Admin.ViewerInfo.last24Hours), start: sub(new Date(), { hours: 24 }) },
+    { title: t(Localization.Admin.ViewerInfo.last7Days), start: sub(new Date(), { days: 7 }) },
+    { title: t(Localization.Admin.ViewerInfo.last30Days), start: sub(new Date(), { days: 30 }) },
+    { title: t(Localization.Admin.ViewerInfo.last3Months), start: sub(new Date(), { months: 3 }) },
+    { title: t(Localization.Admin.ViewerInfo.last6Months), start: sub(new Date(), { months: 6 }) },
   ];
 
   const [loadingChart, setLoadingChart] = useState(true);
   const [viewerInfo, setViewerInfo] = useState([]);
   const [viewerDetails, setViewerDetails] = useState([]);
   const [timeWindowStart, setTimeWindowStart] = useState(times[1]);
+  const [timeWindowKey, setTimeWindowKey] = useState(1);
 
   const getInfo = async () => {
     try {
@@ -85,6 +87,7 @@ export default function ViewersOverTime() {
 
   const onTimeWindowSelect = ({ key }) => {
     setTimeWindowStart(times[key]);
+    setTimeWindowKey(Number(key));
   };
 
   const offset: number = online && streamStart ? 0 : 1;
@@ -96,13 +99,13 @@ export default function ViewersOverTime() {
 
   return (
     <>
-      <Typography.Title>{t('Viewer Info')}</Typography.Title>
+      <Typography.Title>{t(Localization.Admin.ViewerInfo.title)}</Typography.Title>
       <br />
       <Row gutter={[16, 16]} justify="space-around">
         {online && (
           <Col span={8} md={8}>
             <StatisticItem
-              title={t('Current viewers')}
+              title={t(Localization.Admin.ViewerInfo.currentViewers)}
               value={viewerCount.toString()}
               prefix={<UserOutlined />}
             />
@@ -110,14 +113,18 @@ export default function ViewersOverTime() {
         )}
         <Col md={online ? 8 : 12}>
           <StatisticItem
-            title={online ? t('Max viewers this stream') : t('Max viewers last stream')}
+            title={
+              online
+                ? t(Localization.Admin.ViewerInfo.maxViewersThisStream)
+                : t(Localization.Admin.ViewerInfo.maxViewersLastStream)
+            }
             value={sessionPeakViewerCount.toString()}
             prefix={<UserOutlined />}
           />
         </Col>
         <Col md={online ? 8 : 12}>
           <StatisticItem
-            title={t('max viewers')}
+            title={t(Localization.Admin.ViewerInfo.maxViewers)}
             value={overallPeakViewerCount.toString()}
             prefix={<UserOutlined />}
           />
@@ -127,8 +134,8 @@ export default function ViewersOverTime() {
         <Alert
           style={{ marginTop: '10px' }}
           banner
-          message={t('Please wait')}
-          description={t('No viewer data has been collected yet.')}
+          message={t(Localization.Admin.ViewerInfo.pleaseWait)}
+          description={t(Localization.Admin.ViewerInfo.noData)}
           type="info"
         />
       )}
@@ -136,12 +143,13 @@ export default function ViewersOverTime() {
       <Spin spinning={!viewerInfo.length || loadingChart}>
         {viewerInfo.length > 0 && (
           <Chart
-            title={t('Viewers')}
+            title={t(Localization.Admin.ViewerInfo.viewers)}
             data={viewerInfo}
             color="#2087E2"
             unit="viewers"
             minYValue={0}
             yStepSize={1}
+            timeWindowKey={timeWindowKey}
           />
         )}
 

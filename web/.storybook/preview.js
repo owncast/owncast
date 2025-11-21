@@ -2,10 +2,11 @@ import '../styles/variables.css';
 import '../styles/global.less';
 import '../styles/theme.less';
 import './preview.scss';
-import { themes } from '@storybook/theming';
+import { themes } from 'storybook/theming';
 import { DocsContainer } from './storybook-theme';
-import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
+import { INITIAL_VIEWPORTS } from 'storybook/viewport';
 import _ from 'lodash';
+import { initialize, mswLoader } from 'msw-storybook-addon';
 
 /**
  * Takes an entry of a viewport (from Object.entries()) and converts it
@@ -13,8 +14,8 @@ import _ from 'lodash';
  *
  * @template {string} Key
  *
- * @param {[Key, import('@storybook/addon-viewport/dist/ts3.9/models').Viewport]} entry
- * @returns {Array<[`${Key}${'Portrait' | 'Landscape'}`, import('@storybook/addon-viewport/dist/ts3.9/models').Viewport]>}
+ * @param {[Key, import('storybook/viewport/dist/ts3.9/models').Viewport]} entry
+ * @returns {Array<[`${Key}${'Portrait' | 'Landscape'}`, import('storybook/viewport/dist/ts3.9/models').Viewport]>}
  */
 const convertToLandscapeAndPortraitEntries = ([objectKey, viewport]) => {
   const pixelStringToNumber = str => parseInt(str.split('px')[0]);
@@ -67,15 +68,14 @@ const convertToLandscapeAndPortraitEntries = ([objectKey, viewport]) => {
  */
 const flatMapObject = (obj, f) => Object.fromEntries(Object.entries(obj).flatMap(f));
 
+// Initialize MSW
+initialize();
+
 export const parameters = {
-  fetchMock: {
-    mocks: [],
-  },
   // actions: { argTypesRegex: '^on[A-Z].*' },
   docs: {
     container: DocsContainer,
   },
-  // actions: { argTypesRegex: '^on[A-Z].*' },
   viewMode: 'docs',
   controls: {
     matchers: {
@@ -99,8 +99,8 @@ export const parameters = {
     light: { ...themes.normal },
   },
   viewport: {
-    // Take a bunch of viewports from the storybook addon and convert them
-    // to portrait + landscape. Keys are appended with 'Landscape' or 'Portrait'.
     viewports: flatMapObject(INITIAL_VIEWPORTS, convertToLandscapeAndPortraitEntries),
   },
 };
+
+export const loaders = [mswLoader];

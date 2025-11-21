@@ -229,7 +229,7 @@ func createBaseOutboundMessage(textContent string) (vocab.ActivityStreamsCreate,
 
 // Get Hashtag HTML link for a given tag (without # prefix).
 func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
-	return fmt.Sprintf("<a class=\"hashtag\" href=\"https://directory.owncast.online/tags/%s\">#%s</a>", baseHashtag, baseHashtag)
+	return fmt.Sprintf("<a class=\"hashtag\" href=\"https://owncast.directory/tags/%s\">#%s</a>", baseHashtag, baseHashtag)
 }
 
 // SendToFollowers will send an arbitrary payload to all follower inboxes.

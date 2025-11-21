@@ -7,93 +7,8 @@ module.exports = {
 
   addons: [
     '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/preset-scss',
     '@storybook/addon-a11y',
-    'storybook-addon-fetch-mock',
-    '@storybook/addon-mdx-gfm',
-    '@storybook/addon-styling-webpack',
-    {
-      name: '@storybook/addon-styling-webpack',
-
-      options: {
-        rules: [
-          {
-            test: /\.css$/,
-            sideEffects: true,
-            use: [
-              require.resolve('style-loader'),
-              {
-                loader: require.resolve('css-loader'),
-                options: {
-                  // Want to add more CSS Modules options? Read more here: https://github.com/webpack-contrib/css-loader#modules
-                  modules: {
-                    auto: true,
-                  },
-                },
-              },
-            ],
-          },
-          {
-            test: /\.s[ac]ss$/,
-            sideEffects: true,
-            use: [
-              require.resolve('style-loader'),
-              {
-                loader: require.resolve('css-loader'),
-                options: {
-                  // Want to add more CSS Modules options? Read more here: https://github.com/webpack-contrib/css-loader#modules
-                  modules: {
-                    auto: true,
-		    namedExport: false,
-                  },
-                  importLoaders: 2,
-                },
-              },
-              require.resolve('resolve-url-loader'),
-              {
-                loader: require.resolve('sass-loader'),
-                options: {
-                  // Want to add more Sass options? Read more here: https://webpack.js.org/loaders/sass-loader/#options
-                  implementation: require.resolve('sass'),
-                  sourceMap: true,
-                  sassOptions: {},
-                },
-              },
-            ],
-          },
-          {
-            test: /\.less$/,
-            sideEffects: true,
-            use: [
-              require.resolve('style-loader'),
-              {
-                loader: require.resolve('css-loader'),
-                options: {
-                  // Want to add more CSS Modules options? Read more here: https://github.com/webpack-contrib/css-loader#modules
-                  modules: {
-                    auto: true,
-                  },
-                  importLoaders: 1,
-                },
-              },
-              {
-                loader: require.resolve('less-loader'),
-                options: {
-                  // Want to add more Less options? Read more here: https://webpack.js.org/loaders/less-loader/#options
-                  implementation: require.resolve('less'),
-                  sourceMap: true,
-                  lessOptions: {
-                    javascriptEnabled: true,
-                  },
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-    '@chromatic-com/storybook'
+    '@storybook/addon-docs'
   ],
 
   webpackFinal: async (config, { configType }) => {
@@ -105,6 +20,23 @@ module.exports = {
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
+    });
+
+    // Configure LESS loader for Ant Design
+    config.module.rules.push({
+      test: /\.less$/,
+      use: [
+        'style-loader',
+        'css-loader',
+        {
+          loader: 'less-loader',
+          options: {
+            lessOptions: {
+              javascriptEnabled: true,
+            },
+          },
+        },
+      ],
     });
 
     return config;

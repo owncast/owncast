@@ -2,6 +2,20 @@
   margin-bottom: 5px;
 }
 
+.errorAlert {
+  margin-bottom: 1.25rem;
+  font-family: var(--theme-text-display-font-family);
+
+  :global(.ant-alert-message) {
+    font-size: 14px;
+  }
+
+  :global(.ant-alert-description) {
+    font-size: 12px;
+    font-family: monospace;
+  }
+}
+
 .pushPreview {
   border-style: dashed;
   border-width: 2px;

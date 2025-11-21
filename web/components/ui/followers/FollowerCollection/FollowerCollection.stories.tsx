@@ -1,24 +1,9 @@
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot } from 'recoil';
-import { action } from '@storybook/addon-actions';
+import { http, HttpResponse } from 'msw';
 import { FollowerCollection } from './FollowerCollection';
 
-const mocks = {
-  mocks: [
-    {
-      // The "matcher" determines if this
-      // mock should respond to the current
-      // call to fetch().
-      matcher: {
-        name: 'response',
-        url: 'glob:/api/followers*',
-      },
-      // If the "matcher" matches the current
-      // fetch() call, the fetch response is
-      // built using this "response".
-      response: {
-        status: 200,
-        body: {
+const mockFollowersData = {
           total: 100,
           results: [
             {
@@ -227,34 +212,11 @@ const mocks = {
               disabledAt: null,
             },
           ],
-        },
-      },
-    },
-  ],
-};
+        };
 
-const noFollowersMock = {
-  mocks: [
-    {
-      // The "matcher" determines if this
-      // mock should respond to the current
-      // call to fetch().
-      matcher: {
-        name: 'response',
-        url: 'glob:/api/followers*',
-      },
-      // If the "matcher" matches the current
-      // fetch() call, the fetch response is
-      // built using this "response".
-      response: {
-        status: 200,
-        body: {
-          total: 0,
-          results: [],
-        },
-      },
-    },
-  ],
+const noFollowersData = {
+  total: 0,
+  results: [],
 };
 
 const meta = {
@@ -270,9 +232,7 @@ export default meta;
 const Template: StoryFn<typeof FollowerCollection> = (args: object) => (
   <RecoilRoot>
     <FollowerCollection
-      onFollowButtonClick={() => {
-        action('Follow button clicked');
-      }}
+      onFollowButtonClick={() => {}}
       name="Example stream name"
       {...args}
     />
@@ -283,7 +243,13 @@ export const NoFollowers = {
   render: Template,
 
   parameters: {
-    fetchMock: noFollowersMock,
+    msw: {
+      handlers: [
+        http.get('/api/followers*', () => {
+          return HttpResponse.json(noFollowersData);
+        }),
+      ],
+    },
   },
 };
 
@@ -291,6 +257,12 @@ export const Example = {
   render: Template,
 
   parameters: {
-    fetchMock: mocks,
+    msw: {
+      handlers: [
+        http.get('/api/followers*', () => {
+          return HttpResponse.json(mockFollowersData);
+        }),
+      ],
+    },
   },
 };

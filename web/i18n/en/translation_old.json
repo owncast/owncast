@@ -1,0 +1,94 @@
+{
+  "Testing": {
+    "simpleKey": "<strong><em>Missing translation Testing.simpleKey: Please report</em></strong>",
+    "itemCount": "<strong><em>Missing translation Testing.itemCount: Please report</em></strong>",
+    "messageCount": "<strong><em>Missing translation Testing.messageCount: Please report</em></strong>",
+    "noPluralKey": "<strong><em>Missing translation Testing.noPluralKey: Please report</em></strong>",
+    "itemCount_one": "You have {{count}} item",
+    "messageCount_one": "You have {{count}} message from {{sender}}"
+  },
+  "Frontend": {
+    "helloWorld": "<strong><em>Missing translation Frontend.helloWorld: Please report</em></strong>",
+    "notificationMessage": "<strong><em>Missing translation Frontend.notificationMessage: Please report</em></strong>",
+    "chatOffline": "<strong><em>Missing translation Frontend.chatOffline: Please report</em></strong>",
+    "offlineNotifyAndFediverse": "This stream is offline. You can <span class='notify-link'>be notified</span> the next time {{streamer}} goes live or <span class='follow-link'>follow</span> {{fediverseAccount}} on the Fediverse.",
+    "offlineNotifyOnly": "This stream is offline. <span class='notify-link'>Be notified</span> the next time {{streamer}} goes live.",
+    "offlineFediverseOnly": "This stream is offline. <span class='follow-link'>Follow</span> {{fediverseAccount}} on the Fediverse to see the next time {{streamer}} goes live.",
+    "offlineBasic": "This stream is offline. Check back soon!",
+    "componentError": "Error: {{message}}",
+    "browser_notify_unsupported": "Browser notifications are not supported in your browser.",
+    "browser_notify_unsupported_local": "Browser notifications are not supported for local servers.",
+    "browser_notify_ios_title": "Get notified on iOS",
+    "browser_notify_ios_description": "It takes a couple extra steps to make sure you get notified when your favorite streams go live.",
+    "browser_notify_ios_share_button": "share",
+    "browser_notify_ios_add_to_home_screen": "Add to Home Screen",
+    "browser_notify_ios_add_button": "Add",
+    "browser_notify_ios_name_and_tap": "Give this link a name and tap the new icon on your home screen",
+    "browser_notify_ios_come_back": "Come back to this screen and enable notifications.",
+    "browser_notify_ios_allow_prompt": "Allow",
+    "browser_notify_permission_wants_to": "{{hostname}} wants to",
+    "browser_notify_show_notifications": "Show notifications",
+    "browser_notify_allow_button": "Allow",
+    "browser_notify_block_button": "Block",
+    "browser_notify_enabled_title": "Notifications are enabled",
+    "browser_notify_enabled_description": "To disable push notifications from {{hostname}} access your browser permissions for this site and turn off notifications. <a href=\"https://owncast.online/docs/notifications\">Learn more.</a>",
+    "browser_notify_denied_title": "Notifications are blocked on your device",
+    "browser_notify_denied_description": "To enable push notifications from {{hostname}} access your browser permissions for this site and turn on notifications. Then reload this page to apply your updated settings on this site. <a href=\"https://owncast.online/docs/notifications\">Learn more.</a>",
+    "browser_notify_main_description": "Get notified right in the browser each time this stream goes live.",
+    "browser_notify_learn_more": "Learn more",
+    "browser_notify_error_title": "Browser Notification Error",
+    "browser_notify_error_message": "Error registering for live notifications: {{message}}. Make sure you're not inside a private browser environment or have previously disabled notifications for this stream.",
+    "BrowserNotifyModal": {
+      "allowButton": "Allow",
+      "blockButton": "Block",
+      "deniedDescription": "To enable push notifications from {{hostname}} access your browser permissions for this site and turn on notifications. Then reload this page to apply your updated settings on this site. <a href='https://owncast.online/docs/notifications'>Learn more.</a>",
+      "deniedTitle": "Notifications are blocked on your device",
+      "enabledDescription": "To disable push notifications from {{hostname}} access your browser permissions for this site and turn off notifications. <a href='https://owncast.online/docs/notifications'>Learn more.</a>",
+      "enabledTitle": "Notifications are enabled",
+      "errorTitle": "Browser Notification Error",
+      "iosAddButton": "Add",
+      "iosAddToHomeScreen": "Add to Home Screen",
+      "iosAllowPrompt": "Allow",
+      "iosComeBack": "Come back to this screen and enable notifications.",
+      "iosDescription": "It takes a couple extra steps to make sure you get notified when your favorite streams go live.",
+      "iosNameAndTap": "Give this link a name and tap the new icon on your home screen",
+      "iosShareButton": "share",
+      "iosTitle": "Get notified on iOS",
+      "learnMore": "Learn more",
+      "mainDescription": "Get notified right in the browser each time this stream goes live.",
+      "permissionWantsTo": "{{hostname}} wants to",
+      "showNotifications": "Show notifications",
+      "unsupported": "Browser notifications are not supported in your browser.",
+      "unsupportedLocal": "Browser notifications are not supported for local servers."
+    },
+    "NameChangeModal": {
+      "authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu.",
+      "buttonText": "Change name",
+      "colorLabel": "Your Color",
+      "description": "Your chat display name is what people see when you send chat messages.",
+      "overLimit": "Over limit",
+      "placeholder": "Your chat display name"
+    }
+  },
+  "Admin": {
+    "emojis": "<strong><em>Missing translation Admin.emojis: Please report</em></strong>",
+    "emojiPageDescription": "<strong><em>Missing translation Admin.emojiPageDescription: Please report</em></strong>",
+    "emojiUploadBulkGuide": "<strong><em>Missing translation Admin.emojiUploadBulkGuide: Please report</em></strong>",
+    "uploadNewEmoji": "<strong><em>Missing translation Admin.uploadNewEmoji: Please report</em></strong>",
+    "EditInstanceDetails": {
+      "offlineMessageDescription": "The offline message is displayed to your page visitors when you're not streaming. Markdown is supported.",
+      "directoryDescription": "Increase your audience by appearing in the <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Learn more</a>.",
+      "serverUrlRequiredForDirectory": "You must set your <strong>Server URL</strong> above to enable the directory."
+    },
+    "VideoVariantForm": {
+      "bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
+      "bitrateValueKbps": "{{bitrate}} kbps",
+      "bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
+      "bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
+      "bitrateGoodForHigh": "Good for high speed & high bitrate viewers."
+    }
+  },
+  "Common": {
+    "poweredByOwncastVersion": "Powered by <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+  }
+}

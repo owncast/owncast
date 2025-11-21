@@ -55,9 +55,10 @@ The pages under `/admin` require authentication to make API calls.
 
 Auth: HTTP Basic
 
-username: admin
+- **Username:** `admin`
+- **Password:** your **admin** password (not your stream key)
 
-pw: [your streamkey]
+> **Note:** your **stream key** is only used by your streaming software to publish video; it is _not_ your admin password.
 
 ### Learn More
 

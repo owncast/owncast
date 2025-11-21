@@ -1,5 +1,5 @@
 /* eslint-disable no-alert */
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { NotifyReminderPopup } from './NotifyReminderPopup';
 import Mock from '../../../stories/assets/mocks/notify-popup.png';
 

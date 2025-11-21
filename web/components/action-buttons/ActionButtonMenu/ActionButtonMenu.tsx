@@ -3,7 +3,7 @@ import { Button, Dropdown } from 'antd';
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';
 import styles from './ActionButtonMenu.module.scss';
-import { ExternalAction } from '../../../interfaces/external-action';
+import { ExternalAction, ExternalActionUtils } from '../../../interfaces/external-action';
 
 // Lazy loaded components
 
@@ -50,12 +50,15 @@ export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
       followItemSelected();
       return;
     }
-    const action = actions.find(x => x.url === a.key);
-    externalActionSelected(action);
+    // Find the action using the utility function
+    const action = ExternalActionUtils.findByKey(actions, a.key);
+    if (action) {
+      externalActionSelected(action);
+    }
   };
 
   const items = actions.map(action => ({
-    key: action.url,
+    key: ExternalActionUtils.generateKey(action),
     label: (
       <span className={styles.item}>
         {action.icon && <img className={styles.icon} src={action.icon} alt={action.title} />}{' '}

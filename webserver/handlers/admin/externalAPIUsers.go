@@ -25,6 +25,16 @@ func CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 
 	userRepository := userrepository.Get()
 
+	if request.Scopes == nil {
+		webutils.BadRequestHandler(w, errors.New("scopes field is required"))
+		return
+	}
+
+	if request.Name == nil {
+		webutils.BadRequestHandler(w, errors.New("name field is required"))
+		return
+	}
+
 	// Verify all the scopes provided are valid
 	if !userRepository.HasValidScopes(*request.Scopes) {
 		webutils.BadRequestHandler(w, errors.New("one or more invalid scopes provided"))
@@ -85,7 +95,12 @@ func DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if request.Token != nil && *request.Token == "" {
+	if request.Token == nil {
+		webutils.BadRequestHandler(w, errors.New("token field is required"))
+		return
+	}
+
+	if *request.Token == "" {
 		webutils.BadRequestHandler(w, errors.New("must provide a token"))
 		return
 	}
