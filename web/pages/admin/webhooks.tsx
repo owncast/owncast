@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from 'antd';
 import dynamic from 'next/dynamic';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'next-export-i18n';
 import { CREATE_WEBHOOK, DELETE_WEBHOOK, fetchData, WEBHOOKS } from '../../utils/apis';
 import { isValidUrl, DEFAULT_TEXTFIELD_URL_PATTERN } from '../../utils/validators';
@@ -21,6 +21,7 @@ import { Localization } from '../../types/localization';
 import { Translation } from '../../components/ui/Translation/Translation';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
+import { ServerStatusContext } from '../../utils/server-status-context';
 
 const { Title, Paragraph } = Typography;
 
@@ -34,6 +35,11 @@ const availableEvents = {
   CHAT: { name: 'Chat messages', description: 'When a user sends a chat message', color: 'purple' },
   USER_JOINED: { name: 'User joined', description: 'When a user joins the chat', color: 'green' },
   USER_PARTED: { name: 'User parted', description: 'When a user leaves the chat', color: 'green' },
+  FEDIVERSE_ENGAGEMENT_FOLLOW: {
+    name: 'New follower',
+    description: 'When a user follows the stream',
+    color: 'green',
+  },
   NAME_CHANGE: {
     name: 'User name changed',
     description: 'When a user changes their name',
@@ -79,6 +85,8 @@ const NewWebhookModal = (props: Props) => {
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [webhookUrl, setWebhookUrl] = useState('');
 
+  const { serverConfig } = useContext(ServerStatusContext);
+
   const events = Object.keys(availableEvents).map(key => ({
     value: key,
     label: availableEvents[key].description,
@@ -104,11 +112,20 @@ const NewWebhookModal = (props: Props) => {
     disabled: selectedEvents?.length === 0 || !isValidUrl(webhookUrl),
   };
 
-  const checkboxes = events.map(singleEvent => (
-    <Col span={8} key={singleEvent.value}>
-      <Checkbox value={singleEvent.value}>{singleEvent.label}</Checkbox>
-    </Col>
-  ));
+  const checkboxes = events
+    .filter(singleEvent => {
+      switch (singleEvent.value) {
+        case 'FEDIVERSE_ENGAGEMENT_FOLLOW':
+          return serverConfig.federation.enabled;
+        default:
+          return true;
+      }
+    })
+    .map(singleEvent => (
+      <Col span={8} key={singleEvent.value}>
+        <Checkbox value={singleEvent.value}>{singleEvent.label}</Checkbox>
+      </Col>
+    ));
 
   return (
     <Modal
