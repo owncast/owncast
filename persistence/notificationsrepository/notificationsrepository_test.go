@@ -3,7 +3,6 @@ package notificationsrepository
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/owncast/owncast/core/data"
 )
@@ -12,11 +11,6 @@ var (
 	testDatastore *data.Datastore
 	testRepo      NotificationsRepository
 )
-
-// generateUniqueID creates a unique identifier for test data
-func generateUniqueID(prefix string) string {
-	return fmt.Sprintf("%s_%d", prefix, time.Now().UnixNano())
-}
 
 func TestMain(m *testing.M) {
 	// Create an in-memory database for testing
