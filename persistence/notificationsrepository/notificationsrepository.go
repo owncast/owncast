@@ -2,7 +2,6 @@ package notificationsrepository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
@@ -12,24 +11,19 @@ import (
 	"github.com/owncast/owncast/persistence/tables"
 
 	"github.com/owncast/owncast/notifications/browser"
-	"github.com/owncast/owncast/notifications/discord"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
 type NotificationsRepository interface {
-	Notify()
 	AddNotification(channel, destination string) error
 	RemoveNotificationForChannel(channel, destination string) error
 	GetNotificationDestinationsForChannel(channel string) ([]string, error)
 }
 
-// SqlNotificationsRepository is an instance of the live stream notifier.
+// SqlNotificationsRepository handles database operations for notifications.
 type SqlNotificationsRepository struct {
-	datastore        *data.Datastore
-	browser          *browser.Browser
-	discord          *discord.Discord
-	configRepository configrepository.ConfigRepository
+	datastore *data.Datastore
 }
 
 // NOTE: This is temporary during the transition period.
@@ -79,103 +73,10 @@ func initializeBrowserPushIfNeeded() {
 	}
 }
 
-// New creates a new instance of the Notifier.
+// New creates a new instance of the NotificationsRepository.
 func New(datastore *data.Datastore) NotificationsRepository {
-	notifier := SqlNotificationsRepository{
-		datastore:        datastore,
-		configRepository: configrepository.Get(),
-	}
-
-	if err := notifier.setupBrowserPush(); err != nil {
-		log.Error(err)
-	}
-	if err := notifier.setupDiscord(); err != nil {
-		log.Error(err)
-	}
-
-	return &notifier
-}
-
-func (n *SqlNotificationsRepository) setupBrowserPush() error {
-	if n.configRepository.GetBrowserPushConfig().Enabled {
-		publicKey, err := n.configRepository.GetBrowserPushPublicKey()
-		if err != nil || publicKey == "" {
-			return errors.Wrap(err, "browser notifier disabled, failed to get browser push public key")
-		}
-
-		privateKey, err := n.configRepository.GetBrowserPushPrivateKey()
-		if err != nil || privateKey == "" {
-			return errors.Wrap(err, "browser notifier disabled, failed to get browser push private key")
-		}
-
-		browserNotifier, err := browser.New(n.datastore, publicKey, privateKey)
-		if err != nil {
-			return errors.Wrap(err, "error creating browser notifier")
-		}
-		n.browser = browserNotifier
-	}
-	return nil
-}
-
-func (n *SqlNotificationsRepository) notifyBrowserPush() {
-	destinations, err := n.GetNotificationDestinationsForChannel(BrowserPushNotification)
-	if err != nil {
-		log.Errorln("error getting browser push notification destinations", err)
-	}
-	for _, destination := range destinations {
-		unsubscribed, err := n.browser.Send(destination, n.configRepository.GetServerName(), n.configRepository.GetBrowserPushConfig().GoLiveMessage)
-		if unsubscribed {
-			// If the error is "unsubscribed", then remove the destination from the database.
-			if err := n.RemoveNotificationForChannel(BrowserPushNotification, destination); err != nil {
-				log.Errorln(err)
-			}
-		} else if err != nil {
-			log.Errorln(err)
-		}
-	}
-}
-
-func (n *SqlNotificationsRepository) setupDiscord() error {
-	discordConfig := n.configRepository.GetDiscordConfig()
-	if discordConfig.Enabled && discordConfig.Webhook != "" {
-		var image string
-		if serverURL := n.configRepository.GetServerURL(); serverURL != "" {
-			image = serverURL + "/logo"
-		}
-		discordNotifier, err := discord.New(
-			n.configRepository.GetServerName(),
-			image,
-			discordConfig.Webhook,
-		)
-		if err != nil {
-			return errors.Wrap(err, "error creating discord notifier")
-		}
-		n.discord = discordNotifier
-	}
-	return nil
-}
-
-func (n *SqlNotificationsRepository) notifyDiscord() {
-	goLiveMessage := n.configRepository.GetDiscordConfig().GoLiveMessage
-	streamTitle := n.configRepository.GetStreamTitle()
-	if streamTitle != "" {
-		goLiveMessage += "\n" + streamTitle
-	}
-	message := fmt.Sprintf("%s\n\n%s", goLiveMessage, n.configRepository.GetServerURL())
-
-	if err := n.discord.Send(message); err != nil {
-		log.Errorln("error sending discord message", err)
-	}
-}
-
-// Notify will fire the different notification channels.
-func (n *SqlNotificationsRepository) Notify() {
-	if n.browser != nil {
-		n.notifyBrowserPush()
-	}
-
-	if n.discord != nil {
-		n.notifyDiscord()
+	return &SqlNotificationsRepository{
+		datastore: datastore,
 	}
 }
 

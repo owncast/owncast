@@ -37,15 +37,7 @@ func TestIntegrationSetup(t *testing.T) {
 }
 
 func TestBrowserPushSetupIntegration(t *testing.T) {
-	// Test that browser push setup is properly integrated
-	repo := New(integrationTestDatastore).(*SqlNotificationsRepository)
-
-	// Verify the repository has proper browser push configuration
-	if repo.configRepository == nil {
-		t.Error("Repository should have config repository initialized")
-	}
-
-	// Test browser push keys are generated during setup
+	// Test that browser push keys are generated during setup
 	configRepo := configrepository.Get()
 	pubKey, err := configRepo.GetBrowserPushPublicKey()
 	if err != nil {
@@ -94,12 +86,6 @@ func TestDiscordConfigurationIntegration(t *testing.T) {
 		t.Errorf("Failed to set Discord configuration: %v", err)
 	}
 
-	// Create a new repository instance to test Discord setup
-	newRepo := New(integrationTestDatastore).(*SqlNotificationsRepository)
-	if newRepo.discord == nil {
-		t.Error("Discord notifier should be initialized when config is enabled")
-	}
-
 	// Test with disabled Discord
 	disabledConfig := models.DiscordConfiguration{
 		Enabled: false,
@@ -108,12 +94,6 @@ func TestDiscordConfigurationIntegration(t *testing.T) {
 	err = configRepo.SetDiscordConfig(disabledConfig)
 	if err != nil {
 		t.Errorf("Failed to disable Discord configuration: %v", err)
-	}
-
-	// Create another repository instance
-	disabledRepo := New(integrationTestDatastore).(*SqlNotificationsRepository)
-	if disabledRepo.discord != nil {
-		t.Error("Discord notifier should not be initialized when disabled")
 	}
 }
 
@@ -144,16 +124,6 @@ func TestNotificationWorkflowIntegration(t *testing.T) {
 	if !found {
 		t.Error("Notification destination should be found after adding")
 	}
-
-	// Test the full notification workflow (this will attempt to send)
-	// Note: This may fail if browser push isn't fully configured, but it tests the workflow
-	defer func() {
-		if r := recover(); r != nil {
-			t.Errorf("Notification workflow should not panic: %v", r)
-		}
-	}()
-
-	integrationRepo.Notify()
 
 	// Clean up
 	err = integrationRepo.RemoveNotificationForChannel(channel, destination)

@@ -2,14 +2,14 @@ package notifications
 
 import (
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/persistence/configrepository"
 	notificationsrepo "github.com/owncast/owncast/persistence/notificationsrepository"
+	notificationsservice "github.com/owncast/owncast/services/notifications"
 )
 
 // Notifier is an instance of the live stream notifier.
+// Deprecated: Use services/notifications.Service interface directly.
 type Notifier struct {
-	repository       notificationsrepo.NotificationsRepository
-	configRepository configrepository.ConfigRepository
+	service notificationsservice.Service
 }
 
 // Setup will perform any pre-use setup for the notifier.
@@ -18,18 +18,21 @@ func Setup(datastore *data.Datastore) {
 }
 
 // New creates a new instance of the Notifier.
+// Deprecated: Use services/notifications.New directly.
 func New(datastore *data.Datastore) (*Notifier, error) {
-	notifier := Notifier{
-		repository:       notificationsrepo.New(datastore),
-		configRepository: configrepository.Get(),
+	service, err := notificationsservice.New(datastore)
+	if err != nil {
+		return nil, err
 	}
 
-	return &notifier, nil
+	return &Notifier{
+		service: service,
+	}, nil
 }
 
 // Notify will fire the different notification channels.
 func (n *Notifier) Notify() {
-	n.repository.Notify()
+	n.service.Notify()
 }
 
 // RemoveNotificationForChannel removes a notification destination.

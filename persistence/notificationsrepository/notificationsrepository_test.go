@@ -197,19 +197,6 @@ func TestNotificationRepositoryInterface(t *testing.T) {
 	}
 }
 
-func TestRepositoryNotifyMethod(t *testing.T) {
-	// Test that the Notify method exists and can be called without panicking
-	defer func() {
-		if r := recover(); r != nil {
-			t.Errorf("Notify method panicked: %v", r)
-		}
-	}()
-
-	// This test mainly ensures the method exists and doesn't panic
-	// The actual notification logic is tested separately in browser/discord packages
-	testRepo.Notify()
-}
-
 func TestAddDuplicateNotification(t *testing.T) {
 	channel := "DUPLICATE_TEST_CHANNEL"
 	destination := "duplicate-dest"
@@ -289,15 +276,6 @@ func TestChannelIsolation(t *testing.T) {
 
 	if len(destinations2After) != 1 || destinations2After[0] != destination2 {
 		t.Errorf("Channel2 should still have destination2 after channel1 removal, got: %v", destinations2After)
-	}
-}
-
-func TestConfigRepositoryIntegration(t *testing.T) {
-	// Test that the repository properly integrates with config repository
-	repo := New(testDatastore).(*SqlNotificationsRepository)
-
-	if repo.configRepository == nil {
-		t.Error("SqlNotificationsRepository should have a non-nil configRepository")
 	}
 }
 
