@@ -70,7 +70,7 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: translations
+          branch: translations-${{ github.run_number }}
           base: develop
           title: 'New Translations from Crowdin'
           body: |
