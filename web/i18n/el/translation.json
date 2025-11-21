@@ -215,7 +215,7 @@
   "Testing": {
     "itemCount": "Έχετε {{count}} αντικείμενα",
     "messageCount": "Έχετε {{count}} μηνύματα από {{sender}}",
-    "noPluralKey": "This key has no plural variants - {{count}} things",
+    "noPluralKey": "",
     "simpleKey": "Απλό κείμενο μετάφρασης"
   }
 }
