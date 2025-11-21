@@ -72,7 +72,6 @@ jobs:
           upload_translations: false
           download_translations: true
           skip_untranslated_strings: true
-          skip_untranslated_files: true
           export_only_approved: false
           push_translations: false
           commit_message: 'chore(i18n): update translations from Crowdin'
