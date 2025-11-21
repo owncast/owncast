@@ -1,4 +1,4 @@
-package notifications
+package notificationsrepository
 
 const (
 	// BrowserPushNotification represents a push notification for a browser.

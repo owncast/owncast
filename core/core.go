@@ -15,8 +15,8 @@ import (
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/notifications"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/persistence/notificationsrepository"
 	"github.com/owncast/owncast/persistence/tables"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
@@ -83,7 +83,7 @@ func Start() error {
 
 	webhooks.SetupWebhooks(GetStatus)
 
-	notifications.Setup(data.GetStore())
+	notificationsrepository.Setup(data.GetStore())
 
 	return nil
 }

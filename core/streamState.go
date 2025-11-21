@@ -15,8 +15,8 @@ import (
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/notifications"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -189,10 +189,10 @@ func startLiveStreamNotificationsTimer() context.CancelFunc {
 			}
 
 			// Send notification to those who have registered for them.
-			if notifier, err := notifications.New(data.GetDatastore()); err != nil {
+			if notificationService, err := notifications.New(data.GetDatastore()); err != nil {
 				log.Errorln(err)
 			} else {
-				notifier.Notify()
+				notificationService.Notify()
 			}
 
 			now := time.Now()
