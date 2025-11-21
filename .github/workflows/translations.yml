@@ -53,11 +53,30 @@ jobs:
       - name: Generate translation files
         run: npm run translate
 
-      - name: Crowdin upload sources/download translations
+      - name: Upload sources to Crowdin
         uses: crowdin/github-action@v2
         with:
           upload_sources: true
+          upload_translations: false
+          download_translations: false
+          config: crowdin.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      - name: Download translations from Crowdin
+        uses: crowdin/github-action@v2
+        with:
+          upload_sources: false
+          upload_translations: false
           download_translations: true
+          skip_untranslated_strings: true
+          skip_untranslated_files: true
+          export_only_approved: false
+          push_translations: false
+          commit_message: 'chore(i18n): update translations from Crowdin'
+          localization_branch_name: crowdin-translations
           create_pull_request: false
           config: crowdin.yml
         env:
@@ -65,14 +84,28 @@ jobs:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
+      - name: Check for translation changes
+        id: changes
+        run: |
+          cd ..
+          git add web/i18n/
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No translation changes detected"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Translation changes detected"
+          fi
+
       - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
         id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: translations-${{ github.run_number }}
           base: develop
-          title: 'New Translations from Crowdin'
+          title: 'chore(i18n): update translations from Crowdin'
           body: |
             This PR contains updated translations downloaded from Crowdin.
 
@@ -83,9 +116,10 @@ jobs:
             Please review the changes and merge if they look correct.
 
             ---
-            *This PR was created automatically by the translation workflow.*
-          commit-message: 'Updated translations from Crowdin'
+            This PR was created automatically by the translation workflow.
+          commit-message: 'chore(i18n): update translations from Crowdin'
           author: 'Owncast <owncast@owncast.online>'
+          committer: 'Owncast <owncast@owncast.online>'
           add-paths: |
             web/i18n/**
           delete-branch: true
@@ -95,3 +129,7 @@ jobs:
         run: |
           echo "Created PR #${{ steps.create_pr.outputs.pull-request-number }}"
           echo "PR URL: ${{ steps.create_pr.outputs.pull-request-url }}"
+
+      - name: No changes detected
+        if: steps.changes.outputs.has_changes == 'false'
+        run: echo "No translation changes to commit"
