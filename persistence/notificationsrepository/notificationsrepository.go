@@ -29,7 +29,7 @@ type SqlNotificationsRepository struct {
 // NOTE: This is temporary during the transition period.
 var temporaryGlobalInstance NotificationsRepository
 
-// Get will return the user repository.
+// Get will return the notifications repository.
 func Get() NotificationsRepository {
 	if temporaryGlobalInstance == nil {
 		i := New(data.GetDatastore())
