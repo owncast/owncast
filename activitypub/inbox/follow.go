@@ -40,21 +40,16 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	}
 
 	localAccountName := configRepository.GetDefaultFederationUsername()
-
-	if approved {
-		if err := requests.SendFollowAccept(follow.Inbox, activity, localAccountName); err != nil {
-			log.Errorln("unable to send follow accept", err)
-			return err
-		}
-	}
-
-	// Save as an activity
 	actorReference := activity.GetActivityStreamsActor()
 	object := activity.GetActivityStreamsObject()
 	objectIRI := object.At(0).GetIRI().String()
 	actorIRI := actorReference.At(0).GetIRI().String()
 
 	if approved {
+		if err := requests.SendFollowAccept(follow.Inbox, activity, localAccountName); err != nil {
+			log.Errorln("unable to send follow accept", err)
+			return err
+		}
 		go webhooks.SendFediverseEngagementFollowEvent(actorIRI)
 	}
 
