@@ -62,14 +62,14 @@ jobs:
           platforms: all
 
       - name: Check out pull request code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'push' || github.event_name == 'schedule'
 
       - name: Build and push

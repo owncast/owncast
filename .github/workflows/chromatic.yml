@@ -52,11 +52,11 @@ jobs:
 
       - name: Check out repository code (Push)
         if: github.event_name == 'push'
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Check out pull request code (PR)
         if: github.event_name == 'pull_request'
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
