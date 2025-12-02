@@ -24,7 +24,7 @@ jobs:
         os: ${{ github.event_name == 'pull_request' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest", "ubuntu-24.04-arm"]') }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Get changed files
         id: changed-files-yaml
@@ -68,7 +68,7 @@ jobs:
             version: 6.8
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Get changed files
         id: changed-files-yaml
