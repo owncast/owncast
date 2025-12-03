@@ -78,7 +78,7 @@ jobs:
       - uses: actions/setup-go@v6
         if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         with:
-          go-version: '1.25.4'
+          go-version: '1.25.5'
           cache: true
 
       - name: Install Google Chrome
