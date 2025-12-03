@@ -73,7 +73,7 @@
     "workbox-precaching": "^7.0.0",
     "workbox-window": "^7.0.0",
     "xstate": "4.38.3",
-    "yaml": "2.8.1"
+    "yaml": "2.8.2"
   },
   "devDependencies": {
     "@babel/core": "7.28.5",
