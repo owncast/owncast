@@ -297,6 +297,7 @@ github.com/golangci/golangci-lint/v2 v2.6.0/go.mod h1:qKA7VpZt6X2uo+ylnFYaNpdmJn
 github.com/golangci/golangci-lint/v2 v2.6.1/go.mod h1:zlg/a5aw46LvRBHZ3OOwwsCtkjWTrn3wm5qowoteCRg=
 github.com/golangci/golangci-lint/v2 v2.6.2/go.mod h1:fSIMDiBt9kzdpnvvV7GO6iWzyv5uaeZ+iPor+2uRczE=
 github.com/golangci/golangci-lint/v2 v2.7.0/go.mod h1:ekW32uOX47mpRlfPlSscuJPprm6pCEYIDagudfLrx34=
+github.com/golangci/golangci-lint/v2 v2.7.1/go.mod h1:ekW32uOX47mpRlfPlSscuJPprm6pCEYIDagudfLrx34=
 github.com/golangci/golines v0.0.0-20250217134842-442fd0091d95 h1:AkK+w9FZBXlU/xUmBtSJN1+tAI4FIvy5WtnUnY8e4p8=
 github.com/golangci/golines v0.0.0-20250217134842-442fd0091d95/go.mod h1:k9mmcyWKSTMcPPvQUCfRWWQ9VHJ1U9Dc0R7kaXAgtnQ=
 github.com/golangci/misspell v0.7.0 h1:4GOHr/T1lTW0hhR4tgaaV1WS/lJ+ncvYCoFKmqJsj0c=
