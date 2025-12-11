@@ -60,7 +60,7 @@ jobs:
       - uses: actions/setup-node@v4
         if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         with:
-          node-version: '24.11.1'
+          node-version: '24.12.0'
 
       - name: Cache node modules
         if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
