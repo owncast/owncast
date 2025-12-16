@@ -12,7 +12,7 @@ class ChatModerationService {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ idArray: [id] }),
+      body: JSON.stringify({ idArray: [id], visible: false }),
     };
 
     await fetch(hideMessageUrl, options);
