@@ -113,7 +113,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "4.6.2",
-    "eslint-plugin-storybook": "9.1.16",
+    "eslint-plugin-storybook": "9.1.17",
     "handlebars": "^4.7.7",
     "html-webpack-plugin": "5.6.5",
     "install": "^0.13.0",
