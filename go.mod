@@ -22,7 +22,7 @@ require (
 	github.com/nareix/joy5 v0.0.0-20210317075623-2c912ca30590
 	github.com/oapi-codegen/runtime v1.1.2
 	github.com/oschwald/geoip2-golang v1.13.0
-	github.com/oschwald/geoip2-golang/v2 v2.0.1
+	github.com/oschwald/geoip2-golang/v2 v2.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
