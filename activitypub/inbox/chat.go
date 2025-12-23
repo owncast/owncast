@@ -24,14 +24,17 @@ func handleEngagementActivity(eventType events.EventType, isLiveNotification boo
 	}
 
 	// Get actor of the action
-	actor, _ := resolvers.GetResolvedActorFromActorProperty(actorReference)
+	actor, err := resolvers.GetResolvedActorFromActorProperty(actorReference)
+	if err != nil {
+		return fmt.Errorf("unable to resolve actor for engagement activity: %w", err)
+	}
 
 	// Send chat message
 	actorName := actor.Name
 	if actorName == "" {
 		actorName = actor.Username
 	}
-	actorIRI := actorReference.Begin().GetIRI().String()
+	actorIRI := actor.ActorIriString()
 
 	userPrefix := fmt.Sprintf("%s ", actorName)
 	var suffix string
@@ -51,9 +54,8 @@ func handleEngagementActivity(eventType events.EventType, isLiveNotification boo
 	body := fmt.Sprintf("%s %s", userPrefix, suffix)
 
 	var image *string
-	if actor.Image != nil {
-		s := actor.Image.String()
-		image = &s
+	if imageStr := actor.ImageString(); imageStr != "" {
+		image = &imageStr
 	}
 
 	if err := chat.SendFediverseAction(eventType, actor.FullUsername, image, body, actorIRI); err != nil {

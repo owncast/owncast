@@ -21,5 +21,5 @@ func handleUpdateRequest(c context.Context, activity vocab.ActivityStreamsUpdate
 		return err
 	}
 
-	return persistence.UpdateFollower(actor.ActorIri.String(), actor.Inbox.String(), actor.Name, actor.FullUsername, actor.Image.String())
+	return persistence.UpdateFollower(actor.ActorIriString(), actor.InboxString(), actor.Name, actor.FullUsername, actor.ImageString())
 }
