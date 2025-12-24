@@ -49,8 +49,8 @@ func AddFollow(follow apmodels.ActivityPubActor, approved bool) error {
 
 // RemoveFollow will remove a follow from the datastore.
 func RemoveFollow(unfollow apmodels.ActivityPubActor) error {
-	if unfollow.ActorIri == nil {
-		return errors.New("cannot remove follow: ActorIri is nil")
+	if err := unfollow.Validate(); err != nil {
+		return errors.Wrap(err, "cannot remove invalid follow")
 	}
 	log.Traceln("Removing", unfollow.ActorIriString(), "as a follower.")
 	return removeFollow(unfollow.ActorIri)
