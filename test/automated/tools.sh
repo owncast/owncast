@@ -32,7 +32,7 @@ function install_ffmpeg() {
 
 	echo "Downloading ffmpeg v${FFMPEG_VER} release ${FFMPEG_BUILD_VERSION}"
 	rm -rf ffmpeg.tar.gz
-	curl -sL --fail "https://github.com/owncast/ffmpeg-builds/releases/download/${FFMPEG_BUILD_VERSION}/ffmpeg${FFMPEG_VER}-${OS}-amd64-static.tar.gz" --output ffmpeg.tar.gz >/dev/null
+	curl -sL --fail "https://github.com/owncast/ffmpeg-builds/releases/download/${FFMPEG_BUILD_VERSION}/ffmpeg${FFMPEG_VER}-amd64-static.tar.gz" --output ffmpeg.tar.gz >/dev/null
 	tar -xzf ffmpeg.tar.gz
 	rm -f ffmpeg.tar.gz
 	chmod +x ffmpeg
