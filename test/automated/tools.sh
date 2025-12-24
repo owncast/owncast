@@ -16,35 +16,29 @@ function install_ffmpeg() {
 
 	OS="linux"
 
-	FFMPEG_VER="5.1"
-	FFMPEG_PATH="$(pwd)/ffmpeg-$FFMPEG_VER"
+	FFMPEG_VER="8.0"
+	FFMPEG_BUILD_VERSION="20251223233512"
+	FFMPEG_PATH="$(pwd)"
 	PATH=$FFMPEG_PATH:$PATH
-
-	if ! [[ -d "$FFMPEG_PATH" ]]; then
-		mkdir "$FFMPEG_PATH"
-	fi
-
-	pushd "$FFMPEG_PATH" >/dev/null
 
 	if [[ -x "$FFMPEG_PATH/ffmpeg" ]]; then
 
 		ffmpeg_version=$("$FFMPEG_PATH/ffmpeg" -version | awk -F 'ffmpeg version' '{print $2}' | awk 'NR==1{print $1}')
 
 		if [[ "$ffmpeg_version" == "$FFMPEG_VER-static" ]]; then
-			popd >/dev/null
 			return 0
 		else
 			mv "$FFMPEG_PATH/ffmpeg" "$FFMPEG_PATH/ffmpeg.bk" || rm -f "$FFMPEG_PATH/ffmpeg"
 		fi
 	fi
 
-	rm -f ffmpeg.zip
-	curl -sL --fail https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v${FFMPEG_VER}/ffmpeg-${FFMPEG_VER}-${OS}-64.zip --output ffmpeg.zip >/dev/null
-	unzip -o ffmpeg.zip >/dev/null && rm -f ffmpeg.zip
+	echo "Downloading ffmpeg v${FFMPEG_VER} release ${FFMPEG_BUILD_VERSION}"
+	rm -rf ffmpeg.tar.gz
+	curl -sL --fail https://github.com/owncast/ffmpeg-builds/releases/download/${FFMPEG_BUILD_VERSION}/ffmpeg${FFMPEG_VER}-amd64-static.tar.gz --output ffmpeg.tar.gz >/dev/null
+	tar -xzf ffmpeg.tar.gz
+	rm -f ffmpeg.tar.gz
 	chmod +x ffmpeg
 	PATH=$FFMPEG_PATH:$PATH
-
-	popd >/dev/null
 }
 
 function start_owncast() {
