@@ -42,7 +42,7 @@ func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) 
 func MakeUnFollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) *apmodels.ActivityPubActor {
 	person, err := GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
 	if err != nil {
-		log.Errorln("unable to resolve person from actor iri:", err)
+		log.Errorln("unable to resolve person from actor iri", person.ActorIri, err)
 		return nil
 	}
 

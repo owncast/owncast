@@ -446,6 +446,9 @@ func TestNewActivityPubActorFromEntityWithoutUsername(t *testing.T) {
 	if err == nil {
 		t.Error("NewActivityPubActorFromEntity without username should return error")
 	}
+	if !errors.Is(err, ErrActorMissingRequiredField) {
+		t.Errorf("NewActivityPubActorFromEntity error = %v, want ErrActorMissingRequiredField", err)
+	}
 }
 
 func TestNewActivityPubActorFromEntityWithoutPublicKey(t *testing.T) {
@@ -453,6 +456,9 @@ func TestNewActivityPubActorFromEntityWithoutPublicKey(t *testing.T) {
 	_, err := NewActivityPubActorFromEntity(service)
 	if err == nil {
 		t.Error("NewActivityPubActorFromEntity without public key should return error")
+	}
+	if !errors.Is(err, ErrActorMissingRequiredField) {
+		t.Errorf("NewActivityPubActorFromEntity error = %v, want ErrActorMissingRequiredField", err)
 	}
 }
 

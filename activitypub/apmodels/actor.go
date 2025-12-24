@@ -130,13 +130,13 @@ func NewActivityPubActorFromEntity(entity ExternalEntity) (*ActivityPubActor, er
 
 	// Username is required (but not a part of the official ActivityPub spec)
 	if entity.GetActivityStreamsPreferredUsername() == nil || entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString() == "" {
-		return nil, errors.New("remote activitypub entity does not have a preferred username set, rejecting")
+		return nil, fmt.Errorf("%w: entity is missing preferred username", ErrActorMissingRequiredField)
 	}
 	username := GetFullUsernameFromExternalEntity(entity)
 
 	// Key is required
 	if entity.GetW3IDSecurityV1PublicKey() == nil {
-		return nil, errors.New("remote activitypub entity does not have a public key set, rejecting")
+		return nil, fmt.Errorf("%w: entity is missing public key", ErrActorMissingRequiredField)
 	}
 
 	// Name is optional
