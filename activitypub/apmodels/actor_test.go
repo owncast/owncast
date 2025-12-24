@@ -485,13 +485,41 @@ func TestNewActivityPubActorFromEntityWithValidEntity(t *testing.T) {
 		t.Errorf("NewActivityPubActorFromEntity with valid entity should not return error, got %v", err)
 	}
 	if actor == nil {
-		t.Error("NewActivityPubActorFromEntity with valid entity should return non-nil actor")
+		t.Fatal("NewActivityPubActorFromEntity with valid entity should return non-nil actor")
 	}
+
+	// Verify required fields are non-nil
 	if actor.ActorIri == nil {
 		t.Error("actor.ActorIri should not be nil")
 	}
 	if actor.Inbox == nil {
 		t.Error("actor.Inbox should not be nil")
+	}
+
+	// Verify extracted values match the fake service data
+	expectedIri := "https://fake.fediverse.server/user/mrfoo"
+	if actor.ActorIriString() != expectedIri {
+		t.Errorf("actor.ActorIri = %v, want %v", actor.ActorIriString(), expectedIri)
+	}
+
+	expectedInbox := "https://fake.fediverse.server/user/mrfoo/inbox"
+	if actor.InboxString() != expectedInbox {
+		t.Errorf("actor.Inbox = %v, want %v", actor.InboxString(), expectedInbox)
+	}
+
+	expectedName := "Mr Foo"
+	if actor.Name != expectedName {
+		t.Errorf("actor.Name = %v, want %v", actor.Name, expectedName)
+	}
+
+	expectedUsername := "foodawg"
+	if actor.Username != expectedUsername {
+		t.Errorf("actor.Username = %v, want %v", actor.Username, expectedUsername)
+	}
+
+	expectedImage := "https://fake.fediverse.server/user/mrfoo/avatar.png"
+	if actor.ImageString() != expectedImage {
+		t.Errorf("actor.Image = %v, want %v", actor.ImageString(), expectedImage)
 	}
 }
 
