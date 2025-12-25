@@ -96,7 +96,10 @@ func Verify(request *http.Request) (bool, error) {
 		return false, err
 	}
 
-	key := publicKey.GetW3IDSecurityV1PublicKeyPem().Get()
+	key, err := apmodels.GetPublicKeyPem(publicKey)
+	if err != nil {
+		return false, errors.Wrap(err, "failed to get public key PEM")
+	}
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {
 		log.Errorln("failed to parse PEM block containing the public key")

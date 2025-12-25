@@ -5,29 +5,24 @@ import (
 	"time"
 
 	"github.com/go-fed/activity/streams/vocab"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/pkg/errors"
 )
 
 func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) error {
-	object := activity.GetActivityStreamsObject()
+	objectIRI, err := apmodels.GetIRIStringFromObjectProperty(activity.GetActivityStreamsObject())
+	if err != nil {
+		return errors.Wrap(err, "like activity is missing object IRI")
+	}
+
+	actorIRI, err := apmodels.GetIRIStringFromActorProperty(activity.GetActivityStreamsActor())
+	if err != nil {
+		return errors.Wrap(err, "like activity is missing actor IRI")
+	}
+
 	actorReference := activity.GetActivityStreamsActor()
-
-	if object.Len() < 1 {
-		return errors.New("like activity is missing object")
-	}
-
-	if actorReference.Len() < 1 {
-		return errors.New("like activity is missing actor")
-	}
-
-	if object.At(0).GetIRI() == nil {
-		return errors.New("like activity iri is missing")
-	}
-
-	objectIRI := object.At(0).GetIRI().String()
-	actorIRI := actorReference.At(0).GetIRI().String()
 
 	if hasPreviouslyhandled, err := persistence.HasPreviouslyHandledInboundActivity(objectIRI, actorIRI, events.FediverseEngagementLike); hasPreviouslyhandled || err != nil {
 		return errors.Wrap(err, "inbound activity of like has already been handled")

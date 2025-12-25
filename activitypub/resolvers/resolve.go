@@ -79,7 +79,7 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty) (apmodels.ActivityPubActor, error) {
 	var apActor apmodels.ActivityPubActor
 
-	if actor.Empty() || actor.Len() == 0 || actor.At(0) == nil {
+	if actor == nil || actor.Empty() || actor.Len() == 0 || actor.At(0) == nil {
 		return apActor, errors.New("actor property is empty or nil")
 	}
 
@@ -89,8 +89,11 @@ func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty)
 
 	// If the actor is an unresolved IRI then we need to resolve it.
 	if actorObjectOrIRI.IsIRI() {
-		iri := actorObjectOrIRI.GetIRI().String()
-		return GetResolvedActorFromIRI(iri)
+		iri := actorObjectOrIRI.GetIRI()
+		if iri == nil {
+			return apActor, errors.New("actor IRI is nil despite IsIRI() returning true")
+		}
+		return GetResolvedActorFromIRI(iri.String())
 	}
 
 	if actorObjectOrIRI.IsActivityStreamsPerson() {

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-fed/activity/streams/vocab"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
@@ -40,10 +41,18 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 	}
 
 	localAccountName := configRepository.GetDefaultFederationUsername()
+
+	objectIRI, err := apmodels.GetIRIStringFromObjectProperty(activity.GetActivityStreamsObject())
+	if err != nil {
+		return errors.Wrap(err, "follow activity is missing object IRI")
+	}
+
+	actorIRI, err := apmodels.GetIRIStringFromActorProperty(activity.GetActivityStreamsActor())
+	if err != nil {
+		return errors.Wrap(err, "follow activity is missing actor IRI")
+	}
+
 	actorReference := activity.GetActivityStreamsActor()
-	object := activity.GetActivityStreamsObject()
-	objectIRI := object.At(0).GetIRI().String()
-	actorIRI := actorReference.At(0).GetIRI().String()
 
 	if approved {
 		if err := requests.SendFollowAccept(follow.Inbox, activity, localAccountName); err != nil {

@@ -146,10 +146,7 @@ func NewActivityPubActorFromEntity(entity ExternalEntity) (*ActivityPubActor, er
 	}
 
 	// Image is optional
-	var image *url.URL
-	if entity.GetActivityStreamsIcon() != nil && !entity.GetActivityStreamsIcon().Empty() && entity.GetActivityStreamsIcon().At(0).GetActivityStreamsImage() != nil {
-		image = entity.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
-	}
+	image := GetImageFromIcon(entity.GetActivityStreamsIcon())
 
 	apActor := &ActivityPubActor{
 		ActorIri:                actorIri,
@@ -328,7 +325,7 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 // GetFullUsernameFromExternalEntity will return the full username from an
 // internal representation of an ExternalEntity. Returns user@host.tld.
 func GetFullUsernameFromExternalEntity(entity ExternalEntity) string {
-	hostname := entity.GetJSONLDId().GetIRI().Hostname()
+	hostname := GetHostnameFromJSONLDId(entity.GetJSONLDId())
 	username := entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
 	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
 
