@@ -135,7 +135,7 @@ func NewActivityPubActorFromEntity(entity ExternalEntity) (*ActivityPubActor, er
 	username := GetFullUsernameFromExternalEntity(entity)
 
 	// Key is required
-	if entity.GetW3IDSecurityV1PublicKey() == nil {
+	if entity.GetW3IDSecurityV1PublicKey() == nil || entity.GetW3IDSecurityV1PublicKey().Len() == 0 {
 		return nil, fmt.Errorf("%w: entity is missing public key", ErrActorMissingRequiredField)
 	}
 

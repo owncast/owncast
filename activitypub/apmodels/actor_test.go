@@ -47,6 +47,8 @@ func makeFakeService() vocab.ActivityStreamsService {
 	service.SetActivityStreamsIcon(icon)
 
 	publicKeyProperty := streams.NewW3IDSecurityV1PublicKeyProperty()
+	publicKeyType := streams.NewW3IDSecurityV1PublicKey()
+	publicKeyProperty.AppendW3IDSecurityV1PublicKey(publicKeyType)
 	service.SetW3IDSecurityV1PublicKey(publicKeyProperty)
 
 	return service
@@ -400,6 +402,32 @@ func makeFakeServiceWithoutPublicKey() vocab.ActivityStreamsService {
 	return service
 }
 
+func makeFakeServiceWithEmptyPublicKey() vocab.ActivityStreamsService {
+	iri, _ := url.Parse("https://fake.fediverse.server/user/mrfoo")
+	inbox, _ := url.Parse("https://fake.fediverse.server/user/mrfoo/inbox")
+	username := "foodawg"
+
+	service := streams.NewActivityStreamsService()
+
+	id := streams.NewJSONLDIdProperty()
+	id.Set(iri)
+	service.SetJSONLDId(id)
+
+	preferredUsernameProperty := streams.NewActivityStreamsPreferredUsernameProperty()
+	preferredUsernameProperty.SetXMLSchemaString(username)
+	service.SetActivityStreamsPreferredUsername(preferredUsernameProperty)
+
+	inboxProp := streams.NewActivityStreamsInboxProperty()
+	inboxProp.SetIRI(inbox)
+	service.SetActivityStreamsInbox(inboxProp)
+
+	// Set an empty public key property (Len() == 0)
+	publicKeyProperty := streams.NewW3IDSecurityV1PublicKeyProperty()
+	service.SetW3IDSecurityV1PublicKey(publicKeyProperty)
+
+	return service
+}
+
 func makeFakeServiceWithoutId() vocab.ActivityStreamsService {
 	inbox, _ := url.Parse("https://fake.fediverse.server/user/mrfoo/inbox")
 	username := "foodawg"
@@ -456,6 +484,17 @@ func TestNewActivityPubActorFromEntityWithoutPublicKey(t *testing.T) {
 	_, err := NewActivityPubActorFromEntity(service)
 	if err == nil {
 		t.Error("NewActivityPubActorFromEntity without public key should return error")
+	}
+	if !errors.Is(err, ErrActorMissingRequiredField) {
+		t.Errorf("NewActivityPubActorFromEntity error = %v, want ErrActorMissingRequiredField", err)
+	}
+}
+
+func TestNewActivityPubActorFromEntityWithEmptyPublicKey(t *testing.T) {
+	service := makeFakeServiceWithEmptyPublicKey()
+	_, err := NewActivityPubActorFromEntity(service)
+	if err == nil {
+		t.Error("NewActivityPubActorFromEntity with empty public key should return error")
 	}
 	if !errors.Is(err, ErrActorMissingRequiredField) {
 		t.Errorf("NewActivityPubActorFromEntity error = %v, want ErrActorMissingRequiredField", err)
