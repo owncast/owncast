@@ -23,7 +23,7 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
   userColor,
   displayName,
 }) => {
-  const color = `var(--theme-color-users-${userColor})`;
+  const color = userColor !== undefined ? `var(--theme-color-users-${userColor})` : 'inherit';
 
   return (
     <div className={styles.root}>
@@ -37,7 +37,9 @@ export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
           </span>
         )}
         <span className={styles.joinMessage}>
-          <span className={styles.user}>{displayName}</span>
+          <span className={styles.user} style={{ color }}>
+            {displayName}
+          </span>
           <span> </span>
           <Translation
             translationKey={Localization.Frontend.Chat.userJoined}
