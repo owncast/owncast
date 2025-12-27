@@ -9,45 +9,44 @@ import styles from './ChatJoinMessage.module.scss';
 // Lazy loaded components
 
 const UsergroupAddOutlined = dynamic(() => import('@ant-design/icons/UsergroupAddOutlined'), {
-	ssr: false,
+  ssr: false,
 });
 
 export type ChatJoinMessageProps = {
-	isAuthorModerator: boolean;
-	userColor: number;
-	displayName: string;
+  isAuthorModerator: boolean;
+  userColor: number;
+  displayName: string;
 };
 
 export const ChatJoinMessage: FC<ChatJoinMessageProps> = ({
-	isAuthorModerator,
-	userColor,
-	displayName,
+  isAuthorModerator,
+  userColor,
+  displayName,
 }) => {
-	const color =
-		userColor !== undefined
-			? `var(--theme-color-users-${userColor})`
-			: 'inherit';
+  const color = userColor !== undefined ? `var(--theme-color-users-${userColor})` : 'inherit';
 
-	return (
-		<div className={styles.root}>
-			<span style={{ color }}>
-				<span className={styles.icon}>
-					<UsergroupAddOutlined />
-				</span>
-				{isAuthorModerator && (
-					<span className={styles.moderatorBadge}>
-						<ModerationBadge userColor={userColor} />
-					</span>
-				)}
-				<span className={styles.joinMessage}>
-					<span className={styles.user} style={{ color }}>{displayName}</span>
-					<span> </span>
-					<Translation
-						translationKey={Localization.Frontend.Chat.userJoined}
-						defaultText="joined the chat."
-					/>
-				</span>
-			</span>
-		</div>
-	);
+  return (
+    <div className={styles.root}>
+      <span style={{ color }}>
+        <span className={styles.icon}>
+          <UsergroupAddOutlined />
+        </span>
+        {isAuthorModerator && (
+          <span className={styles.moderatorBadge}>
+            <ModerationBadge userColor={userColor} />
+          </span>
+        )}
+        <span className={styles.joinMessage}>
+          <span className={styles.user} style={{ color }}>
+            {displayName}
+          </span>
+          <span> </span>
+          <Translation
+            translationKey={Localization.Frontend.Chat.userJoined}
+            defaultText="joined the chat."
+          />
+        </span>
+      </span>
+    </div>
+  );
 };
