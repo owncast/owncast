@@ -35,6 +35,7 @@ export default function ReadOnlyChatEmbed() {
             showInput={false}
             height="100vh"
             chatAvailable={isChatAvailable}
+            readonly
           />
         )}
       </ErrorBoundary>
