@@ -162,9 +162,7 @@ export const ChatModerationDetailsModal: FC<ChatModerationDetailsModalProps> = (
     >
       <Spin spinning={loading}>
         <UserColorBlock color={displayColor} />
-        {scopes?.map(scope => (
-          <Tag key={scope}>{scope}</Tag>
-        ))}
+        {scopes?.map(scope => <Tag key={scope}>{scope}</Tag>)}
         {authenticated && <Tag>Authenticated</Tag>}
         {isBot && <Tag>Bot</Tag>}
         <ValueRow label="Messages Sent Across Clients" value={totalMessagesSent.toString()} />
