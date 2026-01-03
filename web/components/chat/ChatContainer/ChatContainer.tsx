@@ -33,6 +33,7 @@ export type ChatContainerProps = {
   chatAvailable: boolean;
   focusInput?: boolean;
   desktop?: boolean;
+  readonly?: boolean;
 };
 
 let resizeWindowCallback: () => void;
@@ -84,6 +85,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   chatAvailable: chatEnabled,
   desktop,
   focusInput = true,
+  readonly = false,
 }) => {
   const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(false);
@@ -358,7 +360,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
       <div
         aria-live="off"
         id="chat-container"
-        className={styles.chatContainer}
+        className={`${styles.chatContainer}${readonly ? ' readonly-chat' : ''}`}
         style={desktop && { width: `${defaultChatWidth}px` }}
       >
         {MessagesTable}
