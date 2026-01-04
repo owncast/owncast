@@ -62,6 +62,28 @@ export default function ReadWriteChatEmbed() {
           .body-background {
             background: var(--theme-color-components-chat-background);
           }
+          .embed-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+          }
+          .embed-container > #chat-container {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+          }
+          .embed-container #chat-container #chat-container {
+            flex: 1 1 0;
+            min-height: 0;
+          }
+          .embed-container #chat-container #virtuoso {
+            flex: 1;
+            min-height: 0;
+            height: auto !important;
+          }
         `}
       </style>
       <ErrorBoundary
@@ -70,29 +92,31 @@ export default function ReadWriteChatEmbed() {
           <ComponentError componentName="ReadWriteChatEmbed" message={error.message} />
         )}
       >
-        <ClientConfigStore />
-        <Theme />
-        <Header
-          name={headerText}
-          chatAvailable
-          chatDisabled={chatDisabled}
-          online={videoAvailable}
-        />
-        {currentUser && (
-          <div id="chat-container">
-            <ChatContainer
-              messages={messages}
-              usernameToHighlight={currentUser.displayName}
-              chatUserId={currentUser.id}
-              isModerator={currentUser.isModerator}
-              showInput
-              height="92vh"
-              chatAvailable={isChatAvailable}
-              inputEnabled={chatInputEnabled}
-              inputDisabledPlaceholder={chatInputDisabledMessage}
-            />
-          </div>
-        )}
+        <div className="embed-container">
+          <ClientConfigStore />
+          <Theme />
+          <Header
+            name={headerText}
+            chatAvailable
+            chatDisabled={chatDisabled}
+            online={videoAvailable}
+          />
+          {currentUser && (
+            <div id="chat-container">
+              <ChatContainer
+                messages={messages}
+                usernameToHighlight={currentUser.displayName}
+                chatUserId={currentUser.id}
+                isModerator={currentUser.isModerator}
+                showInput
+                height="100%"
+                chatAvailable={isChatAvailable}
+                inputEnabled={chatInputEnabled}
+                inputDisabledPlaceholder={chatInputDisabledMessage}
+              />
+            </div>
+          )}
+        </div>
       </ErrorBoundary>
     </div>
   );
