@@ -1,6 +1,6 @@
 import { Popover } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import sanitizeHtml from 'sanitize-html';
 import Graphemer from 'graphemer';
 
@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic';
 import classNames from 'classnames';
 import ContentEditable from './ContentEditable';
 import WebsocketService from '../../../services/websocket-service';
-import { websocketServiceAtom } from '../../stores/ClientConfigStore';
+import { websocketServiceAtom, chatInputDraftAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
 import styles from './ChatTextField.module.scss';
 
@@ -120,6 +120,7 @@ const getTextContent = node => {
 };
 
 export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
+  const [inputDraft, setInputDraft] = useRecoilState(chatInputDraftAtom);
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const [contentEditable, setContentEditable] = useState(null);
@@ -146,6 +147,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
 
     websocketService.send({ type: MessageType.CHAT, body: message });
     contentEditable.innerHTML = '';
+    setInputDraft('');
   };
 
   const insertTextAtEnd = (textToInsert: string) => {
@@ -220,6 +222,9 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
         contentEditable.removeChild(contentEditable.children[0]);
       }
     }
+
+    // Persist draft to Recoil state so it survives mobile/desktop mode switches
+    setInputDraft(contentEditable.innerHTML);
   };
 
   // Focus the input when the component mounts.
@@ -229,6 +234,14 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     }
     document.getElementById('chat-input-content-editable').focus({ preventScroll: true });
   }, []);
+
+  // Restore draft from Recoil state when component mounts (e.g., after mobile/desktop switch)
+  useEffect(() => {
+    if (contentEditable && inputDraft) {
+      contentEditable.innerHTML = inputDraft;
+      setCharacterCount(graphemer.countGraphemes(getTextContent(contentEditable)));
+    }
+  }, [contentEditable]);
 
   const getCustomEmoji = async () => {
     try {
