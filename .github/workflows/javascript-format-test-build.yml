@@ -87,7 +87,7 @@ jobs:
               - '**/*.{js,ts,tsx,jsx,md}'
 
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-node-modules-bundle-web-app
         with:
@@ -170,7 +170,7 @@ jobs:
           node-version: '24.12.0'
 
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-node-modules-bundle-web-app
         with:
@@ -213,7 +213,7 @@ jobs:
           node-version: '24.12.0'
 
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-node-modules-bundle-web-app
         with:
