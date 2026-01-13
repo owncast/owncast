@@ -5,12 +5,8 @@ set -e
 function install_ffmpeg() {
 	# install a specific version of ffmpeg
 
-	if [[ "$OSTYPE" == "linux-"* ]]; then
-		OS="linux"
-	elif [[ "$OSTYPE" == "darwin"* ]]; then
-		OS="macos"
-	else
-		echo "Exiting!!!"
+	if [[ "$OSTYPE" != "linux-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
+		echo "Unsupported platform: $OSTYPE"
 		exit 1
 	fi
 
