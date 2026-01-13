@@ -11,30 +11,28 @@ Only those who need to create or update SQL queries will need to have `sqlc` ins
 
 ## Using sqlc
 
-This project uses Go 1.24+'s native tool management. The `sqlc` tool is already defined in `go.mod`.
-
-After cloning the repository, ensure tools are downloaded:
+Run from the repository root:
 
 ```bash
-go mod download
+make sqlc
 ```
 
-Then run sqlc:
+Or manually:
 
 ```bash
-go tool sqlc generate
+./bin/sqlc generate
 ```
 
 ## Managing Tool Versions
 
-To upgrade sqlc to a specific version:
+To upgrade sqlc to a specific version, edit `tools/go.mod` and run:
 
 ```bash
-go get -tool github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+cd tools && go get github.com/sqlc-dev/sqlc@latest && go mod tidy
 ```
 
-To check the current version:
+Then reinstall:
 
 ```bash
-go list -m github.com/sqlc-dev/sqlc
+rm ./bin/sqlc && make sqlc
 ```
