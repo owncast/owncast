@@ -225,10 +225,8 @@ func (t *Transcoder) getFlags() *execInfo {
 	environ := []string{
 		reportEnv,
 	}
-	ffmpegFlags := []string{
-		"-hide_banner",
-		"-loglevel", "warning",
-	}
+	ffmpegFlags := make([]string, 0, 64)
+	ffmpegFlags = append(ffmpegFlags, "-hide_banner", "-loglevel", "warning")
 	ffmpegFlags = append(ffmpegFlags, t.codec.GlobalFlags()...)
 	ffmpegFlags = append(ffmpegFlags, []string{
 		"-fflags", "+genpts", // Generate presentation time stamp if missing
@@ -370,7 +368,7 @@ func (v *HLSVariant) getVariantString(t *Transcoder) []string {
 
 // Get the command flags for the variants.
 func (t *Transcoder) getVariantsString() []string {
-	var variantsCommandFlags []string
+	variantsCommandFlags := make([]string, 0, len(t.variants)*20)
 	streamMap := make([]string, 0, len(t.variants))
 
 	for _, variant := range t.variants {
@@ -418,7 +416,8 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) []string {
 	}
 
 	gop := v.framerate * t.currentLatencyLevel.SecondsPerSegment // force an i-frame every segment
-	cmd := []string{
+	cmd := make([]string, 0, 20)
+	cmd = append(cmd,
 		"-map", "v:0",
 		fmt.Sprintf("-c:v:%d", v.index), t.codec.Name(), // Video codec used for this variant
 		fmt.Sprintf("-b:v:%d", v.index), fmt.Sprintf("%dk", v.getAllocatedVideoBitrate()), // The average bitrate for this variant allowing space for audio
@@ -426,7 +425,7 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) []string {
 		fmt.Sprintf("-g:v:%d", v.index), fmt.Sprintf("%d", gop), // Suggested interval where i-frames are encoded into the segments
 		fmt.Sprintf("-keyint_min:v:%d", v.index), fmt.Sprintf("%d", gop), // minimum i-keyframe interval
 		fmt.Sprintf("-r:v:%d", v.index), fmt.Sprintf("%d", v.framerate),
-	}
+	)
 	cmd = append(cmd, t.codec.VariantFlags(v)...)
 
 	return cmd
