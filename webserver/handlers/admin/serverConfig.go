@@ -21,8 +21,9 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	usernameBlocklist := configRepository.GetForbiddenUsernameList()
 	usernameSuggestions := configRepository.GetSuggestedUsernamesList()
 
-	videoQualityVariants := make([]models.StreamOutputVariant, 0)
-	for _, variant := range configRepository.GetStreamOutputVariants() {
+	streamOutputVariants := configRepository.GetStreamOutputVariants()
+	videoQualityVariants := make([]models.StreamOutputVariant, 0, len(streamOutputVariants))
+	for _, variant := range streamOutputVariants {
 		videoQualityVariants = append(videoQualityVariants, models.StreamOutputVariant{
 			Name:               variant.GetName(),
 			IsAudioPassthrough: variant.GetIsAudioPassthrough(),

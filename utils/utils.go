@@ -344,7 +344,7 @@ func StringSliceToMap(stringSlice []string) map[string]interface{} {
 
 // Float64MapToSlice is a convenience function to convert a map of floats into.
 func Float64MapToSlice(float64Map map[string]float64) []float64 {
-	float64Slice := []float64{}
+	float64Slice := make([]float64, 0, len(float64Map))
 
 	for _, val := range float64Map {
 		float64Slice = append(float64Slice, val)
@@ -355,7 +355,7 @@ func Float64MapToSlice(float64Map map[string]float64) []float64 {
 
 // StringMapKeys returns a slice of string keys from a map.
 func StringMapKeys(stringMap map[string]interface{}) []string {
-	stringSlice := []string{}
+	stringSlice := make([]string, 0, len(stringMap))
 	for k := range stringMap {
 		stringSlice = append(stringSlice, k)
 	}
