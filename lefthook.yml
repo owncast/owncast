@@ -77,4 +77,4 @@ lint:
 commit-msg:
   commands:
     'lint commit message':
-      run: command -v commitlint >/dev/null 2>&1 && commitlint --edit {1}
+      run: if command -v commitlint >/dev/null 2>&1; then commitlint --edit {1}; fi

@@ -32,8 +32,8 @@ $(OAPI_CODEGEN):
 install-hooks: $(LEFTHOOK)
 	$(LEFTHOOK) install
 	@echo "Patching hooks to use ./bin/lefthook..."
-	@for hook in .git/hooks/pre-commit .git/hooks/pre-push .git/hooks/commit-msg; do \
-		if [ -f "$$hook" ]; then \
+	@for hook in .git/hooks/*; do \
+		if [ -f "$$hook" ] && grep -q 'call_lefthook' "$$hook" && ! grep -q 'export LEFTHOOK_BIN' "$$hook"; then \
 			sed -i.bak 's|call_lefthook|export LEFTHOOK_BIN="$$(git rev-parse --show-toplevel)/bin/lefthook"; call_lefthook|' "$$hook" && rm -f "$$hook.bak"; \
 		fi \
 	done
