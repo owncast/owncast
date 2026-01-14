@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@latest
+# Tools are managed in tools/go.mod and installed to ./bin
 
 # setup
 package="generated"
@@ -24,9 +24,12 @@ fi
 rm -r $folderPath
 mkdir -p $folderPath
 
+# install oapi-codegen
+GOBIN=$(pwd)/bin go install -C tools github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen
+
 # codegen
-go tool oapi-codegen -generate types -o $folderPath/$package-types.gen.go -package $package $specPath
-go tool oapi-codegen -generate "chi-server" -o $folderPath/$package.gen.go -package $package $specPath
+./bin/oapi-codegen -generate types -o $folderPath/$package-types.gen.go -package $package $specPath
+./bin/oapi-codegen -generate "chi-server" -o $folderPath/$package.gen.go -package $package $specPath
 
 # go
 go mod tidy

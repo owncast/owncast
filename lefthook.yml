@@ -2,13 +2,15 @@
 # be optionally run to assist in Owncast development.
 # This file should be placed in the root of the Owncast repository.
 # It will perform code linting, formatting, run tests, and other checks.
-# To enable this, you need to enable to enable the hooks by running:
-# go tool lefthook install
+#
+# To enable, run:
+#   make install-hooks
 #
 # To learn more: https://lefthook.dev/usage/commands.html#lefthook-install
 #
-# To test the install run: go tool lefthook run test
+# To test the install run: ./bin/lefthook run test
 # And you should see the Go and JS tests run.
+
 
 pre-push:
   parallel: true
@@ -40,11 +42,11 @@ pre-commit:
       run: npx --yes knip --include dependencies,files,exports
     go-fmt:
       glob: '*.go'
-      run: go tool gofumpt -l -w {staged_files}
+      run: GOBIN=$(pwd)/bin go install -C tools mvdan.cc/gofumpt && ./bin/gofumpt -l -w {staged_files}
       stage_fixed: true
     golangci-lint:
       glob: '*.go'
-      run: go tool golangci-lint run ./...
+      run: GOBIN=$(pwd)/bin go install -C tools github.com/golangci/golangci-lint/v2/cmd/golangci-lint && ./bin/golangci-lint run ./...
     go-test:
       glob: '*.go'
       run: go test ./... > /dev/null
@@ -67,7 +69,7 @@ lint:
   commands:
     golangci-lint:
       glob: '*.go'
-      run: go tool golangci-lint run ./...
+      run: GOBIN=$(pwd)/bin go install -C tools github.com/golangci/golangci-lint/v2/cmd/golangci-lint && ./bin/golangci-lint run ./...
 
 # Validate commit messages per https://www.conventionalcommits.org/en/v1.0.0/
 # Install commitlint into your global npm path if you want to use it.
@@ -75,4 +77,4 @@ lint:
 commit-msg:
   commands:
     'lint commit message':
-      run: command -v commitlint >/dev/null 2>&1 && commitlint --edit {1}
+      run: if command -v commitlint >/dev/null 2>&1; then commitlint --edit {1}; fi
