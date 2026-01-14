@@ -28,7 +28,7 @@ class ChatModerationService {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ userId: id }),
+      body: JSON.stringify({ userId: id, enabled: false }),
     };
 
     await fetch(hideMessageUrl, options);
