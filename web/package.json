@@ -76,7 +76,7 @@
     "yaml": "2.8.2"
   },
   "devDependencies": {
-    "@babel/core": "7.28.5",
+    "@babel/core": "7.28.6",
     "@babel/preset-react": "^7.25.7",
     "@commitlint/cli": "^20.0.0",
     "@commitlint/config-conventional": "^20.0.0",
