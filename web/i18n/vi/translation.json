@@ -1,221 +1,222 @@
 {
-  "Admin": {
-    "EditInstanceDetails": {
-      "directoryDescription": "Tăng cường khán giả của bạn bằng cách xuất hiện trong <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Danh bạ Owncast</strong></a>. Đây là một dịch vụ bên ngoài do dự án Owncast vận hành. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Tìm hiểu thêm</a>.",
-      "offlineMessageDescription": "Thông điệp ngoại tuyến sẽ được hiển thị cho khách truy cập trang của bạn khi bạn không phát sóng. Markdown được hỗ trợ.",
-      "serverUrlRequiredForDirectory": "Bạn phải thiết lập <strong>URL máy chủ</strong> của mình ở trên để kích hoạt thư mục."
-    },
-    "HardwareInfo": {
-      "title": "Thông tin phần cứng",
-      "pleaseWait": "Vui lòng đợi",
-      "noDetails": "Chưa có thông tin phần cứng nào được thu thập",
-      "cpu": "CPU",
-      "memory": "Bộ nhớ",
-      "disk": "Ổ đĩa",
-      "used": "đã sử dụng"
-    },
-    "Help": {
-      "title": "Chúng tôi có thể giúp gì cho bạn?",
-      "configureInstance": "Tôi muốn cấu hình phiên bản Owncast của mình",
-      "learnMore": "Tìm hiểu thêm",
-      "configureBroadcasting": "Trợ giúp cấu hình phần mềm phát sóng của tôi",
-      "embedStream": "Tôi muốn nhúng stream của mình vào trang web khác",
-      "customizeWebsite": "Tôi muốn tùy chỉnh trang web của mình",
-      "tweakVideo": "Tôi muốn điều chỉnh đầu ra video",
-      "useStorage": "Tôi muốn sử dụng nhà cung cấp lưu trữ bên ngoài",
-      "foundBug": "Tôi phát hiện lỗi",
-      "bugPlease": "Nếu bạn phát hiện lỗi, vui lòng",
-      "letUsKnow": "cho chúng tôi biết",
-      "generalQuestion": "Tôi có câu hỏi chung",
-      "generalAnswered": "Hầu hết các câu hỏi chung được trả lời trong",
-      "faq": "FAQ",
-      "orExist": "hoặc có trong",
-      "discussions": "thảo luận",
-      "buildAddons": "Tôi muốn xây dựng tiện ích mở rộng cho Owncast",
-      "buildTools": "Bạn có thể xây dựng bot, lớp phủ, công cụ và tiện ích mở rộng riêng với",
-      "developerApis": "API cho nhà phát triển của chúng tôi",
-      "troubleshooting": "Xử lý sự cố",
-      "fixProblems": "Giải quyết vấn đề của bạn",
-      "documentation": "Tài liệu",
-      "readDocs": "Đọc tài liệu",
-      "commonTasks": "Tác vụ thông dụng",
-      "other": "Khác"
-    },
-    "LogTable": {
-      "level": "Mức độ",
-      "info": "Thông tin",
-      "warning": "Cảnh báo",
-      "error": "Lỗi",
-      "timestamp": "Thời gian",
-      "message": "Tin nhắn",
-      "logs": "Nhật ký"
-    },
-    "NewsFeed": {
-      "link": "Liên kết",
-      "noNews": "Không có tin tức",
-      "title": "Tin tức & Cập nhật từ Owncast"
-    },
-    "ViewerInfo": {
-      "title": "Thông tin người xem",
-      "currentStream": "Stream hiện tại",
-      "last12Hours": "12 giờ qua",
-      "last24Hours": "24 giờ qua",
-      "last7Days": "7 ngày qua",
-      "last30Days": "30 ngày qua",
-      "last3Months": "3 tháng qua",
-      "last6Months": "6 tháng qua",
-      "currentViewers": "Số người xem hiện tại",
-      "maxViewersThisStream": "Số người xem tối đa stream này",
-      "maxViewersLastStream": "Số người xem tối đa stream trước",
-      "maxViewers": "Người xem tối đa",
-      "pleaseWait": "Vui lòng đợi",
-      "noData": "Chưa có dữ liệu người xem nào được thu thập",
-      "viewers": "Người xem"
-    },
-    "VideoVariantForm": {
-      "bitrateDisabledPassthrough": "Lựa chọn bitrate bị vô hiệu hóa khi Video Passthrough được bật.",
-      "bitrateGoodForHigh": "Tốt cho người xem tốc độ cao & bitrate cao.",
-      "bitrateGoodForMost": "Tốt cho hầu hết người xem, băng thông và độ phân giải.",
-      "bitrateGoodForSlow": "Tốt cho người xem chậm, di động và bitrate thấp.",
-      "bitrateValueKbps": "{{bitrate}} kbps"
-    },
-    "deleteEmoji": "Xóa emoji",
-    "emojiPageDescription": "Tại đây bạn có thể tải lên các emoji tùy chỉnh mới để sử dụng trong chat. Khi tải lên một emoji mới, tên tệp không có đuôi sẽ được sử dụng làm tên emoji. Thêm vào đó, tên emoji không phân biệt chữ hoa chữ thường. Để có kết quả tốt nhất, hãy đảm bảo tất cả emoji có tên gọi độc nhất.",
-    "emojiUploadBulkGuide": "Bạn muốn tải lên emoji tùy chỉnh hàng loạt? Xem hướng dẫn <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji</a>.",
-    "emojis": "Emoji",
-    "uploadNewEmoji": "Tải lên emoji mới",
-    "StatusMessages": {
-      "updated": "Đã cập nhật.",
-      "tagsUpdated": "Thẻ đã được cập nhật.",
-      "variantsUpdated": "Biến thể đã được cập nhật.",
-      "videoCodecUpdated": "Codec video đã được cập nhật.",
-      "latencyBufferUpdated": "Cấp độ bộ đệm độ trễ đã được cập nhật.",
-      "deletingEmoji": "Đang xóa emoji...",
-      "emojiDeleted": "Emoji đã bị xóa.",
-      "convertingEmoji": "Đang chuyển đổi emoji...",
-      "uploadingEmoji": "Đang tải emoji...",
-      "emojiUploadedSuccessfully": "Emoji đã được tải lên thành công!",
-      "thereWasAnError": "Có lỗi xảy ra: {{message}}",
-      "fileSizeTooBig": "Kích thước tệp quá lớn: {{size}}",
-      "fileTypeNotSupported": "Loại tệp không được hỗ trợ: {{type}}",
-      "pleaseEnterTag": "Vui lòng nhập thẻ",
-      "tagAlreadyUsed": "Thẻ này đã được sử dụng!"
-    },
-    "Actions": {
-      "title": "Hành động bên ngoài",
-      "description": "URL hành động bên ngoài là UI bên thứ ba mà bạn có thể hiển thị, nhúng, vào trang Owncast của bạn khi người dùng nhấp vào nút để khởi chạy hành động của bạn.",
-      "readMoreLink": "Đọc thêm về cách sử dụng hành động, với các ví dụ, tại",
-      "createNewAction": "Tạo hành động mới",
-      "createNewActionTitle": "Tạo hành động mới",
-      "editActionTitle": "Chỉnh sửa hành động",
-      "modalDescription": "Thêm URL cho hành động bên ngoài mà bạn muốn trình diễn.",
-      "onlyHttpsSupported": "Chỉ hỗ trợ URL và nhúng HTTPS.",
-      "readMoreAboutActions": "Đọc thêm về các hành động bên ngoài.",
-      "selectActionType": "Chọn loại hành động",
-      "linkOrEmbedUrl": "Liên kết hoặc nhúng một URL",
-      "customHtml": "HTML tùy chỉnh",
-      "htmlEmbedPlaceholder": "Mã nhúng HTML (bắt buộc)",
-      "urlPlaceholder": "https://myserver.com/action (bắt buộc)",
-      "titlePlaceholder": "Tiêu đề hành động của bạn (bắt buộc)",
-      "descriptionPlaceholder": "Mô tả tùy chọn",
-      "iconPlaceholder": "https://myserver.com/action/icon.png (tùy chọn)",
-      "optionalBackgroundColor": "Màu nền tùy chọn của nút hành động.",
-      "openExternally": "Mở trong tab mới thay vì bên trong trang của bạn."
-    },
-    "Webhooks": {
-      "createNewWebhook": "Tạo Webhook mới",
-      "webhookUrlPlaceholder": "https://myserver.com/webhook",
-      "selectEvents": "Chọn các sự kiện sẽ được gửi đến webhook này.",
-      "selectAll": "Chọn tất cả"
-    },
-    "AccessTokens": {
-      "createNewAccessToken": "Tạo mã truy cập mới",
-      "nameDescription": "Tên sẽ được hiển thị như người dùng chat khi gửi tin nhắn với mã truy cập này.",
-      "namePlaceholder": "Tên bot, dịch vụ hoặc tích hợp",
-      "selectPermissions": "Chọn quyền mà mã truy cập này sẽ có. Nó không thể được chỉnh sửa sau khi được tạo.",
-      "selectAll": "Chọn tất cả"
-    }
-  },
-  "Common": {
-    "poweredByOwncastVersion": "Được cung cấp bởi <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
-  },
-  "Frontend": {
-    "BrowserNotifyModal": {
-      "allowButton": "Cho phép",
-      "blockButton": "Chặn",
-      "deniedDescription": "Để kích hoạt thông báo đẩy từ {{hostname}}, hãy truy cập quyền trình duyệt của bạn cho trang web này và bật thông báo. Sau đó, tải lại trang này để áp dụng cài đặt cập nhật của bạn trên trang web này. <a href='https://owncast.online/docs/notifications'>Tìm hiểu thêm.</a>",
-      "deniedTitle": "Thông báo đã bị chặn trên thiết bị của bạn",
-      "enabledDescription": "Để vô hiệu hóa thông báo đẩy từ {{hostname}}, hãy truy cập quyền trình duyệt của bạn cho trang web này và tắt thông báo. <a href='https://owncast.online/docs/notifications'>Tìm hiểu thêm.</a>",
-      "enabledTitle": "Thông báo đã được bật",
-      "errorMessage": "Lỗi đăng ký thông báo trực tiếp: {{message}}. Hãy chắc chắn rằng bạn không ở trong môi trường trình duyệt riêng tư hoặc đã vô hiệu hóa thông báo cho stream này trước đó.",
-      "errorTitle": "Lỗi thông báo trình duyệt",
-      "iosAddButton": "Thêm",
-      "iosAddToHomeScreen": "Thêm vào màn hình chính",
-      "iosAllowPrompt": "Cho phép",
-      "iosComeBack": "Quay lại màn hình này và bật thông báo.",
-      "iosDescription": "Bạn cần thực hiện thêm một vài bước để đảm bảo bạn nhận được thông báo khi các luồng yêu thích của bạn phát trực tiếp.",
-      "iosNameAndTap": "Đặt tên cho liên kết này và nhấn vào biểu tượng mới trên màn hình chính của bạn",
-      "iosShareButton": "chia sẻ",
-      "iosTitle": "Nhận thông báo trên iOS",
-      "learnMore": "Tìm hiểu thêm",
-      "mainDescription": "Nhận thông báo ngay trong trình duyệt mỗi khi luồng này phát trực tiếp.",
-      "permissionWantsTo": "{{hostname}} muốn",
-      "showNotifications": "Hiển thị thông báo",
-      "unsupported": "Thông báo trình duyệt không được hỗ trợ trong trình duyệt của bạn.",
-      "unsupportedLocal": "Thông báo trình duyệt không được hỗ trợ cho các máy chủ cục bộ."
-    },
-    "Footer": {
-      "documentation": "Tài liệu",
-      "contribute": "Đóng góp",
-      "source": "Mã nguồn"
-    },
-    "Chat": {
-      "userJoined": "đã tham gia trò chuyện.",
-      "userLeft": "đã rời khỏi trò chuyện.",
-      "nameChangeText": "hiện được biết đến với tên",
-      "moderatorNotification": "Bạn hiện là một người điều hành."
-    },
-    "FollowModal": {
-      "description": "Bằng cách theo dõi dòng này, bạn sẽ nhận được thông báo trên Fediverse khi nó hoạt động. Bây giờ là thời điểm tuyệt vời để",
-      "learnFediverse": "tìm hiểu về Fediverse",
-      "newToYou": "nếu đây là lần đầu tiên bạn biết đến.",
-      "instructions": "Nhập tên người dùng của bạn @server để theo dõi",
-      "placeholder": "Tài khoản Fediverse của bạn @account@server",
-      "redirectMessage": "Bạn sẽ được chuyển hướng đến máy chủ Fediverse của bạn và được yêu cầu xác nhận hành động.",
-      "joinFediverse": "Tham gia Fediverse",
-      "followButton": "Theo dõi",
-      "followError": "Lỗi theo dõi",
-      "unableToFollow": "Không thể theo dõi."
-    },
-    "Header": {
-      "skipToPlayer": "Chuyển đến trình phát",
-      "skipToOfflineMessage": "Chuyển đến tin nhắn ngoại tuyến",
-      "skipToContent": "Chuyển đến nội dung trang",
-      "skipToFooter": "Chuyển đến chân trang",
-      "chatWillBeAvailable": "Trò chuyện sẽ khả dụng khi stream trực tiếp",
-      "chatOffline": "Trò chuyện đang ngoại tuyến"
-    },
-    "NameChangeModal": {
-      "authInfo": "Bạn cũng có thể xác thực tài khoản IndieAuth hoặc Fediverse thông qua menu \"Xác thực\".",
-      "buttonText": "Thay đổi tên",
-      "colorLabel": "Màu sắc của bạn",
-      "description": "Tên hiển thị của bạn trong chat là những gì mọi người thấy khi bạn gửi tin nhắn chat.",
-      "overLimit": "Vượt quá giới hạn",
-      "placeholder": "Tên hiển thị của bạn trong chat"
-    },
-    "chatOffline": "Trò chuyện đang ngoại tuyến",
-    "componentError": "Lỗi: {{message}}",
-    "helloWorld": "Xin chào thế giới",
-    "offlineBasic": "Luồng này đang ngoại tuyến. Hãy quay lại sau!",
-    "offlineFediverseOnly": "Luồng này đang ngoại tuyến. <span class='follow-link'>Theo dõi</span> {{fediverseAccount}} trên Fediverse để xem lần tới {{streamer}} trực tiếp.",
-    "offlineNotifyAndFediverse": "Luồng này đang ngoại tuyến. Bạn có thể <span class='notify-link'>được thông báo</span> khi {{streamer}} trực tiếp hoặc <span class='follow-link'>theo dõi</span> {{fediverseAccount}} trên Fediverse.",
-    "offlineNotifyOnly": "Luồng này đang ngoại tuyến. <span class='notify-link'>Được thông báo</span> khi {{streamer}} trực tiếp.",
-    "lastLiveAgo": "Lần phát trực tiếp cuối cùng cách đây {{timeAgo}}"
-  },
-  "Testing": {
-    "itemCount": "Bạn có {{count}} mục",
-    "messageCount": "Bạn có {{count}} tin nhắn từ {{sender}}",
-    "noPluralKey": "Khóa này không có biến số số nhiều - {{count}} thứ",
-    "simpleKey": "Văn bản dịch đơn giản"
-  }
+	"Admin": {
+		"AccessTokens": {
+			"createNewAccessToken": "Tạo mã truy cập mới",
+			"nameDescription": "Tên sẽ được hiển thị như người dùng chat khi gửi tin nhắn với mã truy cập này.",
+			"namePlaceholder": "Tên bot, dịch vụ hoặc tích hợp",
+			"selectAll": "Chọn tất cả",
+			"selectPermissions": "Chọn quyền mà mã truy cập này sẽ có. Nó không thể được chỉnh sửa sau khi được tạo."
+		},
+		"Actions": {
+			"createNewAction": "Tạo hành động mới",
+			"createNewActionTitle": "Tạo hành động mới",
+			"customHtml": "HTML tùy chỉnh",
+			"description": "URL hành động bên ngoài là UI bên thứ ba mà bạn có thể hiển thị, nhúng, vào trang Owncast của bạn khi người dùng nhấp vào nút để khởi chạy hành động của bạn.",
+			"descriptionPlaceholder": "Mô tả tùy chọn",
+			"editActionTitle": "Chỉnh sửa hành động",
+			"htmlEmbedPlaceholder": "Mã nhúng HTML (bắt buộc)",
+			"iconPlaceholder": "https://myserver.com/action/icon.png (tùy chọn)",
+			"linkOrEmbedUrl": "Liên kết hoặc nhúng một URL",
+			"modalDescription": "Thêm URL cho hành động bên ngoài mà bạn muốn trình diễn.",
+			"onlyHttpsSupported": "Chỉ hỗ trợ URL và nhúng HTTPS.",
+			"openExternally": "Mở trong tab mới thay vì bên trong trang của bạn.",
+			"optionalBackgroundColor": "Màu nền tùy chọn của nút hành động.",
+			"readMoreAboutActions": "Đọc thêm về các hành động bên ngoài.",
+			"readMoreLink": "Đọc thêm về cách sử dụng hành động, với các ví dụ, tại",
+			"selectActionType": "Chọn loại hành động",
+			"title": "Hành động bên ngoài",
+			"titlePlaceholder": "Tiêu đề hành động của bạn (bắt buộc)",
+			"urlPlaceholder": "https://myserver.com/action (bắt buộc)"
+		},
+		"EditInstanceDetails": {
+			"directoryDescription": "Tăng cường khán giả của bạn bằng cách xuất hiện trong <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Danh bạ Owncast</strong></a>. Đây là một dịch vụ bên ngoài do dự án Owncast vận hành. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Tìm hiểu thêm</a>.",
+			"offlineMessageDescription": "Thông điệp ngoại tuyến sẽ được hiển thị cho khách truy cập trang của bạn khi bạn không phát sóng. Markdown được hỗ trợ.",
+			"serverUrlRequiredForDirectory": "Bạn phải thiết lập <strong>URL máy chủ</strong> của mình ở trên để kích hoạt thư mục."
+		},
+		"HardwareInfo": {
+			"cpu": "CPU",
+			"disk": "Ổ đĩa",
+			"memory": "Bộ nhớ",
+			"noDetails": "Chưa có thông tin phần cứng nào được thu thập",
+			"pleaseWait": "Vui lòng đợi",
+			"title": "Thông tin phần cứng",
+			"used": "đã sử dụng"
+		},
+		"Help": {
+			"bugPlease": "Nếu bạn phát hiện lỗi, vui lòng",
+			"buildAddons": "Tôi muốn xây dựng tiện ích mở rộng cho Owncast",
+			"buildTools": "Bạn có thể xây dựng bot, lớp phủ, công cụ và tiện ích mở rộng riêng với",
+			"commonTasks": "Tác vụ thông dụng",
+			"configureBroadcasting": "Trợ giúp cấu hình phần mềm phát sóng của tôi",
+			"configureInstance": "Tôi muốn cấu hình phiên bản Owncast của mình",
+			"customizeWebsite": "Tôi muốn tùy chỉnh trang web của mình",
+			"developerApis": "API cho nhà phát triển của chúng tôi",
+			"discussions": "thảo luận",
+			"documentation": "Tài liệu",
+			"embedStream": "Tôi muốn nhúng stream của mình vào trang web khác",
+			"faq": "FAQ",
+			"fixProblems": "Giải quyết vấn đề của bạn",
+			"foundBug": "Tôi phát hiện lỗi",
+			"generalAnswered": "Hầu hết các câu hỏi chung được trả lời trong",
+			"generalQuestion": "Tôi có câu hỏi chung",
+			"learnMore": "Tìm hiểu thêm",
+			"letUsKnow": "cho chúng tôi biết",
+			"orExist": "hoặc có trong",
+			"other": "Khác",
+			"readDocs": "Đọc tài liệu",
+			"title": "Chúng tôi có thể giúp gì cho bạn?",
+			"troubleshooting": "Xử lý sự cố",
+			"tweakVideo": "Tôi muốn điều chỉnh đầu ra video",
+			"useStorage": "Tôi muốn sử dụng nhà cung cấp lưu trữ bên ngoài"
+		},
+		"LogTable": {
+			"error": "Lỗi",
+			"info": "Thông tin",
+			"level": "Mức độ",
+			"logs": "Nhật ký",
+			"message": "Tin nhắn",
+			"timestamp": "Thời gian",
+			"warning": "Cảnh báo"
+		},
+		"NewsFeed": {
+			"link": "Liên kết",
+			"noNews": "Không có tin tức",
+			"title": "Tin tức & Cập nhật từ Owncast"
+		},
+		"StatusMessages": {
+			"convertingEmoji": "Đang chuyển đổi emoji...",
+			"deletingEmoji": "Đang xóa emoji...",
+			"emojiDeleted": "Emoji đã bị xóa.",
+			"emojiUploadedSuccessfully": "Emoji đã được tải lên thành công!",
+			"fileSizeTooBig": "Kích thước tệp quá lớn: {{size}}",
+			"fileTypeNotSupported": "Loại tệp không được hỗ trợ: {{type}}",
+			"latencyBufferUpdated": "Cấp độ bộ đệm độ trễ đã được cập nhật.",
+			"pleaseEnterTag": "Vui lòng nhập thẻ",
+			"tagAlreadyUsed": "Thẻ này đã được sử dụng!",
+			"tagsUpdated": "Thẻ đã được cập nhật.",
+			"thereWasAnError": "Có lỗi xảy ra: {{message}}",
+			"updated": "Đã cập nhật.",
+			"uploadingEmoji": "Đang tải emoji...",
+			"variantsUpdated": "Biến thể đã được cập nhật.",
+			"videoCodecUpdated": "Codec video đã được cập nhật."
+		},
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "Lựa chọn bitrate bị vô hiệu hóa khi Video Passthrough được bật.",
+			"bitrateGoodForHigh": "Tốt cho người xem tốc độ cao & bitrate cao.",
+			"bitrateGoodForMost": "Tốt cho hầu hết người xem, băng thông và độ phân giải.",
+			"bitrateGoodForSlow": "Tốt cho người xem chậm, di động và bitrate thấp.",
+			"bitrateValueKbps": "{{bitrate}} kbps"
+		},
+		"ViewerInfo": {
+			"currentStream": "Stream hiện tại",
+			"currentViewers": "Số người xem hiện tại",
+			"last12Hours": "12 giờ qua",
+			"last24Hours": "24 giờ qua",
+			"last30Days": "30 ngày qua",
+			"last3Months": "3 tháng qua",
+			"last6Months": "6 tháng qua",
+			"last7Days": "7 ngày qua",
+			"maxViewers": "Người xem tối đa",
+			"maxViewersLastStream": "Số người xem tối đa stream trước",
+			"maxViewersThisStream": "Số người xem tối đa stream này",
+			"noData": "Chưa có dữ liệu người xem nào được thu thập",
+			"pleaseWait": "Vui lòng đợi",
+			"title": "Thông tin người xem",
+			"viewers": "Người xem"
+		},
+		"Webhooks": {
+			"createNewWebhook": "Tạo Webhook mới",
+			"selectAll": "Chọn tất cả",
+			"selectEvents": "Chọn các sự kiện sẽ được gửi đến webhook này.",
+			"webhookUrlPlaceholder": "https://myserver.com/webhook"
+		},
+		"deleteEmoji": "Xóa emoji",
+		"emojiPageDescription": "Tại đây bạn có thể tải lên các emoji tùy chỉnh mới để sử dụng trong chat. Khi tải lên một emoji mới, tên tệp không có đuôi sẽ được sử dụng làm tên emoji. Thêm vào đó, tên emoji không phân biệt chữ hoa chữ thường. Để có kết quả tốt nhất, hãy đảm bảo tất cả emoji có tên gọi độc nhất.",
+		"emojiUploadBulkGuide": "Bạn muốn tải lên emoji tùy chỉnh hàng loạt? Xem hướng dẫn <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Emoji</a>.",
+		"emojis": "Emoji",
+		"uploadNewEmoji": "Tải lên emoji mới"
+	},
+	"Common": {
+		"poweredByOwncastVersion": "Được cung cấp bởi <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+	},
+	"Frontend": {
+		"BrowserNotifyModal": {
+			"allowButton": "Cho phép",
+			"blockButton": "Chặn",
+			"deniedDescription": "Để kích hoạt thông báo đẩy từ {{hostname}}, hãy truy cập quyền trình duyệt của bạn cho trang web này và bật thông báo. Sau đó, tải lại trang này để áp dụng cài đặt cập nhật của bạn trên trang web này. <a href='https://owncast.online/docs/notifications'>Tìm hiểu thêm.</a>",
+			"deniedTitle": "Thông báo đã bị chặn trên thiết bị của bạn",
+			"enabledDescription": "Để vô hiệu hóa thông báo đẩy từ {{hostname}}, hãy truy cập quyền trình duyệt của bạn cho trang web này và tắt thông báo. <a href='https://owncast.online/docs/notifications'>Tìm hiểu thêm.</a>",
+			"enabledTitle": "Thông báo đã được bật",
+			"errorMessage": "Lỗi đăng ký thông báo trực tiếp: {{message}}. Hãy chắc chắn rằng bạn không ở trong môi trường trình duyệt riêng tư hoặc đã vô hiệu hóa thông báo cho stream này trước đó.",
+			"errorTitle": "Lỗi thông báo trình duyệt",
+			"iosAddButton": "Thêm",
+			"iosAddToHomeScreen": "Thêm vào màn hình chính",
+			"iosAllowPrompt": "Cho phép",
+			"iosComeBack": "Quay lại màn hình này và bật thông báo.",
+			"iosDescription": "Bạn cần thực hiện thêm một vài bước để đảm bảo bạn nhận được thông báo khi các luồng yêu thích của bạn phát trực tiếp.",
+			"iosNameAndTap": "Đặt tên cho liên kết này và nhấn vào biểu tượng mới trên màn hình chính của bạn",
+			"iosShareButton": "chia sẻ",
+			"iosTitle": "Nhận thông báo trên iOS",
+			"learnMore": "Tìm hiểu thêm",
+			"learnMoreAboutNotifications": "<a href='https://owncast.online/docs/notifications/#browser-notifications'>Tìm hiểu thêm</a> về thông báo trình duyệt của Owncast.",
+			"mainDescription": "Nhận thông báo ngay trong trình duyệt mỗi khi luồng này phát trực tiếp.",
+			"permissionWantsTo": "{{hostname}} muốn",
+			"showNotifications": "Hiển thị thông báo",
+			"unsupported": "Thông báo trình duyệt không được hỗ trợ trong trình duyệt của bạn.",
+			"unsupportedLocal": "Thông báo trình duyệt không được hỗ trợ cho các máy chủ cục bộ."
+		},
+		"Chat": {
+			"moderatorNotification": "Bạn hiện là một người điều hành.",
+			"nameChangeText": "hiện được biết đến với tên",
+			"userJoined": "đã tham gia trò chuyện.",
+			"userLeft": "đã rời khỏi trò chuyện."
+		},
+		"FollowModal": {
+			"description": "Bằng cách theo dõi dòng này, bạn sẽ nhận được thông báo trên Fediverse khi nó hoạt động. Bây giờ là thời điểm tuyệt vời để",
+			"followButton": "Theo dõi",
+			"followError": "Lỗi theo dõi",
+			"instructions": "Nhập tên người dùng của bạn @server để theo dõi",
+			"joinFediverse": "Tham gia Fediverse",
+			"learnFediverse": "tìm hiểu về Fediverse",
+			"newToYou": "nếu đây là lần đầu tiên bạn biết đến.",
+			"placeholder": "Tài khoản Fediverse của bạn @account@server",
+			"redirectMessage": "Bạn sẽ được chuyển hướng đến máy chủ Fediverse của bạn và được yêu cầu xác nhận hành động.",
+			"unableToFollow": "Không thể theo dõi."
+		},
+		"Footer": {
+			"contribute": "Đóng góp",
+			"documentation": "Tài liệu",
+			"source": "Mã nguồn"
+		},
+		"Header": {
+			"chatOffline": "Trò chuyện đang ngoại tuyến",
+			"chatWillBeAvailable": "Trò chuyện sẽ khả dụng khi stream trực tiếp",
+			"skipToContent": "Chuyển đến nội dung trang",
+			"skipToFooter": "Chuyển đến chân trang",
+			"skipToOfflineMessage": "Chuyển đến tin nhắn ngoại tuyến",
+			"skipToPlayer": "Chuyển đến trình phát"
+		},
+		"NameChangeModal": {
+			"authInfo": "Bạn cũng có thể xác thực tài khoản IndieAuth hoặc Fediverse thông qua menu \"Xác thực\".",
+			"buttonText": "Thay đổi tên",
+			"colorLabel": "Màu sắc của bạn",
+			"description": "Tên hiển thị của bạn trong chat là những gì mọi người thấy khi bạn gửi tin nhắn chat.",
+			"overLimit": "Vượt quá giới hạn",
+			"placeholder": "Tên hiển thị của bạn trong chat"
+		},
+		"chatOffline": "Trò chuyện đang ngoại tuyến",
+		"componentError": "Lỗi: {{message}}",
+		"helloWorld": "Xin chào thế giới",
+		"lastLiveAgo": "Lần phát trực tiếp cuối cùng cách đây {{timeAgo}}",
+		"offlineBasic": "Luồng này đang ngoại tuyến. Hãy quay lại sau!",
+		"offlineFediverseOnly": "Luồng này đang ngoại tuyến. <span class='follow-link'>Theo dõi</span> {{fediverseAccount}} trên Fediverse để xem lần tới {{streamer}} trực tiếp.",
+		"offlineNotifyAndFediverse": "Luồng này đang ngoại tuyến. Bạn có thể <span class='notify-link'>được thông báo</span> khi {{streamer}} trực tiếp hoặc <span class='follow-link'>theo dõi</span> {{fediverseAccount}} trên Fediverse.",
+		"offlineNotifyOnly": "Luồng này đang ngoại tuyến. <span class='notify-link'>Được thông báo</span> khi {{streamer}} trực tiếp."
+	},
+	"Testing": {
+		"itemCount": "Bạn có {{count}} mục",
+		"messageCount": "Bạn có {{count}} tin nhắn từ {{sender}}",
+		"noPluralKey": "Khóa này không có biến số số nhiều - {{count}} thứ",
+		"simpleKey": "Văn bản dịch đơn giản"
+	}
 }

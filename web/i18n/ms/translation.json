@@ -1,221 +1,222 @@
 {
-  "Admin": {
-    "EditInstanceDetails": {
-      "directoryDescription": "Tingkatkan audiens anda dengan muncul di <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Direktori Owncast</strong></a>. Ini adalah perkhidmatan luaran yang dikendalikan oleh projek Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Ketahui lebih lanjut</a>.",
-      "offlineMessageDescription": "Mesej luar talian dipaparkan kepada pelawat halaman anda apabila anda tidak sedang penyiaran. Markdown disokong.",
-      "serverUrlRequiredForDirectory": "Anda mesti menetapkan <strong>URL Pelayan</strong> anda di atas untuk membolehkan direktori."
-    },
-    "HardwareInfo": {
-      "title": "Maklumat Perkakasan",
-      "pleaseWait": "Sila tunggu",
-      "noDetails": "Tiada butiran perkakasan yang telah dikumpulkan.",
-      "cpu": "CPU",
-      "memory": "Memori",
-      "disk": "Cakera",
-      "used": "digunakan"
-    },
-    "Help": {
-      "title": "Bagaimana kami boleh membantu anda?",
-      "configureInstance": "Saya mahu mengkonfigurasi instance owncast saya",
-      "learnMore": "Ketahui lebih lanjut",
-      "configureBroadcasting": "Bantuan untuk mengkonfigurasi perisian siaran saya",
-      "embedStream": "Saya mahu menyematkan siaran saya ke dalam laman lain",
-      "customizeWebsite": "Saya mahu mengubahsuai laman web saya",
-      "tweakVideo": "Saya mahu menyunting output video saya",
-      "useStorage": "Saya mahu menggunakan penyedia storan luaran",
-      "foundBug": "Saya telah menemui pepijat",
-      "bugPlease": "Jika anda menemui pepijat, sila",
-      "letUsKnow": "maklumkan kepada kami",
-      "generalQuestion": "Saya mempunyai soalan umum",
-      "generalAnswered": "Kebanyakan soalan umum telah dijawab dalam",
-      "faq": "FAQ",
-      "orExist": "atau wujud dalam",
-      "discussions": "perbincangan",
-      "buildAddons": "Saya mahu membina add-on untuk Owncast",
-      "buildTools": "Anda boleh membina bot, overlay, alat dan add-on anda sendiri dengan",
-      "developerApis": "API pemaju.",
-      "troubleshooting": "Penyelesaian Masalah",
-      "fixProblems": "Buat penyelesaian untuk masalah anda",
-      "documentation": "Dokumentasi",
-      "readDocs": "Baca Dokumentasi",
-      "commonTasks": "Tugas biasa",
-      "other": "Lain-lain"
-    },
-    "LogTable": {
-      "level": "Tahap",
-      "info": "Info",
-      "warning": "Amaran",
-      "error": "Ralat",
-      "timestamp": "Tanda Waktu",
-      "message": "Mesej",
-      "logs": "Log"
-    },
-    "NewsFeed": {
-      "link": "Pautan",
-      "noNews": "Tiada berita.",
-      "title": "Berita & Kemas Kini dari Owncast"
-    },
-    "ViewerInfo": {
-      "title": "Info Penonton",
-      "currentStream": "Siaran semasa",
-      "last12Hours": "12 jam yang lepas",
-      "last24Hours": "24 jam yang lepas",
-      "last7Days": "7 hari yang lepas",
-      "last30Days": "30 hari yang lepas",
-      "last3Months": "3 bulan yang lepas",
-      "last6Months": "6 bulan yang lepas",
-      "currentViewers": "Penonton semasa",
-      "maxViewersThisStream": "Penonton maksima siaran ini",
-      "maxViewersLastStream": "Penonton maksima siaran lepas",
-      "maxViewers": "Max penonton",
-      "pleaseWait": "Sila tunggu",
-      "noData": "Tiada data penonton yang telah dikumpul lagi.",
-      "viewers": "Penonton"
-    },
-    "VideoVariantForm": {
-      "bitrateDisabledPassthrough": "Pemilihan bitrate tidak dibenarkan apabila Passthrough Video diaktifkan.",
-      "bitrateGoodForHigh": "Baik untuk penonton berkelajuan tinggi & bitrate tinggi.",
-      "bitrateGoodForMost": "Baik untuk kebanyakan penonton, lebar jalur dan resolusi.",
-      "bitrateGoodForSlow": "Baik untuk penonton perlahan, mudah alih dan bitrate rendah.",
-      "bitrateValueKbps": "{{bitrate}} kbps"
-    },
-    "deleteEmoji": "Padam emoji",
-    "emojiPageDescription": "Di sini anda boleh memuat naik emoji khusus baru untuk digunakan dalam sembang. Semasa memuat naik emoji baru, nama fail tanpa sambungan akan digunakan sebagai nama emoji. Selain itu, nama emoji bersifat sensitif terhadap huruf besar dan huruf kecil. Untuk hasil terbaik, pastikan semua emoji mempunyai nama yang unik.",
-    "emojiUploadBulkGuide": "Ingin memuat naik emoji khusus secara pukal? Lihat <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">panduan Emoji</a> kami.",
-    "emojis": "Emoji",
-    "uploadNewEmoji": "Muat naik emoji baru",
-    "StatusMessages": {
-      "updated": "Dikemas kini.",
-      "tagsUpdated": "Tag dikemas kini.",
-      "variantsUpdated": "Variasi dikemas kini",
-      "videoCodecUpdated": "Codec video dikemas kini.",
-      "latencyBufferUpdated": "Tahap buffer latensi dikemas kini.",
-      "deletingEmoji": "Memadam emoji...",
-      "emojiDeleted": "Emoji dipadam",
-      "convertingEmoji": "Menukar emoji...",
-      "uploadingEmoji": "Memuat naik emoji...",
-      "emojiUploadedSuccessfully": "Emoji telah dimuat naik dengan berjaya!",
-      "thereWasAnError": "Terdapat ralat: {{message}}",
-      "fileSizeTooBig": "Saiz fail terlalu besar: {{size}}",
-      "fileTypeNotSupported": "Jenis fail tidak disokong: {{type}}",
-      "pleaseEnterTag": "Sila masukkan tag",
-      "tagAlreadyUsed": "Tag ini sudah digunakan!"
-    },
-    "Actions": {
-      "title": "Tindakan Luar",
-      "description": "URL tindakan luar adalah antaramuka pihak ketiga yang anda boleh paparkan, terbenam, di halaman Owncast anda apabila pengguna mengklik butang untuk melancarkan tindakan anda.",
-      "readMoreLink": "Baca lebih lanjut tentang cara menggunakan tindakan, dengan contoh, di",
-      "createNewAction": "Buat Tindakan Baru",
-      "createNewActionTitle": "Buat Tindakan Baru",
-      "editActionTitle": "Edit Tindakan",
-      "modalDescription": "Tambahkan URL untuk tindakan luar yang anda ingin paparkan.",
-      "onlyHttpsSupported": "Hanya URL HTTPS dan terbenam yang disokong.",
-      "readMoreAboutActions": "Baca lebih lanjut tentang tindakan luar.",
-      "selectActionType": "Pilih jenis tindakan",
-      "linkOrEmbedUrl": "Pautan atau terbenam URL",
-      "customHtml": "HTML tersuai",
-      "htmlEmbedPlaceholder": "Kod terbenam HTML (diperlukan)",
-      "urlPlaceholder": "https://myserver.com/action (diperlukan)",
-      "titlePlaceholder": "Tajuk tindakan anda (diperlukan)",
-      "descriptionPlaceholder": "Penerangan pilihan",
-      "iconPlaceholder": "https://myserver.com/action/icon.png (pilihan)",
-      "optionalBackgroundColor": "Warna latar pilihan bagi butang tindakan.",
-      "openExternally": "Buka dalam tab baru dan bukannya di dalam halaman anda."
-    },
-    "Webhooks": {
-      "createNewWebhook": "Buat Webhook Baru",
-      "webhookUrlPlaceholder": "https://myserver.com/webhook",
-      "selectEvents": "Pilih acara yang akan dihantar ke webhook ini.",
-      "selectAll": "Pilih semua"
-    },
-    "AccessTokens": {
-      "createNewAccessToken": "Buat Token Akses Baru",
-      "nameDescription": "Nama ini akan dipaparkan sebagai pengguna chat semasa menghantar mesej dengan token akses ini.",
-      "namePlaceholder": "Nama bot, perkhidmatan, atau integrasi",
-      "selectPermissions": "Pilih kebenaran yang akan dimiliki oleh token akses ini. Ia tidak boleh disunting selepas ia dibuat.",
-      "selectAll": "Pilih semua"
-    }
-  },
-  "Common": {
-    "poweredByOwncastVersion": "Dikuasakan oleh <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
-  },
-  "Frontend": {
-    "BrowserNotifyModal": {
-      "allowButton": "Benarkan",
-      "blockButton": "Sekat",
-      "deniedDescription": "Untuk membolehkan pemberitahuan push daripada {{hostname}}, akses izin penyemak imbas anda untuk laman ini dan hidupkan pemberitahuan. Kemudian muat semula halaman ini untuk menerapkan tetapan yang telah anda kemas kini pada laman ini. <a href='https://owncast.online/docs/notifications'>Ketahui lebih lanjut.</a>",
-      "deniedTitle": "Pemberitahuan disekat pada peranti anda",
-      "enabledDescription": "Untuk melumpuhkan pemberitahuan push daripada {{hostname}}, akses izin penyemak imbas anda untuk laman ini dan matikan pemberitahuan. <a href='https://owncast.online/docs/notifications'>Ketahui lebih lanjut.</a>",
-      "enabledTitle": "Pemberitahuan telah dihidupkan",
-      "errorMessage": "Ralat mendaftar untuk notifikasi langsung: {{message}}. Pastikan anda tidak berada dalam persekitaran pelayar persendirian atau telah menonaktifkan notifikasi untuk siaran ini.",
-      "errorTitle": "Ralat Pemberitahuan Penyemak Imbas",
-      "iosAddButton": "Tambah",
-      "iosAddToHomeScreen": "Tambah ke Skrin Utama",
-      "iosAllowPrompt": "Benarkan",
-      "iosComeBack": "Kembali ke skrin ini dan aktifkan pemberitahuan.",
-      "iosDescription": "Ia memerlukan beberapa langkah tambahan untuk memastikan anda mendapat pemberitahuan apabila siaran kegemaran anda dijadualkan.",
-      "iosNameAndTap": "Berikan nama kepada pautan ini dan ketuk ikon baru di skrin utama anda",
-      "iosShareButton": "kongsi",
-      "iosTitle": "Dapatkan notifikasi di iOS",
-      "learnMore": "Ketahui lebih lanjut",
-      "mainDescription": "Dapatkan notifikasi terus di pelayar setiap kali siaran ini dilancarkan.",
-      "permissionWantsTo": "{{hostname}} ingin",
-      "showNotifications": "Tunjukkan pemberitahuan",
-      "unsupported": "Pemberitahuan pelayar tidak disokong dalam pelayar anda.",
-      "unsupportedLocal": "Pemberitahuan pelayar tidak disokong untuk pelayan tempatan."
-    },
-    "Footer": {
-      "documentation": "Dokumentasi",
-      "contribute": "Sumbangkan",
-      "source": "Sumber"
-    },
-    "Chat": {
-      "userJoined": "menyertai perbualan.",
-      "userLeft": "keluar dari perbualan.",
-      "nameChangeText": "sekarang dikenali sebagai",
-      "moderatorNotification": "Anda kini seorang moderator."
-    },
-    "FollowModal": {
-      "description": "Dengan mengikuti aliran ini anda akan diberitahu di Fediverse apabila ia dilancarkan. Sekarang adalah masa yang baik untuk",
-      "learnFediverse": "mempelajari tentang Fediverse",
-      "newToYou": "jika ia adalah baru bagi anda.",
-      "instructions": "Masukkan nama pengguna anda @server untuk mengikuti",
-      "placeholder": "Akaun fediverse anda @account@server",
-      "redirectMessage": "Anda akan diarahkan ke pelayan Fediverse anda dan diminta untuk mengesahkan tindakan tersebut.",
-      "joinFediverse": "Sertai Fediverse",
-      "followButton": "Ikuti",
-      "followError": "Ralat Ikut",
-      "unableToFollow": "Tidak dapat mengikuti."
-    },
-    "Header": {
-      "skipToPlayer": "Lompat ke pemain",
-      "skipToOfflineMessage": "Lompat ke mesej luar talian",
-      "skipToContent": "Lompat ke kandungan halaman",
-      "skipToFooter": "Lompat ke footer",
-      "chatWillBeAvailable": "Sembang akan tersedia apabila siaran langsung.",
-      "chatOffline": "Sembang luar talian"
-    },
-    "NameChangeModal": {
-      "authInfo": "Anda juga boleh mengesahkan akaun IndieAuth atau Fediverse melalui menu \"Mengesahkan\".",
-      "buttonText": "Tukar nama",
-      "colorLabel": "Warna Anda",
-      "description": "Nama paparan sembang anda adalah apa yang orang lihat apabila anda menghantar mesej sembang.",
-      "overLimit": "Melebihi had",
-      "placeholder": "Nama paparan sembang anda"
-    },
-    "chatOffline": "Sembang luar talian",
-    "componentError": "Ralat: {{message}}",
-    "helloWorld": "Hello world",
-    "offlineBasic": "Saluran ini sedang offline. Periksa kembali sebentar lagi!",
-    "offlineFediverseOnly": "Saluran ini sedang offline. <span class='follow-link'>Ikuti</span> {{fediverseAccount}} di Fediverse untuk melihat kali seterusnya {{streamer}} siaran langsung.",
-    "offlineNotifyAndFediverse": "Saluran ini sedang offline. Anda boleh <span class='notify-link'>diberitahu</span> kali seterusnya {{streamer}} siaran langsung atau <span class='follow-link'>ikuti</span> {{fediverseAccount}} di Fediverse.",
-    "offlineNotifyOnly": "Saluran ini sedang offline. <span class='notify-link'>Diberitahu</span> kali seterusnya {{streamer}} siaran langsung.",
-    "lastLiveAgo": "Siaran langsung terakhir {{timeAgo}} lalu"
-  },
-  "Testing": {
-    "itemCount": "Anda mempunyai {{count}} item",
-    "messageCount": "Anda mempunyai {{count}} mesej dari {{sender}}",
-    "noPluralKey": "Kunci ini tiada variasi jamak - {{count}} perkara",
-    "simpleKey": "Teks terjemahan mudah"
-  }
+	"Admin": {
+		"AccessTokens": {
+			"createNewAccessToken": "Buat Token Akses Baru",
+			"nameDescription": "Nama ini akan dipaparkan sebagai pengguna chat semasa menghantar mesej dengan token akses ini.",
+			"namePlaceholder": "Nama bot, perkhidmatan, atau integrasi",
+			"selectAll": "Pilih semua",
+			"selectPermissions": "Pilih kebenaran yang akan dimiliki oleh token akses ini. Ia tidak boleh disunting selepas ia dibuat."
+		},
+		"Actions": {
+			"createNewAction": "Buat Tindakan Baru",
+			"createNewActionTitle": "Buat Tindakan Baru",
+			"customHtml": "HTML tersuai",
+			"description": "URL tindakan luar adalah antaramuka pihak ketiga yang anda boleh paparkan, terbenam, di halaman Owncast anda apabila pengguna mengklik butang untuk melancarkan tindakan anda.",
+			"descriptionPlaceholder": "Penerangan pilihan",
+			"editActionTitle": "Edit Tindakan",
+			"htmlEmbedPlaceholder": "Kod terbenam HTML (diperlukan)",
+			"iconPlaceholder": "https://myserver.com/action/icon.png (pilihan)",
+			"linkOrEmbedUrl": "Pautan atau terbenam URL",
+			"modalDescription": "Tambahkan URL untuk tindakan luar yang anda ingin paparkan.",
+			"onlyHttpsSupported": "Hanya URL HTTPS dan terbenam yang disokong.",
+			"openExternally": "Buka dalam tab baru dan bukannya di dalam halaman anda.",
+			"optionalBackgroundColor": "Warna latar pilihan bagi butang tindakan.",
+			"readMoreAboutActions": "Baca lebih lanjut tentang tindakan luar.",
+			"readMoreLink": "Baca lebih lanjut tentang cara menggunakan tindakan, dengan contoh, di",
+			"selectActionType": "Pilih jenis tindakan",
+			"title": "Tindakan Luar",
+			"titlePlaceholder": "Tajuk tindakan anda (diperlukan)",
+			"urlPlaceholder": "https://myserver.com/action (diperlukan)"
+		},
+		"EditInstanceDetails": {
+			"directoryDescription": "Tingkatkan audiens anda dengan muncul di <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Direktori Owncast</strong></a>. Ini adalah perkhidmatan luaran yang dikendalikan oleh projek Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Ketahui lebih lanjut</a>.",
+			"offlineMessageDescription": "Mesej luar talian dipaparkan kepada pelawat halaman anda apabila anda tidak sedang penyiaran. Markdown disokong.",
+			"serverUrlRequiredForDirectory": "Anda mesti menetapkan <strong>URL Pelayan</strong> anda di atas untuk membolehkan direktori."
+		},
+		"HardwareInfo": {
+			"cpu": "CPU",
+			"disk": "Cakera",
+			"memory": "Memori",
+			"noDetails": "Tiada butiran perkakasan yang telah dikumpulkan.",
+			"pleaseWait": "Sila tunggu",
+			"title": "Maklumat Perkakasan",
+			"used": "digunakan"
+		},
+		"Help": {
+			"bugPlease": "Jika anda menemui pepijat, sila",
+			"buildAddons": "Saya mahu membina add-on untuk Owncast",
+			"buildTools": "Anda boleh membina bot, overlay, alat dan add-on anda sendiri dengan",
+			"commonTasks": "Tugas biasa",
+			"configureBroadcasting": "Bantuan untuk mengkonfigurasi perisian siaran saya",
+			"configureInstance": "Saya mahu mengkonfigurasi instance owncast saya",
+			"customizeWebsite": "Saya mahu mengubahsuai laman web saya",
+			"developerApis": "API pemaju.",
+			"discussions": "perbincangan",
+			"documentation": "Dokumentasi",
+			"embedStream": "Saya mahu menyematkan siaran saya ke dalam laman lain",
+			"faq": "FAQ",
+			"fixProblems": "Buat penyelesaian untuk masalah anda",
+			"foundBug": "Saya telah menemui pepijat",
+			"generalAnswered": "Kebanyakan soalan umum telah dijawab dalam",
+			"generalQuestion": "Saya mempunyai soalan umum",
+			"learnMore": "Ketahui lebih lanjut",
+			"letUsKnow": "maklumkan kepada kami",
+			"orExist": "atau wujud dalam",
+			"other": "Lain-lain",
+			"readDocs": "Baca Dokumentasi",
+			"title": "Bagaimana kami boleh membantu anda?",
+			"troubleshooting": "Penyelesaian Masalah",
+			"tweakVideo": "Saya mahu menyunting output video saya",
+			"useStorage": "Saya mahu menggunakan penyedia storan luaran"
+		},
+		"LogTable": {
+			"error": "Ralat",
+			"info": "Info",
+			"level": "Tahap",
+			"logs": "Log",
+			"message": "Mesej",
+			"timestamp": "Tanda Waktu",
+			"warning": "Amaran"
+		},
+		"NewsFeed": {
+			"link": "Pautan",
+			"noNews": "Tiada berita.",
+			"title": "Berita & Kemas Kini dari Owncast"
+		},
+		"StatusMessages": {
+			"convertingEmoji": "Menukar emoji...",
+			"deletingEmoji": "Memadam emoji...",
+			"emojiDeleted": "Emoji dipadam",
+			"emojiUploadedSuccessfully": "Emoji telah dimuat naik dengan berjaya!",
+			"fileSizeTooBig": "Saiz fail terlalu besar: {{size}}",
+			"fileTypeNotSupported": "Jenis fail tidak disokong: {{type}}",
+			"latencyBufferUpdated": "Tahap buffer latensi dikemas kini.",
+			"pleaseEnterTag": "Sila masukkan tag",
+			"tagAlreadyUsed": "Tag ini sudah digunakan!",
+			"tagsUpdated": "Tag dikemas kini.",
+			"thereWasAnError": "Terdapat ralat: {{message}}",
+			"updated": "Dikemas kini.",
+			"uploadingEmoji": "Memuat naik emoji...",
+			"variantsUpdated": "Variasi dikemas kini",
+			"videoCodecUpdated": "Codec video dikemas kini."
+		},
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "Pemilihan bitrate tidak dibenarkan apabila Passthrough Video diaktifkan.",
+			"bitrateGoodForHigh": "Baik untuk penonton berkelajuan tinggi & bitrate tinggi.",
+			"bitrateGoodForMost": "Baik untuk kebanyakan penonton, lebar jalur dan resolusi.",
+			"bitrateGoodForSlow": "Baik untuk penonton perlahan, mudah alih dan bitrate rendah.",
+			"bitrateValueKbps": "{{bitrate}} kbps"
+		},
+		"ViewerInfo": {
+			"currentStream": "Siaran semasa",
+			"currentViewers": "Penonton semasa",
+			"last12Hours": "12 jam yang lepas",
+			"last24Hours": "24 jam yang lepas",
+			"last30Days": "30 hari yang lepas",
+			"last3Months": "3 bulan yang lepas",
+			"last6Months": "6 bulan yang lepas",
+			"last7Days": "7 hari yang lepas",
+			"maxViewers": "Max penonton",
+			"maxViewersLastStream": "Penonton maksima siaran lepas",
+			"maxViewersThisStream": "Penonton maksima siaran ini",
+			"noData": "Tiada data penonton yang telah dikumpul lagi.",
+			"pleaseWait": "Sila tunggu",
+			"title": "Info Penonton",
+			"viewers": "Penonton"
+		},
+		"Webhooks": {
+			"createNewWebhook": "Buat Webhook Baru",
+			"selectAll": "Pilih semua",
+			"selectEvents": "Pilih acara yang akan dihantar ke webhook ini.",
+			"webhookUrlPlaceholder": "https://myserver.com/webhook"
+		},
+		"deleteEmoji": "Padam emoji",
+		"emojiPageDescription": "Di sini anda boleh memuat naik emoji khusus baru untuk digunakan dalam sembang. Semasa memuat naik emoji baru, nama fail tanpa sambungan akan digunakan sebagai nama emoji. Selain itu, nama emoji bersifat sensitif terhadap huruf besar dan huruf kecil. Untuk hasil terbaik, pastikan semua emoji mempunyai nama yang unik.",
+		"emojiUploadBulkGuide": "Ingin memuat naik emoji khusus secara pukal? Lihat <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">panduan Emoji</a> kami.",
+		"emojis": "Emoji",
+		"uploadNewEmoji": "Muat naik emoji baru"
+	},
+	"Common": {
+		"poweredByOwncastVersion": "Dikuasakan oleh <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+	},
+	"Frontend": {
+		"BrowserNotifyModal": {
+			"allowButton": "Benarkan",
+			"blockButton": "Sekat",
+			"deniedDescription": "Untuk membolehkan pemberitahuan push daripada {{hostname}}, akses izin penyemak imbas anda untuk laman ini dan hidupkan pemberitahuan. Kemudian muat semula halaman ini untuk menerapkan tetapan yang telah anda kemas kini pada laman ini. <a href='https://owncast.online/docs/notifications'>Ketahui lebih lanjut.</a>",
+			"deniedTitle": "Pemberitahuan disekat pada peranti anda",
+			"enabledDescription": "Untuk melumpuhkan pemberitahuan push daripada {{hostname}}, akses izin penyemak imbas anda untuk laman ini dan matikan pemberitahuan. <a href='https://owncast.online/docs/notifications'>Ketahui lebih lanjut.</a>",
+			"enabledTitle": "Pemberitahuan telah dihidupkan",
+			"errorMessage": "Ralat mendaftar untuk notifikasi langsung: {{message}}. Pastikan anda tidak berada dalam persekitaran pelayar persendirian atau telah menonaktifkan notifikasi untuk siaran ini.",
+			"errorTitle": "Ralat Pemberitahuan Penyemak Imbas",
+			"iosAddButton": "Tambah",
+			"iosAddToHomeScreen": "Tambah ke Skrin Utama",
+			"iosAllowPrompt": "Benarkan",
+			"iosComeBack": "Kembali ke skrin ini dan aktifkan pemberitahuan.",
+			"iosDescription": "Ia memerlukan beberapa langkah tambahan untuk memastikan anda mendapat pemberitahuan apabila siaran kegemaran anda dijadualkan.",
+			"iosNameAndTap": "Berikan nama kepada pautan ini dan ketuk ikon baru di skrin utama anda",
+			"iosShareButton": "kongsi",
+			"iosTitle": "Dapatkan notifikasi di iOS",
+			"learnMore": "Ketahui lebih lanjut",
+			"learnMoreAboutNotifications": "<a href='https://owncast.online/docs/notifications/#browser-notifications'>Ketahui lebih lanjut</a> tentang pemberitahuan penyemak imbas Owncast.",
+			"mainDescription": "Dapatkan notifikasi terus di pelayar setiap kali siaran ini dilancarkan.",
+			"permissionWantsTo": "{{hostname}} ingin",
+			"showNotifications": "Tunjukkan pemberitahuan",
+			"unsupported": "Pemberitahuan pelayar tidak disokong dalam pelayar anda.",
+			"unsupportedLocal": "Pemberitahuan pelayar tidak disokong untuk pelayan tempatan."
+		},
+		"Chat": {
+			"moderatorNotification": "Anda kini seorang moderator.",
+			"nameChangeText": "sekarang dikenali sebagai",
+			"userJoined": "menyertai perbualan.",
+			"userLeft": "keluar dari perbualan."
+		},
+		"FollowModal": {
+			"description": "Dengan mengikuti aliran ini anda akan diberitahu di Fediverse apabila ia dilancarkan. Sekarang adalah masa yang baik untuk",
+			"followButton": "Ikuti",
+			"followError": "Ralat Ikut",
+			"instructions": "Masukkan nama pengguna anda @server untuk mengikuti",
+			"joinFediverse": "Sertai Fediverse",
+			"learnFediverse": "mempelajari tentang Fediverse",
+			"newToYou": "jika ia adalah baru bagi anda.",
+			"placeholder": "Akaun fediverse anda @account@server",
+			"redirectMessage": "Anda akan diarahkan ke pelayan Fediverse anda dan diminta untuk mengesahkan tindakan tersebut.",
+			"unableToFollow": "Tidak dapat mengikuti."
+		},
+		"Footer": {
+			"contribute": "Sumbangkan",
+			"documentation": "Dokumentasi",
+			"source": "Sumber"
+		},
+		"Header": {
+			"chatOffline": "Sembang luar talian",
+			"chatWillBeAvailable": "Sembang akan tersedia apabila siaran langsung.",
+			"skipToContent": "Lompat ke kandungan halaman",
+			"skipToFooter": "Lompat ke footer",
+			"skipToOfflineMessage": "Lompat ke mesej luar talian",
+			"skipToPlayer": "Lompat ke pemain"
+		},
+		"NameChangeModal": {
+			"authInfo": "Anda juga boleh mengesahkan akaun IndieAuth atau Fediverse melalui menu \"Mengesahkan\".",
+			"buttonText": "Tukar nama",
+			"colorLabel": "Warna Anda",
+			"description": "Nama paparan sembang anda adalah apa yang orang lihat apabila anda menghantar mesej sembang.",
+			"overLimit": "Melebihi had",
+			"placeholder": "Nama paparan sembang anda"
+		},
+		"chatOffline": "Sembang luar talian",
+		"componentError": "Ralat: {{message}}",
+		"helloWorld": "Hello world",
+		"lastLiveAgo": "Siaran langsung terakhir {{timeAgo}} lalu",
+		"offlineBasic": "Saluran ini sedang offline. Periksa kembali sebentar lagi!",
+		"offlineFediverseOnly": "Saluran ini sedang offline. <span class='follow-link'>Ikuti</span> {{fediverseAccount}} di Fediverse untuk melihat kali seterusnya {{streamer}} siaran langsung.",
+		"offlineNotifyAndFediverse": "Saluran ini sedang offline. Anda boleh <span class='notify-link'>diberitahu</span> kali seterusnya {{streamer}} siaran langsung atau <span class='follow-link'>ikuti</span> {{fediverseAccount}} di Fediverse.",
+		"offlineNotifyOnly": "Saluran ini sedang offline. <span class='notify-link'>Diberitahu</span> kali seterusnya {{streamer}} siaran langsung."
+	},
+	"Testing": {
+		"itemCount": "Anda mempunyai {{count}} item",
+		"messageCount": "Anda mempunyai {{count}} mesej dari {{sender}}",
+		"noPluralKey": "Kunci ini tiada variasi jamak - {{count}} perkara",
+		"simpleKey": "Teks terjemahan mudah"
+	}
 }
