@@ -44,7 +44,7 @@ jobs:
 
       - uses: actions/setup-go@v6
         with:
-          go-version: '1.25.5'
+          go-version: '1.25.6'
           cache: true
       - uses: actions/checkout@v6
       - name: golangci-lint
