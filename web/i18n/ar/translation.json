@@ -1,221 +1,222 @@
 {
-  "Admin": {
-    "EditInstanceDetails": {
-      "directoryDescription": "زيادة جمهورك عن طريق الظهور في <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast directory</strong></a>. هذه خدمة خارجية يديرها مشروع Owncast . <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">تعرف على</a> أكثر.",
-      "offlineMessageDescription": "يتم عرض الرسالة دون اتصال على زوار الصفحة الخاصة بك عندما لا تذيل. يتم دعم Markdown.",
-      "serverUrlRequiredForDirectory": "يجب عليك تعيين رابط الخادم <strong></strong> أعلاه لتمكين الدليل."
-    },
-    "HardwareInfo": {
-      "title": "معلومات الجهاز",
-      "pleaseWait": "الرجاء الانتظار",
-      "noDetails": "لم يتم جمع أي تفاصيل عن الأجهزة بعد.",
-      "cpu": "المعالج",
-      "memory": "الذاكرة",
-      "disk": "قرص",
-      "used": "مستعمل"
-    },
-    "Help": {
-      "title": "كيف يمكننا مساعدتك؟",
-      "configureInstance": "أريد تكوين مثيل خاص بي",
-      "learnMore": "اعرف المزيد",
-      "configureBroadcasting": "المساعدة في تكوين برنامج البث الخاص بي",
-      "embedStream": "أريد أن أدمج دفعي في موقع آخر",
-      "customizeWebsite": "أريد تخصيص موقع الويب الخاص بي",
-      "tweakVideo": "أريد تعديل إخراج الفيديو الخاص بي",
-      "useStorage": "أريد استخدام موفر تخزين خارجي",
-      "foundBug": "وجدت خلل",
-      "bugPlease": "إذا وجدت خطأ، الرجاء",
-      "letUsKnow": "دعونا نعرف",
-      "generalQuestion": "لدي سؤال عام",
-      "generalAnswered": "يتم الرد على معظم الأسئلة العامة في منطقتنا",
-      "faq": "أسئلة متكررة",
-      "orExist": "أو موجود في بلدنا",
-      "discussions": "المناقشات",
-      "buildAddons": "أريد بناء إضافات للبث",
-      "buildTools": "يمكنك بناء الروبوتات الخاصة بك ، الإضافات ، الأدوات و الإضافات الخاصة بنا",
-      "developerApis": "واجهة برمجة تطبيقات المطور.",
-      "troubleshooting": "استكشاف الأخطاء",
-      "fixProblems": "اصلاح مشاكلك",
-      "documentation": "الوثائق",
-      "readDocs": "اقرأ الوثائق",
-      "commonTasks": "المهام المشتركة",
-      "other": "اخرى"
-    },
-    "LogTable": {
-      "level": "المستوى",
-      "info": "معلومات",
-      "warning": "تحذير",
-      "error": "خطأ",
-      "timestamp": "الطابع الزمني",
-      "message": "رسالة",
-      "logs": "السجلات"
-    },
-    "NewsFeed": {
-      "link": "رابط",
-      "noNews": "لا توجد أخبار.",
-      "title": "الأخبار والتحديثات من Owncast"
-    },
-    "ViewerInfo": {
-      "title": "معلومات العارض",
-      "currentStream": "التدفق الحالي",
-      "last12Hours": "آخر 12 ساعة",
-      "last24Hours": "آخر 24 ساعة",
-      "last7Days": "آخر 7 أيام",
-      "last30Days": "آخر 30 يوما",
-      "last3Months": "آخر 3 أشهر",
-      "last6Months": "آخر 6 أشهر",
-      "currentViewers": "المشاهدون الحاليون",
-      "maxViewersThisStream": "الحد الأقصى للمشاهدين في هذا البث",
-      "maxViewersLastStream": "الحد الأقصى للمشاهدين في البث الأخير",
-      "maxViewers": "الحد الأقصى للمشاهدين",
-      "pleaseWait": "الرجاء الانتظار",
-      "noData": "لم يتم جمع بيانات المشاهدين حتى الآن.",
-      "viewers": "المشاهدون"
-    },
-    "VideoVariantForm": {
-      "bitrateDisabledPassthrough": "يتم تعطيل اختيار البيت عند تمكين مرور الفيديو.",
-      "bitrateGoodForHigh": "جيد لمستخدمي المشاهدين ذوي السرعة العالية و معدل البت.",
-      "bitrateGoodForMost": "جيد لمعظم المشاهدين وعرض النطاق الترددي والاستقرارات.",
-      "bitrateGoodForSlow": "جيد لمشاهدي البتات البطيئين والمحمولين والمنخفضين.",
-      "bitrateValueKbps": "{{bitrate}} كيلوبايت"
-    },
-    "deleteEmoji": "حذف الرمز التعبيري",
-    "emojiPageDescription": "هنا يمكنك رفع رمز تعبيري مخصص جديد للاستخدام في الدردشة. عند تحميل رمز تعبيري جديد، سيتم استخدام اسم الملف بدون إضافة اسم تعبيري. بالإضافة إلى ذلك، فإن أسماء الرموز التعبيرية حساسة لحالة الأحرف. لتحقيق أفضل النتائج، تأكد من أن جميع الرموز التعبيرية لها أسماء فريدة.",
-    "emojiUploadBulkGuide": "هل ترغب في تحميل الرموز التعبيرية المخصصة بالجملة؟ شاهد دليل الرموز التعبيرية <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Amoji</a>.",
-    "emojis": "Emojis",
-    "uploadNewEmoji": "تحميل إيموجي جديد",
-    "StatusMessages": {
-      "updated": "تم التحديث.",
-      "tagsUpdated": "تم تحديث العلامات.",
-      "variantsUpdated": "تم تحديث المتغيرات",
-      "videoCodecUpdated": "تم تحديث رمز الفيديو.",
-      "latencyBufferUpdated": "تم تحديث مستوى الذاكرة المؤقتة للاتا.",
-      "deletingEmoji": "حذف الإيموجي...",
-      "emojiDeleted": "تم حذف الرمز التعبيري",
-      "convertingEmoji": "تحويل الإيموجي...",
-      "uploadingEmoji": "تحميل رمز تعبيري...",
-      "emojiUploadedSuccessfully": "تم تحميل الرمز التعبيري بنجاح!",
-      "thereWasAnError": "حدث خطأ: {{message}}",
-      "fileSizeTooBig": "حجم الملف كبير جدا: {{size}}",
-      "fileTypeNotSupported": "نوع الملف غير مدعوم: {{type}}",
-      "pleaseEnterTag": "الرجاء إدخال علامة",
-      "tagAlreadyUsed": "هذه العلامة مستخدمة مسبقاً!"
-    },
-    "Actions": {
-      "title": "الإجراءات الخارجية",
-      "description": "عناوين العمل الخارجي هي واجهة المستخدم الثالثة التي يمكنك عرضها، مضمنة، في صفحة البث الخاص بك عندما ينقر المستخدم على زر لتشغيل الإجراء الخاص بك.",
-      "readMoreLink": "اقرأ المزيد عن كيفية استخدام الإجراءات، مع الأمثلة، في",
-      "createNewAction": "إنشاء إجراء جديد",
-      "createNewActionTitle": "إنشاء إجراء جديد",
-      "editActionTitle": "تعديل الإجراء",
-      "modalDescription": "أضف عنوان URL للإجراء الخارجي الذي تريد عرضه.",
-      "onlyHttpsSupported": "عناوين HTTPS فقط مدعومة.",
-      "readMoreAboutActions": "اقرأ المزيد عن الإجراءات الخارجية.",
-      "selectActionType": "حدد نوع الإجراء",
-      "linkOrEmbedUrl": "Link or embed an URL",
-      "customHtml": "HTML مخصص",
-      "htmlEmbedPlaceholder": "رمز تضمين HTML (مطلوب)",
-      "urlPlaceholder": "https://myserver.com/action (مطلوب)",
-      "titlePlaceholder": "عنوان الإجراء الخاص بك (مطلوب)",
-      "descriptionPlaceholder": "وصف اختياري",
-      "iconPlaceholder": "https://myserver.com/action/icon.png (اختياري)",
-      "optionalBackgroundColor": "لون الخلفية اختياري لزر الإجراء.",
-      "openExternally": "افتح في علامة تبويب جديدة بدلاً من داخل الصفحة الخاصة بك."
-    },
-    "Webhooks": {
-      "createNewWebhook": "إنشاء Webhook جديد",
-      "webhookUrlPlaceholder": "https://myserver.com/webhook",
-      "selectEvents": "حدد الأحداث التي سيتم إرسالها إلى هذا webhook.",
-      "selectAll": "حدد الكل"
-    },
-    "AccessTokens": {
-      "createNewAccessToken": "إنشاء رمز وصول جديد",
-      "nameDescription": "سيتم عرض الاسم كمستخدم دردشة عند إرسال الرسائل مع هذا الرمز المميز الوصول.",
-      "namePlaceholder": "اسم البوت أو الخدمة أو التكامل",
-      "selectPermissions": "حدد الأذونات التي ستحصل عليها هذه الرمز المميز للوصول. لا يمكن تعديلها بعد إنشائها.",
-      "selectAll": "حدد الكل"
-    }
-  },
-  "Common": {
-    "poweredByOwncastVersion": "مدعوم من <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
-  },
-  "Frontend": {
-    "BrowserNotifyModal": {
-      "allowButton": "السماح",
-      "blockButton": "كتلة",
-      "deniedDescription": "لتمكين الإشعارات من {{hostname}} الوصول إلى أذونات المتصفح الخاصة بك لهذا الموقع وتشغيل الإشعارات. ثم أعد تحميل هذه الصفحة لتطبيق الإعدادات المحدثة على هذا الموقع. <a href='https://owncast.online/docs/notifications'>اعرف المزيد.</a>",
-      "deniedTitle": "تم حظر الإشعارات على جهازك",
-      "enabledDescription": "لتعطيل دفع الإشعارات من {{hostname}} الوصول إلى أذونات المتصفح لهذا الموقع وإيقاف الإشعارات. <a href='https://owncast.online/docs/notifications'>اعرف المزيد.</a>",
-      "enabledTitle": "الإشعارات مفعلة",
-      "errorMessage": "خطأ في التسجيل للإشعارات المباشرة: {{message}}. تأكد من أنك لست داخل بيئة المتصفح الخاص أو قمت مسبقاً بتعطيل الإشعارات لهذا البث.",
-      "errorTitle": "خطأ في إشعار المتصفح",
-      "iosAddButton": "إضافة",
-      "iosAddToHomeScreen": "إضافة إلى الشاشة الرئيسية",
-      "iosAllowPrompt": "السماح",
-      "iosComeBack": "العودة إلى هذه الشاشة وتمكين الإشعارات.",
-      "iosDescription": "يحتاج الأمر إلى خطوتين إضافيتين للتأكد من تلقيك إشعارا عندما تبدأ البث المفضل لديك.",
-      "iosNameAndTap": "اعطي هذا الرابط اسما وانقر على أيقونة جديدة على الشاشة الرئيسية",
-      "iosShareButton": "مشاركة",
-      "iosTitle": "الحصول على إشعار على iOS",
-      "learnMore": "اعرف المزيد",
-      "mainDescription": "احصل على إشعار صحيح في المتصفح في كل مرة يذهب فيها هذا البث مباشرة.",
-      "permissionWantsTo": "{{hostname}} يريد أن",
-      "showNotifications": "إظهار الإشعارات",
-      "unsupported": "إشعارات المتصفح غير مدعومة في المتصفح الخاص بك.",
-      "unsupportedLocal": "إشعارات المتصفح غير مدعومة للخوادم المحلية."
-    },
-    "Footer": {
-      "documentation": "الوثائق",
-      "contribute": "المساهمة",
-      "source": "المصدر"
-    },
-    "Chat": {
-      "userJoined": "انضم إلى الدردشة.",
-      "userLeft": "غادر الدردشة",
-      "nameChangeText": "معروف الآن باسم",
-      "moderatorNotification": "أنت الآن مشرف."
-    },
-    "FollowModal": {
-      "description": "من خلال متابعة هذا البث سوف يتم إعلامك على فيديفيرس عندما يبدأ الحياة. الآن وقت عظيم",
-      "learnFediverse": "تعلم عن فيديفرس",
-      "newToYou": "إذا كانت جديدة بالنسبة لك.",
-      "instructions": "أدخل اسم المستخدم الخاص بك @server للمتابعة",
-      "placeholder": "حسابك fediverse @account@server",
-      "redirectMessage": "سيتم إعادة توجيهك إلى سيرفر فيديفرس الخاص بك وطلب تأكيد الإجراء.",
-      "joinFediverse": "الانضمام إلى فيديفرس",
-      "followButton": "اتبع",
-      "followError": "خطأ في المتابعة",
-      "unableToFollow": "غير قادر على المتابعة."
-    },
-    "Header": {
-      "skipToPlayer": "تخطي للاعب",
-      "skipToOfflineMessage": "تخطي الرسالة دون اتصال",
-      "skipToContent": "تخطي إلى محتوى الصفحة",
-      "skipToFooter": "تخطي إلى تذييل الصفحة",
-      "chatWillBeAvailable": "ستكون الدردشة متاحة عندما يكون البث على قيد الحياة.",
-      "chatOffline": "الدردشة غير متصل"
-    },
-    "NameChangeModal": {
-      "authInfo": "يمكنك أيضا المصادقة على حساب IndieAuth أو Fediverse من خلال قائمة \"المصادقة\".",
-      "buttonText": "تغيير الاسم",
-      "colorLabel": "لونك",
-      "description": "اسم عرض الدردشة الخاص بك هو ما يراه الناس عندما ترسل رسائل الدردشة.",
-      "overLimit": "تجاوز الحد",
-      "placeholder": "اسم عرض المحادثة"
-    },
-    "chatOffline": "الدردشة غير متصل",
-    "componentError": "خطأ: {{message}}",
-    "helloWorld": "مرحبا بالعالم",
-    "offlineBasic": "هذا البث غير متصل. تحقق قريباً!",
-    "offlineFediverseOnly": "هذا البث غير متصل. <span class='follow-link'>تابع</span> {{fediverseAccount}} على فيديفيرس لرؤية المرة القادمة التي يذهب فيها {{streamer}} للحياة.",
-    "offlineNotifyAndFediverse": "هذا البث غير متصل بالإنترنت. يمكنك أن تتلقى <span class='notify-link'>إشعارًا</span> في المرة القادمة {{streamer}} أو <span class='follow-link'>متابعة</span> {{fediverseAccount}} على موقع Fediverse.",
-    "offlineNotifyOnly": "هذا البث غير متصل بالإنترنت. <span class='notify-link'>كن على علم</span> في المرة القادمة التي يتم فيها البث المباشر {{streamer}} .",
-    "lastLiveAgo": "آخر بث مباشر {{timeAgo}}"
-  },
-  "Testing": {
-    "itemCount": "لديك عناصر {{count}}",
-    "messageCount": "لديك رسائل {{count}} من {{sender}}",
-    "noPluralKey": "هذا المفتاح لا يحتوي على متغيرات تعبيرية - {{count}} أشياء",
-    "simpleKey": "نص ترجمة بسيط"
-  }
+	"Admin": {
+		"AccessTokens": {
+			"createNewAccessToken": "إنشاء رمز وصول جديد",
+			"nameDescription": "سيتم عرض الاسم كمستخدم دردشة عند إرسال الرسائل مع هذا الرمز المميز الوصول.",
+			"namePlaceholder": "اسم البوت أو الخدمة أو التكامل",
+			"selectAll": "حدد الكل",
+			"selectPermissions": "حدد الأذونات التي ستحصل عليها هذه الرمز المميز للوصول. لا يمكن تعديلها بعد إنشائها."
+		},
+		"Actions": {
+			"createNewAction": "إنشاء إجراء جديد",
+			"createNewActionTitle": "إنشاء إجراء جديد",
+			"customHtml": "HTML مخصص",
+			"description": "عناوين العمل الخارجي هي واجهة المستخدم الثالثة التي يمكنك عرضها، مضمنة، في صفحة البث الخاص بك عندما ينقر المستخدم على زر لتشغيل الإجراء الخاص بك.",
+			"descriptionPlaceholder": "وصف اختياري",
+			"editActionTitle": "تعديل الإجراء",
+			"htmlEmbedPlaceholder": "رمز تضمين HTML (مطلوب)",
+			"iconPlaceholder": "https://myserver.com/action/icon.png (اختياري)",
+			"linkOrEmbedUrl": "Link or embed an URL",
+			"modalDescription": "أضف عنوان URL للإجراء الخارجي الذي تريد عرضه.",
+			"onlyHttpsSupported": "عناوين HTTPS فقط مدعومة.",
+			"openExternally": "افتح في علامة تبويب جديدة بدلاً من داخل الصفحة الخاصة بك.",
+			"optionalBackgroundColor": "لون الخلفية اختياري لزر الإجراء.",
+			"readMoreAboutActions": "اقرأ المزيد عن الإجراءات الخارجية.",
+			"readMoreLink": "اقرأ المزيد عن كيفية استخدام الإجراءات، مع الأمثلة، في",
+			"selectActionType": "حدد نوع الإجراء",
+			"title": "الإجراءات الخارجية",
+			"titlePlaceholder": "عنوان الإجراء الخاص بك (مطلوب)",
+			"urlPlaceholder": "https://myserver.com/action (مطلوب)"
+		},
+		"EditInstanceDetails": {
+			"directoryDescription": "زيادة جمهورك عن طريق الظهور في <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast directory</strong></a>. هذه خدمة خارجية يديرها مشروع Owncast . <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">تعرف على</a> أكثر.",
+			"offlineMessageDescription": "يتم عرض الرسالة دون اتصال على زوار الصفحة الخاصة بك عندما لا تذيل. يتم دعم Markdown.",
+			"serverUrlRequiredForDirectory": "يجب عليك تعيين رابط الخادم <strong></strong> أعلاه لتمكين الدليل."
+		},
+		"HardwareInfo": {
+			"cpu": "المعالج",
+			"disk": "قرص",
+			"memory": "الذاكرة",
+			"noDetails": "لم يتم جمع أي تفاصيل عن الأجهزة بعد.",
+			"pleaseWait": "الرجاء الانتظار",
+			"title": "معلومات الجهاز",
+			"used": "مستعمل"
+		},
+		"Help": {
+			"bugPlease": "إذا وجدت خطأ، الرجاء",
+			"buildAddons": "أريد بناء إضافات للبث",
+			"buildTools": "يمكنك بناء الروبوتات الخاصة بك ، الإضافات ، الأدوات و الإضافات الخاصة بنا",
+			"commonTasks": "المهام المشتركة",
+			"configureBroadcasting": "المساعدة في تكوين برنامج البث الخاص بي",
+			"configureInstance": "أريد تكوين مثيل خاص بي",
+			"customizeWebsite": "أريد تخصيص موقع الويب الخاص بي",
+			"developerApis": "واجهة برمجة تطبيقات المطور.",
+			"discussions": "المناقشات",
+			"documentation": "الوثائق",
+			"embedStream": "أريد أن أدمج دفعي في موقع آخر",
+			"faq": "أسئلة متكررة",
+			"fixProblems": "اصلاح مشاكلك",
+			"foundBug": "وجدت خلل",
+			"generalAnswered": "يتم الرد على معظم الأسئلة العامة في منطقتنا",
+			"generalQuestion": "لدي سؤال عام",
+			"learnMore": "اعرف المزيد",
+			"letUsKnow": "دعونا نعرف",
+			"orExist": "أو موجود في بلدنا",
+			"other": "اخرى",
+			"readDocs": "اقرأ الوثائق",
+			"title": "كيف يمكننا مساعدتك؟",
+			"troubleshooting": "استكشاف الأخطاء",
+			"tweakVideo": "أريد تعديل إخراج الفيديو الخاص بي",
+			"useStorage": "أريد استخدام موفر تخزين خارجي"
+		},
+		"LogTable": {
+			"error": "خطأ",
+			"info": "معلومات",
+			"level": "المستوى",
+			"logs": "السجلات",
+			"message": "رسالة",
+			"timestamp": "الطابع الزمني",
+			"warning": "تحذير"
+		},
+		"NewsFeed": {
+			"link": "رابط",
+			"noNews": "لا توجد أخبار.",
+			"title": "الأخبار والتحديثات من Owncast"
+		},
+		"StatusMessages": {
+			"convertingEmoji": "تحويل الإيموجي...",
+			"deletingEmoji": "حذف الإيموجي...",
+			"emojiDeleted": "تم حذف الرمز التعبيري",
+			"emojiUploadedSuccessfully": "تم تحميل الرمز التعبيري بنجاح!",
+			"fileSizeTooBig": "حجم الملف كبير جدا: {{size}}",
+			"fileTypeNotSupported": "نوع الملف غير مدعوم: {{type}}",
+			"latencyBufferUpdated": "تم تحديث مستوى الذاكرة المؤقتة للاتا.",
+			"pleaseEnterTag": "الرجاء إدخال علامة",
+			"tagAlreadyUsed": "هذه العلامة مستخدمة مسبقاً!",
+			"tagsUpdated": "تم تحديث العلامات.",
+			"thereWasAnError": "حدث خطأ: {{message}}",
+			"updated": "تم التحديث.",
+			"uploadingEmoji": "تحميل رمز تعبيري...",
+			"variantsUpdated": "تم تحديث المتغيرات",
+			"videoCodecUpdated": "تم تحديث رمز الفيديو."
+		},
+		"VideoVariantForm": {
+			"bitrateDisabledPassthrough": "يتم تعطيل اختيار البيت عند تمكين مرور الفيديو.",
+			"bitrateGoodForHigh": "جيد لمستخدمي المشاهدين ذوي السرعة العالية و معدل البت.",
+			"bitrateGoodForMost": "جيد لمعظم المشاهدين وعرض النطاق الترددي والاستقرارات.",
+			"bitrateGoodForSlow": "جيد لمشاهدي البتات البطيئين والمحمولين والمنخفضين.",
+			"bitrateValueKbps": "{{bitrate}} كيلوبايت"
+		},
+		"ViewerInfo": {
+			"currentStream": "التدفق الحالي",
+			"currentViewers": "المشاهدون الحاليون",
+			"last12Hours": "آخر 12 ساعة",
+			"last24Hours": "آخر 24 ساعة",
+			"last30Days": "آخر 30 يوما",
+			"last3Months": "آخر 3 أشهر",
+			"last6Months": "آخر 6 أشهر",
+			"last7Days": "آخر 7 أيام",
+			"maxViewers": "الحد الأقصى للمشاهدين",
+			"maxViewersLastStream": "الحد الأقصى للمشاهدين في البث الأخير",
+			"maxViewersThisStream": "الحد الأقصى للمشاهدين في هذا البث",
+			"noData": "لم يتم جمع بيانات المشاهدين حتى الآن.",
+			"pleaseWait": "الرجاء الانتظار",
+			"title": "معلومات العارض",
+			"viewers": "المشاهدون"
+		},
+		"Webhooks": {
+			"createNewWebhook": "إنشاء Webhook جديد",
+			"selectAll": "حدد الكل",
+			"selectEvents": "حدد الأحداث التي سيتم إرسالها إلى هذا webhook.",
+			"webhookUrlPlaceholder": "https://myserver.com/webhook"
+		},
+		"deleteEmoji": "حذف الرمز التعبيري",
+		"emojiPageDescription": "هنا يمكنك رفع رمز تعبيري مخصص جديد للاستخدام في الدردشة. عند تحميل رمز تعبيري جديد، سيتم استخدام اسم الملف بدون إضافة اسم تعبيري. بالإضافة إلى ذلك، فإن أسماء الرموز التعبيرية حساسة لحالة الأحرف. لتحقيق أفضل النتائج، تأكد من أن جميع الرموز التعبيرية لها أسماء فريدة.",
+		"emojiUploadBulkGuide": "هل ترغب في تحميل الرموز التعبيرية المخصصة بالجملة؟ شاهد دليل الرموز التعبيرية <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">Amoji</a>.",
+		"emojis": "Emojis",
+		"uploadNewEmoji": "تحميل إيموجي جديد"
+	},
+	"Common": {
+		"poweredByOwncastVersion": "مدعوم من <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
+	},
+	"Frontend": {
+		"BrowserNotifyModal": {
+			"allowButton": "السماح",
+			"blockButton": "كتلة",
+			"deniedDescription": "لتمكين الإشعارات من {{hostname}} الوصول إلى أذونات المتصفح الخاصة بك لهذا الموقع وتشغيل الإشعارات. ثم أعد تحميل هذه الصفحة لتطبيق الإعدادات المحدثة على هذا الموقع. <a href='https://owncast.online/docs/notifications'>اعرف المزيد.</a>",
+			"deniedTitle": "تم حظر الإشعارات على جهازك",
+			"enabledDescription": "لتعطيل دفع الإشعارات من {{hostname}} الوصول إلى أذونات المتصفح لهذا الموقع وإيقاف الإشعارات. <a href='https://owncast.online/docs/notifications'>اعرف المزيد.</a>",
+			"enabledTitle": "الإشعارات مفعلة",
+			"errorMessage": "خطأ في التسجيل للإشعارات المباشرة: {{message}}. تأكد من أنك لست داخل بيئة المتصفح الخاص أو قمت مسبقاً بتعطيل الإشعارات لهذا البث.",
+			"errorTitle": "خطأ في إشعار المتصفح",
+			"iosAddButton": "إضافة",
+			"iosAddToHomeScreen": "إضافة إلى الشاشة الرئيسية",
+			"iosAllowPrompt": "السماح",
+			"iosComeBack": "العودة إلى هذه الشاشة وتمكين الإشعارات.",
+			"iosDescription": "يحتاج الأمر إلى خطوتين إضافيتين للتأكد من تلقيك إشعارا عندما تبدأ البث المفضل لديك.",
+			"iosNameAndTap": "اعطي هذا الرابط اسما وانقر على أيقونة جديدة على الشاشة الرئيسية",
+			"iosShareButton": "مشاركة",
+			"iosTitle": "الحصول على إشعار على iOS",
+			"learnMore": "اعرف المزيد",
+			"learnMoreAboutNotifications": "<a href='https://owncast.online/docs/notifications/#browser-notifications'>تعرّف على المزيد</a> حول إشعارات متصفح Owncast.",
+			"mainDescription": "احصل على إشعار صحيح في المتصفح في كل مرة يذهب فيها هذا البث مباشرة.",
+			"permissionWantsTo": "{{hostname}} يريد أن",
+			"showNotifications": "إظهار الإشعارات",
+			"unsupported": "إشعارات المتصفح غير مدعومة في المتصفح الخاص بك.",
+			"unsupportedLocal": "إشعارات المتصفح غير مدعومة للخوادم المحلية."
+		},
+		"Chat": {
+			"moderatorNotification": "أنت الآن مشرف.",
+			"nameChangeText": "معروف الآن باسم",
+			"userJoined": "انضم إلى الدردشة.",
+			"userLeft": "غادر الدردشة"
+		},
+		"FollowModal": {
+			"description": "من خلال متابعة هذا البث سوف يتم إعلامك على فيديفيرس عندما يبدأ الحياة. الآن وقت عظيم",
+			"followButton": "اتبع",
+			"followError": "خطأ في المتابعة",
+			"instructions": "أدخل اسم المستخدم الخاص بك @server للمتابعة",
+			"joinFediverse": "الانضمام إلى فيديفرس",
+			"learnFediverse": "تعلم عن فيديفرس",
+			"newToYou": "إذا كانت جديدة بالنسبة لك.",
+			"placeholder": "حسابك fediverse @account@server",
+			"redirectMessage": "سيتم إعادة توجيهك إلى سيرفر فيديفرس الخاص بك وطلب تأكيد الإجراء.",
+			"unableToFollow": "غير قادر على المتابعة."
+		},
+		"Footer": {
+			"contribute": "المساهمة",
+			"documentation": "الوثائق",
+			"source": "المصدر"
+		},
+		"Header": {
+			"chatOffline": "الدردشة غير متصل",
+			"chatWillBeAvailable": "ستكون الدردشة متاحة عندما يكون البث على قيد الحياة.",
+			"skipToContent": "تخطي إلى محتوى الصفحة",
+			"skipToFooter": "تخطي إلى تذييل الصفحة",
+			"skipToOfflineMessage": "تخطي الرسالة دون اتصال",
+			"skipToPlayer": "تخطي للاعب"
+		},
+		"NameChangeModal": {
+			"authInfo": "يمكنك أيضا المصادقة على حساب IndieAuth أو Fediverse من خلال قائمة \"المصادقة\".",
+			"buttonText": "تغيير الاسم",
+			"colorLabel": "لونك",
+			"description": "اسم عرض الدردشة الخاص بك هو ما يراه الناس عندما ترسل رسائل الدردشة.",
+			"overLimit": "تجاوز الحد",
+			"placeholder": "اسم عرض المحادثة"
+		},
+		"chatOffline": "الدردشة غير متصل",
+		"componentError": "خطأ: {{message}}",
+		"helloWorld": "مرحبا بالعالم",
+		"lastLiveAgo": "آخر بث مباشر {{timeAgo}}",
+		"offlineBasic": "هذا البث غير متصل. تحقق قريباً!",
+		"offlineFediverseOnly": "هذا البث غير متصل. <span class='follow-link'>تابع</span> {{fediverseAccount}} على فيديفيرس لرؤية المرة القادمة التي يذهب فيها {{streamer}} للحياة.",
+		"offlineNotifyAndFediverse": "هذا البث غير متصل بالإنترنت. يمكنك أن تتلقى <span class='notify-link'>إشعارًا</span> في المرة القادمة {{streamer}} أو <span class='follow-link'>متابعة</span> {{fediverseAccount}} على موقع Fediverse.",
+		"offlineNotifyOnly": "هذا البث غير متصل بالإنترنت. <span class='notify-link'>كن على علم</span> في المرة القادمة التي يتم فيها البث المباشر {{streamer}} ."
+	},
+	"Testing": {
+		"itemCount": "لديك عناصر {{count}}",
+		"messageCount": "لديك رسائل {{count}} من {{sender}}",
+		"noPluralKey": "هذا المفتاح لا يحتوي على متغيرات تعبيرية - {{count}} أشياء",
+		"simpleKey": "نص ترجمة بسيط"
+	}
 }
