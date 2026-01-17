@@ -33,23 +33,26 @@ func Setup(datastore *data.Datastore) {
 
 // AddFollow will save a follow to the datastore.
 func AddFollow(follow apmodels.ActivityPubActor, approved bool) error {
-	log.Traceln("Saving", follow.ActorIri, "as a follower.")
-	var image string
-	if follow.Image != nil {
-		image = follow.Image.String()
+	if err := follow.Validate(); err != nil {
+		return errors.Wrap(err, "cannot add invalid follow")
 	}
+
+	log.Traceln("Saving", follow.ActorIriString(), "as a follower.")
 
 	followRequestObject, err := apmodels.Serialize(follow.RequestObject)
 	if err != nil {
 		return errors.Wrap(err, "error serializing follow request object")
 	}
 
-	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.FollowRequestIri.String(), follow.Name, follow.Username, image, followRequestObject, approved)
+	return createFollow(follow.ActorIriString(), follow.InboxString(), follow.FollowRequestIriString(), follow.Name, follow.Username, follow.ImageString(), followRequestObject, approved)
 }
 
 // RemoveFollow will remove a follow from the datastore.
 func RemoveFollow(unfollow apmodels.ActivityPubActor) error {
-	log.Traceln("Removing", unfollow.ActorIri, "as a follower.")
+	if err := unfollow.Validate(); err != nil {
+		return errors.Wrap(err, "cannot remove invalid follow")
+	}
+	log.Traceln("Removing", unfollow.ActorIriString(), "as a follower.")
 	return removeFollow(unfollow.ActorIri)
 }
 

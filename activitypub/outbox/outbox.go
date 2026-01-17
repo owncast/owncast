@@ -308,13 +308,12 @@ func UpdateFollowersWithAccountUpdates() error {
 
 // Add will save an ActivityPub object to the datastore.
 func Add(item vocab.Type, id string, isLiveNotification bool) error {
-	iri := item.GetJSONLDId().GetIRI().String()
-	typeString := item.GetTypeName()
-
-	if iri == "" {
-		log.Errorln("Unable to get iri from item")
-		return errors.New("Unable to get iri from item " + id)
+	iri, err := apmodels.GetIRIStringFromJSONLDIdProperty(item.GetJSONLDId())
+	if err != nil {
+		log.Errorln("Unable to get iri from item:", err)
+		return errors.Wrap(err, "unable to get iri from item "+id)
 	}
+	typeString := item.GetTypeName()
 
 	b, err := apmodels.Serialize(item)
 	if err != nil {

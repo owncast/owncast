@@ -5,16 +5,24 @@ import (
 	"time"
 
 	"github.com/go-fed/activity/streams/vocab"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/pkg/errors"
 )
 
 func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnnounce) error {
-	object := activity.GetActivityStreamsObject()
+	objectIRI, err := apmodels.GetIRIStringFromObjectProperty(activity.GetActivityStreamsObject())
+	if err != nil {
+		return errors.Wrap(err, "announce activity is missing object IRI")
+	}
+
+	actorIRI, err := apmodels.GetIRIStringFromActorProperty(activity.GetActivityStreamsActor())
+	if err != nil {
+		return errors.Wrap(err, "announce activity is missing actor IRI")
+	}
+
 	actorReference := activity.GetActivityStreamsActor()
-	objectIRI := object.At(0).GetIRI().String()
-	actorIRI := actorReference.At(0).GetIRI().String()
 
 	if hasPreviouslyhandled, err := persistence.HasPreviouslyHandledInboundActivity(objectIRI, actorIRI, events.FediverseEngagementRepost); hasPreviouslyhandled || err != nil {
 		return errors.Wrap(err, "inbound activity of share/re-post has already been handled")

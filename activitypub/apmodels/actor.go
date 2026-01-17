@@ -38,6 +38,129 @@ type ActivityPubActor struct {
 	FullUsername string
 }
 
+// ErrActorMissingRequiredField is returned when an actor is missing a required field.
+var ErrActorMissingRequiredField = errors.New("actor missing required field")
+
+// Validate checks that required fields are present on the actor.
+// Returns an error if ActorIri or Inbox are nil.
+func (a *ActivityPubActor) Validate() error {
+	if a.ActorIri == nil {
+		return fmt.Errorf("%w: ActorIri is required", ErrActorMissingRequiredField)
+	}
+	if a.Inbox == nil {
+		return fmt.Errorf("%w: Inbox is required", ErrActorMissingRequiredField)
+	}
+	return nil
+}
+
+// IsValid returns true if the actor has all required fields.
+func (a *ActivityPubActor) IsValid() bool {
+	return a.Validate() == nil
+}
+
+// ActorIriString returns the string representation of ActorIri, or empty string if nil.
+func (a *ActivityPubActor) ActorIriString() string {
+	if a.ActorIri == nil {
+		return ""
+	}
+	return a.ActorIri.String()
+}
+
+// InboxString returns the string representation of Inbox, or empty string if nil.
+func (a *ActivityPubActor) InboxString() string {
+	if a.Inbox == nil {
+		return ""
+	}
+	return a.Inbox.String()
+}
+
+// ImageString returns the string representation of Image, or empty string if nil.
+func (a *ActivityPubActor) ImageString() string {
+	if a.Image == nil {
+		return ""
+	}
+	return a.Image.String()
+}
+
+// FollowRequestIriString returns the string representation of FollowRequestIri, or empty string if nil.
+func (a *ActivityPubActor) FollowRequestIriString() string {
+	if a.FollowRequestIri == nil {
+		return ""
+	}
+	return a.FollowRequestIri.String()
+}
+
+// ActorIriHostname returns the hostname of ActorIri, or empty string if nil.
+func (a *ActivityPubActor) ActorIriHostname() string {
+	if a.ActorIri == nil {
+		return ""
+	}
+	return a.ActorIri.Hostname()
+}
+
+// NewActivityPubActor creates a new ActivityPubActor with required fields.
+// Returns an error if actorIri or inbox are nil.
+func NewActivityPubActor(actorIri, inbox *url.URL) (*ActivityPubActor, error) {
+	if actorIri == nil {
+		return nil, fmt.Errorf("%w: actorIri is required", ErrActorMissingRequiredField)
+	}
+	if inbox == nil {
+		return nil, fmt.Errorf("%w: inbox is required", ErrActorMissingRequiredField)
+	}
+	return &ActivityPubActor{
+		ActorIri: actorIri,
+		Inbox:    inbox,
+	}, nil
+}
+
+// NewActivityPubActorFromEntity creates a new ActivityPubActor from an external entity
+// with validation of required fields.
+func NewActivityPubActorFromEntity(entity ExternalEntity) (*ActivityPubActor, error) {
+	// ActorIri is required (must validate before GetFullUsernameFromExternalEntity which uses it)
+	if entity.GetJSONLDId() == nil || entity.GetJSONLDId().Get() == nil {
+		return nil, fmt.Errorf("%w: entity is missing actor IRI", ErrActorMissingRequiredField)
+	}
+	actorIri := entity.GetJSONLDId().Get()
+
+	// Inbox is required
+	if entity.GetActivityStreamsInbox() == nil || entity.GetActivityStreamsInbox().GetIRI() == nil {
+		return nil, fmt.Errorf("%w: entity is missing inbox", ErrActorMissingRequiredField)
+	}
+	inbox := entity.GetActivityStreamsInbox().GetIRI()
+
+	// Username is required (but not a part of the official ActivityPub spec)
+	if entity.GetActivityStreamsPreferredUsername() == nil || entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString() == "" {
+		return nil, fmt.Errorf("%w: entity is missing preferred username", ErrActorMissingRequiredField)
+	}
+	username := GetFullUsernameFromExternalEntity(entity)
+
+	// Key is required
+	if entity.GetW3IDSecurityV1PublicKey() == nil || entity.GetW3IDSecurityV1PublicKey().Len() == 0 {
+		return nil, fmt.Errorf("%w: entity is missing public key", ErrActorMissingRequiredField)
+	}
+
+	// Name is optional
+	var name string
+	if entity.GetActivityStreamsName() != nil && !entity.GetActivityStreamsName().Empty() {
+		name = entity.GetActivityStreamsName().At(0).GetXMLSchemaString()
+	}
+
+	// Image is optional
+	image := GetImageFromIcon(entity.GetActivityStreamsIcon())
+
+	apActor := &ActivityPubActor{
+		ActorIri:                actorIri,
+		Inbox:                   inbox,
+		Name:                    name,
+		Username:                entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
+		FullUsername:            username,
+		W3IDSecurityV1PublicKey: entity.GetW3IDSecurityV1PublicKey(),
+		Image:                   image,
+	}
+
+	return apActor, nil
+}
+
 // DeleteRequest represents a request for delete.
 type DeleteRequest struct {
 	ActorIri string
@@ -51,45 +174,6 @@ type ExternalEntity interface {
 	GetActivityStreamsPreferredUsername() vocab.ActivityStreamsPreferredUsernameProperty
 	GetActivityStreamsIcon() vocab.ActivityStreamsIconProperty
 	GetW3IDSecurityV1PublicKey() vocab.W3IDSecurityV1PublicKeyProperty
-}
-
-// MakeActorFromExernalAPEntity takes a full ActivityPub entity and returns our
-// internal representation of an actor.
-func MakeActorFromExernalAPEntity(entity ExternalEntity) (*ActivityPubActor, error) {
-	// Username is required (but not a part of the official ActivityPub spec)
-	if entity.GetActivityStreamsPreferredUsername() == nil || entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString() == "" {
-		return nil, errors.New("remote activitypub entity does not have a preferred username set, rejecting")
-	}
-	username := GetFullUsernameFromExternalEntity(entity)
-
-	// Key is required
-	if entity.GetW3IDSecurityV1PublicKey() == nil {
-		return nil, errors.New("remote activitypub entity does not have a public key set, rejecting")
-	}
-
-	// Name is optional
-	var name string
-	if entity.GetActivityStreamsName() != nil && !entity.GetActivityStreamsName().Empty() {
-		name = entity.GetActivityStreamsName().At(0).GetXMLSchemaString()
-	}
-
-	// Image is optional
-	var image *url.URL
-	if entity.GetActivityStreamsIcon() != nil && !entity.GetActivityStreamsIcon().Empty() && entity.GetActivityStreamsIcon().At(0).GetActivityStreamsImage() != nil {
-		image = entity.GetActivityStreamsIcon().At(0).GetActivityStreamsImage().GetActivityStreamsUrl().Begin().GetIRI()
-	}
-
-	apActor := ActivityPubActor{
-		ActorIri:                entity.GetJSONLDId().Get(),
-		Inbox:                   entity.GetActivityStreamsInbox().GetIRI(),
-		Name:                    name,
-		Username:                entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
-		FullUsername:            username,
-		W3IDSecurityV1PublicKey: entity.GetW3IDSecurityV1PublicKey(),
-		Image:                   image,
-	}
-
-	return &apActor, nil
 }
 
 // MakeActorPropertyWithID will return an actor property filled with the provided IRI.
@@ -241,7 +325,7 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 // GetFullUsernameFromExternalEntity will return the full username from an
 // internal representation of an ExternalEntity. Returns user@host.tld.
 func GetFullUsernameFromExternalEntity(entity ExternalEntity) string {
-	hostname := entity.GetJSONLDId().GetIRI().Hostname()
+	hostname := GetHostnameFromJSONLDId(entity.GetJSONLDId())
 	username := entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString()
 	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
 

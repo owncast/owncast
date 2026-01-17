@@ -37,7 +37,14 @@ func worker(workerID int, queue <-chan Job) {
 	log.Debugf("Started ActivityPub worker %d", workerID)
 
 	for job := range queue {
-		handle(job.request)
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Errorf("Recovered from panic in ActivityPub worker %d: %v", workerID, r)
+				}
+			}()
+			handle(job.request)
+		}()
 
 		log.Tracef("Done with ActivityPub inbox handler using worker %d", workerID)
 	}
