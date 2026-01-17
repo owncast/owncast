@@ -64,7 +64,11 @@ func TestValidatedFfmpegPathPrefersLocalBinary(t *testing.T) {
 
 	// The result should be the absolute path to our local fake ffmpeg,
 	// not the system ffmpeg in /usr/bin or similar.
-	expectedPath, _ := filepath.Abs("./ffmpeg")
+	expectedPath, err := filepath.Abs("./ffmpeg")
+	if err != nil {
+		t.Fatalf("Failed to get absolute path for fake ffmpeg: %v", err)
+	}
+
 	if result != expectedPath {
 		t.Errorf("Expected local ffmpeg path %q, got %q", expectedPath, result)
 	}
