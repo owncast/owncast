@@ -274,8 +274,10 @@ const Actions = () => {
     actionsData.splice(index, 1);
 
     try {
-      setActions(actionsData);
-      save(actionsData);
+      // Don't optimistically update local state - let the server response
+      // update externalActions in context, which will then update actions
+      // via useEffect. This prevents race conditions causing visual glitches.
+      await save(actionsData);
     } catch (error) {
       console.error(error);
     }
@@ -312,7 +314,9 @@ const Actions = () => {
         actionsData.push(newAction);
       }
 
-      setActions(actionsData);
+      // Don't optimistically update local state - let the server response
+      // update externalActions in context, which will then update actions
+      // via useEffect. This prevents race conditions causing visual glitches.
       await save(actionsData);
     } catch (error) {
       console.error(error);
