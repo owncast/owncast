@@ -260,10 +260,15 @@ func ValidatedFfmpegPath(ffmpegPath string) string {
 		log.Warnln(ffmpegPath, "is an invalid path to ffmpeg will try to use a copy in your path, if possible")
 	}
 
-	// Look for ffmpeg in the system path or in the current working directory.
-	ffmpegPath, err := exec.LookPath("ffmpeg")
-	if ffmpegPath == "" || (err != nil && !errors.Is(err, exec.ErrDot)) || VerifyFFMpegPath(ffmpegPath) != nil {
-		log.Fatalln("Unable to locate ffmpeg. Either install it globally on your system or put the ffmpeg binary in the same directory as Owncast. The binary must be named ffmpeg.")
+	// First, check for ffmpeg in the current working directory.
+	if err := VerifyFFMpegPath("./ffmpeg"); err == nil {
+		ffmpegPath = "./ffmpeg"
+	} else {
+		// Fall back to looking for ffmpeg in the system path.
+		ffmpegPath, err = exec.LookPath("ffmpeg")
+		if err != nil || VerifyFFMpegPath(ffmpegPath) != nil {
+			log.Fatalln("Unable to locate ffmpeg. Either install it globally on your system or put the ffmpeg binary in the same directory as Owncast. The binary must be named ffmpeg.")
+		}
 	}
 
 	// Resolve to an absolute path.
