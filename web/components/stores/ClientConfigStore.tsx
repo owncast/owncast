@@ -73,6 +73,12 @@ export const chatAuthenticatedAtom = atom<boolean>({
   default: false,
 });
 
+// Stores chat input draft to preserve text across mobile/desktop mode switches
+export const chatInputDraftAtom = atom<string>({
+  key: 'chatInputDraftAtom',
+  default: '',
+});
+
 export const websocketServiceAtom = atom<WebsocketService>({
   key: 'websocketServiceAtom',
   default: null,
