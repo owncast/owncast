@@ -11,7 +11,7 @@
 	"dependencies": {
 		"ajv": "^8.11.0",
 		"ajv-draft-04": "^1.0.0",
-		"bcrypt": "^5.1.1",
+		"bcrypt": "^6.0.0",
 		"crypto-random": "^2.0.1",
 		"jsonfile": "^6.1.0",
 		"sha.js": "^2.4.12",
