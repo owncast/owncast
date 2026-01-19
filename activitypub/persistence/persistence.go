@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
@@ -44,7 +45,7 @@ func AddFollow(follow apmodels.ActivityPubActor, approved bool) error {
 		return errors.Wrap(err, "error serializing follow request object")
 	}
 
-	return createFollow(follow.ActorIriString(), follow.InboxString(), follow.FollowRequestIriString(), follow.Name, follow.Username, follow.ImageString(), followRequestObject, approved)
+	return createFollow(follow.ActorIriString(), follow.InboxString(), follow.SharedInboxString(), follow.FollowRequestIriString(), follow.Name, follow.Username, follow.ImageString(), followRequestObject, approved)
 }
 
 // RemoveFollow will remove a follow from the datastore.
@@ -78,6 +79,14 @@ func GetFollower(iri string) (*apmodels.ActivityPubActor, error) {
 		return nil, errors.Wrap(err, "error parsing acting inbox")
 	}
 
+	var sharedInbox *url.URL
+	if result.SharedInbox.Valid && result.SharedInbox.String != "" {
+		sharedInbox, err = url.Parse(result.SharedInbox.String)
+		if err != nil {
+			log.Warnln("error parsing shared inbox, ignoring:", err)
+		}
+	}
+
 	requestObjectBytes := result.RequestObject
 	var followRequestObject vocab.ActivityStreamsFollow
 
@@ -109,6 +118,7 @@ func GetFollower(iri string) (*apmodels.ActivityPubActor, error) {
 	follower := apmodels.ActivityPubActor{
 		ActorIri:         iriURL,
 		Inbox:            inbox,
+		SharedInbox:      sharedInbox,
 		Name:             result.Name.String,
 		Username:         result.Username,
 		Image:            image,
@@ -142,7 +152,7 @@ func BlockOrRejectFollower(iri string) error {
 	})
 }
 
-func createFollow(actor, inbox, request, name, username, image string, requestObject []byte, approved bool) error {
+func createFollow(actor, inbox, sharedInbox, request, name, username, image string, requestObject []byte, approved bool) error {
 	tx, err := _datastore.DB.Begin()
 	if err != nil {
 		log.Debugln(err)
@@ -162,6 +172,7 @@ func createFollow(actor, inbox, request, name, username, image string, requestOb
 	if err = _datastore.GetQueries().WithTx(tx).AddFollower(context.Background(), db.AddFollowerParams{
 		Iri:           actor,
 		Inbox:         inbox,
+		SharedInbox:   sql.NullString{String: sharedInbox, Valid: sharedInbox != ""},
 		Name:          sql.NullString{String: name, Valid: true},
 		Username:      username,
 		Image:         sql.NullString{String: image, Valid: true},
@@ -176,7 +187,7 @@ func createFollow(actor, inbox, request, name, username, image string, requestOb
 }
 
 // UpdateFollower will update the details of a stored follower given an IRI.
-func UpdateFollower(actorIRI string, inbox string, name string, username string, image string) error {
+func UpdateFollower(actorIRI string, inbox string, sharedInbox string, name string, username string, image string) error {
 	_datastore.DbLock.Lock()
 	defer _datastore.DbLock.Unlock()
 
@@ -189,11 +200,12 @@ func UpdateFollower(actorIRI string, inbox string, name string, username string,
 	}()
 
 	if err = _datastore.GetQueries().WithTx(tx).UpdateFollowerByIRI(context.Background(), db.UpdateFollowerByIRIParams{
-		Inbox:    inbox,
-		Name:     sql.NullString{String: name, Valid: true},
-		Username: username,
-		Image:    sql.NullString{String: image, Valid: true},
-		Iri:      actorIRI,
+		Inbox:       inbox,
+		SharedInbox: sql.NullString{String: sharedInbox, Valid: sharedInbox != ""},
+		Name:        sql.NullString{String: name, Valid: true},
+		Username:    username,
+		Image:       sql.NullString{String: image, Valid: true},
+		Iri:         actorIRI,
 	}); err != nil {
 		return fmt.Errorf("error updating follower %s %s", actorIRI, err)
 	}
@@ -263,7 +275,7 @@ func GetOutbox(limit int, offset int) (vocab.ActivityStreamsOrderedCollection, e
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
 	rows, err := _datastore.GetQueries().GetOutboxWithOffset(
 		context.Background(),
-		db.GetOutboxWithOffsetParams{Limit: limit, Offset: offset},
+		db.GetOutboxWithOffsetParams{Limit: utils.SafeIntToInt32(limit), Offset: utils.SafeIntToInt32(offset)},
 	)
 	if err != nil {
 		return collection, err
@@ -335,8 +347,8 @@ func SaveInboundFediverseActivity(objectIRI string, actorIRI string, eventType s
 func GetInboundActivities(limit int, offset int) ([]models.FederatedActivity, int, error) {
 	ctx := context.Background()
 	rows, err := _datastore.GetQueries().GetInboundActivitiesWithOffset(ctx, db.GetInboundActivitiesWithOffsetParams{
-		Limit:  limit,
-		Offset: offset,
+		Limit:  utils.SafeIntToInt32(limit),
+		Offset: utils.SafeIntToInt32(offset),
 	})
 	if err != nil {
 		return nil, 0, err

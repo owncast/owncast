@@ -8,6 +8,8 @@ type Follower struct {
 	ActorIRI string `json:"link"`
 	// Inbox is the inbox URL of the remote follower
 	Inbox string `json:"-"`
+	// SharedInbox is the shared inbox URL of the remote follower's server (optional)
+	SharedInbox string `json:"-"`
 	// Name is the display name of the follower.
 	Name string `json:"name"`
 	// Username is the account username of the remote actor.

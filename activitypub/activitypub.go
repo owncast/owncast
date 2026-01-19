@@ -58,7 +58,7 @@ func getOutboundWorkerPoolSize() int {
 		workers = maxWorkers
 	}
 
-	log.Infof("Initializing ActivityPub outbound worker pool with %d workers for %d followers", workers, followerCount)
+	log.Debugf("Initializing ActivityPub outbound worker pool with %d workers for %d followers", workers, followerCount)
 	return workers
 }
 

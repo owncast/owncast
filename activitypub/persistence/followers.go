@@ -16,6 +16,7 @@ func createFederationFollowersTable() {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_followers (
 		"iri" TEXT NOT NULL,
 		"inbox" TEXT NOT NULL,
+		"shared_inbox" TEXT,
 		"name" TEXT,
 		"username" TEXT NOT NULL,
 		"image" TEXT,
@@ -45,8 +46,8 @@ func GetFederationFollowers(limit int, offset int) ([]models.Follower, int, erro
 	}
 
 	followersResult, err := _datastore.GetQueries().GetFederationFollowersWithOffset(ctx, db.GetFederationFollowersWithOffsetParams{
-		Limit:  limit,
-		Offset: offset,
+		Limit:  utils.SafeIntToInt32(limit),
+		Offset: utils.SafeIntToInt32(offset),
 	})
 	if err != nil {
 		return nil, 0, err
@@ -56,12 +57,13 @@ func GetFederationFollowers(limit int, offset int) ([]models.Follower, int, erro
 
 	for _, row := range followersResult {
 		singleFollower := models.Follower{
-			Name:      row.Name.String,
-			Username:  row.Username,
-			Image:     row.Image.String,
-			ActorIRI:  row.Iri,
-			Inbox:     row.Inbox,
-			Timestamp: utils.NullTime(row.CreatedAt),
+			Name:        row.Name.String,
+			Username:    row.Username,
+			Image:       row.Image.String,
+			ActorIRI:    row.Iri,
+			Inbox:       row.Inbox,
+			SharedInbox: row.SharedInbox.String,
+			Timestamp:   utils.NullTime(row.CreatedAt),
 		}
 
 		followers = append(followers, singleFollower)
@@ -81,17 +83,25 @@ func GetPendingFollowRequests() ([]models.Follower, error) {
 
 	for _, row := range pendingFollowersResult {
 		singleFollower := models.Follower{
-			Name:      row.Name.String,
-			Username:  row.Username,
-			Image:     row.Image.String,
-			ActorIRI:  row.Iri,
-			Inbox:     row.Inbox,
-			Timestamp: utils.NullTime{Time: row.CreatedAt.Time, Valid: true},
+			Name:        row.Name.String,
+			Username:    row.Username,
+			Image:       row.Image.String,
+			ActorIRI:    row.Iri,
+			Inbox:       row.Inbox,
+			SharedInbox: row.SharedInbox.String,
+			Timestamp:   utils.NullTime{Time: row.CreatedAt.Time, Valid: true},
 		}
 		followers = append(followers, singleFollower)
 	}
 
 	return followers, nil
+}
+
+// GetUniqueDeliveryInboxes returns a list of unique inbox URLs for delivery.
+// It prefers shared inboxes over individual inboxes to reduce the number of requests.
+func GetUniqueDeliveryInboxes() ([]string, error) {
+	ctx := context.Background()
+	return _datastore.GetQueries().GetUniqueDeliveryInboxes(ctx)
 }
 
 // GetBlockedAndRejectedFollowers will return blocked and rejected followers.

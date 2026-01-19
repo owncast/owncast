@@ -234,15 +234,16 @@ func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
 }
 
 // SendToFollowers will send an arbitrary payload to all follower inboxes.
-// Requests are batched to prevent resource exhaustion when there are many followers.
+// It uses shared inboxes when available to reduce the number of outbound requests.
 func SendToFollowers(payload []byte) error {
 	configRepository := configrepository.Get()
 	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 
-	followers, _, err := persistence.GetFederationFollowers(-1, 0)
+	// Get unique delivery inboxes (prefers shared inboxes over individual inboxes)
+	inboxes, err := persistence.GetUniqueDeliveryInboxes()
 	if err != nil {
-		log.Errorln("unable to fetch followers to send to", err)
-		return errors.New("unable to fetch followers to send payload to")
+		log.Errorln("unable to fetch delivery inboxes", err)
+		return errors.New("unable to fetch delivery inboxes to send payload to")
 	}
 
 	// Batch size and delay to prevent resource exhaustion during delivery.
@@ -253,10 +254,10 @@ func SendToFollowers(payload []byte) error {
 	queued := 0
 	skipped := 0
 
-	for i, follower := range followers {
-		inbox, err := url.Parse(follower.Inbox)
+	for i, inboxURL := range inboxes {
+		inbox, err := url.Parse(inboxURL)
 		if err != nil {
-			log.Errorln("unable to parse follower inbox URL", follower.Inbox, err)
+			log.Warnln("unable to parse inbox URL", inboxURL, err)
 			continue
 		}
 
@@ -269,8 +270,8 @@ func SendToFollowers(payload []byte) error {
 
 		req, err := crypto.CreateSignedRequest(payload, inbox, localActor)
 		if err != nil {
-			log.Errorln("unable to create outbox request", follower.Inbox, err)
-			return errors.New("unable to create outbox request: " + follower.Inbox)
+			log.Errorln("unable to create outbox request", inboxURL, err)
+			continue
 		}
 
 		workerpool.AddToOutboundQueue(req)
@@ -280,7 +281,7 @@ func SendToFollowers(payload []byte) error {
 		// This helps prevent ActivityPub delivery from competing with video encoding.
 		// Use queued count (not loop index) to ensure consistent rate limiting
 		// even when followers are skipped due to circuit breaker or parse errors.
-		if queued%batchSize == 0 && i+1 < len(followers) {
+		if queued%batchSize == 0 && i+1 < len(inboxes) {
 			time.Sleep(batchDelay)
 		}
 	}

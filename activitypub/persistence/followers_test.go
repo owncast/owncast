@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/owncast/owncast/core/data"
@@ -25,7 +26,7 @@ func setup() {
 	number := 100
 	for i := 0; i < number; i++ {
 		u := createFakeFollower()
-		createFollow(u.ActorIRI, u.Inbox, "https://fake.fediverse.server/some/request", u.Name, u.Username, u.Image, nil, true)
+		createFollow(u.ActorIRI, u.Inbox, "", "https://fake.fediverse.server/some/request", u.Name, u.Username, u.Image, nil, true)
 		followers = append(followers, u)
 	}
 }
@@ -103,5 +104,180 @@ func createFakeFollower() models.Follower {
 		Name:      user,
 		Username:  user,
 		Timestamp: utils.NullTime{},
+	}
+}
+
+func TestGetUniqueDeliveryInboxes(t *testing.T) {
+	// Set up a fresh database for this test
+	data.SetupPersistence(":memory:")
+	_datastore = data.GetDatastore()
+	createFederationFollowersTable()
+
+	// Create followers from server1 with a shared inbox (3 users, 1 shared inbox)
+	server1SharedInbox := "https://server1.example.com/inbox"
+	for i := 0; i < 3; i++ {
+		user, _ := utils.GenerateRandomString(10)
+		createFollow(
+			"https://server1.example.com/user/"+user,          // actor
+			"https://server1.example.com/user/"+user+"/inbox", // individual inbox
+			server1SharedInbox,                         // shared inbox
+			"https://server1.example.com/follow/"+user, // request
+			user, // name
+			user, // username
+			"",   // image
+			nil,  // requestObject
+			true, // approved
+		)
+	}
+
+	// Create followers from server2 with a shared inbox (2 users, 1 shared inbox)
+	server2SharedInbox := "https://server2.example.com/inbox"
+	for i := 0; i < 2; i++ {
+		user, _ := utils.GenerateRandomString(10)
+		createFollow(
+			"https://server2.example.com/user/"+user,
+			"https://server2.example.com/user/"+user+"/inbox",
+			server2SharedInbox,
+			"https://server2.example.com/follow/"+user,
+			user,
+			user,
+			"",
+			nil,
+			true,
+		)
+	}
+
+	// Create followers from server3 WITHOUT a shared inbox (2 users, 2 individual inboxes)
+	for i := 0; i < 2; i++ {
+		user, _ := utils.GenerateRandomString(10)
+		createFollow(
+			"https://server3.example.com/user/"+user,
+			"https://server3.example.com/user/"+user+"/inbox",
+			"", // no shared inbox
+			"https://server3.example.com/follow/"+user,
+			user,
+			user,
+			"",
+			nil,
+			true,
+		)
+	}
+
+	// Total: 7 followers, but should result in 4 unique delivery inboxes:
+	// - 1 shared inbox for server1
+	// - 1 shared inbox for server2
+	// - 2 individual inboxes for server3
+
+	inboxes, err := GetUniqueDeliveryInboxes()
+	if err != nil {
+		t.Fatalf("Error getting unique delivery inboxes: %s", err)
+	}
+
+	if len(inboxes) != 4 {
+		t.Errorf("Expected 4 unique delivery inboxes, got %d: %v", len(inboxes), inboxes)
+	}
+
+	// Verify the shared inboxes are included
+	hasServer1Shared := false
+	hasServer2Shared := false
+	server3IndividualCount := 0
+
+	for _, inbox := range inboxes {
+		if inbox == server1SharedInbox {
+			hasServer1Shared = true
+		}
+		if inbox == server2SharedInbox {
+			hasServer2Shared = true
+		}
+		if len(inbox) > 0 && inbox != server1SharedInbox && inbox != server2SharedInbox {
+			// Should be one of server3's individual inboxes
+			if !strings.Contains(inbox, "server3.example.com") {
+				t.Errorf("Unexpected inbox in results: %s", inbox)
+			}
+			server3IndividualCount++
+		}
+	}
+
+	if !hasServer1Shared {
+		t.Error("Expected server1 shared inbox to be in results")
+	}
+	if !hasServer2Shared {
+		t.Error("Expected server2 shared inbox to be in results")
+	}
+	if server3IndividualCount != 2 {
+		t.Errorf("Expected 2 individual inboxes from server3, got %d", server3IndividualCount)
+	}
+}
+
+func TestSharedInboxPreferredOverIndividual(t *testing.T) {
+	// Set up a fresh database for this test
+	data.SetupPersistence(":memory:")
+	_datastore = data.GetDatastore()
+	createFederationFollowersTable()
+
+	// Create a single follower with both individual and shared inbox
+	sharedInbox := "https://mastodon.social/inbox"
+	individualInbox := "https://mastodon.social/users/testuser/inbox"
+
+	createFollow(
+		"https://mastodon.social/users/testuser",
+		individualInbox,
+		sharedInbox,
+		"https://mastodon.social/follow/123",
+		"Test User",
+		"testuser",
+		"",
+		nil,
+		true,
+	)
+
+	inboxes, err := GetUniqueDeliveryInboxes()
+	if err != nil {
+		t.Fatalf("Error getting unique delivery inboxes: %s", err)
+	}
+
+	if len(inboxes) != 1 {
+		t.Errorf("Expected 1 unique delivery inbox, got %d", len(inboxes))
+	}
+
+	// The shared inbox should be returned, not the individual inbox
+	if inboxes[0] != sharedInbox {
+		t.Errorf("Expected shared inbox %s, got %s", sharedInbox, inboxes[0])
+	}
+}
+
+func TestIndividualInboxUsedWhenNoSharedInbox(t *testing.T) {
+	// Set up a fresh database for this test
+	data.SetupPersistence(":memory:")
+	_datastore = data.GetDatastore()
+	createFederationFollowersTable()
+
+	// Create a follower without a shared inbox
+	individualInbox := "https://pleroma.example.com/users/testuser/inbox"
+
+	createFollow(
+		"https://pleroma.example.com/users/testuser",
+		individualInbox,
+		"", // no shared inbox
+		"https://pleroma.example.com/follow/123",
+		"Test User",
+		"testuser",
+		"",
+		nil,
+		true,
+	)
+
+	inboxes, err := GetUniqueDeliveryInboxes()
+	if err != nil {
+		t.Fatalf("Error getting unique delivery inboxes: %s", err)
+	}
+
+	if len(inboxes) != 1 {
+		t.Errorf("Expected 1 unique delivery inbox, got %d", len(inboxes))
+	}
+
+	// The individual inbox should be returned when no shared inbox exists
+	if inboxes[0] != individualInbox {
+		t.Errorf("Expected individual inbox %s, got %s", individualInbox, inboxes[0])
 	}
 }

@@ -9,13 +9,13 @@ SElECT count(*) FROM ap_followers WHERE approved_at is not null;
 SElECT count(*) FROM ap_outbox;
 
 -- name: GetFederationFollowersWithOffset :many
-SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null ORDER BY created_at DESC LIMIT $1 OFFSET $2;
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null ORDER BY created_at DESC LIMIT $1 OFFSET $2;
 
 -- name: GetRejectedAndBlockedFollowers :many
 SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null;
 
 -- name: GetFederationFollowerApprovalRequests :many
-SELECT iri, inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null;
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null;
 
 -- name: ApproveFederationFollower :exec
 UPDATE ap_followers SET approved_at = $1, disabled_at = null WHERE iri = $2;
@@ -24,7 +24,7 @@ UPDATE ap_followers SET approved_at = $1, disabled_at = null WHERE iri = $2;
 UPDATE ap_followers SET approved_at = null, disabled_at = $1 WHERE iri = $2;
 
 -- name: GetFollowerByIRI :one
-SELECT iri, inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = $1;
+SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = $1;
 
 -- name: GetOutboxWithOffset :many
 SELECT value FROM ap_outbox LIMIT $1 OFFSET $2;
@@ -37,7 +37,7 @@ SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = $1;
 DELETE FROM ap_followers WHERE iri = $1;
 
 -- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, request, request_object, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6, $7, $8);
+INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6, $7, $8, $9);
 
 -- name: AddToOutbox :exec
 INSERT INTO ap_outbox(iri, value, type, live_notification) values($1, $2, $3, $4);
@@ -55,7 +55,10 @@ SELECT iri, actor, type, timestamp FROM ap_accepted_activities ORDER BY timestam
 SELECT count(*) FROM ap_accepted_activities WHERE iri = $1 AND actor = $2 AND TYPE = $3;
 
 -- name: UpdateFollowerByIRI :exec
-UPDATE ap_followers SET inbox = $1, name = $2, username = $3, image = $4 WHERE iri = $5;
+UPDATE ap_followers SET inbox = $1, shared_inbox = $2, name = $3, username = $4, image = $5 WHERE iri = $6;
+
+-- name: GetUniqueDeliveryInboxes :many
+SELECT COALESCE(shared_inbox, inbox) as delivery_inbox FROM ap_followers WHERE approved_at is not null GROUP BY delivery_inbox;
 
 -- name: BanIPAddress :exec
 INSERT INTO ip_bans(ip_address, notes) values($1, $2);
