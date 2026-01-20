@@ -8,6 +8,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/chat/events"
@@ -20,6 +21,7 @@ import (
 
 func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
 	configRepository := configrepository.Get()
+	followersRepo := followersrepository.Get()
 
 	follow, err := resolvers.MakeFollowRequest(c, activity)
 	if err != nil {
@@ -35,7 +37,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 
 	followRequest := *follow
 
-	if err := persistence.AddFollow(followRequest, approved); err != nil {
+	if err := followersRepo.Add(followRequest, approved); err != nil {
 		log.Errorln("unable to save follow request", err)
 		return err
 	}
@@ -95,5 +97,6 @@ func handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo
 	unfollowRequest := *request
 	log.Traceln("unfollow request:", unfollowRequest)
 
-	return persistence.RemoveFollow(unfollowRequest)
+	followersRepo := followersrepository.Get()
+	return followersRepo.Remove(unfollowRequest)
 }

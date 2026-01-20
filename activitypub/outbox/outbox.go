@@ -13,6 +13,7 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/activitypub/webfinger"
@@ -237,10 +238,11 @@ func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
 // It uses shared inboxes when available to reduce the number of outbound requests.
 func SendToFollowers(payload []byte) error {
 	configRepository := configrepository.Get()
+	followersRepo := followersrepository.Get()
 	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 
 	// Get unique delivery inboxes (prefers shared inboxes over individual inboxes)
-	inboxes, err := persistence.GetUniqueDeliveryInboxes()
+	inboxes, err := followersRepo.GetUniqueDeliveryInboxes()
 	if err != nil {
 		log.Errorln("unable to fetch delivery inboxes", err)
 		return errors.New("unable to fetch delivery inboxes to send payload to")

@@ -8,6 +8,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/persistence/configrepository"
 )
@@ -79,13 +80,14 @@ func TestBlockedDomains(t *testing.T) {
 func TestBlockedActors(t *testing.T) {
 	person := makeFakePerson()
 	fakeRequest := streams.NewActivityStreamsFollow()
-	persistence.AddFollow(apmodels.ActivityPubActor{
+	followersRepo := followersrepository.Get()
+	followersRepo.Add(apmodels.ActivityPubActor{
 		ActorIri:         person.GetJSONLDId().GetIRI(),
 		Inbox:            person.GetJSONLDId().GetIRI(),
 		FollowRequestIri: person.GetJSONLDId().GetIRI(),
 		RequestObject:    fakeRequest,
 	}, false)
-	persistence.BlockOrRejectFollower(person.GetJSONLDId().GetIRI().String())
+	followersRepo.BlockOrReject(person.GetJSONLDId().GetIRI().String())
 
 	blocked, err := isBlockedActor(person.GetJSONLDId().GetIRI())
 	if err != nil {
