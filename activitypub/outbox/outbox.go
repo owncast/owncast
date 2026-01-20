@@ -254,7 +254,11 @@ func SendToFollowers(payload []byte) error {
 	skipped := 0
 
 	for i, follower := range followers {
-		inbox, _ := url.Parse(follower.Inbox)
+		inbox, err := url.Parse(follower.Inbox)
+		if err != nil {
+			log.Errorln("unable to parse follower inbox URL", follower.Inbox, err)
+			continue
+		}
 
 		// Pre-check circuit breaker BEFORE expensive cryptographic signing.
 		// This saves CPU cycles for domains we know are failing.
