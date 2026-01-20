@@ -278,7 +278,9 @@ func SendToFollowers(payload []byte) error {
 
 		// Add a small delay between batches to spread out CPU and network load.
 		// This helps prevent ActivityPub delivery from competing with video encoding.
-		if (i+1)%batchSize == 0 && i+1 < len(followers) {
+		// Use queued count (not loop index) to ensure consistent rate limiting
+		// even when followers are skipped due to circuit breaker or parse errors.
+		if queued%batchSize == 0 && i+1 < len(followers) {
 			time.Sleep(batchDelay)
 		}
 	}
