@@ -151,23 +151,19 @@ func getNameFromEntity(entity ExternalEntity) string {
 
 // getSharedInboxFromEntity extracts the optional shared inbox URL from an entity.
 func getSharedInboxFromEntity(entity ExternalEntity) *url.URL {
-	unknownProps := entity.GetUnknownProperties()
-	if unknownProps == nil {
+	endpointsProp := entity.GetActivityStreamsEndpoints()
+	if endpointsProp == nil || !endpointsProp.IsActivityStreamsEndpointCollection() {
 		return nil
 	}
-	endpoints, ok := unknownProps["endpoints"].(map[string]interface{})
-	if !ok {
+	endpoints := endpointsProp.Get()
+	if endpoints == nil {
 		return nil
 	}
-	sharedInboxStr, ok := endpoints["sharedInbox"].(string)
-	if !ok || sharedInboxStr == "" {
+	sharedInboxProp := endpoints.GetActivityStreamsSharedInbox()
+	if sharedInboxProp == nil || !sharedInboxProp.HasAny() {
 		return nil
 	}
-	parsed, err := url.Parse(sharedInboxStr)
-	if err != nil {
-		return nil
-	}
-	return parsed
+	return sharedInboxProp.Get()
 }
 
 // NewActivityPubActorFromEntity creates a new ActivityPubActor from an external entity
@@ -204,7 +200,7 @@ type ExternalEntity interface {
 	GetActivityStreamsPreferredUsername() vocab.ActivityStreamsPreferredUsernameProperty
 	GetActivityStreamsIcon() vocab.ActivityStreamsIconProperty
 	GetW3IDSecurityV1PublicKey() vocab.W3IDSecurityV1PublicKeyProperty
-	GetUnknownProperties() map[string]interface{}
+	GetActivityStreamsEndpoints() vocab.ActivityStreamsEndpointsProperty
 }
 
 // MakeActorPropertyWithID will return an actor property filled with the provided IRI.
