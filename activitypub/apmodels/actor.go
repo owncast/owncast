@@ -152,17 +152,20 @@ func getNameFromEntity(entity ExternalEntity) string {
 // getSharedInboxFromEntity extracts the optional shared inbox URL from an entity.
 func getSharedInboxFromEntity(entity ExternalEntity) *url.URL {
 	endpointsProp := entity.GetActivityStreamsEndpoints()
-	if endpointsProp == nil || !endpointsProp.IsActivityStreamsEndpointCollection() {
+	if endpointsProp == nil || !endpointsProp.IsActivityStreamsEndpoints() {
 		return nil
 	}
+
 	endpoints := endpointsProp.Get()
 	if endpoints == nil {
 		return nil
 	}
+
 	sharedInboxProp := endpoints.GetActivityStreamsSharedInbox()
 	if sharedInboxProp == nil || !sharedInboxProp.HasAny() {
 		return nil
 	}
+
 	return sharedInboxProp.Get()
 }
 
