@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2317  # cleanup() is invoked via trap, not direct call
 
 # ActivityPub Federation Test using snac2
 #
