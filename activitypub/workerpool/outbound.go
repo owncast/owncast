@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -50,17 +51,9 @@ func InitOutboundWorkerPool(workerPoolSize int) {
 	}
 	queue = make(chan Job, queueBuffer)
 
-	// Initialize HTTP client with conservative timeouts and connection limits
-	// to prevent resource exhaustion and hanging requests
-	httpClient = &http.Client{
-		Timeout: 8 * time.Second, // Short timeout - legitimate servers respond quickly
-		Transport: &http.Transport{
-			MaxIdleConns:        20,               // Reduced from 100 to limit resource usage
-			MaxIdleConnsPerHost: 2,                // Reduced from 10 to be more conservative
-			IdleConnTimeout:     10 * time.Second, // Reduced from 30s for faster cleanup
-			DisableKeepAlives:   false,
-		},
-	}
+	// Initialize HTTP client with retry logic for transient failures
+	// The retryable client handles 502/503/504 errors automatically
+	httpClient = utils.GetRetryableHTTPClient()
 
 	// start workers
 	for i := 1; i <= workerPoolSize; i++ {
