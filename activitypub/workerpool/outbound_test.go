@@ -21,7 +21,7 @@ func TestCircuitBreaker(t *testing.T) {
 	testDomain := "failing.example.com"
 
 	// Initially, domain should not be skipped
-	if shouldSkipDomain(testDomain) {
+	if ShouldSkipDomain(testDomain) {
 		t.Error("Domain should not be skipped initially")
 	}
 
@@ -31,13 +31,13 @@ func TestCircuitBreaker(t *testing.T) {
 	recordDomainFailure(testDomain)
 
 	// Domain should now be skipped
-	if !shouldSkipDomain(testDomain) {
+	if !ShouldSkipDomain(testDomain) {
 		t.Error("Domain should be skipped after failures")
 	}
 
 	// After successful delivery, domain should be reset
 	resetDomainFailure(testDomain)
-	if shouldSkipDomain(testDomain) {
+	if ShouldSkipDomain(testDomain) {
 		t.Error("Domain should not be skipped after reset")
 	}
 }
@@ -54,8 +54,8 @@ func TestHTTPTimeouts(t *testing.T) {
 		t.Error("HTTP client should be initialized")
 	}
 
-	if httpClient.Timeout != 15*time.Second {
-		t.Error("HTTP client should have 15 second timeout")
+	if httpClient.Timeout != 8*time.Second {
+		t.Errorf("HTTP client should have 8 second timeout, got %v", httpClient.Timeout)
 	}
 }
 
@@ -64,11 +64,17 @@ func TestWorkerPoolSizing(t *testing.T) {
 	resetCircuitBreakerForTesting()
 	defer resetCircuitBreakerForTesting() // Clean up after test
 
-	// Test the queue sizing
+	// Test that queue buffer is at least the minimum (500) even for small worker pools
 	InitOutboundWorkerPool(5)
 
-	if cap(queue) != 5 {
-		t.Errorf("Queue capacity should be 5, got %d", cap(queue))
+	if cap(queue) < 500 {
+		t.Errorf("Queue capacity should be at least 500, got %d", cap(queue))
+	}
+
+	// Test that larger worker pools get proportionally larger buffers
+	InitOutboundWorkerPool(100)
+	if cap(queue) != 1000 {
+		t.Errorf("Queue capacity should be 1000 for 100 workers, got %d", cap(queue))
 	}
 }
 
@@ -102,7 +108,7 @@ func TestCircuitBreakerIsolation(t *testing.T) {
 	domain2 := "test2.example.com"
 
 	// Neither domain should be blocked initially
-	if shouldSkipDomain(domain1) || shouldSkipDomain(domain2) {
+	if ShouldSkipDomain(domain1) || ShouldSkipDomain(domain2) {
 		t.Error("Domains should not be blocked initially")
 	}
 
@@ -112,16 +118,16 @@ func TestCircuitBreakerIsolation(t *testing.T) {
 	recordDomainFailure(domain1)
 
 	// Only domain1 should be blocked
-	if !shouldSkipDomain(domain1) {
+	if !ShouldSkipDomain(domain1) {
 		t.Error("Domain1 should be blocked after failures")
 	}
-	if shouldSkipDomain(domain2) {
+	if ShouldSkipDomain(domain2) {
 		t.Error("Domain2 should not be blocked")
 	}
 
 	// Reset and verify clean state
 	resetCircuitBreakerForTesting()
-	if shouldSkipDomain(domain1) || shouldSkipDomain(domain2) {
+	if ShouldSkipDomain(domain1) || ShouldSkipDomain(domain2) {
 		t.Error("Both domains should be unblocked after reset")
 	}
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -45,31 +46,37 @@ func Resolve(c context.Context, data []byte, callbacks ...interface{}) error {
 	return nil
 }
 
-// ResolveIRI will resolve an IRI ahd call the correct callback for the resolved type.
+// ResolveIRI will resolve an IRI and call the correct callback for the resolved type.
+// Uses a retryable HTTP client for resilience against transient failures.
 func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	configRepository := configrepository.Get()
 	log.Debugln("Resolving", iri)
 
 	req, _ := http.NewRequest(http.MethodGet, iri, nil)
+	req.Header.Set("Accept", "application/activity+json, application/ld+json")
 
 	actor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 	if err := crypto.SignRequest(req, nil, actor); err != nil {
 		return err
 	}
 
-	response, err := http.DefaultClient.Do(req)
+	client := utils.GetRetryableHTTPClient()
+	response, err := client.Do(req)
 	if err != nil {
 		return err
 	}
 
 	defer response.Body.Close()
 
+	if response.StatusCode >= 400 {
+		return errors.New("request failed with status: " + response.Status)
+	}
+
 	data, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
 
-	// fmt.Println(string(data))
 	return Resolve(c, data, callbacks...)
 }
 

@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
@@ -233,6 +234,7 @@ func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
 }
 
 // SendToFollowers will send an arbitrary payload to all follower inboxes.
+// Requests are batched to prevent resource exhaustion when there are many followers.
 func SendToFollowers(payload []byte) error {
 	configRepository := configrepository.Get()
 	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
@@ -243,8 +245,28 @@ func SendToFollowers(payload []byte) error {
 		return errors.New("unable to fetch followers to send payload to")
 	}
 
-	for _, follower := range followers {
-		inbox, _ := url.Parse(follower.Inbox)
+	// Batch size and delay to prevent resource exhaustion during delivery.
+	// This spreads CPU load from cryptographic signing over time.
+	const batchSize = 50
+	const batchDelay = 100 * time.Millisecond
+
+	queued := 0
+	skipped := 0
+
+	for i, follower := range followers {
+		inbox, err := url.Parse(follower.Inbox)
+		if err != nil {
+			log.Errorln("unable to parse follower inbox URL", follower.Inbox, err)
+			continue
+		}
+
+		// Pre-check circuit breaker BEFORE expensive cryptographic signing.
+		// This saves CPU cycles for domains we know are failing.
+		if workerpool.ShouldSkipDomain(inbox.Host) {
+			skipped++
+			continue
+		}
+
 		req, err := crypto.CreateSignedRequest(payload, inbox, localActor)
 		if err != nil {
 			log.Errorln("unable to create outbox request", follower.Inbox, err)
@@ -252,7 +274,21 @@ func SendToFollowers(payload []byte) error {
 		}
 
 		workerpool.AddToOutboundQueue(req)
+		queued++
+
+		// Add a small delay between batches to spread out CPU and network load.
+		// This helps prevent ActivityPub delivery from competing with video encoding.
+		// Use queued count (not loop index) to ensure consistent rate limiting
+		// even when followers are skipped due to circuit breaker or parse errors.
+		if queued%batchSize == 0 && i+1 < len(followers) {
+			time.Sleep(batchDelay)
+		}
 	}
+
+	if skipped > 0 {
+		log.Debugf("Skipped %d followers due to circuit breaker, queued %d", skipped, queued)
+	}
+
 	return nil
 }
 
