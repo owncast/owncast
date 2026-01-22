@@ -14,14 +14,14 @@ NC='\033[0m'
 log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-if [[ $EUID -ne 0 ]]; then
+if [[ ${EUID} -ne 0 ]]; then
     log_error "This script must be run as root (sudo ./setup.sh)"
     exit 1
 fi
 
 # Get the actual user who ran sudo
-ACTUAL_USER="${SUDO_USER:-$USER}"
-ACTUAL_HOME=$(getent passwd "$ACTUAL_USER" | cut -d: -f6)
+ACTUAL_USER="${SUDO_USER:-${USER}}"
+ACTUAL_HOME=$(getent passwd "${ACTUAL_USER}" | cut -d: -f6)
 
 log_info "Setting up ActivityPub federation test environment..."
 
@@ -36,16 +36,16 @@ fi
 
 # 2. Install CA into system trust store
 log_info "Installing mkcert CA into system trust store..."
-sudo -u "$ACTUAL_USER" CAROOT="$ACTUAL_HOME/.local/share/mkcert" mkcert -install
+sudo -u "${ACTUAL_USER}" CAROOT="${ACTUAL_HOME}/.local/share/mkcert" mkcert -install
 
 # 3. Generate certificates
 log_info "Generating certificates..."
-mkdir -p "$SCRIPT_DIR/certs"
-sudo -u "$ACTUAL_USER" CAROOT="$ACTUAL_HOME/.local/share/mkcert" mkcert \
-    -cert-file "$SCRIPT_DIR/certs/cert.pem" \
-    -key-file "$SCRIPT_DIR/certs/key.pem" \
+mkdir -p "${SCRIPT_DIR}/certs"
+sudo -u "${ACTUAL_USER}" CAROOT="${ACTUAL_HOME}/.local/share/mkcert" mkcert \
+    -cert-file "${SCRIPT_DIR}/certs/cert.pem" \
+    -key-file "${SCRIPT_DIR}/certs/key.pem" \
     owncast.local snac.local localhost 127.0.0.1
-chown "$ACTUAL_USER:$ACTUAL_USER" "$SCRIPT_DIR/certs"/*
+chown "${ACTUAL_USER}:${ACTUAL_USER}" "${SCRIPT_DIR}/certs"/*
 
 # 4. Add hosts entries
 if ! grep -q "owncast.local" /etc/hosts; then
@@ -61,7 +61,7 @@ if ! command -v snac &> /dev/null; then
     log_error "See: https://codeberg.org/grunfink/snac2"
     exit 1
 else
-    log_info "snac2 found: $(which snac)"
+    log_info "snac2 found: $(command -v snac)"
 fi
 
 # 6. Install Caddy
@@ -72,12 +72,12 @@ if ! command -v caddy &> /dev/null; then
     chmod +x /usr/local/bin/caddy
     log_info "Caddy installed"
 else
-    log_info "Caddy already installed: $(which caddy)"
+    log_info "Caddy already installed: $(command -v caddy)"
 fi
 
 echo ""
 log_info "Setup complete!"
 echo ""
 echo "You can now run the test:"
-echo "  cd $SCRIPT_DIR"
+echo "  cd ${SCRIPT_DIR}"
 echo "  ./run.sh"

@@ -11,4 +11,4 @@
 #   Add to /etc/hosts: 127.0.0.1 owncast.local snac.local
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "$SCRIPT_DIR/test-federation.sh" "$@"
+exec "${SCRIPT_DIR}/test-federation.sh" "$@"
