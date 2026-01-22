@@ -49,7 +49,7 @@
     "i18next-scanner": "^4.6.0",
     "interweave": "^13.0.0",
     "interweave-autolink": "^5.1.0",
-    "lodash": "4.17.21",
+    "lodash": "4.17.23",
     "next": "14.2.35",
     "next-export-i18n": "2.3.5",
     "next-pwa": "^5.6.0",
