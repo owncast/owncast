@@ -41,11 +41,11 @@ sudo -u "${ACTUAL_USER}" CAROOT="${ACTUAL_HOME}/.local/share/mkcert" mkcert -ins
 # 3. Generate certificates
 log_info "Generating certificates..."
 mkdir -p "${SCRIPT_DIR}/certs"
+chown "${ACTUAL_USER}:${ACTUAL_USER}" "${SCRIPT_DIR}/certs"
 sudo -u "${ACTUAL_USER}" CAROOT="${ACTUAL_HOME}/.local/share/mkcert" mkcert \
     -cert-file "${SCRIPT_DIR}/certs/cert.pem" \
     -key-file "${SCRIPT_DIR}/certs/key.pem" \
     owncast.local snac.local localhost 127.0.0.1
-chown "${ACTUAL_USER}:${ACTUAL_USER}" "${SCRIPT_DIR}/certs"/*
 
 # 4. Add hosts entries
 if ! grep -q "owncast.local" /etc/hosts; then
