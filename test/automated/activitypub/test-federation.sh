@@ -682,21 +682,32 @@ main() {
     echo "----------------------------------------"
     send_follow_requests
 
-    # First check - may take time for follows to process
-    local followers
-    followers=$(verify_followers)
+    # Wait for all followers to be registered (with timeout)
+    local followers=0
+    local max_wait=60  # Maximum seconds to wait for followers
+    local waited=0
+    local check_interval=2
 
-    # If no followers yet, wait longer and check again
-    if [[ "$followers" -eq 0 ]]; then
-        log_info "No followers yet, waiting 10 more seconds..."
-        sleep 10
+    log_info "Waiting for $USER_COUNT followers to be registered..."
+    while [[ "$followers" -lt "$USER_COUNT" ]] && [[ "$waited" -lt "$max_wait" ]]; do
+        sleep "$check_interval"
+        waited=$((waited + check_interval))
         followers=$(verify_followers)
-    fi
+        if [[ "$followers" -lt "$USER_COUNT" ]]; then
+            log_info "Followers registered: $followers/$USER_COUNT (waited ${waited}s)"
+        fi
+    done
 
     if [[ "$followers" -eq 0 ]]; then
         log_error "No followers registered - cannot proceed with message delivery test"
         print_results "$followers" 0
         exit 1
+    fi
+
+    if [[ "$followers" -lt "$USER_COUNT" ]]; then
+        log_warn "Only $followers/$USER_COUNT followers registered after ${max_wait}s timeout"
+    else
+        log_info "All $followers followers registered"
     fi
     echo ""
 
@@ -735,11 +746,27 @@ main() {
     fi
 
     # Exit with appropriate code
-    if [[ "$delivery_success" -eq 1 ]] && [[ "$delivered" -eq "$followers" ]]; then
-        exit 0
-    else
+    # All conditions must be met:
+    # 1. All follow requests succeeded (followers == USER_COUNT)
+    # 2. Message delivery completed successfully
+    # 3. All followers received the message (delivered == followers)
+    if [[ "$followers" -ne "$USER_COUNT" ]]; then
+        log_error "Follow count mismatch: expected $USER_COUNT, got $followers"
         exit 1
     fi
+
+    if [[ "$delivery_success" -ne 1 ]]; then
+        log_error "Message delivery failed"
+        exit 1
+    fi
+
+    if [[ "$delivered" -ne "$followers" ]]; then
+        log_error "Delivery count mismatch: expected $followers, got $delivered"
+        exit 1
+    fi
+
+    log_info "All tests passed"
+    exit 0
 }
 
 main "$@"
