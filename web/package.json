@@ -103,7 +103,7 @@
     "babel-loader": "10.0.0",
     "chromatic": "13.3.5",
     "css-loader": "7.1.2",
-    "cypress": "^14.0.0",
+    "cypress": "^15.0.0",
     "eslint": "8.57.1",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-next": "14.2.35",
