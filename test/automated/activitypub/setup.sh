@@ -64,6 +64,17 @@ else
     log_info "snac2 found: $(which snac)"
 fi
 
+# 6. Install Caddy
+if ! command -v caddy &> /dev/null; then
+    log_info "Installing Caddy..."
+    CADDY_VERSION="2.8.4"
+    curl -sL "https://github.com/caddyserver/caddy/releases/download/v${CADDY_VERSION}/caddy_${CADDY_VERSION}_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin caddy
+    chmod +x /usr/local/bin/caddy
+    log_info "Caddy installed"
+else
+    log_info "Caddy already installed: $(which caddy)"
+fi
+
 echo ""
 log_info "Setup complete!"
 echo ""

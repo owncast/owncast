@@ -1,0 +1,35 @@
+# Caddyfile for ActivityPub federation testing
+# Routes requests to owncast.local and snac.local to their respective backends
+
+{
+	# Disable automatic HTTPS since we use mkcert certificates
+	auto_https off
+	# Disable admin API
+	admin off
+	# Suppress logging
+	log {
+		level error
+	}
+}
+
+# HTTPS listener using mkcert certificates
+https://:{$PROXY_PORT} {
+	tls {$CERT_FILE} {$KEY_FILE}
+
+	# Route based on Host header
+	@owncast host owncast.local
+	@snac host snac.local
+
+	handle @owncast {
+		reverse_proxy localhost:{$OWNCAST_PORT}
+	}
+
+	handle @snac {
+		reverse_proxy localhost:{$SNAC_PORT}
+	}
+
+	# Default: return error for unknown hosts
+	handle {
+		respond "Unknown host" 404
+	}
+}

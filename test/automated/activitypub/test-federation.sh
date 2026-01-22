@@ -244,26 +244,47 @@ create_snac_users() {
 }
 
 start_proxy() {
-    log_info "Starting HTTPS reverse proxy..."
+    log_info "Starting HTTPS reverse proxy (Caddy)..."
 
-    node "$SCRIPT_DIR/local-proxy.js" \
-        --port=$PROXY_PORT \
-        --owncast-port=$OWNCAST_PORT \
-        --snac-port=$SNAC_PORT \
-        --cert="$CERT_DIR/cert.pem" \
-        --key="$CERT_DIR/key.pem" &
+    # Check if caddy is installed
+    if ! command -v caddy &> /dev/null; then
+        log_error "Caddy is not installed. Please install it: https://caddyserver.com/docs/install"
+        return 1
+    fi
+
+    # Set environment variables for Caddyfile
+    export PROXY_PORT="$PROXY_PORT"
+    export OWNCAST_PORT="$OWNCAST_PORT"
+    export SNAC_PORT="$SNAC_PORT"
+    export CERT_FILE="$CERT_DIR/cert.pem"
+    export KEY_FILE="$CERT_DIR/key.pem"
+
+    caddy run --config "$SCRIPT_DIR/Caddyfile" --adapter caddyfile &
     PROXY_PID=$!
 
-    log_info "Proxy started with PID $PROXY_PID"
+    log_info "Caddy started with PID $PROXY_PID"
     sleep 2
 
     # Verify proxy is running
     if ! kill -0 "$PROXY_PID" 2>/dev/null; then
-        log_error "Proxy failed to start"
+        log_error "Caddy failed to start"
         return 1
     fi
 
-    log_info "Proxy is ready"
+    # Verify proxy is accepting connections
+    local max_attempts=10
+    local attempt=0
+    while [[ $attempt -lt $max_attempts ]]; do
+        if curl -sk "https://127.0.0.1:$PROXY_PORT/" > /dev/null 2>&1; then
+            log_info "Caddy proxy is ready"
+            return 0
+        fi
+        attempt=$((attempt + 1))
+        sleep 1
+    done
+
+    log_error "Caddy proxy did not become ready"
+    return 1
 }
 
 start_snac2() {

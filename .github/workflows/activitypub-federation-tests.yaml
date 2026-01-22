@@ -33,14 +33,17 @@ jobs:
           go-version: "^1.23"
           cache: true
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+      - name: Install Caddy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https curl
+          curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+          curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+          sudo apt-get update
+          sudo apt-get install -y caddy
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
           sudo apt-get install -y snac2 ffmpeg
 
       - name: Run setup

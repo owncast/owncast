@@ -51,6 +51,17 @@ make
 sudo make install
 ```
 
+### 6. Install Caddy
+
+Caddy is used as the HTTPS reverse proxy for TLS termination. It will be installed automatically by `setup.sh`, or you can install it manually:
+
+```bash
+# Download binary directly
+curl -sL "https://github.com/caddyserver/caddy/releases/download/v2.8.4/caddy_2.8.4_linux_amd64.tar.gz" | sudo tar -xz -C /usr/local/bin caddy
+
+# Or see: https://caddyserver.com/docs/install
+```
+
 ## Running the Test
 
 ```bash
@@ -111,7 +122,7 @@ Make sure you ran `mkcert -install` and generated the certificates. The CA must 
 Kill any leftover processes:
 ```bash
 pkill -f "snac httpd /tmp"
-pkill -f "local-proxy.js"
+pkill -f "caddy run"
 ```
 
 ### Hosts file not configured
