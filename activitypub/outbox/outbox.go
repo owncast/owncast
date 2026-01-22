@@ -263,6 +263,18 @@ func SendToFollowers(payload []byte) error {
 			continue
 		}
 
+		// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
+		// A malicious remote actor could set their inbox to an internal address
+		// to trick this server into making requests to internal services.
+		if inbox.Scheme != "https" {
+			log.Warnln("rejecting non-HTTPS inbox URL for SSRF protection:", inboxURL)
+			continue
+		}
+		if utils.IsHostnameInternal(inbox.Hostname()) {
+			log.Warnln("rejecting internal/loopback inbox URL for SSRF protection:", inboxURL)
+			continue
+		}
+
 		// Pre-check circuit breaker BEFORE expensive cryptographic signing.
 		// This saves CPU cycles for domains we know are failing.
 		if workerpool.ShouldSkipDomain(inbox.Host) {
@@ -297,6 +309,14 @@ func SendToFollowers(payload []byte) error {
 
 // SendToUser will send a payload to a single specific inbox.
 func SendToUser(inbox *url.URL, payload []byte) error {
+	// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
+	if inbox.Scheme != "https" {
+		return errors.Errorf("rejecting non-HTTPS inbox URL for SSRF protection: %s", inbox.String())
+	}
+	if utils.IsHostnameInternal(inbox.Hostname()) {
+		return errors.Errorf("rejecting internal/loopback inbox URL for SSRF protection: %s", inbox.String())
+	}
+
 	configRepository := configrepository.Get()
 	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 

@@ -292,7 +292,7 @@ func (r *SqlFollowersRepository) Update(actorIRI string, inbox string, sharedInb
 
 	tx, err := r.datastore.DB.Begin()
 	if err != nil {
-		log.Debugln(err)
+		return errors.Wrap(err, "error beginning transaction")
 	}
 	defer func() {
 		_ = tx.Rollback()
@@ -315,7 +315,7 @@ func (r *SqlFollowersRepository) Update(actorIRI string, inbox string, sharedInb
 func (r *SqlFollowersRepository) createFollow(actor, inbox, sharedInbox, request, name, username, image string, requestObject []byte, approved bool) error {
 	tx, err := r.datastore.DB.Begin()
 	if err != nil {
-		log.Debugln(err)
+		return errors.Wrap(err, "error beginning transaction")
 	}
 	defer func() {
 		_ = tx.Rollback()
