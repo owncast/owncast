@@ -4,6 +4,7 @@
 CREATE TABLE IF NOT EXISTS ap_followers (
 		"iri" TEXT NOT NULL,
 		"inbox" TEXT NOT NULL,
+		"shared_inbox" TEXT,
 		"name" TEXT,
 		"username" TEXT NOT NULL,
 		"image" TEXT,

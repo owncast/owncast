@@ -15,6 +15,7 @@ require (
 	github.com/go-fed/httpsig v1.1.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/grafov/m3u8 v0.12.1
+	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/jellydator/ttlcache/v3 v3.4.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/mattn/go-sqlite3 v1.14.33
@@ -55,7 +56,6 @@ require (
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
@@ -79,4 +79,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/go-fed/activity => github.com/owncast/activity v1.0.1-0.20260121052038-3b267f104359
+replace github.com/go-fed/activity => github.com/owncast/activity v1.0.1-0.20260122170223-675f6eb53e71

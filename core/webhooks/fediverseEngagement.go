@@ -2,14 +2,15 @@ package webhooks
 
 import (
 	"github.com/owncast/owncast/activitypub/events"
-	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/models"
 )
 
 // SendFediverseEventFollow will send a user followed event to webhook
 // destinations.
 func SendFediverseEngagementFollowEvent(iri string) {
-	follower, err := persistence.GetFollower(iri)
+	followersRepo := followersrepository.Get()
+	follower, err := followersRepo.GetByIRI(iri)
 	if err != nil {
 		return
 	}

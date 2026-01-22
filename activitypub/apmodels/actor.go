@@ -26,6 +26,8 @@ type ActivityPubActor struct {
 	FollowRequestIri *url.URL
 	// Inbox is the inbox URL of the remote follower
 	Inbox *url.URL
+	// SharedInbox is the shared inbox URL of the remote server (optional)
+	SharedInbox *url.URL
 	// Image is the avatar image of the Actor.
 	Image *url.URL
 	// DisabledAt is the time, if any, this follower was blocked/removed.
@@ -74,6 +76,14 @@ func (a *ActivityPubActor) InboxString() string {
 	return a.Inbox.String()
 }
 
+// SharedInboxString returns the string representation of SharedInbox, or empty string if nil.
+func (a *ActivityPubActor) SharedInboxString() string {
+	if a.SharedInbox == nil {
+		return ""
+	}
+	return a.SharedInbox.String()
+}
+
 // ImageString returns the string representation of Image, or empty string if nil.
 func (a *ActivityPubActor) ImageString() string {
 	if a.Image == nil {
@@ -113,49 +123,68 @@ func NewActivityPubActor(actorIri, inbox *url.URL) (*ActivityPubActor, error) {
 	}, nil
 }
 
+// validateEntityRequiredFields checks that all required fields are present on the entity.
+func validateEntityRequiredFields(entity ExternalEntity) error {
+	if entity.GetJSONLDId() == nil || entity.GetJSONLDId().Get() == nil {
+		return fmt.Errorf("%w: entity is missing actor IRI", ErrActorMissingRequiredField)
+	}
+	if entity.GetActivityStreamsInbox() == nil || entity.GetActivityStreamsInbox().GetIRI() == nil {
+		return fmt.Errorf("%w: entity is missing inbox", ErrActorMissingRequiredField)
+	}
+	if entity.GetActivityStreamsPreferredUsername() == nil || entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString() == "" {
+		return fmt.Errorf("%w: entity is missing preferred username", ErrActorMissingRequiredField)
+	}
+	if entity.GetW3IDSecurityV1PublicKey() == nil || entity.GetW3IDSecurityV1PublicKey().Len() == 0 {
+		return fmt.Errorf("%w: entity is missing public key", ErrActorMissingRequiredField)
+	}
+	return nil
+}
+
+// getNameFromEntity extracts the optional name from an entity.
+func getNameFromEntity(entity ExternalEntity) string {
+	nameProp := entity.GetActivityStreamsName()
+	if nameProp == nil || nameProp.Empty() {
+		return ""
+	}
+	return nameProp.At(0).GetXMLSchemaString()
+}
+
+// getSharedInboxFromEntity extracts the optional shared inbox URL from an entity.
+func getSharedInboxFromEntity(entity ExternalEntity) *url.URL {
+	endpointsProp := entity.GetActivityStreamsEndpoints()
+	if endpointsProp == nil || !endpointsProp.IsActivityStreamsEndpoints() {
+		return nil
+	}
+
+	endpoints := endpointsProp.Get()
+	if endpoints == nil {
+		return nil
+	}
+
+	sharedInboxProp := endpoints.GetActivityStreamsSharedInbox()
+	if sharedInboxProp == nil || !sharedInboxProp.HasAny() {
+		return nil
+	}
+
+	return sharedInboxProp.Get()
+}
+
 // NewActivityPubActorFromEntity creates a new ActivityPubActor from an external entity
 // with validation of required fields.
 func NewActivityPubActorFromEntity(entity ExternalEntity) (*ActivityPubActor, error) {
-	// ActorIri is required (must validate before GetFullUsernameFromExternalEntity which uses it)
-	if entity.GetJSONLDId() == nil || entity.GetJSONLDId().Get() == nil {
-		return nil, fmt.Errorf("%w: entity is missing actor IRI", ErrActorMissingRequiredField)
+	if err := validateEntityRequiredFields(entity); err != nil {
+		return nil, err
 	}
-	actorIri := entity.GetJSONLDId().Get()
-
-	// Inbox is required
-	if entity.GetActivityStreamsInbox() == nil || entity.GetActivityStreamsInbox().GetIRI() == nil {
-		return nil, fmt.Errorf("%w: entity is missing inbox", ErrActorMissingRequiredField)
-	}
-	inbox := entity.GetActivityStreamsInbox().GetIRI()
-
-	// Username is required (but not a part of the official ActivityPub spec)
-	if entity.GetActivityStreamsPreferredUsername() == nil || entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString() == "" {
-		return nil, fmt.Errorf("%w: entity is missing preferred username", ErrActorMissingRequiredField)
-	}
-	username := GetFullUsernameFromExternalEntity(entity)
-
-	// Key is required
-	if entity.GetW3IDSecurityV1PublicKey() == nil || entity.GetW3IDSecurityV1PublicKey().Len() == 0 {
-		return nil, fmt.Errorf("%w: entity is missing public key", ErrActorMissingRequiredField)
-	}
-
-	// Name is optional
-	var name string
-	if entity.GetActivityStreamsName() != nil && !entity.GetActivityStreamsName().Empty() {
-		name = entity.GetActivityStreamsName().At(0).GetXMLSchemaString()
-	}
-
-	// Image is optional
-	image := GetImageFromIcon(entity.GetActivityStreamsIcon())
 
 	apActor := &ActivityPubActor{
-		ActorIri:                actorIri,
-		Inbox:                   inbox,
-		Name:                    name,
+		ActorIri:                entity.GetJSONLDId().Get(),
+		Inbox:                   entity.GetActivityStreamsInbox().GetIRI(),
+		SharedInbox:             getSharedInboxFromEntity(entity),
+		Name:                    getNameFromEntity(entity),
 		Username:                entity.GetActivityStreamsPreferredUsername().GetXMLSchemaString(),
-		FullUsername:            username,
+		FullUsername:            GetFullUsernameFromExternalEntity(entity),
 		W3IDSecurityV1PublicKey: entity.GetW3IDSecurityV1PublicKey(),
-		Image:                   image,
+		Image:                   GetImageFromIcon(entity.GetActivityStreamsIcon()),
 	}
 
 	return apActor, nil
@@ -174,6 +203,7 @@ type ExternalEntity interface {
 	GetActivityStreamsPreferredUsername() vocab.ActivityStreamsPreferredUsernameProperty
 	GetActivityStreamsIcon() vocab.ActivityStreamsIconProperty
 	GetW3IDSecurityV1PublicKey() vocab.W3IDSecurityV1PublicKeyProperty
+	GetActivityStreamsEndpoints() vocab.ActivityStreamsEndpointsProperty
 }
 
 // MakeActorPropertyWithID will return an actor property filled with the provided IRI.

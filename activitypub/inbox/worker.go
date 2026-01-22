@@ -13,7 +13,7 @@ import (
 
 	"github.com/go-fed/httpsig"
 	"github.com/owncast/owncast/activitypub/apmodels"
-	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/persistence/configrepository"
 
@@ -148,7 +148,8 @@ func isBlockedDomain(domain string) bool {
 }
 
 func isBlockedActor(actorIRI *url.URL) (bool, error) {
-	blockedactor, err := persistence.GetFollower(actorIRI.String())
+	followersRepo := followersrepository.Get()
+	blockedactor, err := followersRepo.GetByIRI(actorIRI.String())
 
 	if blockedactor != nil && blockedactor.DisabledAt != nil {
 		return true, errors.Wrap(err, "remote actor is blocked")

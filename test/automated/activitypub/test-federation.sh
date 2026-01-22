@@ -37,6 +37,7 @@ OWNCAST_HOSTNAME="owncast.local"
 ADMIN_USER="admin"
 ADMIN_PASS="abc123"
 FEDERATION_USERNAME="streamer"
+CLEAR_SHARED_INBOX_PERCENT="${CLEAR_SHARED_INBOX_PERCENT:-30}"  # Percentage of followers to clear shared_inbox (0 = none)
 
 # URLs (HTTPS via proxy)
 SNAC_URL="https://${SNAC_HOSTNAME}:${PROXY_PORT}"
@@ -59,13 +60,13 @@ SNAC_USERNAMES=()
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m'
 
 log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
-log_test() { echo -e "${BLUE}[TEST]${NC} $1"; }
+log_test() { echo -e "${CYAN}[TEST]${NC} $1"; }
 
 kill_leftover_processes() {
     # Kill any leftover test processes from previous runs
@@ -213,6 +214,44 @@ init_snac2() {
     log_info "snac2 initialized"
 }
 
+enable_snac_shared_inbox() {
+    log_info "Enabling shared_inboxes in snac2 configuration..."
+
+    local server_json="${SNAC_DATA_DIR}/server.json"
+
+    if [[ ! -f "${server_json}" ]]; then
+        log_error "server.json not found at ${server_json}"
+        return 1
+    fi
+
+    # Use jq if available, otherwise use Python as a fallback
+    if command -v jq &> /dev/null; then
+        local tmp_file
+        tmp_file=$(mktemp)
+        jq '. + {"shared_inboxes": true}' "${server_json}" > "${tmp_file}" && mv "${tmp_file}" "${server_json}"
+    elif command -v python3 &> /dev/null; then
+        python3 -c "
+import json
+with open('${server_json}', 'r') as f:
+    data = json.load(f)
+data['shared_inboxes'] = True
+with open('${server_json}', 'w') as f:
+    json.dump(data, f, indent=2)
+"
+    else
+        log_error "Neither jq nor python3 available to modify server.json"
+        return 1
+    fi
+
+    # Verify the setting was applied
+    if grep -q '"shared_inboxes"' "${server_json}"; then
+        log_info "shared_inboxes enabled in snac2 configuration"
+    else
+        log_error "Failed to enable shared_inboxes"
+        return 1
+    fi
+}
+
 create_snac_users() {
     log_info "Creating ${USER_COUNT} users in snac2 using snac adduser..."
 
@@ -263,7 +302,9 @@ start_proxy() {
     export CERT_FILE="${CERT_DIR}/cert.pem"
     export KEY_FILE="${CERT_DIR}/key.pem"
 
-    caddy run --config "${SCRIPT_DIR}/Caddyfile" --adapter caddyfile &
+    # Redirect caddy output to a log file to reduce test noise
+    local caddy_log="${TEMP_DIR}/caddy.log"
+    caddy run --config "${SCRIPT_DIR}/Caddyfile" --adapter caddyfile > "${caddy_log}" 2>&1 &
     PROXY_PID=$!
 
     log_info "Caddy started with PID ${PROXY_PID}"
@@ -295,8 +336,11 @@ start_snac2() {
     log_info "Starting snac2 server..."
 
     # mkcert certificates are trusted system-wide, no special env vars needed
-    "${SNAC_BIN}" httpd "${SNAC_DATA_DIR}" &
+    # Redirect snac2 output to a log file to reduce test noise
+    local snac_log="${TEMP_DIR}/snac2.log"
+    DEBUG=0 "${SNAC_BIN}" httpd "${SNAC_DATA_DIR}" > "${snac_log}" 2>&1 &
     SNAC_PID=$!
+    log_info "snac2 logs available at: ${snac_log}"
 
     log_info "snac2 started with PID ${SNAC_PID}"
 
@@ -315,6 +359,32 @@ start_snac2() {
 
     log_error "snac2 did not become ready"
     return 1
+}
+
+verify_snac_shared_inbox() {
+    log_info "Verifying snac2 actors have sharedInbox endpoint..."
+
+    # Get the first test user to check their actor object
+    if [[ ${#SNAC_USERNAMES[@]} -eq 0 ]]; then
+        log_warn "No snac2 users created yet, skipping sharedInbox verification"
+        return 0
+    fi
+
+    local test_user="${SNAC_USERNAMES[0]}"
+    local actor_url="${SNAC_URL}/${test_user}"
+
+    # Fetch the actor object and check for sharedInbox
+    local actor_response
+    actor_response=$(curl -s --max-time 10 -H "Accept: application/activity+json" "${actor_url}" 2>&1)
+
+    if echo "${actor_response}" | grep -q '"sharedInbox"'; then
+        log_info "sharedInbox endpoint found in snac2 actor objects"
+        return 0
+    else
+        log_error "sharedInbox endpoint NOT found in snac2 actor objects"
+        log_error "Actor response: ${actor_response}"
+        return 1
+    fi
 }
 
 build_owncast() {
@@ -567,6 +637,51 @@ check_snac_inboxes() {
     echo "${users_with_messages}"
 }
 
+# Count followers with shared_inbox set vs those with individual inboxes only
+count_shared_inbox_followers() {
+    local shared_count
+    shared_count=$(sqlite3 "${OWNCAST_DB}" "SELECT COUNT(*) FROM ap_followers WHERE shared_inbox IS NOT NULL AND shared_inbox != '';" 2>/dev/null || echo "0")
+    echo "${shared_count}"
+}
+
+count_individual_inbox_followers() {
+    local individual_count
+    individual_count=$(sqlite3 "${OWNCAST_DB}" "SELECT COUNT(*) FROM ap_followers WHERE shared_inbox IS NULL OR shared_inbox = '';" 2>/dev/null || echo "0")
+    echo "${individual_count}"
+}
+
+# Clear shared_inbox from a percentage of followers to test mixed delivery
+clear_some_shared_inboxes() {
+    local percentage=${1:-50}  # Default to 50% of followers
+
+    log_info "Clearing shared_inbox from ${percentage}% of followers to test mixed delivery..."
+
+    # Get total follower count
+    local total_followers
+    total_followers=$(sqlite3 "${OWNCAST_DB}" "SELECT COUNT(*) FROM ap_followers;" 2>/dev/null || echo "0")
+
+    if [[ "${total_followers}" -eq 0 ]]; then
+        log_warn "No followers found in database"
+        return 1
+    fi
+
+    # Calculate how many to clear
+    local clear_count=$((total_followers * percentage / 100))
+
+    log_info "Total followers: ${total_followers}, clearing shared_inbox from ${clear_count} followers"
+
+    # Clear shared_inbox from a random subset of followers
+    # SQLite's RANDOM() function helps select random rows
+    sqlite3 "${OWNCAST_DB}" "UPDATE ap_followers SET shared_inbox = NULL WHERE iri IN (SELECT iri FROM ap_followers ORDER BY RANDOM() LIMIT ${clear_count});"
+
+    local shared_remaining
+    shared_remaining=$(count_shared_inbox_followers)
+    local individual_count
+    individual_count=$(count_individual_inbox_followers)
+
+    log_info "After clearing: ${shared_remaining} followers with shared_inbox, ${individual_count} with individual inbox only"
+}
+
 verify_all_followers_received_message() {
     local followers=$1
     local max_wait=${2:-60}
@@ -624,12 +739,20 @@ print_results() {
     local delivered=$2
     local delivery_time=$3
 
+    # Get shared inbox vs individual inbox counts
+    local shared_inbox_count
+    shared_inbox_count=$(count_shared_inbox_followers)
+    local individual_inbox_count
+    individual_inbox_count=$(count_individual_inbox_followers)
+
     echo ""
     echo "========================================"
     echo "ActivityPub Federation Test Results"
     echo "========================================"
     echo "Test Users Created:   ${USER_COUNT}"
     echo "Followers Registered: ${followers}"
+    echo "  - Shared Inbox:     ${shared_inbox_count}"
+    echo "  - Individual Inbox: ${individual_inbox_count}"
     echo "Messages Delivered:   ${delivered}"
     if [[ -n "${delivery_time}" ]] && [[ "${delivery_time}" -gt 0 ]]; then
         echo "Delivery Time:        ${delivery_time}s"
@@ -676,6 +799,9 @@ main() {
     log_info "Configuration: ${USER_COUNT} test users"
     log_info "Owncast URL: ${OWNCAST_URL}"
     log_info "snac2 URL: ${SNAC_URL}"
+    if [[ "${CLEAR_SHARED_INBOX_PERCENT}" -gt 0 ]]; then
+        log_info "Mixed delivery test: ${CLEAR_SHARED_INBOX_PERCENT}% of followers will use individual inbox"
+    fi
     echo ""
 
     # ==========================================
@@ -689,9 +815,11 @@ main() {
     install_snac2
     check_certs
     init_snac2
+    enable_snac_shared_inbox
     create_snac_users
     start_proxy
     start_snac2
+    verify_snac_shared_inbox
     echo ""
 
     # ==========================================
@@ -743,6 +871,15 @@ main() {
         log_warn "Only ${followers}/${USER_COUNT} followers registered after ${max_wait}s timeout"
     else
         log_info "All ${followers} followers registered"
+    fi
+
+    # Optionally clear shared_inbox from some followers to test mixed delivery
+    if [[ "${CLEAR_SHARED_INBOX_PERCENT}" -gt 0 ]]; then
+        echo ""
+        echo "----------------------------------------"
+        echo "STEP 3.5: Clear shared_inbox from ${CLEAR_SHARED_INBOX_PERCENT}% of followers"
+        echo "----------------------------------------"
+        clear_some_shared_inboxes "${CLEAR_SHARED_INBOX_PERCENT}"
     fi
     echo ""
 

@@ -29,6 +29,7 @@ func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) 
 		ActorIri:         person.ActorIri,
 		FollowRequestIri: activity.GetJSONLDId().Get(),
 		Inbox:            person.Inbox,
+		SharedInbox:      person.SharedInbox,
 		Name:             person.Name,
 		Username:         fullUsername,
 		Image:            person.Image,

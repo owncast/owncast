@@ -13,6 +13,7 @@ import (
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/activitypub/webfinger"
@@ -234,15 +235,17 @@ func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
 }
 
 // SendToFollowers will send an arbitrary payload to all follower inboxes.
-// Requests are batched to prevent resource exhaustion when there are many followers.
+// It uses shared inboxes when available to reduce the number of outbound requests.
 func SendToFollowers(payload []byte) error {
 	configRepository := configrepository.Get()
+	followersRepo := followersrepository.Get()
 	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 
-	followers, _, err := persistence.GetFederationFollowers(-1, 0)
+	// Get unique delivery inboxes (prefers shared inboxes over individual inboxes)
+	inboxes, err := followersRepo.GetUniqueDeliveryInboxes()
 	if err != nil {
-		log.Errorln("unable to fetch followers to send to", err)
-		return errors.New("unable to fetch followers to send payload to")
+		log.Errorln("unable to fetch delivery inboxes", err)
+		return errors.New("unable to fetch delivery inboxes to send payload to")
 	}
 
 	// Batch size and delay to prevent resource exhaustion during delivery.
@@ -253,10 +256,22 @@ func SendToFollowers(payload []byte) error {
 	queued := 0
 	skipped := 0
 
-	for i, follower := range followers {
-		inbox, err := url.Parse(follower.Inbox)
+	for i, inboxURL := range inboxes {
+		inbox, err := url.Parse(inboxURL)
 		if err != nil {
-			log.Errorln("unable to parse follower inbox URL", follower.Inbox, err)
+			log.Warnln("unable to parse inbox URL", inboxURL, err)
+			continue
+		}
+
+		// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
+		// A malicious remote actor could set their inbox to an internal address
+		// to trick this server into making requests to internal services.
+		if inbox.Scheme != "https" {
+			log.Warnln("rejecting non-HTTPS inbox URL for SSRF protection:", inboxURL)
+			continue
+		}
+		if utils.IsHostnameInternal(inbox.Hostname()) {
+			log.Warnln("rejecting internal/loopback inbox URL for SSRF protection:", inboxURL)
 			continue
 		}
 
@@ -269,8 +284,8 @@ func SendToFollowers(payload []byte) error {
 
 		req, err := crypto.CreateSignedRequest(payload, inbox, localActor)
 		if err != nil {
-			log.Errorln("unable to create outbox request", follower.Inbox, err)
-			return errors.New("unable to create outbox request: " + follower.Inbox)
+			log.Errorln("unable to create outbox request", inboxURL, err)
+			continue
 		}
 
 		workerpool.AddToOutboundQueue(req)
@@ -280,7 +295,7 @@ func SendToFollowers(payload []byte) error {
 		// This helps prevent ActivityPub delivery from competing with video encoding.
 		// Use queued count (not loop index) to ensure consistent rate limiting
 		// even when followers are skipped due to circuit breaker or parse errors.
-		if queued%batchSize == 0 && i+1 < len(followers) {
+		if queued%batchSize == 0 && i+1 < len(inboxes) {
 			time.Sleep(batchDelay)
 		}
 	}
@@ -294,6 +309,14 @@ func SendToFollowers(payload []byte) error {
 
 // SendToUser will send a payload to a single specific inbox.
 func SendToUser(inbox *url.URL, payload []byte) error {
+	// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
+	if inbox.Scheme != "https" {
+		return errors.Errorf("rejecting non-HTTPS inbox URL for SSRF protection: %s", inbox.String())
+	}
+	if utils.IsHostnameInternal(inbox.Hostname()) {
+		return errors.Errorf("rejecting internal/loopback inbox URL for SSRF protection: %s", inbox.String())
+	}
+
 	configRepository := configrepository.Get()
 	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 

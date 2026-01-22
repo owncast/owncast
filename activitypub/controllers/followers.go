@@ -14,7 +14,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
-	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/persistence/configrepository"
 )
@@ -60,7 +60,8 @@ func FollowersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getInitialFollowersRequest(r *http.Request) (vocab.ActivityStreamsOrderedCollection, error) {
-	followerCount, _ := persistence.GetFollowerCount()
+	followersRepo := followersrepository.Get()
+	followerCount, _ := followersRepo.GetCount()
 	collection := streams.NewActivityStreamsOrderedCollection()
 	idProperty := streams.NewJSONLDIdProperty()
 	id, err := createPageURL(r, nil)
@@ -93,12 +94,13 @@ func getFollowersPage(page string, r *http.Request) (vocab.ActivityStreamsOrdere
 		return nil, errors.Wrap(err, "unable to parse page number")
 	}
 
-	followerCount, err := persistence.GetFollowerCount()
+	followersRepo := followersrepository.Get()
+	followerCount, err := followersRepo.GetCount()
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to get follower count")
 	}
 
-	followers, _, err := persistence.GetFederationFollowers(followersPageSize, (pageInt-1)*followersPageSize)
+	followers, _, err := followersRepo.GetFollowers(followersPageSize, (pageInt-1)*followersPageSize)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to get federation followers")
 	}

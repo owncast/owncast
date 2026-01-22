@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"math/rand"
 	"net/url"
 	"os"
@@ -420,6 +421,17 @@ func ShuffleStringSlice(s []string) []string {
 // IntPercentage returns  an int percentage of a number.
 func IntPercentage(x, total int) int {
 	return int(float64(x) / float64(total) * 100)
+}
+
+// SafeIntToInt32 safely converts an int to int32, clamping to int32 bounds.
+func SafeIntToInt32(n int) int32 {
+	if n > math.MaxInt32 {
+		return math.MaxInt32
+	}
+	if n < math.MinInt32 {
+		return math.MinInt32
+	}
+	return int32(n)
 }
 
 // DecodeBase64Image decodes a base64 image string into a byte array, returning the extension (including dot) for the content type.
