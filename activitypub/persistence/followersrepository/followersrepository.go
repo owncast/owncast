@@ -313,6 +313,9 @@ func (r *SqlFollowersRepository) Update(actorIRI string, inbox string, sharedInb
 }
 
 func (r *SqlFollowersRepository) createFollow(actor, inbox, sharedInbox, request, name, username, image string, requestObject []byte, approved bool) error {
+	r.datastore.DbLock.Lock()
+	defer r.datastore.DbLock.Unlock()
+
 	tx, err := r.datastore.DB.Begin()
 	if err != nil {
 		return errors.Wrap(err, "error beginning transaction")
@@ -340,7 +343,7 @@ func (r *SqlFollowersRepository) createFollow(actor, inbox, sharedInbox, request
 		Request:       request,
 		RequestObject: requestObject,
 	}); err != nil {
-		log.Errorln("error creating new federation follow: ", err)
+		return errors.Wrap(err, "error creating new federation follow")
 	}
 
 	return tx.Commit()
