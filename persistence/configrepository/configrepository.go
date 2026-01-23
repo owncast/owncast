@@ -67,6 +67,8 @@ type ConfigRepository interface {
 	GetChatSpamProtectionEnabled() bool
 	SetChatSlurFilterEnabled(enabled bool) error
 	GetChatSlurFilterEnabled() bool
+	SetChatRequireAuthentication(enabled bool) error
+	GetChatRequireAuthentication() bool
 	GetExternalActions() []models.ExternalAction
 	SetExternalActions(actions []models.ExternalAction) error
 	SetCustomStyles(styles string) error

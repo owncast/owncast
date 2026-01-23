@@ -397,6 +397,12 @@ func (s *Server) eventReceived(event chatClientEvent) {
 		return
 	}
 
+	// Check if authentication is required for chat
+	if u != nil && configRepository.GetChatRequireAuthentication() && !u.Authenticated && !u.IsModerator() {
+		s.sendActionToClient(c, "Authentication is required to participate in chat.")
+		return
+	}
+
 	var typecheck map[string]interface{}
 	if err := json.Unmarshal(event.data, &typecheck); err != nil {
 		log.Debugln(err)
