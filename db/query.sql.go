@@ -306,9 +306,23 @@ const getFollowerByIRI = `-- name: GetFollowerByIRI :one
 SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = $1
 `
 
-func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (ApFollower, error) {
+type GetFollowerByIRIRow struct {
+	Iri           string
+	Inbox         string
+	SharedInbox   sql.NullString
+	Name          sql.NullString
+	Username      string
+	Image         sql.NullString
+	Request       string
+	RequestObject []byte
+	CreatedAt     sql.NullTime
+	ApprovedAt    sql.NullTime
+	DisabledAt    sql.NullTime
+}
+
+func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (GetFollowerByIRIRow, error) {
 	row := q.db.QueryRowContext(ctx, getFollowerByIRI, iri)
-	var i ApFollower
+	var i GetFollowerByIRIRow
 	err := row.Scan(
 		&i.Iri,
 		&i.Inbox,
@@ -338,6 +352,55 @@ func (q *Queries) GetFollowerCount(ctx context.Context) (int64, error) {
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const getFollowersToValidate = `-- name: GetFollowersToValidate :many
+SELECT iri, inbox, shared_inbox, name, username, image, first_validation_failure_at
+FROM ap_followers
+WHERE approved_at IS NOT NULL AND disabled_at IS NULL
+ORDER BY last_validated_at ASC NULLS FIRST
+LIMIT $1
+`
+
+type GetFollowersToValidateRow struct {
+	Iri                      string
+	Inbox                    string
+	SharedInbox              sql.NullString
+	Name                     sql.NullString
+	Username                 string
+	Image                    sql.NullString
+	FirstValidationFailureAt sql.NullTime
+}
+
+func (q *Queries) GetFollowersToValidate(ctx context.Context, limit int32) ([]GetFollowersToValidateRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFollowersToValidate, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFollowersToValidateRow
+	for rows.Next() {
+		var i GetFollowersToValidateRow
+		if err := rows.Scan(
+			&i.Iri,
+			&i.Inbox,
+			&i.SharedInbox,
+			&i.Name,
+			&i.Username,
+			&i.Image,
+			&i.FirstValidationFailureAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getIPAddressBans = `-- name: GetIPAddressBans :many
@@ -813,5 +876,37 @@ func (q *Queries) UpdateFollowerByIRI(ctx context.Context, arg UpdateFollowerByI
 		arg.Image,
 		arg.Iri,
 	)
+	return err
+}
+
+const updateFollowerValidationFailure = `-- name: UpdateFollowerValidationFailure :exec
+UPDATE ap_followers
+SET last_validated_at = $1, first_validation_failure_at = COALESCE(first_validation_failure_at, $1)
+WHERE iri = $2
+`
+
+type UpdateFollowerValidationFailureParams struct {
+	LastValidatedAt sql.NullTime
+	Iri             string
+}
+
+func (q *Queries) UpdateFollowerValidationFailure(ctx context.Context, arg UpdateFollowerValidationFailureParams) error {
+	_, err := q.db.ExecContext(ctx, updateFollowerValidationFailure, arg.LastValidatedAt, arg.Iri)
+	return err
+}
+
+const updateFollowerValidationSuccess = `-- name: UpdateFollowerValidationSuccess :exec
+UPDATE ap_followers
+SET last_validated_at = $1, first_validation_failure_at = NULL
+WHERE iri = $2
+`
+
+type UpdateFollowerValidationSuccessParams struct {
+	LastValidatedAt sql.NullTime
+	Iri             string
+}
+
+func (q *Queries) UpdateFollowerValidationSuccess(ctx context.Context, arg UpdateFollowerValidationSuccessParams) error {
+	_, err := q.db.ExecContext(ctx, updateFollowerValidationSuccess, arg.LastValidatedAt, arg.Iri)
 	return err
 }

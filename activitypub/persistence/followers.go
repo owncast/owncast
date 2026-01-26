@@ -19,6 +19,8 @@ func createFederationFollowersTable() {
 		"approved_at" TIMESTAMP,
     "disabled_at" TIMESTAMP,
     "request_object" BLOB,
+    "last_validated_at" TIMESTAMP,
+    "first_validation_failure_at" TIMESTAMP,
 		PRIMARY KEY (iri));`
 	_datastore.MustExec(createTableSQL)
 	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_iri ON ap_followers (iri);`)

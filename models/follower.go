@@ -20,4 +20,6 @@ type Follower struct {
 	Timestamp utils.NullTime `json:"timestamp,omitempty"`
 	// DisabledAt is when this follower was rejected or disabled.
 	DisabledAt utils.NullTime `json:"disabledAt,omitempty"`
+	// FirstValidationFailureAt is when consecutive validation failures started.
+	FirstValidationFailureAt utils.NullTime `json:"-"`
 }
