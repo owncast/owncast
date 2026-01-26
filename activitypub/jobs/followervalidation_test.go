@@ -1,7 +1,6 @@
 package jobs
 
 import (
-	"database/sql"
 	"net/url"
 	"os"
 	"testing"
@@ -314,12 +313,12 @@ func TestFollowersOrderedByOldestValidatedFirst(t *testing.T) {
 	// Set different last_validated_at times
 	now := time.Now()
 	_, err := datastore.DB.Exec("UPDATE ap_followers SET last_validated_at = ? WHERE iri = ?",
-		sql.NullTime{Time: now.Add(-3 * time.Hour), Valid: true}, iri1)
+		now.Add(-3*time.Hour), iri1)
 	if err != nil {
 		t.Fatalf("Error updating: %s", err)
 	}
 	_, err = datastore.DB.Exec("UPDATE ap_followers SET last_validated_at = ? WHERE iri = ?",
-		sql.NullTime{Time: now.Add(-1 * time.Hour), Valid: true}, iri2)
+		now.Add(-1*time.Hour), iri2)
 	if err != nil {
 		t.Fatalf("Error updating: %s", err)
 	}
