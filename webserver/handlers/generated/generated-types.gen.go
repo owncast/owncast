@@ -701,7 +701,7 @@ type SetExternalActionsJSONBody struct {
 
 // SetFaviconMultipartBody defines parameters for SetFavicon.
 type SetFaviconMultipartBody struct {
-	// Favicon Favicon file (PNG or ICO, max 100KB)
+	// Favicon Favicon file (PNG or ICO, max 200KB)
 	Favicon *openapi_types.File `json:"favicon,omitempty"`
 }
 
