@@ -108,6 +108,7 @@ func addStaticFileEndpoints(r chi.Router) {
 	r.HandleFunc("/thumbnail.jpg", handlers.GetThumbnail)
 	r.HandleFunc("/preview.gif", handlers.GetPreview)
 	r.HandleFunc("/logo", handlers.GetLogo)
+	r.HandleFunc("/favicon.ico", handlers.GetFavicon)
 	// return a logo that's compatible with external social networks
 	r.HandleFunc("/logo/external", handlers.GetCompatibleLogo)
 

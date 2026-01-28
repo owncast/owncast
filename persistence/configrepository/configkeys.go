@@ -60,4 +60,5 @@ const (
 	streamKeysKey                        = "stream_keys"
 	disableSearchIndexingKey             = "disable_search_indexing"
 	videoServingEndpointKey              = "video_serving_endpoint"
+	faviconPathKey                       = "favicon_path"
 )

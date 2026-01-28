@@ -3,6 +3,7 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/netip"
@@ -280,6 +281,61 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	webutils.WriteSimpleResponse(w, true, "changed")
+}
+
+// SetFavicon will handle a new favicon image file being uploaded.
+func SetFavicon(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	// Parse multipart form with 200KB max
+	if err := r.ParseMultipartForm(200 << 10); err != nil {
+		webutils.WriteSimpleResponse(w, false, "file too large, max 200KB")
+		return
+	}
+
+	file, header, err := r.FormFile("favicon")
+	if err != nil {
+		webutils.WriteSimpleResponse(w, false, "no file provided")
+		return
+	}
+	defer file.Close()
+
+	// Validate content type (PNG or ICO only)
+	contentType := header.Header.Get("Content-Type")
+	var extension string
+	switch contentType {
+	case "image/png":
+		extension = ".png"
+	case "image/x-icon", "image/vnd.microsoft.icon":
+		extension = ".ico"
+	default:
+		webutils.WriteSimpleResponse(w, false, "favicon must be PNG or ICO format")
+		return
+	}
+
+	// Read file content
+	bytes, err := io.ReadAll(file)
+	if err != nil {
+		webutils.WriteSimpleResponse(w, false, "unable to read file")
+		return
+	}
+
+	imgPath := filepath.Join("data", "favicon"+extension)
+	if err := os.WriteFile(imgPath, bytes, 0o600); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	configRepository := configrepository.Get()
+
+	if err := configRepository.SetFaviconPath("favicon" + extension); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	webutils.WriteSimpleResponse(w, true, "favicon updated")
 }
 
 // SetNSFW will handle the web config request to set the NSFW flag.

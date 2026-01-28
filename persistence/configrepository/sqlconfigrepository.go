@@ -135,6 +135,22 @@ func (r *SqlConfigRepository) GetLogoUniquenessString() string {
 	return uniqueness
 }
 
+// GetFaviconPath will return the filename for the favicon in the data directory.
+func (r *SqlConfigRepository) GetFaviconPath() string {
+	favicon, err := r.datastore.GetString(faviconPathKey)
+	if err != nil {
+		log.Traceln(faviconPathKey, err)
+		return ""
+	}
+
+	return favicon
+}
+
+// SetFaviconPath will set the filename for the favicon in the data directory.
+func (r *SqlConfigRepository) SetFaviconPath(favicon string) error {
+	return r.datastore.SetString(faviconPathKey, favicon)
+}
+
 // GetServerSummary will return the server summary text.
 func (r *SqlConfigRepository) GetServerSummary() string {
 	summary, err := r.datastore.GetString(serverSummaryKey)
