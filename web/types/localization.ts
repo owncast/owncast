@@ -157,6 +157,12 @@ export const Localization = {
       serverUrlRequiredForDirectory: 'Admin.EditInstanceDetails.serverUrlRequiredForDirectory',
     },
 
+    // EditFavicon component specific keys
+    EditFavicon: {
+      label: 'Admin.EditFavicon.label',
+      tip: 'Admin.EditFavicon.tip',
+    },
+
     // VideoVariantForm component specific keys
     VideoVariantForm: {
       bitrateDisabledPassthrough: 'Admin.VideoVariantForm.bitrateDisabledPassthrough',

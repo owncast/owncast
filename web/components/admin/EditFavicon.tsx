@@ -14,6 +14,7 @@ import {
 } from '../../utils/input-statuses';
 import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
 import { Localization } from '../../types/localization';
+import { Translation } from '../ui/Translation/Translation';
 
 import { ACCEPTED_FAVICON_TYPES, MAX_FAVICON_FILESIZE, readableBytes } from '../../utils/images';
 
@@ -135,7 +136,12 @@ export const EditFavicon: FC = () => {
   return (
     <div className="formfield-container logo-upload-container">
       <div className="label-side">
-        <span className="formfield-label">Favicon</span>
+        <span className="formfield-label">
+          <Translation
+            translationKey={Localization.Admin.EditFavicon.label}
+            defaultText="Favicon"
+          />
+        </span>
       </div>
 
       <div className="input-side">
@@ -169,8 +175,10 @@ export const EditFavicon: FC = () => {
         </div>
         <FormStatusIndicator status={submitStatus} />
         <p className="field-tip">
-          Upload a custom favicon (PNG or ICO format, max 200KB). This icon appears in browser tabs
-          and bookmarks.
+          <Translation
+            translationKey={Localization.Admin.EditFavicon.tip}
+            defaultText="Upload a custom favicon (PNG or ICO format, max 200KB). This icon appears in browser tabs and bookmarks."
+          />
         </p>
       </div>
     </div>
