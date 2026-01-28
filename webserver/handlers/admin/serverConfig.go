@@ -66,6 +66,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ChatEstablishedUserMode:   configRepository.GetChatEstbalishedUsersOnlyMode(),
 		ChatSpamProtectionEnabled: configRepository.GetChatSpamProtectionEnabled(),
 		ChatSlurFilterEnabled:     configRepository.GetChatSlurFilterEnabled(),
+		ChatRequireAuthentication: configRepository.GetChatRequireAuthentication(),
 		HideViewerCount:           configRepository.GetHideViewerCount(),
 		DisableSearchIndexing:     configRepository.GetDisableSearchIndexing(),
 		VideoSettings: videoSettings{
@@ -129,6 +130,7 @@ type serverConfigAdminResponse struct {
 	ChatEstablishedUserMode   bool                        `json:"chatEstablishedUserMode"`
 	ChatSpamProtectionEnabled bool                        `json:"chatSpamProtectionEnabled"`
 	ChatSlurFilterEnabled     bool                        `json:"chatSlurFilterEnabled"`
+	ChatRequireAuthentication bool                        `json:"chatRequireAuthentication"`
 	DisableSearchIndexing     bool                        `json:"disableSearchIndexing"`
 	StreamKeyOverridden       bool                        `json:"streamKeyOverridden"`
 	HideViewerCount           bool                        `json:"hideViewerCount"`

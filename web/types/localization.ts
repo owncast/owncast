@@ -68,8 +68,7 @@ export const Localization = {
       deniedTitle: 'Frontend.BrowserNotifyModal.deniedTitle',
       deniedDescription: 'Frontend.BrowserNotifyModal.deniedDescription',
       mainDescription: 'Frontend.BrowserNotifyModal.mainDescription',
-      learnMoreAboutNotifications:
-        'Frontend.BrowserNotifyModal.learnMoreAboutNotifications',
+      learnMoreAboutNotifications: 'Frontend.BrowserNotifyModal.learnMoreAboutNotifications',
       errorTitle: 'Frontend.BrowserNotifyModal.errorTitle',
       errorMessage: 'Frontend.BrowserNotifyModal.errorMessage',
     },
@@ -107,6 +106,7 @@ export const Localization = {
       userLeft: 'Frontend.Chat.userLeft',
       nameChangeText: 'Frontend.Chat.nameChangeText',
       moderatorNotification: 'Frontend.Chat.moderatorNotification',
+      authenticateToChat: 'Frontend.Chat.authenticateToChat',
     },
 
     // Follow modal component

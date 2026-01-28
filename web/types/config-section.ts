@@ -154,6 +154,7 @@ export interface ConfigDetails {
   chatDisabled: boolean;
   chatSpamProtectionEnabled: boolean;
   chatSlurFilterEnabled: boolean;
+  chatRequireAuthentication: boolean;
   federation: Federation;
   notifications: NotificationsConfig;
   chatJoinMessagesEnabled: boolean;

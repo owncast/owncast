@@ -30,6 +30,7 @@ export type ChatTextFieldProps = {
   defaultText?: string;
   enabled: boolean;
   focusInput: boolean;
+  disabledPlaceholder?: string;
 };
 
 const characterLimit = 300;
@@ -119,7 +120,12 @@ const getTextContent = node => {
   return text;
 };
 
-export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
+export const ChatTextField: FC<ChatTextFieldProps> = ({
+  defaultText,
+  enabled,
+  focusInput,
+  disabledPlaceholder,
+}) => {
   const [inputDraft, setInputDraft] = useRecoilState(chatInputDraftAtom);
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
@@ -276,7 +282,9 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
         <ContentEditable
           id="chat-input-content-editable"
           html={defaultText || ''}
-          placeholder={enabled ? 'Send a message to chat' : 'Chat is disabled'}
+          placeholder={
+            enabled ? 'Send a message to chat' : disabledPlaceholder || 'Chat is disabled'
+          }
           disabled={!enabled}
           onKeyDown={onKeyDown}
           onContentChange={handleChange}

@@ -877,6 +877,25 @@ func SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteSimpleResponse(w, true, "chat message slur filter changed")
 }
 
+// SetChatRequireAuthentication will enable or disable requiring authentication for chat.
+func SetChatRequireAuthentication(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	configRepository := configrepository.Get()
+	if err := configRepository.SetChatRequireAuthentication(configValue.Value.(bool)); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+	webutils.WriteSimpleResponse(w, true, "chat authentication requirement changed")
+}
+
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != http.MethodPost {
 		webutils.WriteSimpleResponse(w, false, r.Method+" not supported")

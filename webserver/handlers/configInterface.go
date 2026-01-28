@@ -127,6 +127,14 @@ func (*ServerInterfaceImpl) SetChatSlurFilterEnabledOptions(w http.ResponseWrite
 	middleware.RequireAdminAuth(admin.SetChatSlurFilterEnabled)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetChatRequireAuthentication(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetChatRequireAuthentication)(w, r)
+}
+
+func (*ServerInterfaceImpl) SetChatRequireAuthenticationOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetChatRequireAuthentication)(w, r)
+}
+
 func (*ServerInterfaceImpl) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetVideoCodec)(w, r)
 }

@@ -1514,6 +1514,35 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /admin/config/chat/requireauthentication:
+    post:
+      summary: Set require authentication for chat
+      operationId: SetChatRequireAuthentication
+      tags: ['Internal', 'Admin', 'Chat']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Require authentication setting updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetChatRequireAuthenticationOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Chat']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /admin/config/video/codec:
     post:
       summary: Set video codec
@@ -3660,6 +3689,9 @@ components:
           type: boolean
         chatDisabled:
           type: boolean
+        chatRequireAuthentication:
+          type: boolean
+          description: Whether users must authenticate before sending chat messages
         nsfw:
           type: boolean
         authentication:

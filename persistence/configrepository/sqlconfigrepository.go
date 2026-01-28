@@ -541,6 +541,21 @@ func (r *SqlConfigRepository) GetChatSlurFilterEnabled() bool {
 	return false
 }
 
+// SetChatRequireAuthentication will set if authentication is required for chat.
+func (r *SqlConfigRepository) SetChatRequireAuthentication(enabled bool) error {
+	return r.datastore.SetBool(chatRequireAuthenticationKey, enabled)
+}
+
+// GetChatRequireAuthentication will return if authentication is required for chat.
+func (r *SqlConfigRepository) GetChatRequireAuthentication() bool {
+	enabled, err := r.datastore.GetBool(chatRequireAuthenticationKey)
+	if err == nil {
+		return enabled
+	}
+
+	return false
+}
+
 // GetExternalActions will return the registered external actions.
 func (r *SqlConfigRepository) GetExternalActions() []models.ExternalAction {
 	configEntry, err := r.datastore.Get(externalActionsKey)

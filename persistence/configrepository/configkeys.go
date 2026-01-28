@@ -46,6 +46,7 @@ const (
 	chatEstablishedUsersOnlyModeKey = "chat_established_users_only_mode"
 	chatSpamProtectionEnabledKey    = "chat_spam_protection_enabled"
 	chatSlurFilterEnabledKey        = "chat_slur_filter_enabled"
+	chatRequireAuthenticationKey    = "chat_require_authentication"
 	notificationsEnabledKey         = "notifications_enabled"
 	discordConfigurationKey         = "discord_configuration"
 	browserPushConfigurationKey     = "browser_push_configuration"
