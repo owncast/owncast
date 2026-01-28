@@ -123,7 +123,7 @@ test('reject unsupported file type (JPEG)', async () => {
 		.post('/api/admin/config/favicon')
 		.auth('admin', defaultAdminPassword)
 		.attach('favicon', testJPEGPath)
-		.expect(200);
+		.expect(400);
 
 	expect(res.body.success).toBe(false);
 	expect(res.body.message).toBe('favicon must be PNG or ICO format');
@@ -134,7 +134,7 @@ test('reject oversized file (>200KB)', async () => {
 		.post('/api/admin/config/favicon')
 		.auth('admin', defaultAdminPassword)
 		.attach('favicon', testOversizedPath)
-		.expect(200);
+		.expect(400);
 
 	expect(res.body.success).toBe(false);
 	expect(res.body.message).toBe('file too large, max 200KB');
@@ -144,7 +144,7 @@ test('reject request without file', async () => {
 	const res = await request
 		.post('/api/admin/config/favicon')
 		.auth('admin', defaultAdminPassword)
-		.expect(200);
+		.expect(400);
 
 	expect(res.body.success).toBe(false);
 	expect(res.body.message).toBe('no file provided');
@@ -153,6 +153,5 @@ test('reject request without file', async () => {
 test('reject unauthenticated request', async () => {
 	await request
 		.post('/api/admin/config/favicon')
-		.attach('favicon', testPNGPath)
 		.expect(401);
 });

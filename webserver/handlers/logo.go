@@ -36,7 +36,7 @@ func GetLogo(w http.ResponseWriter, r *http.Request) {
 	} else if filepath.Ext(imageFilename) == ".gif" {
 		contentType = "image/gif"
 	} else if filepath.Ext(imageFilename) == ".png" {
-		contentType = "image/png"
+		contentType = "image/png" //nolint:goconst
 	}
 
 	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)

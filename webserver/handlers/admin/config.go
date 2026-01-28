@@ -291,7 +291,7 @@ func SetFavicon(w http.ResponseWriter, r *http.Request) {
 
 	// Parse multipart form with 200KB max
 	if err := r.ParseMultipartForm(200 << 10); err != nil {
-		webutils.WriteSimpleResponse(w, false, "file too large, max 200KB")
+		webutils.WriteSimpleResponse(w, false, "no file provided")
 		return
 	}
 
@@ -319,6 +319,13 @@ func SetFavicon(w http.ResponseWriter, r *http.Request) {
 	bytes, err := io.ReadAll(file)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to read file")
+		return
+	}
+
+	// Enforce 200KB size limit
+	const maxFaviconSize = 200 * 1024 // 200KB
+	if len(bytes) > maxFaviconSize {
+		webutils.WriteSimpleResponse(w, false, "file too large, max 200KB")
 		return
 	}
 
