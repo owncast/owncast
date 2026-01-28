@@ -639,3 +639,28 @@ export const PASSWORD_COMPLEXITY_RULES = [
 ];
 
 export const REGEX_PASSWORD = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])[^-]{8,192}$/;
+
+// Stream key validation rules - same as password but WITHOUT special character requirement
+// This is needed because some broadcasting software (e.g., Prism Live Studio) strips special characters
+export const STREAM_KEY_COMPLEXITY_RULES = [
+  { min: 8, message: '- minimum 8 characters' },
+  { max: 192, message: '- maximum 192 characters' },
+  {
+    pattern: /^(?=.*[a-z])/,
+    message: '- at least one lowercase letter',
+  },
+  {
+    pattern: /^(?=.*[A-Z])/,
+    message: '- at least one uppercase letter',
+  },
+  {
+    pattern: /\d/,
+    message: '- at least one digit',
+  },
+  {
+    pattern: /^[^-]+$/,
+    message: '- must NOT contain a dash: -',
+  },
+];
+
+export const REGEX_STREAM_KEY = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])[^-]{8,192}$/;
