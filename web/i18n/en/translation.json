@@ -166,6 +166,7 @@
 			"unsupportedLocal": "Browser notifications are not supported for local servers."
 		},
 		"Chat": {
+			"authenticateToChat": "Authenticate to chat",
 			"moderatorNotification": "You are now a moderator.",
 			"nameChangeText": "is now known as",
 			"userJoined": "joined the chat.",

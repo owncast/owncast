@@ -3689,6 +3689,9 @@ components:
           type: boolean
         chatDisabled:
           type: boolean
+        chatRequireAuthentication:
+          type: boolean
+          description: Whether users must authenticate before sending chat messages
         nsfw:
           type: boolean
         authentication:

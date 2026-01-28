@@ -9,6 +9,7 @@ export interface ClientConfig {
   extraPageContent: string;
   socialHandles: SocialHandle[];
   chatDisabled: boolean;
+  chatRequireAuthentication: boolean;
   externalActions: any[];
   customStyles: string;
   appearanceVariables: Map<string, string>;
@@ -55,6 +56,7 @@ export function makeEmptyClientConfig(): ClientConfig {
     extraPageContent: '',
     socialHandles: [],
     chatDisabled: false,
+    chatRequireAuthentication: false,
     externalActions: [],
     customStyles: '',
     appearanceVariables: new Map(),
