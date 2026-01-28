@@ -67,12 +67,12 @@ func GetLogo() []byte {
 	return getFileSystemStaticFileOrDefault("img/logo.png", logo)
 }
 
-//go:embed web/favicon.ico
+//go:embed favicon.ico
 var favicon []byte
 
 // GetFavicon will return the favicon data.
 func GetFavicon() []byte {
-	return getFileSystemStaticFileOrDefault("web/favicon.ico", favicon)
+	return getFileSystemStaticFileOrDefault("favicon.ico", favicon)
 }
 
 func getFileSystemStaticFileOrDefault(path string, defaultData []byte) []byte {
