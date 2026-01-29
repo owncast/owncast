@@ -213,7 +213,7 @@
 			"overLimit": "Os cionn theorainne",
 			"placeholder": "Do shainainm comhoiriúnachta"
 		},
-		"chatDisabled": "<strong><em>Toiliú a bhfuil in easnamh Frontend.chatDisabled: Tugaigí tuairisc</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "Tá comhrá díchumasaithe",
 		"componentError": "Earráid: {{message}}",
 		"helloWorld": "Dia duit, a dhuine.",

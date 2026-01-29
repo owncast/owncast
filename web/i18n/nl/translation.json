@@ -213,7 +213,7 @@
 			"overLimit": "Limiet overschreden",
 			"placeholder": "Jouw weergavenaam van je chat"
 		},
-		"chatDisabled": "<strong><em>Ontbrekende vertaling Frontend.chatDisabled: Rapporteer</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "Chat is offline",
 		"componentError": "Fout: {{message}}",
 		"helloWorld": "Hallo wereld",

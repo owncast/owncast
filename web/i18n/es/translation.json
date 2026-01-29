@@ -213,7 +213,7 @@
 			"overLimit": "Límite de superación",
 			"placeholder": "Nombre de la pantalla de chat"
 		},
-		"chatDisabled": "<strong><em>Falta traducción Frontend.chatDisabled: Por favor reporte</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "Chat desconectado",
 		"componentError": "Error: {{message}}",
 		"helloWorld": "Hola mundo",

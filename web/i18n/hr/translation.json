@@ -213,7 +213,7 @@
 			"overLimit": "Prekoračenje limita",
 			"placeholder": "Vaše ime prikazano u chatu"
 		},
-		"chatDisabled": "<strong><em>Nedostaje prijevod Frontend.chatDisabled: Molimo javite</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "Chat je offline",
 		"componentError": "Greška: {{message}}",
 		"helloWorld": "Pozdrav svijete",

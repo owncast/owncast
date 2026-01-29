@@ -213,7 +213,7 @@
 			"overLimit": "제한 초과",
 			"placeholder": "귀하의 채팅 표시 이름"
 		},
-		"chatDisabled": "<strong><em>번역 누락 Frontend.chatDisabled: 신고해 주세요</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "채팅이 오프라인입니다",
 		"componentError": "오류: {{message}}",
 		"helloWorld": "헬로 월드",

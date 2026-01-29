@@ -213,7 +213,7 @@
 			"overLimit": "超出限制",
 			"placeholder": "您的聊天顯示名稱"
 		},
-		"chatDisabled": "<strong><em>缺少翻譯 Frontend.chatDisabled: 請報告</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "聊天室已離線",
 		"componentError": "錯誤： {{message}}",
 		"helloWorld": "你好，世界",

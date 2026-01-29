@@ -213,7 +213,7 @@
 			"overLimit": "上限を超えました",
 			"placeholder": "チャットの表示名"
 		},
-		"chatDisabled": "<strong><em>不足している翻訳Frontend.chatDisabled: Please report</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "チャットはオフラインです",
 		"componentError": "エラー: {{message}}",
 		"helloWorld": "Hello world",

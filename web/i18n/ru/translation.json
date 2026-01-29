@@ -213,7 +213,7 @@
 			"overLimit": "Превышен предел",
 			"placeholder": "Отображаемое имя чата"
 		},
-		"chatDisabled": "<strong><em>Отсутствует перевод Frontend.chatDisabled: Пожалуйста, сообщите</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "Чат не в сети",
 		"componentError": "Ошибка: {{message}}",
 		"helloWorld": "Здравствуй, мир",

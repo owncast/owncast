@@ -213,7 +213,7 @@
 			"overLimit": "Mugaren gainean",
 			"placeholder": "Zure txateko izena"
 		},
-		"chatDisabled": "<strong><em>Itzulpen falta Frontend.chatDisabled: Mesedez, jakinarazi</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "Txata lineaz kanpo dago",
 		"componentError": "Errorea: {{message}}",
 		"helloWorld": "Kaixo mundua",

@@ -213,7 +213,7 @@
 			"overLimit": "Limite dépassée",
 			"placeholder": "Nom d'affichage de votre chat"
 		},
-		"chatDisabled": "<strong><em>Traduction manquante Frontend.chatDisabled: Veuillez signaler</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "Le chat est hors ligne",
 		"componentError": "Erreur: {{message}}",
 		"helloWorld": "Bonjour le monde",

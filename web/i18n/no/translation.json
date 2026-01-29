@@ -213,7 +213,7 @@
 			"overLimit": "Over grensen",
 			"placeholder": "Ditt chatte visningsnavn"
 		},
-		"chatDisabled": "<strong><em>mangler oversettelse Frontend.chatDeaktivert: Rapporter</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "Chatten er frakoblet",
 		"componentError": "Feil: {{message}}",
 		"helloWorld": "Hallo, verden",

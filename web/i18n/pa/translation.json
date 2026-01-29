@@ -213,7 +213,7 @@
 			"overLimit": "ਸੀਮਾ ਿਲੰਘ ਗਈ",
 			"placeholder": "ਤੁਹਾਡਾ ਚੈਟ ਡਿਸਪਲੇ ਨਾਮ"
 		},
-		"chatDisabled": "<strong><em>ਉੱਥੇ ਅਨੁਵਾਦ ਨਹੀਂ ਹੈ Frontend.chatDisabled: ਕਿਰਪਾ ਕਰਕੇ ਰਿਪੋਰਟ ਕਰੋ</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "ਚੈਟ ਆਫਲਾਈਨ ਹੈ",
 		"componentError": "ਗਲਤੀ: {{message}}",
 		"helloWorld": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ ਦੁਨਿਆ",

@@ -213,7 +213,7 @@
 			"overLimit": "เกินขีดจำกัด",
 			"placeholder": "ชื่อแสดงในแชทของคุณ"
 		},
-		"chatDisabled": "<strong><em>คุณลักษณะที่หายไป Frontend.chatDisabled: กรุณารายงาน</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "แชทออฟไลน์",
 		"componentError": "Error: {{message}}",
 		"helloWorld": "สวัสดีโลก",

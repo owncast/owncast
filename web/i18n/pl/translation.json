@@ -213,7 +213,7 @@
 			"overLimit": "Przekroczono limit",
 			"placeholder": "Twoja nazwa wyświetlana czatu"
 		},
-		"chatDisabled": "<strong><em>Brakujące tłumaczenie Frontend.chatDisabled: Proszę zgłosić</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "Czat jest offline",
 		"componentError": "Błąd: {{message}}",
 		"helloWorld": "Witaj świat",

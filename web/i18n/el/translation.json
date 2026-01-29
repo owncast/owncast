@@ -213,7 +213,7 @@
 			"overLimit": "Υπέρβαση ορίου",
 			"placeholder": "Το όνομα της συνομιλίας σας"
 		},
-		"chatDisabled": "<strong><em>Λείπει μετάφραση Frontend.chatDisabled: Παρακαλώ αναφέρετε</em></strong>",
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "Η συνομιλία είναι εκτός σύνδεσης",
 		"componentError": "Σφάλμα: {{message}}",
 		"helloWorld": "Γεια σας κόσμο",
