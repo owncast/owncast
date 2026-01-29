@@ -35,33 +35,42 @@ const SERVER_STATUS_POLL_DURATION = 5000;
 
 // Helper to safely parse hydration data from window object
 // This runs during module initialization so data is available for first render
-const getInitialConfig = (): ClientConfig => {
+// Returns both the config and whether parsing succeeded
+const getInitialConfig = (): { config: ClientConfig; success: boolean } => {
   if (typeof window !== 'undefined' && (window as any).configHydration) {
     try {
-      return JSON.parse((window as any).configHydration);
+      const parsed = JSON.parse((window as any).configHydration);
+      if (parsed) {
+        return { config: parsed, success: true };
+      }
     } catch (e) {
       console.error('Error parsing config hydration during init', e);
     }
   }
-  return makeEmptyClientConfig();
+  return { config: makeEmptyClientConfig(), success: false };
 };
 
-const getInitialStatus = (): ServerStatus => {
+const getInitialStatus = (): { status: ServerStatus; success: boolean } => {
   if (typeof window !== 'undefined' && (window as any).statusHydration) {
     try {
-      return JSON.parse((window as any).statusHydration);
+      const parsed = JSON.parse((window as any).statusHydration);
+      if (parsed) {
+        return { status: parsed, success: true };
+      }
     } catch (e) {
       console.error('Error parsing status hydration during init', e);
     }
   }
-  return makeEmptyServerStatus();
+  return { status: makeEmptyServerStatus(), success: false };
 };
 
 // Cache the initial values to avoid re-parsing
-const initialConfig = getInitialConfig();
-const initialStatus = getInitialStatus();
-const hasHydratedConfig = typeof window !== 'undefined' && !!(window as any).configHydration;
-const hasHydratedStatus = typeof window !== 'undefined' && !!(window as any).statusHydration;
+const configResult = getInitialConfig();
+const statusResult = getInitialStatus();
+const initialConfig = configResult.config;
+const initialStatus = statusResult.status;
+const hasHydratedConfig = configResult.success;
+const hasHydratedStatus = statusResult.success;
 const ACCESS_TOKEN_KEY = 'accessToken';
 
 let serverStatusRefreshPoll: ReturnType<typeof setInterval>;
