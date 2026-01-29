@@ -28,6 +28,14 @@
 			"titlePlaceholder": "您的操作標題（必填）",
 			"urlPlaceholder": "https://myserver.com/action（必填）"
 		},
+		"EditFavicon": {
+			"label": "網站圖標",
+			"tip": "上傳自定義網站圖標（PNG或ICO格式，最大200KB）。此圖標出現在瀏覽器標籤和書籤中。",
+			"resetButton": "重置",
+			"resetConfirmTitle": "是否重置為默認網站圖標？",
+			"resetConfirmOk": "是",
+			"resetConfirmCancel": "否"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "透過出現在<a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast 目錄</strong></a>來增加您的觀眾。這是由 Owncast 專案運營的外部服務。<a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">了解更多</a>。",
 			"offlineMessageDescription": "當您不在串流時，離線訊息會顯示給您的頁面訪客。支援 Markdown。",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "您的瀏覽器不支援本地伺服器的瀏覽器通知。"
 		},
 		"Chat": {
+			"authenticateToChat": "驗證以進行聊天",
 			"moderatorNotification": "您現在是版主。",
 			"nameChangeText": "現在被稱為",
 			"userJoined": "已加入聊天室。",
@@ -204,6 +213,7 @@
 			"overLimit": "超出限制",
 			"placeholder": "您的聊天顯示名稱"
 		},
+		"chatDisabled": "<strong><em>缺少翻譯 Frontend.chatDisabled: 請報告</em></strong>",
 		"chatOffline": "聊天室已離線",
 		"componentError": "錯誤： {{message}}",
 		"helloWorld": "你好，世界",

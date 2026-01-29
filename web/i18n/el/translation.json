@@ -28,6 +28,14 @@
 			"titlePlaceholder": "Ο τίτλος της ενέργειας σας (απαιτείται)",
 			"urlPlaceholder": "https://myserver.com/ενέργεια (απαιτείται)"
 		},
+		"EditFavicon": {
+			"label": "Αγαπημένο",
+			"tip": "Ανεβάστε ένα προσαρμοσμένο favicon (μορφή PNG ή ICO, max 200KB). Αυτό το εικονίδιο εμφανίζεται σε καρτέλες και σελιδοδείκτες.",
+			"resetButton": "Reset",
+			"resetConfirmTitle": "Επαναφορά στο προεπιλεγμένο favicon?",
+			"resetConfirmOk": "Ναι",
+			"resetConfirmCancel": "Όχι"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Αυξήστε το κοινό σας με την εμφάνιση στο <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. Αυτή είναι μια εξωτερική υπηρεσία που εκτελείται από το έργο Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Μάθετε περισσότερα</a>.",
 			"offlineMessageDescription": "Το μήνυμα εκτός σύνδεσης εμφανίζεται στους επισκέπτες της σελίδας σας όταν δεν κάνετε streaming. Υποστηρίζεται Markdown.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "Οι ειδοποιήσεις του προγράμματος περιήγησης δεν υποστηρίζονται για τοπικούς διακομιστές."
 		},
 		"Chat": {
+			"authenticateToChat": "Ταυτοποίηση για συνομιλία",
 			"moderatorNotification": "Είστε τώρα ένας συντονιστής.",
 			"nameChangeText": "είναι τώρα γνωστό ως",
 			"userJoined": "μπήκε στη συνομιλία.",
@@ -204,6 +213,7 @@
 			"overLimit": "Υπέρβαση ορίου",
 			"placeholder": "Το όνομα της συνομιλίας σας"
 		},
+		"chatDisabled": "<strong><em>Λείπει μετάφραση Frontend.chatDisabled: Παρακαλώ αναφέρετε</em></strong>",
 		"chatOffline": "Η συνομιλία είναι εκτός σύνδεσης",
 		"componentError": "Σφάλμα: {{message}}",
 		"helloWorld": "Γεια σας κόσμο",

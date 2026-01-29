@@ -28,6 +28,14 @@
 			"titlePlaceholder": "Titolo azione (richiesto)",
 			"urlPlaceholder": "https://myserver.com/action (richiesto)"
 		},
+		"EditFavicon": {
+			"label": "Favicon",
+			"tip": "Carica una favicon personalizzata (formato PNG o ICO, max 200KB). Questa icona appare nelle schede del browser e nei segnalibri.",
+			"resetButton": "Reset",
+			"resetConfirmTitle": "Ripristinare la favicon predefinita?",
+			"resetConfirmOk": "Sì",
+			"resetConfirmCancel": "No"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Aumenta il tuo pubblico comparendo nella <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. Si tratta di un servizio esterno gestito dal progetto Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Per saperne di più</a>.",
 			"offlineMessageDescription": "Il messaggio offline viene visualizzato ai visitatori della pagina quando non sei in streaming. Markdown è supportato.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "Le notifiche del browser non sono supportate per i server locali."
 		},
 		"Chat": {
+			"authenticateToChat": "Autenticazione in chat",
 			"moderatorNotification": "Ora sei un moderatore.",
 			"nameChangeText": "è ora noto come",
 			"userJoined": "è entrato in chat.",
@@ -204,6 +213,7 @@
 			"overLimit": "Limite superiore",
 			"placeholder": "Il nome della tua chat"
 		},
+		"chatDisabled": "<strong><em>Traduzione mancante Frontend.chatDisabilitata: Si prega di segnalare</em></strong>",
 		"chatOffline": "La chat è offline",
 		"componentError": "Errore: {{message}}",
 		"helloWorld": "Ciao mondo",

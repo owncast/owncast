@@ -28,6 +28,14 @@
 			"titlePlaceholder": "आपकी क्रिया शीर्षक (अनिवार्य)",
 			"urlPlaceholder": "https://myserver.com/action (अनिवार्य)"
 		},
+		"EditFavicon": {
+			"label": "फ़ेविकॉन",
+			"tip": "एक कस्टम फ़ेविकॉन अपलोड करें (PNG या ICO प्रारूप, अधिकतम 200KB)। यह आइकन ब्राउज़र टैब और बुकमार्क में दिखाई देता है।",
+			"resetButton": "रीसेट करें",
+			"resetConfirmTitle": "डिफ़ॉल्ट फ़ेविकॉन पर रीसेट करें?",
+			"resetConfirmOk": "हाँ",
+			"resetConfirmCancel": "नहीं"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "अपने दर्शकों को <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast निर्देशिका</strong></a> में दिखाई देकर बढ़ाएं। यह एक बाहरी सेवा है जिसे Owncast प्रोजेक्ट द्वारा संचालित किया जाता है। <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">अधिक जानें</a>.",
 			"offlineMessageDescription": "ऑफलाइन संदेश आपके पृष्ठ के आगंतुकों को तब दिखाया जाता है जब आप स्ट्रीमिंग नहीं कर रहे होते हैं। मार्कडाउन समर्थित है।",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "स्थानीय सर्वरों के लिए ब्राउज़र सूचनाएँ समर्थित नहीं हैं।"
 		},
 		"Chat": {
+			"authenticateToChat": "चैट के लिए प्रमाणित करें",
 			"moderatorNotification": "आप अब एक moderator हैं।",
 			"nameChangeText": "अब जाना जाता है",
 			"userJoined": "चैट में शामिल हुआ।",
@@ -204,6 +213,7 @@
 			"overLimit": "सीमा से परे",
 			"placeholder": "आपका चैट डिस्प्ले नाम"
 		},
+		"chatDisabled": "<strong><em>अनुवाद गायब है Frontend.chatDisabled: कृपया रिपोर्ट करें</em></strong>",
 		"chatOffline": "चैट ऑफ़लाइन है",
 		"componentError": "त्रुटि: {{message}}",
 		"helloWorld": "नमस्ते दुनिया",

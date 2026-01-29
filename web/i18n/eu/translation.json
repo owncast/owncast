@@ -28,6 +28,14 @@
 			"titlePlaceholder": "Zure ekintzaren izena (beharrezkoa)",
 			"urlPlaceholder": "https://myserver.com/action (beharrezkoa)"
 		},
+		"EditFavicon": {
+			"label": "Favicon",
+			"tip": "Zure irudi pertsonalizatua igotzea (PNG edo ICO formatuan, gehienez 200KB). Ikono hau nabigatzaileetako tabuetan eta txarteletan agertzen da.",
+			"resetButton": "Birsortu",
+			"resetConfirmTitle": "Berreskuratu jatorrizko favicon?a?",
+			"resetConfirmOk": "Bai",
+			"resetConfirmCancel": "Ez"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Handitu zure ikusleak <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>-n agerita. Hau Owncast proiektua kudeatutako zerbitzu kanpoa da. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Gehiago ikasi</a>.",
 			"offlineMessageDescription": "Offlain mezua zure orri bisitariei erakusten zaie zu ez bazaude irratian. Markdown babesten da.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "Nabigatzailean abisuak ez dira onartu lokaleko zerbitzarietan."
 		},
 		"Chat": {
+			"authenticateToChat": "Saioa hasi txateatzeko",
 			"moderatorNotification": "Orain moderatzailea zara.",
 			"nameChangeText": "orain ezagutzen da",
 			"userJoined": "txat-ean batzen",
@@ -204,6 +213,7 @@
 			"overLimit": "Mugaren gainean",
 			"placeholder": "Zure txateko izena"
 		},
+		"chatDisabled": "<strong><em>Itzulpen falta Frontend.chatDisabled: Mesedez, jakinarazi</em></strong>",
 		"chatOffline": "Txata lineaz kanpo dago",
 		"componentError": "Errorea: {{message}}",
 		"helloWorld": "Kaixo mundua",

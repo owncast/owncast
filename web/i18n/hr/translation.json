@@ -28,6 +28,14 @@
 			"titlePlaceholder": "Naslov vaše radnje (obavezno)",
 			"urlPlaceholder": "https://myserver.com/action (obavezno)"
 		},
+		"EditFavicon": {
+			"label": "Favicon",
+			"tip": "Otpremite prilagođeni favicon (PNG ili ICO format, max 200KB). Ova ikona se pojavljuje na karticama preglednika i u favoritima.",
+			"resetButton": "Resetirati",
+			"resetConfirmTitle": "Resetirati na zadani favicon?",
+			"resetConfirmOk": "Da",
+			"resetConfirmCancel": "Ne"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Povećajte svoju publiku pojavljujući se u <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast direktoriju</strong></a>. Ovo je vanjska usluga koju vodi projekt Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Saznajte više</a>.",
 			"offlineMessageDescription": "Poruka izvan mreže prikazuje se vašim posjetiteljima stranice kada ne prenosite. Markdown je podržan.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "Obavijesti preglednika nisu podržane za lokalne poslužitelje."
 		},
 		"Chat": {
+			"authenticateToChat": "Autenticirajte se za chat",
 			"moderatorNotification": "Sada ste moderator.",
 			"nameChangeText": "sada je poznat kao",
 			"userJoined": "pridružio se chatu.",
@@ -204,6 +213,7 @@
 			"overLimit": "Prekoračenje limita",
 			"placeholder": "Vaše ime prikazano u chatu"
 		},
+		"chatDisabled": "<strong><em>Nedostaje prijevod Frontend.chatDisabled: Molimo javite</em></strong>",
 		"chatOffline": "Chat je offline",
 		"componentError": "Greška: {{message}}",
 		"helloWorld": "Pozdrav svijete",

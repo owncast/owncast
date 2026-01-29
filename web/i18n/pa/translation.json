@@ -28,6 +28,14 @@
 			"titlePlaceholder": "ਤੁਹਾਡਾ ਕਾਰਵਾਈ ਦਾ ਸਿਰਲੇਖ (ਜ਼ਰੂਰੀ)",
 			"urlPlaceholder": "https://myserver.com/action (ਜ਼ਰੂਰੀ)"
 		},
+		"EditFavicon": {
+			"label": "ਫੇਵਿਕਨ",
+			"tip": "ਇੱਕ ਕਸਟਮ ਫੇਵਿਕਨ ਅਪਲੇਡ ਕਰੋ (PNG ਜਾਂ ICO ਫਾਰਮੈਟ, ਵੱਧ ਤੋਂ ਵੱਧ 200KB)। ਇਹ ਆਈਕਨ ਬਰਾਊਜਰ ਟੈਬਸ ਅਤੇ ਬੁੱਕਮਾਰਕਸ ਵਿੱਚ ਪ੍ਰਗਟ ਹੁੰਦਾ ਹੈ।",
+			"resetButton": "ਰੀਸੈਟ",
+			"resetConfirmTitle": "ਡਿਫੌਲਟ ਫੇਵਿਕਨ ਤੇ ਰੀਸੈਟ ਕਰਨਾ ਹੈ?",
+			"resetConfirmOk": "ਹਾਂ",
+			"resetConfirmCancel": "ਨਹੀਂ"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "ਆਪਣੇ ਦਰਸ਼ਕਾਂ ਦੀ ਗਿਣਤੀ ਵਧਾਓ <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a> ਵਿੱਚ ਸ਼ਾਮਲ ਹੋ ਕੇ। ਅਗੇੇਂ ਬਾਰੇ ਜਾਣੂ ਹੋਣ ਲਈ ਇੱਕ ਬਾਹਰੀ ਸਰਵਿਸ ਜਿਸਨੂੰ Owncast ਪ੍ਰੋਜੈਕਟ ਦੁਆਰਾ ਚਲਾਇਆ ਜਾਂਦਾ ਹੈ। <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">ਹੋਰ ਜਾਣੋ</a>।",
 			"offlineMessageDescription": "ਆਪਣੇ ਪੰਨੇ ਦੇ ਦ੍ਰਸ਼ਕਾਂ ਨੂੰ ਨਿਰਦਸ਼ਨ ਕੀਤਾ ਗਿਆ ਸੰਦੇਸ਼ ਦਿਖਾਇਆ ਜਾਂਦਾ ਹੈ ਜਦੋਂ ਤੁਸੀਂ ਸਟ੍ਰੀਮ ਨਹੀਂ ਕਰ ਰਹੇ ਹੁੰਦੇ। ਮਾਰਕਡਾਊਨ ਦਾ ਸਮਰਥਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "ਸਥਾਨਕ ਸਰਵਰ ਲਈ ਬ੍ਰਾਊਜ਼ਰ ਸੂਚਨਾਵਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਹੈ।"
 		},
 		"Chat": {
+			"authenticateToChat": "ਚੈਟ ਕਰਨ ਲਈ ਪ੍ਰਮਾਣਿਤ ਕਰੋ",
 			"moderatorNotification": "ਤੁਸੀਂ ਹੁਣ ਮੋਡਰੇਟਰ ਹੋ।",
 			"nameChangeText": "ਹੁਣ ਇਸਨੂੰ ਕਿਹਾ ਜਾਂਦਾ ਹੈ",
 			"userJoined": "ਚੈਟ ਵਿੱਚ ਸ਼ਾਮਿਲ ਹੋਇਆ।",
@@ -204,6 +213,7 @@
 			"overLimit": "ਸੀਮਾ ਿਲੰਘ ਗਈ",
 			"placeholder": "ਤੁਹਾਡਾ ਚੈਟ ਡਿਸਪਲੇ ਨਾਮ"
 		},
+		"chatDisabled": "<strong><em>ਉੱਥੇ ਅਨੁਵਾਦ ਨਹੀਂ ਹੈ Frontend.chatDisabled: ਕਿਰਪਾ ਕਰਕੇ ਰਿਪੋਰਟ ਕਰੋ</em></strong>",
 		"chatOffline": "ਚੈਟ ਆਫਲਾਈਨ ਹੈ",
 		"componentError": "ਗਲਤੀ: {{message}}",
 		"helloWorld": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ ਦੁਨਿਆ",

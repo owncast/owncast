@@ -28,6 +28,14 @@
 			"titlePlaceholder": "アクションタイトル (必須)",
 			"urlPlaceholder": "https://myserver.com/action (required)"
 		},
+		"EditFavicon": {
+			"label": "ファビコン",
+			"tip": "カスタム favicon (PNG または ICO 形式) をアップロードします。このアイコンはブラウザのタブとブックマークに表示されます。",
+			"resetButton": "Reset",
+			"resetConfirmTitle": "デフォルトのfaviconにリセット?",
+			"resetConfirmOk": "はい",
+			"resetConfirmCancel": "いいえ"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "<a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast ディレクトリ</strong></a> に表示されることでオーディエンスを増やしましょう。これは Owncast プロジェクトが運営する外部サービスです。<a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">詳細はこちら</a>。",
 			"offlineMessageDescription": "オフラインメッセージは、ストリーミングしていないときにページ訪問者に表示されます。Markdown はサポートされています。",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "ブラウザー通知はローカルサーバーではサポートされていません。"
 		},
 		"Chat": {
+			"authenticateToChat": "チャットに認証",
 			"moderatorNotification": "モデレータになりました。",
 			"nameChangeText": "今では、",
 			"userJoined": "チャットに参加した",
@@ -204,6 +213,7 @@
 			"overLimit": "上限を超えました",
 			"placeholder": "チャットの表示名"
 		},
+		"chatDisabled": "<strong><em>不足している翻訳Frontend.chatDisabled: Please report</em></strong>",
 		"chatOffline": "チャットはオフラインです",
 		"componentError": "エラー: {{message}}",
 		"helloWorld": "Hello world",

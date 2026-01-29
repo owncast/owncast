@@ -28,6 +28,14 @@
 			"titlePlaceholder": "Tajuk tindakan anda (diperlukan)",
 			"urlPlaceholder": "https://myserver.com/action (diperlukan)"
 		},
+		"EditFavicon": {
+			"label": "Favicon",
+			"tip": "Muat naik favicon khusus (format PNG atau ICO, maksimum 200KB). Ikon ini muncul dalam tab pelayar dan tanda buku.",
+			"resetButton": "Set semula",
+			"resetConfirmTitle": "Set semula kepada favicon lalai?",
+			"resetConfirmOk": "Ya",
+			"resetConfirmCancel": "Tidak"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Tingkatkan audiens anda dengan muncul di <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Direktori Owncast</strong></a>. Ini adalah perkhidmatan luaran yang dikendalikan oleh projek Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Ketahui lebih lanjut</a>.",
 			"offlineMessageDescription": "Mesej luar talian dipaparkan kepada pelawat halaman anda apabila anda tidak sedang penyiaran. Markdown disokong.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "Pemberitahuan pelayar tidak disokong untuk pelayan tempatan."
 		},
 		"Chat": {
+			"authenticateToChat": "Sahkan untuk berbual",
 			"moderatorNotification": "Anda kini seorang moderator.",
 			"nameChangeText": "sekarang dikenali sebagai",
 			"userJoined": "menyertai perbualan.",
@@ -204,6 +213,7 @@
 			"overLimit": "Melebihi had",
 			"placeholder": "Nama paparan sembang anda"
 		},
+		"chatDisabled": "<strong><em>Terjemahan hilang Frontend.chatDisabled: Sila laporkan</em></strong>",
 		"chatOffline": "Sembang luar talian",
 		"componentError": "Ralat: {{message}}",
 		"helloWorld": "Hello world",
