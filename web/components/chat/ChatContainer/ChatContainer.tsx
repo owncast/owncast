@@ -34,6 +34,8 @@ export type ChatContainerProps = {
   focusInput?: boolean;
   desktop?: boolean;
   readonly?: boolean;
+  inputEnabled?: boolean;
+  inputDisabledPlaceholder?: string;
 };
 
 let resizeWindowCallback: () => void;
@@ -82,11 +84,15 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   isModerator,
   showInput = true,
   height = 'auto',
-  chatAvailable: chatEnabled,
+  chatAvailable,
   desktop,
   focusInput = true,
   readonly = false,
+  inputEnabled,
+  inputDisabledPlaceholder,
 }) => {
+  // If inputEnabled is explicitly set, use that; otherwise fall back to chatAvailable
+  const chatInputEnabled = inputEnabled !== undefined ? inputEnabled : chatAvailable;
   const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(false);
 
@@ -366,7 +372,11 @@ export const ChatContainer: FC<ChatContainerProps> = ({
         {MessagesTable}
         {showInput && (
           <div className={styles.chatTextField}>
-            <ChatTextField enabled={chatEnabled} focusInput={focusInput} />
+            <ChatTextField
+              enabled={chatInputEnabled}
+              focusInput={focusInput}
+              disabledPlaceholder={inputDisabledPlaceholder}
+            />
           </div>
         )}
         {desktop && (

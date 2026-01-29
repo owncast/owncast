@@ -19,6 +19,7 @@ import {
   FIELD_PROPS_ENABLE_CHAT_SLUR_FILTER,
   CHAT_ESTABLISHED_USER_MODE,
   FIELD_PROPS_DISABLE_CHAT,
+  FIELD_PROPS_CHAT_REQUIRE_AUTHENTICATION,
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
   TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES,
@@ -47,6 +48,7 @@ export default function ConfigChat() {
     chatEstablishedUserMode,
     chatSpamProtectionEnabled,
     chatSlurFilterEnabled,
+    chatRequireAuthentication,
   } = serverConfig;
   const { welcomeMessage } = instanceDetails;
 
@@ -75,6 +77,10 @@ export default function ConfigChat() {
 
   function handleChatSlurFilterChange(enabled: boolean) {
     handleFieldChange({ fieldName: 'chatSlurFilterEnabled', value: enabled });
+  }
+
+  function handleChatRequireAuthenticationChange(enabled: boolean) {
+    handleFieldChange({ fieldName: 'chatRequireAuthentication', value: enabled });
   }
 
   function resetForbiddenUsernameState() {
@@ -169,6 +175,7 @@ export default function ConfigChat() {
       chatEstablishedUserMode,
       chatSpamProtectionEnabled,
       chatSlurFilterEnabled,
+      chatRequireAuthentication,
     });
   }, [serverConfig]);
 
@@ -249,6 +256,12 @@ export default function ConfigChat() {
               {...FIELD_PROPS_ENABLE_CHAT_SLUR_FILTER}
               checked={formDataValues.chatSlurFilterEnabled}
               onChange={handleChatSlurFilterChange}
+            />
+            <ToggleSwitch
+              fieldName="chatRequireAuthentication"
+              {...FIELD_PROPS_CHAT_REQUIRE_AUTHENTICATION}
+              checked={formDataValues.chatRequireAuthentication}
+              onChange={handleChatRequireAuthenticationChange}
             />
           </div>
         </Col>

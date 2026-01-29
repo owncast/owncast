@@ -119,3 +119,68 @@ test('verify message is in the chat feed', async () => {
 
 	expect(message.length).toBe(0);
 });
+
+// Chat authentication requirement tests
+const unauthenticatedUserFailedChatMessage = {
+	body:
+		'this unauthenticated message should fail ' +
+		Math.floor(Math.random() * 100),
+	type: 'CHAT',
+};
+
+const unauthenticatedUserSucceedChatMessage = {
+	body:
+		'this unauthenticated message should succeed ' +
+		Math.floor(Math.random() * 100),
+	type: 'CHAT',
+};
+
+test('enable chat require authentication mode', async () => {
+	await sendAdminRequest('config/chat/requireauthentication', true);
+});
+
+test('send a message after require authentication is enabled', async () => {
+	const registration = await registerChat();
+	const accessToken = registration.accessToken;
+
+	await sendChatMessage(unauthenticatedUserFailedChatMessage, accessToken);
+});
+
+test('verify unauthenticated message is not in the chat feed', async () => {
+	await new Promise((r) => setTimeout(r, 1000));
+
+	const res = await getAdminResponse('chat/messages');
+	const expectedBody =
+		`<p>` + unauthenticatedUserFailedChatMessage.body + `</p>`;
+
+	const message = res.body.filter((obj) => {
+		return obj.body === expectedBody;
+	});
+
+	expect(message.length).toBe(0);
+});
+
+test('disable chat require authentication mode', async () => {
+	await sendAdminRequest('config/chat/requireauthentication', false);
+});
+
+test('send a message after require authentication is disabled', async () => {
+	const registration = await registerChat();
+	const accessToken = registration.accessToken;
+
+	await sendChatMessage(unauthenticatedUserSucceedChatMessage, accessToken);
+});
+
+test('verify message from unauthenticated user is now in the chat feed', async () => {
+	await new Promise((r) => setTimeout(r, 1000));
+
+	const res = await getAdminResponse('chat/messages');
+	const expectedBody =
+		`<p>` + unauthenticatedUserSucceedChatMessage.body + `</p>`;
+
+	const message = res.body.filter((obj) => {
+		return obj.body === expectedBody;
+	});
+
+	expect(message.length).toBe(1);
+});

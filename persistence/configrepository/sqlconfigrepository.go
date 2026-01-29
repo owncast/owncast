@@ -135,6 +135,22 @@ func (r *SqlConfigRepository) GetLogoUniquenessString() string {
 	return uniqueness
 }
 
+// GetFaviconPath will return the filename for the favicon in the data directory.
+func (r *SqlConfigRepository) GetFaviconPath() string {
+	favicon, err := r.datastore.GetString(faviconPathKey)
+	if err != nil {
+		log.Traceln(faviconPathKey, err)
+		return ""
+	}
+
+	return favicon
+}
+
+// SetFaviconPath will set the filename for the favicon in the data directory.
+func (r *SqlConfigRepository) SetFaviconPath(favicon string) error {
+	return r.datastore.SetString(faviconPathKey, favicon)
+}
+
 // GetServerSummary will return the server summary text.
 func (r *SqlConfigRepository) GetServerSummary() string {
 	summary, err := r.datastore.GetString(serverSummaryKey)
@@ -534,6 +550,21 @@ func (r *SqlConfigRepository) SetChatSlurFilterEnabled(enabled bool) error {
 // GetChatSlurFilterEnabled will return if the chat slur filter is enabled.
 func (r *SqlConfigRepository) GetChatSlurFilterEnabled() bool {
 	enabled, err := r.datastore.GetBool(chatSlurFilterEnabledKey)
+	if err == nil {
+		return enabled
+	}
+
+	return false
+}
+
+// SetChatRequireAuthentication will set if authentication is required for chat.
+func (r *SqlConfigRepository) SetChatRequireAuthentication(enabled bool) error {
+	return r.datastore.SetBool(chatRequireAuthenticationKey, enabled)
+}
+
+// GetChatRequireAuthentication will return if authentication is required for chat.
+func (r *SqlConfigRepository) GetChatRequireAuthentication() bool {
+	enabled, err := r.datastore.GetBool(chatRequireAuthenticationKey)
 	if err == nil {
 		return enabled
 	}

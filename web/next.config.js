@@ -42,6 +42,10 @@ async function rewrites() {
       source: '/customjavascript',
       destination: 'http://localhost:8080/customjavascript', // Proxy to Backend to work around CORS.
     },
+    {
+      source: '/favicon.ico',
+      destination: 'http://localhost:8080/favicon.ico', // Proxy to Backend to work around CORS.
+    },
   ];
 }
 

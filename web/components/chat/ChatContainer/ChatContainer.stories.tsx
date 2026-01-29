@@ -618,6 +618,22 @@ export const ChatDisabled = {
   },
 };
 
+export const AuthenticationRequired = {
+  render: Template,
+
+  args: {
+    loading: false,
+    messages,
+    usernameToHighlight: 'testuser',
+    chatUserId: 'testuser',
+    isModerator: false,
+    showInput: true,
+    chatAvailable: true,
+    inputEnabled: false,
+    inputDisabledPlaceholder: 'Authenticate to chat',
+  },
+};
+
 export const SingleMessage = {
   render: Template,
 

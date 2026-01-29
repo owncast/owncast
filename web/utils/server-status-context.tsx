@@ -71,6 +71,7 @@ const initialServerConfigState: ConfigDetails = {
   chatDisabled: false,
   chatSpamProtectionEnabled: true,
   chatSlurFilterEnabled: false,
+  chatRequireAuthentication: false,
   chatJoinMessagesEnabled: true,
   chatEstablishedUserMode: false,
   hideViewerCount: false,
@@ -127,6 +128,7 @@ const ServerStatusProvider: FC<ServerStatusProviderProps> = ({ children }) => {
 
       setStatus({ ...result, error: { type: null, msg: null } });
     } catch (error) {
+      console.error('Failed to fetch server status:', error);
       setStatus(initialStatus => ({
         ...initialStatus,
         error: {
@@ -134,7 +136,6 @@ const ServerStatusProvider: FC<ServerStatusProviderProps> = ({ children }) => {
           msg: 'Cannot connect to the Owncast service. Please check you are connected to the internet and the Owncast server is running.',
         },
       }));
-      // todo
     }
   };
   const getConfig = async () => {

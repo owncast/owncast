@@ -26,6 +26,7 @@ import {
 import { UpdateArgs } from '../../../../types/config-section';
 import { ToggleSwitch } from '../../ToggleSwitch';
 import { EditLogo } from '../../EditLogo';
+import { EditFavicon } from '../../EditFavicon';
 import FormStatusIndicator from '../../FormStatusIndicator';
 import { createInputStatus, STATUS_SUCCESS } from '../../../../utils/input-statuses';
 import { Translation } from '../../../ui/Translation/Translation';
@@ -268,6 +269,8 @@ export default function EditInstanceDetails() {
 
       {/* Logo section */}
       <EditLogo />
+
+      <EditFavicon />
 
       <ToggleSwitch
         fieldName="hideViewerCount"

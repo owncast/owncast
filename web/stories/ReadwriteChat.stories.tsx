@@ -31,6 +31,7 @@ const Page = () => {
 
   const fakeConfig: ClientConfig = {
     chatDisabled: false,
+    chatRequireAuthentication: false,
     name: 'Fake Owncast Server',
     summary: '',
     logo: '',

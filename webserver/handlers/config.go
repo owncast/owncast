@@ -36,6 +36,7 @@ type webConfigResponse struct {
 	HideViewerCount            bool                         `json:"hideViewerCount"`
 	ChatDisabled               bool                         `json:"chatDisabled"`
 	ChatSpamProtectionDisabled bool                         `json:"chatSpamProtectionDisabled"`
+	ChatRequireAuthentication  bool                         `json:"chatRequireAuthentication"`
 	NSFW                       bool                         `json:"nsfw"`
 	Authentication             authenticationConfigResponse `json:"authentication"`
 }
@@ -134,6 +135,7 @@ func getConfigResponse() webConfigResponse {
 		SocialHandles:              socialHandles,
 		ChatDisabled:               configRepository.GetChatDisabled(),
 		ChatSpamProtectionDisabled: configRepository.GetChatSpamProtectionEnabled(),
+		ChatRequireAuthentication:  configRepository.GetChatRequireAuthentication(),
 		ExternalActions:            configRepository.GetExternalActions(),
 		CustomStyles:               configRepository.GetCustomStyles(),
 		MaxSocketPayloadSize:       config.MaxSocketPayloadSize,
