@@ -1704,6 +1704,60 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /admin/config/favicon:
+    post:
+      summary: Upload custom favicon
+      operationId: SetFavicon
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                favicon:
+                  type: string
+                  format: binary
+                  description: Favicon file (PNG or ICO, max 200KB)
+      responses:
+        '200':
+          description: Favicon updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    delete:
+      summary: Reset favicon to default
+      operationId: ResetFavicon
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: Favicon reset to default
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetFaviconOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /admin/config/tags:
     post:
       summary: Update server tags

@@ -129,4 +129,6 @@ type ConfigRepository interface {
 	GetPrivateKey() string
 	SetPublicKey(key string) error
 	SetPrivateKey(key string) error
+	GetFaviconPath() string
+	SetFaviconPath(favicon string) error
 }

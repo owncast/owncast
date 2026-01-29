@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -569,26 +570,29 @@ type Viewer struct {
 
 // WebConfig defines model for WebConfig.
 type WebConfig struct {
-	AppearanceVariables  *map[string]string    `json:"appearanceVariables,omitempty"`
-	Authentication       *AuthenticationConfig `json:"authentication,omitempty"`
-	ChatDisabled         *bool                 `json:"chatDisabled,omitempty"`
-	CustomStyles         *string               `json:"customStyles,omitempty"`
-	ExternalActions      *[]ExternalAction     `json:"externalActions,omitempty"`
-	ExtraPageContent     *string               `json:"extraPageContent,omitempty"`
-	Federation           *FederationConfig     `json:"federation,omitempty"`
-	HideViewerCount      *bool                 `json:"hideViewerCount,omitempty"`
-	Logo                 *string               `json:"logo,omitempty"`
-	MaxSocketPayloadSize *int                  `json:"maxSocketPayloadSize,omitempty"`
-	Name                 *string               `json:"name,omitempty"`
-	Notifications        *NotificationConfig   `json:"notifications,omitempty"`
-	Nsfw                 *bool                 `json:"nsfw,omitempty"`
-	OfflineMessage       *string               `json:"offlineMessage,omitempty"`
-	SocialHandles        *[]SocialHandle       `json:"socialHandles,omitempty"`
-	SocketHostOverride   *string               `json:"socketHostOverride,omitempty"`
-	StreamTitle          *string               `json:"streamTitle,omitempty"`
-	Summary              *string               `json:"summary,omitempty"`
-	Tags                 *[]string             `json:"tags,omitempty"`
-	Version              *string               `json:"version,omitempty"`
+	AppearanceVariables *map[string]string    `json:"appearanceVariables,omitempty"`
+	Authentication      *AuthenticationConfig `json:"authentication,omitempty"`
+	ChatDisabled        *bool                 `json:"chatDisabled,omitempty"`
+
+	// ChatRequireAuthentication Whether users must authenticate before sending chat messages
+	ChatRequireAuthentication *bool               `json:"chatRequireAuthentication,omitempty"`
+	CustomStyles              *string             `json:"customStyles,omitempty"`
+	ExternalActions           *[]ExternalAction   `json:"externalActions,omitempty"`
+	ExtraPageContent          *string             `json:"extraPageContent,omitempty"`
+	Federation                *FederationConfig   `json:"federation,omitempty"`
+	HideViewerCount           *bool               `json:"hideViewerCount,omitempty"`
+	Logo                      *string             `json:"logo,omitempty"`
+	MaxSocketPayloadSize      *int                `json:"maxSocketPayloadSize,omitempty"`
+	Name                      *string             `json:"name,omitempty"`
+	Notifications             *NotificationConfig `json:"notifications,omitempty"`
+	Nsfw                      *bool               `json:"nsfw,omitempty"`
+	OfflineMessage            *string             `json:"offlineMessage,omitempty"`
+	SocialHandles             *[]SocialHandle     `json:"socialHandles,omitempty"`
+	SocketHostOverride        *string             `json:"socketHostOverride,omitempty"`
+	StreamTitle               *string             `json:"streamTitle,omitempty"`
+	Summary                   *string             `json:"summary,omitempty"`
+	Tags                      *[]string           `json:"tags,omitempty"`
+	Version                   *string             `json:"version,omitempty"`
 }
 
 // Webhook defines model for Webhook.
@@ -693,6 +697,12 @@ type SetSuggestedUsernameListJSONBody struct {
 // SetExternalActionsJSONBody defines parameters for SetExternalActions.
 type SetExternalActionsJSONBody struct {
 	Value *[]ExternalAction `json:"value,omitempty"`
+}
+
+// SetFaviconMultipartBody defines parameters for SetFavicon.
+type SetFaviconMultipartBody struct {
+	// Favicon Favicon file (PNG or ICO, max 200KB)
+	Favicon *openapi_types.File `json:"favicon,omitempty"`
 }
 
 // SetBrowserNotificationConfigurationJSONBody defines parameters for SetBrowserNotificationConfiguration.
@@ -944,6 +954,9 @@ type SetDisableSearchIndexingJSONRequestBody = AdminConfigValue
 
 // SetExternalActionsJSONRequestBody defines body for SetExternalActions for application/json ContentType.
 type SetExternalActionsJSONRequestBody SetExternalActionsJSONBody
+
+// SetFaviconMultipartRequestBody defines body for SetFavicon for multipart/form-data ContentType.
+type SetFaviconMultipartRequestBody SetFaviconMultipartBody
 
 // SetFederationBlockDomainsJSONRequestBody defines body for SetFederationBlockDomains for application/json ContentType.
 type SetFederationBlockDomainsJSONRequestBody = AdminConfigValue

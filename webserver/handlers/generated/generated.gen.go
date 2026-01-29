@@ -182,6 +182,15 @@ type ServerInterface interface {
 	// Update external action links
 	// (POST /admin/config/externalactions)
 	SetExternalActions(w http.ResponseWriter, r *http.Request)
+	// Reset favicon to default
+	// (DELETE /admin/config/favicon)
+	ResetFavicon(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/favicon)
+	SetFaviconOptions(w http.ResponseWriter, r *http.Request)
+	// Upload custom favicon
+	// (POST /admin/config/favicon)
+	SetFavicon(w http.ResponseWriter, r *http.Request)
 
 	// (OPTIONS /admin/config/federation/blockdomains)
 	SetFederationBlockDomainsOptions(w http.ResponseWriter, r *http.Request)
@@ -967,6 +976,23 @@ func (_ Unimplemented) SetExternalActionsOptions(w http.ResponseWriter, r *http.
 // Update external action links
 // (POST /admin/config/externalactions)
 func (_ Unimplemented) SetExternalActions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Reset favicon to default
+// (DELETE /admin/config/favicon)
+func (_ Unimplemented) ResetFavicon(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/favicon)
+func (_ Unimplemented) SetFaviconOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Upload custom favicon
+// (POST /admin/config/favicon)
+func (_ Unimplemented) SetFavicon(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2749,6 +2775,57 @@ func (siw *ServerInterfaceWrapper) SetExternalActions(w http.ResponseWriter, r *
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetExternalActions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ResetFavicon operation middleware
+func (siw *ServerInterfaceWrapper) ResetFavicon(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ResetFavicon(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetFaviconOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetFaviconOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFaviconOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetFavicon operation middleware
+func (siw *ServerInterfaceWrapper) SetFavicon(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFavicon(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -5851,6 +5928,15 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/externalactions", wrapper.SetExternalActions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/admin/config/favicon", wrapper.ResetFavicon)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/favicon", wrapper.SetFaviconOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/favicon", wrapper.SetFavicon)
 	})
 	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/admin/config/federation/blockdomains", wrapper.SetFederationBlockDomainsOptions)

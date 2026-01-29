@@ -3,6 +3,7 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/netip"
@@ -280,6 +281,100 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	webutils.WriteSimpleResponse(w, true, "changed")
+}
+
+// SetFavicon will handle a new favicon image file being uploaded.
+func SetFavicon(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	// Parse multipart form with 200KB max
+	if err := r.ParseMultipartForm(200 << 10); err != nil {
+		webutils.WriteSimpleResponse(w, false, "no file provided")
+		return
+	}
+
+	file, header, err := r.FormFile("favicon")
+	if err != nil {
+		webutils.WriteSimpleResponse(w, false, "no file provided")
+		return
+	}
+	defer file.Close()
+
+	// Validate content type (PNG or ICO only)
+	contentType := header.Header.Get("Content-Type")
+	var extension string
+	switch contentType {
+	case "image/png":
+		extension = ".png"
+	case "image/x-icon", "image/vnd.microsoft.icon":
+		extension = ".ico"
+	default:
+		webutils.WriteSimpleResponse(w, false, "favicon must be PNG or ICO format")
+		return
+	}
+
+	// Read file content
+	bytes, err := io.ReadAll(file)
+	if err != nil {
+		webutils.WriteSimpleResponse(w, false, "unable to read file")
+		return
+	}
+
+	// Enforce 200KB size limit
+	const maxFaviconSize = 200 * 1024 // 200KB
+	if len(bytes) > maxFaviconSize {
+		webutils.WriteSimpleResponse(w, false, "file too large, max 200KB")
+		return
+	}
+
+	imgPath := filepath.Join("data", "favicon"+extension)
+	if err := os.WriteFile(imgPath, bytes, 0o600); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	configRepository := configrepository.Get()
+
+	if err := configRepository.SetFaviconPath("favicon" + extension); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	webutils.WriteSimpleResponse(w, true, "favicon updated")
+}
+
+// ResetFavicon will reset the favicon to the default by removing the custom one.
+func ResetFavicon(w http.ResponseWriter, r *http.Request) {
+	configRepository := configrepository.Get()
+
+	// Get the current favicon path before clearing it
+	currentFavicon := configRepository.GetFaviconPath()
+
+	// Clear the favicon path in the database
+	if err := configRepository.SetFaviconPath(""); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	// Delete the favicon file if it exists
+	if currentFavicon != "" {
+		faviconPath := filepath.Join("data", currentFavicon)
+		if err := os.Remove(faviconPath); err != nil && !os.IsNotExist(err) {
+			log.Debugln("error removing favicon file:", err)
+		}
+	}
+
+	// Also try to remove any favicon files that might exist with different extensions
+	for _, ext := range []string{".ico", ".png"} {
+		faviconPath := filepath.Join("data", "favicon"+ext)
+		if err := os.Remove(faviconPath); err != nil && !os.IsNotExist(err) {
+			log.Debugln("error removing favicon file:", err)
+		}
+	}
+
+	webutils.WriteSimpleResponse(w, true, "favicon reset to default")
 }
 
 // SetNSFW will handle the web config request to set the NSFW flag.

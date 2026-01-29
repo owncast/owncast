@@ -175,6 +175,18 @@ func (*ServerInterfaceImpl) SetLogoOptions(w http.ResponseWriter, r *http.Reques
 	middleware.RequireAdminAuth(admin.SetLogo)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetFavicon(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetFavicon)(w, r)
+}
+
+func (*ServerInterfaceImpl) SetFaviconOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetFavicon)(w, r)
+}
+
+func (*ServerInterfaceImpl) ResetFavicon(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.ResetFavicon)(w, r)
+}
+
 func (*ServerInterfaceImpl) SetTags(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetTags)(w, r)
 }

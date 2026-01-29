@@ -28,6 +28,14 @@
 			"titlePlaceholder": "Your action title (required)",
 			"urlPlaceholder": "https://myserver.com/action (required)"
 		},
+		"EditFavicon": {
+			"label": "Favicon",
+			"tip": "Upload a custom favicon (PNG or ICO format, max 200KB). This icon appears in browser tabs and bookmarks.",
+			"resetButton": "Reset",
+			"resetConfirmTitle": "Reset to default favicon?",
+			"resetConfirmOk": "Yes",
+			"resetConfirmCancel": "No"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Increase your audience by appearing in the <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Learn more</a>.",
 			"offlineMessageDescription": "The offline message is displayed to your page visitors when you're not streaming. Markdown is supported.",
@@ -205,6 +213,7 @@
 			"overLimit": "Over limit",
 			"placeholder": "Your chat display name"
 		},
+		"chatDisabled": "<strong><em>Missing translation Frontend.chatDisabled: Please report</em></strong>",
 		"chatOffline": "Chat is offline",
 		"componentError": "Error: {{message}}",
 		"helloWorld": "Hello world",
