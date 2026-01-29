@@ -32,6 +32,36 @@ import { DisplayableError } from '../../types/displayable-error';
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 const SERVER_STATUS_POLL_DURATION = 5000;
+
+// Helper to safely parse hydration data from window object
+// This runs during module initialization so data is available for first render
+const getInitialConfig = (): ClientConfig => {
+  if (typeof window !== 'undefined' && (window as any).configHydration) {
+    try {
+      return JSON.parse((window as any).configHydration);
+    } catch (e) {
+      console.error('Error parsing config hydration during init', e);
+    }
+  }
+  return makeEmptyClientConfig();
+};
+
+const getInitialStatus = (): ServerStatus => {
+  if (typeof window !== 'undefined' && (window as any).statusHydration) {
+    try {
+      return JSON.parse((window as any).statusHydration);
+    } catch (e) {
+      console.error('Error parsing status hydration during init', e);
+    }
+  }
+  return makeEmptyServerStatus();
+};
+
+// Cache the initial values to avoid re-parsing
+const initialConfig = getInitialConfig();
+const initialStatus = getInitialStatus();
+const hasHydratedConfig = typeof window !== 'undefined' && !!(window as any).configHydration;
+const hasHydratedStatus = typeof window !== 'undefined' && !!(window as any).statusHydration;
 const ACCESS_TOKEN_KEY = 'accessToken';
 
 let serverStatusRefreshPoll: ReturnType<typeof setInterval>;
@@ -42,15 +72,17 @@ const serverConnectivityError = `Cannot connect to the Owncast service. Please c
 
 // Server status is what gets updated such as viewer count, durations,
 // stream title, online/offline state, etc.
+// Initialize with hydration data if available for faster first render.
 export const serverStatusState = atom<ServerStatus>({
   key: 'serverStatusState',
-  default: makeEmptyServerStatus(),
+  default: initialStatus,
 });
 
 // The config that comes from the API.
+// Initialize with hydration data if available for faster first render.
 export const clientConfigStateAtom = atom({
   key: 'clientConfigState',
-  default: makeEmptyClientConfig(),
+  default: initialConfig,
 });
 
 export const accessTokenAtom = atom<string>({
@@ -181,7 +213,7 @@ export const ClientConfigStore: FC = () => {
   const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
   const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
   const setHiddenMessageIds = useSetRecoilState<string[]>(removedMessageIdsAtom);
-  const [hasLoadedConfig, setHasLoadedConfig] = useState(false);
+  const [hasLoadedConfig, setHasLoadedConfig] = useState(hasHydratedConfig);
 
   let ws: WebsocketService;
 
@@ -394,36 +426,25 @@ export const ClientConfigStore: FC = () => {
     }
   };
 
-  // Read the config and status on initial load from a JSON string that lives
-  // in window. This is placed there server-side and allows for fast initial
-  // load times because we don't have to wait for the API calls to complete.
+  // Handle initial state machine transition when hydration data was available.
+  // The atoms are already initialized with hydration data at module load time,
+  // so we just need to update the app state machine and calculate clock skew.
   useEffect(() => {
-    try {
-      if ((window as any).configHydration) {
-        const config = JSON.parse((window as any).configHydration);
-        setClientConfig(config);
-        setHasLoadedConfig(true);
+    if (hasHydratedConfig && hasHydratedStatus) {
+      // Transition app state machine based on hydrated status
+      const events = [AppStateEvent.Loaded];
+      if (initialStatus.online) {
+        events.push(AppStateEvent.Online);
+      } else {
+        events.push(AppStateEvent.Offline);
       }
-    } catch (e) {
-      console.error('Error parsing config hydration', e);
-    }
+      sendEvent(events);
 
-    try {
-      if ((window as any).statusHydration) {
-        const status = JSON.parse((window as any).statusHydration);
-        setServerStatus(status);
-        handleStatusChange(status);
+      // Calculate clock skew from hydrated server time
+      if (initialStatus.serverTime) {
+        const clockSkew = new Date(initialStatus.serverTime).getTime() - Date.now();
+        setClockSkew(clockSkew);
       }
-    } catch (e) {
-      console.error('error parsing status hydration', e);
-    }
-
-    try {
-      if ((window as any).configHydration && (window as any).statusHydration) {
-        sendEvent([AppStateEvent.Loaded]);
-      }
-    } catch (e) {
-      console.error('error sending loaded event', e);
     }
   }, []);
 
@@ -448,11 +469,13 @@ export const ClientConfigStore: FC = () => {
   }, [hasLoadedConfig, accessToken]);
 
   useEffect(() => {
-    if (!(window as any).configHydration) {
+    // Only fetch config from API if not hydrated from server
+    if (!hasHydratedConfig) {
       updateClientConfig();
     }
     handleUserRegistration();
-    if (!(window as any).statusHydration) {
+    // Only fetch status from API if not hydrated from server
+    if (!hasHydratedStatus) {
       updateServerStatus();
     }
     clearInterval(serverStatusRefreshPoll);
