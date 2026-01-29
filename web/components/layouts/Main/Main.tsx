@@ -66,7 +66,7 @@ export const Main: FC = () => {
       <Head>
         {isProduction && <ServerRenderedHydration />}
 
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="authorization_endpoint" href="/api/auth/provider/indieauth" />
         <meta

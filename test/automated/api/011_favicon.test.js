@@ -151,7 +151,5 @@ test('reject request without file', async () => {
 });
 
 test('reject unauthenticated request', async () => {
-	await request
-		.post('/api/admin/config/favicon')
-		.expect(401);
+	await request.post('/api/admin/config/favicon').expect(401);
 });
