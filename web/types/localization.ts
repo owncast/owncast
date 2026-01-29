@@ -161,6 +161,10 @@ export const Localization = {
     EditFavicon: {
       label: 'Admin.EditFavicon.label',
       tip: 'Admin.EditFavicon.tip',
+      resetButton: 'Admin.EditFavicon.resetButton',
+      resetConfirmTitle: 'Admin.EditFavicon.resetConfirmTitle',
+      resetConfirmOk: 'Admin.EditFavicon.resetConfirmOk',
+      resetConfirmCancel: 'Admin.EditFavicon.resetConfirmCancel',
     },
 
     // VideoVariantForm component specific keys

@@ -1,4 +1,4 @@
-import { Button, Upload } from 'antd';
+import { Button, Upload, Popconfirm } from 'antd';
 import { RcFile } from 'antd/lib/upload/interface';
 import React, { useState, useRef, FC } from 'react';
 import dynamic from 'next/dynamic';
@@ -23,6 +23,10 @@ const LoadingOutlined = dynamic(() => import('@ant-design/icons/LoadingOutlined'
 });
 
 const UploadOutlined = dynamic(() => import('@ant-design/icons/UploadOutlined'), {
+  ssr: false,
+});
+
+const UndoOutlined = dynamic(() => import('@ant-design/icons/UndoOutlined'), {
   ssr: false,
 });
 
@@ -131,6 +135,45 @@ export const EditFavicon: FC = () => {
     resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
   };
 
+  const handleResetFavicon = async () => {
+    setLoading(true);
+    setSubmitStatus(createInputStatus(STATUS_PROCESSING));
+
+    try {
+      const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
+      const response = await fetch(`${NEXT_PUBLIC_API_HOST}api/admin/config/favicon`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Basic ${encoded}`,
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitStatus(createInputStatus(STATUS_SUCCESS));
+        setFaviconCacheBuster(Math.floor(Math.random() * 100));
+      } else {
+        setSubmitStatus(
+          createInputStatus(
+            STATUS_ERROR,
+            t(Localization.Admin.StatusMessages.thereWasAnError, { message: result.message }),
+          ),
+        );
+      }
+    } catch (error) {
+      setSubmitStatus(
+        createInputStatus(
+          STATUS_ERROR,
+          t(Localization.Admin.StatusMessages.thereWasAnError, { message: error.message }),
+        ),
+      );
+    }
+
+    setLoading(false);
+    resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+  };
+
   const faviconDisplayUrl = `${NEXT_PUBLIC_API_HOST}favicon.ico?random=${faviconCachebuster}`;
 
   return (
@@ -172,6 +215,20 @@ export const EditFavicon: FC = () => {
               <Button icon={<UploadOutlined />} />
             )}
           </Upload>
+          <Popconfirm
+            title={t(Localization.Admin.EditFavicon.resetConfirmTitle)}
+            onConfirm={handleResetFavicon}
+            okText={t(Localization.Admin.EditFavicon.resetConfirmOk)}
+            cancelText={t(Localization.Admin.EditFavicon.resetConfirmCancel)}
+            disabled={loading}
+          >
+            <Button icon={<UndoOutlined />} disabled={loading} style={{ marginLeft: '8px' }}>
+              <Translation
+                translationKey={Localization.Admin.EditFavicon.resetButton}
+                defaultText="Reset"
+              />
+            </Button>
+          </Popconfirm>
         </div>
         <FormStatusIndicator status={submitStatus} />
         <p className="field-tip">

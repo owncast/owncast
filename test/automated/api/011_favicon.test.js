@@ -153,3 +153,32 @@ test('reject request without file', async () => {
 test('reject unauthenticated request', async () => {
 	await request.post('/api/admin/config/favicon').expect(401);
 });
+
+test('reset favicon to default successfully', async () => {
+	// First upload a favicon to ensure we have one to reset
+	await request
+		.post('/api/admin/config/favicon')
+		.auth('admin', defaultAdminPassword)
+		.attach('favicon', testPNGPath)
+		.expect(200);
+
+	// Now reset to default
+	const res = await request
+		.delete('/api/admin/config/favicon')
+		.auth('admin', defaultAdminPassword)
+		.expect(200);
+
+	expect(res.body.success).toBe(true);
+	expect(res.body.message).toBe('favicon reset to default');
+});
+
+test('verify favicon.ico returns default after reset', async () => {
+	const res = await request.get('/favicon.ico').expect(200);
+
+	expect(res.headers['content-type']).toMatch(/image\/(png|x-icon)/);
+	expect(res.body).toBeDefined();
+});
+
+test('reject unauthenticated reset request', async () => {
+	await request.delete('/api/admin/config/favicon').expect(401);
+});

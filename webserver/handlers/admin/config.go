@@ -345,6 +345,38 @@ func SetFavicon(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteSimpleResponse(w, true, "favicon updated")
 }
 
+// ResetFavicon will reset the favicon to the default by removing the custom one.
+func ResetFavicon(w http.ResponseWriter, r *http.Request) {
+	configRepository := configrepository.Get()
+
+	// Get the current favicon path before clearing it
+	currentFavicon := configRepository.GetFaviconPath()
+
+	// Clear the favicon path in the database
+	if err := configRepository.SetFaviconPath(""); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	// Delete the favicon file if it exists
+	if currentFavicon != "" {
+		faviconPath := filepath.Join("data", currentFavicon)
+		if err := os.Remove(faviconPath); err != nil && !os.IsNotExist(err) {
+			log.Debugln("error removing favicon file:", err)
+		}
+	}
+
+	// Also try to remove any favicon files that might exist with different extensions
+	for _, ext := range []string{".ico", ".png"} {
+		faviconPath := filepath.Join("data", "favicon"+ext)
+		if err := os.Remove(faviconPath); err != nil && !os.IsNotExist(err) {
+			log.Debugln("error removing favicon file:", err)
+		}
+	}
+
+	webutils.WriteSimpleResponse(w, true, "favicon reset to default")
+}
+
 // SetNSFW will handle the web config request to set the NSFW flag.
 func SetNSFW(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
