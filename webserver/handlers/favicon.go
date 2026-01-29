@@ -40,8 +40,8 @@ func GetFavicon(w http.ResponseWriter, r *http.Request) {
 
 func returnDefaultFavicon(w http.ResponseWriter) {
 	faviconBytes := static.GetFavicon()
-	cacheTime := utils.GetCacheDurationSecondsForPath("favicon.ico")
-	writeFaviconResponse(faviconBytes, "image/x-icon", w, cacheTime)
+	cacheTime := utils.GetCacheDurationSecondsForPath("favicon.png")
+	writeFaviconResponse(faviconBytes, "image/png", w, cacheTime)
 }
 
 func writeFaviconResponse(data []byte, contentType string, w http.ResponseWriter, cacheSeconds int) {
