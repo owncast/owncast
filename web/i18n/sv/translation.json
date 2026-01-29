@@ -28,6 +28,14 @@
 			"titlePlaceholder": "Din åtgärdstitel (obligatoriskt)",
 			"urlPlaceholder": "https://myserver.com/action (obligatoriskt)"
 		},
+		"EditFavicon": {
+			"label": "Favicon",
+			"tip": "Ladda upp en anpassad favicon (PNG eller ICO format, max 200KB). Denna ikon visas i flikar och bokmärken.",
+			"resetButton": "Reset",
+			"resetConfirmTitle": "Återställ till standardfavorit?",
+			"resetConfirmOk": "Ja",
+			"resetConfirmCancel": "Nej"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Öka din publik genom att synas i <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. Detta är en extern tjänst som drivs av projektet Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Läs mer</a>.",
 			"offlineMessageDescription": "Meddelandet offline visas för dina sidbesökare när du inte streamar. Markdown stöds.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "Webbläsaraviseringar stöds inte för lokala servrar."
 		},
 		"Chat": {
+			"authenticateToChat": "Autentisera till chatt",
 			"moderatorNotification": "Du är nu moderator.",
 			"nameChangeText": "är nu känd som",
 			"userJoined": "gick med i chatten.",
@@ -204,6 +213,7 @@
 			"overLimit": "Över gräns",
 			"placeholder": "Ditt visningsnamn på chatten"
 		},
+		"chatDisabled": "<strong><em>Saknad översättning Frontend.chatDisabled: Please report</em></strong>",
 		"chatOffline": "Chatten är offline",
 		"componentError": "Fel: {{message}}",
 		"helloWorld": "Hej världen",

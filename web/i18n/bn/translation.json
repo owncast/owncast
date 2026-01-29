@@ -28,6 +28,14 @@
 			"titlePlaceholder": "আপনার ক্রিয়াকলাপের শিরোনাম (প্রয়োজনীয়)",
 			"urlPlaceholder": "https://myserver.com/action (প্রয়োজনীয়)"
 		},
+		"EditFavicon": {
+			"label": "ফেভিকন",
+			"tip": "একটি কাস্টম ফেভিকন আপলোড করুন (PNG বা ICO ফরম্যাট, সর্বোচ্চ 200KB)। এই চিহ্নটি ব্রাউজার ট্যাব এবং বুকমার্কে প্রদর্শিত হবে।",
+			"resetButton": "রিসেট",
+			"resetConfirmTitle": "ডিফল্ট ফেভিকনে রিসেট করতে চান?",
+			"resetConfirmOk": "হ্যাঁ",
+			"resetConfirmCancel": "না"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "আপনার দর্শকদের <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast ডিরেক্টরিতে</strong></a> হাজির হয়ে বৃদ্ধি করুন। এটি Owncast প্রকল্প দ্বারা পরিচালিত একটি বাহ্যিক পরিষেবা। <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">আরও জানুন</a>।",
 			"offlineMessageDescription": "যখন আপনি সম্প্রচার করছেন না তখন আপনার পৃষ্ঠার দর্শকদের জন্য অফলাইন বার্তা দেখানো হয়। মার্কডাউন সমর্থিত।",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "লোকাল সার্ভারের জন্য ব্রাউজার বিজ্ঞপ্তি সমর্থিত নয়।"
 		},
 		"Chat": {
+			"authenticateToChat": "চ্যাটে প্রমাণীকরণ করুন",
 			"moderatorNotification": "আপনি এখন একজন পরিচালকের।",
 			"nameChangeText": "এখন পরিচিত হিসাবে",
 			"userJoined": "চ্যাটে যোগদান করেছে।",
@@ -204,6 +213,7 @@
 			"overLimit": "সীমার উর্ধ্বে",
 			"placeholder": "আপনার চ্যাট ডিসপ্লে নাম"
 		},
+		"chatDisabled": "<strong><em>অনুবাদ অনুপস্থিত Frontend.chatDisabled: দয়া করে রিপোর্ট করুন</em></strong>",
 		"chatOffline": "চ্যাট অফলাইনে রয়েছে",
 		"componentError": "ত্রুটি: {{message}}",
 		"helloWorld": "হ্যালো বিশ্ব",

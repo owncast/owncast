@@ -28,6 +28,14 @@
 			"titlePlaceholder": "ชื่อการกระทำของคุณ (ต้องกรอก)",
 			"urlPlaceholder": "https://myserver.com/action (ต้องกรอก)"
 		},
+		"EditFavicon": {
+			"label": "ฟาเวคอน",
+			"tip": "อัปโหลดฟาเวคอนที่กำหนดเอง (รูปแบบ PNG หรือ ICO ขนาดสูงสุด 200KB) ไอคอนนี้จะแสดงในแท็บเบราว์เซอร์และบุ๊กมาร์ก",
+			"resetButton": "รีเซ็ต",
+			"resetConfirmTitle": "รีเซ็ตฟาเวคอนเป็นค่าเริ่มต้นหรือไม่?",
+			"resetConfirmOk": "ใช่",
+			"resetConfirmCancel": "ไม่"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "เพิ่มผู้ชมของคุณโดยการปรากฏใน <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a> นี่เป็นบริการภายนอกที่ดำเนินการโดยโครงการ Owncast <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">เรียนรู้เพิ่มเติม</a>",
 			"offlineMessageDescription": "ข้อความออฟไลน์จะแสดงให้ผู้เข้าชมหน้าของคุณเมื่อคุณไม่ได้สตรีม มาร์กอัปได้รับการสนับสนุน.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "เบราว์เซอร์ไม่รองรับการแจ้งเตือนสำหรับเซิร์ฟเวอร์ท้องถิ่น"
 		},
 		"Chat": {
+			"authenticateToChat": "ตรวจสอบสิทธิ์ในการแชท",
 			"moderatorNotification": "คุณตอนนี้เป็นผู้ดูแลระบบ.",
 			"nameChangeText": "ตอนนี้รู้จักในชื่อ",
 			"userJoined": "เข้าร่วมการสนทนาแล้ว.",
@@ -204,6 +213,7 @@
 			"overLimit": "เกินขีดจำกัด",
 			"placeholder": "ชื่อแสดงในแชทของคุณ"
 		},
+		"chatDisabled": "<strong><em>คุณลักษณะที่หายไป Frontend.chatDisabled: กรุณารายงาน</em></strong>",
 		"chatOffline": "แชทออฟไลน์",
 		"componentError": "Error: {{message}}",
 		"helloWorld": "สวัสดีโลก",

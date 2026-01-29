@@ -28,6 +28,14 @@
 			"titlePlaceholder": "Uw titel (verplicht)",
 			"urlPlaceholder": "https://myserver.com/actie (verplicht)"
 		},
+		"EditFavicon": {
+			"label": "Favicon",
+			"tip": "Upload een aangepast favicon (PNG of ICO formaat, max 200KB). Dit pictogram wordt weergegeven in browser tabbladen en bladwijzers.",
+			"resetButton": "Reset",
+			"resetConfirmTitle": "Standaardinstellingen favicon herstellen?",
+			"resetConfirmOk": "ja",
+			"resetConfirmCancel": "Neen"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Vergroot je publiek door in de <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>te verschijnen. Dit is een externe dienst die wordt uitgevoerd door het Owncast project. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Leer meer</a>.",
 			"offlineMessageDescription": "Het offline-bericht wordt getoond aan de bezoekers van je pagina wanneer er geen stream live is. Markdown wordt ondersteund.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "Browsermeldingen worden niet ondersteund voor lokale servers."
 		},
 		"Chat": {
+			"authenticateToChat": "Authenticeer bij chat",
 			"moderatorNotification": "Je bent nu een moderator.",
 			"nameChangeText": "staat nu bekend als",
 			"userJoined": "ging de chat binnen.",
@@ -204,6 +213,7 @@
 			"overLimit": "Limiet overschreden",
 			"placeholder": "Jouw weergavenaam van je chat"
 		},
+		"chatDisabled": "<strong><em>Ontbrekende vertaling Frontend.chatDisabled: Rapporteer</em></strong>",
 		"chatOffline": "Chat is offline",
 		"componentError": "Fout: {{message}}",
 		"helloWorld": "Hallo wereld",

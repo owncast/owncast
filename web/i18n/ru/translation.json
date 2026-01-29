@@ -28,6 +28,14 @@
 			"titlePlaceholder": "Название действия (обязательно)",
 			"urlPlaceholder": "https://myserver.com/action (обязательно)"
 		},
+		"EditFavicon": {
+			"label": "Иконка",
+			"tip": "Загрузите пользовательский значок фаворита (PNG или ICO формат, макс. 200KB). Эта иконка отображается на вкладках браузера и закладках.",
+			"resetButton": "Reset",
+			"resetConfirmTitle": "Восстановить избранное по умолчанию?",
+			"resetConfirmOk": "Да",
+			"resetConfirmCancel": "Нет"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Увеличьте свою аудиторию, появляясь в <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Каталоге Owncast</strong></a>. Это внешний сервис, управляемый проектом Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Узнайте больше</a>.",
 			"offlineMessageDescription": "Оффлайн сообщение отображается посетителям ваших страниц, когда вы не транслируете. Поддерживается Markdown.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "Уведомления браузера не поддерживаются для локальных серверов."
 		},
 		"Chat": {
+			"authenticateToChat": "Аутентифицироваться в чате",
 			"moderatorNotification": "Теперь вы модератор.",
 			"nameChangeText": "теперь известен как",
 			"userJoined": "присоединился к чату.",
@@ -204,6 +213,7 @@
 			"overLimit": "Превышен предел",
 			"placeholder": "Отображаемое имя чата"
 		},
+		"chatDisabled": "<strong><em>Отсутствует перевод Frontend.chatDisabled: Пожалуйста, сообщите</em></strong>",
 		"chatOffline": "Чат не в сети",
 		"componentError": "Ошибка: {{message}}",
 		"helloWorld": "Здравствуй, мир",

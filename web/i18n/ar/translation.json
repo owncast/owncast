@@ -28,6 +28,14 @@
 			"titlePlaceholder": "عنوان الإجراء الخاص بك (مطلوب)",
 			"urlPlaceholder": "https://myserver.com/action (مطلوب)"
 		},
+		"EditFavicon": {
+			"label": "فافيتشون",
+			"tip": "تحميل فافيكون مخصص (PNG أو ICO، بحد أقصى 200 كيلو بايت). تظهر هذه الأيقونة في علامات تبويب المتصفح والإشارات المرجعية.",
+			"resetButton": "Reset",
+			"resetConfirmTitle": "إعادة تعيين إلى الفافيكون الافتراضي؟",
+			"resetConfirmOk": "نعم",
+			"resetConfirmCancel": "لا"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "زيادة جمهورك عن طريق الظهور في <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast directory</strong></a>. هذه خدمة خارجية يديرها مشروع Owncast . <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">تعرف على</a> أكثر.",
 			"offlineMessageDescription": "يتم عرض الرسالة دون اتصال على زوار الصفحة الخاصة بك عندما لا تذيل. يتم دعم Markdown.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "إشعارات المتصفح غير مدعومة للخوادم المحلية."
 		},
 		"Chat": {
+			"authenticateToChat": "المصادقة للمحادثة",
 			"moderatorNotification": "أنت الآن مشرف.",
 			"nameChangeText": "معروف الآن باسم",
 			"userJoined": "انضم إلى الدردشة.",
@@ -204,6 +213,7 @@
 			"overLimit": "تجاوز الحد",
 			"placeholder": "اسم عرض المحادثة"
 		},
+		"chatDisabled": "<strong><em>الترجمة المفقودة Frontend.chatDisabled: الرجاء الإبلاغ</em></strong>",
 		"chatOffline": "الدردشة غير متصل",
 		"componentError": "خطأ: {{message}}",
 		"helloWorld": "مرحبا بالعالم",

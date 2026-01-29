@@ -28,6 +28,14 @@
 			"titlePlaceholder": "Tiêu đề hành động của bạn (bắt buộc)",
 			"urlPlaceholder": "https://myserver.com/action (bắt buộc)"
 		},
+		"EditFavicon": {
+			"label": "Favicon",
+			"tip": "Tải lên favicon tùy chỉnh (định dạng PNG hoặc ICO, tối đa 200KB). Biểu tượng này xuất hiện trên các tab và dấu trang của trình duyệt.",
+			"resetButton": "Đặt lại",
+			"resetConfirmTitle": "Đặt lại favicon về mặc định?",
+			"resetConfirmOk": "Có",
+			"resetConfirmCancel": "Không"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Tăng cường khán giả của bạn bằng cách xuất hiện trong <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Danh bạ Owncast</strong></a>. Đây là một dịch vụ bên ngoài do dự án Owncast vận hành. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Tìm hiểu thêm</a>.",
 			"offlineMessageDescription": "Thông điệp ngoại tuyến sẽ được hiển thị cho khách truy cập trang của bạn khi bạn không phát sóng. Markdown được hỗ trợ.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "Thông báo trình duyệt không được hỗ trợ cho các máy chủ cục bộ."
 		},
 		"Chat": {
+			"authenticateToChat": "Xác thực để trò chuyện",
 			"moderatorNotification": "Bạn hiện là một người điều hành.",
 			"nameChangeText": "hiện được biết đến với tên",
 			"userJoined": "đã tham gia trò chuyện.",
@@ -204,6 +213,7 @@
 			"overLimit": "Vượt quá giới hạn",
 			"placeholder": "Tên hiển thị của bạn trong chat"
 		},
+		"chatDisabled": "<strong><em>Thiếu bản dịch Frontend.chatDisabled: Vui lòng báo cáo</em></strong>",
 		"chatOffline": "Trò chuyện đang ngoại tuyến",
 		"componentError": "Lỗi: {{message}}",
 		"helloWorld": "Xin chào thế giới",

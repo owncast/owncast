@@ -28,6 +28,14 @@
 			"titlePlaceholder": "작업 제목 (필수)",
 			"urlPlaceholder": "https://myserver.com/action (필수)"
 		},
+		"EditFavicon": {
+			"label": "파비콘",
+			"tip": "사용자 정의 파비콘을 업로드하세요 (PNG 또는 ICO 형식, 최대 200KB). 이 아이콘은 브라우저 탭과 즐겨찾기에 나타납니다.",
+			"resetButton": "재설정",
+			"resetConfirmTitle": "기본 파비콘으로 재설정하시겠습니까?",
+			"resetConfirmOk": "예",
+			"resetConfirmCancel": "아니오"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "<a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast 디렉토리</strong></a>에 나타나 청중을 늘리세요. 이 서비스는 Owncast 프로젝트에서 운영하는 외부 서비스입니다. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">자세히 알아보기</a>.",
 			"offlineMessageDescription": "스트리밍을 하지 않을 때 페이지 방문자에게 오프라인 메시지가 표시됩니다. 마크다운이 지원됩니다.",
@@ -166,6 +174,7 @@
 			"unsupportedLocal": "로컬 서버에 대한 브라우저 알림은 지원되지 않습니다."
 		},
 		"Chat": {
+			"authenticateToChat": "채팅 인증하기",
 			"moderatorNotification": "이제 당신은 중재자입니다.",
 			"nameChangeText": "이제 이름이 다음과 같습니다.",
 			"userJoined": "채팅에 참여했습니다.",
@@ -204,6 +213,7 @@
 			"overLimit": "제한 초과",
 			"placeholder": "귀하의 채팅 표시 이름"
 		},
+		"chatDisabled": "<strong><em>번역 누락 Frontend.chatDisabled: 신고해 주세요</em></strong>",
 		"chatOffline": "채팅이 오프라인입니다",
 		"componentError": "오류: {{message}}",
 		"helloWorld": "헬로 월드",
