@@ -21,4 +21,4 @@ if [ -n "${EARTHLY_BUILD_BRANCH}" ]; then
 	git checkout "${EARTHLY_BUILD_BRANCH}" || exit
 fi
 
-earthly --ci +docker-all --images="ghcr.io/owncast/${EARTHLY_IMAGE_NAME}:${BUILD_TAG}" --version="${VERSION}"
+earthly -P --ci +docker-all --images="ghcr.io/owncast/${EARTHLY_IMAGE_NAME}:${BUILD_TAG}" --version="${VERSION}"

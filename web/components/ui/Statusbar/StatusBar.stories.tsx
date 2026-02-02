@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/react';
+import { Meta } from '@storybook/nextjs';
 import { subHours, subMinutes, subSeconds } from 'date-fns';
 import { Statusbar } from './Statusbar';
 

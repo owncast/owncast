@@ -1,6 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useContext, useState, useEffect } from 'react';
 import { Typography, Tag } from 'antd';
+import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 import {
   FIELD_PROPS_TAGS,
@@ -17,12 +18,14 @@ import {
   STATUS_SUCCESS,
   STATUS_WARNING,
 } from '../../../../utils/input-statuses';
+import { Localization } from '../../../../types/localization';
 import { TAG_COLOR } from '../../EditValueArray';
 
 const { Title } = Typography;
 
 // eslint-disable-next-line react/function-component-definition
 export default function EditInstanceTags() {
+  const { t } = useTranslation();
   const [newTagInput, setNewTagInput] = useState<string>('');
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
 
@@ -58,7 +61,9 @@ export default function EditInstanceTags() {
       data: { value: postValue },
       onSuccess: () => {
         setFieldInConfigState({ fieldName: 'tags', value: postValue, path: configPath });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Tags updated.'));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.tagsUpdated)),
+        );
         setNewTagInput('');
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
       },
@@ -81,11 +86,15 @@ export default function EditInstanceTags() {
     resetStates();
     const newTag = newTagInput.trim();
     if (newTag === '') {
-      setSubmitStatus(createInputStatus(STATUS_WARNING, 'Please enter a tag'));
+      setSubmitStatus(
+        createInputStatus(STATUS_WARNING, t(Localization.Admin.StatusMessages.pleaseEnterTag)),
+      );
       return;
     }
     if (tags.some(tag => tag.toLowerCase() === newTag.toLowerCase())) {
-      setSubmitStatus(createInputStatus(STATUS_WARNING, 'This tag is already used!'));
+      setSubmitStatus(
+        createInputStatus(STATUS_WARNING, t(Localization.Admin.StatusMessages.tagAlreadyUsed)),
+      );
       return;
     }
 

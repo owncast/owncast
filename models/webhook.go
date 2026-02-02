@@ -21,6 +21,7 @@ var validEvents = []EventType{
 	UserJoined,
 	UserParted,
 	UserNameChanged,
+	FediverseEngagementFollow,
 	VisibiltyToggled,
 	StreamStarted,
 	StreamStopped,

@@ -1,3 +1,15 @@
+# This workflow builds and deploys Storybook component documentation
+# Triggers:
+#   - Push to develop branch with changes to:
+#     - web/stories/** (story files)
+#     - web/components/** (component source)
+#     - web/.storybook/** (Storybook config)
+#     - web/i18n/** (translations)
+# Output:
+#   - Generates updated story files
+#   - Builds Storybook to docs/components
+#   - Dispatches event to owncast.github.io for deployment
+
 name: Build and Deploy Components+Style Guide
 on:
   push:
@@ -16,19 +28,26 @@ jobs:
     if: github.repository == 'owncast/owncast'
 
     steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+          cancel_others: 'true'
+          skip_after_successful_duplicate: 'true'
+
       - name: Check out pull request code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         if: github.event_name == 'push'
 
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-node-modules-bundle-web-app
         with:
@@ -62,7 +81,7 @@ jobs:
 
       - name: Dispatch event to web site
         if: github.repository == 'owncast/owncast'
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.BUNDLE_STORYBOOK_OWNCAST_ONLINE }}
           repository: owncast/owncast.github.io

@@ -1,23 +1,9 @@
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot } from 'recoil';
+import { http, HttpResponse } from 'msw';
 import { ChatModerationActionMenu } from './ChatModerationActionMenu';
 
-const mocks = {
-  mocks: [
-    {
-      // The "matcher" determines if this
-      // mock should respond to the current
-      // call to fetch().
-      matcher: {
-        name: 'response',
-        url: 'glob:/api/moderation/chat/user/*',
-      },
-      // If the "matcher" matches the current
-      // fetch() call, the fetch response is
-      // built using this "response".
-      response: {
-        status: 200,
-        body: {
+const mockUserData = {
           user: {
             id: 'hjFPU967R',
             displayName: 'focused-snyder',
@@ -57,17 +43,19 @@ const mocks = {
               body: 'test message 1',
             },
           ],
-        },
-      },
-    },
-  ],
-};
+        };
 
 const meta = {
   title: 'owncast/Chat/Moderation menu',
   component: ChatModerationActionMenu,
   parameters: {
-    fetchMock: mocks,
+    msw: {
+      handlers: [
+        http.get('/api/moderation/chat/user/*', () => {
+          return HttpResponse.json(mockUserData);
+        }),
+      ],
+    },
     docs: {
       description: {
         component: `This should be a popup that is activated from a user's chat message. It should have actions to:

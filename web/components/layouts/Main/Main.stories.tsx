@@ -1,4 +1,4 @@
-import { Meta, StoryFn, StoryObj } from '@storybook/react';
+import { Meta, StoryFn, StoryObj } from '@storybook/nextjs';
 import { MutableSnapshot, RecoilRoot } from 'recoil';
 import { makeEmptyClientConfig } from '../../../interfaces/client-config.model';
 import { ServerStatus, makeEmptyServerStatus } from '../../../interfaces/server-status.model';
@@ -129,20 +129,22 @@ export const OfflineMobile: StoryObj<typeof Template> = {
     },
   },
 
-  parameters: {
+  globals: {
     viewport: {
-      defaultViewport: 'mobile1',
-    },
+      value: 'mobile1',
+      isRotated: false
+    }
   },
 };
 
 export const OfflineTablet: StoryObj<typeof Template> = {
   render: Template,
 
-  parameters: {
+  globals: {
     viewport: {
-      defaultViewport: 'tablet',
-    },
+      value: 'tablet',
+      isRotated: false
+    }
   },
 };
 
@@ -168,10 +170,11 @@ export const OnlineMobile: StoryObj<typeof Template> = {
     },
   },
 
-  parameters: {
+  globals: {
     viewport: {
-      defaultViewport: 'mobile1',
-    },
+      value: 'mobile1',
+      isRotated: false
+    }
   },
 };
 
@@ -182,9 +185,10 @@ export const OnlineTablet: StoryObj<typeof Template> = {
     ServerStatusServiceMock: OnlineServerStatusServiceMock,
   },
 
-  parameters: {
+  globals: {
     viewport: {
-      defaultViewport: 'tablet',
-    },
+      value: 'tablet',
+      isRotated: false
+    }
   },
 };

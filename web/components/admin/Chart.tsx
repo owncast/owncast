@@ -28,6 +28,15 @@ ChartJS.register(
   Legend,
 );
 
+export enum TimeWindow {
+  Hour12 = 1,
+  Hour24 = 2,
+  Day7 = 3,
+  Day30 = 4,
+  Month3 = 5,
+  Month6 = 6,
+}
+
 interface TimedValue {
   time: Date;
   value: number;
@@ -45,13 +54,33 @@ export type ChartProps = {
   dataCollections?: any[];
   minYValue?: number;
   yStepSize?: number;
+  timeWindowKey?: TimeWindow;
 };
 
-function createGraphDataset(dataArray) {
+function getLabelFormat(timeWindowKey?: TimeWindow) {
+  switch (timeWindowKey) {
+    case TimeWindow.Hour12:
+    case TimeWindow.Hour24:
+      return 'H:mm'; // 12/24h: hour
+
+    case TimeWindow.Day7:
+    case TimeWindow.Day30:
+      return 'MMM d'; // 7/30d: day
+
+    case TimeWindow.Month3:
+    case TimeWindow.Month6:
+      return 'MMM'; // 3/6mo: month
+
+    default:
+      return 'H:mm';
+  }
+}
+
+function createGraphDataset(dataArray, labelFormat) {
   const dataValues = {};
   dataArray.forEach(item => {
     const dateObject = new Date(item.time);
-    const dateString = format(dateObject, 'H:mma');
+    const dateString = format(dateObject, labelFormat);
     dataValues[dateString] = item.value;
   });
   return dataValues;
@@ -67,10 +96,13 @@ export const Chart: FC<ChartProps> = ({
   yLogarithmic,
   minYValue,
   yStepSize = 0,
+  timeWindowKey,
 }) => {
   const renderData = [];
-
   const chartRef = useRef(null);
+
+  const labelFormat = getLabelFormat(timeWindowKey);
+
   const downloadChart = () => {
     if (chartRef.current) {
       const link = document.createElement('a');
@@ -87,7 +119,7 @@ export const Chart: FC<ChartProps> = ({
       backgroundColor: color,
       borderColor: color,
       borderWidth: 3,
-      data: createGraphDataset(data),
+      data: createGraphDataset(data, labelFormat),
     });
   }
 
@@ -95,7 +127,7 @@ export const Chart: FC<ChartProps> = ({
     renderData.push({
       id: collection.name,
       label: collection.name,
-      data: createGraphDataset(collection.data),
+      data: createGraphDataset(collection.data, labelFormat),
       backgroundColor: collection.color,
       borderColor: collection.color,
       borderWidth: 3,
@@ -107,8 +139,14 @@ export const Chart: FC<ChartProps> = ({
   const options = {
     responsive: true,
     clip: false,
-
     scales: {
+      x: {
+        title: { display: false },
+        ticks: {
+          autoSkip: true,
+          maxTicksLimit: 10,
+        },
+      },
       y: {
         type: yLogarithmic ? ('logarithmic' as const) : ('linear' as const),
         reverse: yFlipped,

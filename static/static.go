@@ -67,6 +67,14 @@ func GetLogo() []byte {
 	return getFileSystemStaticFileOrDefault("img/logo.png", logo)
 }
 
+//go:embed favicon.png
+var favicon []byte
+
+// GetFavicon will return the favicon data.
+func GetFavicon() []byte {
+	return getFileSystemStaticFileOrDefault("favicon.png", favicon)
+}
+
 func getFileSystemStaticFileOrDefault(path string, defaultData []byte) []byte {
 	fullPath := filepath.Join("static", path)
 	data, err := os.ReadFile(fullPath) //nolint: gosec

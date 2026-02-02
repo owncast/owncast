@@ -1,3 +1,13 @@
+# This workflow runs automated API integration tests using Earthly
+# Triggers:
+#   - Push/PR with Go file changes
+# Skips:
+#   - Web-only changes
+# Uses:
+#   - Earthly for reproducible builds
+#   - QEMU for cross-platform testing
+#   - Retries up to 3 times for flaky tests
+
 name: Automated API tests
 
 on:
@@ -19,19 +29,26 @@ jobs:
           concurrent_skipping: 'same_content_newer'
 
       - name: Check out pull request code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Fetch base branch for comparison
+        if: github.event_name == 'pull_request'
+        run: |
+          git remote add upstream https://github.com/${{ github.event.pull_request.base.repo.full_name }}.git || true
+          git fetch upstream ${{ github.event.pull_request.base.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         if: github.event_name == 'push'
 
       - name: Get changed files
         id: changed-files-yaml
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v47
         with:
           files_yaml: |
             src:

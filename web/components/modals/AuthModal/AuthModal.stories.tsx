@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { AuthModal } from './AuthModal';
 import { currentUserAtom } from '../../stores/ClientConfigStore';

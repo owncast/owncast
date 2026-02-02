@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Table, Space, Button, Typography, Alert, Input, Form, message } from 'antd';
 import dynamic from 'next/dynamic';
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 
 import { fetchData, UPDATE_STREAM_KEYS } from '../../../../utils/apis';
-import { PASSWORD_COMPLEXITY_RULES, REGEX_PASSWORD } from '../../../../utils/config-constants';
+import { STREAM_KEY_COMPLEXITY_RULES, REGEX_STREAM_KEY } from '../../../../utils/config-constants';
 
 const { Paragraph } = Typography;
 
@@ -37,14 +37,13 @@ const saveKeys = async (keys, setError) => {
 export const generateRndKey = () => {
   let defaultKey = '';
   let isValidStreamKey = false;
-  const streamKeyRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$^&*]).{8,192}$/;
-  const s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$^&*';
+  const s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
   while (!isValidStreamKey) {
     const temp = Array.apply(20, Array(30))
       .map(() => s.charAt(Math.floor(Math.random() * s.length)))
       .join('');
-    if (streamKeyRegex.test(temp)) {
+    if (REGEX_STREAM_KEY.test(temp)) {
       isValidStreamKey = true;
       defaultKey = temp;
     }
@@ -56,15 +55,6 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
   const [hasChanged, setHasChanged] = useState(true);
   const [form] = Form.useForm();
   const { Item } = Form;
-
-  // Password Complexity rules
-  const passwordComplexityRules = [];
-
-  useEffect(() => {
-    PASSWORD_COMPLEXITY_RULES.forEach(element => {
-      passwordComplexityRules.push(element);
-    });
-  }, []);
 
   const handleAddKey = (newkey: any) => {
     const updatedKeys = [...streamKeys, newkey];
@@ -81,7 +71,7 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
 
   const handleInputChange = (event: any) => {
     const val = event.target.value;
-    if (REGEX_PASSWORD.test(val)) {
+    if (REGEX_STREAM_KEY.test(val)) {
       setHasChanged(true);
     } else {
       setHasChanged(false);
@@ -108,10 +98,10 @@ const AddKeyForm = ({ setShowAddKeyForm, setFieldInConfigState, streamKeys, setE
           <p>
             The key you provide your broadcasting software. Please note that the key must be a
             minimum of eight characters and must include at least one uppercase letter, at least one
-            lowercase letter, at least one special character, and at least one number.
+            lowercase letter, and at least one number.
           </p>
         }
-        rules={PASSWORD_COMPLEXITY_RULES}
+        rules={STREAM_KEY_COMPLEXITY_RULES}
       >
         <Input placeholder="your key" onChange={handleInputChange} />
       </Item>

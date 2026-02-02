@@ -26,8 +26,11 @@ import {
 import { UpdateArgs } from '../../../../types/config-section';
 import { ToggleSwitch } from '../../ToggleSwitch';
 import { EditLogo } from '../../EditLogo';
+import { EditFavicon } from '../../EditFavicon';
 import FormStatusIndicator from '../../FormStatusIndicator';
 import { createInputStatus, STATUS_SUCCESS } from '../../../../utils/input-statuses';
+import { Translation } from '../../../ui/Translation/Translation';
+import { Localization } from '../../../../types/localization';
 
 const { Title } = Typography;
 
@@ -54,9 +57,9 @@ const DirectoryInfoModal: FC<DirectoryInfoModalProps> = ({ cancelPressed, okPres
     <Typography.Title level={3}>What is the Owncast Directory?</Typography.Title>
     <Typography.Paragraph>
       Owncast operates a public directory at{' '}
-      <a href="https://directory.owncast.online">directory.owncast.online</a> to share your video
-      streams with more people, while also using these as examples for others. Live streams and
-      servers listed on the directory may optionally be shared on other platforms and applications.
+      <a href="https://owncast.directory">owncast.directory</a> to share your video streams with
+      more people, while also using these as examples for others. Live streams and servers listed on
+      the directory may optionally be shared on other platforms and applications.
     </Typography.Paragraph>
 
     <Typography.Title level={3}>Disclaimers and Responsibility</Typography.Title>
@@ -248,8 +251,10 @@ export default function EditInstanceDetails() {
           />
         </div>
         <div className="field-tip">
-          The offline message is displayed to your page visitors when you&apos;re not streaming.
-          Markdown is supported.
+          <Translation
+            translationKey={Localization.Admin.EditInstanceDetails.offlineMessageDescription}
+            defaultText="The offline message is displayed to your page visitors when you're not streaming. Markdown is supported."
+          />
         </div>
 
         <Button
@@ -264,6 +269,8 @@ export default function EditInstanceDetails() {
 
       {/* Logo section */}
       <EditLogo />
+
+      <EditFavicon />
 
       <ToggleSwitch
         fieldName="hideViewerCount"
@@ -283,23 +290,17 @@ export default function EditInstanceDetails() {
 
       <br />
       <p className="description">
-        Increase your audience by appearing in the{' '}
-        <a href="https://directory.owncast.online" target="_blank" rel="noreferrer">
-          <strong>Owncast Directory</strong>
-        </a>
-        . This is an external service run by the Owncast project.{' '}
-        <a
-          href="https://owncast.online/docs/directory/?source=admin"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn more
-        </a>
-        .
+        <Translation
+          translationKey={Localization.Admin.EditInstanceDetails.directoryDescription}
+          defaultText='Increase your audience by appearing in the <a href="https://owncast.directory" target="_blank" rel="noreferrer"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href="https://owncast.online/docs/directory/?source=admin" target="_blank" rel="noopener noreferrer">Learn more</a>.'
+        />
       </p>
       {!yp.instanceUrl && (
         <p className="description">
-          You must set your <strong>Server URL</strong> above to enable the directory.
+          <Translation
+            translationKey={Localization.Admin.EditInstanceDetails.serverUrlRequiredForDirectory}
+            defaultText="You must set your <strong>Server URL</strong> above to enable the directory."
+          />
         </p>
       )}
 

@@ -13,7 +13,7 @@ type TimestampedValue struct {
 }
 
 func makeTimestampedValuesFromDatapoints(dp []*tstorage.DataPoint) []TimestampedValue {
-	tv := []TimestampedValue{}
+	tv := make([]TimestampedValue, 0, len(dp))
 	for _, d := range dp {
 		tv = append(tv, TimestampedValue{Time: time.Unix(d.Timestamp, 0), Value: d.Value})
 	}

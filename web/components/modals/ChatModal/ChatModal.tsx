@@ -14,9 +14,17 @@ export type ChatModalProps = {
   messages: ChatMessage[];
   currentUser: CurrentUser;
   handleClose: () => void;
+  inputEnabled?: boolean;
+  inputDisabledPlaceholder?: string;
 };
 
-export const ChatModal: FC<ChatModalProps> = ({ messages, currentUser, handleClose }) => {
+export const ChatModal: FC<ChatModalProps> = ({
+  messages,
+  currentUser,
+  handleClose,
+  inputEnabled = true,
+  inputDisabledPlaceholder,
+}) => {
   if (!currentUser) {
     return null;
   }
@@ -58,6 +66,8 @@ export const ChatModal: FC<ChatModalProps> = ({ messages, currentUser, handleClo
           chatUserId={id}
           isModerator={isModerator}
           chatAvailable
+          inputEnabled={inputEnabled}
+          inputDisabledPlaceholder={inputDisabledPlaceholder}
           focusInput={false}
         />
       </Modal>

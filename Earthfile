@@ -1,6 +1,6 @@
 VERSION --new-platform 0.6
 
-FROM --platform=linux/amd64 alpine:3.22.0
+FROM --platform=linux/amd64 alpine:3.23.3
 ARG version=develop
 
 WORKDIR /build
@@ -16,11 +16,12 @@ docker-all:
 
 crosscompiler:
   # This image is missing a few platforms, so we'll add them locally
-  FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+  FROM --platform=linux/amd64 ghcr.io/gabek/go-crosscompile:latest
   RUN apk add --update --no-cache tar gzip upx >> /dev/null
   RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/armv7l-linux-musleabihf-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
   RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/i686-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
   RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/x86_64-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
+	RUN curl -sfL "https://owncast-infra.nyc3.cdn.digitaloceanspaces.com/build/aarch64-linux-musl-cross.tgz" | tar zxf - -C /usr/ --strip-components=1
 
 code:
   FROM --platform=linux/amd64 +crosscompiler
@@ -83,8 +84,37 @@ build:
   # See https://github.com/upx/upx/issues/612
   IF [ "$GOOS" != "darwin" ]
 	  RUN upx --best --lzma owncast
-	  # Test the binary
+	  # Test the binary integrity
 	  RUN upx -t owncast
+  END
+
+  # Sanity check: verify the binary runs without immediate crash.
+  # We can only run Linux binaries in this container. macOS binaries are skipped.
+  # The check downloads a static ffmpeg (required dependency), starts the binary,
+  # waits 3 seconds, then verifies the process is still running.
+  IF [ "$GOOS" = "linux" ]
+    IF [ "$TARGETPLATFORM" = "linux/amd64" ]
+      # Native architecture - run directly
+      RUN curl -sL -o /usr/local/bin/ffmpeg https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-x64 && chmod +x /usr/local/bin/ffmpeg
+      RUN ./owncast & PID=$!; sleep 3; if kill -0 $PID 2>/dev/null; then kill $PID; echo "Sanity check passed: binary runs on linux/amd64"; else echo "Sanity check FAILED: binary crashed on linux/amd64"; exit 1; fi
+    ELSE IF [ "$TARGETPLATFORM" = "linux/arm64" ]
+      # ARM64 - use QEMU
+      RUN apk add --no-cache qemu-aarch64 >> /dev/null
+      RUN curl -sL -o /usr/local/bin/ffmpeg https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-arm64 && chmod +x /usr/local/bin/ffmpeg
+      RUN qemu-aarch64 ./owncast & PID=$!; sleep 3; if kill -0 $PID 2>/dev/null; then kill $PID; echo "Sanity check passed: binary runs on linux/arm64"; else echo "Sanity check FAILED: binary crashed on linux/arm64"; exit 1; fi
+    ELSE IF [ "$TARGETPLATFORM" = "linux/arm/v7" ]
+      # ARMv7 - use QEMU
+      RUN apk add --no-cache qemu-arm >> /dev/null
+      RUN curl -sL -o /usr/local/bin/ffmpeg https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-arm && chmod +x /usr/local/bin/ffmpeg
+      RUN qemu-arm ./owncast & PID=$!; sleep 3; if kill -0 $PID 2>/dev/null; then kill $PID; echo "Sanity check passed: binary runs on linux/arm/v7"; else echo "Sanity check FAILED: binary crashed on linux/arm/v7"; exit 1; fi
+    ELSE IF [ "$TARGETPLATFORM" = "linux/386" ]
+      # 32-bit x86 - use QEMU
+      RUN apk add --no-cache qemu-i386 >> /dev/null
+      RUN curl -sL -o /usr/local/bin/ffmpeg https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-ia32 && chmod +x /usr/local/bin/ffmpeg
+      RUN qemu-i386 ./owncast & PID=$!; sleep 3; if kill -0 $PID 2>/dev/null; then kill $PID; echo "Sanity check passed: binary runs on linux/386"; else echo "Sanity check FAILED: binary crashed on linux/386"; exit 1; fi
+    END
+  ELSE
+    RUN echo "Skipping sanity check for $TARGETPLATFORM (cannot execute on Linux)"
   END
 
   SAVE ARTIFACT --keep-ts owncast owncast
@@ -114,12 +144,10 @@ package:
   RUN cd /build/dist && zip -r -q -8 /build/dist/owncast.zip .
   SAVE ARTIFACT --keep-ts /build/dist/owncast.zip owncast.zip AS LOCAL dist/$ZIPNAME
 
-docker:
-	# Multiple image names can be tagged at once. They should all be passed
-	# in as space separated strings using the full account/repo:tag format.
-	# https://github.com/earthly/earthly/blob/aea38448fa9c0064b1b70d61be717ae740689fb9/docs/earthfile/earthfile.md#assigning-multiple-image-names
+docker-image:
+  # Internal target that builds the docker image. Used by +docker for testing.
   ARG TARGETPLATFORM
-  FROM --platform=$TARGETPLATFORM alpine:3.22.0
+  FROM --platform=$TARGETPLATFORM alpine:3.23.3
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
   RUN addgroup -g 101 -S owncast && adduser -u 101 -S owncast -G owncast
   WORKDIR /app
@@ -133,7 +161,34 @@ docker:
   ENTRYPOINT ["/app/owncast"]
   EXPOSE 8080 1935
 
+docker:
+	# Multiple image names can be tagged at once. They should all be passed
+	# in as space separated strings using the full account/repo:tag format.
+	# https://github.com/earthly/earthly/blob/aea38448fa9c0064b1b70d61be717ae740689fb9/docs/earthfile/earthfile.md#assigning-multiple-image-names
+  ARG TARGETPLATFORM
   ARG images=ghcr.io/owncast/owncast:testing
+
+  # Sanity check: run the container to verify it starts without crashing.
+  # Only run for linux/amd64 as other architectures would need QEMU emulation.
+  IF [ "$TARGETPLATFORM" = "linux/amd64" ]
+    WITH DOCKER --load owncast:sanity-test=+docker-image
+      RUN docker run -d --name owncast-sanity-test owncast:sanity-test && \
+          sleep 5 && \
+          if docker ps | grep -q owncast-sanity-test; then \
+            echo "Docker sanity check passed: container runs on $TARGETPLATFORM"; \
+            docker stop owncast-sanity-test; \
+          else \
+            echo "Docker sanity check FAILED: container crashed on $TARGETPLATFORM"; \
+            docker logs owncast-sanity-test; \
+            exit 1; \
+          fi
+    END
+  ELSE
+    RUN echo "Skipping docker sanity check for $TARGETPLATFORM (only runs on linux/amd64)"
+  END
+
+  FROM --platform=$TARGETPLATFORM +docker-image
+
 	RUN echo "Saving images: ${images}"
 
 	# Tag this image with the list of names
@@ -146,13 +201,13 @@ dockerfile:
   FROM DOCKERFILE -f Dockerfile .
 
 unit-tests:
-  FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+  FROM --platform=linux/amd64 ghcr.io/gabek/go-crosscompile:latest
   COPY . /build
 	WORKDIR /build
 	RUN go test ./...
 
 api-tests:
-	FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+	FROM --platform=linux/amd64 ghcr.io/gabek/go-crosscompile:latest
 	RUN apk add npm font-noto && fc-cache -f
   COPY . /build
 	WORKDIR /build/test/automated/api
@@ -160,7 +215,7 @@ api-tests:
 	RUN ./run.sh
 
 hls-tests:
-	FROM --platform=linux/amd64 bdwyertech/go-crosscompile
+	FROM --platform=linux/amd64 ghcr.io/gabek/go-crosscompile:latest
 	RUN apk add npm font-noto && fc-cache -f
   COPY . /build
 	WORKDIR /build/test/automated/hls

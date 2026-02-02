@@ -75,10 +75,8 @@ export const Statusbar: FC<StatusbarProps> = ({
   }
 
   return (
-    <div className={classNames(styles.statusbar, className)} role="status">
-      <span aria-live="off" className={styles.onlineMessage}>
-        {onlineMessage}
-      </span>
+    <div className={classNames(styles.statusbar, className)}>
+      <span className={styles.onlineMessage}>{onlineMessage}</span>
       <span className={styles.viewerCount}>{rightSideMessage}</span>
     </div>
   );

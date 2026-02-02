@@ -4,6 +4,13 @@ import handlebars from 'handlebars';
 const template = fs.readFileSync('./Document.template', 'utf8');
 let t = handlebars.compile(template, { noEscape: true });
 
+// Strip YAML front matter from markdown content
+function stripFrontMatter(content) {
+  // Match YAML front matter: starts with ---, ends with ---
+  const frontMatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+  return content.replace(frontMatterRegex, '');
+}
+
 const documents = [
   {
     title: 'Product Definition',
@@ -28,7 +35,8 @@ documents.forEach(doc => {
     return;
   }
 
-  const document = fs.readFileSync(doc.path, 'utf8');
+  let document = fs.readFileSync(doc.path, 'utf8');
+  document = stripFrontMatter(document);
   const output = t({ name: doc.name, title: doc.title, content: document });
   fs.writeFileSync(`../stories-category-doc-pages/${doc.name}.mdx`, output);
 });

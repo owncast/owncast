@@ -1,11 +1,27 @@
+# This workflow runs golangci-lint to check Go code quality
+# Triggers:
+#   - Push/PR with Go file changes
+# Skips:
+#   - Web-only changes
+#   - Dependabot PRs (separate workflow)
+# Note: Only reports on new issues to reduce noise
+
 name: Lint
 on:
   push:
-    paths-ignore:
-      - 'web/**'
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - '.golangci.yml'
+      - '.github/workflows/go-lint.yml'
   pull_request:
-    paths-ignore:
-      - 'web/**'
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - '.golangci.yml'
+      - '.github/workflows/go-lint.yml'
 
 permissions:
   contents: read
@@ -22,18 +38,18 @@ jobs:
         with:
           concurrent_skipping: 'same_content_newer'
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
-          go-version: '1.24'
+          go-version: '1.25.6'
           cache: true
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v9
         with:
-          version: v1.64.5
+          version: v2.5.0
           only-new-issues: true
           args: --timeout=3m

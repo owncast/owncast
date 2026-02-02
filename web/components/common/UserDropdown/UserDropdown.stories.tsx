@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { UserDropdown } from './UserDropdown';
 import { CurrentUser } from '../../../interfaces/current-user';

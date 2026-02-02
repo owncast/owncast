@@ -1,6 +1,6 @@
 import { Popover } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import sanitizeHtml from 'sanitize-html';
 import Graphemer from 'graphemer';
 
@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic';
 import classNames from 'classnames';
 import ContentEditable from './ContentEditable';
 import WebsocketService from '../../../services/websocket-service';
-import { websocketServiceAtom } from '../../stores/ClientConfigStore';
+import { websocketServiceAtom, chatInputDraftAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
 import styles from './ChatTextField.module.scss';
 
@@ -30,6 +30,7 @@ export type ChatTextFieldProps = {
   defaultText?: string;
   enabled: boolean;
   focusInput: boolean;
+  disabledPlaceholder?: string;
 };
 
 const characterLimit = 300;
@@ -119,7 +120,13 @@ const getTextContent = node => {
   return text;
 };
 
-export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, focusInput }) => {
+export const ChatTextField: FC<ChatTextFieldProps> = ({
+  defaultText,
+  enabled,
+  focusInput,
+  disabledPlaceholder,
+}) => {
+  const [inputDraft, setInputDraft] = useRecoilState(chatInputDraftAtom);
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
   const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
   const [contentEditable, setContentEditable] = useState(null);
@@ -146,6 +153,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
 
     websocketService.send({ type: MessageType.CHAT, body: message });
     contentEditable.innerHTML = '';
+    setInputDraft('');
   };
 
   const insertTextAtEnd = (textToInsert: string) => {
@@ -220,6 +228,9 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
         contentEditable.removeChild(contentEditable.children[0]);
       }
     }
+
+    // Persist draft to Recoil state so it survives mobile/desktop mode switches
+    setInputDraft(contentEditable.innerHTML);
   };
 
   // Focus the input when the component mounts.
@@ -229,6 +240,14 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
     }
     document.getElementById('chat-input-content-editable').focus({ preventScroll: true });
   }, []);
+
+  // Restore draft from Recoil state when component mounts (e.g., after mobile/desktop switch)
+  useEffect(() => {
+    if (contentEditable && inputDraft) {
+      contentEditable.innerHTML = inputDraft;
+      setCharacterCount(graphemer.countGraphemes(getTextContent(contentEditable)));
+    }
+  }, [contentEditable]);
 
   const getCustomEmoji = async () => {
     try {
@@ -263,7 +282,9 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
         <ContentEditable
           id="chat-input-content-editable"
           html={defaultText || ''}
-          placeholder={enabled ? 'Send a message to chat' : 'Chat is disabled'}
+          placeholder={
+            enabled ? 'Send a message to chat' : disabledPlaceholder || 'Chat is disabled'
+          }
           disabled={!enabled}
           onKeyDown={onKeyDown}
           onContentChange={handleChange}
@@ -276,13 +297,18 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
         {enabled && (
           <div style={{ display: 'flex', paddingLeft: '5px' }}>
             <Popover
-              content={<EmojiPicker customEmoji={customEmoji} onEmojiSelect={onEmojiSelect} />}
+              content={
+                <div className={styles.emojiPickerContainer}>
+                  <EmojiPicker customEmoji={customEmoji} onEmojiSelect={onEmojiSelect} />
+                </div>
+              }
               trigger="click"
               placement="topRight"
             >
               <button
                 type="button"
                 aria-label="Emoji picker"
+                id="owncast-emoji-picker-button"
                 className={styles.emojiButton}
                 title="Emoji picker button"
               >
@@ -292,6 +318,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({ defaultText, enabled, fo
             <button
               type="button"
               aria-label="Send message"
+              id="owncast-send-message-button"
               className={styles.sendButton}
               title="Send message Button"
               onClick={sendMessage}

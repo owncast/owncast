@@ -6,10 +6,13 @@ import (
 	"time"
 
 	"github.com/go-fed/activity/streams/vocab"
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/chat/events"
+	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/pkg/errors"
 
@@ -18,6 +21,7 @@ import (
 
 func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
 	configRepository := configrepository.Get()
+	followersRepo := followersrepository.Get()
 
 	follow, err := resolvers.MakeFollowRequest(c, activity)
 	if err != nil {
@@ -33,25 +37,32 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 
 	followRequest := *follow
 
-	if err := persistence.AddFollow(followRequest, approved); err != nil {
+	if err := followersRepo.Add(followRequest, approved); err != nil {
 		log.Errorln("unable to save follow request", err)
 		return err
 	}
 
 	localAccountName := configRepository.GetDefaultFederationUsername()
 
+	objectIRI, err := apmodels.GetIRIStringFromObjectProperty(activity.GetActivityStreamsObject())
+	if err != nil {
+		return errors.Wrap(err, "follow activity is missing object IRI")
+	}
+
+	actorIRI, err := apmodels.GetIRIStringFromActorProperty(activity.GetActivityStreamsActor())
+	if err != nil {
+		return errors.Wrap(err, "follow activity is missing actor IRI")
+	}
+
+	actorReference := activity.GetActivityStreamsActor()
+
 	if approved {
 		if err := requests.SendFollowAccept(follow.Inbox, activity, localAccountName); err != nil {
 			log.Errorln("unable to send follow accept", err)
 			return err
 		}
+		go webhooks.SendFediverseEngagementFollowEvent(actorIRI)
 	}
-
-	// Save as an activity
-	actorReference := activity.GetActivityStreamsActor()
-	object := activity.GetActivityStreamsObject()
-	objectIRI := object.At(0).GetIRI().String()
-	actorIRI := actorReference.At(0).GetIRI().String()
 
 	// If this request is approved and we have not previously sent an action to
 	// chat due to a previous follow request, then do so.
@@ -86,5 +97,6 @@ func handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo
 	unfollowRequest := *request
 	log.Traceln("unfollow request:", unfollowRequest)
 
-	return persistence.RemoveFollow(unfollowRequest)
+	followersRepo := followersrepository.Get()
+	return followersRepo.Remove(unfollowRequest)
 }

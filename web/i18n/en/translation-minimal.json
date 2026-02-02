@@ -1,0 +1,15 @@
+{
+    "Frontend": {
+        "NameChangeModal": {
+            "description": "Your chat display name is what people see when you send chat messages.",
+            "placeholder": "Your chat display name",
+            "buttonText": "Change name",
+            "colorLabel": "Your Color",
+            "overLimit": "Over limit",
+            "authInfo": "You can also authenticate an IndieAuth or Fediverse account via the \"Authenticate\" menu."
+        },
+        "componentError": "Error: {{message}}",
+        "offlineBasic": "This stream is offline. Check back soon!",
+        "offlineNotifyOnly": "This stream is offline. <span class='notify-link'>Be notified</span> the next time {{streamer}} goes live."
+    }
+}

@@ -33,6 +33,8 @@ func MigrateDatabaseSchema(db *sql.DB, from, to int) error {
 			migrateToSchema6(db)
 		case 6:
 			migrateToSchema7(db)
+		case 7:
+			migrateToSchema8(db)
 		default:
 			log.Fatalln("missing database migration step")
 		}
@@ -44,6 +46,23 @@ func MigrateDatabaseSchema(db *sql.DB, from, to int) error {
 	}
 
 	return nil
+}
+
+func migrateToSchema8(db *sql.DB) {
+	// Add shared_inbox column to ap_followers for ActivityPub shared inbox support.
+	// This allows delivering messages to a server's shared inbox instead of each
+	// user's individual inbox, reducing the number of outbound requests.
+	stmt, err := db.Prepare("ALTER TABLE ap_followers ADD COLUMN shared_inbox TEXT")
+	if err != nil {
+		log.Errorln("Error running migration. This may be because you have already been running a dev version.", err)
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Warnln(err)
+	}
 }
 
 func migrateToSchema7(db *sql.DB) {

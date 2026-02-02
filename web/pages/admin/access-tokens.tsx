@@ -16,12 +16,15 @@ import {
 import { format } from 'date-fns';
 
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'next-export-i18n';
 import {
   fetchData,
   ACCESS_TOKENS,
   DELETE_ACCESS_TOKEN,
   CREATE_ACCESS_TOKEN,
 } from '../../utils/apis';
+import { Localization } from '../../types/localization';
+import { Translation } from '../../components/ui/Translation/Translation';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
@@ -72,6 +75,7 @@ interface Props {
 }
 const NewTokenModal = (props: Props) => {
   const { onOk, onCancel, open } = props;
+  const { t } = useTranslation();
   const [selectedScopes, setSelectedScopes] = useState([]);
   const [name, setName] = useState('');
 
@@ -107,7 +111,7 @@ const NewTokenModal = (props: Props) => {
 
   return (
     <Modal
-      title="Create New Access token"
+      title={t(Localization.Admin.AccessTokens.createNewAccessToken)}
       open={open}
       onOk={saveToken}
       onCancel={onCancel}
@@ -115,18 +119,17 @@ const NewTokenModal = (props: Props) => {
     >
       <p>
         <p>
-          The name will be displayed as the chat user when sending messages with this access token.
+          <Translation translationKey={Localization.Admin.AccessTokens.nameDescription} />
         </p>
         <Input
           value={name}
-          placeholder="Name of bot, service, or integration"
+          placeholder={t(Localization.Admin.AccessTokens.namePlaceholder)}
           onChange={input => setName(input.currentTarget.value)}
         />
       </p>
 
       <p>
-        Select the permissions this access token will have. It cannot be edited after it&apos;s
-        created.
+        <Translation translationKey={Localization.Admin.AccessTokens.selectPermissions} />
       </p>
       <Checkbox.Group style={{ width: '100%' }} value={selectedScopes} onChange={onChange}>
         <Row>{checkboxes}</Row>
@@ -134,7 +137,7 @@ const NewTokenModal = (props: Props) => {
 
       <p>
         <Button type="primary" onClick={selectAll}>
-          Select all
+          <Translation translationKey={Localization.Admin.AccessTokens.selectAll} />
         </Button>
       </p>
     </Modal>

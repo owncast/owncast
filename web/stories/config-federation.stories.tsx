@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/react';
+import { Meta } from '@storybook/nextjs';
 import ConfigFederation from '../pages/admin/config-federation';
 
 const meta = {

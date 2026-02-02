@@ -14,13 +14,23 @@ name: 'CodeQL'
 on:
   push:
     branches: [develop]
-    paths-ignore:
-      - 'static/**'
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'web/**/*.{js,ts,tsx,jsx}'
+      - '.github/workflows/codeql-analysis.yml'
+      - '.github/codeql/**'
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [develop]
-    paths-ignore:
-      - 'static/**'
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'web/**/*.{js,ts,tsx,jsx}'
+      - '.github/workflows/codeql-analysis.yml'
+      - '.github/codeql/**'
 
 jobs:
   analyze:
@@ -37,24 +47,24 @@ jobs:
 
     steps:
       - name: Check out pull request code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         if: github.event_name == 'push'
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
-          go-version: '1.24'
+          go-version: '1.25.6'
           cache: true
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql/${{ matrix.language }}.yml
@@ -66,7 +76,7 @@ jobs:
       # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
       # If this step fails, then you should remove it and run the build manually (see below)
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+        uses: github/codeql-action/autobuild@v4
 
       # ℹ️ Command-line programs to run using the OS shell.
       # 📚 https://git.io/JvXDl
@@ -80,4 +90,4 @@ jobs:
       #   make release
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4

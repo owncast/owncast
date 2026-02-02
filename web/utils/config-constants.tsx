@@ -40,6 +40,7 @@ const API_CHAT_JOIN_MESSAGES_ENABLED = '/chat/joinmessagesenabled';
 const API_CHAT_ESTABLISHED_MODE = '/chat/establishedusermode';
 const API_CHAT_SPAM_PROTECTION_ENABLED = '/chat/spamprotectionenabled';
 const API_CHAT_SLUR_FILTER_ENABLED = '/chat/slurfilterenabled';
+const API_CHAT_REQUIRE_AUTHENTICATION = '/chat/requireauthentication';
 const API_DISABLE_SEARCH_INDEXING = '/disablesearchindexing';
 const API_SOCKET_HOST_OVERRIDE = '/sockethostoverride';
 const API_VIDEO_SERVING_ENDPOINT = '/videoservingendpoint';
@@ -292,6 +293,14 @@ export const CHAT_ESTABLISHED_USER_MODE = {
   useSubmit: true,
 };
 
+export const FIELD_PROPS_CHAT_REQUIRE_AUTHENTICATION = {
+  apiPath: API_CHAT_REQUIRE_AUTHENTICATION,
+  configPath: '',
+  label: 'Require Authentication',
+  tip: 'Only users who have authenticated may chat.',
+  useSubmit: true,
+};
+
 export const TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES = {
   apiPath: API_CHAT_FORBIDDEN_USERNAMES,
   placeholder: 'username',
@@ -435,12 +444,12 @@ export const FRAMERATE_TOOLTIPS = {
   50: '50fps - Good for fast/action games, sports, HD video.',
   60: '60fps - Good for fast/action games, sports, HD video.',
   90: '90fps - Good for newer fast games and hardware.',
-  [FRAMERATE_DEFAULTS.max]: `${FRAMERATE_DEFAULTS.max}fps - Experimental, use at your own risk!`,
+  [FRAMERATE_DEFAULTS.max]: `${FRAMERATE_DEFAULTS.max}fps - Use at your own risk!`,
 };
 // VIDEO VARIANT FORM - bitrate
 export const VIDEO_BITRATE_DEFAULTS = {
   min: 400,
-  max: 6000,
+  max: 13000,
   defaultValue: 1200,
   unit: 'kbps',
   incrementBy: 100,
@@ -463,7 +472,8 @@ export const VIDEO_BITRATE_SLIDER_MARKS = {
     label: `${VIDEO_BITRATE_DEFAULTS.min} ${VIDEO_BITRATE_DEFAULTS.unit}`,
   },
   3000: 3000,
-  4500: 4500,
+  6000: 6000,
+  9000: 9000,
   [VIDEO_BITRATE_DEFAULTS.max]: {
     style: {
       marginLeft: '-10px',
@@ -629,3 +639,28 @@ export const PASSWORD_COMPLEXITY_RULES = [
 ];
 
 export const REGEX_PASSWORD = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])[^-]{8,192}$/;
+
+// Stream key validation rules - same as password but WITHOUT special character requirement
+// This is needed because some broadcasting software (e.g., Prism Live Studio) strips special characters
+export const STREAM_KEY_COMPLEXITY_RULES = [
+  { min: 8, message: '- minimum 8 characters' },
+  { max: 192, message: '- maximum 192 characters' },
+  {
+    pattern: /^(?=.*[a-z])/,
+    message: '- at least one lowercase letter',
+  },
+  {
+    pattern: /^(?=.*[A-Z])/,
+    message: '- at least one uppercase letter',
+  },
+  {
+    pattern: /\d/,
+    message: '- at least one digit',
+  },
+  {
+    pattern: /^[^-]+$/,
+    message: '- must NOT contain a dash: -',
+  },
+];
+
+export const REGEX_STREAM_KEY = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])[^-]{8,192}$/;
