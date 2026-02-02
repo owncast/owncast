@@ -16,7 +16,7 @@ export type OfflineEmbedProps = {
   supportsFollows: boolean;
 };
 
-export const OfflineEmbed = ({
+export const OfflineEmbed: FC<OfflineEmbedProps> = ({
   streamName,
   image,
   supportsFollows,
@@ -58,7 +58,7 @@ export const OfflineEmbed = ({
         </Linkable>
         <div className={styles.body}>
           <Title level={2} className={styles.text}>
-            This stream is not currently live.
+            {t('This stream is offline')}
           </Title>
           {subtitle && (
             <div className={styles.message}>
