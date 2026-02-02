@@ -11,11 +11,10 @@
   justify-content: center;
   align-items: center;
   background-image:
-		linear-gradient(to bottom, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 75%) 100%),
-		radial-gradient(circle, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 50%) 100%),
-		linear-gradient(to bottom, var(--theme-color-action) 0%, #2386e2 100%),
-		linear-gradient(rgb(240 243 248), rgb(240 243 248)),
-		linear-gradient(#f0f3f8, #f0f3f8);
+    linear-gradient(to bottom, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 75%) 100%),
+    radial-gradient(circle, rgb(18 22 29 / 0%) 0%, rgb(18 22 29 / 50%) 100%),
+    linear-gradient(to bottom, var(--theme-color-action) 0%, #2386e2 100%),
+    linear-gradient(rgb(240 243 248), rgb(240 243 248)), linear-gradient(#f0f3f8, #f0f3f8);
   color: white;
   padding: 1em;
 
@@ -115,9 +114,9 @@
 
 // Hide message if we are not on the stream's web page
 @container wrapper (max-width: 480px) {
-	.message {
-		display: none;
-	}
+  .message {
+    display: none;
+  }
 }
 
 // iPhone 6 (portrait)
