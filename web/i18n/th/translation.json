@@ -213,7 +213,7 @@
 			"overLimit": "เกินขีดจำกัด",
 			"placeholder": "ชื่อแสดงในแชทของคุณ"
 		},
-		"chatDisabled": "Chat is disabled",
+		"chatDisabled": "การแชทถูกปิดใช้งาน",
 		"chatOffline": "แชทออฟไลน์",
 		"componentError": "Error: {{message}}",
 		"helloWorld": "สวัสดีโลก",

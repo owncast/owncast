@@ -213,7 +213,7 @@
 			"overLimit": "সীমার উর্ধ্বে",
 			"placeholder": "আপনার চ্যাট ডিসপ্লে নাম"
 		},
-		"chatDisabled": "Chat is disabled",
+		"chatDisabled": "চ্যাট নিষ্ক্রিয়",
 		"chatOffline": "চ্যাট অফলাইনে রয়েছে",
 		"componentError": "ত্রুটি: {{message}}",
 		"helloWorld": "হ্যালো বিশ্ব",

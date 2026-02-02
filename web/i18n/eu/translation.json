@@ -213,7 +213,7 @@
 			"overLimit": "Mugaren gainean",
 			"placeholder": "Zure txateko izena"
 		},
-		"chatDisabled": "Chat is disabled",
+		"chatDisabled": "Txata desgaituta dago",
 		"chatOffline": "Txata lineaz kanpo dago",
 		"componentError": "Errorea: {{message}}",
 		"helloWorld": "Kaixo mundua",
