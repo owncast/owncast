@@ -1,5 +1,5 @@
 /* eslint-disable react/no-danger */
-import React, { useContext, useState } from 'react';
+import React, { FC, useCallback, useContext, useState } from 'react';
 import Head from 'next/head';
 import { Typography } from 'antd';
 import styles from './OfflineEmbed.module.scss';
@@ -16,27 +16,6 @@ export type OfflineEmbedProps = {
   supportsFollows: boolean;
 };
 
-const Header = ({ instanceUrl, image, streamName }) =>
-  instanceUrl ? (
-    <a href={instanceUrl} className={styles.header}>
-      <div className={styles.logo} style={{ backgroundImage: `url(${image})` }} />
-      <div className={styles.title}>
-        <Title level={1} className={styles.text} ellipsis={{ rows: 2 }}>
-          {streamName}
-        </Title>
-      </div>
-    </a>
-  ) : (
-    <div className={styles.header}>
-      <div className={styles.logo} style={{ backgroundImage: `url(${image})` }} />
-      <div className={styles.title}>
-        <Title level={1} className={styles.text} ellipsis={{ rows: 2 }}>
-          {streamName}
-        </Title>
-      </div>
-    </div>
-  );
-
 export const OfflineEmbed = ({
   streamName,
   image,
@@ -44,8 +23,24 @@ export const OfflineEmbed = ({
   subtitle,
 }: OfflineEmbedProps) => {
   const [showFollowModal, setShowFollowModal] = useState(false);
+  const {
+    serverConfig: {
+      yp: { instanceUrl },
+    },
+  } = useContext(ServerStatusContext);
+  const { t } = useTranslation();
 
-  const { serverConfig } = useContext(ServerStatusContext);
+  const Linkable = useCallback(
+    ({ href, children, ...props }) =>
+      href ? (
+        <a href={href} {...props}>
+          {children}
+        </a>
+      ) : (
+        <div {...props}>{children}</div>
+      ),
+    [],
+  );
 
   return (
     <div className={styles.canvas}>
@@ -53,7 +48,14 @@ export const OfflineEmbed = ({
         <title>{streamName}</title>
       </Head>
       <div className={styles.content}>
-        <Header instanceUrl={serverConfig.yp.instanceUrl} image={image} streamName={streamName} />
+        <Linkable href={instanceUrl} className={styles.header}>
+          <div className={styles.logo} style={{ backgroundImage: `url(${image})` }} />
+          <div className={styles.title}>
+            <Title level={1} className={styles.text} ellipsis={{ rows: 2 }}>
+              {streamName}
+            </Title>
+          </div>
+        </Linkable>
         <div className={styles.body}>
           <Title level={2} className={styles.text}>
             This stream is not currently live.
