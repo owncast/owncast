@@ -31,26 +31,18 @@ Owncast actors do not follow other actors. The `following` collection endpoint r
 
 ## Activities
 
-### Activities Owncast Sends
+| Activity | Object | Send | Receive | Notes |
+|----------|--------|:----:|:-------:|-------|
+| `Create` | `Note` | Yes | No | Sent on go-live and manual fediverse posts. Incoming posts are ignored. |
+| `Update` | `Service` | Yes | No | Sent when server profile changes. |
+| `Update` | `Person` | No | Yes | Updates cached follower profile information. |
+| `Follow` | - | No | Yes | Queued for approval if private mode is enabled. |
+| `Accept` | `Follow` | Yes | No | Sent automatically unless in private mode. |
+| `Undo` | `Follow` | No | Yes | Removes the follower. |
+| `Like` | `Note` | No | Yes | Optionally displayed in live chat. |
+| `Announce` | `Note` | No | Yes | Optionally displayed in live chat. |
 
-| Activity | When | Notes |
-|----------|------|-------|
-| `Create(Note)` | Stream goes live | Contains stream title, thumbnail, hashtags |
-| `Create(Note)` | Admin posts to fediverse | Manual posts from admin interface |
-| `Update(Service)` | Profile changes | Sent when server name, description, or logo changes |
-| `Accept(Follow)` | Follow request received | Automatic unless in private mode |
-
-### Activities Owncast Accepts
-
-| Activity | Response |
-|----------|----------|
-| `Follow` | Adds follower; sends `Accept` (or queues for approval in private mode) |
-| `Undo(Follow)` | Removes follower |
-| `Like` | Acknowledged; optionally displayed in chat |
-| `Announce` | Acknowledged; optionally displayed in chat |
-| `Update(Person)` | Updates cached follower information |
-
-Owncast does **not** accept `Create` activities. It is a broadcast-only service and does not display posts from other servers.
+Owncast is a broadcast-only service. It does not follow other actors or accept incoming posts.
 
 ## Notes
 
