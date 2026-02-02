@@ -1,7 +1,8 @@
 /* eslint-disable react/no-danger */
 import React, { FC, useCallback, useContext, useState } from 'react';
 import Head from 'next/head';
-import { Typography } from 'antd';
+import { Button, Typography } from 'antd';
+import { useTranslation } from 'next-export-i18n';
 import styles from './OfflineEmbed.module.scss';
 import { Modal } from '../Modal/Modal';
 import { FollowForm } from '../../modals/FollowModal/FollowForm';
@@ -67,11 +68,11 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
           )}
           {supportsFollows && (
             <>
-              <button type="button" onClick={() => setShowFollowModal(true)}>
-                Follow
-              </button>
+              <Button size="small" onClick={() => setShowFollowModal(true)}>
+                {t('Follow')}
+              </Button>
               <Modal
-                title={`Follow ${streamName}`}
+                title={`${t('Follow')} ${streamName}`}
                 open={showFollowModal}
                 handleCancel={() => setShowFollowModal(false)}
               >
