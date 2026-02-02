@@ -4,11 +4,7 @@
 }
 
 .content {
-  // Should be able to set width: 100% and let aspect ration determine height,
-  // but then somehow doesn't come out 16:9.
-  // However setting height: 100% seems to work.
-  // Idk why, but it works so... ¯\_(ツ)_/¯
-  height: 100%;
+  width: 100%;
   aspect-ratio: 16 / 9;
   display: flex;
   flex-direction: column;
@@ -74,17 +70,6 @@
 
   .message {
     margin: 0 1em;
-    line-height: 0.7em;
-    max-height: 2.1em;
-    overflow: auto;
-
-    --description-height: auto;
-    --gradient-mask: linear-gradient(to top, rgb(0 0 0 / 0%), rgb(0 0 0 / 100%) 17%);
-
-    mask-image: var(--gradient-mask);
-    mask-repeat: repeat-x;
-    mask-size: auto var(--description-height);
-    mask-position: top;
   }
 
   button {
@@ -125,6 +110,13 @@
 .body .message .text {
   font-size: 0.5em;
   text-align: center;
+}
+
+// Hide message if we are not on the stream's web page
+@container wrapper (max-width: 480px) {
+	.message {
+		display: none;
+	}
 }
 
 // iPhone 6 (portrait)

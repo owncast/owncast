@@ -63,7 +63,12 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
           </Title>
           {subtitle && (
             <div className={styles.message}>
-              <div className={styles.text}>{subtitle}</div>
+              <div
+                className={styles.text}
+                dangerouslySetInnerHTML={{
+                  __html: subtitle,
+                }}
+              />
             </div>
           )}
           {supportsFollows && (
