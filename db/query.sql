@@ -57,6 +57,23 @@ SELECT count(*) FROM ap_accepted_activities WHERE iri = $1 AND actor = $2 AND TY
 -- name: UpdateFollowerByIRI :exec
 UPDATE ap_followers SET inbox = $1, shared_inbox = $2, name = $3, username = $4, image = $5 WHERE iri = $6;
 
+-- name: GetFollowersToValidate :many
+SELECT iri, inbox, shared_inbox, name, username, image, first_validation_failure_at
+FROM ap_followers
+WHERE approved_at IS NOT NULL AND disabled_at IS NULL
+ORDER BY last_validated_at ASC NULLS FIRST
+LIMIT $1;
+
+-- name: UpdateFollowerValidationSuccess :exec
+UPDATE ap_followers
+SET last_validated_at = $1, first_validation_failure_at = NULL
+WHERE iri = $2;
+
+-- name: UpdateFollowerValidationFailure :exec
+UPDATE ap_followers
+SET last_validated_at = $1, first_validation_failure_at = COALESCE(first_validation_failure_at, $1)
+WHERE iri = $2;
+
 -- name: GetUniqueDeliveryInboxes :many
 SELECT COALESCE(shared_inbox, inbox) as delivery_inbox FROM ap_followers WHERE approved_at is not null GROUP BY delivery_inbox;
 

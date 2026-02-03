@@ -3,6 +3,7 @@ package activitypub
 import (
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/inbox"
+	"github.com/owncast/owncast/activitypub/jobs"
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
@@ -32,6 +33,9 @@ func Start(datastore *data.Datastore) {
 			log.Errorln("Unable to get private key", err)
 		}
 	}
+
+	// Start follower validation background job.
+	jobs.StartFollowerValidationJob()
 }
 
 func getOutboundWorkerPoolSize() int {

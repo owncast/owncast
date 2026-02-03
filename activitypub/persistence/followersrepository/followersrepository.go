@@ -42,6 +42,14 @@ type FollowersRepository interface {
 	BlockOrReject(iri string) error
 	// Update updates the details of a stored follower.
 	Update(actorIRI string, inbox string, sharedInbox string, name string, username string, image string) error
+	// GetFollowersToValidate returns followers needing validation, ordered by oldest validated first.
+	GetFollowersToValidate(limit int) ([]models.Follower, error)
+	// UpdateFollowerValidationSuccess marks a follower as successfully validated and clears failure timestamp.
+	UpdateFollowerValidationSuccess(iri string) error
+	// UpdateFollowerValidationFailure marks a validation failure, setting first failure time if not already set.
+	UpdateFollowerValidationFailure(iri string) error
+	// RemoveByIRI removes a follower directly by IRI string.
+	RemoveByIRI(iri string) error
 }
 
 // SqlFollowersRepository is the SQL-based implementation of FollowersRepository.
@@ -362,6 +370,101 @@ func (r *SqlFollowersRepository) removeFollow(actor *url.URL) error {
 	}()
 
 	if err := r.datastore.GetQueries().WithTx(tx).RemoveFollowerByIRI(context.Background(), actor.String()); err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+// GetFollowersToValidate returns followers needing validation, ordered by oldest validated first.
+func (r *SqlFollowersRepository) GetFollowersToValidate(limit int) ([]models.Follower, error) {
+	ctx := context.Background()
+	followersResult, err := r.datastore.GetQueries().GetFollowersToValidate(ctx, utils.SafeIntToInt32(limit))
+	if err != nil {
+		return nil, err
+	}
+
+	followers := make([]models.Follower, 0)
+
+	for _, row := range followersResult {
+		singleFollower := models.Follower{
+			Name:                     row.Name.String,
+			Username:                 row.Username,
+			Image:                    row.Image.String,
+			ActorIRI:                 row.Iri,
+			Inbox:                    row.Inbox,
+			SharedInbox:              row.SharedInbox.String,
+			FirstValidationFailureAt: utils.NullTime(row.FirstValidationFailureAt),
+		}
+
+		followers = append(followers, singleFollower)
+	}
+
+	return followers, nil
+}
+
+// UpdateFollowerValidationSuccess marks a follower as successfully validated and clears failure timestamp.
+func (r *SqlFollowersRepository) UpdateFollowerValidationSuccess(iri string) error {
+	r.datastore.DbLock.Lock()
+	defer r.datastore.DbLock.Unlock()
+
+	ctx := context.Background()
+	tx, err := r.datastore.DB.Begin()
+	if err != nil {
+		return errors.Wrap(err, "error beginning transaction")
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	if err := r.datastore.GetQueries().WithTx(tx).UpdateFollowerValidationSuccess(ctx, db.UpdateFollowerValidationSuccessParams{
+		LastValidatedAt: sql.NullTime{Time: time.Now(), Valid: true},
+		Iri:             iri,
+	}); err != nil {
+		return errors.Wrap(err, "error updating follower validation success")
+	}
+
+	return tx.Commit()
+}
+
+// UpdateFollowerValidationFailure marks a validation failure, setting first failure time if not already set.
+func (r *SqlFollowersRepository) UpdateFollowerValidationFailure(iri string) error {
+	r.datastore.DbLock.Lock()
+	defer r.datastore.DbLock.Unlock()
+
+	ctx := context.Background()
+	tx, err := r.datastore.DB.Begin()
+	if err != nil {
+		return errors.Wrap(err, "error beginning transaction")
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	if err := r.datastore.GetQueries().WithTx(tx).UpdateFollowerValidationFailure(ctx, db.UpdateFollowerValidationFailureParams{
+		LastValidatedAt: sql.NullTime{Time: time.Now(), Valid: true},
+		Iri:             iri,
+	}); err != nil {
+		return errors.Wrap(err, "error updating follower validation failure")
+	}
+
+	return tx.Commit()
+}
+
+// RemoveByIRI removes a follower directly by IRI string.
+func (r *SqlFollowersRepository) RemoveByIRI(iri string) error {
+	r.datastore.DbLock.Lock()
+	defer r.datastore.DbLock.Unlock()
+
+	tx, err := r.datastore.DB.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	if err := r.datastore.GetQueries().WithTx(tx).RemoveFollowerByIRI(context.Background(), iri); err != nil {
 		return err
 	}
 
