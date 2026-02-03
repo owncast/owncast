@@ -213,7 +213,7 @@
 			"overLimit": "Melebihi had",
 			"placeholder": "Nama paparan sembang anda"
 		},
-		"chatDisabled": "Chat is disabled",
+		"chatDisabled": "Sembang dinonaktifkan",
 		"chatOffline": "Sembang luar talian",
 		"componentError": "Ralat: {{message}}",
 		"helloWorld": "Hello world",

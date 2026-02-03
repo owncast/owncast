@@ -213,7 +213,7 @@
 			"overLimit": "Vượt quá giới hạn",
 			"placeholder": "Tên hiển thị của bạn trong chat"
 		},
-		"chatDisabled": "Chat is disabled",
+		"chatDisabled": "Trò chuyện đã bị vô hiệu hóa",
 		"chatOffline": "Trò chuyện đang ngoại tuyến",
 		"componentError": "Lỗi: {{message}}",
 		"helloWorld": "Xin chào thế giới",

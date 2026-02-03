@@ -213,7 +213,7 @@
 			"overLimit": "Limite superiore",
 			"placeholder": "Il nome della tua chat"
 		},
-		"chatDisabled": "Chat is disabled",
+		"chatDisabled": "La chat è disattivata",
 		"chatOffline": "La chat è offline",
 		"componentError": "Errore: {{message}}",
 		"helloWorld": "Ciao mondo",

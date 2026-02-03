@@ -213,7 +213,7 @@
 			"overLimit": "تجاوز الحد",
 			"placeholder": "اسم عرض المحادثة"
 		},
-		"chatDisabled": "Chat is disabled",
+		"chatDisabled": "تم تعطيل الدردشة",
 		"chatOffline": "الدردشة غير متصل",
 		"componentError": "خطأ: {{message}}",
 		"helloWorld": "مرحبا بالعالم",

@@ -213,7 +213,7 @@
 			"overLimit": "Превышен предел",
 			"placeholder": "Отображаемое имя чата"
 		},
-		"chatDisabled": "Chat is disabled",
+		"chatDisabled": "Чат отключен",
 		"chatOffline": "Чат не в сети",
 		"componentError": "Ошибка: {{message}}",
 		"helloWorld": "Здравствуй, мир",
