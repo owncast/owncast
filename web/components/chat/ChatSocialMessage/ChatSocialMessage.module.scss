@@ -1,3 +1,10 @@
+.containerColumn {
+  position: relative;
+  max-width: 100%;
+  min-width: 1px;
+  display: grid;
+}
+
 .followerPadding {
   padding: 0.5em;
 }
@@ -39,9 +46,13 @@
   }
 
   .account {
+    text-overflow: ellipsis;
     font-family: var(--theme-text-display-font-family);
     font-weight: 600;
     color: var(--theme-color-components-text-on-light);
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
   }
 
   .icon {
