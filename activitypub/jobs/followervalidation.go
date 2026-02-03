@@ -5,6 +5,7 @@ import (
 
 	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/activitypub/resolvers"
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	log "github.com/sirupsen/logrus"
@@ -21,15 +22,24 @@ const (
 	DelayBetweenFollowers = 2 * time.Second
 )
 
+// GetValidationInterval returns the configured validation interval, or the default.
+func GetValidationInterval() time.Duration {
+	if config.FollowerValidationInterval > 0 {
+		return config.FollowerValidationInterval
+	}
+	return ValidationInterval
+}
+
 // StartFollowerValidationJob starts the background job that periodically validates followers.
 func StartFollowerValidationJob() {
-	ticker := time.NewTicker(ValidationInterval)
+	interval := GetValidationInterval()
+	ticker := time.NewTicker(interval)
 	go func() {
 		for range ticker.C {
 			runFollowerValidation()
 		}
 	}()
-	log.Debugln("Follower validation job scheduled")
+	log.Debugf("Follower validation job scheduled with interval %v", interval)
 }
 
 func runFollowerValidation() {

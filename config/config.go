@@ -43,6 +43,10 @@ var EnableAutoUpdate = false
 // A temporary stream key that can be set via the command line.
 var TemporaryStreamKey = ""
 
+// FollowerValidationInterval is how often the follower validation job runs.
+// Defaults to 0 which means use the default (1 hour).
+var FollowerValidationInterval time.Duration = 0
+
 // GetCommit will return an identifier used for identifying the point in time this build took place.
 func GetCommit() string {
 	if GitCommit == "" {
