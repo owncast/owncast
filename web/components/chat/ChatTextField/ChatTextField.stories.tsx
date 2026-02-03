@@ -13,11 +13,7 @@ const meta = {
   component: ChatTextField,
   parameters: {
     msw: {
-      handlers: [
-        http.get('/api/emoji', () => {
-          return HttpResponse.json(mockResponse);
-        }),
-      ],
+      handlers: [http.get('/api/emoji', () => HttpResponse.json(mockResponse))],
     },
     chromatic: { diffThreshold: 0.9 },
 

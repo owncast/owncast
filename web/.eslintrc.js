@@ -20,7 +20,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['react', 'prettier', '@typescript-eslint', 'import'],
-  ignorePatterns: ['!./storybook/**'],
+  ignorePatterns: ['!./.storybook/**'],
   rules: {
     'prettier/prettier': 'error',
     'react/destructuring-assignment': 'off',
@@ -86,4 +86,13 @@ module.exports = {
       },
     },
   },
+  overrides: [
+    {
+      files: ['**/*.stories.*', '**/.storybook/**/*.*'],
+      rules: {
+        'import/no-unresolved': ['error', { ignore: ['^storybook/'] }],
+        'import/no-unused-modules': 'off',
+      },
+    },
+  ],
 };

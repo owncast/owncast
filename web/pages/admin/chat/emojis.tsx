@@ -196,7 +196,7 @@ const Emoji = () => {
                     </Tooltip>
                     <Button
                       size="small"
-                      type="ghost"
+                      type="text"
                       title={t(Localization.Admin.deleteEmoji)}
                       style={{
                         position: 'absolute',

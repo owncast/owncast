@@ -1,0 +1,151 @@
+/**
+ * Ant Design v5 CSS Variable Bridge
+ *
+ * This file maps Owncast's CSS variables (set by Theme.tsx and Style Dictionary)
+ * to Ant Design v5's CSS variables. When Theme.tsx updates Owncast variables
+ * (e.g., --theme-color-action), this bridge propagates the change to Ant Design
+ * components (e.g., --ant-color-primary).
+ *
+ * This allows the existing dynamic theming system to continue working with Ant Design v5.
+ */
+
+:root {
+  /* Primary/Action colors */
+  --ant-color-primary: var(--theme-color-action);
+  --ant-color-primary-hover: var(--theme-color-action-hover);
+  --ant-color-primary-active: var(--theme-color-action-hover);
+  --ant-color-primary-bg: color-mix(in srgb, var(--theme-color-action) 10%, transparent);
+  --ant-color-primary-bg-hover: color-mix(in srgb, var(--theme-color-action) 20%, transparent);
+  --ant-color-primary-border: var(--theme-color-action);
+  --ant-color-primary-border-hover: var(--theme-color-action-hover);
+
+  /* Link colors */
+  --ant-color-link: var(--theme-color-action);
+  --ant-color-link-hover: var(--theme-color-action-hover);
+  --ant-color-link-active: var(--theme-color-action-hover);
+
+  /* Border radius */
+  --ant-border-radius: var(--theme-rounded-corners);
+  --ant-border-radius-lg: var(--theme-rounded-corners);
+  --ant-border-radius-sm: calc(var(--theme-rounded-corners) * 0.66);
+
+  /* Background colors */
+  --ant-color-bg-container: var(--theme-color-palette-4);
+  --ant-color-bg-layout: var(--theme-color-background-main);
+  --ant-color-bg-elevated: var(--theme-color-palette-4);
+
+  /* Text colors */
+  --ant-color-text: var(--theme-color-components-text-on-light);
+
+  /* Error/Warning colors */
+  --ant-color-error: var(--theme-color-error);
+  --ant-color-warning: var(--theme-color-warning);
+
+  /* Font family */
+  --ant-font-family: var(--theme-text-body-font-family);
+}
+
+/* Button component overrides */
+.ant-btn-primary {
+  --ant-button-default-bg: var(--theme-color-components-primary-button-background);
+  --ant-button-default-color: var(--theme-color-components-primary-button-text);
+  --ant-button-default-border-color: var(--theme-color-components-primary-button-border);
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  --ant-button-default-hover-bg: var(--theme-color-action-hover);
+  --ant-button-default-hover-color: var(--theme-color-components-primary-button-text);
+  --ant-button-default-hover-border-color: var(--theme-color-action-hover);
+}
+
+.ant-btn-primary:disabled {
+  --ant-button-default-bg: var(--theme-color-components-primary-button-background-disabled);
+  --ant-button-default-color: var(--theme-color-components-primary-button-text-disabled);
+  --ant-button-default-border-color: var(--theme-color-components-primary-button-border-disabled);
+}
+
+/* Default button overrides */
+.ant-btn-default {
+  --ant-button-default-border-color: var(--theme-color-components-primary-button-border);
+}
+
+.ant-btn-default:disabled {
+  --ant-button-default-bg: var(--theme-color-components-secondary-button-background-disabled);
+  --ant-button-default-color: var(--theme-color-components-secondary-button-text-disabled);
+  --ant-button-default-border-color: var(--theme-color-components-secondary-button-border-disabled);
+}
+
+/* Modal component overrides */
+.ant-modal .ant-modal-header {
+  background-color: var(--theme-color-components-modal-header-background);
+}
+
+.ant-modal .ant-modal-title {
+  color: var(--theme-color-components-modal-header-text);
+}
+
+.ant-modal .ant-modal-content {
+  background-color: var(--theme-color-components-modal-content-background);
+}
+
+.ant-modal .ant-modal-close:hover {
+  color: var(--theme-color-components-modal-header-text);
+}
+
+/* Input component overrides */
+.ant-input,
+.ant-input-number-input,
+.ant-input-affix-wrapper {
+  background-color: var(--theme-color-components-form-field-background);
+  color: var(--theme-color-components-form-field-text);
+}
+
+.ant-input::placeholder {
+  color: var(--theme-color-components-form-field-placeholder);
+}
+
+/* Dropdown/Menu component overrides */
+.ant-dropdown-menu {
+  background-color: var(--theme-color-components-menu-background);
+  border-radius: var(--theme-rounded-corners);
+}
+
+.ant-dropdown-menu-item {
+  color: var(--theme-color-components-menu-item-text);
+}
+
+.ant-dropdown-menu-item:hover {
+  background-color: var(--theme-color-components-menu-item-hover-bg);
+}
+
+/* Tabs component overrides */
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--theme-color-action);
+}
+
+.ant-tabs-ink-bar {
+  background-color: var(--theme-color-action);
+}
+
+/* Table component overrides */
+.ant-table-thead th {
+  color: var(--theme-color-components-modal-header-text);
+  font-family: var(--theme-text-display-font-family);
+}
+
+/* Collapse component overrides */
+.ant-collapse > .ant-collapse-item {
+  background: var(--theme-color-palette-14);
+}
+
+/* Alert component overrides */
+.ant-alert-error .ant-alert-icon,
+.ant-alert-error .ant-alert-message {
+  color: var(--theme-color-palette-error);
+}
+
+/* Popover z-index adjustment */
+.ant-popover {
+  z-index: 800;
+}

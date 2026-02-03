@@ -3,7 +3,7 @@
 
 // order matters!
 import '../styles/variables.css';
-import '../styles/global.less';
+import '../styles/antd-css-var-bridge.css';
 import '../styles/globals.scss';
 import '../styles/ant-overrides.scss';
 
@@ -14,6 +14,8 @@ import { AppProps } from 'next/app';
 import { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import { RecoilRoot } from 'recoil';
+import { ConfigProvider } from 'antd';
+import { antdTheme } from '../components/theme/antdThemeConfig';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -28,7 +30,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return layout(
     <RecoilRoot>
-      <Component {...pageProps} />
+      <ConfigProvider theme={antdTheme}>
+        <Component {...pageProps} />
+      </ConfigProvider>
     </RecoilRoot>,
   );
 }

@@ -1,12 +1,15 @@
-import '../styles/variables.css';
-import '../styles/global.less';
-import '../styles/theme.less';
-import './preview.scss';
+import React from 'react';
+import { ConfigProvider } from 'antd';
 import { themes } from 'storybook/theming';
-import { DocsContainer } from './storybook-theme';
 import { INITIAL_VIEWPORTS } from 'storybook/viewport';
-import _ from 'lodash';
 import { initialize, mswLoader } from 'msw-storybook-addon';
+import { antdTheme } from '../components/theme/antdThemeConfig';
+import { DocsContainer } from './storybook-theme';
+import '../styles/variables.css';
+import '../styles/antd-css-var-bridge.css';
+import '../styles/globals.scss';
+import '../styles/ant-overrides.scss';
+import './preview.scss';
 
 /**
  * Takes an entry of a viewport (from Object.entries()) and converts it
@@ -18,7 +21,7 @@ import { initialize, mswLoader } from 'msw-storybook-addon';
  * @returns {Array<[`${Key}${'Portrait' | 'Landscape'}`, import('storybook/viewport/dist/ts3.9/models').Viewport]>}
  */
 const convertToLandscapeAndPortraitEntries = ([objectKey, viewport]) => {
-  const pixelStringToNumber = str => parseInt(str.split('px')[0]);
+  const pixelStringToNumber = str => parseInt(str.split('px')[0], 10);
   const dimensions = [viewport.styles.width, viewport.styles.height].map(pixelStringToNumber);
   const minDimension = Math.min(...dimensions);
   const maxDimension = Math.max(...dimensions);
@@ -28,11 +31,11 @@ const convertToLandscapeAndPortraitEntries = ([objectKey, viewport]) => {
       `${objectKey}Portrait`,
       {
         ...viewport,
-        name: viewport.name + ' (Portrait)',
+        name: `${viewport.name} (Portrait)`,
         styles: {
           ...viewport.styles,
-          height: maxDimension + 'px',
-          width: minDimension + 'px',
+          height: `${maxDimension}px`,
+          width: `${minDimension}px`,
         },
       },
     ],
@@ -40,11 +43,11 @@ const convertToLandscapeAndPortraitEntries = ([objectKey, viewport]) => {
       `${objectKey}Landscape`,
       {
         ...viewport,
-        name: viewport.name + ' (Landscape)',
+        name: `${viewport.name} (Landscape)`,
         styles: {
           ...viewport.styles,
-          height: minDimension + 'px',
-          width: maxDimension + 'px',
+          height: `${minDimension}px`,
+          width: `${maxDimension}px`,
         },
       },
     ],
@@ -104,3 +107,11 @@ export const parameters = {
 };
 
 export const loaders = [mswLoader];
+
+export const decorators = [
+  Story => (
+    <ConfigProvider theme={antdTheme}>
+      <Story />
+    </ConfigProvider>
+  ),
+];

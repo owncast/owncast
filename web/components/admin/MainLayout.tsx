@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
-import { Layout, Menu, Alert, Button, Space, Tooltip } from 'antd';
+import { Layout, Menu, Alert, Button, Space, Tooltip, MenuProps } from 'antd';
 
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';
@@ -227,34 +227,38 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     },
   ];
 
-  const menuItems = [
+  const menuItems: MenuProps['items'] = [
     { label: <Link href="/admin">Home</Link>, icon: <HomeOutlined />, key: '/admin' },
     {
       label: <Link href="/admin/viewer-info">Viewers</Link>,
       icon: <LineChartOutlined />,
       key: '/admin/viewer-info',
     },
-    !chatDisabled && {
-      label: <span>Chat &amp; Users</span>,
-      icon: <MessageOutlined />,
-      children: chatMenu,
-      key: 'chat-and-users',
-    },
-    federationEnabled && {
-      key: '/admin/federation/followers',
-      label: <Link href="/admin/federation/followers">Followers</Link>,
-      icon: (
-        <span
-          role="img"
-          aria-label="message"
-          className="anticon anticon-message ant-menu-item-icon"
-        >
-          {/* Wrapping the icon in span for consistency with other icons used
+    !chatDisabled
+      ? {
+          label: <span>Chat &amp; Users</span>,
+          icon: <MessageOutlined />,
+          children: chatMenu,
+          key: 'chat-and-users',
+        }
+      : null,
+    federationEnabled
+      ? {
+          key: '/admin/federation/followers',
+          label: <Link href="/admin/federation/followers">Followers</Link>,
+          icon: (
+            <span
+              role="img"
+              aria-label="message"
+              className="anticon anticon-message ant-menu-item-icon"
+            >
+              {/* Wrapping the icon in span for consistency with other icons used
             directly from antd */}
-          <FediverseOutlined />
-        </span>
-      ),
-    },
+              <FediverseOutlined />
+            </span>
+          ),
+        }
+      : null,
     {
       key: 'configuration',
       label: 'Configuration',
@@ -273,25 +277,24 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       icon: <ExperimentOutlined />,
       children: integrationsMenu,
     },
-    upgradeVersion && {
-      type: 'divider',
-      key: 'upgrade-divider',
-    },
-    upgradeVersion && {
-      key: '/admin/upgrade',
-      label: (
-        <Link href="/admin/upgrade">
-          <strong>{upgradeMessage}</strong>
-        </Link>
-      ),
-      icon: <DownloadOutlined />,
-    },
+    upgradeVersion ? { type: 'divider' as const, key: 'upgrade-divider' } : null,
+    upgradeVersion
+      ? {
+          key: '/admin/upgrade',
+          label: (
+            <Link href="/admin/upgrade">
+              <strong>{upgradeMessage}</strong>
+            </Link>
+          ),
+          icon: <DownloadOutlined />,
+        }
+      : null,
     {
       key: '/admin/help',
       label: <Link href="/admin/help">Help</Link>,
       icon: <QuestionCircleOutlined />,
     },
-  ];
+  ].filter(Boolean);
 
   const [openKeys, setOpenKeys] = useState(openMenuItems);
 
@@ -300,11 +303,13 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    menuItems.forEach(item =>
-      item?.children?.forEach(child => {
-        if (child?.key === route) setOpenKeys([...openMenuItems, item.key]);
-      }),
-    );
+    menuItems.forEach(item => {
+      if (item && 'children' in item && item.children) {
+        item.children.forEach(child => {
+          if (child?.key === route) setOpenKeys([...openMenuItems, item.key as string]);
+        });
+      }
+    });
   }, []);
 
   return (

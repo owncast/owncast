@@ -1,4 +1,5 @@
 const yaml = require('yaml');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const StyleDictionary = require('style-dictionary');
 
 StyleDictionary.registerFileHeader({
@@ -23,7 +24,7 @@ module.exports = {
       // 2 attributes: contents which is a string of the file contents, and
       // filePath which is the path of the file.
       // The function is expected to return a plain object.
-      parse: ({ contents, filePath }) => yaml.parse(contents),
+      parse: ({ contents }) => yaml.parse(contents),
     },
   ],
   source: [`tokens/**/*.yaml`],
@@ -35,19 +36,6 @@ module.exports = {
         {
           destination: 'variables.css',
           format: 'css/variables',
-          options: {
-            fileHeader: 'myCustomHeader',
-          },
-        },
-      ],
-    },
-    less: {
-      transformGroup: 'less',
-      buildPath: 'build/',
-      files: [
-        {
-          destination: 'variables.less',
-          format: 'less/variables',
           options: {
             fileHeader: 'myCustomHeader',
           },
