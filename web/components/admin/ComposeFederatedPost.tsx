@@ -50,7 +50,7 @@ export const ComposeFederatedPost: FC<ComposeFederatedPostProps> = ({ open, hand
 
   return (
     <Modal
-      destroyOnClose
+      destroyOnHidden
       width={600}
       title="Post to Followers"
       open={open}

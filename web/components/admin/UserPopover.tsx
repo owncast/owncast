@@ -18,7 +18,7 @@ export type UserPopoverProps = {
   children: ReactNode;
 };
 
-export const UserPopover: FC<UserPopoverProps> = ({ user, connectionInfo, children }) => {
+export const UserPopover: FC<UserPopoverProps> = ({ user, connectionInfo = null, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleShowModal = () => {
     setIsModalOpen(true);
@@ -68,7 +68,7 @@ export const UserPopover: FC<UserPopoverProps> = ({ user, connectionInfo, childr
       </Tooltip>
 
       <Modal
-        destroyOnClose
+        destroyOnHidden
         width={600}
         cancelText="Close"
         okButtonProps={{ style: { display: 'none' } }}
@@ -143,8 +143,4 @@ export const UserPopover: FC<UserPopoverProps> = ({ user, connectionInfo, childr
       </Modal>
     </>
   );
-};
-
-UserPopover.defaultProps = {
-  connectionInfo: null,
 };

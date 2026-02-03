@@ -33,16 +33,16 @@ export type ToggleSwitchProps = {
 };
 
 export const ToggleSwitch: FC<ToggleSwitchProps> = ({
-  apiPath,
-  checked,
+  apiPath = '',
+  checked = false,
   reversed = false,
   configPath = '',
   disabled = false,
   fieldName,
-  label,
-  tip,
-  useSubmit,
-  onChange,
+  label = '',
+  tip = '',
+  useSubmit = false,
+  onChange = null,
 }) => {
   const { t } = useTranslation();
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
@@ -113,16 +113,4 @@ export const ToggleSwitch: FC<ToggleSwitchProps> = ({
       </div>
     </div>
   );
-};
-
-ToggleSwitch.defaultProps = {
-  apiPath: '',
-  checked: false,
-  reversed: false,
-  configPath: '',
-  disabled: false,
-  label: '',
-  tip: '',
-  useSubmit: false,
-  onChange: null,
 };

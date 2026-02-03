@@ -18,17 +18,6 @@ export type StatisticItemProps = {
   formatter?: any;
 };
 
-const defaultProps = {
-  title: '',
-  value: 0,
-  prefix: null,
-  suffix: null,
-  color: '',
-  progress: false,
-  centered: false,
-  formatter: null,
-};
-
 export type ContentProps = {
   prefix: string;
   value: any;
@@ -51,7 +40,13 @@ const Content: FC<ContentProps> = ({ prefix, value, suffix, title }) => (
   </div>
 );
 
-const ProgressView: FC<StatisticItemProps> = ({ title, value, prefix, suffix, color }) => {
+const ProgressView: FC<StatisticItemProps> = ({
+  title = '',
+  value = 0,
+  prefix = null,
+  suffix = null,
+  color = '',
+}) => {
   const endColor = value > 90 ? 'red' : color;
   const content = <Content prefix={prefix} value={value} suffix={suffix} title={title} />;
 
@@ -68,15 +63,24 @@ const ProgressView: FC<StatisticItemProps> = ({ title, value, prefix, suffix, co
     />
   );
 };
-ProgressView.defaultProps = defaultProps;
 
-const StatisticView: FC<StatisticItemProps> = ({ title, value, prefix, formatter }) => (
-  <Statistic title={title} value={value} prefix={prefix} formatter={formatter} />
-);
-StatisticView.defaultProps = defaultProps;
+const StatisticView: FC<StatisticItemProps> = ({
+  title = '',
+  value = 0,
+  prefix = null,
+  formatter = null,
+}) => <Statistic title={title} value={value} prefix={prefix} formatter={formatter} />;
 
-export const StatisticItem: FC<StatisticItemProps> = props => {
-  const { progress, centered } = props;
+export const StatisticItem: FC<StatisticItemProps> = ({
+  title = '',
+  value = 0,
+  prefix = null,
+  suffix = null,
+  color = '',
+  progress = false,
+  centered = false,
+  formatter = null,
+}) => {
   const View = progress ? ProgressView : StatisticView;
 
   const style = centered ? { display: 'flex', alignItems: 'center', justifyContent: 'center' } : {};
@@ -84,9 +88,15 @@ export const StatisticItem: FC<StatisticItemProps> = props => {
   return (
     <Card type="inner">
       <div style={style}>
-        <View {...props} />
+        <View
+          title={title}
+          value={value}
+          prefix={prefix}
+          suffix={suffix}
+          color={color}
+          formatter={formatter}
+        />
       </div>
     </Card>
   );
 };
-StatisticItem.defaultProps = defaultProps;

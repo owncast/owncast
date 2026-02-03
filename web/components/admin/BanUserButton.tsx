@@ -25,7 +25,12 @@ export type BanUserButtonProps = {
   onClick?: () => void;
 };
 
-export const BanUserButton: FC<BanUserButtonProps> = ({ user, isEnabled, label, onClick }) => {
+export const BanUserButton: FC<BanUserButtonProps> = ({
+  user,
+  isEnabled,
+  label = '',
+  onClick = null,
+}) => {
   async function buttonClicked({ id }): Promise<Boolean> {
     const data = {
       userId: id,
@@ -95,8 +100,4 @@ export const BanUserButton: FC<BanUserButtonProps> = ({ user, isEnabled, label, 
       {label || actionString}
     </Button>
   );
-};
-BanUserButton.defaultProps = {
-  label: '',
-  onClick: null,
 };

@@ -56,7 +56,7 @@ export const ChatModal: FC<ChatModalProps> = ({
           zIndex: 700,
         }}
         className={styles.root}
-        bodyStyle={modalBodyStyle}
+        styles={{ body: modalBodyStyle }}
         wrapClassName={styles.modalWrapper}
         onCancel={handleClose}
       >

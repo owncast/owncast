@@ -1,9 +1,14 @@
 import React from 'react';
+import dynamic from 'next/dynamic';
 
 import EditInstanceDetails from './EditInstanceDetails';
 import EditInstanceTags from './EditInstanceTags';
 import EditSocialLinks from './EditSocialLinks';
-import EditPageContent from './EditPageContent';
+
+// Lazy load CodeMirror-based component to avoid useLayoutEffect SSR warning
+const EditPageContent = dynamic(() => import('./EditPageContent'), {
+  ssr: false,
+});
 
 // eslint-disable-next-line react/function-component-definition
 export default function PublicFacingDetails() {

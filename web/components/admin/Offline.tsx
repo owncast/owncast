@@ -165,7 +165,7 @@ export const Offline: FC<OfflineProps> = ({ logs = [], config }) => {
       <Row gutter={[16, 16]} className="offline-content">
         <Col span={12} xs={24} sm={24} md={24} lg={12} className="list-section">
           {data.map(item => (
-            <Card key={item.title} size="small" bordered={false}>
+            <Card key={item.title} size="small" variant="borderless">
               <Meta avatar={item.icon} title={item.title} description={item.content} />
             </Card>
           ))}

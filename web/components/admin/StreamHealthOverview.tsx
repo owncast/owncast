@@ -22,7 +22,9 @@ export type StreamHealthOverviewProps = {
   showTroubleshootButton?: Boolean;
 };
 
-export const StreamHealthOverview: FC<StreamHealthOverviewProps> = ({ showTroubleshootButton }) => {
+export const StreamHealthOverview: FC<StreamHealthOverviewProps> = ({
+  showTroubleshootButton = true,
+}) => {
   const { t } = useTranslation();
   const serverStatusData = useContext(ServerStatusContext);
   const { health } = serverStatusData;
@@ -94,8 +96,4 @@ export const StreamHealthOverview: FC<StreamHealthOverviewProps> = ({ showTroubl
       </Card>
     </div>
   );
-};
-
-StreamHealthOverview.defaultProps = {
-  showTroubleshootButton: true,
 };

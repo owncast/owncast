@@ -123,7 +123,7 @@ const ActionModal = (props: Props) => {
 
   return (
     <Modal
-      destroyOnClose
+      destroyOnHidden
       title={
         action == null
           ? t(Localization.Admin.Actions.createNewActionTitle)
