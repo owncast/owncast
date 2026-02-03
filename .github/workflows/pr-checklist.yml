@@ -1,0 +1,88 @@
+# This workflow validates that required PR checklist items are checked
+# Triggers:
+#   - PR opened, edited, or reopened
+# Skips:
+#   - Organization members
+#   - Dependabot PRs
+# Note: Looks for content between REQUIRED-CHECKLIST:START and REQUIRED-CHECKLIST:END
+#       markers and fails if any unchecked boxes exist in that section.
+
+name: PR Checklist
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-checklist:
+    name: Validate PR checklist
+    runs-on: ubuntu-latest
+    if: ${{ github.actor != 'dependabot[bot]' }}
+
+    steps:
+      - name: Check organization membership
+        id: membership
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.orgs.checkMembershipForUser({
+                org: 'owncast',
+                username: context.payload.pull_request.user.login
+              });
+              console.log('User is an organization member, skipping checklist validation');
+              return true;
+            } catch (error) {
+              if (error.status === 404 || error.status === 302) {
+                console.log('User is not an organization member, will validate checklist');
+                return false;
+              }
+              throw error;
+            }
+
+      - name: Validate required checkboxes
+        if: ${{ steps.membership.outputs.result == 'false' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prBody = context.payload.pull_request.body || '';
+
+            // Extract content between the markers
+            const markerPattern = /<!-- REQUIRED-CHECKLIST:START[\s\S]*?-->([\s\S]*?)<!-- REQUIRED-CHECKLIST:END -->/;
+            const match = prBody.match(markerPattern);
+
+            if (!match) {
+              core.setFailed(
+                '## PR Checklist Validation Failed\n\n' +
+                'The required checklist section is missing from your PR description.\n\n' +
+                'Please do not remove the "Required checklist" section from the PR template.'
+                'If you need to restore this section, please edit your PR description to include it from [the original template](https://raw.githubusercontent.com/owncast/owncast/refs/heads/develop/.github/PULL_REQUEST_TEMPLATE.MD).'
+              );
+              return;
+            }
+
+            const checklistSection = match[1];
+
+            // Find all unchecked boxes in the section
+            const uncheckedPattern = /-\s*\[\s*\]\s*(.+)/g;
+            const uncheckedItems = [];
+            let uncheckedMatch;
+
+            while ((uncheckedMatch = uncheckedPattern.exec(checklistSection)) !== null) {
+              uncheckedItems.push(uncheckedMatch[1].trim());
+            }
+
+            if (uncheckedItems.length > 0) {
+              let message = '## PR Checklist Validation Failed\n\n';
+              message += 'The following required checklist items are not checked:\n\n';
+              for (const item of uncheckedItems) {
+                message += `- [ ] ${item}\n`;
+              }
+              message += '\nPlease check all items in the required checklist section to confirm you have completed them.';
+              core.setFailed(message);
+            } else {
+              console.log('All required checklist items are checked');
+            }
