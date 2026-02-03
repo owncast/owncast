@@ -3,7 +3,7 @@
 #   - PR opened, edited, or reopened
 # Skips:
 #   - Organization members
-#   - Dependabot PRs
+#   - Bot PRs (dependabot, renovate, etc.)
 # Note: Looks for content between REQUIRED-CHECKLIST:START and REQUIRED-CHECKLIST:END
 #       markers and fails if any unchecked boxes exist in that section.
 
@@ -20,7 +20,7 @@ jobs:
   validate-checklist:
     name: Validate PR checklist
     runs-on: ubuntu-latest
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    if: ${{ !contains(github.actor, '[bot]') }}
 
     steps:
       - name: Check organization membership
