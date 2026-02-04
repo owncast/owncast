@@ -6,7 +6,6 @@ import { initialize, mswLoader } from 'msw-storybook-addon';
 import { antdTheme } from '../components/theme/antdThemeConfig';
 import { DocsContainer } from './storybook-theme';
 import '../styles/variables.css';
-import '../styles/antd-css-var-bridge.css';
 import '../styles/globals.scss';
 import '../styles/ant-overrides.scss';
 import './preview.scss';
