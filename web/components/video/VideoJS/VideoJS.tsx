@@ -8,14 +8,14 @@ import styles from './VideoJS.module.scss';
 require('video.js/dist/video-js.css');
 
 const SHORTCUT_SUFFIXES: Record<string, string> = {
-  "Play": " (Space)",
-  "Pause": " (Space)",
-  "Mute": " (m)",
-  "Unmute": " (m)",
-  "Fullscreen": " (f)",
-  "Non-Fullscreen": " (f)",
-  "Picture-in-Picture": " (i)",
-  "Exit Picture-in-Picture": " (i)",
+  Play: ' (Space)',
+  Pause: ' (Space)',
+  Mute: ' (m)',
+  Unmute: ' (m)',
+  Fullscreen: ' (f)',
+  'Non-Fullscreen': ' (f)',
+  'Picture-in-Picture': ' (i)',
+  'Exit Picture-in-Picture': ' (i)',
 };
 
 export type VideoJSProps = {
@@ -30,24 +30,24 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
 
   const addShortcutsToLanguage = (vjs: typeof videojs, langCode: string) => {
     const updates: Record<string, string> = {};
-    Object.keys(SHORTCUT_SUFFIXES).forEach((key) => {
+    Object.keys(SHORTCUT_SUFFIXES).forEach(key => {
       const currentLabel = key;
       const suffix = SHORTCUT_SUFFIXES[key];
       updates[key] = t(`${currentLabel}${suffix}`);
     });
     vjs.addLanguage(langCode, updates);
-  }; 
+  };
 
   React.useEffect(() => {
     // Make sure Video.js player is only initialized once
     if (!playerRef.current) {
       const videoElement = videoRef.current;
 
-      addShortcutsToLanguage(videojs, "en");
+      addShortcutsToLanguage(videojs, 'en');
       options = {
         ...options,
-        noUITitleAttributes: true // Prevents videojs from adding a title attribute to UI elements, thus preventing "double tooltips".
-      } 
+        noUITitleAttributes: true, // Prevents videojs from adding a title attribute to UI elements, thus preventing "double tooltips".
+      };
       // eslint-disable-next-line no-multi-assign
       const player: VideoJsPlayer = (playerRef.current = videojs(videoElement, options, () => {
         console.debug('player is ready');
@@ -58,6 +58,17 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
       player.src(options.sources);
     }
   }, [options, videoRef]);
+
+  // Detect if the user is using touch.
+  React.useEffect(() => {
+    const onFirstTouch = () => {
+      document.body.setAttribute('player-data-is-touch', 'true');
+      window.removeEventListener('touchstart', onFirstTouch);
+    };
+
+    window.addEventListener('touchstart', onFirstTouch, { passive: true });
+    return () => window.removeEventListener('touchstart', onFirstTouch);
+  }, []);
 
   React.useEffect(() => {
     videojs.getPlayer(videoRef.current).on('xhr-hooks-ready', () => {
