@@ -40,6 +40,14 @@ html {
   font-size: clamp(15px, 1.35vw, 16px);
 }
 
+// Ensure consistent box-sizing across all elements.
+// Ant Design v5 no longer applies a global box-sizing reset.
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   font-family: var(--theme-text-body-font-family);
   font-weight: 300;

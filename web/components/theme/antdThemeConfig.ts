@@ -28,6 +28,18 @@ export const antdTheme: ThemeConfig = {
     colorWarning: '#ffc655',
     fontFamily:
       "Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
+    // Spacing and sizing tokens to match v4 defaults
+    fontSize: 14,
+    lineHeight: 1.5714285714285714,
+    controlHeight: 32,
+    paddingXS: 8,
+    paddingSM: 12,
+    padding: 16,
+    paddingLG: 24,
+    marginXS: 8,
+    marginSM: 12,
+    margin: 16,
+    marginLG: 24,
   },
   components: {
     Button: {
@@ -45,14 +57,17 @@ export const antdTheme: ThemeConfig = {
     },
     Input: {
       colorBgContainer: '#ffffff',
+      controlHeight: 32,
     },
     Dropdown: {
       borderRadiusLG: 9,
+      paddingBlock: 5,
     },
     Menu: {
       itemBg: 'transparent',
       itemHoverBg: 'rgba(0, 0, 0, 0.05)',
       itemSelectedBg: 'rgba(0, 0, 0, 0.1)',
+      itemPaddingInline: 16,
     },
     Tabs: {
       itemActiveColor: '#6544e9',
@@ -66,6 +81,24 @@ export const antdTheme: ThemeConfig = {
     Table: {
       headerBg: '#2d3748',
       headerColor: '#e2e8f0',
+    },
+    Avatar: {
+      // Keep v4 default sizes
+      containerSize: 32,
+      containerSizeLG: 40,
+      containerSizeSM: 24,
+    },
+    Space: {
+      // v4 default gap was 8px
+      size: 8,
+    },
+    Alert: {
+      // Maintain v4-style alert padding
+      defaultPadding: '8px 15px',
+    },
+    Popover: {
+      // Maintain v4 popover styling
+      titleMinWidth: 177,
     },
   },
 };
