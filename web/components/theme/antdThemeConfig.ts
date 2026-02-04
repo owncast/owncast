@@ -44,10 +44,12 @@ export const antdTheme: ThemeConfig = {
   components: {
     Button: {
       borderRadius: 9,
-      controlHeight: 36,
+      controlHeight: 32,
+      controlHeightLG: 40,
+      controlHeightSM: 24,
       fontSize: 14,
       fontSizeLG: 16,
-      paddingContentHorizontal: 16,
+      paddingContentHorizontal: 15,
     },
     Modal: {
       headerBg: '#2d3748',
