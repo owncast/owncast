@@ -58,7 +58,7 @@ jobs:
               core.setFailed(
                 '## PR Checklist Validation Failed\n\n' +
                 'The required checklist section is missing from your PR description.\n\n' +
-                'Please do not remove the "Required checklist" section from the PR template.'
+                'Please do not remove the "Required checklist" section from the PR template. ' +
                 'If you need to restore this section, please edit your PR description to include it from [the original template](https://raw.githubusercontent.com/owncast/owncast/refs/heads/develop/.github/PULL_REQUEST_TEMPLATE.MD).'
               );
               return;
