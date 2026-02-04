@@ -13,7 +13,8 @@
 		"i18n/index.js",
 		"i18next-parser.config.mjs",
 		"types/index.ts",
-		"scripts/i18n-extract.js"
+		"scripts/i18n-extract.js",
+		"worker/**"
 	],
 	"ignoreDependencies": [
 		"@fontsource/inter",

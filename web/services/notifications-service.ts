@@ -27,7 +27,25 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
+function pausePrecaching(): Promise<void> {
+  return navigator.serviceWorker.ready.then(registration => {
+    if (!registration.active) {
+      return Promise.resolve();
+    }
+    return new Promise<void>(resolve => {
+      const messageChannel = new MessageChannel();
+      messageChannel.port1.onmessage = () => resolve();
+      // Timeout fallback in case SW doesn't respond
+      setTimeout(resolve, 100);
+      registration.active.postMessage({ type: 'PAUSE_PRECACHING' }, [messageChannel.port2]);
+    });
+  });
+}
+
 export async function registerWebPushNotifications(vapidPublicKey) {
+  // Pause precaching to free up the service worker event loop
+  await pausePrecaching();
+
   const registration = await navigator.serviceWorker.ready;
   let subscription = await registration.pushManager.getSubscription();
 

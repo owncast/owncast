@@ -6,6 +6,7 @@ const { PHASE_DEVELOPMENT_SERVER } = require('next/constants');
 
 const withPWA = require('next-pwa')({
   dest: 'public',
+  customWorkerDir: 'worker',
   runtimeCaching: [],
   register: true,
   skipWaiting: true,
