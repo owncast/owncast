@@ -24,6 +24,7 @@ import setupNoLinkReferrer from '../../../utils/no-link-referrer';
 import { TitleNotifier } from '../../TitleNotifier/TitleNotifier';
 import { ServerRenderedHydration } from '../../ServerRendered/ServerRenderedHydration';
 import { Theme } from '../../theme/Theme';
+import { DynamicThemeProvider } from '../../theme/DynamicThemeProvider';
 import styles from './Main.module.scss';
 import { PushNotificationServiceWorker } from '../../workers/PushNotificationServiceWorker/PushNotificationServiceWorker';
 import { AppStateOptions } from '../../stores/application-state';
@@ -100,18 +101,20 @@ export const Main: FC = () => {
       <TitleNotifier name={name} />
       <Theme />
       <Script strategy="afterInteractive" src="/customjavascript" />
-      <Layout ref={layoutRef} className={styles.layout}>
-        <Header
-          name={headerText}
-          chatAvailable={isChatAvailable}
-          chatDisabled={chatDisabled}
-          online={videoAvailable}
-        />
-        <Content />
-        {fatalError && (
-          <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
-        )}
-      </Layout>
+      <DynamicThemeProvider>
+        <Layout ref={layoutRef} className={styles.layout}>
+          <Header
+            name={headerText}
+            chatAvailable={isChatAvailable}
+            chatDisabled={chatDisabled}
+            online={videoAvailable}
+          />
+          <Content />
+          {fatalError && (
+            <FatalErrorStateModal title={fatalError.title} message={fatalError.message} />
+          )}
+        </Layout>
+      </DynamicThemeProvider>
       <Noscript />
     </>
   );

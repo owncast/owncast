@@ -1,13 +1,23 @@
 /**
  * Ant Design v5 CSS Overrides
  *
- * Most theme-related overrides have been migrated to:
- * 1. antdThemeConfig.ts - Design tokens
- * 2. antd-css-var-bridge.css - CSS variable mappings
+ * Theme-related styling is handled by:
+ * 1. antdThemeConfig.ts - Default design tokens for admin
+ * 2. DynamicThemeProvider.tsx - Dynamic tokens for main page based on appearance variables
  *
  * This file contains layout-specific and structural overrides
  * that cannot be expressed as design tokens.
  */
+
+/* ------------------------- //
+LAYOUT
+// ------------------------- */
+
+// Ant Design's Layout uses CSS-in-JS with inline styles for background.
+// !important is required here to allow theme customization.
+.ant-layout {
+  background: var(--theme-color-background-main) !important;
+}
 
 /* ------------------------- //
 HEADER
@@ -32,15 +42,13 @@ BUTTONS
 
 .ant-btn-primary {
   border-width: 2px;
-
-  &[ant-click-animating-without-extra-node]::after {
-    animation: 0s !important;
-  }
+  border-style: solid;
+  border-color: var(--theme-color-components-primary-button-border, currentColor);
 }
 
 .ant-btn-background-ghost {
   border: 0;
-  box-shadow: none !important;
+  box-shadow: none;
 }
 
 /* ------------------------- //
@@ -60,7 +68,6 @@ TABS
 .ant-tabs-tab {
   padding: 0.7rem;
   background-color: transparent;
-  border-radius: var(--theme-rounded-corners) var(--theme-rounded-corners) 0 0;
   font-weight: 600;
 
   & + .ant-tabs-tab {
@@ -88,10 +95,6 @@ TABS
   }
 }
 
-.ant-tabs-nav::before {
-  border-bottom-color: var(--theme-color-components-menu-item-focus-bg) !important;
-}
-
 /* ------------------------- //
 MENU
 // ------------------------- */
@@ -110,7 +113,7 @@ td.ant-table-column-sort,
 }
 
 th {
-  font-weight: 700 !important;
+  font-weight: 700;
 }
 
 /* ------------------------- //
@@ -145,4 +148,12 @@ CHART CONTAINER
     top: 0.3rem;
     right: 0.35rem;
   }
+}
+
+/* ------------------------- //
+POPOVER
+// ------------------------- */
+
+.ant-popover {
+  z-index: 800;
 }

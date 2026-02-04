@@ -13,8 +13,6 @@ import type { ThemeConfig } from 'antd';
  * which we can then override using our own variables through CSS cascade.
  */
 export const antdTheme: ThemeConfig = {
-  cssVar: true,
-  hashed: false,
   token: {
     colorPrimary: '#6544e9',
     colorLink: '#6544e9',
@@ -43,6 +41,7 @@ export const antdTheme: ThemeConfig = {
       headerBg: '#2d3748',
       titleColor: '#e2e8f0',
       contentBg: '#e2e8f0',
+      wireframe: true,
     },
     Input: {
       colorBgContainer: '#ffffff',

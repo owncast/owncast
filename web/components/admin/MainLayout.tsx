@@ -318,7 +318,6 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
         <title>Owncast Admin</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       {serverError?.type === 'OWNCAST_SERVICE_UNREACHABLE' && (
         <FatalErrorStateModal title="Server Unreachable" message={serverError.msg} />
       )}

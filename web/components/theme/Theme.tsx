@@ -9,9 +9,30 @@ export const Theme: FC = () => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const { appearanceVariables, customStyles } = clientConfig;
 
+  // Map Owncast appearance variables to CSS variables
   const appearanceVars = Object.keys(appearanceVariables || {})
     .filter(variable => !!appearanceVariables[variable])
     .map(variable => `--${variable}: ${appearanceVariables[variable]}`);
+
+  // Also map to Ant Design CSS variables so Ant components pick up the theme
+  const antVars: string[] = [];
+  if (appearanceVariables?.['theme-color-background-main']) {
+    antVars.push(`--ant-layout-body-bg: ${appearanceVariables['theme-color-background-main']}`);
+    antVars.push(`--ant-color-bg-layout: ${appearanceVariables['theme-color-background-main']}`);
+  }
+  if (appearanceVariables?.['theme-color-action']) {
+    antVars.push(`--ant-color-primary: ${appearanceVariables['theme-color-action']}`);
+    antVars.push(`--ant-color-link: ${appearanceVariables['theme-color-action']}`);
+  }
+  if (appearanceVariables?.['theme-color-action-hover']) {
+    antVars.push(`--ant-color-primary-hover: ${appearanceVariables['theme-color-action-hover']}`);
+    antVars.push(`--ant-color-link-hover: ${appearanceVariables['theme-color-action-hover']}`);
+  }
+  if (appearanceVariables?.['theme-rounded-corners']) {
+    antVars.push(`--ant-border-radius: ${appearanceVariables['theme-rounded-corners']}`);
+  }
+
+  const allVars = [...appearanceVars, ...antVars];
 
   const [themeColor, setThemeColor] = useState('#fff');
 
@@ -31,7 +52,7 @@ export const Theme: FC = () => {
         dangerouslySetInnerHTML={{
           __html: `
 				:root {
-					${appearanceVars.join(';\n')}
+					${allVars.join(';\n')}
 				}
 			`,
         }}

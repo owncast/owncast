@@ -12,7 +12,7 @@ export interface ClientConfig {
   chatRequireAuthentication: boolean;
   externalActions: any[];
   customStyles: string;
-  appearanceVariables: Map<string, string>;
+  appearanceVariables: Record<string, string>;
   maxSocketPayloadSize: number;
   federation: Federation;
   notifications: Notifications;
@@ -59,7 +59,7 @@ export function makeEmptyClientConfig(): ClientConfig {
     chatRequireAuthentication: false,
     externalActions: [],
     customStyles: '',
-    appearanceVariables: new Map(),
+    appearanceVariables: {},
     maxSocketPayloadSize: 0,
     federation: {
       enabled: false,

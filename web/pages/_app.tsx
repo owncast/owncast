@@ -3,7 +3,6 @@
 
 // order matters!
 import '../styles/variables.css';
-import '../styles/antd-css-var-bridge.css';
 import '../styles/globals.scss';
 import '../styles/ant-overrides.scss';
 
