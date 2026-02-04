@@ -6,15 +6,16 @@
   overflow: hidden;
 
   /* player-data-is-touch attribute is set if a touchstart event is ever fired, used for preventing mobile devices from incorrectly displaying hovered state. */
-  @at-root :global(body:not([player-data-is-touch="true"])) & {
+  @at-root :global(body:not([player-data-is-touch='true'])) & {
     @media (hover: hover) {
       :global(.vjs-control-bar .vjs-control:hover .vjs-control-text) {
         /* This ensures the text isn't hidden by default VJS accessibility rules */
-        display: block !important; 
+        display: block !important;
         visibility: visible !important;
         width: auto !important;
         height: auto !important;
-        clip: auto !important;
+        /* stylelint-disable-next-line property-no-deprecated */
+        clip: auto !important; /* necessary to make the control text visible */
         margin: 0 !important;
 
         /* Base tooltip styles */
@@ -31,18 +32,18 @@
         font-size: 12px;
         line-height: 1.2;
         pointer-events: none; /* Prevents tooltip from flickering when mouse hits it */
-        
+
         /* If there's no text content, it stays invisible */
         &:empty {
           display: none !important;
         }
       }
-      
+
       /* Prevent the "Mute"/"Unmute" tooltip from showing when interacting with the volume slider.
       * Since the slider is part of the volume panel container, hovering it technically
       * counts as hovering the mute control context. We force-hide the tooltip 
       * unless the cursor is explicitly over the mute button icon itself.
-      */ 
+      */
       :global(.vjs-volume-panel:hover .vjs-mute-control:not(:hover) .vjs-control-text) {
         display: none !important;
       }
@@ -50,10 +51,10 @@
       /* Move the first and last element slightly right and left to prevent them from overflowing respectively */
       :global(.vjs-control:first-child:hover .vjs-control-text) {
         left: 0;
-        transform: translateX(6px); 
+        transform: translateX(6px);
 
         &::after {
-          left: 15%; 
+          left: 15%;
         }
       }
 

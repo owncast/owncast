@@ -44,12 +44,12 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
       const videoElement = videoRef.current;
 
       addShortcutsToLanguage(videojs, 'en');
-      options = {
+      const finalOptions = {
         ...options,
         noUITitleAttributes: true, // Prevents videojs from adding a title attribute to UI elements, thus preventing "double tooltips".
       };
       // eslint-disable-next-line no-multi-assign
-      const player: VideoJsPlayer = (playerRef.current = videojs(videoElement, options, () => {
+      const player: VideoJsPlayer = (playerRef.current = videojs(videoElement, finalOptions, () => {
         console.debug('player is ready');
         return onReady && onReady(player, videojs);
       }));
