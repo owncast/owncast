@@ -61,7 +61,7 @@ export const Header: FC<HeaderComponentProps> = ({ name, chatAvailable, chatDisa
       )}
       {!chatAvailable && !chatDisabled && (
         <Tooltip
-          classNames={{ root: styles.toolTip }}
+          classNames={{ overlay: styles.toolTip }}
           title={t(Localization.Frontend.Header.chatWillBeAvailable)}
           placement="left"
         >

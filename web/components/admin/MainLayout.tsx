@@ -198,7 +198,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       label: <Link href="/admin/federation/actions">Social Actions</Link>,
       key: '/admin/federation/actions',
     },
-  ];
+  ].filter(Boolean);
 
   const configurationMenu = [
     {
