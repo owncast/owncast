@@ -24,6 +24,10 @@ func rewritePlaylistLocations(localFilePath, remoteServingEndpoint, hlsPrefix st
 		log.Warnln(err)
 	}
 
+	if hlsPrefix == "" {
+		hlsPrefix = "hls"
+	}
+
 	for _, item := range p.Variants {
 		item.URI = remoteServingEndpoint + "/" + hlsPrefix + "/" + item.URI
 	}
