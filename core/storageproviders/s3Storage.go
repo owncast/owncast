@@ -146,7 +146,7 @@ func (s *S3Storage) VariantPlaylistWritten(localFilePath string) {
 // MasterPlaylistWritten is called when the master hls playlist is written.
 func (s *S3Storage) MasterPlaylistWritten(localFilePath string) {
 	// Rewrite the playlist to use absolute remote S3 URLs
-	if err := rewritePlaylistLocations(localFilePath, s.host, s.s3PathPrefix); err != nil {
+	if err := rewritePlaylistLocations(localFilePath, s.host, s.remoteHLSPrefix()); err != nil {
 		log.Warnln(err)
 	}
 }
@@ -161,14 +161,8 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 
 	// Convert the local path to the variant/file path by stripping the local storage location.
 	normalizedPath := strings.TrimPrefix(filePath, config.HLSStoragePath)
-	// Build the remote path by adding the "hls" path prefix.
-	remotePath := strings.Join([]string{"hls", normalizedPath}, "")
-
-	// If a custom path prefix is set prepend it.
-	if s.s3PathPrefix != "" {
-		prefix := strings.TrimPrefix(s.s3PathPrefix, "/")
-		remotePath = strings.Join([]string{prefix, remotePath}, "/")
-	}
+	// Build the remote path using the shared HLS prefix.
+	remotePath := s.remoteHLSPrefix() + normalizedPath
 
 	maxAgeSeconds := utils.GetCacheDurationSecondsForPath(filePath)
 	cacheControlHeader := fmt.Sprintf("max-age=%d", maxAgeSeconds)
@@ -273,14 +267,15 @@ func (s *S3Storage) getDeletableVideoSegmentsWithOffset(offset int) ([]s3object,
 		return nil, err
 	}
 
-	if offset > len(objectsToDelete)-1 {
-		offset = len(objectsToDelete) - 1
+	if len(objectsToDelete) <= offset {
+		return nil, nil
 	}
 
-	objectsToDelete = objectsToDelete[offset : len(objectsToDelete)-1]
-
-	return objectsToDelete, nil
+	return objectsToDelete[offset:], nil
 }
+
+// s3MaxDeleteKeys is the maximum number of keys per DeleteObjects request.
+const s3MaxDeleteKeys = 1000
 
 func (s *S3Storage) deleteObjects(objects []s3object) {
 	keys := make([]*s3.ObjectIdentifier, len(objects))
@@ -290,45 +285,53 @@ func (s *S3Storage) deleteObjects(objects []s3object) {
 
 	log.Debugln("Deleting", len(keys), "objects from S3 bucket:", s.s3Bucket)
 
-	deleteObjectsRequest := &s3.DeleteObjectsInput{
-		Bucket: aws.String(s.s3Bucket),
-		Delete: &s3.Delete{
-			Objects: keys,
-			Quiet:   aws.Bool(true),
-		},
-	}
+	for i := 0; i < len(keys); i += s3MaxDeleteKeys {
+		end := i + s3MaxDeleteKeys
+		if end > len(keys) {
+			end = len(keys)
+		}
 
-	_, err := s.s3Client.DeleteObjects(deleteObjectsRequest)
-	if err != nil {
-		log.Errorf("Unable to delete objects from bucket %q, %v\n", s.s3Bucket, err)
+		resp, err := s.s3Client.DeleteObjects(&s3.DeleteObjectsInput{
+			Bucket: aws.String(s.s3Bucket),
+			Delete: &s3.Delete{
+				Objects: keys[i:end],
+				Quiet:   aws.Bool(true),
+			},
+		})
+		if err != nil {
+			log.Errorf("Unable to delete objects from bucket %q, %v\n", s.s3Bucket, err)
+		} else if len(resp.Errors) > 0 {
+			log.Errorf("Failed to delete %d objects from bucket %q, first error: %v\n", len(resp.Errors), s.s3Bucket, resp.Errors[0])
+		}
 	}
 }
 
 func (s *S3Storage) retrieveAllVideoSegments() ([]s3object, error) {
 	allObjectsListRequest := &s3.ListObjectsInput{
 		Bucket: aws.String(s.s3Bucket),
+		Prefix: aws.String(s.remoteHLSListingPrefix()),
 	}
 
-	// Fetch all objects in the bucket
-	allObjectsListResponse, err := s.s3Client.ListObjects(allObjectsListRequest)
+	// Fetch all objects in the bucket, paginating automatically.
+	var allObjects []s3object
+	err := s.s3Client.ListObjectsPages(allObjectsListRequest,
+		func(page *s3.ListObjectsOutput, lastPage bool) bool {
+			for _, item := range page.Contents {
+				if strings.HasSuffix(*item.Key, ".ts") {
+					allObjects = append(allObjects, s3object{
+						key:          *item.Key,
+						lastModified: *item.LastModified,
+					})
+				}
+			}
+			return true // continue paging
+		},
+	)
 	if err != nil {
 		return nil, errors.Wrap(err, "Unable to fetch list of items in bucket for cleanup")
 	}
 
-	// Filter out non-video segments
-	allObjects := []s3object{}
-	for _, item := range allObjectsListResponse.Contents {
-		if !strings.HasSuffix(*item.Key, ".ts") {
-			continue
-		}
-
-		allObjects = append(allObjects, s3object{
-			key:          *item.Key,
-			lastModified: *item.LastModified,
-		})
-	}
-
-	// Sort the results by timestamp
+	// Sort the results by timestamp, newest first.
 	sort.Slice(allObjects, func(i, j int) bool {
 		return allObjects[i].lastModified.After(allObjects[j].lastModified)
 	})
@@ -339,4 +342,22 @@ func (s *S3Storage) retrieveAllVideoSegments() ([]s3object, error) {
 type s3object struct {
 	lastModified time.Time
 	key          string
+}
+
+// remoteHLSPrefix returns the S3 key prefix under which HLS segments are
+// stored, without a trailing slash. normalizedPath from Save() starts with
+// "/" so concatenation produces "hls/0/segment.ts" or "myprefix/hls/0/segment.ts".
+func (s *S3Storage) remoteHLSPrefix() string {
+	prefix := "hls"
+	if s.s3PathPrefix != "" {
+		prefix = strings.Trim(s.s3PathPrefix, "/") + "/" + prefix
+	}
+	return prefix
+}
+
+// remoteHLSListingPrefix returns remoteHLSPrefix with a trailing slash,
+// ensuring S3 listing is directory-scoped and won't match sibling keys
+// like "hls-archive/" or "hls_old/".
+func (s *S3Storage) remoteHLSListingPrefix() string {
+	return s.remoteHLSPrefix() + "/"
 }
