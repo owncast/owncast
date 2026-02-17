@@ -93,6 +93,7 @@ func GetDefaults() Defaults {
 				VideoBitrate:       1200,
 				Framerate:          24,
 				CPUUsageLevel:      2,
+				Enabled:            true,
 			},
 		},
 

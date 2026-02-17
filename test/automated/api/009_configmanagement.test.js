@@ -99,6 +99,7 @@ const streamOutputVariants = {
 	cpuUsageLevel: randomNumber(4, 0),
 	scaledHeight: randomNumber() * 100,
 	scaledWidth: randomNumber() * 100,
+	enabled: true,
 };
 const newSocialHandles = [
 	{
@@ -234,6 +235,13 @@ test('set latency level', async () => {
 test('set video stream output variants', async () => {
 	await sendAdminRequest('config/video/streamoutputvariants', [
 		streamOutputVariants,
+	]);
+});
+
+test('reject all variants disabled', async () => {
+	const disabledVariant = { ...streamOutputVariants, enabled: false };
+	await failAdminRequest('config/video/streamoutputvariants', [
+		disabledVariant,
 	]);
 });
 
@@ -458,6 +466,7 @@ test('verify updated admin configuration', async () => {
 	expect(res.body.videoSettings.videoQualityVariants[0].cpuUsageLevel).toBe(
 		streamOutputVariants.cpuUsageLevel,
 	);
+	expect(res.body.videoSettings.videoQualityVariants[0].enabled).toBe(true);
 
 	expect(res.body.yp.enabled).toBe(newYPConfig.enabled);
 	// expect(res.body.yp.instanceUrl).toBe(newYPConfig.instanceUrl);

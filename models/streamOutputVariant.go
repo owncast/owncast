@@ -28,6 +28,9 @@ type StreamOutputVariant struct {
 	Framerate int `yaml:"framerate" json:"framerate"`
 	// CPUUsageLevel represents a codec preset to configure CPU usage.
 	CPUUsageLevel int `json:"cpuUsageLevel"`
+
+	// Enabled represents a flag to see if the variant is active.
+	Enabled bool `yaml:"enabled" json:"enabled"`
 }
 
 // GetFramerate returns the framerate or default.
@@ -98,9 +101,11 @@ func (q *StreamOutputVariant) MarshalJSON() ([]byte, error) {
 	type Alias StreamOutputVariant
 	return json.Marshal(&struct {
 		*Alias
-		Framerate int `json:"framerate"`
+		Framerate int  `json:"framerate"`
+		Enabled   bool `json:"enabled"`
 	}{
 		Framerate: q.GetFramerate(),
+		Enabled:   q.Enabled,
 		Alias:     (*Alias)(q),
 	})
 }

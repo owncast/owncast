@@ -1,7 +1,7 @@
 // Updating a variant will post ALL the variants in an array as an update to the API.
 
 import React, { FC, useContext, useState } from 'react';
-import { Typography, Table, Modal, Button, Alert } from 'antd';
+import { Typography, Table, Modal, Button, Alert, Switch } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';
@@ -130,6 +130,16 @@ export const CurrentVariantsTable: FC = () => {
     postUpdateToAPI(postData);
   };
 
+  const handleToggleEnabled = (index: number) => {
+    const postData = [...videoQualityVariants];
+    const enabledCount = postData.filter(v => v.enabled).length;
+    if (postData[index].enabled && enabledCount <= 1) {
+      return;
+    }
+    postData[index] = { ...postData[index], enabled: !postData[index].enabled };
+    postUpdateToAPI(postData);
+  };
+
   const handleUpdateField = ({ fieldName, value }: UpdateArgs) => {
     setModalDataState({
       ...modalDataState,
@@ -138,6 +148,23 @@ export const CurrentVariantsTable: FC = () => {
   };
 
   const videoQualityColumns: ColumnsType<VideoVariant> = [
+    {
+      title: 'Enabled',
+      dataIndex: 'enabled',
+      key: 'enabled',
+      render: (enabled: boolean, { key }: VideoVariant) => {
+        const index = key - 1;
+        const enabledCount = videoQualityVariants.filter(v => v.enabled).length;
+        return (
+          <Switch
+            size="small"
+            checked={enabled}
+            disabled={enabled && enabledCount <= 1}
+            onChange={() => handleToggleEnabled(index)}
+          />
+        );
+      },
+    },
     {
       title: 'Name',
       dataIndex: 'name',

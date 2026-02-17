@@ -484,6 +484,20 @@ func (r *SqlConfigRepository) GetStreamOutputVariants() []models.StreamOutputVar
 		return config.GetDefaults().StreamVariants
 	}
 
+	// Handle pre-existing data without the enabled field.
+	hasEnabled := false
+	for _, v := range streamOutputVariants {
+		if v.Enabled {
+			hasEnabled = true
+			break
+		}
+	}
+	if !hasEnabled {
+		for i := range streamOutputVariants {
+			streamOutputVariants[i].Enabled = true
+		}
+	}
+
 	if len(streamOutputVariants) == 0 {
 		return config.GetDefaults().StreamVariants
 	}

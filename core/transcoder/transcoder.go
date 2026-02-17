@@ -316,7 +316,16 @@ func NewTranscoder() *Transcoder {
 	transcoder.ffmpegPath = ffmpegPath
 	transcoder.internalListenerPort = config.InternalHLSListenerPort
 
-	transcoder.currentStreamOutputSettings = configRepository.GetStreamOutputVariants()
+	rawSettings := configRepository.GetStreamOutputVariants()
+
+	enabledVariants := []models.StreamOutputVariant{}
+	for _, variant := range rawSettings {
+		if variant.Enabled {
+			enabledVariants = append(enabledVariants, variant)
+		}
+	}
+	transcoder.currentStreamOutputSettings = enabledVariants
+
 	transcoder.currentLatencyLevel = configRepository.GetStreamLatencyLevel()
 	transcoder.codec = getCodec(configRepository.GetVideoCodec())
 	transcoder.segmentOutputPath = config.HLSStoragePath

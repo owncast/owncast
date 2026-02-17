@@ -25,15 +25,18 @@ func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	configRepository := configrepository.Get()
 	outputVariants := configRepository.GetStreamOutputVariants()
 
-	streamSortVariants := make([]variantsSort, len(outputVariants))
+	streamSortVariants := make([]variantsSort, 0, len(outputVariants))
 	for i, variant := range outputVariants {
+		if !variant.Enabled {
+			continue
+		}
 		variantSort := variantsSort{
 			Index:              i,
 			Name:               variant.GetName(),
 			IsVideoPassthrough: variant.IsVideoPassthrough,
 			VideoBitrate:       variant.VideoBitrate,
 		}
-		streamSortVariants[i] = variantSort
+		streamSortVariants = append(streamSortVariants, variantSort)
 	}
 
 	sort.Slice(streamSortVariants, func(i, j int) bool {
