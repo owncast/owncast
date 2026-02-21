@@ -59,17 +59,6 @@ export const VideoJS: FC<VideoJSProps> = ({ options, onReady }) => {
     }
   }, [options, videoRef]);
 
-  // Detect if the user is using touch.
-  React.useEffect(() => {
-    const onFirstTouch = () => {
-      document.body.setAttribute('player-data-is-touch', 'true');
-      window.removeEventListener('touchstart', onFirstTouch);
-    };
-
-    window.addEventListener('touchstart', onFirstTouch, { passive: true });
-    return () => window.removeEventListener('touchstart', onFirstTouch);
-  }, []);
-
   React.useEffect(() => {
     videojs.getPlayer(videoRef.current).on('xhr-hooks-ready', () => {
       const cachebusterRequestHook = o => {
