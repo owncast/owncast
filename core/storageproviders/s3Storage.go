@@ -182,7 +182,7 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	}
 	putInput.ACL = types.ObjectCannedACL(acl)
 
-	_, err = s.s3Client.PutObject(context.TODO(), putInput)
+	_, err = s.s3Client.PutObject(context.Background(), putInput)
 	if err != nil {
 		log.Traceln("error uploading segment", err.Error())
 		if retryCount < 4 {
@@ -281,7 +281,7 @@ func (s *S3Storage) deleteObjects(objects []s3object) {
 			end = len(keys)
 		}
 
-		resp, err := s.s3Client.DeleteObjects(context.TODO(), &s3.DeleteObjectsInput{
+		resp, err := s.s3Client.DeleteObjects(context.Background(), &s3.DeleteObjectsInput{
 			Bucket: aws.String(s.s3Bucket),
 			Delete: &types.Delete{
 				Objects: keys[i:end],
@@ -304,7 +304,7 @@ func (s *S3Storage) retrieveAllVideoSegments() ([]s3object, error) {
 
 	var allObjects []s3object
 	for paginator.HasMorePages() {
-		page, err := paginator.NextPage(context.TODO())
+		page, err := paginator.NextPage(context.Background())
 		if err != nil {
 			return nil, errors.Wrap(err, "Unable to fetch list of items in bucket for cleanup")
 		}
