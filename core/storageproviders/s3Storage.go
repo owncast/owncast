@@ -193,7 +193,7 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 		return "", fmt.Errorf("giving up uploading %s to object storage %s", filePath, s.s3Endpoint)
 	}
 
-	return "", nil
+	return s.host + "/" + remotePath, nil
 }
 
 // Cleanup will fire the different cleanup tasks required.
