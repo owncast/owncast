@@ -241,9 +241,6 @@ func (s *S3Storage) createS3Client() *s3.Client {
 		HTTPClient:   httpClient,
 		BaseEndpoint: aws.String(s.s3Endpoint),
 		UsePathStyle: s.s3ForcePathStyle,
-		// Only calculate checksums when required by the S3 API (e.g. DeleteObjects).
-		// For optional operations like PutObject, no checksum header is sent.
-		RequestChecksumCalculation: aws.RequestChecksumCalculationWhenRequired,
 	})
 
 	return client
