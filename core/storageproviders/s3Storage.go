@@ -241,10 +241,8 @@ func (s *S3Storage) createS3Client() *s3.Client {
 		HTTPClient:   httpClient,
 		BaseEndpoint: aws.String(s.s3Endpoint),
 		UsePathStyle: s.s3ForcePathStyle,
-		// Disable automatic CRC32 checksum calculation for compatibility with
-		// S3-compatible providers (MinIO, DigitalOcean Spaces, Backblaze B2, etc.)
-		// that may not support checksum headers. See:
-		// https://github.com/aws/aws-sdk-go-v2/discussions/2960
+		// Only calculate checksums when required by the S3 API (e.g. DeleteObjects).
+		// For optional operations like PutObject, no checksum header is sent.
 		RequestChecksumCalculation: aws.RequestChecksumCalculationWhenRequired,
 	})
 
