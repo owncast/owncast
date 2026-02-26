@@ -164,8 +164,8 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 
 	uploadInput := &s3.PutObjectInput{
 		Bucket:       aws.String(s.s3Bucket), // Bucket to be used
-		Key:          aws.String(remotePath),  // Name of the file to be saved
-		Body:         file,                    // File
+		Key:          aws.String(remotePath), // Name of the file to be saved
+		Body:         file,                   // File
 		CacheControl: &cacheControlHeader,
 	}
 
