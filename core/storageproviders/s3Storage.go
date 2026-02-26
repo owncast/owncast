@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -161,10 +162,10 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	maxAgeSeconds := utils.GetCacheDurationSecondsForPath(filePath)
 	cacheControlHeader := fmt.Sprintf("max-age=%d", maxAgeSeconds)
 
-	putInput := &s3.PutObjectInput{
-		Bucket:       aws.String(s.s3Bucket),
-		Key:          aws.String(remotePath),
-		Body:         file,
+	uploadInput := &s3.PutObjectInput{
+		Bucket:       aws.String(s.s3Bucket), // Bucket to be used
+		Key:          aws.String(remotePath),  // Name of the file to be saved
+		Body:         file,                    // File
 		CacheControl: &cacheControlHeader,
 	}
 
@@ -172,17 +173,18 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 		noCacheHeader := "no-cache, no-store, must-revalidate"
 		contentType := "application/x-mpegURL"
 
-		putInput.CacheControl = &noCacheHeader
-		putInput.ContentType = &contentType
+		uploadInput.CacheControl = &noCacheHeader
+		uploadInput.ContentType = &contentType
 	}
 
-	acl := s.s3ACL
-	if acl == "" {
-		acl = "public-read"
+	if s.s3ACL != "" {
+		uploadInput.ACL = types.ObjectCannedACL(s.s3ACL)
+	} else {
+		// Default ACL
+		uploadInput.ACL = types.ObjectCannedACLPublicRead
 	}
-	putInput.ACL = types.ObjectCannedACL(acl)
 
-	_, err = s.s3Client.PutObject(context.Background(), putInput)
+	_, err = s.s3Client.PutObject(context.Background(), uploadInput)
 	if err != nil {
 		log.Traceln("error uploading segment", err.Error())
 		if retryCount < 4 {
@@ -193,7 +195,7 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 		return "", fmt.Errorf("giving up uploading %s to object storage %s", filePath, s.s3Endpoint)
 	}
 
-	return s.host + "/" + remotePath, nil
+	return url.JoinPath(s.host, remotePath)
 }
 
 // Cleanup will fire the different cleanup tasks required.
