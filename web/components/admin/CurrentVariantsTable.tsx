@@ -27,6 +27,7 @@ import {
 } from '../../utils/input-statuses';
 import { Localization } from '../../types/localization';
 import { FormStatusIndicator } from './FormStatusIndicator';
+import { Translation } from '../ui/Translation/Translation';
 
 const { Title } = Typography;
 
@@ -149,9 +150,15 @@ export const CurrentVariantsTable: FC = () => {
 
   const videoQualityColumns: ColumnsType<VideoVariant> = [
     {
-      title: 'Enabled',
+      title: (
+        <Translation
+          translationKey={Localization.Admin.VideoVariantForm.enabled}
+          defaultText="Enabled"
+        />
+      ),
       dataIndex: 'enabled',
       key: 'enabled',
+      align: 'center' as const,
       render: (enabled: boolean, { key }: VideoVariant) => {
         const index = key - 1;
         const enabledCount = videoQualityVariants.filter(v => v.enabled).length;

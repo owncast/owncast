@@ -113,7 +113,8 @@
 			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
 			"bitrateGoodForMost": "Good for most viewers, bandwidths and resolutions.",
 			"bitrateGoodForSlow": "Good for slow, mobile and low bitrate viewers.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
+			"bitrateValueKbps": "{{bitrate}} kbps",
+			"enabled": "Enabled"
 		},
 		"ViewerInfo": {
 			"currentStream": "Current stream",

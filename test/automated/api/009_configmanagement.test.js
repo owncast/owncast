@@ -245,6 +245,32 @@ test('reject all variants disabled', async () => {
 	]);
 });
 
+test('verify public video variants return contiguous indexes for enabled variants only', async () => {
+	const disabledVariant = { ...streamOutputVariants, name: 'Disabled', enabled: false, videoBitrate: 800 };
+	const enabledVariant1 = { ...streamOutputVariants, name: 'Enabled 1', enabled: true, videoBitrate: 1000 };
+	const enabledVariant2 = { ...streamOutputVariants, name: 'Enabled 2', enabled: true, videoBitrate: 600 };
+	await sendAdminRequest('config/video/streamoutputvariants', [
+		enabledVariant1,
+		disabledVariant,
+		enabledVariant2,
+	]);
+
+	const res = await request.get('/api/video/variants');
+	expect(res.body.length).toBe(2);
+
+	const names = res.body.map(v => v.name);
+	expect(names).not.toContain('Disabled');
+
+	const indexes = res.body.map(v => v.index);
+	for (let i = 0; i < indexes.length; i++) {
+		expect(indexes).toContain(i);
+	}
+
+	await sendAdminRequest('config/video/streamoutputvariants', [
+		streamOutputVariants,
+	]);
+});
+
 test('set social handles', async () => {
 	await sendAdminRequest('config/socialhandles', newSocialHandles);
 });

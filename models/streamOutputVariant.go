@@ -101,11 +101,9 @@ func (q *StreamOutputVariant) MarshalJSON() ([]byte, error) {
 	type Alias StreamOutputVariant
 	return json.Marshal(&struct {
 		*Alias
-		Framerate int  `json:"framerate"`
-		Enabled   bool `json:"enabled"`
+		Framerate int `json:"framerate"`
 	}{
 		Framerate: q.GetFramerate(),
-		Enabled:   q.Enabled,
 		Alias:     (*Alias)(q),
 	})
 }

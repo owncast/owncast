@@ -71,13 +71,16 @@ func networkSpeedHealthOverviewMessage() string {
 	configRepository := configrepository.Get()
 	outputVariants := configRepository.GetStreamOutputVariants()
 
-	streamSortVariants := make([]singleVariant, len(outputVariants))
-	for i, variant := range outputVariants {
+	streamSortVariants := make([]singleVariant, 0, len(outputVariants))
+	for _, variant := range outputVariants {
+		if !variant.Enabled {
+			continue
+		}
 		variantSort := singleVariant{
 			bitrate:            variant.VideoBitrate,
 			isVideoPassthrough: variant.IsVideoPassthrough,
 		}
-		streamSortVariants[i] = variantSort
+		streamSortVariants = append(streamSortVariants, variantSort)
 	}
 
 	sort.Slice(streamSortVariants, func(i, j int) bool {
@@ -163,13 +166,16 @@ func wastefulBitrateOverviewMessage() string {
 		bitrate            int
 	}
 
-	streamSortVariants := make([]singleVariant, len(outputVariants))
-	for i, variant := range outputVariants {
+	streamSortVariants := make([]singleVariant, 0, len(outputVariants))
+	for _, variant := range outputVariants {
+		if !variant.Enabled {
+			continue
+		}
 		variantSort := singleVariant{
 			bitrate:            variant.VideoBitrate,
 			isVideoPassthrough: variant.IsVideoPassthrough,
 		}
-		streamSortVariants[i] = variantSort
+		streamSortVariants = append(streamSortVariants, variantSort)
 	}
 
 	sort.Slice(streamSortVariants, func(i, j int) bool {
@@ -233,7 +239,7 @@ func errorCountHealthOverviewMessage() string {
 		configRepository := configrepository.Get()
 		outputVariants := configRepository.GetStreamOutputVariants()
 		for _, variant := range outputVariants {
-			if variant.IsVideoPassthrough {
+			if variant.Enabled && variant.IsVideoPassthrough {
 				isUsingPassthrough = true
 			}
 		}
