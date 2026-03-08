@@ -4,7 +4,7 @@ go 1.25.3
 
 require (
 	github.com/evilmartians/lefthook v1.13.6
-	github.com/golangci/golangci-lint/v2 v2.11.1
+	github.com/golangci/golangci-lint/v2 v2.11.2
 	github.com/oapi-codegen/oapi-codegen/v2 v2.6.0
 	github.com/sqlc-dev/sqlc v1.30.0
 	mvdan.cc/gofumpt v0.9.2
