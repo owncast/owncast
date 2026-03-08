@@ -1,8 +1,6 @@
 module github.com/owncast/owncast
 
-go 1.24.4
-
-toolchain go1.24.11
+go 1.25.0
 
 require (
 	github.com/CAFxX/httpcompression v0.0.9
@@ -39,7 +37,7 @@ require (
 	golang.org/x/crypto v0.48.0
 	golang.org/x/mod v0.32.0
 	golang.org/x/net v0.49.0
-	golang.org/x/time v0.14.0
+	golang.org/x/time v0.15.0
 	gopkg.in/evanphx/json-patch.v5 v5.9.11
 	mvdan.cc/xurls/v2 v2.6.0
 )
