@@ -127,7 +127,7 @@
     "jest-environment-jsdom": "^30.0.4",
     "knip": "^5.0.0",
     "less": "4.6.3",
-    "less-loader": "12.3.1",
+    "less-loader": "12.3.2",
     "mdx-mermaid": "^2.0.0",
     "mermaid": "^11.10.0",
     "msw": "^2.11.6",
