@@ -127,6 +127,14 @@ func (*ServerInterfaceImpl) SetChatSlurFilterEnabledOptions(w http.ResponseWrite
 	middleware.RequireAdminAuth(admin.SetChatSlurFilterEnabled)(w, r)
 }
 
+func (*ServerInterfaceImpl) SetChatRequireAuthentication(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetChatRequireAuthentication)(w, r)
+}
+
+func (*ServerInterfaceImpl) SetChatRequireAuthenticationOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetChatRequireAuthentication)(w, r)
+}
+
 func (*ServerInterfaceImpl) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetVideoCodec)(w, r)
 }
@@ -165,6 +173,18 @@ func (*ServerInterfaceImpl) SetLogo(w http.ResponseWriter, r *http.Request) {
 
 func (*ServerInterfaceImpl) SetLogoOptions(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(admin.SetLogo)(w, r)
+}
+
+func (*ServerInterfaceImpl) SetFavicon(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetFavicon)(w, r)
+}
+
+func (*ServerInterfaceImpl) SetFaviconOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.SetFavicon)(w, r)
+}
+
+func (*ServerInterfaceImpl) ResetFavicon(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(admin.ResetFavicon)(w, r)
 }
 
 func (*ServerInterfaceImpl) SetTags(w http.ResponseWriter, r *http.Request) {

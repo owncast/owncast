@@ -282,15 +282,10 @@ export const BrowserNotifyModal = () => {
             translationKey={Localization.Frontend.BrowserNotifyModal.mainDescription}
             defaultText="Get notified right in the browser each time this stream goes live."
           />
-          <span>
-            <a href="https://owncast.online/docs/notifications/#browser-notifications">
-              <Translation
-                translationKey={Localization.Frontend.BrowserNotifyModal.learnMore}
-                defaultText="Learn more"
-              />
-            </a>
-            &nbsp; about Owncast browser notifications.
-          </span>
+          <Translation
+            translationKey={Localization.Frontend.BrowserNotifyModal.learnMoreAboutNotifications}
+            defaultText="<a href='https://owncast.online/docs/notifications/#browser-notifications'>Learn more</a> about Owncast browser notifications."
+          />
         </Row>
         <Row>
           {error && (

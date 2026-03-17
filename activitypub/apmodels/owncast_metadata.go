@@ -23,76 +23,59 @@ type OwncastMetadata struct {
 func ParseOwncastMetadata(unknownProps map[string]interface{}) *OwncastMetadata {
 	metadata := &OwncastMetadata{}
 
-	// Check if this is an Owncast server by looking for any Owncast namespace properties
-	if _, hasStreamStatus := unknownProps[config.APOwncastNamespaceStreamStatus]; hasStreamStatus {
-		metadata.IsOwncastServer = true
-	}
+	metadata.StreamStatus = extractStringProp(unknownProps, config.APOwncastNamespaceStreamStatus)
+	metadata.StreamTitle = extractStringProp(unknownProps, config.APOwncastNamespaceStreamTitle)
+	metadata.StreamDescription = extractStringProp(unknownProps, config.APOwncastNamespaceStreamDescription)
+	metadata.ServerName = extractStringProp(unknownProps, config.APOwncastNamespaceServerName)
+	metadata.LogoURL = extractStringProp(unknownProps, config.APOwncastNamespaceLogoURL)
+	metadata.ThumbnailURL = extractStringProp(unknownProps, config.APOwncastNamespaceThumbnailURL)
+	metadata.Tags = extractTagsProp(unknownProps)
 
-	// Parse stream status
-	if streamStatus, exists := unknownProps[config.APOwncastNamespaceStreamStatus]; exists {
-		if status, ok := streamStatus.(string); ok {
-			metadata.StreamStatus = status
-			metadata.IsOwncastServer = true
-		}
-	}
-
-	// Parse stream title
-	if streamTitle, exists := unknownProps[config.APOwncastNamespaceStreamTitle]; exists {
-		if title, ok := streamTitle.(string); ok {
-			metadata.StreamTitle = title
-			metadata.IsOwncastServer = true
-		}
-	}
-
-	// Parse stream description
-	if streamDescription, exists := unknownProps[config.APOwncastNamespaceStreamDescription]; exists {
-		if desc, ok := streamDescription.(string); ok {
-			metadata.StreamDescription = desc
-			metadata.IsOwncastServer = true
-		}
-	}
-
-	// Parse server name
-	if serverName, exists := unknownProps[config.APOwncastNamespaceServerName]; exists {
-		if name, ok := serverName.(string); ok {
-			metadata.ServerName = name
-			metadata.IsOwncastServer = true
-		}
-	}
-
-	// Parse logo URL
-	if logoURL, exists := unknownProps[config.APOwncastNamespaceLogoURL]; exists {
-		if logo, ok := logoURL.(string); ok {
-			metadata.LogoURL = logo
-			metadata.IsOwncastServer = true
-		}
-	}
-
-	// Parse thumbnail URL
-	if thumbnailURL, exists := unknownProps[config.APOwncastNamespaceThumbnailURL]; exists {
-		if thumb, ok := thumbnailURL.(string); ok {
-			metadata.ThumbnailURL = thumb
-			metadata.IsOwncastServer = true
-		}
-	}
-
-	// Parse tags
-	if tags, exists := unknownProps[config.APOwncastNamespaceStreamTags]; exists {
-		if tagList, ok := tags.([]interface{}); ok && len(tagList) > 0 {
-			tagStrings := make([]string, 0, len(tagList))
-			for _, tag := range tagList {
-				if tagStr, ok := tag.(string); ok {
-					tagStrings = append(tagStrings, tagStr)
-				}
-			}
-			if len(tagStrings) > 0 {
-				metadata.Tags = tagStrings
-				metadata.IsOwncastServer = true
-			}
-		}
-	}
+	metadata.IsOwncastServer = metadata.StreamStatus != "" ||
+		metadata.StreamTitle != "" ||
+		metadata.StreamDescription != "" ||
+		metadata.ServerName != "" ||
+		metadata.LogoURL != "" ||
+		metadata.ThumbnailURL != "" ||
+		len(metadata.Tags) > 0
 
 	return metadata
+}
+
+// extractStringProp extracts a string value from the unknown properties map for a given key.
+func extractStringProp(unknownProps map[string]interface{}, key string) string {
+	if val, exists := unknownProps[key]; exists {
+		if str, ok := val.(string); ok {
+			return str
+		}
+	}
+	return ""
+}
+
+// extractTagsProp extracts the tags list from the unknown properties map.
+func extractTagsProp(unknownProps map[string]interface{}) []string {
+	tags, exists := unknownProps[config.APOwncastNamespaceStreamTags]
+	if !exists {
+		return nil
+	}
+
+	tagList, ok := tags.([]interface{})
+	if !ok || len(tagList) == 0 {
+		return nil
+	}
+
+	tagStrings := make([]string, 0, len(tagList))
+	for _, tag := range tagList {
+		if tagStr, ok := tag.(string); ok {
+			tagStrings = append(tagStrings, tagStr)
+		}
+	}
+
+	if len(tagStrings) == 0 {
+		return nil
+	}
+
+	return tagStrings
 }
 
 // SetOwncastMetadata sets Owncast metadata properties in unknownProps map from ConfigRepository.
@@ -104,9 +87,9 @@ func SetOwncastMetadata(unknownProps map[string]interface{}, repo configreposito
 
 	// Always include current stream status
 	if isStreamConnected {
-		unknownProps[config.APOwncastNamespaceStreamStatus] = "live"
+		unknownProps[config.APOwncastNamespaceStreamStatus] = config.APStreamStatusLive
 	} else {
-		unknownProps[config.APOwncastNamespaceStreamStatus] = "offline"
+		unknownProps[config.APOwncastNamespaceStreamStatus] = config.APStreamStatusOffline
 	}
 
 	// Add stream title if available
@@ -135,8 +118,8 @@ func SetBasicOwncastMetadata(unknownProps map[string]interface{}, repo configrep
 
 	// Always include current stream status
 	if isStreamConnected {
-		unknownProps[config.APOwncastNamespaceStreamStatus] = "live"
+		unknownProps[config.APOwncastNamespaceStreamStatus] = config.APStreamStatusLive
 	} else {
-		unknownProps[config.APOwncastNamespaceStreamStatus] = "offline"
+		unknownProps[config.APOwncastNamespaceStreamStatus] = config.APStreamStatusOffline
 	}
 }

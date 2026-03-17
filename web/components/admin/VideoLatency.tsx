@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect, FC } from 'react';
 import { Typography, Slider } from 'antd';
+import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
 import {
@@ -14,6 +15,7 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
+import { Localization } from '../../types/localization';
 import { FormStatusIndicator } from './FormStatusIndicator';
 
 const { Title } = Typography;
@@ -36,6 +38,7 @@ const SLIDER_COMMENTS = {
 
 // eslint-disable-next-line import/prefer-default-export
 export const VideoLatency: FC = () => {
+  const { t } = useTranslation();
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [selectedOption, setSelectedOption] = useState(null);
 
@@ -73,7 +76,12 @@ export const VideoLatency: FC = () => {
           value: postValue,
           path: 'videoSettings',
         });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Latency buffer level updated.'));
+        setSubmitStatus(
+          createInputStatus(
+            STATUS_SUCCESS,
+            t(Localization.Admin.StatusMessages.latencyBufferUpdated),
+          ),
+        );
 
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         if (serverStatusData.online) {

@@ -1,5 +1,41 @@
 {
 	"Admin": {
+		"AccessTokens": {
+			"createNewAccessToken": "Create New Access token",
+			"nameDescription": "The name will be displayed as the chat user when sending messages with this access token.",
+			"namePlaceholder": "Name of bot, service, or integration",
+			"selectAll": "Select all",
+			"selectPermissions": "Select the permissions this access token will have. It cannot be edited after it's created."
+		},
+		"Actions": {
+			"createNewAction": "Create New Action",
+			"createNewActionTitle": "Create New Action",
+			"customHtml": "Custom HTML",
+			"description": "External action URLs are 3rd party UI you can display, embedded, into your Owncast page when a user clicks on a button to launch your action.",
+			"descriptionPlaceholder": "Optional description",
+			"editActionTitle": "Edit Action",
+			"htmlEmbedPlaceholder": "HTML embed code (required)",
+			"iconPlaceholder": "https://myserver.com/action/icon.png (optional)",
+			"linkOrEmbedUrl": "Link or embed an URL",
+			"modalDescription": "Add the URL for the external action you want to present.",
+			"onlyHttpsSupported": "Only HTTPS URLs and embeds are supported.",
+			"openExternally": "Open in a new tab instead of within your page.",
+			"optionalBackgroundColor": "Optional background color of the action button.",
+			"readMoreAboutActions": "Read more about external actions.",
+			"readMoreLink": "Read more about how to use actions, with examples, at",
+			"selectActionType": "Select an action type",
+			"title": "External Actions",
+			"titlePlaceholder": "Your action title (required)",
+			"urlPlaceholder": "https://myserver.com/action (required)"
+		},
+		"EditFavicon": {
+			"label": "Favicon",
+			"tip": "Upload a custom favicon (PNG or ICO format, max 200KB). This icon appears in browser tabs and bookmarks.",
+			"resetButton": "Reset",
+			"resetConfirmTitle": "Reset to default favicon?",
+			"resetConfirmOk": "Yes",
+			"resetConfirmCancel": "No"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Increase your audience by appearing in the <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Learn more</a>.",
 			"offlineMessageDescription": "The offline message is displayed to your page visitors when you're not streaming. Markdown is supported.",
@@ -95,6 +131,23 @@
 			"noNews": "No news.",
 			"title": "News & Updates from Owncast"
 		},
+		"StatusMessages": {
+			"convertingEmoji": "Converting emoji...",
+			"deletingEmoji": "Deleting emoji...",
+			"emojiDeleted": "Emoji deleted",
+			"emojiUploadedSuccessfully": "Emoji uploaded successfully!",
+			"fileSizeTooBig": "File size is too big: {{size}}",
+			"fileTypeNotSupported": "File type is not supported: {{type}}",
+			"latencyBufferUpdated": "Latency buffer level updated.",
+			"pleaseEnterTag": "Please enter a tag",
+			"tagAlreadyUsed": "This tag is already used!",
+			"tagsUpdated": "Tags updated.",
+			"thereWasAnError": "There was an error: {{message}}",
+			"updated": "Updated.",
+			"uploadingEmoji": "Uploading emoji...",
+			"variantsUpdated": "Variants updated",
+			"videoCodecUpdated": "Video codec updated."
+		},
 		"VideoVariantForm": {
 			"bitrateDisabledPassthrough": "Bitrate selection is disabled when Video Passthrough is enabled.",
 			"bitrateGoodForHigh": "Good for high speed & high bitrate viewers.",
@@ -111,13 +164,19 @@
 			"last3Months": "Last 3 months",
 			"last6Months": "Last 6 months",
 			"last7Days": "Last 7 days",
-			"maxViewers": "max viewers",
+			"maxViewers": "Max viewers",
 			"maxViewersLastStream": "Max viewers last stream",
 			"maxViewersThisStream": "Max viewers this stream",
 			"noData": "No viewer data has been collected yet.",
 			"pleaseWait": "Please wait",
 			"title": "Viewer Info",
 			"viewers": "Viewers"
+		},
+		"Webhooks": {
+			"createNewWebhook": "Create New Webhook",
+			"selectAll": "Select all",
+			"selectEvents": "Select the events that will be sent to this webhook.",
+			"webhookUrlPlaceholder": "https://myserver.com/webhook"
 		},
 		"deleteEmoji": "Delete emoji",
 		"emojiPageDescription": "Here you can upload new custom emojis for usage in the chat. When uploading a new emoji, the filename without extension will be used as emoji name. Additionally, emoji names are case-insensitive. For best results, ensure all emoji have unique names.",
@@ -147,6 +206,7 @@
 			"iosShareButton": "share",
 			"iosTitle": "Get notified on iOS",
 			"learnMore": "Learn more",
+			"learnMoreAboutNotifications": "<a href='https://owncast.online/docs/notifications/#browser-notifications'>Learn more</a> about Owncast browser notifications.",
 			"mainDescription": "Get notified right in the browser each time this stream goes live.",
 			"permissionWantsTo": "{{hostname}} wants to",
 			"showNotifications": "Show notifications",
@@ -154,6 +214,7 @@
 			"unsupportedLocal": "Browser notifications are not supported for local servers."
 		},
 		"Chat": {
+			"authenticateToChat": "Authenticate to chat",
 			"moderatorNotification": "You are now a moderator.",
 			"nameChangeText": "is now known as",
 			"userJoined": "joined the chat.",
@@ -197,6 +258,7 @@
 			"loadingStreams": "Loading featured streams...",
 			"noFeaturedStreams": "No featured streams available"
 		},
+		"chatDisabled": "Chat is disabled",
 		"chatOffline": "Chat is offline",
 		"componentError": "Error: {{message}}",
 		"helloWorld": "Hello world",

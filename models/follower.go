@@ -8,6 +8,8 @@ type Follower struct {
 	ActorIRI string `json:"link"`
 	// Inbox is the inbox URL of the remote follower
 	Inbox string `json:"-"`
+	// SharedInbox is the shared inbox URL of the remote follower's server (optional)
+	SharedInbox string `json:"-"`
 	// Name is the display name of the follower.
 	Name string `json:"name"`
 	// Username is the account username of the remote actor.
@@ -18,4 +20,6 @@ type Follower struct {
 	Timestamp utils.NullTime `json:"timestamp,omitempty"`
 	// DisabledAt is when this follower was rejected or disabled.
 	DisabledAt utils.NullTime `json:"disabledAt,omitempty"`
+	// FirstValidationFailureAt is when consecutive validation failures started.
+	FirstValidationFailureAt utils.NullTime `json:"-"`
 }

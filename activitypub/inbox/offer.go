@@ -65,7 +65,7 @@ func isValidOwncastStreamOffer(activity vocab.ActivityStreamsOffer) bool {
 	}
 
 	statusStr, ok := streamStatus.(string)
-	return ok && statusStr == "live"
+	return ok && statusStr == config.APStreamStatusLive
 }
 
 func shouldProcessOfferFromServer(repo federatedserversrepository.FederatedServersRepository, actorIRI string) bool {

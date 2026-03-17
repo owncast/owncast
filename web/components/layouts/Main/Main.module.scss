@@ -1,4 +1,4 @@
-@import '../../../styles/mixins';
+@use '../../../styles/mixins' as *;
 
 .layout {
   // this margin is for fixed header

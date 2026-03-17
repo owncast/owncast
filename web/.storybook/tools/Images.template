@@ -1,4 +1,4 @@
-import { Canvas, Meta, Story, IconItem, IconGallery } from '@storybook/addon-docs';
+import { Meta, IconItem, IconGallery } from '@storybook/addon-docs/blocks';
 
 <Meta title="{{category}}" parameters=\{{previewTabs: { canvas: { hidden: true } }, chromatic: { disableSnapshot: true }}} />
 

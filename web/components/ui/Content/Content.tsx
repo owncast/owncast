@@ -4,9 +4,11 @@ import MessageFilled from '@ant-design/icons/MessageFilled';
 import { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import classnames from 'classnames';
+import { useTranslation } from 'next-export-i18n';
 import ActionButtons from './ActionButtons';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 import { canPushNotificationsBeSupported } from '../../../utils/browserPushNotifications';
+import { Localization } from '../../../types/localization';
 
 import {
   clientConfigStateAtom,
@@ -19,6 +21,7 @@ import {
   serverStatusState,
   isChatAvailableSelector,
   visibleChatMessagesSelector,
+  chatAuthenticatedAtom,
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 
@@ -98,6 +101,7 @@ const ExternalModal = ({ externalActionToDisplay, setExternalActionToDisplay }) 
 };
 
 export const Content: FC = () => {
+  const { t } = useTranslation();
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const chatState = useRecoilValue<ChatState>(chatStateAtom);
@@ -107,6 +111,7 @@ export const Content: FC = () => {
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
   const online = useRecoilValue<boolean>(isOnlineSelector);
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
+  const isUserAuthenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
 
   const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } =
     useRecoilValue<ServerStatus>(serverStatusState);
@@ -119,6 +124,7 @@ export const Content: FC = () => {
     externalActions,
     offlineMessage,
     chatDisabled,
+    chatRequireAuthentication,
     federation,
     notifications,
   } = clientConfig;
@@ -220,6 +226,16 @@ export const Content: FC = () => {
   }, []);
 
   const showChat = isChatAvailable && !chatDisabled && chatState === ChatState.VISIBLE;
+
+  // Determine if chat input should be enabled based on authentication requirements.
+  // Moderators bypass the authentication requirement.
+  const chatInputEnabled = !!(
+    isChatAvailable &&
+    (!chatRequireAuthentication || isUserAuthenticated || currentUser?.isModerator)
+  );
+  const chatInputDisabledMessage = chatRequireAuthentication
+    ? t(Localization.Frontend.Chat.authenticateToChat)
+    : t(Localization.Frontend.chatDisabled);
 
   return (
     <div className={styles.main}>
@@ -329,6 +345,8 @@ export const Content: FC = () => {
           isModerator={currentUser.isModerator}
           chatAvailable={isChatAvailable}
           showInput={!!currentUser}
+          inputEnabled={chatInputEnabled}
+          inputDisabledPlaceholder={chatInputDisabledMessage}
           desktop
         />
       )}
@@ -355,6 +373,8 @@ export const Content: FC = () => {
           messages={messages}
           currentUser={currentUser}
           handleClose={() => setShowChatModal(false)}
+          inputEnabled={chatInputEnabled}
+          inputDisabledPlaceholder={chatInputDisabledMessage}
         />
       )}
       {isMobile && isChatAvailable && !chatDisabled && (

@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -41,19 +42,18 @@ type domainFailure struct {
 
 // InitOutboundWorkerPool starts n go routines that await ActivityPub jobs.
 func InitOutboundWorkerPool(workerPoolSize int) {
-	queue = make(chan Job, workerPoolSize)
-
-	// Initialize HTTP client with conservative timeouts and connection limits
-	// to prevent resource exhaustion and hanging requests
-	httpClient = &http.Client{
-		Timeout: 15 * time.Second, // Reduced from 30s for faster failure detection
-		Transport: &http.Transport{
-			MaxIdleConns:        20,               // Reduced from 100 to limit resource usage
-			MaxIdleConnsPerHost: 2,                // Reduced from 10 to be more conservative
-			IdleConnTimeout:     10 * time.Second, // Reduced from 30s for faster cleanup
-			DisableKeepAlives:   false,
-		},
+	// Use a larger buffer to decouple request creation from processing.
+	// This prevents SendToFollowers from blocking when many followers need updates.
+	const minQueueBuffer = 500
+	queueBuffer := workerPoolSize * 10
+	if queueBuffer < minQueueBuffer {
+		queueBuffer = minQueueBuffer
 	}
+	queue = make(chan Job, queueBuffer)
+
+	// Initialize HTTP client with retry logic for transient failures
+	// The retryable client handles 502/503/504 errors automatically
+	httpClient = utils.GetRetryableHTTPClient()
 
 	// start workers
 	for i := 1; i <= workerPoolSize; i++ {
@@ -64,7 +64,7 @@ func InitOutboundWorkerPool(workerPoolSize int) {
 // AddToOutboundQueue will queue up an outbound http request.
 func AddToOutboundQueue(req *http.Request) {
 	// Check if domain should be skipped due to circuit breaker
-	if shouldSkipDomain(req.URL.Host) {
+	if ShouldSkipDomain(req.URL.Host) {
 		log.Debugf("Skipping request to %s due to circuit breaker", req.URL.Host)
 		return
 	}
@@ -119,8 +119,9 @@ func (e *httpError) Error() string {
 	return e.message
 }
 
-// shouldSkipDomain checks if a domain should be skipped due to circuit breaker.
-func shouldSkipDomain(domain string) bool {
+// ShouldSkipDomain checks if a domain should be skipped due to circuit breaker.
+// This is exported so callers can check before expensive operations like request signing.
+func ShouldSkipDomain(domain string) bool {
 	failedDomainsMutex.RLock()
 	defer failedDomainsMutex.RUnlock()
 

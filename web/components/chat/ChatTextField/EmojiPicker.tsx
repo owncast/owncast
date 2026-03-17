@@ -39,6 +39,12 @@ export const EmojiPicker: FC<EmojiPickerProps> = ({ onEmojiSelect, customEmoji }
   }, []);
 
   return (
-    <Picker data={data} custom={custom} onEmojiSelect={onEmojiSelect} categories={categories} />
+    <Picker
+      data={data}
+      custom={custom}
+      onEmojiSelect={onEmojiSelect}
+      categories={categories}
+      dynamicWidth
+    />
   );
 };

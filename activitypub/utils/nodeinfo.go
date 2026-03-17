@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// NodeInfoV2 represents the nodeinfo 2.0 response structure
+// NodeInfoV2 represents the nodeinfo 2.0 response structure.
 type NodeInfoV2 struct {
 	Metadata struct {
 		Federation struct {
@@ -25,7 +25,7 @@ type NodeInfoV2 struct {
 	Protocols []string `json:"protocols"`
 }
 
-// FetchNodeInfo fetches the nodeinfo from a given server URL
+// FetchNodeInfo fetches the nodeinfo from a given server URL.
 func FetchNodeInfo(serverURL string) (*NodeInfoV2, error) {
 	// Parse and validate the URL
 	parsedURL, err := url.Parse(serverURL)
@@ -109,7 +109,7 @@ func FetchNodeInfo(serverURL string) (*NodeInfoV2, error) {
 	return &nodeinfo, nil
 }
 
-// ExtractFederationUsername extracts the federation username from nodeinfo
+// ExtractFederationUsername extracts the federation username from nodeinfo.
 func ExtractFederationUsername(nodeinfo *NodeInfoV2) (string, error) {
 	if nodeinfo == nil {
 		return "", errors.New("nodeinfo is nil")
@@ -123,7 +123,7 @@ func ExtractFederationUsername(nodeinfo *NodeInfoV2) (string, error) {
 	return username, nil
 }
 
-// ValidateOwncastServer validates if the server is an Owncast instance
+// ValidateOwncastServer validates if the server is an Owncast instance.
 func ValidateOwncastServer(nodeinfo *NodeInfoV2) error {
 	if nodeinfo == nil {
 		return errors.New("nodeinfo is nil")

@@ -7,3 +7,18 @@ We abide by our [Code of Conduct](https://owncast.online/contribute/) and feel s
 We’ve been very lucky to have this so far, so maybe you can help us with your skills and passion, too!
 
 There is a larger, more detailed, and more up-to-date [guide for helping contribute to Owncast on our website](https://owncast.online/help/).
+
+## Before Submitting a PR
+
+For web changes, from the `web/` directory:
+
+```bash
+npm run check              # Verify your code will pass CI
+npm run lint && npm run format   # Auto-fix errors
+```
+
+For Go changes, from the repository root:
+
+```bash
+make lint && make fmt
+```

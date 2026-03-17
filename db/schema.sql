@@ -4,6 +4,7 @@
 CREATE TABLE IF NOT EXISTS ap_followers (
 		"iri" TEXT NOT NULL,
 		"inbox" TEXT NOT NULL,
+		"shared_inbox" TEXT,
 		"name" TEXT,
 		"username" TEXT NOT NULL,
 		"image" TEXT,
@@ -13,6 +14,8 @@ CREATE TABLE IF NOT EXISTS ap_followers (
 		"approved_at" TIMESTAMP,
     "disabled_at" TIMESTAMP,
     "owncast_server" BOOLEAN DEFAULT FALSE,
+    "last_validated_at" TIMESTAMP,
+    "first_validation_failure_at" TIMESTAMP,
 		PRIMARY KEY (iri));
 		CREATE INDEX iri_index ON ap_followers (iri);
     CREATE INDEX approved_at_index ON ap_followers (approved_at);

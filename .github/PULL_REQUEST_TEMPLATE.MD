@@ -1,12 +1,16 @@
+<!-- REQUIRED-CHECKLIST:START - Do not remove this section -->
 
-## Double check
+## Required checklist
 
-- [ ] I included a screenshot, logs, or example payload to demonstrate the change.
+**Do not remove this section.** These checkboxes are required and validated.
+
+- [ ] I have personally tested these changes and verified they work as intended.
+- [ ] I understand the code I'm submitting and can explain how it works if asked.
+- [ ] I included a screenshot, logs, example payload to demonstrate the change, or it really doesn't need it.
 - [ ] This is a frontend change and it supports [translations](https://docs.owncast.dev/web-translations), or it's not a frontend change.
-- [ ] This change has actually been tested.
 - [ ] The code has been run through the proper linters and/or formatters for the language.
 - [ ] There is an issue discussing this change and it's assigned to me.
-- [ ] I read the "Read first" details about filing this PR.
+<!-- REQUIRED-CHECKLIST:END -->
 
 ---
 
@@ -47,5 +51,5 @@ Some things you might want to mention:
 3. If you're fixing something, what was wrong? How should we stop from having this issue happen again?
 4. If this is a new feature or addition to functionality, why should it be added? What are the use cases? Who was asking for this functionality?
 5. If this is a frontend change, does the text support [translation](https://owncast.notion.site/web-translations)?
-   
+
 Thank you so much for contributing to Owncast! 🎉

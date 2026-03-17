@@ -18,17 +18,20 @@ type ApAcceptedActivity struct {
 }
 
 type ApFollower struct {
-	Iri           string
-	Inbox         string
-	Name          sql.NullString
-	Username      string
-	Image         sql.NullString
-	Request       string
-	RequestObject []byte
-	CreatedAt     sql.NullTime
-	ApprovedAt    sql.NullTime
-	DisabledAt    sql.NullTime
-	OwncastServer sql.NullBool
+	Iri                      string
+	Inbox                    string
+	SharedInbox              sql.NullString
+	Name                     sql.NullString
+	Username                 string
+	Image                    sql.NullString
+	Request                  string
+	RequestObject            []byte
+	CreatedAt                sql.NullTime
+	ApprovedAt               sql.NullTime
+	DisabledAt               sql.NullTime
+	OwncastServer            sql.NullBool
+	LastValidatedAt          sql.NullTime
+	FirstValidationFailureAt sql.NullTime
 }
 
 type ApOutbox struct {

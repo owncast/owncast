@@ -88,6 +88,7 @@ export const StreamCard: FC<StreamCardProps> = ({
   return (
     <Card
       hoverable
+      role="article"
       className={classNames(styles.streamCard, {
         [styles.online]: isOnline,
         [styles.offline]: !isOnline,

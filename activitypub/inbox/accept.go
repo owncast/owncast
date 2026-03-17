@@ -39,62 +39,7 @@ func handleAcceptInboxRequest(c context.Context, activity vocab.ActivityStreamsA
 	// Check if this is accepting a Follow
 	for iter := objectProp.Begin(); iter != objectProp.End(); iter = iter.Next() {
 		if iter.IsActivityStreamsFollow() {
-			// This is an Accept of a Follow request
-			log.Debugf("Received Accept for Follow request from %s", actorIRI)
-
-			// Extract the server URL from the actor IRI
-			parsedIRI, err := url.Parse(actorIRI)
-			if err != nil {
-				log.Errorf("Failed to parse actor IRI %s: %v", actorIRI, err)
-				return nil
-			}
-
-			// Construct the server URL (base URL without the federation path)
-			serverURL := fmt.Sprintf("%s://%s", parsedIRI.Scheme, parsedIRI.Host)
-
-			// Update the follow status in the database
-			repo := federatedserversrepository.Get()
-
-			// Get the existing server record
-			server, err := repo.GetFederatedServer(serverURL)
-			if err != nil || server == nil {
-				log.Debugf("No pending follow found for %s", serverURL)
-				return nil
-			}
-
-			// Update follow status to accepted
-			acceptedAt := time.Now()
-			err = repo.UpdateFollowStatus(serverURL, "accepted", false, &acceptedAt, nil)
-			if err != nil {
-				log.Errorf("Failed to update follow status for %s: %v", serverURL, err)
-				return nil
-			}
-
-			// Try to fetch and update server metadata from the actor
-			actorData, err := resolvers.GetResolvedActorFromIRI(actorIRI)
-			if err == nil {
-				// Extract metadata from the actor
-				var name, displayName, summary, logoURL string
-
-				displayName = actorData.Name
-				name = actorData.Username
-
-				// For summary, we'd need to extract from the raw activity
-				// For now, use the display name as summary
-				summary = actorData.Name
-
-				if actorData.Image != nil {
-					logoURL = actorData.Image.String()
-				}
-
-				// Update server metadata
-				err = repo.UpdateServerMetadata(serverURL, name, displayName, summary, logoURL)
-				if err != nil {
-					log.Errorf("Failed to update server metadata for %s: %v", serverURL, err)
-				}
-			}
-
-			log.Infof("Follow request to %s has been accepted", serverURL)
+			handleFollowAccepted(actorIRI)
 		}
 	}
 
@@ -107,4 +52,64 @@ func handleAcceptInboxRequest(c context.Context, activity vocab.ActivityStreamsA
 	}
 
 	return nil
+}
+
+func handleFollowAccepted(actorIRI string) {
+	log.Debugf("Received Accept for Follow request from %s", actorIRI)
+
+	// Extract the server URL from the actor IRI
+	parsedIRI, err := url.Parse(actorIRI)
+	if err != nil {
+		log.Errorf("Failed to parse actor IRI %s: %v", actorIRI, err)
+		return
+	}
+
+	// Construct the server URL (base URL without the federation path)
+	serverURL := fmt.Sprintf("%s://%s", parsedIRI.Scheme, parsedIRI.Host)
+
+	// Update the follow status in the database
+	repo := federatedserversrepository.Get()
+
+	// Get the existing server record
+	server, err := repo.GetFederatedServer(serverURL)
+	if err != nil || server == nil {
+		log.Debugf("No pending follow found for %s", serverURL)
+		return
+	}
+
+	// Update follow status to accepted
+	acceptedAt := time.Now()
+	err = repo.UpdateFollowStatus(serverURL, "accepted", false, &acceptedAt, nil)
+	if err != nil {
+		log.Errorf("Failed to update follow status for %s: %v", serverURL, err)
+		return
+	}
+
+	// Try to fetch and update server metadata from the actor
+	updateServerMetadataFromActor(repo, serverURL, actorIRI)
+
+	log.Infof("Follow request to %s has been accepted", serverURL)
+}
+
+func updateServerMetadataFromActor(repo federatedserversrepository.FederatedServersRepository, serverURL, actorIRI string) {
+	actorData, err := resolvers.GetResolvedActorFromIRI(actorIRI)
+	if err != nil {
+		return
+	}
+
+	displayName := actorData.Name
+	name := actorData.Username
+	// For summary, use the display name as a fallback.
+	summary := actorData.Name
+
+	var logoURL string
+	if actorData.Image != nil {
+		logoURL = actorData.Image.String()
+	}
+
+	// Update server metadata
+	err = repo.UpdateServerMetadata(serverURL, name, displayName, summary, logoURL)
+	if err != nil {
+		log.Errorf("Failed to update server metadata for %s: %v", serverURL, err)
+	}
 }

@@ -5,7 +5,6 @@ import (
 	"os/exec"
 	"path"
 	"strconv"
-	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -94,18 +93,16 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	outputFileTemp := path.Join(config.TempDir, "tempthumbnail.jpg")
 
 	thumbnailCmdFlags := []string{
-		ffmpegPath,
-		"-y",                 // Overwrite file
-		"-threads 1",         // Low priority processing
-		"-t 1",               // Pull from frame 1
+		"-y",            // Overwrite file
+		"-threads", "1", // Low priority processing
+		"-t", "1", // Pull from frame 1
 		"-i", mostRecentFile, // Input
-		"-f image2",  // format
-		"-vframes 1", // Single frame
+		"-f", "image2", // format
+		"-vframes", "1", // Single frame
 		outputFileTemp,
 	}
 
-	ffmpegCmd := strings.Join(thumbnailCmdFlags, " ")
-	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
+	if _, err := exec.Command(ffmpegPath, thumbnailCmdFlags...).Output(); err != nil {
 		return err
 	}
 
@@ -126,17 +123,15 @@ func makeAnimatedGifPreview(sourceFile string, outputFile string) {
 
 	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
 	animatedGifFlags := []string{
-		ffmpegPath,
-		"-y",             // Overwrite file
-		"-threads 1",     // Low priority processing
+		"-y",            // Overwrite file
+		"-threads", "1", // Low priority processing
 		"-i", sourceFile, // Input
-		"-t 1", // Output is one second in length
-		"-filter_complex", "\"[0:v] fps=8,scale=w=480:h=-1:flags=lanczos,split [a][b];[a] palettegen=stats_mode=full [p];[b][p] paletteuse=new=1\"",
+		"-t", "1", // Output is one second in length
+		"-filter_complex", "[0:v] fps=8,scale=w=480:h=-1:flags=lanczos,split [a][b];[a] palettegen=stats_mode=full [p];[b][p] paletteuse=new=1",
 		outputFileTemp,
 	}
 
-	ffmpegCmd := strings.Join(animatedGifFlags, " ")
-	if _, err := exec.Command("sh", "-c", ffmpegCmd).Output(); err != nil {
+	if _, err := exec.Command(ffmpegPath, animatedGifFlags...).Output(); err != nil {
 		log.Errorln(err)
 		// rename temp file
 	} else if err := utils.Move(outputFileTemp, outputFile); err != nil {

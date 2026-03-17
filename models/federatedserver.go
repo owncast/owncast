@@ -78,7 +78,7 @@ func (f *FederatedServer) FromDatabaseModel(dbServer db.FederatedServer) {
 	}
 }
 
-// Helper functions for null value conversion
+// Helper functions for null value conversion.
 func nullStringToPointer(ns sql.NullString) *string {
 	if ns.Valid {
 		return &ns.String

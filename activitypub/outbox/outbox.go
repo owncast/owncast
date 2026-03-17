@@ -6,12 +6,14 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/activitypub/webfinger"
@@ -299,31 +301,88 @@ func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
 }
 
 // SendToFollowers will send an arbitrary payload to all follower inboxes.
+// It uses shared inboxes when available to reduce the number of outbound requests.
 func SendToFollowers(payload []byte) error {
 	configRepository := configrepository.Get()
+	followersRepo := followersrepository.Get()
 	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 
-	followers, _, err := persistence.GetFederationFollowers(-1, 0)
+	// Get unique delivery inboxes (prefers shared inboxes over individual inboxes)
+	inboxes, err := followersRepo.GetUniqueDeliveryInboxes()
 	if err != nil {
-		log.Errorln("unable to fetch followers to send to", err)
-		return errors.New("unable to fetch followers to send payload to")
+		log.Errorln("unable to fetch delivery inboxes", err)
+		return errors.New("unable to fetch delivery inboxes to send payload to")
 	}
 
-	for _, follower := range followers {
-		inbox, _ := url.Parse(follower.Inbox)
+	// Batch size and delay to prevent resource exhaustion during delivery.
+	// This spreads CPU load from cryptographic signing over time.
+	const batchSize = 50
+	const batchDelay = 100 * time.Millisecond
+
+	queued := 0
+	skipped := 0
+
+	for i, inboxURL := range inboxes {
+		inbox, err := url.Parse(inboxURL)
+		if err != nil {
+			log.Warnln("unable to parse inbox URL", inboxURL, err)
+			continue
+		}
+
+		// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
+		// A malicious remote actor could set their inbox to an internal address
+		// to trick this server into making requests to internal services.
+		if inbox.Scheme != "https" {
+			log.Warnln("rejecting non-HTTPS inbox URL for SSRF protection:", inboxURL)
+			continue
+		}
+		if utils.IsHostnameInternal(inbox.Hostname()) {
+			log.Warnln("rejecting internal/loopback inbox URL for SSRF protection:", inboxURL)
+			continue
+		}
+
+		// Pre-check circuit breaker BEFORE expensive cryptographic signing.
+		// This saves CPU cycles for domains we know are failing.
+		if workerpool.ShouldSkipDomain(inbox.Host) {
+			skipped++
+			continue
+		}
+
 		req, err := crypto.CreateSignedRequest(payload, inbox, localActor)
 		if err != nil {
-			log.Errorln("unable to create outbox request", follower.Inbox, err)
-			return errors.Wrapf(err, "unable to create outbox request for inbox: %s", follower.Inbox)
+			log.Errorln("unable to create outbox request", inboxURL, err)
+			continue
 		}
 
 		workerpool.AddToOutboundQueue(req)
+		queued++
+
+		// Add a small delay between batches to spread out CPU and network load.
+		// This helps prevent ActivityPub delivery from competing with video encoding.
+		// Use queued count (not loop index) to ensure consistent rate limiting
+		// even when followers are skipped due to circuit breaker or parse errors.
+		if queued%batchSize == 0 && i+1 < len(inboxes) {
+			time.Sleep(batchDelay)
+		}
 	}
+
+	if skipped > 0 {
+		log.Debugf("Skipped %d followers due to circuit breaker, queued %d", skipped, queued)
+	}
+
 	return nil
 }
 
 // SendToUser will send a payload to a single specific inbox.
 func SendToUser(inbox *url.URL, payload []byte) error {
+	// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
+	if inbox.Scheme != "https" {
+		return errors.Errorf("rejecting non-HTTPS inbox URL for SSRF protection: %s", inbox.String())
+	}
+	if utils.IsHostnameInternal(inbox.Hostname()) {
+		return errors.Errorf("rejecting internal/loopback inbox URL for SSRF protection: %s", inbox.String())
+	}
+
 	configRepository := configrepository.Get()
 	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 
@@ -374,13 +433,12 @@ func UpdateFollowersWithAccountUpdates() error {
 
 // Add will save an ActivityPub object to the datastore.
 func Add(item vocab.Type, id string, isLiveNotification bool) error {
-	iri := item.GetJSONLDId().GetIRI().String()
-	typeString := item.GetTypeName()
-
-	if iri == "" {
-		log.Errorln("Unable to get iri from item")
-		return errors.Errorf("unable to get iri from item %s", id)
+	iri, err := apmodels.GetIRIStringFromJSONLDIdProperty(item.GetJSONLDId())
+	if err != nil {
+		log.Errorln("Unable to get iri from item:", err)
+		return errors.Wrap(err, "unable to get iri from item "+id)
 	}
+	typeString := item.GetTypeName()
 
 	b, err := apmodels.Serialize(item)
 	if err != nil {

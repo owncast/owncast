@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { IndieAuthModal } from './IndieAuthModal';
 import Mock from '../../../stories/assets/mocks/indieauth-modal.png';
 

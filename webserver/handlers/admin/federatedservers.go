@@ -9,6 +9,7 @@ import (
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/federatedserversrepository"
+	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	log "github.com/sirupsen/logrus"
 )
@@ -92,8 +93,8 @@ func AddFederatedServer(w http.ResponseWriter, r *http.Request) {
 func RemoveFederatedServer(w http.ResponseWriter, r *http.Request, id int) {
 	repo := federatedserversrepository.Get()
 
-	// Convert int to int32 as expected by the repository
-	serverID := int32(id)
+	// Convert int to int32 as expected by the repository.
+	serverID := utils.SafeIntToInt32(id)
 
 	err := repo.RemoveFederatedServer(serverID)
 	if err != nil {
@@ -116,7 +117,7 @@ func RemoveFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// Helper function to write simple JSON responses
+// Helper function to write simple JSON responses.
 func writeSimpleResponse(w http.ResponseWriter, success bool, message string) {
 	w.Header().Set("Content-Type", "application/json")
 

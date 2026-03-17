@@ -4,7 +4,7 @@ import "path/filepath"
 
 const (
 	// StaticVersionNumber is the version of Owncast that is used when it's not overwritten via build-time settings.
-	StaticVersionNumber = "0.2.3" // Shown when you build from develop
+	StaticVersionNumber = "0.2.4" // Shown when you build from develop
 	// FfmpegSuggestedVersion is the version of ffmpeg we suggest.
 	FfmpegSuggestedVersion = "v4.1.5" // Requires the v
 	// DataDirectory is the directory we save data to.
@@ -17,7 +17,7 @@ const (
 	// MaxChatDisplayNameLength is the maximum length of a chat display name.
 	MaxChatDisplayNameLength = 30
 
-	// ActivityPub namespace properties for Owncast metadata
+	// ActivityPub namespace properties for Owncast metadata.
 	APOwncastNamespaceStreamStatus      = "https://owncast.online/ns#streamStatus"
 	APOwncastNamespaceStreamTitle       = "https://owncast.online/ns#streamTitle"
 	APOwncastNamespaceServerName        = "https://owncast.online/ns#serverName"
@@ -25,6 +25,11 @@ const (
 	APOwncastNamespaceLogoURL           = "https://owncast.online/ns#logoUrl"
 	APOwncastNamespaceThumbnailURL      = "https://owncast.online/ns#thumbnailUrl"
 	APOwncastNamespaceStreamTags        = "https://owncast.online/ns#streamTags"
+
+	// APStreamStatusLive is the stream status value for a live stream.
+	APStreamStatusLive = "live"
+	// APStreamStatusOffline is the stream status value for an offline stream.
+	APStreamStatusOffline = "offline"
 )
 
 var (

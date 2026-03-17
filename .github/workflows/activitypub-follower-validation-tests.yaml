@@ -1,0 +1,47 @@
+name: ActivityPub Follower Validation Tests
+
+on:
+  push:
+    paths:
+      - "activitypub/**"
+      - "config/**"
+      - "main.go"
+      - "test/automated/activitypub/**"
+      - ".github/workflows/activitypub-follower-validation-tests.yaml"
+  pull_request:
+    paths:
+      - "activitypub/**"
+      - "config/**"
+      - "main.go"
+      - "test/automated/activitypub/**"
+      - ".github/workflows/activitypub-follower-validation-tests.yaml"
+
+jobs:
+  follower-validation-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: "same_content_newer"
+
+      - name: Check out repository code
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "^1.23"
+          cache: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sqlite3 ffmpeg jq
+
+      - name: Run follower validation test
+        timeout-minutes: 15
+        run: |
+          cd test/automated/activitypub
+          ./test-follower-validation.sh

@@ -25,14 +25,21 @@ jobs:
 
     steps:
       - name: Check out pull request code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Fetch base branch for comparison
+        if: github.event_name == 'pull_request'
+        run: |
+          git remote add upstream https://github.com/${{ github.event.pull_request.base.repo.full_name }}.git || true
+          git fetch upstream ${{ github.event.pull_request.base.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'push'
 
       - name: Get changed files
@@ -45,9 +52,9 @@ jobs:
               - '**/*.{css,scss}'
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '22.20.0'
+          node-version: '24.12.0'
 
       - name: Install dependencies
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'

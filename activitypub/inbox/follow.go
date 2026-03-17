@@ -8,9 +8,12 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
+	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/federatedserversrepository"
@@ -21,6 +24,7 @@ import (
 
 func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
 	configRepository := configrepository.Get()
+	followersRepo := followersrepository.Get()
 
 	follow, err := resolvers.MakeFollowRequest(c, activity)
 	if err != nil {
@@ -36,7 +40,7 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 
 	followRequest := *follow
 
-	if err := persistence.AddFollow(followRequest, approved); err != nil {
+	if err := followersRepo.Add(followRequest, approved); err != nil {
 		log.Errorln("unable to save follow request", err)
 		return err
 	}
@@ -51,18 +55,25 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 
 	localAccountName := configRepository.GetDefaultFederationUsername()
 
+	objectIRI, err := apmodels.GetIRIStringFromObjectProperty(activity.GetActivityStreamsObject())
+	if err != nil {
+		return errors.Wrap(err, "follow activity is missing object IRI")
+	}
+
+	actorIRI, err := apmodels.GetIRIStringFromActorProperty(activity.GetActivityStreamsActor())
+	if err != nil {
+		return errors.Wrap(err, "follow activity is missing actor IRI")
+	}
+
+	actorReference := activity.GetActivityStreamsActor()
+
 	if approved {
 		if err := requests.SendFollowAccept(follow.Inbox, activity, localAccountName, false); err != nil {
 			log.Errorln("unable to send follow accept", err)
 			return err
 		}
+		go webhooks.SendFediverseEngagementFollowEvent(actorIRI)
 	}
-
-	// Save as an activity
-	actorReference := activity.GetActivityStreamsActor()
-	object := activity.GetActivityStreamsObject()
-	objectIRI := object.At(0).GetIRI().String()
-	actorIRI := actorReference.At(0).GetIRI().String()
 
 	// If this request is approved and we have not previously sent an action to
 	// chat due to a previous follow request, then do so.
@@ -97,59 +108,83 @@ func handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo
 	unfollowRequest := *request
 	log.Traceln("unfollow request:", unfollowRequest)
 
-	return persistence.RemoveFollow(unfollowRequest)
+	followersRepo := followersrepository.Get()
+	return followersRepo.Remove(unfollowRequest)
 }
 
 func handleOwncastServerFollow(activity vocab.ActivityStreamsFollow, followRequest apmodels.ActivityPubActor) error {
-	// Extract Owncast metadata from the follow request using shared utility
+	// Extract Owncast metadata from the follow request using shared utility.
 	unknownProps := activity.GetUnknownProperties()
 	metadata := apmodels.ParseOwncastMetadata(unknownProps)
 
 	if !metadata.IsOwncastServer {
-		return nil // Not an Owncast server, nothing to do
+		return nil // Not an Owncast server, nothing to do.
 	}
 
 	repo := federatedserversrepository.Get()
 	actorIRI := followRequest.ActorIri.String()
 
-	// Check if server already exists
-	server, err := repo.GetFederatedServer(actorIRI)
+	// Get or create the federated server record.
+	server, err := getOrCreateFederatedServer(repo, actorIRI, metadata, &followRequest)
 	if err != nil {
-		// Server doesn't exist, create it
-		var name string
-		if metadata.ServerName != "" {
-			name = metadata.ServerName
-		} else if followRequest.Name != "" {
-			name = followRequest.Name
-		}
-
-		var logoURL string
-		if metadata.LogoURL != "" {
-			logoURL = metadata.LogoURL
-		} else if followRequest.Image != nil {
-			logoURL = followRequest.Image.String()
-		}
-
-		// This is an inbound follow from another server following us
-		// We don't track these as pending - they're already following us
-		err = repo.AddFederatedServer(actorIRI, name, logoURL, time.Now(), false, "", "accepted")
-		if err != nil {
-			return err
-		}
-
-		// Reload to get the created server
-		server, err = repo.GetFederatedServer(actorIRI)
-		if err != nil {
-			return err
-		}
+		return err
 	}
 
-	// Update server with metadata from follow request
+	// Update server with metadata from follow request.
 	now := time.Now()
 	server.LastStatusUpdate = &now
 	server.FollowedAt = &now
 
-	// Extract metadata from parsed data
+	streamUpdate, hasUpdates := buildFollowStreamUpdate(metadata, server)
+
+	isOnline := metadata.StreamStatus == config.APStreamStatusLive
+	if isOnline {
+		server.LastSeenOnline = &now
+	}
+
+	if hasUpdates || isOnline {
+		err = repo.UpdateServerStatus(actorIRI, isOnline, streamUpdate)
+		if err != nil {
+			log.Errorf("Failed to update federated server status: %v", err)
+		}
+	}
+
+	log.Infof("Updated federated server %s from follow request (online: %v)", actorIRI, isOnline)
+	return nil
+}
+
+// getOrCreateFederatedServer retrieves an existing server or creates a new one.
+func getOrCreateFederatedServer(repo federatedserversrepository.FederatedServersRepository, actorIRI string, metadata *apmodels.OwncastMetadata, followRequest *apmodels.ActivityPubActor) (*models.FederatedServer, error) {
+	server, err := repo.GetFederatedServer(actorIRI)
+	if err == nil {
+		return server, nil
+	}
+
+	// Server doesn't exist, create it.
+	var name string
+	if metadata.ServerName != "" {
+		name = metadata.ServerName
+	} else if followRequest.Name != "" {
+		name = followRequest.Name
+	}
+
+	var logoURL string
+	if metadata.LogoURL != "" {
+		logoURL = metadata.LogoURL
+	} else if followRequest.Image != nil {
+		logoURL = followRequest.Image.String()
+	}
+
+	err = repo.AddFederatedServer(actorIRI, name, logoURL, time.Now(), false, "", "accepted")
+	if err != nil {
+		return nil, err
+	}
+
+	return repo.GetFederatedServer(actorIRI)
+}
+
+// buildFollowStreamUpdate creates a FederatedStreamUpdate from parsed metadata and updates the server model.
+func buildFollowStreamUpdate(metadata *apmodels.OwncastMetadata, server *models.FederatedServer) (*models.FederatedStreamUpdate, bool) {
 	streamUpdate := &models.FederatedStreamUpdate{}
 	hasUpdates := false
 
@@ -176,21 +211,5 @@ func handleOwncastServerFollow(activity vocab.ActivityStreamsFollow, followReque
 		server.LogoURL = &metadata.LogoURL
 	}
 
-	// Check if server is online
-	isOnline := false
-	if metadata.StreamStatus == "live" {
-		isOnline = true
-		server.LastSeenOnline = &now
-	}
-
-	// Update server status
-	if hasUpdates || isOnline {
-		err = repo.UpdateServerStatus(actorIRI, isOnline, streamUpdate)
-		if err != nil {
-			log.Errorf("Failed to update federated server status: %v", err)
-		}
-	}
-
-	log.Infof("Updated federated server %s from follow request (online: %v)", actorIRI, isOnline)
-	return nil
+	return streamUpdate, hasUpdates
 }

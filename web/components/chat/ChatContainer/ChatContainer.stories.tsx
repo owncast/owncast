@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot } from 'recoil';
 import { ChatContainer } from './ChatContainer';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
@@ -615,6 +615,22 @@ export const ChatDisabled = {
     isModerator: true,
     showInput: true,
     chatAvailable: false,
+  },
+};
+
+export const AuthenticationRequired = {
+  render: Template,
+
+  args: {
+    loading: false,
+    messages,
+    usernameToHighlight: 'testuser',
+    chatUserId: 'testuser',
+    isModerator: false,
+    showInput: true,
+    chatAvailable: true,
+    inputEnabled: false,
+    inputDisabledPlaceholder: 'Authenticate to chat',
   },
 };
 

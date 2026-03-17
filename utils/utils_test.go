@@ -1,6 +1,9 @@
 package utils
 
 import (
+	"os"
+	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -24,5 +27,95 @@ func TestPercentageUtilsTest(t *testing.T) {
 
 	if percent != 42 {
 		t.Error("Incorrect percentage calculation.")
+	}
+}
+
+func TestValidatedFfmpegPathPrefersLocalBinary(t *testing.T) {
+	// Skip on Windows as executable permissions work differently.
+	if runtime.GOOS == "windows" {
+		t.Skip("Skipping test on Windows")
+	}
+
+	// Create a temporary directory to act as our working directory.
+	tempDir, err := os.MkdirTemp("", "ffmpeg-test")
+	if err != nil {
+		t.Fatalf("Failed to create temp directory: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Create a fake ffmpeg executable in the temp directory.
+	fakeFfmpegPath := filepath.Join(tempDir, "ffmpeg")
+	if err := os.WriteFile(fakeFfmpegPath, []byte("#!/bin/sh\necho fake"), 0o755); err != nil {
+		t.Fatalf("Failed to create fake ffmpeg: %v", err)
+	}
+
+	// Save the current working directory and change to the temp directory.
+	originalWd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get current working directory: %v", err)
+	}
+	if err := os.Chdir(tempDir); err != nil {
+		t.Fatalf("Failed to change to temp directory: %v", err)
+	}
+	defer os.Chdir(originalWd)
+
+	// Call ValidatedFfmpegPath with an empty string to trigger auto-detection.
+	result := ValidatedFfmpegPath("")
+
+	// The result should be the absolute path to our local fake ffmpeg,
+	// not the system ffmpeg in /usr/bin or similar.
+	expectedPath, err := filepath.Abs("./ffmpeg")
+	if err != nil {
+		t.Fatalf("Failed to get absolute path for fake ffmpeg: %v", err)
+	}
+
+	if result != expectedPath {
+		t.Errorf("Expected local ffmpeg path %q, got %q", expectedPath, result)
+	}
+}
+
+func TestVerifyFFMpegPath(t *testing.T) {
+	// Test with non-existent path.
+	err := VerifyFFMpegPath("/nonexistent/path/to/ffmpeg")
+	if err == nil {
+		t.Error("Expected error for non-existent path")
+	}
+
+	// Test with a directory instead of a file.
+	tempDir, err := os.MkdirTemp("", "ffmpeg-dir-test")
+	if err != nil {
+		t.Fatalf("Failed to create temp directory: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	err = VerifyFFMpegPath(tempDir)
+	if err == nil {
+		t.Error("Expected error when path is a directory")
+	}
+
+	// Test with a non-executable file (Unix only).
+	if runtime.GOOS != "windows" {
+		nonExecFile := filepath.Join(tempDir, "nonexec")
+		if err := os.WriteFile(nonExecFile, []byte("test"), 0o644); err != nil {
+			t.Fatalf("Failed to create non-executable file: %v", err)
+		}
+
+		err = VerifyFFMpegPath(nonExecFile)
+		if err == nil {
+			t.Error("Expected error for non-executable file")
+		}
+	}
+
+	// Test with a valid executable file.
+	if runtime.GOOS != "windows" {
+		execFile := filepath.Join(tempDir, "executable")
+		if err := os.WriteFile(execFile, []byte("#!/bin/sh\necho test"), 0o755); err != nil {
+			t.Fatalf("Failed to create executable file: %v", err)
+		}
+
+		err = VerifyFFMpegPath(execFile)
+		if err != nil {
+			t.Errorf("Expected no error for valid executable, got: %v", err)
+		}
 	}
 }

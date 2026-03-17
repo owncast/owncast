@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot } from 'recoil';
 import { BrowserNotifyModal } from './BrowserNotifyModal';
 import BrowserNotifyModalMock from '../../../stories/assets/mocks/notify-modal.png';

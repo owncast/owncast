@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"math/rand"
 	"net/url"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"time"
 
@@ -38,7 +40,7 @@ func DoesFileExists(name string) bool {
 
 // GetRelativePathFromAbsolutePath gets the relative path from the provided absolute path.
 func GetRelativePathFromAbsolutePath(path string) string {
-	pathComponents := strings.Split(path, "/")
+	pathComponents := strings.Split(path, string(os.PathSeparator))
 	variant := pathComponents[len(pathComponents)-2]
 	file := pathComponents[len(pathComponents)-1]
 
@@ -47,7 +49,7 @@ func GetRelativePathFromAbsolutePath(path string) string {
 
 // GetIndexFromFilePath is a utility that will return the index/key/variant name in a full path.
 func GetIndexFromFilePath(path string) string {
-	pathComponents := strings.Split(path, "/")
+	pathComponents := strings.Split(path, string(os.PathSeparator))
 	variant := pathComponents[len(pathComponents)-2]
 
 	return variant
@@ -259,22 +261,23 @@ func ValidatedFfmpegPath(ffmpegPath string) string {
 		log.Warnln(ffmpegPath, "is an invalid path to ffmpeg will try to use a copy in your path, if possible")
 	}
 
-	// First look to see if ffmpeg is in the current working directory
-	localCopy := "./ffmpeg"
-	hasLocalCopyError := VerifyFFMpegPath(localCopy)
-	if hasLocalCopyError == nil {
-		// No error, so all is good.  Use the local copy.
-		return localCopy
+	// First, check for ffmpeg in the current working directory.
+	if err := VerifyFFMpegPath("./ffmpeg"); err == nil {
+		ffmpegPath = "./ffmpeg"
+	} else {
+		// Fall back to looking for ffmpeg in the system path.
+		ffmpegPath, err = exec.LookPath("ffmpeg")
+		if err != nil || VerifyFFMpegPath(ffmpegPath) != nil {
+			log.Fatalln("Unable to locate ffmpeg. Either install it globally on your system or put the ffmpeg binary in the same directory as Owncast. The binary must be named ffmpeg.")
+		}
 	}
 
-	cmd := exec.Command("which", "ffmpeg")
-	out, err := cmd.CombinedOutput()
+	// Resolve to an absolute path.
+	absPath, err := filepath.Abs(ffmpegPath)
 	if err != nil {
-		log.Fatalln("Unable to locate ffmpeg. Either install it globally on your system or put the ffmpeg binary in the same directory as Owncast. The binary must be named ffmpeg.")
+		return ffmpegPath
 	}
-
-	path := strings.TrimSpace(string(out))
-	return path
+	return absPath
 }
 
 // VerifyFFMpegPath verifies that the path exists, is a file, and is executable.
@@ -293,9 +296,12 @@ func VerifyFFMpegPath(path string) error {
 		return errors.New("ffmpeg path can not be a folder")
 	}
 
-	mode := stat.Mode()
+	mode := stat.Mode().Perm()
+
 	// source: https://stackoverflow.com/a/60128480
-	if mode&0o111 == 0 {
+	// On Windows, Perm() omits the executable bit, only check on Unix-like systems.
+	// https://github.com/golang/go/issues/41809
+	if runtime.GOOS != "windows" && mode&0o111 == 0 {
 		return errors.New("ffmpeg path is not executable")
 	}
 
@@ -344,7 +350,7 @@ func StringSliceToMap(stringSlice []string) map[string]interface{} {
 
 // Float64MapToSlice is a convenience function to convert a map of floats into.
 func Float64MapToSlice(float64Map map[string]float64) []float64 {
-	float64Slice := []float64{}
+	float64Slice := make([]float64, 0, len(float64Map))
 
 	for _, val := range float64Map {
 		float64Slice = append(float64Slice, val)
@@ -355,7 +361,7 @@ func Float64MapToSlice(float64Map map[string]float64) []float64 {
 
 // StringMapKeys returns a slice of string keys from a map.
 func StringMapKeys(stringMap map[string]interface{}) []string {
-	stringSlice := []string{}
+	stringSlice := make([]string, 0, len(stringMap))
 	for k := range stringMap {
 		stringSlice = append(stringSlice, k)
 	}
@@ -415,6 +421,17 @@ func ShuffleStringSlice(s []string) []string {
 // IntPercentage returns  an int percentage of a number.
 func IntPercentage(x, total int) int {
 	return int(float64(x) / float64(total) * 100)
+}
+
+// SafeIntToInt32 safely converts an int to int32, clamping to int32 bounds.
+func SafeIntToInt32(n int) int32 {
+	if n > math.MaxInt32 {
+		return math.MaxInt32
+	}
+	if n < math.MinInt32 {
+		return math.MinInt32
+	}
+	return int32(n)
 }
 
 // DecodeBase64Image decodes a base64 image string into a byte array, returning the extension (including dot) for the content type.

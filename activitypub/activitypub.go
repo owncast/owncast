@@ -3,8 +3,10 @@ package activitypub
 import (
 	"github.com/owncast/owncast/activitypub/crypto"
 	"github.com/owncast/owncast/activitypub/inbox"
+	"github.com/owncast/owncast/activitypub/jobs"
 	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/activitypub/workerpool"
 	"github.com/owncast/owncast/persistence/configrepository"
 
@@ -31,6 +33,9 @@ func Start(datastore *data.Datastore) {
 			log.Errorln("Unable to get private key", err)
 		}
 	}
+
+	// Start follower validation background job.
+	jobs.StartFollowerValidationJob()
 }
 
 func getOutboundWorkerPoolSize() int {
@@ -42,8 +47,9 @@ func getOutboundWorkerPoolSize() int {
 		defaultWorkers = 20 // Default for most instances
 	)
 
+	followersRepo := followersrepository.Get()
 	var followerCount int64
-	fc, err := persistence.GetFollowerCount()
+	fc, err := followersRepo.GetCount()
 	if err != nil {
 		log.Errorln("Unable to get follower count", err)
 		return defaultWorkers
@@ -58,7 +64,7 @@ func getOutboundWorkerPoolSize() int {
 		workers = maxWorkers
 	}
 
-	log.Infof("Initializing ActivityPub outbound worker pool with %d workers for %d followers", workers, followerCount)
+	log.Debugf("Initializing ActivityPub outbound worker pool with %d workers for %d followers", workers, followerCount)
 	return workers
 }
 
@@ -84,10 +90,12 @@ func SendDirectFederatedMessage(message, account string, isStreamConnected bool)
 
 // GetFollowerCount will return the local tracked follower count.
 func GetFollowerCount() (int64, error) {
-	return persistence.GetFollowerCount()
+	followersRepo := followersrepository.Get()
+	return followersRepo.GetCount()
 }
 
 // GetPendingFollowRequests will return the pending follow requests.
 func GetPendingFollowRequests() ([]models.Follower, error) {
-	return persistence.GetPendingFollowRequests()
+	followersRepo := followersrepository.Get()
+	return followersRepo.GetPendingFollowRequests()
 }

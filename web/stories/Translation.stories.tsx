@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/nextjs';
 import { Translation } from '../components/ui/Translation/Translation';
 import { Localization } from '../types/localization';
 

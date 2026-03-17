@@ -33,14 +33,21 @@ jobs:
           concurrent_skipping: 'same_content_newer'
 
       - name: Check out pull request code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Fetch base branch for comparison
+        if: github.event_name == 'pull_request'
+        run: |
+          git remote add upstream https://github.com/${{ github.event.pull_request.base.repo.full_name }}.git || true
+          git fetch upstream ${{ github.event.pull_request.base.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'push'
 
       - name: Get changed files
@@ -57,14 +64,14 @@ jobs:
             docs:
               - '**/*.md'
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         with:
-          node-version: '22.20.0'
+          node-version: '24.12.0'
 
       - name: Cache node modules
         if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-node-modules-browser-tests
         with:
@@ -75,10 +82,10 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         with:
-          go-version: '1.24'
+          go-version: '1.26.1'
           cache: true
 
       - name: Install Google Chrome

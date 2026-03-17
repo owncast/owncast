@@ -1,37 +1,24 @@
-import { StoryFn, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot } from 'recoil';
+import { http, HttpResponse } from 'msw';
 import { ChatTextField } from './ChatTextField';
 import Mockup from '../../../stories/assets/mocks/chatinput-mock.png';
 
 const mockResponse = JSON.parse(
   `[{"name":"Reaper-gg.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=OC"},{"name":"Reaper-hi.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=XX"},{"name":"Reaper-hype.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=TX"},{"name":"Reaper-lol.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=CA"},{"name":"Reaper-love.png","url":"https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=OK"}]`,
 );
-const mocks = {
-  mocks: [
-    {
-      // The "matcher" determines if this
-      // mock should respond to the current
-      // call to fetch().
-      matcher: {
-        name: 'response',
-        url: 'glob:/api/emoji',
-      },
-      // If the "matcher" matches the current
-      // fetch() call, the fetch response is
-      // built using this "response".
-      response: {
-        status: 200,
-        body: mockResponse,
-      },
-    },
-  ],
-};
 
 const meta = {
   title: 'owncast/Chat/Input text field',
   component: ChatTextField,
   parameters: {
-    fetchMock: mocks,
+    msw: {
+      handlers: [
+        http.get('/api/emoji', () => {
+          return HttpResponse.json(mockResponse);
+        }),
+      ],
+    },
     chromatic: { diffThreshold: 0.9 },
 
     design: {

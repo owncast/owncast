@@ -68,7 +68,7 @@ export const Localization = {
       deniedTitle: 'Frontend.BrowserNotifyModal.deniedTitle',
       deniedDescription: 'Frontend.BrowserNotifyModal.deniedDescription',
       mainDescription: 'Frontend.BrowserNotifyModal.mainDescription',
-      learnMore: 'Frontend.BrowserNotifyModal.learnMore',
+      learnMoreAboutNotifications: 'Frontend.BrowserNotifyModal.learnMoreAboutNotifications',
       errorTitle: 'Frontend.BrowserNotifyModal.errorTitle',
       errorMessage: 'Frontend.BrowserNotifyModal.errorMessage',
     },
@@ -116,6 +116,7 @@ export const Localization = {
       userLeft: 'Frontend.Chat.userLeft',
       nameChangeText: 'Frontend.Chat.nameChangeText',
       moderatorNotification: 'Frontend.Chat.moderatorNotification',
+      authenticateToChat: 'Frontend.Chat.authenticateToChat',
     },
 
     // Follow modal component
@@ -164,6 +165,16 @@ export const Localization = {
       offlineMessageDescription: 'Admin.EditInstanceDetails.offlineMessageDescription',
       directoryDescription: 'Admin.EditInstanceDetails.directoryDescription',
       serverUrlRequiredForDirectory: 'Admin.EditInstanceDetails.serverUrlRequiredForDirectory',
+    },
+
+    // EditFavicon component specific keys
+    EditFavicon: {
+      label: 'Admin.EditFavicon.label',
+      tip: 'Admin.EditFavicon.tip',
+      resetButton: 'Admin.EditFavicon.resetButton',
+      resetConfirmTitle: 'Admin.EditFavicon.resetConfirmTitle',
+      resetConfirmOk: 'Admin.EditFavicon.resetConfirmOk',
+      resetConfirmCancel: 'Admin.EditFavicon.resetConfirmCancel',
     },
 
     // VideoVariantForm component specific keys
@@ -321,6 +332,66 @@ export const Localization = {
     timestamp: 'Admin.timestamp',
     message: 'Admin.message',
     logs: 'Admin.logs',
+
+    // Form status messages
+    StatusMessages: {
+      updated: 'Admin.StatusMessages.updated',
+      tagsUpdated: 'Admin.StatusMessages.tagsUpdated',
+      variantsUpdated: 'Admin.StatusMessages.variantsUpdated',
+      videoCodecUpdated: 'Admin.StatusMessages.videoCodecUpdated',
+      latencyBufferUpdated: 'Admin.StatusMessages.latencyBufferUpdated',
+      deletingEmoji: 'Admin.StatusMessages.deletingEmoji',
+      emojiDeleted: 'Admin.StatusMessages.emojiDeleted',
+      convertingEmoji: 'Admin.StatusMessages.convertingEmoji',
+      uploadingEmoji: 'Admin.StatusMessages.uploadingEmoji',
+      emojiUploadedSuccessfully: 'Admin.StatusMessages.emojiUploadedSuccessfully',
+      thereWasAnError: 'Admin.StatusMessages.thereWasAnError',
+      fileSizeTooBig: 'Admin.StatusMessages.fileSizeTooBig',
+      fileTypeNotSupported: 'Admin.StatusMessages.fileTypeNotSupported',
+      pleaseEnterTag: 'Admin.StatusMessages.pleaseEnterTag',
+      tagAlreadyUsed: 'Admin.StatusMessages.tagAlreadyUsed',
+    },
+
+    // Actions page
+    Actions: {
+      title: 'Admin.Actions.title',
+      description: 'Admin.Actions.description',
+      readMoreLink: 'Admin.Actions.readMoreLink',
+      createNewAction: 'Admin.Actions.createNewAction',
+      createNewActionTitle: 'Admin.Actions.createNewActionTitle',
+      editActionTitle: 'Admin.Actions.editActionTitle',
+      modalDescription: 'Admin.Actions.modalDescription',
+      onlyHttpsSupported: 'Admin.Actions.onlyHttpsSupported',
+      readMoreAboutActions: 'Admin.Actions.readMoreAboutActions',
+      selectActionType: 'Admin.Actions.selectActionType',
+      linkOrEmbedUrl: 'Admin.Actions.linkOrEmbedUrl',
+      customHtml: 'Admin.Actions.customHtml',
+      htmlEmbedPlaceholder: 'Admin.Actions.htmlEmbedPlaceholder',
+      urlPlaceholder: 'Admin.Actions.urlPlaceholder',
+      titlePlaceholder: 'Admin.Actions.titlePlaceholder',
+      descriptionPlaceholder: 'Admin.Actions.descriptionPlaceholder',
+      iconPlaceholder: 'Admin.Actions.iconPlaceholder',
+      optionalBackgroundColor: 'Admin.Actions.optionalBackgroundColor',
+      openExternally: 'Admin.Actions.openExternally',
+    },
+
+    // Webhooks page
+    Webhooks: {
+      createNewWebhook: 'Admin.Webhooks.createNewWebhook',
+      webhookUrlPlaceholder: 'Admin.Webhooks.webhookUrlPlaceholder',
+      selectEvents: 'Admin.Webhooks.selectEvents',
+      selectAll: 'Admin.Webhooks.selectAll',
+    },
+
+    // Access Tokens page
+    AccessTokens: {
+      createNewAccessToken: 'Admin.AccessTokens.createNewAccessToken',
+      nameDescription: 'Admin.AccessTokens.nameDescription',
+      namePlaceholder: 'Admin.AccessTokens.namePlaceholder',
+      selectPermissions: 'Admin.AccessTokens.selectPermissions',
+      cannotEditAfterCreated: 'Admin.AccessTokens.cannotEditAfterCreated',
+      selectAll: 'Admin.AccessTokens.selectAll',
+    },
   },
 
   /**

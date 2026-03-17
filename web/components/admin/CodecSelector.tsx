@@ -1,5 +1,6 @@
 import { Popconfirm, Select, Typography } from 'antd';
 import React, { FC, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'next-export-i18n';
 import { AlertMessageContext } from '../../utils/alert-message-context';
 import {
   API_VIDEO_CODEC,
@@ -13,11 +14,13 @@ import {
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
 import { ServerStatusContext } from '../../utils/server-status-context';
+import { Localization } from '../../types/localization';
 import { FormStatusIndicator } from './FormStatusIndicator';
 
 export type CodecSelectorProps = {};
 
 export const CodecSelector: FC<CodecSelectorProps> = () => {
+  const { t } = useTranslation();
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { videoCodec, supportedCodecs } = serverConfig || {};
@@ -60,7 +63,9 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
           value: pendingSaveCodec,
           path: 'videoSettings',
         });
-        setSubmitStatus(createInputStatus(STATUS_SUCCESS, 'Video codec updated.'));
+        setSubmitStatus(
+          createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.videoCodecUpdated)),
+        );
 
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         if (serverStatusData.online) {

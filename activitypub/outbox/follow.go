@@ -17,7 +17,7 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-// SendFollowRequestToOwncastServerURL sends a follow request to another Owncast server
+// SendFollowRequestToOwncastServerURL sends a follow request to another Owncast server.
 func SendFollowRequestToOwncastServerURL(targetServerURL string, isStreamConnected bool) error {
 	configRepository := configrepository.Get()
 

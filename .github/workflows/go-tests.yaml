@@ -24,7 +24,7 @@ jobs:
         os: ${{ github.event_name == 'pull_request' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest", "ubuntu-24.04-arm"]') }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Get changed files
         id: changed-files-yaml
@@ -34,7 +34,7 @@ jobs:
             src:
               - '**/*.{go,mod,sum}'
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
           path: |
@@ -46,7 +46,7 @@ jobs:
 
       - name: Install go
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: '^1'
           cache: true
@@ -68,7 +68,7 @@ jobs:
             version: 6.8
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Get changed files
         id: changed-files-yaml
@@ -78,7 +78,7 @@ jobs:
             src:
               - '**/*.{go,mod,sum}'
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: |
             ~/.cache/go-build
@@ -89,7 +89,7 @@ jobs:
 
       - name: Install go
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: '^1'
           cache: true

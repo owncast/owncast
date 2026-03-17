@@ -1,76 +1,112 @@
 {
 	"Admin": {
+		"AccessTokens": {
+			"createNewAccessToken": "Δημιουργία νέου διακριτικού πρόσβασης",
+			"nameDescription": "Το όνομα θα εμφανίζεται ως ο χρήστης συνομιλίας κατά την αποστολή μηνυμάτων με αυτό το διακριτικό πρόσβασης.",
+			"namePlaceholder": "Όνομα του bot, της υπηρεσίας ή της ενσωμάτωσης",
+			"selectAll": "Επιλογή όλων",
+			"selectPermissions": "Επιλέξτε τα δικαιώματα που θα έχει αυτό το διακριτικό πρόσβασης. Δεν μπορεί να επεξεργαστεί μετά τη δημιουργία του."
+		},
+		"Actions": {
+			"createNewAction": "Δημιουργία Νέας Ενέργειας",
+			"createNewActionTitle": "Δημιουργία Νέας Ενέργειας",
+			"customHtml": "Προσαρμοσμένο HTML",
+			"description": "Τα URL εξωτερικής ενέργειας είναι UI τρίτων που μπορείτε να εμφανίσετε, ενσωματωμένο, στη δική σας σελίδα όταν ένας χρήστης κάνει κλικ σε ένα κουμπί για να ξεκινήσει η ενέργειά σας.",
+			"descriptionPlaceholder": "Προαιρετική περιγραφή",
+			"editActionTitle": "Επεξεργασία Ενέργειας",
+			"htmlEmbedPlaceholder": "Κωδικός ενσωμάτωσης HTML (απαιτείται)",
+			"iconPlaceholder": "https://myserver.com/action/icon.png (προαιρετικό)",
+			"linkOrEmbedUrl": "Link or embed an URL",
+			"modalDescription": "Προσθέστε τη διεύθυνση URL για την εξωτερική ενέργεια που θέλετε να δώσετε.",
+			"onlyHttpsSupported": "Υποστηρίζονται μόνο διευθύνσεις URL και ενσωματώσεις HTTPS.",
+			"openExternally": "Ανοίξτε σε μια νέα καρτέλα αντί για τη σελίδα σας.",
+			"optionalBackgroundColor": "Προαιρετικό χρώμα φόντου του κουμπιού δράσης.",
+			"readMoreAboutActions": "Διαβάστε περισσότερα για τις εξωτερικές ενέργειες.",
+			"readMoreLink": "Διαβάστε περισσότερα για το πώς να χρησιμοποιήσετε ενέργειες, με παραδείγματα, στο",
+			"selectActionType": "Επιλέξτε έναν τύπο ενέργειας",
+			"title": "Εξωτερικές Ενέργειες",
+			"titlePlaceholder": "Ο τίτλος της ενέργειας σας (απαιτείται)",
+			"urlPlaceholder": "https://myserver.com/ενέργεια (απαιτείται)"
+		},
+		"EditFavicon": {
+			"label": "Αγαπημένο",
+			"tip": "Ανεβάστε ένα προσαρμοσμένο favicon (μορφή PNG ή ICO, max 200KB). Αυτό το εικονίδιο εμφανίζεται σε καρτέλες και σελιδοδείκτες.",
+			"resetButton": "Reset",
+			"resetConfirmTitle": "Επαναφορά στο προεπιλεγμένο favicon?",
+			"resetConfirmOk": "Ναι",
+			"resetConfirmCancel": "Όχι"
+		},
 		"EditInstanceDetails": {
 			"directoryDescription": "Αυξήστε το κοινό σας με την εμφάνιση στο <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. Αυτή είναι μια εξωτερική υπηρεσία που εκτελείται από το έργο Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Μάθετε περισσότερα</a>.",
 			"offlineMessageDescription": "Το μήνυμα εκτός σύνδεσης εμφανίζεται στους επισκέπτες της σελίδας σας όταν δεν κάνετε streaming. Υποστηρίζεται Markdown.",
 			"serverUrlRequiredForDirectory": "Πρέπει να ορίσετε το <strong>Server URL</strong> παραπάνω για να ενεργοποιήσετε τον κατάλογο."
 		},
 		"HardwareInfo": {
-			"title": "Πληροφορίες Υλικού",
-			"pleaseWait": "Παρακαλώ περιμένετε",
-			"noDetails": "Δεν έχουν συλλεχθεί ακόμα στοιχεία υλικού.",
 			"cpu": "Επεξεργαστής",
-			"memory": "Μνήμη",
 			"disk": "Δίσκος",
+			"memory": "Μνήμη",
+			"noDetails": "Δεν έχουν συλλεχθεί ακόμα στοιχεία υλικού.",
+			"pleaseWait": "Παρακαλώ περιμένετε",
+			"title": "Πληροφορίες Υλικού",
 			"used": "χρησιμοποιημένο"
 		},
 		"Help": {
-			"title": "Πώς μπορούμε να σας βοηθήσουμε?",
-			"configureInstance": "Θέλω να ρυθμίσω το δικό μου cast instance",
-			"learnMore": "Μάθετε περισσότερα",
-			"configureBroadcasting": "Βοηθήστε στη διαμόρφωση του λογισμικού μετάδοσης",
-			"embedStream": "Θέλω να ενσωματώσω το ρεύμα μου σε μια άλλη ιστοσελίδα",
-			"customizeWebsite": "Θέλω να προσαρμόσω την ιστοσελίδα μου",
-			"tweakVideo": "Θέλω να τροποποιήσω την έξοδο βίντεο μου",
-			"useStorage": "Θέλω να χρησιμοποιήσω έναν εξωτερικό πάροχο αποθήκευσης",
-			"foundBug": "Βρήκα ένα σφάλμα",
 			"bugPlease": "Αν βρήκατε ένα σφάλμα, τότε παρακαλώ",
-			"letUsKnow": "ενημερώστε μας",
-			"generalQuestion": "Έχω μια γενική ερώτηση",
-			"generalAnswered": "Οι περισσότερες γενικές ερωτήσεις απαντώνται σε μας",
-			"faq": "Συχνές",
-			"orExist": "ή υπάρχουν σε μας",
-			"discussions": "συζητήσεις",
 			"buildAddons": "Θέλω να δημιουργήσω πρόσθετα για το Owncast",
 			"buildTools": "Μπορείτε να φτιάξετε τα δικά σας bots, επικαλύψεις, εργαλεία και πρόσθετα με μας",
-			"developerApis": "API προγραμματιστή.",
-			"troubleshooting": "Αντιμετώπιση Προβλημάτων",
-			"fixProblems": "Διορθώστε τα προβλήματά σας",
-			"documentation": "Τεκμηρίωση",
-			"readDocs": "Διαβάστε τα έγγραφα",
 			"commonTasks": "Κοινά καθήκοντα",
-			"other": "Άλλο"
+			"configureBroadcasting": "Βοηθήστε στη διαμόρφωση του λογισμικού μετάδοσης",
+			"configureInstance": "Θέλω να ρυθμίσω το δικό μου cast instance",
+			"customizeWebsite": "Θέλω να προσαρμόσω την ιστοσελίδα μου",
+			"developerApis": "API προγραμματιστή.",
+			"discussions": "συζητήσεις",
+			"documentation": "Τεκμηρίωση",
+			"embedStream": "Θέλω να ενσωματώσω το ρεύμα μου σε μια άλλη ιστοσελίδα",
+			"faq": "Συχνές",
+			"fixProblems": "Διορθώστε τα προβλήματά σας",
+			"foundBug": "Βρήκα ένα σφάλμα",
+			"generalAnswered": "Οι περισσότερες γενικές ερωτήσεις απαντώνται σε μας",
+			"generalQuestion": "Έχω μια γενική ερώτηση",
+			"learnMore": "Μάθετε περισσότερα",
+			"letUsKnow": "ενημερώστε μας",
+			"orExist": "ή υπάρχουν σε μας",
+			"other": "Άλλο",
+			"readDocs": "Διαβάστε τα έγγραφα",
+			"title": "Πώς μπορούμε να σας βοηθήσουμε?",
+			"troubleshooting": "Αντιμετώπιση Προβλημάτων",
+			"tweakVideo": "Θέλω να τροποποιήσω την έξοδο βίντεο μου",
+			"useStorage": "Θέλω να χρησιμοποιήσω έναν εξωτερικό πάροχο αποθήκευσης"
 		},
 		"LogTable": {
-			"level": "Επίπεδο",
-			"info": "Πληροφορίες",
-			"warning": "Προειδοποίηση",
 			"error": "Σφάλμα",
-			"timestamp": "Χρονοσήμανση",
+			"info": "Πληροφορίες",
+			"level": "Επίπεδο",
+			"logs": "Καταγραφή",
 			"message": "Μήνυμα",
-			"logs": "Καταγραφή"
+			"timestamp": "Χρονοσήμανση",
+			"warning": "Προειδοποίηση"
 		},
 		"NewsFeed": {
 			"link": "Σύνδεσμος",
 			"noNews": "Δεν υπάρχουν νέα.",
 			"title": "Ειδήσεις & ενημερώσεις από Owncast"
 		},
-		"ViewerInfo": {
-			"title": "Πληροφορίες Προβολής",
-			"currentStream": "Τρέχουσα ροή",
-			"last12Hours": "Τελευταίες 12 ώρες",
-			"last24Hours": "Τελευταίες 24 ώρες",
-			"last7Days": "Τελευταίες 7 ημέρες",
-			"last30Days": "Τελευταίες 30 ημέρες",
-			"last3Months": "Τελευταίοι 3 μήνες",
-			"last6Months": "Τελευταίοι 6 μήνες",
-			"currentViewers": "Τρέχοντες θεατές",
-			"maxViewersThisStream": "Μέγιστος αριθμός θεατών αυτής της ροής",
-			"maxViewersLastStream": "Μέγιστος αριθμός θεατών τελευταία ροή",
-			"maxViewers": "μέγιστος αριθμός θεατών",
-			"pleaseWait": "Παρακαλώ περιμένετε",
-			"noData": "Κανένας προβολέας δεν έχει συλλεχθεί ακόμα.",
-			"viewers": "Θεατές"
+		"StatusMessages": {
+			"convertingEmoji": "Μετατροπή emoji...",
+			"deletingEmoji": "Διαγραφή emoji...",
+			"emojiDeleted": "Τα Emoji διαγράφηκαν",
+			"emojiUploadedSuccessfully": "Τα Emoji ανέβηκαν επιτυχώς!",
+			"fileSizeTooBig": "Το μέγεθος του αρχείου είναι πολύ μεγάλο: {{size}}",
+			"fileTypeNotSupported": "Ο τύπος αρχείου δεν υποστηρίζεται: {{type}}",
+			"latencyBufferUpdated": "Το επίπεδο λανθάνουσας μνήμης ενημερώθηκε.",
+			"pleaseEnterTag": "Παρακαλώ εισάγετε μια ετικέτα",
+			"tagAlreadyUsed": "Αυτή η ετικέτα χρησιμοποιείται ήδη!",
+			"tagsUpdated": "Οι ετικέτες ενημερώθηκαν.",
+			"thereWasAnError": "Υπήρξε ένα σφάλμα: {{message}}",
+			"updated": "Ενημερώθηκε.",
+			"uploadingEmoji": "Μεταφόρτωση emoji...",
+			"variantsUpdated": "Οι παραλλαγές ενημερώθηκαν",
+			"videoCodecUpdated": "Ενημέρωση κωδικοποιητή βίντεο."
 		},
 		"VideoVariantForm": {
 			"bitrateDisabledPassthrough": "Η επιλογή Ρυθμού Bitrate είναι απενεργοποιημένη όταν είναι ενεργοποιημένη η σύνδεση μέσω βίντεο.",
@@ -78,6 +114,29 @@
 			"bitrateGoodForMost": "Καλό για τους περισσότερους θεατές, εύρος ζώνης και ψηφίσματα.",
 			"bitrateGoodForSlow": "Καλό για αργούς, κινητούς και χαμηλούς ρυθμούς bit θεατές.",
 			"bitrateValueKbps": "{{bitrate}} kbps"
+		},
+		"ViewerInfo": {
+			"currentStream": "Τρέχουσα ροή",
+			"currentViewers": "Τρέχοντες θεατές",
+			"last12Hours": "Τελευταίες 12 ώρες",
+			"last24Hours": "Τελευταίες 24 ώρες",
+			"last30Days": "Τελευταίες 30 ημέρες",
+			"last3Months": "Τελευταίοι 3 μήνες",
+			"last6Months": "Τελευταίοι 6 μήνες",
+			"last7Days": "Τελευταίες 7 ημέρες",
+			"maxViewers": "Μέγιστος αριθμός θεατών",
+			"maxViewersLastStream": "Μέγιστος αριθμός θεατών τελευταία ροή",
+			"maxViewersThisStream": "Μέγιστος αριθμός θεατών αυτής της ροής",
+			"noData": "Κανένας προβολέας δεν έχει συλλεχθεί ακόμα.",
+			"pleaseWait": "Παρακαλώ περιμένετε",
+			"title": "Πληροφορίες Προβολής",
+			"viewers": "Θεατές"
+		},
+		"Webhooks": {
+			"createNewWebhook": "Δημιουργία Νέου Webhook",
+			"selectAll": "Επιλογή όλων",
+			"selectEvents": "Επιλέξτε τα γεγονότα που θα σταλούν σε αυτό το webhook.",
+			"webhookUrlPlaceholder": "https://myserver.com/webhook"
 		},
 		"deleteEmoji": "Διαγραφή emoji",
 		"emojiPageDescription": "Εδώ μπορείτε να ανεβάσετε νέα προσαρμοσμένα emojis για χρήση στη συνομιλία. Κατά το ανέβασμα ενός νέου emoji, το όνομα αρχείου χωρίς επέκταση θα χρησιμοποιηθεί ως όνομα emoji. Επιπλέον, τα ονόματα emoji είναι ευαίσθητα στην περίπτωση. Για καλύτερα αποτελέσματα, βεβαιωθείτε ότι όλα τα emoji έχουν μοναδικά ονόματα.",
@@ -107,42 +166,44 @@
 			"iosShareButton": "κοινοποίηση",
 			"iosTitle": "Ειδοποιηθείτε στο iOS",
 			"learnMore": "Μάθετε περισσότερα",
+			"learnMoreAboutNotifications": "<a href='https://owncast.online/docs/notifications/#browser-notifications'>Μάθετε περισσότερα</a> για τις ειδοποιήσεις του Owncast στον περιηγητή.",
 			"mainDescription": "Λάβετε ειδοποίηση απευθείας στο πρόγραμμα περιήγησης κάθε φορά που αυτό το ρεύμα πηγαίνει ζωντανά.",
 			"permissionWantsTo": "{{hostname}} θέλει να",
 			"showNotifications": "Εμφάνιση ειδοποιήσεων",
 			"unsupported": "Οι ειδοποιήσεις του προγράμματος περιήγησης δεν υποστηρίζονται στο πρόγραμμα περιήγησης.",
 			"unsupportedLocal": "Οι ειδοποιήσεις του προγράμματος περιήγησης δεν υποστηρίζονται για τοπικούς διακομιστές."
 		},
-		"Footer": {
-			"documentation": "Τεκμηρίωση",
-			"contribute": "Συνεισφέρετε",
-			"source": "Πηγή"
-		},
 		"Chat": {
-			"userJoined": "μπήκε στη συνομιλία.",
-			"userLeft": "άφησε τη συνομιλία.",
+			"authenticateToChat": "Ταυτοποίηση για συνομιλία",
+			"moderatorNotification": "Είστε τώρα ένας συντονιστής.",
 			"nameChangeText": "είναι τώρα γνωστό ως",
-			"moderatorNotification": "Είστε τώρα ένας συντονιστής."
+			"userJoined": "μπήκε στη συνομιλία.",
+			"userLeft": "άφησε τη συνομιλία."
 		},
 		"FollowModal": {
 			"description": "Ακολουθώντας αυτό το ρεύμα θα ειδοποιηθείτε στο Fediverse όταν πηγαίνει ζωντανά.",
-			"learnFediverse": "μάθετε για το Fediverse",
-			"newToYou": "if it's newνέος to you.",
-			"instructions": "Εισάγετε το όνομα χρήστη @server σας για να ακολουθήσετε",
-			"placeholder": "Ο fediverse λογαριασμός σας @account@server",
-			"redirectMessage": "Θα μεταφερθείτε στον Fediverse server σας και θα σας ζητηθεί να επιβεβαιώσετε την ενέργεια.",
-			"joinFediverse": "Γίνετε μέλος του Fediverse",
 			"followButton": "Ακολουθήστε",
 			"followError": "Σφάλμα Ακολούθησης",
+			"instructions": "Εισάγετε το όνομα χρήστη @server σας για να ακολουθήσετε",
+			"joinFediverse": "Γίνετε μέλος του Fediverse",
+			"learnFediverse": "μάθετε για το Fediverse",
+			"newToYou": "if it's newνέος to you.",
+			"placeholder": "Ο fediverse λογαριασμός σας @account@server",
+			"redirectMessage": "Θα μεταφερθείτε στον Fediverse server σας και θα σας ζητηθεί να επιβεβαιώσετε την ενέργεια.",
 			"unableToFollow": "Αδύνατη η παρακολούθηση."
 		},
+		"Footer": {
+			"contribute": "Συνεισφέρετε",
+			"documentation": "Τεκμηρίωση",
+			"source": "Πηγή"
+		},
 		"Header": {
-			"skipToPlayer": "Μετάβαση στον παίκτη",
-			"skipToOfflineMessage": "Μετάβαση στο μήνυμα εκτός σύνδεσης",
+			"chatOffline": "Η συνομιλία είναι εκτός σύνδεσης",
+			"chatWillBeAvailable": "Η συνομιλία θα είναι διαθέσιμη όταν η ροή είναι ζωντανή.",
 			"skipToContent": "Μετάβαση στο περιεχόμενο της σελίδας",
 			"skipToFooter": "Μετάβαση στο υποσέλιδο",
-			"chatWillBeAvailable": "Η συνομιλία θα είναι διαθέσιμη όταν η ροή είναι ζωντανή.",
-			"chatOffline": "Η συνομιλία είναι εκτός σύνδεσης"
+			"skipToOfflineMessage": "Μετάβαση στο μήνυμα εκτός σύνδεσης",
+			"skipToPlayer": "Μετάβαση στον παίκτη"
 		},
 		"NameChangeModal": {
 			"authInfo": "Μπορείτε επίσης να πιστοποιήσετε έναν λογαριασμό IndieAuth ή Fediverse μέσω του μενού \"Authenticate\".",
@@ -152,19 +213,20 @@
 			"overLimit": "Υπέρβαση ορίου",
 			"placeholder": "Το όνομα της συνομιλίας σας"
 		},
+		"chatDisabled": "Η συνομιλία είναι απενεργοποιημένη",
 		"chatOffline": "Η συνομιλία είναι εκτός σύνδεσης",
 		"componentError": "Σφάλμα: {{message}}",
 		"helloWorld": "Γεια σας κόσμο",
+		"lastLiveAgo": "Πριν από {{timeAgo}}",
 		"offlineBasic": "Αυτό το ρεύμα είναι εκτός σύνδεσης. Ελέγξτε ξανά σύντομα!",
 		"offlineFediverseOnly": "Αυτό το ρεύμα είναι εκτός σύνδεσης. <span class='follow-link'>Ακολουθήστε</span> {{fediverseAccount}} στο Fediverse για να δείτε την επόμενη φορά που το {{streamer}} ζωντανά.",
 		"offlineNotifyAndFediverse": "Αυτή η ροή είναι εκτός σύνδεσης. Μπορείτε να ειδοποιηθείτε <span class='notify-link'></span> την επόμενη φορά που το {{streamer}} πηγαίνει ζωντανά ή <span class='follow-link'>ακολουθήστε το</span> {{fediverseAccount}} στο Fediverse.",
-		"offlineNotifyOnly": "Αυτή η ροή είναι εκτός σύνδεσης. <span class='notify-link'>Θα ειδοποιηθείτε</span> την επόμενη φορά που το {{streamer}} θα συνδεθεί.",
-		"lastLiveAgo": "Πριν από {{timeAgo}}"
+		"offlineNotifyOnly": "Αυτή η ροή είναι εκτός σύνδεσης. <span class='notify-link'>Θα ειδοποιηθείτε</span> την επόμενη φορά που το {{streamer}} θα συνδεθεί."
 	},
 	"Testing": {
 		"itemCount": "Έχετε {{count}} αντικείμενα",
 		"messageCount": "Έχετε {{count}} μηνύματα από {{sender}}",
-		"noPluralKey": "This key has no plural variants - {{count}} things",
+		"noPluralKey": "",
 		"simpleKey": "Απλό κείμενο μετάφρασης"
 	}
 }

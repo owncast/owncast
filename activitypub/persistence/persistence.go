@@ -3,18 +3,16 @@ package persistence
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"net/url"
 	"time"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
@@ -31,191 +29,9 @@ func Setup(datastore *data.Datastore) {
 	addFollowersFixtureData()
 }
 
-// AddFollow will save a follow to the datastore.
-func AddFollow(follow apmodels.ActivityPubActor, approved bool) error {
-	log.Traceln("Saving", follow.ActorIri, "as a follower.")
-	var image string
-	if follow.Image != nil {
-		image = follow.Image.String()
-	}
-
-	followRequestObject, err := apmodels.Serialize(follow.RequestObject)
-	if err != nil {
-		return errors.Wrap(err, "error serializing follow request object")
-	}
-
-	return createFollow(follow.ActorIri.String(), follow.Inbox.String(), follow.FollowRequestIri.String(), follow.Name, follow.Username, image, followRequestObject, approved, follow.IsOwncastServer)
-}
-
-// RemoveFollow will remove a follow from the datastore.
-func RemoveFollow(unfollow apmodels.ActivityPubActor) error {
-	log.Traceln("Removing", unfollow.ActorIri, "as a follower.")
-	return removeFollow(unfollow.ActorIri)
-}
-
-// GetFollower will return a single follower/request given an IRI.
-func GetFollower(iri string) (*apmodels.ActivityPubActor, error) {
-	result, err := _datastore.GetQueries().GetFollowerByIRI(context.Background(), iri)
-	if err != nil {
-		return nil, err
-	}
-
-	followIRI, err := url.Parse(result.Request)
-	if err != nil {
-		return nil, errors.Wrap(err, "error parsing follow request IRI")
-	}
-
-	iriURL, err := url.Parse(result.Iri)
-	if err != nil {
-		return nil, errors.Wrap(err, "error parsing actor IRI")
-	}
-
-	inbox, err := url.Parse(result.Inbox)
-	if err != nil {
-		return nil, errors.Wrap(err, "error parsing acting inbox")
-	}
-
-	requestObjectBytes := result.RequestObject
-	var followRequestObject vocab.ActivityStreamsFollow
-
-	resolver, err := streams.NewJSONResolver(func(c context.Context, followObject vocab.ActivityStreamsFollow) error {
-		followRequestObject = followObject
-		return nil
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "error creating JSON resolver")
-	}
-	jsonMap := make(map[string]interface{})
-	err = json.Unmarshal(requestObjectBytes, &jsonMap)
-	if err != nil {
-		return nil, errors.Wrap(err, "error unmarshaling follow request object")
-	}
-
-	err = resolver.Resolve(context.Background(), jsonMap)
-	if err != nil {
-		return nil, errors.Wrap(err, "error resolving follow request object")
-	}
-
-	image, _ := url.Parse(result.Image.String)
-
-	var disabledAt *time.Time
-	if result.DisabledAt.Valid {
-		disabledAt = &result.DisabledAt.Time
-	}
-
-	follower := apmodels.ActivityPubActor{
-		ActorIri:         iriURL,
-		Inbox:            inbox,
-		Name:             result.Name.String,
-		Username:         result.Username,
-		Image:            image,
-		FollowRequestIri: followIRI,
-		DisabledAt:       disabledAt,
-		RequestObject:    followRequestObject,
-	}
-
-	return &follower, nil
-}
-
-// ApprovePreviousFollowRequest will approve a follow request.
-func ApprovePreviousFollowRequest(iri string) error {
-	return _datastore.GetQueries().ApproveFederationFollower(context.Background(), db.ApproveFederationFollowerParams{
-		Iri: iri,
-		ApprovedAt: sql.NullTime{
-			Time:  time.Now(),
-			Valid: true,
-		},
-	})
-}
-
-// BlockOrRejectFollower will block an existing follower or reject a follow request.
-func BlockOrRejectFollower(iri string) error {
-	return _datastore.GetQueries().RejectFederationFollower(context.Background(), db.RejectFederationFollowerParams{
-		Iri: iri,
-		DisabledAt: sql.NullTime{
-			Time:  time.Now(),
-			Valid: true,
-		},
-	})
-}
-
-func createFollow(actor, inbox, request, name, username, image string, requestObject []byte, approved bool, owncastServer bool) error {
-	tx, err := _datastore.DB.Begin()
-	if err != nil {
-		log.Debugln(err)
-	}
-	defer func() {
-		_ = tx.Rollback()
-	}()
-
-	var approvedAt sql.NullTime
-	if approved {
-		approvedAt = sql.NullTime{
-			Time:  time.Now(),
-			Valid: true,
-		}
-	}
-
-	if err = _datastore.GetQueries().WithTx(tx).AddFollower(context.Background(), db.AddFollowerParams{
-		Iri:           actor,
-		Inbox:         inbox,
-		Name:          sql.NullString{String: name, Valid: true},
-		Username:      username,
-		Image:         sql.NullString{String: image, Valid: true},
-		ApprovedAt:    approvedAt,
-		Request:       request,
-		RequestObject: requestObject,
-		OwncastServer: sql.NullBool{Bool: owncastServer, Valid: true},
-	}); err != nil {
-		log.Errorln("error creating new federation follow: ", err)
-	}
-
-	return tx.Commit()
-}
-
-// UpdateFollower will update the details of a stored follower given an IRI.
-func UpdateFollower(actorIRI string, inbox string, name string, username string, image string) error {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
-
-	tx, err := _datastore.DB.Begin()
-	if err != nil {
-		log.Debugln(err)
-	}
-	defer func() {
-		_ = tx.Rollback()
-	}()
-
-	if err = _datastore.GetQueries().WithTx(tx).UpdateFollowerByIRI(context.Background(), db.UpdateFollowerByIRIParams{
-		Inbox:    inbox,
-		Name:     sql.NullString{String: name, Valid: true},
-		Username: username,
-		Image:    sql.NullString{String: image, Valid: true},
-		Iri:      actorIRI,
-	}); err != nil {
-		return fmt.Errorf("error updating follower %s %s", actorIRI, err)
-	}
-
-	return tx.Commit()
-}
-
-func removeFollow(actor *url.URL) error {
-	_datastore.DbLock.Lock()
-	defer _datastore.DbLock.Unlock()
-
-	tx, err := _datastore.DB.Begin()
-	if err != nil {
-		return err
-	}
-	defer func() {
-		_ = tx.Rollback()
-	}()
-
-	if err := _datastore.GetQueries().WithTx(tx).RemoveFollowerByIRI(context.Background(), actor.String()); err != nil {
-		return err
-	}
-
-	return tx.Commit()
+// GetDatastore returns the datastore instance for use by sub-repositories.
+func GetDatastore() *data.Datastore {
+	return _datastore
 }
 
 // createFederatedActivitiesTable will create the accepted
@@ -261,7 +77,7 @@ func GetOutbox(limit int, offset int) (vocab.ActivityStreamsOrderedCollection, e
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
 	rows, err := _datastore.GetQueries().GetOutboxWithOffset(
 		context.Background(),
-		db.GetOutboxWithOffsetParams{Limit: int32(limit), Offset: int32(offset)},
+		db.GetOutboxWithOffsetParams{Limit: utils.SafeIntToInt32(limit), Offset: utils.SafeIntToInt32(offset)},
 	)
 	if err != nil {
 		return collection, err
@@ -333,8 +149,8 @@ func SaveInboundFediverseActivity(objectIRI string, actorIRI string, eventType s
 func GetInboundActivities(limit int, offset int) ([]models.FederatedActivity, int, error) {
 	ctx := context.Background()
 	rows, err := _datastore.GetQueries().GetInboundActivitiesWithOffset(ctx, db.GetInboundActivitiesWithOffsetParams{
-		Limit:  int32(limit),
-		Offset: int32(offset),
+		Limit:  utils.SafeIntToInt32(limit),
+		Offset: utils.SafeIntToInt32(offset),
 	})
 	if err != nil {
 		return nil, 0, err

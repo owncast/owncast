@@ -30,46 +30,21 @@ func handleCreateRequest(c context.Context, activity vocab.ActivityStreamsCreate
 	return nil
 }
 
-func handleNoteActivity(c context.Context, activity vocab.ActivityStreamsCreate, note vocab.ActivityStreamsNote) error {
-	// Get the actor who created the note
-	actorProp := activity.GetActivityStreamsActor()
-	if actorProp == nil || actorProp.Len() == 0 {
-		return nil
-	}
-
-	var actorIRI string
-	if actorProp.At(0).GetIRI() != nil {
-		actorIRI = actorProp.At(0).GetIRI().String()
-	} else {
-		return nil
-	}
-
-	// Check for Owncast custom properties in the note
-	unknownProps := note.GetUnknownProperties()
-	streamStatus, hasStreamStatus := unknownProps[config.APOwncastNamespaceStreamStatus]
-
-	if !hasStreamStatus {
-		// Not an Owncast stream status update, ignore
-		return nil
-	}
-
-	statusStr, ok := streamStatus.(string)
+func handleNoteActivity(_ context.Context, activity vocab.ActivityStreamsCreate, note vocab.ActivityStreamsNote) error {
+	actorIRI, statusStr, unknownProps, ok := extractNoteStreamStatus(activity, note)
 	if !ok {
 		return nil
 	}
 
 	log.Debugf("Received Owncast stream status update from %s: %s", actorIRI, statusStr)
 
-	// Get or create the federated server
 	repo := federatedserversrepository.Get()
 	server, err := repo.GetFederatedServer(actorIRI)
 	if err != nil || server == nil {
-		// Server doesn't exist in our database - we're not following them
 		log.Debugf("Ignoring Note activity from unfollowed server: %s", actorIRI)
 		return nil
 	}
 
-	// Check if we're actually following this server (not pending or rejected)
 	if server.Pending || server.FollowStatus == "rejected" || server.FollowStatus == "none" {
 		log.Debugf("Ignoring Note activity from server we're not actively following: %s (status: %s)", actorIRI, server.FollowStatus)
 		return nil
@@ -79,44 +54,20 @@ func handleNoteActivity(c context.Context, activity vocab.ActivityStreamsCreate,
 	server.LastStatusUpdate = &now
 
 	switch statusStr {
-	case "live":
+	case config.APStreamStatusLive:
 		server.IsOnline = true
 		server.LastSeenOnline = &now
-
-		// Extract stream metadata from unknown properties using utility function
-		extractedMetadata := apmodels.ParseOwncastMetadata(unknownProps)
-		if extractedMetadata.StreamTitle != "" {
-			server.StreamTitle = &extractedMetadata.StreamTitle
-		}
-		if extractedMetadata.StreamDescription != "" {
-			server.StreamDescription = &extractedMetadata.StreamDescription
-		}
-		if extractedMetadata.ThumbnailURL != "" {
-			server.ThumbnailURL = &extractedMetadata.ThumbnailURL
-		}
-		if extractedMetadata.LogoURL != "" {
-			server.LogoURL = &extractedMetadata.LogoURL
-		}
-		if len(extractedMetadata.Tags) > 0 {
-			server.Tags = extractedMetadata.Tags
-		}
-		if extractedMetadata.ServerName != "" {
-			server.Name = &extractedMetadata.ServerName
-		}
-
+		applyLiveMetadataToServer(server, unknownProps)
 		log.Infof("Federated server %s is now online", actorIRI)
 
-	case "offline":
+	case config.APStreamStatusOffline:
 		server.IsOnline = false
-		// Clear stream metadata when offline
 		server.StreamTitle = nil
 		server.StreamDescription = nil
 		server.ThumbnailURL = nil
-
 		log.Infof("Federated server %s is now offline", actorIRI)
 	}
 
-	// Update the server status (we know server exists and we're following them)
 	update := &models.FederatedStreamUpdate{
 		Title:        server.StreamTitle,
 		Description:  server.StreamDescription,
@@ -130,4 +81,55 @@ func handleNoteActivity(c context.Context, activity vocab.ActivityStreamsCreate,
 	}
 
 	return nil
+}
+
+// extractNoteStreamStatus extracts the actor IRI and stream status from a Note activity.
+// Returns the actorIRI, status string, unknown properties map, and whether extraction succeeded.
+func extractNoteStreamStatus(activity vocab.ActivityStreamsCreate, note vocab.ActivityStreamsNote) (string, string, map[string]interface{}, bool) {
+	actorProp := activity.GetActivityStreamsActor()
+	if actorProp == nil || actorProp.Len() == 0 {
+		return "", "", nil, false
+	}
+
+	if actorProp.At(0).GetIRI() == nil {
+		return "", "", nil, false
+	}
+
+	actorIRI := actorProp.At(0).GetIRI().String()
+
+	unknownProps := note.GetUnknownProperties()
+	streamStatus, hasStreamStatus := unknownProps[config.APOwncastNamespaceStreamStatus]
+	if !hasStreamStatus {
+		return "", "", nil, false
+	}
+
+	statusStr, ok := streamStatus.(string)
+	if !ok {
+		return "", "", nil, false
+	}
+
+	return actorIRI, statusStr, unknownProps, true
+}
+
+// applyLiveMetadataToServer applies parsed Owncast metadata to a server model when going live.
+func applyLiveMetadataToServer(server *models.FederatedServer, unknownProps map[string]interface{}) {
+	extractedMetadata := apmodels.ParseOwncastMetadata(unknownProps)
+	if extractedMetadata.StreamTitle != "" {
+		server.StreamTitle = &extractedMetadata.StreamTitle
+	}
+	if extractedMetadata.StreamDescription != "" {
+		server.StreamDescription = &extractedMetadata.StreamDescription
+	}
+	if extractedMetadata.ThumbnailURL != "" {
+		server.ThumbnailURL = &extractedMetadata.ThumbnailURL
+	}
+	if extractedMetadata.LogoURL != "" {
+		server.LogoURL = &extractedMetadata.LogoURL
+	}
+	if len(extractedMetadata.Tags) > 0 {
+		server.Tags = extractedMetadata.Tags
+	}
+	if extractedMetadata.ServerName != "" {
+		server.Name = &extractedMetadata.ServerName
+	}
 }

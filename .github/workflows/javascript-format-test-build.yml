@@ -52,19 +52,26 @@ jobs:
           skip_after_successful_duplicate: 'true'
 
       - name: Check out pull request code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{github.event.pull_request.head.ref}}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Fetch base branch for comparison
+        if: github.event_name == 'pull_request'
+        run: |
+          git remote add upstream https://github.com/${{ github.event.pull_request.base.repo.full_name }}.git || true
+          git fetch upstream ${{ github.event.pull_request.base.ref }}
 
       - name: Setup Nodejs
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '22.20.0'
+          node-version: '24.12.0'
 
       - name: Check out repository code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'push'
 
       - name: Get changed files
@@ -80,7 +87,7 @@ jobs:
               - '**/*.{js,ts,tsx,jsx,md}'
 
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-node-modules-bundle-web-app
         with:
@@ -140,23 +147,30 @@ jobs:
           skip_after_successful_duplicate: 'true'
 
       - name: Check out pull request code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Fetch base branch for comparison
+        if: github.event_name == 'pull_request'
+        run: |
+          git remote add upstream https://github.com/${{ github.event.pull_request.base.repo.full_name }}.git || true
+          git fetch upstream ${{ github.event.pull_request.base.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'push'
 
       - name: Setup Nodejs
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '22.20.0'
+          node-version: '24.12.0'
 
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-node-modules-bundle-web-app
         with:
@@ -194,12 +208,12 @@ jobs:
           skip_after_successful_duplicate: 'true'
 
       - name: Setup Nodejs
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '22.20.0'
+          node-version: '24.12.0'
 
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-node-modules-bundle-web-app
         with:
@@ -211,14 +225,14 @@ jobs:
             ${{ runner.os }}-
 
       - name: Check out pull request code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: github.event_name == 'push'
 
       - name: Bundle web app (next.js build)

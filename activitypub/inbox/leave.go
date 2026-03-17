@@ -6,6 +6,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/resolvers"
+	"github.com/owncast/owncast/config"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -33,7 +34,7 @@ func handleLeaveInboxRequest(c context.Context, activity vocab.ActivityStreamsLe
 
 	if metadata != nil {
 		// Update the federated server status to offline
-		metadata.StreamStatus = "offline"
+		metadata.StreamStatus = config.APStreamStatusOffline
 
 		// Log the metadata we received
 		log.Debugf("Leave activity metadata - Server: %s, Status: %s, Title: %s",
@@ -51,20 +52,10 @@ func handleLeaveInboxRequest(c context.Context, activity vocab.ActivityStreamsLe
 	return nil
 }
 
-// updateFederatedServerStatus updates the status and metadata for a federated server
-func updateFederatedServerStatus(actorIRI string, metadata *apmodels.OwncastMetadata) error {
-	// Log the status update
+// updateFederatedServerStatus updates the status and metadata for a federated server.
+func updateFederatedServerStatus(actorIRI string, _ *apmodels.OwncastMetadata) error {
+	// Log the status update.
 	log.Infof("Updated federated server %s to offline status", actorIRI)
 
-	// Update the follower information with the new metadata
-	// This updates the existing follower record with the latest server information
-	name := metadata.ServerName
-	if name == "" {
-		name = actorIRI
-	}
-
-	// For federated Owncast servers, we can update their metadata
-	// The actual status tracking would need to be implemented based on
-	// how the application tracks federated server states
 	return nil
 }

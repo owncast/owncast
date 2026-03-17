@@ -21,8 +21,9 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	usernameBlocklist := configRepository.GetForbiddenUsernameList()
 	usernameSuggestions := configRepository.GetSuggestedUsernamesList()
 
-	videoQualityVariants := make([]models.StreamOutputVariant, 0)
-	for _, variant := range configRepository.GetStreamOutputVariants() {
+	streamOutputVariants := configRepository.GetStreamOutputVariants()
+	videoQualityVariants := make([]models.StreamOutputVariant, 0, len(streamOutputVariants))
+	for _, variant := range streamOutputVariants {
 		videoQualityVariants = append(videoQualityVariants, models.StreamOutputVariant{
 			Name:               variant.GetName(),
 			IsAudioPassthrough: variant.GetIsAudioPassthrough(),
@@ -65,6 +66,7 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ChatEstablishedUserMode:   configRepository.GetChatEstbalishedUsersOnlyMode(),
 		ChatSpamProtectionEnabled: configRepository.GetChatSpamProtectionEnabled(),
 		ChatSlurFilterEnabled:     configRepository.GetChatSlurFilterEnabled(),
+		ChatRequireAuthentication: configRepository.GetChatRequireAuthentication(),
 		HideViewerCount:           configRepository.GetHideViewerCount(),
 		DisableSearchIndexing:     configRepository.GetDisableSearchIndexing(),
 		VideoSettings: videoSettings{
@@ -128,6 +130,7 @@ type serverConfigAdminResponse struct {
 	ChatEstablishedUserMode   bool                        `json:"chatEstablishedUserMode"`
 	ChatSpamProtectionEnabled bool                        `json:"chatSpamProtectionEnabled"`
 	ChatSlurFilterEnabled     bool                        `json:"chatSlurFilterEnabled"`
+	ChatRequireAuthentication bool                        `json:"chatRequireAuthentication"`
 	DisableSearchIndexing     bool                        `json:"disableSearchIndexing"`
 	StreamKeyOverridden       bool                        `json:"streamKeyOverridden"`
 	HideViewerCount           bool                        `json:"hideViewerCount"`
