@@ -6,8 +6,12 @@ package persistence
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
 
+	"github.com/go-fed/activity/streams"
+	"github.com/owncast/owncast/activitypub/apmodels"
+	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -29,8 +33,23 @@ func addFollowersFixtureData() {
 		return
 	}
 
-	// Iterate over the followers array
+	followersRepo := followersrepository.Get()
+
 	for _, follower := range followers {
-		createFollow(follower.ActorIRI, follower.Inbox, "", follower.Name, follower.Username, follower.Image, nil, true, false)
+		actorIRI, _ := url.Parse(follower.ActorIRI)
+		inboxURL, _ := url.Parse(follower.Inbox)
+		imageURL, _ := url.Parse(follower.Image)
+		requestIRI, _ := url.Parse("https://fixture.example.com/follow-request")
+		fakeRequest := streams.NewActivityStreamsFollow()
+
+		followersRepo.Add(apmodels.ActivityPubActor{
+			ActorIri:         actorIRI,
+			Inbox:            inboxURL,
+			Name:             follower.Name,
+			Username:         follower.Username,
+			Image:            imageURL,
+			FollowRequestIri: requestIRI,
+			RequestObject:    fakeRequest,
+		}, true)
 	}
 }

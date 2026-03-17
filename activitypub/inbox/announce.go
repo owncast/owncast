@@ -6,7 +6,8 @@ import (
 
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
-	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/activitiesrepository"
+	"github.com/owncast/owncast/activitypub/persistence/outboxrepository"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/pkg/errors"
 )
@@ -24,12 +25,14 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 
 	actorReference := activity.GetActivityStreamsActor()
 
-	if hasPreviouslyhandled, err := persistence.HasPreviouslyHandledInboundActivity(objectIRI, actorIRI, events.FediverseEngagementRepost); hasPreviouslyhandled || err != nil {
+	activitiesRepo := activitiesrepository.Get()
+	if hasPreviouslyhandled, err := activitiesRepo.HasPreviouslyHandled(objectIRI, actorIRI, events.FediverseEngagementRepost); hasPreviouslyhandled || err != nil {
 		return errors.Wrap(err, "inbound activity of share/re-post has already been handled")
 	}
 
 	// Shares need to match a post we had already sent.
-	_, isLiveNotification, timestamp, err := persistence.GetObjectByIRI(objectIRI)
+	outboxRepo := outboxrepository.Get()
+	_, isLiveNotification, timestamp, err := outboxRepo.GetObjectByIRI(objectIRI)
 	if err != nil {
 		return errors.Wrap(err, "Could not find post locally")
 	}
@@ -40,7 +43,7 @@ func handleAnnounceRequest(c context.Context, activity vocab.ActivityStreamsAnno
 	}
 
 	// Save as an accepted activity
-	if err := persistence.SaveInboundFediverseActivity(objectIRI, actorIRI, events.FediverseEngagementRepost, time.Now()); err != nil {
+	if err := activitiesRepo.Save(objectIRI, actorIRI, events.FediverseEngagementRepost, time.Now()); err != nil {
 		return errors.Wrap(err, "unable to save inbound share/re-post activity")
 	}
 

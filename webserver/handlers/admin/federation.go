@@ -5,7 +5,7 @@ import (
 
 	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/activitypub/outbox"
-	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/activitiesrepository"
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/persistence/configrepository"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -180,7 +180,8 @@ func SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 func GetFederatedActions(page int, pageSize int, w http.ResponseWriter, r *http.Request) {
 	offset := pageSize * page
 
-	activities, total, err := persistence.GetInboundActivities(pageSize, offset)
+	activitiesRepo := activitiesrepository.Get()
+	activities, total, err := activitiesRepo.GetInboundActivities(pageSize, offset)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return

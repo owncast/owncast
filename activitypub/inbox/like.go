@@ -6,7 +6,8 @@ import (
 
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
-	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/activitiesrepository"
+	"github.com/owncast/owncast/activitypub/persistence/outboxrepository"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/pkg/errors"
 )
@@ -24,12 +25,14 @@ func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) er
 
 	actorReference := activity.GetActivityStreamsActor()
 
-	if hasPreviouslyhandled, err := persistence.HasPreviouslyHandledInboundActivity(objectIRI, actorIRI, events.FediverseEngagementLike); hasPreviouslyhandled || err != nil {
+	activitiesRepo := activitiesrepository.Get()
+	if hasPreviouslyhandled, err := activitiesRepo.HasPreviouslyHandled(objectIRI, actorIRI, events.FediverseEngagementLike); hasPreviouslyhandled || err != nil {
 		return errors.Wrap(err, "inbound activity of like has already been handled")
 	}
 
 	// Likes need to match a post we had already sent.
-	_, isLiveNotification, timestamp, err := persistence.GetObjectByIRI(objectIRI)
+	outboxRepo := outboxrepository.Get()
+	_, isLiveNotification, timestamp, err := outboxRepo.GetObjectByIRI(objectIRI)
 	if err != nil {
 		return errors.Wrap(err, "Could not find post locally")
 	}
@@ -40,7 +43,7 @@ func handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) er
 	}
 
 	// Save as an accepted activity
-	if err := persistence.SaveInboundFediverseActivity(objectIRI, actorIRI, events.FediverseEngagementLike, time.Now()); err != nil {
+	if err := activitiesRepo.Save(objectIRI, actorIRI, events.FediverseEngagementLike, time.Now()); err != nil {
 		return errors.Wrap(err, "unable to save inbound like activity")
 	}
 

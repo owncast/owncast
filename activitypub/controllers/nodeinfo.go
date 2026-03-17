@@ -7,7 +7,7 @@ import (
 
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
-	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/outboxrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -102,7 +102,8 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	localPostCount, _ := persistence.GetLocalPostCount()
+	outboxRepo := outboxrepository.Get()
+	localPostCount, _ := outboxRepo.GetLocalPostCount()
 
 	res := response{
 		Version: "2.0",
@@ -187,7 +188,8 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	localPostCount, _ := persistence.GetLocalPostCount()
+	outboxRepo := outboxrepository.Get()
+	localPostCount, _ := outboxRepo.GetLocalPostCount()
 
 	res := &response{
 		Organization: Organization{
@@ -265,7 +267,8 @@ func InstanceV1Controller(w http.ResponseWriter, r *http.Request) {
 	}
 
 	thumbnail.Path = "/logo/external"
-	localPostCount, _ := persistence.GetLocalPostCount()
+	outboxRepo := outboxrepository.Get()
+	localPostCount, _ := outboxRepo.GetLocalPostCount()
 
 	res := response{
 		URI:              serverURL,

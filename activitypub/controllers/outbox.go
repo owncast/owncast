@@ -10,7 +10,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
-	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/outboxrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -58,7 +58,8 @@ func OutboxHandler(w http.ResponseWriter, r *http.Request) {
 
 // ActorObjectHandler will handle the request for a single ActivityPub object.
 func ActorObjectHandler(w http.ResponseWriter, r *http.Request) {
-	object, _, _, err := persistence.GetObjectByIRI(r.URL.Path)
+	outboxRepo := outboxrepository.Get()
+	object, _, _, err := outboxRepo.GetObjectByIRI(r.URL.Path)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -81,7 +82,8 @@ func getInitialOutboxHandler(r *http.Request) (vocab.ActivityStreamsOrderedColle
 	idProperty.SetIRI(id)
 	collection.SetJSONLDId(idProperty)
 
-	totalPosts, err := persistence.GetOutboxPostCount()
+	outboxRepo := outboxrepository.Get()
+	totalPosts, err := outboxRepo.GetPostCount()
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to get outbox post count")
 	}
@@ -108,7 +110,8 @@ func getOutboxPage(page string, r *http.Request) (vocab.ActivityStreamsOrderedCo
 		return nil, errors.Wrap(err, "unable to parse page number")
 	}
 
-	postCount, err := persistence.GetOutboxPostCount()
+	outboxRepo := outboxrepository.Get()
+	postCount, err := outboxRepo.GetPostCount()
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to get outbox post count")
 	}
@@ -124,7 +127,7 @@ func getOutboxPage(page string, r *http.Request) (vocab.ActivityStreamsOrderedCo
 
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
 
-	outboxItems, err := persistence.GetOutbox(outboxPageSize, (pageInt-1)*outboxPageSize)
+	outboxItems, err := outboxRepo.GetOutbox(outboxPageSize, (pageInt-1)*outboxPageSize)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to get federation followers")
 	}

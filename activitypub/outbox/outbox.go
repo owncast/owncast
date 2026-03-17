@@ -12,8 +12,8 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
-	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
+	"github.com/owncast/owncast/activitypub/persistence/outboxrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/activitypub/webfinger"
@@ -446,5 +446,6 @@ func Add(item vocab.Type, id string, isLiveNotification bool) error {
 		return err
 	}
 
-	return persistence.AddToOutbox(iri, b, typeString, isLiveNotification)
+	outboxRepo := outboxrepository.Get()
+	return outboxRepo.Add(iri, b, typeString, isLiveNotification)
 }

@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/activitypub/apmodels"
-	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/activitiesrepository"
 	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/activitypub/resolvers"
@@ -77,16 +77,18 @@ func handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsF
 
 	// If this request is approved and we have not previously sent an action to
 	// chat due to a previous follow request, then do so.
+	activitiesRepo := activitiesrepository.Get()
+
 	hasPreviouslyhandled := true // Default so we don't send anything if it fails.
 	if approved {
-		hasPreviouslyhandled, err = persistence.HasPreviouslyHandledInboundActivity(objectIRI, actorIRI, events.FediverseEngagementFollow)
+		hasPreviouslyhandled, err = activitiesRepo.HasPreviouslyHandled(objectIRI, actorIRI, events.FediverseEngagementFollow)
 		if err != nil {
 			log.Errorln("error checking for previously handled follow activity", err)
 		}
 	}
 
 	// Save this follow action to our activities table.
-	if err := persistence.SaveInboundFediverseActivity(objectIRI, actorIRI, events.FediverseEngagementFollow, time.Now()); err != nil {
+	if err := activitiesRepo.Save(objectIRI, actorIRI, events.FediverseEngagementFollow, time.Now()); err != nil {
 		return errors.Wrap(err, "unable to save inbound share/re-post activity")
 	}
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/crypto"
-	"github.com/owncast/owncast/activitypub/persistence"
+	"github.com/owncast/owncast/activitypub/persistence/outboxrepository"
 	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/persistence/configrepository"
 	log "github.com/sirupsen/logrus"
@@ -28,7 +28,8 @@ func ObjectHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	iri := strings.Join([]string{strings.TrimSuffix(configRepository.GetServerURL(), "/"), r.URL.Path}, "")
-	object, _, _, err := persistence.GetObjectByIRI(iri)
+	outboxRepo := outboxrepository.Get()
+	object, _, _, err := outboxRepo.GetObjectByIRI(iri)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
