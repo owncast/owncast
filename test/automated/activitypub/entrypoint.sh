@@ -8,7 +8,7 @@ export CERT_DIR="/tmp/test-certs"
 mkdir -p "${CERT_DIR}"
 mkcert -cert-file "${CERT_DIR}/cert.pem" \
        -key-file "${CERT_DIR}/key.pem" \
-       owncast.local snac.local localhost 127.0.0.1
+       owncast.local owncast2.local snac.local localhost 127.0.0.1
 
 # Change CWD away from the mounted repo root so Owncast doesn't pick up the
 # host's (possibly wrong-architecture) ffmpeg binary via ./ffmpeg detection.
