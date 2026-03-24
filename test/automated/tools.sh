@@ -11,24 +11,40 @@ function install_ffmpeg() {
 	fi
 
 	FFMPEG_VER="8.0"
-	FFMPEG_BUILD_VERSION="20251223233512"
+	FFMPEG_BUILD_VERSION="20260223192056"
 	FFMPEG_PATH="$(pwd)"
 	PATH=$FFMPEG_PATH:$PATH
+
+	# Determine the platform-specific archive name
+	ARCH="$(uname -m)"
+	if [[ "$OSTYPE" == "darwin"* ]]; then
+		if [[ "$ARCH" == "arm64" ]]; then
+			FFMPEG_ARCHIVE="ffmpeg${FFMPEG_VER}-darwin-arm64.tar.gz"
+		else
+			FFMPEG_ARCHIVE="ffmpeg${FFMPEG_VER}-darwin-amd64.tar.gz"
+		fi
+	else
+		if [[ "$ARCH" == "aarch64" ]]; then
+			FFMPEG_ARCHIVE="ffmpeg${FFMPEG_VER}-linux-arm64-static.tar.gz"
+		else
+			FFMPEG_ARCHIVE="ffmpeg${FFMPEG_VER}-linux-amd64-static.tar.gz"
+		fi
+	fi
 
 	if [[ -x "$FFMPEG_PATH/ffmpeg" ]]; then
 
 		ffmpeg_version=$("$FFMPEG_PATH/ffmpeg" -version | awk -F 'ffmpeg version' '{print $2}' | awk 'NR==1{print $1}')
 
-		if [[ "$ffmpeg_version" == "$FFMPEG_VER-static" ]]; then
+		if [[ "$ffmpeg_version" == "${FFMPEG_VER}.1" ]]; then
 			return 0
 		else
 			mv "$FFMPEG_PATH/ffmpeg" "$FFMPEG_PATH/ffmpeg.bk" || rm -f "$FFMPEG_PATH/ffmpeg"
 		fi
 	fi
 
-	echo "Downloading ffmpeg v${FFMPEG_VER} release ${FFMPEG_BUILD_VERSION}"
+	echo "Downloading ffmpeg v${FFMPEG_VER} release ${FFMPEG_BUILD_VERSION} (${FFMPEG_ARCHIVE})"
 	rm -rf ffmpeg.tar.gz
-	curl -sL --fail "https://github.com/owncast/ffmpeg-builds/releases/download/${FFMPEG_BUILD_VERSION}/ffmpeg${FFMPEG_VER}-amd64-static.tar.gz" --output ffmpeg.tar.gz >/dev/null
+	curl -sL --fail "https://github.com/owncast/ffmpeg-builds/releases/download/${FFMPEG_BUILD_VERSION}/${FFMPEG_ARCHIVE}" --output ffmpeg.tar.gz >/dev/null
 	tar -xzf ffmpeg.tar.gz
 	rm -f ffmpeg.tar.gz
 	chmod +x ffmpeg

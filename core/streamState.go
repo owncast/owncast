@@ -96,9 +96,7 @@ func SetStreamAsDisconnected() {
 	_stats.LastConnectTime = nil
 	_broadcaster = nil
 
-	offlineFilename := "offline-v2.ts"
-
-	offlineFilePath, err := saveOfflineClipToDisk(offlineFilename)
+	offlineInitPath, offlineSegmentPath, err := saveOfflineFMP4ToDisk()
 	if err != nil {
 		log.Errorln(err)
 		return
@@ -122,7 +120,7 @@ func SetStreamAsDisconnected() {
 	}
 
 	for index := range _currentBroadcast.OutputSettings {
-		makeVariantIndexOffline(index, offlineFilePath, offlineFilename)
+		makeVariantIndexOffline(index, offlineInitPath, offlineSegmentPath)
 	}
 
 	StartOfflineCleanupTimer()
