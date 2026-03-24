@@ -59,6 +59,7 @@ func HandleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 	if err := r.ParseForm(); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return

@@ -289,7 +289,8 @@ func SetFavicon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse multipart form with 200KB max
+	// Limit request body and parse multipart form with 200KB max
+	r.Body = http.MaxBytesReader(w, r.Body, 200<<10)
 	if err := r.ParseMultipartForm(200 << 10); err != nil {
 		webutils.WriteSimpleResponse(w, false, "no file provided")
 		return
