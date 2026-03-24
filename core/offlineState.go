@@ -92,6 +92,36 @@ func createEmptyOfflinePlaylist(playlistFilePath string, offlineFilename string)
 	}
 }
 
+func saveOfflineFMP4ToDisk() (initPath string, segmentPath string, err error) {
+	initData := static.GetOfflineInitSegment()
+	initTmp, err := os.CreateTemp(config.TempDir, "offline-init-*.mp4")
+	if err != nil {
+		return "", "", fmt.Errorf("unable to create temp file for offline init segment: %s", err)
+	}
+
+	if _, err = initTmp.Write(initData); err != nil {
+		return "", "", fmt.Errorf("unable to write offline init segment to disk: %s", err)
+	}
+
+	initTmp.Close()
+	initPath, _ = filepath.Abs(initTmp.Name())
+
+	segData := static.GetOfflineMediaSegment()
+	segTmp, err := os.CreateTemp(config.TempDir, "offline-v2-*.m4s")
+	if err != nil {
+		return "", "", fmt.Errorf("unable to create temp file for offline media segment: %s", err)
+	}
+
+	if _, err = segTmp.Write(segData); err != nil {
+		return "", "", fmt.Errorf("unable to write offline media segment to disk: %s", err)
+	}
+
+	segTmp.Close()
+	segmentPath, _ = filepath.Abs(segTmp.Name())
+
+	return initPath, segmentPath, nil
+}
+
 func saveOfflineClipToDisk(offlineFilename string) (string, error) {
 	offlineFileData := static.GetOfflineSegment()
 	offlineTmpFile, err := os.CreateTemp(config.TempDir, offlineFilename)
