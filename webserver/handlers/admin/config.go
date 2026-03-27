@@ -2,6 +2,7 @@ package admin
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -292,7 +293,12 @@ func SetFavicon(w http.ResponseWriter, r *http.Request) {
 	// Limit request body and parse multipart form with 200KB max
 	r.Body = http.MaxBytesReader(w, r.Body, 200<<10)
 	if err := r.ParseMultipartForm(200 << 10); err != nil {
-		webutils.WriteSimpleResponse(w, false, "no file provided")
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			webutils.WriteSimpleResponse(w, false, "file too large, max 200KB")
+		} else {
+			webutils.WriteSimpleResponse(w, false, "no file provided")
+		}
 		return
 	}
 
