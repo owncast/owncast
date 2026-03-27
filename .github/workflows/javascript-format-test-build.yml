@@ -38,7 +38,7 @@ on:
 jobs:
   formatting:
     name: Code formatting
-    if: github.actor != 'renovate[bot]'
+    if: github.actor != 'renovate[bot]' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -134,7 +134,7 @@ jobs:
 
   unused-code:
     name: Test for unused code
-    if: github.actor != 'renovate[bot]'
+    if: github.actor != 'renovate[bot]' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     defaults:
       run:
