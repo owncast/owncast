@@ -38,6 +38,7 @@ on:
 jobs:
   formatting:
     name: Code formatting
+    if: github.actor != 'renovate[bot]'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -133,6 +134,7 @@ jobs:
 
   unused-code:
     name: Test for unused code
+    if: github.actor != 'renovate[bot]'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -197,7 +199,7 @@ jobs:
   web-bundle:
     name: Build and bundle web project
     runs-on: ubuntu-latest
-    if: github.repository == 'owncast/owncast'
+    if: github.repository == 'owncast/owncast' && !cancelled()
     needs: [formatting, unused-code]
     steps:
       - id: skip_check
