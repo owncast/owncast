@@ -16,6 +16,8 @@ on:
     # Run the workflow every hour
     - cron: '0 * * * *'
   push:
+    branches:
+      - develop
     paths:
       - 'web/i18n/en/translation.json'
       - 'web/**/*.tsx'
