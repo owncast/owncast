@@ -121,7 +121,7 @@
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "4.6.2",
     "eslint-plugin-storybook": "9.1.20",
-    "handlebars": "^4.7.7",
+    "handlebars": "^4.7.9",
     "html-webpack-plugin": "5.6.6",
     "install": "^0.13.0",
     "jest-environment-jsdom": "^30.0.4",
