@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/go-fed/activity/streams/vocab"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/owncast/owncast/activitypub/resolvers"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/chat/events"
@@ -30,9 +31,10 @@ func handleEngagementActivity(eventType events.EventType, isLiveNotification boo
 	}
 
 	// Send chat message
-	actorName := actor.Name
+	strict := bluemonday.StrictPolicy()
+	actorName := strict.Sanitize(actor.Name)
 	if actorName == "" {
-		actorName = actor.Username
+		actorName = strict.Sanitize(actor.Username)
 	}
 	actorIRI := actor.ActorIriString()
 
