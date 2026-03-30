@@ -11,6 +11,17 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 )
 
+// sanitizeActorName strips HTML tags from the ActivityPub actor display name.
+// Falls back to the username if the display name is empty or entirely HTML.
+func sanitizeActorName(displayName, username string) string {
+	strict := bluemonday.StrictPolicy()
+	name := strict.Sanitize(displayName)
+	if name == "" {
+		name = strict.Sanitize(username)
+	}
+	return name
+}
+
 func handleEngagementActivity(eventType events.EventType, isLiveNotification bool, actorReference vocab.ActivityStreamsActorProperty, action string) error {
 	configRepository := configrepository.Get()
 
@@ -31,11 +42,7 @@ func handleEngagementActivity(eventType events.EventType, isLiveNotification boo
 	}
 
 	// Send chat message
-	strict := bluemonday.StrictPolicy()
-	actorName := strict.Sanitize(actor.Name)
-	if actorName == "" {
-		actorName = strict.Sanitize(actor.Username)
-	}
+	actorName := sanitizeActorName(actor.Name, actor.Username)
 	actorIRI := actor.ActorIriString()
 
 	userPrefix := fmt.Sprintf("%s ", actorName)

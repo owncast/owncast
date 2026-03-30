@@ -126,7 +126,6 @@ func SendFediverseAction(eventType string, userAccountName string, image *string
 	}
 
 	message.SetDefaults()
-	message.RenderBody()
 
 	if err := Broadcast(&message); err != nil {
 		log.Errorln("error sending system message", err)
