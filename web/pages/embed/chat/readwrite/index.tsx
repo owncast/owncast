@@ -1,8 +1,9 @@
 /* eslint-disable react/no-unknown-property */
 import { useRecoilValue } from 'recoil';
 import { useEffect } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import Head from 'next/head';
 import { useTranslation } from 'next-export-i18n';
+import { ErrorBoundary } from 'react-error-boundary';
 import { ChatMessage } from '../../../../interfaces/chat-message.model';
 import { ChatContainer } from '../../../../components/chat/ChatContainer/ChatContainer';
 import {
@@ -50,6 +51,8 @@ export default function ReadWriteChatEmbed() {
 
   const headerText = online ? streamTitle || name : name;
 
+  const pageTitle = name ? t(Localization.Frontend.chatEmbedTitle, { name }) : 'Chat';
+
   // This is a hack to force a specific body background color for just this page.
   useEffect(() => {
     document.body.classList.add('body-background');
@@ -57,6 +60,9 @@ export default function ReadWriteChatEmbed() {
 
   return (
     <div>
+      <Head>
+        <title>{pageTitle}</title>
+      </Head>
       <style jsx global>
         {`
           .body-background {
