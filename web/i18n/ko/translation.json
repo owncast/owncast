@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "스트리밍을 하지 않을 때 페이지 방문자에게 오프라인 메시지가 표시됩니다. 마크다운이 지원됩니다.",
 			"serverUrlRequiredForDirectory": "디렉토리를 활성화하려면 위에서 <strong>서버 URL을</strong> 설정해야 합니다."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "CPU",
 			"disk": "디스크",
@@ -253,11 +213,6 @@
 			"overLimit": "제한 초과",
 			"placeholder": "귀하의 채팅 표시 이름"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "채팅이 비활성화되었습니다.",
 		"chatOffline": "채팅이 오프라인입니다",
 		"componentError": "오류: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "이 스트림은 오프라인 상태입니다. 곧 다시 확인해주세요!",
 		"offlineFediverseOnly": "이 스트림은 오프라인 상태입니다. 다음 번 {{streamer}} 라이브 방송을 보려면 Fediverse에서 {{fediverseAccount}} <span class='follow-link'>팔로우하세요</span>.",
 		"offlineNotifyAndFediverse": "이 스트림은 오프라인 상태입니다. 다음 번에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받거나 페디버스에서 {{fediverseAccount}} 을 <span class='follow-link'>팔로우하세요</span>.",
-		"offlineNotifyOnly": "이 스트림은 오프라인 상태입니다. 다음에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받으세요."
+		"offlineNotifyOnly": "이 스트림은 오프라인 상태입니다. 다음에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받으세요.",
+		"chatEmbedTitle": "{{name}} 채팅"
 	},
 	"Testing": {
 		"itemCount": "귀하는 {{count}} 개 항목이 있습니다",

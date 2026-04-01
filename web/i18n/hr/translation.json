@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "Poruka izvan mreže prikazuje se vašim posjetiteljima stranice kada ne prenosite. Markdown je podržan.",
 			"serverUrlRequiredForDirectory": "Morate postaviti svoj <strong>Server URL</strong> iznad kako biste omogućili direktorij."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "CPU",
 			"disk": "Disk",
@@ -253,11 +213,6 @@
 			"overLimit": "Prekoračenje limita",
 			"placeholder": "Vaše ime prikazano u chatu"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "Chat je onemogućen",
 		"chatOffline": "Chat je offline",
 		"componentError": "Greška: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "Ovaj stream je offline. Provjerite ponovno uskoro!",
 		"offlineFediverseOnly": "Ovaj stream je offline. <span class='follow-link'>Pratite</span> {{fediverseAccount}} na Fediversu kako biste vidjeli kada {{streamer}} ponovno ide uživo.",
 		"offlineNotifyAndFediverse": "Ovaj stream je offline. Možete <span class='notify-link'>biti obaviješteni</span> kada {{streamer}} ponovno ide uživo ili <span class='follow-link'>pratiti</span> {{fediverseAccount}} na Fediversu.",
-		"offlineNotifyOnly": "Ovaj stream je offline. <span class='notify-link'>Budite obaviješteni</span> kada {{streamer}} ponovno ide uživo."
+		"offlineNotifyOnly": "Ovaj stream je offline. <span class='notify-link'>Budite obaviješteni</span> kada {{streamer}} ponovno ide uživo.",
+		"chatEmbedTitle": "{{name}} Čavrljanje"
 	},
 	"Testing": {
 		"itemCount": "Imate {{count}} stavki",

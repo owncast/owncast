@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "El mensaje fuera de línea se muestra a los visitantes de la página cuando no se está transmitiendo. Markdown es compatible.",
 			"serverUrlRequiredForDirectory": "Debe configurar la <strong>URL de</strong> su servidor para habilitar el directorio."
 		},
-		"FeaturedStreams": {
-			"actions": "Acciones",
-			"added": "Añadido",
-			"confirmNo": "Nu",
-			"confirmYes": "Sí",
-			"enterStreamUrl": "Por favor ingrese una URL de flujo",
-			"enterValidUrl": "Por favor, introduzca una URL válida",
-			"failedToFeature": "Fallo al característica de flujo",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "CPU",
 			"disk": "Disco",
@@ -253,11 +213,6 @@
 			"overLimit": "Límite de superación",
 			"placeholder": "Nombre de la pantalla de chat"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "Chat desactivado",
 		"chatOffline": "Chat desconectado",
 		"componentError": "Error: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "Esta corriente está fuera de línea. ¡Vuelve pronto!",
 		"offlineFediverseOnly": "Este stream está fuera de línea. <span class='follow-link'>Sigue</span> {{fediverseAccount}} en el Fediverso para ver la próxima vez que {{streamer}} se ponga en directo.",
 		"offlineNotifyAndFediverse": "Esta transmisión está desconectada. Puede <span class='notify-link'>recibir una notificación</span> la próxima vez que {{streamer}} salga en directo o <span class='follow-link'>seguir</span> {{fediverseAccount}} en Fediverse.",
-		"offlineNotifyOnly": "Este stream está desconectado. <span class='notify-link'>Ser notificado</span> la próxima vez que {{streamer}} vaya en directo."
+		"offlineNotifyOnly": "Este stream está desconectado. <span class='notify-link'>Ser notificado</span> la próxima vez que {{streamer}} vaya en directo.",
+		"chatEmbedTitle": "Chat {{name}}"
 	},
 	"Testing": {
 		"itemCount": "Tienes {{count}} elementos",

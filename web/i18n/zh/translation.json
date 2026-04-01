@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "當您不在串流時，離線訊息會顯示給您的頁面訪客。支援 Markdown。",
 			"serverUrlRequiredForDirectory": "您必須在上方設定<strong>伺服器 URL</strong>，才能啟用目錄。"
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "中央處理器",
 			"disk": "磁碟",
@@ -253,11 +213,6 @@
 			"overLimit": "超出限制",
 			"placeholder": "您的聊天顯示名稱"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "聊天已禁用。",
 		"chatOffline": "聊天室已離線",
 		"componentError": "錯誤： {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "此串流已離線。請稍後再回來查看！",
 		"offlineFediverseOnly": "此串流已離線。請在 Fediverse<span class='follow-link'>上追</span>蹤 {{fediverseAccount}} ，以查看 {{streamer}} 的下次直播時間。",
 		"offlineNotifyAndFediverse": "此串流已離線。您可以在 {{streamer}} 上線時<span class='notify-link'>收到通知，</span>或在 Fediverse<span class='follow-link'>上追蹤</span> {{fediverseAccount}}。",
-		"offlineNotifyOnly": "此串流已離線。下次 {{streamer}} 上線時，您<span class='notify-link'>將會收到通知</span>。"
+		"offlineNotifyOnly": "此串流已離線。下次 {{streamer}} 上線時，您<span class='notify-link'>將會收到通知</span>。",
+		"chatEmbedTitle": "{{name}} 聊天"
 	},
 	"Testing": {
 		"itemCount": "您有 {{count}} 項目",

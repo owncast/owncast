@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "ข้อความออฟไลน์จะแสดงให้ผู้เข้าชมหน้าของคุณเมื่อคุณไม่ได้สตรีม มาร์กอัปได้รับการสนับสนุน.",
 			"serverUrlRequiredForDirectory": "คุณต้องตั้งค่า <strong>URL เซิร์ฟเวอร์</strong> ข้างต้นเพื่อเปิดใช้งานไดเรกทอรี."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "CPU",
 			"disk": "ดิสก์",
@@ -253,11 +213,6 @@
 			"overLimit": "เกินขีดจำกัด",
 			"placeholder": "ชื่อแสดงในแชทของคุณ"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "การแชทถูกปิดใช้งาน",
 		"chatOffline": "แชทออฟไลน์",
 		"componentError": "Error: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "สตรีมนี้ออฟไลน์ กรุณาตรวจสอบอีกครั้งในภายหลัง!",
 		"offlineFediverseOnly": "สตรีมนี้ออฟไลน์ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse เพื่อดูเมื่อ {{streamer}} เริ่มถ่ายทอดสดครั้งต่อไป",
 		"offlineNotifyAndFediverse": "สตรีมนี้ออฟไลน์ คุณสามารถ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสดอีกครั้งหรือ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse",
-		"offlineNotifyOnly": "สตรีมนี้ออฟไลน์ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสด"
+		"offlineNotifyOnly": "สตรีมนี้ออฟไลน์ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสด",
+		"chatEmbedTitle": "{{name}} แชนแนลแชท"
 	},
 	"Testing": {
 		"itemCount": "คุณมี {{count}} รายการ",

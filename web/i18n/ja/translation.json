@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "オフラインメッセージは、ストリーミングしていないときにページ訪問者に表示されます。Markdown はサポートされています。",
 			"serverUrlRequiredForDirectory": "ディレクトリを有効にするには、上記の<strong>サーバーURLを</strong>設定する必要があります。"
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "CPU",
 			"disk": "ディスク",
@@ -253,11 +213,6 @@
 			"overLimit": "上限を超えました",
 			"placeholder": "チャットの表示名"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "チャットは無効です",
 		"chatOffline": "チャットはオフラインです",
 		"componentError": "エラー: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "このストリームはオフラインです。もう一度お試しください！",
 		"offlineFediverseOnly": "このストリームはオフラインです。 <span class='follow-link'></span> {{fediverseAccount}} をFediverse でフォローして、次回 {{streamer}} がライブになるのを確認します。",
 		"offlineNotifyAndFediverse": "このストリームはオフラインです。次回のライブ配信は {{streamer}} <span class='notify-link'>に通知さ</span>れるか、Fediverse で {{fediverseAccount}} を<span class='follow-link'>フォローして</span>ください。",
-		"offlineNotifyOnly": "このストリームはオフラインです。 <span class='notify-link'></span> 次回 {{streamer}} がライブになるときに通知されます。"
+		"offlineNotifyOnly": "このストリームはオフラインです。 <span class='notify-link'></span> 次回 {{streamer}} がライブになるときに通知されます。",
+		"chatEmbedTitle": "{{name}} チャット"
 	},
 	"Testing": {
 		"itemCount": "{{count}} 個のアイテムがあります",

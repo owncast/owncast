@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "Taispeántar an teachtaireacht as líne do chuairteoirí do leathanach nuair nach bhfuil tú ag sruthú. Tacaítear le Markdown.",
 			"serverUrlRequiredForDirectory": "Caithfidh tú do <strong>URL freastalaí</strong> a shocrú thuas chun an cláraithe a chumasú."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "CPU",
 			"disk": "Diosca",
@@ -253,11 +213,6 @@
 			"overLimit": "Os cionn theorainne",
 			"placeholder": "Do shainainm comhoiriúnachta"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "Tá comhoiriúnacht as cuimhne",
 		"chatOffline": "Tá comhrá díchumasaithe",
 		"componentError": "Earráid: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "Tá an sruth seo as líne. Seiceáil arís go luath!",
 		"offlineFediverseOnly": "Tá an sruth seo as líne. <span class='follow-link'>Lean</span> {{fediverseAccount}} ar an Fediverse chun a fheiceáil an uair a bhíonn {{streamer}} ar líne.",
 		"offlineNotifyAndFediverse": "Tá an sruth seo as líne. Is féidir leat <span class='notify-link'>a bheith rabhaidh</span> an uair a bhíonn {{streamer}} ar líne nó <span class='follow-link'>lean</span> {{fediverseAccount}} ar an Fediverse.",
-		"offlineNotifyOnly": "Tá an sruth seo as líne. <span class='notify-link'>Bí rabhaidh</span> an uair a bhíonn {{streamer}} ar líne."
+		"offlineNotifyOnly": "Tá an sruth seo as líne. <span class='notify-link'>Bí rabhaidh</span> an uair a bhíonn {{streamer}} ar líne.",
+		"chatEmbedTitle": "{{name}} Comhrá"
 	},
 	"Testing": {
 		"itemCount": "Tá {{count}} réadanna agat",
