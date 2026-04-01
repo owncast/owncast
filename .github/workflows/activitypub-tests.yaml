@@ -1,0 +1,130 @@
+name: ActivityPub Tests
+
+on:
+  push:
+    paths:
+      - "activitypub/**"
+      - "core/chat/**"
+      - "config/**"
+      - "main.go"
+      - "webserver/**"
+      - "test/automated/activitypub/**"
+      - ".github/workflows/activitypub-tests.yaml"
+  pull_request:
+    paths:
+      - "activitypub/**"
+      - "core/chat/**"
+      - "config/**"
+      - "main.go"
+      - "webserver/**"
+      - "test/automated/activitypub/**"
+      - ".github/workflows/activitypub-tests.yaml"
+
+jobs:
+  federation-test:
+    runs-on: ubuntu-latest
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: "same_content_newer"
+
+      - name: Check out repository code
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "^1.23"
+          cache: true
+
+      - name: Install Caddy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https curl
+          curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+          curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+          sudo apt-get update
+          sudo apt-get install -y caddy
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y snac2 ffmpeg
+
+      - name: Run setup
+        run: |
+          cd test/automated/activitypub
+          sudo ./setup.sh
+
+      - name: Run federation test
+        run: |
+          cd test/automated/activitypub
+          CI=true USER_COUNT=20 ./test-federation.sh
+
+  chat-sanitization-test:
+    runs-on: ubuntu-latest
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: "same_content_newer"
+
+      - name: Check out repository code
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "^1.23"
+          cache: true
+
+      - name: Install Caddy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https curl
+          curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+          curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+          sudo apt-get update
+          sudo apt-get install -y caddy
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y snac2 ffmpeg
+
+      - name: Run setup
+        run: |
+          cd test/automated/activitypub
+          sudo ./setup.sh
+
+      - name: Run chat sanitization test
+        run: |
+          cd test/automated/activitypub
+          CI=true ./test-chat-sanitization.sh
+
+  follower-validation-test:
+    runs-on: ubuntu-latest
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: "same_content_newer"
+
+      - name: Check out repository code
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "^1.23"
+          cache: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sqlite3 ffmpeg jq
+
+      - name: Run follower validation test
+        timeout-minutes: 15
+        run: |
+          cd test/automated/activitypub
+          ./test-follower-validation.sh
