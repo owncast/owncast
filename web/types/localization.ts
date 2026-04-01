@@ -9,6 +9,7 @@ export const Localization = {
    */
   Frontend: {
     // Chat interface
+    chatEmbedTitle: 'Frontend.chatEmbedTitle',
     chatOffline: 'Chat is offline',
     chatDisabled: 'Chat is disabled',
     chatWillBeAvailable: 'Chat will be available when the stream is live',
