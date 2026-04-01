@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "Meddelandet offline visas för dina sidbesökare när du inte streamar. Markdown stöds.",
 			"serverUrlRequiredForDirectory": "Du måste ställa in din <strong>Server-URL</strong> ovan för att aktivera katalogen."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "CPU",
 			"disk": "Diskett",
@@ -253,11 +213,6 @@
 			"overLimit": "Över gräns",
 			"placeholder": "Ditt visningsnamn på chatten"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "Chatten är inaktiverad",
 		"chatOffline": "Chatten är offline",
 		"componentError": "Fel: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "Denna ström är offline. Kom tillbaka snart!",
 		"offlineFediverseOnly": "Denna ström är offline. <span class='follow-link'>Följ</span> {{fediverseAccount}} på Fediverse för att se nästa gång {{streamer}} går live.",
 		"offlineNotifyAndFediverse": "Denna ström är offline. Du kan <span class='notify-link'>meddelas</span> nästa gång {{streamer}} går live eller <span class='follow-link'>följ</span> {{fediverseAccount}} på Fediverse.",
-		"offlineNotifyOnly": "Denna ström är offline. <span class='notify-link'>meddelas</span> nästa gång {{streamer}} går live."
+		"offlineNotifyOnly": "Denna ström är offline. <span class='notify-link'>meddelas</span> nästa gång {{streamer}} går live.",
+		"chatEmbedTitle": "{{name}} Chatt"
 	},
 	"Testing": {
 		"itemCount": "Du har {{count}} objekt",

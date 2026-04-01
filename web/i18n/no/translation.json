@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "Denne offline-meldingen vises til besøkende når du ikke strømmer. Markdown støttes",
 			"serverUrlRequiredForDirectory": "Du må angi <strong>server-URL</strong> ovenfor for å aktivere mappen."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "Prosessor",
 			"disk": "Disk",
@@ -253,11 +213,6 @@
 			"overLimit": "Over grensen",
 			"placeholder": "Ditt chatte visningsnavn"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "Chatten er deaktivert",
 		"chatOffline": "Chatten er frakoblet",
 		"componentError": "Feil: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "Denne strømmen er frakoblet. Sjekk igjen snart!",
 		"offlineFediverseOnly": "Denne strømmen er frakoblet. <span class='follow-link'>Følg</span> {{fediverseAccount}} på Fediverse for å se neste gang {{streamer}} går liv.",
 		"offlineNotifyAndFediverse": "Denne strømmen er offline. Du kan <span class='notify-link'>bli varslet</span> neste gang {{streamer}} er live, eller <span class='follow-link'>følge</span> {{fediverseAccount}} på Fediverse.",
-		"offlineNotifyOnly": "Denne strømmen er frakoblet. <span class='notify-link'>bli varslet</span> neste gang {{streamer}} går bor."
+		"offlineNotifyOnly": "Denne strømmen er frakoblet. <span class='notify-link'>bli varslet</span> neste gang {{streamer}} går bor.",
+		"chatEmbedTitle": "{{name}} Chat"
 	},
 	"Testing": {
 		"itemCount": "Du har {{count}} objekter",

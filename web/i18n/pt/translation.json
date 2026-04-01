@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "A mensagem offline é exibida aos visitantes da página quando você não está transmitindo. Markdown é suportado.",
 			"serverUrlRequiredForDirectory": "Você deve definir a URL <strong>do servidor</strong> acima para habilitar o diretório."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "cpu",
 			"disk": "Disco",
@@ -253,11 +213,6 @@
 			"overLimit": "Acima do limite",
 			"placeholder": "Seu nome de exibição do chat"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "Bate-papo está desativado",
 		"chatOffline": "O bate-papo está offline",
 		"componentError": "Erro: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "Esta transmissão está offline. Volte em breve!",
 		"offlineFediverseOnly": "Esta transmissão está off-line. <span class='follow-link'>Siga</span> {{fediverseAccount}} no Fediverse para ver a próxima vez que {{streamer}} estiver ao vivo.",
 		"offlineNotifyAndFediverse": "Esta transmissão está offline. <span class='notify-link'>Pode ser notificado</span> na próxima vez que {{streamer}} for ao ar ou <span class='follow-link'>siga</span> {{fediverseAccount}} no Fediverse.",
-		"offlineNotifyOnly": "Esta transmissão está offline. U <span class='notify-link'>Seja notificado</span> na próxima vez que {{streamer}} for ao ar."
+		"offlineNotifyOnly": "Esta transmissão está offline. U <span class='notify-link'>Seja notificado</span> na próxima vez que {{streamer}} for ao ar.",
+		"chatEmbedTitle": "{{name}} Chat"
 	},
 	"Testing": {
 		"itemCount": "Você tem {{count}} itens",

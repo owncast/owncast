@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "ऑफलाइन संदेश आपके पृष्ठ के आगंतुकों को तब दिखाया जाता है जब आप स्ट्रीमिंग नहीं कर रहे होते हैं। मार्कडाउन समर्थित है।",
 			"serverUrlRequiredForDirectory": "आपको निर्देशिका को सक्षम करने के लिए अपने <strong>सर्वर URL</strong> को ऊपर सेट करना होगा।"
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "सीपीयू",
 			"disk": "डिस्क",
@@ -253,11 +213,6 @@
 			"overLimit": "सीमा से परे",
 			"placeholder": "आपका चैट डिस्प्ले नाम"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "चैट अक्षम है",
 		"chatOffline": "चैट ऑफ़लाइन है",
 		"componentError": "त्रुटि: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "यह स्ट्रीम ऑफ़लाइन है। कृपया जल्द ही वापस आएं!",
 		"offlineFediverseOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='follow-link'>अनुसरण करें</span> {{fediverseAccount}} Fediverse पर अगली बार देखने के लिए जब {{streamer}} लाइव जाएं।",
 		"offlineNotifyAndFediverse": "यह स्ट्रीम ऑफ़लाइन है। आप अगले बार जब {{streamer}} लाइव जाएं तो <span class='notify-link'>सूचित</span> हो सकते हैं या <span class='follow-link'>अनुसरण</span> कर सकते हैं {{fediverseAccount}} को Fediverse पर।",
-		"offlineNotifyOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='notify-link'>सूचित हों</span> अगली बार जब {{streamer}} लाइव जाएं।"
+		"offlineNotifyOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='notify-link'>सूचित हों</span> अगली बार जब {{streamer}} लाइव जाएं।",
+		"chatEmbedTitle": "{{name}} चैट"
 	},
 	"Testing": {
 		"itemCount": "आपके पास {{count}} आइटम हैं",

@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "Offlain mezua zure orri bisitariei erakusten zaie zu ez bazaude irratian. Markdown babesten da.",
 			"serverUrlRequiredForDirectory": "<strong>Server URL</strong> goian ezarri behar duzu direktorioa ahalbidetzeko."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "PUZ",
 			"disk": "Biltegiratzea",
@@ -253,11 +213,6 @@
 			"overLimit": "Mugaren gainean",
 			"placeholder": "Zure txateko izena"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "Txata desgaituta dago",
 		"chatOffline": "Txata lineaz kanpo dago",
 		"componentError": "Errorea: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "Torrente hau offline dago. Itzuli laster!",
 		"offlineFediverseOnly": "Torrente hau offline dago. <span class='follow-link'>Jarraitzaile</span> {{fediverseAccount}} Fediversen hurrengoa {{streamer}} zuzenean joan denean ikusteko.",
 		"offlineNotifyAndFediverse": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean edo <span class='follow-link'>jarraitu</span> {{fediverseAccount}} Fediversen.",
-		"offlineNotifyOnly": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean."
+		"offlineNotifyOnly": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean.",
+		"chatEmbedTitle": "{{name}} Txata"
 	},
 	"Testing": {
 		"itemCount": "{{count}} elementu dituzu",

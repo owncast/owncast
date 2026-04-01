@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "যখন আপনি সম্প্রচার করছেন না তখন আপনার পৃষ্ঠার দর্শকদের জন্য অফলাইন বার্তা দেখানো হয়। মার্কডাউন সমর্থিত।",
 			"serverUrlRequiredForDirectory": "ডিরেক্টরি সক্ষম করার জন্য উপরের <strong>সার্ভার ইউআরএল</strong> আপনার সেট করতে হবে।"
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "CPU",
 			"disk": "ডিস্ক",
@@ -253,11 +213,6 @@
 			"overLimit": "সীমার উর্ধ্বে",
 			"placeholder": "আপনার চ্যাট ডিসপ্লে নাম"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "চ্যাট নিষ্ক্রিয়",
 		"chatOffline": "চ্যাট অফলাইনে রয়েছে",
 		"componentError": "ত্রুটি: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "এই স্ট্রিম অফলাইন। কিছুক্ষণ পরে চেক করুন!",
 		"offlineFediverseOnly": "এই স্ট্রিম অফলাইন। <span class='follow-link'>ফলো করুন</span> {{fediverseAccount}} কে Fediverse এ পরবর্তী সময়ের জন্য যখন {{streamer}} লাইভ হবে তা দেখার জন্য।",
 		"offlineNotifyAndFediverse": "এই স্ট্রিম অফলাইন। আপনি <span class='notify-link'>বিজ্ঞপ্তি গ্রহণ করতে পারবেন</span> পরবর্তী সময় {{streamer}} লাইভ হলে অথবা <span class='follow-link'>ফলো করতে পারবেন</span> {{fediverseAccount}} কে Fediverse এ।",
-		"offlineNotifyOnly": "এই স্ট্রিম অফলাইন। <span class='notify-link'>বিজ্ঞপ্তি পান</span> পরবর্তী সময় {{streamer}} লাইভ হলে।"
+		"offlineNotifyOnly": "এই স্ট্রিম অফলাইন। <span class='notify-link'>বিজ্ঞপ্তি পান</span> পরবর্তী সময় {{streamer}} লাইভ হলে।",
+		"chatEmbedTitle": "{{name}} চ্যাট"
 	},
 	"Testing": {
 		"itemCount": "আপনার {{count}} টি আইটেম রয়েছে",

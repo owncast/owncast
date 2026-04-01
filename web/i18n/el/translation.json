@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "Το μήνυμα εκτός σύνδεσης εμφανίζεται στους επισκέπτες της σελίδας σας όταν δεν κάνετε streaming. Υποστηρίζεται Markdown.",
 			"serverUrlRequiredForDirectory": "Πρέπει να ορίσετε το <strong>Server URL</strong> παραπάνω για να ενεργοποιήσετε τον κατάλογο."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "Επεξεργαστής",
 			"disk": "Δίσκος",
@@ -253,11 +213,6 @@
 			"overLimit": "Υπέρβαση ορίου",
 			"placeholder": "Το όνομα της συνομιλίας σας"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "Η συνομιλία είναι απενεργοποιημένη",
 		"chatOffline": "Η συνομιλία είναι εκτός σύνδεσης",
 		"componentError": "Σφάλμα: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "Αυτό το ρεύμα είναι εκτός σύνδεσης. Ελέγξτε ξανά σύντομα!",
 		"offlineFediverseOnly": "Αυτό το ρεύμα είναι εκτός σύνδεσης. <span class='follow-link'>Ακολουθήστε</span> {{fediverseAccount}} στο Fediverse για να δείτε την επόμενη φορά που το {{streamer}} ζωντανά.",
 		"offlineNotifyAndFediverse": "Αυτή η ροή είναι εκτός σύνδεσης. Μπορείτε να ειδοποιηθείτε <span class='notify-link'></span> την επόμενη φορά που το {{streamer}} πηγαίνει ζωντανά ή <span class='follow-link'>ακολουθήστε το</span> {{fediverseAccount}} στο Fediverse.",
-		"offlineNotifyOnly": "Αυτή η ροή είναι εκτός σύνδεσης. <span class='notify-link'>Θα ειδοποιηθείτε</span> την επόμενη φορά που το {{streamer}} θα συνδεθεί."
+		"offlineNotifyOnly": "Αυτή η ροή είναι εκτός σύνδεσης. <span class='notify-link'>Θα ειδοποιηθείτε</span> την επόμενη φορά που το {{streamer}} θα συνδεθεί.",
+		"chatEmbedTitle": "{{name}} Συζήτηση"
 	},
 	"Testing": {
 		"itemCount": "Έχετε {{count}} αντικείμενα",

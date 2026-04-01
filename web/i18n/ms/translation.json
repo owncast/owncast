@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "Mesej luar talian dipaparkan kepada pelawat halaman anda apabila anda tidak sedang penyiaran. Markdown disokong.",
 			"serverUrlRequiredForDirectory": "Anda mesti menetapkan <strong>URL Pelayan</strong> anda di atas untuk membolehkan direktori."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "CPU",
 			"disk": "Cakera",
@@ -253,11 +213,6 @@
 			"overLimit": "Melebihi had",
 			"placeholder": "Nama paparan sembang anda"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "Sembang dinonaktifkan",
 		"chatOffline": "Sembang luar talian",
 		"componentError": "Ralat: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "Saluran ini sedang offline. Periksa kembali sebentar lagi!",
 		"offlineFediverseOnly": "Saluran ini sedang offline. <span class='follow-link'>Ikuti</span> {{fediverseAccount}} di Fediverse untuk melihat kali seterusnya {{streamer}} siaran langsung.",
 		"offlineNotifyAndFediverse": "Saluran ini sedang offline. Anda boleh <span class='notify-link'>diberitahu</span> kali seterusnya {{streamer}} siaran langsung atau <span class='follow-link'>ikuti</span> {{fediverseAccount}} di Fediverse.",
-		"offlineNotifyOnly": "Saluran ini sedang offline. <span class='notify-link'>Diberitahu</span> kali seterusnya {{streamer}} siaran langsung."
+		"offlineNotifyOnly": "Saluran ini sedang offline. <span class='notify-link'>Diberitahu</span> kali seterusnya {{streamer}} siaran langsung.",
+		"chatEmbedTitle": "{{name}} Sembang"
 	},
 	"Testing": {
 		"itemCount": "Anda mempunyai {{count}} item",

@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "يتم عرض الرسالة دون اتصال على زوار الصفحة الخاصة بك عندما لا تذيل. يتم دعم Markdown.",
 			"serverUrlRequiredForDirectory": "يجب عليك تعيين رابط الخادم <strong></strong> أعلاه لتمكين الدليل."
 		},
-		"FeaturedStreams": {
-			"actions": "الإجراءات",
-			"added": "أضيف",
-			"confirmNo": "لا",
-			"confirmYes": "نعم",
-			"enterStreamUrl": "الرجاء إدخال عنوان URL للبث",
-			"enterValidUrl": "الرجاء إدخال عنوان URL صالح",
-			"failedToFeature": "فشل في بث الميزة",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "المعالج",
 			"disk": "قرص",
@@ -253,11 +213,6 @@
 			"overLimit": "تجاوز الحد",
 			"placeholder": "اسم عرض المحادثة"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "تم تعطيل الدردشة",
 		"chatOffline": "الدردشة غير متصل",
 		"componentError": "خطأ: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "هذا البث غير متصل. تحقق قريباً!",
 		"offlineFediverseOnly": "هذا البث غير متصل. <span class='follow-link'>تابع</span> {{fediverseAccount}} على فيديفيرس لرؤية المرة القادمة التي يذهب فيها {{streamer}} للحياة.",
 		"offlineNotifyAndFediverse": "هذا البث غير متصل بالإنترنت. يمكنك أن تتلقى <span class='notify-link'>إشعارًا</span> في المرة القادمة {{streamer}} أو <span class='follow-link'>متابعة</span> {{fediverseAccount}} على موقع Fediverse.",
-		"offlineNotifyOnly": "هذا البث غير متصل بالإنترنت. <span class='notify-link'>كن على علم</span> في المرة القادمة التي يتم فيها البث المباشر {{streamer}} ."
+		"offlineNotifyOnly": "هذا البث غير متصل بالإنترنت. <span class='notify-link'>كن على علم</span> في المرة القادمة التي يتم فيها البث المباشر {{streamer}} .",
+		"chatEmbedTitle": "محادثة {{name}}"
 	},
 	"Testing": {
 		"itemCount": "لديك عناصر {{count}}",

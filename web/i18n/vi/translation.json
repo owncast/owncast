@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "Thông điệp ngoại tuyến sẽ được hiển thị cho khách truy cập trang của bạn khi bạn không phát sóng. Markdown được hỗ trợ.",
 			"serverUrlRequiredForDirectory": "Bạn phải thiết lập <strong>URL máy chủ</strong> của mình ở trên để kích hoạt thư mục."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "CPU",
 			"disk": "Ổ đĩa",
@@ -253,11 +213,6 @@
 			"overLimit": "Vượt quá giới hạn",
 			"placeholder": "Tên hiển thị của bạn trong chat"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "Trò chuyện đã bị vô hiệu hóa",
 		"chatOffline": "Trò chuyện đang ngoại tuyến",
 		"componentError": "Lỗi: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "Luồng này đang ngoại tuyến. Hãy quay lại sau!",
 		"offlineFediverseOnly": "Luồng này đang ngoại tuyến. <span class='follow-link'>Theo dõi</span> {{fediverseAccount}} trên Fediverse để xem lần tới {{streamer}} trực tiếp.",
 		"offlineNotifyAndFediverse": "Luồng này đang ngoại tuyến. Bạn có thể <span class='notify-link'>được thông báo</span> khi {{streamer}} trực tiếp hoặc <span class='follow-link'>theo dõi</span> {{fediverseAccount}} trên Fediverse.",
-		"offlineNotifyOnly": "Luồng này đang ngoại tuyến. <span class='notify-link'>Được thông báo</span> khi {{streamer}} trực tiếp."
+		"offlineNotifyOnly": "Luồng này đang ngoại tuyến. <span class='notify-link'>Được thông báo</span> khi {{streamer}} trực tiếp.",
+		"chatEmbedTitle": "Chat {{name}}"
 	},
 	"Testing": {
 		"itemCount": "Bạn có {{count}} mục",

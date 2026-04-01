@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "Het offline-bericht wordt getoond aan de bezoekers van je pagina wanneer er geen stream live is. Markdown wordt ondersteund.",
 			"serverUrlRequiredForDirectory": "U moet uw <strong>Server URL</strong> hierboven instellen om de map in te schakelen."
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "CPU",
 			"disk": "Schijf",
@@ -253,11 +213,6 @@
 			"overLimit": "Limiet overschreden",
 			"placeholder": "Jouw weergavenaam van je chat"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "Chat is uitgeschakeld",
 		"chatOffline": "Chat is offline",
 		"componentError": "Fout: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "Deze stream is offline. Kom snel terug!",
 		"offlineFediverseOnly": "Deze stream is offline. <span class='follow-link'>Volg</span> {{fediverseAccount}} op de Fediverse om de volgende keer dat {{streamer}} live gaat te zien.",
 		"offlineNotifyAndFediverse": "Deze stream is offline. U kunt <span class='notify-link'>een bericht ontvangen</span> wanneer {{streamer}} weer live gaat of {{fediverseAccount}} <span class='follow-link'>volgen</span> op de Fediverse.",
-		"offlineNotifyOnly": "Deze stream is offline. <span class='notify-link'>Krijg een melding</span> de volgende keer dat {{streamer}} live gaat."
+		"offlineNotifyOnly": "Deze stream is offline. <span class='notify-link'>Krijg een melding</span> de volgende keer dat {{streamer}} live gaat.",
+		"chatEmbedTitle": "{{name}} chat"
 	},
 	"Testing": {
 		"itemCount": "Je hebt {{count}} items",

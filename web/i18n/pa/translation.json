@@ -41,46 +41,6 @@
 			"offlineMessageDescription": "ਆਪਣੇ ਪੰਨੇ ਦੇ ਦ੍ਰਸ਼ਕਾਂ ਨੂੰ ਨਿਰਦਸ਼ਨ ਕੀਤਾ ਗਿਆ ਸੰਦੇਸ਼ ਦਿਖਾਇਆ ਜਾਂਦਾ ਹੈ ਜਦੋਂ ਤੁਸੀਂ ਸਟ੍ਰੀਮ ਨਹੀਂ ਕਰ ਰਹੇ ਹੁੰਦੇ। ਮਾਰਕਡਾਊਨ ਦਾ ਸਮਰਥਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।",
 			"serverUrlRequiredForDirectory": "ਡਾਇਰੈਕਟਰੀ ਨੂੰ ਯੋਗ ਬਣਾਉਣ ਲਈ ਤੁਹਾਨੂੰ ਉੱਪਰ ਆਪਣੇ <strong>ਸਰਵਰ ਯੂਆਰਐੱਲ</strong> ਨੂੰ ਸੈਟ ਕਰਨਾ ਹੋਵੇਗਾ।"
 		},
-		"FeaturedStreams": {
-			"actions": "",
-			"added": "",
-			"confirmNo": "",
-			"confirmYes": "",
-			"enterStreamUrl": "",
-			"enterValidUrl": "",
-			"failedToFeature": "",
-			"failedToUnfeature": "",
-			"featureStreamAction": "",
-			"featureStreamButton": "",
-			"federationSettings": "",
-			"lastChecked": "",
-			"modalTitle": "",
-			"never": "",
-			"offline": "",
-			"online": "",
-			"onlyDefaultPortSupported": "",
-			"onlyHttpsSupported": "",
-			"pageDescription": "",
-			"pageDescriptionSecondary": "",
-			"pageTitle": "",
-			"requirementDefaultPort": "",
-			"requirementFederationEnabled": "",
-			"requirementHttps": "",
-			"requirementOwncast": "",
-			"socialFeaturesRequired": "",
-			"socialFeaturesRequiredDesc": "",
-			"status": "",
-			"streamFeaturedSuccess": "",
-			"streamName": "",
-			"streamRequirements": "",
-			"streamUnfeaturedSuccess": "",
-			"streamUrlHelp": "",
-			"streamUrlLabel": "",
-			"streamUrlPlaceholder": "",
-			"unfeatureButton": "",
-			"unfeatureConfirm": "",
-			"url": ""
-		},
 		"HardwareInfo": {
 			"cpu": "ਸੀਪੀਯੂ",
 			"disk": "ਡਿਲਗ",
@@ -253,11 +213,6 @@
 			"overLimit": "ਸੀਮਾ ਿਲੰਘ ਗਈ",
 			"placeholder": "ਤੁਹਾਡਾ ਚੈਟ ਡਿਸਪਲੇ ਨਾਮ"
 		},
-		"StreamsTab": {
-			"errorLoadingStreams": "",
-			"loadingStreams": "",
-			"noFeaturedStreams": ""
-		},
 		"chatDisabled": "ਚੈਟ ਬੰਦ ਹੈ",
 		"chatOffline": "ਚੈਟ ਆਫਲਾਈਨ ਹੈ",
 		"componentError": "ਗਲਤੀ: {{message}}",
@@ -266,7 +221,8 @@
 		"offlineBasic": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। ਜਲਦੀ ਹੀ ਵਾਪਸ ਆਓ!",
 		"offlineFediverseOnly": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। ਜਅਦੋ {{streamer}} ਲਾਈਵ ਹੋਵੇਗਾ, ਗੇਰੀ ਮਨੱਤਾ ਤੋਂ <span class='follow-link'>ਜਾਣੋ</span>।",
 		"offlineNotifyAndFediverse": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। ਜਦੋਂ {{streamer}} ਲਾਈਵ ਹੋਵੇਗਾ, ਤੁਸੀਂ <span class='notify-link'>ਜਾਣੋ</span> ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ <span class='follow-link'>ਫਾਲੋ</span> {{fediverseAccount}} ਫੈਡੀਵਰਸ 'ਤੇ।",
-		"offlineNotifyOnly": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। <span class='notify-link'>ਜਾਣੋ</span> ਜਦੋਂ {{streamer}} ਲਾਈਵ ਹੋਵੇਗਾ।"
+		"offlineNotifyOnly": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। <span class='notify-link'>ਜਾਣੋ</span> ਜਦੋਂ {{streamer}} ਲਾਈਵ ਹੋਵੇਗਾ।",
+		"chatEmbedTitle": "{{name}} ਚੈਟ"
 	},
 	"Testing": {
 		"itemCount": "ਤੁਹਾਡੇ ਕੋਲ {{count}} ਆਈਟਮ ਹਨ",
