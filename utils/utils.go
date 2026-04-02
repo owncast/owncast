@@ -218,20 +218,25 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 	if filename == "thumbnail.jpg" || filename == "preview.gif" {
 		// Thumbnails & preview gif re-generate during live
 		return 20
-	} else if fileExtension == ".js" || fileExtension == ".css" {
-		// Cache javascript & CSS
-		return 60 * 60 * 24 * defaultDaysCached
-	} else if fileExtension == ".m4s" || fileExtension == ".mp4" || fileExtension == ".woff2" {
+	}
+
+	noCacheExts := map[string]bool{".m3u8": true, ".html": true}
+	longCacheExts := map[string]bool{".m4s": true, ".mp4": true, ".woff2": true}
+	defaultCacheExts := map[string]bool{
+		".js": true, ".css": true,
+		".jpg": true, ".png": true, ".gif": true, ".svg": true,
+	}
+
+	switch {
+	case noCacheExts[fileExtension] || filename == "/" || fileExtension == "":
+		return 0
+	case longCacheExts[fileExtension]:
 		// Cache video segments as long as you want. They can't change.
 		// This matters most for local hosting of segments for recordings
 		// and not for live or 3rd party storage.
 		return 31557600
-	} else if fileExtension == ".m3u8" {
-		return 0
-	} else if fileExtension == ".jpg" || fileExtension == ".png" || fileExtension == ".gif" || fileExtension == ".svg" {
+	case defaultCacheExts[fileExtension]:
 		return 60 * 60 * 24 * defaultDaysCached
-	} else if fileExtension == ".html" || filename == "/" || fileExtension == "" {
-		return 0
 	}
 
 	// Default cache length in seconds

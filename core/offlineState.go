@@ -112,7 +112,9 @@ func saveOfflineFMP4ToDisk() (initPath string, segmentPath string, err error) {
 		return "", "", fmt.Errorf("unable to write offline init segment to disk: %s", err)
 	}
 
-	initTmp.Close()
+	if err := initTmp.Close(); err != nil {
+		return "", "", fmt.Errorf("unable to close offline init segment: %s", err)
+	}
 	initPath, _ = filepath.Abs(initTmp.Name())
 
 	segData := static.GetOfflineMediaSegment()
@@ -125,7 +127,9 @@ func saveOfflineFMP4ToDisk() (initPath string, segmentPath string, err error) {
 		return "", "", fmt.Errorf("unable to write offline media segment to disk: %s", err)
 	}
 
-	segTmp.Close()
+	if err := segTmp.Close(); err != nil {
+		return "", "", fmt.Errorf("unable to close offline media segment: %s", err)
+	}
 	segmentPath, _ = filepath.Abs(segTmp.Name())
 
 	return initPath, segmentPath, nil
