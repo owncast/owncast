@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -98,23 +99,47 @@ func createInitialOfflineState() error {
 // offline video stream state only.  No live stream HLS segments will continue to be
 // referenced.
 func transitionToOfflineVideoStreamContent() {
-	log.Traceln("Firing transcoder with offline stream state")
+	log.Traceln("Placing offline fMP4 content into HLS directories")
 
-	_transcoder := transcoder.NewTranscoder()
-	_transcoder.SetIdentifier("offline")
-	_transcoder.SetLatencyLevel(models.GetLatencyLevel(4))
-	_transcoder.SetIsEvent(true)
+	configRepository := configrepository.Get()
 
-	offlineFilePath, err := saveOfflineClipToDisk("offline-v2.ts")
+	offlineInitPath, offlineSegmentPath, err := saveOfflineFMP4ToDisk()
 	if err != nil {
-		log.Fatalln("unable to save offline clip:", err)
+		log.Fatalln("unable to save offline fMP4 files:", err)
 	}
 
-	_transcoder.SetInput(offlineFilePath)
-	go _transcoder.Start(false)
+	variants := configRepository.GetStreamOutputVariants()
+	if len(variants) == 0 {
+		// Ensure at least one variant directory exists.
+		variants = make([]models.StreamOutputVariant, 1)
+	}
+
+	for index := range variants {
+		variantDir := filepath.Join(config.HLSStoragePath, fmt.Sprintf("%d", index))
+		if err := os.MkdirAll(variantDir, 0o750); err != nil {
+			log.Errorln("unable to create variant directory:", err)
+			continue
+		}
+		makeVariantIndexOffline(index, offlineInitPath, offlineSegmentPath)
+	}
+
+	// Write the master playlist that points to each variant's playlist.
+	masterPlaylistPath := filepath.Join(config.HLSStoragePath, "stream.m3u8")
+	masterFile, err := os.Create(masterPlaylistPath) //nolint:gosec
+	if err != nil {
+		log.Errorln("unable to create master playlist:", err)
+	} else {
+		defer masterFile.Close()
+		_, _ = masterFile.WriteString("#EXTM3U\n")
+		_, _ = masterFile.WriteString("#EXT-X-VERSION:7\n")
+		_, _ = masterFile.WriteString("#EXT-X-INDEPENDENT-SEGMENTS\n")
+		for index := range variants {
+			_, _ = fmt.Fprintf(masterFile, "#EXT-X-STREAM-INF:BANDWIDTH=0\n")
+			_, _ = fmt.Fprintf(masterFile, "%d/stream.m3u8\n", index)
+		}
+	}
 
 	// Copy the logo to be the thumbnail
-	configRepository := configrepository.Get()
 	logo := configRepository.GetLogoPath()
 	dst := filepath.Join(config.TempDir, "thumbnail.jpg")
 	if err = utils.Copy(filepath.Join("data", logo), dst); err != nil {
