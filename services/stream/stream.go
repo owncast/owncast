@@ -2,6 +2,7 @@ package stream
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"path"
@@ -89,29 +90,43 @@ func (s *Service) createInitialOfflineState() error {
 // with the offline video stream state only. No live stream HLS segments
 // will continue to be referenced.
 func (s *Service) transitionToOfflineVideoStreamContent() {
-	log.Traceln("Firing transcoder with offline stream state")
+	log.Traceln("Placing offline fMP4 content into HLS directories")
 
-	offlineTranscoder := transcoder.NewTranscoder(s.cfg, s.configRepository)
-	offlineTranscoder.SetIdentifier("offline")
-	offlineTranscoder.SetLatencyLevel(models.GetLatencyLevel(4))
-	offlineTranscoder.SetIsEvent(true)
-
-	offlineFilePath, err := saveOfflineClipToDisk(s.cfg.TempDir, "offline-v2.ts")
+	offlineInitPath, offlineSegmentPath, err := saveOfflineFMP4ToDisk()
 	if err != nil {
-		log.Fatalln("unable to save offline clip:", err)
+		log.Fatalln("unable to save offline fMP4 files:", err)
 	}
 
-	offlineTranscoder.SetInput(offlineFilePath)
-	go offlineTranscoder.Start(false)
+	variants := s.configRepository.GetStreamOutputVariants()
+	if len(variants) == 0 {
+		variants = make([]models.StreamOutputVariant, 1)
+	}
+	for index := range variants {
+		variantDir := filepath.Join(config.HLSStoragePath, fmt.Sprintf("%d", index))
+		if err := os.MkdirAll(variantDir, 0o750); err != nil {
+			log.Errorln("unable to create variant directory:", err)
+			continue
+		}
+		s.makeVariantIndexOffline(index, offlineInitPath, offlineSegmentPath)
+	}
 
-	// Copy the logo to be the thumbnail
+	masterPlaylistPath := filepath.Join(config.HLSStoragePath, "stream.m3u8")
+	masterFile, err := os.Create(masterPlaylistPath) //nolint:gosec
+	if err != nil {
+		log.Errorln("unable to create master playlist:", err)
+	} else {
+		defer masterFile.Close()
+		_, _ = masterFile.WriteString("#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-INDEPENDENT-SEGMENTS\n")
+		for index := range variants {
+			_, _ = fmt.Fprintf(masterFile, "#EXT-X-STREAM-INF:BANDWIDTH=0\n%d/stream.m3u8\n", index)
+		}
+	}
+
 	logo := s.configRepository.GetLogoPath()
 	dst := filepath.Join(s.cfg.TempDir, "thumbnail.jpg")
 	if err = utils.Copy(filepath.Join("data", logo), dst); err != nil {
 		log.Warnln(err)
 	}
-
-	// Delete the preview Gif
 	_ = os.Remove(path.Join(config.DataDirectory, "preview.gif"))
 }
 

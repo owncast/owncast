@@ -51,14 +51,6 @@ func GetWebIndexTemplate() (*template.Template, error) {
 	return tmpl, err
 }
 
-//go:embed offline-v2.ts
-var offlineVideoSegment []byte
-
-// GetOfflineSegment will return the offline video segment data.
-func GetOfflineSegment() []byte {
-	return getFileSystemStaticFileOrDefault("offline-v2.ts", offlineVideoSegment)
-}
-
 //go:embed offline-init.mp4
 var offlineInitSegment []byte
 
