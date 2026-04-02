@@ -317,7 +317,7 @@ func (s *S3Storage) retrieveAllVideoSegments() ([]s3object, error) {
 	err := s.s3Client.ListObjectsPages(allObjectsListRequest,
 		func(page *s3.ListObjectsOutput, lastPage bool) bool {
 			for _, item := range page.Contents {
-				if strings.HasSuffix(*item.Key, ".m4s") {
+				if strings.HasSuffix(*item.Key, ".m4s") || strings.HasSuffix(*item.Key, ".mp4") {
 					allObjects = append(allObjects, s3object{
 						key:          *item.Key,
 						lastModified: *item.LastModified,
