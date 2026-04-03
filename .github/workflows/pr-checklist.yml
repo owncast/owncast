@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   validate-checklist:
@@ -44,6 +45,7 @@ jobs:
             }
 
       - name: Validate required checkboxes
+        id: validate
         if: ${{ steps.membership.outputs.result == 'false' }}
         uses: actions/github-script@v8
         with:
@@ -55,6 +57,7 @@ jobs:
             const match = prBody.match(markerPattern);
 
             if (!match) {
+              core.setOutput('missing_checklist', 'true');
               core.setFailed(
                 '## PR Checklist Validation Failed\n\n' +
                 'The required checklist section is missing from your PR description.\n\n' +
@@ -86,3 +89,24 @@ jobs:
             } else {
               console.log('All required checklist items are checked');
             }
+
+      - name: Comment on PR about missing checklist
+        if: ${{ steps.validate.outputs.missing_checklist == 'true' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const body =
+              '## PR Checklist Missing\n\n' +
+              'It looks like the **required checklist section** was removed from your PR description. ' +
+              'This section is needed for the PR checks to pass.\n\n' +
+              'Please edit your PR description and restore the checklist from ' +
+              '[the PR template](https://raw.githubusercontent.com/owncast/owncast/refs/heads/develop/.github/PULL_REQUEST_TEMPLATE.MD). ' +
+              'Once restored, check off each item to confirm you have completed them.\n\n' +
+              'The checklist section begins with `<!-- REQUIRED-CHECKLIST:START -->` and ends with `<!-- REQUIRED-CHECKLIST:END -->`.';
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: body
+            });
