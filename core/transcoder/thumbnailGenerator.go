@@ -89,8 +89,19 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 		return nil
 	}
 	configRepository := configrepository.Get()
-	initSegment := path.Join(framePath, "init.mp4")
+	// With multiple variants ffmpeg names init segments init_0.mp4, init_1.mp4, etc.
+	// With a single variant it uses init.mp4.
+	initSegment := path.Join(framePath, fmt.Sprintf("init_%d.mp4", variantIndex))
+	if !utils.DoesFileExists(initSegment) {
+		initSegment = path.Join(framePath, "init.mp4")
+	}
 	mostRecentFile := path.Join(framePath, names[0])
+
+	// The segment may have been cleaned up between ReadDir and now.
+	if !utils.DoesFileExists(mostRecentFile) {
+		return nil
+	}
+
 	// fMP4 segments require the init segment to be readable by ffmpeg
 	inputArg := fmt.Sprintf("concat:%s|%s", initSegment, mostRecentFile)
 	ffmpegPath := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
