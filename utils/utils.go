@@ -220,22 +220,19 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 		return 20
 	}
 
-	noCacheExts := map[string]bool{".m3u8": true, ".html": true}
-	longCacheExts := map[string]bool{".m4s": true, ".mp4": true, ".woff2": true}
-	defaultCacheExts := map[string]bool{
-		".js": true, ".css": true,
-		".jpg": true, ".png": true, ".gif": true, ".svg": true,
+	if filename == "/" || fileExtension == "" {
+		return 0
 	}
 
-	switch {
-	case noCacheExts[fileExtension] || filename == "/" || fileExtension == "":
+	switch fileExtension {
+	case ".m3u8", ".html":
 		return 0
-	case longCacheExts[fileExtension]:
+	case ".m4s", ".mp4", ".woff2":
 		// Cache video segments as long as you want. They can't change.
 		// This matters most for local hosting of segments for recordings
 		// and not for live or 3rd party storage.
 		return 31557600
-	case defaultCacheExts[fileExtension]:
+	case ".js", ".css", ".jpg", ".png", ".gif", ".svg":
 		return 60 * 60 * 24 * defaultDaysCached
 	}
 
