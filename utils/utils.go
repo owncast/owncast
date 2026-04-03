@@ -215,7 +215,7 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 
 	defaultDaysCached := 30
 
-	if filename == "thumbnail.jpg" || filename == "preview.gif" {
+	if filename == "thumbnail.jpg" || filename == "preview.gif" || filename == "init.mp4" {
 		// Thumbnails & preview gif re-generate during live
 		return 20
 	}

@@ -82,7 +82,7 @@ func getAllFilesRecursive(baseDirectory string) (map[string][]os.FileInfo, error
 			directory = info.Name()
 		}
 
-		if filepath.Ext(info.Name()) == ".m4s" || filepath.Ext(info.Name()) == ".mp4" {
+		if filepath.Ext(info.Name()) == ".m4s" {
 			files[directory] = append(files[directory], info)
 		}
 
