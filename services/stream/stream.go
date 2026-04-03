@@ -115,10 +115,15 @@ func (s *Service) transitionToOfflineVideoStreamContent() {
 	if err != nil {
 		log.Errorln("unable to create master playlist:", err)
 	} else {
-		defer masterFile.Close()
 		_, _ = masterFile.WriteString("#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-INDEPENDENT-SEGMENTS\n")
 		for index := range variants {
 			_, _ = fmt.Fprintf(masterFile, "#EXT-X-STREAM-INF:BANDWIDTH=0\n%d/stream.m3u8\n", index)
+		}
+		if err := masterFile.Close(); err != nil {
+			log.Errorln("unable to close master playlist:", err)
+		}
+		if _, err := s.storage.Save(masterPlaylistPath, 0); err != nil {
+			log.Errorln("unable to save master playlist:", err)
 		}
 	}
 
