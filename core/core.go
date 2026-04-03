@@ -129,7 +129,6 @@ func transitionToOfflineVideoStreamContent() {
 	if err != nil {
 		log.Errorln("unable to create master playlist:", err)
 	} else {
-		defer masterFile.Close()
 		_, _ = masterFile.WriteString("#EXTM3U\n")
 		_, _ = masterFile.WriteString("#EXT-X-VERSION:7\n")
 		_, _ = masterFile.WriteString("#EXT-X-INDEPENDENT-SEGMENTS\n")
@@ -137,6 +136,13 @@ func transitionToOfflineVideoStreamContent() {
 			_, _ = fmt.Fprintf(masterFile, "#EXT-X-STREAM-INF:BANDWIDTH=0\n")
 			_, _ = fmt.Fprintf(masterFile, "%d/stream.m3u8\n", index)
 		}
+		if err := masterFile.Close(); err != nil {
+			log.Errorln("unable to close master playlist:", err)
+		}
+
+		// Notify the storage provider so it can rewrite variant URLs
+		// to absolute paths for S3 or remote serving endpoints.
+		_storage.MasterPlaylistWritten(masterPlaylistPath)
 	}
 
 	// Copy the logo to be the thumbnail
