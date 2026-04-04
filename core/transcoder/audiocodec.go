@@ -11,6 +11,7 @@ type AudioCodec interface {
 	Name() string
 	DisplayName() string
 	FFmpegEncoderName() string
+	BitstreamFilters() []string
 }
 
 // AACCodec implements AudioCodec for AAC audio.
@@ -28,6 +29,12 @@ func (c *AACCodec) DisplayName() string {
 // "aac" encoder rather than "libfdk_aac" since it is universally available.
 func (c *AACCodec) FFmpegEncoderName() string {
 	return aacFFmpegEncoder
+}
+
+func (c *AACCodec) BitstreamFilters() []string {
+	return []string{
+		// "aac_adtstoasc", // Required for fMP4 segments, not needed yet.
+	}
 }
 
 var audioCodecRegistry = map[string]AudioCodec{

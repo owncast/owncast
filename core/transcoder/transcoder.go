@@ -469,11 +469,17 @@ func (v *HLSVariant) getAudioQualityString() []string {
 		}
 	}
 
-	return []string{
+	flags := []string{
 		"-map", "a:0?",
 		fmt.Sprintf("-c:a:%d", v.index), v.audioCodec.FFmpegEncoderName(),
 		fmt.Sprintf("-b:a:%d", v.index), v.audioBitrate,
 	}
+
+	for _, bsf := range v.audioCodec.BitstreamFilters() {
+		flags = append(flags, fmt.Sprintf("-bsf:a:%d", v.index), bsf)
+	}
+
+	return flags
 }
 
 // AddVariant adds a new HLS variant to include in the output.
