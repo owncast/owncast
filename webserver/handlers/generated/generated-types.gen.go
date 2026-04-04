@@ -105,13 +105,20 @@ type AdminServerConfig struct {
 	StreamKeyOverridden     *bool                     `json:"streamKeyOverridden,omitempty"`
 	StreamKeys              *[]StreamKey              `json:"streamKeys,omitempty"`
 	SuggestedUsernames      *[]string                 `json:"suggestedUsernames,omitempty"`
-	SupportedCodecs         *[]string                 `json:"supportedCodecs,omitempty"`
-	VideoCodec              *string                   `json:"videoCodec,omitempty"`
-	VideoServingEndpoint    *string                   `json:"videoServingEndpoint,omitempty"`
-	VideoSettings           *AdminVideoSettings       `json:"videoSettings,omitempty"`
-	WebServerIP             *string                   `json:"webServerIP,omitempty"`
-	WebServerPort           *int                      `json:"webServerPort,omitempty"`
-	Yp                      *AdminYPInfo              `json:"yp,omitempty"`
+	SupportedAudioCodecs    *[]string                 `json:"supportedAudioCodecs,omitempty"`
+	SupportedVideoEncoders  *[]struct {
+		EncoderDisplayName   *string   `json:"encoderDisplayName,omitempty"`
+		EncoderType          *string   `json:"encoderType,omitempty"`
+		SupportedVideoCodecs *[]string `json:"supportedVideoCodecs,omitempty"`
+	} `json:"supportedVideoEncoders,omitempty"`
+
+	// VideoEncoder The global video encoder type (e.g., software, nvenc, vaapi)
+	VideoEncoder         *string             `json:"videoEncoder,omitempty"`
+	VideoServingEndpoint *string             `json:"videoServingEndpoint,omitempty"`
+	VideoSettings        *AdminVideoSettings `json:"videoSettings,omitempty"`
+	WebServerIP          *string             `json:"webServerIP,omitempty"`
+	WebServerPort        *int                `json:"webServerPort,omitempty"`
+	Yp                   *AdminYPInfo        `json:"yp,omitempty"`
 }
 
 // AdminStatus defines model for AdminStatus.
@@ -493,7 +500,10 @@ type StreamKey struct {
 
 // StreamOutputVariant defines model for StreamOutputVariant.
 type StreamOutputVariant struct {
-	AudioBitrate     *int    `json:"audioBitrate,omitempty"`
+	AudioBitrate *int `json:"audioBitrate,omitempty"`
+
+	// AudioCodec Audio compression format (e.g., aac). Defaults to aac.
+	AudioCodec       *string `json:"audioCodec,omitempty"`
 	AudioPassthrough *bool   `json:"audioPassthrough,omitempty"`
 	CpuUsageLevel    *int    `json:"cpuUsageLevel,omitempty"`
 	Framerate        *int    `json:"framerate,omitempty"`
@@ -501,6 +511,9 @@ type StreamOutputVariant struct {
 	ScaledHeight     *int    `json:"scaledHeight,omitempty"`
 	ScaledWidth      *int    `json:"scaledWidth,omitempty"`
 	VideoBitrate     *int    `json:"videoBitrate,omitempty"`
+
+	// VideoCodec Video compression format (e.g., h264). Defaults to h264.
+	VideoCodec       *string `json:"videoCodec,omitempty"`
 	VideoPassthrough *bool   `json:"videoPassthrough,omitempty"`
 }
 

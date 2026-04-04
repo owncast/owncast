@@ -66,6 +66,15 @@ export interface VideoVariant {
   scaledHeight: number;
 
   name: string;
+
+  videoCodec: string;
+  audioCodec: string;
+}
+
+export interface EncoderCodecSupport {
+  encoderType: string;
+  encoderDisplayName: string;
+  supportedVideoCodecs: string[];
 }
 export interface VideoSettingsFields {
   latencyLevel: number;
@@ -147,8 +156,9 @@ export interface ConfigDetails {
   socketHostOverride: string;
   videoServingEndpoint: string;
   yp: ConfigDirectoryFields;
-  supportedCodecs: string[];
-  videoCodec: string;
+  supportedVideoEncoders: EncoderCodecSupport[];
+  supportedAudioCodecs: string[];
+  videoEncoder: string;
   forbiddenUsernames: string[];
   suggestedUsernames: string[];
   chatDisabled: boolean;

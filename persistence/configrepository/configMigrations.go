@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	datastoreValuesVersion   = 4
+	datastoreValuesVersion   = 5
 	datastoreValueVersionKey = "DATA_STORE_VERSION"
 )
 
@@ -30,6 +30,8 @@ func migrateDatastoreValues(datastore *data.Datastore, configRepository ConfigRe
 			migrateToDatastoreValues3ServingEndpoint3(configRepository)
 		case 3:
 			migrateToDatastoreValues4(datastore, configRepository)
+		case 4:
+			migrateToDatastoreValues5(datastore, configRepository)
 		default:
 			log.Fatalln("missing datastore values migration step")
 		}
@@ -84,5 +86,46 @@ func migrateToDatastoreValues4(datastore *data.Datastore, configRepository Confi
 	err := configRepository.SetAdminPassword(unhashed_pass)
 	if err != nil {
 		log.Fatalln("error migrating admin password:", err)
+	}
+}
+
+func migrateToDatastoreValues5(datastore *data.Datastore, configRepository ConfigRepository) {
+	// Migrate the old video_codec value (which was really an encoder name like "libx264",
+	// "h264_nvenc") to the new video_encoder key with the encoder type ("software", "nvenc").
+	// Inlined from transcoder.OldCodecNameToEncoderType to avoid an import cycle
+	// (core/transcoder imports persistence/configrepository).
+	oldCodecToEncoderType := map[string]string{
+		"libx264":           "software",
+		"h264_nvenc":        "nvenc",
+		"h264_vaapi":        "vaapi",
+		"h264_qsv":          "qsv",
+		"h264_omx":          "omx",
+		"h264_v4l2m2m":      "v4l2m2m",
+		"h264_videotoolbox": "videotoolbox",
+	}
+
+	oldCodecValue, _ := datastore.GetString("video_codec")
+	if oldCodecValue != "" {
+		encoderType, ok := oldCodecToEncoderType[oldCodecValue]
+		if !ok {
+			encoderType = "software"
+		}
+		if err := configRepository.SetVideoEncoder(encoderType); err != nil {
+			log.Errorln("error migrating video encoder setting:", err)
+		}
+	}
+
+	// Add default video and audio codec values to existing stream output variants.
+	variants := configRepository.GetStreamOutputVariants()
+	for i := range variants {
+		if variants[i].VideoCodec == "" {
+			variants[i].VideoCodec = "h264"
+		}
+		if variants[i].AudioCodec == "" {
+			variants[i].AudioCodec = "aac"
+		}
+	}
+	if err := configRepository.SetStreamOutputVariants(variants); err != nil {
+		log.Errorln("error migrating stream output variants with codec defaults:", err)
 	}
 }

@@ -23,20 +23,20 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
   const { t } = useTranslation();
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
-  const { videoCodec, supportedCodecs } = serverConfig || {};
+  const { videoEncoder, supportedVideoEncoders } = serverConfig || {};
   const { Title } = Typography;
   const { Option } = Select;
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const { setMessage } = useContext(AlertMessageContext);
-  const [selectedCodec, setSelectedCodec] = useState(videoCodec);
-  const [pendingSaveCodec, setPendingSavecodec] = useState(videoCodec);
+  const [selectedCodec, setSelectedCodec] = useState(videoEncoder);
+  const [pendingSaveCodec, setPendingSaveCodec] = useState(videoEncoder);
   const [confirmPopupOpen, setConfirmPopupOpen] = React.useState(false);
 
   let resetTimer = null;
 
   useEffect(() => {
-    setSelectedCodec(videoCodec);
-  }, [videoCodec]);
+    setSelectedCodec(videoEncoder);
+  }, [videoEncoder]);
 
   const resetStates = () => {
     setSubmitStatus(null);
@@ -45,13 +45,13 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
   };
 
   function handleChange(value) {
-    setPendingSavecodec(value);
+    setPendingSaveCodec(value);
     setConfirmPopupOpen(true);
   }
 
   async function save() {
     setSelectedCodec(pendingSaveCodec);
-    setPendingSavecodec('');
+    setPendingSaveCodec('');
     setConfirmPopupOpen(false);
 
     await postConfigUpdateToAPI({
@@ -59,9 +59,8 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
       data: { value: pendingSaveCodec },
       onSuccess: () => {
         setFieldInConfigState({
-          fieldName: 'videoCodec',
+          fieldName: 'videoEncoder',
           value: pendingSaveCodec,
-          path: 'videoSettings',
         });
         setSubmitStatus(
           createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.videoCodecUpdated)),
@@ -70,7 +69,7 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
         resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
         if (serverStatusData.online) {
           setMessage(
-            'Your latency buffer setting will take effect the next time you begin a live stream.',
+            'Your encoder setting will take effect the next time you begin a live stream.',
           );
         }
       },
@@ -82,50 +81,31 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
     });
   }
 
-  const items = supportedCodecs.map(codec => {
-    let title = codec;
-    if (title === 'libx264') {
-      title = 'Default (libx264)';
-    } else if (title === 'h264_nvenc') {
-      title = 'NVIDIA GPU acceleration';
-    } else if (title === 'h264_vaapi') {
-      title = 'VA-API hardware encoding';
-    } else if (title === 'h264_qsv') {
-      title = 'Intel QuickSync';
-    } else if (title === 'h264_v4l2m2m') {
-      title = 'Video4Linux hardware encoding';
-    } else if (title === 'h264_omx') {
-      title = 'OpenMax (omx) for Raspberry Pi';
-    } else if (title === 'h264_videotoolbox') {
-      title = 'Apple VideoToolbox (hardware)';
-    }
-
-    return (
-      <Option key={codec} value={codec}>
-        {title}
-      </Option>
-    );
-  });
+  const items = (supportedVideoEncoders || []).map(encoder => (
+    <Option key={encoder.encoderType} value={encoder.encoderType}>
+      {encoder.encoderDisplayName}
+    </Option>
+  ));
 
   let description = '';
-  if (selectedCodec === 'libx264') {
+  if (selectedCodec === 'software') {
     description =
-      'libx264 is the default codec and generally the only working choice for shared VPS environments. This is likely what you should be using unless you know you have set up other options.';
-  } else if (selectedCodec === 'h264_nvenc') {
+      'Software encoding uses your CPU. This is the default and generally the only working choice for shared VPS environments. This is likely what you should be using unless you know you have set up other options.';
+  } else if (selectedCodec === 'nvenc') {
     description =
       'You can use your NVIDIA GPU for encoding if you have a modern NVIDIA card with encoding cores.';
-  } else if (selectedCodec === 'h264_vaapi') {
+  } else if (selectedCodec === 'vaapi') {
     description =
       'VA-API may be supported by your NVIDIA proprietary drivers, Mesa open-source drivers for AMD or Intel graphics.';
-  } else if (selectedCodec === 'h264_qsv') {
+  } else if (selectedCodec === 'qsv') {
     description =
       "Quick Sync Video is Intel's brand for its dedicated video encoding and decoding hardware. It may be an option if you have a modern Intel CPU with integrated graphics.";
-  } else if (selectedCodec === 'h264_v4l2m2m') {
+  } else if (selectedCodec === 'v4l2m2m') {
     description =
       'Video4Linux is an interface to multiple different hardware encoding platforms such as Intel and AMD.';
-  } else if (selectedCodec === 'h264_omx') {
-    description = 'OpenMax is a codec most often used with a Raspberry Pi.';
-  } else if (selectedCodec === 'h264_videotoolbox') {
+  } else if (selectedCodec === 'omx') {
+    description = 'OpenMax is an encoder most often used with a Raspberry Pi.';
+  } else if (selectedCodec === 'videotoolbox') {
     description =
       'Apple VideoToolbox is a low-level framework that provides direct access to hardware encoders and decoders.';
   }
@@ -151,7 +131,7 @@ export const CodecSelector: FC<CodecSelectorProps> = () => {
       </div>
       <div className="segment-slider-container">
         <Popconfirm
-          title={`Are you sure you want to change your video codec to ${pendingSaveCodec} and understand what this means?`}
+          title={`Are you sure you want to change your video encoder to ${pendingSaveCodec} and understand what this means?`}
           open={confirmPopupOpen}
           placement="leftBottom"
           onConfirm={save}

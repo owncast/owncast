@@ -28,6 +28,11 @@ type StreamOutputVariant struct {
 	Framerate int `yaml:"framerate" json:"framerate"`
 	// CPUUsageLevel represents a codec preset to configure CPU usage.
 	CPUUsageLevel int `json:"cpuUsageLevel"`
+
+	// VideoCodec is the video compression format for this variant (e.g., "h264").
+	VideoCodec string `yaml:"videoCodec" json:"videoCodec,omitempty"`
+	// AudioCodec is the audio compression format for this variant (e.g., "aac").
+	AudioCodec string `yaml:"audioCodec" json:"audioCodec,omitempty"`
 }
 
 // GetFramerate returns the framerate or default.

@@ -30,7 +30,7 @@ const (
 	externalActionsKey              = "external_actions"
 	customStylesKey                 = "custom_styles"
 	customJavascriptKey             = "custom_javascript"
-	videoCodecKey                   = "video_codec"
+	videoEncoderKey                 = "video_encoder"
 	blockedUsernamesKey             = "blocked_usernames"
 	publicKeyKey                    = "public_key"
 	privateKeyKey                   = "private_key"

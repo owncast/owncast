@@ -740,7 +740,9 @@ func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteSimpleResponse(w, true, "chat disabled status updated")
 }
 
-// SetVideoCodec will change the codec used for video encoding.
+// SetVideoCodec will change the encoder used for video encoding.
+// The endpoint name is kept for backward compatibility but the value
+// is now an encoder type (e.g., "software", "nvenc") not an ffmpeg codec name.
 func SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -748,17 +750,17 @@ func SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 
 	configValue, success := getValueFromRequest(w, r)
 	if !success {
-		webutils.WriteSimpleResponse(w, false, "unable to change video codec")
+		webutils.WriteSimpleResponse(w, false, "unable to change video encoder")
 		return
 	}
 
 	configRepository := configrepository.Get()
-	if err := configRepository.SetVideoCodec(configValue.Value.(string)); err != nil {
-		webutils.WriteSimpleResponse(w, false, "unable to update codec")
+	if err := configRepository.SetVideoEncoder(configValue.Value.(string)); err != nil {
+		webutils.WriteSimpleResponse(w, false, "unable to update video encoder")
 		return
 	}
 
-	webutils.WriteSimpleResponse(w, true, "video codec updated")
+	webutils.WriteSimpleResponse(w, true, "video encoder updated")
 }
 
 // SetExternalActions will set the 3rd party actions for the web interface.

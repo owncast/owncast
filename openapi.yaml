@@ -1545,7 +1545,8 @@ paths:
           $ref: '#/components/responses/204'
   /admin/config/video/codec:
     post:
-      summary: Set video codec
+      summary: Set video encoder type
+      description: "Set the global video encoder backend (e.g., software, nvenc, vaapi)."
       operationId: SetVideoCodec
       tags: ['Internal', 'Admin', 'Video']
       security:
@@ -1554,7 +1555,7 @@ paths:
         $ref: '#/components/requestBodies/AdminConfigValue'
       responses:
         '200':
-          description: Video codec updated
+          description: Video encoder updated
           content:
             application/json:
               schema:
@@ -3918,6 +3919,12 @@ components:
           type: integer
         cpuUsageLevel:
           type: integer
+        videoCodec:
+          type: string
+          description: "Video compression format (e.g., h264). Defaults to h264."
+        audioCodec:
+          type: string
+          description: "Audio compression format (e.g., aac). Defaults to aac."
     LatencyLevel:
       type: object
       properties:
@@ -4204,15 +4211,29 @@ components:
           type: string
         webServerIP:
           type: string
-        videoCodec:
+        videoEncoder:
           type: string
+          description: "The global video encoder type (e.g., software, nvenc, vaapi)"
         videoServingEndpoint:
           type: string
         s3:
           $ref: '#/components/schemas/S3Info'
         federation:
           $ref: '#/components/schemas/AdminFederationConfig'
-        supportedCodecs:
+        supportedVideoEncoders:
+          type: array
+          items:
+            type: object
+            properties:
+              encoderType:
+                type: string
+              encoderDisplayName:
+                type: string
+              supportedVideoCodecs:
+                type: array
+                items:
+                  type: string
+        supportedAudioCodecs:
           type: array
           items:
             type: string

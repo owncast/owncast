@@ -623,19 +623,19 @@ func (r *SqlConfigRepository) GetCustomJavascript() string {
 	return style
 }
 
-// SetVideoCodec will set the codec used for video encoding.
-func (r *SqlConfigRepository) SetVideoCodec(codec string) error {
-	return r.datastore.SetString(videoCodecKey, codec)
+// SetVideoEncoder will set the encoder used for video encoding.
+func (r *SqlConfigRepository) SetVideoEncoder(encoder string) error {
+	return r.datastore.SetString(videoEncoderKey, encoder)
 }
 
-// GetVideoCodec returns the codec to use for transcoding video.
-func (r *SqlConfigRepository) GetVideoCodec() string {
-	codec, err := r.datastore.GetString(videoCodecKey)
-	if codec == "" || err != nil {
-		return "libx264" // Default value
+// GetVideoEncoder returns the encoder to use for transcoding video.
+func (r *SqlConfigRepository) GetVideoEncoder() string {
+	encoder, err := r.datastore.GetString(videoEncoderKey)
+	if encoder == "" || err != nil {
+		return "software"
 	}
 
-	return codec
+	return encoder
 }
 
 // VerifySettings will perform a sanity check for specific settings values.

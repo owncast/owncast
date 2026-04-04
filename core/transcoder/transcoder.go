@@ -33,7 +33,7 @@ func (e *execInfo) String() string {
 
 // Transcoder is a single instance of a video transcoder.
 type Transcoder struct {
-	codec Codec
+	encoder Encoder
 
 	stdin *io.PipeReader
 
@@ -66,6 +66,9 @@ type HLSVariant struct {
 	isVideoPassthrough bool // Override all settings and just copy the video stream
 
 	isAudioPassthrough bool // Override all settings and just copy the audio stream
+
+	videoCodec VideoCodec
+	audioCodec AudioCodec
 }
 
 // VideoSize is the scaled size of the video output.
@@ -127,7 +130,7 @@ func (t *Transcoder) Start(shouldLog bool) {
 
 	flags := t.getFlags()
 	if shouldLog {
-		log.Infof("Processing video using codec %s with %d output qualities configured.", t.codec.DisplayName(), len(t.variants))
+		log.Infof("Processing video using encoder %s with %d output qualities configured.", t.encoder.DisplayName(), len(t.variants))
 	}
 	createVariantDirectories()
 	command := flags.String()
@@ -167,7 +170,7 @@ func (t *Transcoder) Start(shouldLog bool) {
 	}
 
 	if err != nil {
-		log.Errorln("transcoding error. look at", logging.GetTranscoderLogFilePath(), "to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/codecs/")
+		log.Errorln("transcoding error. look at", logging.GetTranscoderLogFilePath(), "to help debug. your copy of ffmpeg may not support your selected encoder of", t.encoder.Name(), "https://owncast.online/docs/codecs/")
 	}
 }
 
@@ -227,7 +230,7 @@ func (t *Transcoder) getFlags() *execInfo {
 	}
 	ffmpegFlags := make([]string, 0, 64)
 	ffmpegFlags = append(ffmpegFlags, "-hide_banner", "-loglevel", "warning")
-	ffmpegFlags = append(ffmpegFlags, t.codec.GlobalFlags()...)
+	ffmpegFlags = append(ffmpegFlags, t.encoder.GlobalFlags()...)
 	ffmpegFlags = append(ffmpegFlags, []string{
 		"-fflags", "+genpts", // Generate presentation time stamp if missing
 		"-flags", "+cgop", // Force closed GOPs
@@ -247,11 +250,11 @@ func (t *Transcoder) getFlags() *execInfo {
 	ffmpegFlags = append(ffmpegFlags, []string{
 		"-segment_format_options", "mpegts_flags=mpegts_copyts=1",
 	}...)
-	ffmpegFlags = append(ffmpegFlags, t.codec.ExtraArguments()...)
+	ffmpegFlags = append(ffmpegFlags, t.encoder.ExtraArguments()...)
 
 	ffmpegFlags = append(ffmpegFlags, []string{
 		// Video settings
-		"-pix_fmt", t.codec.PixelFormat(),
+		"-pix_fmt", t.encoder.PixelFormat(),
 		"-sc_threshold", "0", // Disable scene change detection for creating segments
 
 		// Filenames
@@ -277,6 +280,9 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 	variant.index = index
 	variant.isAudioPassthrough = quality.IsAudioPassthrough
 	variant.isVideoPassthrough = quality.IsVideoPassthrough
+
+	variant.videoCodec = getVideoCodec(quality.VideoCodec)
+	variant.audioCodec = getAudioCodec(quality.AudioCodec)
 
 	// If no audio bitrate is specified then we pass through original audio
 	if quality.AudioBitrate == 0 {
@@ -318,7 +324,7 @@ func NewTranscoder() *Transcoder {
 
 	transcoder.currentStreamOutputSettings = configRepository.GetStreamOutputVariants()
 	transcoder.currentLatencyLevel = configRepository.GetStreamLatencyLevel()
-	transcoder.codec = getCodec(configRepository.GetVideoCodec())
+	transcoder.encoder = getEncoder(configRepository.GetVideoEncoder())
 	transcoder.segmentOutputPath = config.HLSStoragePath
 	transcoder.playlistOutputPath = config.HLSStoragePath
 
@@ -340,23 +346,23 @@ func (v *HLSVariant) getVariantString(t *Transcoder) []string {
 	if (v.videoSize.Width != 0 || v.videoSize.Height != 0) && !v.isVideoPassthrough {
 		// Order here matters, you must scale before changing hardware formats
 		filters := []string{
-			v.getScalingString(t.codec.Scaler()),
+			v.getScalingString(t.encoder.Scaler()),
 		}
-		if t.codec.ExtraFilters() != "" {
-			filters = append(filters, t.codec.ExtraFilters())
+		if t.encoder.ExtraFilters() != "" {
+			filters = append(filters, t.encoder.ExtraFilters())
 		}
 		scalingAlgorithm := "bilinear"
 		variantEncoderCommands = append(variantEncoderCommands, []string{
 			"-sws_flags", scalingAlgorithm,
 			"-filter:v:" + strconv.Itoa(v.index), strings.Join(filters, ","),
 		}...)
-	} else if t.codec.ExtraFilters() != "" && !v.isVideoPassthrough {
+	} else if t.encoder.ExtraFilters() != "" && !v.isVideoPassthrough {
 		variantEncoderCommands = append(variantEncoderCommands, []string{
-			"-filter:v:" + strconv.Itoa(v.index), t.codec.ExtraFilters(),
+			"-filter:v:" + strconv.Itoa(v.index), t.encoder.ExtraFilters(),
 		}...)
 	}
 
-	preset := t.codec.GetPresetForLevel(v.cpuUsageLevel)
+	preset := t.encoder.GetPresetForLevel(v.cpuUsageLevel)
 	if preset != "" {
 		variantEncoderCommands = append(variantEncoderCommands, []string{
 			"-preset", preset,
@@ -415,18 +421,22 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) []string {
 		}
 	}
 
+	ffmpegEncoder := t.encoder.FFmpegEncoderForCodec(v.videoCodec.Name())
+
 	gop := v.framerate * t.currentLatencyLevel.SecondsPerSegment // force an i-frame every segment
 	cmd := make([]string, 0, 20)
 	cmd = append(cmd,
 		"-map", "v:0",
-		fmt.Sprintf("-c:v:%d", v.index), t.codec.Name(), // Video codec used for this variant
+		fmt.Sprintf("-c:v:%d", v.index), ffmpegEncoder, // Video encoder used for this variant
 		fmt.Sprintf("-b:v:%d", v.index), fmt.Sprintf("%dk", v.getAllocatedVideoBitrate()), // The average bitrate for this variant allowing space for audio
 		fmt.Sprintf("-maxrate:v:%d", v.index), fmt.Sprintf("%dk", v.getMaxVideoBitrate()), // The max bitrate allowed for this variant
 		fmt.Sprintf("-g:v:%d", v.index), fmt.Sprintf("%d", gop), // Suggested interval where i-frames are encoded into the segments
 		fmt.Sprintf("-keyint_min:v:%d", v.index), fmt.Sprintf("%d", gop), // minimum i-keyframe interval
 		fmt.Sprintf("-r:v:%d", v.index), fmt.Sprintf("%d", v.framerate),
 	)
-	cmd = append(cmd, t.codec.VariantFlags(v)...)
+
+	// Add encoder-specific variant flags (e.g., x264-params for software, NVENC low-latency tuning).
+	cmd = append(cmd, t.encoder.VariantFlags(v)...)
 
 	return cmd
 }
@@ -455,11 +465,9 @@ func (v *HLSVariant) getAudioQualityString() []string {
 		}
 	}
 
-	// libfdk_aac is not a part of every ffmpeg install, so use "aac" instead
-	encoderCodec := "aac"
 	return []string{
 		"-map", "a:0?",
-		fmt.Sprintf("-c:a:%d", v.index), encoderCodec,
+		fmt.Sprintf("-c:a:%d", v.index), v.audioCodec.FFmpegEncoderName(),
 		fmt.Sprintf("-b:a:%d", v.index), v.audioBitrate,
 	}
 }
@@ -495,7 +503,7 @@ func (t *Transcoder) SetInternalHTTPPort(port string) {
 	t.internalListenerPort = port
 }
 
-// SetCodec will set the codec to be used for the transocder.
-func (t *Transcoder) SetCodec(codecName string) {
-	t.codec = getCodec(codecName)
+// SetEncoder will set the encoder to be used for the transcoder.
+func (t *Transcoder) SetEncoder(encoderType string) {
+	t.encoder = getEncoder(encoderType)
 }

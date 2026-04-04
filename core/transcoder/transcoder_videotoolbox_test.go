@@ -9,7 +9,6 @@ import (
 
 func TestFFmpegVideoToolboxCommand(t *testing.T) {
 	latencyLevel := models.GetLatencyLevel(2)
-	codec := VideoToolboxCodec{}
 
 	transcoder := new(Transcoder)
 	transcoder.ffmpegPath = filepath.Join("fake", "path", "ffmpeg")
@@ -17,12 +16,14 @@ func TestFFmpegVideoToolboxCommand(t *testing.T) {
 	transcoder.SetOutputPath("fakeOutput")
 	transcoder.SetIdentifier("jdFsdfzGg")
 	transcoder.SetInternalHTTPPort("8123")
-	transcoder.SetCodec(codec.Name())
+	transcoder.SetEncoder("videotoolbox")
 	transcoder.currentLatencyLevel = latencyLevel
 
 	variant := HLSVariant{}
 	variant.videoBitrate = 1200
 	variant.isAudioPassthrough = true
+	variant.videoCodec = &H264Codec{}
+	variant.audioCodec = &AACCodec{}
 	variant.SetVideoFramerate(30)
 	variant.SetCPUUsageLevel(2)
 	transcoder.AddVariant(variant)
@@ -30,6 +31,8 @@ func TestFFmpegVideoToolboxCommand(t *testing.T) {
 	variant2 := HLSVariant{}
 	variant2.videoBitrate = 3500
 	variant2.isAudioPassthrough = true
+	variant2.videoCodec = &H264Codec{}
+	variant2.audioCodec = &AACCodec{}
 	variant2.SetVideoFramerate(24)
 	variant2.SetCPUUsageLevel(4)
 	transcoder.AddVariant(variant2)
@@ -37,6 +40,8 @@ func TestFFmpegVideoToolboxCommand(t *testing.T) {
 	variant3 := HLSVariant{}
 	variant3.isAudioPassthrough = true
 	variant3.isVideoPassthrough = true
+	variant3.videoCodec = &H264Codec{}
+	variant3.audioCodec = &AACCodec{}
 	transcoder.AddVariant(variant3)
 
 	cmd := transcoder.GetString()

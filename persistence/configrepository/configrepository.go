@@ -75,8 +75,8 @@ type ConfigRepository interface {
 	GetCustomStyles() string
 	SetCustomJavascript(styles string) error
 	GetCustomJavascript() string
-	SetVideoCodec(codec string) error
-	GetVideoCodec() string
+	SetVideoEncoder(encoder string) error
+	GetVideoEncoder() string
 	VerifySettings() error
 	FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) (int, bool)
 	GetForbiddenUsernameList() []string
