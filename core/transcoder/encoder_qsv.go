@@ -20,20 +20,16 @@ func (e *QuicksyncEncoder) GlobalFlags() []string {
 	}
 }
 
-func (e *QuicksyncEncoder) PixelFormat() string {
-	return "qsv"
-}
-
-func (e *QuicksyncEncoder) Scaler() string {
-	return "scale_qsv"
-}
-
-func (e *QuicksyncEncoder) ExtraFilters() string {
-	return "hwupload=extra_hw_frames=64,format=qsv"
-}
-
 func (e *QuicksyncEncoder) ExtraArguments() []string {
 	return nil
+}
+
+func (e *QuicksyncEncoder) ProfileForCodec(codec string) CodecProfile {
+	return CodecProfile{
+		PixelFormat:  "qsv",
+		Scaler:       "scale_qsv",
+		ExtraFilters: "hwupload=extra_hw_frames=64,format=qsv",
+	}
 }
 
 func (e *QuicksyncEncoder) VariantFlags(v *HLSVariant) []string {

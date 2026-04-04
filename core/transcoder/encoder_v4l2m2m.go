@@ -17,20 +17,14 @@ func (e *V4l2m2mEncoder) GlobalFlags() []string {
 	return nil
 }
 
-func (e *V4l2m2mEncoder) PixelFormat() string {
-	return "nv21"
-}
-
-func (e *V4l2m2mEncoder) Scaler() string {
-	return ""
-}
-
-func (e *V4l2m2mEncoder) ExtraFilters() string {
-	return ""
-}
-
 func (e *V4l2m2mEncoder) ExtraArguments() []string {
 	return nil
+}
+
+func (e *V4l2m2mEncoder) ProfileForCodec(codec string) CodecProfile {
+	return CodecProfile{
+		PixelFormat: "nv21",
+	}
 }
 
 func (e *V4l2m2mEncoder) VariantFlags(v *HLSVariant) []string {

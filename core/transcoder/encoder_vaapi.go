@@ -21,20 +21,16 @@ func (e *VaapiEncoder) GlobalFlags() []string {
 	}
 }
 
-func (e *VaapiEncoder) PixelFormat() string {
-	return "vaapi"
-}
-
-func (e *VaapiEncoder) Scaler() string {
-	return "scale_vaapi"
-}
-
-func (e *VaapiEncoder) ExtraFilters() string {
-	return "hwupload=extra_hw_frames=64,format=vaapi"
-}
-
 func (e *VaapiEncoder) ExtraArguments() []string {
 	return nil
+}
+
+func (e *VaapiEncoder) ProfileForCodec(codec string) CodecProfile {
+	return CodecProfile{
+		PixelFormat:  "vaapi",
+		Scaler:       "scale_vaapi",
+		ExtraFilters: "hwupload=extra_hw_frames=64,format=vaapi",
+	}
 }
 
 func (e *VaapiEncoder) VariantFlags(v *HLSVariant) []string {

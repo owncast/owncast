@@ -17,21 +17,13 @@ func (e *OmxEncoder) GlobalFlags() []string {
 	return nil
 }
 
-func (e *OmxEncoder) PixelFormat() string {
-	return pixelFormatYUV420P
-}
-
-func (e *OmxEncoder) Scaler() string {
-	return ""
-}
-
-func (e *OmxEncoder) ExtraFilters() string {
-	return ""
-}
-
 func (e *OmxEncoder) ExtraArguments() []string {
-	return []string{
-		"-tune", "zerolatency",
+	return []string{"-tune", "zerolatency"}
+}
+
+func (e *OmxEncoder) ProfileForCodec(codec string) CodecProfile {
+	return CodecProfile{
+		PixelFormat: pixelFormatYUV420P,
 	}
 }
 

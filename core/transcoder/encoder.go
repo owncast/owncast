@@ -11,15 +11,20 @@ const (
 	ffmpegEncoderX264  = "libx264"
 )
 
+// CodecProfile holds codec-dependent encoding parameters for an encoder.
+type CodecProfile struct {
+	PixelFormat  string
+	Scaler       string
+	ExtraFilters string
+}
+
 // Encoder represents a hardware/software video encoding backend (e.g., software CPU, NVENC, VA-API).
 type Encoder interface {
 	Name() string
 	DisplayName() string
 	GlobalFlags() []string
-	PixelFormat() string
-	Scaler() string
-	ExtraFilters() string
 	ExtraArguments() []string
+	ProfileForCodec(codec string) CodecProfile
 	VariantFlags(v *HLSVariant) []string
 	SupportedVideoCodecs() []string
 	FFmpegEncoderForCodec(codec string) string
@@ -41,31 +46,37 @@ func (e *SoftwareEncoder) GlobalFlags() []string {
 	return nil
 }
 
-func (e *SoftwareEncoder) PixelFormat() string {
-	return pixelFormatYUV420P
-}
-
-func (e *SoftwareEncoder) Scaler() string {
-	return ""
-}
-
-func (e *SoftwareEncoder) ExtraFilters() string {
-	return ""
-}
-
 func (e *SoftwareEncoder) ExtraArguments() []string {
-	return []string{
-		"-tune", "zerolatency",
+	return []string{"-tune", "zerolatency"}
+}
+
+func (e *SoftwareEncoder) ProfileForCodec(codec string) CodecProfile {
+	return CodecProfile{
+		PixelFormat: pixelFormatYUV420P,
 	}
 }
 
 func (e *SoftwareEncoder) VariantFlags(v *HLSVariant) []string {
-	return []string{
-		fmt.Sprintf("-x264-params:v:%d", v.index),
-		"scenecut=0:open_gop=0",
-		fmt.Sprintf("-bufsize:v:%d", v.index), fmt.Sprintf("%dk", v.getBufferSize()),
-		fmt.Sprintf("-profile:v:%d", v.index), "high",
+	codec := v.videoCodec.Name()
+	var flags []string
+
+	if codec == videoCodecH264 {
+		flags = append(flags,
+			fmt.Sprintf("-x264-params:v:%d", v.index), "scenecut=0:open_gop=0",
+		)
 	}
+
+	flags = append(flags,
+		fmt.Sprintf("-bufsize:v:%d", v.index), fmt.Sprintf("%dk", v.getBufferSize()),
+	)
+
+	if codec == videoCodecH264 {
+		flags = append(flags,
+			fmt.Sprintf("-profile:v:%d", v.index), "high",
+		)
+	}
+
+	return flags
 }
 
 func (e *SoftwareEncoder) SupportedVideoCodecs() []string {

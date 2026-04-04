@@ -254,7 +254,6 @@ func (t *Transcoder) getFlags() *execInfo {
 
 	ffmpegFlags = append(ffmpegFlags, []string{
 		// Video settings
-		"-pix_fmt", t.encoder.PixelFormat(),
 		"-sc_threshold", "0", // Disable scene change detection for creating segments
 
 		// Filenames
@@ -343,22 +342,24 @@ func (v *HLSVariant) getVariantString(t *Transcoder) []string {
 	variantEncoderCommands := v.getVideoQualityString(t)
 	variantEncoderCommands = append(variantEncoderCommands, v.getAudioQualityString()...)
 
+	profile := t.encoder.ProfileForCodec(v.videoCodec.Name())
+
 	if (v.videoSize.Width != 0 || v.videoSize.Height != 0) && !v.isVideoPassthrough {
 		// Order here matters, you must scale before changing hardware formats
 		filters := []string{
-			v.getScalingString(t.encoder.Scaler()),
+			v.getScalingString(profile.Scaler),
 		}
-		if t.encoder.ExtraFilters() != "" {
-			filters = append(filters, t.encoder.ExtraFilters())
+		if profile.ExtraFilters != "" {
+			filters = append(filters, profile.ExtraFilters)
 		}
 		scalingAlgorithm := "bilinear"
 		variantEncoderCommands = append(variantEncoderCommands, []string{
 			"-sws_flags", scalingAlgorithm,
 			"-filter:v:" + strconv.Itoa(v.index), strings.Join(filters, ","),
 		}...)
-	} else if t.encoder.ExtraFilters() != "" && !v.isVideoPassthrough {
+	} else if profile.ExtraFilters != "" && !v.isVideoPassthrough {
 		variantEncoderCommands = append(variantEncoderCommands, []string{
-			"-filter:v:" + strconv.Itoa(v.index), t.encoder.ExtraFilters(),
+			"-filter:v:" + strconv.Itoa(v.index), profile.ExtraFilters,
 		}...)
 	}
 
@@ -421,13 +422,16 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) []string {
 		}
 	}
 
-	ffmpegEncoder := t.encoder.FFmpegEncoderForCodec(v.videoCodec.Name())
+	codec := v.videoCodec.Name()
+	ffmpegEncoder := t.encoder.FFmpegEncoderForCodec(codec)
+	profile := t.encoder.ProfileForCodec(codec)
 
 	gop := v.framerate * t.currentLatencyLevel.SecondsPerSegment // force an i-frame every segment
 	cmd := make([]string, 0, 20)
 	cmd = append(cmd,
 		"-map", "v:0",
 		fmt.Sprintf("-c:v:%d", v.index), ffmpegEncoder, // Video encoder used for this variant
+		fmt.Sprintf("-pix_fmt:v:%d", v.index), profile.PixelFormat, // Pixel format for this variant
 		fmt.Sprintf("-b:v:%d", v.index), fmt.Sprintf("%dk", v.getAllocatedVideoBitrate()), // The average bitrate for this variant allowing space for audio
 		fmt.Sprintf("-maxrate:v:%d", v.index), fmt.Sprintf("%dk", v.getMaxVideoBitrate()), // The max bitrate allowed for this variant
 		fmt.Sprintf("-g:v:%d", v.index), fmt.Sprintf("%d", gop), // Suggested interval where i-frames are encoded into the segments

@@ -17,20 +17,14 @@ func (e *VideoToolboxEncoder) GlobalFlags() []string {
 	return nil
 }
 
-func (e *VideoToolboxEncoder) PixelFormat() string {
-	return "nv12"
-}
-
-func (e *VideoToolboxEncoder) Scaler() string {
-	return ""
-}
-
-func (e *VideoToolboxEncoder) ExtraFilters() string {
-	return ""
-}
-
 func (e *VideoToolboxEncoder) ExtraArguments() []string {
 	return nil
+}
+
+func (e *VideoToolboxEncoder) ProfileForCodec(codec string) CodecProfile {
+	return CodecProfile{
+		PixelFormat: "nv12",
+	}
 }
 
 func (e *VideoToolboxEncoder) VariantFlags(v *HLSVariant) []string {

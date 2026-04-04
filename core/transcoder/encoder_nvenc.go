@@ -23,20 +23,14 @@ func (e *NvencEncoder) GlobalFlags() []string {
 	}
 }
 
-func (e *NvencEncoder) PixelFormat() string {
-	return pixelFormatYUV420P
-}
-
-func (e *NvencEncoder) Scaler() string {
-	return ""
-}
-
-func (e *NvencEncoder) ExtraFilters() string {
-	return ""
-}
-
 func (e *NvencEncoder) ExtraArguments() []string {
 	return nil
+}
+
+func (e *NvencEncoder) ProfileForCodec(codec string) CodecProfile {
+	return CodecProfile{
+		PixelFormat: pixelFormatYUV420P,
+	}
 }
 
 func (e *NvencEncoder) VariantFlags(v *HLSVariant) []string {
