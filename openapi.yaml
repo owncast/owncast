@@ -4085,6 +4085,9 @@ components:
         - STREAM_TITLE_UPDATED
         - SYSTEM
         - CHAT_ACTION
+        - FEDIVERSE_ENGAGEMENT_FOLLOW
+        - FEDIVERSE_ENGAGEMENT_LIKE
+        - FEDIVERSE_ENGAGEMENT_REPOST
     ExternalAPIUser:
       type: object
       properties:
