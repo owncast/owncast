@@ -21,16 +21,20 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(dbFile.Name())
+	dbFile.Close()
 
 	if err := data.SetupPersistence(dbFile.Name()); err != nil {
 		panic(err)
 	}
 
 	// Ensure data directory exists for file operations.
-	os.MkdirAll("data", 0o755)
+	if err := os.MkdirAll("data", 0o755); err != nil {
+		panic(err)
+	}
 
-	m.Run()
+	code := m.Run()
+	os.Remove(dbFile.Name())
+	os.Exit(code)
 }
 
 // Minimal valid 1x1 PNG.
@@ -162,8 +166,9 @@ func TestSetFaviconRejectsJPEG(t *testing.T) {
 func TestSetFaviconRejectsOversized(t *testing.T) {
 	defer cleanupFaviconFiles(t)
 
-	// Create a PNG data URL with >200KB of base64 data.
-	oversized := make([]byte, 250*1024)
+	// Create a PNG data URL with >200KB of decoded data but under the
+	// MaxBytesReader limit so the size check in the handler is exercised.
+	oversized := make([]byte, 210*1024)
 	body := makeConfigValueBody(makeBase64DataURL("image/png", oversized))
 	req := httptest.NewRequest(http.MethodPost, "/api/admin/config/favicon", strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")

@@ -47,7 +47,7 @@ export const EditFavicon: FC = () => {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   let resetTimer = null;
 
-  const { apiPath, tip } = TEXTFIELD_PROPS_FAVICON;
+  const { apiPath } = TEXTFIELD_PROPS_FAVICON;
 
   const resetStates = () => {
     setSubmitStatus(null);

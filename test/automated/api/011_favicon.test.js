@@ -1,6 +1,4 @@
 var request = require('supertest');
-var fs = require('fs');
-var path = require('path');
 
 request = request('http://127.0.0.1:8080');
 
@@ -69,6 +67,22 @@ test('reject unsupported file type (JPEG)', async () => {
 
 	expect(res.body.success).toBe(false);
 	expect(res.body.message).toBe('favicon must be PNG or ICO format');
+});
+
+test('reject oversized favicon (>200KB)', async () => {
+	// 210KB decoded exceeds the 200KB server limit but stays under the
+	// MaxBytesReader limit so the handler's own size check is exercised.
+	const oversized = Buffer.alloc(210 * 1024, 0x42);
+	const oversizedBase64 = `data:image/png;base64,${oversized.toString('base64')}`;
+
+	const res = await request
+		.post('/api/admin/config/favicon')
+		.auth('admin', defaultAdminPassword)
+		.send({ value: oversizedBase64 })
+		.expect(400);
+
+	expect(res.body.success).toBe(false);
+	expect(res.body.message).toBe('file too large, max 200KB');
 });
 
 test('reject request without image data', async () => {

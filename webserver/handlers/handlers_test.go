@@ -18,13 +18,15 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(dbFile.Name())
+	dbFile.Close()
 
 	if err := data.SetupPersistence(dbFile.Name()); err != nil {
 		panic(err)
 	}
 
-	m.Run()
+	code := m.Run()
+	os.Remove(dbFile.Name())
+	os.Exit(code)
 }
 
 // Minimal 1x1 PNG.

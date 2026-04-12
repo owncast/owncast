@@ -25,12 +25,12 @@ pre-commit:
     js-linter:
       glob: '*.{js,ts,jsx,tsx}'
       root: web/
-      run: npx --yes eslint --fix --ext {staged_files}
+      run: npx --yes eslint --fix {staged_files}
       stage_fixed: true
     prettier:
       glob: '*.{js,ts,jsx,tsx,css,scss}'
       run: npx --yes prettier --write {staged_files}
-      staged_fixed: true
+      stage_fixed: true
     css-linter:
       glob: '*.{css,scss}'
       root: web/

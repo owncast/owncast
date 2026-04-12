@@ -288,6 +288,10 @@ func SetFavicon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Limit request body size to prevent large allocations before the decoded
+	// size check runs. 200KB decoded = ~267KB base64 + JSON overhead ≈ 300KB.
+	r.Body = http.MaxBytesReader(w, r.Body, 300*1024)
+
 	configValue, success := getValueFromRequest(w, r)
 	if !success {
 		return
