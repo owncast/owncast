@@ -74,6 +74,84 @@ func TestValidatedFfmpegPathPrefersLocalBinary(t *testing.T) {
 	}
 }
 
+func TestDecodeBase64Image(t *testing.T) {
+	tests := []struct {
+		name          string
+		input         string
+		wantExtension string
+		wantErr       bool
+	}{
+		{
+			name:          "valid PNG",
+			input:         "data:image/png;base64,iVBORw0KGgo=",
+			wantExtension: ".png",
+		},
+		{
+			name:          "valid JPEG",
+			input:         "data:image/jpeg;base64,/9j/4AAQ",
+			wantExtension: ".jpeg",
+		},
+		{
+			name:          "valid GIF",
+			input:         "data:image/gif;base64,R0lGODlh",
+			wantExtension: ".gif",
+		},
+		{
+			name:          "valid SVG",
+			input:         "data:image/svg+xml;base64,PHN2Zz4=",
+			wantExtension: ".svg",
+		},
+		{
+			name:          "valid ICO via image/x-icon",
+			input:         "data:image/x-icon;base64,AAABAA==",
+			wantExtension: ".ico",
+		},
+		{
+			name:          "valid ICO via image/vnd.microsoft.icon",
+			input:         "data:image/vnd.microsoft.icon;base64,AAABAA==",
+			wantExtension: ".ico",
+		},
+		{
+			name:    "unsupported content type",
+			input:   "data:image/webp;base64,AAABAA==",
+			wantErr: true,
+		},
+		{
+			name:    "missing comma separator",
+			input:   "data:image/png;base64AAAA",
+			wantErr: true,
+		},
+		{
+			name:    "missing header",
+			input:   ",AAABAA==",
+			wantErr: true,
+		},
+		{
+			name:    "empty string",
+			input:   "",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, ext, err := DecodeBase64Image(tt.input)
+			if tt.wantErr {
+				if err == nil {
+					t.Error("expected error but got nil")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if ext != tt.wantExtension {
+				t.Errorf("expected extension %q, got %q", tt.wantExtension, ext)
+			}
+		})
+	}
+}
+
 func TestVerifyFFMpegPath(t *testing.T) {
 	// Test with non-existent path.
 	err := VerifyFFMpegPath("/nonexistent/path/to/ffmpeg")
