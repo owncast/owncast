@@ -5,13 +5,16 @@
   padding: 5px;
   margin: 0 auto;
   min-height: 20vh;
-  overflow: hidden;
 
   .followerRow {
     display: grid;
     gap: 16px 0;
     grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
     grid-auto-rows: min-content;
+
+    > * {
+      min-width: 0;
+    }
   }
 
   @include screen(mobile) {
