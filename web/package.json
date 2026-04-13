@@ -134,7 +134,7 @@
     "msw-storybook-addon": "^2.0.6",
     "npm": "^11.0.0",
     "postcss": "^8.4.31",
-    "prettier": "3.8.1",
+    "prettier": "3.8.2",
     "sass": "1.99.0",
     "storybook": "^9.1.13",
     "style-dictionary": "3.9.2",
