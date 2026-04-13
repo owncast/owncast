@@ -25,6 +25,7 @@ export const API_VIDEO_CODEC = '/video/codec';
 const API_FFMPEG = '/ffmpegpath';
 const API_INSTANCE_URL = '/serverurl';
 const API_LOGO = '/logo';
+const API_FAVICON = '/favicon';
 const API_NSFW_SWITCH = '/nsfw';
 const API_RTMP_PORT = '/rtmpserverport';
 const API_SERVER_SUMMARY = '/serversummary';
@@ -125,6 +126,14 @@ export const TEXTFIELD_PROPS_LOGO = {
   placeholder: '/img/mylogo.png',
   label: 'Logo',
   tip: 'Upload your logo if you have one (max size 2 MB). We recommend that you use a square image that is at least 256x256. SVGs are discouraged as they cannot be displayed on all social media platforms.',
+};
+export const TEXTFIELD_PROPS_FAVICON = {
+  apiPath: API_FAVICON,
+  configPath: 'instanceDetails',
+  maxLength: 255,
+  placeholder: '',
+  label: 'Favicon',
+  tip: 'Upload a custom favicon (PNG or ICO format, max 200KB). This icon appears in browser tabs and bookmarks.',
 };
 export const TEXTFIELD_PROPS_ADMIN_PASSWORD = {
   apiPath: API_STREAM_KEY,

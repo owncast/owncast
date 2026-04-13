@@ -2,9 +2,7 @@ package admin
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"net/netip"
@@ -284,53 +282,41 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteSimpleResponse(w, true, "changed")
 }
 
-// SetFavicon will handle a new favicon image file being uploaded.
+// SetFavicon will handle a new favicon image being set via base64 data.
 func SetFavicon(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
 
-	// Limit request body and parse multipart form with 200KB max
-	r.Body = http.MaxBytesReader(w, r.Body, 200<<10)
-	if err := r.ParseMultipartForm(200 << 10); err != nil {
-		var maxBytesErr *http.MaxBytesError
-		if errors.As(err, &maxBytesErr) {
-			webutils.WriteSimpleResponse(w, false, "file too large, max 200KB")
-		} else {
-			webutils.WriteSimpleResponse(w, false, "no file provided")
-		}
+	// Limit request body size to prevent large allocations before the decoded
+	// size check runs. 200KB decoded = ~267KB base64 + JSON overhead ≈ 300KB.
+	r.Body = http.MaxBytesReader(w, r.Body, 300*1024)
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
 		return
 	}
 
-	file, header, err := r.FormFile("favicon")
+	value, ok := configValue.Value.(string)
+	if !ok {
+		webutils.WriteSimpleResponse(w, false, "unable to find image data")
+		return
+	}
+
+	bytes, extension, err := utils.DecodeBase64Image(value)
 	if err != nil {
-		webutils.WriteSimpleResponse(w, false, "no file provided")
+		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
-	defer file.Close()
 
-	// Validate content type (PNG or ICO only)
-	contentType := header.Header.Get("Content-Type")
-	var extension string
-	switch contentType {
-	case "image/png":
-		extension = ".png"
-	case "image/x-icon", "image/vnd.microsoft.icon":
-		extension = ".ico"
-	default:
+	// Only allow PNG and ICO formats for favicons.
+	if extension != ".png" && extension != ".ico" {
 		webutils.WriteSimpleResponse(w, false, "favicon must be PNG or ICO format")
 		return
 	}
 
-	// Read file content
-	bytes, err := io.ReadAll(file)
-	if err != nil {
-		webutils.WriteSimpleResponse(w, false, "unable to read file")
-		return
-	}
-
-	// Enforce 200KB size limit
-	const maxFaviconSize = 200 * 1024 // 200KB
+	// Enforce 200KB size limit.
+	const maxFaviconSize = 200 * 1024
 	if len(bytes) > maxFaviconSize {
 		webutils.WriteSimpleResponse(w, false, "file too large, max 200KB")
 		return

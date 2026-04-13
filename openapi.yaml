@@ -1712,15 +1712,7 @@ paths:
       security:
         - BasicAuth: []
       requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                favicon:
-                  type: string
-                  format: binary
-                  description: Favicon file (PNG or ICO, max 200KB)
+        $ref: '#/components/requestBodies/AdminConfigValue'
       responses:
         '200':
           description: Favicon updated

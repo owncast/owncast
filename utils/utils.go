@@ -464,6 +464,8 @@ func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
 		extension = ".png"
 	case "image/jpeg":
 		extension = ".jpeg"
+	case "image/x-icon", "image/vnd.microsoft.icon":
+		extension = ".ico"
 	}
 
 	if extension == "" {
