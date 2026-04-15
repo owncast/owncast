@@ -21,19 +21,13 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	instanceHostURL := configRepository.GetServerURL()
-	if instanceHostURL == "" {
+	instanceURL, err := apmodels.GetCanonicalServerURL()
+	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		log.Warnln("webfinger request rejected! Federation is enabled but server URL is empty.")
+		log.Warnln("webfinger request rejected! Federation is enabled but server URL host cannot be canonicalized: " + configRepository.GetServerURL())
 		return
 	}
-
-	instanceHostString := utils.GetHostnameFromURLString(instanceHostURL)
-	if instanceHostString == "" {
-		w.WriteHeader(http.StatusNotFound)
-		log.Warnln("webfinger request rejected! Federation is enabled but server URL is not set properly. data.GetServerURL(): " + configRepository.GetServerURL())
-		return
-	}
+	instanceHostString := instanceURL.Host
 
 	resource := r.URL.Query().Get("resource")
 	preAcct, account, foundAcct := strings.Cut(resource, "acct:")
@@ -52,6 +46,12 @@ func WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	host := userComponents[1]
 	user := userComponents[0]
+	host, err = utils.CanonicalizeHost(host)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Debugln("webfinger request rejected! Invalid host: " + userComponents[1])
+		return
+	}
 
 	if _, valid := configRepository.GetFederatedInboxMap()[user]; !valid {
 		w.WriteHeader(http.StatusNotFound)

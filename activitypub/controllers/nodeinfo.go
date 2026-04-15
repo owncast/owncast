@@ -32,13 +32,7 @@ func NodeInfoController(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	serverURL := configRepository.GetServerURL()
-	if serverURL == "" {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	v2, err := url.Parse(serverURL)
+	v2, err := apmodels.GetCanonicalServerURL()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -302,8 +296,8 @@ func HostMetaController(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	serverURL := configRepository.GetServerURL()
-	if serverURL == "" {
+	serverURL, err := apmodels.GetCanonicalServerURL()
+	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -311,7 +305,7 @@ func HostMetaController(w http.ResponseWriter, r *http.Request) {
 	res := fmt.Sprintf(`<?xml version="1.0" encoding="UTF-8"?>
 	<XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
 		<Link rel="lrdd" type="application/json" template="%s/.well-known/webfinger?resource={uri}"/>
-	</XRD>`, serverURL)
+	</XRD>`, serverURL.String())
 
 	if _, err := w.Write([]byte(res)); err != nil {
 		log.Errorln(err)

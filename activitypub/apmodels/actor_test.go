@@ -1,6 +1,7 @@
 package apmodels
 
 import (
+	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"net/url"
@@ -153,6 +154,57 @@ func TestMakeServiceForAccount(t *testing.T) {
 
 	if person.GetActivityStreamsUrl().At(0).GetIRI().String() != expectedIRI {
 		t.Errorf("actor.URL = %v, want %v", person.GetActivityStreamsUrl().At(0).GetIRI().String(), expectedIRI)
+	}
+}
+
+func TestMakeServiceForAccountWithIDNServerURL(t *testing.T) {
+	configRepository := configrepository.Get()
+	configRepository.SetServerURL("https://live.retrospection.みんな")
+	t.Cleanup(func() {
+		configRepository.SetServerURL("https://my.cool.site.biz")
+	})
+
+	person := MakeServiceForAccount("retrots3m")
+	payload, err := Serialize(person)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var actor map[string]interface{}
+	if err := json.Unmarshal(payload, &actor); err != nil {
+		t.Fatal(err)
+	}
+
+	expectedActorURL := "https://live.retrospection.xn--q9jyb4c/federation/user/retrots3m"
+	if actor["id"] != expectedActorURL {
+		t.Errorf("actor id = %v, want %v", actor["id"], expectedActorURL)
+	}
+	if actor["url"] != expectedActorURL {
+		t.Errorf("actor url = %v, want %v", actor["url"], expectedActorURL)
+	}
+	if actor["inbox"] != expectedActorURL+"/inbox" {
+		t.Errorf("actor inbox = %v, want %v", actor["inbox"], expectedActorURL+"/inbox")
+	}
+	if actor["outbox"] != expectedActorURL+"/outbox" {
+		t.Errorf("actor outbox = %v, want %v", actor["outbox"], expectedActorURL+"/outbox")
+	}
+	if actor["followers"] != expectedActorURL+"/followers" {
+		t.Errorf("actor followers = %v, want %v", actor["followers"], expectedActorURL+"/followers")
+	}
+
+	publicKey := actor["publicKey"].(map[string]interface{})
+	if publicKey["id"] != expectedActorURL+"#main-key" {
+		t.Errorf("public key id = %v, want %v", publicKey["id"], expectedActorURL+"#main-key")
+	}
+	if publicKey["owner"] != expectedActorURL {
+		t.Errorf("public key owner = %v, want %v", publicKey["owner"], expectedActorURL)
+	}
+
+	attachments := actor["attachment"].([]interface{})
+	streamAttachment := attachments[0].(map[string]interface{})
+	expectedDisplayValue := `<a href="https://live.retrospection.みんな" rel="me nofollow noopener noreferrer" target="_blank">https://live.retrospection.みんな</a>`
+	if streamAttachment["value"] != expectedDisplayValue {
+		t.Errorf("stream attachment = %v, want %v", streamAttachment["value"], expectedDisplayValue)
 	}
 }
 

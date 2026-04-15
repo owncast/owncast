@@ -2,11 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"net/url"
 	"strings"
 
+	"github.com/owncast/owncast/activitypub/apmodels"
 	"github.com/owncast/owncast/activitypub/webfinger"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/webserver/handlers/generated"
@@ -37,8 +36,7 @@ func RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	configRepository := configrepository.Get()
-	localActorPath, _ := url.Parse(configRepository.GetServerURL())
-	localActorPath.Path = fmt.Sprintf("/federation/user/%s", configRepository.GetDefaultFederationUsername())
+	localActorPath := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
 	var template string
 	links, err := webfinger.GetWebfingerLinks(*request.Account)
 	if err != nil {
@@ -55,7 +53,7 @@ func RemoteFollow(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if localActorPath.String() == "" || template == "" {
+	if localActorPath == nil || localActorPath.String() == "" || template == "" {
 		webutils.WriteSimpleResponse(w, false, "unable to determine remote follow information for "+*request.Account)
 		return
 	}
