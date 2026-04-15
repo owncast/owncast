@@ -18,7 +18,7 @@ export function isValidUrl(url: string, validProtocols: string[] = ['http:', 'ht
     ) {
       return false;
     }
-  } catch (e) {
+  } catch {
     return false;
   }
 
@@ -60,7 +60,31 @@ export function isValidAccount(account: string, protocol: string): boolean {
  */
 export function isValidFediverseAccount(account: string): boolean {
   const sanitized = account.replace(/^@+/, '');
-  const regex =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return regex.test(String(sanitized).toLowerCase());
+  const separatorIndex = sanitized.lastIndexOf('@');
+
+  if (separatorIndex <= 0 || separatorIndex === sanitized.length - 1) {
+    return false;
+  }
+
+  const username = sanitized.slice(0, separatorIndex);
+  const host = sanitized.slice(separatorIndex + 1);
+
+  if (!/^[^\s@]+$/.test(username) || /\s/.test(host)) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(`https://${host}`);
+    const { hostname } = parsed;
+
+    return (
+      hostname !== '' &&
+      hostname.includes('.') &&
+      parsed.pathname === '/' &&
+      parsed.search === '' &&
+      parsed.hash === ''
+    );
+  } catch {
+    return false;
+  }
 }
