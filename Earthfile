@@ -1,6 +1,6 @@
 VERSION --new-platform 0.6
 
-FROM --platform=linux/amd64 alpine:3.23.3
+FROM --platform=linux/amd64 alpine:3.23.4
 ARG version=develop
 
 WORKDIR /build
@@ -147,7 +147,7 @@ package:
 docker-image:
   # Internal target that builds the docker image. Used by +docker for testing.
   ARG TARGETPLATFORM
-  FROM --platform=$TARGETPLATFORM alpine:3.23.3
+  FROM --platform=$TARGETPLATFORM alpine:3.23.4
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
   RUN addgroup -g 101 -S owncast && adduser -u 101 -S owncast -G owncast
   WORKDIR /app
