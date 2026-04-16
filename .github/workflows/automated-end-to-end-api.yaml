@@ -73,7 +73,7 @@ jobs:
 
       - name: Run API tests
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
           max_attempts: 3
