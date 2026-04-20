@@ -9,7 +9,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/webhooks"
@@ -78,7 +77,7 @@ func Start() error {
 
 	webhooks.SetupWebhooks(GetStatus)
 
-	notificationsrepository.Setup(data.GetStore())
+	notificationsrepository.Setup()
 
 	return nil
 }

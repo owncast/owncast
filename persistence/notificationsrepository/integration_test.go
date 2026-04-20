@@ -27,7 +27,7 @@ func TestIntegrationSetup(t *testing.T) {
 	// The actual setup is done in the init function below
 	if integrationTestDatastore == nil {
 		integrationTestDatastore = data.GetDatastore()
-		Setup(integrationTestDatastore)
+		Setup()
 		integrationRepo = New(integrationTestDatastore)
 	}
 

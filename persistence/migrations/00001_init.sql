@@ -53,8 +53,6 @@ CREATE TABLE IF NOT EXISTS users (
     "last_used" DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
--- NOTE: idx_user_id here wins the index-name collision against the
--- messages-table index of the same name, matching existing-install state.
 CREATE INDEX IF NOT EXISTS idx_user_id ON users (id);
 CREATE INDEX IF NOT EXISTS idx_user_id_disabled ON users (id, disabled_at);
 CREATE INDEX IF NOT EXISTS idx_user_disabled_at ON users (disabled_at);
@@ -82,9 +80,8 @@ CREATE TABLE IF NOT EXISTS ap_followers (
     "first_validation_failure_at" TIMESTAMP,
     PRIMARY KEY (iri)
 );
--- NOTE: idx_iri here wins the index-name collision against the ap_outbox
--- index of the same name, matching existing-install state.
 CREATE INDEX IF NOT EXISTS idx_iri ON ap_followers (iri);
+CREATE INDEX IF NOT EXISTS idx_ap_followers_iri ON ap_followers (iri);
 CREATE INDEX IF NOT EXISTS idx_approved_at ON ap_followers (approved_at);
 
 CREATE TABLE IF NOT EXISTS ap_outbox (
@@ -95,8 +92,8 @@ CREATE TABLE IF NOT EXISTS ap_outbox (
     "live_notification" BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (iri)
 );
--- idx_iri on ap_outbox is intentionally a no-op; see note on ap_followers.
 CREATE INDEX IF NOT EXISTS idx_iri ON ap_outbox (iri);
+CREATE INDEX IF NOT EXISTS idx_ap_outbox_iri ON ap_outbox (iri);
 CREATE INDEX IF NOT EXISTS idx_type ON ap_outbox (type);
 CREATE INDEX IF NOT EXISTS idx_live_notification ON ap_outbox (live_notification);
 
@@ -132,8 +129,8 @@ CREATE TABLE IF NOT EXISTS messages (
 );
 CREATE INDEX IF NOT EXISTS user_id_hidden_at_timestamp ON messages (id, user_id, hidden_at, timestamp);
 CREATE INDEX IF NOT EXISTS idx_id ON messages (id);
--- idx_user_id on messages is intentionally a no-op; see note on users.
 CREATE INDEX IF NOT EXISTS idx_user_id ON messages (user_id);
+CREATE INDEX IF NOT EXISTS idx_messages_user_id ON messages (user_id);
 CREATE INDEX IF NOT EXISTS idx_hidden_at ON messages (hidden_at);
 CREATE INDEX IF NOT EXISTS idx_timestamp ON messages (timestamp);
 CREATE INDEX IF NOT EXISTS idx_messages_hidden_at_timestamp ON messages (hidden_at, timestamp);

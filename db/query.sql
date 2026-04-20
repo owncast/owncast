@@ -111,7 +111,7 @@ INSERT INTO user_access_tokens(token, user_id) values(?, ?);
 SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM users, user_access_tokens WHERE token = ? AND users.id = user_id;
 
 -- name: GetUserDisplayNameByToken :one
-SELECT display_name FROM users, user_access_tokens WHERE token = ? AND users.id = user_id AND disabled_at = NULL;
+SELECT display_name FROM users JOIN user_access_tokens ON users.id = user_access_tokens.user_id WHERE token = ? AND users.disabled_at IS NULL;
 
 -- name: SetAccessTokenToOwner :exec
 UPDATE user_access_tokens SET user_id = ? WHERE token = ?;

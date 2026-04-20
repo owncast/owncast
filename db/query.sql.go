@@ -753,7 +753,7 @@ func (q *Queries) GetUserByAuth(ctx context.Context, arg GetUserByAuthParams) (G
 }
 
 const getUserDisplayNameByToken = `-- name: GetUserDisplayNameByToken :one
-SELECT display_name FROM users, user_access_tokens WHERE token = ? AND users.id = user_id AND disabled_at = NULL
+SELECT display_name FROM users JOIN user_access_tokens ON users.id = user_access_tokens.user_id WHERE token = ? AND users.disabled_at IS NULL
 `
 
 func (q *Queries) GetUserDisplayNameByToken(ctx context.Context, token string) (string, error) {

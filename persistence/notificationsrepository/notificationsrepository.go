@@ -39,8 +39,7 @@ func Get() NotificationsRepository {
 
 // Setup will perform any pre-use setup for the notifier.
 // The notifications table itself is created by the goose migrations package.
-func Setup(datastore *data.Datastore) {
-	_ = datastore
+func Setup() {
 	initializeBrowserPushIfNeeded()
 }
 
