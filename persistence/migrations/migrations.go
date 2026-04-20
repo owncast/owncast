@@ -21,6 +21,7 @@ import (
 	"embed"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/owncast/owncast/persistence/legacymigrations"
 	"github.com/pressly/goose/v3"
@@ -92,8 +93,16 @@ func readLegacyVersion(db *sql.DB) (int, error) {
 }
 
 // gooseLogger adapts goose's Logger interface onto logrus so migration
-// output flows through the project's normal logging pipeline.
+// output flows through the project's normal logging pipeline. It silences
+// the "no migrations to run" message that goose emits on every startup
+// when the schema is already current.
 type gooseLogger struct{}
 
 func (gooseLogger) Fatalf(format string, v ...interface{}) { log.Fatalf(format, v...) }
-func (gooseLogger) Printf(format string, v ...interface{}) { log.Infof(format, v...) }
+
+func (gooseLogger) Printf(format string, v ...interface{}) {
+	if strings.Contains(fmt.Sprintf(format, v...), "no migrations to run") {
+		return
+	}
+	log.Infof(format, v...)
+}
