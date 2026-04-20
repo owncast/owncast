@@ -11,15 +11,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/owncast/owncast/persistence/tables"
-
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/persistence/migrations"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
-)
-
-const (
-	schemaVersion = 9
 )
 
 var (
@@ -75,45 +70,11 @@ func SetupPersistence(file string) error {
 	_, _ = db.Exec("pragma temp_store = memory")
 	_, _ = db.Exec("pragma wal_checkpoint(full)")
 
-	tables.CreateConfigTable(db)
-	tables.CreateWebhooksTable(db)
-	tables.CreateUsersTable(db)
-	tables.CreateAccessTokenTable(db)
-
-	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS config (
-		"key" string NOT NULL PRIMARY KEY,
-		"value" TEXT
-	);`); err != nil {
-		return err
-	}
-
-	var version int
-	err := db.QueryRow("SELECT value FROM config WHERE key='version'").
-		Scan(&version)
-	if err != nil {
-		if err != sql.ErrNoRows {
-			return err
-		}
-
-		// fresh database: initialize it with the current schema version
-		_, err := db.Exec("INSERT INTO config(key, value) VALUES(?, ?)", "version", schemaVersion)
-		if err != nil {
-			return err
-		}
-		version = schemaVersion
-	}
-
-	// is database from a newer Owncast version?
-	if version > schemaVersion {
-		return fmt.Errorf("incompatible database version %d (versions up to %d are supported)",
-			version, schemaVersion)
-	}
-
-	// is database schema outdated?
-	if version < schemaVersion {
-		if err := tables.MigrateDatabaseSchema(db, version, schemaVersion); err != nil {
-			return err
-		}
+	// Bring the schema up to date. The migrations package owns all table
+	// creation and schema changes; existing pre-goose installs are caught up
+	// automatically by its legacy-bridge step.
+	if err := migrations.Run(db); err != nil {
+		return fmt.Errorf("running database migrations: %w", err)
 	}
 
 	_datastore = &Datastore{}

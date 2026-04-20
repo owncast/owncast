@@ -8,7 +8,6 @@ import (
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/owncast/owncast/persistence/tables"
 
 	"github.com/owncast/owncast/notifications/browser"
 	"github.com/pkg/errors"
@@ -39,8 +38,8 @@ func Get() NotificationsRepository {
 }
 
 // Setup will perform any pre-use setup for the notifier.
-func Setup(datastore *data.Datastore) {
-	tables.CreateNotificationsTable(datastore.DB)
+// The notifications table itself is created by the goose migrations package.
+func Setup() {
 	initializeBrowserPushIfNeeded()
 }
 

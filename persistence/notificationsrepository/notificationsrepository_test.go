@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 	testDatastore = data.GetDatastore()
 
 	// Setup the notifications repository
-	Setup(testDatastore)
+	Setup()
 	testRepo = New(testDatastore)
 
 	// Run tests

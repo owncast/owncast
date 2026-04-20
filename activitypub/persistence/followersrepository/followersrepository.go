@@ -92,8 +92,8 @@ func (r *SqlFollowersRepository) GetFollowers(limit int, offset int) ([]models.F
 	}
 
 	followersResult, err := r.datastore.GetQueries().GetFederationFollowersWithOffset(ctx, db.GetFederationFollowersWithOffsetParams{
-		Limit:  utils.SafeIntToInt32(limit),
-		Offset: utils.SafeIntToInt32(offset),
+		Limit:  int64(limit),
+		Offset: int64(offset),
 	})
 	if err != nil {
 		return nil, 0, err
@@ -379,7 +379,7 @@ func (r *SqlFollowersRepository) removeFollow(actor *url.URL) error {
 // GetFollowersToValidate returns followers needing validation, ordered by oldest validated first.
 func (r *SqlFollowersRepository) GetFollowersToValidate(limit int) ([]models.Follower, error) {
 	ctx := context.Background()
-	followersResult, err := r.datastore.GetQueries().GetFollowersToValidate(ctx, utils.SafeIntToInt32(limit))
+	followersResult, err := r.datastore.GetQueries().GetFollowersToValidate(ctx, int64(limit))
 	if err != nil {
 		return nil, err
 	}

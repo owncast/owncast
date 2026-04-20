@@ -12,7 +12,6 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
@@ -21,48 +20,16 @@ import (
 var _datastore *data.Datastore
 
 // Setup will initialize the ActivityPub persistence layer with the provided datastore.
+// ActivityPub-related tables (ap_followers, ap_outbox, ap_accepted_activities)
+// are created by the goose migrations package.
 func Setup(datastore *data.Datastore) {
 	_datastore = datastore
-	createFederationFollowersTable()
-	createFederationOutboxTable()
-	createFederatedActivitiesTable()
 	addFollowersFixtureData()
 }
 
 // GetDatastore returns the datastore instance for use by sub-repositories.
 func GetDatastore() *data.Datastore {
 	return _datastore
-}
-
-// createFederatedActivitiesTable will create the accepted
-// activities table if needed.
-func createFederatedActivitiesTable() {
-	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_accepted_activities (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		"iri" TEXT NOT NULL,
-    "actor" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
-		"timestamp" TIMESTAMP NOT NULL
-	);`
-
-	_datastore.MustExec(createTableSQL)
-	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_iri_actor_index ON ap_accepted_activities (iri,actor);`)
-}
-
-func createFederationOutboxTable() {
-	log.Traceln("Creating federation outbox table...")
-	createTableSQL := `CREATE TABLE IF NOT EXISTS ap_outbox (
-		"iri" TEXT NOT NULL,
-		"value" BLOB,
-		"type" TEXT NOT NULL,
-		"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "live_notification" BOOLEAN DEFAULT FALSE,
-		PRIMARY KEY (iri));`
-
-	_datastore.MustExec(createTableSQL)
-	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_iri ON ap_outbox (iri);`)
-	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_type ON ap_outbox (type);`)
-	_datastore.MustExec(`CREATE INDEX IF NOT EXISTS idx_live_notification ON ap_outbox (live_notification);`)
 }
 
 // GetOutboxPostCount will return the number of posts in the outbox.
@@ -77,7 +44,7 @@ func GetOutbox(limit int, offset int) (vocab.ActivityStreamsOrderedCollection, e
 	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
 	rows, err := _datastore.GetQueries().GetOutboxWithOffset(
 		context.Background(),
-		db.GetOutboxWithOffsetParams{Limit: utils.SafeIntToInt32(limit), Offset: utils.SafeIntToInt32(offset)},
+		db.GetOutboxWithOffsetParams{Limit: int64(limit), Offset: int64(offset)},
 	)
 	if err != nil {
 		return collection, err
@@ -149,8 +116,8 @@ func SaveInboundFediverseActivity(objectIRI string, actorIRI string, eventType s
 func GetInboundActivities(limit int, offset int) ([]models.FederatedActivity, int, error) {
 	ctx := context.Background()
 	rows, err := _datastore.GetQueries().GetInboundActivitiesWithOffset(ctx, db.GetInboundActivitiesWithOffsetParams{
-		Limit:  utils.SafeIntToInt32(limit),
-		Offset: utils.SafeIntToInt32(offset),
+		Limit:  int64(limit),
+		Offset: int64(offset),
 	})
 	if err != nil {
 		return nil, 0, err

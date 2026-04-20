@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/persistence/authrepository"
-	"github.com/owncast/owncast/persistence/tables"
 )
 
 var _datastore *data.Datastore
@@ -16,10 +14,6 @@ const (
 
 func setupPersistence() {
 	_datastore = data.GetDatastore()
-	tables.CreateMessagesTable(_datastore.DB)
-
-	authRepository := authrepository.Get()
-	authRepository.CreateBanIPTable(_datastore.DB)
 
 	chatDataPruner := time.NewTicker(5 * time.Minute)
 	go func() {

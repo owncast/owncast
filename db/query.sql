@@ -3,13 +3,13 @@
 -- Federation related queries.
 
 -- name: GetFollowerCount :one
-SElECT count(*) FROM ap_followers WHERE approved_at is not null;
+SELECT count(*) FROM ap_followers WHERE approved_at is not null;
 
 -- name: GetLocalPostCount :one
-SElECT count(*) FROM ap_outbox;
+SELECT count(*) FROM ap_outbox;
 
 -- name: GetFederationFollowersWithOffset :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null ORDER BY created_at DESC LIMIT $1 OFFSET $2;
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null ORDER BY created_at DESC LIMIT ? OFFSET ?;
 
 -- name: GetRejectedAndBlockedFollowers :many
 SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null;
@@ -18,113 +18,115 @@ SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHE
 SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null;
 
 -- name: ApproveFederationFollower :exec
-UPDATE ap_followers SET approved_at = $1, disabled_at = null WHERE iri = $2;
+UPDATE ap_followers SET approved_at = ?, disabled_at = null WHERE iri = ?;
 
 -- name: RejectFederationFollower :exec
-UPDATE ap_followers SET approved_at = null, disabled_at = $1 WHERE iri = $2;
+UPDATE ap_followers SET approved_at = null, disabled_at = ? WHERE iri = ?;
 
 -- name: GetFollowerByIRI :one
-SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = $1;
+SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = ?;
 
 -- name: GetOutboxWithOffset :many
-SELECT value FROM ap_outbox LIMIT $1 OFFSET $2;
+SELECT value FROM ap_outbox LIMIT ? OFFSET ?;
 
 
 -- name: GetObjectFromOutboxByIRI :one
-SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = $1;
+SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = ?;
 
 -- name: RemoveFollowerByIRI :exec
-DELETE FROM ap_followers WHERE iri = $1;
+DELETE FROM ap_followers WHERE iri = ?;
 
 -- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at) values($1, $2, $3, $4, $5, $6, $7, $8, $9);
+INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: AddToOutbox :exec
-INSERT INTO ap_outbox(iri, value, type, live_notification) values($1, $2, $3, $4);
+INSERT INTO ap_outbox(iri, value, type, live_notification) values(?, ?, ?, ?);
 
 -- name: AddToAcceptedActivities :exec
-INSERT INTO ap_accepted_activities(iri, actor, type, timestamp) values($1, $2, $3, $4);
+INSERT INTO ap_accepted_activities(iri, actor, type, timestamp) values(?, ?, ?, ?);
 
 -- name: GetInboundActivityCount :one
 SELECT count(*) FROM ap_accepted_activities;
 
 -- name: GetInboundActivitiesWithOffset :many
-SELECT iri, actor, type, timestamp FROM ap_accepted_activities ORDER BY timestamp DESC LIMIT $1 OFFSET $2;
+SELECT iri, actor, type, timestamp FROM ap_accepted_activities ORDER BY timestamp DESC LIMIT ? OFFSET ?;
 
 -- name: DoesInboundActivityExist :one
-SELECT count(*) FROM ap_accepted_activities WHERE iri = $1 AND actor = $2 AND TYPE = $3;
+SELECT count(*) FROM ap_accepted_activities WHERE iri = ? AND actor = ? AND TYPE = ?;
 
 -- name: UpdateFollowerByIRI :exec
-UPDATE ap_followers SET inbox = $1, shared_inbox = $2, name = $3, username = $4, image = $5 WHERE iri = $6;
+UPDATE ap_followers SET inbox = ?, shared_inbox = ?, name = ?, username = ?, image = ? WHERE iri = ?;
 
 -- name: GetFollowersToValidate :many
 SELECT iri, inbox, shared_inbox, name, username, image, first_validation_failure_at
 FROM ap_followers
 WHERE approved_at IS NOT NULL AND disabled_at IS NULL
 ORDER BY last_validated_at ASC NULLS FIRST
-LIMIT $1;
+LIMIT ?;
 
 -- name: UpdateFollowerValidationSuccess :exec
 UPDATE ap_followers
-SET last_validated_at = $1, first_validation_failure_at = NULL
-WHERE iri = $2;
+SET last_validated_at = ?, first_validation_failure_at = NULL
+WHERE iri = ?;
 
 -- name: UpdateFollowerValidationFailure :exec
 UPDATE ap_followers
-SET last_validated_at = $1, first_validation_failure_at = COALESCE(first_validation_failure_at, $1)
-WHERE iri = $2;
+SET last_validated_at = @last_validated_at, first_validation_failure_at = COALESCE(first_validation_failure_at, @last_validated_at)
+WHERE iri = @iri;
 
 -- name: GetUniqueDeliveryInboxes :many
 SELECT COALESCE(shared_inbox, inbox) as delivery_inbox FROM ap_followers WHERE approved_at is not null GROUP BY delivery_inbox;
 
 -- name: BanIPAddress :exec
-INSERT INTO ip_bans(ip_address, notes) values($1, $2);
+INSERT INTO ip_bans(ip_address, notes) values(?, ?);
 
 -- name: RemoveIPAddressBan :exec
-DELETE FROM ip_bans WHERE ip_address = $1;
+DELETE FROM ip_bans WHERE ip_address = ?;
 
 -- name: IsIPAddressBlocked :one
-SELECT count(*) FROM ip_bans WHERE ip_address = $1;
+SELECT count(*) FROM ip_bans WHERE ip_address = ?;
 
 -- name: GetIPAddressBans :many
 SELECT * FROM ip_bans;
+
 -- name: AddNotification :exec
-INSERT INTO notifications (channel, destination) VALUES($1, $2);
+INSERT INTO notifications (channel, destination) VALUES(?, ?);
 
 -- name: GetNotificationDestinationsForChannel :many
-SELECT destination FROM notifications WHERE channel = $1;
+SELECT destination FROM notifications WHERE channel = ?;
 
 -- name: RemoveNotificationDestinationForChannel :exec
-DELETE FROM notifications WHERE channel = $1 AND destination = $2;
+DELETE FROM notifications WHERE channel = ? AND destination = ?;
+
 -- name: AddAuthForUser :exec
-INSERT INTO auth(user_id, token, type) values($1, $2, $3);
+INSERT INTO auth(user_id, token, type) values(?, ?, ?);
 
 -- name: GetUserByAuth :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE token = $1 AND auth.type = $2 AND users.id = auth.user_id;
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE token = ? AND auth.type = ? AND users.id = auth.user_id;
 
 -- name: AddAccessTokenForUser :exec
-INSERT INTO user_access_tokens(token, user_id) values($1, $2);
+INSERT INTO user_access_tokens(token, user_id) values(?, ?);
 
 -- name: GetUserByAccessToken :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id;
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM users, user_access_tokens WHERE token = ? AND users.id = user_id;
 
 -- name: GetUserDisplayNameByToken :one
-SELECT display_name FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id AND disabled_at = NULL;
+SELECT display_name FROM users JOIN user_access_tokens ON users.id = user_access_tokens.user_id WHERE token = ? AND users.disabled_at IS NULL;
 
 -- name: SetAccessTokenToOwner :exec
-UPDATE user_access_tokens SET user_id = $1 WHERE token = $2;
+UPDATE user_access_tokens SET user_id = ? WHERE token = ?;
 
 -- name: SetUserAsAuthenticated :exec
-UPDATE users SET authenticated_at = CURRENT_TIMESTAMP WHERE id = $1;
+UPDATE users SET authenticated_at = CURRENT_TIMESTAMP WHERE id = ?;
 
 -- name: GetMessagesFromUser :many
-SELECT id, body, hidden_at, timestamp FROM messages WHERE eventType = 'CHAT' AND user_id = $1 ORDER BY TIMESTAMP DESC;
+SELECT id, body, hidden_at, timestamp FROM messages WHERE eventType = 'CHAT' AND user_id = ? ORDER BY TIMESTAMP DESC;
 
 -- name: IsDisplayNameAvailable :one
-SELECT count(*) FROM users WHERE display_name = $1 AND ( type='API' OR authenticated_at IS NOT NULL ) AND disabled_at IS NULL;
+SELECT count(*) FROM users WHERE display_name = ? AND ( type='API' OR authenticated_at IS NOT NULL ) AND disabled_at IS NULL;
 
 -- name: ChangeDisplayName :exec
-UPDATE users SET display_name = $1, previous_names = previous_names || $2, namechanged_at = $3 WHERE id = $4;
+UPDATE users SET display_name = ?, previous_names = previous_names || ?, namechanged_at = ? WHERE id = ?;
 
 -- name: ChangeDisplayColor :exec
-UPDATE users SET display_color = $1 WHERE id = $2;
+UPDATE users SET display_color = ? WHERE id = ?;

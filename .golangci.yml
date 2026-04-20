@@ -1,6 +1,6 @@
 version: "2"
 run:
-  go: "1.25.3"
+  go: "1.26"
   modules-download-mode: readonly
   tests: false
 linters:
@@ -64,6 +64,7 @@ linters:
       - third_party$
       - builtin$
       - examples$
+      - node_modules
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
@@ -76,3 +77,4 @@ formatters:
       - third_party$
       - builtin$
       - examples$
+      - node_modules
