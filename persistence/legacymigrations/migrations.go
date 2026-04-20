@@ -1,4 +1,12 @@
-package tables
+// Package legacymigrations holds the hand-rolled, version-numbered schema
+// migrations used before Owncast moved to goose. This package is FROZEN:
+// the migration functions here advance pre-goose installs to schema version
+// 9 and must not be modified or extended. All new schema changes go in
+// persistence/migrations as numbered goose migrations.
+//
+// The only public entry point, MigrateDatabaseSchema, is invoked by the
+// migrations runner when it detects a legacy `config.version` row below 9.
+package legacymigrations
 
 import (
 	"database/sql"

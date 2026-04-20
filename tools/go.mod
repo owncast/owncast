@@ -1,6 +1,6 @@
 module github.com/owncast/owncast/tools
 
-go 1.25.3
+go 1.26.2
 
 require (
 	github.com/evilmartians/lefthook v1.13.6

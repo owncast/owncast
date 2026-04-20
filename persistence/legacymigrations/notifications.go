@@ -1,4 +1,4 @@
-package tables
+package legacymigrations
 
 import (
 	"database/sql"
