@@ -67,5 +67,10 @@
         transform: translateX(50%);
       }
     }
+
+    /* Disables the tooltip for the bitrate selector */
+    :global(.vjs-control-bar .vjs-control:hover .vjs-menu .vjs-control-text) {
+      display: none !important;
+    }
   }
 }
