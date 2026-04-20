@@ -4069,6 +4069,7 @@ components:
         - USER_JOINED
         - USER_PARTED
         - NAME_CHANGE
+        - FEDIVERSE_ENGAGEMENT_FOLLOW
         - VISIBILITY-UPDATE
         - PING
         - PONG

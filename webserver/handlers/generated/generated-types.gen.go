@@ -17,18 +17,19 @@ const (
 
 // Defines values for WebhookEventType.
 const (
-	CHAT               WebhookEventType = "CHAT"
-	CHATACTION         WebhookEventType = "CHAT_ACTION"
-	NAMECHANGE         WebhookEventType = "NAME_CHANGE"
-	PING               WebhookEventType = "PING"
-	PONG               WebhookEventType = "PONG"
-	STREAMSTARTED      WebhookEventType = "STREAM_STARTED"
-	STREAMSTOPPED      WebhookEventType = "STREAM_STOPPED"
-	STREAMTITLEUPDATED WebhookEventType = "STREAM_TITLE_UPDATED"
-	SYSTEM             WebhookEventType = "SYSTEM"
-	USERJOINED         WebhookEventType = "USER_JOINED"
-	USERPARTED         WebhookEventType = "USER_PARTED"
-	VISIBILITYUPDATE   WebhookEventType = "VISIBILITY-UPDATE"
+	CHAT                      WebhookEventType = "CHAT"
+	CHATACTION                WebhookEventType = "CHAT_ACTION"
+	FEDIVERSEENGAGEMENTFOLLOW WebhookEventType = "FEDIVERSE_ENGAGEMENT_FOLLOW"
+	NAMECHANGE                WebhookEventType = "NAME_CHANGE"
+	PING                      WebhookEventType = "PING"
+	PONG                      WebhookEventType = "PONG"
+	STREAMSTARTED             WebhookEventType = "STREAM_STARTED"
+	STREAMSTOPPED             WebhookEventType = "STREAM_STOPPED"
+	STREAMTITLEUPDATED        WebhookEventType = "STREAM_TITLE_UPDATED"
+	SYSTEM                    WebhookEventType = "SYSTEM"
+	USERJOINED                WebhookEventType = "USER_JOINED"
+	USERPARTED                WebhookEventType = "USER_PARTED"
+	VISIBILITYUPDATE          WebhookEventType = "VISIBILITY-UPDATE"
 )
 
 // Valid indicates whether the value is a known member of the WebhookEventType enum.
