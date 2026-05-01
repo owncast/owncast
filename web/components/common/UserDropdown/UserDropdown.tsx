@@ -213,6 +213,8 @@ export const UserDropdown: FC<UserDropdownProps> = ({
           title="Authenticate"
           open={showAuthModal}
           handleCancel={() => setShowAuthModal(false)}
+          maskClosable={false}
+          destroyOnClose={false}
         >
           <AuthModal />
         </Modal>

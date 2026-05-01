@@ -14,6 +14,8 @@ export type ModalProps = {
   children?: ReactNode;
   height?: string;
   width?: string;
+  maskClosable?: boolean;
+  destroyOnClose?: boolean;
 };
 
 export const Modal: FC<ModalProps> = ({
@@ -25,6 +27,8 @@ export const Modal: FC<ModalProps> = ({
   afterClose = undefined,
   height,
   width,
+  maskClosable = true,
+  destroyOnClose = true,
   children = undefined,
 }) => {
   const [loading, setLoading] = useState(!!url);
@@ -71,7 +75,8 @@ export const Modal: FC<ModalProps> = ({
       zIndex={999}
       footer={null}
       centered
-      destroyOnClose
+      maskClosable={maskClosable}
+      destroyOnClose={destroyOnClose}
       className={styles.modal}
     >
       <ErrorBoundary
