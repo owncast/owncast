@@ -124,25 +124,32 @@ func transitionToOfflineVideoStreamContent() {
 	}
 
 	// Write the master playlist that points to each variant's playlist.
+	// Write to a temp file in the same directory and rename into place so
+	// concurrent readers never see a partial file.
 	masterPlaylistPath := filepath.Join(config.HLSStoragePath, "stream.m3u8")
-	masterFile, err := os.Create(masterPlaylistPath) //nolint:gosec
+	masterTmp, err := os.CreateTemp(config.HLSStoragePath, "tmp-stream-*.m3u8")
 	if err != nil {
-		log.Errorln("unable to create master playlist:", err)
+		log.Errorln("unable to create master playlist temp file:", err)
 	} else {
-		_, _ = masterFile.WriteString("#EXTM3U\n")
-		_, _ = masterFile.WriteString("#EXT-X-VERSION:7\n")
-		_, _ = masterFile.WriteString("#EXT-X-INDEPENDENT-SEGMENTS\n")
+		_, _ = masterTmp.WriteString("#EXTM3U\n")
+		_, _ = masterTmp.WriteString("#EXT-X-VERSION:7\n")
+		_, _ = masterTmp.WriteString("#EXT-X-INDEPENDENT-SEGMENTS\n")
 		for index := range variants {
-			_, _ = fmt.Fprintf(masterFile, "#EXT-X-STREAM-INF:BANDWIDTH=0\n")
-			_, _ = fmt.Fprintf(masterFile, "%d/stream.m3u8\n", index)
+			_, _ = fmt.Fprintf(masterTmp, "#EXT-X-STREAM-INF:BANDWIDTH=0\n")
+			_, _ = fmt.Fprintf(masterTmp, "%d/stream.m3u8\n", index)
 		}
-		if err := masterFile.Close(); err != nil {
-			log.Errorln("unable to close master playlist:", err)
+		if err := masterTmp.Close(); err != nil {
+			log.Errorln("unable to close master playlist temp file:", err)
 		}
 
-		// Notify the storage provider so it can rewrite variant URLs
-		// to absolute paths for S3 or remote serving endpoints.
-		_storage.MasterPlaylistWritten(masterPlaylistPath)
+		if err := utils.Move(masterTmp.Name(), masterPlaylistPath); err != nil {
+			log.Errorln("unable to move master playlist into place:", err)
+			_ = os.Remove(masterTmp.Name())
+		} else {
+			// Notify the storage provider so it can rewrite variant URLs
+			// to absolute paths for S3 or remote serving endpoints.
+			_storage.MasterPlaylistWritten(masterPlaylistPath)
+		}
 	}
 
 	// Copy the logo to be the thumbnail
