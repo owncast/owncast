@@ -10,6 +10,7 @@ import (
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -28,12 +29,9 @@ func MakeRemoteIRIForResource(resourcePath string, host string) (*url.URL, error
 
 // MakeLocalIRIForResource will create an IRI for the local server.
 func MakeLocalIRIForResource(resourcePath string) *url.URL {
-	configRepository := configrepository.Get()
-
-	host := configRepository.GetServerURL()
-	u, err := url.Parse(host)
+	u, err := GetCanonicalServerURL()
 	if err != nil {
-		log.Errorln("unable to parse local IRI url", host, err)
+		log.Errorln("unable to parse local IRI url", err)
 		return nil
 	}
 
@@ -44,16 +42,39 @@ func MakeLocalIRIForResource(resourcePath string) *url.URL {
 
 // MakeLocalIRIForAccount will return a full IRI for the local server account username.
 func MakeLocalIRIForAccount(account string) *url.URL {
-	configRepository := configrepository.Get()
-
-	host := configRepository.GetServerURL()
-	u, err := url.Parse(host)
+	u, err := GetCanonicalServerURL()
 	if err != nil {
 		log.Errorln("unable to parse local IRI account server url", err)
 		return nil
 	}
 
 	u.Path = path.Join(u.Path, "federation", "user", account)
+
+	return u
+}
+
+// GetCanonicalServerURL returns the local server URL with an ASCII/punycode hostname.
+func GetCanonicalServerURL() (*url.URL, error) {
+	configRepository := configrepository.Get()
+
+	host := configRepository.GetServerURL()
+	canonicalHost, err := utils.CanonicalizeURLHostname(host)
+	if err != nil {
+		return nil, err
+	}
+
+	return url.Parse(canonicalHost)
+}
+
+// MakeLocalURLForPath will return a full URL for a path on the local server.
+func MakeLocalURLForPath(resourcePath string) *url.URL {
+	u, err := GetCanonicalServerURL()
+	if err != nil {
+		log.Errorln("unable to parse local server url", err)
+		return nil
+	}
+
+	u.Path = path.Join(u.Path, resourcePath)
 
 	return u
 }
@@ -69,34 +90,12 @@ func Serialize(obj vocab.Type) ([]byte, error) {
 
 // MakeLocalIRIForStreamURL will return a full IRI for the local server stream url.
 func MakeLocalIRIForStreamURL() *url.URL {
-	configRepository := configrepository.Get()
-
-	host := configRepository.GetServerURL()
-	u, err := url.Parse(host)
-	if err != nil {
-		log.Errorln("unable to parse local IRI stream url", err)
-		return nil
-	}
-
-	u.Path = path.Join(u.Path, "/hls/stream.m3u8")
-
-	return u
+	return MakeLocalURLForPath("/hls/stream.m3u8")
 }
 
 // MakeLocalIRIforLogo will return a full IRI for the local server logo.
 func MakeLocalIRIforLogo() *url.URL {
-	configRepository := configrepository.Get()
-
-	host := configRepository.GetServerURL()
-	u, err := url.Parse(host)
-	if err != nil {
-		log.Errorln("unable to parse local IRI stream url", err)
-		return nil
-	}
-
-	u.Path = path.Join(u.Path, "/logo/external")
-
-	return u
+	return MakeLocalURLForPath("/logo/external")
 }
 
 // GetLogoType will return the rel value for the webfinger response and

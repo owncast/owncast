@@ -27,11 +27,25 @@ func ObjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	iri := strings.Join([]string{strings.TrimSuffix(configRepository.GetServerURL(), "/"), r.URL.Path}, "")
-	object, _, _, err := persistence.GetObjectByIRI(iri)
+	serverURL, err := apmodels.GetCanonicalServerURL()
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
+	}
+	serverURL.Path = r.URL.Path
+	iri := serverURL.String()
+	object, _, _, err := persistence.GetObjectByIRI(iri)
+	if err != nil {
+		legacyIRI := strings.Join([]string{strings.TrimSuffix(configRepository.GetServerURL(), "/"), r.URL.Path}, "")
+		if legacyIRI == iri {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		object, _, _, err = persistence.GetObjectByIRI(legacyIRI)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
 	}
 
 	accountName := configRepository.GetDefaultFederationUsername()
