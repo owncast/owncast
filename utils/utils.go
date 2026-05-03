@@ -215,8 +215,15 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 
 	defaultDaysCached := 30
 
-	if filename == "thumbnail.jpg" || filename == "preview.gif" || filename == "init.mp4" {
+	if filename == "thumbnail.jpg" || filename == "preview.gif" {
 		// Thumbnails & preview gif re-generate during live
+		return 20
+	}
+
+	// HLS fMP4 init segments. Single-variant ffmpeg writes init.mp4; multi-variant
+	// writes init_0.mp4, init_1.mp4, etc. All of these are regenerated when a
+	// stream restarts, so they need a short cache.
+	if fileExtension == ".mp4" && strings.HasPrefix(filename, "init") {
 		return 20
 	}
 
