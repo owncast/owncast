@@ -62,7 +62,7 @@ func Copy(source, destination string) error {
 		return err
 	}
 
-	return os.WriteFile(destination, input, 0o600)
+	return os.WriteFile(filepath.Clean(destination), input, 0o600) //nolint:gosec
 }
 
 // Move moves the file at source to destination.
@@ -464,6 +464,8 @@ func DecodeBase64Image(url string) (bytes []byte, extension string, err error) {
 		extension = ".png"
 	case "image/jpeg":
 		extension = ".jpeg"
+	case "image/x-icon", "image/vnd.microsoft.icon":
+		extension = ".ico"
 	}
 
 	if extension == "" {

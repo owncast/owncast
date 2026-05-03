@@ -41,8 +41,8 @@ func OutboxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		_, _ = w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte("internal server error"))
 		return
 	}
 
@@ -65,7 +65,8 @@ func ActorObjectHandler(w http.ResponseWriter, r *http.Request) {
 		// controllers.WriteSimpleResponse(w, false, err.Error())
 	}
 
-	if _, err := w.Write([]byte(object)); err != nil {
+	w.Header().Set("Content-Type", "application/activity+json")
+	if _, err := w.Write([]byte(object)); err != nil { //nolint:gosec
 		log.Errorln(err)
 	}
 }

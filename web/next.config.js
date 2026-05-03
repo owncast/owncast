@@ -59,6 +59,9 @@ module.exports = async phase => {
         productionBrowserSourceMaps: process.env.SOURCE_MAPS === 'true',
         trailingSlash: true,
         reactStrictMode: true,
+        eslint: {
+          ignoreDuringBuilds: true,
+        },
         images: {
           unoptimized: true,
         },

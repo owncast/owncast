@@ -221,7 +221,8 @@
 		"offlineBasic": "Torrente hau offline dago. Itzuli laster!",
 		"offlineFediverseOnly": "Torrente hau offline dago. <span class='follow-link'>Jarraitzaile</span> {{fediverseAccount}} Fediversen hurrengoa {{streamer}} zuzenean joan denean ikusteko.",
 		"offlineNotifyAndFediverse": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean edo <span class='follow-link'>jarraitu</span> {{fediverseAccount}} Fediversen.",
-		"offlineNotifyOnly": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean."
+		"offlineNotifyOnly": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean.",
+		"chatEmbedTitle": "{{name}} Txata"
 	},
 	"Testing": {
 		"itemCount": "{{count}} elementu dituzu",

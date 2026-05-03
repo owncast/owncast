@@ -25,7 +25,7 @@ jobs:
           npx @redocly/cli --config docs/api/redocly.yaml build-docs openapi.yaml -o docs/api/index.html
 
       - name: Commit changes
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
           author_name: Owncast
           author_email: owncast@owncast.online

@@ -7,17 +7,14 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/auth"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
-	"github.com/owncast/owncast/persistence/tables"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
 )
@@ -57,9 +54,6 @@ func Start() error {
 		log.Errorln("storage error", err)
 	}
 
-	tables.SetupUsers(data.GetDatastore().DB)
-	auth.Setup(data.GetDatastore())
-
 	fileWriter.SetupFileWriterReceiverService(&handler)
 
 	if err := createInitialOfflineState(); err != nil {
@@ -83,7 +77,7 @@ func Start() error {
 
 	webhooks.SetupWebhooks(GetStatus)
 
-	notificationsrepository.Setup(data.GetStore())
+	notificationsrepository.Setup()
 
 	return nil
 }

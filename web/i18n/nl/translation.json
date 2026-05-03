@@ -221,7 +221,8 @@
 		"offlineBasic": "Deze stream is offline. Kom snel terug!",
 		"offlineFediverseOnly": "Deze stream is offline. <span class='follow-link'>Volg</span> {{fediverseAccount}} op de Fediverse om de volgende keer dat {{streamer}} live gaat te zien.",
 		"offlineNotifyAndFediverse": "Deze stream is offline. U kunt <span class='notify-link'>een bericht ontvangen</span> wanneer {{streamer}} weer live gaat of {{fediverseAccount}} <span class='follow-link'>volgen</span> op de Fediverse.",
-		"offlineNotifyOnly": "Deze stream is offline. <span class='notify-link'>Krijg een melding</span> de volgende keer dat {{streamer}} live gaat."
+		"offlineNotifyOnly": "Deze stream is offline. <span class='notify-link'>Krijg een melding</span> de volgende keer dat {{streamer}} live gaat.",
+		"chatEmbedTitle": "{{name}} chat"
 	},
 	"Testing": {
 		"itemCount": "Je hebt {{count}} items",

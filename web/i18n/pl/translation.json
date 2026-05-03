@@ -221,7 +221,8 @@
 		"offlineBasic": "Ten strumień jest offline. Sprawdź wkrótce!",
 		"offlineFediverseOnly": "Ten strumień jest offline. <span class='follow-link'>Śledź</span> {{fediverseAccount}} na Fediwerse, aby zobaczyć kiedy następny {{streamer}} będzie na żywo.",
 		"offlineNotifyAndFediverse": "Ten strumień jest offline. Możesz <span class='notify-link'>zostać powiadomiony</span> następnym razem, gdy {{streamer}} pojawi się lub <span class='follow-link'>podążaj za</span> {{fediverseAccount}} na Fediverse.",
-		"offlineNotifyOnly": "Ta transmisja jest wyłączona. <span class='notify-link'>Otrzymaj powiadomienie</span>, gdy następnym razem strona {{streamer}} zostanie uruchomiona."
+		"offlineNotifyOnly": "Ta transmisja jest wyłączona. <span class='notify-link'>Otrzymaj powiadomienie</span>, gdy następnym razem strona {{streamer}} zostanie uruchomiona.",
+		"chatEmbedTitle": "Czat {{name}}"
 	},
 	"Testing": {
 		"itemCount": "Masz {{count}} przedmiotów",

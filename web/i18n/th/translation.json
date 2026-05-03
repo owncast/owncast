@@ -221,7 +221,8 @@
 		"offlineBasic": "สตรีมนี้ออฟไลน์ กรุณาตรวจสอบอีกครั้งในภายหลัง!",
 		"offlineFediverseOnly": "สตรีมนี้ออฟไลน์ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse เพื่อดูเมื่อ {{streamer}} เริ่มถ่ายทอดสดครั้งต่อไป",
 		"offlineNotifyAndFediverse": "สตรีมนี้ออฟไลน์ คุณสามารถ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสดอีกครั้งหรือ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse",
-		"offlineNotifyOnly": "สตรีมนี้ออฟไลน์ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสด"
+		"offlineNotifyOnly": "สตรีมนี้ออฟไลน์ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสด",
+		"chatEmbedTitle": "{{name}} แชนแนลแชท"
 	},
 	"Testing": {
 		"itemCount": "คุณมี {{count}} รายการ",

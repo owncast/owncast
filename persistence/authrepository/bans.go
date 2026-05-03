@@ -3,29 +3,10 @@ package authrepository
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 )
-
-// CreateBanIPTable will create the IP ban table if needed.
-func (r *SqlAuthRepository) CreateBanIPTable(db *sql.DB) {
-	createTableSQL := `  CREATE TABLE IF NOT EXISTS ip_bans (
-    "ip_address" TEXT NOT NULL PRIMARY KEY,
-    "notes" TEXT,
-    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  );`
-
-	stmt, err := db.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatal("error creating ip ban table", err)
-	}
-	defer stmt.Close()
-	if _, err := stmt.Exec(); err != nil {
-		log.Fatal("error creating ip ban table", err)
-	}
-}
 
 // BanIPAddress will persist a new IP address ban to the datastore.
 func (r *SqlAuthRepository) BanIPAddress(address, note string) error {

@@ -44,8 +44,8 @@ func FollowersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		_, _ = w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte("internal server error"))
 		return
 	}
 

@@ -221,7 +221,8 @@
 		"offlineBasic": "Ce flux est hors ligne. Revenez bientôt !",
 		"offlineFediverseOnly": "Ce flux est hors ligne. <span class='follow-link'>Suivez</span> {{fediverseAccount}} sur le Fédiverse pour voir la prochaine fois que {{streamer}} sera en live.",
 		"offlineNotifyAndFediverse": "Ce flux est hors ligne. Vous pouvez <span class='notify-link'>être notifié</span> la prochaine fois que {{streamer}} sera en direct ou <span class='follow-link'>suivre</span> {{fediverseAccount}} sur le Fediverse.",
-		"offlineNotifyOnly": "Ce flux est hors ligne. <span class='notify-link'>Être notifié</span> la prochaine fois que {{streamer}} sera en ligne."
+		"offlineNotifyOnly": "Ce flux est hors ligne. <span class='notify-link'>Être notifié</span> la prochaine fois que {{streamer}} sera en ligne.",
+		"chatEmbedTitle": "Chat {{name}}"
 	},
 	"Testing": {
 		"itemCount": "Vous avez des objets {{count}}",

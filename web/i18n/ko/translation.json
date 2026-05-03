@@ -221,7 +221,8 @@
 		"offlineBasic": "이 스트림은 오프라인 상태입니다. 곧 다시 확인해주세요!",
 		"offlineFediverseOnly": "이 스트림은 오프라인 상태입니다. 다음 번 {{streamer}} 라이브 방송을 보려면 Fediverse에서 {{fediverseAccount}} <span class='follow-link'>팔로우하세요</span>.",
 		"offlineNotifyAndFediverse": "이 스트림은 오프라인 상태입니다. 다음 번에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받거나 페디버스에서 {{fediverseAccount}} 을 <span class='follow-link'>팔로우하세요</span>.",
-		"offlineNotifyOnly": "이 스트림은 오프라인 상태입니다. 다음에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받으세요."
+		"offlineNotifyOnly": "이 스트림은 오프라인 상태입니다. 다음에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받으세요.",
+		"chatEmbedTitle": "{{name}} 채팅"
 	},
 	"Testing": {
 		"itemCount": "귀하는 {{count}} 개 항목이 있습니다",

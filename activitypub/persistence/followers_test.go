@@ -25,7 +25,6 @@ var followers = []models.Follower{}
 func setup() {
 	data.SetupPersistence(":memory:")
 	_datastore = data.GetDatastore()
-	createFederationFollowersTable()
 
 	followersRepo := followersrepository.New(_datastore)
 
@@ -153,7 +152,6 @@ func TestGetUniqueDeliveryInboxes(t *testing.T) {
 	data.SetupPersistence(":memory:")
 	ds := data.GetDatastore()
 	_datastore = ds
-	createFederationFollowersTable()
 	followersRepo := followersrepository.New(ds)
 
 	// Create followers from server1 with a shared inbox (3 users, 1 shared inbox)
@@ -251,7 +249,6 @@ func TestSharedInboxPreferredOverIndividual(t *testing.T) {
 	data.SetupPersistence(":memory:")
 	ds := data.GetDatastore()
 	_datastore = ds
-	createFederationFollowersTable()
 	followersRepo := followersrepository.New(ds)
 
 	// Create a single follower with both individual and shared inbox
@@ -288,7 +285,6 @@ func TestIndividualInboxUsedWhenNoSharedInbox(t *testing.T) {
 	data.SetupPersistence(":memory:")
 	ds := data.GetDatastore()
 	_datastore = ds
-	createFederationFollowersTable()
 	followersRepo := followersrepository.New(ds)
 
 	// Create a follower without a shared inbox
