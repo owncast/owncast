@@ -111,18 +111,19 @@ func (s *Service) transitionToOfflineVideoStreamContent() {
 	}
 
 	masterPlaylistPath := filepath.Join(config.HLSStoragePath, "stream.m3u8")
-	masterFile, err := os.Create(masterPlaylistPath) //nolint:gosec
+	masterTmp, err := os.CreateTemp(config.HLSStoragePath, "tmp-stream-*.m3u8")
 	if err != nil {
-		log.Errorln("unable to create master playlist:", err)
+		log.Errorln("unable to create master playlist temp file:", err)
 	} else {
-		_, _ = masterFile.WriteString("#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-INDEPENDENT-SEGMENTS\n")
+		_, _ = masterTmp.WriteString("#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-INDEPENDENT-SEGMENTS\n")
 		for index := range variants {
-			_, _ = fmt.Fprintf(masterFile, "#EXT-X-STREAM-INF:BANDWIDTH=0\n%d/stream.m3u8\n", index)
+			_, _ = fmt.Fprintf(masterTmp, "#EXT-X-STREAM-INF:BANDWIDTH=0\n%d/stream.m3u8\n", index)
 		}
-		if err := masterFile.Close(); err != nil {
+		if err := masterTmp.Close(); err != nil {
 			log.Errorln("unable to close master playlist:", err)
-		}
-		if _, err := s.storage.Save(masterPlaylistPath, 0); err != nil {
+		} else if err := utils.Move(masterTmp.Name(), masterPlaylistPath); err != nil {
+			log.Errorln("unable to atomically replace master playlist:", err)
+		} else if _, err := s.storage.Save(masterPlaylistPath, 0); err != nil {
 			log.Errorln("unable to save master playlist:", err)
 		}
 	}
