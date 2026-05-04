@@ -1,8 +1,10 @@
 package storageproviders
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -16,11 +18,10 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 
 	"github.com/owncast/owncast/config"
 )
@@ -31,11 +32,8 @@ type S3Storage struct {
 	// then keep a reference to it here.
 	queuedPlaylistUpdates map[string]string
 
-	s3Client *s3.S3
+	s3Client *s3.Client
 
-	uploader *s3manager.Uploader
-
-	sess     *session.Session
 	s3Secret string
 
 	s3Bucket          string
@@ -84,10 +82,7 @@ func (s *S3Storage) Setup() error {
 	s.s3PathPrefix = s3Config.PathPrefix
 	s.s3ForcePathStyle = s3Config.ForcePathStyle
 
-	s.sess = s.connectAWS()
-	s.s3Client = s3.New(s.sess)
-
-	s.uploader = s3manager.NewUploader(s.sess)
+	s.s3Client = s.createS3Client()
 
 	return nil
 }
@@ -167,7 +162,7 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	maxAgeSeconds := utils.GetCacheDurationSecondsForPath(filePath)
 	cacheControlHeader := fmt.Sprintf("max-age=%d", maxAgeSeconds)
 
-	uploadInput := &s3manager.UploadInput{
+	uploadInput := &s3.PutObjectInput{
 		Bucket:       aws.String(s.s3Bucket), // Bucket to be used
 		Key:          aws.String(remotePath), // Name of the file to be saved
 		Body:         file,                   // File
@@ -183,13 +178,13 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	}
 
 	if s.s3ACL != "" {
-		uploadInput.ACL = aws.String(s.s3ACL)
+		uploadInput.ACL = types.ObjectCannedACL(s.s3ACL)
 	} else {
 		// Default ACL
-		uploadInput.ACL = aws.String("public-read")
+		uploadInput.ACL = types.ObjectCannedACLPublicRead
 	}
 
-	response, err := s.uploader.Upload(uploadInput)
+	_, err = s.s3Client.PutObject(context.Background(), uploadInput)
 	if err != nil {
 		log.Traceln("error uploading segment", err.Error())
 		if retryCount < 4 {
@@ -200,7 +195,7 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 		return "", fmt.Errorf("giving up uploading %s to object storage %s", filePath, s.s3Endpoint)
 	}
 
-	return response.Location, nil
+	return url.JoinPath(s.host, remotePath)
 }
 
 // Cleanup will fire the different cleanup tasks required.
@@ -231,7 +226,7 @@ func (s *S3Storage) RemoteCleanup() error {
 	return nil
 }
 
-func (s *S3Storage) connectAWS() *session.Session {
+func (s *S3Storage) createS3Client() *s3.Client {
 	t := http.DefaultTransport.(*http.Transport).Clone()
 	t.MaxIdleConnsPerHost = 100
 
@@ -240,25 +235,17 @@ func (s *S3Storage) connectAWS() *session.Session {
 		Transport: t,
 	}
 
-	creds := credentials.NewStaticCredentials(s.s3AccessKey, s.s3Secret, "")
-	_, err := creds.Get()
-	if err != nil {
-		log.Panicln(err)
-	}
+	creds := credentials.NewStaticCredentialsProvider(s.s3AccessKey, s.s3Secret, "")
 
-	sess, err := session.NewSession(
-		&aws.Config{
-			HTTPClient:       httpClient,
-			Region:           aws.String(s.s3Region),
-			Credentials:      creds,
-			Endpoint:         aws.String(s.s3Endpoint),
-			S3ForcePathStyle: aws.Bool(s.s3ForcePathStyle),
-		},
-	)
-	if err != nil {
-		log.Panicln(err)
-	}
-	return sess
+	client := s3.New(s3.Options{
+		Region:       s.s3Region,
+		Credentials:  aws.NewCredentialsCache(creds),
+		HTTPClient:   httpClient,
+		BaseEndpoint: aws.String(s.s3Endpoint),
+		UsePathStyle: s.s3ForcePathStyle,
+	})
+
+	return client
 }
 
 func (s *S3Storage) getDeletableVideoSegmentsWithOffset(offset int) ([]s3object, error) {
@@ -278,9 +265,9 @@ func (s *S3Storage) getDeletableVideoSegmentsWithOffset(offset int) ([]s3object,
 const s3MaxDeleteKeys = 1000
 
 func (s *S3Storage) deleteObjects(objects []s3object) {
-	keys := make([]*s3.ObjectIdentifier, len(objects))
+	keys := make([]types.ObjectIdentifier, len(objects))
 	for i, object := range objects {
-		keys[i] = &s3.ObjectIdentifier{Key: aws.String(object.key)}
+		keys[i] = types.ObjectIdentifier{Key: aws.String(object.key)}
 	}
 
 	log.Debugln("Deleting", len(keys), "objects from S3 bucket:", s.s3Bucket)
@@ -291,9 +278,9 @@ func (s *S3Storage) deleteObjects(objects []s3object) {
 			end = len(keys)
 		}
 
-		resp, err := s.s3Client.DeleteObjects(&s3.DeleteObjectsInput{
+		resp, err := s.s3Client.DeleteObjects(context.Background(), &s3.DeleteObjectsInput{
 			Bucket: aws.String(s.s3Bucket),
-			Delete: &s3.Delete{
+			Delete: &types.Delete{
 				Objects: keys[i:end],
 				Quiet:   aws.Bool(true),
 			},
@@ -307,28 +294,25 @@ func (s *S3Storage) deleteObjects(objects []s3object) {
 }
 
 func (s *S3Storage) retrieveAllVideoSegments() ([]s3object, error) {
-	allObjectsListRequest := &s3.ListObjectsInput{
+	paginator := s3.NewListObjectsV2Paginator(s.s3Client, &s3.ListObjectsV2Input{
 		Bucket: aws.String(s.s3Bucket),
 		Prefix: aws.String(s.remoteHLSListingPrefix()),
-	}
+	})
 
-	// Fetch all objects in the bucket, paginating automatically.
 	var allObjects []s3object
-	err := s.s3Client.ListObjectsPages(allObjectsListRequest,
-		func(page *s3.ListObjectsOutput, lastPage bool) bool {
-			for _, item := range page.Contents {
-				if strings.HasSuffix(*item.Key, ".ts") {
-					allObjects = append(allObjects, s3object{
-						key:          *item.Key,
-						lastModified: *item.LastModified,
-					})
-				}
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(context.Background())
+		if err != nil {
+			return nil, errors.Wrap(err, "Unable to fetch list of items in bucket for cleanup")
+		}
+		for _, item := range page.Contents {
+			if strings.HasSuffix(*item.Key, ".ts") {
+				allObjects = append(allObjects, s3object{
+					key:          *item.Key,
+					lastModified: *item.LastModified,
+				})
 			}
-			return true // continue paging
-		},
-	)
-	if err != nil {
-		return nil, errors.Wrap(err, "Unable to fetch list of items in bucket for cleanup")
+		}
 	}
 
 	// Sort the results by timestamp, newest first.

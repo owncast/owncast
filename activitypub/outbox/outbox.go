@@ -203,13 +203,12 @@ func SendPublicMessage(textContent string) error {
 // if public, cc the followers and to the Public uri, else private, address followers directly.
 func getAddressingToFollowers() (vocab.ActivityStreamsToProperty, vocab.ActivityStreamsCcProperty) {
 	configRepository := configrepository.Get()
-	server_url := configRepository.GetServerURL()
-	followers_iri, _ := url.Parse(server_url)
 	username := configRepository.GetDefaultFederationUsername()
 
-	followers_iri = followers_iri.JoinPath("federation", "user", username, "followers")
+	followersIRI := apmodels.MakeLocalIRIForAccount(username)
+	followersIRI = followersIRI.JoinPath("followers")
 
-	return apmodels.MakeAddressingToFollowers(followers_iri, !configRepository.GetFederationIsPrivate())
+	return apmodels.MakeAddressingToFollowers(followersIRI, !configRepository.GetFederationIsPrivate())
 }
 
 // nolint: unparam
