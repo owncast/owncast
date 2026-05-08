@@ -46,7 +46,7 @@ pre-commit:
       stage_fixed: true
     golangci-lint:
       glob: '*.go'
-      run: ./bin/golangci-lint run ./...
+      run: ./bin/golangci-lint run $(echo {staged_files} | tr ' ' '\n' | xargs -n1 dirname | sort -u)
     go-test:
       glob: '*.go'
       run: go test ./... > /dev/null
