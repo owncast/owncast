@@ -42,11 +42,11 @@ pre-commit:
       run: npx --yes knip --include dependencies,files,exports
     go-fmt:
       glob: '*.go'
-      run: GOBIN=$(pwd)/bin go install -C tools mvdan.cc/gofumpt && ./bin/gofumpt -l -w {staged_files}
+      run: ./bin/gofumpt -l -w {staged_files}
       stage_fixed: true
     golangci-lint:
       glob: '*.go'
-      run: GOBIN=$(pwd)/bin go install -C tools github.com/golangci/golangci-lint/v2/cmd/golangci-lint && ./bin/golangci-lint run ./...
+      run: ./bin/golangci-lint run ./...
     go-test:
       glob: '*.go'
       run: go test ./... > /dev/null
@@ -69,7 +69,7 @@ lint:
   commands:
     golangci-lint:
       glob: '*.go'
-      run: GOBIN=$(pwd)/bin go install -C tools github.com/golangci/golangci-lint/v2/cmd/golangci-lint && ./bin/golangci-lint run ./...
+      run: ./bin/golangci-lint run ./...
 
 # Validate commit messages per https://www.conventionalcommits.org/en/v1.0.0/
 # Install commitlint into your global npm path if you want to use it.
