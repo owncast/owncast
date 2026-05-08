@@ -7,7 +7,7 @@ require (
 	github.com/golangci/golangci-lint/v2 v2.12.1
 	github.com/oapi-codegen/oapi-codegen/v2 v2.7.0
 	github.com/sqlc-dev/sqlc v1.31.1
-	mvdan.cc/gofumpt v0.9.2
+	mvdan.cc/gofumpt v0.10.0
 )
 
 require (
