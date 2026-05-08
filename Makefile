@@ -43,6 +43,7 @@ install-hooks: $(LEFTHOOK)
 				print "  (cd \"$$__owncast_dir\" && make install-tools) >&2 || exit 1"; \
 				print "fi"; \
 				print "export LEFTHOOK_BIN"; \
+				sub(/call_lefthook run /, "call_lefthook run --no-auto-install "); \
 				done = 1 \
 			} { print }' "$$hook" > "$$hook.new" && mv "$$hook.new" "$$hook" && chmod +x "$$hook"; \
 		fi \
