@@ -66,7 +66,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "18.3.1",
     "react-error-boundary": "^5.0.0",
-    "react-hotkeys-hook": "5.3.0",
+    "react-hotkeys-hook": "5.3.2",
     "react-linkify": "1.0.0-alpha",
     "react-markdown": "10.1.0",
     "react-virtuoso": "4.18.6",
