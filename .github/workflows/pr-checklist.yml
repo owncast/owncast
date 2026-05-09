@@ -21,7 +21,11 @@ jobs:
   validate-checklist:
     name: Validate PR checklist
     runs-on: ubuntu-latest
-    if: ${{ !contains(github.actor, '[bot]') }}
+    if: >-
+      ${{
+        github.event.pull_request.user.type != 'Bot'
+        && !endsWith(github.event.pull_request.user.login, '[bot]')
+      }}
 
     steps:
       - name: Check organization membership
