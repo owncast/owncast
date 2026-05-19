@@ -31,6 +31,11 @@ func fakeGetStatus() models.Status {
 	}
 }
 
+// testSvc is the *Service used by tests in this package. Constructed
+// in TestMain after the in-memory datastore is up so the worker pool
+// has somewhere to dispatch.
+var testSvc *Service
+
 func TestMain(m *testing.M) {
 	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-db.db")
 	if err != nil {
@@ -47,9 +52,10 @@ func TestMain(m *testing.M) {
 	configRepo := configrepository.Get()
 	configRepo.SetServerURL("http://localhost:8080")
 
-	SetupWebhooks(fakeGetStatus)
+	testSvc = New(Deps{GetStatus: fakeGetStatus})
+	testSvc.Start()
 
-	defer close(queue)
+	defer close(testSvc.queue)
 
 	m.Run()
 }
@@ -58,7 +64,7 @@ func TestMain(m *testing.M) {
 // this test ensures that `SendToWebhooks` without a `WaitGroup` doesn't panic.
 func TestPublicSend(t *testing.T) {
 	// Send enough events to be sure at least one worker delivers a second event.
-	eventsCount := webhookWorkerPoolSize + 1
+	eventsCount := testSvc.workerPoolSize + 1
 
 	var wg sync.WaitGroup
 	wg.Add(eventsCount)
@@ -85,7 +91,7 @@ func TestPublicSend(t *testing.T) {
 			EventData: struct{}{},
 			Type:      models.MessageSent,
 		}
-		SendEventToWebhooks(wh)
+		testSvc.SendEventToWebhooks(wh)
 	}
 
 	wg.Wait()
@@ -136,7 +142,7 @@ func TestRouting(t *testing.T) {
 			EventData: struct{}{},
 			Type:      eventType,
 		}
-		sendEventToWebhooks(wh, &wg)
+		testSvc.sendEventToWebhooks(wh, &wg)
 	}
 
 	wg.Wait()
@@ -178,7 +184,7 @@ func TestMultiple(t *testing.T) {
 		EventData: struct{}{},
 		Type:      models.MessageSent,
 	}
-	sendEventToWebhooks(wh, &wg)
+	testSvc.sendEventToWebhooks(wh, &wg)
 
 	wg.Wait()
 
@@ -219,7 +225,7 @@ func TestTimestamps(t *testing.T) {
 		EventData: struct{}{},
 		Type:      eventTypes[0],
 	}
-	sendEventToWebhooks(wh, &wg)
+	testSvc.sendEventToWebhooks(wh, &wg)
 
 	wg.Wait()
 
@@ -276,13 +282,13 @@ func TestParallel(t *testing.T) {
 
 	var wgStart sync.WaitGroup
 	finished := make(chan int)
-	wgStart.Add(webhookWorkerPoolSize)
+	wgStart.Add(testSvc.workerPoolSize)
 
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		myId := atomic.AddUint32(&calls, 1)
 
 		// We made it to the pool size + 1 event, so we're done with the test.
-		if myId == uint32(webhookWorkerPoolSize)+1 {
+		if myId == uint32(testSvc.workerPoolSize)+1 {
 			close(finished)
 			return
 		}
@@ -313,12 +319,12 @@ func TestParallel(t *testing.T) {
 
 	var wgMessages sync.WaitGroup
 
-	for i := 0; i < webhookWorkerPoolSize+1; i++ {
+	for i := 0; i < testSvc.workerPoolSize+1; i++ {
 		wh := WebhookEvent{
 			EventData: struct{}{},
 			Type:      models.MessageSent,
 		}
-		sendEventToWebhooks(wh, &wgMessages)
+		testSvc.sendEventToWebhooks(wh, &wgMessages)
 	}
 
 	wgMessages.Wait()

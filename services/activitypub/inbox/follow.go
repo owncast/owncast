@@ -10,7 +10,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/requests"
@@ -58,7 +57,7 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 			log.Errorln("unable to send follow accept", err)
 			return err
 		}
-		go webhooks.SendFediverseEngagementFollowEvent(actorIRI)
+		go s.webhooks.SendFediverseEngagementFollowEvent(actorIRI)
 	}
 
 	// If this request is approved and we have not previously sent an action to

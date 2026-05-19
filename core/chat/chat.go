@@ -5,14 +5,16 @@ import (
 	"net/http"
 	"sort"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
-	log "github.com/sirupsen/logrus"
+	"github.com/owncast/owncast/services/webhooks"
 )
 
 var (
@@ -20,14 +22,16 @@ var (
 	chatMessagesSentCounter prometheus.Gauge
 )
 
-// Start begins the chat server.
-func Start(getStatusFunc func() models.Status) error {
+// Start begins the chat server. The provided webhooks service is held
+// by *_server so chat events can be dispatched to configured
+// destinations.
+func Start(getStatusFunc func() models.Status, webhooksSvc *webhooks.Service) error {
 	setupPersistence()
 
 	configRepository := configrepository.Get()
 
 	getStatus = getStatusFunc
-	_server = NewChat()
+	_server = NewChat(webhooksSvc)
 
 	go _server.Run()
 

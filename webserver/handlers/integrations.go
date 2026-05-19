@@ -60,12 +60,12 @@ func (*ServerInterfaceImpl) ExternalUpdateMessageVisibilityOptions(w http.Respon
 	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, admin.ExternalUpdateMessageVisibility)(w, r)
 }
 
-func (*ServerInterfaceImpl) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, admin.ExternalSetStreamTitle)(w, r)
+func (s *ServerInterfaceImpl) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, s.h.admin.ExternalSetStreamTitle)(w, r)
 }
 
-func (*ServerInterfaceImpl) ExternalSetStreamTitleOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, admin.ExternalSetStreamTitle)(w, r)
+func (s *ServerInterfaceImpl) ExternalSetStreamTitleOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, s.h.admin.ExternalSetStreamTitle)(w, r)
 }
 
 func (*ServerInterfaceImpl) ExternalGetUserDetails(w http.ResponseWriter, r *http.Request, userId string) {

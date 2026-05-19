@@ -1,3 +1,8 @@
+// Package webhooks dispatches Owncast events (chat messages, stream
+// status changes, fediverse engagement, …) to user-configured HTTP
+// destinations via a bounded worker pool. Construct a *Service in
+// main.go with the stream status callback and the followers repository,
+// then call Start to launch the workers.
 package webhooks
 
 import (
@@ -7,6 +12,7 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
+	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 )
 
 // BaseWebhookData contains common fields shared across all webhook event data.
@@ -68,25 +74,35 @@ type WebhookVisibilityToggleEventData struct {
 	MessageIDs []string     `json:"ids"`
 }
 
-// SendEventToWebhooks will send a single webhook event to all webhook destinations.
-func SendEventToWebhooks(payload WebhookEvent) {
-	sendEventToWebhooks(payload, nil)
+// SendEventToWebhooks fans an event out to every configured webhook
+// destination subscribed to that event type.
+func (s *Service) SendEventToWebhooks(payload WebhookEvent) {
+	s.sendEventToWebhooks(payload, nil)
 }
 
-func sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
+// sendEventToWebhooks is the dispatch internal that also accepts an
+// optional waitgroup so callers (tests, batched senders) can wait for
+// all destinations to be drained.
+func (s *Service) sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
 	webhooksRepo := webhookrepository.Get()
 	webhooks := webhooksRepo.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {
-		// Use wg to track the number of notifications to be sent.
 		if wg != nil {
 			wg.Add(1)
 		}
-		addToQueue(webhook, payload, wg)
+		s.addToQueue(webhook, payload, wg)
 	}
 }
 
+// getServerURL is a helper used in event payloads.
 func getServerURL() string {
 	configRepo := configrepository.Get()
 	return configRepo.GetServerURL()
+}
+
+// Followers exposes the followers repository the service was
+// constructed with. Used by the fediverse-engagement event builder.
+func (s *Service) Followers() followersrepository.FollowersRepository {
+	return s.followers
 }

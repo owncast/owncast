@@ -31,12 +31,12 @@ func (*ServerInterfaceImpl) SetExtraPageContentOptions(w http.ResponseWriter, r 
 	middleware.RequireAdminAuth(admin.SetExtraPageContent)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetStreamTitle)(w, r)
+func (s *ServerInterfaceImpl) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetStreamTitle)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetStreamTitleOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetStreamTitle)(w, r)
+func (s *ServerInterfaceImpl) SetStreamTitleOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetStreamTitle)(w, r)
 }
 
 func (s *ServerInterfaceImpl) SetServerName(w http.ResponseWriter, r *http.Request) {

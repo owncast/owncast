@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
+	"github.com/owncast/owncast/services/webhooks"
 )
 
 // Job bundles a single inbound HTTP request for a worker.
@@ -31,6 +32,7 @@ type Service struct {
 
 	persistence *persistence.Service
 	workerpool  *workerpool.Service
+	webhooks    *webhooks.Service
 	followers   followersrepository.FollowersRepository
 }
 
@@ -38,6 +40,7 @@ type Service struct {
 type Deps struct {
 	Persistence *persistence.Service
 	Workerpool  *workerpool.Service
+	Webhooks    *webhooks.Service
 	Followers   followersrepository.FollowersRepository
 }
 
@@ -48,6 +51,7 @@ func New(deps Deps) *Service {
 		workerPoolSize: runtime.GOMAXPROCS(0),
 		persistence:    deps.Persistence,
 		workerpool:     deps.Workerpool,
+		webhooks:       deps.Webhooks,
 		followers:      deps.Followers,
 	}
 }

@@ -19,6 +19,7 @@ import (
 	"github.com/owncast/owncast/services/cache"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
+	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers"
 	"github.com/owncast/owncast/webserver/handlers/admin"
@@ -121,13 +122,35 @@ func main() {
 
 	rtmpSvc := rtmp.New(rtmp.Deps{})
 
-	apSvc := activitypub.New(activitypub.Deps{Datastore: data.GetDatastore()})
+	// Webhooks needs the stream status callback and the followers
+	// repository. Construct it before activitypub (which uses it) and
+	// before stream (which uses it to dispatch start/stop events).
+	webhooksSvc := webhooks.New(webhooks.Deps{
+		GetStatus: nil, // wired below once streamSvc exists
+		Followers: nil, // wired below from apSvc
+	})
+
+	apSvc := activitypub.New(activitypub.Deps{
+		Datastore: data.GetDatastore(),
+		Webhooks:  webhooksSvc,
+	})
 	apSvc.Start()
 
 	streamSvc := stream.New(stream.Deps{
 		Rtmp:        rtmpSvc,
 		Activitypub: apSvc,
+		Webhooks:    webhooksSvc,
 	})
+
+	// Now that stream + AP are constructed, finish wiring the webhook
+	// service deps (a small workaround for the construction cycle:
+	// webhooks needs stream.GetStatus and ap.Followers; stream and AP
+	// both need *webhooks.Service).
+	webhooksSvc.SetDeps(webhooks.Deps{
+		GetStatus: streamSvc.GetStatus,
+		Followers: apSvc.Followers(),
+	})
+
 	if err := streamSvc.Start(ctx); err != nil {
 		log.Fatalln("failed to start the stream service", err)
 	}
@@ -139,6 +162,7 @@ func main() {
 		Stream:      streamSvc,
 		Rtmp:        rtmpSvc,
 		Activitypub: apSvc,
+		Webhooks:    webhooksSvc,
 	})
 
 	fediverseHandler := fediverse.New(fediverse.Deps{

@@ -13,12 +13,12 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/geoip"
+	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -39,6 +39,10 @@ type Server struct {
 
 	geoipClient *geoip.Client
 
+	// webhooks dispatches chat events (messages, joins, parts,
+	// renames, visibility toggles) to configured webhook destinations.
+	webhooks *webhooks.Service
+
 	// a map of user IDs and timers that fire for chat part messages.
 	userPartedTimers         map[string]*time.Ticker
 	seq                      uint
@@ -48,7 +52,7 @@ type Server struct {
 }
 
 // NewChat will return a new instance of the chat server.
-func NewChat() *Server {
+func NewChat(webhooksSvc *webhooks.Service) *Server {
 	maximumConcurrentConnectionLimit := getMaximumConcurrentConnectionLimit()
 	setSystemConcurrentConnectionLimit(maximumConcurrentConnectionLimit)
 
@@ -59,6 +63,7 @@ func NewChat() *Server {
 		unregister:               make(chan uint),
 		maxSocketConnectionLimit: maximumConcurrentConnectionLimit,
 		geoipClient:              geoip.NewClient(),
+		webhooks:                 webhooksSvc,
 		userPartedTimers:         map[string]*time.Ticker{},
 	}
 
@@ -157,7 +162,7 @@ func (s *Server) sendUserJoinedMessage(c *Client) {
 	}
 
 	// Send chat user joined webhook
-	webhooks.SendChatEventUserJoined(userJoinedEvent)
+	s.webhooks.SendChatEventUserJoined(userJoinedEvent)
 }
 
 func (s *Server) handleClientDisconnected(c *Client) {
@@ -198,7 +203,7 @@ func (s *Server) sendUserPartedMessage(c *Client) {
 		}
 	}
 	// Send chat user joined webhook
-	webhooks.SendChatEventUserParted(userPartEvent)
+	s.webhooks.SendChatEventUserParted(userPartEvent)
 }
 
 // HandleClientConnection is fired when a single client connects to the websocket.

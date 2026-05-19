@@ -3,10 +3,10 @@ package chat
 import (
 	"errors"
 
-	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/webhooks"
-	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/core/chat/events"
+	"github.com/owncast/owncast/persistence/chatmessagerepository"
 )
 
 // SetMessagesVisibility will set the visibility of multiple messages by ID.
@@ -31,7 +31,7 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 		return errors.New("error broadcasting message visibility payload " + err.Error())
 	}
 
-	webhooks.SendChatEventSetMessageVisibility(event)
+	_server.webhooks.SendChatEventSetMessageVisibility(event)
 
 	return nil
 }

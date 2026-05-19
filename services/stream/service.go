@@ -16,6 +16,7 @@ import (
 	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/transcoder"
+	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/yp"
 )
 
@@ -89,14 +90,19 @@ type Service struct {
 	// it to broadcast go-live notifications to followers when a stream
 	// starts.
 	activitypub *activitypub.Service
+
+	// webhooks dispatches stream-status events (started/stopped) to
+	// user-configured HTTP destinations.
+	webhooks *webhooks.Service
 }
 
 // Deps is the explicit-dependency contract the service requires at
-// construction time. As more collaborators (chat, webhooks, etc.)
-// migrate to constructor-injected services, they appear here.
+// construction time. As more collaborators (chat, etc.) migrate to
+// constructor-injected services, they appear here.
 type Deps struct {
 	Rtmp        *rtmp.Service
 	Activitypub *activitypub.Service
+	Webhooks    *webhooks.Service
 }
 
 // New constructs an idle stream Service. Call Start(ctx) to bring up the
@@ -107,5 +113,6 @@ func New(deps Deps) *Service {
 		fileWriter:  transcoder.FileWriterReceiverService{},
 		rtmp:        deps.Rtmp,
 		activitypub: deps.Activitypub,
+		webhooks:    deps.Webhooks,
 	}
 }

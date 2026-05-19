@@ -10,7 +10,7 @@ import (
 
 func TestSendFediverseEngagementEventFollow(t *testing.T) {
 	checkPayload(t, models.FediverseEngagementFollow, func() {
-		sendFediverseEngagementEventFollow(events.FediverseEngagementFollowEvent{
+		testSvc.sendFediverseEngagementEventFollow(events.FediverseEngagementFollowEvent{
 			Event: events.Event{
 				Timestamp: time.Unix(72, 6).UTC(),
 				ID:        "id",

@@ -3,27 +3,29 @@ package webhooks
 import (
 	"time"
 
+	"github.com/teris-io/shortid"
+
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/teris-io/shortid"
 )
 
-// SendStreamStatusEvent will send all webhook destinations the current stream status.
-func SendStreamStatusEvent(eventType models.EventType) {
-	sendStreamStatusEvent(eventType, shortid.MustGenerate(), time.Now())
+// SendStreamStatusEvent dispatches a stream-status event (started,
+// stopped, title-updated, …) to all configured webhook destinations.
+func (s *Service) SendStreamStatusEvent(eventType models.EventType) {
+	s.sendStreamStatusEvent(eventType, shortid.MustGenerate(), time.Now())
 }
 
-func sendStreamStatusEvent(eventType models.EventType, id string, timestamp time.Time) {
+func (s *Service) sendStreamStatusEvent(eventType models.EventType, id string, timestamp time.Time) {
 	configRepository := configrepository.Get()
 
-	SendEventToWebhooks(WebhookEvent{
+	s.SendEventToWebhooks(WebhookEvent{
 		Type: eventType,
 		EventData: map[string]interface{}{
 			"id":          id,
 			"name":        configRepository.GetServerName(),
 			"summary":     configRepository.GetServerSummary(),
 			"streamTitle": configRepository.GetStreamTitle(),
-			"status":      getStatus(),
+			"status":      s.getStatus(),
 			"serverURL":   getServerURL(),
 			"timestamp":   timestamp,
 		},

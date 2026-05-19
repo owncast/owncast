@@ -8,7 +8,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat/events"
-	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
@@ -113,7 +112,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	// Send chat user name changed webhook
 	receivedEvent.User = savedUser
 	receivedEvent.ClientID = eventData.client.Id
-	webhooks.SendChatEventUsernameChanged(receivedEvent)
+	s.webhooks.SendChatEventUsernameChanged(receivedEvent)
 
 	// Resend the client's user so their username is in sync.
 	eventData.client.sendConnectedClientInfo()
@@ -183,7 +182,7 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 	}
 
 	// Send chat message sent webhook
-	webhooks.SendChatEvent(&event)
+	s.webhooks.SendChatEvent(&event)
 	chatMessagesSentCounter.Inc()
 	chatMessageRepository := chatmessagerepository.Get()
 	chatMessageRepository.SaveUserMessage(event)

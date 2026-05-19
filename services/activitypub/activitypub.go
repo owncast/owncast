@@ -19,6 +19,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
+	"github.com/owncast/owncast/services/webhooks"
 )
 
 // Service is the composed federation subsystem. Construct one in
@@ -38,6 +39,7 @@ type Service struct {
 // subsystem.
 type Deps struct {
 	Datastore *data.Datastore
+	Webhooks  *webhooks.Service
 }
 
 // New constructs the federation subsystem in dependency order. It does
@@ -58,6 +60,7 @@ func New(deps Deps) *Service {
 		Persistence: persistenceSvc,
 		Workerpool:  wpSvc,
 		Followers:   followers,
+		Webhooks:    deps.Webhooks,
 	})
 
 	jobsSvc := jobs.New(jobs.Deps{

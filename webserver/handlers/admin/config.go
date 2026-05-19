@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
@@ -59,7 +58,7 @@ func (a *Admin) SetTags(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetStreamTitle will handle the web config request to set the current stream title.
-func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -78,14 +77,14 @@ func SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	}
 	if value != "" {
 		sendSystemChatAction(fmt.Sprintf("Stream title changed to **%s**", value), true)
-		go webhooks.SendStreamStatusEvent(models.StreamTitleUpdated)
+		go a.webhooks.SendStreamStatusEvent(models.StreamTitleUpdated)
 	}
 	webutils.WriteSimpleResponse(w, true, "changed")
 }
 
 // ExternalSetStreamTitle will change the stream title on behalf of an external integration API request.
-func ExternalSetStreamTitle(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
-	SetStreamTitle(w, r)
+func (a *Admin) ExternalSetStreamTitle(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	a.SetStreamTitle(w, r)
 }
 
 // ExternalGetStatus will return the status of the server.

@@ -4,6 +4,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
+	"github.com/owncast/owncast/services/webhooks"
 )
 
 // Admin carries the dependencies of admin HTTP handlers that need
@@ -18,6 +19,7 @@ type Admin struct {
 	stream      *stream.Service
 	rtmp        *rtmp.Service
 	activitypub *activitypub.Service
+	webhooks    *webhooks.Service
 }
 
 // Deps lists every service a *Admin consumes. New deps appear here as
@@ -26,6 +28,7 @@ type Deps struct {
 	Stream      *stream.Service
 	Rtmp        *rtmp.Service
 	Activitypub *activitypub.Service
+	Webhooks    *webhooks.Service
 }
 
 // New constructs the dependency-bearing admin handler set.
@@ -34,5 +37,6 @@ func New(deps Deps) *Admin {
 		stream:      deps.Stream,
 		rtmp:        deps.Rtmp,
 		activitypub: deps.Activitypub,
+		webhooks:    deps.Webhooks,
 	}
 }

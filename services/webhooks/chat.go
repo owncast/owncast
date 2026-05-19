@@ -5,13 +5,13 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
-// SendChatEvent will send a chat event to webhook destinations.
-func SendChatEvent(chatEvent *events.UserMessageEvent) {
+// SendChatEvent dispatches a chat-message event to webhook destinations.
+func (s *Service) SendChatEvent(chatEvent *events.UserMessageEvent) {
 	webhookEvent := WebhookEvent{
 		Type: chatEvent.GetMessageType(),
 		EventData: &WebhookChatMessage{
 			BaseWebhookData: BaseWebhookData{
-				Status:    getStatus(),
+				Status:    s.getStatus(),
 				ServerURL: getServerURL(),
 			},
 			User:      chatEvent.User,
@@ -24,16 +24,16 @@ func SendChatEvent(chatEvent *events.UserMessageEvent) {
 		},
 	}
 
-	SendEventToWebhooks(webhookEvent)
+	s.SendEventToWebhooks(webhookEvent)
 }
 
-// SendChatEventUsernameChanged will send a username changed event to webhook destinations.
-func SendChatEventUsernameChanged(event events.NameChangeEvent) {
+// SendChatEventUsernameChanged dispatches a username-changed event.
+func (s *Service) SendChatEventUsernameChanged(event events.NameChangeEvent) {
 	webhookEvent := WebhookEvent{
 		Type: models.UserNameChanged,
 		EventData: &WebhookNameChangeEventData{
 			BaseWebhookData: BaseWebhookData{
-				Status:    getStatus(),
+				Status:    s.getStatus(),
 				ServerURL: getServerURL(),
 			},
 			ID:        event.ID,
@@ -43,16 +43,16 @@ func SendChatEventUsernameChanged(event events.NameChangeEvent) {
 		},
 	}
 
-	SendEventToWebhooks(webhookEvent)
+	s.SendEventToWebhooks(webhookEvent)
 }
 
-// SendChatEventUserJoined sends a webhook notifying that a user has joined.
-func SendChatEventUserJoined(event events.UserJoinedEvent) {
+// SendChatEventUserJoined dispatches a user-joined event.
+func (s *Service) SendChatEventUserJoined(event events.UserJoinedEvent) {
 	webhookEvent := WebhookEvent{
 		Type: models.UserJoined,
 		EventData: &WebhookUserJoinedEventData{
 			BaseWebhookData: BaseWebhookData{
-				Status:    getStatus(),
+				Status:    s.getStatus(),
 				ServerURL: getServerURL(),
 			},
 			ID:        event.ID,
@@ -61,16 +61,16 @@ func SendChatEventUserJoined(event events.UserJoinedEvent) {
 		},
 	}
 
-	SendEventToWebhooks(webhookEvent)
+	s.SendEventToWebhooks(webhookEvent)
 }
 
-// SendChatEventUserParted sends a webhook notifying that a user has parted.
-func SendChatEventUserParted(event events.UserPartEvent) {
+// SendChatEventUserParted dispatches a user-parted event.
+func (s *Service) SendChatEventUserParted(event events.UserPartEvent) {
 	webhookEvent := WebhookEvent{
 		Type: events.UserParted,
 		EventData: &WebhookUserPartEventData{
 			BaseWebhookData: BaseWebhookData{
-				Status:    getStatus(),
+				Status:    s.getStatus(),
 				ServerURL: getServerURL(),
 			},
 			ID:        event.ID,
@@ -79,17 +79,16 @@ func SendChatEventUserParted(event events.UserPartEvent) {
 		},
 	}
 
-	SendEventToWebhooks(webhookEvent)
+	s.SendEventToWebhooks(webhookEvent)
 }
 
-// SendChatEventSetMessageVisibility sends a webhook notifying that the visibility of one or more
-// messages has changed.
-func SendChatEventSetMessageVisibility(event events.SetMessageVisibilityEvent) {
+// SendChatEventSetMessageVisibility dispatches a message-visibility-changed event.
+func (s *Service) SendChatEventSetMessageVisibility(event events.SetMessageVisibilityEvent) {
 	webhookEvent := WebhookEvent{
 		Type: models.VisibiltyToggled,
 		EventData: &WebhookVisibilityToggleEventData{
 			BaseWebhookData: BaseWebhookData{
-				Status:    getStatus(),
+				Status:    s.getStatus(),
 				ServerURL: getServerURL(),
 			},
 			ID:         event.ID,
@@ -100,5 +99,5 @@ func SendChatEventSetMessageVisibility(event events.SetMessageVisibilityEvent) {
 		},
 	}
 
-	SendEventToWebhooks(webhookEvent)
+	s.SendEventToWebhooks(webhookEvent)
 }

@@ -13,7 +13,6 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
@@ -58,7 +57,7 @@ func (s *Service) Start(_ context.Context) error {
 
 	s.yp = yp.NewYP(s.GetStatus)
 
-	if err := chat.Start(s.GetStatus); err != nil {
+	if err := chat.Start(s.GetStatus, s.webhooks); err != nil {
 		log.Errorln(err)
 	}
 
@@ -70,7 +69,7 @@ func (s *Service) Start(_ context.Context) error {
 		log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
 	}
 
-	webhooks.SetupWebhooks(s.GetStatus)
+	s.webhooks.Start()
 
 	notificationsrepository.Setup()
 
@@ -179,7 +178,7 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 		s.transcoder.Start(true)
 	}()
 
-	go webhooks.SendStreamStatusEvent(models.StreamStarted)
+	go s.webhooks.SendStreamStatusEvent(models.StreamStarted)
 	selectedThumbnailVideoQualityIndex, isVideoPassthrough := configRepository.FindHighestVideoQualityIndex(s.currentBroadcast.OutputSettings)
 	s.thumbnailGen = transcoder.NewThumbnailGenerator()
 	s.thumbnailGen.Start(segmentPath, selectedThumbnailVideoQualityIndex, isVideoPassthrough)
@@ -240,7 +239,7 @@ func (s *Service) SetStreamAsDisconnected() {
 	s.stopOnlineCleanupTimer()
 	s.saveStats()
 
-	go webhooks.SendStreamStatusEvent(models.StreamStopped)
+	go s.webhooks.SendStreamStatusEvent(models.StreamStopped)
 }
 
 // StartOfflineCleanupTimer fires a cleanup after n minutes being
