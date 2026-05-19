@@ -18,17 +18,22 @@ import (
 
 // Handler bundles the dependencies the moderation handlers need.
 type Handler struct {
-	chat *chat.Service
+	chat                  *chat.Service
+	chatMessageRepository chatmessagerepository.ChatMessageRepository
 }
 
 // Deps lists the dependencies of the moderation Handler.
 type Deps struct {
-	Chat *chat.Service
+	Chat                  *chat.Service
+	ChatMessageRepository chatmessagerepository.ChatMessageRepository
 }
 
 // New constructs the Handler.
 func New(deps Deps) *Handler {
-	return &Handler{chat: deps.Chat}
+	return &Handler{
+		chat:                  deps.Chat,
+		chatMessageRepository: deps.ChatMessageRepository,
+	}
 }
 
 // GetUserDetails returns the details of a chat user for moderators.
@@ -75,8 +80,7 @@ func (h *Handler) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 		clients[i] = client
 	}
 
-	chatMessagesRepository := chatmessagerepository.Get()
-	messages, err := chatMessagesRepository.GetMessagesFromUser(uid)
+	messages, err := h.chatMessageRepository.GetMessagesFromUser(uid)
 	if err != nil {
 		log.Errorln(err)
 	}

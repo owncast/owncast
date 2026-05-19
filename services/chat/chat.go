@@ -24,10 +24,11 @@ import (
 
 // Deps lists the explicit dependencies for the chat Service.
 type Deps struct {
-	GetStatus        func() models.Status
-	Webhooks         *webhooks.Service
-	ConfigRepository configrepository.ConfigRepository
-	AuthRepository   authrepository.AuthRepository
+	GetStatus             func() models.Status
+	Webhooks              *webhooks.Service
+	ConfigRepository      configrepository.ConfigRepository
+	AuthRepository        authrepository.AuthRepository
+	ChatMessageRepository chatmessagerepository.ChatMessageRepository
 }
 
 // New constructs a chat Service. Call Start to launch the broadcast
@@ -37,6 +38,7 @@ func New(deps Deps) *Service {
 	s.getStatus = deps.GetStatus
 	s.configRepository = deps.ConfigRepository
 	s.authRepository = deps.AuthRepository
+	s.chatMessageRepository = deps.ChatMessageRepository
 	return s
 }
 
@@ -128,8 +130,7 @@ func (s *Service) SendSystemMessage(text string, ephemeral bool) error {
 	}
 
 	if !ephemeral {
-		chatMessageRepository := chatmessagerepository.Get()
-		chatMessageRepository.SaveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
+		s.chatMessageRepository.SaveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
 	}
 
 	return nil
@@ -156,8 +157,7 @@ func (s *Service) SendFediverseAction(eventType string, userAccountName string, 
 		return err
 	}
 
-	chatMessageRepository := chatmessagerepository.Get()
-	chatMessageRepository.SaveFederatedAction(message)
+	s.chatMessageRepository.SaveFederatedAction(message)
 
 	return nil
 }
@@ -178,8 +178,7 @@ func (s *Service) SendSystemAction(text string, ephemeral bool) error {
 	}
 
 	if !ephemeral {
-		chatMessageRepository := chatmessagerepository.Get()
-		chatMessageRepository.SaveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
+		s.chatMessageRepository.SaveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
 	}
 
 	return nil

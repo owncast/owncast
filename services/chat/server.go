@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/authrepository"
+	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
@@ -54,6 +55,10 @@ type Service struct {
 	// authRepository is consulted on each inbound websocket connection to
 	// reject banned IP addresses before upgrading to a chat client.
 	authRepository authrepository.AuthRepository
+
+	// chatMessageRepository persists user/system/action/federated chat
+	// events and answers history + moderation visibility queries.
+	chatMessageRepository chatmessagerepository.ChatMessageRepository
 
 	// chatMessagesSentCounter is the Prometheus counter incremented on
 	// each accepted inbound message.

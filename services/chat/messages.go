@@ -5,15 +5,13 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/services/chat/events"
 )
 
 // SetMessagesVisibility sets the visibility of multiple messages by ID.
 func (s *Service) SetMessagesVisibility(messageIDs []string, visibility bool) error {
 	// Save new message visibility
-	chatMessageRepository := chatmessagerepository.Get()
-	if err := chatMessageRepository.SetMessageVisibilityForMessageIDs(messageIDs, visibility); err != nil {
+	if err := s.chatMessageRepository.SetMessageVisibilityForMessageIDs(messageIDs, visibility); err != nil {
 		log.Errorln(err)
 		return err
 	}

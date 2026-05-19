@@ -8,7 +8,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
@@ -19,22 +18,21 @@ import (
 // ExternalGetChatMessages gets all of the chat messages.
 func (h *Handlers) ExternalGetChatMessages(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
-	getChatMessages(w, r)
+	h.getChatMessages(w, r)
 }
 
 // GetChatMessages gets all of the chat messages.
 func (h *Handlers) GetChatMessages(u models.User, w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
-	getChatMessages(w, r)
+	h.getChatMessages(w, r)
 }
 
-func getChatMessages(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) getChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	switch r.Method {
 	case http.MethodGet:
-		chatMessageRepository := chatmessagerepository.Get()
-		messages := chatMessageRepository.GetChatHistory()
+		messages := h.chatMessageRepository.GetChatHistory()
 
 		if err := json.NewEncoder(w).Encode(messages); err != nil {
 			log.Debugln(err)

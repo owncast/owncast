@@ -64,12 +64,12 @@ func (s *ServerInterfaceImpl) GetConnectedChatClientsOptions(w http.ResponseWrit
 	middleware.RequireAdminAuth(s.h.admin.GetConnectedChatClients)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetChatMessagesAdmin(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetChatMessages)(w, r)
+func (s *ServerInterfaceImpl) GetChatMessagesAdmin(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetChatMessages)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetChatMessagesAdminOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetChatMessages)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.GetChatMessages)(w, r)
 }
 
 func (s *ServerInterfaceImpl) UpdateMessageVisibilityAdmin(w http.ResponseWriter, r *http.Request) {

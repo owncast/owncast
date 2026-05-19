@@ -12,7 +12,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/utils"
@@ -144,14 +143,13 @@ func (a *Admin) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 
 func (a *Admin) updateUserStatus(request generated.UpdateUserEnabledJSONBody) error {
 	userRepository := userrepository.Get()
-	chatMessageRepository := chatmessagerepository.Get()
 
 	if err := userRepository.SetEnabled(*request.UserId, *request.Enabled); err != nil {
 		log.Errorln("error changing user enabled status", err)
 		return err
 	}
 
-	messageIDs, err := chatMessageRepository.GetMessageIdsForUserID(*request.UserId)
+	messageIDs, err := a.chatMessageRepository.GetMessageIdsForUserID(*request.UserId)
 	if err != nil {
 		return errors.Wrap(err, "error fetching user messages")
 	}
@@ -248,11 +246,10 @@ func GetModerators(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetChatMessages returns all of the chat messages, unfiltered.
-func GetChatMessages(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	chatMessageRepository := chatmessagerepository.Get()
-	messages := chatMessageRepository.GetChatModerationHistory()
+	messages := a.chatMessageRepository.GetChatModerationHistory()
 	webutils.WriteResponse(w, messages)
 }
 
@@ -348,8 +345,7 @@ func (a *Admin) SendIntegrationChatMessage(integration models.ExternalAPIUser, w
 		return
 	}
 
-	chatMessageRepository := chatmessagerepository.Get()
-	chatMessageRepository.SaveUserMessage(event)
+	a.chatMessageRepository.SaveUserMessage(event)
 
 	webutils.WriteSimpleResponse(w, true, "sent")
 }

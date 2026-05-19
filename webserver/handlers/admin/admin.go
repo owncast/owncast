@@ -2,6 +2,7 @@ package admin
 
 import (
 	"github.com/owncast/owncast/persistence/authrepository"
+	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/activitypub"
@@ -21,42 +22,45 @@ import (
 // this package; they migrate to methods on *Admin as the services they
 // need to consume move to services/<domain>/.
 type Admin struct {
-	stream              *stream.Service
-	rtmp                *rtmp.Service
-	activitypub         *activitypub.Service
-	webhooks            *webhooks.Service
-	chat                *chat.Service
-	configRepository    configrepository.ConfigRepository
-	authRepository      authrepository.AuthRepository
-	followersRepository followersrepository.FollowersRepository
-	webhookRepository   webhookrepository.WebhookRepository
+	stream                *stream.Service
+	rtmp                  *rtmp.Service
+	activitypub           *activitypub.Service
+	webhooks              *webhooks.Service
+	chat                  *chat.Service
+	configRepository      configrepository.ConfigRepository
+	authRepository        authrepository.AuthRepository
+	followersRepository   followersrepository.FollowersRepository
+	webhookRepository     webhookrepository.WebhookRepository
+	chatMessageRepository chatmessagerepository.ChatMessageRepository
 }
 
 // Deps lists every service a *Admin consumes. New deps appear here as
 // more admin handlers migrate.
 type Deps struct {
-	Stream              *stream.Service
-	Rtmp                *rtmp.Service
-	Activitypub         *activitypub.Service
-	Webhooks            *webhooks.Service
-	Chat                *chat.Service
-	ConfigRepository    configrepository.ConfigRepository
-	AuthRepository      authrepository.AuthRepository
-	FollowersRepository followersrepository.FollowersRepository
-	WebhookRepository   webhookrepository.WebhookRepository
+	Stream                *stream.Service
+	Rtmp                  *rtmp.Service
+	Activitypub           *activitypub.Service
+	Webhooks              *webhooks.Service
+	Chat                  *chat.Service
+	ConfigRepository      configrepository.ConfigRepository
+	AuthRepository        authrepository.AuthRepository
+	FollowersRepository   followersrepository.FollowersRepository
+	WebhookRepository     webhookrepository.WebhookRepository
+	ChatMessageRepository chatmessagerepository.ChatMessageRepository
 }
 
 // New constructs the dependency-bearing admin handler set.
 func New(deps Deps) *Admin {
 	return &Admin{
-		stream:              deps.Stream,
-		rtmp:                deps.Rtmp,
-		activitypub:         deps.Activitypub,
-		webhooks:            deps.Webhooks,
-		chat:                deps.Chat,
-		configRepository:    deps.ConfigRepository,
-		authRepository:      deps.AuthRepository,
-		followersRepository: deps.FollowersRepository,
-		webhookRepository:   deps.WebhookRepository,
+		stream:                deps.Stream,
+		rtmp:                  deps.Rtmp,
+		activitypub:           deps.Activitypub,
+		webhooks:              deps.Webhooks,
+		chat:                  deps.Chat,
+		configRepository:      deps.ConfigRepository,
+		authRepository:        deps.AuthRepository,
+		followersRepository:   deps.FollowersRepository,
+		webhookRepository:     deps.WebhookRepository,
+		chatMessageRepository: deps.ChatMessageRepository,
 	}
 }

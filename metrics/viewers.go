@@ -6,7 +6,6 @@ import (
 	"github.com/nakabonne/tstorage"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 )
 
@@ -56,7 +55,6 @@ func collectChatClientCount() {
 	activeChatClientCount.Set(float64(count))
 
 	// Total message count
-	chatMessageRepository := chatmessagerepository.Get()
 	cmc := chatMessageRepository.GetMessagesCount()
 	// Insert message count into Prometheus collector.
 	currentChatMessageCount.Set(float64(cmc))

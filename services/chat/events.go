@@ -9,7 +9,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/utils"
@@ -182,8 +181,7 @@ func (s *Service) userMessageSent(eventData chatClientEvent) {
 	// Send chat message sent webhook
 	s.webhooks.SendChatEvent(&event)
 	s.chatMessagesSentCounter.Inc()
-	chatMessageRepository := chatmessagerepository.Get()
-	chatMessageRepository.SaveUserMessage(event)
+	s.chatMessageRepository.SaveUserMessage(event)
 	eventData.client.MessageCount++
 }
 

@@ -32,19 +32,7 @@ type SqlChatMessageRepository struct {
 	datastore *datastore.Datastore
 }
 
-// NOTE: This is temporary during the transition period.
-var temporaryGlobalInstance ChatMessageRepository
-
-// Get will return the user repository.
-func Get() ChatMessageRepository {
-	if temporaryGlobalInstance == nil {
-		i := New(datastore.GetDatastore())
-		temporaryGlobalInstance = i
-	}
-	return temporaryGlobalInstance
-}
-
-// New will create a new instance of the UserRepository.
+// New will create a new instance of the ChatMessageRepository.
 func New(datastore *datastore.Datastore) ChatMessageRepository {
 	r := SqlChatMessageRepository{
 		datastore: datastore,

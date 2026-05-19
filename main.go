@@ -12,6 +12,7 @@ import (
 	indieauthlib "github.com/owncast/owncast/auth/indieauth"
 	"github.com/owncast/owncast/logging"
 	"github.com/owncast/owncast/persistence/authrepository"
+	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
@@ -130,6 +131,7 @@ func main() {
 	authRepository := authrepository.New(datastore.GetDatastore())
 	followersRepository := followersrepository.New(datastore.GetDatastore())
 	webhookRepository := webhookrepository.New(datastore.GetDatastore())
+	chatMessageRepository := chatmessagerepository.New(datastore.GetDatastore())
 
 	handleCommandLineFlags(configRepository)
 
@@ -152,6 +154,7 @@ func main() {
 	middleware.SetAuthRepository(authRepository)
 	indieauthlib.SetConfigRepository(configRepository)
 	notificationsrepository.SetConfigRepository(configRepository)
+	metrics.SetChatMessageRepository(chatMessageRepository)
 
 	rtmpSvc := rtmp.New(rtmp.Deps{
 		ConfigRepository: configRepository,
@@ -172,10 +175,11 @@ func main() {
 	// migrates to receive webhook events via the dispatcher, this
 	// changes).
 	chatSvc := chat.New(chat.Deps{
-		GetStatus:        nil, // wired below once streamSvc exists
-		Webhooks:         webhooksSvc,
-		ConfigRepository: configRepository,
-		AuthRepository:   authRepository,
+		GetStatus:             nil, // wired below once streamSvc exists
+		Webhooks:              webhooksSvc,
+		ConfigRepository:      configRepository,
+		AuthRepository:        authRepository,
+		ChatMessageRepository: chatMessageRepository,
 	})
 
 	apSvc := activitypub.New(activitypub.Deps{
@@ -216,15 +220,16 @@ func main() {
 	go metrics.Start(streamSvc, chatSvc)
 
 	adminHandlers := admin.New(admin.Deps{
-		Stream:              streamSvc,
-		Rtmp:                rtmpSvc,
-		Activitypub:         apSvc,
-		Webhooks:            webhooksSvc,
-		Chat:                chatSvc,
-		ConfigRepository:    configRepository,
-		AuthRepository:      authRepository,
-		FollowersRepository: followersRepository,
-		WebhookRepository:   webhookRepository,
+		Stream:                streamSvc,
+		Rtmp:                  rtmpSvc,
+		Activitypub:           apSvc,
+		Webhooks:              webhooksSvc,
+		Chat:                  chatSvc,
+		ConfigRepository:      configRepository,
+		AuthRepository:        authRepository,
+		FollowersRepository:   followersRepository,
+		WebhookRepository:     webhookRepository,
+		ChatMessageRepository: chatMessageRepository,
 	})
 
 	fediverseHandler := fediverse.New(fediverse.Deps{
@@ -238,20 +243,22 @@ func main() {
 	})
 
 	moderationHandler := moderation.New(moderation.Deps{
-		Chat: chatSvc,
+		Chat:                  chatSvc,
+		ChatMessageRepository: chatMessageRepository,
 	})
 
 	h := handlers.NewHandlers(handlers.Deps{
-		Cache:               cacheContainer,
-		Stream:              streamSvc,
-		Chat:                chatSvc,
-		Admin:               adminHandlers,
-		Activitypub:         apSvc,
-		Fediverse:           fediverseHandler,
-		IndieAuth:           indieauthHandler,
-		Moderation:          moderationHandler,
-		ConfigRepository:    configRepository,
-		FollowersRepository: followersRepository,
+		Cache:                 cacheContainer,
+		Stream:                streamSvc,
+		Chat:                  chatSvc,
+		Admin:                 adminHandlers,
+		Activitypub:           apSvc,
+		Fediverse:             fediverseHandler,
+		IndieAuth:             indieauthHandler,
+		Moderation:            moderationHandler,
+		ConfigRepository:      configRepository,
+		FollowersRepository:   followersRepository,
+		ChatMessageRepository: chatMessageRepository,
 	})
 
 	if err := router.Start(*enableVerboseLogging, h, apSvc.Controllers()); err != nil {
