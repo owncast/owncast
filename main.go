@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/services/cache"
+	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers"
@@ -115,7 +116,11 @@ func main() {
 	cacheContainer := cache.New()
 	defer cacheContainer.Stop()
 
-	streamSvc := stream.New(stream.Deps{})
+	rtmpSvc := rtmp.New(rtmp.Deps{})
+
+	streamSvc := stream.New(stream.Deps{
+		Rtmp: rtmpSvc,
+	})
 	if err := streamSvc.Start(ctx); err != nil {
 		log.Fatalln("failed to start the stream service", err)
 	}
@@ -125,6 +130,7 @@ func main() {
 
 	adminHandlers := admin.New(admin.Deps{
 		Stream: streamSvc,
+		Rtmp:   rtmpSvc,
 	})
 
 	h := handlers.NewHandlers(handlers.Deps{

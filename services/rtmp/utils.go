@@ -9,8 +9,9 @@ import (
 	"strings"
 
 	"github.com/nareix/joy5/format/flv/flvio"
-	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/models"
 )
 
 const unknownString = "Unknown"
@@ -86,10 +87,10 @@ func secretMatch(configStreamKey string, path string) bool {
 
 	if !strings.HasPrefix(path, prefix) {
 		log.Debug("RTMP path does not start with " + prefix)
-		return false // We need the path to begin with $prefix
+		return false
 	}
 
-	streamingKey := path[len(prefix):] // Remove $prefix
+	streamingKey := path[len(prefix):]
 
 	matches := subtle.ConstantTimeCompare([]byte(streamingKey), []byte(configStreamKey)) == 1
 	return matches

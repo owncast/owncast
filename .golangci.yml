@@ -68,7 +68,7 @@ linters:
         path: core/chat/events/
       - linters:
           - goconst
-        path: core/transcoder/
+        path: services/transcoder/
       - linters:
           - goconst
         path: activitypub/controllers/nodeinfo\.go

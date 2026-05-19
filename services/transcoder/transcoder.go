@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
@@ -18,8 +19,6 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 )
-
-var _commandExec *exec.Cmd
 
 type execInfo struct {
 	binPath string
@@ -36,6 +35,18 @@ type Transcoder struct {
 	codec Codec
 
 	stdin *io.PipeReader
+
+	// commandExec holds the live ffmpeg child process while the
+	// transcoder is running. Set in Start, killed in Stop.
+	commandExec *exec.Cmd
+
+	// logMu guards lastLogMessage. Held briefly while
+	// handleTranscoderMessage decides whether to emit a deduped log line
+	// from the stderr-scanner goroutine.
+	logMu sync.RWMutex
+	// lastLogMessage is the most recent stderr line surfaced to the
+	// logger; used to suppress immediate repeats.
+	lastLogMessage string
 
 	TranscoderCompleted  func(error)
 	playlistOutputPath   string
@@ -115,7 +126,7 @@ func (v *VideoSize) getString() string {
 // Stop will stop the transcoder and kill all processing.
 func (t *Transcoder) Stop() {
 	log.Traceln("Transcoder STOP requested.")
-	err := _commandExec.Process.Kill()
+	err := t.commandExec.Process.Kill()
 	if err != nil {
 		log.Errorln(err)
 	}
@@ -123,8 +134,6 @@ func (t *Transcoder) Stop() {
 
 // Start will execute the transcoding process with the settings previously set.
 func (t *Transcoder) Start(shouldLog bool) {
-	_lastTranscoderLogMessage = ""
-
 	flags := t.getFlags()
 	if shouldLog {
 		log.Infof("Processing video using codec %s with %d output qualities configured.", t.codec.DisplayName(), len(t.variants))
@@ -136,19 +145,19 @@ func (t *Transcoder) Start(shouldLog bool) {
 		log.Println(command)
 	}
 
-	_commandExec = exec.Command(flags.binPath, flags.command...) // nolint: gosec
-	_commandExec.Env = flags.environ
+	t.commandExec = exec.Command(flags.binPath, flags.command...) // nolint: gosec
+	t.commandExec.Env = flags.environ
 
 	if t.stdin != nil {
-		_commandExec.Stdin = t.stdin
+		t.commandExec.Stdin = t.stdin
 	}
 
-	stdout, err := _commandExec.StderrPipe()
+	stdout, err := t.commandExec.StderrPipe()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	if err := _commandExec.Start(); err != nil {
+	if err := t.commandExec.Start(); err != nil {
 		log.Errorln("Transcoder error. See", logging.GetTranscoderLogFilePath(), "for full output to debug.")
 		log.Panicln(err, command)
 	}
@@ -157,11 +166,11 @@ func (t *Transcoder) Start(shouldLog bool) {
 		scanner := bufio.NewScanner(stdout)
 		for scanner.Scan() {
 			line := scanner.Text()
-			handleTranscoderMessage(line)
+			t.handleTranscoderMessage(line)
 		}
 	}()
 
-	err = _commandExec.Wait()
+	err = t.commandExec.Wait()
 	if t.TranscoderCompleted != nil {
 		t.TranscoderCompleted(err)
 	}

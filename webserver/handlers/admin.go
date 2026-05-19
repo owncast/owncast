@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/core/rtmp"
 	"github.com/owncast/owncast/webserver/handlers/admin"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
@@ -303,10 +302,4 @@ func (*ServerInterfaceImpl) GetFederatedActions(w http.ResponseWriter, r *http.R
 
 func (*ServerInterfaceImpl) GetFederatedActionsOptions(w http.ResponseWriter, r *http.Request) {
 	middleware.RequireAdminAuth(middleware.HandlePagination(admin.GetFederatedActions))(w, r)
-}
-
-// DisconnectInboundConnection will force-disconnect an inbound stream.
-func DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
-	rtmp.Disconnect()
-	w.WriteHeader(http.StatusOK)
 }

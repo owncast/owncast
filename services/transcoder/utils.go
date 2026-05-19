@@ -5,17 +5,11 @@ import (
 	"path"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
-)
-
-var (
-	_lastTranscoderLogMessage = ""
-	l                         = &sync.RWMutex{}
 )
 
 var errorMap = map[string]string{
@@ -63,11 +57,11 @@ var ignoredErrors = []string{
 	"Failed to allocate a vaapi/nv12 frame from a fixed pool of hardware frames.",
 }
 
-func handleTranscoderMessage(message string) {
+func (t *Transcoder) handleTranscoderMessage(message string) {
 	log.Debugln(message)
 
-	l.Lock()
-	defer l.Unlock()
+	t.logMu.Lock()
+	defer t.logMu.Unlock()
 
 	// Ignore certain messages that we don't care about.
 	for _, error := range ignoredErrors {
@@ -89,13 +83,13 @@ func handleTranscoderMessage(message string) {
 	}
 
 	// No good comes from a flood of repeated messages.
-	if message == _lastTranscoderLogMessage {
+	if message == t.lastLogMessage {
 		return
 	}
 
 	log.Error(message)
 
-	_lastTranscoderLogMessage = message
+	t.lastLogMessage = message
 }
 
 func createVariantDirectories() {

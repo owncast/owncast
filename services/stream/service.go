@@ -11,9 +11,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/geoip"
+	"github.com/owncast/owncast/services/rtmp"
+	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/yp"
 )
 
@@ -71,22 +72,32 @@ type Service struct {
 	handler    transcoder.HLSHandler
 	fileWriter transcoder.FileWriterReceiverService
 
+	// thumbnailGen owns the periodic thumbnail+preview snapshotter that
+	// runs while a stream is online. Lazily started on stream-connect,
+	// stopped on stream-disconnect.
+	thumbnailGen *transcoder.ThumbnailGenerator
+
 	// geoIPClient performs the asynchronous viewer-geolocation lookup.
 	geoIPClient *geoip.Client
+
+	// rtmp is the inbound RTMP ingest service. Start hands it
+	// stream-lifecycle callbacks; admin disconnect goes through it too.
+	rtmp *rtmp.Service
 }
 
 // Deps is the explicit-dependency contract the service requires at
-// construction time. It's currently empty: the service still calls into
-// other packages (chat, rtmp, transcoder, webhooks, etc.) via their
-// legacy package-level functions. As those collaborators migrate to
-// constructor-injected services, they appear here.
-type Deps struct{}
+// construction time. As more collaborators (chat, transcoder, webhooks,
+// etc.) migrate to constructor-injected services, they appear here.
+type Deps struct {
+	Rtmp *rtmp.Service
+}
 
 // New constructs an idle stream Service. Call Start(ctx) to bring up the
 // storage backend, transcoder, RTMP listener, and associated lifecycle.
-func New(_ Deps) *Service {
+func New(deps Deps) *Service {
 	return &Service{
 		geoIPClient: geoip.NewClient(),
 		fileWriter:  transcoder.FileWriterReceiverService{},
+		rtmp:        deps.Rtmp,
 	}
 }

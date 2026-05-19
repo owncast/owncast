@@ -14,13 +14,12 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/core/rtmp"
-	"github.com/owncast/owncast/core/transcoder"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
 	"github.com/owncast/owncast/services/notifications"
+	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/yp"
 )
@@ -65,7 +64,7 @@ func (s *Service) Start(_ context.Context) error {
 	}
 
 	// start the rtmp server
-	go rtmp.Start(s.setStreamAsConnected, s.setBroadcaster)
+	go s.rtmp.Start(s.setStreamAsConnected, s.setBroadcaster)
 
 	rtmpPort := configRepository.GetRTMPPortNumber()
 	if rtmpPort != 1935 {
@@ -183,7 +182,8 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 
 	go webhooks.SendStreamStatusEvent(models.StreamStarted)
 	selectedThumbnailVideoQualityIndex, isVideoPassthrough := configRepository.FindHighestVideoQualityIndex(s.currentBroadcast.OutputSettings)
-	transcoder.StartThumbnailGenerator(segmentPath, selectedThumbnailVideoQualityIndex, isVideoPassthrough)
+	s.thumbnailGen = transcoder.NewThumbnailGenerator()
+	s.thumbnailGen.Start(segmentPath, selectedThumbnailVideoQualityIndex, isVideoPassthrough)
 
 	_ = chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
 	chat.SendAllWelcomeMessage()
@@ -214,8 +214,10 @@ func (s *Service) SetStreamAsDisconnected() {
 		return
 	}
 
-	transcoder.StopThumbnailGenerator()
-	rtmp.Disconnect()
+	if s.thumbnailGen != nil {
+		s.thumbnailGen.Stop()
+	}
+	s.rtmp.Disconnect()
 
 	if s.yp != nil {
 		s.yp.Stop()

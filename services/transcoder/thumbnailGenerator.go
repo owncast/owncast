@@ -14,39 +14,42 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-var _timer *time.Ticker
+// ThumbnailGenerator periodically snapshots the most recent HLS segment
+// into thumbnail.jpg + preview.gif while a stream is online. One
+// instance per active stream, owned by the stream service.
+type ThumbnailGenerator struct {
+	timer *time.Ticker
+}
 
-// StopThumbnailGenerator will stop the periodic generating of a thumbnail from video.
-func StopThumbnailGenerator() {
-	if _timer != nil {
-		_timer.Stop()
+// NewThumbnailGenerator returns an idle generator. Call Start to begin.
+func NewThumbnailGenerator() *ThumbnailGenerator {
+	return &ThumbnailGenerator{}
+}
+
+// Stop will stop the periodic generating of a thumbnail from video.
+func (g *ThumbnailGenerator) Stop() {
+	if g.timer != nil {
+		g.timer.Stop()
 	}
 }
 
-// StartThumbnailGenerator starts generating thumbnails.
-func StartThumbnailGenerator(chunkPath string, variantIndex int, isVideoPassthrough bool) {
+// Start starts generating thumbnails.
+func (g *ThumbnailGenerator) Start(chunkPath string, variantIndex int, isVideoPassthrough bool) {
 	// Every 20 seconds create a thumbnail from the most
 	// recent video segment.
-	_timer = time.NewTicker(20 * time.Second)
-	quit := make(chan struct{})
+	g.timer = time.NewTicker(20 * time.Second)
 
 	go func() {
-		for {
-			select {
-			case <-_timer.C:
-				if err := fireThumbnailGenerator(chunkPath, variantIndex); err != nil {
-					logMsg := "Unable to generate thumbnail: " + err.Error()
-					if isVideoPassthrough {
-						logMsg += ". Video Passthrough is enabled. You should disable it to fix this, and other, streaming errors. https://owncast.online/troubleshoot"
-					}
-					log.Errorln("Unable to generate thumbnail:", logMsg)
+		for range g.timer.C {
+			if err := fireThumbnailGenerator(chunkPath, variantIndex); err != nil {
+				logMsg := "Unable to generate thumbnail: " + err.Error()
+				if isVideoPassthrough {
+					logMsg += ". Video Passthrough is enabled. You should disable it to fix this, and other, streaming errors. https://owncast.online/troubleshoot"
 				}
-			case <-quit:
-				log.Debug("thumbnail generator has stopped")
-				_timer.Stop()
-				return
+				log.Errorln("Unable to generate thumbnail:", logMsg)
 			}
 		}
+		log.Debug("thumbnail generator has stopped")
 	}()
 }
 

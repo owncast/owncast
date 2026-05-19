@@ -3,7 +3,6 @@ package admin
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/core/rtmp"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -14,6 +13,6 @@ func (a *Admin) DisconnectInboundConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	rtmp.Disconnect()
+	a.rtmp.Disconnect()
 	webutils.WriteSimpleResponse(w, true, "inbound stream disconnected")
 }
