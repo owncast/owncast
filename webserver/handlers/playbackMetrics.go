@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // ReportPlaybackMetrics will accept playback metrics from a client and save

@@ -9,9 +9,9 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/utils"
 )
 
 // MakeRemoteIRIForResource will create an IRI for a remote location.
@@ -55,8 +55,6 @@ func MakeLocalIRIForAccount(account string) *url.URL {
 
 // GetCanonicalServerURL returns the local server URL with an ASCII/punycode hostname.
 func GetCanonicalServerURL() (*url.URL, error) {
-	configRepository := configrepository.Get()
-
 	host := configRepository.GetServerURL()
 	canonicalHost, err := utils.CanonicalizeURLHostname(host)
 	if err != nil {
@@ -101,8 +99,6 @@ func MakeLocalIRIforLogo() *url.URL {
 // GetLogoType will return the rel value for the webfinger response and
 // the default static image is of type png.
 func GetLogoType() string {
-	configRepository := configrepository.Get()
-
 	imageFilename := configRepository.GetLogoPath()
 	if imageFilename == "" {
 		return "image/png"

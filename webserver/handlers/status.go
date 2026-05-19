@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -33,8 +32,7 @@ func (h *Handlers) getStatusResponse() webStatusResponse {
 		VersionNumber:      status.VersionNumber,
 		StreamTitle:        status.StreamTitle,
 	}
-	configRepository := configrepository.Get()
-	if !configRepository.GetHideViewerCount() {
+	if !h.configRepository.GetHideViewerCount() {
 		response.ViewerCount = status.ViewerCount
 	}
 	return response

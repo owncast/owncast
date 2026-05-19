@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/datastore"
 )
 
@@ -20,6 +21,10 @@ func TestMain(m *testing.M) {
 
 	// Get the shared datastore instance
 	testDatastore = datastore.GetDatastore()
+
+	// Install the package-level configRepository handle the Setup() path
+	// expects to read browser-push keys from.
+	SetConfigRepository(configrepository.New(datastore.GetDatastore()))
 
 	// Setup the notifications repository
 	Setup()

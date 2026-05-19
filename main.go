@@ -9,14 +9,20 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	indieauthlib "github.com/owncast/owncast/auth/indieauth"
 	"github.com/owncast/owncast/logging"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/persistence/notificationsrepository"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/services/activitypub"
+	"github.com/owncast/owncast/services/activitypub/apmodels"
+	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
+	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/cache"
 	"github.com/owncast/owncast/services/chat"
+	chatevents "github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
@@ -28,6 +34,8 @@ import (
 	"github.com/owncast/owncast/webserver/handlers/auth/indieauth"
 	"github.com/owncast/owncast/webserver/handlers/moderation"
 	"github.com/owncast/owncast/webserver/router"
+	"github.com/owncast/owncast/webserver/router/middleware"
+	"github.com/owncast/owncast/yp"
 )
 
 var (
@@ -111,26 +119,44 @@ func main() {
 		log.Fatalln("failed to open database", err)
 	}
 
-	handleCommandLineFlags()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	// Composition root: construct services here and inject them into the
 	// components that consume them. As more packages migrate off package-
 	// level singletons into services/<domain>/, their constructors join
 	// this block.
+	configRepository := configrepository.New(datastore.GetDatastore())
+
+	handleCommandLineFlags(configRepository)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	cacheContainer := cache.New()
 	defer cacheContainer.Stop()
 
-	rtmpSvc := rtmp.New(rtmp.Deps{})
+	// Install the package-level configRepository handle in every helper
+	// package that has stateless lookups. main.go is the only place that
+	// knows the concrete repo — all other callers receive it via Deps.
+	apmodels.SetConfigRepository(configRepository)
+	apcrypto.SetConfigRepository(configRepository)
+	apresolvers.SetConfigRepository(configRepository)
+	chatevents.SetConfigRepository(configRepository)
+	metrics.SetConfigRepository(configRepository)
+	yp.SetConfigRepository(configRepository)
+	middleware.SetConfigRepository(configRepository)
+	indieauthlib.SetConfigRepository(configRepository)
+	notificationsrepository.SetConfigRepository(configRepository)
+
+	rtmpSvc := rtmp.New(rtmp.Deps{
+		ConfigRepository: configRepository,
+	})
 
 	// Webhooks needs the stream status callback and the followers
 	// repository. Construct it before activitypub (which uses it) and
 	// before stream (which uses it to dispatch start/stop events).
 	webhooksSvc := webhooks.New(webhooks.Deps{
-		GetStatus: nil, // wired below once streamSvc exists
-		Followers: nil, // wired below from apSvc
+		GetStatus:        nil, // wired below once streamSvc exists
+		Followers:        nil, // wired below from apSvc
+		ConfigRepository: configRepository,
 	})
 
 	// chat is constructed first because activitypub.Deps and
@@ -138,22 +164,25 @@ func main() {
 	// migrates to receive webhook events via the dispatcher, this
 	// changes).
 	chatSvc := chat.New(chat.Deps{
-		GetStatus: nil, // wired below once streamSvc exists
-		Webhooks:  webhooksSvc,
+		GetStatus:        nil, // wired below once streamSvc exists
+		Webhooks:         webhooksSvc,
+		ConfigRepository: configRepository,
 	})
 
 	apSvc := activitypub.New(activitypub.Deps{
-		Datastore: datastore.GetDatastore(),
-		Webhooks:  webhooksSvc,
-		Chat:      chatSvc,
+		Datastore:        datastore.GetDatastore(),
+		Webhooks:         webhooksSvc,
+		Chat:             chatSvc,
+		ConfigRepository: configRepository,
 	})
 	apSvc.Start()
 
 	streamSvc := stream.New(stream.Deps{
-		Rtmp:        rtmpSvc,
-		Activitypub: apSvc,
-		Webhooks:    webhooksSvc,
-		Chat:        chatSvc,
+		Rtmp:             rtmpSvc,
+		Activitypub:      apSvc,
+		Webhooks:         webhooksSvc,
+		Chat:             chatSvc,
+		ConfigRepository: configRepository,
 	})
 
 	// Now that stream + AP are constructed, finish wiring the webhook
@@ -162,8 +191,9 @@ func main() {
 	// stream.GetStatus; stream and AP both need *webhooks.Service +
 	// *chat.Service).
 	webhooksSvc.SetDeps(webhooks.Deps{
-		GetStatus: streamSvc.GetStatus,
-		Followers: apSvc.Followers(),
+		GetStatus:        streamSvc.GetStatus,
+		Followers:        apSvc.Followers(),
+		ConfigRepository: configRepository,
 	})
 	chatSvc.SetGetStatus(streamSvc.GetStatus)
 
@@ -175,16 +205,18 @@ func main() {
 	go metrics.Start(streamSvc, chatSvc)
 
 	adminHandlers := admin.New(admin.Deps{
-		Stream:      streamSvc,
-		Rtmp:        rtmpSvc,
-		Activitypub: apSvc,
-		Webhooks:    webhooksSvc,
-		Chat:        chatSvc,
+		Stream:           streamSvc,
+		Rtmp:             rtmpSvc,
+		Activitypub:      apSvc,
+		Webhooks:         webhooksSvc,
+		Chat:             chatSvc,
+		ConfigRepository: configRepository,
 	})
 
 	fediverseHandler := fediverse.New(fediverse.Deps{
-		Activitypub: apSvc,
-		Chat:        chatSvc,
+		Activitypub:      apSvc,
+		Chat:             chatSvc,
+		ConfigRepository: configRepository,
 	})
 
 	indieauthHandler := indieauth.New(indieauth.Deps{
@@ -196,14 +228,15 @@ func main() {
 	})
 
 	h := handlers.NewHandlers(handlers.Deps{
-		Cache:       cacheContainer,
-		Stream:      streamSvc,
-		Chat:        chatSvc,
-		Admin:       adminHandlers,
-		Activitypub: apSvc,
-		Fediverse:   fediverseHandler,
-		IndieAuth:   indieauthHandler,
-		Moderation:  moderationHandler,
+		Cache:            cacheContainer,
+		Stream:           streamSvc,
+		Chat:             chatSvc,
+		Admin:            adminHandlers,
+		Activitypub:      apSvc,
+		Fediverse:        fediverseHandler,
+		IndieAuth:        indieauthHandler,
+		Moderation:       moderationHandler,
+		ConfigRepository: configRepository,
 	})
 
 	if err := router.Start(*enableVerboseLogging, h, apSvc.Controllers()); err != nil {
@@ -211,9 +244,7 @@ func main() {
 	}
 }
 
-func handleCommandLineFlags() {
-	configRepository := configrepository.Get()
-
+func handleCommandLineFlags(configRepository configrepository.ConfigRepository) {
 	if *newAdminPassword != "" {
 		if err := configRepository.SetAdminPassword(*newAdminPassword); err != nil {
 			log.Errorln("Error setting your admin password.", err)

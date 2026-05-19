@@ -8,7 +8,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
@@ -16,8 +15,8 @@ import (
 )
 
 // GetServerConfig gets the config details of the server.
-func GetServerConfig(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
+func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
+	configRepository := a.configRepository
 	ffmpeg := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
 	usernameBlocklist := configRepository.GetForbiddenUsernameList()
 	usernameSuggestions := configRepository.GetSuggestedUsernamesList()

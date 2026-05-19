@@ -10,7 +10,9 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
+
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/datastore"
 )
 
@@ -62,7 +64,9 @@ func TestMain(m *testing.M) {
 	}
 	datastore.SetupPersistence(dbFile.Name())
 
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(datastore.GetDatastore())
+	SetConfigRepository(configRepository)
+	crypto.SetConfigRepository(configRepository)
 
 	configRepository.SetServerURL("https://my.cool.site.biz")
 
@@ -158,7 +162,7 @@ func TestMakeServiceForAccount(t *testing.T) {
 }
 
 func TestMakeServiceForAccountWithIDNServerURL(t *testing.T) {
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(datastore.GetDatastore())
 	configRepository.SetServerURL("https://live.retrospection.みんな")
 	t.Cleanup(func() {
 		configRepository.SetServerURL("https://my.cool.site.biz")

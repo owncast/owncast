@@ -34,6 +34,10 @@ func (e *execInfo) String() string {
 type Transcoder struct {
 	codec Codec
 
+	// configRepository provides ffmpeg path, latency level, output variants,
+	// and codec selection consulted at Start.
+	configRepository configrepository.ConfigRepository
+
 	stdin *io.PipeReader
 
 	// commandExec holds the live ffmpeg child process while the
@@ -138,7 +142,7 @@ func (t *Transcoder) Start(shouldLog bool) {
 	if shouldLog {
 		log.Infof("Processing video using codec %s with %d output qualities configured.", t.codec.DisplayName(), len(t.variants))
 	}
-	createVariantDirectories()
+	t.createVariantDirectories()
 	command := flags.String()
 
 	if config.EnableDebugFeatures {
@@ -317,11 +321,11 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 }
 
 // NewTranscoder will return a new Transcoder, populated by the config.
-func NewTranscoder() *Transcoder {
-	configRepository := configrepository.Get()
+func NewTranscoder(configRepository configrepository.ConfigRepository) *Transcoder {
 	ffmpegPath := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
 
 	transcoder := new(Transcoder)
+	transcoder.configRepository = configRepository
 	transcoder.ffmpegPath = ffmpegPath
 	transcoder.internalListenerPort = config.InternalHLSListenerPort
 

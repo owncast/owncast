@@ -22,18 +22,6 @@ type SqlConfigRepository struct {
 	datastore *datastore.Datastore
 }
 
-// NOTE: This is temporary during the transition period.
-var temporaryGlobalInstance ConfigRepository
-
-// Get will return the user repository.
-func Get() ConfigRepository {
-	if temporaryGlobalInstance == nil {
-		i := New(datastore.GetDatastore())
-		temporaryGlobalInstance = i
-	}
-	return temporaryGlobalInstance
-}
-
 // New will create a new instance of the UserRepository.
 func New(datastore *datastore.Datastore) ConfigRepository {
 	r := SqlConfigRepository{

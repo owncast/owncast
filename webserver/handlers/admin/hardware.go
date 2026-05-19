@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/metrics"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/metrics"
 )
 
 // GetHardwareStats will return hardware utilization over time.

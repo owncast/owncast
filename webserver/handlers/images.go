@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jellydator/ttlcache/v3"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 )
@@ -24,7 +25,7 @@ var previewThumbCache = ttlcache.New(
 )
 
 // GetThumbnail will return the thumbnail image as a response.
-func GetThumbnail(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) GetThumbnail(w http.ResponseWriter, r *http.Request) {
 	imageFilename := thumbnailFilename
 	imagePath := filepath.Join(config.TempDir, imageFilename)
 	httpCacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
@@ -40,12 +41,12 @@ func GetThumbnail(w http.ResponseWriter, r *http.Request) {
 		imageBytes, err = getImage(imagePath)
 		previewThumbCache.Set(imagePath, imageBytes, inMemoryCacheTime)
 	} else {
-		GetLogo(w, r)
+		h.GetLogo(w, r)
 		return
 	}
 
 	if err != nil {
-		GetLogo(w, r)
+		h.GetLogo(w, r)
 		return
 	}
 
@@ -53,7 +54,7 @@ func GetThumbnail(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetPreview will return the preview gif as a response.
-func GetPreview(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) GetPreview(w http.ResponseWriter, r *http.Request) {
 	imageFilename := "preview.gif"
 	imagePath := filepath.Join(config.TempDir, imageFilename)
 	httpCacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
@@ -69,12 +70,12 @@ func GetPreview(w http.ResponseWriter, r *http.Request) {
 		imageBytes, err = getImage(imagePath)
 		previewThumbCache.Set(imagePath, imageBytes, inMemoryCacheTime)
 	} else {
-		GetLogo(w, r)
+		h.GetLogo(w, r)
 		return
 	}
 
 	if err != nil {
-		GetLogo(w, r)
+		h.GetLogo(w, r)
 		return
 	}
 

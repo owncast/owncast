@@ -23,8 +23,9 @@ import (
 
 // Deps lists the explicit dependencies for the chat Service.
 type Deps struct {
-	GetStatus func() models.Status
-	Webhooks  *webhooks.Service
+	GetStatus        func() models.Status
+	Webhooks         *webhooks.Service
+	ConfigRepository configrepository.ConfigRepository
 }
 
 // New constructs a chat Service. Call Start to launch the broadcast
@@ -32,6 +33,7 @@ type Deps struct {
 func New(deps Deps) *Service {
 	s := newServer(deps.Webhooks)
 	s.getStatus = deps.GetStatus
+	s.configRepository = deps.ConfigRepository
 	return s
 }
 
@@ -49,8 +51,6 @@ func (s *Service) SetGetStatus(fn func() models.Status) {
 func (s *Service) Start() error {
 	setupPersistence()
 
-	configRepository := configrepository.Get()
-
 	go s.Run()
 
 	log.Traceln("Chat server started with max connection count of", s.maxSocketConnectionLimit)
@@ -60,7 +60,7 @@ func (s *Service) Start() error {
 		Help: "The number of chat messages incremented over time.",
 		ConstLabels: map[string]string{
 			"version": config.VersionNumber,
-			"host":    configRepository.GetServerURL(),
+			"host":    s.configRepository.GetServerURL(),
 		},
 	})
 

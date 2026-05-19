@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"net/url"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 type webConfigResponse struct {
@@ -73,7 +73,7 @@ func (h *Handlers) GetWebConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) getConfigResponse() webConfigResponse {
-	configRepository := configrepository.Get()
+	configRepository := h.configRepository
 	pageContent := utils.RenderPageContentMarkdown(configRepository.GetExtraPageBodyContent())
 	offlineMessage := utils.RenderSimpleMarkdown(configRepository.GetCustomOfflineMessage())
 	socialHandles := configRepository.GetSocialHandles()

@@ -9,12 +9,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
-	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 )
 
 var (

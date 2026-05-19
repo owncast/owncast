@@ -18,12 +18,13 @@ import (
 // into thumbnail.jpg + preview.gif while a stream is online. One
 // instance per active stream, owned by the stream service.
 type ThumbnailGenerator struct {
-	timer *time.Ticker
+	timer            *time.Ticker
+	configRepository configrepository.ConfigRepository
 }
 
 // NewThumbnailGenerator returns an idle generator. Call Start to begin.
-func NewThumbnailGenerator() *ThumbnailGenerator {
-	return &ThumbnailGenerator{}
+func NewThumbnailGenerator(configRepository configrepository.ConfigRepository) *ThumbnailGenerator {
+	return &ThumbnailGenerator{configRepository: configRepository}
 }
 
 // Stop will stop the periodic generating of a thumbnail from video.
@@ -41,7 +42,7 @@ func (g *ThumbnailGenerator) Start(chunkPath string, variantIndex int, isVideoPa
 
 	go func() {
 		for range g.timer.C {
-			if err := fireThumbnailGenerator(chunkPath, variantIndex); err != nil {
+			if err := g.fireThumbnailGenerator(chunkPath, variantIndex); err != nil {
 				logMsg := "Unable to generate thumbnail: " + err.Error()
 				if isVideoPassthrough {
 					logMsg += ". Video Passthrough is enabled. You should disable it to fix this, and other, streaming errors. https://owncast.online/troubleshoot"
@@ -53,7 +54,7 @@ func (g *ThumbnailGenerator) Start(chunkPath string, variantIndex int, isVideoPa
 	}()
 }
 
-func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
+func (g *ThumbnailGenerator) fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	// JPG takes less time to encode than PNG
 	outputFile := path.Join(config.TempDir, "thumbnail.jpg")
 	previewGifFile := path.Join(config.TempDir, "preview.gif")
@@ -90,9 +91,8 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	if len(names) == 0 {
 		return nil
 	}
-	configRepository := configrepository.Get()
 	mostRecentFile := path.Join(framePath, names[0])
-	ffmpegPath := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
+	ffmpegPath := utils.ValidatedFfmpegPath(g.configRepository.GetFfMpegPath())
 	outputFileTemp := path.Join(config.TempDir, "tempthumbnail.jpg")
 
 	thumbnailCmdFlags := []string{
@@ -114,14 +114,13 @@ func fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 		log.Errorln(err)
 	}
 
-	makeAnimatedGifPreview(mostRecentFile, previewGifFile)
+	g.makeAnimatedGifPreview(mostRecentFile, previewGifFile)
 
 	return nil
 }
 
-func makeAnimatedGifPreview(sourceFile string, outputFile string) {
-	configRepository := configrepository.Get()
-	ffmpegPath := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
+func (g *ThumbnailGenerator) makeAnimatedGifPreview(sourceFile string, outputFile string) {
+	ffmpegPath := utils.ValidatedFfmpegPath(g.configRepository.GetFfMpegPath())
 	outputFileTemp := path.Join(config.TempDir, "temppreview.gif")
 
 	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/

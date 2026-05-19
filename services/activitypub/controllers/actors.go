@@ -6,7 +6,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/requests"
@@ -14,9 +13,7 @@ import (
 
 // ActorHandler handles requests for a single actor.
 func (c *Controllers) ActorHandler(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetFederationEnabled() {
+	if !c.configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
@@ -24,7 +21,7 @@ func (c *Controllers) ActorHandler(w http.ResponseWriter, r *http.Request) {
 	pathComponents := strings.Split(r.URL.Path, "/")
 	accountName := pathComponents[3]
 
-	if _, valid := configRepository.GetFederatedInboxMap()[accountName]; !valid {
+	if _, valid := c.configRepository.GetFederatedInboxMap()[accountName]; !valid {
 		// User is not valid
 		w.WriteHeader(http.StatusNotFound)
 		return

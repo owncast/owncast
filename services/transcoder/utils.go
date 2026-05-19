@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/utils"
 )
 
 var errorMap = map[string]string{
@@ -92,12 +92,11 @@ func (t *Transcoder) handleTranscoderMessage(message string) {
 	t.lastLogMessage = message
 }
 
-func createVariantDirectories() {
+func (t *Transcoder) createVariantDirectories() {
 	// Create private hls data dirs
 	utils.CleanupDirectory(config.HLSStoragePath)
-	configRepository := configrepository.Get()
-	if len(configRepository.GetStreamOutputVariants()) != 0 {
-		for index := range configRepository.GetStreamOutputVariants() {
+	if len(t.configRepository.GetStreamOutputVariants()) != 0 {
+		for index := range t.configRepository.GetStreamOutputVariants() {
 			if err := os.MkdirAll(path.Join(config.HLSStoragePath, strconv.Itoa(index)), 0o750); err != nil {
 				log.Fatalln(err)
 			}

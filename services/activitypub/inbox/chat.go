@@ -6,7 +6,6 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/microcosm-cc/bluemonday"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/chat/events"
 )
@@ -23,15 +22,13 @@ func sanitizeActorName(displayName, username string) string {
 }
 
 func (s *Service) handleEngagementActivity(eventType events.EventType, isLiveNotification bool, actorReference vocab.ActivityStreamsActorProperty, action string) error {
-	configRepository := configrepository.Get()
-
 	// Do nothing if displaying engagement actions has been turned off.
-	if !configRepository.GetFederationShowEngagement() {
+	if !s.configRepository.GetFederationShowEngagement() {
 		return nil
 	}
 
 	// Do nothing if chat is disabled
-	if configRepository.GetChatDisabled() {
+	if s.configRepository.GetChatDisabled() {
 		return nil
 	}
 
@@ -50,11 +47,11 @@ func (s *Service) handleEngagementActivity(eventType events.EventType, isLiveNot
 	if isLiveNotification && action == events.FediverseEngagementLike {
 		suffix = "liked that this stream went live."
 	} else if action == events.FediverseEngagementLike {
-		suffix = fmt.Sprintf("liked a post from %s.", configRepository.GetServerName())
+		suffix = fmt.Sprintf("liked a post from %s.", s.configRepository.GetServerName())
 	} else if isLiveNotification && action == events.FediverseEngagementRepost {
 		suffix = "shared this stream with their followers."
 	} else if action == events.FediverseEngagementRepost {
-		suffix = fmt.Sprintf("shared a post from %s.", configRepository.GetServerName())
+		suffix = fmt.Sprintf("shared a post from %s.", s.configRepository.GetServerName())
 	} else if action == events.FediverseEngagementFollow {
 		suffix = "followed this stream."
 	} else {

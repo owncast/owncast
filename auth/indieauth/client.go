@@ -11,10 +11,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/utils"
 )
 
 var (
@@ -47,8 +47,6 @@ func setupExpiredRequestPruner() {
 
 // StartAuthFlow will begin the IndieAuth flow by generating an auth request.
 func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
-	configRepository := configrepository.Get()
-
 	// Limit the number of pending requests
 	if len(pendingAuthRequests) >= maxPendingRequests {
 		return nil, errors.New("Please try again later. Too many pending requests.")

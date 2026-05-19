@@ -4,9 +4,10 @@ import (
 	"time"
 
 	"github.com/nakabonne/tstorage"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/userrepository"
-	log "github.com/sirupsen/logrus"
 )
 
 var storage tstorage.Storage

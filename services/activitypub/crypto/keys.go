@@ -8,14 +8,11 @@ import (
 	"errors"
 	"net/url"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	log "github.com/sirupsen/logrus"
 )
 
 // GetPublicKey will return the public key for the provided actor.
 func GetPublicKey(actorIRI *url.URL) PublicKey {
-	configRepository := configrepository.Get()
-
 	key := configRepository.GetPublicKey()
 	idURL, err := url.Parse(actorIRI.String() + "#main-key")
 	if err != nil {
@@ -31,8 +28,6 @@ func GetPublicKey(actorIRI *url.URL) PublicKey {
 
 // GetPrivateKey will return the internal server private key.
 func GetPrivateKey() *rsa.PrivateKey {
-	configRepository := configrepository.Get()
-
 	key := configRepository.GetPrivateKey()
 
 	block, _ := pem.Decode([]byte(key))

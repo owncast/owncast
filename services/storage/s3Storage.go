@@ -13,10 +13,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/utils"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
@@ -48,23 +49,25 @@ type S3Storage struct {
 
 	lock sync.Mutex
 
+	configRepository configrepository.ConfigRepository
+
 	s3ForcePathStyle bool
 }
 
 // NewS3Storage returns a new S3Storage instance.
-func NewS3Storage() *S3Storage {
+func NewS3Storage(configRepository configrepository.ConfigRepository) *S3Storage {
 	return &S3Storage{
 		queuedPlaylistUpdates: make(map[string]string),
 		lock:                  sync.Mutex{},
+		configRepository:      configRepository,
 	}
 }
 
 // Setup sets up the s3 storage for saving the video to s3.
 func (s *S3Storage) Setup() error {
 	log.Trace("Setting up S3 for external storage of video...")
-	configRepository := configrepository.Get()
-	s3Config := configRepository.GetS3Config()
-	customVideoServingEndpoint := configRepository.GetVideoServingEndpoint()
+	s3Config := s.configRepository.GetS3Config()
+	customVideoServingEndpoint := s.configRepository.GetVideoServingEndpoint()
 
 	if customVideoServingEndpoint != "" {
 		s.host = customVideoServingEndpoint
@@ -101,9 +104,8 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 	averagePerformance := utils.GetAveragePerformance(performanceMonitorKey)
 
 	// Warn the user about long-running save operations
-	configRepository := configrepository.Get()
 	if averagePerformance != 0 {
-		if averagePerformance > float64(configRepository.GetStreamLatencyLevel().SecondsPerSegment)*0.9 {
+		if averagePerformance > float64(s.configRepository.GetStreamLatencyLevel().SecondsPerSegment)*0.9 {
 			log.Warnln("Possible slow uploads: average upload S3 save duration", averagePerformance, "s. troubleshoot this issue by visiting https://owncast.online/docs/troubleshooting/")
 		}
 	}
@@ -210,8 +212,7 @@ func (s *S3Storage) Cleanup() error {
 // RemoteCleanup will remove old files from the remote storage provider.
 func (s *S3Storage) RemoteCleanup() error {
 	// Determine how many files we should keep on S3 storage
-	configRepository := configrepository.Get()
-	maxNumber := configRepository.GetStreamLatencyLevel().SegmentCount
+	maxNumber := s.configRepository.GetStreamLatencyLevel().SegmentCount
 	buffer := 20
 
 	keys, err := s.getDeletableVideoSegmentsWithOffset(maxNumber + buffer)

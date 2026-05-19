@@ -7,16 +7,13 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/utils"
 )
 
 // WebfingerHandler will handle webfinger lookup requests.
 func (c *Controllers) WebfingerHandler(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetFederationEnabled() {
+	if !c.configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		log.Debugln("webfinger request rejected! Federation is not enabled")
 		return
@@ -25,7 +22,7 @@ func (c *Controllers) WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 	instanceURL, err := apmodels.GetCanonicalServerURL()
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		log.Warnln("webfinger request rejected! Federation is enabled but server URL host cannot be canonicalized: " + configRepository.GetServerURL())
+		log.Warnln("webfinger request rejected! Federation is enabled but server URL host cannot be canonicalized: " + c.configRepository.GetServerURL())
 		return
 	}
 	instanceHostString := instanceURL.Host
@@ -54,7 +51,7 @@ func (c *Controllers) WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, valid := configRepository.GetFederatedInboxMap()[user]; !valid {
+	if _, valid := c.configRepository.GetFederatedInboxMap()[user]; !valid {
 		w.WriteHeader(http.StatusNotFound)
 		log.Debugln("webfinger request rejected! Invalid user: " + user)
 		return

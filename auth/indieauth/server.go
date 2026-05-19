@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/pkg/errors"
 	"github.com/teris-io/shortid"
 )
@@ -70,8 +69,6 @@ func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*S
 // CompleteServerAuth will verify that the values provided in the final step
 // of the IndieAuth flow are correct, and return some basic profile info.
 func CompleteServerAuth(code, redirectURI, clientID string, codeVerifier string) (*ServerProfileResponse, error) {
-	configRepository := configrepository.Get()
-
 	request, pending := pendingServerAuthRequests[code]
 	if !pending {
 		return nil, errors.New("no pending authentication request")

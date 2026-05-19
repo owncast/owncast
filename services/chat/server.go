@@ -46,6 +46,11 @@ type Service struct {
 	// (welcome messages, recent-disconnect heuristics).
 	getStatus func() models.Status
 
+	// configRepository provides server-side chat settings consulted on each
+	// inbound message (slur/spam filters, established-users-only mode,
+	// auth requirement, welcome message text, etc.).
+	configRepository configrepository.ConfigRepository
+
 	// chatMessagesSentCounter is the Prometheus counter incremented on
 	// each accepted inbound message.
 	chatMessagesSentCounter prometheus.Gauge
@@ -108,9 +113,7 @@ func (s *Service) Addclient(conn *websocket.Conn, user *models.User, accessToken
 		ConnectedAt: time.Now(),
 	}
 
-	configRepository := configrepository.Get()
-
-	shouldSendJoinedMessages := configRepository.GetChatJoinPartMessagesEnabled()
+	shouldSendJoinedMessages := s.configRepository.GetChatJoinPartMessagesEnabled()
 
 	// If there are existing clients connected for this user do not send
 	// a user joined message. Do not put this under a mutex, as
@@ -201,10 +204,8 @@ func (s *Service) sendUserPartedMessage(c *Client) {
 	userPartEvent.User = c.User
 	userPartEvent.ClientID = c.Id
 
-	configRepository := configrepository.Get()
-
 	// If part messages are disabled.
-	if configRepository.GetChatJoinPartMessagesEnabled() {
+	if s.configRepository.GetChatJoinPartMessagesEnabled() {
 		if err := s.Broadcast(userPartEvent.GetBroadcastPayload()); err != nil {
 			log.Errorln("error sending chat part message", err)
 		}
@@ -215,10 +216,9 @@ func (s *Service) sendUserPartedMessage(c *Client) {
 
 // HandleClientConnection is fired when a single client connects to the websocket.
 func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
 	authRepository := authrepository.Get()
 
-	if configRepository.GetChatDisabled() {
+	if s.configRepository.GetChatDisabled() {
 		_, _ = w.Write([]byte(events.ChatDisabled))
 		return
 	}
@@ -397,20 +397,18 @@ func (s *Service) SendActionToUser(userID string, text string) error {
 }
 
 func (s *Service) eventReceived(event chatClientEvent) {
-	configRepository := configrepository.Get()
-
 	c := event.client
 	u := c.User
 
 	// If established chat user only mode is enabled and the user is not old
 	// enough then reject this event and send them an informative message.
-	if u != nil && configRepository.GetChatEstbalishedUsersOnlyMode() && time.Since(event.client.User.CreatedAt) < config.GetDefaults().ChatEstablishedUserModeTimeDuration && !u.IsModerator() {
+	if u != nil && s.configRepository.GetChatEstbalishedUsersOnlyMode() && time.Since(event.client.User.CreatedAt) < config.GetDefaults().ChatEstablishedUserModeTimeDuration && !u.IsModerator() {
 		s.sendActionToClient(c, "You have not been an established chat participant long enough to take part in chat. Please enjoy the stream and try again later.")
 		return
 	}
 
 	// Check if authentication is required for chat
-	if configRepository.GetChatRequireAuthentication() {
+	if s.configRepository.GetChatRequireAuthentication() {
 		if u == nil || (!u.Authenticated && !u.IsModerator()) {
 			s.sendActionToClient(c, "Authentication is required to participate in chat.")
 			return
@@ -439,12 +437,10 @@ func (s *Service) eventReceived(event chatClientEvent) {
 }
 
 func (s *Service) sendWelcomeMessageToClient(c *Client) {
-	configRepository := configrepository.Get()
-
 	// Add an artificial delay so people notice this message come in.
 	time.Sleep(7 * time.Second)
 
-	welcomeMessage := utils.RenderSimpleMarkdown(configRepository.GetServerWelcomeMessage())
+	welcomeMessage := utils.RenderSimpleMarkdown(s.configRepository.GetServerWelcomeMessage())
 
 	if welcomeMessage != "" {
 		s.sendSystemMessageToClient(c, welcomeMessage)
@@ -452,9 +448,7 @@ func (s *Service) sendWelcomeMessageToClient(c *Client) {
 }
 
 func (s *Service) sendAllWelcomeMessage() {
-	configRepository := configrepository.Get()
-
-	welcomeMessage := utils.RenderSimpleMarkdown(configRepository.GetServerWelcomeMessage())
+	welcomeMessage := utils.RenderSimpleMarkdown(s.configRepository.GetServerWelcomeMessage())
 
 	if welcomeMessage != "" {
 		clientMessage := events.SystemMessageEvent{

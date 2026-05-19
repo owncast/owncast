@@ -11,9 +11,10 @@ import (
 	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-	"github.com/owncast/owncast/utils"
 	"github.com/rifflock/lfshook"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/utils"
 )
 
 const maxLogEntries = 500

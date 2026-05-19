@@ -12,7 +12,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/notifications"
@@ -27,8 +26,7 @@ import (
 func (s *Service) Start(_ context.Context) error {
 	s.resetDirectories()
 
-	configRepository := configrepository.Get()
-	if err := configRepository.VerifySettings(); err != nil {
+	if err := s.configRepository.VerifySettings(); err != nil {
 		log.Error(err)
 		return err
 	}
@@ -63,7 +61,7 @@ func (s *Service) Start(_ context.Context) error {
 	// start the rtmp server
 	go s.rtmp.Start(s.setStreamAsConnected, s.setBroadcaster)
 
-	rtmpPort := configRepository.GetRTMPPortNumber()
+	rtmpPort := s.configRepository.GetRTMPPortNumber()
 	if rtmpPort != 1935 {
 		log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
 	}
@@ -96,7 +94,7 @@ func (s *Service) createInitialOfflineState() error {
 func (s *Service) transitionToOfflineVideoStreamContent() {
 	log.Traceln("Firing transcoder with offline stream state")
 
-	offlineTranscoder := transcoder.NewTranscoder()
+	offlineTranscoder := transcoder.NewTranscoder(s.configRepository)
 	offlineTranscoder.SetIdentifier("offline")
 	offlineTranscoder.SetLatencyLevel(models.GetLatencyLevel(4))
 	offlineTranscoder.SetIsEvent(true)
@@ -110,8 +108,7 @@ func (s *Service) transitionToOfflineVideoStreamContent() {
 	go offlineTranscoder.Start(false)
 
 	// Copy the logo to be the thumbnail
-	configRepository := configrepository.Get()
-	logo := configRepository.GetLogoPath()
+	logo := s.configRepository.GetLogoPath()
 	dst := filepath.Join(config.TempDir, "thumbnail.jpg")
 	if err = utils.Copy(filepath.Join("data", logo), dst); err != nil {
 		log.Warnln(err)
@@ -128,8 +125,7 @@ func (s *Service) resetDirectories() {
 	utils.CleanupDirectory(config.HLSStoragePath)
 
 	// Remove the previous thumbnail
-	configRepository := configrepository.Get()
-	logo := configRepository.GetLogoPath()
+	logo := s.configRepository.GetLogoPath()
 	if utils.DoesFileExists(logo) {
 		err := utils.Copy(path.Join("data", logo), filepath.Join(config.DataDirectory, "thumbnail.jpg"))
 		if err != nil {
@@ -146,11 +142,9 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 	s.stats.LastConnectTime = &now
 	s.stats.SessionMaxViewerCount = 0
 
-	configRepository := configrepository.Get()
-
 	s.currentBroadcast = &models.CurrentBroadcast{
-		LatencyLevel:   configRepository.GetStreamLatencyLevel(),
-		OutputSettings: configRepository.GetStreamOutputVariants(),
+		LatencyLevel:   s.configRepository.GetStreamLatencyLevel(),
+		OutputSettings: s.configRepository.GetStreamOutputVariants(),
 	}
 
 	s.StopOfflineCleanupTimer()
@@ -167,7 +161,7 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 	}
 
 	go func() {
-		s.transcoder = transcoder.NewTranscoder()
+		s.transcoder = transcoder.NewTranscoder(s.configRepository)
 		s.transcoder.TranscoderCompleted = func(error) {
 			s.SetStreamAsDisconnected()
 			s.transcoder = nil
@@ -178,8 +172,8 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 	}()
 
 	go s.webhooks.SendStreamStatusEvent(models.StreamStarted)
-	selectedThumbnailVideoQualityIndex, isVideoPassthrough := configRepository.FindHighestVideoQualityIndex(s.currentBroadcast.OutputSettings)
-	s.thumbnailGen = transcoder.NewThumbnailGenerator()
+	selectedThumbnailVideoQualityIndex, isVideoPassthrough := s.configRepository.FindHighestVideoQualityIndex(s.currentBroadcast.OutputSettings)
+	s.thumbnailGen = transcoder.NewThumbnailGenerator(s.configRepository)
 	s.thumbnailGen.Start(segmentPath, selectedThumbnailVideoQualityIndex, isVideoPassthrough)
 
 	_ = s.chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
@@ -289,9 +283,8 @@ func (s *Service) startLiveStreamNotificationsTimer() context.CancelFunc {
 				return
 			}
 
-			configRepository := configrepository.Get()
 			// Send Fediverse message.
-			if configRepository.GetFederationEnabled() {
+			if s.configRepository.GetFederationEnabled() {
 				log.Traceln("Sending Federated Go Live message.")
 				if err := s.activitypub.SendLive(); err != nil {
 					log.Errorln(err)
@@ -299,7 +292,7 @@ func (s *Service) startLiveStreamNotificationsTimer() context.CancelFunc {
 			}
 
 			// Send notification to those who have registered for them.
-			if notificationService, err := notifications.New(datastore.GetDatastore()); err != nil {
+			if notificationService, err := notifications.New(datastore.GetDatastore(), s.configRepository); err != nil {
 				log.Errorln(err)
 			} else {
 				notificationService.Notify()

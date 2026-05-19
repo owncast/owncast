@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/authrepository"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // ExternalAccessTokenHandlerFunc is a function that is called after validing access.
@@ -22,7 +22,6 @@ type UserAccessTokenHandlerFunc func(models.User, http.ResponseWriter, *http.Req
 // RequireAdminAuth wraps a handler requiring HTTP basic auth for it using the given
 // the stream key as the password and and a hardcoded "admin" for username.
 func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
-	configRepository := configrepository.Get()
 	return func(w http.ResponseWriter, r *http.Request) {
 		username := "admin"
 		password := configRepository.GetAdminPassword()

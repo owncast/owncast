@@ -6,7 +6,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/stream"
 )
@@ -63,7 +62,6 @@ var (
 
 // Start will begin the metrics collection and alerting.
 func Start(s *stream.Service, c *chat.Service) {
-	configRepository := configrepository.Get()
 	streamSvc = s
 	chatSvc = c
 	host := configRepository.GetServerURL()

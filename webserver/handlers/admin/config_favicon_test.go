@@ -16,6 +16,11 @@ import (
 	"github.com/owncast/owncast/services/datastore"
 )
 
+// testAdmin is the *Admin used by tests in this package. Only the
+// configRepository handle is needed by favicon tests; expand if other
+// handler tests land that need additional deps.
+var testAdmin *Admin
+
 func TestMain(m *testing.M) {
 	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-db.db")
 	if err != nil {
@@ -31,6 +36,8 @@ func TestMain(m *testing.M) {
 	if err := os.MkdirAll("data", 0o755); err != nil {
 		panic(err)
 	}
+
+	testAdmin = &Admin{configRepository: configrepository.New(datastore.GetDatastore())}
 
 	code := m.Run()
 	os.Remove(dbFile.Name())
@@ -79,7 +86,7 @@ func cleanupFaviconFiles(t *testing.T) {
 	for _, ext := range []string{".png", ".ico"} {
 		os.Remove(filepath.Join("data", "favicon"+ext))
 	}
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(datastore.GetDatastore())
 	configRepository.SetFaviconPath("")
 }
 
@@ -91,7 +98,7 @@ func TestSetFaviconPNG(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	SetFavicon(w, req)
+	testAdmin.SetFavicon(w, req)
 
 	resp := parseResponse(t, w)
 	if !resp.Success {
@@ -107,7 +114,7 @@ func TestSetFaviconPNG(t *testing.T) {
 	}
 
 	// Verify config was updated.
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(datastore.GetDatastore())
 	if path := configRepository.GetFaviconPath(); path != "favicon.png" {
 		t.Errorf("expected favicon path 'favicon.png', got %q", path)
 	}
@@ -121,7 +128,7 @@ func TestSetFaviconICO(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	SetFavicon(w, req)
+	testAdmin.SetFavicon(w, req)
 
 	resp := parseResponse(t, w)
 	if !resp.Success {
@@ -134,7 +141,7 @@ func TestSetFaviconICO(t *testing.T) {
 	}
 
 	// Verify config was updated.
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(datastore.GetDatastore())
 	if path := configRepository.GetFaviconPath(); path != "favicon.ico" {
 		t.Errorf("expected favicon path 'favicon.ico', got %q", path)
 	}
@@ -148,7 +155,7 @@ func TestSetFaviconRejectsJPEG(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	SetFavicon(w, req)
+	testAdmin.SetFavicon(w, req)
 
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("expected status 400, got %d", w.Code)
@@ -174,7 +181,7 @@ func TestSetFaviconRejectsOversized(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	SetFavicon(w, req)
+	testAdmin.SetFavicon(w, req)
 
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("expected status 400, got %d", w.Code)
@@ -196,7 +203,7 @@ func TestSetFaviconRejectsEmptyBody(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
-	SetFavicon(w, req)
+	testAdmin.SetFavicon(w, req)
 
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("expected status 400, got %d", w.Code)
@@ -207,7 +214,7 @@ func TestSetFaviconRejectsGETMethod(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/api/admin/config/favicon", nil)
 	w := httptest.NewRecorder()
 
-	SetFavicon(w, req)
+	testAdmin.SetFavicon(w, req)
 
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("expected status 400 for GET request, got %d", w.Code)
@@ -223,7 +230,7 @@ func TestResetFavicon(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(datastore.GetDatastore())
 	if err := configRepository.SetFaviconPath("favicon.png"); err != nil {
 		t.Fatal(err)
 	}
@@ -231,7 +238,7 @@ func TestResetFavicon(t *testing.T) {
 	req := httptest.NewRequest(http.MethodDelete, "/api/admin/config/favicon", nil)
 	w := httptest.NewRecorder()
 
-	ResetFavicon(w, req)
+	testAdmin.ResetFavicon(w, req)
 
 	resp := parseResponse(t, w)
 	if !resp.Success {
@@ -254,13 +261,13 @@ func TestResetFavicon(t *testing.T) {
 
 func TestResetFaviconWhenNoneSet(t *testing.T) {
 	// Reset when no custom favicon is set should still succeed.
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(datastore.GetDatastore())
 	configRepository.SetFaviconPath("")
 
 	req := httptest.NewRequest(http.MethodDelete, "/api/admin/config/favicon", nil)
 	w := httptest.NewRecorder()
 
-	ResetFavicon(w, req)
+	testAdmin.ResetFavicon(w, req)
 
 	resp := parseResponse(t, w)
 	if !resp.Success {

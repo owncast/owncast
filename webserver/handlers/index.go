@@ -11,13 +11,13 @@ import (
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
-	log "github.com/sirupsen/logrus"
 )
 
 // IndexHandler handles the default index route.
@@ -83,7 +83,7 @@ func (h *Handlers) renderIndexHtml(w http.ResponseWriter, nonce string) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := h.configRepository
 	content := serverSideContent{
 		Name:             configRepository.GetServerName(),
 		Summary:          configRepository.GetServerSummary(),
@@ -150,7 +150,7 @@ func (h *Handlers) handleScraperMetadataPage(w http.ResponseWriter, r *http.Requ
 	}
 
 	scheme := "http"
-	configRepository := configrepository.Get()
+	configRepository := h.configRepository
 	if siteURL := configRepository.GetServerURL(); siteURL != "" {
 		if parsed, err := url.Parse(siteURL); err == nil && parsed.Scheme != "" {
 			scheme = parsed.Scheme

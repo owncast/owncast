@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 )
@@ -95,10 +94,9 @@ func (s *Service) sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) 
 	}
 }
 
-// getServerURL is a helper used in event payloads.
-func getServerURL() string {
-	configRepo := configrepository.Get()
-	return configRepo.GetServerURL()
+// serverURL is the helper used in event payloads.
+func (s *Service) serverURL() string {
+	return s.configRepository.GetServerURL()
 }
 
 // Followers exposes the followers repository the service was

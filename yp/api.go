@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 )
 
 type ypDetailsResponse struct {
@@ -28,7 +28,6 @@ type ypDetailsResponse struct {
 
 // GetYPResponse gets the status of the server for YP purposes.
 func GetYPResponse(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
 	if !configRepository.GetDirectoryEnabled() {
 		w.WriteHeader(http.StatusNotFound)
 		return

@@ -6,7 +6,6 @@ import (
 	"github.com/teris-io/shortid"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 // SendStreamStatusEvent dispatches a stream-status event (started,
@@ -16,17 +15,15 @@ func (s *Service) SendStreamStatusEvent(eventType models.EventType) {
 }
 
 func (s *Service) sendStreamStatusEvent(eventType models.EventType, id string, timestamp time.Time) {
-	configRepository := configrepository.Get()
-
 	s.SendEventToWebhooks(WebhookEvent{
 		Type: eventType,
 		EventData: map[string]interface{}{
 			"id":          id,
-			"name":        configRepository.GetServerName(),
-			"summary":     configRepository.GetServerSummary(),
-			"streamTitle": configRepository.GetStreamTitle(),
+			"name":        s.configRepository.GetServerName(),
+			"summary":     s.configRepository.GetServerSummary(),
+			"streamTitle": s.configRepository.GetStreamTitle(),
 			"status":      s.getStatus(),
-			"serverURL":   getServerURL(),
+			"serverURL":   s.configRepository.GetServerURL(),
 			"timestamp":   timestamp,
 		},
 	})

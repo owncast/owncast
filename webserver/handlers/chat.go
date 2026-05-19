@@ -4,26 +4,26 @@ import (
 	"encoding/json"
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // ExternalGetChatMessages gets all of the chat messages.
-func ExternalGetChatMessages(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) ExternalGetChatMessages(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 	getChatMessages(w, r)
 }
 
 // GetChatMessages gets all of the chat messages.
-func GetChatMessages(u models.User, w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) GetChatMessages(u models.User, w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 	getChatMessages(w, r)
 }
@@ -48,7 +48,7 @@ func getChatMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 // RegisterAnonymousChatUser will register a new user.
-func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 
 	userRepository := userrepository.Get()
@@ -83,7 +83,7 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 		proposedNewDisplayName = *request.DisplayName
 	}
 	if proposedNewDisplayName == "" {
-		proposedNewDisplayName = generateDisplayName()
+		proposedNewDisplayName = h.generateDisplayName()
 	}
 
 	proposedNewDisplayName = utils.MakeSafeStringOfLength(proposedNewDisplayName, config.MaxChatDisplayNameLength)
@@ -105,9 +105,8 @@ func RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteResponse(w, response)
 }
 
-func generateDisplayName() string {
-	configRepository := configrepository.Get()
-	suggestedUsernamesList := configRepository.GetSuggestedUsernamesList()
+func (h *Handlers) generateDisplayName() string {
+	suggestedUsernamesList := h.configRepository.GetSuggestedUsernamesList()
 	minSuggestedUsernamePoolLength := 10
 
 	if len(suggestedUsernamesList) >= minSuggestedUsernamePoolLength {

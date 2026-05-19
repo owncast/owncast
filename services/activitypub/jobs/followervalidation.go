@@ -38,18 +38,20 @@ func GetValidationInterval() time.Duration {
 
 // Service runs the recurring AP-side jobs.
 type Service struct {
-	followers followersrepository.FollowersRepository
+	followers        followersrepository.FollowersRepository
+	configRepository configrepository.ConfigRepository
 }
 
 // Deps is the dependency contract for jobs.
 type Deps struct {
-	Followers followersrepository.FollowersRepository
+	Followers        followersrepository.FollowersRepository
+	ConfigRepository configrepository.ConfigRepository
 }
 
 // New constructs the jobs Service. Call Start to schedule the
 // recurring tasks.
 func New(deps Deps) *Service {
-	return &Service{followers: deps.Followers}
+	return &Service{followers: deps.Followers, configRepository: deps.ConfigRepository}
 }
 
 // Start schedules the follower-validation tick.
@@ -65,8 +67,7 @@ func (s *Service) Start() {
 }
 
 func (s *Service) runFollowerValidation() {
-	configRepo := configrepository.Get()
-	if !configRepo.GetFederationEnabled() {
+	if !s.configRepository.GetFederationEnabled() {
 		return
 	}
 

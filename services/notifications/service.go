@@ -27,10 +27,10 @@ type notificationService struct {
 }
 
 // New creates a new instance of the notification service.
-func New(datastore *datastore.Datastore) (Service, error) {
+func New(datastore *datastore.Datastore, configRepository configrepository.ConfigRepository) (Service, error) {
 	service := &notificationService{
 		repository:       notificationsrepository.New(datastore),
-		configRepository: configrepository.Get(),
+		configRepository: configRepository,
 	}
 
 	if err := service.setupBrowserPush(datastore); err != nil {

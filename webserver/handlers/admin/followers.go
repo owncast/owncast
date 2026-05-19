@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/activitypub/requests"
 	"github.com/owncast/owncast/webserver/handlers/generated"
@@ -41,8 +40,7 @@ func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 		// Fire fediverse engagement follow event.
 		go a.webhooks.SendFediverseEngagementFollowEvent(*approval.ActorIRI)
 
-		configRepository := configrepository.Get()
-		localAccountName := configRepository.GetDefaultFederationUsername()
+		localAccountName := a.configRepository.GetDefaultFederationUsername()
 
 		followRequest, err := followersRepo.GetByIRI(*approval.ActorIRI)
 		if err != nil {

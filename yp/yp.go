@@ -10,7 +10,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -61,8 +60,6 @@ func (yp *YP) Stop() {
 }
 
 func (yp *YP) ping() {
-	configRepository := configrepository.Get()
-
 	if !configRepository.GetDirectoryEnabled() {
 		return
 	}

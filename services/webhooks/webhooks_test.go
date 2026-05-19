@@ -12,12 +12,13 @@ import (
 	"testing"
 	"time"
 
+	jsonpatch "gopkg.in/evanphx/json-patch.v5"
+
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/datastore"
-	jsonpatch "gopkg.in/evanphx/json-patch.v5"
 )
 
 func fakeGetStatus() models.Status {
@@ -49,10 +50,10 @@ func TestMain(m *testing.M) {
 	}
 
 	// Set up server URL for tests
-	configRepo := configrepository.Get()
-	configRepo.SetServerURL("http://localhost:8080")
+	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository.SetServerURL("http://localhost:8080")
 
-	testSvc = New(Deps{GetStatus: fakeGetStatus})
+	testSvc = New(Deps{GetStatus: fakeGetStatus, ConfigRepository: configRepository})
 	testSvc.Start()
 
 	defer close(testSvc.queue)

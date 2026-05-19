@@ -13,7 +13,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 )
 
@@ -25,9 +24,7 @@ func (s *Service) Start(setStreamAsConnected func(*io.PipeReader), setBroadcaste
 	s.setStreamAsConnected = setStreamAsConnected
 	s.setBroadcaster = setBroadcaster
 
-	configRepository := configrepository.Get()
-
-	port := configRepository.GetRTMPPortNumber()
+	port := s.configRepository.GetRTMPPortNumber()
 	srv := rtmp.NewServer()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
@@ -68,10 +65,8 @@ func (s *Service) handleConn(c *rtmp.Conn, nc net.Conn) {
 		return
 	}
 
-	configRepository := configrepository.Get()
-
 	accessGranted := false
-	validStreamingKeys := configRepository.GetStreamKeys()
+	validStreamingKeys := s.configRepository.GetStreamKeys()
 
 	// If a stream key override was specified then use that instead.
 	if config.TemporaryStreamKey != "" {

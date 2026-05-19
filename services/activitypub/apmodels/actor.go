@@ -11,7 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/crypto"
 )
 
@@ -216,8 +215,6 @@ func MakeActorPropertyWithID(idIRI *url.URL) vocab.ActivityStreamsActorProperty 
 
 // MakeServiceForAccount will create a new local actor service with the the provided username.
 func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
-	configRepository := configrepository.Get()
-
 	actorIRI := MakeLocalIRIForAccount(accountName)
 
 	person := streams.NewActivityStreamsService()

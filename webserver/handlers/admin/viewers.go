@@ -6,10 +6,11 @@ import (
 	"strconv"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/models"
 	webutils "github.com/owncast/owncast/webserver/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // GetViewersOverTime will return the number of viewers at points in time.

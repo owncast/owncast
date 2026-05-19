@@ -3,7 +3,6 @@ package stream
 import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 // GetStatus returns a snapshot of the current stream state suitable for
@@ -18,7 +17,6 @@ func (s *Service) GetStatus() models.Status {
 		viewerCount = len(s.stats.Viewers)
 	}
 
-	configRepository := configrepository.Get()
 	return models.Status{
 		Online:                s.IsStreamConnected(),
 		ViewerCount:           viewerCount,
@@ -27,7 +25,7 @@ func (s *Service) GetStatus() models.Status {
 		LastDisconnectTime:    s.stats.LastDisconnectTime,
 		LastConnectTime:       s.stats.LastConnectTime,
 		VersionNumber:         config.VersionNumber,
-		StreamTitle:           configRepository.GetStreamTitle(),
+		StreamTitle:           s.configRepository.GetStreamTitle(),
 	}
 }
 

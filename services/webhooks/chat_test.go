@@ -11,6 +11,7 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/chat/events"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 func TestSendChatEvent(t *testing.T) {
@@ -229,8 +230,8 @@ func TestSendChatEventSetMessageVisibility(t *testing.T) {
 // TestWebhookHasServerStatus verifies that all webhook events include server status
 func TestWebhookHasServerStatus(t *testing.T) {
 	// Set up server configuration
-	configRepo := configrepository.Get()
-	configRepo.SetServerURL("http://localhost:8080")
+	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository.SetServerURL("http://localhost:8080")
 
 	eventChannel := make(chan WebhookEvent)
 

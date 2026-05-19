@@ -3,7 +3,6 @@ package admin
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -13,9 +12,7 @@ func (a *Admin) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetFederationEnabled() {
+	if !a.configRepository.GetFederationEnabled() {
 		webutils.WriteSimpleResponse(w, false, "Federation is disabled")
 		return
 	}
@@ -40,7 +37,7 @@ func (a *Admin) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetFederationEnabled will set if Federation features are enabled.
-func SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -50,9 +47,7 @@ func SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
-
-	if err := configRepository.SetFederationEnabled(configValue.Value.(bool)); err != nil {
+	if err := a.configRepository.SetFederationEnabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -70,9 +65,7 @@ func (a *Admin) SetFederationActivityPrivate(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	configRepository := configrepository.Get()
-
-	if err := configRepository.SetFederationIsPrivate(configValue.Value.(bool)); err != nil {
+	if err := a.configRepository.SetFederationIsPrivate(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -87,7 +80,7 @@ func (a *Admin) SetFederationActivityPrivate(w http.ResponseWriter, r *http.Requ
 }
 
 // SetFederationShowEngagement will set if Fedivese engagement shows in chat.
-func SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -97,8 +90,7 @@ func SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
-	if err := configRepository.SetFederationShowEngagement(configValue.Value.(bool)); err != nil {
+	if err := a.configRepository.SetFederationShowEngagement(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -106,7 +98,7 @@ func SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetFederationUsername will set the local actor username used for federation activities.
-func SetFederationUsername(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetFederationUsername(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -116,8 +108,7 @@ func SetFederationUsername(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
-	if err := configRepository.SetFederationUsername(configValue.Value.(string)); err != nil {
+	if err := a.configRepository.SetFederationUsername(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -126,7 +117,7 @@ func SetFederationUsername(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetFederationGoLiveMessage will set the federated message sent when the streamer goes live.
-func SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -136,8 +127,7 @@ func SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
-	if err := configRepository.SetFederationGoLiveMessage(configValue.Value.(string)); err != nil {
+	if err := a.configRepository.SetFederationGoLiveMessage(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -146,7 +136,7 @@ func SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetFederationBlockDomains saves a list of domains to block on the Fediverse.
-func SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -162,8 +152,7 @@ func SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 		domainStrings = append(domainStrings, domain.Value.(string))
 	}
 
-	configRepository := configrepository.Get()
-	if err := configRepository.SetBlockedFederatedDomains(domainStrings); err != nil {
+	if err := a.configRepository.SetBlockedFederatedDomains(domainStrings); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

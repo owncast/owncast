@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/cache"
 	"github.com/owncast/owncast/services/chat"
@@ -21,27 +22,29 @@ import (
 // package; they migrate to methods as the services they depend on move to
 // services/<domain>/ and stop being callable via package-level singletons.
 type Handlers struct {
-	cache       *cache.Container
-	stream      *stream.Service
-	chat        *chat.Service
-	admin       *admin.Admin
-	activitypub *activitypub.Service
-	fediverse   *fediverse.Handler
-	indieauth   *indieauth.Handler
-	moderation  *moderation.Handler
+	cache            *cache.Container
+	stream           *stream.Service
+	chat             *chat.Service
+	admin            *admin.Admin
+	activitypub      *activitypub.Service
+	fediverse        *fediverse.Handler
+	indieauth        *indieauth.Handler
+	moderation       *moderation.Handler
+	configRepository configrepository.ConfigRepository
 }
 
 // Deps lists every service a *Handlers consumes. New deps appear here as
 // more handlers migrate.
 type Deps struct {
-	Cache       *cache.Container
-	Stream      *stream.Service
-	Chat        *chat.Service
-	Admin       *admin.Admin
-	Activitypub *activitypub.Service
-	Fediverse   *fediverse.Handler
-	IndieAuth   *indieauth.Handler
-	Moderation  *moderation.Handler
+	Cache            *cache.Container
+	Stream           *stream.Service
+	Chat             *chat.Service
+	Admin            *admin.Admin
+	Activitypub      *activitypub.Service
+	Fediverse        *fediverse.Handler
+	IndieAuth        *indieauth.Handler
+	Moderation       *moderation.Handler
+	ConfigRepository configrepository.ConfigRepository
 }
 
 // HandleWebsocketConnection routes the /ws websocket upgrade to the
@@ -54,13 +57,14 @@ func (h *Handlers) HandleWebsocketConnection(w http.ResponseWriter, r *http.Requ
 // NewHandlers constructs the dependency-bearing handler set.
 func NewHandlers(deps Deps) *Handlers {
 	return &Handlers{
-		cache:       deps.Cache,
-		stream:      deps.Stream,
-		chat:        deps.Chat,
-		admin:       deps.Admin,
-		activitypub: deps.Activitypub,
-		fediverse:   deps.Fediverse,
-		indieauth:   deps.IndieAuth,
-		moderation:  deps.Moderation,
+		cache:            deps.Cache,
+		stream:           deps.Stream,
+		chat:             deps.Chat,
+		admin:            deps.Admin,
+		activitypub:      deps.Activitypub,
+		fediverse:        deps.Fediverse,
+		indieauth:        deps.IndieAuth,
+		moderation:       deps.Moderation,
+		configRepository: deps.ConfigRepository,
 	}
 }

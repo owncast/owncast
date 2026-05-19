@@ -14,7 +14,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/geoip"
 )
@@ -134,9 +133,8 @@ func (c *Client) readPump() {
 		}
 
 		// Check if this message passes the optional language filter
-		configRepository := configrepository.Get()
 
-		if configRepository.GetChatSlurFilterEnabled() && !c.messageFilter.Allow(string(message)) {
+		if c.server.configRepository.GetChatSlurFilterEnabled() && !c.messageFilter.Allow(string(message)) {
 			c.sendAction("Sorry, that message contained language that is not allowed in this chat.")
 			continue
 		}
@@ -212,11 +210,9 @@ func (c *Client) close() {
 }
 
 func (c *Client) passesRateLimit() bool {
-	configRepository := configrepository.Get()
-
 	// If spam rate limiting is disabled, or the user is a moderator, always
 	// allow the message.
-	if !configRepository.GetChatSpamProtectionEnabled() || c.User.IsModerator() {
+	if !c.server.configRepository.GetChatSpamProtectionEnabled() || c.User.IsModerator() {
 		return true
 	}
 

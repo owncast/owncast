@@ -40,16 +40,16 @@ func (*ServerInterfaceImpl) GetCustomEmojiList(w http.ResponseWriter, r *http.Re
 	GetCustomEmojiList(w, r)
 }
 
-func (*ServerInterfaceImpl) GetChatMessages(w http.ResponseWriter, r *http.Request, params generated.GetChatMessagesParams) {
-	middleware.RequireUserAccessToken(GetChatMessages)(w, r)
+func (s *ServerInterfaceImpl) GetChatMessages(w http.ResponseWriter, r *http.Request, params generated.GetChatMessagesParams) {
+	middleware.RequireUserAccessToken(s.h.GetChatMessages)(w, r)
 }
 
-func (*ServerInterfaceImpl) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params generated.RegisterAnonymousChatUserParams) {
-	RegisterAnonymousChatUser(w, r)
+func (s *ServerInterfaceImpl) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params generated.RegisterAnonymousChatUserParams) {
+	s.h.RegisterAnonymousChatUser(w, r)
 }
 
-func (*ServerInterfaceImpl) RegisterAnonymousChatUserOptions(w http.ResponseWriter, r *http.Request) {
-	RegisterAnonymousChatUser(w, r)
+func (s *ServerInterfaceImpl) RegisterAnonymousChatUserOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.RegisterAnonymousChatUser(w, r)
 }
 
 func (s *ServerInterfaceImpl) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request, params generated.UpdateMessageVisibilityParams) {
@@ -72,16 +72,16 @@ func (*ServerInterfaceImpl) GetAllSocialPlatforms(w http.ResponseWriter, r *http
 	GetAllSocialPlatforms(w, r)
 }
 
-func (*ServerInterfaceImpl) GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
-	GetVideoStreamOutputVariants(w, r)
+func (s *ServerInterfaceImpl) GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
+	s.h.GetVideoStreamOutputVariants(w, r)
 }
 
 func (s *ServerInterfaceImpl) Ping(w http.ResponseWriter, r *http.Request) {
 	s.h.Ping(w, r)
 }
 
-func (*ServerInterfaceImpl) RemoteFollow(w http.ResponseWriter, r *http.Request) {
-	RemoteFollow(w, r)
+func (s *ServerInterfaceImpl) RemoteFollow(w http.ResponseWriter, r *http.Request) {
+	s.h.RemoteFollow(w, r)
 }
 
 func (*ServerInterfaceImpl) GetFollowers(w http.ResponseWriter, r *http.Request, params generated.GetFollowersParams) {

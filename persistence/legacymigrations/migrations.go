@@ -14,10 +14,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
+
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/utils"
 )
 
 func MigrateDatabaseSchema(db *sql.DB, from, to int) error {

@@ -23,9 +23,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/owncast/owncast/persistence/legacymigrations"
 	"github.com/pressly/goose/v3"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/persistence/legacymigrations"
 )
 
 //go:embed *.sql

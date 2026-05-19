@@ -7,7 +7,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 )
 
@@ -21,9 +20,7 @@ func (c *Controllers) InboxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controllers) acceptInboxRequest(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetFederationEnabled() {
+	if !c.configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
@@ -40,7 +37,7 @@ func (c *Controllers) acceptInboxRequest(w http.ResponseWriter, r *http.Request)
 
 	// The account this request is for must match the account name we have set
 	// for federation.
-	if forLocalAccount != configRepository.GetFederationUsername() {
+	if forLocalAccount != c.configRepository.GetFederationUsername() {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}

@@ -9,6 +9,8 @@ import (
 	"testing"
 
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/activitypub/apmodels"
+	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/datastore"
 )
 
@@ -27,6 +29,11 @@ func TestMain(m *testing.M) {
 	if err := datastore.SetupPersistence(dbFile.Name()); err != nil {
 		panic(err)
 	}
+
+	cfg := configrepository.New(datastore.GetDatastore())
+	apmodels.SetConfigRepository(cfg)
+	apcrypto.SetConfigRepository(cfg)
+	testControllers = &Controllers{configRepository: cfg}
 
 	os.Exit(m.Run())
 }
@@ -64,7 +71,7 @@ func TestWebfingerHandlerWithIDNHost(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			configRepository := configrepository.Get()
+			configRepository := configrepository.New(datastore.GetDatastore())
 			configRepository.SetFederationEnabled(true)
 			configRepository.SetFederationUsername("retrots3m")
 			configRepository.SetServerURL(tt.serverURL)

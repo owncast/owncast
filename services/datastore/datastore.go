@@ -8,9 +8,10 @@ import (
 
 	// sqlite requires a blank import.
 	_ "github.com/mattn/go-sqlite3"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
-	log "github.com/sirupsen/logrus"
 )
 
 // Datastore is the global key/value store for configuration values.

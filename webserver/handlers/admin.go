@@ -24,12 +24,12 @@ func (s *ServerInterfaceImpl) DisconnectInboundConnectionOptions(w http.Response
 	middleware.RequireAdminAuth(s.h.admin.DisconnectInboundConnection)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetServerConfig(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetServerConfig)(w, r)
+func (s *ServerInterfaceImpl) GetServerConfig(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetServerConfig)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetServerConfigOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetServerConfig)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.GetServerConfig)(w, r)
 }
 
 func (*ServerInterfaceImpl) GetViewersOverTime(w http.ResponseWriter, r *http.Request, params generated.GetViewersOverTimeParams) {
@@ -272,12 +272,12 @@ func (s *ServerInterfaceImpl) AutoUpdateForceQuitOptions(w http.ResponseWriter, 
 	middleware.RequireAdminAuth(admin.AutoUpdateForceQuit)(w, r)
 }
 
-func (*ServerInterfaceImpl) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.ResetYPRegistration)(w, r)
+func (s *ServerInterfaceImpl) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.ResetYPRegistration)(w, r)
 }
 
 func (s *ServerInterfaceImpl) ResetYPRegistrationOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.ResetYPRegistration)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.ResetYPRegistration)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {

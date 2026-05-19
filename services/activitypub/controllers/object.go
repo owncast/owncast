@@ -6,7 +6,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/requests"
@@ -14,15 +13,13 @@ import (
 
 // ObjectHandler handles requests for a single federated ActivityPub object.
 func (c *Controllers) ObjectHandler(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetFederationEnabled() {
+	if !c.configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
 	// If private federation mode is enabled do not allow access to objects.
-	if configRepository.GetFederationIsPrivate() {
+	if c.configRepository.GetFederationIsPrivate() {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -36,7 +33,7 @@ func (c *Controllers) ObjectHandler(w http.ResponseWriter, r *http.Request) {
 	iri := serverURL.String()
 	object, _, _, err := c.persistence.GetObjectByIRI(iri)
 	if err != nil {
-		legacyIRI := strings.Join([]string{strings.TrimSuffix(configRepository.GetServerURL(), "/"), r.URL.Path}, "")
+		legacyIRI := strings.Join([]string{strings.TrimSuffix(c.configRepository.GetServerURL(), "/"), r.URL.Path}, "")
 		if legacyIRI == iri {
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -48,7 +45,7 @@ func (c *Controllers) ObjectHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	accountName := configRepository.GetDefaultFederationUsername()
+	accountName := c.configRepository.GetDefaultFederationUsername()
 	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
 	publicKey := crypto.GetPublicKey(actorIRI)
 

@@ -7,7 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 // setupStats restores stats from the previous session and starts the
@@ -45,8 +44,7 @@ func (s *Service) IsStreamConnected() bool {
 	// connection and when HLS data is available. Account for that with
 	// an artificial buffer of a few segments.
 	timeSinceLastConnected := time.Since(s.stats.LastConnectTime.Time).Seconds()
-	configRepository := configrepository.Get()
-	waitTime := math.Max(float64(configRepository.GetStreamLatencyLevel().SecondsPerSegment)*3.0, 7)
+	waitTime := math.Max(float64(s.configRepository.GetStreamLatencyLevel().SecondsPerSegment)*3.0, 7)
 	if timeSinceLastConnected < waitTime {
 		return false
 	}
@@ -114,29 +112,27 @@ func (s *Service) pruneViewerCount() {
 }
 
 func (s *Service) saveStats() {
-	configRepository := configrepository.Get()
-	if err := configRepository.SetPeakOverallViewerCount(s.stats.OverallMaxViewerCount); err != nil {
+	if err := s.configRepository.SetPeakOverallViewerCount(s.stats.OverallMaxViewerCount); err != nil {
 		log.Errorln("error saving viewer count", err)
 	}
-	if err := configRepository.SetPeakSessionViewerCount(s.stats.SessionMaxViewerCount); err != nil {
+	if err := s.configRepository.SetPeakSessionViewerCount(s.stats.SessionMaxViewerCount); err != nil {
 		log.Errorln("error saving viewer count", err)
 	}
 	if s.stats.LastDisconnectTime != nil && s.stats.LastDisconnectTime.Valid {
-		if err := configRepository.SetLastDisconnectTime(s.stats.LastDisconnectTime.Time); err != nil {
+		if err := s.configRepository.SetLastDisconnectTime(s.stats.LastDisconnectTime.Time); err != nil {
 			log.Errorln("error saving disconnect time", err)
 		}
 	}
 }
 
 func (s *Service) getSavedStats() models.Stats {
-	configRepository := configrepository.Get()
-	savedLastDisconnectTime, _ := configRepository.GetLastDisconnectTime()
+	savedLastDisconnectTime, _ := s.configRepository.GetLastDisconnectTime()
 
 	result := models.Stats{
 		ChatClients:           make(map[string]models.Client),
 		Viewers:               make(map[string]*models.Viewer),
-		SessionMaxViewerCount: configRepository.GetPeakSessionViewerCount(),
-		OverallMaxViewerCount: configRepository.GetPeakOverallViewerCount(),
+		SessionMaxViewerCount: s.configRepository.GetPeakSessionViewerCount(),
+		OverallMaxViewerCount: s.configRepository.GetPeakOverallViewerCount(),
 		LastDisconnectTime:    savedLastDisconnectTime,
 	}
 

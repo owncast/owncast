@@ -5,9 +5,10 @@ import (
 	"fmt"
 
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/services/activitypub/apmodels"
 )
 
 func getPersonFromFollow(activity vocab.ActivityStreamsFollow) (apmodels.ActivityPubActor, error) {

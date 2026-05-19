@@ -6,7 +6,6 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/datastore"
 
 	"github.com/pkg/errors"
@@ -45,8 +44,6 @@ func Setup() {
 }
 
 func initializeBrowserPushIfNeeded() {
-	configRepository := configrepository.Get()
-
 	pubKey, _ := configRepository.GetBrowserPushPublicKey()
 	privKey, _ := configRepository.GetBrowserPushPrivateKey()
 

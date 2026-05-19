@@ -10,6 +10,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
@@ -31,32 +32,35 @@ type Service struct {
 	workerPoolSize int
 	queue          chan Job
 
-	persistence *persistence.Service
-	workerpool  *workerpool.Service
-	webhooks    *webhooks.Service
-	chat        *chat.Service
-	followers   followersrepository.FollowersRepository
+	persistence      *persistence.Service
+	workerpool       *workerpool.Service
+	webhooks         *webhooks.Service
+	chat             *chat.Service
+	followers        followersrepository.FollowersRepository
+	configRepository configrepository.ConfigRepository
 }
 
 // Deps is the explicit dependency contract for inbox.
 type Deps struct {
-	Persistence *persistence.Service
-	Workerpool  *workerpool.Service
-	Webhooks    *webhooks.Service
-	Chat        *chat.Service
-	Followers   followersrepository.FollowersRepository
+	Persistence      *persistence.Service
+	Workerpool       *workerpool.Service
+	Webhooks         *webhooks.Service
+	Chat             *chat.Service
+	Followers        followersrepository.FollowersRepository
+	ConfigRepository configrepository.ConfigRepository
 }
 
 // New constructs an idle inbox Service. Call Start to launch the worker
 // pool.
 func New(deps Deps) *Service {
 	return &Service{
-		workerPoolSize: runtime.GOMAXPROCS(0),
-		persistence:    deps.Persistence,
-		workerpool:     deps.Workerpool,
-		webhooks:       deps.Webhooks,
-		chat:           deps.Chat,
-		followers:      deps.Followers,
+		workerPoolSize:   runtime.GOMAXPROCS(0),
+		persistence:      deps.Persistence,
+		workerpool:       deps.Workerpool,
+		webhooks:         deps.Webhooks,
+		chat:             deps.Chat,
+		followers:        deps.Followers,
+		configRepository: deps.ConfigRepository,
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
+
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/persistence"
@@ -56,7 +57,7 @@ var testService *Service
 
 func TestMain(m *testing.M) {
 	datastore.SetupPersistence(":memory:")
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(datastore.GetDatastore())
 	configRepository.SetServerURL("https://my.cool.site.biz")
 	ds := datastore.GetDatastore()
 	persistenceSvc := persistence.New(ds)
@@ -68,7 +69,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestBlockedDomains(t *testing.T) {
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(datastore.GetDatastore())
 
 	person := makeFakePerson()
 

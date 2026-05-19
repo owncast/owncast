@@ -12,7 +12,7 @@ func (s *Service) SendChatEvent(chatEvent *events.UserMessageEvent) {
 		EventData: &WebhookChatMessage{
 			BaseWebhookData: BaseWebhookData{
 				Status:    s.getStatus(),
-				ServerURL: getServerURL(),
+				ServerURL: s.serverURL(),
 			},
 			User:      chatEvent.User,
 			Body:      chatEvent.Body,
@@ -34,7 +34,7 @@ func (s *Service) SendChatEventUsernameChanged(event events.NameChangeEvent) {
 		EventData: &WebhookNameChangeEventData{
 			BaseWebhookData: BaseWebhookData{
 				Status:    s.getStatus(),
-				ServerURL: getServerURL(),
+				ServerURL: s.serverURL(),
 			},
 			ID:        event.ID,
 			Timestamp: event.Timestamp,
@@ -53,7 +53,7 @@ func (s *Service) SendChatEventUserJoined(event events.UserJoinedEvent) {
 		EventData: &WebhookUserJoinedEventData{
 			BaseWebhookData: BaseWebhookData{
 				Status:    s.getStatus(),
-				ServerURL: getServerURL(),
+				ServerURL: s.serverURL(),
 			},
 			ID:        event.ID,
 			Timestamp: event.Timestamp,
@@ -71,7 +71,7 @@ func (s *Service) SendChatEventUserParted(event events.UserPartEvent) {
 		EventData: &WebhookUserPartEventData{
 			BaseWebhookData: BaseWebhookData{
 				Status:    s.getStatus(),
-				ServerURL: getServerURL(),
+				ServerURL: s.serverURL(),
 			},
 			ID:        event.ID,
 			Timestamp: event.Timestamp,
@@ -89,7 +89,7 @@ func (s *Service) SendChatEventSetMessageVisibility(event events.SetMessageVisib
 		EventData: &WebhookVisibilityToggleEventData{
 			BaseWebhookData: BaseWebhookData{
 				Status:    s.getStatus(),
-				ServerURL: getServerURL(),
+				ServerURL: s.serverURL(),
 			},
 			ID:         event.ID,
 			Timestamp:  event.Timestamp,

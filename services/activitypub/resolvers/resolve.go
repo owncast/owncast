@@ -11,7 +11,6 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/utils"
@@ -50,7 +49,6 @@ func Resolve(c context.Context, data []byte, callbacks ...interface{}) error {
 // ResolveIRI will resolve an IRI and call the correct callback for the resolved type.
 // Uses a retryable HTTP client for resilience against transient failures.
 func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
-	configRepository := configrepository.Get()
 	log.Debugln("Resolving", iri)
 
 	req, _ := http.NewRequest(http.MethodGet, iri, nil)

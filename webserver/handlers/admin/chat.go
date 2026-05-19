@@ -14,7 +14,6 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/utils"
@@ -386,7 +385,7 @@ func (a *Admin) SendChatAction(integration models.ExternalAPIUser, w http.Respon
 
 // SetEnableEstablishedChatUserMode sets the requirement for a chat user
 // to be "established" for some time before taking part in chat.
-func SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -397,8 +396,7 @@ func SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
-	if err := configRepository.SetChatEstablishedUsersOnlyMode(configValue.Value.(bool)); err != nil {
+	if err := a.configRepository.SetChatEstablishedUsersOnlyMode(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

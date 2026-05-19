@@ -6,6 +6,7 @@
 package controllers
 
 import (
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/inbox"
 	"github.com/owncast/owncast/services/activitypub/outbox"
 	"github.com/owncast/owncast/services/activitypub/persistence"
@@ -18,26 +19,29 @@ import (
 // handlers (ActorHandler, WebfingerHandler, HostMetaController) remain
 // package-level free functions.
 type Controllers struct {
-	persistence *persistence.Service
-	outbox      *outbox.Service
-	inbox       *inbox.Service
-	followers   followersrepository.FollowersRepository
+	persistence      *persistence.Service
+	outbox           *outbox.Service
+	inbox            *inbox.Service
+	followers        followersrepository.FollowersRepository
+	configRepository configrepository.ConfigRepository
 }
 
 // Deps lists every service the *Controllers consume.
 type Deps struct {
-	Persistence *persistence.Service
-	Outbox      *outbox.Service
-	Inbox       *inbox.Service
-	Followers   followersrepository.FollowersRepository
+	Persistence      *persistence.Service
+	Outbox           *outbox.Service
+	Inbox            *inbox.Service
+	Followers        followersrepository.FollowersRepository
+	ConfigRepository configrepository.ConfigRepository
 }
 
 // New constructs the controllers set with explicit dependencies.
 func New(deps Deps) *Controllers {
 	return &Controllers{
-		persistence: deps.Persistence,
-		outbox:      deps.Outbox,
-		inbox:       deps.Inbox,
-		followers:   deps.Followers,
+		persistence:      deps.Persistence,
+		outbox:           deps.Outbox,
+		inbox:            deps.Inbox,
+		followers:        deps.Followers,
+		configRepository: deps.ConfigRepository,
 	}
 }

@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/models"
 	notificationsrepo "github.com/owncast/owncast/persistence/notificationsrepository"
 	"github.com/owncast/owncast/utils"
 	webutils "github.com/owncast/owncast/webserver/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // RegisterForLiveNotifications will register a channel + destination to be

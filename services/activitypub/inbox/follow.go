@@ -9,7 +9,6 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/requests"
 	"github.com/owncast/owncast/services/activitypub/resolvers"
@@ -17,8 +16,6 @@ import (
 )
 
 func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
-	configRepository := configrepository.Get()
-
 	follow, err := resolvers.MakeFollowRequest(c, activity)
 	if err != nil {
 		log.Errorln("unable to create follow inbox request", err)
@@ -29,7 +26,7 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 		return fmt.Errorf("unable to handle request")
 	}
 
-	approved := !configRepository.GetFederationIsPrivate()
+	approved := !s.configRepository.GetFederationIsPrivate()
 
 	followRequest := *follow
 
@@ -38,7 +35,7 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 		return err
 	}
 
-	localAccountName := configRepository.GetDefaultFederationUsername()
+	localAccountName := s.configRepository.GetDefaultFederationUsername()
 
 	objectIRI, err := apmodels.GetIRIStringFromObjectProperty(activity.GetActivityStreamsObject())
 	if err != nil {

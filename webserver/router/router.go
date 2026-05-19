@@ -35,7 +35,7 @@ func Start(enableVerboseLogging bool, h *handlers.Handlers, apc *apcontrollers.C
 	}
 	r.Use(chiMW.Recoverer)
 
-	addStaticFileEndpoints(r, apc)
+	addStaticFileEndpoints(r, h, apc)
 
 	// websocket
 	r.HandleFunc("/ws", h.HandleWebsocketConnection)
@@ -102,20 +102,20 @@ func Start(enableVerboseLogging bool, h *handlers.Handlers, apc *apcontrollers.C
 	return server.ListenAndServe()
 }
 
-func addStaticFileEndpoints(r chi.Router, apc *apcontrollers.Controllers) {
+func addStaticFileEndpoints(r chi.Router, h *handlers.Handlers, apc *apcontrollers.Controllers) {
 	// Images
-	r.HandleFunc("/thumbnail.jpg", handlers.GetThumbnail)
-	r.HandleFunc("/preview.gif", handlers.GetPreview)
-	r.HandleFunc("/logo", handlers.GetLogo)
-	r.HandleFunc("/favicon.ico", handlers.GetFavicon)
+	r.HandleFunc("/thumbnail.jpg", h.GetThumbnail)
+	r.HandleFunc("/preview.gif", h.GetPreview)
+	r.HandleFunc("/logo", h.GetLogo)
+	r.HandleFunc("/favicon.ico", h.GetFavicon)
 	// return a logo that's compatible with external social networks
-	r.HandleFunc("/logo/external", handlers.GetCompatibleLogo)
+	r.HandleFunc("/logo/external", h.GetCompatibleLogo)
 
 	// Custom Javascript
-	r.HandleFunc("/customjavascript", handlers.ServeCustomJavascript)
+	r.HandleFunc("/customjavascript", h.ServeCustomJavascript)
 
 	// robots.txt
-	r.HandleFunc("/robots.txt", handlers.GetRobotsDotTxt)
+	r.HandleFunc("/robots.txt", h.GetRobotsDotTxt)
 
 	// Return a single emoji image.
 	emojiDir := config.EmojiDir

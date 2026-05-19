@@ -12,6 +12,7 @@ import (
 	"net"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 // Service owns the RTMP listener and the single in-flight inbound
@@ -39,16 +40,19 @@ type Service struct {
 	// setBroadcaster is invoked when the inbound onMetaData arrives with
 	// the parsed broadcaster details. Set by Start.
 	setBroadcaster func(models.Broadcaster)
+
+	// configRepository is consulted at listener bind for the RTMP port and at
+	// connect time for the list of valid stream keys.
+	configRepository configrepository.ConfigRepository
 }
 
-// Deps lists every service a *Service consumes at construction. Empty
-// today because the rtmp service still reads its port from the
-// configrepository.Get() singleton; it'll appear here once configuration
-// is injected.
-type Deps struct{}
+// Deps is the explicit dependency contract for the RTMP service.
+type Deps struct {
+	ConfigRepository configrepository.ConfigRepository
+}
 
 // New constructs an idle RTMP service. Call Start(...) to bind the
 // listener and begin accepting connections.
-func New(_ Deps) *Service {
-	return &Service{}
+func New(deps Deps) *Service {
+	return &Service{configRepository: deps.ConfigRepository}
 }

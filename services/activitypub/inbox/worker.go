@@ -13,7 +13,6 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/resolvers"
 )
@@ -85,7 +84,7 @@ func (s *Service) Verify(request *http.Request) (bool, error) {
 	}
 
 	// Test to see if the actor is in the list of blocked federated domains.
-	if isBlockedDomain(publicKeyActorIRI.Hostname()) {
+	if s.isBlockedDomain(publicKeyActorIRI.Hostname()) {
 		return false, errors.New("domain is blocked")
 	}
 
@@ -131,10 +130,8 @@ func (s *Service) Verify(request *http.Request) (bool, error) {
 	return false, fmt.Errorf("http signature verification error(s) for: %s: %+v", pubKeyID.String(), triedAlgos)
 }
 
-func isBlockedDomain(domain string) bool {
-	configRepository := configrepository.Get()
-
-	blockedDomains := configRepository.GetBlockedFederatedDomains()
+func (s *Service) isBlockedDomain(domain string) bool {
+	blockedDomains := s.configRepository.GetBlockedFederatedDomains()
 
 	for _, blockedDomain := range blockedDomains {
 		if strings.Contains(domain, blockedDomain) {

@@ -11,13 +11,13 @@ import (
 	"reflect"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
+	"github.com/teris-io/shortid"
+
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
-	log "github.com/sirupsen/logrus"
-	"github.com/teris-io/shortid"
 )
 
 // ConfigValue is a container object that holds a value, is encoded, and saved to the database.
@@ -41,7 +41,7 @@ func (a *Admin) SetTags(w http.ResponseWriter, r *http.Request) {
 		tagStrings = append(tagStrings, strings.TrimLeft(tag.Value.(string), "#"))
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetServerMetadataTags(tagStrings); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -68,7 +68,7 @@ func (a *Admin) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	value := configValue.Value.(string)
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 
 	if err := configRepository.SetStreamTitle(value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
@@ -109,7 +109,7 @@ func (a *Admin) SetServerName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetServerName(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -135,7 +135,7 @@ func (a *Admin) SetServerSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetServerSummary(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -151,7 +151,7 @@ func (a *Admin) SetServerSummary(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetCustomOfflineMessage will set a message to display when the server is offline.
-func SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -161,7 +161,7 @@ func SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetCustomOfflineMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -171,7 +171,7 @@ func SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetServerWelcomeMessage will handle the web config request to set the welcome message text.
-func SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -181,7 +181,7 @@ func SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetServerWelcomeMessage(strings.TrimSpace(configValue.Value.(string))); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -191,7 +191,7 @@ func SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetExtraPageContent will handle the web config request to set the page markdown content.
-func SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -201,7 +201,7 @@ func SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetExtraPageBodyContent(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -211,7 +211,7 @@ func SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetAdminPassword will handle the web config request to set the server admin password.
-func SetAdminPassword(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetAdminPassword(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -221,7 +221,7 @@ func SetAdminPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetAdminPassword(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -258,7 +258,7 @@ func (a *Admin) SetLogo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 
 	if err := configRepository.SetLogoPath("logo" + extension); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
@@ -279,7 +279,7 @@ func (a *Admin) SetLogo(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetFavicon will handle a new favicon image being set via base64 data.
-func SetFavicon(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetFavicon(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -324,7 +324,7 @@ func SetFavicon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 
 	if err := configRepository.SetFaviconPath("favicon" + extension); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
@@ -335,8 +335,8 @@ func SetFavicon(w http.ResponseWriter, r *http.Request) {
 }
 
 // ResetFavicon will reset the favicon to the default by removing the custom one.
-func ResetFavicon(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
+func (a *Admin) ResetFavicon(w http.ResponseWriter, r *http.Request) {
+	configRepository := a.configRepository
 
 	// Get the current favicon path before clearing it
 	currentFavicon := configRepository.GetFaviconPath()
@@ -367,7 +367,7 @@ func ResetFavicon(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetNSFW will handle the web config request to set the NSFW flag.
-func SetNSFW(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetNSFW(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -377,7 +377,7 @@ func SetNSFW(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetNSFW(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -387,7 +387,7 @@ func SetNSFW(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetFfmpegPath will handle the web config request to validate and set an updated copy of ffmpg.
-func SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -403,7 +403,7 @@ func SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetFfmpegPath(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -413,7 +413,7 @@ func SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetWebServerPort will handle the web config request to set the server's HTTP port.
-func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -423,7 +423,7 @@ func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if port, ok := configValue.Value.(float64); ok {
 		if (port < 1) || (port > 65535) {
 			webutils.WriteSimpleResponse(w, false, "Port number must be between 1 and 65535")
@@ -442,7 +442,7 @@ func SetWebServerPort(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetWebServerIP will handle the web config request to set the server's HTTP listen address.
-func SetWebServerIP(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetWebServerIP(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -452,7 +452,7 @@ func SetWebServerIP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if input, ok := configValue.Value.(string); ok {
 		if ip := net.ParseIP(input); ip != nil {
 			if err := configRepository.SetHTTPListenAddress(ip.String()); err != nil {
@@ -471,7 +471,7 @@ func SetWebServerIP(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetRTMPServerPort will handle the web config request to set the inbound RTMP port.
-func SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -481,7 +481,7 @@ func SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetRTMPPortNumber(configValue.Value.(float64)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -491,7 +491,7 @@ func SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetServerURL will handle the web config request to set the full server URL.
-func SetServerURL(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetServerURL(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -521,7 +521,7 @@ func SetServerURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 
 	// Trim any trailing slash
 	serverURL := strings.TrimRight(rawValue, "/")
@@ -535,7 +535,7 @@ func SetServerURL(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetSocketHostOverride will set the host override for the websocket.
-func SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -545,7 +545,7 @@ func SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 
 	if err := configRepository.SetWebsocketOverrideHost(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
@@ -556,7 +556,7 @@ func SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetDirectoryEnabled will handle the web config request to enable or disable directory registration.
-func SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -566,7 +566,7 @@ func SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 
 	if err := configRepository.SetDirectoryEnabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
@@ -576,7 +576,7 @@ func SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetStreamLatencyLevel will handle the web config request to set the stream latency level.
-func SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -586,7 +586,7 @@ func SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 
 	if err := configRepository.SetStreamLatencyLevel(configValue.Value.(float64)); err != nil {
 		webutils.WriteSimpleResponse(w, false, "error setting stream latency "+err.Error())
@@ -597,7 +597,7 @@ func SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetS3Configuration will handle the web config request to set the storage configuration.
-func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -635,7 +635,7 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetS3Config(newS3Config.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -644,7 +644,7 @@ func SetS3Configuration(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetStreamOutputVariants will handle the web config request to set the video output stream variants.
-func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -660,7 +660,7 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetStreamOutputVariants(videoVariants.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update video config with provided values "+err.Error())
 		return
@@ -686,7 +686,7 @@ func (a *Admin) SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetSocialHandles(socialHandles.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update social handles with provided values")
 		return
@@ -702,7 +702,7 @@ func (a *Admin) SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetChatDisabled will disable chat functionality.
-func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -713,7 +713,7 @@ func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetChatDisabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -723,7 +723,7 @@ func SetChatDisabled(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetVideoCodec will change the codec used for video encoding.
-func SetVideoCodec(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -734,7 +734,7 @@ func SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetVideoCodec(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update codec")
 		return
@@ -744,7 +744,7 @@ func SetVideoCodec(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetExternalActions will set the 3rd party actions for the web interface.
-func SetExternalActions(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetExternalActions(w http.ResponseWriter, r *http.Request) {
 	type externalActionsRequest struct {
 		Value []models.ExternalAction `json:"value"`
 	}
@@ -756,7 +756,7 @@ func SetExternalActions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetExternalActions(actions.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update external actions with provided values")
 		return
@@ -766,14 +766,14 @@ func SetExternalActions(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetCustomStyles will set the CSS string we insert into the page.
-func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 	customStyles, success := getValueFromRequest(w, r)
 	if !success {
 		webutils.WriteSimpleResponse(w, false, "unable to update custom styles")
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetCustomStyles(customStyles.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -783,14 +783,14 @@ func SetCustomStyles(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetCustomJavascript will set the Javascript string we insert into the page.
-func SetCustomJavascript(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetCustomJavascript(w http.ResponseWriter, r *http.Request) {
 	customJavascript, success := getValueFromRequest(w, r)
 	if !success {
 		webutils.WriteSimpleResponse(w, false, "unable to update custom javascript")
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetCustomJavascript(customJavascript.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -800,7 +800,7 @@ func SetCustomJavascript(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetForbiddenUsernameList will set the list of usernames we do not allow to use.
-func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var request generated.SetForbiddenUsernameListJSONBody
 
@@ -809,7 +809,7 @@ func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetForbiddenUsernameList(*request.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -819,7 +819,7 @@ func SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetSuggestedUsernameList will set the list of suggested usernames that newly registered users are assigned if it isn't inferred otherwise (i.e. through a proxy).
-func SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var request generated.SetSuggestedUsernameListJSONBody
 
@@ -828,7 +828,7 @@ func SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetSuggestedUsernamesList(*request.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -838,7 +838,7 @@ func SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetChatJoinMessagesEnabled will enable or disable the chat join messages.
-func SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -849,7 +849,7 @@ func SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetChatJoinMessagesEnabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -859,7 +859,7 @@ func SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetHideViewerCount will enable or disable hiding the viewer count.
-func SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -870,7 +870,7 @@ func SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetHideViewerCount(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -880,7 +880,7 @@ func SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetDisableSearchIndexing will set search indexing support.
-func SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -891,7 +891,7 @@ func SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetDisableSearchIndexing(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -901,7 +901,7 @@ func SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetVideoServingEndpoint will save the video serving endpoint.
-func SetVideoServingEndpoint(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetVideoServingEndpoint(w http.ResponseWriter, r *http.Request) {
 	endpoint, success := getValueFromRequest(w, r)
 	if !success {
 		webutils.WriteSimpleResponse(w, false, "unable to update custom video serving endpoint")
@@ -914,7 +914,7 @@ func SetVideoServingEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetVideoServingEndpoint(value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -924,7 +924,7 @@ func SetVideoServingEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetChatSpamProtectionEnabled will enable or disable the chat spam protection.
-func SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -934,7 +934,7 @@ func SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetChatSpamProtectionEnabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -943,7 +943,7 @@ func SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetChatSlurFilterEnabled will enable or disable the chat slur filter.
-func SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -953,7 +953,7 @@ func SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetChatSlurFilterEnabled(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -962,7 +962,7 @@ func SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetChatRequireAuthentication will enable or disable requiring authentication for chat.
-func SetChatRequireAuthentication(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetChatRequireAuthentication(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -972,7 +972,7 @@ func SetChatRequireAuthentication(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetChatRequireAuthentication(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -1021,7 +1021,7 @@ func getValuesFromRequest(w http.ResponseWriter, r *http.Request) ([]ConfigValue
 }
 
 // SetStreamKeys will set the valid stream keys.
-func SetStreamKeys(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -1045,7 +1045,7 @@ func SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := a.configRepository
 	if err := configRepository.SetStreamKeys(*streamKeys.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return

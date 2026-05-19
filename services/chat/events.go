@@ -10,7 +10,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/utils"
@@ -23,12 +22,10 @@ func (s *Service) userNameChanged(eventData chatClientEvent) {
 		return
 	}
 
-	configRepository := configrepository.Get()
-
 	proposedUsername := receivedEvent.NewName
 
 	// Check if name is on the blocklist
-	blocklist := configRepository.GetForbiddenUsernameList()
+	blocklist := s.configRepository.GetForbiddenUsernameList()
 
 	// Names have a max length
 	proposedUsername = utils.MakeSafeStringOfLength(proposedUsername, config.MaxChatDisplayNameLength)

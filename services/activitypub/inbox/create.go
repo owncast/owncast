@@ -4,8 +4,9 @@ import (
 	"context"
 
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/pkg/errors"
+
+	"github.com/owncast/owncast/services/activitypub/apmodels"
 )
 
 func (s *Service) handleCreateRequest(c context.Context, activity vocab.ActivityStreamsCreate) error {

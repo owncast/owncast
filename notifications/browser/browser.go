@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 
 	"github.com/SherClockHolmes/webpush-go"
-	"github.com/owncast/owncast/services/datastore"
 	"github.com/pkg/errors"
+
+	"github.com/owncast/owncast/services/datastore"
 )
 
 // Browser is an instance of the Browser service.

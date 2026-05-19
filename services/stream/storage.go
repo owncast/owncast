@@ -1,20 +1,18 @@
 package stream
 
 import (
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/storage"
 )
 
 // setupStorage picks an HLS storage backend based on the S3 config and
 // wires it into the HLS handler. Called once from Start().
 func (s *Service) setupStorage() error {
-	configRepository := configrepository.Get()
-	s3Config := configRepository.GetS3Config()
+	s3Config := s.configRepository.GetS3Config()
 
 	if s3Config.Enabled {
-		s.storage = storage.NewS3Storage()
+		s.storage = storage.NewS3Storage(s.configRepository)
 	} else {
-		s.storage = storage.NewLocalStorage()
+		s.storage = storage.NewLocalStorage(s.configRepository)
 	}
 
 	if err := s.storage.Setup(); err != nil {

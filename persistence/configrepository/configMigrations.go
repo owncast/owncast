@@ -3,9 +3,10 @@ package configrepository
 import (
 	"strings"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/webserver/handlers/generated"
-	log "github.com/sirupsen/logrus"
 )
 
 const (

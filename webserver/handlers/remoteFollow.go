@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/webfinger"
 	"github.com/owncast/owncast/webserver/handlers/generated"
@@ -13,7 +12,7 @@ import (
 )
 
 // RemoteFollow handles a request to begin the remote follow redirect flow.
-func RemoteFollow(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	type followResponse struct {
 		RedirectURL string `json:"redirectUrl"`
 	}
@@ -35,8 +34,7 @@ func RemoteFollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
-	localActorPath := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
+	localActorPath := apmodels.MakeLocalIRIForAccount(h.configRepository.GetDefaultFederationUsername())
 	var template string
 	links, err := webfinger.GetWebfingerLinks(*request.Account)
 	if err != nil {

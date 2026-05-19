@@ -22,21 +22,24 @@ import (
 // message) and the chat service (to broadcast a system action when an
 // authenticated user re-logs in under a different display name).
 type Handler struct {
-	activitypub *activitypub.Service
-	chat        *chat.Service
+	activitypub      *activitypub.Service
+	chat             *chat.Service
+	configRepository configrepository.ConfigRepository
 }
 
 // Deps lists the dependencies of the fediverse auth Handler.
 type Deps struct {
-	Activitypub *activitypub.Service
-	Chat        *chat.Service
+	Activitypub      *activitypub.Service
+	Chat             *chat.Service
+	ConfigRepository configrepository.ConfigRepository
 }
 
 // New constructs the Handler.
 func New(deps Deps) *Handler {
 	return &Handler{
-		activitypub: deps.Activitypub,
-		chat:        deps.Chat,
+		activitypub:      deps.Activitypub,
+		chat:             deps.Chat,
+		configRepository: deps.ConfigRepository,
 	}
 }
 
@@ -64,8 +67,7 @@ func (h *Handler) RegisterFediverseOTPRequest(u models.User, w http.ResponseWrit
 		return
 	}
 
-	configRepository := configrepository.Get()
-	msg := fmt.Sprintf("<p>One-time code from %s: %s. If you did not request this message please ignore or block.</p>", configRepository.GetServerName(), reg.Code)
+	msg := fmt.Sprintf("<p>One-time code from %s: %s. If you did not request this message please ignore or block.</p>", h.configRepository.GetServerName(), reg.Code)
 	if err := h.activitypub.SendDirectFederatedMessage(msg, reg.Account); err != nil {
 		webutils.WriteSimpleResponse(w, false, "Could not send code to fediverse: "+err.Error())
 		return

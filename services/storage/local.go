@@ -5,24 +5,25 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 // LocalStorage represents an instance of the local storage provider for HLS video.
 type LocalStorage struct {
-	host string
+	host             string
+	configRepository configrepository.ConfigRepository
 }
 
 // NewLocalStorage returns a new LocalStorage instance.
-func NewLocalStorage() *LocalStorage {
-	return &LocalStorage{}
+func NewLocalStorage(configRepository configrepository.ConfigRepository) *LocalStorage {
+	return &LocalStorage{configRepository: configRepository}
 }
 
 // Setup configures this storage provider.
 func (s *LocalStorage) Setup() error {
-	configRepository := configrepository.Get()
-	s.host = configRepository.GetVideoServingEndpoint()
+	s.host = s.configRepository.GetVideoServingEndpoint()
 	return nil
 }
 
@@ -63,8 +64,7 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 // Cleanup will remove old files from the storage provider.
 func (s *LocalStorage) Cleanup() error {
 	// Determine how many files we should keep on disk
-	configRepository := configrepository.Get()
-	maxNumber := configRepository.GetStreamLatencyLevel().SegmentCount
+	maxNumber := s.configRepository.GetStreamLatencyLevel().SegmentCount
 	buffer := 10
 	return localCleanup(maxNumber + buffer)
 }

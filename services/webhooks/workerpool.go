@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 )
@@ -37,21 +38,27 @@ type Service struct {
 	// followers is consulted by the fediverse-engagement builder to
 	// resolve actor IRIs to display data.
 	followers followersrepository.FollowersRepository
+
+	// configRepository provides server metadata included in stream-status
+	// event payloads.
+	configRepository configrepository.ConfigRepository
 }
 
 // Deps lists every collaborator a *Service needs at construction.
 type Deps struct {
-	GetStatus func() models.Status
-	Followers followersrepository.FollowersRepository
+	GetStatus        func() models.Status
+	Followers        followersrepository.FollowersRepository
+	ConfigRepository configrepository.ConfigRepository
 }
 
 // New constructs an idle webhook Service. Call Start to launch the
 // worker pool.
 func New(deps Deps) *Service {
 	return &Service{
-		workerPoolSize: runtime.GOMAXPROCS(0),
-		getStatus:      deps.GetStatus,
-		followers:      deps.Followers,
+		workerPoolSize:   runtime.GOMAXPROCS(0),
+		getStatus:        deps.GetStatus,
+		followers:        deps.Followers,
+		configRepository: deps.ConfigRepository,
 	}
 }
 
@@ -64,6 +71,7 @@ func New(deps Deps) *Service {
 func (s *Service) SetDeps(deps Deps) {
 	s.getStatus = deps.GetStatus
 	s.followers = deps.Followers
+	s.configRepository = deps.ConfigRepository
 }
 
 // Start launches the worker goroutines that drain the queue.

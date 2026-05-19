@@ -9,8 +9,9 @@ import (
 	"time"
 
 	"github.com/go-fed/httpsig"
-	"github.com/owncast/owncast/config"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/config"
 )
 
 // SignResponse will sign a response using the provided response body and public key.

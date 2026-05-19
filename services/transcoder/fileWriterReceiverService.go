@@ -8,9 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // FileWriterReceiverServiceCallback are to be fired when transcoder responses are written to disk.

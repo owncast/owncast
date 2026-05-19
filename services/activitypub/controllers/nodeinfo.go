@@ -8,7 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/requests"
@@ -25,9 +24,7 @@ func (c *Controllers) NodeInfoController(w http.ResponseWriter, r *http.Request)
 		Links []links `json:"links"`
 	}
 
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetFederationEnabled() {
+	if !c.configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
@@ -48,7 +45,7 @@ func (c *Controllers) NodeInfoController(w http.ResponseWriter, r *http.Request)
 			},
 		},
 	}
-	if err := writeResponse(res, w); err != nil {
+	if err := c.writeResponse(res, w); err != nil {
 		log.Errorln(err)
 	}
 }
@@ -85,9 +82,7 @@ func (c *Controllers) NodeInfoV2Controller(w http.ResponseWriter, r *http.Reques
 		Metadata          metadata `json:"metadata"`
 	}
 
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetFederationEnabled() {
+	if !c.configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
@@ -115,11 +110,11 @@ func (c *Controllers) NodeInfoV2Controller(w http.ResponseWriter, r *http.Reques
 		OpenRegistrations: false,
 		Protocols:         []string{"activitypub"},
 		Metadata: metadata{
-			ChatEnabled: !configRepository.GetChatDisabled(),
+			ChatEnabled: !c.configRepository.GetChatDisabled(),
 		},
 	}
 
-	if err := writeResponse(res, w); err != nil {
+	if err := c.writeResponse(res, w); err != nil {
 		log.Errorln(err)
 	}
 }
@@ -161,14 +156,12 @@ func (c *Controllers) XNodeInfo2Controller(w http.ResponseWriter, r *http.Reques
 		OpenRegistrations bool         `json:"openRegistrations"`
 	}
 
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetFederationEnabled() {
+	if !c.configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	serverURL := configRepository.GetServerURL()
+	serverURL := c.configRepository.GetServerURL()
 	if serverURL == "" {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -178,7 +171,7 @@ func (c *Controllers) XNodeInfo2Controller(w http.ResponseWriter, r *http.Reques
 
 	res := &response{
 		Organization: Organization{
-			Name:    configRepository.GetServerName(),
+			Name:    c.configRepository.GetServerName(),
 			Contact: serverURL,
 		},
 		Server: Server{
@@ -206,7 +199,7 @@ func (c *Controllers) XNodeInfo2Controller(w http.ResponseWriter, r *http.Reques
 		},
 	}
 
-	if err := writeResponse(res, w); err != nil {
+	if err := c.writeResponse(res, w); err != nil {
 		log.Errorln(err)
 	}
 }
@@ -232,14 +225,12 @@ func (c *Controllers) InstanceV1Controller(w http.ResponseWriter, r *http.Reques
 		InvitesEnabled   bool     `json:"invites_enabled"`
 	}
 
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetFederationEnabled() {
+	if !c.configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	serverURL := configRepository.GetServerURL()
+	serverURL := c.configRepository.GetServerURL()
 	if serverURL == "" {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -256,9 +247,9 @@ func (c *Controllers) InstanceV1Controller(w http.ResponseWriter, r *http.Reques
 
 	res := response{
 		URI:              serverURL,
-		Title:            configRepository.GetServerName(),
-		ShortDescription: configRepository.GetServerSummary(),
-		Description:      configRepository.GetServerSummary(),
+		Title:            c.configRepository.GetServerName(),
+		ShortDescription: c.configRepository.GetServerSummary(),
+		Description:      c.configRepository.GetServerSummary(),
 		Version:          config.GetReleaseString(),
 		Stats: Stats{
 			UserCount:   1,
@@ -271,15 +262,13 @@ func (c *Controllers) InstanceV1Controller(w http.ResponseWriter, r *http.Reques
 		InvitesEnabled:   false,
 	}
 
-	if err := writeResponse(res, w); err != nil {
+	if err := c.writeResponse(res, w); err != nil {
 		log.Errorln(err)
 	}
 }
 
-func writeResponse(payload interface{}, w http.ResponseWriter) error {
-	configRepository := configrepository.Get()
-
-	accountName := configRepository.GetDefaultFederationUsername()
+func (c *Controllers) writeResponse(payload interface{}, w http.ResponseWriter) error {
+	accountName := c.configRepository.GetDefaultFederationUsername()
 	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
 	publicKey := crypto.GetPublicKey(actorIRI)
 
@@ -288,9 +277,7 @@ func writeResponse(payload interface{}, w http.ResponseWriter) error {
 
 // HostMetaController points to webfinger.
 func (c *Controllers) HostMetaController(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetFederationEnabled() {
+	if !c.configRepository.GetFederationEnabled() {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		log.Debugln("host meta request rejected! Federation is not enabled")
 		return

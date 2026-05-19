@@ -3,8 +3,9 @@ package legacymigrations
 import (
 	"database/sql"
 
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/utils"
 )
 
 func CreateNotificationsTable(db *sql.DB) {

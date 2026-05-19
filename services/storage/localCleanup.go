@@ -4,9 +4,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/owncast/owncast/config"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/config"
 )
 
 func localCleanup(maxNumber int) error {

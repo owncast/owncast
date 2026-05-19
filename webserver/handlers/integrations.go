@@ -71,12 +71,12 @@ func (s *ServerInterfaceImpl) ExternalGetUserDetails(w http.ResponseWriter, r *h
 	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, s.h.moderation.ExternalGetUserDetails)(w, r)
 }
 
-func (*ServerInterfaceImpl) ExternalGetChatMessages(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, ExternalGetChatMessages)(w, r)
+func (s *ServerInterfaceImpl) ExternalGetChatMessages(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, s.h.ExternalGetChatMessages)(w, r)
 }
 
 func (s *ServerInterfaceImpl) ExternalGetChatMessagesOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, ExternalGetChatMessages)(w, r)
+	middleware.RequireExternalAPIAccessToken(models.ScopeHasAdminAccess, s.h.ExternalGetChatMessages)(w, r)
 }
 
 func (s *ServerInterfaceImpl) ExternalGetConnectedChatClients(w http.ResponseWriter, r *http.Request) {

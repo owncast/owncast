@@ -36,32 +36,33 @@ import (
 // for storing what we send and a *workerpool.Service for actually
 // delivering it.
 type Service struct {
-	persistence *persistence.Service
-	workerpool  *workerpool.Service
-	followers   followersrepository.FollowersRepository
+	persistence      *persistence.Service
+	workerpool       *workerpool.Service
+	followers        followersrepository.FollowersRepository
+	configRepository configrepository.ConfigRepository
 }
 
 // Deps is the explicit dependency contract for outbox.
 type Deps struct {
-	Persistence *persistence.Service
-	Workerpool  *workerpool.Service
-	Followers   followersrepository.FollowersRepository
+	Persistence      *persistence.Service
+	Workerpool       *workerpool.Service
+	Followers        followersrepository.FollowersRepository
+	ConfigRepository configrepository.ConfigRepository
 }
 
 // New constructs an outbox Service. All deps are required.
 func New(deps Deps) *Service {
 	return &Service{
-		persistence: deps.Persistence,
-		workerpool:  deps.Workerpool,
-		followers:   deps.Followers,
+		persistence:      deps.Persistence,
+		workerpool:       deps.Workerpool,
+		followers:        deps.Followers,
+		configRepository: deps.ConfigRepository,
 	}
 }
 
 // SendLive notifies all followers that the stream has gone live.
 func (s *Service) SendLive() error {
-	configRepository := configrepository.Get()
-
-	textContent := configRepository.GetFederationGoLiveMessage()
+	textContent := s.configRepository.GetFederationGoLiveMessage()
 
 	// If the message is empty then do not send it.
 	if textContent == "" {
@@ -72,7 +73,7 @@ func (s *Service) SendLive() error {
 	reg := regexp.MustCompile("[^a-zA-Z0-9]+")
 
 	tagProp := streams.NewActivityStreamsTagProperty()
-	for _, tagString := range configRepository.GetServerMetadataTags() {
+	for _, tagString := range s.configRepository.GetServerMetadataTags() {
 		tagWithoutSpecialCharacters := reg.ReplaceAllString(tagString, "")
 		hashtag := apmodels.MakeHashtag(tagWithoutSpecialCharacters)
 		tagProp.AppendTootHashtag(hashtag)
@@ -90,14 +91,14 @@ func (s *Service) SendLive() error {
 	tagsString := strings.Join(tagStrings, " ")
 
 	var streamTitle string
-	if title := configRepository.GetStreamTitle(); title != "" {
+	if title := s.configRepository.GetStreamTitle(); title != "" {
 		streamTitle = fmt.Sprintf("<p>%s</p>", title)
 	}
-	textContent = fmt.Sprintf("<p>%s</p>%s<p>%s</p><p><a href=\"%s\">%s</a></p>", textContent, streamTitle, tagsString, configRepository.GetServerURL(), configRepository.GetServerURL())
+	textContent = fmt.Sprintf("<p>%s</p>%s<p>%s</p><p><a href=\"%s\">%s</a></p>", textContent, streamTitle, tagsString, s.configRepository.GetServerURL(), s.configRepository.GetServerURL())
 
-	activity, _, note, noteID := createBaseOutboundMessage(textContent)
+	activity, _, note, noteID := s.createBaseOutboundMessage(textContent)
 
-	to, cc := getAddressingToFollowers()
+	to, cc := s.getAddressingToFollowers()
 	note.SetActivityStreamsTo(to)
 	note.SetActivityStreamsCc(cc)
 	activity.SetActivityStreamsTo(to)
@@ -106,7 +107,7 @@ func (s *Service) SendLive() error {
 	note.SetActivityStreamsTag(tagProp)
 
 	// Attach an image along with the Federated message.
-	previewURL, err := url.Parse(configRepository.GetServerURL())
+	previewURL, err := url.Parse(s.configRepository.GetServerURL())
 	if err == nil {
 		var imageToAttach string
 		var mediaType string
@@ -127,7 +128,7 @@ func (s *Service) SendLive() error {
 		}
 	}
 
-	if configRepository.GetNSFW() {
+	if s.configRepository.GetNSFW() {
 		sensitive := streams.NewActivityStreamsSensitiveProperty()
 		sensitive.AppendXMLSchemaBoolean(true)
 		note.SetActivityStreamsSensitive(sensitive)
@@ -164,7 +165,7 @@ func (s *Service) SendDirectMessageToAccount(textContent, account string) error 
 		return errors.Wrap(err, "unable to resolve actor to send message to")
 	}
 
-	activity, _, note, _ := createBaseOutboundMessage(textContent)
+	activity, _, note, _ := s.createBaseOutboundMessage(textContent)
 
 	// Set direct message visibility.
 	activity = apmodels.MakeActivityDirect(activity, actor.ActorIri)
@@ -201,10 +202,10 @@ func (s *Service) SendPublicMessage(textContent string) error {
 		tagProp.AppendTootHashtag(hashtag)
 	}
 
-	activity, _, note, noteID := createBaseOutboundMessage(textContent)
+	activity, _, note, noteID := s.createBaseOutboundMessage(textContent)
 	note.SetActivityStreamsTag(tagProp)
 
-	to, cc := getAddressingToFollowers()
+	to, cc := s.getAddressingToFollowers()
 	note.SetActivityStreamsTo(to)
 	note.SetActivityStreamsCc(cc)
 	activity.SetActivityStreamsTo(to)
@@ -229,20 +230,18 @@ func (s *Service) SendPublicMessage(textContent string) error {
 
 // getAddressingToFollowers builds the to/cc properties for a follower-addressed
 // activity: public → cc:followers, to:public; private → to:followers.
-func getAddressingToFollowers() (vocab.ActivityStreamsToProperty, vocab.ActivityStreamsCcProperty) {
-	configRepository := configrepository.Get()
-	username := configRepository.GetDefaultFederationUsername()
+func (s *Service) getAddressingToFollowers() (vocab.ActivityStreamsToProperty, vocab.ActivityStreamsCcProperty) {
+	username := s.configRepository.GetDefaultFederationUsername()
 
 	followersIRI := apmodels.MakeLocalIRIForAccount(username)
 	followersIRI = followersIRI.JoinPath("followers")
 
-	return apmodels.MakeAddressingToFollowers(followersIRI, !configRepository.GetFederationIsPrivate())
+	return apmodels.MakeAddressingToFollowers(followersIRI, !s.configRepository.GetFederationIsPrivate())
 }
 
 // nolint: unparam
-func createBaseOutboundMessage(textContent string) (vocab.ActivityStreamsCreate, string, vocab.ActivityStreamsNote, string) {
-	configRepository := configrepository.Get()
-	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
+func (s *Service) createBaseOutboundMessage(textContent string) (vocab.ActivityStreamsCreate, string, vocab.ActivityStreamsNote, string) {
+	localActor := apmodels.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 	noteID := shortid.MustGenerate()
 	noteIRI := apmodels.MakeLocalIRIForResource(noteID)
 	id := shortid.MustGenerate()
@@ -264,8 +263,7 @@ func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
 // SendToFollowers sends an arbitrary payload to all follower inboxes,
 // preferring shared inboxes to reduce outbound request count.
 func (s *Service) SendToFollowers(payload []byte) error {
-	configRepository := configrepository.Get()
-	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
+	localActor := apmodels.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 
 	// Prefer shared inboxes over individual inboxes.
 	inboxes, err := s.followers.GetUniqueDeliveryInboxes()
@@ -345,8 +343,7 @@ func (s *Service) SendToUser(inbox *url.URL, payload []byte) error {
 		return errors.Errorf("rejecting internal/loopback inbox URL for SSRF protection: %s", inbox.String())
 	}
 
-	configRepository := configrepository.Get()
-	localActor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
+	localActor := apmodels.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 
 	req, err := requests.CreateSignedRequest(payload, inbox, localActor)
 	if err != nil {
@@ -361,9 +358,7 @@ func (s *Service) SendToUser(inbox *url.URL, payload []byte) error {
 // UpdateFollowersWithAccountUpdates broadcasts a profile-update Activity
 // to all followers.
 func (s *Service) UpdateFollowersWithAccountUpdates() error {
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetFederationEnabled() {
+	if !s.configRepository.GetFederationEnabled() {
 		return nil
 	}
 
@@ -372,7 +367,7 @@ func (s *Service) UpdateFollowersWithAccountUpdates() error {
 	activity := apmodels.MakeUpdateActivity(objectID)
 
 	actor := streams.NewActivityStreamsPerson()
-	actorID := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
+	actorID := apmodels.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 	actorIDProperty := streams.NewJSONLDIdProperty()
 	actorIDProperty.Set(actorID)
 	actor.SetJSONLDId(actorIDProperty)

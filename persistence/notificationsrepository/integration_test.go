@@ -38,13 +38,13 @@ func TestIntegrationSetup(t *testing.T) {
 
 func TestBrowserPushSetupIntegration(t *testing.T) {
 	// Test that browser push keys are generated during setup
-	configRepo := configrepository.Get()
-	pubKey, err := configRepo.GetBrowserPushPublicKey()
+	configRepository := configrepository.New(datastore.GetDatastore())
+	pubKey, err := configRepository.GetBrowserPushPublicKey()
 	if err != nil {
 		t.Errorf("Should be able to get browser push public key: %v", err)
 	}
 
-	privKey, err := configRepo.GetBrowserPushPrivateKey()
+	privKey, err := configRepository.GetBrowserPushPrivateKey()
 	if err != nil {
 		t.Errorf("Should be able to get browser push private key: %v", err)
 	}
@@ -56,23 +56,23 @@ func TestBrowserPushSetupIntegration(t *testing.T) {
 }
 
 func TestBrowserPushConfigurationIntegration(t *testing.T) {
-	configRepo := configrepository.Get()
+	configRepository := configrepository.New(datastore.GetDatastore())
 
 	// Test that browser push is enabled by default
-	browserConfig := configRepo.GetBrowserPushConfig()
+	browserConfig := configRepository.GetBrowserPushConfig()
 	if !browserConfig.Enabled {
 		t.Error("Browser push should be enabled by default")
 	}
 
 	// Test that initial notification configuration flag is set
-	hasConfigured := configRepo.GetHasPerformedInitialNotificationsConfig()
+	hasConfigured := configRepository.GetHasPerformedInitialNotificationsConfig()
 	if !hasConfigured {
 		t.Error("Should have performed initial notifications configuration")
 	}
 }
 
 func TestDiscordConfigurationIntegration(t *testing.T) {
-	configRepo := configrepository.Get()
+	configRepository := configrepository.New(datastore.GetDatastore())
 
 	// Test Discord configuration setup
 	discordConfig := models.DiscordConfiguration{
@@ -81,7 +81,7 @@ func TestDiscordConfigurationIntegration(t *testing.T) {
 		GoLiveMessage: "Test stream is live!",
 	}
 
-	err := configRepo.SetDiscordConfig(discordConfig)
+	err := configRepository.SetDiscordConfig(discordConfig)
 	if err != nil {
 		t.Errorf("Failed to set Discord configuration: %v", err)
 	}
@@ -91,7 +91,7 @@ func TestDiscordConfigurationIntegration(t *testing.T) {
 		Enabled: false,
 		Webhook: "",
 	}
-	err = configRepo.SetDiscordConfig(disabledConfig)
+	err = configRepository.SetDiscordConfig(disabledConfig)
 	if err != nil {
 		t.Errorf("Failed to disable Discord configuration: %v", err)
 	}

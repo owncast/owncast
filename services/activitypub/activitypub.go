@@ -27,21 +27,23 @@ import (
 // main.go with New(Deps) and call Start to spin up the worker pools and
 // background jobs. Hand .Controllers() to the router for HTTP routing.
 type Service struct {
-	persistence *persistence.Service
-	workerpool  *workerpool.Service
-	outbox      *outbox.Service
-	inbox       *inbox.Service
-	jobs        *jobs.Service
-	controllers *controllers.Controllers
-	followers   followersrepository.FollowersRepository
+	persistence      *persistence.Service
+	workerpool       *workerpool.Service
+	outbox           *outbox.Service
+	inbox            *inbox.Service
+	jobs             *jobs.Service
+	controllers      *controllers.Controllers
+	followers        followersrepository.FollowersRepository
+	configRepository configrepository.ConfigRepository
 }
 
 // Deps lists the explicit construction inputs for the federation
 // subsystem.
 type Deps struct {
-	Datastore *datastore.Datastore
-	Webhooks  *webhooks.Service
-	Chat      *chat.Service
+	Datastore        *datastore.Datastore
+	Webhooks         *webhooks.Service
+	Chat             *chat.Service
+	ConfigRepository configrepository.ConfigRepository
 }
 
 // New constructs the federation subsystem in dependency order. It does
@@ -53,54 +55,57 @@ func New(deps Deps) *Service {
 	wpSvc := workerpool.New(outboundWorkerPoolSize(followers))
 
 	outboxSvc := outbox.New(outbox.Deps{
-		Persistence: persistenceSvc,
-		Workerpool:  wpSvc,
-		Followers:   followers,
+		Persistence:      persistenceSvc,
+		Workerpool:       wpSvc,
+		Followers:        followers,
+		ConfigRepository: deps.ConfigRepository,
 	})
 
 	inboxSvc := inbox.New(inbox.Deps{
-		Persistence: persistenceSvc,
-		Workerpool:  wpSvc,
-		Followers:   followers,
-		Webhooks:    deps.Webhooks,
-		Chat:        deps.Chat,
+		Persistence:      persistenceSvc,
+		Workerpool:       wpSvc,
+		Followers:        followers,
+		Webhooks:         deps.Webhooks,
+		Chat:             deps.Chat,
+		ConfigRepository: deps.ConfigRepository,
 	})
 
 	jobsSvc := jobs.New(jobs.Deps{
-		Followers: followers,
+		Followers:        followers,
+		ConfigRepository: deps.ConfigRepository,
 	})
 
 	ctrls := controllers.New(controllers.Deps{
-		Persistence: persistenceSvc,
-		Outbox:      outboxSvc,
-		Inbox:       inboxSvc,
-		Followers:   followers,
+		Persistence:      persistenceSvc,
+		Outbox:           outboxSvc,
+		Inbox:            inboxSvc,
+		Followers:        followers,
+		ConfigRepository: deps.ConfigRepository,
 	})
 
 	return &Service{
-		persistence: persistenceSvc,
-		workerpool:  wpSvc,
-		outbox:      outboxSvc,
-		inbox:       inboxSvc,
-		jobs:        jobsSvc,
-		controllers: ctrls,
-		followers:   followers,
+		persistence:      persistenceSvc,
+		workerpool:       wpSvc,
+		outbox:           outboxSvc,
+		inbox:            inboxSvc,
+		jobs:             jobsSvc,
+		controllers:      ctrls,
+		followers:        followers,
+		configRepository: deps.ConfigRepository,
 	}
 }
 
 // Start brings up the worker pools and recurring jobs. Also generates
 // the signing keypair on first run.
 func (s *Service) Start() {
-	configRepository := configrepository.Get()
-
 	s.workerpool.Start()
 	s.inbox.Start()
 
 	// Generate the keys for signing federated activity if needed.
-	if configRepository.GetPrivateKey() == "" {
+	if s.configRepository.GetPrivateKey() == "" {
 		privateKey, publicKey, err := crypto.GenerateKeys()
-		_ = configRepository.SetPrivateKey(string(privateKey))
-		_ = configRepository.SetPublicKey(string(publicKey))
+		_ = s.configRepository.SetPrivateKey(string(privateKey))
+		_ = s.configRepository.SetPublicKey(string(publicKey))
 		if err != nil {
 			log.Errorln("Unable to get private key", err)
 		}

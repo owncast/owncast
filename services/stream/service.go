@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/geoip"
@@ -100,26 +101,32 @@ type Service struct {
 	// when a stream starts/ends so it can send the appropriate
 	// system-message announcements.
 	chat *chat.Service
+
+	// configRepository provides all server settings used during stream
+	// lifecycle (latency level, output variants, stream keys, …).
+	configRepository configrepository.ConfigRepository
 }
 
 // Deps is the explicit-dependency contract the service requires at
 // construction time.
 type Deps struct {
-	Rtmp        *rtmp.Service
-	Activitypub *activitypub.Service
-	Webhooks    *webhooks.Service
-	Chat        *chat.Service
+	Rtmp             *rtmp.Service
+	Activitypub      *activitypub.Service
+	Webhooks         *webhooks.Service
+	Chat             *chat.Service
+	ConfigRepository configrepository.ConfigRepository
 }
 
 // New constructs an idle stream Service. Call Start(ctx) to bring up the
 // storage backend, transcoder, RTMP listener, and associated lifecycle.
 func New(deps Deps) *Service {
 	return &Service{
-		geoIPClient: geoip.NewClient(),
-		fileWriter:  transcoder.FileWriterReceiverService{},
-		rtmp:        deps.Rtmp,
-		activitypub: deps.Activitypub,
-		webhooks:    deps.Webhooks,
-		chat:        deps.Chat,
+		geoIPClient:      geoip.NewClient(),
+		fileWriter:       transcoder.FileWriterReceiverService{},
+		rtmp:             deps.Rtmp,
+		activitypub:      deps.Activitypub,
+		webhooks:         deps.Webhooks,
+		chat:             deps.Chat,
+		configRepository: deps.ConfigRepository,
 	}
 }
