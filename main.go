@@ -14,7 +14,9 @@ import (
 	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/services/cache"
 	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/webserver/handlers"
 	"github.com/owncast/owncast/webserver/router"
 )
 
@@ -108,7 +110,18 @@ func main() {
 
 	go metrics.Start(core.GetStatus)
 
-	if err := router.Start(*enableVerboseLogging); err != nil {
+	// Composition root: construct services here and inject them into the
+	// components that consume them. As more packages migrate off package-
+	// level singletons into services/<domain>/, their constructors join
+	// this block.
+	cacheContainer := cache.New()
+	defer cacheContainer.Stop()
+
+	h := handlers.NewHandlers(handlers.Deps{
+		Cache: cacheContainer,
+	})
+
+	if err := router.Start(*enableVerboseLogging, h); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
 }

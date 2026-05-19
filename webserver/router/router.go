@@ -23,7 +23,14 @@ import (
 )
 
 // Start starts the router for the http, ws, and rtmp.
-func Start(enableVerboseLogging bool) error {
+//
+// h carries dependency-injected handler methods. Free-function handlers
+// (the majority during the migration) are referenced directly by package
+// path; methods on *handlers.Handlers are registered via the h receiver.
+// As more handlers migrate to needing injected services, they move from
+// the free-function set to *Handlers methods and their references update
+// here.
+func Start(enableVerboseLogging bool, h *handlers.Handlers) error {
 	// @behlers New Router
 	r := chi.NewRouter()
 
@@ -46,7 +53,7 @@ func Start(enableVerboseLogging bool) error {
 	r.HandleFunc("/hls/*", handlers.HandleHLSRequest)
 
 	// The admin web app.
-	r.HandleFunc("/admin/*", middleware.RequireAdminAuth(handlers.IndexHandler))
+	r.HandleFunc("/admin/*", middleware.RequireAdminAuth(h.IndexHandler))
 
 	// Single ActivityPub Actor
 	r.HandleFunc("/federation/user/*", middleware.RequireActivityPubOrRedirect(aphandlers.ActorHandler))
@@ -55,7 +62,7 @@ func Start(enableVerboseLogging bool) error {
 	r.HandleFunc("/federation/*", middleware.RequireActivityPubOrRedirect(aphandlers.ObjectHandler))
 
 	// The primary web app.
-	r.HandleFunc("/*", handlers.IndexHandler)
+	r.HandleFunc("/*", h.IndexHandler)
 
 	// mount the api
 	r.Mount("/api/", handlers.New().Handler())

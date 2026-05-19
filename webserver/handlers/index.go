@@ -13,7 +13,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/core/cache"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/static"
@@ -22,10 +21,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var gc = cache.GetGlobalCache()
-
 // IndexHandler handles the default index route.
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 
 	isIndexRequest := r.URL.Path == "/" || filepath.Base(r.URL.Path) == "index.html" || filepath.Base(r.URL.Path) == ""
@@ -38,7 +35,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// For search engine bots and social scrapers return a special
 	// server-rendered page.
 	if utils.IsUserAgentABot(r.UserAgent()) && isIndexRequest {
-		handleScraperMetadataPage(w, r)
+		h.handleScraperMetadataPage(w, r)
 		return
 	}
 
@@ -93,8 +90,8 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 		Summary:          configRepository.GetServerSummary(),
 		RequestedURL:     fmt.Sprintf("%s%s", configRepository.GetServerURL(), "/"),
 		TagsString:       strings.Join(configRepository.GetServerMetadataTags(), ","),
-		ThumbnailURL:     "thumbnail.jpg",
-		Thumbnail:        "thumbnail.jpg",
+		ThumbnailURL:     thumbnailFilename,
+		Thumbnail:        thumbnailFilename,
 		Image:            "logo/external",
 		StatusJSON:       string(sb),
 		ServerConfigJSON: string(cb),
@@ -134,12 +131,12 @@ type MetadataPage struct {
 
 // Return a basic HTML page with server-rendered metadata from the config
 // to give to Opengraph clients and web scrapers (bots, web crawlers, etc).
-func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 	cacheKey := "bot-scraper-html"
 	cacheHtmlExpiration := time.Duration(60) * time.Second
-	c := gc.GetOrCreateCache(cacheKey, cacheHtmlExpiration)
+	c := h.cache.GetOrCreate(cacheKey, cacheHtmlExpiration)
 
-	cachedHtml := c.GetValueForKey(cacheKey)
+	cachedHtml := c.Get(cacheKey)
 	if cachedHtml != nil {
 		w.Header().Set("Content-Type", "text/html")
 		_, _ = w.Write(cachedHtml)
@@ -174,8 +171,8 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 
 	// If the thumbnail does not exist or we're offline then just use the logo image
 	var thumbnailURL string
-	if status.Online && utils.DoesFileExists(filepath.Join(config.DataDirectory, "tmp", "thumbnail.jpg")) {
-		thumbnail, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, "/thumbnail.jpg"))
+	if status.Online && utils.DoesFileExists(filepath.Join(config.DataDirectory, "tmp", thumbnailFilename)) {
+		thumbnail, err := url.Parse(fmt.Sprintf("%s://%s/%s", scheme, r.Host, thumbnailFilename))
 		if err != nil {
 			log.Errorln(err)
 			thumbnailURL = imageURL.String()

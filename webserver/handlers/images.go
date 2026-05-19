@@ -13,6 +13,8 @@ import (
 const (
 	contentTypeJPEG = "image/jpeg"
 	contentTypeGIF  = "image/gif"
+
+	thumbnailFilename = "thumbnail.jpg"
 )
 
 var previewThumbCache = ttlcache.New(
@@ -23,7 +25,7 @@ var previewThumbCache = ttlcache.New(
 
 // GetThumbnail will return the thumbnail image as a response.
 func GetThumbnail(w http.ResponseWriter, r *http.Request) {
-	imageFilename := "thumbnail.jpg"
+	imageFilename := thumbnailFilename
 	imagePath := filepath.Join(config.TempDir, imageFilename)
 	httpCacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
 	inMemoryCacheTime := time.Duration(15) * time.Second
