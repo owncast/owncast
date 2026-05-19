@@ -1,4 +1,4 @@
-package storageproviders
+package storage
 
 import (
 	"bufio"
@@ -6,10 +6,9 @@ import (
 	"path/filepath"
 
 	"github.com/grafov/m3u8"
-	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/playlist"
-
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/config"
 )
 
 // rewritePlaylistLocations will take a local playlist and rewrite it to have absolute URLs to a specified location.
@@ -36,5 +35,5 @@ func rewritePlaylistLocations(localFilePath, remoteServingEndpoint, hlsPrefix st
 
 	newPlaylist := p.String()
 
-	return playlist.WritePlaylist(newPlaylist, publicPath)
+	return writePlaylist(newPlaylist, publicPath)
 }

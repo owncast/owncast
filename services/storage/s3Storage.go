@@ -1,4 +1,4 @@
-package storageproviders
+package storage
 
 import (
 	"context"
