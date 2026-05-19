@@ -13,11 +13,9 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
-	"github.com/owncast/owncast/activitypub"
-	aphandlers "github.com/owncast/owncast/activitypub/controllers"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/data"
+	apcontrollers "github.com/owncast/owncast/services/activitypub/controllers"
 	"github.com/owncast/owncast/webserver/handlers"
 	"github.com/owncast/owncast/webserver/router/middleware"
 )
@@ -27,10 +25,8 @@ import (
 // h carries dependency-injected handler methods. Free-function handlers
 // (the majority during the migration) are referenced directly by package
 // path; methods on *handlers.Handlers are registered via the h receiver.
-// As more handlers migrate to needing injected services, they move from
-// the free-function set to *Handlers methods and their references update
-// here.
-func Start(enableVerboseLogging bool, h *handlers.Handlers) error {
+// apc carries the methodified ActivityPub HTTP handler set.
+func Start(enableVerboseLogging bool, h *handlers.Handlers, apc *apcontrollers.Controllers) error {
 	// @behlers New Router
 	r := chi.NewRouter()
 
@@ -40,7 +36,7 @@ func Start(enableVerboseLogging bool, h *handlers.Handlers) error {
 	}
 	r.Use(chiMW.Recoverer)
 
-	addStaticFileEndpoints(r)
+	addStaticFileEndpoints(r, apc)
 
 	// websocket
 	r.HandleFunc("/ws", chat.HandleClientConnection)
@@ -56,19 +52,16 @@ func Start(enableVerboseLogging bool, h *handlers.Handlers) error {
 	r.HandleFunc("/admin/*", middleware.RequireAdminAuth(h.IndexHandler))
 
 	// Single ActivityPub Actor
-	r.HandleFunc("/federation/user/*", middleware.RequireActivityPubOrRedirect(aphandlers.ActorHandler))
+	r.HandleFunc("/federation/user/*", middleware.RequireActivityPubOrRedirect(apc.ActorHandler))
 
 	// Single AP object
-	r.HandleFunc("/federation/*", middleware.RequireActivityPubOrRedirect(aphandlers.ObjectHandler))
+	r.HandleFunc("/federation/*", middleware.RequireActivityPubOrRedirect(apc.ObjectHandler))
 
 	// The primary web app.
 	r.HandleFunc("/*", h.IndexHandler)
 
 	// mount the api
 	r.Mount("/api/", handlers.New(h).Handler())
-
-	// ActivityPub has its own router
-	activitypub.Start(data.GetDatastore())
 
 	// Create a custom mux handler to intercept the /debug/vars endpoint.
 	// This is a hack because Prometheus enables this endpoint by default
@@ -110,7 +103,7 @@ func Start(enableVerboseLogging bool, h *handlers.Handlers) error {
 	return server.ListenAndServe()
 }
 
-func addStaticFileEndpoints(r chi.Router) {
+func addStaticFileEndpoints(r chi.Router, apc *apcontrollers.Controllers) {
 	// Images
 	r.HandleFunc("/thumbnail.jpg", handlers.GetThumbnail)
 	r.HandleFunc("/preview.gif", handlers.GetPreview)
@@ -133,20 +126,20 @@ func addStaticFileEndpoints(r chi.Router) {
 	r.HandleFunc(emojiDir, handlers.GetCustomEmojiImage)
 
 	// WebFinger
-	r.HandleFunc("/.well-known/webfinger", aphandlers.WebfingerHandler)
+	r.HandleFunc("/.well-known/webfinger", apc.WebfingerHandler)
 
 	// Host Metadata
-	r.HandleFunc("/.well-known/host-meta", aphandlers.HostMetaController)
+	r.HandleFunc("/.well-known/host-meta", apc.HostMetaController)
 
 	// Nodeinfo v1
-	r.HandleFunc("/.well-known/nodeinfo", aphandlers.NodeInfoController)
+	r.HandleFunc("/.well-known/nodeinfo", apc.NodeInfoController)
 
 	// x-nodeinfo v2
-	r.HandleFunc("/.well-known/x-nodeinfo2", aphandlers.XNodeInfo2Controller)
+	r.HandleFunc("/.well-known/x-nodeinfo2", apc.XNodeInfo2Controller)
 
 	// Nodeinfo v2
-	r.HandleFunc("/nodeinfo/2.0", aphandlers.NodeInfoV2Controller)
+	r.HandleFunc("/nodeinfo/2.0", apc.NodeInfoV2Controller)
 
 	// Instance details
-	r.HandleFunc("/api/v1/instance", aphandlers.InstanceV1Controller)
+	r.HandleFunc("/api/v1/instance", apc.InstanceV1Controller)
 }

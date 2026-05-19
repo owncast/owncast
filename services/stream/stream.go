@@ -10,7 +10,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
@@ -296,7 +295,7 @@ func (s *Service) startLiveStreamNotificationsTimer() context.CancelFunc {
 			// Send Fediverse message.
 			if configRepository.GetFederationEnabled() {
 				log.Traceln("Sending Federated Go Live message.")
-				if err := activitypub.SendLive(); err != nil {
+				if err := s.activitypub.SendLive(); err != nil {
 					log.Errorln(err)
 				}
 			}

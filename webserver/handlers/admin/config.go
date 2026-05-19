@@ -11,7 +11,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/owncast/owncast/activitypub/outbox"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
@@ -29,7 +28,7 @@ type ConfigValue struct {
 }
 
 // SetTags will handle the web config request to set tags.
-func SetTags(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetTags(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -51,7 +50,7 @@ func SetTags(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := a.activitypub.UpdateFollowersWithAccountUpdates(); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -102,7 +101,7 @@ func sendSystemChatAction(messageText string, ephemeral bool) {
 }
 
 // SetServerName will handle the web config request to set the server's name.
-func SetServerName(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetServerName(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -119,7 +118,7 @@ func SetServerName(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := a.activitypub.UpdateFollowersWithAccountUpdates(); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -128,7 +127,7 @@ func SetServerName(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetServerSummary will handle the web config request to set the about/summary text.
-func SetServerSummary(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -145,7 +144,7 @@ func SetServerSummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := a.activitypub.UpdateFollowersWithAccountUpdates(); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -234,7 +233,7 @@ func SetAdminPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetLogo will handle a new logo image file being uploaded.
-func SetLogo(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetLogo(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -273,7 +272,7 @@ func SetLogo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := a.activitypub.UpdateFollowersWithAccountUpdates(); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -673,7 +672,7 @@ func SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetSocialHandles will handle the web config request to set the external social profile links.
-func SetSocialHandles(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -696,7 +695,7 @@ func SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := a.activitypub.UpdateFollowersWithAccountUpdates(); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

@@ -176,12 +176,12 @@ func (*ServerInterfaceImpl) GetBlockedAndRejectedFollowersOptions(w http.Respons
 	middleware.RequireAdminAuth(admin.GetBlockedAndRejectedFollowers)(w, r)
 }
 
-func (*ServerInterfaceImpl) ApproveFollower(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.ApproveFollower)(w, r)
+func (s *ServerInterfaceImpl) ApproveFollower(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.ApproveFollower)(w, r)
 }
 
-func (*ServerInterfaceImpl) ApproveFollowerOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.ApproveFollower)(w, r)
+func (s *ServerInterfaceImpl) ApproveFollowerOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.ApproveFollower)(w, r)
 }
 
 func (*ServerInterfaceImpl) UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
@@ -288,18 +288,18 @@ func (s *ServerInterfaceImpl) GetVideoPlaybackMetricsOptions(w http.ResponseWrit
 	middleware.RequireAdminAuth(s.h.admin.GetVideoPlaybackMetrics)(w, r)
 }
 
-func (*ServerInterfaceImpl) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SendFederatedMessage)(w, r)
+func (s *ServerInterfaceImpl) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SendFederatedMessage)(w, r)
 }
 
-func (*ServerInterfaceImpl) SendFederatedMessageOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SendFederatedMessage)(w, r)
+func (s *ServerInterfaceImpl) SendFederatedMessageOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SendFederatedMessage)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetFederatedActions(w http.ResponseWriter, r *http.Request, params generated.GetFederatedActionsParams) {
-	middleware.RequireAdminAuth(middleware.HandlePagination(admin.GetFederatedActions))(w, r)
+func (s *ServerInterfaceImpl) GetFederatedActions(w http.ResponseWriter, r *http.Request, params generated.GetFederatedActionsParams) {
+	middleware.RequireAdminAuth(middleware.HandlePagination(s.h.admin.GetFederatedActions))(w, r)
 }
 
-func (*ServerInterfaceImpl) GetFederatedActionsOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(middleware.HandlePagination(admin.GetFederatedActions))(w, r)
+func (s *ServerInterfaceImpl) GetFederatedActionsOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(middleware.HandlePagination(s.h.admin.GetFederatedActions))(w, r)
 }

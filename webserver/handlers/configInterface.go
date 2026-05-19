@@ -39,20 +39,20 @@ func (*ServerInterfaceImpl) SetStreamTitleOptions(w http.ResponseWriter, r *http
 	middleware.RequireAdminAuth(admin.SetStreamTitle)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetServerName(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetServerName)(w, r)
+func (s *ServerInterfaceImpl) SetServerName(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetServerName)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetServerNameOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetServerName)(w, r)
+func (s *ServerInterfaceImpl) SetServerNameOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetServerName)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetServerSummary(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetServerSummary)(w, r)
+func (s *ServerInterfaceImpl) SetServerSummary(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetServerSummary)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetServerSummaryOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetServerSummary)(w, r)
+func (s *ServerInterfaceImpl) SetServerSummaryOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetServerSummary)(w, r)
 }
 
 func (*ServerInterfaceImpl) SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request) {
@@ -167,12 +167,12 @@ func (*ServerInterfaceImpl) SetCustomColorVariableValuesOptions(w http.ResponseW
 	middleware.RequireAdminAuth(admin.SetCustomColorVariableValues)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetLogo(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetLogo)(w, r)
+func (s *ServerInterfaceImpl) SetLogo(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetLogo)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetLogoOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetLogo)(w, r)
+func (s *ServerInterfaceImpl) SetLogoOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetLogo)(w, r)
 }
 
 func (*ServerInterfaceImpl) SetFavicon(w http.ResponseWriter, r *http.Request) {
@@ -187,12 +187,12 @@ func (*ServerInterfaceImpl) ResetFavicon(w http.ResponseWriter, r *http.Request)
 	middleware.RequireAdminAuth(admin.ResetFavicon)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetTags(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetTags)(w, r)
+func (s *ServerInterfaceImpl) SetTags(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetTags)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetTagsOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetTags)(w, r)
+func (s *ServerInterfaceImpl) SetTagsOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetTags)(w, r)
 }
 
 func (*ServerInterfaceImpl) SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
@@ -259,12 +259,12 @@ func (*ServerInterfaceImpl) SetDirectoryEnabledOptions(w http.ResponseWriter, r 
 	middleware.RequireAdminAuth(admin.SetDirectoryEnabled)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetSocialHandles(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetSocialHandles)(w, r)
+func (s *ServerInterfaceImpl) SetSocialHandles(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetSocialHandles)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetSocialHandlesOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetSocialHandles)(w, r)
+func (s *ServerInterfaceImpl) SetSocialHandlesOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetSocialHandles)(w, r)
 }
 
 func (*ServerInterfaceImpl) SetS3Configuration(w http.ResponseWriter, r *http.Request) {
@@ -331,12 +331,12 @@ func (*ServerInterfaceImpl) SetFederationEnabledOptions(w http.ResponseWriter, r
 	middleware.RequireAdminAuth(admin.SetFederationEnabled)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetFederationActivityPrivate)(w, r)
+func (s *ServerInterfaceImpl) SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetFederationActivityPrivate)(w, r)
 }
 
-func (*ServerInterfaceImpl) SetFederationActivityPrivateOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.SetFederationActivityPrivate)(w, r)
+func (s *ServerInterfaceImpl) SetFederationActivityPrivateOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.SetFederationActivityPrivate)(w, r)
 }
 
 func (*ServerInterfaceImpl) SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {

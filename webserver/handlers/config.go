@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/owncast/owncast/activitypub"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -61,19 +60,19 @@ type authenticationConfigResponse struct {
 }
 
 // GetWebConfig gets the status of the server.
-func GetWebConfig(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 	middleware.DisableCache(w)
 	w.Header().Set("Content-Type", "application/json")
 
-	configuration := getConfigResponse()
+	configuration := h.getConfigResponse()
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {
 		webutils.BadRequestHandler(w, err)
 	}
 }
 
-func getConfigResponse() webConfigResponse {
+func (h *Handlers) getConfigResponse() webConfigResponse {
 	configRepository := configrepository.Get()
 	pageContent := utils.RenderPageContentMarkdown(configRepository.GetExtraPageBodyContent())
 	offlineMessage := utils.RenderSimpleMarkdown(configRepository.GetCustomOfflineMessage())
@@ -91,7 +90,7 @@ func getConfigResponse() webConfigResponse {
 	var federationResponse federationConfigResponse
 	federationEnabled := configRepository.GetFederationEnabled()
 
-	followerCount, _ := activitypub.GetFollowerCount()
+	followerCount, _ := h.activitypub.GetFollowerCount()
 	if federationEnabled {
 		serverURLString := configRepository.GetServerURL()
 		serverURL, _ := url.Parse(serverURLString)

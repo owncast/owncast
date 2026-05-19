@@ -3,15 +3,12 @@ package admin
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/activitypub"
-	"github.com/owncast/owncast/activitypub/outbox"
-	"github.com/owncast/owncast/activitypub/persistence"
 	"github.com/owncast/owncast/persistence/configrepository"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
 // SendFederatedMessage will send a manual message to the fediverse.
-func SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -34,7 +31,7 @@ func SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := activitypub.SendPublicFederatedMessage(message); err != nil {
+	if err := a.activitypub.SendPublicFederatedMessage(message); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -63,7 +60,7 @@ func SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
 }
 
 // SetFederationActivityPrivate will set if Federation features are private to followers.
-func SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -81,7 +78,7 @@ func SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Fediverse followers about this change.
-	if err := outbox.UpdateFollowersWithAccountUpdates(); err != nil {
+	if err := a.activitypub.UpdateFollowersWithAccountUpdates(); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -176,10 +173,10 @@ func SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
 
 // GetFederatedActions will return the saved list of accepted inbound
 // federated activities.
-func GetFederatedActions(page int, pageSize int, w http.ResponseWriter, r *http.Request) {
+func (a *Admin) GetFederatedActions(page int, pageSize int, w http.ResponseWriter, r *http.Request) {
 	offset := pageSize * page
 
-	activities, total, err := persistence.GetInboundActivities(pageSize, offset)
+	activities, total, err := a.activitypub.GetInboundActivities(pageSize, offset)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return

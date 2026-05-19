@@ -5,19 +5,36 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/owncast/owncast/activitypub"
+	log "github.com/sirupsen/logrus"
+
 	fediverseauth "github.com/owncast/owncast/auth/fediverse"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
+	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
-	log "github.com/sirupsen/logrus"
 )
 
+// Handler bundles the dependencies the fediverse auth handlers need to
+// send OTP codes via direct federated message.
+type Handler struct {
+	activitypub *activitypub.Service
+}
+
+// Deps lists the dependencies of the fediverse auth Handler.
+type Deps struct {
+	Activitypub *activitypub.Service
+}
+
+// New constructs the Handler.
+func New(deps Deps) *Handler {
+	return &Handler{activitypub: deps.Activitypub}
+}
+
 // RegisterFediverseOTPRequest registers a new OTP request for the given access token.
-func RegisterFediverseOTPRequest(u models.User, w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RegisterFediverseOTPRequest(u models.User, w http.ResponseWriter, r *http.Request) {
 	type request struct {
 		FediverseAccount string `json:"account"`
 	}
@@ -42,7 +59,7 @@ func RegisterFediverseOTPRequest(u models.User, w http.ResponseWriter, r *http.R
 
 	configRepository := configrepository.Get()
 	msg := fmt.Sprintf("<p>One-time code from %s: %s. If you did not request this message please ignore or block.</p>", configRepository.GetServerName(), reg.Code)
-	if err := activitypub.SendDirectFederatedMessage(msg, reg.Account); err != nil {
+	if err := h.activitypub.SendDirectFederatedMessage(msg, reg.Account); err != nil {
 		webutils.WriteSimpleResponse(w, false, "Could not send code to fediverse: "+err.Error())
 		return
 	}

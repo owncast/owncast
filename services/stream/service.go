@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/transcoder"
@@ -83,13 +84,19 @@ type Service struct {
 	// rtmp is the inbound RTMP ingest service. Start hands it
 	// stream-lifecycle callbacks; admin disconnect goes through it too.
 	rtmp *rtmp.Service
+
+	// activitypub is the federation subsystem; the stream service uses
+	// it to broadcast go-live notifications to followers when a stream
+	// starts.
+	activitypub *activitypub.Service
 }
 
 // Deps is the explicit-dependency contract the service requires at
-// construction time. As more collaborators (chat, transcoder, webhooks,
-// etc.) migrate to constructor-injected services, they appear here.
+// construction time. As more collaborators (chat, webhooks, etc.)
+// migrate to constructor-injected services, they appear here.
 type Deps struct {
-	Rtmp *rtmp.Service
+	Rtmp        *rtmp.Service
+	Activitypub *activitypub.Service
 }
 
 // New constructs an idle stream Service. Call Start(ctx) to bring up the
@@ -99,5 +106,6 @@ func New(deps Deps) *Service {
 		geoIPClient: geoip.NewClient(),
 		fileWriter:  transcoder.FileWriterReceiverService{},
 		rtmp:        deps.Rtmp,
+		activitypub: deps.Activitypub,
 	}
 }

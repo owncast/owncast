@@ -7,19 +7,22 @@ import (
 	"strconv"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/logging"
 	"github.com/owncast/owncast/persistence/configrepository"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/cache"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers"
 	"github.com/owncast/owncast/webserver/handlers/admin"
+	"github.com/owncast/owncast/webserver/handlers/auth/fediverse"
 	"github.com/owncast/owncast/webserver/router"
 )
 
@@ -118,8 +121,12 @@ func main() {
 
 	rtmpSvc := rtmp.New(rtmp.Deps{})
 
+	apSvc := activitypub.New(activitypub.Deps{Datastore: data.GetDatastore()})
+	apSvc.Start()
+
 	streamSvc := stream.New(stream.Deps{
-		Rtmp: rtmpSvc,
+		Rtmp:        rtmpSvc,
+		Activitypub: apSvc,
 	})
 	if err := streamSvc.Start(ctx); err != nil {
 		log.Fatalln("failed to start the stream service", err)
@@ -129,17 +136,24 @@ func main() {
 	go metrics.Start(streamSvc)
 
 	adminHandlers := admin.New(admin.Deps{
-		Stream: streamSvc,
-		Rtmp:   rtmpSvc,
+		Stream:      streamSvc,
+		Rtmp:        rtmpSvc,
+		Activitypub: apSvc,
+	})
+
+	fediverseHandler := fediverse.New(fediverse.Deps{
+		Activitypub: apSvc,
 	})
 
 	h := handlers.NewHandlers(handlers.Deps{
-		Cache:  cacheContainer,
-		Stream: streamSvc,
-		Admin:  adminHandlers,
+		Cache:       cacheContainer,
+		Stream:      streamSvc,
+		Admin:       adminHandlers,
+		Activitypub: apSvc,
+		Fediverse:   fediverseHandler,
 	})
 
-	if err := router.Start(*enableVerboseLogging, h); err != nil {
+	if err := router.Start(*enableVerboseLogging, h, apSvc.Controllers()); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
 }

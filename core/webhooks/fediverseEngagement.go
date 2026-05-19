@@ -1,9 +1,9 @@
 package webhooks
 
 import (
-	"github.com/owncast/owncast/activitypub/events"
-	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/activitypub/events"
+	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 )
 
 // SendFediverseEventFollow will send a user followed event to webhook

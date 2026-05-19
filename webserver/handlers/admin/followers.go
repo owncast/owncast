@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
-	"github.com/owncast/owncast/activitypub/requests"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
+	"github.com/owncast/owncast/services/activitypub/requests"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
 // ApproveFollower will approve a federated follow request.
-func ApproveFollower(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -52,7 +52,7 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send the approval to the follow requestor.
-		if err := requests.SendFollowAccept(followRequest.Inbox, followRequest.RequestObject, localAccountName); err != nil {
+		if err := requests.SendFollowAccept(a.activitypub.Workerpool(), followRequest.Inbox, followRequest.RequestObject, localAccountName); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}

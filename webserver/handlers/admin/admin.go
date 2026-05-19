@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
 )
@@ -14,21 +15,24 @@ import (
 // this package; they migrate to methods on *Admin as the services they
 // need to consume move to services/<domain>/.
 type Admin struct {
-	stream *stream.Service
-	rtmp   *rtmp.Service
+	stream      *stream.Service
+	rtmp        *rtmp.Service
+	activitypub *activitypub.Service
 }
 
 // Deps lists every service a *Admin consumes. New deps appear here as
 // more admin handlers migrate.
 type Deps struct {
-	Stream *stream.Service
-	Rtmp   *rtmp.Service
+	Stream      *stream.Service
+	Rtmp        *rtmp.Service
+	Activitypub *activitypub.Service
 }
 
 // New constructs the dependency-bearing admin handler set.
 func New(deps Deps) *Admin {
 	return &Admin{
-		stream: deps.Stream,
-		rtmp:   deps.Rtmp,
+		stream:      deps.Stream,
+		rtmp:        deps.Rtmp,
+		activitypub: deps.Activitypub,
 	}
 }

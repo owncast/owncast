@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
+	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 

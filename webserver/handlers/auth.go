@@ -25,8 +25,8 @@ func (*ServerInterfaceImpl) HandleIndieAuthEndpointPost(w http.ResponseWriter, r
 	indieauth.HandleAuthEndpointPost(w, r)
 }
 
-func (*ServerInterfaceImpl) RegisterFediverseOTPRequest(w http.ResponseWriter, r *http.Request, params generated.RegisterFediverseOTPRequestParams) {
-	middleware.RequireUserAccessToken(fediverse.RegisterFediverseOTPRequest)(w, r)
+func (s *ServerInterfaceImpl) RegisterFediverseOTPRequest(w http.ResponseWriter, r *http.Request, params generated.RegisterFediverseOTPRequestParams) {
+	middleware.RequireUserAccessToken(s.h.fediverse.RegisterFediverseOTPRequest)(w, r)
 }
 
 func (*ServerInterfaceImpl) VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {

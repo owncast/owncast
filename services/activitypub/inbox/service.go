@@ -1,0 +1,84 @@
+// Package inbox is the inbound side of the ActivityPub federation
+// subsystem: parses verified inbound activities, dispatches them to
+// per-type handlers (Follow, Like, Announce, Undo, Create, Update), and
+// records accepted activities. Construct via New(Deps) and call
+// Start(ctx) to spin up the request worker pool.
+package inbox
+
+import (
+	"runtime"
+
+	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/services/activitypub/apmodels"
+	"github.com/owncast/owncast/services/activitypub/persistence"
+	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
+	"github.com/owncast/owncast/services/activitypub/workerpool"
+)
+
+// Job bundles a single inbound HTTP request for a worker.
+type Job struct {
+	request apmodels.InboxRequest
+}
+
+// Service owns the inbound inbox worker pool and routes verified
+// activities to their per-type handlers. It composes the persistence
+// service (to record accepted activities) and the followers repository
+// (to track follow/unfollow state).
+type Service struct {
+	workerPoolSize int
+	queue          chan Job
+
+	persistence *persistence.Service
+	workerpool  *workerpool.Service
+	followers   followersrepository.FollowersRepository
+}
+
+// Deps is the explicit dependency contract for inbox.
+type Deps struct {
+	Persistence *persistence.Service
+	Workerpool  *workerpool.Service
+	Followers   followersrepository.FollowersRepository
+}
+
+// New constructs an idle inbox Service. Call Start to launch the worker
+// pool.
+func New(deps Deps) *Service {
+	return &Service{
+		workerPoolSize: runtime.GOMAXPROCS(0),
+		persistence:    deps.Persistence,
+		workerpool:     deps.Workerpool,
+		followers:      deps.Followers,
+	}
+}
+
+// Start launches the inbox worker pool. Safe to call once.
+func (s *Service) Start() {
+	s.queue = make(chan Job)
+	for i := 1; i <= s.workerPoolSize; i++ {
+		go s.worker(i)
+	}
+}
+
+// AddToQueue queues an inbound request for the worker pool.
+func (s *Service) AddToQueue(req apmodels.InboxRequest) {
+	log.Tracef("Queued request for ActivityPub inbox handler")
+	s.queue <- Job{req}
+}
+
+func (s *Service) worker(workerID int) {
+	log.Debugf("Started ActivityPub worker %d", workerID)
+
+	for job := range s.queue {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Errorf("Recovered from panic in ActivityPub worker %d: %v", workerID, r)
+				}
+			}()
+			s.handle(job.request)
+		}()
+
+		log.Tracef("Done with ActivityPub inbox handler using worker %d", workerID)
+	}
+}

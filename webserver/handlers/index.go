@@ -76,7 +76,7 @@ func (h *Handlers) renderIndexHtml(w http.ResponseWriter, nonce string) {
 		return
 	}
 
-	config := getConfigResponse()
+	config := h.getConfigResponse()
 	cb, err := json.Marshal(config)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

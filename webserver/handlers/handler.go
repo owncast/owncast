@@ -61,8 +61,8 @@ func (*ServerInterfaceImpl) UpdateUserEnabled(w http.ResponseWriter, r *http.Req
 	middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetWebConfig(w http.ResponseWriter, r *http.Request) {
-	GetWebConfig(w, r)
+func (s *ServerInterfaceImpl) GetWebConfig(w http.ResponseWriter, r *http.Request) {
+	s.h.GetWebConfig(w, r)
 }
 
 func (*ServerInterfaceImpl) GetYPResponse(w http.ResponseWriter, r *http.Request) {

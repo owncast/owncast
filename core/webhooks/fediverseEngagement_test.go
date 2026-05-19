@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/owncast/owncast/activitypub/events"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/activitypub/events"
 )
 
 func TestSendFediverseEngagementEventFollow(t *testing.T) {
