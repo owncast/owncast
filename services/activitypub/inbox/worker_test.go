@@ -91,14 +91,14 @@ func TestBlockedDomains(t *testing.T) {
 func TestBlockedActors(t *testing.T) {
 	person := makeFakePerson()
 	fakeRequest := streams.NewActivityStreamsFollow()
-	followersRepo := followersrepository.Get()
-	followersRepo.Add(apmodels.ActivityPubActor{
+	followersRepository := followersrepository.New(datastore.GetDatastore())
+	followersRepository.Add(apmodels.ActivityPubActor{
 		ActorIri:         person.GetJSONLDId().GetIRI(),
 		Inbox:            person.GetJSONLDId().GetIRI(),
 		FollowRequestIri: person.GetJSONLDId().GetIRI(),
 		RequestObject:    fakeRequest,
 	}, false)
-	followersRepo.BlockOrReject(person.GetJSONLDId().GetIRI().String())
+	followersRepository.BlockOrReject(person.GetJSONLDId().GetIRI().String())
 
 	blocked, err := testService.isBlockedActor(person.GetJSONLDId().GetIRI())
 	if err != nil {

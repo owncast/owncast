@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/activitypub/requests"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -28,11 +27,9 @@ func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	followersRepo := followersrepository.Get()
-
 	if *approval.Approved {
 		// Approve a follower
-		if err := followersRepo.ApprovePreviousRequest(*approval.ActorIRI); err != nil {
+		if err := a.followersRepository.ApprovePreviousRequest(*approval.ActorIRI); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
@@ -42,7 +39,7 @@ func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 
 		localAccountName := a.configRepository.GetDefaultFederationUsername()
 
-		followRequest, err := followersRepo.GetByIRI(*approval.ActorIRI)
+		followRequest, err := a.followersRepository.GetByIRI(*approval.ActorIRI)
 		if err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
@@ -55,7 +52,7 @@ func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// Remove/block a follower
-		if err := followersRepo.BlockOrReject(*approval.ActorIRI); err != nil {
+		if err := a.followersRepository.BlockOrReject(*approval.ActorIRI); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
@@ -65,9 +62,8 @@ func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetPendingFollowRequests will return a list of pending follow requests.
-func GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
-	followersRepo := followersrepository.Get()
-	requests, err := followersRepo.GetPendingFollowRequests()
+func (a *Admin) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
+	requests, err := a.followersRepository.GetPendingFollowRequests()
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -77,9 +73,8 @@ func GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetBlockedAndRejectedFollowers will return blocked and rejected followers.
-func GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
-	followersRepo := followersrepository.Get()
-	rejections, err := followersRepo.GetBlockedAndRejected()
+func (a *Admin) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
+	rejections, err := a.followersRepository.GetBlockedAndRejected()
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return

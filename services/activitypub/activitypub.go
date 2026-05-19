@@ -40,17 +40,18 @@ type Service struct {
 // Deps lists the explicit construction inputs for the federation
 // subsystem.
 type Deps struct {
-	Datastore        *datastore.Datastore
-	Webhooks         *webhooks.Service
-	Chat             *chat.Service
-	ConfigRepository configrepository.ConfigRepository
+	Datastore           *datastore.Datastore
+	Webhooks            *webhooks.Service
+	Chat                *chat.Service
+	ConfigRepository    configrepository.ConfigRepository
+	FollowersRepository followersrepository.FollowersRepository
 }
 
 // New constructs the federation subsystem in dependency order. It does
 // not spawn any goroutines or bind ports; call Start for that.
 func New(deps Deps) *Service {
 	persistenceSvc := persistence.New(deps.Datastore)
-	followers := followersrepository.New(deps.Datastore)
+	followers := deps.FollowersRepository
 
 	wpSvc := workerpool.New(outboundWorkerPoolSize(followers))
 

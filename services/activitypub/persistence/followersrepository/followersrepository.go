@@ -58,18 +58,6 @@ type SqlFollowersRepository struct {
 	datastore *datastore.Datastore
 }
 
-// NOTE: This is temporary during the transition period.
-var temporaryGlobalInstance FollowersRepository
-
-// Get returns the followers repository singleton.
-func Get() FollowersRepository {
-	if temporaryGlobalInstance == nil {
-		i := New(datastore.GetDatastore())
-		temporaryGlobalInstance = i
-	}
-	return temporaryGlobalInstance
-}
-
 // New creates a new instance of the FollowersRepository.
 func New(datastore *datastore.Datastore) FollowersRepository {
 	r := SqlFollowersRepository{

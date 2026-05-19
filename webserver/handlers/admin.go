@@ -152,28 +152,28 @@ func (s *ServerInterfaceImpl) GetWarningsOptions(w http.ResponseWriter, r *http.
 	middleware.RequireAdminAuth(admin.GetWarnings)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params generated.GetFollowersAdminParams) {
-	middleware.RequireAdminAuth(middleware.HandlePagination(GetFollowers))(w, r)
+func (s *ServerInterfaceImpl) GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params generated.GetFollowersAdminParams) {
+	middleware.RequireAdminAuth(middleware.HandlePagination(s.h.GetFollowers))(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetFollowersAdminOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(middleware.HandlePagination(GetFollowers))(w, r)
+	middleware.RequireAdminAuth(middleware.HandlePagination(s.h.GetFollowers))(w, r)
 }
 
-func (*ServerInterfaceImpl) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetPendingFollowRequests)(w, r)
+func (s *ServerInterfaceImpl) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetPendingFollowRequests)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetPendingFollowRequestsOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetPendingFollowRequests)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.GetPendingFollowRequests)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetBlockedAndRejectedFollowers)(w, r)
+func (s *ServerInterfaceImpl) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetBlockedAndRejectedFollowers)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetBlockedAndRejectedFollowersOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetBlockedAndRejectedFollowers)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.GetBlockedAndRejectedFollowers)(w, r)
 }
 
 func (s *ServerInterfaceImpl) ApproveFollower(w http.ResponseWriter, r *http.Request) {

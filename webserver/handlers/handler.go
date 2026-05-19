@@ -84,8 +84,8 @@ func (s *ServerInterfaceImpl) RemoteFollow(w http.ResponseWriter, r *http.Reques
 	s.h.RemoteFollow(w, r)
 }
 
-func (*ServerInterfaceImpl) GetFollowers(w http.ResponseWriter, r *http.Request, params generated.GetFollowersParams) {
-	middleware.HandlePagination(GetFollowers)(w, r)
+func (s *ServerInterfaceImpl) GetFollowers(w http.ResponseWriter, r *http.Request, params generated.GetFollowersParams) {
+	middleware.HandlePagination(s.h.GetFollowers)(w, r)
 }
 
 func (*ServerInterfaceImpl) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
