@@ -3,6 +3,7 @@ package admin
 import (
 	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/chat"
@@ -28,6 +29,7 @@ type Admin struct {
 	configRepository    configrepository.ConfigRepository
 	authRepository      authrepository.AuthRepository
 	followersRepository followersrepository.FollowersRepository
+	webhookRepository   webhookrepository.WebhookRepository
 }
 
 // Deps lists every service a *Admin consumes. New deps appear here as
@@ -41,6 +43,7 @@ type Deps struct {
 	ConfigRepository    configrepository.ConfigRepository
 	AuthRepository      authrepository.AuthRepository
 	FollowersRepository followersrepository.FollowersRepository
+	WebhookRepository   webhookrepository.WebhookRepository
 }
 
 // New constructs the dependency-bearing admin handler set.
@@ -54,5 +57,6 @@ func New(deps Deps) *Admin {
 		configRepository:    deps.ConfigRepository,
 		authRepository:      deps.AuthRepository,
 		followersRepository: deps.FollowersRepository,
+		webhookRepository:   deps.WebhookRepository,
 	}
 }

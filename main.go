@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
+	"github.com/owncast/owncast/persistence/webhookrepository"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/metrics"
@@ -128,6 +129,7 @@ func main() {
 	configRepository := configrepository.New(datastore.GetDatastore())
 	authRepository := authrepository.New(datastore.GetDatastore())
 	followersRepository := followersrepository.New(datastore.GetDatastore())
+	webhookRepository := webhookrepository.New(datastore.GetDatastore())
 
 	handleCommandLineFlags(configRepository)
 
@@ -159,9 +161,10 @@ func main() {
 	// repository. Construct it before activitypub (which uses it) and
 	// before stream (which uses it to dispatch start/stop events).
 	webhooksSvc := webhooks.New(webhooks.Deps{
-		GetStatus:        nil, // wired below once streamSvc exists
-		Followers:        followersRepository,
-		ConfigRepository: configRepository,
+		GetStatus:         nil, // wired below once streamSvc exists
+		Followers:         followersRepository,
+		ConfigRepository:  configRepository,
+		WebhookRepository: webhookRepository,
 	})
 
 	// chat is constructed first because activitypub.Deps and
@@ -198,9 +201,10 @@ func main() {
 	// stream.GetStatus; stream and AP both need *webhooks.Service +
 	// *chat.Service).
 	webhooksSvc.SetDeps(webhooks.Deps{
-		GetStatus:        streamSvc.GetStatus,
-		Followers:        followersRepository,
-		ConfigRepository: configRepository,
+		GetStatus:         streamSvc.GetStatus,
+		Followers:         followersRepository,
+		ConfigRepository:  configRepository,
+		WebhookRepository: webhookRepository,
 	})
 	chatSvc.SetGetStatus(streamSvc.GetStatus)
 
@@ -220,6 +224,7 @@ func main() {
 		ConfigRepository:    configRepository,
 		AuthRepository:      authRepository,
 		FollowersRepository: followersRepository,
+		WebhookRepository:   webhookRepository,
 	})
 
 	fediverseHandler := fediverse.New(fediverse.Deps{

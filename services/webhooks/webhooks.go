@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 )
 
@@ -83,8 +82,7 @@ func (s *Service) SendEventToWebhooks(payload WebhookEvent) {
 // optional waitgroup so callers (tests, batched senders) can wait for
 // all destinations to be drained.
 func (s *Service) sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
-	webhooksRepo := webhookrepository.Get()
-	webhooks := webhooksRepo.GetWebhooksForEvent(payload.Type)
+	webhooks := s.webhookRepository.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {
 		if wg != nil {

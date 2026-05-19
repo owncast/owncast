@@ -243,7 +243,7 @@ func TestWebhookHasServerStatus(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.Get()
+	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
 
 	// Subscribe to the webhook.
 	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.UserJoined})

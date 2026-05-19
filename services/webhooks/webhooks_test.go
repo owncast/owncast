@@ -52,8 +52,13 @@ func TestMain(m *testing.M) {
 	// Set up server URL for tests
 	configRepository := configrepository.New(datastore.GetDatastore())
 	configRepository.SetServerURL("http://localhost:8080")
+	webhookRepository := webhookrepository.New(datastore.GetDatastore())
 
-	testSvc = New(Deps{GetStatus: fakeGetStatus, ConfigRepository: configRepository})
+	testSvc = New(Deps{
+		GetStatus:         fakeGetStatus,
+		ConfigRepository:  configRepository,
+		WebhookRepository: webhookRepository,
+	})
 	testSvc.Start()
 
 	defer close(testSvc.queue)
@@ -75,7 +80,7 @@ func TestPublicSend(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.Get()
+	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
 
 	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
 	if err != nil {
@@ -122,7 +127,7 @@ func TestRouting(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.Get()
+	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
 
 	for _, eventType := range eventTypes {
 		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
@@ -165,7 +170,7 @@ func TestMultiple(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.Get()
+	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
 
 	for i := 0; i < times; i++ {
 		hook, err := webhooksRepo.InsertWebhook(fmt.Sprintf("%v/%v", svr.URL, i), []models.EventType{models.MessageSent})
@@ -205,7 +210,7 @@ func TestTimestamps(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.Get()
+	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
 
 	for i, eventType := range eventTypes {
 		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
@@ -306,7 +311,7 @@ func TestParallel(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.Get()
+	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
 
 	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
 	if err != nil {
@@ -343,7 +348,7 @@ func checkPayload(t *testing.T, eventType models.EventType, send func(), expecte
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.Get()
+	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
 
 	// Subscribe to the webhook.
 	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{eventType})

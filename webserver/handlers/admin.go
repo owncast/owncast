@@ -200,28 +200,28 @@ func (s *ServerInterfaceImpl) DeleteCustomEmojiOptions(w http.ResponseWriter, r 
 	middleware.RequireAdminAuth(admin.DeleteCustomEmoji)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
+func (s *ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetWebhooks)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetWebhooksOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetWebhooks)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.GetWebhooks)(w, r)
 }
 
-func (*ServerInterfaceImpl) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.DeleteWebhook)(w, r)
+func (s *ServerInterfaceImpl) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.DeleteWebhook)(w, r)
 }
 
 func (s *ServerInterfaceImpl) DeleteWebhookOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.DeleteWebhook)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.DeleteWebhook)(w, r)
 }
 
-func (*ServerInterfaceImpl) CreateWebhook(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.CreateWebhook)(w, r)
+func (s *ServerInterfaceImpl) CreateWebhook(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.CreateWebhook)(w, r)
 }
 
 func (s *ServerInterfaceImpl) CreateWebhookOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.CreateWebhook)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.CreateWebhook)(w, r)
 }
 
 func (*ServerInterfaceImpl) GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {

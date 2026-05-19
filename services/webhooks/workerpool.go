@@ -42,23 +42,30 @@ type Service struct {
 	// configRepository provides server metadata included in stream-status
 	// event payloads.
 	configRepository configrepository.ConfigRepository
+
+	// webhookRepository stores configured webhook destinations and is
+	// consulted when dispatching events as well as when marking a
+	// destination as used after a successful send.
+	webhookRepository webhookrepository.WebhookRepository
 }
 
 // Deps lists every collaborator a *Service needs at construction.
 type Deps struct {
-	GetStatus        func() models.Status
-	Followers        followersrepository.FollowersRepository
-	ConfigRepository configrepository.ConfigRepository
+	GetStatus         func() models.Status
+	Followers         followersrepository.FollowersRepository
+	ConfigRepository  configrepository.ConfigRepository
+	WebhookRepository webhookrepository.WebhookRepository
 }
 
 // New constructs an idle webhook Service. Call Start to launch the
 // worker pool.
 func New(deps Deps) *Service {
 	return &Service{
-		workerPoolSize:   runtime.GOMAXPROCS(0),
-		getStatus:        deps.GetStatus,
-		followers:        deps.Followers,
-		configRepository: deps.ConfigRepository,
+		workerPoolSize:    runtime.GOMAXPROCS(0),
+		getStatus:         deps.GetStatus,
+		followers:         deps.Followers,
+		configRepository:  deps.ConfigRepository,
+		webhookRepository: deps.WebhookRepository,
 	}
 }
 
@@ -72,6 +79,7 @@ func (s *Service) SetDeps(deps Deps) {
 	s.getStatus = deps.GetStatus
 	s.followers = deps.Followers
 	s.configRepository = deps.ConfigRepository
+	s.webhookRepository = deps.WebhookRepository
 }
 
 // Start launches the worker goroutines that drain the queue.
@@ -93,7 +101,7 @@ func (s *Service) worker(workerID int) {
 	for job := range s.queue {
 		log.Debugf("Event %s sent to Webhook %s using worker %d", job.payload.Type, job.webhook.URL, workerID)
 
-		if err := sendWebhook(job); err != nil {
+		if err := s.sendWebhook(job); err != nil {
 			log.Errorf("Event: %s failed to send to webhook: %s Error: %s", job.payload.Type, job.webhook.URL, err)
 		}
 		log.Tracef("Done with Event %s to Webhook %s using worker %d", job.payload.Type, job.webhook.URL, workerID)
@@ -103,7 +111,7 @@ func (s *Service) worker(workerID int) {
 	}
 }
 
-func sendWebhook(job Job) error {
+func (s *Service) sendWebhook(job Job) error {
 	jsonText, err := json.Marshal(job.payload)
 	if err != nil {
 		return err
@@ -125,8 +133,7 @@ func sendWebhook(job Job) error {
 
 	defer resp.Body.Close()
 
-	webhooksRepo := webhookrepository.Get()
-	if err := webhooksRepo.SetWebhookAsUsed(job.webhook); err != nil {
+	if err := s.webhookRepository.SetWebhookAsUsed(job.webhook); err != nil {
 		log.Warnln(err)
 	}
 
