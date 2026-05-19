@@ -9,7 +9,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/utils"
 )
@@ -57,10 +56,8 @@ func (s *Service) userNameChanged(eventData chatClientEvent) {
 		}
 	}
 
-	userRepository := userrepository.Get()
-
 	// Check if the name is not already assigned to a registered user.
-	if available, err := userRepository.IsDisplayNameAvailable(proposedUsername); err != nil {
+	if available, err := s.userRepository.IsDisplayNameAvailable(proposedUsername); err != nil {
 		log.Errorln("error checking if name is available", err)
 		return
 	} else if !available {
@@ -73,7 +70,7 @@ func (s *Service) userNameChanged(eventData chatClientEvent) {
 		return
 	}
 
-	savedUser := userRepository.GetUserByToken(eventData.client.accessToken)
+	savedUser := s.userRepository.GetUserByToken(eventData.client.accessToken)
 	oldName := savedUser.DisplayName
 
 	// Check that the new name is different from old.
@@ -83,7 +80,7 @@ func (s *Service) userNameChanged(eventData chatClientEvent) {
 	}
 
 	// Save the new name
-	if err := userRepository.ChangeUsername(eventData.client.User.ID, proposedUsername); err != nil {
+	if err := s.userRepository.ChangeUsername(eventData.client.User.ID, proposedUsername); err != nil {
 		log.Errorln("error changing username", err)
 	}
 
@@ -116,8 +113,6 @@ func (s *Service) userNameChanged(eventData chatClientEvent) {
 }
 
 func (s *Service) userColorChanged(eventData chatClientEvent) {
-	userRepository := userrepository.Get()
-
 	var receivedEvent events.ColorChangeEvent
 	if err := json.Unmarshal(eventData.data, &receivedEvent); err != nil {
 		log.Errorln("error unmarshalling to ColorChangeEvent", err)
@@ -131,7 +126,7 @@ func (s *Service) userColorChanged(eventData chatClientEvent) {
 	}
 
 	// Save the new color
-	if err := userRepository.ChangeUserColor(eventData.client.User.ID, receivedEvent.NewColor); err != nil {
+	if err := s.userRepository.ChangeUserColor(eventData.client.User.ID, receivedEvent.NewColor); err != nil {
 		log.Errorln("error changing user display color", err)
 	}
 
@@ -141,8 +136,6 @@ func (s *Service) userColorChanged(eventData chatClientEvent) {
 }
 
 func (s *Service) userMessageSent(eventData chatClientEvent) {
-	userRepository := userrepository.Get()
-
 	var event events.UserMessageEvent
 	if err := json.Unmarshal(eventData.data, &event); err != nil {
 		log.Errorln("error unmarshalling to UserMessageEvent", err)
@@ -165,7 +158,7 @@ func (s *Service) userMessageSent(eventData chatClientEvent) {
 		}
 	}
 
-	event.User = userRepository.GetUserByToken(eventData.client.accessToken)
+	event.User = s.userRepository.GetUserByToken(eventData.client.accessToken)
 
 	// Guard against nil users
 	if event.User == nil {

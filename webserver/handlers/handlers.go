@@ -5,6 +5,7 @@ import (
 
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/cache"
@@ -35,6 +36,7 @@ type Handlers struct {
 	configRepository      configrepository.ConfigRepository
 	followersRepository   followersrepository.FollowersRepository
 	chatMessageRepository chatmessagerepository.ChatMessageRepository
+	userRepository        userrepository.UserRepository
 }
 
 // Deps lists every service a *Handlers consumes. New deps appear here as
@@ -51,6 +53,7 @@ type Deps struct {
 	ConfigRepository      configrepository.ConfigRepository
 	FollowersRepository   followersrepository.FollowersRepository
 	ChatMessageRepository chatmessagerepository.ChatMessageRepository
+	UserRepository        userrepository.UserRepository
 }
 
 // HandleWebsocketConnection routes the /ws websocket upgrade to the
@@ -74,5 +77,6 @@ func NewHandlers(deps Deps) *Handlers {
 		configRepository:      deps.ConfigRepository,
 		followersRepository:   deps.FollowersRepository,
 		chatMessageRepository: deps.ChatMessageRepository,
+		userRepository:        deps.UserRepository,
 	}
 }

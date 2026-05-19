@@ -60,6 +60,11 @@ type Service struct {
 	// events and answers history + moderation visibility queries.
 	chatMessageRepository chatmessagerepository.ChatMessageRepository
 
+	// userRepository provides access to user records (lookups by ID/token,
+	// display-name availability checks, color/name updates) consulted
+	// throughout the chat message lifecycle.
+	userRepository userrepository.UserRepository
+
 	// chatMessagesSentCounter is the Prometheus counter incremented on
 	// each accepted inbound message.
 	chatMessagesSentCounter prometheus.Gauge
@@ -267,10 +272,8 @@ func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	userRepository := userrepository.Get()
-
 	// A user is required to use the websocket
-	user := userRepository.GetUserByToken(accessToken)
+	user := s.userRepository.GetUserByToken(accessToken)
 
 	if user == nil {
 		// Send error that registration is required
@@ -366,10 +369,8 @@ func (s *Service) SendConnectedClientInfoToUser(userID string) error {
 		return err
 	}
 
-	userRepository := userrepository.Get()
-
 	// Get an updated reference to the user.
-	user := userRepository.GetUserByID(userID)
+	user := s.userRepository.GetUserByID(userID)
 	if user == nil {
 		return fmt.Errorf("user not found")
 	}

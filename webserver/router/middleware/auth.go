@@ -8,7 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -81,8 +80,6 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 			return
 		}
 
-		userRepository := userrepository.Get()
-
 		integration, err := userRepository.GetExternalAPIUserForAccessTokenAndScope(token, scope)
 		if integration == nil || err != nil {
 			accessDenied(w)
@@ -120,8 +117,6 @@ func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc
 			log.Errorln("error determining if IP address is blocked: ", err)
 		}
 
-		userRepository := userrepository.Get()
-
 		// A user is required to use the websocket
 		user := userRepository.GetUserByToken(accessToken)
 		if user == nil || !user.IsEnabled() {
@@ -142,8 +137,6 @@ func RequireUserModerationScopeAccesstoken(handler http.HandlerFunc) http.Handle
 			accessDenied(w)
 			return
 		}
-
-		userRepository := userrepository.Get()
 
 		// A user is required to use the websocket
 		user := userRepository.GetUserByToken(accessToken)

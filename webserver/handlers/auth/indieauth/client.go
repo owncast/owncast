@@ -17,17 +17,22 @@ import (
 
 // Handler bundles the dependencies the IndieAuth handlers need.
 type Handler struct {
-	chat *chat.Service
+	chat           *chat.Service
+	userRepository userrepository.UserRepository
 }
 
 // Deps lists the dependencies of the IndieAuth Handler.
 type Deps struct {
-	Chat *chat.Service
+	Chat           *chat.Service
+	UserRepository userrepository.UserRepository
 }
 
 // New constructs the Handler.
 func New(deps Deps) *Handler {
-	return &Handler{chat: deps.Chat}
+	return &Handler{
+		chat:           deps.Chat,
+		userRepository: deps.UserRepository,
+	}
 }
 
 // StartAuthFlow will begin the IndieAuth flow for the current user.
@@ -79,17 +84,15 @@ func (h *Handler) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepository := userrepository.Get()
-
 	// Check if a user with this auth already exists, if so, log them in.
-	if u := userRepository.GetUserByAuth(response.Me, models.IndieAuth); u != nil {
+	if u := h.userRepository.GetUserByAuth(response.Me, models.IndieAuth); u != nil {
 		// Handle existing auth.
 		log.Debugln("user with provided indieauth already exists, logging them in")
 
 		// Update the current user's access token to point to the existing user id.
 		accessToken := request.CurrentAccessToken
 		userID := u.ID
-		if err := userRepository.SetAccessTokenToOwner(accessToken, userID); err != nil {
+		if err := h.userRepository.SetAccessTokenToOwner(accessToken, userID); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
@@ -108,14 +111,14 @@ func (h *Handler) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 
 	// Otherwise, save this as new auth.
 	log.Debug("indieauth token does not already exist, saving it as a new one for the current user")
-	if err := userRepository.AddAuth(request.UserID, response.Me, models.IndieAuth); err != nil {
+	if err := h.userRepository.AddAuth(request.UserID, response.Me, models.IndieAuth); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	// Update the current user's authenticated flag so we can show it in
 	// the chat UI.
-	if err := userRepository.SetUserAsAuthenticated(request.UserID); err != nil {
+	if err := h.userRepository.SetUserAsAuthenticated(request.UserID); err != nil {
 		log.Errorln(err)
 	}
 

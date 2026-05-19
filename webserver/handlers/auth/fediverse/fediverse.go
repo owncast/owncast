@@ -25,6 +25,7 @@ type Handler struct {
 	activitypub      *activitypub.Service
 	chat             *chat.Service
 	configRepository configrepository.ConfigRepository
+	userRepository   userrepository.UserRepository
 }
 
 // Deps lists the dependencies of the fediverse auth Handler.
@@ -32,6 +33,7 @@ type Deps struct {
 	Activitypub      *activitypub.Service
 	Chat             *chat.Service
 	ConfigRepository configrepository.ConfigRepository
+	UserRepository   userrepository.UserRepository
 }
 
 // New constructs the Handler.
@@ -40,6 +42,7 @@ func New(deps Deps) *Handler {
 		activitypub:      deps.Activitypub,
 		chat:             deps.Chat,
 		configRepository: deps.ConfigRepository,
+		userRepository:   deps.UserRepository,
 	}
 }
 
@@ -98,16 +101,14 @@ func (h *Handler) VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	userRepository := userrepository.Get()
-
 	// Check if a user with this auth already exists, if so, log them in.
-	if u := userRepository.GetUserByAuth(authRegistration.Account, models.Fediverse); u != nil {
+	if u := h.userRepository.GetUserByAuth(authRegistration.Account, models.Fediverse); u != nil {
 		// Handle existing auth.
 		log.Debugln("user with provided fedvierse identity already exists, logging them in")
 
 		// Update the current user's access token to point to the existing user id.
 		userID := u.ID
-		if err := userRepository.SetAccessTokenToOwner(accessToken, userID); err != nil {
+		if err := h.userRepository.SetAccessTokenToOwner(accessToken, userID); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
@@ -126,14 +127,14 @@ func (h *Handler) VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Reque
 
 	// Otherwise, save this as new auth.
 	log.Debug("fediverse account does not already exist, saving it as a new one for the current user")
-	if err := userRepository.AddAuth(authRegistration.UserID, authRegistration.Account, models.Fediverse); err != nil {
+	if err := h.userRepository.AddAuth(authRegistration.UserID, authRegistration.Account, models.Fediverse); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	// Update the current user's authenticated flag so we can show it in
 	// the chat UI.
-	if err := userRepository.SetUserAsAuthenticated(authRegistration.UserID); err != nil {
+	if err := h.userRepository.SetUserAsAuthenticated(authRegistration.UserID); err != nil {
 		log.Errorln(err)
 	}
 

@@ -12,7 +12,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
@@ -142,9 +141,7 @@ func (a *Admin) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *Admin) updateUserStatus(request generated.UpdateUserEnabledJSONBody) error {
-	userRepository := userrepository.Get()
-
-	if err := userRepository.SetEnabled(*request.UserId, *request.Enabled); err != nil {
+	if err := a.userRepository.SetEnabled(*request.UserId, *request.Enabled); err != nil {
 		log.Errorln("error changing user enabled status", err)
 		return err
 	}
@@ -175,8 +172,7 @@ func (a *Admin) handleUserDisabling(userID string) error {
 	}
 
 	a.chat.DisconnectClients(clients)
-	userRepository := userrepository.Get()
-	disconnectedUser := userRepository.GetUserByID(userID)
+	disconnectedUser := a.userRepository.GetUserByID(userID)
 	_ = a.chat.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
 
 	localIP4Address := "127.0.0.1"
@@ -195,12 +191,10 @@ func (a *Admin) handleUserDisabling(userID string) error {
 }
 
 // GetDisabledUsers will return all the disabled users.
-func GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	userRepository := userrepository.Get()
-
-	users := userRepository.GetDisabledUsers()
+	users := a.userRepository.GetDisabledUsers()
 	webutils.WriteResponse(w, users)
 }
 
@@ -219,10 +213,8 @@ func (a *Admin) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepository := userrepository.Get()
-
 	// Update the user object with new moderation access.
-	if err := userRepository.SetModerator(*req.UserId, *req.IsModerator); err != nil {
+	if err := a.userRepository.SetModerator(*req.UserId, *req.IsModerator); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -236,12 +228,10 @@ func (a *Admin) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetModerators will return a list of moderator users.
-func GetModerators(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) GetModerators(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	userRepository := userrepository.Get()
-
-	users := userRepository.GetModeratorUsers()
+	users := a.userRepository.GetModeratorUsers()
 	webutils.WriteResponse(w, users)
 }
 

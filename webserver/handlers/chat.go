@@ -8,7 +8,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
@@ -49,8 +48,6 @@ func (h *Handlers) getChatMessages(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 
-	userRepository := userrepository.Get()
-
 	if r.Method == http.MethodOptions {
 		// All OPTIONS requests should have a wildcard CORS header.
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -85,7 +82,7 @@ func (h *Handlers) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Requ
 	}
 
 	proposedNewDisplayName = utils.MakeSafeStringOfLength(proposedNewDisplayName, config.MaxChatDisplayNameLength)
-	newUser, accessToken, err := userRepository.CreateAnonymousUser(proposedNewDisplayName)
+	newUser, accessToken, err := h.userRepository.CreateAnonymousUser(proposedNewDisplayName)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return

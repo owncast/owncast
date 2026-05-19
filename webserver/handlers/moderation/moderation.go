@@ -20,12 +20,14 @@ import (
 type Handler struct {
 	chat                  *chat.Service
 	chatMessageRepository chatmessagerepository.ChatMessageRepository
+	userRepository        userrepository.UserRepository
 }
 
 // Deps lists the dependencies of the moderation Handler.
 type Deps struct {
 	Chat                  *chat.Service
 	ChatMessageRepository chatmessagerepository.ChatMessageRepository
+	UserRepository        userrepository.UserRepository
 }
 
 // New constructs the Handler.
@@ -33,6 +35,7 @@ func New(deps Deps) *Handler {
 	return &Handler{
 		chat:                  deps.Chat,
 		chatMessageRepository: deps.ChatMessageRepository,
+		userRepository:        deps.UserRepository,
 	}
 }
 
@@ -55,9 +58,7 @@ func (h *Handler) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	pathComponents := strings.Split(r.URL.Path, "/")
 	uid := pathComponents[len(pathComponents)-1]
 
-	userRepository := userrepository.Get()
-
-	u := userRepository.GetUserByID(uid)
+	u := h.userRepository.GetUserByID(uid)
 
 	if u == nil {
 		w.WriteHeader(http.StatusNotFound)

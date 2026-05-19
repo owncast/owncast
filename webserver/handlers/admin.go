@@ -88,12 +88,12 @@ func (s *ServerInterfaceImpl) UpdateUserEnabledAdminOptions(w http.ResponseWrite
 	middleware.RequireAdminAuth(s.h.admin.UpdateUserEnabled)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetDisabledUsers)(w, r)
+func (s *ServerInterfaceImpl) GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetDisabledUsers)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetDisabledUsersOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetDisabledUsers)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.GetDisabledUsers)(w, r)
 }
 
 func (s *ServerInterfaceImpl) BanIPAddress(w http.ResponseWriter, r *http.Request) {
@@ -128,12 +128,12 @@ func (s *ServerInterfaceImpl) UpdateUserModeratorOptions(w http.ResponseWriter, 
 	middleware.RequireAdminAuth(s.h.admin.UpdateUserModerator)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetModerators(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetModerators)(w, r)
+func (s *ServerInterfaceImpl) GetModerators(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetModerators)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetModeratorsOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetModerators)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.GetModerators)(w, r)
 }
 
 func (*ServerInterfaceImpl) GetLogs(w http.ResponseWriter, r *http.Request) {
@@ -224,28 +224,28 @@ func (s *ServerInterfaceImpl) CreateWebhookOptions(w http.ResponseWriter, r *htt
 	middleware.RequireAdminAuth(s.h.admin.CreateWebhook)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetExternalAPIUsers)(w, r)
+func (s *ServerInterfaceImpl) GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetExternalAPIUsers)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetExternalAPIUsersOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetExternalAPIUsers)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.GetExternalAPIUsers)(w, r)
 }
 
-func (*ServerInterfaceImpl) DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.DeleteExternalAPIUser)(w, r)
+func (s *ServerInterfaceImpl) DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.DeleteExternalAPIUser)(w, r)
 }
 
 func (s *ServerInterfaceImpl) DeleteExternalAPIUserOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.DeleteExternalAPIUser)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.DeleteExternalAPIUser)(w, r)
 }
 
-func (*ServerInterfaceImpl) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.CreateExternalAPIUser)(w, r)
+func (s *ServerInterfaceImpl) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.CreateExternalAPIUser)(w, r)
 }
 
 func (s *ServerInterfaceImpl) CreateExternalAPIUserOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.CreateExternalAPIUser)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.CreateExternalAPIUser)(w, r)
 }
 
 func (s *ServerInterfaceImpl) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {

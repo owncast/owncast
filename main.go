@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
+	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 
 	"github.com/owncast/owncast/config"
@@ -132,6 +133,7 @@ func main() {
 	followersRepository := followersrepository.New(datastore.GetDatastore())
 	webhookRepository := webhookrepository.New(datastore.GetDatastore())
 	chatMessageRepository := chatmessagerepository.New(datastore.GetDatastore())
+	userRepository := userrepository.New(datastore.GetDatastore())
 
 	handleCommandLineFlags(configRepository)
 
@@ -149,9 +151,11 @@ func main() {
 	apresolvers.SetConfigRepository(configRepository)
 	chatevents.SetConfigRepository(configRepository)
 	metrics.SetConfigRepository(configRepository)
+	metrics.SetUserRepository(userRepository)
 	yp.SetConfigRepository(configRepository)
 	middleware.SetConfigRepository(configRepository)
 	middleware.SetAuthRepository(authRepository)
+	middleware.SetUserRepository(userRepository)
 	indieauthlib.SetConfigRepository(configRepository)
 	notificationsrepository.SetConfigRepository(configRepository)
 	metrics.SetChatMessageRepository(chatMessageRepository)
@@ -180,6 +184,7 @@ func main() {
 		ConfigRepository:      configRepository,
 		AuthRepository:        authRepository,
 		ChatMessageRepository: chatMessageRepository,
+		UserRepository:        userRepository,
 	})
 
 	apSvc := activitypub.New(activitypub.Deps{
@@ -230,21 +235,25 @@ func main() {
 		FollowersRepository:   followersRepository,
 		WebhookRepository:     webhookRepository,
 		ChatMessageRepository: chatMessageRepository,
+		UserRepository:        userRepository,
 	})
 
 	fediverseHandler := fediverse.New(fediverse.Deps{
 		Activitypub:      apSvc,
 		Chat:             chatSvc,
 		ConfigRepository: configRepository,
+		UserRepository:   userRepository,
 	})
 
 	indieauthHandler := indieauth.New(indieauth.Deps{
-		Chat: chatSvc,
+		Chat:           chatSvc,
+		UserRepository: userRepository,
 	})
 
 	moderationHandler := moderation.New(moderation.Deps{
 		Chat:                  chatSvc,
 		ChatMessageRepository: chatMessageRepository,
+		UserRepository:        userRepository,
 	})
 
 	h := handlers.NewHandlers(handlers.Deps{
@@ -259,6 +268,7 @@ func main() {
 		ConfigRepository:      configRepository,
 		FollowersRepository:   followersRepository,
 		ChatMessageRepository: chatMessageRepository,
+		UserRepository:        userRepository,
 	})
 
 	if err := router.Start(*enableVerboseLogging, h, apSvc.Controllers()); err != nil {

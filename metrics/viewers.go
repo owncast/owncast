@@ -5,8 +5,6 @@ import (
 
 	"github.com/nakabonne/tstorage"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/owncast/owncast/persistence/userrepository"
 )
 
 var storage tstorage.Storage
@@ -60,7 +58,6 @@ func collectChatClientCount() {
 	currentChatMessageCount.Set(float64(cmc))
 
 	// Total user count
-	userRepository := userrepository.Get()
 	uc := userRepository.GetUsersCount()
 	// Insert user count into Prometheus collector.
 	chatUserCount.Set(float64(uc))
