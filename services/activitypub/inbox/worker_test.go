@@ -6,11 +6,11 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 func makeFakePerson() vocab.ActivityStreamsPerson {
@@ -55,10 +55,10 @@ func makeFakePerson() vocab.ActivityStreamsPerson {
 var testService *Service
 
 func TestMain(m *testing.M) {
-	data.SetupPersistence(":memory:")
+	datastore.SetupPersistence(":memory:")
 	configRepository := configrepository.Get()
 	configRepository.SetServerURL("https://my.cool.site.biz")
-	ds := data.GetDatastore()
+	ds := datastore.GetDatastore()
 	persistenceSvc := persistence.New(ds)
 	testService = New(Deps{
 		Persistence: persistenceSvc,

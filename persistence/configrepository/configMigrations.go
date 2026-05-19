@@ -3,7 +3,7 @@ package configrepository
 import (
 	"strings"
 
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	log "github.com/sirupsen/logrus"
 )
@@ -13,7 +13,7 @@ const (
 	datastoreValueVersionKey = "DATA_STORE_VERSION"
 )
 
-func migrateDatastoreValues(datastore *data.Datastore, configRepository ConfigRepository) {
+func migrateDatastoreValues(datastore *datastore.Datastore, configRepository ConfigRepository) {
 	currentVersion, _ := datastore.GetNumber(datastoreValueVersionKey)
 	if currentVersion == 0 {
 		currentVersion = datastoreValuesVersion
@@ -39,7 +39,7 @@ func migrateDatastoreValues(datastore *data.Datastore, configRepository ConfigRe
 	}
 }
 
-func migrateToDatastoreValues1(datastore *data.Datastore) {
+func migrateToDatastoreValues1(datastore *datastore.Datastore) {
 	// Migrate the forbidden usernames to be a slice instead of a string.
 	forbiddenUsernamesString, _ := datastore.GetString(blockedUsernamesKey)
 	if forbiddenUsernamesString != "" {
@@ -59,7 +59,7 @@ func migrateToDatastoreValues1(datastore *data.Datastore) {
 	}
 }
 
-func migrateToDatastoreValues2(datastore *data.Datastore, configRepository ConfigRepository) {
+func migrateToDatastoreValues2(datastore *datastore.Datastore, configRepository ConfigRepository) {
 	oldAdminPassword, _ := datastore.GetString("stream_key")
 	// Avoids double hashing the password
 	_ = datastore.SetString("admin_password_key", oldAdminPassword)
@@ -79,7 +79,7 @@ func migrateToDatastoreValues3ServingEndpoint3(configRepository ConfigRepository
 	_ = configRepository.SetVideoServingEndpoint(s3Config.ServingEndpoint)
 }
 
-func migrateToDatastoreValues4(datastore *data.Datastore, configRepository ConfigRepository) {
+func migrateToDatastoreValues4(datastore *datastore.Datastore, configRepository ConfigRepository) {
 	unhashed_pass, _ := datastore.GetString("admin_password_key")
 	err := configRepository.SetAdminPassword(unhashed_pass)
 	if err != nil {

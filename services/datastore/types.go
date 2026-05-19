@@ -1,4 +1,4 @@
-package data
+package datastore
 
 import "github.com/owncast/owncast/models"
 

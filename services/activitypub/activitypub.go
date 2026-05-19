@@ -8,7 +8,6 @@ package activitypub
 import (
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/controllers"
@@ -20,6 +19,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/webhooks"
 )
 
@@ -39,7 +39,7 @@ type Service struct {
 // Deps lists the explicit construction inputs for the federation
 // subsystem.
 type Deps struct {
-	Datastore *data.Datastore
+	Datastore *datastore.Datastore
 	Webhooks  *webhooks.Service
 	Chat      *chat.Service
 }

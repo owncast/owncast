@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/chat/events"
+	"github.com/owncast/owncast/services/datastore"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -29,7 +29,7 @@ type ChatMessageRepository interface {
 }
 
 type SqlChatMessageRepository struct {
-	datastore *data.Datastore
+	datastore *datastore.Datastore
 }
 
 // NOTE: This is temporary during the transition period.
@@ -38,14 +38,14 @@ var temporaryGlobalInstance ChatMessageRepository
 // Get will return the user repository.
 func Get() ChatMessageRepository {
 	if temporaryGlobalInstance == nil {
-		i := New(data.GetDatastore())
+		i := New(datastore.GetDatastore())
 		temporaryGlobalInstance = i
 	}
 	return temporaryGlobalInstance
 }
 
 // New will create a new instance of the UserRepository.
-func New(datastore *data.Datastore) ChatMessageRepository {
+func New(datastore *datastore.Datastore) ChatMessageRepository {
 	r := SqlChatMessageRepository{
 		datastore: datastore,
 	}

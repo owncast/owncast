@@ -11,9 +11,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 func TestMain(m *testing.M) {
@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 	}
 	dbFile.Close()
 
-	if err := data.SetupPersistence(dbFile.Name()); err != nil {
+	if err := datastore.SetupPersistence(dbFile.Name()); err != nil {
 		panic(err)
 	}
 

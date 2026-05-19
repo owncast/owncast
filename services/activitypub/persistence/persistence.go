@@ -16,21 +16,21 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/activitypub/resolvers"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 // Service owns the ActivityPub persistence operations.
 type Service struct {
-	datastore *data.Datastore
+	datastore *datastore.Datastore
 }
 
 // New constructs a persistence Service bound to the given datastore.
 // Side effect: loads followers fixture data (no-op in the default build
 // tag; populated when the `fixture` build tag is set).
-func New(datastore *data.Datastore) *Service {
+func New(datastore *datastore.Datastore) *Service {
 	s := &Service{datastore: datastore}
 	s.addFollowersFixtureData()
 	return s
@@ -38,7 +38,7 @@ func New(datastore *data.Datastore) *Service {
 
 // Datastore returns the underlying datastore. Provided so sub-services
 // (followers repository, etc.) can be constructed from the same handle.
-func (s *Service) Datastore() *data.Datastore {
+func (s *Service) Datastore() *datastore.Datastore {
 	return s.datastore
 }
 

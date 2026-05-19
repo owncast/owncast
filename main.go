@@ -13,11 +13,11 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/cache"
 	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
@@ -68,7 +68,7 @@ func main() {
 	utils.MigrateCustomEmojiLocations()
 
 	// Otherwise save the default emoji to the data directory.
-	if err := data.SetupEmojiDirectory(); err != nil {
+	if err := datastore.SetupEmojiDirectory(); err != nil {
 		log.Fatalln("Cannot set up emoji directory", err)
 	}
 
@@ -107,7 +107,7 @@ func main() {
 		config.DatabaseFilePath = *dbFile
 	}
 
-	if err := data.SetupPersistence(config.DatabaseFilePath); err != nil {
+	if err := datastore.SetupPersistence(config.DatabaseFilePath); err != nil {
 		log.Fatalln("failed to open database", err)
 	}
 
@@ -143,7 +143,7 @@ func main() {
 	})
 
 	apSvc := activitypub.New(activitypub.Deps{
-		Datastore: data.GetDatastore(),
+		Datastore: datastore.GetDatastore(),
 		Webhooks:  webhooksSvc,
 		Chat:      chatSvc,
 	})

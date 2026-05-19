@@ -3,13 +3,13 @@ package notificationsrepository
 import (
 	"testing"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 var (
-	integrationTestDatastore *data.Datastore
+	integrationTestDatastore *datastore.Datastore
 	integrationRepo          NotificationsRepository
 )
 
@@ -26,7 +26,7 @@ func TestIntegrationSetup(t *testing.T) {
 	// This test ensures integration setup works properly
 	// The actual setup is done in the init function below
 	if integrationTestDatastore == nil {
-		integrationTestDatastore = data.GetDatastore()
+		integrationTestDatastore = datastore.GetDatastore()
 		Setup()
 		integrationRepo = New(integrationTestDatastore)
 	}

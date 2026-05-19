@@ -3,17 +3,17 @@ package chat
 import (
 	"time"
 
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/services/datastore"
 )
 
-var _datastore *data.Datastore
+var _datastore *datastore.Datastore
 
 const (
 	maxBacklogHours = 2 // Keep backlog max hours worth of messages
 )
 
 func setupPersistence() {
-	_datastore = data.GetDatastore()
+	_datastore = datastore.GetDatastore()
 
 	chatDataPruner := time.NewTicker(5 * time.Minute)
 	go func() {

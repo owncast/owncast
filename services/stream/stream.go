@@ -11,10 +11,10 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
@@ -299,7 +299,7 @@ func (s *Service) startLiveStreamNotificationsTimer() context.CancelFunc {
 			}
 
 			// Send notification to those who have registered for them.
-			if notificationService, err := notifications.New(data.GetDatastore()); err != nil {
+			if notificationService, err := notifications.New(datastore.GetDatastore()); err != nil {
 				log.Errorln(err)
 			} else {
 				notificationService.Notify()

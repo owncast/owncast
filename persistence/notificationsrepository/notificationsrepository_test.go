@@ -4,22 +4,22 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 var (
-	testDatastore *data.Datastore
+	testDatastore *datastore.Datastore
 	testRepo      NotificationsRepository
 )
 
 func TestMain(m *testing.M) {
 	// Create an in-memory database for testing
-	if err := data.SetupPersistence(":memory:"); err != nil {
+	if err := datastore.SetupPersistence(":memory:"); err != nil {
 		panic(err)
 	}
 
 	// Get the shared datastore instance
-	testDatastore = data.GetDatastore()
+	testDatastore = datastore.GetDatastore()
 
 	// Setup the notifications repository
 	Setup()

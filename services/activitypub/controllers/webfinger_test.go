@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 // testControllers is the *Controllers used by tests in this package.
@@ -24,7 +24,7 @@ func TestMain(m *testing.M) {
 	}
 	defer os.Remove(dbFile.Name())
 
-	if err := data.SetupPersistence(dbFile.Name()); err != nil {
+	if err := datastore.SetupPersistence(dbFile.Name()); err != nil {
 		panic(err)
 	}
 

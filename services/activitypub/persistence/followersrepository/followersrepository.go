@@ -12,10 +12,10 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -55,7 +55,7 @@ type FollowersRepository interface {
 
 // SqlFollowersRepository is the SQL-based implementation of FollowersRepository.
 type SqlFollowersRepository struct {
-	datastore *data.Datastore
+	datastore *datastore.Datastore
 }
 
 // NOTE: This is temporary during the transition period.
@@ -64,14 +64,14 @@ var temporaryGlobalInstance FollowersRepository
 // Get returns the followers repository singleton.
 func Get() FollowersRepository {
 	if temporaryGlobalInstance == nil {
-		i := New(data.GetDatastore())
+		i := New(datastore.GetDatastore())
 		temporaryGlobalInstance = i
 	}
 	return temporaryGlobalInstance
 }
 
 // New creates a new instance of the FollowersRepository.
-func New(datastore *data.Datastore) FollowersRepository {
+func New(datastore *datastore.Datastore) FollowersRepository {
 	r := SqlFollowersRepository{
 		datastore: datastore,
 	}

@@ -10,8 +10,8 @@ import (
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 func makeFakeService() vocab.ActivityStreamsService {
@@ -60,7 +60,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	data.SetupPersistence(dbFile.Name())
+	datastore.SetupPersistence(dbFile.Name())
 
 	configRepository := configrepository.Get()
 

@@ -19,9 +19,10 @@ import (
 	"github.com/yuin/goldmark/util"
 	"mvdan.cc/xurls/v2"
 
-	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 // EventPayload is a generic key/value map for sending out to chat clients.
@@ -142,7 +143,7 @@ var (
 )
 
 func loadEmoji() {
-	modTime, err := data.UpdateEmojiList(false)
+	modTime, err := datastore.UpdateEmojiList(false)
 	if err != nil {
 		return
 	}
@@ -153,7 +154,7 @@ func loadEmoji() {
 
 		emojiHTML = make(map[string]string)
 
-		emojiList := data.GetEmojiList()
+		emojiList := datastore.GetEmojiList()
 		emojiArr := make([]emojiDef.Emoji, 0)
 
 		for i := 0; i < len(emojiList); i++ {

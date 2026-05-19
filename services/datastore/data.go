@@ -1,8 +1,11 @@
-// This is a centralized place to connect to the database, and hold a reference to it.
-// Other packages can share this reference.  This package would also be a place to add any kind of
-// persistence-related convenience methods or migrations.
-
-package data
+// Package datastore is the database root for the rest of the
+// application. SetupPersistence opens the SQLite file and exposes the
+// resulting *Datastore via the package-level GetDatastore() accessor —
+// kept as a singleton during the migration window because the
+// persistence/*repository.Get() shims still rely on it. The
+// persistence-repo sweep is what finally retires GetDatastore() and
+// threads *Datastore through main.go as a constructor injection.
+package datastore
 
 import (
 	"database/sql"

@@ -4,14 +4,15 @@ import (
 	"context"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/datastore"
 
-	"github.com/owncast/owncast/notifications/browser"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/notifications/browser"
 )
 
 type NotificationsRepository interface {
@@ -22,7 +23,7 @@ type NotificationsRepository interface {
 
 // SqlNotificationsRepository handles database operations for notifications.
 type SqlNotificationsRepository struct {
-	datastore *data.Datastore
+	datastore *datastore.Datastore
 }
 
 // NOTE: This is temporary during the transition period.
@@ -31,7 +32,7 @@ var temporaryGlobalInstance NotificationsRepository
 // Get will return the notifications repository.
 func Get() NotificationsRepository {
 	if temporaryGlobalInstance == nil {
-		i := New(data.GetDatastore())
+		i := New(datastore.GetDatastore())
 		temporaryGlobalInstance = i
 	}
 	return temporaryGlobalInstance
@@ -73,7 +74,7 @@ func initializeBrowserPushIfNeeded() {
 }
 
 // New creates a new instance of the NotificationsRepository.
-func New(datastore *data.Datastore) NotificationsRepository {
+func New(datastore *datastore.Datastore) NotificationsRepository {
 	return &SqlNotificationsRepository{
 		datastore: datastore,
 	}

@@ -8,9 +8,9 @@ import (
 
 	"github.com/go-fed/activity/streams"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-var datastore *data.Datastore
+var testDatastore *datastore.Datastore
 
 func setup() {
 	resetTestDatabase()
@@ -28,15 +28,15 @@ func setup() {
 
 // resetTestDatabase initializes a fresh in-memory database for testing.
 func resetTestDatabase() {
-	data.SetupPersistence(":memory:")
-	datastore = data.GetDatastore()
+	datastore.SetupPersistence(":memory:")
+	testDatastore = datastore.GetDatastore()
 }
 
 // setupTestWithRepo resets the database and returns a new repository instance.
 func setupTestWithRepo(t *testing.T) followersrepository.FollowersRepository {
 	t.Helper()
 	resetTestDatabase()
-	return followersrepository.New(datastore)
+	return followersrepository.New(testDatastore)
 }
 
 func createTestFollower(repo followersrepository.FollowersRepository, iri, inbox, name, username string) {
@@ -214,7 +214,7 @@ func TestFailureDurationThresholdLogic(t *testing.T) {
 
 	// Set first_validation_failure_at to 8 days ago (past threshold)
 	eightDaysAgo := time.Now().Add(-8 * 24 * time.Hour)
-	_, err := datastore.DB.Exec(
+	_, err := testDatastore.DB.Exec(
 		"UPDATE ap_followers SET first_validation_failure_at = ? WHERE iri = ?",
 		eightDaysAgo, testIRI,
 	)
@@ -263,7 +263,7 @@ func TestFailureNotRemovedBeforeThreshold(t *testing.T) {
 
 	// Set first_validation_failure_at to 1 day ago (not past threshold)
 	oneDayAgo := time.Now().Add(-1 * 24 * time.Hour)
-	_, err := datastore.DB.Exec(
+	_, err := testDatastore.DB.Exec(
 		"UPDATE ap_followers SET first_validation_failure_at = ? WHERE iri = ?",
 		oneDayAgo, testIRI,
 	)
@@ -311,12 +311,12 @@ func TestFollowersOrderedByOldestValidatedFirst(t *testing.T) {
 
 	// Set different last_validated_at times
 	now := time.Now()
-	_, err := datastore.DB.Exec("UPDATE ap_followers SET last_validated_at = ? WHERE iri = ?",
+	_, err := testDatastore.DB.Exec("UPDATE ap_followers SET last_validated_at = ? WHERE iri = ?",
 		now.Add(-3*time.Hour), iri1)
 	if err != nil {
 		t.Fatalf("Error updating: %s", err)
 	}
-	_, err = datastore.DB.Exec("UPDATE ap_followers SET last_validated_at = ? WHERE iri = ?",
+	_, err = testDatastore.DB.Exec("UPDATE ap_followers SET last_validated_at = ? WHERE iri = ?",
 		now.Add(-1*time.Hour), iri2)
 	if err != nil {
 		t.Fatalf("Error updating: %s", err)

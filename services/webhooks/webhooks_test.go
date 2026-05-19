@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/chat/events"
+	"github.com/owncast/owncast/services/datastore"
 	jsonpatch "gopkg.in/evanphx/json-patch.v5"
 )
 
@@ -44,7 +44,7 @@ func TestMain(m *testing.M) {
 	dbFile.Close()
 	defer os.Remove(dbFile.Name())
 
-	if err := data.SetupPersistence(dbFile.Name()); err != nil {
+	if err := datastore.SetupPersistence(dbFile.Name()); err != nil {
 		panic(err)
 	}
 

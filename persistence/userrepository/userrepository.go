@@ -9,13 +9,14 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
+	"github.com/owncast/owncast/services/datastore"
+
+	"github.com/pkg/errors"
+	"github.com/teris-io/shortid"
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
-	"github.com/pkg/errors"
-	"github.com/teris-io/shortid"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -45,7 +46,7 @@ type UserRepository interface {
 }
 
 type SqlUserRepository struct {
-	datastore *data.Datastore
+	datastore *datastore.Datastore
 }
 
 // NOTE: This is temporary during the transition period.
@@ -54,14 +55,14 @@ var temporaryGlobalInstance UserRepository
 // Get will return the user repository.
 func Get() UserRepository {
 	if temporaryGlobalInstance == nil {
-		i := New(data.GetDatastore())
+		i := New(datastore.GetDatastore())
 		temporaryGlobalInstance = i
 	}
 	return temporaryGlobalInstance
 }
 
 // New will create a new instance of the UserRepository.
-func New(datastore *data.Datastore) UserRepository {
+func New(datastore *datastore.Datastore) UserRepository {
 	r := SqlUserRepository{
 		datastore: datastore,
 	}

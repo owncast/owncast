@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	"github.com/go-fed/activity/streams"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -23,13 +23,13 @@ func TestMain(m *testing.M) {
 // _datastore is the test-local datastore handle. Each setup sets it
 // to a fresh in-memory database; the package no longer maintains a
 // global one.
-var _datastore *data.Datastore
+var _datastore *datastore.Datastore
 
 var followers = []models.Follower{}
 
 func setup() {
-	data.SetupPersistence(":memory:")
-	_datastore = data.GetDatastore()
+	datastore.SetupPersistence(":memory:")
+	_datastore = datastore.GetDatastore()
 
 	followersRepo := followersrepository.New(_datastore)
 
@@ -154,8 +154,8 @@ func createTestFollower(followersRepo followersrepository.FollowersRepository, a
 
 func TestGetUniqueDeliveryInboxes(t *testing.T) {
 	// Set up a fresh database for this test
-	data.SetupPersistence(":memory:")
-	ds := data.GetDatastore()
+	datastore.SetupPersistence(":memory:")
+	ds := datastore.GetDatastore()
 	_datastore = ds
 	followersRepo := followersrepository.New(ds)
 
@@ -251,8 +251,8 @@ func TestGetUniqueDeliveryInboxes(t *testing.T) {
 
 func TestSharedInboxPreferredOverIndividual(t *testing.T) {
 	// Set up a fresh database for this test
-	data.SetupPersistence(":memory:")
-	ds := data.GetDatastore()
+	datastore.SetupPersistence(":memory:")
+	ds := datastore.GetDatastore()
 	_datastore = ds
 	followersRepo := followersrepository.New(ds)
 
@@ -287,8 +287,8 @@ func TestSharedInboxPreferredOverIndividual(t *testing.T) {
 
 func TestIndividualInboxUsedWhenNoSharedInbox(t *testing.T) {
 	// Set up a fresh database for this test
-	data.SetupPersistence(":memory:")
-	ds := data.GetDatastore()
+	datastore.SetupPersistence(":memory:")
+	ds := datastore.GetDatastore()
 	_datastore = ds
 	followersRepo := followersrepository.New(ds)
 
