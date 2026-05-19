@@ -7,6 +7,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/stream"
 )
 
 // How often we poll for updates.
@@ -52,12 +53,14 @@ type CollectedMetrics struct {
 // Metrics is the shared Metrics instance.
 var metrics *CollectedMetrics
 
-var _getStatus func() models.Status
+// streamSvc is the injected stream service used by all metrics
+// collection routines. Set once by Start; do not access before then.
+var streamSvc *stream.Service
 
 // Start will begin the metrics collection and alerting.
-func Start(getStatus func() models.Status) {
+func Start(s *stream.Service) {
 	configRepository := configrepository.Get()
-	_getStatus = getStatus
+	streamSvc = s
 	host := configRepository.GetServerURL()
 	if host == "" {
 		host = "unknown"

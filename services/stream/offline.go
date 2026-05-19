@@ -1,4 +1,4 @@
-package core
+package stream
 
 import (
 	"fmt"
@@ -6,13 +6,14 @@ import (
 	"path/filepath"
 
 	"github.com/grafov/m3u8"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
-func appendOfflineToVariantPlaylist(index int, playlistFilePath string) {
+func (s *Service) appendOfflineToVariantPlaylist(index int, playlistFilePath string) {
 	existingPlaylistContents, err := os.ReadFile(playlistFilePath) // nolint: gosec
 	if err != nil {
 		log.Debugln("unable to read existing playlist file", err)
@@ -48,7 +49,7 @@ func appendOfflineToVariantPlaylist(index int, playlistFilePath string) {
 	}
 }
 
-func makeVariantIndexOffline(index int, offlineFilePath string, offlineFilename string) {
+func (s *Service) makeVariantIndexOffline(index int, offlineFilePath string, offlineFilename string) {
 	playlistFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/stream.m3u8"), index)
 	segmentFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/%s"), index, offlineFilename)
 
@@ -56,16 +57,16 @@ func makeVariantIndexOffline(index int, offlineFilePath string, offlineFilename 
 		log.Warnln(err)
 	}
 
-	if _, err := _storage.Save(segmentFilePath, 0); err != nil {
+	if _, err := s.storage.Save(segmentFilePath, 0); err != nil {
 		log.Warnln(err)
 	}
 
 	if utils.DoesFileExists(playlistFilePath) {
-		appendOfflineToVariantPlaylist(index, playlistFilePath)
+		s.appendOfflineToVariantPlaylist(index, playlistFilePath)
 	} else {
 		createEmptyOfflinePlaylist(playlistFilePath, offlineFilename)
 	}
-	if _, err := _storage.Save(playlistFilePath, 0); err != nil {
+	if _, err := s.storage.Save(playlistFilePath, 0); err != nil {
 		log.Warnln(err)
 	}
 }

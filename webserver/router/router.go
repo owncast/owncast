@@ -50,7 +50,7 @@ func Start(enableVerboseLogging bool, h *handlers.Handlers) error {
 	r.Handle("/public/*", http.StripPrefix("/public/", fs))
 
 	// Return HLS video
-	r.HandleFunc("/hls/*", handlers.HandleHLSRequest)
+	r.HandleFunc("/hls/*", h.HandleHLSRequest)
 
 	// The admin web app.
 	r.HandleFunc("/admin/*", middleware.RequireAdminAuth(h.IndexHandler))
@@ -65,7 +65,7 @@ func Start(enableVerboseLogging bool, h *handlers.Handlers) error {
 	r.HandleFunc("/*", h.IndexHandler)
 
 	// mount the api
-	r.Mount("/api/", handlers.New().Handler())
+	r.Mount("/api/", handlers.New(h).Handler())
 
 	// ActivityPub has its own router
 	activitypub.Start(data.GetDatastore())

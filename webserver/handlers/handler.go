@@ -10,21 +10,31 @@ import (
 	"github.com/owncast/owncast/yp"
 )
 
-type ServerInterfaceImpl struct{}
+// ServerInterfaceImpl is the OpenAPI-generated ServerInterface
+// implementation. It holds the dependency-bearing handler sets and
+// delegates each generated method to either a free function in this
+// package or a method on one of those sets.
+//
+// As more handlers migrate to needing injected services, their
+// delegations here switch from `pkg.X(w, r)` to `s.h.X(w, r)` or
+// `s.h.admin.X(w, r)`.
+type ServerInterfaceImpl struct {
+	h *Handlers
+}
 
 // ensure ServerInterfaceImpl implements ServerInterface.
 var _ generated.ServerInterface = &ServerInterfaceImpl{}
 
-func New() *ServerInterfaceImpl {
-	return &ServerInterfaceImpl{}
+func New(h *Handlers) *ServerInterfaceImpl {
+	return &ServerInterfaceImpl{h: h}
 }
 
 func (s *ServerInterfaceImpl) Handler() http.Handler {
 	return generated.Handler(s)
 }
 
-func (*ServerInterfaceImpl) GetStatus(w http.ResponseWriter, r *http.Request) {
-	GetStatus(w, r)
+func (s *ServerInterfaceImpl) GetStatus(w http.ResponseWriter, r *http.Request) {
+	s.h.GetStatus(w, r)
 }
 
 func (*ServerInterfaceImpl) GetCustomEmojiList(w http.ResponseWriter, r *http.Request) {
@@ -67,8 +77,8 @@ func (*ServerInterfaceImpl) GetVideoStreamOutputVariants(w http.ResponseWriter, 
 	GetVideoStreamOutputVariants(w, r)
 }
 
-func (*ServerInterfaceImpl) Ping(w http.ResponseWriter, r *http.Request) {
-	Ping(w, r)
+func (s *ServerInterfaceImpl) Ping(w http.ResponseWriter, r *http.Request) {
+	s.h.Ping(w, r)
 }
 
 func (*ServerInterfaceImpl) RemoteFollow(w http.ResponseWriter, r *http.Request) {

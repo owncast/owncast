@@ -1,0 +1,316 @@
+package stream
+
+import (
+	"context"
+	"io"
+	"os"
+	"path"
+	"path/filepath"
+	"time"
+
+	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/activitypub"
+	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/chat"
+	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/core/rtmp"
+	"github.com/owncast/owncast/core/transcoder"
+	"github.com/owncast/owncast/core/webhooks"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/persistence/notificationsrepository"
+	"github.com/owncast/owncast/services/notifications"
+	"github.com/owncast/owncast/utils"
+	"github.com/owncast/owncast/yp"
+)
+
+// Start brings up the storage backend, transcoder, RTMP listener, chat,
+// webhooks, and the directory/notification subsystems. Must be called
+// exactly once after New().
+func (s *Service) Start(_ context.Context) error {
+	s.resetDirectories()
+
+	configRepository := configrepository.Get()
+	if err := configRepository.VerifySettings(); err != nil {
+		log.Error(err)
+		return err
+	}
+
+	if err := s.setupStats(); err != nil {
+		log.Error("failed to setup the stats")
+		return err
+	}
+
+	// The HLS handler takes the written HLS playlists and segments and
+	// makes storage decisions. Rather simple right now but will play more
+	// useful when recordings come into play.
+	s.handler = transcoder.HLSHandler{}
+
+	if err := s.setupStorage(); err != nil {
+		log.Errorln("storage error", err)
+	}
+
+	s.fileWriter.SetupFileWriterReceiverService(&s.handler)
+
+	if err := s.createInitialOfflineState(); err != nil {
+		log.Error("failed to create the initial offline state")
+		return err
+	}
+
+	s.yp = yp.NewYP(s.GetStatus)
+
+	if err := chat.Start(s.GetStatus); err != nil {
+		log.Errorln(err)
+	}
+
+	// start the rtmp server
+	go rtmp.Start(s.setStreamAsConnected, s.setBroadcaster)
+
+	rtmpPort := configRepository.GetRTMPPortNumber()
+	if rtmpPort != 1935 {
+		log.Infof("RTMP is accepting inbound streams on port %d.", rtmpPort)
+	}
+
+	webhooks.SetupWebhooks(s.GetStatus)
+
+	notificationsrepository.Setup()
+
+	return nil
+}
+
+// Stop releases anything the service is holding. Currently a no-op
+// because individual goroutines and ffmpeg children are tied to
+// stream-connect/disconnect rather than overall service lifetime, but the
+// hook is here for graceful-shutdown plumbing later: process exit
+// reclaims the goroutines and ffmpeg child today; future work cancels
+// onlineTimerCancelFunc, stops tickers, and closes the transcoder
+// cleanly.
+func (s *Service) Stop(_ context.Context) {
+}
+
+func (s *Service) createInitialOfflineState() error {
+	s.transitionToOfflineVideoStreamContent()
+	return nil
+}
+
+// transitionToOfflineVideoStreamContent overwrites the current stream
+// with the offline video stream state only. No live stream HLS segments
+// will continue to be referenced.
+func (s *Service) transitionToOfflineVideoStreamContent() {
+	log.Traceln("Firing transcoder with offline stream state")
+
+	offlineTranscoder := transcoder.NewTranscoder()
+	offlineTranscoder.SetIdentifier("offline")
+	offlineTranscoder.SetLatencyLevel(models.GetLatencyLevel(4))
+	offlineTranscoder.SetIsEvent(true)
+
+	offlineFilePath, err := saveOfflineClipToDisk("offline-v2.ts")
+	if err != nil {
+		log.Fatalln("unable to save offline clip:", err)
+	}
+
+	offlineTranscoder.SetInput(offlineFilePath)
+	go offlineTranscoder.Start(false)
+
+	// Copy the logo to be the thumbnail
+	configRepository := configrepository.Get()
+	logo := configRepository.GetLogoPath()
+	dst := filepath.Join(config.TempDir, "thumbnail.jpg")
+	if err = utils.Copy(filepath.Join("data", logo), dst); err != nil {
+		log.Warnln(err)
+	}
+
+	// Delete the preview Gif
+	_ = os.Remove(path.Join(config.DataDirectory, "preview.gif"))
+}
+
+func (s *Service) resetDirectories() {
+	log.Trace("Resetting file directories to a clean slate.")
+
+	// Wipe hls data directory
+	utils.CleanupDirectory(config.HLSStoragePath)
+
+	// Remove the previous thumbnail
+	configRepository := configrepository.Get()
+	logo := configRepository.GetLogoPath()
+	if utils.DoesFileExists(logo) {
+		err := utils.Copy(path.Join("data", logo), filepath.Join(config.DataDirectory, "thumbnail.jpg"))
+		if err != nil {
+			log.Warnln(err)
+		}
+	}
+}
+
+// setStreamAsConnected is the RTMP server's on-connect callback.
+func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
+	now := utils.NullTime{Time: time.Now(), Valid: true}
+	s.stats.StreamConnected = true
+	s.stats.LastDisconnectTime = nil
+	s.stats.LastConnectTime = &now
+	s.stats.SessionMaxViewerCount = 0
+
+	configRepository := configrepository.Get()
+
+	s.currentBroadcast = &models.CurrentBroadcast{
+		LatencyLevel:   configRepository.GetStreamLatencyLevel(),
+		OutputSettings: configRepository.GetStreamOutputVariants(),
+	}
+
+	s.StopOfflineCleanupTimer()
+	s.startOnlineCleanupTimer()
+
+	if s.yp != nil {
+		go s.yp.Start()
+	}
+
+	segmentPath := config.HLSStoragePath
+
+	if err := s.setupStorage(); err != nil {
+		log.Fatalln("failed to setup the storage", err)
+	}
+
+	go func() {
+		s.transcoder = transcoder.NewTranscoder()
+		s.transcoder.TranscoderCompleted = func(error) {
+			s.SetStreamAsDisconnected()
+			s.transcoder = nil
+			s.currentBroadcast = nil
+		}
+		s.transcoder.SetStdin(rtmpOut)
+		s.transcoder.Start(true)
+	}()
+
+	go webhooks.SendStreamStatusEvent(models.StreamStarted)
+	selectedThumbnailVideoQualityIndex, isVideoPassthrough := configRepository.FindHighestVideoQualityIndex(s.currentBroadcast.OutputSettings)
+	transcoder.StartThumbnailGenerator(segmentPath, selectedThumbnailVideoQualityIndex, isVideoPassthrough)
+
+	_ = chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
+	chat.SendAllWelcomeMessage()
+
+	// Send delayed notification messages.
+	s.onlineTimerCancelFunc = s.startLiveStreamNotificationsTimer()
+}
+
+// SetStreamAsDisconnected handles cleanup when a live stream ends.
+func (s *Service) SetStreamAsDisconnected() {
+	_ = chat.SendSystemAction("The stream is ending.", true)
+
+	now := utils.NullTime{Time: time.Now(), Valid: true}
+	if s.onlineTimerCancelFunc != nil {
+		s.onlineTimerCancelFunc()
+	}
+
+	s.stats.StreamConnected = false
+	s.stats.LastDisconnectTime = &now
+	s.stats.LastConnectTime = nil
+	s.broadcaster = nil
+
+	offlineFilename := "offline-v2.ts"
+
+	offlineFilePath, err := saveOfflineClipToDisk(offlineFilename)
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
+
+	transcoder.StopThumbnailGenerator()
+	rtmp.Disconnect()
+
+	if s.yp != nil {
+		s.yp.Stop()
+	}
+
+	// If there is no current broadcast available the previous stream
+	// likely failed for some reason. Don't try to append to it. Just
+	// transition to offline.
+	if s.currentBroadcast == nil {
+		s.stopOnlineCleanupTimer()
+		s.transitionToOfflineVideoStreamContent()
+		log.Errorln("unexpected nil currentBroadcast")
+		return
+	}
+
+	for index := range s.currentBroadcast.OutputSettings {
+		s.makeVariantIndexOffline(index, offlineFilePath, offlineFilename)
+	}
+
+	s.StartOfflineCleanupTimer()
+	s.stopOnlineCleanupTimer()
+	s.saveStats()
+
+	go webhooks.SendStreamStatusEvent(models.StreamStopped)
+}
+
+// StartOfflineCleanupTimer fires a cleanup after n minutes being
+// disconnected.
+func (s *Service) StartOfflineCleanupTimer() {
+	s.offlineCleanupTimer = time.NewTimer(5 * time.Minute)
+	go func() {
+		for range s.offlineCleanupTimer.C {
+			// Set video to offline state
+			s.resetDirectories()
+			s.transitionToOfflineVideoStreamContent()
+		}
+	}()
+}
+
+// StopOfflineCleanupTimer stops the previous offline cleanup timer.
+func (s *Service) StopOfflineCleanupTimer() {
+	if s.offlineCleanupTimer != nil {
+		s.offlineCleanupTimer.Stop()
+	}
+}
+
+func (s *Service) startOnlineCleanupTimer() {
+	s.onlineCleanupTicker = time.NewTicker(1 * time.Minute)
+	go func() {
+		for range s.onlineCleanupTicker.C {
+			if err := s.storage.Cleanup(); err != nil {
+				log.Errorln(err)
+			}
+		}
+	}()
+}
+
+func (s *Service) stopOnlineCleanupTimer() {
+	if s.onlineCleanupTicker != nil {
+		s.onlineCleanupTicker.Stop()
+	}
+}
+
+func (s *Service) startLiveStreamNotificationsTimer() context.CancelFunc {
+	// Send delayed notification messages.
+	c, cancelFunc := context.WithCancel(context.Background())
+	s.onlineTimerCancelFunc = cancelFunc
+	go func(c context.Context) {
+		select {
+		case <-time.After(time.Minute * 2.0):
+			if s.lastNotified != nil && time.Since(*s.lastNotified) < 10*time.Minute {
+				return
+			}
+
+			configRepository := configrepository.Get()
+			// Send Fediverse message.
+			if configRepository.GetFederationEnabled() {
+				log.Traceln("Sending Federated Go Live message.")
+				if err := activitypub.SendLive(); err != nil {
+					log.Errorln(err)
+				}
+			}
+
+			// Send notification to those who have registered for them.
+			if notificationService, err := notifications.New(data.GetDatastore()); err != nil {
+				log.Errorln(err)
+			} else {
+				notificationService.Notify()
+			}
+
+			now := time.Now()
+			s.lastNotified = &now
+		case <-c.Done():
+		}
+	}(c)
+
+	return cancelFunc
+}

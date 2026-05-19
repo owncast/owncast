@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
@@ -23,7 +22,7 @@ func GetStreamHealthOverview() *models.StreamHealthOverview {
 
 func generateStreamHealthOverview() {
 	// Determine what percentage of total players are represented in our overview.
-	totalPlayerCount := len(core.GetActiveViewers())
+	totalPlayerCount := len(streamSvc.GetActiveViewers())
 	if totalPlayerCount == 0 {
 		metrics.streamHealthOverview = nil
 		return
@@ -135,12 +134,12 @@ func wastefulBitrateOverviewMessage() string {
 		return ""
 	}
 
-	currentBroadcast := core.GetCurrentBroadcast()
+	currentBroadcast := streamSvc.GetCurrentBroadcast()
 	if currentBroadcast == nil {
 		return ""
 	}
 
-	currentBroadcaster := core.GetBroadcaster()
+	currentBroadcaster := streamSvc.GetBroadcaster()
 	if currentBroadcast == nil {
 		return ""
 	}
@@ -242,7 +241,7 @@ func errorCountHealthOverviewMessage() string {
 			return fmt.Sprintf("%d of %d viewers (%d%%) are experiencing errors. You're currently using a video passthrough output, often known for causing playback issues for people. It is suggested you turn it off.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 		}
 
-		currentBroadcast := core.GetCurrentBroadcast()
+		currentBroadcast := streamSvc.GetCurrentBroadcast()
 		if currentBroadcast != nil && currentBroadcast.LatencyLevel.SecondsPerSegment < 3 {
 			return fmt.Sprintf("%d of %d viewers (%d%%) may be experiencing some issues. You may want to increase your latency buffer level in your video configuration to see if it helps.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 		}

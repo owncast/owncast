@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/activitypub/outbox"
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/webhooks"
 	"github.com/owncast/owncast/models"
@@ -91,8 +90,8 @@ func ExternalSetStreamTitle(integration models.ExternalAPIUser, w http.ResponseW
 }
 
 // ExternalGetStatus will return the status of the server.
-func ExternalGetStatus(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
-	status := core.GetStatus()
+func (a *Admin) ExternalGetStatus(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	status := a.stream.GetStatus()
 	webutils.WriteResponse(w, status)
 }
 

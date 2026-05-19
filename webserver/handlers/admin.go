@@ -9,20 +9,20 @@ import (
 	"github.com/owncast/owncast/webserver/router/middleware"
 )
 
-func (*ServerInterfaceImpl) StatusAdmin(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.Status)(w, r)
+func (s *ServerInterfaceImpl) StatusAdmin(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.Status)(w, r)
 }
 
-func (*ServerInterfaceImpl) StatusAdminOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.Status)(w, r)
+func (s *ServerInterfaceImpl) StatusAdminOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.Status)(w, r)
 }
 
-func (*ServerInterfaceImpl) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.DisconnectInboundConnection)(w, r)
+func (s *ServerInterfaceImpl) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.DisconnectInboundConnection)(w, r)
 }
 
-func (*ServerInterfaceImpl) DisconnectInboundConnectionOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.DisconnectInboundConnection)(w, r)
+func (s *ServerInterfaceImpl) DisconnectInboundConnectionOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.DisconnectInboundConnection)(w, r)
 }
 
 func (*ServerInterfaceImpl) GetServerConfig(w http.ResponseWriter, r *http.Request) {
@@ -41,12 +41,12 @@ func (*ServerInterfaceImpl) GetViewersOverTimeOptions(w http.ResponseWriter, r *
 	middleware.RequireAdminAuth(admin.GetViewersOverTime)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetActiveViewers)(w, r)
+func (s *ServerInterfaceImpl) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetActiveViewers)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetActiveViewersOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetActiveViewers)(w, r)
+func (s *ServerInterfaceImpl) GetActiveViewersOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetActiveViewers)(w, r)
 }
 
 func (*ServerInterfaceImpl) GetHardwareStats(w http.ResponseWriter, r *http.Request) {
@@ -281,12 +281,12 @@ func (*ServerInterfaceImpl) ResetYPRegistrationOptions(w http.ResponseWriter, r 
 	middleware.RequireAdminAuth(admin.ResetYPRegistration)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics)(w, r)
+func (s *ServerInterfaceImpl) GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetVideoPlaybackMetrics)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetVideoPlaybackMetricsOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetVideoPlaybackMetrics)(w, r)
+func (s *ServerInterfaceImpl) GetVideoPlaybackMetricsOptions(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetVideoPlaybackMetrics)(w, r)
 }
 
 func (*ServerInterfaceImpl) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {

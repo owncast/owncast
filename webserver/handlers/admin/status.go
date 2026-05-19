@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -13,12 +12,12 @@ import (
 )
 
 // Status gets the details of the inbound broadcaster.
-func Status(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) Status(w http.ResponseWriter, r *http.Request) {
 	configRepository := configrepository.Get()
 
-	broadcaster := core.GetBroadcaster()
-	status := core.GetStatus()
-	currentBroadcast := core.GetCurrentBroadcast()
+	broadcaster := a.stream.GetBroadcaster()
+	status := a.stream.GetStatus()
+	currentBroadcast := a.stream.GetCurrentBroadcast()
 	health := metrics.GetStreamHealthOverview()
 	response := adminStatusResponse{
 		Broadcaster:            broadcaster,

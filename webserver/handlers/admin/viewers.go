@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/models"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -34,8 +33,8 @@ func GetViewersOverTime(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetActiveViewers returns currently connected clients.
-func GetActiveViewers(w http.ResponseWriter, r *http.Request) {
-	c := core.GetActiveViewers()
+func (a *Admin) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
+	c := a.stream.GetActiveViewers()
 	viewers := make([]models.Viewer, 0, len(c))
 	for _, v := range c {
 		viewers = append(viewers, *v)

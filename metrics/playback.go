@@ -4,7 +4,6 @@ import (
 	"math"
 	"time"
 
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -22,7 +21,7 @@ func handlePlaybackPolling() {
 	defer metrics.m.Unlock()
 
 	// Make sure this is fired first before all the values get cleared below.
-	if _getStatus().Online {
+	if streamSvc.GetStatus().Online {
 		generateStreamHealthOverview()
 	}
 
@@ -331,7 +330,7 @@ func GetQualityVariantChangesOverTime() []TimestampedValue {
 // GetPlaybackMetricsRepresentation returns what percentage of all known players
 // the metrics represent.
 func GetPlaybackMetricsRepresentation() int {
-	totalPlayerCount := len(core.GetActiveViewers())
+	totalPlayerCount := len(streamSvc.GetActiveViewers())
 	representation := utils.IntPercentage(len(windowedBandwidths), totalPlayerCount)
 	return representation
 }

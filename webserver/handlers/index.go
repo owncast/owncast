@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/static"
@@ -48,14 +47,14 @@ func (h *Handlers) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.SetHeaders(w, fmt.Sprintf("nonce-%s", nonceRandom))
 
 	if isIndexRequest {
-		renderIndexHtml(w, nonceRandom)
+		h.renderIndexHtml(w, nonceRandom)
 		return
 	}
 
 	serveWeb(w, r)
 }
 
-func renderIndexHtml(w http.ResponseWriter, nonce string) {
+func (h *Handlers) renderIndexHtml(w http.ResponseWriter, nonce string) {
 	type serverSideContent struct {
 		Name             string
 		Summary          string
@@ -70,7 +69,7 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 		Nonce            string
 	}
 
-	status := getStatusResponse()
+	status := h.getStatusResponse()
 	sb, err := json.Marshal(status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -167,7 +166,7 @@ func (h *Handlers) handleScraperMetadataPage(w http.ResponseWriter, r *http.Requ
 		log.Errorln(err)
 	}
 
-	status := core.GetStatus()
+	status := h.stream.GetStatus()
 
 	// If the thumbnail does not exist or we're offline then just use the logo image
 	var thumbnailURL string

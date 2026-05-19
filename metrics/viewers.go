@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/nakabonne/tstorage"
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/userrepository"
@@ -30,12 +29,13 @@ func startViewerCollectionMetrics() {
 
 func collectViewerCount() {
 	// Don't collect metrics for viewers if there's no stream active.
-	if !core.GetStatus().Online {
+	status := streamSvc.GetStatus()
+	if !status.Online {
 		activeViewerCount.Set(0)
 		return
 	}
 
-	count := core.GetStatus().ViewerCount
+	count := status.ViewerCount
 
 	// Save active viewer count to our Prometheus collector.
 	activeViewerCount.Set(float64(count))

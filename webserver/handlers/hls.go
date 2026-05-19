@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
@@ -16,7 +15,7 @@ import (
 )
 
 // HandleHLSRequest will manage all requests to HLS content.
-func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	// Sanity check to limit requests to HLS file types.
 	if filepath.Ext(r.URL.Path) != ".m3u8" && filepath.Ext(r.URL.Path) != ".ts" {
 		w.WriteHeader(http.StatusNotFound)
@@ -61,7 +60,7 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 
 		// Use this as an opportunity to mark this viewer as active.
 		viewer := models.GenerateViewerFromRequest(r)
-		core.SetViewerActive(&viewer)
+		h.stream.SetViewerActive(&viewer)
 	} else {
 		cacheTime := utils.GetCacheDurationSecondsForPath(relativePath)
 		w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheTime))

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"os"
 	"strconv"
@@ -11,12 +12,13 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/services/cache"
+	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers"
+	"github.com/owncast/owncast/webserver/handlers/admin"
 	"github.com/owncast/owncast/webserver/router"
 )
 
@@ -103,12 +105,8 @@ func main() {
 
 	handleCommandLineFlags()
 
-	// starts the core
-	if err := core.Start(); err != nil {
-		log.Fatalln("failed to start the core package", err)
-	}
-
-	go metrics.Start(core.GetStatus)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	// Composition root: construct services here and inject them into the
 	// components that consume them. As more packages migrate off package-
@@ -117,8 +115,22 @@ func main() {
 	cacheContainer := cache.New()
 	defer cacheContainer.Stop()
 
+	streamSvc := stream.New(stream.Deps{})
+	if err := streamSvc.Start(ctx); err != nil {
+		log.Fatalln("failed to start the stream service", err)
+	}
+	defer streamSvc.Stop(ctx)
+
+	go metrics.Start(streamSvc)
+
+	adminHandlers := admin.New(admin.Deps{
+		Stream: streamSvc,
+	})
+
 	h := handlers.NewHandlers(handlers.Deps{
-		Cache: cacheContainer,
+		Cache:  cacheContainer,
+		Stream: streamSvc,
+		Admin:  adminHandlers,
 	})
 
 	if err := router.Start(*enableVerboseLogging, h); err != nil {
