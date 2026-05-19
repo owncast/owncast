@@ -11,7 +11,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
@@ -76,7 +75,7 @@ func (a *Admin) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if value != "" {
-		sendSystemChatAction(fmt.Sprintf("Stream title changed to **%s**", value), true)
+		a.sendSystemChatAction(fmt.Sprintf("Stream title changed to **%s**", value), true)
 		go a.webhooks.SendStreamStatusEvent(models.StreamTitleUpdated)
 	}
 	webutils.WriteSimpleResponse(w, true, "changed")
@@ -93,8 +92,8 @@ func (a *Admin) ExternalGetStatus(integration models.ExternalAPIUser, w http.Res
 	webutils.WriteResponse(w, status)
 }
 
-func sendSystemChatAction(messageText string, ephemeral bool) {
-	if err := chat.SendSystemAction(messageText, ephemeral); err != nil {
+func (a *Admin) sendSystemChatAction(messageText string, ephemeral bool) {
+	if err := a.chat.SendSystemAction(messageText, ephemeral); err != nil {
 		log.Errorln(err)
 	}
 }

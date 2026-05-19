@@ -9,11 +9,11 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/requests"
 	"github.com/owncast/owncast/services/activitypub/resolvers"
+	"github.com/owncast/owncast/services/chat/events"
 )
 
 func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {

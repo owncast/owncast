@@ -2,6 +2,7 @@ package admin
 
 import (
 	"github.com/owncast/owncast/services/activitypub"
+	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
@@ -20,6 +21,7 @@ type Admin struct {
 	rtmp        *rtmp.Service
 	activitypub *activitypub.Service
 	webhooks    *webhooks.Service
+	chat        *chat.Service
 }
 
 // Deps lists every service a *Admin consumes. New deps appear here as
@@ -29,6 +31,7 @@ type Deps struct {
 	Rtmp        *rtmp.Service
 	Activitypub *activitypub.Service
 	Webhooks    *webhooks.Service
+	Chat        *chat.Service
 }
 
 // New constructs the dependency-bearing admin handler set.
@@ -38,5 +41,6 @@ func New(deps Deps) *Admin {
 		rtmp:        deps.Rtmp,
 		activitypub: deps.Activitypub,
 		webhooks:    deps.Webhooks,
+		chat:        deps.Chat,
 	}
 }

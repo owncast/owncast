@@ -11,7 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -57,7 +56,7 @@ func (s *Service) Start(_ context.Context) error {
 
 	s.yp = yp.NewYP(s.GetStatus)
 
-	if err := chat.Start(s.GetStatus, s.webhooks); err != nil {
+	if err := s.chat.Start(); err != nil {
 		log.Errorln(err)
 	}
 
@@ -183,8 +182,8 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 	s.thumbnailGen = transcoder.NewThumbnailGenerator()
 	s.thumbnailGen.Start(segmentPath, selectedThumbnailVideoQualityIndex, isVideoPassthrough)
 
-	_ = chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
-	chat.SendAllWelcomeMessage()
+	_ = s.chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
+	s.chat.SendAllWelcomeMessage()
 
 	// Send delayed notification messages.
 	s.onlineTimerCancelFunc = s.startLiveStreamNotificationsTimer()
@@ -192,7 +191,7 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 
 // SetStreamAsDisconnected handles cleanup when a live stream ends.
 func (s *Service) SetStreamAsDisconnected() {
-	_ = chat.SendSystemAction("The stream is ending.", true)
+	_ = s.chat.SendSystemAction("The stream is ending.", true)
 
 	now := utils.NullTime{Time: time.Now(), Valid: true}
 	if s.onlineTimerCancelFunc != nil {

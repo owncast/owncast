@@ -6,16 +6,17 @@ import (
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
+	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
-func (s *Server) userNameChanged(eventData chatClientEvent) {
+func (s *Service) userNameChanged(eventData chatClientEvent) {
 	var receivedEvent events.NameChangeEvent
 	if err := json.Unmarshal(eventData.data, &receivedEvent); err != nil {
 		log.Errorln("error unmarshalling to NameChangeEvent", err)
@@ -118,7 +119,7 @@ func (s *Server) userNameChanged(eventData chatClientEvent) {
 	eventData.client.sendConnectedClientInfo()
 }
 
-func (s *Server) userColorChanged(eventData chatClientEvent) {
+func (s *Service) userColorChanged(eventData chatClientEvent) {
 	userRepository := userrepository.Get()
 
 	var receivedEvent events.ColorChangeEvent
@@ -143,7 +144,7 @@ func (s *Server) userColorChanged(eventData chatClientEvent) {
 	eventData.client.sendConnectedClientInfo()
 }
 
-func (s *Server) userMessageSent(eventData chatClientEvent) {
+func (s *Service) userMessageSent(eventData chatClientEvent) {
 	userRepository := userrepository.Get()
 
 	var event events.UserMessageEvent
@@ -161,8 +162,8 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 	}
 
 	// Ignore if the stream has been offline
-	if !getStatus().Online && getStatus().LastDisconnectTime != nil {
-		disconnectedTime := getStatus().LastDisconnectTime.Time
+	if !s.getStatus().Online && s.getStatus().LastDisconnectTime != nil {
+		disconnectedTime := s.getStatus().LastDisconnectTime.Time
 		if time.Since(disconnectedTime) > 5*time.Minute {
 			return
 		}
@@ -183,7 +184,7 @@ func (s *Server) userMessageSent(eventData chatClientEvent) {
 
 	// Send chat message sent webhook
 	s.webhooks.SendChatEvent(&event)
-	chatMessagesSentCounter.Inc()
+	s.chatMessagesSentCounter.Inc()
 	chatMessageRepository := chatmessagerepository.Get()
 	chatMessageRepository.SaveUserMessage(event)
 	eventData.client.MessageCount++

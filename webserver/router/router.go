@@ -14,7 +14,6 @@ import (
 	"golang.org/x/net/http2/h2c"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/chat"
 	apcontrollers "github.com/owncast/owncast/services/activitypub/controllers"
 	"github.com/owncast/owncast/webserver/handlers"
 	"github.com/owncast/owncast/webserver/router/middleware"
@@ -39,7 +38,7 @@ func Start(enableVerboseLogging bool, h *handlers.Handlers, apc *apcontrollers.C
 	addStaticFileEndpoints(r, apc)
 
 	// websocket
-	r.HandleFunc("/ws", chat.HandleClientConnection)
+	r.HandleFunc("/ws", h.HandleWebsocketConnection)
 
 	// serve files
 	fs := http.FileServer(http.Dir(config.PublicFilesPath))

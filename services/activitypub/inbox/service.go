@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
+	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/webhooks"
 )
 
@@ -33,6 +34,7 @@ type Service struct {
 	persistence *persistence.Service
 	workerpool  *workerpool.Service
 	webhooks    *webhooks.Service
+	chat        *chat.Service
 	followers   followersrepository.FollowersRepository
 }
 
@@ -41,6 +43,7 @@ type Deps struct {
 	Persistence *persistence.Service
 	Workerpool  *workerpool.Service
 	Webhooks    *webhooks.Service
+	Chat        *chat.Service
 	Followers   followersrepository.FollowersRepository
 }
 
@@ -52,6 +55,7 @@ func New(deps Deps) *Service {
 		persistence:    deps.Persistence,
 		workerpool:     deps.Workerpool,
 		webhooks:       deps.Webhooks,
+		chat:           deps.Chat,
 		followers:      deps.Followers,
 	}
 }

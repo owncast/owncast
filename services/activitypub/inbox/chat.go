@@ -6,10 +6,9 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/microcosm-cc/bluemonday"
 
-	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/resolvers"
+	"github.com/owncast/owncast/services/chat/events"
 )
 
 // sanitizeActorName strips HTML tags from the ActivityPub actor display name.
@@ -68,7 +67,7 @@ func (s *Service) handleEngagementActivity(eventType events.EventType, isLiveNot
 		image = &imageStr
 	}
 
-	if err := chat.SendFediverseAction(eventType, actor.FullUsername, image, body, actorIRI); err != nil {
+	if err := s.chat.SendFediverseAction(eventType, actor.FullUsername, image, body, actorIRI); err != nil {
 		return err
 	}
 

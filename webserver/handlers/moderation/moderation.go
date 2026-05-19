@@ -6,17 +6,33 @@ import (
 	"strings"
 	"time"
 
-	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/chat/events"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/userrepository"
+	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/webserver/utils"
-	log "github.com/sirupsen/logrus"
 )
 
+// Handler bundles the dependencies the moderation handlers need.
+type Handler struct {
+	chat *chat.Service
+}
+
+// Deps lists the dependencies of the moderation Handler.
+type Deps struct {
+	Chat *chat.Service
+}
+
+// New constructs the Handler.
+func New(deps Deps) *Handler {
+	return &Handler{chat: deps.Chat}
+}
+
 // GetUserDetails returns the details of a chat user for moderators.
-func GetUserDetails(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	type connectedClient struct {
 		ConnectedAt  time.Time `json:"connectedAt"`
 		UserAgent    string    `json:"userAgent"`
@@ -43,7 +59,7 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, _ := chat.GetClientsForUser(uid)
+	c, _ := h.chat.GetClientsForUser(uid)
 	clients := make([]connectedClient, len(c))
 	for i, c := range c {
 		client := connectedClient{
@@ -77,6 +93,8 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ExternalGetUserDetails(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
-	GetUserDetails(w, r)
+// ExternalGetUserDetails is the externally-authenticated entry point that
+// delegates to GetUserDetails.
+func (h *Handler) ExternalGetUserDetails(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	h.GetUserDetails(w, r)
 }

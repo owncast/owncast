@@ -1,8 +1,8 @@
 package webhooks
 
 import (
-	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/chat/events"
 )
 
 // SendChatEvent dispatches a chat-message event to webhook destinations.

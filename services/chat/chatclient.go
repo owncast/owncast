@@ -11,10 +11,11 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/gorilla/websocket"
+
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/geoip"
 )
 
@@ -26,7 +27,7 @@ type Client struct {
 	messageFilter *ChatMessageFilter
 	conn          *websocket.Conn
 	User          *models.User `json:"user"`
-	server        *Server
+	server        *Service
 	Geo           *geoip.GeoDetails `json:"geo"`
 	// Buffered channel of outbound messages.
 	send         chan []byte

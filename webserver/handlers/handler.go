@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/owncast/owncast/webserver/handlers/admin"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
 
@@ -53,12 +52,12 @@ func (*ServerInterfaceImpl) RegisterAnonymousChatUserOptions(w http.ResponseWrit
 	RegisterAnonymousChatUser(w, r)
 }
 
-func (*ServerInterfaceImpl) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request, params generated.UpdateMessageVisibilityParams) {
-	middleware.RequireUserModerationScopeAccesstoken(admin.UpdateMessageVisibility)(w, r)
+func (s *ServerInterfaceImpl) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request, params generated.UpdateMessageVisibilityParams) {
+	middleware.RequireUserModerationScopeAccesstoken(s.h.admin.UpdateMessageVisibility)(w, r)
 }
 
-func (*ServerInterfaceImpl) UpdateUserEnabled(w http.ResponseWriter, r *http.Request, params generated.UpdateUserEnabledParams) {
-	middleware.RequireUserModerationScopeAccesstoken(admin.UpdateUserEnabled)(w, r)
+func (s *ServerInterfaceImpl) UpdateUserEnabled(w http.ResponseWriter, r *http.Request, params generated.UpdateUserEnabledParams) {
+	middleware.RequireUserModerationScopeAccesstoken(s.h.admin.UpdateUserEnabled)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetWebConfig(w http.ResponseWriter, r *http.Request) {

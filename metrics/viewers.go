@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/nakabonne/tstorage"
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	log "github.com/sirupsen/logrus"
@@ -52,7 +51,7 @@ func collectViewerCount() {
 }
 
 func collectChatClientCount() {
-	count := len(chat.GetClients())
+	count := len(chatSvc.GetClients())
 	activeChatClientCount.Set(float64(count))
 
 	// Total message count

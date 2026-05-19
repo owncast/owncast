@@ -7,6 +7,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/stream"
 )
 
@@ -53,14 +54,18 @@ type CollectedMetrics struct {
 // Metrics is the shared Metrics instance.
 var metrics *CollectedMetrics
 
-// streamSvc is the injected stream service used by all metrics
+// streamSvc and chatSvc are the injected services used by all metrics
 // collection routines. Set once by Start; do not access before then.
-var streamSvc *stream.Service
+var (
+	streamSvc *stream.Service
+	chatSvc   *chat.Service
+)
 
 // Start will begin the metrics collection and alerting.
-func Start(s *stream.Service) {
+func Start(s *stream.Service, c *chat.Service) {
 	configRepository := configrepository.Get()
 	streamSvc = s
+	chatSvc = c
 	host := configRepository.GetServerURL()
 	if host == "" {
 		host = "unknown"

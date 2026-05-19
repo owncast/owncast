@@ -7,25 +7,23 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gorilla/websocket"
+	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gorilla/websocket"
-
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
+	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"
 )
 
-var _server *Server
-
-// Server represents an instance of the chat server.
-type Server struct {
+// Service is an instance of the chat server. Construct via New(Deps).
+type Service struct {
 	clients map[uint]*Client
 
 	// send outbound message payload to all clients
@@ -43,6 +41,15 @@ type Server struct {
 	// renames, visibility toggles) to configured webhook destinations.
 	webhooks *webhooks.Service
 
+	// getStatus returns the current stream status; used by the
+	// inbound-message path to make stream-state-aware decisions
+	// (welcome messages, recent-disconnect heuristics).
+	getStatus func() models.Status
+
+	// chatMessagesSentCounter is the Prometheus counter incremented on
+	// each accepted inbound message.
+	chatMessagesSentCounter prometheus.Gauge
+
 	// a map of user IDs and timers that fire for chat part messages.
 	userPartedTimers         map[string]*time.Ticker
 	seq                      uint
@@ -52,11 +59,11 @@ type Server struct {
 }
 
 // NewChat will return a new instance of the chat server.
-func NewChat(webhooksSvc *webhooks.Service) *Server {
+func newServer(webhooksSvc *webhooks.Service) *Service {
 	maximumConcurrentConnectionLimit := getMaximumConcurrentConnectionLimit()
 	setSystemConcurrentConnectionLimit(maximumConcurrentConnectionLimit)
 
-	server := &Server{
+	server := &Service{
 		clients:                  map[uint]*Client{},
 		outbound:                 make(chan []byte),
 		inbound:                  make(chan chatClientEvent),
@@ -71,7 +78,7 @@ func NewChat(webhooksSvc *webhooks.Service) *Server {
 }
 
 // Run will start the chat server.
-func (s *Server) Run() {
+func (s *Service) Run() {
 	for {
 		select {
 		case clientID := <-s.unregister:
@@ -89,7 +96,7 @@ func (s *Server) Run() {
 }
 
 // Addclient registers new connection as a User.
-func (s *Server) Addclient(conn *websocket.Conn, user *models.User, accessToken string, userAgent string, ipAddress string) *Client {
+func (s *Service) Addclient(conn *websocket.Conn, user *models.User, accessToken string, userAgent string, ipAddress string) *Client {
 	client := &Client{
 		server:      s,
 		conn:        conn,
@@ -108,7 +115,7 @@ func (s *Server) Addclient(conn *websocket.Conn, user *models.User, accessToken 
 	// If there are existing clients connected for this user do not send
 	// a user joined message. Do not put this under a mutex, as
 	// GetClientsForUser already has a lock.
-	if existingConnectedClients, _ := GetClientsForUser(user.ID); len(existingConnectedClients) > 0 {
+	if existingConnectedClients, _ := s.GetClientsForUser(user.ID); len(existingConnectedClients) > 0 {
 		shouldSendJoinedMessages = false
 	}
 
@@ -136,7 +143,7 @@ func (s *Server) Addclient(conn *websocket.Conn, user *models.User, accessToken 
 
 	client.sendConnectedClientInfo()
 
-	if getStatus().Online {
+	if s.getStatus().Online {
 		if shouldSendJoinedMessages {
 			s.sendUserJoinedMessage(client)
 		}
@@ -151,7 +158,7 @@ func (s *Server) Addclient(conn *websocket.Conn, user *models.User, accessToken 
 	return client
 }
 
-func (s *Server) sendUserJoinedMessage(c *Client) {
+func (s *Service) sendUserJoinedMessage(c *Client) {
 	userJoinedEvent := events.UserJoinedEvent{}
 	userJoinedEvent.SetDefaults()
 	userJoinedEvent.User = c.User
@@ -165,13 +172,13 @@ func (s *Server) sendUserJoinedMessage(c *Client) {
 	s.webhooks.SendChatEventUserJoined(userJoinedEvent)
 }
 
-func (s *Server) handleClientDisconnected(c *Client) {
+func (s *Service) handleClientDisconnected(c *Client) {
 	if _, ok := s.clients[c.Id]; ok {
 		log.Debugln("Deleting", c.Id)
 		delete(s.clients, c.Id)
 	}
 
-	additionalClientCheck, _ := GetClientsForUser(c.User.ID)
+	additionalClientCheck, _ := s.GetClientsForUser(c.User.ID)
 	if len(additionalClientCheck) > 0 {
 		// This user is still connected to chat with another client.
 		return
@@ -185,7 +192,7 @@ func (s *Server) handleClientDisconnected(c *Client) {
 	}()
 }
 
-func (s *Server) sendUserPartedMessage(c *Client) {
+func (s *Service) sendUserPartedMessage(c *Client) {
 	s.userPartedTimers[c.User.ID].Stop()
 	delete(s.userPartedTimers, c.User.ID)
 
@@ -207,7 +214,7 @@ func (s *Server) sendUserPartedMessage(c *Client) {
 }
 
 // HandleClientConnection is fired when a single client connects to the websocket.
-func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
+func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
 	configRepository := configrepository.Get()
 	authRepository := authrepository.Get()
 
@@ -283,7 +290,7 @@ func (s *Server) HandleClientConnection(w http.ResponseWriter, r *http.Request) 
 }
 
 // Broadcast sends message to all connected clients.
-func (s *Server) Broadcast(payload events.EventPayload) error {
+func (s *Service) Broadcast(payload events.EventPayload) error {
 	data, err := json.Marshal(payload)
 	if err != nil {
 		return err
@@ -308,7 +315,7 @@ func (s *Server) Broadcast(payload events.EventPayload) error {
 }
 
 // Send will send a single payload to a single connected client.
-func (s *Server) Send(payload events.EventPayload, client *Client) {
+func (s *Service) Send(payload events.EventPayload, client *Client) {
 	data, err := json.Marshal(payload)
 	if err != nil {
 		log.Errorln(err)
@@ -319,7 +326,7 @@ func (s *Server) Send(payload events.EventPayload, client *Client) {
 }
 
 // DisconnectClients will forcefully disconnect all clients belonging to a user by ID.
-func (s *Server) DisconnectClients(clients []*Client) {
+func (s *Service) DisconnectClients(clients []*Client) {
 	for _, client := range clients {
 		log.Traceln("Disconnecting client", client.User.ID, "owned by", client.User.DisplayName)
 
@@ -329,7 +336,7 @@ func (s *Server) DisconnectClients(clients []*Client) {
 
 			// Send this disabled event specifically to this single connected client
 			// to let them know they've been banned.
-			_server.Send(event.GetBroadcastPayload(), client)
+			s.Send(event.GetBroadcastPayload(), client)
 
 			// Give the socket time to send out the above message.
 			// Unfortunately I don't know of any way to get a real callback to know when
@@ -346,8 +353,8 @@ func (s *Server) DisconnectClients(clients []*Client) {
 
 // SendConnectedClientInfoToUser will find all the connected clients assigned to a user
 // and re-send each the connected client info.
-func SendConnectedClientInfoToUser(userID string) error {
-	clients, err := GetClientsForUser(userID)
+func (s *Service) SendConnectedClientInfoToUser(userID string) error {
+	clients, err := s.GetClientsForUser(userID)
 	if err != nil {
 		return err
 	}
@@ -376,20 +383,20 @@ func SendConnectedClientInfoToUser(userID string) error {
 
 // SendActionToUser will send system action text to all connected clients
 // assigned to a user ID.
-func SendActionToUser(userID string, text string) error {
-	clients, err := GetClientsForUser(userID)
+func (s *Service) SendActionToUser(userID string, text string) error {
+	clients, err := s.GetClientsForUser(userID)
 	if err != nil {
 		return err
 	}
 
 	for _, client := range clients {
-		_server.sendActionToClient(client, text)
+		s.sendActionToClient(client, text)
 	}
 
 	return nil
 }
 
-func (s *Server) eventReceived(event chatClientEvent) {
+func (s *Service) eventReceived(event chatClientEvent) {
 	configRepository := configrepository.Get()
 
 	c := event.client
@@ -431,7 +438,7 @@ func (s *Server) eventReceived(event chatClientEvent) {
 	}
 }
 
-func (s *Server) sendWelcomeMessageToClient(c *Client) {
+func (s *Service) sendWelcomeMessageToClient(c *Client) {
 	configRepository := configrepository.Get()
 
 	// Add an artificial delay so people notice this message come in.
@@ -444,7 +451,7 @@ func (s *Server) sendWelcomeMessageToClient(c *Client) {
 	}
 }
 
-func (s *Server) sendAllWelcomeMessage() {
+func (s *Service) sendAllWelcomeMessage() {
 	configRepository := configrepository.Get()
 
 	welcomeMessage := utils.RenderSimpleMarkdown(configRepository.GetServerWelcomeMessage())
@@ -461,7 +468,7 @@ func (s *Server) sendAllWelcomeMessage() {
 	}
 }
 
-func (s *Server) sendSystemMessageToClient(c *Client, message string) {
+func (s *Service) sendSystemMessageToClient(c *Client, message string) {
 	clientMessage := events.SystemMessageEvent{
 		Event: events.Event{},
 		MessageEvent: events.MessageEvent{
@@ -473,7 +480,7 @@ func (s *Server) sendSystemMessageToClient(c *Client, message string) {
 	s.Send(clientMessage.GetBroadcastPayload(), c)
 }
 
-func (s *Server) sendActionToClient(c *Client, message string) {
+func (s *Service) sendActionToClient(c *Client, message string) {
 	clientMessage := events.ActionEvent{
 		MessageEvent: events.MessageEvent{
 			Body: message,

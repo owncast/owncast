@@ -10,22 +10,22 @@ import (
 )
 
 // HandleAuthEndpoint will handle the IndieAuth auth endpoint.
-func HandleAuthEndpoint(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) HandleAuthEndpoint(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		// Require the GET request for IndieAuth to be behind admin login.
-		f := middleware.RequireAdminAuth(HandleAuthEndpointGet)
+		f := middleware.RequireAdminAuth(h.HandleAuthEndpointGet)
 		f(w, r)
 		return
 	case http.MethodPost:
-		HandleAuthEndpointPost(w, r)
+		h.HandleAuthEndpointPost(w, r)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 }
 
-func HandleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) HandleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	clientID := r.URL.Query().Get("client_id")
 	redirectURI := r.URL.Query().Get("redirect_uri")
 	codeChallenge := r.URL.Query().Get("code_challenge")
@@ -63,7 +63,7 @@ func HandleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect) //nolint:gosec // G710: redirect target is the validated IndieAuth client redirect_uri
 }
 
-func HandleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) HandleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 	if err := r.ParseForm(); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())

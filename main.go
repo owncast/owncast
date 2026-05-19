@@ -17,6 +17,7 @@ import (
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/cache"
+	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
@@ -24,6 +25,8 @@ import (
 	"github.com/owncast/owncast/webserver/handlers"
 	"github.com/owncast/owncast/webserver/handlers/admin"
 	"github.com/owncast/owncast/webserver/handlers/auth/fediverse"
+	"github.com/owncast/owncast/webserver/handlers/auth/indieauth"
+	"github.com/owncast/owncast/webserver/handlers/moderation"
 	"github.com/owncast/owncast/webserver/router"
 )
 
@@ -130,9 +133,19 @@ func main() {
 		Followers: nil, // wired below from apSvc
 	})
 
+	// chat is constructed first because activitypub.Deps and
+	// stream.Deps both need it; webhooks doesn't (yet — once chat
+	// migrates to receive webhook events via the dispatcher, this
+	// changes).
+	chatSvc := chat.New(chat.Deps{
+		GetStatus: nil, // wired below once streamSvc exists
+		Webhooks:  webhooksSvc,
+	})
+
 	apSvc := activitypub.New(activitypub.Deps{
 		Datastore: data.GetDatastore(),
 		Webhooks:  webhooksSvc,
+		Chat:      chatSvc,
 	})
 	apSvc.Start()
 
@@ -140,41 +153,57 @@ func main() {
 		Rtmp:        rtmpSvc,
 		Activitypub: apSvc,
 		Webhooks:    webhooksSvc,
+		Chat:        chatSvc,
 	})
 
 	// Now that stream + AP are constructed, finish wiring the webhook
-	// service deps (a small workaround for the construction cycle:
-	// webhooks needs stream.GetStatus and ap.Followers; stream and AP
-	// both need *webhooks.Service).
+	// service deps and the chat getStatus (small construction cycle:
+	// webhooks needs stream.GetStatus and ap.Followers; chat needs
+	// stream.GetStatus; stream and AP both need *webhooks.Service +
+	// *chat.Service).
 	webhooksSvc.SetDeps(webhooks.Deps{
 		GetStatus: streamSvc.GetStatus,
 		Followers: apSvc.Followers(),
 	})
+	chatSvc.SetGetStatus(streamSvc.GetStatus)
 
 	if err := streamSvc.Start(ctx); err != nil {
 		log.Fatalln("failed to start the stream service", err)
 	}
 	defer streamSvc.Stop(ctx)
 
-	go metrics.Start(streamSvc)
+	go metrics.Start(streamSvc, chatSvc)
 
 	adminHandlers := admin.New(admin.Deps{
 		Stream:      streamSvc,
 		Rtmp:        rtmpSvc,
 		Activitypub: apSvc,
 		Webhooks:    webhooksSvc,
+		Chat:        chatSvc,
 	})
 
 	fediverseHandler := fediverse.New(fediverse.Deps{
 		Activitypub: apSvc,
+		Chat:        chatSvc,
+	})
+
+	indieauthHandler := indieauth.New(indieauth.Deps{
+		Chat: chatSvc,
+	})
+
+	moderationHandler := moderation.New(moderation.Deps{
+		Chat: chatSvc,
 	})
 
 	h := handlers.NewHandlers(handlers.Deps{
 		Cache:       cacheContainer,
 		Stream:      streamSvc,
+		Chat:        chatSvc,
 		Admin:       adminHandlers,
 		Activitypub: apSvc,
 		Fediverse:   fediverseHandler,
+		IndieAuth:   indieauthHandler,
+		Moderation:  moderationHandler,
 	})
 
 	if err := router.Start(*enableVerboseLogging, h, apSvc.Controllers()); err != nil {

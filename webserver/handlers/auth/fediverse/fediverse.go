@@ -8,29 +8,36 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	fediverseauth "github.com/owncast/owncast/auth/fediverse"
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/activitypub"
+	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
-// Handler bundles the dependencies the fediverse auth handlers need to
-// send OTP codes via direct federated message.
+// Handler bundles the dependencies the fediverse auth handlers need:
+// the activitypub service (to send OTP codes via direct federated
+// message) and the chat service (to broadcast a system action when an
+// authenticated user re-logs in under a different display name).
 type Handler struct {
 	activitypub *activitypub.Service
+	chat        *chat.Service
 }
 
 // Deps lists the dependencies of the fediverse auth Handler.
 type Deps struct {
 	Activitypub *activitypub.Service
+	Chat        *chat.Service
 }
 
 // New constructs the Handler.
 func New(deps Deps) *Handler {
-	return &Handler{activitypub: deps.Activitypub}
+	return &Handler{
+		activitypub: deps.Activitypub,
+		chat:        deps.Chat,
+	}
 }
 
 // RegisterFediverseOTPRequest registers a new OTP request for the given access token.
@@ -68,7 +75,7 @@ func (h *Handler) RegisterFediverseOTPRequest(u models.User, w http.ResponseWrit
 }
 
 // VerifyFediverseOTPRequest verifies the given OTP code for the given access token.
-func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 	var req generated.VerifyFediverseOTPRequestJSONBody
 
 	decoder := json.NewDecoder(r.Body)
@@ -105,7 +112,7 @@ func VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
 
 		if authRegistration.UserDisplayName != u.DisplayName {
 			loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", authRegistration.UserDisplayName, u.DisplayName)
-			if err := chat.SendSystemAction(loginMessage, true); err != nil {
+			if err := h.chat.SendSystemAction(loginMessage, true); err != nil {
 				log.Errorln(err)
 			}
 		}

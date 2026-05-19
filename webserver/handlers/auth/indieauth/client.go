@@ -6,16 +6,32 @@ import (
 	"io"
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
+
 	ia "github.com/owncast/owncast/auth/indieauth"
-	"github.com/owncast/owncast/core/chat"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/userrepository"
+	"github.com/owncast/owncast/services/chat"
 	webutils "github.com/owncast/owncast/webserver/utils"
-	log "github.com/sirupsen/logrus"
 )
 
+// Handler bundles the dependencies the IndieAuth handlers need.
+type Handler struct {
+	chat *chat.Service
+}
+
+// Deps lists the dependencies of the IndieAuth Handler.
+type Deps struct {
+	Chat *chat.Service
+}
+
+// New constructs the Handler.
+func New(deps Deps) *Handler {
+	return &Handler{chat: deps.Chat}
+}
+
 // StartAuthFlow will begin the IndieAuth flow for the current user.
-func StartAuthFlow(u models.User, w http.ResponseWriter, r *http.Request) {
+func (h *Handler) StartAuthFlow(u models.User, w http.ResponseWriter, r *http.Request) {
 	type request struct {
 		AuthHost string `json:"authHost"`
 	}
@@ -52,7 +68,7 @@ func StartAuthFlow(u models.User, w http.ResponseWriter, r *http.Request) {
 
 // HandleRedirect will handle the redirect from an IndieAuth server to
 // continue the auth flow.
-func HandleRedirect(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query().Get("state")
 	code := r.URL.Query().Get("code")
 	request, response, err := ia.HandleCallbackCode(code, state)
@@ -80,7 +96,7 @@ func HandleRedirect(w http.ResponseWriter, r *http.Request) {
 
 		if request.DisplayName != u.DisplayName {
 			loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", request.DisplayName, u.DisplayName)
-			if err := chat.SendSystemAction(loginMessage, true); err != nil {
+			if err := h.chat.SendSystemAction(loginMessage, true); err != nil {
 				log.Errorln(err)
 			}
 		}

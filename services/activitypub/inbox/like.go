@@ -7,8 +7,8 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/pkg/errors"
 
-	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
+	"github.com/owncast/owncast/services/chat/events"
 )
 
 func (s *Service) handleLikeRequest(c context.Context, activity vocab.ActivityStreamsLike) error {

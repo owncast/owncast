@@ -5,12 +5,12 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
+	"github.com/owncast/owncast/services/chat/events"
 )
 
-// SetMessagesVisibility will set the visibility of multiple messages by ID.
-func SetMessagesVisibility(messageIDs []string, visibility bool) error {
+// SetMessagesVisibility sets the visibility of multiple messages by ID.
+func (s *Service) SetMessagesVisibility(messageIDs []string, visibility bool) error {
 	// Save new message visibility
 	chatMessageRepository := chatmessagerepository.Get()
 	if err := chatMessageRepository.SetMessageVisibilityForMessageIDs(messageIDs, visibility); err != nil {
@@ -27,11 +27,11 @@ func SetMessagesVisibility(messageIDs []string, visibility bool) error {
 	event.Event.SetDefaults()
 
 	payload := event.GetBroadcastPayload()
-	if err := _server.Broadcast(payload); err != nil {
+	if err := s.Broadcast(payload); err != nil {
 		return errors.New("error broadcasting message visibility payload " + err.Error())
 	}
 
-	_server.webhooks.SendChatEventSetMessageVisibility(event)
+	s.webhooks.SendChatEventSetMessageVisibility(event)
 
 	return nil
 }

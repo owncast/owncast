@@ -48,6 +48,6 @@ func (a *Admin) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
 }
 
 // ExternalGetActiveViewers returns currently connected clients.
-func ExternalGetActiveViewers(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
-	GetConnectedChatClients(w, r)
+func (a *Admin) ExternalGetActiveViewers(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	a.GetConnectedChatClients(w, r)
 }

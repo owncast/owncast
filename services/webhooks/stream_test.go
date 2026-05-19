@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/owncast/owncast/core/chat/events"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/chat/events"
 )
 
 func TestSendStreamStatusEvent(t *testing.T) {

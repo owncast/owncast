@@ -65,7 +65,7 @@ linters:
       # signal. Scoped here so the rest of the codebase still benefits.
       - linters:
           - goconst
-        path: core/chat/events/
+        path: services/chat/events/
       - linters:
           - goconst
         path: services/transcoder/

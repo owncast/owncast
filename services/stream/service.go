@@ -13,6 +13,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/activitypub"
+	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/transcoder"
@@ -94,15 +95,20 @@ type Service struct {
 	// webhooks dispatches stream-status events (started/stopped) to
 	// user-configured HTTP destinations.
 	webhooks *webhooks.Service
+
+	// chat is the websocket chat server; the stream service tells it
+	// when a stream starts/ends so it can send the appropriate
+	// system-message announcements.
+	chat *chat.Service
 }
 
 // Deps is the explicit-dependency contract the service requires at
-// construction time. As more collaborators (chat, etc.) migrate to
-// constructor-injected services, they appear here.
+// construction time.
 type Deps struct {
 	Rtmp        *rtmp.Service
 	Activitypub *activitypub.Service
 	Webhooks    *webhooks.Service
+	Chat        *chat.Service
 }
 
 // New constructs an idle stream Service. Call Start(ctx) to bring up the
@@ -114,5 +120,6 @@ func New(deps Deps) *Service {
 		rtmp:        deps.Rtmp,
 		activitypub: deps.Activitypub,
 		webhooks:    deps.Webhooks,
+		chat:        deps.Chat,
 	}
 }
