@@ -51,6 +51,10 @@ type Service struct {
 	// auth requirement, welcome message text, etc.).
 	configRepository configrepository.ConfigRepository
 
+	// authRepository is consulted on each inbound websocket connection to
+	// reject banned IP addresses before upgrading to a chat client.
+	authRepository authrepository.AuthRepository
+
 	// chatMessagesSentCounter is the Prometheus counter incremented on
 	// each accepted inbound message.
 	chatMessagesSentCounter prometheus.Gauge
@@ -216,8 +220,6 @@ func (s *Service) sendUserPartedMessage(c *Client) {
 
 // HandleClientConnection is fired when a single client connects to the websocket.
 func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request) {
-	authRepository := authrepository.Get()
-
 	if s.configRepository.GetChatDisabled() {
 		_, _ = w.Write([]byte(events.ChatDisabled))
 		return
@@ -225,7 +227,7 @@ func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request)
 
 	ipAddress := utils.GetIPAddressFromRequest(r)
 	// Check if this client's IP address is banned. If so send a rejection.
-	if blocked, err := authRepository.IsIPAddressBanned(ipAddress); blocked {
+	if blocked, err := s.authRepository.IsIPAddressBanned(ipAddress); blocked {
 		log.Debugln("Client ip address has been blocked. Rejecting.")
 
 		w.WriteHeader(http.StatusForbidden)

@@ -12,7 +12,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
@@ -57,7 +56,7 @@ func (a *Admin) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) 
 }
 
 // BanIPAddress will manually ban an IP address.
-func BanIPAddress(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) BanIPAddress(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -68,9 +67,7 @@ func BanIPAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authRepository := authrepository.Get()
-
-	if err := authRepository.BanIPAddress(configValue.Value.(string), "manually added"); err != nil {
+	if err := a.authRepository.BanIPAddress(configValue.Value.(string), "manually added"); err != nil {
 		webutils.WriteSimpleResponse(w, false, "error saving IP address ban")
 		return
 	}
@@ -79,7 +76,7 @@ func BanIPAddress(w http.ResponseWriter, r *http.Request) {
 }
 
 // UnBanIPAddress will remove an IP address ban.
-func UnBanIPAddress(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) UnBanIPAddress(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -90,9 +87,7 @@ func UnBanIPAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authRepository := authrepository.Get()
-
-	if err := authRepository.RemoveIPAddressBan(configValue.Value.(string)); err != nil {
+	if err := a.authRepository.RemoveIPAddressBan(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, "error removing IP address ban")
 		return
 	}
@@ -101,10 +96,8 @@ func UnBanIPAddress(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetIPAddressBans will return all the banned IP addresses.
-func GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
-	authRepository := authrepository.Get()
-
-	bans, err := authRepository.GetIPAddressBans()
+func (a *Admin) GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
+	bans, err := a.authRepository.GetIPAddressBans()
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -191,12 +184,11 @@ func (a *Admin) handleUserDisabling(userID string) error {
 	localIP4Address := "127.0.0.1"
 	localIP6Address := "::1"
 
-	authRepository := authrepository.Get()
 	for _, client := range clients {
 		ipAddress := client.IPAddress
 		if ipAddress != localIP4Address && ipAddress != localIP6Address {
 			reason := fmt.Sprintf("Banning of %s", disconnectedUser.DisplayName)
-			if err := authRepository.BanIPAddress(ipAddress, reason); err != nil {
+			if err := a.authRepository.BanIPAddress(ipAddress, reason); err != nil {
 				log.Errorln("error banning IP address: ", err)
 			}
 		}

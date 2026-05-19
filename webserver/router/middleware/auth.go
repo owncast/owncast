@@ -8,7 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/utils"
 )
@@ -104,7 +103,6 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 // RequireUserAccessToken will validate a provided user's access token and make sure the associated user is enabled.
 // Not to be used for validating 3rd party access.
 func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc {
-	authRepository := authrepository.Get()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accessToken := r.URL.Query().Get("accessToken")
 		if accessToken == "" {

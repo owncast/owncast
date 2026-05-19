@@ -15,6 +15,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/chat/events"
@@ -26,6 +27,7 @@ type Deps struct {
 	GetStatus        func() models.Status
 	Webhooks         *webhooks.Service
 	ConfigRepository configrepository.ConfigRepository
+	AuthRepository   authrepository.AuthRepository
 }
 
 // New constructs a chat Service. Call Start to launch the broadcast
@@ -34,6 +36,7 @@ func New(deps Deps) *Service {
 	s := newServer(deps.Webhooks)
 	s.getStatus = deps.GetStatus
 	s.configRepository = deps.ConfigRepository
+	s.authRepository = deps.AuthRepository
 	return s
 }
 

@@ -96,28 +96,28 @@ func (s *ServerInterfaceImpl) GetDisabledUsersOptions(w http.ResponseWriter, r *
 	middleware.RequireAdminAuth(admin.GetDisabledUsers)(w, r)
 }
 
-func (*ServerInterfaceImpl) BanIPAddress(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.BanIPAddress)(w, r)
+func (s *ServerInterfaceImpl) BanIPAddress(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.BanIPAddress)(w, r)
 }
 
 func (s *ServerInterfaceImpl) BanIPAddressOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.BanIPAddress)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.BanIPAddress)(w, r)
 }
 
-func (*ServerInterfaceImpl) UnbanIPAddress(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.UnBanIPAddress)(w, r)
+func (s *ServerInterfaceImpl) UnbanIPAddress(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.UnBanIPAddress)(w, r)
 }
 
 func (s *ServerInterfaceImpl) UnbanIPAddressOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.UnBanIPAddress)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.UnBanIPAddress)(w, r)
 }
 
-func (*ServerInterfaceImpl) GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetIPAddressBans)(w, r)
+func (s *ServerInterfaceImpl) GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
+	middleware.RequireAdminAuth(s.h.admin.GetIPAddressBans)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetIPAddressBansOptions(w http.ResponseWriter, r *http.Request) {
-	middleware.RequireAdminAuth(admin.GetIPAddressBans)(w, r)
+	middleware.RequireAdminAuth(s.h.admin.GetIPAddressBans)(w, r)
 }
 
 func (s *ServerInterfaceImpl) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {

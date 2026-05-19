@@ -11,6 +11,7 @@ import (
 
 	indieauthlib "github.com/owncast/owncast/auth/indieauth"
 	"github.com/owncast/owncast/logging"
+	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
 
@@ -124,6 +125,7 @@ func main() {
 	// level singletons into services/<domain>/, their constructors join
 	// this block.
 	configRepository := configrepository.New(datastore.GetDatastore())
+	authRepository := authrepository.New(datastore.GetDatastore())
 
 	handleCommandLineFlags(configRepository)
 
@@ -143,6 +145,7 @@ func main() {
 	metrics.SetConfigRepository(configRepository)
 	yp.SetConfigRepository(configRepository)
 	middleware.SetConfigRepository(configRepository)
+	middleware.SetAuthRepository(authRepository)
 	indieauthlib.SetConfigRepository(configRepository)
 	notificationsrepository.SetConfigRepository(configRepository)
 
@@ -167,6 +170,7 @@ func main() {
 		GetStatus:        nil, // wired below once streamSvc exists
 		Webhooks:         webhooksSvc,
 		ConfigRepository: configRepository,
+		AuthRepository:   authRepository,
 	})
 
 	apSvc := activitypub.New(activitypub.Deps{
@@ -211,6 +215,7 @@ func main() {
 		Webhooks:         webhooksSvc,
 		Chat:             chatSvc,
 		ConfigRepository: configRepository,
+		AuthRepository:   authRepository,
 	})
 
 	fediverseHandler := fediverse.New(fediverse.Deps{
