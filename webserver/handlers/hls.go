@@ -27,6 +27,22 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	relativePath := strings.Replace(requestedPath, "/hls/", "", 1)
 	fullPath := filepath.Join(config.HLSStoragePath, relativePath)
 
+	// Defense-in-depth path-traversal guard. http.ServeFile already rejects
+	// URL.Path entries containing "..", but we resolve both paths to
+	// absolute form and confirm the request stays inside HLSStoragePath
+	// rather than relying on that stdlib detail. HLS asset names never
+	// contain ".." in practice.
+	absBase, err := filepath.Abs(config.HLSStoragePath)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	absFull, err := filepath.Abs(fullPath)
+	if err != nil || (absFull != absBase && !strings.HasPrefix(absFull, absBase+string(filepath.Separator))) {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	// If using external storage then only allow requests for the
 	// master playlist at stream.m3u8, no variants or segments.
 	configRepository := configrepository.Get()
@@ -52,5 +68,5 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	middleware.EnableCors(w)
-	http.ServeFile(w, r, fullPath)
+	http.ServeFile(w, r, fullPath) //nolint:gosec // G703: fullPath was verified to be inside HLSStoragePath above
 }

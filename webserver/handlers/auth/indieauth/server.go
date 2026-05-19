@@ -55,7 +55,12 @@ func HandleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	redirectParams.Set("state", request.State)
 	u.RawQuery = redirectParams.Encode()
 
-	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect)
+	// The redirect target is the IndieAuth client's registered redirect_uri,
+	// already parsed and validated by ia.StartServerAuth above. This handler
+	// is also gated by middleware.RequireAdminAuth, so only authenticated
+	// admins reach this code path. The "open redirect" warning is the
+	// protocol working as designed.
+	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect) //nolint:gosec // G710: redirect target is the validated IndieAuth client redirect_uri
 }
 
 func HandleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
