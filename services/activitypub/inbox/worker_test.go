@@ -53,23 +53,29 @@ func makeFakePerson() vocab.ActivityStreamsPerson {
 // testService is the inbox Service used by tests in this file. It's
 // initialized in TestMain with a real in-memory datastore so handler
 // methods that hit persistence/followers work.
-var testService *Service
+var (
+	testService   *Service
+	testDatastore *datastore.Datastore
+)
 
 func TestMain(m *testing.M) {
-	datastore.SetupPersistence(":memory:")
-	configRepository := configrepository.New(datastore.GetDatastore())
+	ds, err := datastore.SetupPersistence(":memory:")
+	if err != nil {
+		panic(err)
+	}
+	testDatastore = ds
+	configRepository := configrepository.New(testDatastore)
 	configRepository.SetServerURL("https://my.cool.site.biz")
-	ds := datastore.GetDatastore()
-	persistenceSvc := persistence.New(ds, nil)
+	persistenceSvc := persistence.New(testDatastore, nil)
 	testService = New(Deps{
 		Persistence: persistenceSvc,
-		Followers:   followersrepository.New(ds),
+		Followers:   followersrepository.New(testDatastore),
 	})
 	m.Run()
 }
 
 func TestBlockedDomains(t *testing.T) {
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 
 	person := makeFakePerson()
 
@@ -91,7 +97,7 @@ func TestBlockedDomains(t *testing.T) {
 func TestBlockedActors(t *testing.T) {
 	person := makeFakePerson()
 	fakeRequest := streams.NewActivityStreamsFollow()
-	followersRepository := followersrepository.New(datastore.GetDatastore())
+	followersRepository := followersrepository.New(testDatastore)
 	followersRepository.Add(apmodels.ActivityPubActor{
 		ActorIri:         person.GetJSONLDId().GetIRI(),
 		Inbox:            person.GetJSONLDId().GetIRI(),

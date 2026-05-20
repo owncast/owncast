@@ -18,7 +18,10 @@ import (
 // Webfinger is stateless apart from the builder + configRepository, so
 // only those deps are populated; if other handler tests land here that
 // hit additional deps, expand the construction below.
-var testControllers = &Controllers{}
+var (
+	testControllers = &Controllers{}
+	testDatastore   *datastore.Datastore
+)
 
 func TestMain(m *testing.M) {
 	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-db.db")
@@ -27,11 +30,13 @@ func TestMain(m *testing.M) {
 	}
 	defer os.Remove(dbFile.Name())
 
-	if err := datastore.SetupPersistence(dbFile.Name()); err != nil {
+	ds, err := datastore.SetupPersistence(dbFile.Name())
+	if err != nil {
 		panic(err)
 	}
+	testDatastore = ds
 
-	cfg := configrepository.New(datastore.GetDatastore())
+	cfg := configrepository.New(testDatastore)
 	signer := apcrypto.New(apcrypto.Deps{ConfigRepository: cfg})
 	builder := apmodels.New(apmodels.Deps{ConfigRepository: cfg, Signer: signer})
 	testControllers = &Controllers{
@@ -76,7 +81,7 @@ func TestWebfingerHandlerWithIDNHost(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			configRepository := configrepository.New(datastore.GetDatastore())
+			configRepository := configrepository.New(testDatastore)
 			configRepository.SetFederationEnabled(true)
 			configRepository.SetFederationUsername("retrots3m")
 			configRepository.SetServerURL(tt.serverURL)

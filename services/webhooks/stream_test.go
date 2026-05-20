@@ -7,11 +7,10 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/chat/events"
-	"github.com/owncast/owncast/services/datastore"
 )
 
 func TestSendStreamStatusEvent(t *testing.T) {
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 
 	configRepository.SetServerName("my server")
 	configRepository.SetServerSummary("my server where I stream")

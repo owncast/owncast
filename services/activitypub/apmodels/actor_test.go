@@ -19,7 +19,10 @@ import (
 // testBuilder is the *Builder used by tests in this package. Initialized
 // in TestMain against an in-memory datastore so the config-reading
 // methods (MakeServiceForAccount, MakeLocalIRIForAccount, etc.) work.
-var testBuilder *Builder
+var (
+	testBuilder   *Builder
+	testDatastore *datastore.Datastore
+)
 
 func makeFakeService() vocab.ActivityStreamsService {
 	iri, _ := url.Parse("https://fake.fediverse.server/user/mrfoo")
@@ -67,9 +70,13 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	datastore.SetupPersistence(dbFile.Name())
+	ds, err := datastore.SetupPersistence(dbFile.Name())
+	if err != nil {
+		panic(err)
+	}
+	testDatastore = ds
 
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 	signer := crypto.New(crypto.Deps{ConfigRepository: configRepository})
 	testBuilder = New(Deps{ConfigRepository: configRepository, Signer: signer})
 
@@ -167,7 +174,7 @@ func TestMakeServiceForAccount(t *testing.T) {
 }
 
 func TestMakeServiceForAccountWithIDNServerURL(t *testing.T) {
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 	configRepository.SetServerURL("https://live.retrospection.みんな")
 	t.Cleanup(func() {
 		configRepository.SetServerURL("https://my.cool.site.biz")

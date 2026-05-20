@@ -29,8 +29,11 @@ var _datastore *datastore.Datastore
 var followers = []models.Follower{}
 
 func setup() {
-	datastore.SetupPersistence(":memory:")
-	_datastore = datastore.GetDatastore()
+	ds, err := datastore.SetupPersistence(":memory:")
+	if err != nil {
+		panic(err)
+	}
+	_datastore = ds
 
 	followersRepo := followersrepository.New(_datastore)
 
@@ -155,8 +158,10 @@ func createTestFollower(followersRepo followersrepository.FollowersRepository, a
 
 func TestGetUniqueDeliveryInboxes(t *testing.T) {
 	// Set up a fresh database for this test
-	datastore.SetupPersistence(":memory:")
-	ds := datastore.GetDatastore()
+	ds, err := datastore.SetupPersistence(":memory:")
+	if err != nil {
+		t.Fatalf("setup error: %s", err)
+	}
 	_datastore = ds
 	followersRepo := followersrepository.New(ds)
 
@@ -252,8 +257,10 @@ func TestGetUniqueDeliveryInboxes(t *testing.T) {
 
 func TestSharedInboxPreferredOverIndividual(t *testing.T) {
 	// Set up a fresh database for this test
-	datastore.SetupPersistence(":memory:")
-	ds := datastore.GetDatastore()
+	ds, err := datastore.SetupPersistence(":memory:")
+	if err != nil {
+		t.Fatalf("setup error: %s", err)
+	}
 	_datastore = ds
 	followersRepo := followersrepository.New(ds)
 
@@ -288,8 +295,10 @@ func TestSharedInboxPreferredOverIndividual(t *testing.T) {
 
 func TestIndividualInboxUsedWhenNoSharedInbox(t *testing.T) {
 	// Set up a fresh database for this test
-	datastore.SetupPersistence(":memory:")
-	ds := datastore.GetDatastore()
+	ds, err := datastore.SetupPersistence(":memory:")
+	if err != nil {
+		t.Fatalf("setup error: %s", err)
+	}
 	_datastore = ds
 	followersRepo := followersrepository.New(ds)
 

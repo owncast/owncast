@@ -11,7 +11,6 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/chat/events"
-	"github.com/owncast/owncast/services/datastore"
 )
 
 func TestSendChatEvent(t *testing.T) {
@@ -230,7 +229,7 @@ func TestSendChatEventSetMessageVisibility(t *testing.T) {
 // TestWebhookHasServerStatus verifies that all webhook events include server status
 func TestWebhookHasServerStatus(t *testing.T) {
 	// Set up server configuration
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 	configRepository.SetServerURL("http://localhost:8080")
 
 	eventChannel := make(chan WebhookEvent)
@@ -243,7 +242,7 @@ func TestWebhookHasServerStatus(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
+	webhooksRepo := webhookrepository.New(testDatastore)
 
 	// Subscribe to the webhook.
 	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.UserJoined})

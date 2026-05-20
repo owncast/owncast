@@ -8,13 +8,19 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
+var _datastore *Datastore
+
 func TestMain(m *testing.M) {
 	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-db.db")
 	if err != nil {
 		panic(err)
 	}
 
-	SetupPersistence(dbFile.Name())
+	ds, err := SetupPersistence(dbFile.Name())
+	if err != nil {
+		panic(err)
+	}
+	_datastore = ds
 	m.Run()
 }
 

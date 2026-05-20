@@ -35,7 +35,10 @@ func fakeGetStatus() models.Status {
 // testSvc is the *Service used by tests in this package. Constructed
 // in TestMain after the in-memory datastore is up so the worker pool
 // has somewhere to dispatch.
-var testSvc *Service
+var (
+	testSvc       *Service
+	testDatastore *datastore.Datastore
+)
 
 func TestMain(m *testing.M) {
 	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-db.db")
@@ -45,14 +48,16 @@ func TestMain(m *testing.M) {
 	dbFile.Close()
 	defer os.Remove(dbFile.Name())
 
-	if err := datastore.SetupPersistence(dbFile.Name()); err != nil {
+	ds, err := datastore.SetupPersistence(dbFile.Name())
+	if err != nil {
 		panic(err)
 	}
+	testDatastore = ds
 
 	// Set up server URL for tests
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 	configRepository.SetServerURL("http://localhost:8080")
-	webhookRepository := webhookrepository.New(datastore.GetDatastore())
+	webhookRepository := webhookrepository.New(testDatastore)
 
 	testSvc = New(Deps{
 		GetStatus:         fakeGetStatus,
@@ -80,7 +85,7 @@ func TestPublicSend(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
+	webhooksRepo := webhookrepository.New(testDatastore)
 
 	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
 	if err != nil {
@@ -127,7 +132,7 @@ func TestRouting(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
+	webhooksRepo := webhookrepository.New(testDatastore)
 
 	for _, eventType := range eventTypes {
 		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
@@ -170,7 +175,7 @@ func TestMultiple(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
+	webhooksRepo := webhookrepository.New(testDatastore)
 
 	for i := 0; i < times; i++ {
 		hook, err := webhooksRepo.InsertWebhook(fmt.Sprintf("%v/%v", svr.URL, i), []models.EventType{models.MessageSent})
@@ -210,7 +215,7 @@ func TestTimestamps(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
+	webhooksRepo := webhookrepository.New(testDatastore)
 
 	for i, eventType := range eventTypes {
 		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
@@ -311,7 +316,7 @@ func TestParallel(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
+	webhooksRepo := webhookrepository.New(testDatastore)
 
 	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
 	if err != nil {
@@ -348,7 +353,7 @@ func checkPayload(t *testing.T, eventType models.EventType, send func(), expecte
 	}))
 	defer svr.Close()
 
-	webhooksRepo := webhookrepository.New(datastore.GetDatastore())
+	webhooksRepo := webhookrepository.New(testDatastore)
 
 	// Subscribe to the webhook.
 	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{eventType})

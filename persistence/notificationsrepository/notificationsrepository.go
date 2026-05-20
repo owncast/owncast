@@ -28,18 +28,6 @@ type SqlNotificationsRepository struct {
 	configRepository configrepository.ConfigRepository
 }
 
-// NOTE: This is temporary during the transition period.
-var temporaryGlobalInstance NotificationsRepository
-
-// Get will return the notifications repository.
-func Get() NotificationsRepository {
-	if temporaryGlobalInstance == nil {
-		i := New(datastore.GetDatastore(), configrepository.New(datastore.GetDatastore()))
-		temporaryGlobalInstance = i
-	}
-	return temporaryGlobalInstance
-}
-
 // Setup will perform any pre-use setup for the notifier.
 // The notifications table itself is created by the goose migrations package.
 func (n *SqlNotificationsRepository) Setup() {

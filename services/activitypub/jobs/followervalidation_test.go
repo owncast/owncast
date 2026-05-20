@@ -28,8 +28,11 @@ func setup() {
 
 // resetTestDatabase initializes a fresh in-memory database for testing.
 func resetTestDatabase() {
-	datastore.SetupPersistence(":memory:")
-	testDatastore = datastore.GetDatastore()
+	ds, err := datastore.SetupPersistence(":memory:")
+	if err != nil {
+		panic(err)
+	}
+	testDatastore = ds
 }
 
 // setupTestWithRepo resets the database and returns a new repository instance.

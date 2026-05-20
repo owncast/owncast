@@ -20,6 +20,7 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/webhooks"
 )
 
@@ -27,6 +28,7 @@ import (
 type Deps struct {
 	GetStatus             func() models.Status
 	Webhooks              *webhooks.Service
+	Datastore             *datastore.Datastore
 	ConfigRepository      configrepository.ConfigRepository
 	AuthRepository        authrepository.AuthRepository
 	ChatMessageRepository chatmessagerepository.ChatMessageRepository
@@ -38,6 +40,7 @@ type Deps struct {
 func New(deps Deps) *Service {
 	s := newServer(deps.Webhooks)
 	s.getStatus = deps.GetStatus
+	s.datastore = deps.Datastore
 	s.configRepository = deps.ConfigRepository
 	s.authRepository = deps.AuthRepository
 	s.chatMessageRepository = deps.ChatMessageRepository
@@ -57,7 +60,7 @@ func (s *Service) SetGetStatus(fn func() models.Status) {
 // Start initializes persistence, launches the broadcast loop, and
 // registers the Prometheus counter. Safe to call once.
 func (s *Service) Start() error {
-	setupPersistence()
+	s.setupPersistence()
 
 	go s.Run()
 

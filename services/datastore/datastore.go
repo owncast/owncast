@@ -108,10 +108,11 @@ func (ds *Datastore) Save(e models.ConfigEntry) error {
 	return nil
 }
 
-// Setup will perform initial initialization.
-func (ds *Datastore) Setup() {
+// Setup will perform initial initialization using the provided database
+// handle. Called by SetupPersistence with the freshly opened *sql.DB.
+func (ds *Datastore) Setup(db *sql.DB) {
 	ds.cache = make(map[string][]byte)
-	ds.DB = GetDatabase()
+	ds.DB = db
 	ds.DbLock = &sync.Mutex{}
 }
 
@@ -128,11 +129,6 @@ func (ds *Datastore) Reset() {
 	if _, err = stmt.Exec(); err != nil {
 		log.Fatalln(err)
 	}
-}
-
-// GetDatastore returns the shared instance of the owncast datastore.
-func GetDatastore() *Datastore {
-	return _datastore
 }
 
 // MustExec will execute a SQL statement on a provided database instance.

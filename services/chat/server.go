@@ -18,6 +18,7 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"
@@ -41,6 +42,10 @@ type Service struct {
 	// webhooks dispatches chat events (messages, joins, parts,
 	// renames, visibility toggles) to configured webhook destinations.
 	webhooks *webhooks.Service
+
+	// datastore is the database handle the chat pruner uses to
+	// trim aged messages on a recurring timer.
+	datastore *datastore.Datastore
 
 	// getStatus returns the current stream status; used by the
 	// inbound-message path to make stream-state-aware decisions

@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/transcoder"
@@ -102,6 +103,10 @@ type Service struct {
 	// system-message announcements.
 	chat *chat.Service
 
+	// datastore is the database handle the stream service hands to the
+	// notifications subsystem when dispatching delayed go-live pushes.
+	datastore *datastore.Datastore
+
 	// configRepository provides all server settings used during stream
 	// lifecycle (latency level, output variants, stream keys, …).
 	configRepository configrepository.ConfigRepository
@@ -115,6 +120,7 @@ type Deps struct {
 	Webhooks         *webhooks.Service
 	Chat             *chat.Service
 	YP               *yp.YP
+	Datastore        *datastore.Datastore
 	ConfigRepository configrepository.ConfigRepository
 }
 
@@ -129,6 +135,7 @@ func New(deps Deps) *Service {
 		webhooks:         deps.Webhooks,
 		chat:             deps.Chat,
 		yp:               deps.YP,
+		datastore:        deps.Datastore,
 		configRepository: deps.ConfigRepository,
 	}
 }

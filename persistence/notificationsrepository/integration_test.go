@@ -26,7 +26,7 @@ func TestIntegrationSetup(t *testing.T) {
 	// This test ensures integration setup works properly
 	// The actual setup is done in the init function below
 	if integrationTestDatastore == nil {
-		integrationTestDatastore = datastore.GetDatastore()
+		integrationTestDatastore = testDatastore
 		integrationRepo = New(integrationTestDatastore, configrepository.New(integrationTestDatastore))
 		integrationRepo.Setup()
 	}
@@ -38,7 +38,7 @@ func TestIntegrationSetup(t *testing.T) {
 
 func TestBrowserPushSetupIntegration(t *testing.T) {
 	// Test that browser push keys are generated during setup
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 	pubKey, err := configRepository.GetBrowserPushPublicKey()
 	if err != nil {
 		t.Errorf("Should be able to get browser push public key: %v", err)
@@ -56,7 +56,7 @@ func TestBrowserPushSetupIntegration(t *testing.T) {
 }
 
 func TestBrowserPushConfigurationIntegration(t *testing.T) {
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 
 	// Test that browser push is enabled by default
 	browserConfig := configRepository.GetBrowserPushConfig()
@@ -72,7 +72,7 @@ func TestBrowserPushConfigurationIntegration(t *testing.T) {
 }
 
 func TestDiscordConfigurationIntegration(t *testing.T) {
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 
 	// Test Discord configuration setup
 	discordConfig := models.DiscordConfiguration{
@@ -142,19 +142,6 @@ func TestNotificationWorkflowIntegration(t *testing.T) {
 			t.Error("Notification destination should be removed")
 		}
 	}
-}
-
-func TestRepositoryGetSingleton(t *testing.T) {
-	// Test that Get() returns the same instance
-	repo1 := Get()
-	repo2 := Get()
-
-	if repo1 != repo2 {
-		t.Error("Get() should return the same singleton instance")
-	}
-
-	// Test that it implements the interface
-	var _ NotificationsRepository = repo1
 }
 
 func TestDatabaseTransactionIntegrity(t *testing.T) {

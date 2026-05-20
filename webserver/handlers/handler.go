@@ -91,5 +91,5 @@ func (s *ServerInterfaceImpl) ReportPlaybackMetrics(w http.ResponseWriter, r *ht
 }
 
 func (s *ServerInterfaceImpl) RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request, params generated.RegisterForLiveNotificationsParams) {
-	s.h.middleware.RequireUserAccessToken(RegisterForLiveNotifications)(w, r)
+	s.h.middleware.RequireUserAccessToken(s.h.RegisterForLiveNotifications)(w, r)
 }

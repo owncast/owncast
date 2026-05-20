@@ -15,15 +15,14 @@ var (
 
 func TestMain(m *testing.M) {
 	// Create an in-memory database for testing
-	if err := datastore.SetupPersistence(":memory:"); err != nil {
+	ds, err := datastore.SetupPersistence(":memory:")
+	if err != nil {
 		panic(err)
 	}
-
-	// Get the shared datastore instance
-	testDatastore = datastore.GetDatastore()
+	testDatastore = ds
 
 	// Setup the notifications repository.
-	testRepo = New(testDatastore, configrepository.New(datastore.GetDatastore()))
+	testRepo = New(testDatastore, configrepository.New(testDatastore))
 	testRepo.Setup()
 
 	// Run tests
@@ -178,12 +177,6 @@ func TestBrowserPushNotificationConstant(t *testing.T) {
 func TestNotificationRepositoryInterface(t *testing.T) {
 	// Test that our implementation satisfies the interface
 	var _ NotificationsRepository = &SqlNotificationsRepository{}
-
-	// Test that we can get the repository instance
-	repo := Get()
-	if repo == nil {
-		t.Error("Get() should return a non-nil repository instance")
-	}
 
 	// Test that New creates a valid repository
 	newRepo := New(testDatastore, configrepository.New(testDatastore))

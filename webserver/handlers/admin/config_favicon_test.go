@@ -19,7 +19,10 @@ import (
 // testAdmin is the *Admin used by tests in this package. Only the
 // configRepository handle is needed by favicon tests; expand if other
 // handler tests land that need additional deps.
-var testAdmin *Admin
+var (
+	testAdmin     *Admin
+	testDatastore *datastore.Datastore
+)
 
 func TestMain(m *testing.M) {
 	dbFile, err := os.CreateTemp(os.TempDir(), "owncast-test-db.db")
@@ -28,16 +31,18 @@ func TestMain(m *testing.M) {
 	}
 	dbFile.Close()
 
-	if err := datastore.SetupPersistence(dbFile.Name()); err != nil {
+	ds, err := datastore.SetupPersistence(dbFile.Name())
+	if err != nil {
 		panic(err)
 	}
+	testDatastore = ds
 
 	// Ensure data directory exists for file operations.
 	if err := os.MkdirAll("data", 0o755); err != nil {
 		panic(err)
 	}
 
-	testAdmin = &Admin{configRepository: configrepository.New(datastore.GetDatastore())}
+	testAdmin = &Admin{configRepository: configrepository.New(testDatastore)}
 
 	code := m.Run()
 	os.Remove(dbFile.Name())
@@ -86,7 +91,7 @@ func cleanupFaviconFiles(t *testing.T) {
 	for _, ext := range []string{".png", ".ico"} {
 		os.Remove(filepath.Join("data", "favicon"+ext))
 	}
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 	configRepository.SetFaviconPath("")
 }
 
@@ -114,7 +119,7 @@ func TestSetFaviconPNG(t *testing.T) {
 	}
 
 	// Verify config was updated.
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 	if path := configRepository.GetFaviconPath(); path != "favicon.png" {
 		t.Errorf("expected favicon path 'favicon.png', got %q", path)
 	}
@@ -141,7 +146,7 @@ func TestSetFaviconICO(t *testing.T) {
 	}
 
 	// Verify config was updated.
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 	if path := configRepository.GetFaviconPath(); path != "favicon.ico" {
 		t.Errorf("expected favicon path 'favicon.ico', got %q", path)
 	}
@@ -230,7 +235,7 @@ func TestResetFavicon(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 	if err := configRepository.SetFaviconPath("favicon.png"); err != nil {
 		t.Fatal(err)
 	}
@@ -261,7 +266,7 @@ func TestResetFavicon(t *testing.T) {
 
 func TestResetFaviconWhenNoneSet(t *testing.T) {
 	// Reset when no custom favicon is set should still succeed.
-	configRepository := configrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(testDatastore)
 	configRepository.SetFaviconPath("")
 
 	req := httptest.NewRequest(http.MethodDelete, "/api/admin/config/favicon", nil)

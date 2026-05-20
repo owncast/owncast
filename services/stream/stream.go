@@ -12,7 +12,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
@@ -286,7 +285,7 @@ func (s *Service) startLiveStreamNotificationsTimer() context.CancelFunc {
 			}
 
 			// Send notification to those who have registered for them.
-			if notificationService, err := notifications.New(datastore.GetDatastore(), s.configRepository); err != nil {
+			if notificationService, err := notifications.New(s.datastore, s.configRepository); err != nil {
 				log.Errorln(err)
 			} else {
 				notificationService.Notify()

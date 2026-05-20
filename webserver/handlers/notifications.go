@@ -14,7 +14,7 @@ import (
 
 // RegisterForLiveNotifications will register a channel + destination to be
 // notified when a stream goes live.
-func RegisterForLiveNotifications(u models.User, w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) RegisterForLiveNotifications(u models.User, w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		webutils.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
@@ -43,7 +43,7 @@ func RegisterForLiveNotifications(u models.User, w http.ResponseWriter, r *http.
 		return
 	}
 
-	if err := notificationsrepo.Get().AddNotification(req.Channel, req.Destination); err != nil {
+	if err := h.notificationsRepository.AddNotification(req.Channel, req.Destination); err != nil {
 		log.Errorln(err)
 		webutils.WriteSimpleResponse(w, false, "unable to save notification")
 		return

@@ -119,7 +119,8 @@ func main() {
 		config.DatabaseFilePath = *dbFile
 	}
 
-	if err := datastore.SetupPersistence(config.DatabaseFilePath); err != nil {
+	dataStore, err := datastore.SetupPersistence(config.DatabaseFilePath)
+	if err != nil {
 		log.Fatalln("failed to open database", err)
 	}
 
@@ -127,12 +128,13 @@ func main() {
 	// components that consume them. As more packages migrate off package-
 	// level singletons into services/<domain>/, their constructors join
 	// this block.
-	configRepository := configrepository.New(datastore.GetDatastore())
-	authRepository := authrepository.New(datastore.GetDatastore())
-	followersRepository := followersrepository.New(datastore.GetDatastore())
-	webhookRepository := webhookrepository.New(datastore.GetDatastore())
-	chatMessageRepository := chatmessagerepository.New(datastore.GetDatastore())
-	userRepository := userrepository.New(datastore.GetDatastore())
+	configRepository := configrepository.New(dataStore)
+	authRepository := authrepository.New(dataStore)
+	followersRepository := followersrepository.New(dataStore)
+	webhookRepository := webhookrepository.New(dataStore)
+	chatMessageRepository := chatmessagerepository.New(dataStore)
+	userRepository := userrepository.New(dataStore)
+	notificationsRepository := notificationsrepository.New(dataStore, configRepository)
 
 	handleCommandLineFlags(configRepository)
 
@@ -156,7 +158,7 @@ func main() {
 
 	// Bring up the notifications repository and run its one-time
 	// browser-push key + default-config bootstrap before stream Start.
-	notificationsrepository.New(datastore.GetDatastore(), configRepository).Setup()
+	notificationsRepository.Setup()
 
 	ypSvc := yp.New(yp.Deps{
 		GetStatus:        nil, // wired below once streamSvc exists
@@ -193,6 +195,7 @@ func main() {
 	chatSvc := chat.New(chat.Deps{
 		GetStatus:             nil, // wired below once streamSvc exists
 		Webhooks:              webhooksSvc,
+		Datastore:             dataStore,
 		ConfigRepository:      configRepository,
 		AuthRepository:        authRepository,
 		ChatMessageRepository: chatMessageRepository,
@@ -200,7 +203,7 @@ func main() {
 	})
 
 	apSvc := activitypub.New(activitypub.Deps{
-		Datastore:           datastore.GetDatastore(),
+		Datastore:           dataStore,
 		Webhooks:            webhooksSvc,
 		Chat:                chatSvc,
 		ConfigRepository:    configRepository,
@@ -217,6 +220,7 @@ func main() {
 		Webhooks:         webhooksSvc,
 		Chat:             chatSvc,
 		YP:               ypSvc,
+		Datastore:        dataStore,
 		ConfigRepository: configRepository,
 	})
 
@@ -286,22 +290,23 @@ func main() {
 	})
 
 	h := handlers.NewHandlers(handlers.Deps{
-		Cache:                 cacheContainer,
-		Stream:                streamSvc,
-		Chat:                  chatSvc,
-		Admin:                 adminHandlers,
-		Activitypub:           apSvc,
-		Fediverse:             fediverseHandler,
-		IndieAuth:             indieauthHandler,
-		Moderation:            moderationHandler,
-		Middleware:            mw,
-		YP:                    ypSvc,
-		Metrics:               metricsSvc,
-		ConfigRepository:      configRepository,
-		FollowersRepository:   followersRepository,
-		ChatMessageRepository: chatMessageRepository,
-		UserRepository:        userRepository,
-		APBuilder:             apBuilder,
+		Cache:                   cacheContainer,
+		Stream:                  streamSvc,
+		Chat:                    chatSvc,
+		Admin:                   adminHandlers,
+		Activitypub:             apSvc,
+		Fediverse:               fediverseHandler,
+		IndieAuth:               indieauthHandler,
+		Moderation:              moderationHandler,
+		Middleware:              mw,
+		YP:                      ypSvc,
+		Metrics:                 metricsSvc,
+		ConfigRepository:        configRepository,
+		FollowersRepository:     followersRepository,
+		ChatMessageRepository:   chatMessageRepository,
+		UserRepository:          userRepository,
+		NotificationsRepository: notificationsRepository,
+		APBuilder:               apBuilder,
 	})
 
 	if err := router.Start(*enableVerboseLogging, h, mw, apSvc.Controllers()); err != nil {
