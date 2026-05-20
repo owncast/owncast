@@ -6,7 +6,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/webserver/router/middleware"
 )
@@ -16,7 +15,7 @@ func (a *Admin) Status(w http.ResponseWriter, r *http.Request) {
 	broadcaster := a.stream.GetBroadcaster()
 	status := a.stream.GetStatus()
 	currentBroadcast := a.stream.GetCurrentBroadcast()
-	health := metrics.GetStreamHealthOverview()
+	health := a.metrics.GetStreamHealthOverview()
 	response := adminStatusResponse{
 		Broadcaster:            broadcaster,
 		CurrentBroadcast:       currentBroadcast,

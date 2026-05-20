@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
@@ -16,6 +17,7 @@ import (
 	"github.com/owncast/owncast/webserver/handlers/auth/indieauth"
 	"github.com/owncast/owncast/webserver/handlers/moderation"
 	"github.com/owncast/owncast/webserver/router/middleware"
+	"github.com/owncast/owncast/yp"
 )
 
 // Handlers carries the dependencies of HTTP handlers that need injected
@@ -35,6 +37,8 @@ type Handlers struct {
 	indieauth             *indieauth.Handler
 	moderation            *moderation.Handler
 	middleware            *middleware.Middleware
+	yp                    *yp.YP
+	metrics               *metrics.Service
 	configRepository      configrepository.ConfigRepository
 	followersRepository   followersrepository.FollowersRepository
 	chatMessageRepository chatmessagerepository.ChatMessageRepository
@@ -53,6 +57,8 @@ type Deps struct {
 	IndieAuth             *indieauth.Handler
 	Moderation            *moderation.Handler
 	Middleware            *middleware.Middleware
+	YP                    *yp.YP
+	Metrics               *metrics.Service
 	ConfigRepository      configrepository.ConfigRepository
 	FollowersRepository   followersrepository.FollowersRepository
 	ChatMessageRepository chatmessagerepository.ChatMessageRepository
@@ -78,6 +84,8 @@ func NewHandlers(deps Deps) *Handlers {
 		indieauth:             deps.IndieAuth,
 		moderation:            deps.Moderation,
 		middleware:            deps.Middleware,
+		yp:                    deps.YP,
+		metrics:               deps.Metrics,
 		configRepository:      deps.ConfigRepository,
 		followersRepository:   deps.FollowersRepository,
 		chatMessageRepository: deps.ChatMessageRepository,

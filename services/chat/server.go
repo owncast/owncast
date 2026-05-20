@@ -464,6 +464,7 @@ func (s *Service) sendAllWelcomeMessage() {
 			MessageEvent: events.MessageEvent{
 				Body: welcomeMessage,
 			},
+			ServerName: s.configRepository.GetServerName(),
 		}
 		clientMessage.SetDefaults()
 		_ = s.Broadcast(clientMessage.GetBroadcastPayload())
@@ -476,6 +477,7 @@ func (s *Service) sendSystemMessageToClient(c *Client, message string) {
 		MessageEvent: events.MessageEvent{
 			Body: message,
 		},
+		ServerName: s.configRepository.GetServerName(),
 	}
 	clientMessage.SetDefaults()
 	clientMessage.RenderBody()

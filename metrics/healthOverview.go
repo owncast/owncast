@@ -15,58 +15,58 @@ const (
 )
 
 // GetStreamHealthOverview will return the stream health overview.
-func GetStreamHealthOverview() *models.StreamHealthOverview {
-	return metrics.streamHealthOverview
+func (s *Service) GetStreamHealthOverview() *models.StreamHealthOverview {
+	return s.metrics.streamHealthOverview
 }
 
-func generateStreamHealthOverview() {
+func (s *Service) generateStreamHealthOverview() {
 	// Determine what percentage of total players are represented in our overview.
-	totalPlayerCount := len(streamSvc.GetActiveViewers())
+	totalPlayerCount := len(s.stream.GetActiveViewers())
 	if totalPlayerCount == 0 {
-		metrics.streamHealthOverview = nil
+		s.metrics.streamHealthOverview = nil
 		return
 	}
 
-	pct := getClientErrorHeathyPercentage()
+	pct := s.getClientErrorHeathyPercentage()
 	if pct < 1 {
-		metrics.streamHealthOverview = nil
+		s.metrics.streamHealthOverview = nil
 		return
 	}
 
 	overview := &models.StreamHealthOverview{
 		Healthy:           pct > healthyPercentageMinValue,
 		HealthyPercentage: pct,
-		Message:           getStreamHealthOverviewMessage(),
+		Message:           s.getStreamHealthOverviewMessage(),
 	}
 
-	if totalPlayerCount > 0 && len(windowedBandwidths) > 0 {
-		representation := utils.IntPercentage(len(windowedBandwidths), totalPlayerCount)
+	if totalPlayerCount > 0 && len(s.windowedBandwidths) > 0 {
+		representation := utils.IntPercentage(len(s.windowedBandwidths), totalPlayerCount)
 		overview.Representation = representation
 	}
 
-	metrics.streamHealthOverview = overview
+	s.metrics.streamHealthOverview = overview
 }
 
-func getStreamHealthOverviewMessage() string {
-	if message := wastefulBitrateOverviewMessage(); message != "" {
+func (s *Service) getStreamHealthOverviewMessage() string {
+	if message := s.wastefulBitrateOverviewMessage(); message != "" {
 		return message
-	} else if message := cpuUsageHealthOverviewMessage(); message != "" {
+	} else if message := s.cpuUsageHealthOverviewMessage(); message != "" {
 		return message
-	} else if message := networkSpeedHealthOverviewMessage(); message != "" {
+	} else if message := s.networkSpeedHealthOverviewMessage(); message != "" {
 		return message
-	} else if message := errorCountHealthOverviewMessage(); message != "" {
+	} else if message := s.errorCountHealthOverviewMessage(); message != "" {
 		return message
 	}
 
 	return ""
 }
 
-func networkSpeedHealthOverviewMessage() string {
+func (s *Service) networkSpeedHealthOverviewMessage() string {
 	type singleVariant struct {
 		isVideoPassthrough bool
 		bitrate            int
 	}
-	outputVariants := configRepository.GetStreamOutputVariants()
+	outputVariants := s.configRepository.GetStreamOutputVariants()
 
 	streamSortVariants := make([]singleVariant, len(outputVariants))
 	for i, variant := range outputVariants {
@@ -90,7 +90,7 @@ func networkSpeedHealthOverviewMessage() string {
 	})
 
 	lowestSupportedBitrate := float64(streamSortVariants[len(streamSortVariants)-1].bitrate)
-	totalNumberOfClients := len(windowedBandwidths)
+	totalNumberOfClients := len(s.windowedBandwidths)
 
 	if totalNumberOfClients == 0 {
 		return ""
@@ -99,7 +99,7 @@ func networkSpeedHealthOverviewMessage() string {
 	// Determine healthy status based on bandwidth speeds of clients.
 	unhealthyClientCount := 0
 
-	for _, speed := range windowedBandwidths {
+	for _, speed := range s.windowedBandwidths {
 		if int(speed) < int(lowestSupportedBitrate*1.1) {
 			unhealthyClientCount++
 		}
@@ -115,13 +115,13 @@ func networkSpeedHealthOverviewMessage() string {
 // wastefulBitrateOverviewMessage attempts to determine if a streamer is sending to
 // Owncast at a bitrate higher than they're streaming to their viewers leading
 // to wasted CPU by having to compress it.
-func wastefulBitrateOverviewMessage() string {
-	if len(metrics.CPUUtilizations) < 2 {
+func (s *Service) wastefulBitrateOverviewMessage() string {
+	if len(s.metrics.CPUUtilizations) < 2 {
 		return ""
 	}
 
 	// Only return an alert if the CPU usage is around the max cpu threshold.
-	recentCPUUses := metrics.CPUUtilizations[len(metrics.CPUUtilizations)-2:]
+	recentCPUUses := s.metrics.CPUUtilizations[len(s.metrics.CPUUtilizations)-2:]
 	values := make([]float64, len(recentCPUUses))
 	for i, val := range recentCPUUses {
 		values[i] = val.Value
@@ -132,12 +132,12 @@ func wastefulBitrateOverviewMessage() string {
 		return ""
 	}
 
-	currentBroadcast := streamSvc.GetCurrentBroadcast()
+	currentBroadcast := s.stream.GetCurrentBroadcast()
 	if currentBroadcast == nil {
 		return ""
 	}
 
-	currentBroadcaster := streamSvc.GetBroadcaster()
+	currentBroadcaster := s.stream.GetBroadcaster()
 	if currentBroadcast == nil {
 		return ""
 	}
@@ -152,7 +152,7 @@ func wastefulBitrateOverviewMessage() string {
 		return ""
 	}
 
-	outputVariants := configRepository.GetStreamOutputVariants()
+	outputVariants := s.configRepository.GetStreamOutputVariants()
 
 	type singleVariant struct {
 		isVideoPassthrough bool
@@ -188,12 +188,12 @@ func wastefulBitrateOverviewMessage() string {
 	return ""
 }
 
-func cpuUsageHealthOverviewMessage() string {
-	if len(metrics.CPUUtilizations) < 2 {
+func (s *Service) cpuUsageHealthOverviewMessage() string {
+	if len(s.metrics.CPUUtilizations) < 2 {
 		return ""
 	}
 
-	recentCPUUses := metrics.CPUUtilizations[len(metrics.CPUUtilizations)-2:]
+	recentCPUUses := s.metrics.CPUUtilizations[len(s.metrics.CPUUtilizations)-2:]
 	values := make([]float64, len(recentCPUUses))
 	for i, val := range recentCPUUses {
 		values[i] = val.Value
@@ -206,13 +206,13 @@ func cpuUsageHealthOverviewMessage() string {
 	return fmt.Sprintf("The CPU usage on your server is over %d%%. This may cause video to be provided slower than necessary, causing buffering for your viewers. Consider increasing the resources available or reducing the number of output variants you made available.", maxCPUUsage)
 }
 
-func errorCountHealthOverviewMessage() string {
-	totalNumberOfClients := len(windowedBandwidths)
+func (s *Service) errorCountHealthOverviewMessage() string {
+	totalNumberOfClients := len(s.windowedBandwidths)
 	if totalNumberOfClients == 0 {
 		return ""
 	}
 
-	clientsWithErrors := getClientsWithErrorsCount()
+	clientsWithErrors := s.getClientsWithErrorsCount()
 
 	if clientsWithErrors == 0 {
 		return ""
@@ -226,7 +226,7 @@ func errorCountHealthOverviewMessage() string {
 		healthyPercentage := utils.IntPercentage(clientsWithErrors, totalNumberOfClients)
 
 		isUsingPassthrough := false
-		outputVariants := configRepository.GetStreamOutputVariants()
+		outputVariants := s.configRepository.GetStreamOutputVariants()
 		for _, variant := range outputVariants {
 			if variant.IsVideoPassthrough {
 				isUsingPassthrough = true
@@ -237,7 +237,7 @@ func errorCountHealthOverviewMessage() string {
 			return fmt.Sprintf("%d of %d viewers (%d%%) are experiencing errors. You're currently using a video passthrough output, often known for causing playback issues for people. It is suggested you turn it off.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 		}
 
-		currentBroadcast := streamSvc.GetCurrentBroadcast()
+		currentBroadcast := s.stream.GetCurrentBroadcast()
 		if currentBroadcast != nil && currentBroadcast.LatencyLevel.SecondsPerSegment < 3 {
 			return fmt.Sprintf("%d of %d viewers (%d%%) may be experiencing some issues. You may want to increase your latency buffer level in your video configuration to see if it helps.", clientsWithErrors, totalNumberOfClients, healthyPercentage)
 		}
@@ -248,9 +248,9 @@ func errorCountHealthOverviewMessage() string {
 	return ""
 }
 
-func getClientsWithErrorsCount() int {
+func (s *Service) getClientsWithErrorsCount() int {
 	clientsWithErrors := 0
-	for _, errors := range windowedErrorCounts {
+	for _, errors := range s.windowedErrorCounts {
 		if errors > 0 {
 			clientsWithErrors++
 		}
@@ -258,13 +258,13 @@ func getClientsWithErrorsCount() int {
 	return clientsWithErrors
 }
 
-func getClientErrorHeathyPercentage() int {
-	totalNumberOfClients := len(windowedErrorCounts)
+func (s *Service) getClientErrorHeathyPercentage() int {
+	totalNumberOfClients := len(s.windowedErrorCounts)
 	if totalNumberOfClients == 0 {
 		return -1
 	}
 
-	clientsWithErrors := getClientsWithErrorsCount()
+	clientsWithErrors := s.getClientsWithErrorsCount()
 
 	if clientsWithErrors == 0 {
 		return 100

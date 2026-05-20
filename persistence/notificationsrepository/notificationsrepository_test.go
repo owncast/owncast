@@ -22,13 +22,9 @@ func TestMain(m *testing.M) {
 	// Get the shared datastore instance
 	testDatastore = datastore.GetDatastore()
 
-	// Install the package-level configRepository handle the Setup() path
-	// expects to read browser-push keys from.
-	SetConfigRepository(configrepository.New(datastore.GetDatastore()))
-
-	// Setup the notifications repository
-	Setup()
-	testRepo = New(testDatastore)
+	// Setup the notifications repository.
+	testRepo = New(testDatastore, configrepository.New(datastore.GetDatastore()))
+	testRepo.Setup()
 
 	// Run tests
 	m.Run()
@@ -190,7 +186,7 @@ func TestNotificationRepositoryInterface(t *testing.T) {
 	}
 
 	// Test that New creates a valid repository
-	newRepo := New(testDatastore)
+	newRepo := New(testDatastore, configrepository.New(testDatastore))
 	if newRepo == nil {
 		t.Error("New() should return a non-nil repository instance")
 	}

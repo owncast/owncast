@@ -33,11 +33,11 @@ func (s *ServerInterfaceImpl) GetServerConfigOptions(w http.ResponseWriter, r *h
 }
 
 func (s *ServerInterfaceImpl) GetViewersOverTime(w http.ResponseWriter, r *http.Request, params generated.GetViewersOverTimeParams) {
-	s.h.middleware.RequireAdminAuth(admin.GetViewersOverTime)(w, r)
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetViewersOverTime)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetViewersOverTimeOptions(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.GetViewersOverTime)(w, r)
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetViewersOverTime)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
@@ -49,11 +49,11 @@ func (s *ServerInterfaceImpl) GetActiveViewersOptions(w http.ResponseWriter, r *
 }
 
 func (s *ServerInterfaceImpl) GetHardwareStats(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.GetHardwareStats)(w, r)
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetHardwareStats)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetHardwareStatsOptions(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.GetHardwareStats)(w, r)
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetHardwareStats)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetConnectedChatClients(w http.ResponseWriter, r *http.Request) {

@@ -4,6 +4,12 @@ package events
 type SystemMessageEvent struct {
 	Event
 	MessageEvent
+	// ServerName is the configured server display name baked in at
+	// construction time. Populated by chat.Service when the event is
+	// created so GetBroadcastPayload no longer needs to read from a
+	// package-level configRepository. Excluded from JSON because it's a
+	// transport detail, not a persisted field.
+	ServerName string `json:"-"`
 }
 
 // GetBroadcastPayload will return the object to send to all chat users.
@@ -14,7 +20,7 @@ func (e *SystemMessageEvent) GetBroadcastPayload() EventPayload {
 		"body":      e.Body,
 		"type":      SystemMessageSent,
 		"user": EventPayload{
-			"displayName": configRepository.GetServerName(),
+			"displayName": e.ServerName,
 		},
 	}
 }

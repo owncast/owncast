@@ -8,13 +8,12 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/models"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
 // GetViewersOverTime will return the number of viewers at points in time.
-func GetViewersOverTime(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) GetViewersOverTime(w http.ResponseWriter, r *http.Request) {
 	windowStartAtStr := r.URL.Query().Get("windowStart")
 	windowStartAtUnix, err := strconv.Atoi(windowStartAtStr)
 	if err != nil {
@@ -25,7 +24,7 @@ func GetViewersOverTime(w http.ResponseWriter, r *http.Request) {
 	windowStartAt := time.Unix(int64(windowStartAtUnix), 0)
 	windowEnd := time.Now()
 
-	viewersOverTime := metrics.GetViewersOverTime(windowStartAt, windowEnd)
+	viewersOverTime := a.metrics.GetViewersOverTime(windowStartAt, windowEnd)
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(viewersOverTime)
 	if err != nil {

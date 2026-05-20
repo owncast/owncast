@@ -18,7 +18,7 @@ func init() {
 	// This ensures we're using the same database setup
 	integrationTestDatastore = testDatastore
 	if integrationTestDatastore != nil {
-		integrationRepo = New(integrationTestDatastore)
+		integrationRepo = New(integrationTestDatastore, configrepository.New(integrationTestDatastore))
 	}
 }
 
@@ -27,8 +27,8 @@ func TestIntegrationSetup(t *testing.T) {
 	// The actual setup is done in the init function below
 	if integrationTestDatastore == nil {
 		integrationTestDatastore = datastore.GetDatastore()
-		Setup()
-		integrationRepo = New(integrationTestDatastore)
+		integrationRepo = New(integrationTestDatastore, configrepository.New(integrationTestDatastore))
+		integrationRepo.Setup()
 	}
 
 	if integrationRepo == nil {

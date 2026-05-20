@@ -124,6 +124,7 @@ func (s *Service) SendSystemMessage(text string, ephemeral bool) error {
 		MessageEvent: events.MessageEvent{
 			Body: text,
 		},
+		ServerName: s.configRepository.GetServerName(),
 	}
 	message.SetDefaults()
 	message.RenderBody()
@@ -151,6 +152,7 @@ func (s *Service) SendFediverseAction(eventType string, userAccountName string, 
 		UserAccountName: userAccountName,
 		Image:           image,
 		Link:            link,
+		ServerName:      s.configRepository.GetServerName(),
 	}
 
 	message.SetDefaults()

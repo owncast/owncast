@@ -29,7 +29,7 @@ type notificationService struct {
 // New creates a new instance of the notification service.
 func New(datastore *datastore.Datastore, configRepository configrepository.ConfigRepository) (Service, error) {
 	service := &notificationService{
-		repository:       notificationsrepository.New(datastore),
+		repository:       notificationsrepository.New(datastore, configRepository),
 		configRepository: configRepository,
 	}
 

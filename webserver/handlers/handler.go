@@ -5,8 +5,6 @@ import (
 
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
-
-	"github.com/owncast/owncast/yp"
 )
 
 // ServerInterfaceImpl is the OpenAPI-generated ServerInterface
@@ -64,8 +62,8 @@ func (s *ServerInterfaceImpl) GetWebConfig(w http.ResponseWriter, r *http.Reques
 	s.h.GetWebConfig(w, r)
 }
 
-func (*ServerInterfaceImpl) GetYPResponse(w http.ResponseWriter, r *http.Request) {
-	yp.GetYPResponse(w, r)
+func (s *ServerInterfaceImpl) GetYPResponse(w http.ResponseWriter, r *http.Request) {
+	s.h.yp.GetYPResponse(w, r)
 }
 
 func (*ServerInterfaceImpl) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
@@ -88,8 +86,8 @@ func (s *ServerInterfaceImpl) GetFollowers(w http.ResponseWriter, r *http.Reques
 	middleware.HandlePagination(s.h.GetFollowers)(w, r)
 }
 
-func (*ServerInterfaceImpl) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
-	ReportPlaybackMetrics(w, r)
+func (s *ServerInterfaceImpl) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
+	s.h.ReportPlaybackMetrics(w, r)
 }
 
 func (s *ServerInterfaceImpl) RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request, params generated.RegisterForLiveNotificationsParams) {

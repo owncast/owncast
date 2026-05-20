@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -28,6 +29,7 @@ type Admin struct {
 	activitypub           *activitypub.Service
 	webhooks              *webhooks.Service
 	chat                  *chat.Service
+	metrics               *metrics.Service
 	configRepository      configrepository.ConfigRepository
 	authRepository        authrepository.AuthRepository
 	followersRepository   followersrepository.FollowersRepository
@@ -44,6 +46,7 @@ type Deps struct {
 	Activitypub           *activitypub.Service
 	Webhooks              *webhooks.Service
 	Chat                  *chat.Service
+	Metrics               *metrics.Service
 	ConfigRepository      configrepository.ConfigRepository
 	AuthRepository        authrepository.AuthRepository
 	FollowersRepository   followersrepository.FollowersRepository
@@ -60,6 +63,7 @@ func New(deps Deps) *Admin {
 		activitypub:           deps.Activitypub,
 		webhooks:              deps.Webhooks,
 		chat:                  deps.Chat,
+		metrics:               deps.Metrics,
 		configRepository:      deps.ConfigRepository,
 		authRepository:        deps.AuthRepository,
 		followersRepository:   deps.FollowersRepository,

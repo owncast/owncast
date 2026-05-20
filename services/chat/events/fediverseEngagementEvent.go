@@ -7,6 +7,12 @@ type FediverseEngagementEvent struct {
 	Image           *string `json:"image"`
 	Link            string  `json:"link"`
 	UserAccountName string  `json:"title"`
+	// ServerName is the configured server display name baked in at
+	// construction time. Populated by chat.Service when the event is
+	// created so GetBroadcastPayload no longer needs to read from a
+	// package-level configRepository. Excluded from JSON because it's a
+	// transport detail, not a persisted field.
+	ServerName string `json:"-"`
 }
 
 // GetBroadcastPayload will return the object to send to all chat users.
@@ -20,7 +26,7 @@ func (e *FediverseEngagementEvent) GetBroadcastPayload() EventPayload {
 		"title":     e.UserAccountName,
 		"link":      e.Link,
 		"user": EventPayload{
-			"displayName": configRepository.GetServerName(),
+			"displayName": e.ServerName,
 		},
 	}
 }

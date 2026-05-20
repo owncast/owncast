@@ -27,7 +27,6 @@ import (
 	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/cache"
 	"github.com/owncast/owncast/services/chat"
-	chatevents "github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
@@ -149,12 +148,15 @@ func main() {
 	apmodels.SetConfigRepository(configRepository)
 	apcrypto.SetConfigRepository(configRepository)
 	apresolvers.SetConfigRepository(configRepository)
-	chatevents.SetConfigRepository(configRepository)
-	metrics.SetConfigRepository(configRepository)
-	metrics.SetUserRepository(userRepository)
-	yp.SetConfigRepository(configRepository)
-	notificationsrepository.SetConfigRepository(configRepository)
-	metrics.SetChatMessageRepository(chatMessageRepository)
+
+	// Bring up the notifications repository and run its one-time
+	// browser-push key + default-config bootstrap before stream Start.
+	notificationsrepository.New(datastore.GetDatastore(), configRepository).Setup()
+
+	ypSvc := yp.New(yp.Deps{
+		GetStatus:        nil, // wired below once streamSvc exists
+		ConfigRepository: configRepository,
+	})
 
 	mw := middleware.New(middleware.Deps{
 		ConfigRepository: configRepository,
@@ -206,6 +208,7 @@ func main() {
 		Activitypub:      apSvc,
 		Webhooks:         webhooksSvc,
 		Chat:             chatSvc,
+		YP:               ypSvc,
 		ConfigRepository: configRepository,
 	})
 
@@ -221,13 +224,21 @@ func main() {
 		WebhookRepository: webhookRepository,
 	})
 	chatSvc.SetGetStatus(streamSvc.GetStatus)
+	ypSvc.SetGetStatus(streamSvc.GetStatus)
 
 	if err := streamSvc.Start(ctx); err != nil {
 		log.Fatalln("failed to start the stream service", err)
 	}
 	defer streamSvc.Stop(ctx)
 
-	go metrics.Start(streamSvc, chatSvc)
+	metricsSvc := metrics.New(metrics.Deps{
+		Stream:                streamSvc,
+		Chat:                  chatSvc,
+		ConfigRepository:      configRepository,
+		ChatMessageRepository: chatMessageRepository,
+		UserRepository:        userRepository,
+	})
+	go metricsSvc.Start()
 
 	adminHandlers := admin.New(admin.Deps{
 		Stream:                streamSvc,
@@ -235,6 +246,7 @@ func main() {
 		Activitypub:           apSvc,
 		Webhooks:              webhooksSvc,
 		Chat:                  chatSvc,
+		Metrics:               metricsSvc,
 		ConfigRepository:      configRepository,
 		AuthRepository:        authRepository,
 		FollowersRepository:   followersRepository,
@@ -273,6 +285,8 @@ func main() {
 		IndieAuth:             indieauthHandler,
 		Moderation:            moderationHandler,
 		Middleware:            mw,
+		YP:                    ypSvc,
+		Metrics:               metricsSvc,
 		ConfigRepository:      configRepository,
 		FollowersRepository:   followersRepository,
 		ChatMessageRepository: chatMessageRepository,

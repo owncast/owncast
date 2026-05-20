@@ -114,6 +114,7 @@ type Deps struct {
 	Activitypub      *activitypub.Service
 	Webhooks         *webhooks.Service
 	Chat             *chat.Service
+	YP               *yp.YP
 	ConfigRepository configrepository.ConfigRepository
 }
 
@@ -127,6 +128,7 @@ func New(deps Deps) *Service {
 		activitypub:      deps.Activitypub,
 		webhooks:         deps.Webhooks,
 		chat:             deps.Chat,
+		yp:               deps.YP,
 		configRepository: deps.ConfigRepository,
 	}
 }

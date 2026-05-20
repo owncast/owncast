@@ -6,6 +6,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/datastore"
 
 	"github.com/pkg/errors"
@@ -18,11 +19,13 @@ type NotificationsRepository interface {
 	AddNotification(channel, destination string) error
 	RemoveNotificationForChannel(channel, destination string) error
 	GetNotificationDestinationsForChannel(channel string) ([]string, error)
+	Setup()
 }
 
 // SqlNotificationsRepository handles database operations for notifications.
 type SqlNotificationsRepository struct {
-	datastore *datastore.Datastore
+	datastore        *datastore.Datastore
+	configRepository configrepository.ConfigRepository
 }
 
 // NOTE: This is temporary during the transition period.
@@ -31,7 +34,7 @@ var temporaryGlobalInstance NotificationsRepository
 // Get will return the notifications repository.
 func Get() NotificationsRepository {
 	if temporaryGlobalInstance == nil {
-		i := New(datastore.GetDatastore())
+		i := New(datastore.GetDatastore(), configrepository.New(datastore.GetDatastore()))
 		temporaryGlobalInstance = i
 	}
 	return temporaryGlobalInstance
@@ -39,13 +42,13 @@ func Get() NotificationsRepository {
 
 // Setup will perform any pre-use setup for the notifier.
 // The notifications table itself is created by the goose migrations package.
-func Setup() {
-	initializeBrowserPushIfNeeded()
+func (n *SqlNotificationsRepository) Setup() {
+	n.initializeBrowserPushIfNeeded()
 }
 
-func initializeBrowserPushIfNeeded() {
-	pubKey, _ := configRepository.GetBrowserPushPublicKey()
-	privKey, _ := configRepository.GetBrowserPushPrivateKey()
+func (n *SqlNotificationsRepository) initializeBrowserPushIfNeeded() {
+	pubKey, _ := n.configRepository.GetBrowserPushPublicKey()
+	privKey, _ := n.configRepository.GetBrowserPushPrivateKey()
 
 	// We need browser push keys so people can register for pushes.
 	if pubKey == "" || privKey == "" {
@@ -54,26 +57,27 @@ func initializeBrowserPushIfNeeded() {
 			log.Errorln("unable to initialize browser push notification keys", err)
 		}
 
-		if err := configRepository.SetBrowserPushPrivateKey(browserPrivateKey); err != nil {
+		if err := n.configRepository.SetBrowserPushPrivateKey(browserPrivateKey); err != nil {
 			log.Errorln("unable to set browser push private key", err)
 		}
 
-		if err := configRepository.SetBrowserPushPublicKey(browserPublicKey); err != nil {
+		if err := n.configRepository.SetBrowserPushPublicKey(browserPublicKey); err != nil {
 			log.Errorln("unable to set browser push public key", err)
 		}
 	}
 
 	// Enable browser push notifications by default.
-	if !configRepository.GetHasPerformedInitialNotificationsConfig() {
-		_ = configRepository.SetBrowserPushConfig(models.BrowserNotificationConfiguration{Enabled: true, GoLiveMessage: config.GetDefaults().FederationGoLiveMessage})
-		_ = configRepository.SetHasPerformedInitialNotificationsConfig(true)
+	if !n.configRepository.GetHasPerformedInitialNotificationsConfig() {
+		_ = n.configRepository.SetBrowserPushConfig(models.BrowserNotificationConfiguration{Enabled: true, GoLiveMessage: config.GetDefaults().FederationGoLiveMessage})
+		_ = n.configRepository.SetHasPerformedInitialNotificationsConfig(true)
 	}
 }
 
 // New creates a new instance of the NotificationsRepository.
-func New(datastore *datastore.Datastore) NotificationsRepository {
+func New(datastore *datastore.Datastore, configRepository configrepository.ConfigRepository) NotificationsRepository {
 	return &SqlNotificationsRepository{
-		datastore: datastore,
+		datastore:        datastore,
+		configRepository: configRepository,
 	}
 }
 

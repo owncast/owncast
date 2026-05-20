@@ -5,13 +5,11 @@ import (
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
-
-	"github.com/owncast/owncast/metrics"
 )
 
 // GetHardwareStats will return hardware utilization over time.
-func GetHardwareStats(w http.ResponseWriter, r *http.Request) {
-	m := metrics.GetMetrics()
+func (a *Admin) GetHardwareStats(w http.ResponseWriter, r *http.Request) {
+	m := a.metrics.GetMetrics()
 
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(m)

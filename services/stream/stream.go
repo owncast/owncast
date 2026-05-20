@@ -12,12 +12,10 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/notificationsrepository"
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
-	"github.com/owncast/owncast/yp"
 )
 
 // Start brings up the storage backend, transcoder, RTMP listener, chat,
@@ -52,8 +50,6 @@ func (s *Service) Start(_ context.Context) error {
 		return err
 	}
 
-	s.yp = yp.NewYP(s.GetStatus)
-
 	if err := s.chat.Start(); err != nil {
 		log.Errorln(err)
 	}
@@ -67,8 +63,6 @@ func (s *Service) Start(_ context.Context) error {
 	}
 
 	s.webhooks.Start()
-
-	notificationsrepository.Setup()
 
 	return nil
 }
