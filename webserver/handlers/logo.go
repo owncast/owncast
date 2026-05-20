@@ -13,8 +13,6 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-var _hasWarnedSVGLogo = false
-
 // GetLogo will return the logo image as a response.
 func (h *Handlers) GetLogo(w http.ResponseWriter, r *http.Request) {
 	imageFilename := h.configRepository.GetLogoPath()
@@ -68,9 +66,11 @@ func (h *Handlers) GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
 	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
 	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
 
-	if !_hasWarnedSVGLogo {
+	h.hasWarnedSVGLogoLock.Lock()
+	defer h.hasWarnedSVGLogoLock.Unlock()
+	if !h.hasWarnedSVGLogo {
 		log.Warnf("an external site requested your logo. because many social networks do not support SVGs we returned a placeholder instead. change your current logo to a png or jpeg to be most compatible with external social networking sites.")
-		_hasWarnedSVGLogo = true
+		h.hasWarnedSVGLogo = true
 	}
 }
 

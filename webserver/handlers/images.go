@@ -5,8 +5,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/jellydator/ttlcache/v3"
-
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 )
@@ -16,12 +14,6 @@ const (
 	contentTypeGIF  = "image/gif"
 
 	thumbnailFilename = "thumbnail.jpg"
-)
-
-var previewThumbCache = ttlcache.New(
-	ttlcache.WithTTL[string, []byte](15),
-	ttlcache.WithCapacity[string, []byte](1),
-	ttlcache.WithDisableTouchOnHit[string, []byte](),
 )
 
 // GetThumbnail will return the thumbnail image as a response.
@@ -34,12 +26,12 @@ func (h *Handlers) GetThumbnail(w http.ResponseWriter, r *http.Request) {
 	var imageBytes []byte
 	var err error
 
-	if previewThumbCache.Get(imagePath) != nil {
-		ci := previewThumbCache.Get(imagePath)
+	if h.previewThumbCache.Get(imagePath) != nil {
+		ci := h.previewThumbCache.Get(imagePath)
 		imageBytes = ci.Value()
 	} else if utils.DoesFileExists(imagePath) {
 		imageBytes, err = getImage(imagePath)
-		previewThumbCache.Set(imagePath, imageBytes, inMemoryCacheTime)
+		h.previewThumbCache.Set(imagePath, imageBytes, inMemoryCacheTime)
 	} else {
 		h.GetLogo(w, r)
 		return
@@ -63,12 +55,12 @@ func (h *Handlers) GetPreview(w http.ResponseWriter, r *http.Request) {
 	var imageBytes []byte
 	var err error
 
-	if previewThumbCache.Get(imagePath) != nil {
-		ci := previewThumbCache.Get(imagePath)
+	if h.previewThumbCache.Get(imagePath) != nil {
+		ci := h.previewThumbCache.Get(imagePath)
 		imageBytes = ci.Value()
 	} else if utils.DoesFileExists(imagePath) {
 		imageBytes, err = getImage(imagePath)
-		previewThumbCache.Set(imagePath, imageBytes, inMemoryCacheTime)
+		h.previewThumbCache.Set(imagePath, imageBytes, inMemoryCacheTime)
 	} else {
 		h.GetLogo(w, r)
 		return

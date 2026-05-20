@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"net/http"
+	"sync"
+
+	"github.com/jellydator/ttlcache/v3"
 
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
@@ -47,6 +50,16 @@ type Handlers struct {
 	userRepository          userrepository.UserRepository
 	notificationsRepository notificationsrepository.NotificationsRepository
 	apBuilder               *apmodels.Builder
+
+	// previewThumbCache caches thumbnail/preview bytes for a short window
+	// so frequent polling from chat clients doesn't re-read the file
+	// every request.
+	previewThumbCache *ttlcache.Cache[string, []byte]
+
+	// hasWarnedSVGLogo gates the one-time warning logged when an
+	// external site requests an SVG logo via /logo/external.
+	hasWarnedSVGLogoLock sync.Mutex
+	hasWarnedSVGLogo     bool
 }
 
 // Deps lists every service a *Handlers consumes. New deps appear here as
@@ -98,5 +111,10 @@ func NewHandlers(deps Deps) *Handlers {
 		userRepository:          deps.UserRepository,
 		notificationsRepository: deps.NotificationsRepository,
 		apBuilder:               deps.APBuilder,
+		previewThumbCache: ttlcache.New(
+			ttlcache.WithTTL[string, []byte](15),
+			ttlcache.WithCapacity[string, []byte](1),
+			ttlcache.WithDisableTouchOnHit[string, []byte](),
+		),
 	}
 }

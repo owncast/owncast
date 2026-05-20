@@ -51,6 +51,8 @@ type S3Storage struct {
 
 	configRepository configrepository.ConfigRepository
 
+	performanceTracker *utils.PerformanceTracker
+
 	s3ForcePathStyle bool
 }
 
@@ -60,6 +62,7 @@ func NewS3Storage(configRepository configrepository.ConfigRepository) *S3Storage
 		queuedPlaylistUpdates: make(map[string]string),
 		lock:                  sync.Mutex{},
 		configRepository:      configRepository,
+		performanceTracker:    utils.NewPerformanceTracker(),
 	}
 }
 
@@ -94,14 +97,14 @@ func (s *S3Storage) Setup() error {
 func (s *S3Storage) SegmentWritten(localFilePath string) {
 	index := utils.GetIndexFromFilePath(localFilePath)
 	performanceMonitorKey := "s3upload-" + index
-	utils.StartPerformanceMonitor(performanceMonitorKey)
+	s.performanceTracker.StartPerformanceMonitor(performanceMonitorKey)
 
 	// Upload the segment
 	if _, err := s.Save(localFilePath, 0); err != nil {
 		log.Errorln(err)
 		return
 	}
-	averagePerformance := utils.GetAveragePerformance(performanceMonitorKey)
+	averagePerformance := s.performanceTracker.GetAveragePerformance(performanceMonitorKey)
 
 	// Warn the user about long-running save operations
 	if averagePerformance != 0 {

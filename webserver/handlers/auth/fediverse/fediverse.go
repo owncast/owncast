@@ -19,11 +19,13 @@ import (
 
 // Handler bundles the dependencies the fediverse auth handlers need:
 // the activitypub service (to send OTP codes via direct federated
-// message) and the chat service (to broadcast a system action when an
-// authenticated user re-logs in under a different display name).
+// message), the chat service (to broadcast a system action when an
+// authenticated user re-logs in under a different display name), and
+// the fediverse auth service that owns the in-memory OTP state.
 type Handler struct {
 	activitypub      *activitypub.Service
 	chat             *chat.Service
+	fediverseAuth    *fediverseauth.Service
 	configRepository configrepository.ConfigRepository
 	userRepository   userrepository.UserRepository
 }
@@ -32,6 +34,7 @@ type Handler struct {
 type Deps struct {
 	Activitypub      *activitypub.Service
 	Chat             *chat.Service
+	FediverseAuth    *fediverseauth.Service
 	ConfigRepository configrepository.ConfigRepository
 	UserRepository   userrepository.UserRepository
 }
@@ -41,6 +44,7 @@ func New(deps Deps) *Handler {
 	return &Handler{
 		activitypub:      deps.Activitypub,
 		chat:             deps.Chat,
+		fediverseAuth:    deps.FediverseAuth,
 		configRepository: deps.ConfigRepository,
 		userRepository:   deps.UserRepository,
 	}
@@ -59,7 +63,7 @@ func (h *Handler) RegisterFediverseOTPRequest(u models.User, w http.ResponseWrit
 	}
 
 	accessToken := r.URL.Query().Get("accessToken")
-	reg, success, err := fediverseauth.RegisterFediverseOTP(accessToken, u.ID, u.DisplayName, req.FediverseAccount)
+	reg, success, err := h.fediverseAuth.RegisterFediverseOTP(accessToken, u.ID, u.DisplayName, req.FediverseAccount)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, "Could not register auth request: "+err.Error())
 		return
@@ -95,7 +99,7 @@ func (h *Handler) VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Reque
 	}
 
 	accessToken := r.URL.Query().Get("accessToken")
-	valid, authRegistration := fediverseauth.ValidateFediverseOTP(accessToken, *req.Code)
+	valid, authRegistration := h.fediverseAuth.ValidateFediverseOTP(accessToken, *req.Code)
 	if !valid {
 		w.WriteHeader(http.StatusForbidden)
 		return

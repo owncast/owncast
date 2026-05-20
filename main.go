@@ -9,6 +9,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	fediverseauth "github.com/owncast/owncast/auth/fediverse"
 	indieauthlib "github.com/owncast/owncast/auth/indieauth"
 	"github.com/owncast/owncast/logging"
 	"github.com/owncast/owncast/persistence/authrepository"
@@ -269,9 +270,13 @@ func main() {
 		APSigner:              apSigner,
 	})
 
+	fediverseAuthSvc := fediverseauth.New()
+	fediverseAuthSvc.Start()
+
 	fediverseHandler := fediverse.New(fediverse.Deps{
 		Activitypub:      apSvc,
 		Chat:             chatSvc,
+		FediverseAuth:    fediverseAuthSvc,
 		ConfigRepository: configRepository,
 		UserRepository:   userRepository,
 	})
