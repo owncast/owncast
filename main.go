@@ -130,10 +130,37 @@ func main() {
 		log.Fatalln("failed to open database", err)
 	}
 
-	// Composition root: construct services here and inject them into the
-	// components that consume them. As more packages migrate off package-
-	// level singletons into services/<domain>/, their constructors join
-	// this block.
+	// Composition root.
+	//
+	// Every service, handler, and repository is constructed here and
+	// passed via explicit Deps structs to its consumers. main.go is the
+	// only place that knows the concrete service implementations; no
+	// other package reaches for a singleton via .Get() or a package-level
+	// global. The order below reflects the dependency layering:
+	//
+	//   1. Repositories — wrap dataStore; depend on nothing else.
+	//   2. ActivityPub helper builders — pure helpers built from repos.
+	//   3. One-shot bootstrap — notificationsRepository.Setup() seeds
+	//      the browser-push keys before any service starts.
+	//   4. Leaf services that depend only on repositories — yp,
+	//      middleware, indieauth, rtmp.
+	//   5. Cycle-pair services — webhooks + chat + yp all need
+	//      streamSvc.GetStatus, but stream needs them too. Each is
+	//      constructed with a nil callback and rewired below via
+	//      SetGetStatus once streamSvc exists.
+	//   6. activitypub + stream — depend on the cycle-pair services.
+	//   7. SetGetStatus fill-in — resolves the cycle.
+	//   8. Late services — metrics + fediverseAuth, depend on stream
+	//      and chat.
+	//   9. HTTP handler set — admin, fediverse, indieauth, moderation,
+	//      then the top-level *Handlers that wires everything for the
+	//      router.
+	//   10. router.Start — blocks; serves until shutdown.
+	//
+	// New deps land here, not as package-level globals. Construction
+	// cycles get the SetGetStatus pattern, not a fresh shim.
+
+	// Stage 1: repositories.
 	configRepository := configrepository.New(dataStore)
 	authRepository := authrepository.New(dataStore)
 	followersRepository := followersrepository.New(dataStore)
@@ -150,24 +177,21 @@ func main() {
 	cacheContainer := cache.New()
 	defer cacheContainer.Stop()
 
-	// Construct the ActivityPub helper types (Signer, Builder, Resolver)
-	// once here. Signer is the seed: Builder depends on it for actor
-	// public-key embedding, Resolver depends on both for signing
-	// outbound IRI fetches.
+	// Stage 2: ActivityPub helper types (Signer → Builder → Resolver).
+	// Signer is the seed; Builder depends on Signer for actor public-key
+	// embedding; Resolver depends on both for signing outbound IRI
+	// fetches.
 	apSigner := apcrypto.New(apcrypto.Deps{ConfigRepository: configRepository})
 	apBuilder := apmodels.New(apmodels.Deps{ConfigRepository: configRepository, Signer: apSigner})
 	apResolver := apresolvers.New(apresolvers.Deps{ConfigRepository: configRepository, Builder: apBuilder, Signer: apSigner})
 
-	// Install the package-level configRepository handle in every helper
-	// package that has stateless lookups. main.go is the only place that
-	// knows the concrete repo — all other callers receive it via Deps.
-
-	// Bring up the notifications repository and run its one-time
-	// browser-push key + default-config bootstrap before stream Start.
+	// Stage 3: one-shot bootstrap. Seeds browser-push keys + default
+	// notification config before any service that reads them starts.
 	notificationsRepository.Setup()
 
+	// Stage 4: leaf services. Each depends only on repositories + cfg.
 	ypSvc := yp.New(yp.Deps{
-		GetStatus:        nil, // wired below once streamSvc exists
+		GetStatus:        nil, // stage 7
 		ConfigRepository: configRepository,
 	})
 
@@ -185,22 +209,18 @@ func main() {
 		Config:           cfg,
 	})
 
-	// Webhooks needs the stream status callback and the followers
-	// repository. Construct it before activitypub (which uses it) and
-	// before stream (which uses it to dispatch start/stop events).
+	// Stage 5: cycle-pair services. webhooks + chat both want
+	// streamSvc.GetStatus, but streamSvc consumes them in turn. Build
+	// them with a nil GetStatus and rewire in stage 7.
 	webhooksSvc := webhooks.New(webhooks.Deps{
-		GetStatus:         nil, // wired below once streamSvc exists
+		GetStatus:         nil, // stage 7
 		Followers:         followersRepository,
 		ConfigRepository:  configRepository,
 		WebhookRepository: webhookRepository,
 	})
 
-	// chat is constructed first because activitypub.Deps and
-	// stream.Deps both need it; webhooks doesn't (yet — once chat
-	// migrates to receive webhook events via the dispatcher, this
-	// changes).
 	chatSvc := chat.New(chat.Deps{
-		GetStatus:             nil, // wired below once streamSvc exists
+		GetStatus:             nil, // stage 7
 		Webhooks:              webhooksSvc,
 		Datastore:             dataStore,
 		ConfigRepository:      configRepository,
@@ -209,6 +229,8 @@ func main() {
 		UserRepository:        userRepository,
 	})
 
+	// Stage 6: cycle-pair consumers. activitypub + stream sit on top of
+	// the stage-5 services.
 	apSvc := activitypub.New(activitypub.Deps{
 		Datastore:           dataStore,
 		Webhooks:            webhooksSvc,
@@ -233,11 +255,8 @@ func main() {
 		Config:           cfg,
 	})
 
-	// Now that streamSvc exists, fill in the stream-status callback that
-	// webhooks, chat, and yp each need at runtime. The cycle is real:
-	// stream owns the status, but webhooks/chat/yp are stream's own
-	// dependencies, so they're constructed first with a nil callback and
-	// rewired here.
+	// Stage 7: resolve the stream-status cycle. webhooks/chat/yp each
+	// hold a func() Status that streamSvc now provides.
 	webhooksSvc.SetGetStatus(streamSvc.GetStatus)
 	chatSvc.SetGetStatus(streamSvc.GetStatus)
 	ypSvc.SetGetStatus(streamSvc.GetStatus)
@@ -247,6 +266,8 @@ func main() {
 	}
 	defer streamSvc.Stop(ctx)
 
+	// Stage 8: late services. metrics polls stream + chat, fediverseAuth
+	// owns OTP state for the chat-side handler.
 	metricsSvc := metrics.New(metrics.Deps{
 		Stream:                streamSvc,
 		Chat:                  chatSvc,
@@ -256,6 +277,9 @@ func main() {
 	})
 	go metricsSvc.Start()
 
+	// Stage 9: HTTP handler set. *Handlers is the dispatcher the router
+	// binds methods on; the sub-handlers (admin, fediverse, indieauth,
+	// moderation) hold their own narrower deps.
 	adminHandlers := admin.New(admin.Deps{
 		Stream:                streamSvc,
 		Rtmp:                  rtmpSvc,
@@ -319,6 +343,7 @@ func main() {
 		Config:                  cfg,
 	})
 
+	// Stage 10: serve. Blocks until shutdown.
 	if err := router.Start(cfg, *enableVerboseLogging, h, mw, apSvc.Controllers()); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
