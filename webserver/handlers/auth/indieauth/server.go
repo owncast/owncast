@@ -5,7 +5,6 @@ import (
 	"net/url"
 
 	ia "github.com/owncast/owncast/auth/indieauth"
-	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -14,7 +13,7 @@ func (h *Handler) HandleAuthEndpoint(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		// Require the GET request for IndieAuth to be behind admin login.
-		f := middleware.RequireAdminAuth(h.HandleAuthEndpointGet)
+		f := h.middleware.RequireAdminAuth(h.HandleAuthEndpointGet)
 		f(w, r)
 		return
 	case http.MethodPost:
@@ -32,7 +31,7 @@ func (h *Handler) HandleAuthEndpointGet(w http.ResponseWriter, r *http.Request) 
 	state := r.URL.Query().Get("state")
 	me := r.URL.Query().Get("me")
 
-	request, err := ia.StartServerAuth(clientID, redirectURI, codeChallenge, state, me)
+	request, err := h.indieAuth.StartServerAuth(clientID, redirectURI, codeChallenge, state, me)
 	if err != nil {
 		_ = webutils.WriteString(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -77,7 +76,7 @@ func (h *Handler) HandleAuthEndpointPost(w http.ResponseWriter, r *http.Request)
 
 	// If the server auth flow cannot be completed then return with specific
 	// "invalid_client" error.
-	response, err := ia.CompleteServerAuth(code, redirectURI, clientID, codeVerifier)
+	response, err := h.indieAuth.CompleteServerAuth(code, redirectURI, clientID, codeVerifier)
 	if err != nil {
 		webutils.WriteResponse(w, ia.Response{
 			Error:            "invalid_client",

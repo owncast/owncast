@@ -24,8 +24,10 @@ import (
 // h carries dependency-injected handler methods. Free-function handlers
 // (the majority during the migration) are referenced directly by package
 // path; methods on *handlers.Handlers are registered via the h receiver.
-// apc carries the methodified ActivityPub HTTP handler set.
-func Start(enableVerboseLogging bool, h *handlers.Handlers, apc *apcontrollers.Controllers) error {
+// mw carries the methodified HTTP middleware (admin basic-auth, federation
+// content-type gating). apc carries the methodified ActivityPub HTTP
+// handler set.
+func Start(enableVerboseLogging bool, h *handlers.Handlers, mw *middleware.Middleware, apc *apcontrollers.Controllers) error {
 	// @behlers New Router
 	r := chi.NewRouter()
 
@@ -48,13 +50,13 @@ func Start(enableVerboseLogging bool, h *handlers.Handlers, apc *apcontrollers.C
 	r.HandleFunc("/hls/*", h.HandleHLSRequest)
 
 	// The admin web app.
-	r.HandleFunc("/admin/*", middleware.RequireAdminAuth(h.IndexHandler))
+	r.HandleFunc("/admin/*", mw.RequireAdminAuth(h.IndexHandler))
 
 	// Single ActivityPub Actor
-	r.HandleFunc("/federation/user/*", middleware.RequireActivityPubOrRedirect(apc.ActorHandler))
+	r.HandleFunc("/federation/user/*", mw.RequireActivityPubOrRedirect(apc.ActorHandler))
 
 	// Single AP object
-	r.HandleFunc("/federation/*", middleware.RequireActivityPubOrRedirect(apc.ObjectHandler))
+	r.HandleFunc("/federation/*", mw.RequireActivityPubOrRedirect(apc.ObjectHandler))
 
 	// The primary web app.
 	r.HandleFunc("/*", h.IndexHandler)

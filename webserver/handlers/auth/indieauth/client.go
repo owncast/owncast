@@ -12,6 +12,7 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -19,12 +20,16 @@ import (
 type Handler struct {
 	chat           *chat.Service
 	userRepository userrepository.UserRepository
+	indieAuth      *ia.Service
+	middleware     *middleware.Middleware
 }
 
 // Deps lists the dependencies of the IndieAuth Handler.
 type Deps struct {
 	Chat           *chat.Service
 	UserRepository userrepository.UserRepository
+	IndieAuth      *ia.Service
+	Middleware     *middleware.Middleware
 }
 
 // New constructs the Handler.
@@ -32,6 +37,8 @@ func New(deps Deps) *Handler {
 	return &Handler{
 		chat:           deps.Chat,
 		userRepository: deps.UserRepository,
+		indieAuth:      deps.IndieAuth,
+		middleware:     deps.Middleware,
 	}
 }
 
@@ -59,7 +66,7 @@ func (h *Handler) StartAuthFlow(u models.User, w http.ResponseWriter, r *http.Re
 
 	accessToken := r.URL.Query().Get("accessToken")
 
-	redirectURL, err := ia.StartAuthFlow(authRequest.AuthHost, u.ID, accessToken, u.DisplayName)
+	redirectURL, err := h.indieAuth.StartAuthFlow(authRequest.AuthHost, u.ID, accessToken, u.DisplayName)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -76,7 +83,7 @@ func (h *Handler) StartAuthFlow(u models.User, w http.ResponseWriter, r *http.Re
 func (h *Handler) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query().Get("state")
 	code := r.URL.Query().Get("code")
-	request, response, err := ia.HandleCallbackCode(code, state)
+	request, response, err := h.indieAuth.HandleCallbackCode(code, state)
 	if err != nil {
 		log.Debugln(err)
 		msg := `Unable to complete authentication. <a href="/">Go back.</a><hr/>`

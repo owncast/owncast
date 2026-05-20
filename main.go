@@ -153,12 +153,17 @@ func main() {
 	metrics.SetConfigRepository(configRepository)
 	metrics.SetUserRepository(userRepository)
 	yp.SetConfigRepository(configRepository)
-	middleware.SetConfigRepository(configRepository)
-	middleware.SetAuthRepository(authRepository)
-	middleware.SetUserRepository(userRepository)
-	indieauthlib.SetConfigRepository(configRepository)
 	notificationsrepository.SetConfigRepository(configRepository)
 	metrics.SetChatMessageRepository(chatMessageRepository)
+
+	mw := middleware.New(middleware.Deps{
+		ConfigRepository: configRepository,
+		AuthRepository:   authRepository,
+		UserRepository:   userRepository,
+	})
+	indieauthSvc := indieauthlib.New(indieauthlib.Deps{
+		ConfigRepository: configRepository,
+	})
 
 	rtmpSvc := rtmp.New(rtmp.Deps{
 		ConfigRepository: configRepository,
@@ -248,6 +253,8 @@ func main() {
 	indieauthHandler := indieauth.New(indieauth.Deps{
 		Chat:           chatSvc,
 		UserRepository: userRepository,
+		IndieAuth:      indieauthSvc,
+		Middleware:     mw,
 	})
 
 	moderationHandler := moderation.New(moderation.Deps{
@@ -265,13 +272,14 @@ func main() {
 		Fediverse:             fediverseHandler,
 		IndieAuth:             indieauthHandler,
 		Moderation:            moderationHandler,
+		Middleware:            mw,
 		ConfigRepository:      configRepository,
 		FollowersRepository:   followersRepository,
 		ChatMessageRepository: chatMessageRepository,
 		UserRepository:        userRepository,
 	})
 
-	if err := router.Start(*enableVerboseLogging, h, apSvc.Controllers()); err != nil {
+	if err := router.Start(*enableVerboseLogging, h, mw, apSvc.Controllers()); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
 }

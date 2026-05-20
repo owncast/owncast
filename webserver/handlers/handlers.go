@@ -15,6 +15,7 @@ import (
 	"github.com/owncast/owncast/webserver/handlers/auth/fediverse"
 	"github.com/owncast/owncast/webserver/handlers/auth/indieauth"
 	"github.com/owncast/owncast/webserver/handlers/moderation"
+	"github.com/owncast/owncast/webserver/router/middleware"
 )
 
 // Handlers carries the dependencies of HTTP handlers that need injected
@@ -33,6 +34,7 @@ type Handlers struct {
 	fediverse             *fediverse.Handler
 	indieauth             *indieauth.Handler
 	moderation            *moderation.Handler
+	middleware            *middleware.Middleware
 	configRepository      configrepository.ConfigRepository
 	followersRepository   followersrepository.FollowersRepository
 	chatMessageRepository chatmessagerepository.ChatMessageRepository
@@ -50,6 +52,7 @@ type Deps struct {
 	Fediverse             *fediverse.Handler
 	IndieAuth             *indieauth.Handler
 	Moderation            *moderation.Handler
+	Middleware            *middleware.Middleware
 	ConfigRepository      configrepository.ConfigRepository
 	FollowersRepository   followersrepository.FollowersRepository
 	ChatMessageRepository chatmessagerepository.ChatMessageRepository
@@ -74,6 +77,7 @@ func NewHandlers(deps Deps) *Handlers {
 		fediverse:             deps.Fediverse,
 		indieauth:             deps.IndieAuth,
 		moderation:            deps.Moderation,
+		middleware:            deps.Middleware,
 		configRepository:      deps.ConfigRepository,
 		followersRepository:   deps.FollowersRepository,
 		chatMessageRepository: deps.ChatMessageRepository,

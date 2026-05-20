@@ -9,9 +9,9 @@ import (
 
 // RequireActivityPubOrRedirect will validate the requested content types and
 // redirect to the main Owncast page if it doesn't match.
-func RequireActivityPubOrRedirect(handler http.HandlerFunc) http.HandlerFunc {
+func (m *Middleware) RequireActivityPubOrRedirect(handler http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !configRepository.GetFederationEnabled() {
+		if !m.configRepository.GetFederationEnabled() {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}

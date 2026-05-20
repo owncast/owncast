@@ -41,7 +41,7 @@ func (*ServerInterfaceImpl) GetCustomEmojiList(w http.ResponseWriter, r *http.Re
 }
 
 func (s *ServerInterfaceImpl) GetChatMessages(w http.ResponseWriter, r *http.Request, params generated.GetChatMessagesParams) {
-	middleware.RequireUserAccessToken(s.h.GetChatMessages)(w, r)
+	s.h.middleware.RequireUserAccessToken(s.h.GetChatMessages)(w, r)
 }
 
 func (s *ServerInterfaceImpl) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params generated.RegisterAnonymousChatUserParams) {
@@ -53,11 +53,11 @@ func (s *ServerInterfaceImpl) RegisterAnonymousChatUserOptions(w http.ResponseWr
 }
 
 func (s *ServerInterfaceImpl) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request, params generated.UpdateMessageVisibilityParams) {
-	middleware.RequireUserModerationScopeAccesstoken(s.h.admin.UpdateMessageVisibility)(w, r)
+	s.h.middleware.RequireUserModerationScopeAccesstoken(s.h.admin.UpdateMessageVisibility)(w, r)
 }
 
 func (s *ServerInterfaceImpl) UpdateUserEnabled(w http.ResponseWriter, r *http.Request, params generated.UpdateUserEnabledParams) {
-	middleware.RequireUserModerationScopeAccesstoken(s.h.admin.UpdateUserEnabled)(w, r)
+	s.h.middleware.RequireUserModerationScopeAccesstoken(s.h.admin.UpdateUserEnabled)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetWebConfig(w http.ResponseWriter, r *http.Request) {
@@ -92,6 +92,6 @@ func (*ServerInterfaceImpl) ReportPlaybackMetrics(w http.ResponseWriter, r *http
 	ReportPlaybackMetrics(w, r)
 }
 
-func (*ServerInterfaceImpl) RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request, params generated.RegisterForLiveNotificationsParams) {
-	middleware.RequireUserAccessToken(RegisterForLiveNotifications)(w, r)
+func (s *ServerInterfaceImpl) RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request, params generated.RegisterForLiveNotificationsParams) {
+	s.h.middleware.RequireUserAccessToken(RegisterForLiveNotifications)(w, r)
 }
