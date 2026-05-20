@@ -60,7 +60,7 @@ func TestMain(m *testing.M) {
 	configRepository := configrepository.New(datastore.GetDatastore())
 	configRepository.SetServerURL("https://my.cool.site.biz")
 	ds := datastore.GetDatastore()
-	persistenceSvc := persistence.New(ds)
+	persistenceSvc := persistence.New(ds, nil)
 	testService = New(Deps{
 		Persistence: persistenceSvc,
 		Followers:   followersrepository.New(ds),

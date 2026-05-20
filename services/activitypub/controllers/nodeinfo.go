@@ -8,8 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/requests"
 )
 
@@ -29,7 +27,7 @@ func (c *Controllers) NodeInfoController(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	v2, err := apmodels.GetCanonicalServerURL()
+	v2, err := c.builder.GetCanonicalServerURL()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -269,10 +267,10 @@ func (c *Controllers) InstanceV1Controller(w http.ResponseWriter, r *http.Reques
 
 func (c *Controllers) writeResponse(payload interface{}, w http.ResponseWriter) error {
 	accountName := c.configRepository.GetDefaultFederationUsername()
-	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
-	publicKey := crypto.GetPublicKey(actorIRI)
+	actorIRI := c.builder.MakeLocalIRIForAccount(accountName)
+	publicKey := c.signer.GetPublicKey(actorIRI)
 
-	return requests.WritePayloadResponse(payload, w, publicKey)
+	return requests.WritePayloadResponse(payload, w, publicKey, c.signer)
 }
 
 // HostMetaController points to webfinger.
@@ -283,7 +281,7 @@ func (c *Controllers) HostMetaController(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	serverURL, err := apmodels.GetCanonicalServerURL()
+	serverURL, err := c.builder.GetCanonicalServerURL()
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return

@@ -15,6 +15,11 @@ func mustParseURL(s string) *url.URL {
 	return u
 }
 
+// testResolver carries no deps. Every assertion in this file exercises
+// an early-error path inside GetResolvedActorFromActorProperty (nil or
+// empty actor property), which returns before deps are touched.
+var testResolver = &Resolver{}
+
 // TestGetResolvedActorFromActorPropertyWithNil verifies that the function
 // doesn't panic when given a nil actor property.
 func TestGetResolvedActorFromActorPropertyWithNil(t *testing.T) {
@@ -24,7 +29,7 @@ func TestGetResolvedActorFromActorPropertyWithNil(t *testing.T) {
 		}
 	}()
 
-	_, err := GetResolvedActorFromActorProperty(nil)
+	_, err := testResolver.GetResolvedActorFromActorProperty(nil)
 	if err == nil {
 		t.Error("GetResolvedActorFromActorProperty(nil) should return error")
 	}
@@ -40,7 +45,7 @@ func TestGetResolvedActorFromActorPropertyWithEmpty(t *testing.T) {
 	}()
 
 	actor := streams.NewActivityStreamsActorProperty()
-	_, err := GetResolvedActorFromActorProperty(actor)
+	_, err := testResolver.GetResolvedActorFromActorProperty(actor)
 	if err == nil {
 		t.Error("GetResolvedActorFromActorProperty with empty actor should return error")
 	}
@@ -69,7 +74,7 @@ func TestGetResolvedActorFromActorPropertyWithPersonMissingFields(t *testing.T) 
 	// Person has no ID, inbox, username, or public key
 	actor.AppendActivityStreamsPerson(person)
 
-	_, err := GetResolvedActorFromActorProperty(actor)
+	_, err := testResolver.GetResolvedActorFromActorProperty(actor)
 	if err == nil {
 		t.Error("GetResolvedActorFromActorProperty with incomplete Person should return error")
 	}
@@ -89,7 +94,7 @@ func TestGetResolvedActorFromActorPropertyWithServiceMissingFields(t *testing.T)
 	// Service has no ID, inbox, username, or public key
 	actor.AppendActivityStreamsService(service)
 
-	_, err := GetResolvedActorFromActorProperty(actor)
+	_, err := testResolver.GetResolvedActorFromActorProperty(actor)
 	if err == nil {
 		t.Error("GetResolvedActorFromActorProperty with incomplete Service should return error")
 	}
@@ -109,7 +114,7 @@ func TestGetResolvedActorFromActorPropertyWithApplicationMissingFields(t *testin
 	// Application has no ID, inbox, username, or public key
 	actor.AppendActivityStreamsApplication(app)
 
-	_, err := GetResolvedActorFromActorProperty(actor)
+	_, err := testResolver.GetResolvedActorFromActorProperty(actor)
 	if err == nil {
 		t.Error("GetResolvedActorFromActorProperty with incomplete Application should return error")
 	}
@@ -124,7 +129,7 @@ func TestNilSafetyNoPanic(t *testing.T) {
 				t.Errorf("panicked: %v", r)
 			}
 		}()
-		_, _ = GetResolvedActorFromActorProperty(nil)
+		_, _ = testResolver.GetResolvedActorFromActorProperty(nil)
 	})
 
 	t.Run("GetResolvedActorFromActorProperty with empty", func(t *testing.T) {
@@ -133,7 +138,7 @@ func TestNilSafetyNoPanic(t *testing.T) {
 				t.Errorf("panicked: %v", r)
 			}
 		}()
-		_, _ = GetResolvedActorFromActorProperty(streams.NewActivityStreamsActorProperty())
+		_, _ = testResolver.GetResolvedActorFromActorProperty(streams.NewActivityStreamsActorProperty())
 	})
 
 	t.Run("GetResolvedActorFromActorProperty with Person no fields", func(t *testing.T) {
@@ -144,7 +149,7 @@ func TestNilSafetyNoPanic(t *testing.T) {
 		}()
 		actor := streams.NewActivityStreamsActorProperty()
 		actor.AppendActivityStreamsPerson(streams.NewActivityStreamsPerson())
-		_, _ = GetResolvedActorFromActorProperty(actor)
+		_, _ = testResolver.GetResolvedActorFromActorProperty(actor)
 	})
 
 	t.Run("GetResolvedActorFromActorProperty with Service no fields", func(t *testing.T) {
@@ -155,7 +160,7 @@ func TestNilSafetyNoPanic(t *testing.T) {
 		}()
 		actor := streams.NewActivityStreamsActorProperty()
 		actor.AppendActivityStreamsService(streams.NewActivityStreamsService())
-		_, _ = GetResolvedActorFromActorProperty(actor)
+		_, _ = testResolver.GetResolvedActorFromActorProperty(actor)
 	})
 
 	t.Run("GetResolvedActorFromActorProperty with Application no fields", func(t *testing.T) {
@@ -166,6 +171,6 @@ func TestNilSafetyNoPanic(t *testing.T) {
 		}()
 		actor := streams.NewActivityStreamsActorProperty()
 		actor.AppendActivityStreamsApplication(streams.NewActivityStreamsApplication())
-		_, _ = GetResolvedActorFromActorProperty(actor)
+		_, _ = testResolver.GetResolvedActorFromActorProperty(actor)
 	})
 }

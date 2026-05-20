@@ -17,7 +17,7 @@ import (
 )
 
 // WriteStreamResponse will write a ActivityPub object to the provided ResponseWriter and sign with the provided key.
-func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey crypto.PublicKey) error {
+func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey crypto.PublicKey, signer *crypto.Signer) error {
 	var jsonmap map[string]interface{}
 	jsonmap, _ = streams.Serialize(item)
 	b, err := json.Marshal(jsonmap)
@@ -25,24 +25,24 @@ func WriteStreamResponse(item vocab.Type, w http.ResponseWriter, publicKey crypt
 		return err
 	}
 
-	return WriteResponse(b, w, publicKey)
+	return WriteResponse(b, w, publicKey, signer)
 }
 
 // WritePayloadResponse will write any arbitrary object to the provided ResponseWriter and sign with the provided key.
-func WritePayloadResponse(payload interface{}, w http.ResponseWriter, publicKey crypto.PublicKey) error {
+func WritePayloadResponse(payload interface{}, w http.ResponseWriter, publicKey crypto.PublicKey, signer *crypto.Signer) error {
 	b, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
 
-	return WriteResponse(b, w, publicKey)
+	return WriteResponse(b, w, publicKey, signer)
 }
 
 // WriteResponse will write any arbitrary payload to the provided ResponseWriter and sign with the provided key.
-func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.PublicKey) error {
+func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.PublicKey, signer *crypto.Signer) error {
 	w.Header().Set("Content-Type", "application/activity+json")
 
-	if err := crypto.SignResponse(w, payload, publicKey); err != nil {
+	if err := signer.SignResponse(w, payload, publicKey); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Errorln("unable to sign response", err)
 		return err
@@ -57,7 +57,7 @@ func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.Publi
 }
 
 // CreateSignedRequest will create a signed POST request of a payload to the provided destination.
-func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) (*http.Request, error) {
+func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL, signer *crypto.Signer) (*http.Request, error) {
 	log.Debugln("Sending", string(payload), "to", url)
 
 	req, _ := http.NewRequest(http.MethodPost, url.String(), bytes.NewBuffer(payload))
@@ -66,7 +66,7 @@ func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) (*
 	req.Header.Set("User-Agent", ua)
 	req.Header.Set("Content-Type", "application/activity+json")
 
-	if err := crypto.SignRequest(req, payload, fromActorIRI); err != nil {
+	if err := signer.SignRequest(req, payload, fromActorIRI); err != nil {
 		log.Errorln("error signing request:", err)
 		return nil, err
 	}

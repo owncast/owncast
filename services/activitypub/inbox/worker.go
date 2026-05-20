@@ -14,7 +14,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/resolvers"
 )
 
 func (s *Service) handle(request apmodels.InboxRequest) {
@@ -26,7 +25,7 @@ func (s *Service) handle(request apmodels.InboxRequest) {
 		return
 	}
 
-	if err := resolvers.Resolve(context.Background(), request.Body, s.handleUpdateRequest, s.handleFollowInboxRequest, s.handleLikeRequest, s.handleAnnounceRequest, s.handleUndoInboxRequest, s.handleCreateRequest); err != nil {
+	if err := s.resolver.Resolve(context.Background(), request.Body, s.handleUpdateRequest, s.handleFollowInboxRequest, s.handleLikeRequest, s.handleAnnounceRequest, s.handleUndoInboxRequest, s.handleCreateRequest); err != nil {
 		log.Debugln("resolver error:", err)
 	}
 }
@@ -69,7 +68,7 @@ func (s *Service) Verify(request *http.Request) (bool, error) {
 		return false, errors.New("Unable to determine algorithm to verify request")
 	}
 
-	publicKey, err := resolvers.GetResolvedPublicKeyFromIRI(pubKeyID.String())
+	publicKey, err := s.resolver.GetResolvedPublicKeyFromIRI(pubKeyID.String())
 	if err != nil {
 		return false, errors.Wrap(err, "failed to resolve actor from IRI to fetch key")
 	}

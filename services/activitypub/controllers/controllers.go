@@ -7,6 +7,8 @@ package controllers
 
 import (
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/activitypub/apmodels"
+	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/inbox"
 	"github.com/owncast/owncast/services/activitypub/outbox"
 	"github.com/owncast/owncast/services/activitypub/persistence"
@@ -24,6 +26,8 @@ type Controllers struct {
 	inbox            *inbox.Service
 	followers        followersrepository.FollowersRepository
 	configRepository configrepository.ConfigRepository
+	builder          *apmodels.Builder
+	signer           *crypto.Signer
 }
 
 // Deps lists every service the *Controllers consume.
@@ -33,6 +37,8 @@ type Deps struct {
 	Inbox            *inbox.Service
 	Followers        followersrepository.FollowersRepository
 	ConfigRepository configrepository.ConfigRepository
+	Builder          *apmodels.Builder
+	Signer           *crypto.Signer
 }
 
 // New constructs the controllers set with explicit dependencies.
@@ -43,5 +49,7 @@ func New(deps Deps) *Controllers {
 		inbox:            deps.Inbox,
 		followers:        deps.Followers,
 		configRepository: deps.ConfigRepository,
+		builder:          deps.Builder,
+		signer:           deps.Signer,
 	}
 }

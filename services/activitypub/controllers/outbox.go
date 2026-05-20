@@ -11,8 +11,6 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/requests"
 )
 
@@ -48,10 +46,10 @@ func (c *Controllers) OutboxHandler(w http.ResponseWriter, r *http.Request) {
 
 	pathComponents := strings.Split(r.URL.Path, "/")
 	accountName := pathComponents[3]
-	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
-	publicKey := crypto.GetPublicKey(actorIRI)
+	actorIRI := c.builder.MakeLocalIRIForAccount(accountName)
+	publicKey := c.signer.GetPublicKey(actorIRI)
 
-	if err := requests.WriteStreamResponse(response.(vocab.Type), w, publicKey); err != nil {
+	if err := requests.WriteStreamResponse(response.(vocab.Type), w, publicKey, c.signer); err != nil {
 		log.Errorln("unable to write stream response for outbox handler", err)
 	}
 }
@@ -75,7 +73,7 @@ func (c *Controllers) getInitialOutboxHandler(r *http.Request) (vocab.ActivitySt
 	collection := streams.NewActivityStreamsOrderedCollection()
 
 	idProperty := streams.NewJSONLDIdProperty()
-	id, err := createPageURL(r, nil)
+	id, err := c.createPageURL(r, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create followers page property")
 	}
@@ -92,7 +90,7 @@ func (c *Controllers) getInitialOutboxHandler(r *http.Request) (vocab.ActivitySt
 
 	first := streams.NewActivityStreamsFirstProperty()
 	page := "1"
-	firstIRI, err := createPageURL(r, &page)
+	firstIRI, err := c.createPageURL(r, &page)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create first page property")
 	}
@@ -116,7 +114,7 @@ func (c *Controllers) getOutboxPage(page string, r *http.Request) (vocab.Activit
 
 	collectionPage := streams.NewActivityStreamsOrderedCollectionPage()
 	idProperty := streams.NewJSONLDIdProperty()
-	id, err := createPageURL(r, &page)
+	id, err := c.createPageURL(r, &page)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create followers page ID")
 	}
@@ -133,7 +131,7 @@ func (c *Controllers) getOutboxPage(page string, r *http.Request) (vocab.Activit
 	collectionPage.SetActivityStreamsOrderedItems(orderedItems)
 
 	partOf := streams.NewActivityStreamsPartOfProperty()
-	partOfIRI, err := createPageURL(r, nil)
+	partOfIRI, err := c.createPageURL(r, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create partOf property for outbox page")
 	}
@@ -144,7 +142,7 @@ func (c *Controllers) getOutboxPage(page string, r *http.Request) (vocab.Activit
 	if pageInt*followersPageSize < int(postCount) {
 		next := streams.NewActivityStreamsNextProperty()
 		nextPage := fmt.Sprintf("%d", pageInt+1)
-		nextIRI, err := createPageURL(r, &nextPage)
+		nextIRI, err := c.createPageURL(r, &nextPage)
 		if err != nil {
 			return nil, errors.Wrap(err, "unable to create next page property")
 		}

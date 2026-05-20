@@ -6,8 +6,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/requests"
 )
 
@@ -45,11 +43,11 @@ func (c *Controllers) ActorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
-	publicKey := crypto.GetPublicKey(actorIRI)
-	person := apmodels.MakeServiceForAccount(accountName)
+	actorIRI := c.builder.MakeLocalIRIForAccount(accountName)
+	publicKey := c.signer.GetPublicKey(actorIRI)
+	person := c.builder.MakeServiceForAccount(accountName)
 
-	if err := requests.WriteStreamResponse(person, w, publicKey); err != nil {
+	if err := requests.WriteStreamResponse(person, w, publicKey, c.signer); err != nil {
 		log.Errorln("unable to write stream response for actor handler", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return

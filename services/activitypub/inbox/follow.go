@@ -11,12 +11,11 @@ import (
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/requests"
-	"github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/chat/events"
 )
 
 func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.ActivityStreamsFollow) error {
-	follow, err := resolvers.MakeFollowRequest(c, activity)
+	follow, err := s.resolver.MakeFollowRequest(c, activity)
 	if err != nil {
 		log.Errorln("unable to create follow inbox request", err)
 		return err
@@ -50,7 +49,7 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 	actorReference := activity.GetActivityStreamsActor()
 
 	if approved {
-		if err := requests.SendFollowAccept(s.workerpool, follow.Inbox, activity, localAccountName); err != nil {
+		if err := requests.SendFollowAccept(s.workerpool, follow.Inbox, activity, localAccountName, s.builder, s.signer); err != nil {
 			log.Errorln("unable to send follow accept", err)
 			return err
 		}
@@ -81,7 +80,7 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 }
 
 func (s *Service) handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) error {
-	request := resolvers.MakeUnFollowRequest(c, activity)
+	request := s.resolver.MakeUnFollowRequest(c, activity)
 	if request == nil {
 		log.Errorf("unable to handle unfollow request")
 		return errors.New("unable to handle unfollow request")

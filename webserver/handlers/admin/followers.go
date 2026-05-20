@@ -46,7 +46,7 @@ func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send the approval to the follow requestor.
-		if err := requests.SendFollowAccept(a.activitypub.Workerpool(), followRequest.Inbox, followRequest.RequestObject, localAccountName); err != nil {
+		if err := requests.SendFollowAccept(a.activitypub.Workerpool(), followRequest.Inbox, followRequest.RequestObject, localAccountName, a.apBuilder, a.apSigner); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}

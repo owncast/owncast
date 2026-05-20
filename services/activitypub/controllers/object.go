@@ -6,8 +6,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/requests"
 )
 
@@ -24,7 +22,7 @@ func (c *Controllers) ObjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	serverURL, err := apmodels.GetCanonicalServerURL()
+	serverURL, err := c.builder.GetCanonicalServerURL()
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -46,10 +44,10 @@ func (c *Controllers) ObjectHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	accountName := c.configRepository.GetDefaultFederationUsername()
-	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
-	publicKey := crypto.GetPublicKey(actorIRI)
+	actorIRI := c.builder.MakeLocalIRIForAccount(accountName)
+	publicKey := c.signer.GetPublicKey(actorIRI)
 
-	if err := requests.WriteResponse([]byte(object), w, publicKey); err != nil {
+	if err := requests.WriteResponse([]byte(object), w, publicKey, c.signer); err != nil {
 		log.Errorln(err)
 	}
 }

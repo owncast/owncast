@@ -12,8 +12,10 @@ import (
 
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
+	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
+	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/webhooks"
@@ -38,6 +40,9 @@ type Service struct {
 	chat             *chat.Service
 	followers        followersrepository.FollowersRepository
 	configRepository configrepository.ConfigRepository
+	builder          *apmodels.Builder
+	signer           *apcrypto.Signer
+	resolver         *apresolvers.Resolver
 }
 
 // Deps is the explicit dependency contract for inbox.
@@ -48,6 +53,9 @@ type Deps struct {
 	Chat             *chat.Service
 	Followers        followersrepository.FollowersRepository
 	ConfigRepository configrepository.ConfigRepository
+	Builder          *apmodels.Builder
+	Signer           *apcrypto.Signer
+	Resolver         *apresolvers.Resolver
 }
 
 // New constructs an idle inbox Service. Call Start to launch the worker
@@ -61,6 +69,9 @@ func New(deps Deps) *Service {
 		chat:             deps.Chat,
 		followers:        deps.Followers,
 		configRepository: deps.ConfigRepository,
+		builder:          deps.Builder,
+		signer:           deps.Signer,
+		resolver:         deps.Resolver,
 	}
 }
 

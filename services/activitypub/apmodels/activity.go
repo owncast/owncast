@@ -99,9 +99,9 @@ func MakeActivityDirect(activity vocab.ActivityStreamsCreate, toIRI *url.URL) vo
 
 // MakeActivityPublic sets the required properties to make this activity
 // seen as public.
-func MakeActivityPublic(activity vocab.ActivityStreamsCreate) vocab.ActivityStreamsCreate {
+func (b *Builder) MakeActivityPublic(activity vocab.ActivityStreamsCreate) vocab.ActivityStreamsCreate {
 	// TO the public if we're not treating ActivityPub as "private".
-	if !configRepository.GetFederationIsPrivate() {
+	if !b.configRepository.GetFederationIsPrivate() {
 		public, _ := url.Parse(PUBLIC)
 
 		to := streams.NewActivityStreamsToProperty()
@@ -127,7 +127,7 @@ func MakeCreateActivity(activityID *url.URL) vocab.ActivityStreamsCreate {
 }
 
 // MakeUpdateActivity will return a new Update activity with the provided aID.
-func MakeUpdateActivity(activityID *url.URL) vocab.ActivityStreamsUpdate {
+func (b *Builder) MakeUpdateActivity(activityID *url.URL) vocab.ActivityStreamsUpdate {
 	activity := streams.NewActivityStreamsUpdate()
 	id := streams.NewJSONLDIdProperty()
 	id.Set(activityID)
@@ -135,7 +135,7 @@ func MakeUpdateActivity(activityID *url.URL) vocab.ActivityStreamsUpdate {
 
 	// CC the public if we're not treating ActivityPub as "private".
 
-	if !configRepository.GetFederationIsPrivate() {
+	if !b.configRepository.GetFederationIsPrivate() {
 		public, _ := url.Parse(PUBLIC)
 		cc := streams.NewActivityStreamsCcProperty()
 		cc.AppendIRI(public)

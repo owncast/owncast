@@ -11,7 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/services/activitypub/crypto"
 )
 
 // ActivityPubActor represents a single actor in handling ActivityPub activity.
@@ -214,29 +213,29 @@ func MakeActorPropertyWithID(idIRI *url.URL) vocab.ActivityStreamsActorProperty 
 }
 
 // MakeServiceForAccount will create a new local actor service with the the provided username.
-func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
-	actorIRI := MakeLocalIRIForAccount(accountName)
+func (b *Builder) MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
+	actorIRI := b.MakeLocalIRIForAccount(accountName)
 
 	person := streams.NewActivityStreamsService()
 	nameProperty := streams.NewActivityStreamsNameProperty()
-	nameProperty.AppendXMLSchemaString(configRepository.GetServerName())
+	nameProperty.AppendXMLSchemaString(b.configRepository.GetServerName())
 	person.SetActivityStreamsName(nameProperty)
 
 	preferredUsernameProperty := streams.NewActivityStreamsPreferredUsernameProperty()
 	preferredUsernameProperty.SetXMLSchemaString(accountName)
 	person.SetActivityStreamsPreferredUsername(preferredUsernameProperty)
 
-	inboxIRI := MakeLocalIRIForResource("/user/" + accountName + "/inbox")
+	inboxIRI := b.MakeLocalIRIForResource("/user/" + accountName + "/inbox")
 
 	inboxProp := streams.NewActivityStreamsInboxProperty()
 	inboxProp.SetIRI(inboxIRI)
 	person.SetActivityStreamsInbox(inboxProp)
 
 	needsFollowApprovalProperty := streams.NewActivityStreamsManuallyApprovesFollowersProperty()
-	needsFollowApprovalProperty.Set(configRepository.GetFederationIsPrivate())
+	needsFollowApprovalProperty.Set(b.configRepository.GetFederationIsPrivate())
 	person.SetActivityStreamsManuallyApprovesFollowers(needsFollowApprovalProperty)
 
-	outboxIRI := MakeLocalIRIForResource("/user/" + accountName + "/outbox")
+	outboxIRI := b.MakeLocalIRIForResource("/user/" + accountName + "/outbox")
 
 	outboxProp := streams.NewActivityStreamsOutboxProperty()
 	outboxProp.SetIRI(outboxIRI)
@@ -246,7 +245,7 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	id.Set(actorIRI)
 	person.SetJSONLDId(id)
 
-	publicKey := crypto.GetPublicKey(actorIRI)
+	publicKey := b.signer.GetPublicKey(actorIRI)
 
 	publicKeyProp := streams.NewW3IDSecurityV1PublicKeyProperty()
 	publicKeyType := streams.NewW3IDSecurityV1PublicKey()
@@ -266,7 +265,7 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	publicKeyProp.AppendW3IDSecurityV1PublicKey(publicKeyType)
 	person.SetW3IDSecurityV1PublicKey(publicKeyProp)
 
-	if t, err := configRepository.GetServerInitTime(); t != nil {
+	if t, err := b.configRepository.GetServerInitTime(); t != nil {
 		publishedDateProp := streams.NewActivityStreamsPublishedProperty()
 		publishedDateProp.Set(t.Time)
 		person.SetActivityStreamsPublished(publishedDateProp)
@@ -277,8 +276,8 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 	// Profile properties
 
 	// Avatar
-	uniquenessString := configRepository.GetLogoUniquenessString()
-	userAvatarURLString := configRepository.GetServerURL() + "/logo/external"
+	uniquenessString := b.configRepository.GetLogoUniquenessString()
+	userAvatarURLString := b.configRepository.GetServerURL() + "/logo/external"
 	userAvatarURL, err := url.Parse(userAvatarURLString)
 	userAvatarURL.RawQuery = "uc=" + uniquenessString
 	if err != nil {
@@ -309,14 +308,14 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 
 	// Profile bio
 	summaryProperty := streams.NewActivityStreamsSummaryProperty()
-	summaryProperty.AppendXMLSchemaString(configRepository.GetServerSummary())
+	summaryProperty.AppendXMLSchemaString(b.configRepository.GetServerSummary())
 	person.SetActivityStreamsSummary(summaryProperty)
 
 	// Links
-	if serverURL := configRepository.GetServerURL(); serverURL != "" {
+	if serverURL := b.configRepository.GetServerURL(); serverURL != "" {
 		addMetadataLinkToProfile(person, "Stream", serverURL)
 	}
-	for _, link := range configRepository.GetSocialHandles() {
+	for _, link := range b.configRepository.GetSocialHandles() {
 		addMetadataLinkToProfile(person, link.Platform, link.URL)
 	}
 
@@ -334,7 +333,7 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 
 	// Tags
 	tagProp := streams.NewActivityStreamsTagProperty()
-	for _, tagString := range configRepository.GetServerMetadataTags() {
+	for _, tagString := range b.configRepository.GetServerMetadataTags() {
 		hashtag := MakeHashtag(tagString)
 		tagProp.AppendTootHashtag(hashtag)
 	}
@@ -343,7 +342,7 @@ func MakeServiceForAccount(accountName string) vocab.ActivityStreamsService {
 
 	// Work around an issue where a single attachment will not serialize
 	// as an array, so add another item to the mix.
-	if len(configRepository.GetSocialHandles()) == 1 {
+	if len(b.configRepository.GetSocialHandles()) == 1 {
 		addMetadataLinkToProfile(person, "Owncast", "https://owncast.online")
 	}
 

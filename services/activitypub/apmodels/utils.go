@@ -28,8 +28,8 @@ func MakeRemoteIRIForResource(resourcePath string, host string) (*url.URL, error
 }
 
 // MakeLocalIRIForResource will create an IRI for the local server.
-func MakeLocalIRIForResource(resourcePath string) *url.URL {
-	u, err := GetCanonicalServerURL()
+func (b *Builder) MakeLocalIRIForResource(resourcePath string) *url.URL {
+	u, err := b.GetCanonicalServerURL()
 	if err != nil {
 		log.Errorln("unable to parse local IRI url", err)
 		return nil
@@ -41,8 +41,8 @@ func MakeLocalIRIForResource(resourcePath string) *url.URL {
 }
 
 // MakeLocalIRIForAccount will return a full IRI for the local server account username.
-func MakeLocalIRIForAccount(account string) *url.URL {
-	u, err := GetCanonicalServerURL()
+func (b *Builder) MakeLocalIRIForAccount(account string) *url.URL {
+	u, err := b.GetCanonicalServerURL()
 	if err != nil {
 		log.Errorln("unable to parse local IRI account server url", err)
 		return nil
@@ -54,8 +54,8 @@ func MakeLocalIRIForAccount(account string) *url.URL {
 }
 
 // GetCanonicalServerURL returns the local server URL with an ASCII/punycode hostname.
-func GetCanonicalServerURL() (*url.URL, error) {
-	host := configRepository.GetServerURL()
+func (b *Builder) GetCanonicalServerURL() (*url.URL, error) {
+	host := b.configRepository.GetServerURL()
 	canonicalHost, err := utils.CanonicalizeURLHostname(host)
 	if err != nil {
 		return nil, err
@@ -65,8 +65,8 @@ func GetCanonicalServerURL() (*url.URL, error) {
 }
 
 // MakeLocalURLForPath will return a full URL for a path on the local server.
-func MakeLocalURLForPath(resourcePath string) *url.URL {
-	u, err := GetCanonicalServerURL()
+func (b *Builder) MakeLocalURLForPath(resourcePath string) *url.URL {
+	u, err := b.GetCanonicalServerURL()
 	if err != nil {
 		log.Errorln("unable to parse local server url", err)
 		return nil
@@ -87,19 +87,19 @@ func Serialize(obj vocab.Type) ([]byte, error) {
 }
 
 // MakeLocalIRIForStreamURL will return a full IRI for the local server stream url.
-func MakeLocalIRIForStreamURL() *url.URL {
-	return MakeLocalURLForPath("/hls/stream.m3u8")
+func (b *Builder) MakeLocalIRIForStreamURL() *url.URL {
+	return b.MakeLocalURLForPath("/hls/stream.m3u8")
 }
 
 // MakeLocalIRIforLogo will return a full IRI for the local server logo.
-func MakeLocalIRIforLogo() *url.URL {
-	return MakeLocalURLForPath("/logo/external")
+func (b *Builder) MakeLocalIRIforLogo() *url.URL {
+	return b.MakeLocalURLForPath("/logo/external")
 }
 
 // GetLogoType will return the rel value for the webfinger response and
 // the default static image is of type png.
-func GetLogoType() string {
-	imageFilename := configRepository.GetLogoPath()
+func (b *Builder) GetLogoType() string {
+	imageFilename := b.configRepository.GetLogoPath()
 	if imageFilename == "" {
 		return "image/png"
 	}

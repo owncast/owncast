@@ -142,12 +142,17 @@ func main() {
 	cacheContainer := cache.New()
 	defer cacheContainer.Stop()
 
+	// Construct the ActivityPub helper types (Signer, Builder, Resolver)
+	// once here. Signer is the seed: Builder depends on it for actor
+	// public-key embedding, Resolver depends on both for signing
+	// outbound IRI fetches.
+	apSigner := apcrypto.New(apcrypto.Deps{ConfigRepository: configRepository})
+	apBuilder := apmodels.New(apmodels.Deps{ConfigRepository: configRepository, Signer: apSigner})
+	apResolver := apresolvers.New(apresolvers.Deps{ConfigRepository: configRepository, Builder: apBuilder, Signer: apSigner})
+
 	// Install the package-level configRepository handle in every helper
 	// package that has stateless lookups. main.go is the only place that
 	// knows the concrete repo — all other callers receive it via Deps.
-	apmodels.SetConfigRepository(configRepository)
-	apcrypto.SetConfigRepository(configRepository)
-	apresolvers.SetConfigRepository(configRepository)
 
 	// Bring up the notifications repository and run its one-time
 	// browser-push key + default-config bootstrap before stream Start.
@@ -200,6 +205,9 @@ func main() {
 		Chat:                chatSvc,
 		ConfigRepository:    configRepository,
 		FollowersRepository: followersRepository,
+		Builder:             apBuilder,
+		Signer:              apSigner,
+		Resolver:            apResolver,
 	})
 	apSvc.Start()
 
@@ -253,6 +261,8 @@ func main() {
 		WebhookRepository:     webhookRepository,
 		ChatMessageRepository: chatMessageRepository,
 		UserRepository:        userRepository,
+		APBuilder:             apBuilder,
+		APSigner:              apSigner,
 	})
 
 	fediverseHandler := fediverse.New(fediverse.Deps{
@@ -291,6 +301,7 @@ func main() {
 		FollowersRepository:   followersRepository,
 		ChatMessageRepository: chatMessageRepository,
 		UserRepository:        userRepository,
+		APBuilder:             apBuilder,
 	})
 
 	if err := router.Start(*enableVerboseLogging, h, mw, apSvc.Controllers()); err != nil {

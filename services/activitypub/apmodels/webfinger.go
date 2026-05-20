@@ -24,11 +24,11 @@ type Link struct {
 }
 
 // MakeWebfingerResponse will create a new Webfinger response.
-func MakeWebfingerResponse(account string, inbox string, host string) WebfingerResponse {
-	accountIRI := MakeLocalIRIForAccount(account)
-	streamIRI := MakeLocalIRIForStreamURL()
-	logoIRI := MakeLocalIRIforLogo()
-	logoType := GetLogoType()
+func (b *Builder) MakeWebfingerResponse(account string, inbox string, host string) WebfingerResponse {
+	accountIRI := b.MakeLocalIRIForAccount(account)
+	streamIRI := b.MakeLocalIRIForStreamURL()
+	logoIRI := b.MakeLocalIRIforLogo()
+	logoType := b.GetLogoType()
 	return WebfingerResponse{
 		Subject: fmt.Sprintf("acct:%s@%s", account, host),
 		Aliases: []string{

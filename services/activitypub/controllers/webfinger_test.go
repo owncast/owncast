@@ -15,8 +15,9 @@ import (
 )
 
 // testControllers is the *Controllers used by tests in this package.
-// Webfinger is stateless so nil deps suffice; if other handler tests
-// land here that hit deps, expand the construction below.
+// Webfinger is stateless apart from the builder + configRepository, so
+// only those deps are populated; if other handler tests land here that
+// hit additional deps, expand the construction below.
 var testControllers = &Controllers{}
 
 func TestMain(m *testing.M) {
@@ -31,9 +32,13 @@ func TestMain(m *testing.M) {
 	}
 
 	cfg := configrepository.New(datastore.GetDatastore())
-	apmodels.SetConfigRepository(cfg)
-	apcrypto.SetConfigRepository(cfg)
-	testControllers = &Controllers{configRepository: cfg}
+	signer := apcrypto.New(apcrypto.Deps{ConfigRepository: cfg})
+	builder := apmodels.New(apmodels.Deps{ConfigRepository: cfg, Signer: signer})
+	testControllers = &Controllers{
+		configRepository: cfg,
+		builder:          builder,
+		signer:           signer,
+	}
 
 	os.Exit(m.Run())
 }

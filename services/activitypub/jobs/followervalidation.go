@@ -13,7 +13,7 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
-	"github.com/owncast/owncast/services/activitypub/resolvers"
+	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 )
 
 const (
@@ -40,18 +40,24 @@ func GetValidationInterval() time.Duration {
 type Service struct {
 	followers        followersrepository.FollowersRepository
 	configRepository configrepository.ConfigRepository
+	resolver         *apresolvers.Resolver
 }
 
 // Deps is the dependency contract for jobs.
 type Deps struct {
 	Followers        followersrepository.FollowersRepository
 	ConfigRepository configrepository.ConfigRepository
+	Resolver         *apresolvers.Resolver
 }
 
 // New constructs the jobs Service. Call Start to schedule the
 // recurring tasks.
 func New(deps Deps) *Service {
-	return &Service{followers: deps.Followers, configRepository: deps.ConfigRepository}
+	return &Service{
+		followers:        deps.Followers,
+		configRepository: deps.ConfigRepository,
+		resolver:         deps.Resolver,
+	}
 }
 
 // Start schedules the follower-validation tick.
@@ -84,7 +90,7 @@ func (s *Service) runFollowerValidation() {
 }
 
 func (s *Service) validateAndUpdateFollower(follower models.Follower) {
-	resolvedActor, err := resolvers.GetResolvedActorFromIRI(follower.ActorIRI)
+	resolvedActor, err := s.resolver.GetResolvedActorFromIRI(follower.ActorIRI)
 	if err != nil {
 		s.handleValidationFailure(follower, err)
 		return

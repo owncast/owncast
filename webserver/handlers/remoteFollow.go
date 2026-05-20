@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/webfinger"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -34,7 +33,7 @@ func (h *Handlers) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	localActorPath := apmodels.MakeLocalIRIForAccount(h.configRepository.GetDefaultFederationUsername())
+	localActorPath := h.apBuilder.MakeLocalIRIForAccount(h.configRepository.GetDefaultFederationUsername())
 	var template string
 	links, err := webfinger.GetWebfingerLinks(*request.Account)
 	if err != nil {

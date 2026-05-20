@@ -16,6 +16,11 @@ import (
 	"github.com/owncast/owncast/services/datastore"
 )
 
+// testBuilder is the *Builder used by tests in this package. Initialized
+// in TestMain against an in-memory datastore so the config-reading
+// methods (MakeServiceForAccount, MakeLocalIRIForAccount, etc.) work.
+var testBuilder *Builder
+
 func makeFakeService() vocab.ActivityStreamsService {
 	iri, _ := url.Parse("https://fake.fediverse.server/user/mrfoo")
 	name := "Mr Foo"
@@ -65,8 +70,8 @@ func TestMain(m *testing.M) {
 	datastore.SetupPersistence(dbFile.Name())
 
 	configRepository := configrepository.New(datastore.GetDatastore())
-	SetConfigRepository(configRepository)
-	crypto.SetConfigRepository(configRepository)
+	signer := crypto.New(crypto.Deps{ConfigRepository: configRepository})
+	testBuilder = New(Deps{ConfigRepository: configRepository, Signer: signer})
 
 	configRepository.SetServerURL("https://my.cool.site.biz")
 
@@ -111,7 +116,7 @@ func TestAddMetadataLinkToProfile(t *testing.T) {
 }
 
 func TestMakeServiceForAccount(t *testing.T) {
-	person := MakeServiceForAccount("accountname")
+	person := testBuilder.MakeServiceForAccount("accountname")
 	expectedIRI := "https://my.cool.site.biz/federation/user/accountname"
 	if person.GetJSONLDId().Get().String() != expectedIRI {
 		t.Errorf("actor.IRI = %v, want %v", person.GetJSONLDId().Get().String(), expectedIRI)
@@ -168,7 +173,7 @@ func TestMakeServiceForAccountWithIDNServerURL(t *testing.T) {
 		configRepository.SetServerURL("https://my.cool.site.biz")
 	})
 
-	person := MakeServiceForAccount("retrots3m")
+	person := testBuilder.MakeServiceForAccount("retrots3m")
 	payload, err := Serialize(person)
 	if err != nil {
 		t.Fatal(err)

@@ -12,8 +12,6 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/requests"
 )
 
@@ -49,10 +47,10 @@ func (c *Controllers) FollowersHandler(w http.ResponseWriter, r *http.Request) {
 
 	pathComponents := strings.Split(r.URL.Path, "/")
 	accountName := pathComponents[3]
-	actorIRI := apmodels.MakeLocalIRIForAccount(accountName)
-	publicKey := crypto.GetPublicKey(actorIRI)
+	actorIRI := c.builder.MakeLocalIRIForAccount(accountName)
+	publicKey := c.signer.GetPublicKey(actorIRI)
 
-	if err := requests.WriteStreamResponse(response.(vocab.Type), w, publicKey); err != nil {
+	if err := requests.WriteStreamResponse(response.(vocab.Type), w, publicKey, c.signer); err != nil {
 		log.Errorln("unable to write stream response for followers handler", err)
 	}
 }
@@ -61,7 +59,7 @@ func (c *Controllers) getInitialFollowersRequest(r *http.Request) (vocab.Activit
 	followerCount, _ := c.followers.GetCount()
 	collection := streams.NewActivityStreamsOrderedCollection()
 	idProperty := streams.NewJSONLDIdProperty()
-	id, err := createPageURL(r, nil)
+	id, err := c.createPageURL(r, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create followers page property")
 	}
@@ -74,7 +72,7 @@ func (c *Controllers) getInitialFollowersRequest(r *http.Request) (vocab.Activit
 
 	first := streams.NewActivityStreamsFirstProperty()
 	page := "1"
-	firstIRI, err := createPageURL(r, &page)
+	firstIRI, err := c.createPageURL(r, &page)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create first page property")
 	}
@@ -103,7 +101,7 @@ func (c *Controllers) getFollowersPage(page string, r *http.Request) (vocab.Acti
 
 	collectionPage := streams.NewActivityStreamsOrderedCollectionPage()
 	idProperty := streams.NewJSONLDIdProperty()
-	id, err := createPageURL(r, &page)
+	id, err := c.createPageURL(r, &page)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create followers page ID")
 	}
@@ -119,7 +117,7 @@ func (c *Controllers) getFollowersPage(page string, r *http.Request) (vocab.Acti
 	collectionPage.SetActivityStreamsOrderedItems(orderedItems)
 
 	partOf := streams.NewActivityStreamsPartOfProperty()
-	partOfIRI, err := createPageURL(r, nil)
+	partOfIRI, err := c.createPageURL(r, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create partOf property for followers page")
 	}
@@ -130,7 +128,7 @@ func (c *Controllers) getFollowersPage(page string, r *http.Request) (vocab.Acti
 	if pageInt*followersPageSize < int(followerCount) {
 		next := streams.NewActivityStreamsNextProperty()
 		nextPage := fmt.Sprintf("%d", pageInt+1)
-		nextIRI, err := createPageURL(r, &nextPage)
+		nextIRI, err := c.createPageURL(r, &nextPage)
 		if err != nil {
 			return nil, errors.Wrap(err, "unable to create next page property")
 		}
@@ -142,8 +140,8 @@ func (c *Controllers) getFollowersPage(page string, r *http.Request) (vocab.Acti
 	return collectionPage, nil
 }
 
-func createPageURL(r *http.Request, page *string) (*url.URL, error) {
-	pageURL, err := apmodels.GetCanonicalServerURL()
+func (c *Controllers) createPageURL(r *http.Request, page *string) (*url.URL, error) {
+	pageURL, err := c.builder.GetCanonicalServerURL()
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to parse server URL")
 	}

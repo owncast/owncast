@@ -22,11 +22,11 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/crypto"
+	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/activitypub/requests"
-	"github.com/owncast/owncast/services/activitypub/resolvers"
+	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/activitypub/webfinger"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 	"github.com/owncast/owncast/utils"
@@ -40,6 +40,9 @@ type Service struct {
 	workerpool       *workerpool.Service
 	followers        followersrepository.FollowersRepository
 	configRepository configrepository.ConfigRepository
+	builder          *apmodels.Builder
+	signer           *apcrypto.Signer
+	resolver         *apresolvers.Resolver
 }
 
 // Deps is the explicit dependency contract for outbox.
@@ -48,6 +51,9 @@ type Deps struct {
 	Workerpool       *workerpool.Service
 	Followers        followersrepository.FollowersRepository
 	ConfigRepository configrepository.ConfigRepository
+	Builder          *apmodels.Builder
+	Signer           *apcrypto.Signer
+	Resolver         *apresolvers.Resolver
 }
 
 // New constructs an outbox Service. All deps are required.
@@ -57,6 +63,9 @@ func New(deps Deps) *Service {
 		workerpool:       deps.Workerpool,
 		followers:        deps.Followers,
 		configRepository: deps.ConfigRepository,
+		builder:          deps.Builder,
+		signer:           deps.Signer,
+		resolver:         deps.Resolver,
 	}
 }
 
@@ -160,7 +169,7 @@ func (s *Service) SendDirectMessageToAccount(textContent, account string) error 
 	user := apmodels.MakeWebFingerRequestResponseFromData(links)
 
 	iri := user.Self
-	actor, err := resolvers.GetResolvedActorFromIRI(iri)
+	actor, err := s.resolver.GetResolvedActorFromIRI(iri)
 	if err != nil {
 		return errors.Wrap(err, "unable to resolve actor to send message to")
 	}
@@ -233,7 +242,7 @@ func (s *Service) SendPublicMessage(textContent string) error {
 func (s *Service) getAddressingToFollowers() (vocab.ActivityStreamsToProperty, vocab.ActivityStreamsCcProperty) {
 	username := s.configRepository.GetDefaultFederationUsername()
 
-	followersIRI := apmodels.MakeLocalIRIForAccount(username)
+	followersIRI := s.builder.MakeLocalIRIForAccount(username)
 	followersIRI = followersIRI.JoinPath("followers")
 
 	return apmodels.MakeAddressingToFollowers(followersIRI, !s.configRepository.GetFederationIsPrivate())
@@ -241,11 +250,11 @@ func (s *Service) getAddressingToFollowers() (vocab.ActivityStreamsToProperty, v
 
 // nolint: unparam
 func (s *Service) createBaseOutboundMessage(textContent string) (vocab.ActivityStreamsCreate, string, vocab.ActivityStreamsNote, string) {
-	localActor := apmodels.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
+	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 	noteID := shortid.MustGenerate()
-	noteIRI := apmodels.MakeLocalIRIForResource(noteID)
+	noteIRI := s.builder.MakeLocalIRIForResource(noteID)
 	id := shortid.MustGenerate()
-	activity := apmodels.CreateCreateActivity(id, localActor)
+	activity := s.builder.CreateCreateActivity(id, localActor)
 	object := streams.NewActivityStreamsObjectProperty()
 	activity.SetActivityStreamsObject(object)
 
@@ -263,7 +272,7 @@ func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
 // SendToFollowers sends an arbitrary payload to all follower inboxes,
 // preferring shared inboxes to reduce outbound request count.
 func (s *Service) SendToFollowers(payload []byte) error {
-	localActor := apmodels.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
+	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 
 	// Prefer shared inboxes over individual inboxes.
 	inboxes, err := s.followers.GetUniqueDeliveryInboxes()
@@ -308,7 +317,7 @@ func (s *Service) SendToFollowers(payload []byte) error {
 			continue
 		}
 
-		req, err := crypto.CreateSignedRequest(payload, inbox, localActor)
+		req, err := s.signer.CreateSignedRequest(payload, inbox, localActor)
 		if err != nil {
 			log.Errorln("unable to create outbox request", inboxURL, err)
 			continue
@@ -343,9 +352,9 @@ func (s *Service) SendToUser(inbox *url.URL, payload []byte) error {
 		return errors.Errorf("rejecting internal/loopback inbox URL for SSRF protection: %s", inbox.String())
 	}
 
-	localActor := apmodels.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
+	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 
-	req, err := requests.CreateSignedRequest(payload, inbox, localActor)
+	req, err := requests.CreateSignedRequest(payload, inbox, localActor, s.signer)
 	if err != nil {
 		return errors.Wrap(err, "unable to create outbox request")
 	}
@@ -363,11 +372,11 @@ func (s *Service) UpdateFollowersWithAccountUpdates() error {
 	}
 
 	id := shortid.MustGenerate()
-	objectID := apmodels.MakeLocalIRIForResource(id)
-	activity := apmodels.MakeUpdateActivity(objectID)
+	objectID := s.builder.MakeLocalIRIForResource(id)
+	activity := s.builder.MakeUpdateActivity(objectID)
 
 	actor := streams.NewActivityStreamsPerson()
-	actorID := apmodels.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
+	actorID := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 	actorIDProperty := streams.NewJSONLDIdProperty()
 	actorIDProperty.Set(actorID)
 	actor.SetJSONLDId(actorIDProperty)

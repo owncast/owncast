@@ -10,6 +10,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/controllers"
 	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/inbox"
@@ -17,6 +18,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/outbox"
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
+	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/datastore"
@@ -45,12 +47,15 @@ type Deps struct {
 	Chat                *chat.Service
 	ConfigRepository    configrepository.ConfigRepository
 	FollowersRepository followersrepository.FollowersRepository
+	Builder             *apmodels.Builder
+	Signer              *crypto.Signer
+	Resolver            *apresolvers.Resolver
 }
 
 // New constructs the federation subsystem in dependency order. It does
 // not spawn any goroutines or bind ports; call Start for that.
 func New(deps Deps) *Service {
-	persistenceSvc := persistence.New(deps.Datastore)
+	persistenceSvc := persistence.New(deps.Datastore, deps.Resolver)
 	followers := deps.FollowersRepository
 
 	wpSvc := workerpool.New(outboundWorkerPoolSize(followers))
@@ -60,6 +65,9 @@ func New(deps Deps) *Service {
 		Workerpool:       wpSvc,
 		Followers:        followers,
 		ConfigRepository: deps.ConfigRepository,
+		Builder:          deps.Builder,
+		Signer:           deps.Signer,
+		Resolver:         deps.Resolver,
 	})
 
 	inboxSvc := inbox.New(inbox.Deps{
@@ -69,11 +77,15 @@ func New(deps Deps) *Service {
 		Webhooks:         deps.Webhooks,
 		Chat:             deps.Chat,
 		ConfigRepository: deps.ConfigRepository,
+		Builder:          deps.Builder,
+		Signer:           deps.Signer,
+		Resolver:         deps.Resolver,
 	})
 
 	jobsSvc := jobs.New(jobs.Deps{
 		Followers:        followers,
 		ConfigRepository: deps.ConfigRepository,
+		Resolver:         deps.Resolver,
 	})
 
 	ctrls := controllers.New(controllers.Deps{
@@ -82,6 +94,8 @@ func New(deps Deps) *Service {
 		Inbox:            inboxSvc,
 		Followers:        followers,
 		ConfigRepository: deps.ConfigRepository,
+		Builder:          deps.Builder,
+		Signer:           deps.Signer,
 	})
 
 	return &Service{

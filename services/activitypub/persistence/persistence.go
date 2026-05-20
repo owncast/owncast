@@ -18,20 +18,23 @@ import (
 
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/services/activitypub/resolvers"
+	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/datastore"
 )
 
 // Service owns the ActivityPub persistence operations.
 type Service struct {
 	datastore *datastore.Datastore
+	resolver  *apresolvers.Resolver
 }
 
 // New constructs a persistence Service bound to the given datastore.
 // Side effect: loads followers fixture data (no-op in the default build
-// tag; populated when the `fixture` build tag is set).
-func New(datastore *datastore.Datastore) *Service {
-	s := &Service{datastore: datastore}
+// tag; populated when the `fixture` build tag is set). The resolver is
+// required for outbox deserialization in GetOutbox; pass nil only if
+// you do not call that method.
+func New(ds *datastore.Datastore, resolver *apresolvers.Resolver) *Service {
+	s := &Service{datastore: ds, resolver: resolver}
 	s.addFollowersFixtureData()
 	return s
 }
@@ -65,7 +68,7 @@ func (s *Service) GetOutbox(limit int, offset int) (vocab.ActivityStreamsOrdered
 			orderedItems.AppendActivityStreamsCreate(activity)
 			return nil
 		}
-		if err := resolvers.Resolve(context.Background(), value, createCallback); err != nil {
+		if err := s.resolver.Resolve(context.Background(), value, createCallback); err != nil {
 			return collection, err
 		}
 	}

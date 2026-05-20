@@ -11,13 +11,13 @@ import (
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 )
 
-func getPersonFromFollow(activity vocab.ActivityStreamsFollow) (apmodels.ActivityPubActor, error) {
-	return GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
+func (r *Resolver) getPersonFromFollow(activity vocab.ActivityStreamsFollow) (apmodels.ActivityPubActor, error) {
+	return r.GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
 }
 
 // MakeFollowRequest will convert an inbound Follow request to our internal actor model.
-func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) (*apmodels.ActivityPubActor, error) {
-	person, err := getPersonFromFollow(activity)
+func (r *Resolver) MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) (*apmodels.ActivityPubActor, error) {
+	person, err := r.getPersonFromFollow(activity)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to resolve person from follow request")
 	}
@@ -41,8 +41,8 @@ func MakeFollowRequest(c context.Context, activity vocab.ActivityStreamsFollow) 
 }
 
 // MakeUnFollowRequest will convert an inbound Unfollow request to our internal actor model.
-func MakeUnFollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) *apmodels.ActivityPubActor {
-	person, err := GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
+func (r *Resolver) MakeUnFollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) *apmodels.ActivityPubActor {
+	person, err := r.GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
 	if err != nil {
 		log.Errorln("unable to resolve person from actor iri", person.ActorIri, err)
 		return nil

@@ -7,7 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/resolvers"
 )
 
 func (s *Service) handleUpdateRequest(c context.Context, activity vocab.ActivityStreamsUpdate) error {
@@ -16,7 +15,7 @@ func (s *Service) handleUpdateRequest(c context.Context, activity vocab.Activity
 		return nil
 	}
 
-	actor, err := resolvers.GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
+	actor, err := s.resolver.GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
 	if err != nil {
 		log.Errorln(err)
 		return err

@@ -8,8 +8,8 @@ import (
 )
 
 // CreateCreateActivity will create a new Create Activity model with the provided ID and IRI.
-func CreateCreateActivity(id string, localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
-	objectID := MakeLocalIRIForResource(id)
+func (b *Builder) CreateCreateActivity(id string, localAccountIRI *url.URL) vocab.ActivityStreamsCreate {
+	objectID := b.MakeLocalIRIForResource(id)
 	message := MakeCreateActivity(objectID)
 
 	actorProp := streams.NewActivityStreamsActorProperty()

@@ -15,8 +15,8 @@ import (
 )
 
 // SignResponse will sign a response using the provided response body and public key.
-func SignResponse(w http.ResponseWriter, body []byte, publicKey PublicKey) error {
-	privateKey := GetPrivateKey()
+func (s *Signer) SignResponse(w http.ResponseWriter, body []byte, publicKey PublicKey) error {
+	privateKey := s.GetPrivateKey()
 
 	return signResponse(privateKey, *publicKey.ID, body, w)
 }
@@ -41,9 +41,9 @@ func signResponse(privateKey crypto.PrivateKey, pubKeyID url.URL, body []byte, w
 }
 
 // SignRequest will sign an ounbound request given the provided body.
-func SignRequest(req *http.Request, body []byte, actorIRI *url.URL) error {
-	publicKey := GetPublicKey(actorIRI)
-	privateKey := GetPrivateKey()
+func (s *Signer) SignRequest(req *http.Request, body []byte, actorIRI *url.URL) error {
+	publicKey := s.GetPublicKey(actorIRI)
+	privateKey := s.GetPrivateKey()
 
 	return signRequest(privateKey, publicKey.ID.String(), body, req)
 }
@@ -73,7 +73,7 @@ func signRequest(privateKey crypto.PrivateKey, pubKeyID string, body []byte, r *
 }
 
 // CreateSignedRequest will create a signed POST request of a payload to the provided destination.
-func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) (*http.Request, error) {
+func (s *Signer) CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) (*http.Request, error) {
 	log.Debugln("Sending", string(payload), "to", url)
 
 	req, _ := http.NewRequest("POST", url.String(), bytes.NewBuffer(payload))
@@ -82,7 +82,7 @@ func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL) (*
 	req.Header.Set("User-Agent", ua)
 	req.Header.Set("Content-Type", "application/activity+json")
 
-	if err := SignRequest(req, payload, fromActorIRI); err != nil {
+	if err := s.SignRequest(req, payload, fromActorIRI); err != nil {
 		log.Errorln("error signing request:", err)
 		return nil, err
 	}

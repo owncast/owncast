@@ -6,7 +6,6 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/microcosm-cc/bluemonday"
 
-	"github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/chat/events"
 )
 
@@ -33,7 +32,7 @@ func (s *Service) handleEngagementActivity(eventType events.EventType, isLiveNot
 	}
 
 	// Get actor of the action
-	actor, err := resolvers.GetResolvedActorFromActorProperty(actorReference)
+	actor, err := s.resolver.GetResolvedActorFromActorProperty(actorReference)
 	if err != nil {
 		return fmt.Errorf("unable to resolve actor for engagement activity: %w", err)
 	}

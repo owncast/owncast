@@ -7,7 +7,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -19,7 +18,7 @@ func (c *Controllers) WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	instanceURL, err := apmodels.GetCanonicalServerURL()
+	instanceURL, err := c.builder.GetCanonicalServerURL()
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		log.Warnln("webfinger request rejected! Federation is enabled but server URL host cannot be canonicalized: " + c.configRepository.GetServerURL())
@@ -65,7 +64,7 @@ func (c *Controllers) WebfingerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	webfingerResponse := apmodels.MakeWebfingerResponse(user, user, host)
+	webfingerResponse := c.builder.MakeWebfingerResponse(user, user, host)
 
 	w.Header().Set("Content-Type", "application/jrd+json")
 

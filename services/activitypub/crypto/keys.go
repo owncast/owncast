@@ -12,8 +12,8 @@ import (
 )
 
 // GetPublicKey will return the public key for the provided actor.
-func GetPublicKey(actorIRI *url.URL) PublicKey {
-	key := configRepository.GetPublicKey()
+func (s *Signer) GetPublicKey(actorIRI *url.URL) PublicKey {
+	key := s.configRepository.GetPublicKey()
 	idURL, err := url.Parse(actorIRI.String() + "#main-key")
 	if err != nil {
 		log.Errorln("unable to parse actor iri string", idURL, err)
@@ -27,8 +27,8 @@ func GetPublicKey(actorIRI *url.URL) PublicKey {
 }
 
 // GetPrivateKey will return the internal server private key.
-func GetPrivateKey() *rsa.PrivateKey {
-	key := configRepository.GetPrivateKey()
+func (s *Signer) GetPrivateKey() *rsa.PrivateKey {
+	key := s.configRepository.GetPrivateKey()
 
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {
@@ -46,6 +46,7 @@ func GetPrivateKey() *rsa.PrivateKey {
 }
 
 // GenerateKeys will generate the private/public key pair needed for federation.
+// This is a pure utility; no Signer state is required.
 func GenerateKeys() ([]byte, []byte, error) {
 	// generate key
 	privatekey, err := rsa.GenerateKey(rand.Reader, 2048)

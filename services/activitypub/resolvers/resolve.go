@@ -12,12 +12,11 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/utils"
 )
 
 // Resolve will translate a raw ActivityPub payload and fire the callback associated with that activity type.
-func Resolve(c context.Context, data []byte, callbacks ...interface{}) error {
+func (r *Resolver) Resolve(c context.Context, data []byte, callbacks ...interface{}) error {
 	jsonResolver, err := streams.NewJSONResolver(callbacks...)
 	if err != nil {
 		// Something in the setup was wrong. For example, a callback has an
@@ -48,14 +47,14 @@ func Resolve(c context.Context, data []byte, callbacks ...interface{}) error {
 
 // ResolveIRI will resolve an IRI and call the correct callback for the resolved type.
 // Uses a retryable HTTP client for resilience against transient failures.
-func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
+func (r *Resolver) ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	log.Debugln("Resolving", iri)
 
 	req, _ := http.NewRequest(http.MethodGet, iri, nil)
 	req.Header.Set("Accept", "application/activity+json, application/ld+json")
 
-	actor := apmodels.MakeLocalIRIForAccount(configRepository.GetDefaultFederationUsername())
-	if err := crypto.SignRequest(req, nil, actor); err != nil {
+	actor := r.builder.MakeLocalIRIForAccount(r.configRepository.GetDefaultFederationUsername())
+	if err := r.signer.SignRequest(req, nil, actor); err != nil {
 		return err
 	}
 
@@ -76,13 +75,13 @@ func ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 		return err
 	}
 
-	return Resolve(c, data, callbacks...)
+	return r.Resolve(c, data, callbacks...)
 }
 
 // GetResolvedActorFromActorProperty resolve an external actor property to a
 // fully populated internal actor representation.
 // Returns an error if the actor cannot be resolved or is missing required fields.
-func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty) (apmodels.ActivityPubActor, error) {
+func (r *Resolver) GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty) (apmodels.ActivityPubActor, error) {
 	var apActor apmodels.ActivityPubActor
 
 	if actor == nil || actor.Empty() || actor.Len() == 0 || actor.At(0) == nil {
@@ -99,7 +98,7 @@ func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty)
 		if iri == nil {
 			return apActor, errors.New("actor IRI is nil despite IsIRI() returning true")
 		}
-		return GetResolvedActorFromIRI(iri.String())
+		return r.GetResolvedActorFromIRI(iri.String())
 	}
 
 	if actorObjectOrIRI.IsActivityStreamsPerson() {
@@ -123,7 +122,7 @@ func GetResolvedActorFromActorProperty(actor vocab.ActivityStreamsActorProperty)
 }
 
 // GetResolvedPublicKeyFromIRI will resolve a publicKey IRI string to a vocab.W3IDSecurityV1PublicKey.
-func GetResolvedPublicKeyFromIRI(publicKeyIRI string) (vocab.W3IDSecurityV1PublicKey, error) {
+func (r *Resolver) GetResolvedPublicKeyFromIRI(publicKeyIRI string) (vocab.W3IDSecurityV1PublicKey, error) {
 	var err error
 	var pubkey vocab.W3IDSecurityV1PublicKey
 	resolved := false
@@ -173,7 +172,7 @@ func GetResolvedPublicKeyFromIRI(publicKeyIRI string) (vocab.W3IDSecurityV1Publi
 		return nil
 	}
 
-	if e := ResolveIRI(context.Background(), publicKeyIRI, personCallback, serviceCallback, applicationCallback, pubkeyCallback); e != nil {
+	if e := r.ResolveIRI(context.Background(), publicKeyIRI, personCallback, serviceCallback, applicationCallback, pubkeyCallback); e != nil {
 		err = e
 	}
 
@@ -190,7 +189,7 @@ func GetResolvedPublicKeyFromIRI(publicKeyIRI string) (vocab.W3IDSecurityV1Publi
 
 // GetResolvedActorFromIRI will resolve an IRI string to a fully populated actor.
 // Returns an error if the actor cannot be resolved or is missing required fields.
-func GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubActor, error) {
+func (r *Resolver) GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubActor, error) {
 	var resolveErr error
 	var apActor apmodels.ActivityPubActor
 	resolved := false
@@ -225,7 +224,7 @@ func GetResolvedActorFromIRI(personOrServiceIRI string) (apmodels.ActivityPubAct
 		return nil
 	}
 
-	if e := ResolveIRI(context.Background(), personOrServiceIRI, personCallback, serviceCallback, applicationCallback); e != nil {
+	if e := r.ResolveIRI(context.Background(), personOrServiceIRI, personCallback, serviceCallback, applicationCallback); e != nil {
 		resolveErr = errors.Wrap(e, "error resolving actor from IRI")
 	}
 
