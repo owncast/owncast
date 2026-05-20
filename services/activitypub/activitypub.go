@@ -8,6 +8,7 @@ package activitypub
 import (
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
@@ -50,6 +51,7 @@ type Deps struct {
 	Builder             *apmodels.Builder
 	Signer              *crypto.Signer
 	Resolver            *apresolvers.Resolver
+	Config              *config.Config
 }
 
 // New constructs the federation subsystem in dependency order. It does
@@ -68,6 +70,7 @@ func New(deps Deps) *Service {
 		Builder:          deps.Builder,
 		Signer:           deps.Signer,
 		Resolver:         deps.Resolver,
+		Config:           deps.Config,
 	})
 
 	inboxSvc := inbox.New(inbox.Deps{
@@ -86,6 +89,7 @@ func New(deps Deps) *Service {
 		Followers:        followers,
 		ConfigRepository: deps.ConfigRepository,
 		Resolver:         deps.Resolver,
+		Config:           deps.Config,
 	})
 
 	ctrls := controllers.New(controllers.Deps{

@@ -15,17 +15,17 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/persistence/migrations"
 	"github.com/owncast/owncast/utils"
 )
 
 // SetupPersistence opens the datastore file (or an in-memory database
 // when file == ":memory:"), runs migrations, starts the periodic backup
-// goroutine, and returns the constructed *Datastore. The returned value
-// is the sole handle to the database — main.go threads it through every
-// consumer.
-func SetupPersistence(file string) (*Datastore, error) {
+// goroutine, and returns the constructed *Datastore. backupDirectory is
+// the directory the hourly backup goroutine writes owncastdb.bak into.
+// The returned value is the sole handle to the database — main.go
+// threads it through every consumer.
+func SetupPersistence(file, backupDirectory string) (*Datastore, error) {
 	// Allow support for in-memory databases for tests.
 
 	var db *sql.DB
@@ -64,7 +64,7 @@ func SetupPersistence(file string) (*Datastore, error) {
 	// Bring the schema up to date. The migrations package owns all table
 	// creation and schema changes; existing pre-goose installs are caught up
 	// automatically by its legacy-bridge step.
-	if err := migrations.Run(db); err != nil {
+	if err := migrations.Run(db, backupDirectory); err != nil {
 		return nil, fmt.Errorf("running database migrations: %w", err)
 	}
 
@@ -73,7 +73,7 @@ func SetupPersistence(file string) (*Datastore, error) {
 
 	dbBackupTicker := time.NewTicker(1 * time.Hour)
 	go func() {
-		backupFile := filepath.Join(config.BackupDirectory, "owncastdb.bak")
+		backupFile := filepath.Join(backupDirectory, "owncastdb.bak")
 		for range dbBackupTicker.C {
 			utils.Backup(db, backupFile)
 		}

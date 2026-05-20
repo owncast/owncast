@@ -34,6 +34,11 @@ func (e *execInfo) String() string {
 type Transcoder struct {
 	codec Codec
 
+	// cfg supplies runtime values (the HLS listener port discovered at
+	// startup, the debug flag, the log directory) needed when building
+	// the ffmpeg command line.
+	cfg *config.Config
+
 	// configRepository provides ffmpeg path, latency level, output variants,
 	// and codec selection consulted at Start.
 	configRepository configrepository.ConfigRepository
@@ -145,7 +150,7 @@ func (t *Transcoder) Start(shouldLog bool) {
 	t.createVariantDirectories()
 	command := flags.String()
 
-	if config.EnableDebugFeatures {
+	if t.cfg.EnableDebugFeatures {
 		log.Println(command)
 	}
 
@@ -162,7 +167,7 @@ func (t *Transcoder) Start(shouldLog bool) {
 	}
 
 	if err := t.commandExec.Start(); err != nil {
-		log.Errorln("Transcoder error. See", logging.GetTranscoderLogFilePath(), "for full output to debug.")
+		log.Errorln("Transcoder error. See", logging.GetTranscoderLogFilePath(t.cfg.LogDirectory), "for full output to debug.")
 		log.Panicln(err, command)
 	}
 
@@ -180,7 +185,7 @@ func (t *Transcoder) Start(shouldLog bool) {
 	}
 
 	if err != nil {
-		log.Errorln("transcoding error. look at", logging.GetTranscoderLogFilePath(), "to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/codecs/")
+		log.Errorln("transcoding error. look at", logging.GetTranscoderLogFilePath(t.cfg.LogDirectory), "to help debug. your copy of ffmpeg may not support your selected codec of", t.codec.Name(), "https://owncast.online/docs/codecs/")
 	}
 }
 
@@ -229,7 +234,7 @@ func (t *Transcoder) getFlags() *execInfo {
 		hlsOptionsString = append(hlsOptionsString, "-hls_flags", strings.Join(hlsOptionFlags, "+"))
 	}
 
-	logPath := logging.GetTranscoderLogFilePath()
+	logPath := logging.GetTranscoderLogFilePath(t.cfg.LogDirectory)
 	reportEnv := fmt.Sprintf(`FFREPORT=file=%s:level=32`, logPath)
 	if runtime.GOOS == "windows" {
 		logPath = strings.ReplaceAll(logPath, "\\", "/")
@@ -321,13 +326,14 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 }
 
 // NewTranscoder will return a new Transcoder, populated by the config.
-func NewTranscoder(configRepository configrepository.ConfigRepository) *Transcoder {
+func NewTranscoder(cfg *config.Config, configRepository configrepository.ConfigRepository) *Transcoder {
 	ffmpegPath := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
 
 	transcoder := new(Transcoder)
+	transcoder.cfg = cfg
 	transcoder.configRepository = configRepository
 	transcoder.ffmpegPath = ffmpegPath
-	transcoder.internalListenerPort = config.InternalHLSListenerPort
+	transcoder.internalListenerPort = cfg.InternalHLSListenerPort
 
 	transcoder.currentStreamOutputSettings = configRepository.GetStreamOutputVariants()
 	transcoder.currentLatencyLevel = configRepository.GetStreamLatencyLevel()
@@ -430,7 +436,8 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) []string {
 
 	gop := v.framerate * t.currentLatencyLevel.SecondsPerSegment // force an i-frame every segment
 	cmd := make([]string, 0, 20)
-	cmd = append(cmd,
+	cmd = append(
+		cmd,
 		"-map", "v:0",
 		fmt.Sprintf("-c:v:%d", v.index), t.codec.Name(), // Video codec used for this variant
 		fmt.Sprintf("-b:v:%d", v.index), fmt.Sprintf("%dk", v.getAllocatedVideoBitrate()), // The average bitrate for this variant allowing space for audio

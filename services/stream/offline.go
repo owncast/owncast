@@ -21,7 +21,7 @@ func (s *Service) appendOfflineToVariantPlaylist(index int, playlistFilePath str
 	}
 
 	tmpFileName := fmt.Sprintf("tmp-stream-%d.m3u8", index)
-	atomicWriteTmpPlaylistFile, err := os.CreateTemp(config.TempDir, tmpFileName)
+	atomicWriteTmpPlaylistFile, err := os.CreateTemp(s.cfg.TempDir, tmpFileName)
 	if err != nil {
 		log.Errorln("error creating tmp playlist file to write to", playlistFilePath, err)
 		return
@@ -93,9 +93,9 @@ func createEmptyOfflinePlaylist(playlistFilePath string, offlineFilename string)
 	}
 }
 
-func saveOfflineClipToDisk(offlineFilename string) (string, error) {
+func saveOfflineClipToDisk(tempDir, offlineFilename string) (string, error) {
 	offlineFileData := static.GetOfflineSegment()
-	offlineTmpFile, err := os.CreateTemp(config.TempDir, offlineFilename)
+	offlineTmpFile, err := os.CreateTemp(tempDir, offlineFilename)
 	if err != nil {
 		log.Errorln("unable to create temp file for offline video segment", err)
 	}

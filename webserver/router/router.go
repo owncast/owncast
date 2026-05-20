@@ -21,13 +21,14 @@ import (
 
 // Start starts the router for the http, ws, and rtmp.
 //
-// h carries dependency-injected handler methods. Free-function handlers
-// (the majority during the migration) are referenced directly by package
+// cfg supplies the bound port + IP for the public web server. h carries
+// dependency-injected handler methods. Free-function handlers (the
+// majority during the migration) are referenced directly by package
 // path; methods on *handlers.Handlers are registered via the h receiver.
 // mw carries the methodified HTTP middleware (admin basic-auth, federation
 // content-type gating). apc carries the methodified ActivityPub HTTP
 // handler set.
-func Start(enableVerboseLogging bool, h *handlers.Handlers, mw *middleware.Middleware, apc *apcontrollers.Controllers) error {
+func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, mw *middleware.Middleware, apc *apcontrollers.Controllers) error {
 	// @behlers New Router
 	r := chi.NewRouter()
 
@@ -84,8 +85,8 @@ func Start(enableVerboseLogging bool, h *handlers.Handlers, mw *middleware.Middl
 		}
 	})
 
-	port := config.WebServerPort
-	ip := config.WebServerIP
+	port := cfg.WebServerPort
+	ip := cfg.WebServerIP
 
 	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
 	server := &http.Server{

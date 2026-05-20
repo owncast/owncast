@@ -43,6 +43,7 @@ type Service struct {
 	builder          *apmodels.Builder
 	signer           *apcrypto.Signer
 	resolver         *apresolvers.Resolver
+	cfg              *config.Config
 }
 
 // Deps is the explicit dependency contract for outbox.
@@ -54,6 +55,7 @@ type Deps struct {
 	Builder          *apmodels.Builder
 	Signer           *apcrypto.Signer
 	Resolver         *apresolvers.Resolver
+	Config           *config.Config
 }
 
 // New constructs an outbox Service. All deps are required.
@@ -66,6 +68,7 @@ func New(deps Deps) *Service {
 		builder:          deps.Builder,
 		signer:           deps.Signer,
 		resolver:         deps.Resolver,
+		cfg:              deps.Config,
 	}
 }
 
@@ -120,8 +123,8 @@ func (s *Service) SendLive() error {
 	if err == nil {
 		var imageToAttach string
 		var mediaType string
-		previewGif := filepath.Join(config.TempDir, "preview.gif")
-		thumbnailJpg := filepath.Join(config.TempDir, "thumbnail.jpg")
+		previewGif := filepath.Join(s.cfg.TempDir, "preview.gif")
+		thumbnailJpg := filepath.Join(s.cfg.TempDir, "thumbnail.jpg")
 		uniquenessString := shortid.MustGenerate()
 		if utils.DoesFileExists(previewGif) {
 			imageToAttach = "preview.gif"

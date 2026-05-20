@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -19,7 +18,7 @@ const (
 // GetThumbnail will return the thumbnail image as a response.
 func (h *Handlers) GetThumbnail(w http.ResponseWriter, r *http.Request) {
 	imageFilename := thumbnailFilename
-	imagePath := filepath.Join(config.TempDir, imageFilename)
+	imagePath := filepath.Join(h.cfg.TempDir, imageFilename)
 	httpCacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
 	inMemoryCacheTime := time.Duration(15) * time.Second
 
@@ -48,7 +47,7 @@ func (h *Handlers) GetThumbnail(w http.ResponseWriter, r *http.Request) {
 // GetPreview will return the preview gif as a response.
 func (h *Handlers) GetPreview(w http.ResponseWriter, r *http.Request) {
 	imageFilename := "preview.gif"
-	imagePath := filepath.Join(config.TempDir, imageFilename)
+	imagePath := filepath.Join(h.cfg.TempDir, imageFilename)
 	httpCacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
 	inMemoryCacheTime := time.Duration(15) * time.Second
 

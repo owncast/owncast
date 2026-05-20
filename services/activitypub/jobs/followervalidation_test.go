@@ -28,7 +28,7 @@ func setup() {
 
 // resetTestDatabase initializes a fresh in-memory database for testing.
 func resetTestDatabase() {
-	ds, err := datastore.SetupPersistence(":memory:")
+	ds, err := datastore.SetupPersistence(":memory:", os.TempDir())
 	if err != nil {
 		panic(err)
 	}

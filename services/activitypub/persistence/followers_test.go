@@ -29,7 +29,7 @@ var _datastore *datastore.Datastore
 var followers = []models.Follower{}
 
 func setup() {
-	ds, err := datastore.SetupPersistence(":memory:")
+	ds, err := datastore.SetupPersistence(":memory:", os.TempDir())
 	if err != nil {
 		panic(err)
 	}
@@ -158,7 +158,7 @@ func createTestFollower(followersRepo followersrepository.FollowersRepository, a
 
 func TestGetUniqueDeliveryInboxes(t *testing.T) {
 	// Set up a fresh database for this test
-	ds, err := datastore.SetupPersistence(":memory:")
+	ds, err := datastore.SetupPersistence(":memory:", os.TempDir())
 	if err != nil {
 		t.Fatalf("setup error: %s", err)
 	}
@@ -257,7 +257,7 @@ func TestGetUniqueDeliveryInboxes(t *testing.T) {
 
 func TestSharedInboxPreferredOverIndividual(t *testing.T) {
 	// Set up a fresh database for this test
-	ds, err := datastore.SetupPersistence(":memory:")
+	ds, err := datastore.SetupPersistence(":memory:", os.TempDir())
 	if err != nil {
 		t.Fatalf("setup error: %s", err)
 	}
@@ -295,7 +295,7 @@ func TestSharedInboxPreferredOverIndividual(t *testing.T) {
 
 func TestIndividualInboxUsedWhenNoSharedInbox(t *testing.T) {
 	// Set up a fresh database for this test
-	ds, err := datastore.SetupPersistence(":memory:")
+	ds, err := datastore.SetupPersistence(":memory:", os.TempDir())
 	if err != nil {
 		t.Fatalf("setup error: %s", err)
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/jellydator/ttlcache/v3"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -50,6 +51,7 @@ type Handlers struct {
 	userRepository          userrepository.UserRepository
 	notificationsRepository notificationsrepository.NotificationsRepository
 	apBuilder               *apmodels.Builder
+	cfg                     *config.Config
 
 	// previewThumbCache caches thumbnail/preview bytes for a short window
 	// so frequent polling from chat clients doesn't re-read the file
@@ -82,6 +84,7 @@ type Deps struct {
 	UserRepository          userrepository.UserRepository
 	NotificationsRepository notificationsrepository.NotificationsRepository
 	APBuilder               *apmodels.Builder
+	Config                  *config.Config
 }
 
 // HandleWebsocketConnection routes the /ws websocket upgrade to the
@@ -111,6 +114,7 @@ func NewHandlers(deps Deps) *Handlers {
 		userRepository:          deps.UserRepository,
 		notificationsRepository: deps.NotificationsRepository,
 		apBuilder:               deps.APBuilder,
+		cfg:                     deps.Config,
 		previewThumbCache: ttlcache.New(
 			ttlcache.WithTTL[string, []byte](15),
 			ttlcache.WithCapacity[string, []byte](1),

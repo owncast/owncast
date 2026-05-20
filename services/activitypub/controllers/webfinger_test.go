@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 	}
 	defer os.Remove(dbFile.Name())
 
-	ds, err := datastore.SetupPersistence(dbFile.Name())
+	ds, err := datastore.SetupPersistence(dbFile.Name(), os.TempDir())
 	if err != nil {
 		panic(err)
 	}

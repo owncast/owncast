@@ -16,7 +16,7 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	ds, err := SetupPersistence(dbFile.Name())
+	ds, err := SetupPersistence(dbFile.Name(), os.TempDir())
 	if err != nil {
 		panic(err)
 	}

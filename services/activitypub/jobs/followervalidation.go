@@ -27,11 +27,12 @@ const (
 	DelayBetweenFollowers = 2 * time.Second
 )
 
-// GetValidationInterval returns the configured validation interval, or
-// the default ValidationInterval when no override is set.
-func GetValidationInterval() time.Duration {
-	if config.FollowerValidationInterval > 0 {
-		return config.FollowerValidationInterval
+// GetValidationInterval returns the configured validation interval (from
+// the supplied Config) when non-zero, otherwise the default
+// ValidationInterval.
+func GetValidationInterval(cfg *config.Config) time.Duration {
+	if cfg != nil && cfg.FollowerValidationInterval > 0 {
+		return cfg.FollowerValidationInterval
 	}
 	return ValidationInterval
 }
@@ -41,6 +42,7 @@ type Service struct {
 	followers        followersrepository.FollowersRepository
 	configRepository configrepository.ConfigRepository
 	resolver         *apresolvers.Resolver
+	cfg              *config.Config
 }
 
 // Deps is the dependency contract for jobs.
@@ -48,6 +50,7 @@ type Deps struct {
 	Followers        followersrepository.FollowersRepository
 	ConfigRepository configrepository.ConfigRepository
 	Resolver         *apresolvers.Resolver
+	Config           *config.Config
 }
 
 // New constructs the jobs Service. Call Start to schedule the
@@ -57,12 +60,13 @@ func New(deps Deps) *Service {
 		followers:        deps.Followers,
 		configRepository: deps.ConfigRepository,
 		resolver:         deps.Resolver,
+		cfg:              deps.Config,
 	}
 }
 
 // Start schedules the follower-validation tick.
 func (s *Service) Start() {
-	interval := GetValidationInterval()
+	interval := GetValidationInterval(s.cfg)
 	ticker := time.NewTicker(interval)
 	go func() {
 		for range ticker.C {

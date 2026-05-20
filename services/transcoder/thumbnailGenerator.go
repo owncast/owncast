@@ -19,12 +19,13 @@ import (
 // instance per active stream, owned by the stream service.
 type ThumbnailGenerator struct {
 	timer            *time.Ticker
+	cfg              *config.Config
 	configRepository configrepository.ConfigRepository
 }
 
 // NewThumbnailGenerator returns an idle generator. Call Start to begin.
-func NewThumbnailGenerator(configRepository configrepository.ConfigRepository) *ThumbnailGenerator {
-	return &ThumbnailGenerator{configRepository: configRepository}
+func NewThumbnailGenerator(cfg *config.Config, configRepository configrepository.ConfigRepository) *ThumbnailGenerator {
+	return &ThumbnailGenerator{cfg: cfg, configRepository: configRepository}
 }
 
 // Stop will stop the periodic generating of a thumbnail from video.
@@ -56,8 +57,8 @@ func (g *ThumbnailGenerator) Start(chunkPath string, variantIndex int, isVideoPa
 
 func (g *ThumbnailGenerator) fireThumbnailGenerator(segmentPath string, variantIndex int) error {
 	// JPG takes less time to encode than PNG
-	outputFile := path.Join(config.TempDir, "thumbnail.jpg")
-	previewGifFile := path.Join(config.TempDir, "preview.gif")
+	outputFile := path.Join(g.cfg.TempDir, "thumbnail.jpg")
+	previewGifFile := path.Join(g.cfg.TempDir, "preview.gif")
 
 	framePath := path.Join(segmentPath, strconv.Itoa(variantIndex))
 	files, err := os.ReadDir(framePath)
@@ -93,7 +94,7 @@ func (g *ThumbnailGenerator) fireThumbnailGenerator(segmentPath string, variantI
 	}
 	mostRecentFile := path.Join(framePath, names[0])
 	ffmpegPath := utils.ValidatedFfmpegPath(g.configRepository.GetFfMpegPath())
-	outputFileTemp := path.Join(config.TempDir, "tempthumbnail.jpg")
+	outputFileTemp := path.Join(g.cfg.TempDir, "tempthumbnail.jpg")
 
 	thumbnailCmdFlags := []string{
 		"-y",            // Overwrite file
@@ -121,7 +122,7 @@ func (g *ThumbnailGenerator) fireThumbnailGenerator(segmentPath string, variantI
 
 func (g *ThumbnailGenerator) makeAnimatedGifPreview(sourceFile string, outputFile string) {
 	ffmpegPath := utils.ValidatedFfmpegPath(g.configRepository.GetFfMpegPath())
-	outputFileTemp := path.Join(config.TempDir, "temppreview.gif")
+	outputFileTemp := path.Join(g.cfg.TempDir, "temppreview.gif")
 
 	// Filter is pulled from https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
 	animatedGifFlags := []string{

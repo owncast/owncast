@@ -2,6 +2,7 @@ package notificationsrepository
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -15,7 +16,7 @@ var (
 
 func TestMain(m *testing.M) {
 	// Create an in-memory database for testing
-	ds, err := datastore.SetupPersistence(":memory:")
+	ds, err := datastore.SetupPersistence(":memory:", os.TempDir())
 	if err != nil {
 		panic(err)
 	}

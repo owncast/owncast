@@ -2,6 +2,7 @@ package inbox
 
 import (
 	"net/url"
+	"os"
 	"testing"
 
 	"github.com/go-fed/activity/streams"
@@ -59,7 +60,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	ds, err := datastore.SetupPersistence(":memory:")
+	ds, err := datastore.SetupPersistence(":memory:", os.TempDir())
 	if err != nil {
 		panic(err)
 	}

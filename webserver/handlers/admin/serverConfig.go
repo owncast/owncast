@@ -6,7 +6,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
@@ -55,9 +54,9 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		FFmpegPath:                ffmpeg,
 		AdminPassword:             configRepository.GetAdminPassword(),
 		StreamKeys:                configRepository.GetStreamKeys(),
-		StreamKeyOverridden:       config.TemporaryStreamKey != "",
-		WebServerPort:             config.WebServerPort,
-		WebServerIP:               config.WebServerIP,
+		StreamKeyOverridden:       a.cfg.TemporaryStreamKey != "",
+		WebServerPort:             a.cfg.WebServerPort,
+		WebServerIP:               a.cfg.WebServerIP,
 		RTMPServerPort:            configRepository.GetRTMPPortNumber(),
 		ChatDisabled:              configRepository.GetChatDisabled(),
 		ChatJoinMessagesEnabled:   configRepository.GetChatJoinPartMessagesEnabled(),

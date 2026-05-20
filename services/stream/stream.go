@@ -23,7 +23,7 @@ import (
 func (s *Service) Start(_ context.Context) error {
 	s.resetDirectories()
 
-	if err := s.configRepository.VerifySettings(); err != nil {
+	if err := s.configRepository.VerifySettings(s.cfg.TemporaryStreamKey); err != nil {
 		log.Error(err)
 		return err
 	}
@@ -87,12 +87,12 @@ func (s *Service) createInitialOfflineState() error {
 func (s *Service) transitionToOfflineVideoStreamContent() {
 	log.Traceln("Firing transcoder with offline stream state")
 
-	offlineTranscoder := transcoder.NewTranscoder(s.configRepository)
+	offlineTranscoder := transcoder.NewTranscoder(s.cfg, s.configRepository)
 	offlineTranscoder.SetIdentifier("offline")
 	offlineTranscoder.SetLatencyLevel(models.GetLatencyLevel(4))
 	offlineTranscoder.SetIsEvent(true)
 
-	offlineFilePath, err := saveOfflineClipToDisk("offline-v2.ts")
+	offlineFilePath, err := saveOfflineClipToDisk(s.cfg.TempDir, "offline-v2.ts")
 	if err != nil {
 		log.Fatalln("unable to save offline clip:", err)
 	}
@@ -102,7 +102,7 @@ func (s *Service) transitionToOfflineVideoStreamContent() {
 
 	// Copy the logo to be the thumbnail
 	logo := s.configRepository.GetLogoPath()
-	dst := filepath.Join(config.TempDir, "thumbnail.jpg")
+	dst := filepath.Join(s.cfg.TempDir, "thumbnail.jpg")
 	if err = utils.Copy(filepath.Join("data", logo), dst); err != nil {
 		log.Warnln(err)
 	}
@@ -154,7 +154,7 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 	}
 
 	go func() {
-		s.transcoder = transcoder.NewTranscoder(s.configRepository)
+		s.transcoder = transcoder.NewTranscoder(s.cfg, s.configRepository)
 		s.transcoder.TranscoderCompleted = func(error) {
 			s.SetStreamAsDisconnected()
 			s.transcoder = nil
@@ -166,7 +166,7 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 
 	go s.webhooks.SendStreamStatusEvent(models.StreamStarted)
 	selectedThumbnailVideoQualityIndex, isVideoPassthrough := s.configRepository.FindHighestVideoQualityIndex(s.currentBroadcast.OutputSettings)
-	s.thumbnailGen = transcoder.NewThumbnailGenerator(s.configRepository)
+	s.thumbnailGen = transcoder.NewThumbnailGenerator(s.cfg, s.configRepository)
 	s.thumbnailGen.Start(segmentPath, selectedThumbnailVideoQualityIndex, isVideoPassthrough)
 
 	_ = s.chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
@@ -192,7 +192,7 @@ func (s *Service) SetStreamAsDisconnected() {
 
 	offlineFilename := "offline-v2.ts"
 
-	offlineFilePath, err := saveOfflineClipToDisk(offlineFilename)
+	offlineFilePath, err := saveOfflineClipToDisk(s.cfg.TempDir, offlineFilename)
 	if err != nil {
 		log.Errorln(err)
 		return

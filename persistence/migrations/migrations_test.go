@@ -46,7 +46,7 @@ func mustExec(t *testing.T, db *sql.DB, query string) {
 func TestRun_FreshDatabase(t *testing.T) {
 	db := openTestDB(t)
 
-	if err := Run(db); err != nil {
+	if err := Run(db, t.TempDir()); err != nil {
 		t.Fatalf("Run on fresh DB: %v", err)
 	}
 
@@ -72,7 +72,7 @@ func TestRun_FreshDatabase(t *testing.T) {
 	}
 
 	// Calling Run a second time should be a no-op (idempotent).
-	if err := Run(db); err != nil {
+	if err := Run(db, t.TempDir()); err != nil {
 		t.Fatalf("second Run: %v", err)
 	}
 }
@@ -87,7 +87,7 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	var tableCount int
 	mustScan(t, db.QueryRow(`SELECT count(*) FROM sqlite_master WHERE type='table'`), &tableCount)
 
-	if err := Run(db); err != nil {
+	if err := Run(db, t.TempDir()); err != nil {
 		t.Fatalf("Run on v9 legacy DB: %v", err)
 	}
 
@@ -114,9 +114,9 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 // TestRun_LegacyDatabasePreV9 verifies that a pre-v9 install runs the legacy
 // bridge to reach v9, then goose records the baseline.
 func TestRun_LegacyDatabasePreV9(t *testing.T) {
-	// The legacy migration code writes a backup file to config.BackupDirectory.
-	// Use a temp working directory so the side effect is contained.
-	t.Chdir(t.TempDir())
+	// The legacy migration code writes a backup file under the provided
+	// backupDirectory; the test passes a temp dir so the side effect is
+	// contained.
 
 	db := openTestDB(t)
 
@@ -126,7 +126,7 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 	createV9Schema(t, db)
 	mustExec(t, db, `UPDATE config SET value = 7 WHERE key = 'version'`)
 
-	if err := Run(db); err != nil {
+	if err := Run(db, t.TempDir()); err != nil {
 		t.Fatalf("Run on v7 legacy DB: %v", err)
 	}
 

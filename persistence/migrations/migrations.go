@@ -44,7 +44,8 @@ const legacyBaselineVersion = 9
 // For installs that predate goose, the legacy catch-up runs first and then
 // the baseline is recorded as applied (its statements are all IF NOT EXISTS
 // and become no-ops on an already-populated database).
-func Run(db *sql.DB) error {
+// backupDirectory is where the legacy bridge writes pre-migration backups.
+func Run(db *sql.DB, backupDirectory string) error {
 	legacyVersion, err := readLegacyVersion(db)
 	if err != nil {
 		return fmt.Errorf("reading legacy schema version: %w", err)
@@ -53,7 +54,7 @@ func Run(db *sql.DB) error {
 	if legacyVersion > 0 && legacyVersion < legacyBaselineVersion {
 		log.Infof("Legacy schema at version %d; upgrading to %d before handing off to goose",
 			legacyVersion, legacyBaselineVersion)
-		if err := legacymigrations.MigrateDatabaseSchema(db, legacyVersion, legacyBaselineVersion); err != nil {
+		if err := legacymigrations.MigrateDatabaseSchema(db, backupDirectory, legacyVersion, legacyBaselineVersion); err != nil {
 			return fmt.Errorf("legacy schema catch-up: %w", err)
 		}
 	}

@@ -62,12 +62,17 @@ var (
 func main() {
 	flag.Parse()
 
+	// Construct the runtime config and overlay CLI flag values onto the
+	// defaults. The resulting *Config is threaded into every consumer
+	// that needs runtime configuration values.
+	cfg := config.NewDefault()
+
 	if *logDirectory != "" {
-		config.LogDirectory = *logDirectory
+		cfg.LogDirectory = *logDirectory
 	}
 
 	if *backupDirectory != "" {
-		config.BackupDirectory = *backupDirectory
+		cfg.BackupDirectory = *backupDirectory
 	}
 
 	// Create the data directory if needed
@@ -86,22 +91,22 @@ func main() {
 	}
 
 	// Recreate the temp dir
-	if utils.DoesFileExists(config.TempDir) {
-		err := os.RemoveAll(config.TempDir)
+	if utils.DoesFileExists(cfg.TempDir) {
+		err := os.RemoveAll(cfg.TempDir)
 		if err != nil {
-			log.Fatalln("Unable to remove temp dir! Check permissions.", config.TempDir, err)
+			log.Fatalln("Unable to remove temp dir! Check permissions.", cfg.TempDir, err)
 		}
 	}
-	if err := os.Mkdir(config.TempDir, 0o700); err != nil {
+	if err := os.Mkdir(cfg.TempDir, 0o700); err != nil {
 		log.Fatalln("Unable to create temp dir!", err)
 	}
 
-	configureLogging(*enableDebugOptions, *enableVerboseLogging)
+	configureLogging(cfg.LogDirectory, *enableDebugOptions, *enableVerboseLogging)
 	log.Infoln(config.GetReleaseString())
 
 	// Allows a user to restore a specific database backup
 	if *restoreDatabaseFile != "" {
-		databaseFile := config.DatabaseFilePath
+		databaseFile := cfg.DatabaseFilePath
 		if *dbFile != "" {
 			databaseFile = *dbFile
 		}
@@ -114,13 +119,13 @@ func main() {
 		log.Exit(0)
 	}
 
-	config.EnableDebugFeatures = *enableDebugOptions
+	cfg.EnableDebugFeatures = *enableDebugOptions
 
 	if *dbFile != "" {
-		config.DatabaseFilePath = *dbFile
+		cfg.DatabaseFilePath = *dbFile
 	}
 
-	dataStore, err := datastore.SetupPersistence(config.DatabaseFilePath)
+	dataStore, err := datastore.SetupPersistence(cfg.DatabaseFilePath, cfg.BackupDirectory)
 	if err != nil {
 		log.Fatalln("failed to open database", err)
 	}
@@ -137,7 +142,7 @@ func main() {
 	userRepository := userrepository.New(dataStore)
 	notificationsRepository := notificationsrepository.New(dataStore, configRepository)
 
-	handleCommandLineFlags(configRepository)
+	handleCommandLineFlags(cfg, configRepository)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -177,6 +182,7 @@ func main() {
 
 	rtmpSvc := rtmp.New(rtmp.Deps{
 		ConfigRepository: configRepository,
+		Config:           cfg,
 	})
 
 	// Webhooks needs the stream status callback and the followers
@@ -212,6 +218,7 @@ func main() {
 		Builder:             apBuilder,
 		Signer:              apSigner,
 		Resolver:            apResolver,
+		Config:              cfg,
 	})
 	apSvc.Start()
 
@@ -223,6 +230,7 @@ func main() {
 		YP:               ypSvc,
 		Datastore:        dataStore,
 		ConfigRepository: configRepository,
+		Config:           cfg,
 	})
 
 	// Now that streamSvc exists, fill in the stream-status callback that
@@ -263,6 +271,7 @@ func main() {
 		UserRepository:        userRepository,
 		APBuilder:             apBuilder,
 		APSigner:              apSigner,
+		Config:                cfg,
 	})
 
 	fediverseAuthSvc := fediverseauth.New()
@@ -307,14 +316,15 @@ func main() {
 		UserRepository:          userRepository,
 		NotificationsRepository: notificationsRepository,
 		APBuilder:               apBuilder,
+		Config:                  cfg,
 	})
 
-	if err := router.Start(*enableVerboseLogging, h, mw, apSvc.Controllers()); err != nil {
+	if err := router.Start(cfg, *enableVerboseLogging, h, mw, apSvc.Controllers()); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
 }
 
-func handleCommandLineFlags(configRepository configrepository.ConfigRepository) {
+func handleCommandLineFlags(cfg *config.Config, configRepository configrepository.ConfigRepository) {
 	if *newAdminPassword != "" {
 		if err := configRepository.SetAdminPassword(*newAdminPassword); err != nil {
 			log.Errorln("Error setting your admin password.", err)
@@ -326,7 +336,7 @@ func handleCommandLineFlags(configRepository configrepository.ConfigRepository) 
 
 	if *newStreamKey != "" {
 		log.Println("Temporary stream key is set for this session.")
-		config.TemporaryStreamKey = *newStreamKey
+		cfg.TemporaryStreamKey = *newStreamKey
 	}
 
 	// Set the web server port
@@ -342,7 +352,7 @@ func handleCommandLineFlags(configRepository configrepository.ConfigRepository) 
 			log.Errorln(err)
 		}
 	}
-	config.WebServerPort = configRepository.GetHTTPPortNumber()
+	cfg.WebServerPort = configRepository.GetHTTPPortNumber()
 
 	// Set the web server ip
 	if *webServerIPOverride != "" {
@@ -351,7 +361,7 @@ func handleCommandLineFlags(configRepository configrepository.ConfigRepository) 
 			log.Errorln(err)
 		}
 	}
-	config.WebServerIP = configRepository.GetHTTPListenAddress()
+	cfg.WebServerIP = configRepository.GetHTTPListenAddress()
 
 	// Set the rtmp server port
 	if *rtmpPortOverride > 0 {
@@ -363,13 +373,13 @@ func handleCommandLineFlags(configRepository configrepository.ConfigRepository) 
 
 	// Set the follower validation interval
 	if *followerValidationIntervalSecs > 0 {
-		config.FollowerValidationInterval = time.Duration(*followerValidationIntervalSecs) * time.Second
-		log.Printf("Follower validation interval set to %v", config.FollowerValidationInterval)
+		cfg.FollowerValidationInterval = time.Duration(*followerValidationIntervalSecs) * time.Second
+		log.Printf("Follower validation interval set to %v", cfg.FollowerValidationInterval)
 	}
 }
 
-func configureLogging(enableDebugFeatures bool, enableVerboseLogging bool) {
-	logging.Setup(enableDebugFeatures, enableVerboseLogging)
+func configureLogging(logDirectory string, enableDebugFeatures bool, enableVerboseLogging bool) {
+	logging.Setup(logDirectory, enableDebugFeatures, enableVerboseLogging)
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
 	})

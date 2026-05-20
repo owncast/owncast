@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
@@ -40,6 +41,7 @@ type Admin struct {
 	userRepository        userrepository.UserRepository
 	apBuilder             *apmodels.Builder
 	apSigner              *apcrypto.Signer
+	cfg                   *config.Config
 }
 
 // Deps lists every service a *Admin consumes. New deps appear here as
@@ -59,6 +61,7 @@ type Deps struct {
 	UserRepository        userrepository.UserRepository
 	APBuilder             *apmodels.Builder
 	APSigner              *apcrypto.Signer
+	Config                *config.Config
 }
 
 // New constructs the dependency-bearing admin handler set.
@@ -78,5 +81,6 @@ func New(deps Deps) *Admin {
 		userRepository:        deps.UserRepository,
 		apBuilder:             deps.APBuilder,
 		apSigner:              deps.APSigner,
+		cfg:                   deps.Config,
 	}
 }

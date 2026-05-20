@@ -70,7 +70,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	ds, err := datastore.SetupPersistence(dbFile.Name())
+	ds, err := datastore.SetupPersistence(dbFile.Name(), os.TempDir())
 	if err != nil {
 		panic(err)
 	}

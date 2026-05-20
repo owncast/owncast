@@ -26,7 +26,17 @@ type FileWriterReceiverServiceCallback interface {
 // the transcoder process to be completely isolated and even run remotely in the future, as long
 // as it can send HTTP requests to this service with the results.
 type FileWriterReceiverService struct {
+	// cfg receives the listener port discovered when the receiver binds
+	// (the kernel-assigned ephemeral port). The transcoder later reads
+	// the same field when it spins up its ffmpeg child.
+	cfg       *config.Config
 	callbacks FileWriterReceiverServiceCallback
+}
+
+// NewFileWriterReceiverService constructs an idle receiver. Call
+// SetupFileWriterReceiverService to bind the listener.
+func NewFileWriterReceiverService(cfg *config.Config) *FileWriterReceiverService {
+	return &FileWriterReceiverService{cfg: cfg}
 }
 
 // SetupFileWriterReceiverService will start listening for transcoder responses.
@@ -44,7 +54,7 @@ func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks Fil
 	}
 
 	listenerPort := strings.Split(listener.Addr().String(), ":")[1]
-	config.InternalHLSListenerPort = listenerPort
+	s.cfg.InternalHLSListenerPort = listenerPort
 	log.Traceln("Transcoder response service listening on: " + listenerPort)
 	go func() {
 		//nolint: gosec

@@ -628,8 +628,11 @@ func (r *SqlConfigRepository) GetVideoCodec() string {
 }
 
 // VerifySettings will perform a sanity check for specific settings values.
-func (r *SqlConfigRepository) VerifySettings() error {
-	if len(r.GetStreamKeys()) == 0 && config.TemporaryStreamKey == "" {
+// temporaryStreamKey is the value of the optional --streamkey CLI flag; the
+// repository checks it alongside the persisted stream-key list to decide
+// whether the server has any usable stream key at all.
+func (r *SqlConfigRepository) VerifySettings(temporaryStreamKey string) error {
+	if len(r.GetStreamKeys()) == 0 && temporaryStreamKey == "" {
 		log.Errorln("No stream key set. Streaming is disabled. Please set one via the admin or command line arguments")
 	}
 

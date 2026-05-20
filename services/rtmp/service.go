@@ -11,6 +11,7 @@ import (
 	"io"
 	"net"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 )
@@ -44,15 +45,20 @@ type Service struct {
 	// configRepository is consulted at listener bind for the RTMP port and at
 	// connect time for the list of valid stream keys.
 	configRepository configrepository.ConfigRepository
+
+	// cfg supplies the optional temporary stream key override set at
+	// startup via the --streamkey CLI flag.
+	cfg *config.Config
 }
 
 // Deps is the explicit dependency contract for the RTMP service.
 type Deps struct {
 	ConfigRepository configrepository.ConfigRepository
+	Config           *config.Config
 }
 
 // New constructs an idle RTMP service. Call Start(...) to bind the
 // listener and begin accepting connections.
 func New(deps Deps) *Service {
-	return &Service{configRepository: deps.ConfigRepository}
+	return &Service{configRepository: deps.ConfigRepository, cfg: deps.Config}
 }

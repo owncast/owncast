@@ -11,7 +11,6 @@ import (
 	"github.com/nareix/joy5/format/rtmp"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 )
@@ -69,8 +68,8 @@ func (s *Service) handleConn(c *rtmp.Conn, nc net.Conn) {
 	validStreamingKeys := s.configRepository.GetStreamKeys()
 
 	// If a stream key override was specified then use that instead.
-	if config.TemporaryStreamKey != "" {
-		validStreamingKeys = []generated.StreamKey{{Key: &config.TemporaryStreamKey}}
+	if s.cfg.TemporaryStreamKey != "" {
+		validStreamingKeys = []generated.StreamKey{{Key: &s.cfg.TemporaryStreamKey}}
 	}
 
 	for _, key := range validStreamingKeys {

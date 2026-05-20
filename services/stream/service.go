@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub"
@@ -75,7 +76,7 @@ type Service struct {
 	// to the storage provider; fileWriter feeds the transcoder's output
 	// into handler.
 	handler    transcoder.HLSHandler
-	fileWriter transcoder.FileWriterReceiverService
+	fileWriter *transcoder.FileWriterReceiverService
 
 	// thumbnailGen owns the periodic thumbnail+preview snapshotter that
 	// runs while a stream is online. Lazily started on stream-connect,
@@ -110,6 +111,11 @@ type Service struct {
 	// configRepository provides all server settings used during stream
 	// lifecycle (latency level, output variants, stream keys, …).
 	configRepository configrepository.ConfigRepository
+
+	// cfg holds runtime configuration values (HLS storage scratch dirs,
+	// debug flag) shared with transcoder/thumbnail children spawned by
+	// the stream lifecycle.
+	cfg *config.Config
 }
 
 // Deps is the explicit-dependency contract the service requires at
@@ -122,6 +128,7 @@ type Deps struct {
 	YP               *yp.YP
 	Datastore        *datastore.Datastore
 	ConfigRepository configrepository.ConfigRepository
+	Config           *config.Config
 }
 
 // New constructs an idle stream Service. Call Start(ctx) to bring up the
@@ -129,7 +136,7 @@ type Deps struct {
 func New(deps Deps) *Service {
 	return &Service{
 		geoIPClient:      geoip.NewClient(),
-		fileWriter:       transcoder.FileWriterReceiverService{},
+		fileWriter:       transcoder.NewFileWriterReceiverService(deps.Config),
 		rtmp:             deps.Rtmp,
 		activitypub:      deps.Activitypub,
 		webhooks:         deps.Webhooks,
@@ -137,5 +144,6 @@ func New(deps Deps) *Service {
 		yp:               deps.YP,
 		datastore:        deps.Datastore,
 		configRepository: deps.ConfigRepository,
+		cfg:              deps.Config,
 	}
 }

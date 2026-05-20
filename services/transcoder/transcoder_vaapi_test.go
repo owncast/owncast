@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 )
 
@@ -12,6 +13,7 @@ func TestFFmpegVaapiCommand(t *testing.T) {
 	codec := VaapiCodec{}
 
 	transcoder := new(Transcoder)
+	transcoder.cfg = &config.Config{LogDirectory: "data/logs"}
 	transcoder.ffmpegPath = filepath.Join("fake", "path", "ffmpeg")
 	transcoder.SetInput("fakecontent.flv")
 	transcoder.SetOutputPath("fakeOutput")

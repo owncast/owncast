@@ -30,9 +30,9 @@ type OCLogger struct {
 var Logger *OCLogger
 
 // Setup configures our custom logging destinations.
-func Setup(enableDebugOptions bool, enableVerboseLogging bool) {
+func Setup(logDirectory string, enableDebugOptions bool, enableVerboseLogging bool) {
 	// Create the logging directory if needed
-	loggingDirectory := filepath.Dir(getLogFilePath())
+	loggingDirectory := filepath.Dir(getLogFilePath(logDirectory))
 	if !utils.DoesFileExists(loggingDirectory) {
 		if err := os.Mkdir(loggingDirectory, 0o700); err != nil {
 			log.Errorln("unable to create logs directory", loggingDirectory, err)
@@ -40,7 +40,7 @@ func Setup(enableDebugOptions bool, enableVerboseLogging bool) {
 	}
 
 	// Write logs to a file
-	path := getLogFilePath()
+	path := getLogFilePath(logDirectory)
 	writer, _ := rotatelogs.New(
 		path+".%Y%m%d%H%M",
 		rotatelogs.WithLinkName(path),
