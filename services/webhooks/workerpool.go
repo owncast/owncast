@@ -69,17 +69,13 @@ func New(deps Deps) *Service {
 	}
 }
 
-// SetDeps replaces the service's dependencies after construction.
+// SetGetStatus wires the stream-status callback after construction.
 // Exists because the composition root has a small cycle: webhooks
-// needs stream.GetStatus + ap.Followers; stream and ap both need
-// *webhooks.Service. main.go constructs webhooks first with nil deps,
-// then fills them in once the other services exist. Must be called
-// before Start.
-func (s *Service) SetDeps(deps Deps) {
-	s.getStatus = deps.GetStatus
-	s.followers = deps.Followers
-	s.configRepository = deps.ConfigRepository
-	s.webhookRepository = deps.WebhookRepository
+// needs stream.GetStatus, but stream needs *webhooks.Service. main.go
+// constructs webhooks first with a nil callback, then fills it in once
+// streamSvc exists. Must be called before Start.
+func (s *Service) SetGetStatus(fn func() models.Status) {
+	s.getStatus = fn
 }
 
 // Start launches the worker goroutines that drain the queue.

@@ -225,17 +225,12 @@ func main() {
 		ConfigRepository: configRepository,
 	})
 
-	// Now that stream + AP are constructed, finish wiring the webhook
-	// service deps and the chat getStatus (small construction cycle:
-	// webhooks needs stream.GetStatus and ap.Followers; chat needs
-	// stream.GetStatus; stream and AP both need *webhooks.Service +
-	// *chat.Service).
-	webhooksSvc.SetDeps(webhooks.Deps{
-		GetStatus:         streamSvc.GetStatus,
-		Followers:         followersRepository,
-		ConfigRepository:  configRepository,
-		WebhookRepository: webhookRepository,
-	})
+	// Now that streamSvc exists, fill in the stream-status callback that
+	// webhooks, chat, and yp each need at runtime. The cycle is real:
+	// stream owns the status, but webhooks/chat/yp are stream's own
+	// dependencies, so they're constructed first with a nil callback and
+	// rewired here.
+	webhooksSvc.SetGetStatus(streamSvc.GetStatus)
 	chatSvc.SetGetStatus(streamSvc.GetStatus)
 	ypSvc.SetGetStatus(streamSvc.GetStatus)
 
