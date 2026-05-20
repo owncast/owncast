@@ -29,7 +29,8 @@ type ChatMessageRepository interface {
 }
 
 type SqlChatMessageRepository struct {
-	datastore *datastore.Datastore
+	datastore    *datastore.Datastore
+	historyCache *[]interface{}
 }
 
 // New will create a new instance of the ChatMessageRepository.
@@ -53,7 +54,7 @@ func (r *SqlChatMessageRepository) SaveFederatedAction(event events.FediverseEng
 // nolint: unparam
 func (r *SqlChatMessageRepository) SaveEvent(id string, userID *string, body string, eventType string, hidden *time.Time, timestamp time.Time, image *string, link *string, title *string, subtitle *string) {
 	defer func() {
-		_historyCache = nil
+		r.historyCache = nil
 	}()
 
 	tx, err := r.datastore.DB.Begin()
@@ -270,12 +271,10 @@ func getChat(rows *sql.Rows) ([]interface{}, error) {
 	return history, nil
 }
 
-var _historyCache *[]interface{}
-
 // GetChatModerationHistory will return all the chat messages suitable for moderation purposes.
 func (r *SqlChatMessageRepository) GetChatModerationHistory() []interface{} {
-	if _historyCache != nil {
-		return *_historyCache
+	if r.historyCache != nil {
+		return *r.historyCache
 	}
 
 	tx, err := r.datastore.DB.Begin()
@@ -310,7 +309,7 @@ func (r *SqlChatMessageRepository) GetChatModerationHistory() []interface{} {
 		return nil
 	}
 
-	_historyCache = &result
+	r.historyCache = &result
 
 	if err = tx.Commit(); err != nil {
 		log.Errorln("error fetching chat moderation history", err)
@@ -394,7 +393,7 @@ func (r *SqlChatMessageRepository) GetMessagesFromUser(userID string) ([]events.
 // GetMessageIdsForUserID will return the chat message IDs for a specific user.
 func (r *SqlChatMessageRepository) GetMessageIdsForUserID(userID string) ([]string, error) {
 	defer func() {
-		_historyCache = nil
+		r.historyCache = nil
 	}()
 
 	tx, err := r.datastore.DB.Begin()
@@ -446,7 +445,7 @@ func (r *SqlChatMessageRepository) GetMessageIdsForUserID(userID string) ([]stri
 
 func (r *SqlChatMessageRepository) SetMessageVisibilityForMessageIDs(messageIDs []string, visible bool) error {
 	defer func() {
-		_historyCache = nil
+		r.historyCache = nil
 	}()
 
 	if len(messageIDs) == 0 {

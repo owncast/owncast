@@ -16,9 +16,10 @@ import (
 
 // Datastore is the global key/value store for configuration values.
 type Datastore struct {
-	DB     *sql.DB
-	cache  map[string][]byte
-	DbLock *sync.Mutex
+	DB        *sql.DB
+	cache     map[string][]byte
+	cacheLock sync.Mutex
+	DbLock    *sync.Mutex
 }
 
 // WarmCache pre-caches all configuration values in memory.
