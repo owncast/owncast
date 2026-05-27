@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/chat/events"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/plugins"
 	"github.com/owncast/owncast/services/webhooks"
 )
@@ -58,18 +60,26 @@ type pluginEvent struct {
 	payload   any
 }
 
-// newPluginChatFilter returns a chat message-filter hook that runs the
-// plugin filterChatMessage chain synchronously and returns the (possibly
-// rewritten) body plus whether the message survived. Plugin errors are
-// fail-open inside the dispatcher, so a broken filter never blocks chat.
-func newPluginChatFilter(dispatcher *plugins.Dispatcher) func(messageID, user, body string) (string, bool) {
-	return func(messageID, user, body string) (string, bool) {
-		msg := pluginChatMessage{ID: messageID, User: user, Body: body}
-		final, allowed, _ := dispatcher.Filter(context.Background(), plugins.EventChatMessageReceived, msg)
-		if !allowed {
-			return "", false
+// newPluginChatFilter returns a dispatcher.Filter that runs the plugin
+// filterChatMessage chain on an inbound chat message, rewriting the message
+// body in place and reporting whether it survived. Plugin errors are
+// fail-open inside the plugin dispatcher, so a broken filter never blocks chat.
+func newPluginChatFilter(pluginDispatcher *plugins.Dispatcher) dispatcher.Filter {
+	return func(ctx context.Context, e dispatcher.Event) bool {
+		msg, ok := e.Payload.(*events.UserMessageEvent)
+		if !ok {
+			return true // not a chat message we filter; let it pass
 		}
-		return filteredBody(final, body), true
+		user := ""
+		if msg.User != nil {
+			user = msg.User.DisplayName
+		}
+		final, allowed, _ := pluginDispatcher.Filter(ctx, plugins.EventChatMessageReceived, pluginChatMessage{ID: msg.ID, User: user, Body: msg.Body})
+		if !allowed {
+			return false
+		}
+		msg.Body = filteredBody(final, msg.Body)
+		return true
 	}
 }
 
@@ -88,14 +98,23 @@ func filteredBody(final any, fallback string) string {
 	return fallback
 }
 
-// newPluginEventListener returns a webhooks event listener that translates
-// each Owncast event into the plugin SDK's payload shape and dispatches it to
-// subscribed plugins. Dispatch runs on its own goroutine so a slow plugin
-// never blocks the event source (the chat hot path).
-func newPluginEventListener(dispatcher *plugins.Dispatcher) func(webhooks.WebhookEvent) {
-	return func(evt webhooks.WebhookEvent) {
-		for _, e := range translateWebhookEvent(evt) {
-			go dispatcher.Dispatch(context.Background(), e.eventType, e.payload)
+// newPluginEventListener returns a dispatcher.Listener that translates each
+// Owncast event (carried as a webhooks.WebhookEvent) into the plugin SDK's
+// payload shape and dispatches it to subscribed plugins. Dispatch runs on its
+// own goroutine so a slow plugin never blocks the event source (the chat hot
+// path).
+func newPluginEventListener(pluginDispatcher *plugins.Dispatcher) dispatcher.Listener {
+	return func(ctx context.Context, e dispatcher.Event) {
+		webhookEvent, ok := e.Payload.(webhooks.WebhookEvent)
+		if !ok {
+			return
+		}
+		// Notifications are fire-and-forget: detach from the publisher's
+		// context so the dispatch isn't cancelled when the publishing call
+		// returns. Per-plugin timeouts still apply inside Dispatch.
+		ctx = context.WithoutCancel(ctx)
+		for _, pe := range translateWebhookEvent(webhookEvent) {
+			go pluginDispatcher.Dispatch(ctx, pe.eventType, pe.payload)
 		}
 	}
 }

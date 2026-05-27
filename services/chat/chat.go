@@ -21,6 +21,7 @@ import (
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/datastore"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/webhooks"
 )
 
@@ -33,6 +34,7 @@ type Deps struct {
 	AuthRepository        authrepository.AuthRepository
 	ChatMessageRepository chatmessagerepository.ChatMessageRepository
 	UserRepository        userrepository.UserRepository
+	Events                *dispatcher.Dispatcher
 }
 
 // New constructs a chat Service. Call Start to launch the broadcast
@@ -45,6 +47,7 @@ func New(deps Deps) *Service {
 	s.authRepository = deps.AuthRepository
 	s.chatMessageRepository = deps.ChatMessageRepository
 	s.userRepository = deps.UserRepository
+	s.events = deps.Events
 	return s
 }
 
@@ -55,19 +58,6 @@ func New(deps Deps) *Service {
 // streamSvc exists. Must be called before Start.
 func (s *Service) SetGetStatus(fn func() models.Status) {
 	s.getStatus = fn
-}
-
-// ChatMessageFilterFunc runs for each inbound user message before it is
-// broadcast. Given the message id, author display name, and rendered body, it
-// returns the body to broadcast and whether to deliver the message at all
-// (false drops it). It must not block; slow work belongs off the hot path.
-type ChatMessageFilterFunc func(messageID, user, body string) (newBody string, allow bool)
-
-// SetMessageFilter installs the inbound-message filter hook. The plugin host
-// wires this to run plugin filterChatMessage handlers. Set before Start; nil
-// disables filtering.
-func (s *Service) SetMessageFilter(fn ChatMessageFilterFunc) {
-	s.messageFilter = fn
 }
 
 // Start initializes persistence, launches the broadcast loop, and

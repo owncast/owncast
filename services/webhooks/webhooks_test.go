@@ -2,6 +2,7 @@ package webhooks
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -19,6 +20,7 @@ import (
 	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/datastore"
+	"github.com/owncast/owncast/services/dispatcher"
 )
 
 func fakeGetStatus() models.Status {
@@ -106,6 +108,36 @@ func TestPublicSend(t *testing.T) {
 	}
 
 	wg.Wait()
+}
+
+// Every event dispatched to webhooks is also published to the shared
+// dispatcher, regardless of whether any HTTP webhook destinations exist —
+// this is how in-process consumers (the plugin host) receive events.
+func TestSendEventPublishesToDispatcher(t *testing.T) {
+	d := dispatcher.New()
+	var got []dispatcher.Event
+	d.AddListener(func(_ context.Context, e dispatcher.Event) {
+		got = append(got, e)
+	})
+
+	svc := New(Deps{
+		GetStatus:         fakeGetStatus,
+		ConfigRepository:  configrepository.New(testDatastore),
+		WebhookRepository: webhookrepository.New(testDatastore),
+		Events:            d,
+	})
+
+	svc.SendEventToWebhooks(WebhookEvent{Type: models.MessageSent, EventData: struct{}{}})
+
+	if len(got) != 1 {
+		t.Fatalf("expected the event published to the dispatcher, got %d", len(got))
+	}
+	if got[0].Type != models.MessageSent {
+		t.Errorf("dispatched event type = %q, want %q", got[0].Type, models.MessageSent)
+	}
+	if _, ok := got[0].Payload.(WebhookEvent); !ok {
+		t.Errorf("dispatched payload type = %T, want webhooks.WebhookEvent", got[0].Payload)
+	}
 }
 
 // Make sure that events are only sent to interested endpoints.

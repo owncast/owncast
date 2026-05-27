@@ -26,9 +26,9 @@ import (
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/datastore"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/plugins"
 	"github.com/owncast/owncast/services/stream"
-	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -48,7 +48,7 @@ type Deps struct {
 	Chat                    *chat.Service
 	Stream                  *stream.Service
 	Activitypub             *activitypub.Service
-	Webhooks                *webhooks.Service
+	Events                  *dispatcher.Dispatcher
 	ConfigRepository        configrepository.ConfigRepository
 	UserRepository          userrepository.UserRepository
 	AuthRepository          *authrepository.SqlAuthRepository
@@ -99,18 +99,15 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 
 	// Emit delivers plugin-published custom events to other plugins'
 	// subscribers. Wired post-Start because it reads the live plugin set.
-	dispatcher := plugins.NewLiveDispatcher(manager.Snapshot)
-	env.Emit = dispatcher.Dispatch
+	pluginDispatcher := plugins.NewLiveDispatcher(manager.Snapshot)
+	env.Emit = pluginDispatcher.Dispatch
 
-	// Deliver Owncast's own events (chat, stream lifecycle, moderation, …) to
-	// subscribed plugins by listening on the webhooks event source.
-	if deps.Webhooks != nil {
-		deps.Webhooks.AddEventListener(newPluginEventListener(dispatcher))
-	}
-
-	// Run plugin filterChatMessage handlers on each inbound chat message
-	// before it's broadcast, so plugins can rewrite or drop messages.
-	deps.Chat.SetMessageFilter(newPluginChatFilter(dispatcher))
+	// Subscribe to the shared event dispatcher: deliver Owncast's events
+	// (chat, stream lifecycle, moderation, …) to plugins' notify handlers,
+	// and run plugin filterChatMessage handlers on inbound chat messages
+	// before they're broadcast.
+	deps.Events.AddListener(newPluginEventListener(pluginDispatcher))
+	deps.Events.AddFilter(newPluginChatFilter(pluginDispatcher))
 
 	server := plugins.NewLiveServer(manager.Snapshot)
 	server.SSE = sseHub

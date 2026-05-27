@@ -31,6 +31,7 @@ import (
 	"github.com/owncast/owncast/services/cache"
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/datastore"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
@@ -211,6 +212,12 @@ func main() {
 		Config:           cfg,
 	})
 
+	// Shared in-process event dispatcher. Constructed before its producers
+	// and consumers so they all receive it via Deps (no post-construction
+	// wiring): webhooks publishes events to it, chat runs inbound messages
+	// through its filter chain, and the plugin host subscribes.
+	eventDispatcher := dispatcher.New()
+
 	// Stage 5: cycle-pair services. webhooks + chat both want
 	// streamSvc.GetStatus, but streamSvc consumes them in turn. Build
 	// them with a nil GetStatus and rewire in stage 7.
@@ -219,6 +226,7 @@ func main() {
 		Followers:         followersRepository,
 		ConfigRepository:  configRepository,
 		WebhookRepository: webhookRepository,
+		Events:            eventDispatcher,
 	})
 
 	chatSvc := chat.New(chat.Deps{
@@ -229,6 +237,7 @@ func main() {
 		AuthRepository:        authRepository,
 		ChatMessageRepository: chatMessageRepository,
 		UserRepository:        userRepository,
+		Events:                eventDispatcher,
 	})
 
 	// Stage 6: cycle-pair consumers. activitypub + stream sit on top of
@@ -290,7 +299,7 @@ func main() {
 		Chat:                    chatSvc,
 		Stream:                  streamSvc,
 		Activitypub:             apSvc,
-		Webhooks:                webhooksSvc,
+		Events:                  eventDispatcher,
 		ConfigRepository:        configRepository,
 		UserRepository:          userRepository,
 		AuthRepository:          authRepository,

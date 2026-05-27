@@ -19,6 +19,7 @@ import (
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/datastore"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"
@@ -52,10 +53,10 @@ type Service struct {
 	// (welcome messages, recent-disconnect heuristics).
 	getStatus func() models.Status
 
-	// messageFilter, when set, runs for each inbound user message before it
-	// is broadcast, letting a consumer (the plugin host) rewrite the body or
-	// drop the message. nil means no filtering.
-	messageFilter ChatMessageFilterFunc
+	// events is the shared dispatcher. Inbound user messages are run through
+	// its filter chain before broadcast, letting consumers (the plugin host)
+	// rewrite or drop them. nil means no filtering.
+	events *dispatcher.Dispatcher
 
 	// configRepository provides server-side chat settings consulted on each
 	// inbound message (slur/spam filters, established-users-only mode,
