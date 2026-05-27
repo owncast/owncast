@@ -10,12 +10,12 @@ type UserMessageEvent struct {
 // GetBroadcastPayload will return the object to send to all chat users.
 func (e *UserMessageEvent) GetBroadcastPayload() EventPayload {
 	return EventPayload{
-		"id":        e.ID,
-		"timestamp": e.Timestamp,
-		"body":      e.Body,
-		"user":      e.User,
-		"type":      MessageSent,
-		"visible":   e.HiddenAt == nil,
+		"id":                e.ID,
+		payloadKeyTimestamp: e.Timestamp,
+		payloadKeyBody:      e.Body,
+		payloadKeyUser:      e.User,
+		payloadKeyType:      MessageSent,
+		"visible":           e.HiddenAt == nil,
 	}
 }
 
