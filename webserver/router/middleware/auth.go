@@ -5,12 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/authrepository"
-	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/owncast/owncast/persistence/userrepository"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 )
 
 // ExternalAccessTokenHandlerFunc is a function that is called after validing access.
@@ -21,11 +19,10 @@ type UserAccessTokenHandlerFunc func(models.User, http.ResponseWriter, *http.Req
 
 // RequireAdminAuth wraps a handler requiring HTTP basic auth for it using the given
 // the stream key as the password and and a hardcoded "admin" for username.
-func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
-	configRepository := configrepository.Get()
+func (m *Middleware) RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		username := "admin"
-		password := configRepository.GetAdminPassword()
+		password := m.configRepository.GetAdminPassword()
 		realm := "Owncast Authenticated Request"
 
 		// Alow CORS only for localhost:3000 to support Owncast development.
@@ -61,7 +58,7 @@ func accessDenied(w http.ResponseWriter) {
 }
 
 // RequireExternalAPIAccessToken will validate a 3rd party access token.
-func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHandlerFunc) http.HandlerFunc {
+func (m *Middleware) RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// We should accept 3rd party preflight OPTIONS requests.
 		if r.Method == "OPTIONS" {
@@ -83,9 +80,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 			return
 		}
 
-		userRepository := userrepository.Get()
-
-		integration, err := userRepository.GetExternalAPIUserForAccessTokenAndScope(token, scope)
+		integration, err := m.userRepository.GetExternalAPIUserForAccessTokenAndScope(token, scope)
 		if integration == nil || err != nil {
 			accessDenied(w)
 			return
@@ -96,7 +91,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 
 		handler(*integration, w, r)
 
-		if err := userRepository.SetExternalAPIUserAccessTokenAsUsed(token); err != nil {
+		if err := m.userRepository.SetExternalAPIUserAccessTokenAsUsed(token); err != nil {
 			log.Debugln("token not found when updating last_used timestamp")
 		}
 	})
@@ -104,8 +99,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 
 // RequireUserAccessToken will validate a provided user's access token and make sure the associated user is enabled.
 // Not to be used for validating 3rd party access.
-func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc {
-	authRepository := authrepository.Get()
+func (m *Middleware) RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accessToken := r.URL.Query().Get("accessToken")
 		if accessToken == "" {
@@ -115,7 +109,7 @@ func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc
 
 		ipAddress := utils.GetIPAddressFromRequest(r)
 		// Check if this client's IP address is banned.
-		if blocked, err := authRepository.IsIPAddressBanned(ipAddress); blocked {
+		if blocked, err := m.authRepository.IsIPAddressBanned(ipAddress); blocked {
 			log.Debugln("Client ip address has been blocked. Rejecting.")
 			accessDenied(w)
 			return
@@ -123,10 +117,8 @@ func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc
 			log.Errorln("error determining if IP address is blocked: ", err)
 		}
 
-		userRepository := userrepository.Get()
-
 		// A user is required to use the websocket
-		user := userRepository.GetUserByToken(accessToken)
+		user := m.userRepository.GetUserByToken(accessToken)
 		if user == nil || !user.IsEnabled() {
 			accessDenied(w)
 			return
@@ -138,7 +130,7 @@ func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc
 
 // RequireUserModerationScopeAccesstoken will validate a provided user's access token and make sure the associated user is enabled
 // and has "MODERATOR" scope assigned to the user.
-func RequireUserModerationScopeAccesstoken(handler http.HandlerFunc) http.HandlerFunc {
+func (m *Middleware) RequireUserModerationScopeAccesstoken(handler http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accessToken := r.URL.Query().Get("accessToken")
 		if accessToken == "" {
@@ -146,10 +138,8 @@ func RequireUserModerationScopeAccesstoken(handler http.HandlerFunc) http.Handle
 			return
 		}
 
-		userRepository := userrepository.Get()
-
 		// A user is required to use the websocket
-		user := userRepository.GetUserByToken(accessToken)
+		user := m.userRepository.GetUserByToken(accessToken)
 		if user == nil || !user.IsEnabled() || !user.IsModerator() {
 			accessDenied(w)
 			return

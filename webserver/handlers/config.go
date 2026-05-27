@@ -6,14 +6,13 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/owncast/owncast/activitypub"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 type webConfigResponse struct {
@@ -61,20 +60,20 @@ type authenticationConfigResponse struct {
 }
 
 // GetWebConfig gets the status of the server.
-func GetWebConfig(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(w)
 	middleware.DisableCache(w)
 	w.Header().Set("Content-Type", "application/json")
 
-	configuration := getConfigResponse()
+	configuration := h.getConfigResponse()
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {
 		webutils.BadRequestHandler(w, err)
 	}
 }
 
-func getConfigResponse() webConfigResponse {
-	configRepository := configrepository.Get()
+func (h *Handlers) getConfigResponse() webConfigResponse {
+	configRepository := h.configRepository
 	pageContent := utils.RenderPageContentMarkdown(configRepository.GetExtraPageBodyContent())
 	offlineMessage := utils.RenderSimpleMarkdown(configRepository.GetCustomOfflineMessage())
 	socialHandles := configRepository.GetSocialHandles()
@@ -91,7 +90,7 @@ func getConfigResponse() webConfigResponse {
 	var federationResponse federationConfigResponse
 	federationEnabled := configRepository.GetFederationEnabled()
 
-	followerCount, _ := activitypub.GetFollowerCount()
+	followerCount, _ := h.activitypub.GetFollowerCount()
 	if federationEnabled {
 		serverURLString := configRepository.GetServerURL()
 		serverURL, _ := url.Parse(serverURLString)

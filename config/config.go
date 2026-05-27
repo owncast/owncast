@@ -2,50 +2,94 @@ package config
 
 import (
 	"fmt"
+	"path/filepath"
 	"time"
 )
 
-// These are runtime-set values used for configuration.
+// Config holds runtime-mutable configuration for a single execution of the
+// Owncast server. It is populated by the composition root (main.go) from
+// CLI flags + persisted settings, then threaded by value-of-pointer into
+// every service that reads any of these fields.
+//
+// All fields are runtime state — values that change between executions or
+// are overridden at startup. Compile-time constants (see constants.go),
+// build-time-set vars (VersionNumber, GitCommit, BuildPlatform), and the
+// build-tag-driven EnableAutoUpdate remain package-level on purpose: they
+// are not runtime state.
+type Config struct {
+	// DatabaseFilePath is the path to the file used as the global database
+	// for this run of the application.
+	DatabaseFilePath string
 
-// DatabaseFilePath is the path to the file ot be used as the global database for this run of the application.
-var DatabaseFilePath = "data/owncast.db"
+	// LogDirectory is the path to various log files.
+	LogDirectory string
 
-// LogDirectory is the path to various log files.
-var LogDirectory = "./data/logs"
+	// TempDir is where we store temporary files.
+	TempDir string
 
-// TempDir is where we store temporary files.
-var TempDir = "./data/tmp"
+	// BackupDirectory is the directory we write backup files to.
+	BackupDirectory string
 
-// EnableDebugFeatures will print additional data to help in debugging.
-var EnableDebugFeatures = false
+	// WebServerPort is the port the public webserver listens on.
+	WebServerPort int
 
-// VersionNumber is the current version string.
+	// WebServerIP is the IP address to bind the web server to. All
+	// interfaces by default.
+	WebServerIP string
+
+	// InternalHLSListenerPort is the port the in-process HLS receiver
+	// binds to. Discovered at runtime when the receiver opens its
+	// listener and read by the transcoder when it spins up.
+	InternalHLSListenerPort string
+
+	// EnableDebugFeatures prints additional data to help in debugging.
+	EnableDebugFeatures bool
+
+	// TemporaryStreamKey is a stream key set via the command line that
+	// overrides the persisted keys for the duration of this process.
+	TemporaryStreamKey string
+
+	// FollowerValidationInterval is how often the follower validation
+	// job runs. A zero value means use the package default.
+	FollowerValidationInterval time.Duration
+}
+
+// NewDefault returns a *Config populated with the default startup values.
+// main.go overlays CLI flag values on top of this before injecting it
+// into services.
+func NewDefault() *Config {
+	return &Config{
+		DatabaseFilePath:        "data/owncast.db",
+		LogDirectory:            "./data/logs",
+		TempDir:                 "./data/tmp",
+		BackupDirectory:         filepath.Join(DataDirectory, "backup"),
+		WebServerPort:           8080,
+		WebServerIP:             "0.0.0.0",
+		InternalHLSListenerPort: "8927",
+		EnableDebugFeatures:     false,
+		TemporaryStreamKey:      "",
+		// FollowerValidationInterval defaults to 0; consumers use their
+		// package-level default when zero.
+	}
+}
+
+// VersionNumber is the current version string. Set at build time via
+// linker flags; defaults to StaticVersionNumber for local builds.
 var VersionNumber = StaticVersionNumber
 
-// WebServerPort is the port for Owncast's webserver that is used for this execution of the service.
-var WebServerPort = 8080
-
-// WebServerIP is the IP address to bind the web server to. All interfaces by default.
-var WebServerIP = "0.0.0.0"
-
-// InternalHLSListenerPort is the port for HLS writes that is used for this execution of the service.
-var InternalHLSListenerPort = "8927"
-
-// GitCommit is an optional commit this build was made from.
+// GitCommit is an optional commit this build was made from. Set at
+// build time via linker flags.
 var GitCommit = ""
 
 // BuildPlatform is the optional platform this release was built for.
+// Set at build time via linker flags; "dev" for local builds.
 var BuildPlatform = "dev"
 
-// EnableAutoUpdate will explicitly enable in-place auto-updates via the admin.
+// EnableAutoUpdate will explicitly enable in-place auto-updates via the
+// admin. Toggled by the enable_updates build tag (see
+// updaterConfig_enabled.go); package-level because the build tag, not
+// the runtime, owns its value.
 var EnableAutoUpdate = false
-
-// A temporary stream key that can be set via the command line.
-var TemporaryStreamKey = ""
-
-// FollowerValidationInterval is how often the follower validation job runs.
-// Defaults to 0 which means use the default (1 hour).
-var FollowerValidationInterval time.Duration = 0
 
 // GetCommit will return an identifier used for identifying the point in time this build took place.
 func GetCommit() string {

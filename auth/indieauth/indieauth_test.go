@@ -6,18 +6,11 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-// isolatePendingServerAuthRequests gives a test its own pending-request map
-// and restores the previous contents on cleanup, so tests in this package
-// don't leak state into one another or become order-dependent.
-func isolatePendingServerAuthRequests(t *testing.T) {
-	t.Helper()
-	prev := pendingServerAuthRequests
-	pendingServerAuthRequests = map[string]ServerAuthRequest{}
-	t.Cleanup(func() { pendingServerAuthRequests = prev })
-}
-
 func TestLimitGlobalPendingRequests(t *testing.T) {
-	isolatePendingServerAuthRequests(t)
+	// Construct an isolated Service for this test. CompleteServerAuth is
+	// not called here, so the ConfigRepository can be nil. Each Service owns
+	// its own pending-request map, so no global reset is needed.
+	svc := New(Deps{ConfigRepository: nil})
 
 	// client_id and redirect_uri must be valid same-host absolute URLs to
 	// pass StartServerAuth's validation; the slug just keeps them unique.
@@ -33,41 +26,41 @@ func TestLimitGlobalPendingRequests(t *testing.T) {
 		state, _ := utils.GenerateRandomString(10)
 		me, _ := utils.GenerateRandomString(10)
 
-		_, err := StartServerAuth(cid, redirectURL, cc, state, me)
+		_, err := svc.StartServerAuth(cid, redirectURL, cc, state, me)
 		if err != nil {
-			t.Error("Registration should be permitted.", i, " of ", len(pendingServerAuthRequests), err)
+			t.Error("Registration should be permitted.", i, " of ", len(svc.pendingServerAuthRequests), err)
 		}
 	}
 
-	// This should throw an error
+	// This should throw an error.
 	cid, redirectURL := clientURLs()
 	cc, _ := utils.GenerateRandomString(10)
 	state, _ := utils.GenerateRandomString(10)
 	me, _ := utils.GenerateRandomString(10)
 
-	_, err := StartServerAuth(cid, redirectURL, cc, state, me)
+	_, err := svc.StartServerAuth(cid, redirectURL, cc, state, me)
 	if err == nil {
 		t.Error("Registration should not be permitted.")
 	}
 }
 
 func TestRejectMismatchedRedirectURI(t *testing.T) {
-	isolatePendingServerAuthRequests(t)
+	svc := New(Deps{ConfigRepository: nil})
 
 	// A redirect_uri on a different host than client_id must be rejected so
 	// the auth endpoint can't be used as an open redirect.
-	if _, err := StartServerAuth("https://client.example", "https://attacker.example/callback", "cc", "state", "me"); err == nil {
+	if _, err := svc.StartServerAuth("https://client.example", "https://attacker.example/callback", "cc", "state", "me"); err == nil {
 		t.Error("redirect_uri on a foreign host should be rejected")
 	}
 
 	// A same-host redirect_uri is accepted.
-	if _, err := StartServerAuth("https://client.example", "https://client.example/callback", "cc", "state", "me"); err != nil {
+	if _, err := svc.StartServerAuth("https://client.example", "https://client.example/callback", "cc", "state", "me"); err != nil {
 		t.Error("same-host redirect_uri should be permitted:", err)
 	}
 }
 
 func TestRejectNonWebRedirectURI(t *testing.T) {
-	isolatePendingServerAuthRequests(t)
+	svc := New(Deps{ConfigRepository: nil})
 
 	// Opaque/non-http(s) URIs (javascript:, data:, mailto:) have an empty
 	// hostname; without a scheme+host check, two of them would pass the
@@ -83,7 +76,7 @@ func TestRejectNonWebRedirectURI(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		if _, err := StartServerAuth(tc.clientID, tc.redirectURI, "cc", "state", "me"); err == nil {
+		if _, err := svc.StartServerAuth(tc.clientID, tc.redirectURI, "cc", "state", "me"); err == nil {
 			t.Errorf("%s: should be rejected", tc.name)
 		}
 	}

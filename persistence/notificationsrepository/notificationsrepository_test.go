@@ -2,28 +2,29 @@ package notificationsrepository
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
-	"github.com/owncast/owncast/core/data"
+	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 var (
-	testDatastore *data.Datastore
+	testDatastore *datastore.Datastore
 	testRepo      NotificationsRepository
 )
 
 func TestMain(m *testing.M) {
 	// Create an in-memory database for testing
-	if err := data.SetupPersistence(":memory:"); err != nil {
+	ds, err := datastore.SetupPersistence(":memory:", os.TempDir())
+	if err != nil {
 		panic(err)
 	}
+	testDatastore = ds
 
-	// Get the shared datastore instance
-	testDatastore = data.GetDatastore()
-
-	// Setup the notifications repository
-	Setup()
-	testRepo = New(testDatastore)
+	// Setup the notifications repository.
+	testRepo = New(testDatastore, configrepository.New(testDatastore))
+	testRepo.Setup()
 
 	// Run tests
 	m.Run()
@@ -178,14 +179,8 @@ func TestNotificationRepositoryInterface(t *testing.T) {
 	// Test that our implementation satisfies the interface
 	var _ NotificationsRepository = &SqlNotificationsRepository{}
 
-	// Test that we can get the repository instance
-	repo := Get()
-	if repo == nil {
-		t.Error("Get() should return a non-nil repository instance")
-	}
-
 	// Test that New creates a valid repository
-	newRepo := New(testDatastore)
+	newRepo := New(testDatastore, configrepository.New(testDatastore))
 	if newRepo == nil {
 		t.Error("New() should return a non-nil repository instance")
 	}

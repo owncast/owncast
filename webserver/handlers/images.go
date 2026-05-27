@@ -5,48 +5,39 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/jellydator/ttlcache/v3"
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/utils"
 )
 
 const (
 	contentTypeJPEG = "image/jpeg"
 	contentTypeGIF  = "image/gif"
-)
 
-// thumbnailFilename is the filename of the generated stream thumbnail image.
-const thumbnailFilename = "thumbnail.jpg"
-
-var previewThumbCache = ttlcache.New(
-	ttlcache.WithTTL[string, []byte](15),
-	ttlcache.WithCapacity[string, []byte](1),
-	ttlcache.WithDisableTouchOnHit[string, []byte](),
+	thumbnailFilename = "thumbnail.jpg"
 )
 
 // GetThumbnail will return the thumbnail image as a response.
-func GetThumbnail(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) GetThumbnail(w http.ResponseWriter, r *http.Request) {
 	imageFilename := thumbnailFilename
-	imagePath := filepath.Join(config.TempDir, imageFilename)
+	imagePath := filepath.Join(h.cfg.TempDir, imageFilename)
 	httpCacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
 	inMemoryCacheTime := time.Duration(15) * time.Second
 
 	var imageBytes []byte
 	var err error
 
-	if previewThumbCache.Get(imagePath) != nil {
-		ci := previewThumbCache.Get(imagePath)
+	if h.previewThumbCache.Get(imagePath) != nil {
+		ci := h.previewThumbCache.Get(imagePath)
 		imageBytes = ci.Value()
 	} else if utils.DoesFileExists(imagePath) {
 		imageBytes, err = getImage(imagePath)
-		previewThumbCache.Set(imagePath, imageBytes, inMemoryCacheTime)
+		h.previewThumbCache.Set(imagePath, imageBytes, inMemoryCacheTime)
 	} else {
-		GetLogo(w, r)
+		h.GetLogo(w, r)
 		return
 	}
 
 	if err != nil {
-		GetLogo(w, r)
+		h.GetLogo(w, r)
 		return
 	}
 
@@ -54,28 +45,28 @@ func GetThumbnail(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetPreview will return the preview gif as a response.
-func GetPreview(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) GetPreview(w http.ResponseWriter, r *http.Request) {
 	imageFilename := "preview.gif"
-	imagePath := filepath.Join(config.TempDir, imageFilename)
+	imagePath := filepath.Join(h.cfg.TempDir, imageFilename)
 	httpCacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
 	inMemoryCacheTime := time.Duration(15) * time.Second
 
 	var imageBytes []byte
 	var err error
 
-	if previewThumbCache.Get(imagePath) != nil {
-		ci := previewThumbCache.Get(imagePath)
+	if h.previewThumbCache.Get(imagePath) != nil {
+		ci := h.previewThumbCache.Get(imagePath)
 		imageBytes = ci.Value()
 	} else if utils.DoesFileExists(imagePath) {
 		imageBytes, err = getImage(imagePath)
-		previewThumbCache.Set(imagePath, imageBytes, inMemoryCacheTime)
+		h.previewThumbCache.Set(imagePath, imageBytes, inMemoryCacheTime)
 	} else {
-		GetLogo(w, r)
+		h.GetLogo(w, r)
 		return
 	}
 
 	if err != nil {
-		GetLogo(w, r)
+		h.GetLogo(w, r)
 		return
 	}
 

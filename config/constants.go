@@ -19,9 +19,6 @@ const (
 )
 
 var (
-	// BackupDirectory is the directory we write backup files to.
-	BackupDirectory = filepath.Join(DataDirectory, "backup")
-
 	// HLSStoragePath is the directory HLS video is written to.
 	HLSStoragePath = filepath.Join(DataDirectory, "hls")
 

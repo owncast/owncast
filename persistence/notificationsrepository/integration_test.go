@@ -3,13 +3,13 @@ package notificationsrepository
 import (
 	"testing"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 var (
-	integrationTestDatastore *data.Datastore
+	integrationTestDatastore *datastore.Datastore
 	integrationRepo          NotificationsRepository
 )
 
@@ -18,7 +18,7 @@ func init() {
 	// This ensures we're using the same database setup
 	integrationTestDatastore = testDatastore
 	if integrationTestDatastore != nil {
-		integrationRepo = New(integrationTestDatastore)
+		integrationRepo = New(integrationTestDatastore, configrepository.New(integrationTestDatastore))
 	}
 }
 
@@ -26,9 +26,9 @@ func TestIntegrationSetup(t *testing.T) {
 	// This test ensures integration setup works properly
 	// The actual setup is done in the init function below
 	if integrationTestDatastore == nil {
-		integrationTestDatastore = data.GetDatastore()
-		Setup()
-		integrationRepo = New(integrationTestDatastore)
+		integrationTestDatastore = testDatastore
+		integrationRepo = New(integrationTestDatastore, configrepository.New(integrationTestDatastore))
+		integrationRepo.Setup()
 	}
 
 	if integrationRepo == nil {
@@ -38,13 +38,13 @@ func TestIntegrationSetup(t *testing.T) {
 
 func TestBrowserPushSetupIntegration(t *testing.T) {
 	// Test that browser push keys are generated during setup
-	configRepo := configrepository.Get()
-	pubKey, err := configRepo.GetBrowserPushPublicKey()
+	configRepository := configrepository.New(testDatastore)
+	pubKey, err := configRepository.GetBrowserPushPublicKey()
 	if err != nil {
 		t.Errorf("Should be able to get browser push public key: %v", err)
 	}
 
-	privKey, err := configRepo.GetBrowserPushPrivateKey()
+	privKey, err := configRepository.GetBrowserPushPrivateKey()
 	if err != nil {
 		t.Errorf("Should be able to get browser push private key: %v", err)
 	}
@@ -56,23 +56,23 @@ func TestBrowserPushSetupIntegration(t *testing.T) {
 }
 
 func TestBrowserPushConfigurationIntegration(t *testing.T) {
-	configRepo := configrepository.Get()
+	configRepository := configrepository.New(testDatastore)
 
 	// Test that browser push is enabled by default
-	browserConfig := configRepo.GetBrowserPushConfig()
+	browserConfig := configRepository.GetBrowserPushConfig()
 	if !browserConfig.Enabled {
 		t.Error("Browser push should be enabled by default")
 	}
 
 	// Test that initial notification configuration flag is set
-	hasConfigured := configRepo.GetHasPerformedInitialNotificationsConfig()
+	hasConfigured := configRepository.GetHasPerformedInitialNotificationsConfig()
 	if !hasConfigured {
 		t.Error("Should have performed initial notifications configuration")
 	}
 }
 
 func TestDiscordConfigurationIntegration(t *testing.T) {
-	configRepo := configrepository.Get()
+	configRepository := configrepository.New(testDatastore)
 
 	// Test Discord configuration setup
 	discordConfig := models.DiscordConfiguration{
@@ -81,7 +81,7 @@ func TestDiscordConfigurationIntegration(t *testing.T) {
 		GoLiveMessage: "Test stream is live!",
 	}
 
-	err := configRepo.SetDiscordConfig(discordConfig)
+	err := configRepository.SetDiscordConfig(discordConfig)
 	if err != nil {
 		t.Errorf("Failed to set Discord configuration: %v", err)
 	}
@@ -91,7 +91,7 @@ func TestDiscordConfigurationIntegration(t *testing.T) {
 		Enabled: false,
 		Webhook: "",
 	}
-	err = configRepo.SetDiscordConfig(disabledConfig)
+	err = configRepository.SetDiscordConfig(disabledConfig)
 	if err != nil {
 		t.Errorf("Failed to disable Discord configuration: %v", err)
 	}
@@ -142,19 +142,6 @@ func TestNotificationWorkflowIntegration(t *testing.T) {
 			t.Error("Notification destination should be removed")
 		}
 	}
-}
-
-func TestRepositoryGetSingleton(t *testing.T) {
-	// Test that Get() returns the same instance
-	repo1 := Get()
-	repo2 := Get()
-
-	if repo1 != repo2 {
-		t.Error("Get() should return the same singleton instance")
-	}
-
-	// Test that it implements the interface
-	var _ NotificationsRepository = repo1
 }
 
 func TestDatabaseTransactionIntegrity(t *testing.T) {

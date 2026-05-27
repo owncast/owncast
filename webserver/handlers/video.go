@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -21,9 +20,8 @@ type variantsResponse struct {
 }
 
 // GetVideoStreamOutputVariants will return the video variants available.
-func GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
-	outputVariants := configRepository.GetStreamOutputVariants()
+func (h *Handlers) GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
+	outputVariants := h.configRepository.GetStreamOutputVariants()
 
 	streamSortVariants := make([]variantsSort, len(outputVariants))
 	for i, variant := range outputVariants {

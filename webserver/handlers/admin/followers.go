@@ -4,16 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/activitypub/persistence/followersrepository"
-	"github.com/owncast/owncast/activitypub/requests"
-	"github.com/owncast/owncast/core/webhooks"
-	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/activitypub/requests"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
 // ApproveFollower will approve a federated follow request.
-func ApproveFollower(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -30,35 +27,32 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	followersRepo := followersrepository.Get()
-
 	if *approval.Approved {
 		// Approve a follower
-		if err := followersRepo.ApprovePreviousRequest(*approval.ActorIRI); err != nil {
+		if err := a.followersRepository.ApprovePreviousRequest(*approval.ActorIRI); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 
 		// Fire fediverse engagement follow event.
-		go webhooks.SendFediverseEngagementFollowEvent(*approval.ActorIRI)
+		go a.webhooks.SendFediverseEngagementFollowEvent(*approval.ActorIRI)
 
-		configRepository := configrepository.Get()
-		localAccountName := configRepository.GetDefaultFederationUsername()
+		localAccountName := a.configRepository.GetDefaultFederationUsername()
 
-		followRequest, err := followersRepo.GetByIRI(*approval.ActorIRI)
+		followRequest, err := a.followersRepository.GetByIRI(*approval.ActorIRI)
 		if err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 
 		// Send the approval to the follow requestor.
-		if err := requests.SendFollowAccept(followRequest.Inbox, followRequest.RequestObject, localAccountName); err != nil {
+		if err := requests.SendFollowAccept(a.activitypub.Workerpool(), followRequest.Inbox, followRequest.RequestObject, localAccountName, a.apBuilder, a.apSigner); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
 	} else {
 		// Remove/block a follower
-		if err := followersRepo.BlockOrReject(*approval.ActorIRI); err != nil {
+		if err := a.followersRepository.BlockOrReject(*approval.ActorIRI); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
@@ -68,9 +62,8 @@ func ApproveFollower(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetPendingFollowRequests will return a list of pending follow requests.
-func GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
-	followersRepo := followersrepository.Get()
-	requests, err := followersRepo.GetPendingFollowRequests()
+func (a *Admin) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
+	requests, err := a.followersRepository.GetPendingFollowRequests()
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -80,9 +73,8 @@ func GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetBlockedAndRejectedFollowers will return blocked and rejected followers.
-func GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
-	followersRepo := followersrepository.Get()
-	rejections, err := followersRepo.GetBlockedAndRejected()
+func (a *Admin) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
+	rejections, err := a.followersRepository.GetBlockedAndRejected()
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return

@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/pkg/errors"
 	"github.com/teris-io/shortid"
 )
@@ -40,8 +39,6 @@ type ServerProfileResponse struct {
 	ErrorDescription string `json:"error_description,omitempty"`
 }
 
-var pendingServerAuthRequests = map[string]ServerAuthRequest{}
-
 const maxPendingRequests = 100
 
 const (
@@ -52,17 +49,20 @@ const (
 // StartServerAuth will handle the authentication for the admin user of this
 // Owncast server. Initiated via a GET of the auth endpoint.
 // https://indieweb.org/authorization-endpoint
-func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*ServerAuthRequest, error) {
-	if len(pendingServerAuthRequests)+1 >= maxPendingRequests {
-		return nil, errors.New("Please try again later. Too many pending requests.")
-	}
-
+func (s *Service) StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*ServerAuthRequest, error) {
 	// Validate the redirect URI against the client ID before the auth
 	// endpoint hands it to the browser. Without this the endpoint is an open
 	// redirect: a crafted redirect_uri would send the generated auth code to
 	// an arbitrary origin.
 	if err := validateClientRedirect(clientID, redirectURI); err != nil {
 		return nil, err
+	}
+
+	s.pendingServerAuthRequestsLock.Lock()
+	defer s.pendingServerAuthRequestsLock.Unlock()
+
+	if len(s.pendingServerAuthRequests)+1 >= maxPendingRequests {
+		return nil, errors.New("Please try again later. Too many pending requests.")
 	}
 
 	code := shortid.MustGenerate()
@@ -77,7 +77,7 @@ func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*S
 		Timestamp:     time.Now(),
 	}
 
-	pendingServerAuthRequests[code] = r
+	s.pendingServerAuthRequests[code] = r
 
 	return &r, nil
 }
@@ -126,10 +126,10 @@ func isWebURL(u *url.URL) bool {
 
 // CompleteServerAuth will verify that the values provided in the final step
 // of the IndieAuth flow are correct, and return some basic profile info.
-func CompleteServerAuth(code, redirectURI, clientID string, codeVerifier string) (*ServerProfileResponse, error) {
-	configRepository := configrepository.Get()
-
-	request, pending := pendingServerAuthRequests[code]
+func (s *Service) CompleteServerAuth(code, redirectURI, clientID string, codeVerifier string) (*ServerProfileResponse, error) {
+	s.pendingServerAuthRequestsLock.Lock()
+	request, pending := s.pendingServerAuthRequests[code]
+	s.pendingServerAuthRequestsLock.Unlock()
 	if !pending {
 		return nil, errors.New("no pending authentication request")
 	}
@@ -148,11 +148,11 @@ func CompleteServerAuth(code, redirectURI, clientID string, codeVerifier string)
 	}
 
 	response := ServerProfileResponse{
-		Me: configRepository.GetServerURL(),
+		Me: s.configRepository.GetServerURL(),
 		Profile: ServerProfile{
-			Name:  configRepository.GetServerName(),
-			URL:   configRepository.GetServerURL(),
-			Photo: fmt.Sprintf("%s/%s", configRepository.GetServerURL(), configRepository.GetLogoPath()),
+			Name:  s.configRepository.GetServerName(),
+			URL:   s.configRepository.GetServerURL(),
+			Photo: fmt.Sprintf("%s/%s", s.configRepository.GetServerURL(), s.configRepository.GetLogoPath()),
 		},
 	}
 

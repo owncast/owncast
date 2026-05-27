@@ -9,8 +9,16 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/datastore"
+)
+
+// testHandlers is the *Handlers used by tests in this package, holding
+// only the configRepository handle. Expand if other handler tests land
+// that need additional deps.
+var (
+	testHandlers  *Handlers
+	testDatastore *datastore.Datastore
 )
 
 func TestMain(m *testing.M) {
@@ -20,9 +28,13 @@ func TestMain(m *testing.M) {
 	}
 	dbFile.Close()
 
-	if err := data.SetupPersistence(dbFile.Name()); err != nil {
+	ds, err := datastore.SetupPersistence(dbFile.Name(), os.TempDir())
+	if err != nil {
 		panic(err)
 	}
+	testDatastore = ds
+
+	testHandlers = &Handlers{configRepository: configrepository.New(testDatastore)}
 
 	code := m.Run()
 	os.Remove(dbFile.Name())
@@ -45,13 +57,13 @@ func makeBase64DataURL(contentType string, data []byte) string {
 
 func TestGetFaviconDefault(t *testing.T) {
 	// With no custom favicon set, should return the default.
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(testDatastore)
 	_ = configRepository.SetFaviconPath("")
 
 	req := httptest.NewRequest(http.MethodGet, "/favicon.ico", nil)
 	w := httptest.NewRecorder()
 
-	GetFavicon(w, req)
+	testHandlers.GetFavicon(w, req)
 
 	resp := w.Result()
 	if resp.StatusCode != http.StatusOK {
@@ -73,7 +85,7 @@ func TestGetFaviconCustomPNG(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(testDatastore)
 	if err := configRepository.SetFaviconPath("favicon.png"); err != nil {
 		t.Fatal(err)
 	}
@@ -82,7 +94,7 @@ func TestGetFaviconCustomPNG(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/favicon.ico", nil)
 	w := httptest.NewRecorder()
 
-	GetFavicon(w, req)
+	testHandlers.GetFavicon(w, req)
 
 	resp := w.Result()
 	if resp.StatusCode != http.StatusOK {
@@ -105,7 +117,7 @@ func TestGetFaviconCustomICO(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(testDatastore)
 	if err := configRepository.SetFaviconPath("favicon.ico"); err != nil {
 		t.Fatal(err)
 	}
@@ -114,7 +126,7 @@ func TestGetFaviconCustomICO(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/favicon.ico", nil)
 	w := httptest.NewRecorder()
 
-	GetFavicon(w, req)
+	testHandlers.GetFavicon(w, req)
 
 	resp := w.Result()
 	if resp.StatusCode != http.StatusOK {
@@ -127,7 +139,7 @@ func TestGetFaviconCustomICO(t *testing.T) {
 
 func TestGetFaviconMissingFileFallsBackToDefault(t *testing.T) {
 	// Point config at a file that doesn't exist; should fall back to default.
-	configRepository := configrepository.Get()
+	configRepository := configrepository.New(testDatastore)
 	if err := configRepository.SetFaviconPath("favicon-nonexistent.png"); err != nil {
 		t.Fatal(err)
 	}
@@ -136,7 +148,7 @@ func TestGetFaviconMissingFileFallsBackToDefault(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/favicon.ico", nil)
 	w := httptest.NewRecorder()
 
-	GetFavicon(w, req)
+	testHandlers.GetFavicon(w, req)
 
 	resp := w.Result()
 	if resp.StatusCode != http.StatusOK {

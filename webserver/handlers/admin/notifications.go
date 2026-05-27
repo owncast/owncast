@@ -5,12 +5,11 @@ import (
 	"net/http"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
 // SetDiscordNotificationConfiguration will set the discord notification configuration.
-func SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -19,8 +18,6 @@ func SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 		Value models.DiscordConfiguration `json:"value"`
 	}
 
-	configRepository := configrepository.Get()
-
 	decoder := json.NewDecoder(r.Body)
 	var config request
 	if err := decoder.Decode(&config); err != nil {
@@ -28,7 +25,7 @@ func SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := configRepository.SetDiscordConfig(config.Value); err != nil {
+	if err := a.configRepository.SetDiscordConfig(config.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update discord config with provided values")
 		return
 	}
@@ -37,7 +34,7 @@ func SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 }
 
 // SetBrowserNotificationConfiguration will set the browser notification configuration.
-func SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -46,7 +43,6 @@ func SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 		Value models.BrowserNotificationConfiguration `json:"value"`
 	}
 
-	configRepository := configrepository.Get()
 	decoder := json.NewDecoder(r.Body)
 	var config request
 	if err := decoder.Decode(&config); err != nil {
@@ -54,7 +50,7 @@ func SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := configRepository.SetBrowserPushConfig(config.Value); err != nil {
+	if err := a.configRepository.SetBrowserPushConfig(config.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update browser push config with provided values")
 		return
 	}

@@ -6,9 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
-	"github.com/owncast/owncast/models"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 type WebhookRepository interface {
@@ -20,23 +21,11 @@ type WebhookRepository interface {
 }
 
 type SqlWebhookRepository struct {
-	datastore *data.Datastore
-}
-
-// NOTE: This is temporary during the transition period.
-var temporaryGlobalInstance WebhookRepository
-
-// Get will return the user repository.
-func Get() WebhookRepository {
-	if temporaryGlobalInstance == nil {
-		i := New(data.GetDatastore())
-		temporaryGlobalInstance = i
-	}
-	return temporaryGlobalInstance
+	datastore *datastore.Datastore
 }
 
 // New will create a new instance of the UserRepository.
-func New(datastore *data.Datastore) WebhookRepository {
+func New(datastore *datastore.Datastore) WebhookRepository {
 	r := SqlWebhookRepository{
 		datastore: datastore,
 	}

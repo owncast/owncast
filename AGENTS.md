@@ -51,7 +51,7 @@ This is a repository consisting of a Go backend and a React frontend. It support
 
 ### Backend Structure
 
-- `main.go`: Entry point. Initializes logging, database, config, core services, metrics, and the HTTP router.
+- `main.go`: Entry point and composition root. Initializes logging, database, config, core services, metrics, then constructs every migrated service from `services/` and injects them into the HTTP router and other consumers. See "Service migration pattern" below for the policy.
 - `webserver/router/`: Chi (v5) HTTP router with HTTP/2 support. Routes organized under `/api/`, `/api/admin/`, federation endpoints, `/hls/`, and `/ws`.
 - `webserver/handlers/`: Request handlers for web, admin, static files, HLS streaming.
 - `webserver/handlers/generated/`: Auto-generated API types and Chi server stubs from OpenAPI spec. Do not hand-edit.
@@ -65,6 +65,21 @@ This is a repository consisting of a Go backend and a React frontend. It support
 - `models/`: Shared data models.
 - `config/`: Configuration package with defaults and constants.
 - `tools/`: Separate `go.mod` for development tool dependencies installed to `./bin/`.
+- `services/`: Migrated services (constructor-injected, no package-level state). See "Service migration pattern" below for the rules.
+
+### Service migration pattern
+
+Owncast is being moved off package-level singletons toward constructor-injected services. New code and migrated services follow these rules:
+
+1. **A migrated service lives in `services/<domain>/`** and exposes `New(Deps) *Service`. Services with a lifecycle also expose `Start(ctx) error` / `Stop(ctx) error`. The package has no package-level state and no `Get()` (or equivalent) accessor.
+
+2. **`main.go` is the composition root.** It's the only place that calls `services/*.New(...)`. Other code receives services via constructor injection. New deps appear in a `Deps` struct on each service or consumer.
+
+3. **Existing `<pkg>.Get()` accessors (in `persistence/`) are deprecated** and exist only until their callers migrate. New code never calls `Get()`. PRs may reduce `Get()` callers; PRs must not add them.
+
+When a service publishes events to multiple listeners, model the listeners as injected interfaces (`type StreamLifecycleListener interface { ... }`) and iterate them in the publisher. Don't introduce a generic event bus — explicit calls make stack traces, grep, and tests work the way the rest of the codebase expects.
+
+The cache (`services/cache/`) is the first migrated service and is the reference shape; the `*Handlers` struct in `webserver/handlers/handlers.go` is the reference pattern for consumers of injected services.
 
 ### Frontend Structure
 

@@ -8,49 +8,17 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"sync"
-	"time"
 
-	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/owncast/owncast/utils"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/utils"
 )
-
-var (
-	pendingAuthRequests = make(map[string]*Request)
-	lock                = sync.Mutex{}
-)
-
-const registrationTimeout = time.Minute * 10
-
-func init() {
-	go setupExpiredRequestPruner()
-}
-
-// Clear out any pending requests that have been pending for greater than
-// the specified timeout value.
-func setupExpiredRequestPruner() {
-	pruneExpiredRequestsTimer := time.NewTicker(registrationTimeout)
-
-	for range pruneExpiredRequestsTimer.C {
-		lock.Lock()
-		log.Debugln("Pruning expired IndieAuth requests.")
-		for k, v := range pendingAuthRequests {
-			if time.Since(v.Timestamp) > registrationTimeout {
-				delete(pendingAuthRequests, k)
-			}
-		}
-		lock.Unlock()
-	}
-}
 
 // StartAuthFlow will begin the IndieAuth flow by generating an auth request.
-func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
-	configRepository := configrepository.Get()
-
+func (s *Service) StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
 	// Limit the number of pending requests
-	if len(pendingAuthRequests) >= maxPendingRequests {
+	if len(s.pendingAuthRequests) >= maxPendingRequests {
 		return nil, errors.New("Please try again later. Too many pending requests.")
 	}
 
@@ -70,7 +38,7 @@ func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL,
 		return nil, errors.New("only servers secured with https are supported")
 	}
 
-	serverURL := configRepository.GetServerURL()
+	serverURL := s.configRepository.GetServerURL()
 	if serverURL == "" {
 		return nil, errors.New("Owncast server URL must be set when using auth")
 	}
@@ -80,15 +48,15 @@ func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL,
 		return nil, errors.Wrap(err, "unable to generate IndieAuth request")
 	}
 
-	pendingAuthRequests[r.State] = r
+	s.pendingAuthRequests[r.State] = r
 
 	return r.Redirect, nil
 }
 
 // HandleCallbackCode will handle the callback from the IndieAuth server
 // to continue the next step of the auth flow.
-func HandleCallbackCode(code, state string) (*Request, *Response, error) {
-	request, exists := pendingAuthRequests[state]
+func (s *Service) HandleCallbackCode(code, state string) (*Request, *Response, error) {
+	request, exists := s.pendingAuthRequests[state]
 	if !exists {
 		return nil, nil, errors.New("no auth requests pending")
 	}
