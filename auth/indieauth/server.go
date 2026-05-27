@@ -2,6 +2,8 @@ package indieauth
 
 import (
 	"fmt"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -50,6 +52,14 @@ func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*S
 		return nil, errors.New("Please try again later. Too many pending requests.")
 	}
 
+	// Validate the redirect URI against the client ID before the auth
+	// endpoint hands it to the browser. Without this the endpoint is an open
+	// redirect: a crafted redirect_uri would send the generated auth code to
+	// an arbitrary origin.
+	if err := validateClientRedirect(clientID, redirectURI); err != nil {
+		return nil, err
+	}
+
 	code := shortid.MustGenerate()
 
 	r := ServerAuthRequest{
@@ -65,6 +75,30 @@ func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*S
 	pendingServerAuthRequests[code] = r
 
 	return &r, nil
+}
+
+// validateClientRedirect enforces the IndieAuth requirement that the
+// redirect_uri belong to the requesting client. Both values must be
+// absolute URLs, and — because Owncast does not fetch the client's
+// published metadata to discover alternate redirect URIs — the redirect
+// host must match the client_id host. This prevents the authorization
+// endpoint from being used as an open redirect.
+func validateClientRedirect(clientID, redirectURI string) error {
+	client, err := url.Parse(clientID)
+	if err != nil || !client.IsAbs() {
+		return errors.New("invalid client_id")
+	}
+
+	redirect, err := url.Parse(redirectURI)
+	if err != nil || !redirect.IsAbs() {
+		return errors.New("invalid redirect_uri")
+	}
+
+	if !strings.EqualFold(client.Hostname(), redirect.Hostname()) {
+		return errors.New("redirect_uri host does not match client_id host")
+	}
+
+	return nil
 }
 
 // CompleteServerAuth will verify that the values provided in the final step
