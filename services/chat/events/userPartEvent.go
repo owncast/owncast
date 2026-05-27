@@ -9,9 +9,9 @@ type UserPartEvent struct {
 // GetBroadcastPayload will return the object to send to all chat users.
 func (e *UserPartEvent) GetBroadcastPayload() EventPayload {
 	return EventPayload{
-		"type":      UserParted,
-		"id":        e.ID,
-		"timestamp": e.Timestamp,
-		"user":      e.User,
+		payloadKeyType:      UserParted,
+		"id":                e.ID,
+		payloadKeyTimestamp: e.Timestamp,
+		payloadKeyUser:      e.User,
 	}
 }

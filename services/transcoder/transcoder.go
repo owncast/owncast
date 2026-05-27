@@ -20,6 +20,9 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
+// ffmpegFlagMap is the ffmpeg stream selection flag.
+const ffmpegFlagMap = "-map"
+
 type execInfo struct {
 	binPath string
 	command []string
@@ -430,7 +433,7 @@ func (v *HLSVariant) SetVideoBitrate(bitrate int) {
 func (v *HLSVariant) getVideoQualityString(t *Transcoder) []string {
 	if v.isVideoPassthrough {
 		return []string{
-			"-map", "v:0", fmt.Sprintf("-c:v:%d", v.index), "copy",
+			ffmpegFlagMap, "v:0", fmt.Sprintf("-c:v:%d", v.index), "copy",
 		}
 	}
 
@@ -438,7 +441,7 @@ func (v *HLSVariant) getVideoQualityString(t *Transcoder) []string {
 	cmd := make([]string, 0, 20)
 	cmd = append(
 		cmd,
-		"-map", "v:0",
+		ffmpegFlagMap, "v:0",
 		fmt.Sprintf("-c:v:%d", v.index), t.codec.Name(), // Video codec used for this variant
 		fmt.Sprintf("-b:v:%d", v.index), fmt.Sprintf("%dk", v.getAllocatedVideoBitrate()), // The average bitrate for this variant allowing space for audio
 		fmt.Sprintf("-maxrate:v:%d", v.index), fmt.Sprintf("%dk", v.getMaxVideoBitrate()), // The max bitrate allowed for this variant
@@ -471,14 +474,14 @@ func (v *HLSVariant) SetAudioBitrate(bitrate string) {
 func (v *HLSVariant) getAudioQualityString() []string {
 	if v.isAudioPassthrough {
 		return []string{
-			"-map", "a:0?", fmt.Sprintf("-c:a:%d", v.index), "copy",
+			ffmpegFlagMap, "a:0?", fmt.Sprintf("-c:a:%d", v.index), "copy",
 		}
 	}
 
 	// libfdk_aac is not a part of every ffmpeg install, so use "aac" instead
 	encoderCodec := "aac"
 	return []string{
-		"-map", "a:0?",
+		ffmpegFlagMap, "a:0?",
 		fmt.Sprintf("-c:a:%d", v.index), encoderCodec,
 		fmt.Sprintf("-b:a:%d", v.index), v.audioBitrate,
 	}

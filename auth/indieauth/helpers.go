@@ -74,7 +74,7 @@ func getAuthEndpointFromURL(urlstring string) (*url.URL, error) {
 		return nil, errors.Wrap(err, "unable to parse URL")
 	}
 
-	if htmlDocScrapeURL.Scheme != "https" {
+	if htmlDocScrapeURL.Scheme != schemeHTTPS {
 		return nil, fmt.Errorf("url must be https")
 	}
 

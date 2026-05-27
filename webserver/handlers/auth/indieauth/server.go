@@ -54,12 +54,12 @@ func (h *Handler) HandleAuthEndpointGet(w http.ResponseWriter, r *http.Request) 
 	redirectParams.Set("state", request.State)
 	u.RawQuery = redirectParams.Encode()
 
-	// The redirect target is the IndieAuth client's registered redirect_uri,
-	// already parsed and validated by ia.StartServerAuth above. This handler
-	// is also gated by middleware.RequireAdminAuth, so only authenticated
-	// admins reach this code path. The "open redirect" warning is the
-	// protocol working as designed.
-	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect) //nolint:gosec // G710: redirect target is the validated IndieAuth client redirect_uri
+	// The redirect target is the client's redirect_uri, which
+	// ia.StartServerAuth above validated to be an http(s) URL whose host
+	// matches the client_id host. The endpoint is also gated behind
+	// RequireAdminAuth. gosec's taint analysis can't see the cross-function
+	// validation, so the open-redirect warning here is a false positive.
+	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect) //nolint:gosec // G710: redirect_uri validated against client_id in StartServerAuth
 }
 
 func (h *Handler) HandleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {

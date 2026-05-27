@@ -18,14 +18,14 @@ type FediverseEngagementEvent struct {
 // GetBroadcastPayload will return the object to send to all chat users.
 func (e *FediverseEngagementEvent) GetBroadcastPayload() EventPayload {
 	return EventPayload{
-		"id":        e.ID,
-		"timestamp": e.Timestamp,
-		"body":      e.Body,
-		"image":     e.Image,
-		"type":      e.Type,
-		"title":     e.UserAccountName,
-		"link":      e.Link,
-		"user": EventPayload{
+		"id":                e.ID,
+		payloadKeyTimestamp: e.Timestamp,
+		payloadKeyBody:      e.Body,
+		"image":             e.Image,
+		payloadKeyType:      e.Type,
+		"title":             e.UserAccountName,
+		"link":              e.Link,
+		payloadKeyUser: EventPayload{
 			"displayName": e.ServerName,
 		},
 	}
