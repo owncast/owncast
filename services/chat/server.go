@@ -52,6 +52,11 @@ type Service struct {
 	// (welcome messages, recent-disconnect heuristics).
 	getStatus func() models.Status
 
+	// messageFilter, when set, runs for each inbound user message before it
+	// is broadcast, letting a consumer (the plugin host) rewrite the body or
+	// drop the message. nil means no filtering.
+	messageFilter ChatMessageFilterFunc
+
 	// configRepository provides server-side chat settings consulted on each
 	// inbound message (slur/spam filters, established-users-only mode,
 	// auth requirement, welcome message text, etc.).

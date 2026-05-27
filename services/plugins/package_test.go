@@ -1,0 +1,223 @@
+package plugins
+
+import (
+	"archive/zip"
+	"bytes"
+	"context"
+	"io"
+	"io/fs"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
+	"testing"
+)
+
+// findExampleWasm returns the path to a real example wasm we can use to make
+// happy-path package tests realistic. Tests that need actual wasm bytes
+// t.Skip() if no example has been built yet.
+func findExampleWasm(t *testing.T) string {
+	t.Helper()
+	_, thisFile, _, _ := runtime.Caller(0)
+	repoRoot := filepath.Join(filepath.Dir(thisFile), "..", "..")
+	candidate := filepath.Join(repoRoot, "examples", "js", "hello-world", "hello-world.wasm")
+	if _, err := os.Stat(candidate); err != nil {
+		t.Skipf("example wasm %s not built; run tools/build-plugin.sh examples/js/hello-world first", candidate)
+	}
+	return candidate
+}
+
+// buildPkg writes a .ocpkg-shaped zip to a temp file and returns the path.
+func buildPkg(t *testing.T, entries map[string][]byte) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "test.ocpkg")
+	f, err := os.Create(path)
+	if err != nil {
+		t.Fatalf("create: %v", err)
+	}
+	defer f.Close()
+	zw := zip.NewWriter(f)
+	for name, data := range entries {
+		w, err := zw.Create(name)
+		if err != nil {
+			t.Fatalf("zip create %s: %v", name, err)
+		}
+		if _, err := w.Write(data); err != nil {
+			t.Fatalf("zip write %s: %v", name, err)
+		}
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatalf("zip close: %v", err)
+	}
+	return path
+}
+
+func validManifestBytes() []byte {
+	return []byte(`{
+		"api": "1",
+		"name": "hello-world",
+		"version": "0.1.0",
+		"description": "test",
+		"permissions": []
+	}`)
+}
+
+func TestLoadPackage_MissingManifest(t *testing.T) {
+	path := buildPkg(t, map[string][]byte{
+		pkgWasmFilename: {0x00}, // not parsed; the manifest check fails first
+	})
+	_, err := LoadPackage(context.Background(), &HostEnv{}, path)
+	if err == nil {
+		t.Fatal("expected error for missing manifest, got nil")
+	}
+	if !strings.Contains(err.Error(), pkgManifestFilename) {
+		t.Errorf("error mentions manifest filename: got %v", err)
+	}
+}
+
+func TestLoadPackage_MissingWasm(t *testing.T) {
+	path := buildPkg(t, map[string][]byte{
+		pkgManifestFilename: validManifestBytes(),
+	})
+	_, err := LoadPackage(context.Background(), &HostEnv{}, path)
+	if err == nil {
+		t.Fatal("expected error for missing wasm, got nil")
+	}
+	if !strings.Contains(err.Error(), pkgWasmFilename) {
+		t.Errorf("error mentions wasm filename: got %v", err)
+	}
+}
+
+func TestLoadPackage_CorruptZip(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "bad.ocpkg")
+	if err := os.WriteFile(path, []byte("this is not a zip file at all"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	_, err := LoadPackage(context.Background(), &HostEnv{}, path)
+	if err == nil {
+		t.Fatal("expected error for corrupt zip, got nil")
+	}
+}
+
+func TestLoadPackage_MalformedManifestJSON(t *testing.T) {
+	path := buildPkg(t, map[string][]byte{
+		pkgManifestFilename: []byte(`{not valid json`),
+		pkgWasmFilename:     {0x00},
+	})
+	_, err := LoadPackage(context.Background(), &HostEnv{}, path)
+	if err == nil {
+		t.Fatal("expected error for malformed manifest, got nil")
+	}
+}
+
+func TestLoadPackage_MissingPathReturnsError(t *testing.T) {
+	_, err := LoadPackage(context.Background(), &HostEnv{}, "/nonexistent/path/foo.ocpkg")
+	if err == nil {
+		t.Fatal("expected error for missing file, got nil")
+	}
+}
+
+func TestLoadPackage_AssetsExposedAsFS(t *testing.T) {
+	wasmPath := findExampleWasm(t)
+	wasmBytes, err := os.ReadFile(wasmPath)
+	if err != nil {
+		t.Fatalf("read example wasm: %v", err)
+	}
+	path := buildPkg(t, map[string][]byte{
+		pkgManifestFilename:               validManifestBytes(),
+		pkgWasmFilename:                   wasmBytes,
+		pkgAssetsPrefix + "index.html":    []byte("<h1>hi</h1>"),
+		pkgAssetsPrefix + "sub/style.css": []byte("body{}"),
+	})
+
+	loaded, err := LoadPackage(context.Background(), &HostEnv{}, path)
+	if err != nil {
+		t.Fatalf("load: %v", err)
+	}
+	defer loaded.Close(context.Background())
+
+	if loaded.AssetsFS == nil {
+		t.Fatal("expected AssetsFS to be set when assets/ present in archive")
+	}
+
+	got, err := fs.ReadFile(loaded.AssetsFS, "index.html")
+	if err != nil {
+		t.Fatalf("read assets/index.html: %v", err)
+	}
+	if !bytes.Equal(got, []byte("<h1>hi</h1>")) {
+		t.Errorf("index.html: got %q want %q", got, "<h1>hi</h1>")
+	}
+
+	got, err = fs.ReadFile(loaded.AssetsFS, "sub/style.css")
+	if err != nil {
+		t.Fatalf("read nested asset: %v", err)
+	}
+	if !bytes.Equal(got, []byte("body{}")) {
+		t.Errorf("sub/style.css: got %q", got)
+	}
+}
+
+func TestLoadPackage_NoAssetsLeavesFSNil(t *testing.T) {
+	wasmPath := findExampleWasm(t)
+	wasmBytes, _ := os.ReadFile(wasmPath)
+	path := buildPkg(t, map[string][]byte{
+		pkgManifestFilename: validManifestBytes(),
+		pkgWasmFilename:     wasmBytes,
+	})
+
+	loaded, err := LoadPackage(context.Background(), &HostEnv{}, path)
+	if err != nil {
+		t.Fatalf("load: %v", err)
+	}
+	defer loaded.Close(context.Background())
+
+	if loaded.AssetsFS != nil {
+		t.Error("expected AssetsFS to be nil when archive has no assets/")
+	}
+}
+
+// Verify that arbitrary file content (incl. binary) round-trips through the
+// zip reader. Belt-and-suspenders for the in-memory zip approach.
+func TestLoadPackage_BinaryAssetsIntact(t *testing.T) {
+	wasmPath := findExampleWasm(t)
+	wasmBytes, _ := os.ReadFile(wasmPath)
+	// Random-ish binary payload — a sentinel image-like byte sequence.
+	binary := []byte{0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x01, 0x02, 0x03}
+	path := buildPkg(t, map[string][]byte{
+		pkgManifestFilename:          validManifestBytes(),
+		pkgWasmFilename:              wasmBytes,
+		pkgAssetsPrefix + "logo.png": binary,
+	})
+
+	loaded, err := LoadPackage(context.Background(), &HostEnv{}, path)
+	if err != nil {
+		t.Fatalf("load: %v", err)
+	}
+	defer loaded.Close(context.Background())
+
+	got, err := fs.ReadFile(loaded.AssetsFS, "logo.png")
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	if !bytes.Equal(got, binary) {
+		t.Errorf("binary asset corrupted:\n  want %v\n  got  %v", binary, got)
+	}
+}
+
+// readZipFile is exercised heavily above, but verify it directly with a tiny
+// constructed archive so its error path is independently tested.
+func TestReadZipFile_Missing(t *testing.T) {
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	w, _ := zw.Create("present.txt")
+	io.WriteString(w, "hi")
+	zw.Close()
+
+	zr, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
+	if err != nil {
+		t.Fatalf("zip reader: %v", err)
+	}
+	if _, err := readZipFile(zr, "missing.txt"); err == nil {
+		t.Error("expected error for missing entry, got nil")
+	}
+}

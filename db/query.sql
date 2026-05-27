@@ -108,7 +108,13 @@ SELECT users.id, display_name, display_color, users.created_at, disabled_at, pre
 INSERT INTO user_access_tokens(token, user_id) values(?, ?);
 
 -- name: GetUserByAccessToken :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM users, user_access_tokens WHERE token = ? AND users.id = user_id;
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, users.type = 'API' AS is_bot FROM users, user_access_tokens WHERE token = ? AND users.id = user_id;
+
+-- name: GetUserByID :one
+SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users WHERE id = ?;
+
+-- name: GetUsers :many
+SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users ORDER BY created_at DESC;
 
 -- name: GetUserDisplayNameByToken :one
 SELECT display_name FROM users JOIN user_access_tokens ON users.id = user_access_tokens.user_id WHERE token = ? AND users.disabled_at IS NULL;

@@ -26,7 +26,7 @@ import (
 // mw carries the methodified HTTP middleware (admin basic-auth, federation
 // content-type gating). apc carries the methodified ActivityPub HTTP
 // handler set.
-func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, mw *middleware.Middleware, apc *apcontrollers.Controllers) error {
+func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, mw *middleware.Middleware, apc *apcontrollers.Controllers, pluginContent http.Handler, pluginAdmin http.Handler) error {
 	// @behlers New Router
 	r := chi.NewRouter()
 
@@ -57,6 +57,13 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 	// Single AP object
 	r.HandleFunc("/federation/*", mw.RequireActivityPubOrRedirect(apc.ObjectHandler))
 
+	// Plugin-served content: /plugins/<name>/* (static assets, dynamic
+	// on_http_request handlers, and host-owned SSE streams). nil when the
+	// plugin host is disabled or failed to start.
+	if pluginContent != nil {
+		r.Handle("/plugins/*", pluginContent)
+	}
+
 	// The primary web app.
 	r.HandleFunc("/*", h.IndexHandler)
 
@@ -68,6 +75,15 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 	// due to its use of expvar and we do not want this exposed.
 	rootHandler := r
 	m := http.NewServeMux()
+
+	// Plugin management API. Mounted on the outer mux (beside the OpenAPI
+	// /api router, which owns /api/* via chi) so these routes don't collide
+	// with the generated handler. nil when the plugin host is disabled.
+	if pluginAdmin != nil {
+		m.Handle("/api/admin/plugins", pluginAdmin)
+		m.Handle("/api/admin/plugins/", pluginAdmin)
+		m.Handle("/api/plugins/actions", pluginAdmin)
+	}
 
 	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {

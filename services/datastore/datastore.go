@@ -109,6 +109,18 @@ func (ds *Datastore) Save(e models.ConfigEntry) error {
 	return nil
 }
 
+// Delete removes the entry for key. A missing key is not an error.
+func (ds *Datastore) Delete(key string) error {
+	ds.DbLock.Lock()
+	defer ds.DbLock.Unlock()
+
+	if _, err := ds.DB.Exec("DELETE FROM datastore WHERE key = ?", key); err != nil {
+		return err
+	}
+	ds.DeleteCachedValue(key)
+	return nil
+}
+
 // Setup will perform initial initialization using the provided database
 // handle. Called by SetupPersistence with the freshly opened *sql.DB.
 func (ds *Datastore) Setup(db *sql.DB) {

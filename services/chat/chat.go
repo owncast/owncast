@@ -57,6 +57,19 @@ func (s *Service) SetGetStatus(fn func() models.Status) {
 	s.getStatus = fn
 }
 
+// ChatMessageFilterFunc runs for each inbound user message before it is
+// broadcast. Given the message id, author display name, and rendered body, it
+// returns the body to broadcast and whether to deliver the message at all
+// (false drops it). It must not block; slow work belongs off the hot path.
+type ChatMessageFilterFunc func(messageID, user, body string) (newBody string, allow bool)
+
+// SetMessageFilter installs the inbound-message filter hook. The plugin host
+// wires this to run plugin filterChatMessage handlers. Set before Start; nil
+// disables filtering.
+func (s *Service) SetMessageFilter(fn ChatMessageFilterFunc) {
+	s.messageFilter = fn
+}
+
 // Start initializes persistence, launches the broadcast loop, and
 // registers the Prometheus counter. Safe to call once.
 func (s *Service) Start() error {
@@ -139,6 +152,36 @@ func (s *Service) SendSystemMessage(text string, ephemeral bool) error {
 	if !ephemeral {
 		s.chatMessageRepository.SaveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
 	}
+
+	return nil
+}
+
+// SendMessageAsUser broadcasts and persists a chat message authored by the
+// given user, running it through the same render/sanitize, broadcast,
+// webhook, and persistence path as a message from a connected client. The
+// plugin host uses this so a plugin can post under its own bot identity
+// rather than as a generic system message.
+func (s *Service) SendMessageAsUser(user *models.User, text string) error {
+	if user == nil {
+		return errors.New("SendMessageAsUser requires a user")
+	}
+
+	event := events.UserMessageEvent{}
+	event.Body = text
+	event.SetDefaults() // generates ID + timestamp, renders and sanitizes the body
+	event.User = user
+
+	if event.Empty() {
+		return nil
+	}
+
+	if err := s.Broadcast(event.GetBroadcastPayload()); err != nil {
+		return err
+	}
+
+	s.webhooks.SendChatEvent(&event)
+	s.chatMessagesSentCounter.Inc()
+	s.chatMessageRepository.SaveUserMessage(event)
 
 	return nil
 }

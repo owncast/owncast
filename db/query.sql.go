@@ -682,7 +682,7 @@ func (q *Queries) GetUniqueDeliveryInboxes(ctx context.Context) ([]string, error
 }
 
 const getUserByAccessToken = `-- name: GetUserByAccessToken :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM users, user_access_tokens WHERE token = ? AND users.id = user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, users.type = 'API' AS is_bot FROM users, user_access_tokens WHERE token = ? AND users.id = user_id
 `
 
 type GetUserByAccessTokenRow struct {
@@ -695,6 +695,7 @@ type GetUserByAccessTokenRow struct {
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
 	Scopes          sql.NullString
+	IsBot           bool
 }
 
 func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUserByAccessTokenRow, error) {
@@ -710,6 +711,7 @@ func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUs
 		&i.NamechangedAt,
 		&i.AuthenticatedAt,
 		&i.Scopes,
+		&i.IsBot,
 	)
 	return i, err
 }
@@ -752,6 +754,41 @@ func (q *Queries) GetUserByAuth(ctx context.Context, arg GetUserByAuthParams) (G
 	return i, err
 }
 
+const getUserByID = `-- name: GetUserByID :one
+SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users WHERE id = ?
+`
+
+type GetUserByIDRow struct {
+	ID              string
+	DisplayName     string
+	DisplayColor    int64
+	CreatedAt       sql.NullTime
+	DisabledAt      sql.NullTime
+	PreviousNames   sql.NullString
+	NamechangedAt   sql.NullTime
+	AuthenticatedAt sql.NullTime
+	Scopes          sql.NullString
+	IsBot           bool
+}
+
+func (q *Queries) GetUserByID(ctx context.Context, id string) (GetUserByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
+	var i GetUserByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.DisplayName,
+		&i.DisplayColor,
+		&i.CreatedAt,
+		&i.DisabledAt,
+		&i.PreviousNames,
+		&i.NamechangedAt,
+		&i.AuthenticatedAt,
+		&i.Scopes,
+		&i.IsBot,
+	)
+	return i, err
+}
+
 const getUserDisplayNameByToken = `-- name: GetUserDisplayNameByToken :one
 SELECT display_name FROM users JOIN user_access_tokens ON users.id = user_access_tokens.user_id WHERE token = ? AND users.disabled_at IS NULL
 `
@@ -761,6 +798,57 @@ func (q *Queries) GetUserDisplayNameByToken(ctx context.Context, token string) (
 	var display_name string
 	err := row.Scan(&display_name)
 	return display_name, err
+}
+
+const getUsers = `-- name: GetUsers :many
+SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users ORDER BY created_at DESC
+`
+
+type GetUsersRow struct {
+	ID              string
+	DisplayName     string
+	DisplayColor    int64
+	CreatedAt       sql.NullTime
+	DisabledAt      sql.NullTime
+	PreviousNames   sql.NullString
+	NamechangedAt   sql.NullTime
+	AuthenticatedAt sql.NullTime
+	Scopes          sql.NullString
+	IsBot           bool
+}
+
+func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUsersRow
+	for rows.Next() {
+		var i GetUsersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.DisplayName,
+			&i.DisplayColor,
+			&i.CreatedAt,
+			&i.DisabledAt,
+			&i.PreviousNames,
+			&i.NamechangedAt,
+			&i.AuthenticatedAt,
+			&i.Scopes,
+			&i.IsBot,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const isDisplayNameAvailable = `-- name: IsDisplayNameAvailable :one

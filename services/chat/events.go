@@ -165,6 +165,16 @@ func (s *Service) userMessageSent(eventData chatClientEvent) {
 		return
 	}
 
+	// Run the inbound-message filter hook (plugin filterChatMessage handlers).
+	// A filter may rewrite the body or drop the message entirely.
+	if s.messageFilter != nil {
+		newBody, allow := s.messageFilter(event.ID, event.User.DisplayName, event.Body)
+		if !allow {
+			return
+		}
+		event.Body = newBody
+	}
+
 	payload := event.GetBroadcastPayload()
 	if err := s.Broadcast(payload); err != nil {
 		log.Errorln("error broadcasting UserMessageEvent payload", err)

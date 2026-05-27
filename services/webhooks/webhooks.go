@@ -82,6 +82,10 @@ func (s *Service) SendEventToWebhooks(payload WebhookEvent) {
 // optional waitgroup so callers (tests, batched senders) can wait for
 // all destinations to be drained.
 func (s *Service) sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
+	// In-process listeners (e.g. the plugin host) see every event, even when
+	// no HTTP webhook destinations are configured for it.
+	s.notifyEventListeners(payload)
+
 	webhooks := s.webhookRepository.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {

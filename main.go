@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -21,6 +22,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/pluginhost"
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
@@ -277,6 +279,32 @@ func main() {
 	})
 	go metricsSvc.Start()
 
+	// Plugin host. Optional infrastructure: a failure here disables plugins
+	// but must not abort startup. Constructs the WASM plugin runtime, wires
+	// its host functions to the services above, and exposes the
+	// /plugins/<name>/* HTTP handler mounted by the router below.
+	var pluginContentHandler http.Handler
+	var pluginAdminHandler http.Handler
+	pluginHostInstance, err := pluginhost.New(ctx, pluginhost.Deps{
+		Datastore:               dataStore,
+		Chat:                    chatSvc,
+		Stream:                  streamSvc,
+		Activitypub:             apSvc,
+		Webhooks:                webhooksSvc,
+		ConfigRepository:        configRepository,
+		UserRepository:          userRepository,
+		AuthRepository:          authRepository,
+		NotificationsRepository: notificationsRepository,
+		ChatMessageRepository:   chatMessageRepository,
+	})
+	if err != nil {
+		log.Errorln("plugin host failed to start; plugins disabled:", err)
+	} else {
+		pluginContentHandler = pluginHostInstance.Handler()
+		pluginAdminHandler = pluginHostInstance.AdminHandler()
+		defer pluginHostInstance.Stop(ctx)
+	}
+
 	// Stage 9: HTTP handler set. *Handlers is the dispatcher the router
 	// binds methods on; the sub-handlers (admin, fediverse, indieauth,
 	// moderation) hold their own narrower deps.
@@ -344,7 +372,7 @@ func main() {
 	})
 
 	// Stage 10: serve. Blocks until shutdown.
-	if err := router.Start(cfg, *enableVerboseLogging, h, mw, apSvc.Controllers()); err != nil {
+	if err := router.Start(cfg, *enableVerboseLogging, h, mw, apSvc.Controllers(), pluginContentHandler, pluginAdminHandler); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
 }

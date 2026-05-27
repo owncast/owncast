@@ -47,6 +47,33 @@ type Service struct {
 	// consulted when dispatching events as well as when marking a
 	// destination as used after a successful send.
 	webhookRepository webhookrepository.WebhookRepository
+
+	// eventListeners are in-process subscribers notified of every event in
+	// addition to the configured HTTP webhook destinations. This makes the
+	// service the single event source for internal consumers (the plugin
+	// host today; other subsystems in future) rather than each event source
+	// having to fan out separately.
+	listenersMu    sync.RWMutex
+	eventListeners []func(WebhookEvent)
+}
+
+// AddEventListener registers fn to be called for every dispatched event,
+// regardless of whether any HTTP webhook destinations are configured.
+// Listeners must not block; offload slow work to a goroutine. Register
+// during composition, before Start.
+func (s *Service) AddEventListener(fn func(WebhookEvent)) {
+	s.listenersMu.Lock()
+	defer s.listenersMu.Unlock()
+	s.eventListeners = append(s.eventListeners, fn)
+}
+
+func (s *Service) notifyEventListeners(payload WebhookEvent) {
+	s.listenersMu.RLock()
+	listeners := s.eventListeners
+	s.listenersMu.RUnlock()
+	for _, fn := range listeners {
+		fn(payload)
+	}
 }
 
 // Deps lists every collaborator a *Service needs at construction.
