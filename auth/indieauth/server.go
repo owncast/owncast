@@ -44,6 +44,11 @@ var pendingServerAuthRequests = map[string]ServerAuthRequest{}
 
 const maxPendingRequests = 100
 
+const (
+	schemeHTTP  = "http"
+	schemeHTTPS = "https"
+)
+
 // StartServerAuth will handle the authentication for the admin user of this
 // Owncast server. Initiated via a GET of the auth endpoint.
 // https://indieweb.org/authorization-endpoint
@@ -79,18 +84,18 @@ func StartServerAuth(clientID, redirectURI, codeChallenge, state, me string) (*S
 
 // validateClientRedirect enforces the IndieAuth requirement that the
 // redirect_uri belong to the requesting client. Both values must be
-// absolute URLs, and — because Owncast does not fetch the client's
-// published metadata to discover alternate redirect URIs — the redirect
-// host must match the client_id host. This prevents the authorization
-// endpoint from being used as an open redirect.
+// http(s) URLs with a host, and — because Owncast does not fetch the
+// client's published metadata to discover alternate redirect URIs — the
+// redirect host must match the client_id host. This prevents the
+// authorization endpoint from being used as an open redirect.
 func validateClientRedirect(clientID, redirectURI string) error {
 	client, err := url.Parse(clientID)
-	if err != nil || !client.IsAbs() {
+	if err != nil || !isWebURL(client) {
 		return errors.New("invalid client_id")
 	}
 
 	redirect, err := url.Parse(redirectURI)
-	if err != nil || !redirect.IsAbs() {
+	if err != nil || !isWebURL(redirect) {
 		return errors.New("invalid redirect_uri")
 	}
 
@@ -99,6 +104,24 @@ func validateClientRedirect(clientID, redirectURI string) error {
 	}
 
 	return nil
+}
+
+// isWebURL reports whether u is an absolute http(s) URL with a non-empty
+// host. Requiring the scheme and host rejects opaque/non-hierarchical URIs
+// such as "javascript:..." or "data:..." — those have an empty hostname, so
+// two of them would otherwise pass the host-match check and slip a hostile
+// target into the redirect Location header.
+func isWebURL(u *url.URL) bool {
+	if u == nil {
+		return false
+	}
+
+	scheme := strings.ToLower(u.Scheme)
+	if scheme != schemeHTTP && scheme != schemeHTTPS {
+		return false
+	}
+
+	return u.Hostname() != ""
 }
 
 // CompleteServerAuth will verify that the values provided in the final step

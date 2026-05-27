@@ -66,7 +66,7 @@ func StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL,
 	}
 
 	// Limit to only secured connections
-	if u.Scheme != "https" {
+	if u.Scheme != schemeHTTPS {
 		return nil, errors.New("only servers secured with https are supported")
 	}
 

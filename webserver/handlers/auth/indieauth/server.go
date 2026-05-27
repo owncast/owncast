@@ -55,7 +55,12 @@ func HandleAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
 	redirectParams.Set("state", request.State)
 	u.RawQuery = redirectParams.Encode()
 
-	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect)
+	// The redirect target is the client's redirect_uri, which
+	// ia.StartServerAuth above validated to be an http(s) URL whose host
+	// matches the client_id host. The endpoint is also gated behind
+	// RequireAdminAuth. gosec's taint analysis can't see the cross-function
+	// validation, so the open-redirect warning here is a false positive.
+	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect) //nolint:gosec // G710: redirect_uri validated against client_id in StartServerAuth
 }
 
 func HandleAuthEndpointPost(w http.ResponseWriter, r *http.Request) {

@@ -6,7 +6,19 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
+// isolatePendingServerAuthRequests gives a test its own pending-request map
+// and restores the previous contents on cleanup, so tests in this package
+// don't leak state into one another or become order-dependent.
+func isolatePendingServerAuthRequests(t *testing.T) {
+	t.Helper()
+	prev := pendingServerAuthRequests
+	pendingServerAuthRequests = map[string]ServerAuthRequest{}
+	t.Cleanup(func() { pendingServerAuthRequests = prev })
+}
+
 func TestLimitGlobalPendingRequests(t *testing.T) {
+	isolatePendingServerAuthRequests(t)
+
 	// client_id and redirect_uri must be valid same-host absolute URLs to
 	// pass StartServerAuth's validation; the slug just keeps them unique.
 	clientURLs := func() (string, string) {
@@ -40,9 +52,7 @@ func TestLimitGlobalPendingRequests(t *testing.T) {
 }
 
 func TestRejectMismatchedRedirectURI(t *testing.T) {
-	// Reset the package-level pending-request map; an earlier test in this
-	// package fills it, and StartServerAuth rejects once it's near capacity.
-	pendingServerAuthRequests = map[string]ServerAuthRequest{}
+	isolatePendingServerAuthRequests(t)
 
 	// A redirect_uri on a different host than client_id must be rejected so
 	// the auth endpoint can't be used as an open redirect.
@@ -53,5 +63,28 @@ func TestRejectMismatchedRedirectURI(t *testing.T) {
 	// A same-host redirect_uri is accepted.
 	if _, err := StartServerAuth("https://client.example", "https://client.example/callback", "cc", "state", "me"); err != nil {
 		t.Error("same-host redirect_uri should be permitted:", err)
+	}
+}
+
+func TestRejectNonWebRedirectURI(t *testing.T) {
+	isolatePendingServerAuthRequests(t)
+
+	// Opaque/non-http(s) URIs (javascript:, data:, mailto:) have an empty
+	// hostname; without a scheme+host check, two of them would pass the
+	// host-match comparison and smuggle a hostile target into the redirect.
+	cases := []struct {
+		name        string
+		clientID    string
+		redirectURI string
+	}{
+		{"javascript scheme", "javascript:alert(1)", "javascript:alert(2)"},
+		{"data scheme", "data:text/html,a", "data:text/html,b"},
+		{"non-web client_id", "https://client.example", "mailto:someone@client.example"},
+	}
+
+	for _, tc := range cases {
+		if _, err := StartServerAuth(tc.clientID, tc.redirectURI, "cc", "state", "me"); err == nil {
+			t.Errorf("%s: should be rejected", tc.name)
+		}
 	}
 }
