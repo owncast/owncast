@@ -10,8 +10,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	chiMW "github.com/go-chi/chi/v5/middleware"
 	log "github.com/sirupsen/logrus"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 
 	"github.com/owncast/owncast/activitypub"
 	aphandlers "github.com/owncast/owncast/activitypub/controllers"
@@ -66,8 +64,7 @@ func Start(enableVerboseLogging bool) error {
 	// Create a custom mux handler to intercept the /debug/vars endpoint.
 	// This is a hack because Prometheus enables this endpoint by default
 	// due to its use of expvar and we do not want this exposed.
-	h2s := &http2.Server{}
-	http2Handler := h2c.NewHandler(r, h2s)
+	rootHandler := r
 	m := http.NewServeMux()
 
 	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -79,18 +76,25 @@ func Start(enableVerboseLogging bool) error {
 			// Redirect /embed/chat
 			http.Redirect(w, r, "/embed/chat/readonly", http.StatusTemporaryRedirect)
 		default:
-			http2Handler.ServeHTTP(w, r)
+			rootHandler.ServeHTTP(w, r)
 		}
 	})
 
 	port := config.WebServerPort
 	ip := config.WebServerIP
 
+	// Allow cleartext (unencrypted) HTTP/2 in addition to HTTP/1, replacing the
+	// previously used and now-deprecated golang.org/x/net/http2/h2c wrapper.
+	protocols := new(http.Protocols)
+	protocols.SetHTTP1(true)
+	protocols.SetUnencryptedHTTP2(true)
+
 	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
 	server := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", ip, port),
 		ReadHeaderTimeout: 4 * time.Second,
 		Handler:           compress(m),
+		Protocols:         protocols,
 	}
 
 	if ip != "0.0.0.0" {

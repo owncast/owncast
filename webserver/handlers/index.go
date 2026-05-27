@@ -93,8 +93,8 @@ func renderIndexHtml(w http.ResponseWriter, nonce string) {
 		Summary:          configRepository.GetServerSummary(),
 		RequestedURL:     fmt.Sprintf("%s%s", configRepository.GetServerURL(), "/"),
 		TagsString:       strings.Join(configRepository.GetServerMetadataTags(), ","),
-		ThumbnailURL:     "thumbnail.jpg",
-		Thumbnail:        "thumbnail.jpg",
+		ThumbnailURL:     thumbnailFilename,
+		Thumbnail:        thumbnailFilename,
 		Image:            "logo/external",
 		StatusJSON:       string(sb),
 		ServerConfigJSON: string(cb),
@@ -174,7 +174,7 @@ func handleScraperMetadataPage(w http.ResponseWriter, r *http.Request) {
 
 	// If the thumbnail does not exist or we're offline then just use the logo image
 	var thumbnailURL string
-	if status.Online && utils.DoesFileExists(filepath.Join(config.DataDirectory, "tmp", "thumbnail.jpg")) {
+	if status.Online && utils.DoesFileExists(filepath.Join(config.DataDirectory, "tmp", thumbnailFilename)) {
 		thumbnail, err := url.Parse(fmt.Sprintf("%s://%s%s", scheme, r.Host, "/thumbnail.jpg"))
 		if err != nil {
 			log.Errorln(err)

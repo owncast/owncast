@@ -1,5 +1,3 @@
-//nolint:goconst
-
 package transcoder
 
 import (
@@ -9,6 +7,18 @@ import (
 
 	log "github.com/sirupsen/logrus"
 )
+
+// ffmpeg x264-style encoding preset names, ordered from fastest to slowest.
+const (
+	presetUltrafast = "ultrafast"
+	presetSuperfast = "superfast"
+	presetVeryfast  = "veryfast"
+	presetFaster    = "faster"
+	presetFast      = "fast"
+)
+
+// codecNameVAAPI is the ffmpeg identifier for the VA-API hardware codec/device.
+const codecNameVAAPI = "vaapi"
 
 // Codec represents a supported codec on the system.
 type Codec interface {
@@ -26,7 +36,7 @@ type Codec interface {
 var supportedCodecs = map[string]string{
 	(&Libx264Codec{}).Name():      "libx264",
 	(&OmxCodec{}).Name():          "omx",
-	(&VaapiCodec{}).Name():        "vaapi",
+	(&VaapiCodec{}).Name():        codecNameVAAPI,
 	(&QuicksyncCodec{}).Name():    "qsv",
 	(&NvencCodec{}).Name():        "NVIDIA nvenc",
 	(&VideoToolboxCodec{}).Name(): "videotoolbox",
@@ -85,11 +95,11 @@ func (c *Libx264Codec) VariantFlags(v *HLSVariant) []string {
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *Libx264Codec) GetPresetForLevel(l int) string {
 	presetMapping := map[int]string{
-		0: "ultrafast",
-		1: "superfast",
-		2: "veryfast",
-		3: "faster",
-		4: "fast",
+		0: presetUltrafast,
+		1: presetSuperfast,
+		2: presetVeryfast,
+		3: presetFaster,
+		4: presetFast,
 	}
 
 	preset, ok := presetMapping[l]
@@ -150,11 +160,11 @@ func (c *OmxCodec) VariantFlags(v *HLSVariant) []string {
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *OmxCodec) GetPresetForLevel(l int) string {
 	presetMapping := map[int]string{
-		0: "ultrafast",
-		1: "superfast",
-		2: "veryfast",
-		3: "faster",
-		4: "fast",
+		0: presetUltrafast,
+		1: presetSuperfast,
+		2: presetVeryfast,
+		3: presetFaster,
+		4: presetFast,
 	}
 
 	preset, ok := presetMapping[l]
@@ -183,8 +193,8 @@ func (c *VaapiCodec) DisplayName() string {
 // GlobalFlags are the global flags used with this codec in the transcoder.
 func (c *VaapiCodec) GlobalFlags() []string {
 	flags := []string{
-		"-hwaccel", "vaapi",
-		"-hwaccel_output_format", "vaapi",
+		"-hwaccel", codecNameVAAPI,
+		"-hwaccel_output_format", codecNameVAAPI,
 		"-vaapi_device", "/dev/dri/renderD128",
 	}
 
@@ -193,7 +203,7 @@ func (c *VaapiCodec) GlobalFlags() []string {
 
 // PixelFormat is the pixel format required for this codec.
 func (c *VaapiCodec) PixelFormat() string {
-	return "vaapi"
+	return codecNameVAAPI
 }
 
 // Scaler is the scaler used for resizing the video in the transcoder.
@@ -219,11 +229,11 @@ func (c *VaapiCodec) VariantFlags(v *HLSVariant) []string {
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *VaapiCodec) GetPresetForLevel(l int) string {
 	presetMapping := map[int]string{
-		0: "ultrafast",
-		1: "superfast",
-		2: "veryfast",
-		3: "faster",
-		4: "fast",
+		0: presetUltrafast,
+		1: presetSuperfast,
+		2: presetVeryfast,
+		3: presetFaster,
+		4: presetFast,
 	}
 
 	preset, ok := presetMapping[l]
@@ -357,8 +367,8 @@ func (c *QuicksyncCodec) VariantFlags(v *HLSVariant) []string {
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *QuicksyncCodec) GetPresetForLevel(l int) string {
 	presetMapping := map[int]string{
-		0: "veryfast",
-		1: "fast",
+		0: presetVeryfast,
+		1: presetFast,
 		2: "medium",
 		3: "slow",
 		4: "veryslow",
@@ -420,11 +430,11 @@ func (c *Video4Linux) VariantFlags(v *HLSVariant) []string {
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *Video4Linux) GetPresetForLevel(l int) string {
 	presetMapping := map[int]string{
-		0: "ultrafast",
-		1: "superfast",
-		2: "veryfast",
-		3: "faster",
-		4: "fast",
+		0: presetUltrafast,
+		1: presetSuperfast,
+		2: presetVeryfast,
+		3: presetFaster,
+		4: presetFast,
 	}
 
 	preset, ok := presetMapping[l]
@@ -486,11 +496,11 @@ func (c *VideoToolboxCodec) VariantFlags(v *HLSVariant) []string {
 // GetPresetForLevel returns the string preset for this codec given an integer level.
 func (c *VideoToolboxCodec) GetPresetForLevel(l int) string {
 	presetMapping := map[int]string{
-		0: "ultrafast",
-		1: "superfast",
-		2: "veryfast",
-		3: "faster",
-		4: "fast",
+		0: presetUltrafast,
+		1: presetSuperfast,
+		2: presetVeryfast,
+		3: presetFaster,
+		4: presetFast,
 	}
 
 	preset, ok := presetMapping[l]

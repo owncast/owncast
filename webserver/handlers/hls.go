@@ -52,5 +52,10 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	middleware.EnableCors(w)
+	// fullPath is built from r.URL.Path, which is normalized and cleaned by the
+	// http.ServeMux that routes to this handler (stripping ".." traversal
+	// segments), and is further constrained to .m3u8/.ts files under
+	// config.HLSStoragePath via the extension check above and filepath.Join.
+	//nolint:gosec // G703: requested path is normalized and confined to HLSStoragePath.
 	http.ServeFile(w, r, fullPath)
 }

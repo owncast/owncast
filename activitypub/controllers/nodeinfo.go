@@ -14,6 +14,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	// softwareName is the name of this server software reported in node info responses.
+	softwareName = "owncast"
+	// protocolActivityPub is the federation protocol name reported in node info responses.
+	protocolActivityPub = "activitypub"
+)
+
 // NodeInfoController returns the V1 node info response.
 func NodeInfoController(w http.ResponseWriter, r *http.Request) {
 	type links struct {
@@ -101,7 +108,7 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 			Outbound: []string{},
 		},
 		Software: software{
-			Name:    "owncast",
+			Name:    softwareName,
 			Version: config.VersionNumber,
 		},
 		Usage: usage{
@@ -113,7 +120,7 @@ func NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 			LocalPosts: int(localPostCount),
 		},
 		OpenRegistrations: false,
-		Protocols:         []string{"activitypub"},
+		Protocols:         []string{protocolActivityPub},
 		Metadata: metadata{
 			ChatEnabled: !configRepository.GetChatDisabled(),
 		},
@@ -184,14 +191,14 @@ func XNodeInfo2Controller(w http.ResponseWriter, r *http.Request) {
 		Server: Server{
 			BaseURL:  serverURL,
 			Version:  config.VersionNumber,
-			Name:     "owncast",
-			Software: "owncast",
+			Name:     softwareName,
+			Software: softwareName,
 		},
 		Services: Services{
-			Inbound:  []string{"activitypub"},
-			Outbound: []string{"activitypub"},
+			Inbound:  []string{protocolActivityPub},
+			Outbound: []string{protocolActivityPub},
 		},
-		Protocols: []string{"activitypub"},
+		Protocols: []string{protocolActivityPub},
 		Version:   config.VersionNumber,
 		Usage: Usage{
 			Users: Users{

@@ -27,6 +27,14 @@ import (
 // EventPayload is a generic key/value map for sending out to chat clients.
 type EventPayload map[string]interface{}
 
+// Shared JSON payload keys used when building outbound chat event payloads.
+const (
+	payloadKeyType      = "type"
+	payloadKeyUser      = "user"
+	payloadKeyTimestamp = "timestamp"
+	payloadKeyBody      = "body"
+)
+
 // OutboundEvent represents an event that is sent out to all listeners of the chat server.
 type OutboundEvent interface {
 	GetBroadcastPayload() EventPayload
