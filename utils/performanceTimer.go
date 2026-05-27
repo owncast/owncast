@@ -40,13 +40,13 @@ func (t *PerformanceTracker) StartPerformanceMonitor(key string) {
 
 // GetAveragePerformance will return the average durations for the event.
 func (t *PerformanceTracker) GetAveragePerformance(key string) float64 {
+	t.lock.Lock()
+	defer t.lock.Unlock()
+
 	timestamp := t.pointsInTime[key]
 	if timestamp.IsZero() {
 		return 0
 	}
-
-	t.lock.Lock()
-	defer t.lock.Unlock()
 
 	delta := time.Since(timestamp).Seconds()
 	t.durationStorage[key] = append(t.durationStorage[key], delta)

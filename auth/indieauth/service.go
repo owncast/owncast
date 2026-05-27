@@ -19,9 +19,11 @@ const registrationTimeout = time.Minute * 10
 type Service struct {
 	configRepository configrepository.ConfigRepository
 
-	pendingAuthRequestsLock   sync.Mutex
-	pendingAuthRequests       map[string]*Request
-	pendingServerAuthRequests map[string]ServerAuthRequest
+	pendingAuthRequestsLock sync.Mutex
+	pendingAuthRequests     map[string]*Request
+
+	pendingServerAuthRequestsLock sync.Mutex
+	pendingServerAuthRequests     map[string]ServerAuthRequest
 }
 
 // Deps lists the services this Service needs.

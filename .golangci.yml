@@ -58,20 +58,6 @@ linters:
       - linters:
           - cyclop
         path: (.+)_test\.go
-      # goconst flags repeated string literals that are arguably more
-      # readable as literals than as named constants — JSON wire-format
-      # keys, ffmpeg vocabulary, and short semantic identifiers used
-      # within a single file. Extracting them produces more noise than
-      # signal. Scoped here so the rest of the codebase still benefits.
-      - linters:
-          - goconst
-        path: services/chat/events/
-      - linters:
-          - goconst
-        path: services/transcoder/
-      - linters:
-          - goconst
-        path: activitypub/controllers/nodeinfo\.go
     paths:
       - third_party$
       - builtin$
