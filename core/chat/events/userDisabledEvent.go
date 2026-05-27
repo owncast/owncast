@@ -9,9 +9,9 @@ type UserDisabledEvent struct {
 // GetBroadcastPayload will return the object to send to all chat users.
 func (e *UserDisabledEvent) GetBroadcastPayload() EventPayload {
 	return EventPayload{
-		"type":      ErrorUserDisabled,
-		"id":        e.ID,
-		"timestamp": e.Timestamp,
-		"user":      e.User,
+		payloadKeyType:      ErrorUserDisabled,
+		"id":                e.ID,
+		payloadKeyTimestamp: e.Timestamp,
+		payloadKeyUser:      e.User,
 	}
 }

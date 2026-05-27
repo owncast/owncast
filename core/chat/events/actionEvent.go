@@ -9,10 +9,10 @@ type ActionEvent struct {
 // GetBroadcastPayload will return the object to send to all chat users.
 func (e *ActionEvent) GetBroadcastPayload() EventPayload {
 	return EventPayload{
-		"id":        e.ID,
-		"timestamp": e.Timestamp,
-		"body":      e.Body,
-		"type":      e.GetMessageType(),
+		"id":                e.ID,
+		payloadKeyTimestamp: e.Timestamp,
+		payloadKeyBody:      e.Body,
+		payloadKeyType:      e.GetMessageType(),
 	}
 }
 

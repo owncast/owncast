@@ -18,14 +18,14 @@ func (e *FediverseEngagementEvent) GetBroadcastPayload() EventPayload {
 	configRepository := configrepository.Get()
 
 	return EventPayload{
-		"id":        e.ID,
-		"timestamp": e.Timestamp,
-		"body":      e.Body,
-		"image":     e.Image,
-		"type":      e.Type,
-		"title":     e.UserAccountName,
-		"link":      e.Link,
-		"user": EventPayload{
+		"id":                e.ID,
+		payloadKeyTimestamp: e.Timestamp,
+		payloadKeyBody:      e.Body,
+		"image":             e.Image,
+		payloadKeyType:      e.Type,
+		"title":             e.UserAccountName,
+		"link":              e.Link,
+		payloadKeyUser: EventPayload{
 			"displayName": configRepository.GetServerName(),
 		},
 	}
