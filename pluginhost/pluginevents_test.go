@@ -14,8 +14,11 @@ func TestTranslateWebhookEvent_ChatMessageOnlyForUserMessages(t *testing.T) {
 	evt := webhooks.WebhookEvent{
 		Type: models.MessageSent,
 		EventData: &webhooks.WebhookChatMessage{
-			ID:        "m1",
-			Body:      "hello",
+			ID: "m1",
+			// Body is the HTML-rendered form the chat client sees; RawBody is
+			// what plugins receive. Set both, to mirror the production payload.
+			Body:      "<p>hello</p>",
+			RawBody:   "hello",
 			Timestamp: &ts,
 			User:      &models.User{ID: "u1", DisplayName: "alice"},
 		},
@@ -36,6 +39,22 @@ func TestTranslateWebhookEvent_ChatMessageOnlyForUserMessages(t *testing.T) {
 	}
 	if msg.Timestamp != "2026-05-27T12:00:00Z" {
 		t.Errorf("timestamp = %q", msg.Timestamp)
+	}
+}
+
+func TestTranslateWebhookEvent_SkipsBotAuthoredMessages(t *testing.T) {
+	// A message a plugin posted (under its bot identity) must not be delivered
+	// back to plugins, or chat-reacting plugins would echo-loop forever.
+	evt := webhooks.WebhookEvent{
+		Type: models.MessageSent,
+		EventData: &webhooks.WebhookChatMessage{
+			ID:   "b1",
+			Body: "echo",
+			User: &models.User{DisplayName: "echo-bot", IsBot: true},
+		},
+	}
+	if out := translateWebhookEvent(evt); len(out) != 0 {
+		t.Errorf("bot-authored message should produce no plugin events, got %d", len(out))
 	}
 }
 

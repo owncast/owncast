@@ -146,7 +146,11 @@ export const Content: FC = () => {
     const { openExternally, url } = action;
 
     if (url) {
-      const updatedUrl = new URL(url);
+      // Plugin-contributed actions can use root-relative URLs (e.g.
+      // "/plugins/<name>/") that the host validates and rewrites. Pass
+      // window.location.origin as the base so URL() accepts both
+      // absolute external URLs and same-origin plugin paths.
+      const updatedUrl = new URL(url, window.location.origin);
       updatedUrl.searchParams.append('instance', currentBrowserWindowUrl);
 
       if (currentUser) {

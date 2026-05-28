@@ -1,0 +1,146 @@
+{
+  "permissions": {
+    "PermChatFilter": "chat.filter",
+    "PermChatHistory": "chat.history",
+    "PermChatModerate": "chat.moderate",
+    "PermChatSend": "chat.send",
+    "PermEmitEvent": "events.emit",
+    "PermFediversePost": "fediverse.post",
+    "PermHttpSSE": "http.sse",
+    "PermHttpServe": "http.serve",
+    "PermNetworkFetch": "network.fetch",
+    "PermNotificationsSend": "notifications.send",
+    "PermServerRead": "server.read",
+    "PermStorageKV": "storage.kv",
+    "PermStorageUpload": "storage.upload",
+    "PermUIModify": "ui.modify",
+    "PermUsersModerate": "users.moderate",
+    "PermUsersRead": "users.read",
+    "PermVideoConfigRead": "videoconfig.read",
+    "PermVideoConfigWrite": "videoconfig.write"
+  },
+  "hostFunctions": [
+    "owncast_add_actions",
+    "owncast_ban_ip",
+    "owncast_chat_clients",
+    "owncast_chat_history",
+    "owncast_clear_actions",
+    "owncast_delete_message",
+    "owncast_emit_event",
+    "owncast_fediverse_post",
+    "owncast_kick_client",
+    "owncast_kv_get",
+    "owncast_kv_set",
+    "owncast_notify_browser_push",
+    "owncast_notify_discord",
+    "owncast_notify_fediverse",
+    "owncast_send_chat",
+    "owncast_send_chat_action",
+    "owncast_send_chat_system",
+    "owncast_send_chat_to",
+    "owncast_server_federation",
+    "owncast_server_info",
+    "owncast_server_socials",
+    "owncast_server_tags",
+    "owncast_sse_send",
+    "owncast_storage_upload",
+    "owncast_stream_broadcaster",
+    "owncast_stream_current",
+    "owncast_user_get",
+    "owncast_user_set_enabled",
+    "owncast_users_list",
+    "owncast_video_config_read",
+    "owncast_video_config_write"
+  ],
+  "wireTypes": {
+    "BrowserPushPayload": {
+      "body": "string",
+      "title": "string",
+      "url": "string"
+    },
+    "FederationInfo": {
+      "enabled": "bool",
+      "isPrivate": "bool",
+      "username": "string"
+    },
+    "FediversePayload": {
+      "body": "string",
+      "image": "string",
+      "link": "string",
+      "type": "string"
+    },
+    "HostChatClient": {
+      "connectedAt": "string",
+      "displayName": "string",
+      "id": "uint64",
+      "ipAddress": "string",
+      "messageCount": "int",
+      "userAgent": "string",
+      "userId": "string"
+    },
+    "HostChatMessage": {
+      "body": "string",
+      "id": "string",
+      "timestamp": "string",
+      "user": "string"
+    },
+    "HostUser": {
+      "createdAt": "string",
+      "disabledAt": "string",
+      "displayName": "string",
+      "id": "string",
+      "isAuthenticated": "bool",
+      "isBot": "bool",
+      "previousNames": "[]string",
+      "scopes": "[]string"
+    },
+    "ServerInfo": {
+      "name": "string",
+      "summary": "string",
+      "url": "string",
+      "version": "string",
+      "welcomeMessage": "string"
+    },
+    "SocialHandle": {
+      "icon": "string",
+      "platform": "string",
+      "url": "string"
+    },
+    "StreamBroadcaster": {
+      "bitrates": "[]int",
+      "codecs": "[]string",
+      "framerate": "int",
+      "remoteAddr": "string",
+      "resolution": "string"
+    },
+    "StreamInfo": {
+      "latencyLevel": "int",
+      "online": "bool",
+      "startedAt": "string",
+      "summary": "string",
+      "title": "string",
+      "viewers": "int"
+    },
+    "StreamVariant": {
+      "audioBitrate": "int",
+      "framerate": "int",
+      "height": "int",
+      "isPassthrough": "bool",
+      "videoBitrate": "int",
+      "width": "int"
+    },
+    "UploadResult": {
+      "url": "string"
+    },
+    "VideoConfig": {
+      "codec": "string",
+      "latencyLevel": "int",
+      "variants": "[]StreamVariant"
+    },
+    "VideoConfigUpdate": {
+      "codec": "*string",
+      "latencyLevel": "*int",
+      "variants": "[]StreamVariant"
+    }
+  }
+}

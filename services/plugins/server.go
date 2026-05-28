@@ -32,10 +32,19 @@ type Server struct {
 	// admin enable/disable takes effect immediately.
 	snapshot func() []*Loaded
 	// IsAuthenticated reports whether an incoming HTTP request carries
-	// authenticated-admin credentials. Used to gate manifest.admin.pages
-	// paths and to populate req.authenticated for dynamic handlers.
-	// nil = always false (no auth available — admin paths return 401).
+	// authenticated-admin credentials. Used to populate req.authenticated
+	// for the plugin's dynamic handler (so a plugin page can render
+	// differently for authenticated viewers without owning auth itself).
+	// Admin-path gating is done via RequireAdmin, not by checking this and
+	// writing a 401 here — that's the host's responsibility.
+	// nil = always false (no auth available).
 	IsAuthenticated func(*http.Request) bool
+	// RequireAdmin wraps a handler in the host's admin Basic Auth
+	// middleware. The plugin static server calls it when a request lands
+	// on a manifest-declared admin path so the 401 (realm, CORS, log line)
+	// comes from one place in the codebase instead of being duplicated
+	// here. nil = admin paths cannot be served (404).
+	RequireAdmin func(http.HandlerFunc) http.HandlerFunc
 	// GetRequestUser returns the user identity attached to the request
 	// (when the request came with a user-token, not admin auth). nil →
 	// req.user is always omitted from the envelope.
@@ -64,10 +73,69 @@ const (
 	MaxHTTPResponseBodyBytes = 10 << 20 // 10 MB
 )
 
+// adminStyleHrefs are the host's stylesheet URLs auto-injected into HTML
+// responses on a plugin's manifest-declared admin paths. It's a single
+// dedicated sheet that styles plain HTML elements (input, button, table,
+// label, …) with the Owncast theme tokens — not the surrounding admin's
+// AntD-specific stylesheets, which only apply to .ant-* class selectors
+// the plugin pages don't use.
+//
+// The file is served by the Owncast HTTP server (from web/public/styles/
+// in dev, from the bundled admin assets in prod), so the same origin-
+// relative URL works in both modes.
+var adminStyleHrefs = []string{
+	"/styles/admin/plugin-iframe.css",
+}
+
+// adminStyleSnippet is the bytes injected into HTML responses on admin
+// paths. Built once at startup so the per-request cost is just a single
+// substring search + concatenation.
+var adminStyleSnippet = buildAdminStyleSnippet(adminStyleHrefs)
+
+// adminStyleMarker is a sentinel attribute on the injected <link> tags
+// so the injector is idempotent: if a plugin's HTML already includes our
+// snippet (e.g. baked in by their build), we don't add it again.
+const adminStyleMarker = `data-owncast-admin-style="1"`
+
+func buildAdminStyleSnippet(hrefs []string) []byte {
+	var b bytes.Buffer
+	for _, h := range hrefs {
+		fmt.Fprintf(&b, `<link rel="stylesheet" href=%q %s>`, h, adminStyleMarker)
+	}
+	return b.Bytes()
+}
+
+// injectAdminStyles returns html with the admin-stylesheet snippet inserted
+// before </head>, or — when no </head> is present — prepended. Idempotent:
+// returns the input unchanged when the snippet's marker is already in the
+// document. text/html responses on a manifest-declared admin path go
+// through this; nothing else.
+func injectAdminStyles(html []byte) []byte {
+	if bytes.Contains(html, []byte(adminStyleMarker)) {
+		return html
+	}
+	if i := bytes.Index(bytes.ToLower(html), []byte("</head>")); i >= 0 {
+		out := make([]byte, 0, len(html)+len(adminStyleSnippet))
+		out = append(out, html[:i]...)
+		out = append(out, adminStyleSnippet...)
+		out = append(out, html[i:]...)
+		return out
+	}
+	// No <head> — prepend so styles still apply. Browsers tolerate a
+	// <link> at the top of a body-only document.
+	out := make([]byte, 0, len(html)+len(adminStyleSnippet))
+	out = append(out, adminStyleSnippet...)
+	out = append(out, html...)
+	return out
+}
+
 // allowedResponseHeaders is the set of headers a plugin response is allowed
-// to set. We block Set-Cookie, Authorization, and anything that could
-// interfere with Owncast's auth or security context. CORS headers (Access-
-// Control-*) are matched via prefix below.
+// to set. We block headers that would let a plugin override Owncast's own
+// transport-security, CSP, or server-identification headers. Set-Cookie
+// is allowed: a plugin's response defaults to a Path scoped to its own
+// /plugins/<name>/ namespace, so cookies don't leak into the rest of
+// Owncast unless the plugin explicitly broadens them. CORS headers
+// (Access-Control-*) are matched via prefix below.
 var allowedResponseHeaders = map[string]bool{
 	"content-type":     true,
 	"content-encoding": true,
@@ -78,6 +146,7 @@ var allowedResponseHeaders = map[string]bool{
 	"location":         true,
 	"vary":             true,
 	"link":             true,
+	"set-cookie":       true,
 }
 
 func isAllowedResponseHeader(name string) bool {
@@ -128,20 +197,40 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		rest = "/" + parts[1]
 	}
 
+	// Admin-only routes (declared in the plugin's manifest) are gated by
+	// the host's admin auth middleware before the plugin sees the request.
+	// We invoke RequireAdmin directly so the 401 — realm, CORS, log line —
+	// comes from middleware/auth.go rather than being duplicated here.
+	if p.IsAdminPath(rest) {
+		if s.RequireAdmin == nil {
+			http.NotFound(w, r)
+			return
+		}
+		s.RequireAdmin(func(w http.ResponseWriter, r *http.Request) {
+			s.serveAuthorized(w, r, p, rest, true)
+		})(w, r)
+		return
+	}
+
 	authenticated := false
 	if s.IsAuthenticated != nil {
 		authenticated = s.IsAuthenticated(r)
 	}
+	s.serveAuthorized(w, r, p, rest, authenticated)
+}
 
-	// Admin-only routes are auth-gated by the host before the plugin sees
-	// the request. Plugins still get req.authenticated for fine-grained
-	// gating, but they can't expose admin endpoints by accident. This also
-	// covers an admin-scoped SSE stream.
-	if p.IsAdminPath(rest) && !authenticated {
-		w.Header().Set("WWW-Authenticate", `Basic realm="Owncast plugin admin"`)
-		http.Error(w, "authentication required", http.StatusUnauthorized)
-		return
-	}
+// serveAuthorized runs the rest of the plugin request pipeline (SSE,
+// permission gate, static asset, dynamic handler) after the admin-path
+// check has been resolved. authenticated is the boolean handed to the
+// plugin's dynamic handler — true on admin paths (callers reach this via
+// RequireAdmin's success continuation), the IsAuthenticated predicate
+// otherwise.
+//
+// An HTML response served on a manifest-declared admin path also gets the
+// host's admin stylesheet injected so the plugin iframe matches the
+// surrounding admin visually with no plugin-author opt-in.
+func (s *Server) serveAuthorized(w http.ResponseWriter, r *http.Request, p *Loaded, rest string, authenticated bool) {
+	injectStyles := p.IsAdminPath(rest)
 
 	// Host-reserved Server-Sent-Events endpoint. Gated on http.sse
 	// (independent of http.serve) and handled entirely by the host — the
@@ -161,10 +250,21 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if s.tryStatic(w, r, p, rest) {
+	if s.tryStatic(w, r, p, rest, injectStyles) {
 		return
 	}
-	s.serveDynamic(w, r, p, rest, authenticated)
+	// Strip the trailing slash before handing the path to the plugin's
+	// dynamic handler so plugin code can match canonical no-slash form
+	// regardless of how the URL was canonicalized upstream. Next.js dev's
+	// trailingSlash:true rewrites every URL to a slash-terminated form,
+	// which would otherwise force every plugin to accept both /foo and
+	// /foo/ in its on_http_request switch. Static asset serving keeps the
+	// original path so directory-vs-file resolution is unaffected.
+	dynamicPath := rest
+	if len(dynamicPath) > 1 && strings.HasSuffix(dynamicPath, "/") {
+		dynamicPath = strings.TrimRight(dynamicPath, "/")
+	}
+	s.serveDynamic(w, r, p, dynamicPath, authenticated, injectStyles)
 }
 
 // serveSSE holds a long-lived Server-Sent-Events connection open and streams
@@ -239,7 +339,7 @@ func pluginHasPermission(m *Manifest, perm string) bool {
 	return false
 }
 
-func (s *Server) tryStatic(w http.ResponseWriter, r *http.Request, loaded *Loaded, requestPath string) bool {
+func (s *Server) tryStatic(w http.ResponseWriter, r *http.Request, loaded *Loaded, requestPath string, injectStyles bool) bool {
 	if r.Method != http.MethodGet && r.Method != http.MethodHead {
 		return false
 	}
@@ -268,10 +368,21 @@ func (s *Server) tryStatic(w http.ResponseWriter, r *http.Request, loaded *Loade
 		if err != nil || idx.IsDir() {
 			return false
 		}
-		serveAssetFile(w, r, loaded.AssetsFS, indexPath, idx)
+		// Standard directory-index behavior: if the request URL doesn't end
+		// with a slash, redirect to the canonical slash form before serving
+		// the index.html. Without this the browser's base URL stays at the
+		// parent path and any relative links in the page (`./api/settings`,
+		// `<img src="logo.png">`, etc.) resolve to the wrong place.
+		if !strings.HasSuffix(r.URL.Path, "/") {
+			// Not an open redirect — destination is the request's own path
+			// with a trailing slash, not an attacker-controlled URL.
+			http.Redirect(w, r, r.URL.Path+"/", http.StatusMovedPermanently) //nolint:gosec // G710
+			return true
+		}
+		serveAssetFile(w, r, loaded.AssetsFS, indexPath, idx, injectStyles)
 		return true
 	}
-	serveAssetFile(w, r, loaded.AssetsFS, cleaned, info)
+	serveAssetFile(w, r, loaded.AssetsFS, cleaned, info, injectStyles)
 	return true
 }
 
@@ -282,11 +393,18 @@ func (s *Server) tryStatic(w http.ResponseWriter, r *http.Request, loaded *Loade
 // fine in practice. http.ServeContent gives us correct content-type
 // sniffing, range support, ETag/conditional-GET handling — without
 // net/http.ServeFile's path-canonicalization redirects.
-func serveAssetFile(w http.ResponseWriter, r *http.Request, root fs.FS, name string, info fs.FileInfo) {
+//
+// injectStyles=true rewrites HTML responses to include the host's admin
+// stylesheet links before serving — only set by serveAuthorized when the
+// path is on a manifest-declared admin route.
+func serveAssetFile(w http.ResponseWriter, r *http.Request, root fs.FS, name string, info fs.FileInfo, injectStyles bool) {
 	data, err := fs.ReadFile(root, name)
 	if err != nil {
 		http.NotFound(w, r)
 		return
+	}
+	if injectStyles && isHTMLName(name) {
+		data = injectAdminStyles(data)
 	}
 	modtime := info.ModTime()
 	if modtime.IsZero() {
@@ -295,7 +413,12 @@ func serveAssetFile(w http.ResponseWriter, r *http.Request, root fs.FS, name str
 	http.ServeContent(w, r, path.Base(name), modtime, bytes.NewReader(data))
 }
 
-func (s *Server) serveDynamic(w http.ResponseWriter, r *http.Request, p *Loaded, requestPath string, authenticated bool) {
+func isHTMLName(name string) bool {
+	lower := strings.ToLower(name)
+	return strings.HasSuffix(lower, ".html") || strings.HasSuffix(lower, ".htm")
+}
+
+func (s *Server) serveDynamic(w http.ResponseWriter, r *http.Request, p *Loaded, requestPath string, authenticated bool, injectStyles bool) {
 	// p.plugin can be nil during shutdown (Loaded.Close clears it) or in
 	// tests that only exercise the static path. Either way, no plugin
 	// instance means no dynamic handler.
@@ -342,7 +465,7 @@ func (s *Server) serveDynamic(w http.ResponseWriter, r *http.Request, p *Loaded,
 		return
 	}
 
-	writePluginHTTPResponse(w, out)
+	writePluginHTTPResponse(w, out, injectStyles)
 }
 
 // buildRequestEnvelope marshals the JSON envelope passed to a plugin's
@@ -367,7 +490,12 @@ func (s *Server) buildRequestEnvelope(r *http.Request, requestPath string, authe
 
 // writePluginHTTPResponse parses a plugin's on_http_request output envelope
 // and writes it to the client, filtering disallowed headers.
-func writePluginHTTPResponse(w http.ResponseWriter, out []byte) {
+//
+// injectStyles=true rewrites an HTML response (Content-Type starting with
+// text/html) to include the host's admin stylesheet links — same behavior
+// as static HTML assets, so a plugin returning admin HTML from
+// on_http_request gets the iframe theme automatically.
+func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles bool) {
 	var resp struct {
 		Status  int               `json:"status"`
 		Headers map[string]string `json:"headers"`
@@ -385,6 +513,11 @@ func writePluginHTTPResponse(w http.ResponseWriter, out []byte) {
 		return
 	}
 
+	body := resp.Body
+	if injectStyles && responseIsHTML(resp.Headers) {
+		body = string(injectAdminStyles([]byte(body)))
+	}
+
 	for k, v := range resp.Headers {
 		if !isAllowedResponseHeader(k) {
 			continue
@@ -392,7 +525,20 @@ func writePluginHTTPResponse(w http.ResponseWriter, out []byte) {
 		w.Header().Set(k, v)
 	}
 	w.WriteHeader(resp.Status)
-	_, _ = io.WriteString(w, resp.Body)
+	_, _ = io.WriteString(w, body)
+}
+
+// responseIsHTML reports whether the plugin-declared headers identify the
+// response body as HTML. Case-insensitive on the header name; only the
+// media type prefix is inspected so charset/boundary parameters don't
+// matter.
+func responseIsHTML(headers map[string]string) bool {
+	for k, v := range headers {
+		if strings.EqualFold(k, "content-type") {
+			return strings.HasPrefix(strings.ToLower(strings.TrimSpace(v)), "text/html")
+		}
+	}
+	return false
 }
 
 func flattenValues(v map[string][]string) map[string]string {

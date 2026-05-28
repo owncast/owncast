@@ -60,6 +60,16 @@ export const CHAT_HISTORY = `${API_LOCATION}chat/messages`;
 // Get chat history
 export const UPDATE_CHAT_MESSGAE_VIZ = `/api/admin/chat/messagevisibility`;
 
+// Plugin management endpoints. Relative URLs go through Next.js's dev proxy
+// (next.config.js rewrites /api/* to the backend), avoiding cross-origin
+// fetches; in production the admin UI is same-origin so they resolve directly.
+export const PLUGINS_LIST = `/api/admin/plugins`;
+export const PLUGIN_UPLOAD = `/api/admin/plugins`;
+export const pluginActionUrl = (
+  name: string,
+  action: 'enable' | 'disable' | 'reload' | 'uninstall',
+) => `/api/admin/plugins/${encodeURIComponent(name)}/${action}`;
+
 // Upload a new custom emoji
 export const UPLOAD_EMOJI = `${API_LOCATION}emoji/upload`;
 

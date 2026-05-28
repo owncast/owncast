@@ -1,6 +1,8 @@
 package plugins
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -168,10 +170,11 @@ type Manager struct {
 	enabledStore EnabledStore
 	env          *HostEnv
 
-	mu         sync.RWMutex
-	discovered map[string]*DiscoveredEntry // keyed by manifest.name
-	loaded     map[string]*Loaded          // subset of discovered that's currently running
-	enabledSet map[string]bool             // names the admin has enabled
+	mu          sync.RWMutex
+	discovered  map[string]*DiscoveredEntry // keyed by manifest.name
+	loaded      map[string]*Loaded          // subset of discovered that's currently running
+	enabledSet  map[string]bool             // names the admin has enabled
+	approvedSet map[string][]string         // plugin name -> sorted approved permission set
 
 	scanInterval time.Duration
 	cancel       context.CancelFunc // stops the scan loop
@@ -181,15 +184,34 @@ type Manager struct {
 // DiscoveredEntry is the public view of a discovered plugin — what the
 // admin UI lists.
 type DiscoveredEntry struct {
-	Name         string    `json:"name"`
-	Version      string    `json:"version,omitempty"`
-	Description  string    `json:"description,omitempty"`
-	Permissions  []string  `json:"permissions,omitempty"`
-	Path         string    `json:"path"`
-	Enabled      bool      `json:"enabled"`
-	Loaded       bool      `json:"loaded"`
-	LastError    string    `json:"lastError,omitempty"`
-	DiscoveredAt time.Time `json:"discoveredAt"`
+	Name        string   `json:"name"`
+	Version     string   `json:"version,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Permissions []string `json:"permissions,omitempty"`
+	Path        string   `json:"path"`
+	Enabled     bool     `json:"enabled"`
+	Loaded      bool     `json:"loaded"`
+	// AutoDisabled is set when the dispatcher's strike system stopped
+	// invoking the plugin (too many consecutive filter failures).
+	// Enabled stays true so the admin can see what they originally chose,
+	// but the plugin isn't doing any work; reload or fix-and-rebuild to
+	// reset the strike counter.
+	AutoDisabled bool `json:"autoDisabled,omitempty"`
+	// HasIcon reports whether the plugin ships an icon.png alongside its
+	// manifest (top-level in the .ocpkg, or <base>.icon.png next to a
+	// loose .wasm). The admin UI fetches the bytes from
+	// /api/plugins/<name>/icon when this is true; no http.serve
+	// permission is required to ship one.
+	HasIcon bool `json:"hasIcon,omitempty"`
+	// PendingPermissions lists permissions the current manifest declares
+	// that the admin has not yet approved. Non-empty means the plugin was
+	// updated on disk to request more access than was originally granted;
+	// the plugin will not load until the admin re-enables it (which
+	// captures a fresh approval snapshot covering the new set).
+	PendingPermissions []string    `json:"pendingPermissions,omitempty"`
+	LastError          string      `json:"lastError,omitempty"`
+	DiscoveredAt       time.Time   `json:"discoveredAt"`
+	AdminPages         []AdminPage `json:"adminPages,omitempty"`
 }
 
 // ScanInterval is how often the manager re-scans the plugins directory.
@@ -214,6 +236,7 @@ func NewManagerWithStore(pluginsDir string, env *HostEnv, store EnabledStore) *M
 		discovered:   make(map[string]*DiscoveredEntry),
 		loaded:       make(map[string]*Loaded),
 		enabledSet:   make(map[string]bool),
+		approvedSet:  make(map[string][]string),
 		scanInterval: ScanInterval,
 		scanCh:       make(chan struct{}, 1),
 	}
@@ -228,9 +251,23 @@ func (m *Manager) Start(ctx context.Context) error {
 	if err := m.scan(ctx); err != nil {
 		return fmt.Errorf("initial scan: %w", err)
 	}
-	// Auto-load anything in the enabled set that isn't already loaded.
+	// Capture an approval baseline for any plugin enabled before the
+	// approved-permissions snapshot existed (older persisted state, or a
+	// fresh first run that pre-seeded enabled names). Without this,
+	// existing installs would see every permission as "pending" and the
+	// plugin would auto-disable on the next start.
+	if m.captureMissingApprovals() {
+		if err := m.saveEnabledSet(); err != nil {
+			fmt.Fprintf(os.Stderr, "persist enabled set: %v\n", err)
+		}
+	}
+	// Auto-load anything in the enabled set that isn't already loaded
+	// AND whose approved-permission set covers the current manifest.
 	for name, enabled := range m.enabledSet {
 		if !enabled {
+			continue
+		}
+		if len(m.pendingForLocked(name)) > 0 {
 			continue
 		}
 		if err := m.loadInternal(ctx, name); err != nil {
@@ -264,8 +301,11 @@ func (m *Manager) List() []DiscoveredEntry {
 	for name, d := range m.discovered {
 		entry := *d
 		entry.Enabled = m.enabledSet[name]
-		_, isLoaded := m.loaded[name]
+		l, isLoaded := m.loaded[name]
 		entry.Loaded = isLoaded
+		if isLoaded {
+			entry.AutoDisabled = l.IsDisabled()
+		}
 		out = append(out, entry)
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Name < out[j].Name })
@@ -285,11 +325,14 @@ func (m *Manager) Snapshot() []*Loaded {
 	return out
 }
 
-// Enable marks a discovered plugin as enabled, persists the choice, and
-// loads it. No-op if already loaded.
+// Enable marks a discovered plugin as enabled, captures the current
+// manifest's permission set as the approved baseline (so any later
+// expansion triggers a re-approval flow), persists the choice, and
+// loads the plugin. No-op if already loaded.
 func (m *Manager) Enable(ctx context.Context, name string) error {
 	m.mu.Lock()
-	if _, ok := m.discovered[name]; !ok {
+	d, ok := m.discovered[name]
+	if !ok {
 		m.mu.Unlock()
 		return fmt.Errorf("plugin %q not discovered", name)
 	}
@@ -301,12 +344,127 @@ func (m *Manager) Enable(ctx context.Context, name string) error {
 		}
 	}
 	m.enabledSet[name] = true
+	snapshot := append([]string(nil), d.Permissions...)
+	sort.Strings(snapshot)
+	m.approvedSet[name] = snapshot
+	d.PendingPermissions = nil
 	m.mu.Unlock()
 	if err := m.saveEnabledSet(); err != nil {
 		return fmt.Errorf("persist enabled set: %w", err)
 	}
 	err := m.loadInternal(ctx, name)
 	return err
+}
+
+// validateUploadedPackage checks an uploaded .ocpkg's bytes and returns
+// its manifest. Pulled out of Install so the validation steps and the
+// (lock + write + scan) plumbing don't combine into one long function.
+func validateUploadedPackage(packageBytes []byte) (*Manifest, error) {
+	if len(packageBytes) == 0 {
+		return nil, fmt.Errorf("upload is empty")
+	}
+	if len(packageBytes) > MaxUploadBytes {
+		return nil, fmt.Errorf("upload exceeds %d-byte cap", MaxUploadBytes)
+	}
+	zr, err := zip.NewReader(bytes.NewReader(packageBytes), int64(len(packageBytes)))
+	if err != nil {
+		return nil, fmt.Errorf("not a valid .ocpkg: %w", err)
+	}
+	manifestBytes, err := readZipFile(zr, pkgManifestFilename)
+	if err != nil {
+		return nil, fmt.Errorf("missing manifest: %w", err)
+	}
+	if _, err := readZipFile(zr, pkgWasmFilename); err != nil {
+		return nil, fmt.Errorf("missing compiled plugin: %w", err)
+	}
+	manifest, err := ParseManifest(manifestBytes)
+	if err != nil {
+		return nil, fmt.Errorf("invalid manifest: %w", err)
+	}
+	return manifest, nil
+}
+
+// destPathForInstall picks the on-disk path for an installed plugin.
+// Prefers an existing discovered entry's path so an update replaces the
+// same file even if the previous file was named non-canonically;
+// otherwise falls back to <pluginsDir>/<name>.ocpkg.
+func (m *Manager) destPathForInstall(name string) string {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if existing, ok := m.discovered[name]; ok && strings.HasSuffix(existing.Path, packageSuffix) {
+		return existing.Path
+	}
+	return filepath.Join(m.pluginsDir, name+packageSuffix)
+}
+
+// atomicWritePackage writes packageBytes to destPath via a sibling temp
+// file + rename, so a partial write never leaves a half-baked .ocpkg in
+// the plugins directory for scan to trip over.
+func atomicWritePackage(pluginsDir, destPath string, packageBytes []byte) error {
+	tmpFile, err := os.CreateTemp(pluginsDir, ".upload-*"+packageSuffix)
+	if err != nil {
+		return fmt.Errorf("create temp file: %w", err)
+	}
+	tmpPath := tmpFile.Name()
+	cleanup := tmpPath
+	defer func() {
+		if cleanup != "" {
+			_ = os.Remove(cleanup)
+		}
+	}()
+	if _, err := tmpFile.Write(packageBytes); err != nil {
+		_ = tmpFile.Close()
+		return fmt.Errorf("write upload: %w", err)
+	}
+	if err := tmpFile.Close(); err != nil {
+		return fmt.Errorf("close upload: %w", err)
+	}
+	if err := os.Rename(tmpPath, destPath); err != nil {
+		return fmt.Errorf("install at %s: %w", destPath, err)
+	}
+	cleanup = ""
+	return nil
+}
+
+// MaxUploadBytes is the cap on package bytes Install will accept. Larger
+// uploads are rejected before any file is written so a malformed or hostile
+// upload can't fill the plugins directory.
+const MaxUploadBytes = 50 * 1024 * 1024
+
+// Install validates a .ocpkg's contents, writes it into the plugins
+// directory, and forces a scan so the new (or updated) plugin shows up
+// in the next List() without waiting for the scan tick. The destination
+// filename is derived from the manifest's name, not from the uploaded
+// name, so an admin can't drop a file outside the plugins directory by
+// abusing the upload filename, and a plugin update from a differently
+// named .ocpkg ends up replacing the right file. Returns the discovered
+// entry for the installed plugin.
+func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*DiscoveredEntry, error) {
+	manifest, err := validateUploadedPackage(packageBytes)
+	if err != nil {
+		return nil, err
+	}
+	destPath := m.destPathForInstall(manifest.Name)
+	if err := atomicWritePackage(m.pluginsDir, destPath, packageBytes); err != nil {
+		return nil, err
+	}
+	// Force an immediate scan so the upload appears in List() before
+	// this call returns.
+	if err := m.scan(ctx); err != nil {
+		return nil, fmt.Errorf("scan after install: %w", err)
+	}
+
+	m.mu.RLock()
+	entry, ok := m.discovered[manifest.Name]
+	var snapshot DiscoveredEntry
+	if ok {
+		snapshot = *entry
+	}
+	m.mu.RUnlock()
+	if !ok {
+		return nil, fmt.Errorf("scan did not pick up the installed plugin %q", manifest.Name)
+	}
+	return &snapshot, nil
 }
 
 // Disable unloads a plugin and persists the choice. No-op if already disabled.
@@ -330,12 +488,73 @@ func (m *Manager) Disable(ctx context.Context, name string) error {
 	return nil
 }
 
+// Uninstall unloads a plugin, deletes its file from the plugins
+// directory, and clears the admin's persisted state (enabled flag and
+// approved-permissions snapshot) for that plugin. The plugin's
+// per-plugin config store is intentionally preserved so an accidental
+// uninstall followed by a reinstall doesn't lose the streamer's
+// settings.
+func (m *Manager) Uninstall(ctx context.Context, name string) error {
+	m.mu.Lock()
+	entry, ok := m.discovered[name]
+	if !ok {
+		m.mu.Unlock()
+		return fmt.Errorf("plugin %q not discovered", name)
+	}
+	path := entry.Path
+	loaded := m.loaded[name]
+	delete(m.loaded, name)
+	delete(m.discovered, name)
+	delete(m.enabledSet, name)
+	delete(m.approvedSet, name)
+	m.mu.Unlock()
+
+	if loaded != nil {
+		loaded.Close(ctx)
+	}
+
+	// Persist the cleared enabled + approved state before touching the
+	// file, so a crash between the two leaves at worst a still-present
+	// file with no in-memory references (the next scan will rediscover
+	// it as a fresh install, which is the safer of the two outcomes).
+	if err := m.saveEnabledSet(); err != nil {
+		fmt.Fprintf(os.Stderr, "persist enabled set after uninstall: %v\n", err)
+	}
+
+	// Delete the .ocpkg (or the loose .wasm + sidecar manifest pair).
+	// A missing file is fine; the scan that picks up our state change
+	// would have dropped the entry anyway.
+	if err := removePluginFiles(path); err != nil {
+		return fmt.Errorf("delete plugin file: %w", err)
+	}
+	return nil
+}
+
+// removePluginFiles deletes the on-disk artifacts that correspond to a
+// discovered plugin's path. For a .ocpkg this is just the one file. For
+// the loose-files layout it's the .wasm, the sibling .manifest.json,
+// and the optional <base>-assets/ directory.
+func removePluginFiles(path string) error {
+	if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	if strings.HasSuffix(path, ".wasm") {
+		base := strings.TrimSuffix(path, ".wasm")
+		_ = os.Remove(base + ".manifest.json")
+		_ = os.Remove(base + ".icon.png")
+		_ = os.RemoveAll(base + "-assets")
+	}
+	return nil
+}
+
 // Reload unloads and reloads a plugin. Plugin author rebuilt → admin
-// triggers a reload to pick up the new wasm without restarting the host.
+// triggers a reload to pick up the new wasm AND the new manifest without
+// restarting the host or waiting for the next discovery scan tick.
 // Plugin must currently be enabled (otherwise call Enable instead).
 func (m *Manager) Reload(ctx context.Context, name string) error {
 	m.mu.Lock()
-	if _, ok := m.discovered[name]; !ok {
+	entry, ok := m.discovered[name]
+	if !ok {
 		m.mu.Unlock()
 		return fmt.Errorf("plugin %q not discovered", name)
 	}
@@ -343,24 +562,58 @@ func (m *Manager) Reload(ctx context.Context, name string) error {
 		m.mu.Unlock()
 		return fmt.Errorf("plugin %q is not enabled; use Enable to load it", name)
 	}
+	path := entry.Path
 	loaded := m.loaded[name]
 	delete(m.loaded, name)
 	m.mu.Unlock()
 	if loaded != nil {
 		loaded.Close(ctx)
 	}
-	err := m.loadInternal(ctx, name)
-	return err
+
+	// Re-read the manifest from disk so any author-side edits (new admin
+	// pages, version bump, permission changes) surface immediately. A
+	// failure here is logged but not fatal; the wasm reload below can
+	// still succeed and the stale metadata will refresh on the next
+	// scanLoop tick.
+	if manifest, err := readManifestForPath(path); err == nil {
+		m.mu.Lock()
+		if existing, ok := m.discovered[name]; ok {
+			existing.Version = manifest.Version
+			existing.Description = manifest.Description
+			existing.Permissions = manifest.Permissions
+			existing.AdminPages = manifest.Admin.Pages
+			existing.PendingPermissions = pendingPermissions(manifest.Permissions, m.approvedSet[name])
+		}
+		m.mu.Unlock()
+	} else {
+		fmt.Fprintf(os.Stderr, "plugin %q reload: re-reading manifest failed: %v\n", name, err)
+	}
+
+	return m.loadInternal(ctx, name)
 }
 
 // loadInternal performs the actual load and inserts into m.loaded. Assumes
 // the caller has already verified the plugin is discovered + enabled.
+// Refuses to load a plugin whose current manifest declares permissions
+// the admin has not yet approved.
 func (m *Manager) loadInternal(ctx context.Context, name string) error {
 	m.mu.RLock()
 	d, ok := m.discovered[name]
+	approved := m.approvedSet[name]
 	m.mu.RUnlock()
 	if !ok {
 		return fmt.Errorf("plugin %q not discovered", name)
+	}
+	if pending := pendingPermissions(d.Permissions, approved); len(pending) > 0 {
+		err := fmt.Errorf("plugin %q declares new permissions that need admin approval: %s",
+			name, strings.Join(pending, ", "))
+		m.mu.Lock()
+		if existing, ok := m.discovered[name]; ok {
+			existing.PendingPermissions = pending
+			existing.LastError = err.Error()
+		}
+		m.mu.Unlock()
+		return err
 	}
 
 	loaded, err := loadByPath(ctx, m.env, d.Path)
@@ -424,6 +677,8 @@ func (m *Manager) scan(ctx context.Context) error {
 		}
 		seen[manifest.Name] = true
 
+		hasIcon := hasPluginIcon(path)
+
 		m.mu.Lock()
 		if existing, ok := m.discovered[manifest.Name]; ok {
 			// Already discovered; refresh manifest metadata in case it changed.
@@ -431,14 +686,20 @@ func (m *Manager) scan(ctx context.Context) error {
 			existing.Description = manifest.Description
 			existing.Permissions = manifest.Permissions
 			existing.Path = path
+			existing.AdminPages = manifest.Admin.Pages
+			existing.HasIcon = hasIcon
+			existing.PendingPermissions = pendingPermissions(manifest.Permissions, m.approvedSet[manifest.Name])
 		} else {
 			m.discovered[manifest.Name] = &DiscoveredEntry{
-				Name:         manifest.Name,
-				Version:      manifest.Version,
-				Description:  manifest.Description,
-				Permissions:  manifest.Permissions,
-				Path:         path,
-				DiscoveredAt: time.Now(),
+				Name:               manifest.Name,
+				Version:            manifest.Version,
+				Description:        manifest.Description,
+				Permissions:        manifest.Permissions,
+				Path:               path,
+				DiscoveredAt:       time.Now(),
+				AdminPages:         manifest.Admin.Pages,
+				HasIcon:            hasIcon,
+				PendingPermissions: pendingPermissions(manifest.Permissions, m.approvedSet[manifest.Name]),
 			}
 		}
 		m.mu.Unlock()
@@ -501,30 +762,48 @@ func readManifestForPath(path string) (*Manifest, error) {
 	return nil, fmt.Errorf("unsupported file type: %s", path)
 }
 
-// Persistence — a tiny JSON file under the plugins directory listing the
-// names the admin has enabled. Survives restarts.
+// Persistence: a tiny JSON file under the plugins directory listing the
+// names the admin has enabled along with the permission set the admin
+// approved at enable time. Survives restarts.
 
-// EnabledStore persists the set of enabled plugin names so admin choices
-// survive host restarts. The PoC's default is a JSON file in the plugins
-// directory (fileEnabledStore); integrated into Owncast it is backed by the
-// native config datastore (see NewManagerWithStore).
+// EnabledStore persists per-plugin admin choices: the enabled set, plus
+// the permission set the admin approved the last time each plugin was
+// enabled. The default is a JSON file in the plugins directory
+// (fileEnabledStore); integrated into Owncast it is backed by the native
+// config datastore (see NewManagerWithStore).
 type EnabledStore interface {
-	// LoadEnabled returns the persisted enabled plugin names. A store with
-	// nothing persisted yet returns an empty slice and a nil error.
-	LoadEnabled() ([]string, error)
-	// SaveEnabled replaces the persisted set with names (already sorted).
-	SaveEnabled(names []string) error
+	// Load returns the persisted state. A fresh store returns an empty
+	// StoreData and a nil error.
+	Load() (StoreData, error)
+	// Save replaces the persisted state atomically.
+	Save(StoreData) error
+}
+
+// StoreData is the persisted admin state for the plugin manager.
+type StoreData struct {
+	// Enabled is the sorted set of plugin names the admin has enabled.
+	Enabled []string
+	// ApprovedPermissions maps plugin name to the sorted permission set
+	// the admin approved the last time that plugin was enabled. If a
+	// plugin appears in Enabled but not here, the next manager startup
+	// captures its current manifest perms as the baseline.
+	ApprovedPermissions map[string][]string
 }
 
 func (m *Manager) loadEnabledSet() error {
-	names, err := m.enabledStore.LoadEnabled()
+	data, err := m.enabledStore.Load()
 	if err != nil {
 		return err
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	for _, name := range names {
+	for _, name := range data.Enabled {
 		m.enabledSet[name] = true
+	}
+	for name, perms := range data.ApprovedPermissions {
+		clone := append([]string(nil), perms...)
+		sort.Strings(clone)
+		m.approvedSet[name] = clone
 	}
 	return nil
 }
@@ -537,14 +816,20 @@ func (m *Manager) saveEnabledSet() error {
 			names = append(names, name)
 		}
 	}
+	approvals := make(map[string][]string, len(m.approvedSet))
+	for name, perms := range m.approvedSet {
+		clone := append([]string(nil), perms...)
+		approvals[name] = clone
+	}
 	m.mu.RUnlock()
 	sort.Strings(names)
-	return m.enabledStore.SaveEnabled(names)
+	return m.enabledStore.Save(StoreData{Enabled: names, ApprovedPermissions: approvals})
 }
 
 // enabledFileContents is the on-disk JSON shape for fileEnabledStore.
 type enabledFileContents struct {
-	Enabled []string `json:"enabled"`
+	Enabled             []string            `json:"enabled"`
+	ApprovedPermissions map[string][]string `json:"approvedPermissions,omitempty"`
 }
 
 // fileEnabledStore persists the enabled set to a JSON file. It's the default
@@ -558,27 +843,93 @@ func newFileEnabledStore(path string) *fileEnabledStore {
 	return &fileEnabledStore{path: path}
 }
 
-func (s *fileEnabledStore) LoadEnabled() ([]string, error) {
+func (s *fileEnabledStore) Load() (StoreData, error) {
 	data, err := os.ReadFile(s.path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, nil // start with empty set
+			return StoreData{}, nil
 		}
-		return nil, err
+		return StoreData{}, err
 	}
 	var f enabledFileContents
 	if err := json.Unmarshal(data, &f); err != nil {
-		return nil, err
+		return StoreData{}, err
 	}
-	return f.Enabled, nil
+	return StoreData(f), nil
 }
 
-func (s *fileEnabledStore) SaveEnabled(names []string) error {
-	data, err := json.MarshalIndent(enabledFileContents{Enabled: names}, "", "  ")
+func (s *fileEnabledStore) Save(d StoreData) error {
+	contents := enabledFileContents(d)
+	data, err := json.MarshalIndent(contents, "", "  ")
 	if err != nil {
 		return err
 	}
 	return os.WriteFile(s.path, data, 0o600)
+}
+
+// pendingForLocked returns the permissions the current manifest declares
+// that the admin has not yet approved. Caller need not hold the
+// manager's lock; this helper acquires its own RLock.
+func (m *Manager) pendingForLocked(name string) []string {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	d, ok := m.discovered[name]
+	if !ok {
+		return nil
+	}
+	return pendingPermissions(d.Permissions, m.approvedSet[name])
+}
+
+// captureMissingApprovals fills in approval baselines for any plugin in
+// the enabled set that doesn't already have one. Used on startup so an
+// existing install (where the approved-permissions field didn't exist
+// in the persisted state) doesn't suddenly see every permission as
+// pending. After capturing, clears PendingPermissions on the affected
+// entries so List() reflects the silent baseline. Returns true when any
+// new baseline was captured (caller is expected to persist).
+func (m *Manager) captureMissingApprovals() bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	changed := false
+	for name, enabled := range m.enabledSet {
+		if !enabled {
+			continue
+		}
+		if _, hasApproval := m.approvedSet[name]; hasApproval {
+			continue
+		}
+		d, ok := m.discovered[name]
+		if !ok {
+			continue
+		}
+		snapshot := append([]string(nil), d.Permissions...)
+		sort.Strings(snapshot)
+		m.approvedSet[name] = snapshot
+		d.PendingPermissions = nil
+		changed = true
+	}
+	return changed
+}
+
+// pendingPermissions returns the permissions in manifestPerms that aren't
+// in approved. Both inputs are treated as case-sensitive strings; the
+// result is sorted and may be nil when there's no gap.
+func pendingPermissions(manifestPerms, approved []string) []string {
+	if len(manifestPerms) == 0 {
+		return nil
+	}
+	approvedIdx := make(map[string]bool, len(approved))
+	for _, p := range approved {
+		approvedIdx[p] = true
+	}
+	var pending []string
+	for _, p := range manifestPerms {
+		if !approvedIdx[p] {
+			pending = append(pending, p)
+		}
+	}
+	sort.Strings(pending)
+	return pending
 }
 
 // LoadPlugin loads a single plugin given explicit wasm and manifest paths
@@ -666,6 +1017,10 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes [
 		_ = p.Close(ctx)
 		return nil, fmt.Errorf("manifest/runtime mismatch: %w", err)
 	}
+	if err := requireChatFilterPermission(manifest, runtime.Subscriptions); err != nil {
+		_ = p.Close(ctx)
+		return nil, err
+	}
 	manifest.Subscriptions = runtime.Subscriptions
 
 	var adminGlobs []glob.Glob
@@ -679,4 +1034,103 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes [
 	}
 
 	return &Loaded{Manifest: manifest, plugin: p, adminGlobs: adminGlobs}, nil
+}
+
+// requireChatFilterPermission rejects a runtime registration that
+// subscribes to filterChatMessage without declaring the chat.filter
+// permission. Modifying or dropping every chat message is a meaningful
+// side-effect, so an admin must opt in at install time by granting it.
+func requireChatFilterPermission(manifest *Manifest, subs Subscriptions) error {
+	if !manifest.hasPermission(PermChatFilter) {
+		for _, s := range subs.Filter {
+			if s.Event == EventChatMessageReceived {
+				return fmt.Errorf(
+					"plugin subscribes to filterChatMessage but does not declare "+
+						"the %q permission. Add %q to the manifest's permissions "+
+						"so an admin can see at install time that this plugin "+
+						"reads or modifies every chat message",
+					PermChatFilter, PermChatFilter,
+				)
+			}
+		}
+	}
+	return nil
+}
+
+// PluginIconFilename is the conventional filename a plugin uses to ship
+// an icon. For .ocpkg plugins it lives at the root of the zip; for loose
+// .wasm files it sits next to the wasm as "<base>.icon.png" so multiple
+// plugins in one directory don't collide.
+const PluginIconFilename = "icon.png"
+
+// hasPluginIcon reports whether the plugin at path bundles an icon.
+// Called per-scan, so it has to be cheap — a single zip central-
+// directory read for packaged plugins, or a stat for loose files.
+func hasPluginIcon(path string) bool {
+	switch {
+	case strings.HasSuffix(path, packageSuffix):
+		zr, err := zip.OpenReader(path)
+		if err != nil {
+			return false
+		}
+		defer zr.Close()
+		for _, f := range zr.File {
+			if f.Name == PluginIconFilename {
+				return true
+			}
+		}
+		return false
+	case strings.HasSuffix(path, ".wasm"):
+		iconPath := strings.TrimSuffix(path, ".wasm") + ".icon.png"
+		_, err := os.Stat(iconPath)
+		return err == nil
+	}
+	return false
+}
+
+// IconBytes returns the raw bytes of the plugin's icon.png, or an error
+// if the plugin isn't discovered or doesn't ship one. Callers should
+// serve the bytes with content-type image/png.
+//
+// Read on-demand from disk on each call: icons are tiny, requests are
+// rare (admin UI only), and reading fresh means an admin who swaps the
+// icon between two scans gets the new one without a host restart.
+func (m *Manager) IconBytes(name string) ([]byte, error) {
+	m.mu.RLock()
+	entry, ok := m.discovered[name]
+	if !ok {
+		m.mu.RUnlock()
+		return nil, fmt.Errorf("plugin %q not discovered", name)
+	}
+	path := entry.Path
+	hasIcon := entry.HasIcon
+	m.mu.RUnlock()
+	if !hasIcon {
+		return nil, fmt.Errorf("plugin %q has no icon", name)
+	}
+
+	switch {
+	case strings.HasSuffix(path, packageSuffix):
+		zr, err := zip.OpenReader(path)
+		if err != nil {
+			return nil, fmt.Errorf("open package %s: %w", path, err)
+		}
+		defer zr.Close()
+		for _, f := range zr.File {
+			if f.Name != PluginIconFilename {
+				continue
+			}
+			rc, err := f.Open()
+			if err != nil {
+				return nil, fmt.Errorf("open icon entry: %w", err)
+			}
+			defer rc.Close()
+			return io.ReadAll(rc)
+		}
+		return nil, fmt.Errorf("plugin %q icon entry vanished between scan and read", name)
+	case strings.HasSuffix(path, ".wasm"):
+		iconPath := strings.TrimSuffix(path, ".wasm") + ".icon.png"
+		return os.ReadFile(iconPath) //nolint:gosec // G304: plugin paths are admin-controlled, not user input
+	}
+	return nil, fmt.Errorf("plugin %q: unsupported file type for icon lookup", name)
 }

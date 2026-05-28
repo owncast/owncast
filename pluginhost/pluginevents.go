@@ -74,7 +74,18 @@ func newPluginChatFilter(pluginDispatcher *plugins.Dispatcher) dispatcher.Filter
 		if msg.User != nil {
 			user = msg.User.DisplayName
 		}
-		final, allowed, _ := pluginDispatcher.Filter(ctx, plugins.EventChatMessageReceived, pluginChatMessage{ID: msg.ID, User: user, Body: msg.Body})
+		// Carry the timestamp through so filter plugins that gate on it
+		// (slow-mode, rate-limit, etc.) can compare elapsed time. Nano-
+		// precision matters: extism-js's Date.now() returns a frozen
+		// WASI-default value, so plugins can't get wall-clock time on
+		// their own — msg.timestamp is the only source of real-time
+		// resolution they have. RFC3339 second-precision is too coarse
+		// for sub-second rate limits.
+		timestamp := ""
+		if !msg.Timestamp.IsZero() {
+			timestamp = msg.Timestamp.UTC().Format(time.RFC3339Nano)
+		}
+		final, allowed, _ := pluginDispatcher.Filter(ctx, plugins.EventChatMessageReceived, pluginChatMessage{ID: msg.ID, User: user, Body: msg.Body, Timestamp: timestamp})
 		if !allowed {
 			return false
 		}
@@ -114,7 +125,13 @@ func newPluginEventListener(pluginDispatcher *plugins.Dispatcher) dispatcher.Lis
 		// returns. Per-plugin timeouts still apply inside Dispatch.
 		ctx = context.WithoutCancel(ctx)
 		for _, pe := range translateWebhookEvent(webhookEvent) {
-			go pluginDispatcher.Dispatch(ctx, pe.eventType, pe.payload)
+			// Notify-only on purpose: the inbound-chat path already ran
+			// the filter chain through newPluginChatFilter before the
+			// event was broadcast. Calling Dispatch (filter + notify)
+			// here would re-run every plugin's on_filter on a message
+			// that already survived once, doubling work and double-
+			// triggering rate-limit logic (slow-mode, etc.).
+			go pluginDispatcher.Notify(ctx, pe.eventType, pe.payload)
 		}
 	}
 }
@@ -140,15 +157,7 @@ func translateWebhookEvent(evt webhooks.WebhookEvent) []pluginEvent {
 func translateChatEvent(evt webhooks.WebhookEvent) []pluginEvent {
 	switch evt.Type {
 	case models.MessageSent:
-		data, ok := evt.EventData.(*webhooks.WebhookChatMessage)
-		if !ok {
-			return nil
-		}
-		msg := pluginChatMessage{ID: data.ID, Body: data.Body, Timestamp: formatTimePtr(data.Timestamp)}
-		if data.User != nil {
-			msg.User = data.User.DisplayName
-		}
-		return []pluginEvent{{plugins.EventChatMessageReceived, msg}}
+		return chatMessageEvent(evt)
 
 	case models.UserJoined:
 		data, ok := evt.EventData.(*webhooks.WebhookUserJoinedEventData)
@@ -201,6 +210,28 @@ func translateChatEvent(evt webhooks.WebhookEvent) []pluginEvent {
 	return nil
 }
 
+func chatMessageEvent(evt webhooks.WebhookEvent) []pluginEvent {
+	data, ok := evt.EventData.(*webhooks.WebhookChatMessage)
+	if !ok {
+		return nil
+	}
+	// Don't deliver messages authored by a bot (e.g. another plugin's
+	// chat.send, posted under its bot identity) back to plugins. This prevents
+	// echo loops: a plugin that replies to chat would otherwise be re-triggered
+	// by its own reply, forever.
+	if data.User != nil && data.User.IsBot {
+		return nil
+	}
+	// Use RawBody (what the user actually typed), not Body (the HTML-rendered
+	// form like `<p>!broadcaster</p>`). Plugins doing command matching or
+	// content analysis want the raw text; the chat client handles rendering.
+	msg := pluginChatMessage{ID: data.ID, Body: data.RawBody, Timestamp: formatTimePtr(data.Timestamp)}
+	if data.User != nil {
+		msg.User = data.User.DisplayName
+	}
+	return []pluginEvent{{plugins.EventChatMessageReceived, msg}}
+}
+
 func translateStreamEvent(evt webhooks.WebhookEvent) []pluginEvent {
 	switch evt.Type {
 	case models.StreamStarted:
@@ -247,7 +278,7 @@ func formatTimePtr(t *time.Time) string {
 	if t == nil {
 		return ""
 	}
-	return t.UTC().Format(time.RFC3339)
+	return t.UTC().Format(time.RFC3339Nano)
 }
 
 // streamLifecycleEvent builds a stream.started/stopped payload from the
@@ -262,7 +293,7 @@ func streamLifecycleEvent(data interface{}, started bool) pluginStreamLifecycleE
 	out.Summary, _ = m["summary"].(string)
 	timestamp := ""
 	if t, ok := m["timestamp"].(time.Time); ok {
-		timestamp = t.UTC().Format(time.RFC3339)
+		timestamp = t.UTC().Format(time.RFC3339Nano)
 	}
 	if started {
 		out.StartedAt = timestamp

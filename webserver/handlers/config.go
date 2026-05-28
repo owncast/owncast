@@ -135,7 +135,7 @@ func (h *Handlers) getConfigResponse() webConfigResponse {
 		ChatDisabled:               configRepository.GetChatDisabled(),
 		ChatSpamProtectionDisabled: configRepository.GetChatSpamProtectionEnabled(),
 		ChatRequireAuthentication:  configRepository.GetChatRequireAuthentication(),
-		ExternalActions:            configRepository.GetExternalActions(),
+		ExternalActions:            mergePluginActions(configRepository.GetExternalActions(), h.pluginActions),
 		CustomStyles:               configRepository.GetCustomStyles(),
 		MaxSocketPayloadSize:       config.MaxSocketPayloadSize,
 		Federation:                 federationResponse,
@@ -144,6 +144,28 @@ func (h *Handlers) getConfigResponse() webConfigResponse {
 		AppearanceVariables:        configRepository.GetCustomColorVariableValues(),
 		HideViewerCount:            configRepository.GetHideViewerCount(),
 	}
+}
+
+// mergePluginActions appends plugin-contributed action buttons to the
+// admin-configured list so the viewer sees both in one externalActions
+// array. Admin entries stay first (and so render first in the UI) — a
+// plugin can extend the action set but can't reorder or replace what
+// the admin defined. A nil getter (no plugin host) makes this a no-op.
+func mergePluginActions(
+	configured []models.ExternalAction,
+	pluginActions func() []models.ExternalAction,
+) []models.ExternalAction {
+	if pluginActions == nil {
+		return configured
+	}
+	contributed := pluginActions()
+	if len(contributed) == 0 {
+		return configured
+	}
+	out := make([]models.ExternalAction, 0, len(configured)+len(contributed))
+	out = append(out, configured...)
+	out = append(out, contributed...)
+	return out
 }
 
 // GetAllSocialPlatforms will return a list of all social platform types.

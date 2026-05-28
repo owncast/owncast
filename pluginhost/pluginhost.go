@@ -2,9 +2,9 @@ package pluginhost
 
 import (
 	"context"
-	"crypto/subtle"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -28,17 +28,22 @@ import (
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/plugins"
+	"github.com/owncast/owncast/services/plugins/kv"
 	"github.com/owncast/owncast/services/stream"
-	"github.com/owncast/owncast/utils"
 )
 
 // pluginsEnabledConfigKey is the datastore key under which the set of
 // admin-enabled plugin names is persisted.
 const pluginsEnabledConfigKey = "plugins.enabled"
 
-// adminAuthUsername is the fixed HTTP Basic Auth username for admin requests,
-// matching webserver/router/middleware.RequireAdminAuth.
-const adminAuthUsername = "admin"
+// jsonErrorKey is the JSON map key used to surface a single human-readable
+// error string back to the admin UI in error responses.
+const jsonErrorKey = "error"
+
+// pluginsApprovedPermsConfigKey is the datastore key under which the
+// per-plugin admin-approved permission snapshots are persisted (as a
+// JSON-encoded map keyed by plugin name).
+const pluginsApprovedPermsConfigKey = "plugins.approvedPermissions"
 
 // Deps bundles the Owncast services the plugin runtime adapts into
 // HostEnv host functions. Everything here is already constructed in the main
@@ -54,6 +59,18 @@ type Deps struct {
 	AuthRepository          *authrepository.SqlAuthRepository
 	NotificationsRepository notificationsrepository.NotificationsRepository
 	ChatMessageRepository   chatmessagerepository.ChatMessageRepository
+
+	// RequireAdminAuth wraps a handler with the host's admin Basic Auth
+	// middleware. The plugin host uses it on management endpoints and on
+	// manifest-declared admin paths inside the plugin static server, so
+	// auth (realm, CORS, credential check) comes from one implementation
+	// instead of being duplicated here.
+	RequireAdminAuth func(http.HandlerFunc) http.HandlerFunc
+	// IsAdminRequest is the predicate behind RequireAdminAuth, exposed as a
+	// boolean for paths that don't reject unauthenticated requests but need
+	// to know whether the caller is an authenticated admin (e.g. the
+	// req.authenticated field passed to a plugin's HTTP handler).
+	IsAdminRequest func(*http.Request) bool
 }
 
 // Host owns the running plugin runtime: the manager (discovery +
@@ -64,7 +81,24 @@ type Host struct {
 	server           *plugins.Server
 	sse              *plugins.SSEHub
 	configRepository configrepository.ConfigRepository
+	// requireAdminAuth is the host's admin Basic Auth middleware, plumbed
+	// in from main.go so the management API and the plugin static server
+	// share one credential check (realm, logging, etc.) with the rest of
+	// the admin API.
+	requireAdminAuth func(http.HandlerFunc) http.HandlerFunc
+	// kv is the per-plugin config store the runtime hands plugins. The
+	// host reads each plugin's reserved actionsOverrideConfigKey from
+	// this store to let a plugin override its manifest-declared action
+	// buttons at runtime (e.g. an admin page that lets the streamer
+	// rename buttons without rebuilding the plugin).
+	kv kv.Store
 }
+
+// runtimeActionsConfigKey is the reserved key inside a plugin's own
+// config namespace that holds action buttons the plugin has added at
+// runtime via owncast.actions.add. The host's Actions() reader returns
+// manifest.actions ++ this list on every /api/config request.
+const runtimeActionsConfigKey = "owncast.actions"
 
 // Handler is the http.Handler for /plugins/<name>/* (static assets, dynamic
 // on_http_request, and the reserved _sse endpoint).
@@ -73,6 +107,58 @@ func (p *Host) Handler() http.Handler { return p.server }
 // Stop closes all loaded plugins.
 func (p *Host) Stop(ctx context.Context) {
 	p.manager.Stop(ctx)
+}
+
+// Actions returns every action-button currently contributed by loaded
+// plugins, projected into the shape Owncast's web config uses for
+// admin-defined externalActions. Empty when no plugins declare actions
+// (or no plugins are loaded). Called from handlers.GetWebConfig so the
+// viewer-facing config endpoint surfaces plugin and admin actions in a
+// single list, without each consumer needing to know about plugins.
+//
+// For each plugin, the effective list is manifest.Actions ++ any
+// buttons the plugin has added at runtime via owncast.actions.add
+// (read from runtimeActionsConfigKey in the plugin's own config).
+func (p *Host) Actions() []models.ExternalAction {
+	if p == nil || p.manager == nil {
+		return nil
+	}
+	loaded := p.manager.Snapshot()
+	var out []models.ExternalAction
+	for _, l := range loaded {
+		actions := p.actionsForPlugin(l)
+		for _, a := range actions {
+			out = append(out, models.ExternalAction{
+				URL:            a.Url,
+				HTML:           a.Html,
+				Title:          a.Title,
+				Description:    a.Description,
+				Icon:           a.Icon,
+				Color:          a.Color,
+				OpenExternally: a.OpenExternally,
+			})
+		}
+	}
+	return out
+}
+
+// actionsForPlugin returns the plugin's manifest action list with any
+// runtime additions appended. Kept separate so Actions() reads cleanly
+// and the append logic can be tested independently.
+func (p *Host) actionsForPlugin(l *plugins.Loaded) []plugins.ActionButton {
+	combined := l.Manifest.Actions
+	if p.kv == nil {
+		return combined
+	}
+	raw, err := p.kv.Namespace(l.Manifest.Name).Get(runtimeActionsConfigKey)
+	if err != nil || len(raw) == 0 {
+		return combined
+	}
+	var extras []plugins.ActionButton
+	if err := json.Unmarshal(raw, &extras); err != nil {
+		return combined
+	}
+	return append(combined, extras...)
 }
 
 // New builds the HostEnv from Owncast services, constructs and
@@ -97,6 +183,12 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 		return nil, fmt.Errorf("start plugin manager: %w", err)
 	}
 
+	// Boot summary — show every discovered plugin with its status and the
+	// permissions it asks for. Per-plugin "loaded" lines come from the
+	// manager itself; this gives the full picture (including disabled ones)
+	// so the admin doesn't need to hit the API to see what's installed.
+	logPluginSummary(manager.List())
+
 	// Emit delivers plugin-published custom events to other plugins'
 	// subscribers. Wired post-Start because it reads the live plugin set.
 	pluginDispatcher := plugins.NewLiveDispatcher(manager.Snapshot)
@@ -112,9 +204,17 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 	server := plugins.NewLiveServer(manager.Snapshot)
 	server.SSE = sseHub
 	server.IsAuthenticated = env.IsAuthenticated
+	server.RequireAdmin = deps.RequireAdminAuth
 	server.GetRequestUser = env.GetRequestUser
 
-	return &Host{manager: manager, server: server, sse: sseHub, configRepository: deps.ConfigRepository}, nil
+	return &Host{
+		manager:          manager,
+		server:           server,
+		sse:              sseHub,
+		configRepository: deps.ConfigRepository,
+		requireAdminAuth: deps.RequireAdminAuth,
+		kv:               env.KV,
+	}, nil
 }
 
 // AdminHandler returns the HTTP handler for plugin management:
@@ -128,48 +228,33 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 func (p *Host) AdminHandler() http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/api/admin/plugins", func(w http.ResponseWriter, r *http.Request) {
-		if !p.requireAdmin(w, r) {
-			return
+	// Admin-protected routes go through the host's RequireAdminAuth
+	// middleware — same realm, same CORS handling, same logging as the
+	// rest of /api/admin/*.
+	requireAdmin := p.requireAdminAuth
+	if requireAdmin == nil {
+		// Defensive: a caller built Host without wiring the middleware.
+		// Treat as "always reject" so a misconfigured boot doesn't expose
+		// the management API.
+		requireAdmin = func(http.HandlerFunc) http.HandlerFunc {
+			return func(w http.ResponseWriter, _ *http.Request) {
+				http.Error(w, "admin auth not configured", http.StatusUnauthorized)
+			}
 		}
-		if r.Method != http.MethodGet {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-		writeJSONResponse(w, http.StatusOK, p.manager.List())
-	})
+	}
 
-	mux.HandleFunc("/api/admin/plugins/", func(w http.ResponseWriter, r *http.Request) {
-		if !p.requireAdmin(w, r) {
-			return
-		}
-		if r.Method != http.MethodPost {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-		name, action, ok := strings.Cut(strings.TrimPrefix(r.URL.Path, "/api/admin/plugins/"), "/")
-		if !ok || name == "" || action == "" {
-			http.Error(w, "expected /<name>/<action>", http.StatusBadRequest)
-			return
-		}
-		var err error
-		switch action {
-		case "enable":
-			err = p.manager.Enable(r.Context(), name)
-		case "disable":
-			err = p.manager.Disable(r.Context(), name)
-		case "reload":
-			err = p.manager.Reload(r.Context(), name)
+	mux.Handle("/api/admin/plugins", requireAdmin(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			writeJSONResponse(w, http.StatusOK, p.manager.List())
+		case http.MethodPost:
+			p.handlePluginUpload(w, r)
 		default:
-			http.Error(w, "unknown action; expected enable, disable, or reload", http.StatusBadRequest)
-			return
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-		if err != nil {
-			writeJSONResponse(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
-			return
-		}
-		writeJSONResponse(w, http.StatusOK, map[string]string{"status": "ok", "name": name, "action": action})
-	})
+	}))
+
+	mux.Handle("/api/admin/plugins/", requireAdmin(p.handlePluginAction))
 
 	mux.HandleFunc("/api/plugins/actions", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -183,18 +268,43 @@ func (p *Host) AdminHandler() http.Handler {
 		writeJSONResponse(w, http.StatusOK, actions)
 	})
 
-	return mux
-}
+	// Plugin icon. Public on purpose: the admin UI renders these in the
+	// plugin list and the sidebar via an <img> tag, which doesn't carry
+	// the Authorization header, and the bytes themselves aren't
+	// sensitive. The host reads icon.png directly from the package on
+	// each request, so an admin who swaps the icon gets the new one
+	// without reloading the plugin.
+	mux.HandleFunc("/api/plugins/", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		const prefix = "/api/plugins/"
+		const suffix = "/icon"
+		rest := strings.TrimPrefix(r.URL.Path, prefix)
+		if !strings.HasSuffix(rest, suffix) {
+			http.NotFound(w, r)
+			return
+		}
+		name := strings.TrimSuffix(rest, suffix)
+		if name == "" || strings.ContainsAny(name, "/") {
+			http.NotFound(w, r)
+			return
+		}
+		data, err := p.manager.IconBytes(name)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Cache-Control", "no-cache")
+		// gosec G705: not XSS. We've set Content-Type to image/png and the
+		// bytes come from the plugin's bundled icon.png, written by the
+		// admin who installed the plugin (not user-controlled input).
+		_, _ = w.Write(data) //nolint:gosec // G705 false positive: image/png body
+	})
 
-// requireAdmin gates a management endpoint on admin HTTP Basic Auth. It
-// writes the 401 response itself and returns false when unauthenticated.
-func (p *Host) requireAdmin(w http.ResponseWriter, r *http.Request) bool {
-	if isAdminRequest(r, p.configRepository) {
-		return true
-	}
-	w.Header().Set("WWW-Authenticate", `Basic realm="Owncast plugin admin"`)
-	http.Error(w, "authentication required", http.StatusUnauthorized)
-	return false
+	return mux
 }
 
 func writeJSONResponse(w http.ResponseWriter, status int, body any) {
@@ -203,23 +313,153 @@ func writeJSONResponse(w http.ResponseWriter, status int, body any) {
 	_ = json.NewEncoder(w).Encode(body)
 }
 
-// configEnabledStore persists the enabled-plugin set in Owncast's config
-// datastore instead of a .enabled.json file.
+// logPluginSummary writes the boot inventory of plugins to the Owncast log:
+// every discovered plugin, its enabled/disabled (and loaded) status, and the
+// permissions it declares. Errors from a failed load are surfaced as warnings
+// so an admin sees them in the console without checking the admin API.
+func logPluginSummary(entries []plugins.DiscoveredEntry) {
+	log.Infof("plugins: %d discovered", len(entries))
+	for _, e := range entries {
+		status := "disabled"
+		if e.Enabled {
+			status = "enabled"
+			if !e.Loaded {
+				status = "enabled (load failed)"
+			}
+		}
+		permPart := "with no permissions"
+		if len(e.Permissions) > 0 {
+			permPart = "with permissions: " + strings.Join(e.Permissions, ", ")
+		}
+		log.Infof("  - %s v%s %s %s", e.Name, e.Version, status, permPart)
+		if e.LastError != "" {
+			log.Warnf("    last error: %s", e.LastError)
+		}
+	}
+}
+
+// handlePluginAction dispatches POST /api/admin/plugins/<name>/<action>
+// to the matching Manager operation (enable, disable, reload, uninstall).
+// Lives on Host rather than inlined in AdminHandler so the switch on
+// `action` stays small and the surrounding routing is easy to read.
+func (p *Host) handlePluginAction(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	name, action, ok := strings.Cut(strings.TrimPrefix(r.URL.Path, "/api/admin/plugins/"), "/")
+	if !ok || name == "" || action == "" {
+		http.Error(w, "expected /<name>/<action>", http.StatusBadRequest)
+		return
+	}
+	err, known := p.dispatchPluginAction(r.Context(), name, action)
+	if !known {
+		http.Error(w, "unknown action; expected enable, disable, reload, or uninstall", http.StatusBadRequest)
+		return
+	}
+	if err != nil {
+		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: err.Error()})
+		return
+	}
+	if action == "uninstall" {
+		log.Infof("plugin %q uninstalled by admin", name)
+	}
+	writeJSONResponse(w, http.StatusOK, map[string]string{"status": "ok", "name": name, "action": action})
+}
+
+// dispatchPluginAction calls the Manager method for one of the admin
+// actions. Returns (operationError, true) for a known action, or
+// (nil, false) when action is unrecognized.
+func (p *Host) dispatchPluginAction(ctx context.Context, name, action string) (error, bool) {
+	switch action {
+	case "enable":
+		return p.manager.Enable(ctx, name), true
+	case "disable":
+		return p.manager.Disable(ctx, name), true
+	case "reload":
+		return p.manager.Reload(ctx, name), true
+	case "uninstall":
+		return p.manager.Uninstall(ctx, name), true
+	}
+	return nil, false
+}
+
+// handlePluginUpload accepts a multipart upload of a .ocpkg file from
+// the admin UI, validates it, writes it into the plugins directory under
+// the manifest's name (not the uploaded filename), and forces a scan
+// so the new entry appears in the next list. Caps the request body at
+// the manager's MaxUploadBytes to keep a hostile upload from filling
+// memory before the validation gate runs.
+func (p *Host) handlePluginUpload(w http.ResponseWriter, r *http.Request) {
+	// MaxBytesReader returns an error as soon as the limit is exceeded,
+	// so we never read more than this into memory.
+	r.Body = http.MaxBytesReader(w, r.Body, plugins.MaxUploadBytes)
+	// The MaxBytesReader above caps the multipart parse; gosec G120's
+	// pattern match doesn't see that wrapping, so it's a false positive.
+	if err := r.ParseMultipartForm(plugins.MaxUploadBytes); err != nil { //nolint:gosec // G120: bound via MaxBytesReader above
+		writeJSONResponse(w, http.StatusRequestEntityTooLarge, map[string]string{jsonErrorKey: err.Error()})
+		return
+	}
+	file, header, err := r.FormFile("plugin")
+	if err != nil {
+		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: "expected a file under form field 'plugin': " + err.Error()})
+		return
+	}
+	defer file.Close()
+	if !strings.HasSuffix(strings.ToLower(header.Filename), ".ocpkg") {
+		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: "filename must end in .ocpkg"})
+		return
+	}
+	packageBytes, err := io.ReadAll(file)
+	if err != nil {
+		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: "read upload: " + err.Error()})
+		return
+	}
+	entry, err := p.manager.Install(r.Context(), packageBytes)
+	if err != nil {
+		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: err.Error()})
+		return
+	}
+	log.Infof("plugin %q v%s installed by admin", entry.Name, entry.Version)
+	writeJSONResponse(w, http.StatusOK, entry)
+}
+
+// configEnabledStore persists the enabled-plugin set and per-plugin
+// admin-approved permission snapshots in Owncast's config datastore
+// instead of a .enabled.json file.
 type configEnabledStore struct {
 	datastore *datastore.Datastore
 }
 
-func (s *configEnabledStore) LoadEnabled() ([]string, error) {
+func (s *configEnabledStore) Load() (plugins.StoreData, error) {
 	names, err := s.datastore.GetStringSlice(pluginsEnabledConfigKey)
 	if err != nil {
-		// Unset on a fresh install — start with no plugins enabled.
-		return nil, nil
+		// Unset on a fresh install: start with no plugins enabled.
+		return plugins.StoreData{}, nil
 	}
-	return names, nil
+	out := plugins.StoreData{Enabled: names}
+	raw, err := s.datastore.GetString(pluginsApprovedPermsConfigKey)
+	if err == nil && raw != "" {
+		var approvals map[string][]string
+		if err := json.Unmarshal([]byte(raw), &approvals); err == nil {
+			out.ApprovedPermissions = approvals
+		}
+	}
+	return out, nil
 }
 
-func (s *configEnabledStore) SaveEnabled(names []string) error {
-	return s.datastore.SetStringSlice(pluginsEnabledConfigKey, names)
+func (s *configEnabledStore) Save(d plugins.StoreData) error {
+	if err := s.datastore.SetStringSlice(pluginsEnabledConfigKey, d.Enabled); err != nil {
+		return err
+	}
+	if len(d.ApprovedPermissions) == 0 {
+		return s.datastore.SetString(pluginsApprovedPermsConfigKey, "")
+	}
+	encoded, err := json.Marshal(d.ApprovedPermissions)
+	if err != nil {
+		return fmt.Errorf("encode approved permissions: %w", err)
+	}
+	return s.datastore.SetString(pluginsApprovedPermsConfigKey, string(encoded))
 }
 
 // wirePluginHostEnv connects each HostEnv host-function pointer to the
@@ -231,9 +471,73 @@ func wirePluginHostEnv(env *plugins.HostEnv, deps Deps) {
 	wireChatReadHostFns(env, deps)
 	wireChatModerationHostFns(env, deps)
 	wireServerReadHostFns(env, deps)
+	wireVideoConfigHostFns(env, deps)
 	wireUserHostFns(env, deps)
 	wireNotificationHostFns(env, deps)
 	wireRequestHostFns(env, deps)
+}
+
+// wireVideoConfigHostFns wires the settable video/transcoding configuration:
+// videoconfig.read (owncast.videoConfig.read) and videoconfig.write
+// (owncast.videoConfig.write). The plugin-facing VideoConfig/StreamVariant
+// shapes are a curated, stable wire contract — the mapping to/from Owncast's
+// internal models.StreamOutputVariant lives here, at the boundary.
+func wireVideoConfigHostFns(env *plugins.HostEnv, deps Deps) {
+	cfg := deps.ConfigRepository
+
+	env.VideoConfig = func() plugins.VideoConfig {
+		variants := cfg.GetStreamOutputVariants()
+		out := plugins.VideoConfig{
+			LatencyLevel: cfg.GetStreamLatencyLevel().Level,
+			Codec:        cfg.GetVideoCodec(),
+			Variants:     make([]plugins.StreamVariant, 0, len(variants)),
+		}
+		for _, v := range variants {
+			out.Variants = append(out.Variants, plugins.StreamVariant{
+				Width:         v.ScaledWidth,
+				Height:        v.ScaledHeight,
+				Framerate:     v.Framerate,
+				VideoBitrate:  v.VideoBitrate,
+				AudioBitrate:  v.AudioBitrate,
+				IsPassthrough: v.IsVideoPassthrough,
+			})
+		}
+		return out
+	}
+
+	env.WriteVideoConfig = func(pluginName string, u plugins.VideoConfigUpdate) error {
+		if u.LatencyLevel != nil {
+			if err := cfg.SetStreamLatencyLevel(float64(*u.LatencyLevel)); err != nil {
+				return err
+			}
+		}
+		if u.Codec != nil {
+			if err := cfg.SetVideoCodec(*u.Codec); err != nil {
+				return err
+			}
+		}
+		if u.Variants != nil {
+			variants := make([]models.StreamOutputVariant, 0, len(u.Variants))
+			for _, v := range u.Variants {
+				variants = append(variants, models.StreamOutputVariant{
+					ScaledWidth:        v.Width,
+					ScaledHeight:       v.Height,
+					Framerate:          v.Framerate,
+					VideoBitrate:       v.VideoBitrate,
+					AudioBitrate:       v.AudioBitrate,
+					IsVideoPassthrough: v.IsPassthrough,
+				})
+			}
+			if err := cfg.SetStreamOutputVariants(variants); err != nil {
+				return err
+			}
+		}
+		// Mirror the admin video-config handlers: persist only. The change
+		// takes effect on the next stream start (the admin UI already shows
+		// this), so we deliberately do NOT restart a live transcoder.
+		log.Infof("plugin %q changed video config via videoconfig.write; will take effect on next stream start", pluginName)
+		return nil
+	}
 }
 
 func wireChatSendHostFns(env *plugins.HostEnv, deps Deps, chatbots *pluginChatbotProvisioner) {
@@ -255,7 +559,7 @@ func wireChatSendHostFns(env *plugins.HostEnv, deps Deps, chatbots *pluginChatbo
 				log.Errorln("plugin", req.PluginName, "resolve chatbot user:", err)
 				return
 			}
-			if err := chatSvc.SendMessageAsUser(chatbot, req.Text); err != nil {
+			if err := chatSvc.SendMessageAsBot(chatbot, req.Text); err != nil {
 				log.Errorln("plugin", req.PluginName, "chat send:", err)
 			}
 		}
@@ -280,7 +584,7 @@ func wireChatReadHostFns(env *plugins.HostEnv, deps Deps) {
 			hm := plugins.HostChatMessage{
 				ID:        msg.ID,
 				Body:      msg.Body,
-				Timestamp: msg.Timestamp.UTC().Format(time.RFC3339),
+				Timestamp: msg.Timestamp.UTC().Format(time.RFC3339Nano),
 			}
 			if msg.User != nil {
 				hm.User = msg.User.DisplayName
@@ -299,7 +603,7 @@ func wireChatReadHostFns(env *plugins.HostEnv, deps Deps) {
 		for _, c := range clients {
 			hc := plugins.HostChatClient{
 				ID:           uint64(c.Id),
-				ConnectedAt:  c.ConnectedAt.UTC().Format(time.RFC3339),
+				ConnectedAt:  c.ConnectedAt.UTC().Format(time.RFC3339Nano),
 				UserAgent:    c.UserAgent,
 				IPAddress:    c.IPAddress,
 				MessageCount: c.MessageCount,
@@ -344,7 +648,7 @@ func wireServerReadHostFns(env *plugins.HostEnv, deps Deps) {
 			LatencyLevel: cfg.GetStreamLatencyLevel().Level,
 		}
 		if status.LastConnectTime != nil && status.LastConnectTime.Valid {
-			info.StartedAt = status.LastConnectTime.Time.UTC().Format(time.RFC3339)
+			info.StartedAt = status.LastConnectTime.Time.UTC().Format(time.RFC3339Nano)
 		}
 		return info
 	}
@@ -374,6 +678,39 @@ func wireServerReadHostFns(env *plugins.HostEnv, deps Deps) {
 			Username:  cfg.GetFederationUsername(),
 			IsPrivate: cfg.GetFederationIsPrivate(),
 		}
+	}
+
+	env.Tags = func() []string {
+		return cfg.GetServerMetadataTags()
+	}
+
+	// Broadcaster is read-only telemetry about the inbound feed (nil between
+	// streams), distinct from the settable video config below.
+	env.Broadcaster = func() plugins.StreamBroadcaster {
+		b := streamSvc.GetBroadcaster()
+		if b == nil {
+			return plugins.StreamBroadcaster{}
+		}
+		d := b.StreamDetails
+		codecs := make([]string, 0, 2)
+		if d.VideoCodec != "" {
+			codecs = append(codecs, d.VideoCodec)
+		}
+		if d.AudioCodec != "" {
+			codecs = append(codecs, d.AudioCodec)
+		}
+		out := plugins.StreamBroadcaster{
+			RemoteAddr: b.RemoteAddr,
+			Codecs:     codecs,
+			Framerate:  int(d.VideoFramerate),
+		}
+		if d.Width > 0 || d.Height > 0 {
+			out.Resolution = fmt.Sprintf("%dx%d", d.Width, d.Height)
+		}
+		if d.VideoBitrate > 0 {
+			out.Bitrates = []int{d.VideoBitrate}
+		}
+		return out
 	}
 }
 
@@ -487,9 +824,7 @@ func wireRequestHostFns(env *plugins.HostEnv, deps Deps) {
 		return uploadPluginAsset(cfg, pluginName, name, data)
 	}
 
-	env.IsAuthenticated = func(r *http.Request) bool {
-		return isAdminRequest(r, cfg)
-	}
+	env.IsAuthenticated = deps.IsAdminRequest
 
 	env.GetRequestUser = func(r *http.Request) *plugins.HostUser {
 		token := r.URL.Query().Get("accessToken")
@@ -514,25 +849,12 @@ func toHostUser(u *models.User) plugins.HostUser {
 		Scopes:          u.Scopes,
 		IsBot:           u.IsBot,
 		IsAuthenticated: u.Authenticated,
-		CreatedAt:       u.CreatedAt.UTC().Format(time.RFC3339),
+		CreatedAt:       u.CreatedAt.UTC().Format(time.RFC3339Nano),
 	}
 	if u.DisabledAt != nil {
-		hu.DisabledAt = u.DisabledAt.UTC().Format(time.RFC3339)
+		hu.DisabledAt = u.DisabledAt.UTC().Format(time.RFC3339Nano)
 	}
 	return hu
-}
-
-// isAdminRequest reports whether r carries valid admin HTTP Basic Auth,
-// mirroring the check in webserver/router/middleware.RequireAdminAuth.
-func isAdminRequest(r *http.Request, cfg configrepository.ConfigRepository) bool {
-	user, pass, ok := r.BasicAuth()
-	if !ok {
-		return false
-	}
-	if subtle.ConstantTimeCompare([]byte(user), []byte(adminAuthUsername)) != 1 {
-		return false
-	}
-	return utils.CompareHash(cfg.GetAdminPassword(), pass) == nil
 }
 
 // uploadPluginAsset writes a plugin upload under the public files directory

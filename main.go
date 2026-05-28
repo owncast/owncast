@@ -22,6 +22,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/pluginhost"
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
@@ -305,6 +306,8 @@ func main() {
 		AuthRepository:          authRepository,
 		NotificationsRepository: notificationsRepository,
 		ChatMessageRepository:   chatMessageRepository,
+		RequireAdminAuth:        mw.RequireAdminAuth,
+		IsAdminRequest:          mw.IsAdminRequest,
 	})
 	if err != nil {
 		log.Errorln("plugin host failed to start; plugins disabled:", err)
@@ -359,6 +362,11 @@ func main() {
 		UserRepository:        userRepository,
 	})
 
+	var pluginActions func() []models.ExternalAction
+	if pluginHostInstance != nil {
+		pluginActions = pluginHostInstance.Actions
+	}
+
 	h := handlers.NewHandlers(handlers.Deps{
 		Cache:                   cacheContainer,
 		Stream:                  streamSvc,
@@ -378,6 +386,7 @@ func main() {
 		NotificationsRepository: notificationsRepository,
 		APBuilder:               apBuilder,
 		Config:                  cfg,
+		PluginActions:           pluginActions,
 	})
 
 	// Stage 10: serve. Blocks until shutdown.

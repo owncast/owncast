@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	extism "github.com/extism/go-sdk"
 	"github.com/owncast/owncast/services/plugins/kv"
@@ -16,11 +17,17 @@ var _ = (*http.Request)(nil) // ensure import retained for the HostEnv signature
 // Permission identifiers. The manifest declares which a plugin needs; only
 // the corresponding wasm imports are wired into the plugin instance.
 const (
-	PermStorageKV         = "storage.kv"
-	PermStorageUpload     = "storage.upload"
-	PermChatSend          = "chat.send"
-	PermChatHistory       = "chat.history"
-	PermChatModerate      = "chat.moderate"
+	PermStorageKV     = "storage.kv"
+	PermStorageUpload = "storage.upload"
+	PermChatSend      = "chat.send"
+	PermChatHistory   = "chat.history"
+	PermChatModerate  = "chat.moderate"
+	// PermChatFilter is required for any plugin that subscribes to
+	// filterChatMessage. The host refuses to load a plugin whose
+	// runtime-declared filter subscriptions include the chat-message
+	// event without this permission, so a plugin can't silently start
+	// dropping or rewriting chat without the admin's consent.
+	PermChatFilter        = "chat.filter"
 	PermNetworkFetch      = "network.fetch"
 	PermEmitEvent         = "events.emit"
 	PermHttpServe         = "http.serve"
@@ -30,6 +37,14 @@ const (
 	PermUsersRead         = "users.read"
 	PermUsersModerate     = "users.moderate"
 	PermFediversePost     = "fediverse.post"
+	PermVideoConfigRead   = "videoconfig.read"
+	PermVideoConfigWrite  = "videoconfig.write"
+	// PermUIModify lets a plugin add UI surfaces to Owncast: admin pages
+	// (manifest.admin.pages) and viewer action buttons (manifest.actions).
+	// A plugin can serve HTTP on /plugins/<name>/ without this permission
+	// (e.g. for headless APIs), but cannot publish anything that shows up
+	// in the admin UI or viewer chrome without opting in explicitly.
+	PermUIModify = "ui.modify"
 )
 
 // ChatSendKind distinguishes how a plugin asked to post to chat. All sends
@@ -72,6 +87,47 @@ type ServerInfo struct {
 	Summary        string `json:"summary,omitempty"`
 	WelcomeMessage string `json:"welcomeMessage,omitempty"`
 	Version        string `json:"version,omitempty"`
+}
+
+// StreamBroadcaster is what owncast.stream.broadcaster() returns — details
+// about the currently-connected inbound broadcast. Zero-valued when offline.
+type StreamBroadcaster struct {
+	RemoteAddr string   `json:"remoteAddr,omitempty"`
+	Codecs     []string `json:"codecs,omitempty"`
+	Resolution string   `json:"resolution,omitempty"`
+	Framerate  int      `json:"framerate,omitempty"`
+	Bitrates   []int    `json:"bitrates,omitempty"`
+}
+
+// StreamVariant is one configured output rendition, part of the VideoConfig
+// returned/accepted by owncast.videoConfig.read()/write().
+type StreamVariant struct {
+	Width         int  `json:"width"`
+	Height        int  `json:"height"`
+	Framerate     int  `json:"framerate"`
+	VideoBitrate  int  `json:"videoBitrate"`
+	AudioBitrate  int  `json:"audioBitrate"`
+	IsPassthrough bool `json:"isPassthrough"`
+}
+
+// VideoConfig is the current output/transcoding configuration returned by
+// owncast.videoConfig.read(). These are settable knobs (see VideoConfigUpdate),
+// as opposed to read-only inbound-broadcast telemetry (StreamBroadcaster).
+// Requires the videoconfig.read permission.
+type VideoConfig struct {
+	LatencyLevel int             `json:"latencyLevel"`
+	Codec        string          `json:"codec"`
+	Variants     []StreamVariant `json:"variants"`
+}
+
+// VideoConfigUpdate is a partial change passed to owncast.videoConfig.write().
+// Nil/omitted fields are left unchanged, so a plugin can set just the latency
+// level without disturbing the configured output variants. Requires the
+// videoconfig.write permission.
+type VideoConfigUpdate struct {
+	LatencyLevel *int            `json:"latencyLevel,omitempty"`
+	Codec        *string         `json:"codec,omitempty"`
+	Variants     []StreamVariant `json:"variants,omitempty"`
 }
 
 // SocialHandle is one entry returned by owncast.server.socials().
@@ -153,6 +209,9 @@ type HostEnv struct {
 	Emit            func(ctx context.Context, eventType string, payload any)
 	StreamCurrent   func() StreamInfo
 	ServerInfo      func() ServerInfo
+	Broadcaster     func() StreamBroadcaster // server.read (read-only telemetry)
+	Tags            func() []string          // server.read
+	VideoConfig     func() VideoConfig       // videoconfig.read
 	ChatHistory     func(limit int) []HostChatMessage
 	ChatClients     func() []HostChatClient                  // chat.history
 	DeleteMessage   func(pluginName, messageID string)       // chat.moderate
@@ -166,8 +225,12 @@ type HostEnv struct {
 	UploadStorage   func(pluginName, name string, data []byte) (string, error)   // storage.upload
 	Socials         func() []SocialHandle                                        // server.read
 	Federation      func() FederationInfo                                        // server.read
-	SendFediverse   func(pluginName string, p FediversePayload)                  // notifications.send
-	SendChatTo      func(pluginName string, clientID uint64, text string)        // chat.send
+	// WriteVideoConfig applies a partial video/transcoding configuration
+	// change. Returns an error the plugin can see if the host rejects the
+	// config (e.g. an invalid variant). videoconfig.write permission required.
+	WriteVideoConfig func(pluginName string, u VideoConfigUpdate) error
+	SendFediverse    func(pluginName string, p FediversePayload)           // notifications.send
+	SendChatTo       func(pluginName string, clientID uint64, text string) // chat.send
 	// PostFediverse publishes a public, text-only note to the fediverse
 	// on the streamer's behalf. Returns the resulting post URL. The host is
 	// responsible for rate-limiting (max 5/hour per plugin by default) and
@@ -219,6 +282,8 @@ func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction 
 			hostServerInfo(env),
 			hostServerSocials(env),
 			hostServerFederation(env),
+			hostStreamBroadcaster(env),
+			hostServerTags(env),
 		)
 	}
 	if granted[PermChatHistory] {
@@ -257,6 +322,27 @@ func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction 
 	}
 	if granted[PermHttpSSE] {
 		fns = append(fns, hostSSESend(env, manifest.Name))
+	}
+	if granted[PermUIModify] {
+		fns = append(fns,
+			hostAddActions(env, manifest),
+			hostClearActions(env, manifest.Name),
+		)
+	}
+	fns = append(fns, videoConfigHostFunctions(env, manifest, granted)...)
+	return fns
+}
+
+// videoConfigHostFunctions returns the videoconfig.read / videoconfig.write
+// host functions a plugin is granted. Split out of BuildHostFunctions to keep
+// that function's cyclomatic complexity in check.
+func videoConfigHostFunctions(env *HostEnv, manifest *Manifest, granted map[string]bool) []extism.HostFunction {
+	var fns []extism.HostFunction
+	if granted[PermVideoConfigRead] {
+		fns = append(fns, hostVideoConfigRead(env))
+	}
+	if granted[PermVideoConfigWrite] {
+		fns = append(fns, hostVideoConfigWrite(env, manifest.Name))
 	}
 	return fns
 }
@@ -869,6 +955,137 @@ func hostServerInfo(env *HostEnv) extism.HostFunction {
 	return fn
 }
 
+func hostStreamBroadcaster(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_stream_broadcaster",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			var info StreamBroadcaster
+			if env.Broadcaster != nil {
+				info = env.Broadcaster()
+			}
+			data, err := json.Marshal(info)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+func hostServerTags(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_server_tags",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			var tags []string
+			if env.Tags != nil {
+				tags = env.Tags()
+			}
+			if tags == nil {
+				tags = []string{}
+			}
+			data, err := json.Marshal(tags)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+func hostVideoConfigRead(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_video_config_read",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			var cfg VideoConfig
+			if env.VideoConfig != nil {
+				cfg = env.VideoConfig()
+			}
+			if cfg.Variants == nil {
+				cfg.Variants = []StreamVariant{}
+			}
+			data, err := json.Marshal(cfg)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostVideoConfigWrite backs owncast.videoConfig.write(config). It applies a
+// partial video/transcoding configuration change via the host. Returns a
+// JSON {ok, error?} result so the plugin can react to a rejected config.
+// Requires the videoconfig.write permission.
+func hostVideoConfigWrite(env *HostEnv, pluginName string) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_video_config_write",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			payloadBytes, err := p.ReadBytes(stack[0])
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			var update VideoConfigUpdate
+			if err := json.Unmarshal(payloadBytes, &update); err != nil {
+				fmt.Fprintf(os.Stderr, "owncast_video_config_write from %s: invalid JSON: %v\n", pluginName, err)
+				stack[0] = 0
+				return
+			}
+			result := map[string]any{"ok": true}
+			if env.WriteVideoConfig != nil {
+				if err := env.WriteVideoConfig(pluginName, update); err != nil {
+					result = map[string]any{"ok": false, "error": err.Error()}
+				}
+			}
+			data, err := json.Marshal(result)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
 func hostKVGet(ns kv.Namespace) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_kv_get",
@@ -918,4 +1135,130 @@ func hostKVSet(ns kv.Namespace) extism.HostFunction {
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
+}
+
+// RuntimeActionsConfigKey is the reserved key inside a plugin's own
+// config namespace that holds action buttons the plugin has added at
+// runtime via owncast.actions.add. The plugin host reads this key on
+// every /api/config request and returns manifest.actions ++ this list
+// to viewers.
+const RuntimeActionsConfigKey = "owncast.actions"
+
+// hostAddActions backs owncast.actions.add(actions). Takes a JSON array
+// of ActionButton entries, validates each (title required, exactly one
+// of url/html, relative URLs rewritten into this plugin's namespace,
+// cross-plugin URLs rejected), and appends to the runtime list in the
+// plugin's config.
+//
+// Requires the ui.modify permission; invalid input is logged but not
+// surfaced back to the plugin.
+func hostAddActions(env *HostEnv, manifest *Manifest) extism.HostFunction {
+	pluginName := manifest.Name
+	hasHTTPServe := false
+	for _, perm := range manifest.Permissions {
+		if perm == PermHttpServe {
+			hasHTTPServe = true
+			break
+		}
+	}
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_add_actions",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			payloadBytes, err := p.ReadBytes(stack[0])
+			if err != nil {
+				return
+			}
+			var incoming []ActionButton
+			if err := json.Unmarshal(payloadBytes, &incoming); err != nil {
+				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: invalid JSON: %v\n", pluginName, err)
+				return
+			}
+			normalized, err := validateRuntimeActions(pluginName, hasHTTPServe, incoming)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: %v\n", pluginName, err)
+				return
+			}
+			if env.KV == nil {
+				return
+			}
+			ns := env.KV.Namespace(pluginName)
+			var existing []ActionButton
+			if raw, err := ns.Get(RuntimeActionsConfigKey); err == nil && len(raw) > 0 {
+				_ = json.Unmarshal(raw, &existing)
+			}
+			combined := make([]ActionButton, 0, len(existing)+len(normalized))
+			combined = append(combined, existing...)
+			combined = append(combined, normalized...)
+			out, err := json.Marshal(combined)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: marshal: %v\n", pluginName, err)
+				return
+			}
+			if err := ns.Set(RuntimeActionsConfigKey, out); err != nil {
+				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: kv write: %v\n", pluginName, err)
+			}
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostClearActions backs owncast.actions.clear(). Removes the runtime
+// list from the plugin's config so only manifest.actions remain in the
+// effective set returned by /api/config.
+func hostClearActions(env *HostEnv, pluginName string) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_clear_actions",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if env.KV == nil {
+				return
+			}
+			if err := env.KV.Namespace(pluginName).Delete(RuntimeActionsConfigKey); err != nil {
+				fmt.Fprintf(os.Stderr, "owncast_clear_actions from %s: %v\n", pluginName, err)
+			}
+		},
+		nil,
+		nil,
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// validateRuntimeActions checks and rewrites plugin-supplied action
+// entries using the same rules as manifest validation, so the runtime
+// path can't accept a malformed entry or a cross-plugin URL.
+func validateRuntimeActions(pluginName string, hasHTTPServe bool, actions []ActionButton) ([]ActionButton, error) {
+	pluginPrefix := "/plugins/" + pluginName + "/"
+	for i := range actions {
+		a := &actions[i]
+		if a.Title == "" {
+			return nil, fmt.Errorf("actions[%d].title is required", i)
+		}
+		hasURL, hasHTML := a.Url != "", a.Html != ""
+		if hasURL == hasHTML {
+			return nil, fmt.Errorf("actions[%d]: exactly one of url or html is required", i)
+		}
+		if !hasURL {
+			continue
+		}
+		if strings.HasPrefix(a.Url, "/") && !strings.HasPrefix(a.Url, "/plugins/") {
+			a.Url = pluginPrefix + strings.TrimPrefix(a.Url, "/")
+		}
+		if strings.HasPrefix(a.Url, pluginPrefix) && !hasHTTPServe {
+			return nil, fmt.Errorf("actions[%d].url targets this plugin (%s) but http.serve permission is not declared", i, a.Url)
+		}
+		if strings.HasPrefix(a.Url, "/plugins/") && !strings.HasPrefix(a.Url, pluginPrefix) {
+			return nil, fmt.Errorf("actions[%d].url points at another plugin's namespace: %s", i, a.Url)
+		}
+	}
+	for i := range actions {
+		rewritten, err := rewriteActionIcon(pluginPrefix, hasHTTPServe, actions[i].Icon)
+		if err != nil {
+			return nil, fmt.Errorf("actions[%d].icon: %w", i, err)
+		}
+		actions[i].Icon = rewritten
+	}
+	return actions, nil
 }

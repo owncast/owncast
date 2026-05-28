@@ -64,8 +64,15 @@ func TestServer_SSE_ServiceUnavailableAtConnectionCap(t *testing.T) {
 
 func TestServer_SSE_AdminChannelRequiresAuth(t *testing.T) {
 	// A channel matching an admin glob is auth-gated like any admin path.
+	// The server delegates the 401 to the host's RequireAdmin middleware
+	// (the real one in production is middleware.RequireAdminAuth); here
+	// we stub it with a always-reject wrapper so we observe the 401.
 	s := sseServer(t, []string{"http.sse"}, NewSSEHub(), "/_sse/*")
-	// IsAuthenticated nil → unauthenticated.
+	s.RequireAdmin = func(http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, _ *http.Request) {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		}
+	}
 	rec := httptest.NewRecorder()
 	s.ServeHTTP(rec, httptest.NewRequest("GET", "/plugins/demo/_sse/admin-stats", nil))
 	if rec.Code != http.StatusUnauthorized {

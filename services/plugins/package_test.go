@@ -15,16 +15,24 @@ import (
 
 // findExampleWasm returns the path to a real example wasm we can use to make
 // happy-path package tests realistic. Tests that need actual wasm bytes
-// t.Skip() if no example has been built yet.
+// t.Skip() if no example has been built yet. Looks in the in-tree examples
+// directory first, then falls back to the sibling owncast-plugin-sdk
+// checkout (where examples live after the SDK split).
 func findExampleWasm(t *testing.T) string {
 	t.Helper()
 	_, thisFile, _, _ := runtime.Caller(0)
 	repoRoot := filepath.Join(filepath.Dir(thisFile), "..", "..")
-	candidate := filepath.Join(repoRoot, "examples", "js", "hello-world", "hello-world.wasm")
-	if _, err := os.Stat(candidate); err != nil {
-		t.Skipf("example wasm %s not built; run tools/build-plugin.sh examples/js/hello-world first", candidate)
+	candidates := []string{
+		filepath.Join(repoRoot, "examples", "js", "hello-world", "hello-world.wasm"),
+		filepath.Join(repoRoot, "..", "owncast-plugin-sdk", "examples", "js", "hello-world", "hello-world.wasm"),
 	}
-	return candidate
+	for _, c := range candidates {
+		if _, err := os.Stat(c); err == nil {
+			return c
+		}
+	}
+	t.Skipf("example wasm not built in any of %v; run npm run build in examples/js/hello-world first", candidates)
+	return ""
 }
 
 // buildPkg writes a .ocpkg-shaped zip to a temp file and returns the path.

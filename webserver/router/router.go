@@ -83,6 +83,10 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 		m.Handle("/api/admin/plugins", pluginAdmin)
 		m.Handle("/api/admin/plugins/", pluginAdmin)
 		m.Handle("/api/plugins/actions", pluginAdmin)
+		// Plugin icons: GET /api/plugins/<name>/icon. The pluginAdmin
+		// mux narrows on the /icon suffix internally; this prefix
+		// mount just routes the namespace.
+		m.Handle("/api/plugins/", pluginAdmin)
 	}
 
 	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

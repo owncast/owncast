@@ -172,7 +172,7 @@ func TestAgreesWith_SidecarMayDeclareMoreThanRuntimeUses(t *testing.T) {
 func TestParseManifest_Action_RelativeURLIsRewritten(t *testing.T) {
 	m, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
-		"permissions": ["http.serve"],
+		"permissions": ["http.serve", "ui.modify"],
 		"actions": [{"title": "Dashboard", "url": "/dashboard"}]
 	}`))
 	if err != nil {
@@ -186,7 +186,7 @@ func TestParseManifest_Action_RelativeURLIsRewritten(t *testing.T) {
 func TestParseManifest_Action_BareSlashIsRewritten(t *testing.T) {
 	m, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
-		"permissions": ["http.serve"],
+		"permissions": ["http.serve", "ui.modify"],
 		"actions": [{"title": "Dashboard", "url": "/"}]
 	}`))
 	if err != nil {
@@ -200,7 +200,7 @@ func TestParseManifest_Action_BareSlashIsRewritten(t *testing.T) {
 func TestParseManifest_Action_ExplicitPluginPathPreserved(t *testing.T) {
 	m, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
-		"permissions": ["http.serve"],
+		"permissions": ["http.serve", "ui.modify"],
 		"actions": [{"title": "Dashboard", "url": "/plugins/stats/foo"}]
 	}`))
 	if err != nil {
@@ -214,6 +214,7 @@ func TestParseManifest_Action_ExplicitPluginPathPreserved(t *testing.T) {
 func TestParseManifest_Action_ExternalURLPreserved(t *testing.T) {
 	m, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
+		"permissions": ["ui.modify"],
 		"actions": [{"title": "External", "url": "https://example.com/help"}]
 	}`))
 	if err != nil {
@@ -227,6 +228,7 @@ func TestParseManifest_Action_ExternalURLPreserved(t *testing.T) {
 func TestParseManifest_Action_MissingHttpServePerm(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
+		"permissions": ["ui.modify"],
 		"actions": [{"title": "Dashboard", "url": "/dashboard"}]
 	}`))
 	if err == nil {
@@ -240,6 +242,7 @@ func TestParseManifest_Action_MissingHttpServePerm(t *testing.T) {
 func TestParseManifest_Action_PointsAtOtherPlugin(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
+		"permissions": ["ui.modify"],
 		"actions": [{"title": "Other", "url": "/plugins/other-plugin/page"}]
 	}`))
 	if err == nil {
@@ -250,9 +253,66 @@ func TestParseManifest_Action_PointsAtOtherPlugin(t *testing.T) {
 	}
 }
 
+func TestParseManifest_Action_IconRelativeIsRewritten(t *testing.T) {
+	m, err := ParseManifest([]byte(`{
+		"api": "1", "name": "stats", "version": "1.0",
+		"permissions": ["http.serve", "ui.modify"],
+		"actions": [{"title": "Dashboard", "url": "/dashboard", "icon": "/star.png"}]
+	}`))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	if m.Actions[0].Icon != "/plugins/stats/star.png" {
+		t.Errorf("icon should auto-prefix to /plugins/stats/star.png, got %q", m.Actions[0].Icon)
+	}
+}
+
+func TestParseManifest_Action_IconExternalPreserved(t *testing.T) {
+	m, err := ParseManifest([]byte(`{
+		"api": "1", "name": "stats", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"actions": [{"title": "External", "url": "https://example.com", "icon": "https://cdn.example.com/star.png"}]
+	}`))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	if m.Actions[0].Icon != "https://cdn.example.com/star.png" {
+		t.Errorf("absolute icon URL should be preserved, got %q", m.Actions[0].Icon)
+	}
+}
+
+func TestParseManifest_Action_IconMissingHttpServePerm(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "stats", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"actions": [{"title": "External", "url": "https://example.com", "icon": "/star.png"}]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: icon targets self but http.serve not declared")
+	}
+	if !strings.Contains(err.Error(), "http.serve") {
+		t.Errorf("error should mention http.serve, got: %v", err)
+	}
+}
+
+func TestParseManifest_Action_IconPointsAtOtherPlugin(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "stats", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"actions": [{"title": "External", "url": "https://example.com", "icon": "/plugins/other-plugin/star.png"}]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: icon points at another plugin's namespace")
+	}
+	if !strings.Contains(err.Error(), "other plugin's namespace") {
+		t.Errorf("error should call out cross-plugin icon, got: %v", err)
+	}
+}
+
 func TestParseManifest_Action_TitleRequired(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
+		"permissions": ["ui.modify"],
 		"actions": [{"url": "https://example.com"}]
 	}`))
 	if err == nil {
@@ -271,6 +331,7 @@ func TestParseManifest_Action_UrlXorHtml(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			_, err := ParseManifest([]byte(`{
 				"api": "1", "name": "stats", "version": "1.0",
+				"permissions": ["ui.modify"],
 				"actions": [` + c.body + `]
 			}`))
 			if err == nil {
@@ -283,6 +344,7 @@ func TestParseManifest_Action_UrlXorHtml(t *testing.T) {
 func TestParseManifest_Action_HtmlOnly(t *testing.T) {
 	m, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
+		"permissions": ["ui.modify"],
 		"actions": [{"title": "Info", "html": "<p>hello</p>"}]
 	}`))
 	if err != nil {
@@ -290,6 +352,47 @@ func TestParseManifest_Action_HtmlOnly(t *testing.T) {
 	}
 	if m.Actions[0].Html != "<p>hello</p>" {
 		t.Errorf("html lost: %q", m.Actions[0].Html)
+	}
+}
+
+func TestParseManifest_UIModify_RequiredForActions(t *testing.T) {
+	// A plugin that contributes a viewer action button must declare
+	// "ui.modify" so the surface is visible in the permission list.
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "stats", "version": "1.0",
+		"actions": [{"title": "x", "url": "https://example.com"}]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: actions without ui.modify permission")
+	}
+	if !strings.Contains(err.Error(), "ui.modify") {
+		t.Errorf("error should mention ui.modify, got: %v", err)
+	}
+}
+
+func TestParseManifest_AdminPages_NoUIModifyRequired(t *testing.T) {
+	// Admin pages live in their own /plugins/<name>/admin namespace and
+	// don't alter Owncast's existing UI, so they're baseline plugin
+	// functionality, no ui.modify permission required.
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "stats", "version": "1.0",
+		"permissions": ["http.serve"],
+		"admin": {"pages": [{"title": "x", "path": "/admin"}]}
+	}`))
+	if err != nil {
+		t.Errorf("admin.pages should not require ui.modify: %v", err)
+	}
+}
+
+func TestParseManifest_UIModify_NotRequiredWhenNoUI(t *testing.T) {
+	// A plugin that doesn't declare any UI surfaces should not be forced
+	// to declare ui.modify — the permission is opt-in only for plugins
+	// that contribute to the host's UI.
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "headless", "version": "1.0"
+	}`))
+	if err != nil {
+		t.Errorf("headless plugin with no UI surfaces should be valid: %v", err)
 	}
 }
 
@@ -370,5 +473,45 @@ func TestParseManifest_Network_NoFetchPermissionAllowsAnyShape(t *testing.T) {
 	}
 	if len(m.Network.AllowedHosts) != 1 {
 		t.Errorf("allowedHosts should be preserved even without fetch perm: %v", m.Network.AllowedHosts)
+	}
+}
+
+func TestRequireChatFilterPermission_RejectsWhenMissing(t *testing.T) {
+	// A plugin that subscribes to filterChatMessage at register-time must
+	// declare the chat.filter permission in its manifest. The host refuses
+	// to load otherwise so the admin can't be surprised by a plugin that
+	// silently starts rewriting chat.
+	m := &Manifest{Name: "stealth", Permissions: nil}
+	subs := Subscriptions{
+		Filter: []Subscription{{Event: EventChatMessageReceived, Priority: 100}},
+	}
+	err := requireChatFilterPermission(m, subs)
+	if err == nil {
+		t.Fatal("expected error when filterChatMessage is subscribed without chat.filter")
+	}
+	if !strings.Contains(err.Error(), PermChatFilter) {
+		t.Errorf("error should mention %q, got: %v", PermChatFilter, err)
+	}
+}
+
+func TestRequireChatFilterPermission_AcceptsWhenDeclared(t *testing.T) {
+	m := &Manifest{Name: "honest", Permissions: []string{PermChatFilter}}
+	subs := Subscriptions{
+		Filter: []Subscription{{Event: EventChatMessageReceived, Priority: 100}},
+	}
+	if err := requireChatFilterPermission(m, subs); err != nil {
+		t.Errorf("declared chat.filter should accept: %v", err)
+	}
+}
+
+func TestRequireChatFilterPermission_NoOpWhenNoFilterSubscription(t *testing.T) {
+	// A plugin that doesn't subscribe to filterChatMessage at all should
+	// pass through, regardless of whether it declares chat.filter.
+	m := &Manifest{Name: "passive", Permissions: nil}
+	subs := Subscriptions{
+		Filter: []Subscription{{Event: "some-other-event", Priority: 100}},
+	}
+	if err := requireChatFilterPermission(m, subs); err != nil {
+		t.Errorf("non-chat filter subscription should not require chat.filter: %v", err)
 	}
 }

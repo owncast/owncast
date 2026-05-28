@@ -159,6 +159,18 @@ func (m *Manifest) validateNetwork() error {
 }
 
 func (m *Manifest) validateActions() error {
+	// Action buttons are the only UI surface a plugin can place inside
+	// Owncast's own chrome (the viewer action bar). Self-contained admin
+	// pages and static content served under /plugins/<name>/ are baseline
+	// plugin functionality and don't gate on this.
+	if len(m.Actions) > 0 && !m.hasPermission(PermUIModify) {
+		return errors.New(
+			"manifest.actions is set but the manifest does not declare " +
+				"the \"ui.modify\" permission; plugins that contribute viewer " +
+				"action buttons must opt in to ui.modify so it's visible to " +
+				"anyone reviewing the manifest that the plugin places UI " +
+				"inside Owncast's chrome")
+	}
 	pluginPrefix := "/plugins/" + m.Name + "/"
 	hasHTTPServe := m.hasPermission(PermHttpServe)
 	for i := range m.Actions {
@@ -188,7 +200,38 @@ func (m *Manifest) validateActions() error {
 			return fmt.Errorf("manifest.actions[%d].url points at another plugin's namespace: %s", i, a.Url)
 		}
 	}
+	for i := range m.Actions {
+		rewritten, err := rewriteActionIcon(pluginPrefix, hasHTTPServe, m.Actions[i].Icon)
+		if err != nil {
+			return fmt.Errorf("manifest.actions[%d].icon: %w", i, err)
+		}
+		m.Actions[i].Icon = rewritten
+	}
 	return nil
+}
+
+// rewriteActionIcon applies the same path-handling rules to a button's
+// icon URL as we do to the button's url: a same-origin relative path is
+// rewritten into this plugin's namespace; an http(s) URL is left alone;
+// a cross-plugin path is rejected. Empty input passes through (icons
+// are optional).
+func rewriteActionIcon(pluginPrefix string, hasHTTPServe bool, icon string) (string, error) {
+	if icon == "" {
+		return "", nil
+	}
+	if strings.HasPrefix(icon, "http://") || strings.HasPrefix(icon, "https://") {
+		return icon, nil
+	}
+	if strings.HasPrefix(icon, "/") && !strings.HasPrefix(icon, "/plugins/") {
+		icon = pluginPrefix + strings.TrimPrefix(icon, "/")
+	}
+	if strings.HasPrefix(icon, pluginPrefix) && !hasHTTPServe {
+		return "", fmt.Errorf("targets this plugin (%s) but http.serve permission is not declared", icon)
+	}
+	if strings.HasPrefix(icon, "/plugins/") && !strings.HasPrefix(icon, pluginPrefix) {
+		return "", fmt.Errorf("points at another plugin's namespace: %s", icon)
+	}
+	return icon, nil
 }
 
 // AgreesWith reports whether the runtime registration `other` is consistent

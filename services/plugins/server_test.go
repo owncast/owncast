@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 	"testing/fstest"
+
+	"github.com/gobwas/glob"
 )
 
 // Thin wrappers so the test code reads cleanly. These are only used by the
@@ -79,24 +81,98 @@ func TestServer_DirectoryServesIndexHTML(t *testing.T) {
 		"sub/index.html": {Data: []byte("<h1>sub</h1>")},
 	})
 
+	// Slash-terminated directory URLs serve the index.html directly. Without
+	// a trailing slash, the server issues a 301 to the canonical slash form
+	// so the browser's base URL is right for any relative links on the page.
 	for _, tc := range []struct {
-		path string
-		want string
+		path         string
+		wantStatus   int
+		wantBody     string
+		wantLocation string
 	}{
-		{"/plugins/demo/", "<h1>root</h1>"},
-		{"/plugins/demo/sub", "<h1>sub</h1>"},
-		{"/plugins/demo/sub/", "<h1>sub</h1>"},
+		{path: "/plugins/demo/", wantStatus: http.StatusOK, wantBody: "<h1>root</h1>"},
+		{path: "/plugins/demo/sub/", wantStatus: http.StatusOK, wantBody: "<h1>sub</h1>"},
+		{path: "/plugins/demo/sub", wantStatus: http.StatusMovedPermanently, wantLocation: "/plugins/demo/sub/"},
 	} {
 		req := httptest.NewRequest("GET", tc.path, nil)
 		rec := httptest.NewRecorder()
 		s.ServeHTTP(rec, req)
-		if rec.Code != http.StatusOK {
-			t.Errorf("%s: status %d want 200", tc.path, rec.Code)
+		if rec.Code != tc.wantStatus {
+			t.Errorf("%s: status %d want %d", tc.path, rec.Code, tc.wantStatus)
 			continue
 		}
-		if rec.Body.String() != tc.want {
-			t.Errorf("%s: body %q want %q", tc.path, rec.Body.String(), tc.want)
+		if tc.wantBody != "" && rec.Body.String() != tc.wantBody {
+			t.Errorf("%s: body %q want %q", tc.path, rec.Body.String(), tc.wantBody)
 		}
+		if tc.wantLocation != "" && rec.Header().Get("Location") != tc.wantLocation {
+			t.Errorf("%s: Location %q want %q", tc.path, rec.Header().Get("Location"), tc.wantLocation)
+		}
+	}
+}
+
+func TestServer_InjectsAdminStylesOnAdminPath(t *testing.T) {
+	// HTML served on a manifest-declared admin path gets the host's admin
+	// stylesheet link injected before </head>, so the plugin iframe matches
+	// the surrounding admin visually without plugin-author opt-in.
+	loaded := &Loaded{
+		Manifest: &Manifest{
+			API: "1", Name: "demo", Version: "1.0.0",
+			Permissions: []string{"http.serve"},
+		},
+		AssetsFS: fstest.MapFS{
+			"admin/index.html": {Data: []byte("<html><head><title>x</title></head><body>hi</body></html>")},
+			"index.html":       {Data: []byte("<html><head></head><body>public</body></html>")},
+		},
+		adminGlobs: []glob.Glob{glob.MustCompile("/admin/*")},
+	}
+	s := NewServer([]*Loaded{loaded})
+	// IsAuthenticated returns true so the admin-path gate lets the request through.
+	s.IsAuthenticated = func(*http.Request) bool { return true }
+	s.RequireAdmin = func(h http.HandlerFunc) http.HandlerFunc { return h }
+
+	// Admin path: snippet present.
+	rec := httptest.NewRecorder()
+	s.ServeHTTP(rec, httptest.NewRequest("GET", "/plugins/demo/admin/", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("admin path status %d want 200; body=%q", rec.Code, rec.Body.String())
+	}
+	if !strings.Contains(rec.Body.String(), adminStyleMarker) {
+		t.Errorf("admin HTML did not contain injected stylesheet marker; body=%q", rec.Body.String())
+	}
+	if !strings.Contains(rec.Body.String(), "/styles/admin/plugin-iframe.css") {
+		t.Errorf("admin HTML missing plugin-iframe.css link; body=%q", rec.Body.String())
+	}
+
+	// Public path: snippet absent (we don't theme non-admin pages).
+	rec = httptest.NewRecorder()
+	s.ServeHTTP(rec, httptest.NewRequest("GET", "/plugins/demo/", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("public path status %d want 200; body=%q", rec.Code, rec.Body.String())
+	}
+	if strings.Contains(rec.Body.String(), adminStyleMarker) {
+		t.Errorf("public HTML should not have injected stylesheet marker; body=%q", rec.Body.String())
+	}
+}
+
+func TestInjectAdminStyles_Idempotent(t *testing.T) {
+	html := []byte("<html><head></head><body></body></html>")
+	once := injectAdminStyles(html)
+	twice := injectAdminStyles(once)
+	if string(once) != string(twice) {
+		t.Errorf("second pass changed the document\nfirst:  %q\nsecond: %q", once, twice)
+	}
+}
+
+func TestInjectAdminStyles_NoHeadStillInjects(t *testing.T) {
+	// A body-only fragment still gets the link prepended so the iframe is
+	// themed even when the plugin emits a bare HTML snippet.
+	html := []byte("<body>just a fragment</body>")
+	out := injectAdminStyles(html)
+	if !strings.Contains(string(out), adminStyleMarker) {
+		t.Errorf("expected marker in output: %q", out)
+	}
+	if !strings.HasPrefix(string(out), "<link") {
+		t.Errorf("expected link prepended, got: %q", out)
 	}
 }
 
@@ -182,6 +258,7 @@ func TestIsAllowedResponseHeader(t *testing.T) {
 		"Cache-Control", "ETag", "Last-Modified", "Location", "Vary",
 		"Access-Control-Allow-Origin", "Access-Control-Allow-Methods",
 		"Content-Encoding", "Content-Language", "Link",
+		"Set-Cookie", "set-cookie", // plugins can set cookies in their own namespace
 	}
 	for _, h := range allowed {
 		if !isAllowedResponseHeader(h) {
@@ -190,7 +267,6 @@ func TestIsAllowedResponseHeader(t *testing.T) {
 	}
 
 	denied := []string{
-		"Set-Cookie",
 		"Authorization",
 		"WWW-Authenticate",
 		"X-Custom-Plugin-Header",

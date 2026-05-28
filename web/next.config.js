@@ -22,6 +22,21 @@ async function rewrites() {
       source: '/api/:path*',
       destination: 'http://localhost:8080/api/:path*', // Proxy to Backend to work around CORS.
     },
+    // Plugin admin iframes proxied so they're same-origin to the admin UI
+    // in dev. Two patterns: the first matches slash-terminated URLs and
+    // preserves the trailing slash through the rewrite; the second handles
+    // everything else. Without the slash-preserving variant the backend
+    // 301-redirects /plugins/<name>/admin to /plugins/<name>/admin/ to
+    // canonicalize the directory, the proxy strips the slash again, and
+    // the iframe runs into an infinite redirect loop.
+    {
+      source: '/plugins/:path*/',
+      destination: 'http://localhost:8080/plugins/:path*/',
+    },
+    {
+      source: '/plugins/:path*',
+      destination: 'http://localhost:8080/plugins/:path*',
+    },
     {
       source: '/hls/:path*',
       destination: 'http://localhost:8080/hls/:path*', // Proxy to Backend to work around CORS.
