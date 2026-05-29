@@ -82,6 +82,11 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 	if pluginAdmin != nil {
 		m.Handle("/api/admin/plugins", pluginAdmin)
 		m.Handle("/api/admin/plugins/", pluginAdmin)
+		// Plugin registry browse + install. Sibling prefix of
+		// /api/admin/plugins/ so the trailing-slash matcher above
+		// doesn't claim these paths. The pluginAdmin mux dispatches
+		// the action (list / install) internally.
+		m.Handle("/api/admin/plugin-registry/", pluginAdmin)
 		m.Handle("/api/plugins/actions", pluginAdmin)
 		// Plugin icons: GET /api/plugins/<name>/icon. The pluginAdmin
 		// mux narrows on the /icon suffix internally; this prefix

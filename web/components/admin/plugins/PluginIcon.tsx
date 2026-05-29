@@ -14,8 +14,9 @@ export type PluginIconProps = {
 // icon.png. The single path describes a classic puzzle piece (knob on
 // the top, socket on the right) and uses currentColor so it inherits
 // the surrounding text color, including the AntD menu's hover and
-// selected states.
-const PuzzlePiece = ({ className }: { className?: string }) => (
+// selected states. Exported so the registry browse modal can render
+// the same placeholder for plugins whose icon URL isn't set.
+export const PuzzlePiece = ({ className }: { className?: string }) => (
   <svg
     viewBox="0 0 24 24"
     className={className}

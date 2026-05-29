@@ -35,3 +35,10 @@
   font-weight: normal;
   font-size: 13px;
 }
+
+// Tag rendered next to the plugin's version when the registry has a
+// newer version. Cursor-pointer to hint it's clickable (wrapped in a
+// Popconfirm).
+.updateTag {
+  cursor: pointer;
+}

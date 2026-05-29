@@ -254,6 +254,14 @@ func (p *Host) AdminHandler() http.Handler {
 		}
 	}))
 
+	// Registry browse + install. Sibling prefix so the catch-all
+	// /api/admin/plugins/ trailing-slash matcher below doesn't swallow
+	// them. Registered as a prefix (trailing slash) and dispatched
+	// internally so /list and /list/ both work — the admin frontend's
+	// Next.js dev server 308-redirects every URL to its slash variant
+	// because of trailingSlash:true in next.config.js.
+	mux.Handle("/api/admin/plugin-registry/", requireAdmin(p.handleRegistryRoute))
+
 	mux.Handle("/api/admin/plugins/", requireAdmin(p.handlePluginAction))
 
 	mux.HandleFunc("/api/plugins/actions", func(w http.ResponseWriter, r *http.Request) {

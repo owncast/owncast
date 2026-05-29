@@ -1,13 +1,22 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { Alert, Button, message, Space, Typography, Upload } from 'antd';
+import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { Alert, Button, message, Space, Tabs, Typography, Upload } from 'antd';
 import type { UploadProps } from 'antd';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-export-i18n';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
-import { fetchData, PLUGIN_UPLOAD, PLUGINS_LIST, pluginActionUrl } from '../../utils/apis';
+import {
+  fetchData,
+  PLUGIN_REGISTRY_INSTALL,
+  PLUGIN_REGISTRY_LIST,
+  PLUGIN_UPLOAD,
+  PLUGINS_LIST,
+  pluginActionUrl,
+} from '../../utils/apis';
 import { Plugin } from '../../interfaces/plugin';
 import { PluginsList } from '../../components/admin/plugins/PluginsList';
+import { BrowseRegistry, RegistryPlugin } from '../../components/admin/plugins/BrowseRegistry';
+import { InstallConfirmModal } from '../../components/admin/plugins/InstallConfirmModal';
 import { Localization } from '../../types/localization';
 import s from './plugins.module.scss';
 
@@ -31,6 +40,18 @@ const Plugins = () => {
   const [reloadingNames, setReloadingNames] = useState<Set<string>>(new Set());
   // And for the Uninstall button.
   const [uninstallingNames, setUninstallingNames] = useState<Set<string>>(new Set());
+  // Tracks which tab is active so the tab-bar extras (Upload +
+  // Refresh) only show when they're contextually relevant to the
+  // Installed view.
+  const [activeTab, setActiveTab] = useState('installed');
+  // The just-installed plugin awaiting an enable/cancel decision in
+  // the InstallConfirmModal. Null when no modal is open.
+  const [pendingEnable, setPendingEnable] = useState<Plugin | null>(null);
+  // Registry list, used both by the Browse tab and by the Installed
+  // tab's "update available" tags. Fetched at the page level so a
+  // single source of truth feeds both views.
+  const [registryPlugins, setRegistryPlugins] = useState<RegistryPlugin[]>([]);
+  const [registryLoading, setRegistryLoading] = useState(true);
 
   const loadPlugins = useCallback(async () => {
     try {
@@ -44,9 +65,56 @@ const Plugins = () => {
     }
   }, []);
 
+  // Registry fetch is independent of the installed-list fetch: a
+  // misconfigured or unreachable registry shouldn't block the
+  // Installed tab. Failures are swallowed here; BrowseRegistry
+  // surfaces its own empty state when the list comes back empty.
+  const loadRegistry = useCallback(async () => {
+    setRegistryLoading(true);
+    try {
+      const result = await fetchData(PLUGIN_REGISTRY_LIST);
+      setRegistryPlugins(Array.isArray(result) ? result : []);
+    } catch {
+      setRegistryPlugins([]);
+    } finally {
+      setRegistryLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadPlugins();
-  }, [loadPlugins]);
+    loadRegistry();
+  }, [loadPlugins, loadRegistry]);
+
+  // Map of installed plugin name -> currently-installed version.
+  // Browse cards use this to decide whether to render "Install" /
+  // "Installed" / "Update".
+  const installedVersions = useMemo(
+    () =>
+      new Map<string, string>(
+        plugins.filter(p => Boolean(p.version)).map(p => [p.name, p.version as string]),
+      ),
+    [plugins],
+  );
+
+  // Map of installed plugin name -> newer version available in the
+  // registry. Empty when the installed and registry versions match
+  // (or the plugin isn't in the registry at all). PluginsList renders
+  // the entries as "update available" tags in the version line.
+  const availableUpdates = useMemo(
+    () =>
+      new Map<string, string>(
+        plugins.flatMap(p => {
+          const reg = registryPlugins.find(r => r.name === p.name);
+          const latest = reg?.latest?.version;
+          if (p.version && latest && latest !== p.version) {
+            return [[p.name, latest] as [string, string]];
+          }
+          return [];
+        }),
+      ),
+    [plugins, registryPlugins],
+  );
 
   const handleToggleEnabled = async (plugin: Plugin, enabled: boolean) => {
     setTogglingNames(prev => {
@@ -149,20 +217,90 @@ const Plugins = () => {
     }
   };
 
+  // Called when the admin clicks "Enable plugin" in the post-install
+  // confirmation modal. Reuses the same enable endpoint the Switch
+  // hits, so the re-approval and load-failure paths are identical.
+  const handleEnableAfterInstall = async () => {
+    const plugin = pendingEnable;
+    setPendingEnable(null);
+    if (!plugin) return;
+    try {
+      await fetchData(pluginActionUrl(plugin.name, 'enable'), { method: 'POST' });
+      message.success(t(Localization.Admin.Plugins.installEnabledSuccess, { name: plugin.name }));
+      await loadPlugins();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  // Common path for "fetch the registry's bytes for (name, version)
+  // and run Manager.Install". Shared between the Browse tab's Update
+  // button and the Installed tab's "update available" tag so both
+  // surface the same post-install confirmation flow.
+  const installFromRegistry = useCallback(
+    async (name: string, version: string) => {
+      const entry = (await fetchData(PLUGIN_REGISTRY_INSTALL, {
+        method: 'POST',
+        data: { name, version },
+      })) as Plugin;
+      message.success(t(Localization.Admin.Plugins.uploadSuccess, { name: entry.name }));
+      await loadPlugins();
+      await loadRegistry();
+      // Only prompt to enable for plugins that aren't already
+      // running. Updates of enabled plugins keep their enabled state
+      // unless the new manifest expanded permissions (in which case
+      // the host marks them auto-disabled and the modal shows the
+      // new perms).
+      if (!entry.enabled) {
+        setPendingEnable(entry);
+      }
+    },
+    [loadPlugins, loadRegistry, t],
+  );
+
+  const installedTab = (
+    <PluginsList
+      plugins={plugins}
+      loading={loading}
+      togglingNames={togglingNames}
+      reloadingNames={reloadingNames}
+      uninstallingNames={uninstallingNames}
+      availableUpdates={availableUpdates}
+      onToggleEnabled={handleToggleEnabled}
+      onReload={handleReload}
+      onUninstall={handleUninstall}
+      onUpdate={(plugin, version) => installFromRegistry(plugin.name, version)}
+      onSelect={p => router.push({ pathname: '/admin/plugins/configure', query: { name: p.name } })}
+    />
+  );
+
+  const browseTab = (
+    <BrowseRegistry
+      installedVersions={installedVersions}
+      registry={registryPlugins}
+      registryLoading={registryLoading}
+      onInstall={installFromRegistry}
+    />
+  );
+
+  // Tab-bar actions for the Installed view: Upload + Refresh. Lives
+  // in the AntD Tabs `tabBarExtraContent` slot so the buttons sit
+  // inline with the tab labels on the right edge. We hide them on
+  // the Browse tab since neither action applies there.
+  const installedActions = (
+    <Space>
+      <Upload {...uploadProps}>
+        <Button icon={<UploadOutlined />}>{t(Localization.Admin.Plugins.uploadButton)}</Button>
+      </Upload>
+      <Button icon={<ReloadOutlined />} onClick={loadPlugins}>
+        {t(Localization.Admin.Plugins.refresh)}
+      </Button>
+    </Space>
+  );
+
   return (
     <div>
-      <Space direction="horizontal" className={s.titleRow}>
-        <Title>{t(Localization.Admin.Plugins.pageTitle)}</Title>
-        <Upload {...uploadProps}>
-          <Button type="primary" icon={<UploadOutlined />}>
-            {t(Localization.Admin.Plugins.uploadButton)}
-          </Button>
-        </Upload>
-        <Button icon={<ReloadOutlined />} onClick={loadPlugins}>
-          {t(Localization.Admin.Plugins.refresh)}
-        </Button>
-      </Space>
-
+      <Title>{t(Localization.Admin.Plugins.pageTitle)}</Title>
       <Paragraph>{t(Localization.Admin.Plugins.pageDescription)}</Paragraph>
 
       {error && (
@@ -177,18 +315,24 @@ const Plugins = () => {
         />
       )}
 
-      <PluginsList
-        plugins={plugins}
-        loading={loading}
-        togglingNames={togglingNames}
-        reloadingNames={reloadingNames}
-        uninstallingNames={uninstallingNames}
-        onToggleEnabled={handleToggleEnabled}
-        onReload={handleReload}
-        onUninstall={handleUninstall}
-        onSelect={p =>
-          router.push({ pathname: '/admin/plugins/configure', query: { name: p.name } })
-        }
+      <Tabs
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        tabBarExtraContent={activeTab === 'installed' ? installedActions : undefined}
+        items={[
+          {
+            key: 'installed',
+            label: t(Localization.Admin.Plugins.tabInstalled),
+            children: installedTab,
+          },
+          { key: 'browse', label: t(Localization.Admin.Plugins.tabBrowse), children: browseTab },
+        ]}
+      />
+
+      <InstallConfirmModal
+        plugin={pendingEnable}
+        onCancel={() => setPendingEnable(null)}
+        onEnable={handleEnableAfterInstall}
       />
     </div>
   );

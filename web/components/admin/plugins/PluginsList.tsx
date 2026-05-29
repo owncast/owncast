@@ -29,9 +29,19 @@ export type PluginsListProps = {
   reloadingNames: Set<string>;
   // And for the Uninstall button.
   uninstallingNames: Set<string>;
+  // Map of plugin name -> newer version available in the registry.
+  // Each entry shows up as a clickable "Update available" tag next
+  // to the installed version. Optional so the component works fine
+  // when the registry isn't configured.
+  availableUpdates?: Map<string, string>;
   onToggleEnabled: (plugin: Plugin, enabled: boolean) => Promise<void> | void;
   onReload: (plugin: Plugin) => Promise<void> | void;
   onUninstall: (plugin: Plugin) => Promise<void> | void;
+  // Called when the admin clicks an "Update available" tag. The
+  // parent runs the registry-install endpoint with the new version
+  // (treated as a fresh install path: same SHA256 check, same
+  // post-install confirmation modal).
+  onUpdate?: (plugin: Plugin, version: string) => Promise<void> | void;
   onSelect: (plugin: Plugin) => void;
 };
 
@@ -45,9 +55,11 @@ export const PluginsList = ({
   togglingNames,
   reloadingNames,
   uninstallingNames,
+  availableUpdates,
   onToggleEnabled,
   onReload,
   onUninstall,
+  onUpdate,
   onSelect,
 }: PluginsListProps) => {
   const { t } = useTranslation();
@@ -61,9 +73,29 @@ export const PluginsList = ({
           <Space direction="vertical" size={2}>
             <Text strong>{plugin.name}</Text>
             {plugin.version && (
-              <Text type="secondary" className={s.secondaryText}>
-                v{plugin.version}
-              </Text>
+              <Space size={6} align="center">
+                <Text type="secondary" className={s.secondaryText}>
+                  v{plugin.version}
+                </Text>
+                {availableUpdates?.has(plugin.name) && onUpdate && (
+                  <Popconfirm
+                    title={t(Localization.Admin.Plugins.updateConfirmTitle, {
+                      name: plugin.name,
+                      version: availableUpdates.get(plugin.name),
+                    })}
+                    okText={t(Localization.Admin.Plugins.updateConfirmOk)}
+                    cancelText={t(Localization.Admin.Plugins.updateConfirmCancel)}
+                    okButtonProps={{ type: 'primary' }}
+                    onConfirm={() => onUpdate(plugin, availableUpdates.get(plugin.name) as string)}
+                  >
+                    <Tag color="blue" className={s.updateTag}>
+                      {t(Localization.Admin.Plugins.updateAvailable, {
+                        version: availableUpdates.get(plugin.name),
+                      })}
+                    </Tag>
+                  </Popconfirm>
+                )}
+              </Space>
             )}
             {plugin.description && (
               <Text type="secondary" className={s.secondaryText}>

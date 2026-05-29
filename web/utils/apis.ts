@@ -65,6 +65,8 @@ export const UPDATE_CHAT_MESSGAE_VIZ = `/api/admin/chat/messagevisibility`;
 // fetches; in production the admin UI is same-origin so they resolve directly.
 export const PLUGINS_LIST = `/api/admin/plugins`;
 export const PLUGIN_UPLOAD = `/api/admin/plugins`;
+export const PLUGIN_REGISTRY_LIST = `/api/admin/plugin-registry/list`;
+export const PLUGIN_REGISTRY_INSTALL = `/api/admin/plugin-registry/install`;
 export const pluginActionUrl = (
   name: string,
   action: 'enable' | 'disable' | 'reload' | 'uninstall',
