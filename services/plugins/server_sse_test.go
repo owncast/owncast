@@ -23,7 +23,7 @@ func sseServer(t *testing.T, perms []string, hub *SSEHub, adminGlobs ...string) 
 		globs = append(globs, glob.MustCompile(g))
 	}
 	loaded := &Loaded{
-		Manifest:   &Manifest{API: "1", Name: "demo", Version: "1.0.0", Permissions: perms},
+		Manifest:   &Manifest{API: "1", DisplayName: "demo", Slug: "demo", Version: "1.0.0", Permissions: perms},
 		adminGlobs: globs,
 	}
 	s := NewServer([]*Loaded{loaded})

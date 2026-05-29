@@ -43,7 +43,7 @@ func formatFilterTimeoutError(err error) error {
 // dispatcher already calls recordFilterFailure on any returned error, so
 // this is a direct check of the strike accumulator.
 func TestFilterTimeoutCountsAsStrike(t *testing.T) {
-	l := &Loaded{Manifest: &Manifest{Name: "slow-filter"}}
+	l := &Loaded{Manifest: &Manifest{DisplayName: "slow-filter"}}
 	for i := 0; i < FilterStrikeThreshold-1; i++ {
 		if disabled := l.recordFilterFailure(); disabled {
 			t.Fatalf("disabled too early at strike %d", i+1)

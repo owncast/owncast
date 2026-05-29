@@ -74,7 +74,7 @@ export type PluginDetailProps = {
 // redirect loop. Paths whose last segment has an extension (e.g.
 // "/admin/page.html") are left alone so the host actually serves the
 // file instead of looking up a same-named directory.
-const pluginAdminUrl = (pluginName: string, path: string): string => {
+const pluginAdminUrl = (pluginSlug: string, path: string): string => {
   let normalized = path;
   if (normalized.endsWith('/*')) {
     normalized = normalized.slice(0, -2) || '/';
@@ -89,7 +89,7 @@ const pluginAdminUrl = (pluginName: string, path: string): string => {
   if (!looksLikeFile && !normalized.endsWith('/')) {
     normalized = `${normalized}/`;
   }
-  return `/plugins/${encodeURIComponent(pluginName)}${normalized}`;
+  return `/plugins/${encodeURIComponent(pluginSlug)}${normalized}`;
 };
 
 // PluginDetail renders the per-plugin view: metadata header + a tab for
@@ -105,13 +105,13 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
   const uniquePages = useMemo(() => {
     const seen = new Set<string>();
     return (plugin.adminPages ?? [])
-      .map(page => ({ ...page, url: pluginAdminUrl(plugin.name, page.path) }))
+      .map(page => ({ ...page, url: pluginAdminUrl(plugin.slug, page.path) }))
       .filter(page => {
         if (seen.has(page.url)) return false;
         seen.add(page.url);
         return true;
       });
-  }, [plugin.adminPages, plugin.name]);
+  }, [plugin.adminPages, plugin.slug]);
 
   const pendingSet = useMemo(
     () => new Set(plugin.pendingPermissions ?? []),
@@ -244,12 +244,12 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
         {/*
           Uncontrolled tabs: AntD picks defaultActiveKey on mount and
           manages selection state internally. The `key` prop ties the
-          tab state to the plugin name, so navigating between plugins
+          tab state to the plugin slug, so navigating between plugins
           (same component, new props) remounts the Tabs and resets the
           active tab to the new plugin's first one instead of carrying
           the stale selection across.
         */}
-        <Tabs key={plugin.name} defaultActiveKey={tabs[0]?.key} items={tabs} />
+        <Tabs key={plugin.slug} defaultActiveKey={tabs[0]?.key} items={tabs} />
       </Space>
     </div>
   );

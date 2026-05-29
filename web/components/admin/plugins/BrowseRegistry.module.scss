@@ -59,6 +59,13 @@
   margin-bottom: 8px !important;
 }
 
+// Row of permission tags between the summary and the optional tag
+// row. Small bottom margin so the tag row underneath doesn't visually
+// merge into the permissions when both are present.
+.permissions {
+  margin-bottom: 6px;
+}
+
 .actions {
   flex: 0 0 auto;
   align-self: center;

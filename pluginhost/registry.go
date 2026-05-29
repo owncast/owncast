@@ -74,8 +74,10 @@ func (p *Host) handleRegistryList(w http.ResponseWriter, _ *http.Request) {
 }
 
 // registryInstallRequest is the body shape posted by the admin UI.
+// Slug identifies the plugin in the registry (the registry's primary
+// key); version pins a specific release.
 type registryInstallRequest struct {
-	Name    string `json:"name"`
+	Slug    string `json:"slug"`
 	Version string `json:"version"`
 }
 
@@ -93,8 +95,8 @@ func (p *Host) handleRegistryInstall(w http.ResponseWriter, r *http.Request) {
 		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: "invalid request body"})
 		return
 	}
-	if req.Name == "" || req.Version == "" {
-		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: "name and version required"})
+	if req.Slug == "" || req.Version == "" {
+		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: "slug and version required"})
 		return
 	}
 
@@ -108,14 +110,14 @@ func (p *Host) handleRegistryInstall(w http.ResponseWriter, r *http.Request) {
 	// downloadURL + sha256 for the requested version. We don't trust
 	// any URL the admin frontend might have constructed locally; the
 	// registry's metadata is the source of truth.
-	detail, err := fetchRegistryDetail(base, req.Name)
+	detail, err := fetchRegistryDetail(base, req.Slug)
 	if err != nil {
 		writeJSONResponse(w, http.StatusBadGateway, map[string]string{jsonErrorKey: err.Error()})
 		return
 	}
 	match := findVersion(detail, req.Version)
 	if match == nil {
-		writeJSONResponse(w, http.StatusNotFound, map[string]string{jsonErrorKey: fmt.Sprintf("version %q not found in registry for plugin %q", req.Version, req.Name)})
+		writeJSONResponse(w, http.StatusNotFound, map[string]string{jsonErrorKey: fmt.Sprintf("version %q not found in registry for plugin %q", req.Version, req.Slug)})
 		return
 	}
 
@@ -142,7 +144,7 @@ func (p *Host) handleRegistryInstall(w http.ResponseWriter, r *http.Request) {
 		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: err.Error()})
 		return
 	}
-	log.Infof("plugin %q v%s installed from registry by admin", entry.Name, entry.Version)
+	log.Infof("plugin %q [%s] v%s installed from registry by admin", entry.DisplayName, entry.Slug, entry.Version)
 	writeJSONResponse(w, http.StatusOK, entry)
 }
 
@@ -155,21 +157,22 @@ type registryVersion struct {
 }
 
 type registryDetail struct {
-	Name     string            `json:"name"`
+	Slug     string            `json:"slug"`
 	Versions []registryVersion `json:"versions"`
 }
 
 // fetchRegistryDetail GETs the registry's detail endpoint for a
 // single plugin and decodes only the fields we use for install. The
-// registry can return extra fields without breaking us.
-func fetchRegistryDetail(base, name string) (*registryDetail, error) {
-	resp, err := registryHTTPClient.Get(base + "/api/plugins/" + url.PathEscape(name))
+// registry can return extra fields without breaking us. Slug is the
+// registry's primary identifier, matching the URL segment used here.
+func fetchRegistryDetail(base, slug string) (*registryDetail, error) {
+	resp, err := registryHTTPClient.Get(base + "/api/plugins/" + url.PathEscape(slug))
 	if err != nil {
 		return nil, fmt.Errorf("registry fetch: %w", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("plugin %q not in registry", name)
+		return nil, fmt.Errorf("plugin %q not in registry", slug)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("registry returned %s", resp.Status)

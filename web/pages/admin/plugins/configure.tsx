@@ -9,11 +9,11 @@ import { PluginDetail } from '../../../components/admin/plugins/PluginDetail';
 import { Localization } from '../../../types/localization';
 import s from './configure.module.scss';
 
-// Per-plugin admin view at /admin/plugins/configure/?name=<plugin-name>.
+// Per-plugin admin view at /admin/plugins/configure/?slug=<plugin-slug>.
 //
-// Why a query-string route and not a dynamic /admin/plugins/[name]/ route:
+// Why a query-string route and not a dynamic /admin/plugins/[slug]/ route:
 // the admin UI is statically exported (next.config.js sets output: 'export'
-// for non-dev), and plugin names are discovered at runtime by the Owncast
+// for non-dev), and plugin slugs are discovered at runtime by the Owncast
 // server. A dynamic Next.js route would either fail the static export or
 // require build-time enumeration we can't provide. A static page with a
 // runtime query param sidesteps both: one HTML file is generated, all
@@ -26,8 +26,8 @@ import s from './configure.module.scss';
 const PluginConfigurePage = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const nameParam = router.query.name;
-  const name = typeof nameParam === 'string' ? nameParam : undefined;
+  const slugParam = router.query.slug;
+  const slug = typeof slugParam === 'string' ? slugParam : undefined;
 
   const [plugin, setPlugin] = useState<Plugin | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,7 @@ const PluginConfigurePage = () => {
   const [notFound, setNotFound] = useState(false);
 
   const load = useCallback(async () => {
-    if (!name) {
+    if (!slug) {
       setLoading(false);
       return;
     }
@@ -43,7 +43,7 @@ const PluginConfigurePage = () => {
     try {
       const result = await fetchData(PLUGINS_LIST);
       const list: Plugin[] = Array.isArray(result) ? result : [];
-      const found = list.find(p => p.name === name) ?? null;
+      const found = list.find(p => p.slug === slug) ?? null;
       setPlugin(found);
       setNotFound(found === null);
       setError(null);
@@ -52,7 +52,7 @@ const PluginConfigurePage = () => {
     } finally {
       setLoading(false);
     }
-  }, [name]);
+  }, [slug]);
 
   useEffect(() => {
     if (router.isReady) load();
@@ -83,7 +83,7 @@ const PluginConfigurePage = () => {
         type="warning"
         showIcon
         message={t(Localization.Admin.Plugins.notFoundTitle)}
-        description={t(Localization.Admin.Plugins.notFoundDescription, { name: name ?? '' })}
+        description={t(Localization.Admin.Plugins.notFoundDescription, { name: slug ?? '' })}
       />
     );
   }

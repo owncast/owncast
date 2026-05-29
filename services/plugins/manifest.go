@@ -4,10 +4,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 )
 
 const SupportedAPIVersion = "1"
+
+// slugPattern is the validation pattern for both explicit and
+// auto-derived plugin slugs. The slug becomes the plugin's URL
+// segment, on-disk filename, KV namespace, and registry identifier,
+// so it has to stay narrow: lowercase letters/digits/hyphens, has to
+// start with a letter, max 64 chars.
+var slugPattern = regexp.MustCompile(`^[a-z][a-z0-9-]{0,63}$`)
 
 type Subscription struct {
 	Event    string `json:"event"`
@@ -26,16 +34,50 @@ type ConfigField struct {
 }
 
 type Manifest struct {
-	API           string                 `json:"api"`
-	Name          string                 `json:"name"`
+	API string `json:"api"`
+	// DisplayName is the user-facing plugin name shown in admin lists,
+	// the Browse cards on the registry, and (by default) as the
+	// in-chat bot identity. Mapped from the JSON `name` field for
+	// author ergonomics (authors write `"name": "Awesome Echo Bot"`
+	// in their manifest; the Go side treats it as a display string).
+	DisplayName string `json:"name"`
+	// Slug is the plugin's canonical identifier: URL segment, KV
+	// namespace, on-disk filename, registry primary key. Lowercase,
+	// hyphenated, matches slugPattern. Authors can pin it via the
+	// JSON `slug` field; if empty, it's auto-derived from
+	// DisplayName at parse time by slugify.
+	Slug          string                 `json:"slug,omitempty"`
 	Version       string                 `json:"version"`
 	Description   string                 `json:"description,omitempty"`
+	Bot           BotConfig              `json:"bot,omitempty"`
 	Subscriptions Subscriptions          `json:"subscriptions"`
 	Permissions   []string               `json:"permissions,omitempty"`
 	Config        map[string]ConfigField `json:"config,omitempty"`
 	Admin         AdminConfig            `json:"admin,omitempty"`
 	Actions       []ActionButton         `json:"actions,omitempty"`
 	Network       NetworkConfig          `json:"network,omitempty"`
+}
+
+// BotConfig is the chat-bot-specific configuration for plugins that
+// post to chat. Optional; defaults to the plugin's DisplayName when
+// unset. Wrapped in a struct so future fields (avatar URL, name
+// color) can land here without flat-namespace pollution on the
+// manifest.
+type BotConfig struct {
+	// DisplayName is what viewers see when the plugin posts to chat.
+	// Falls back to Manifest.DisplayName at the call site
+	// (ChatDisplayName()).
+	DisplayName string `json:"displayName,omitempty"`
+}
+
+// ChatDisplayName resolves the name the chat bot should post as.
+// Bot.DisplayName wins when set, otherwise the plugin's DisplayName.
+// Always non-empty post-Validate because DisplayName is required.
+func (m *Manifest) ChatDisplayName() string {
+	if m.Bot.DisplayName != "" {
+		return m.Bot.DisplayName
+	}
+	return m.DisplayName
 }
 
 // NetworkConfig narrows what hosts a plugin with the `network.fetch`
@@ -106,11 +148,14 @@ func (m *Manifest) Validate() error {
 	if m.API != SupportedAPIVersion {
 		return fmt.Errorf("unsupported api version %q (host supports %q)", m.API, SupportedAPIVersion)
 	}
-	if m.Name == "" {
+	if m.DisplayName == "" {
 		return errors.New("manifest.name is required")
 	}
 	if m.Version == "" {
 		return errors.New("manifest.version is required")
+	}
+	if err := m.resolveSlug(); err != nil {
+		return err
 	}
 	if err := m.validateAdminPages(); err != nil {
 		return err
@@ -119,6 +164,69 @@ func (m *Manifest) Validate() error {
 		return err
 	}
 	return m.validateActions()
+}
+
+// resolveSlug fills in m.Slug when the author didn't pin one
+// explicitly, and validates the resulting slug against slugPattern.
+// Called from Validate, so every Manifest returned by ParseManifest
+// has Slug populated and well-formed.
+func (m *Manifest) resolveSlug() error {
+	if m.Slug == "" {
+		derived, err := slugify(m.DisplayName)
+		if err != nil {
+			return fmt.Errorf("could not auto-generate a slug from manifest.name %q: %w; set manifest.slug explicitly", m.DisplayName, err)
+		}
+		m.Slug = derived
+	}
+	if !slugPattern.MatchString(m.Slug) {
+		return fmt.Errorf("manifest.slug %q is invalid; must match %s", m.Slug, slugPattern.String())
+	}
+	return nil
+}
+
+// slugify turns a free-form display name into a URL-safe slug
+// matching slugPattern. The pipeline: ASCII-lowercase letters and
+// digits pass through; every other rune (whitespace, punctuation,
+// non-ASCII) collapses to a single hyphen; leading and trailing
+// hyphens are trimmed. Non-ASCII names degrade noisily (e.g.
+// "Café Helper" becomes "caf-helper"), so authors with diacritics
+// or non-Latin scripts should pin `slug` explicitly in the
+// manifest instead of relying on derivation.
+//
+// Returns an error when the result is empty (the input had no
+// usable characters) or doesn't start with a letter (e.g.
+// "123 Plugin" produces "123-plugin", which fails the
+// start-with-letter rule); in either case the author has to pin
+// slug explicitly.
+func slugify(input string) (string, error) {
+	var sb strings.Builder
+	prevHyphen := false
+	for _, r := range input {
+		switch {
+		case r >= 'a' && r <= 'z':
+			sb.WriteRune(r)
+			prevHyphen = false
+		case r >= 'A' && r <= 'Z':
+			sb.WriteRune(r + ('a' - 'A'))
+			prevHyphen = false
+		case r >= '0' && r <= '9':
+			sb.WriteRune(r)
+			prevHyphen = false
+		default:
+			if !prevHyphen && sb.Len() > 0 {
+				sb.WriteRune('-')
+				prevHyphen = true
+			}
+		}
+	}
+	out := strings.TrimRight(sb.String(), "-")
+	if out == "" {
+		return "", errors.New("slugified value is empty")
+	}
+	if !slugPattern.MatchString(out) {
+		return "", fmt.Errorf("slugified value %q does not match the required pattern", out)
+	}
+	return out, nil
 }
 
 // hasPermission reports whether the manifest declares the given permission.
@@ -171,7 +279,7 @@ func (m *Manifest) validateActions() error {
 				"anyone reviewing the manifest that the plugin places UI " +
 				"inside Owncast's chrome")
 	}
-	pluginPrefix := "/plugins/" + m.Name + "/"
+	pluginPrefix := "/plugins/" + m.Slug + "/"
 	hasHTTPServe := m.hasPermission(PermHttpServe)
 	for i := range m.Actions {
 		a := &m.Actions[i]
@@ -238,9 +346,36 @@ func rewriteActionIcon(pluginPrefix string, hasHTTPServe bool, icon string) (str
 // with the sidecar manifest. The sidecar declares identity and permissions;
 // the runtime must not exceed declared permissions. Subscriptions are derived
 // by the SDK at runtime, so they aren't validated here.
+//
+// Identity is checked on Slug (the canonical identifier), not DisplayName:
+// the runtime side may not echo DisplayName back identically (the SDK doesn't
+// have to), but Slug is mechanically derived/declared the same way on both
+// sides, so it's the reliable identity column. When the runtime side ships
+// a Slug field, the two slugs are compared directly. When it doesn't (older
+// SDK that only emits DisplayName), the slug is derived from the runtime
+// DisplayName the same way ParseManifest derives it on the sidecar side
+// and the comparison falls through to the same result.
 func (m *Manifest) AgreesWith(other *Manifest) error {
-	if m.Name != other.Name {
-		return fmt.Errorf("name mismatch: manifest=%q register=%q", m.Name, other.Name)
+	// Resolve the slug on both sides: a sidecar that didn't go through
+	// ParseManifest (e.g. a test fixture) won't have Slug populated, but
+	// it should still produce the same identity from its DisplayName.
+	resolveSlug := func(x *Manifest) string {
+		if x.Slug != "" {
+			return x.Slug
+		}
+		if x.DisplayName == "" {
+			return ""
+		}
+		derived, err := slugify(x.DisplayName)
+		if err != nil {
+			return ""
+		}
+		return derived
+	}
+	mySlug := resolveSlug(m)
+	otherSlug := resolveSlug(other)
+	if mySlug != otherSlug {
+		return fmt.Errorf("slug mismatch: manifest=%q register=%q", mySlug, otherSlug)
 	}
 	if m.Version != other.Version {
 		return fmt.Errorf("version mismatch: manifest=%q register=%q", m.Version, other.Version)

@@ -11,22 +11,24 @@ func TestPluginChatbotProvisioner(t *testing.T) {
 	users := userrepository.New(ds)
 	prov := newPluginChatbotProvisioner(users, ds)
 
-	chatbot, err := prov.chatbotUser("uptime-bot")
+	chatbot, err := prov.chatbotUser("uptime-bot", "Uptime Bot")
 	if err != nil {
 		t.Fatalf("chatbotUser: %v", err)
 	}
 	if chatbot == nil {
 		t.Fatal("expected a chatbot user")
 	}
-	if chatbot.DisplayName != "uptime-bot" {
-		t.Errorf("display name = %q want uptime-bot", chatbot.DisplayName)
+	if chatbot.DisplayName != "Uptime Bot" {
+		t.Errorf("display name = %q want %q", chatbot.DisplayName, "Uptime Bot")
 	}
 	if !chatbot.IsBot {
 		t.Error("chatbot user should have IsBot=true")
 	}
 
-	// Second call returns the same identity (cache).
-	again, err := prov.chatbotUser("uptime-bot")
+	// Second call returns the same identity (cache). Passing a different
+	// display name on subsequent calls is a no-op: the user record was
+	// created with the first display name.
+	again, err := prov.chatbotUser("uptime-bot", "Uptime Bot")
 	if err != nil {
 		t.Fatalf("chatbotUser (cached): %v", err)
 	}
@@ -34,8 +36,8 @@ func TestPluginChatbotProvisioner(t *testing.T) {
 		t.Errorf("cached lookup returned a different user: %q vs %q", again.ID, chatbot.ID)
 	}
 
-	// A different plugin gets a distinct identity.
-	other, err := prov.chatbotUser("welcome-bot")
+	// A different plugin slug gets a distinct identity.
+	other, err := prov.chatbotUser("welcome-bot", "Welcome Bot")
 	if err != nil {
 		t.Fatalf("chatbotUser other: %v", err)
 	}
@@ -46,7 +48,7 @@ func TestPluginChatbotProvisioner(t *testing.T) {
 	// A fresh provisioner (cold cache) resolves the same persisted identity,
 	// so the chatbot survives restarts.
 	prov2 := newPluginChatbotProvisioner(users, ds)
-	resolved, err := prov2.chatbotUser("uptime-bot")
+	resolved, err := prov2.chatbotUser("uptime-bot", "Uptime Bot")
 	if err != nil {
 		t.Fatalf("chatbotUser after restart: %v", err)
 	}

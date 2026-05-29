@@ -283,7 +283,7 @@ func (s *Server) serveSSE(w http.ResponseWriter, r *http.Request, p *Loaded, cha
 		return
 	}
 
-	stream, unsubscribe, ok := s.SSE.Subscribe(p.Manifest.Name, channel)
+	stream, unsubscribe, ok := s.SSE.Subscribe(p.Manifest.Slug, channel)
 	if !ok {
 		http.Error(w, "too many event-stream connections for this plugin", http.StatusServiceUnavailable)
 		return
@@ -319,11 +319,13 @@ func (s *Server) serveSSE(w http.ResponseWriter, r *http.Request, p *Loaded, cha
 	}
 }
 
-// lookup returns the currently-loaded plugin with the given name, or nil
+// lookup returns the currently-loaded plugin with the given slug, or nil
 // if there isn't one. Called per-request against the live snapshot.
-func (s *Server) lookup(name string) *Loaded {
+// The lookup key is the manifest slug (also the URL segment under
+// /plugins/<slug>/), not the human-readable display name.
+func (s *Server) lookup(slug string) *Loaded {
 	for _, p := range s.snapshot() {
-		if p.Manifest.Name == name {
+		if p.Manifest.Slug == slug {
 			return p
 		}
 	}
@@ -451,17 +453,17 @@ func (s *Server) serveDynamic(w http.ResponseWriter, r *http.Request, p *Loaded,
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) || callCtx.Err() == context.DeadlineExceeded {
 			http.Error(w, "plugin timed out", http.StatusGatewayTimeout)
-			fmt.Fprintf(os.Stderr, "plugin %s: on_http_request timed out after %s\n", p.Manifest.Name, HTTPHandlerTimeout)
+			fmt.Fprintf(os.Stderr, "plugin %s: on_http_request timed out after %s\n", p.Manifest.Slug, HTTPHandlerTimeout)
 			return
 		}
 		http.Error(w, "plugin error", http.StatusInternalServerError)
-		fmt.Fprintf(os.Stderr, "plugin %s: on_http_request failed: %v\n", p.Manifest.Name, err)
+		fmt.Fprintf(os.Stderr, "plugin %s: on_http_request failed: %v\n", p.Manifest.Slug, err)
 		return
 	}
 	if len(out) > MaxHTTPHandlerOutputBytes {
 		http.Error(w, "plugin response too large", http.StatusInternalServerError)
 		fmt.Fprintf(os.Stderr, "plugin %s: on_http_request output too large: %d bytes (max %d)\n",
-			p.Manifest.Name, len(out), MaxHTTPHandlerOutputBytes)
+			p.Manifest.Slug, len(out), MaxHTTPHandlerOutputBytes)
 		return
 	}
 

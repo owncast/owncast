@@ -110,7 +110,7 @@ func withRegistryEnv(t *testing.T, url string) {
 
 func TestFindVersion(t *testing.T) {
 	detail := &registryDetail{
-		Name: "demo",
+		Slug: "demo",
 		Versions: []registryVersion{
 			{Version: "0.2.0", SHA256: "b", DownloadURL: "u-b"},
 			{Version: "0.1.0", SHA256: "a", DownloadURL: "u-a"},
@@ -212,7 +212,7 @@ func TestHandleRegistryInstall_RejectsNonPost(t *testing.T) {
 
 func TestHandleRegistryInstall_RejectsMissingFields(t *testing.T) {
 	host := newTestHost(t)
-	for _, body := range []string{`{}`, `{"name":""}`, `{"version":"0.1.0"}`} {
+	for _, body := range []string{`{}`, `{"slug":""}`, `{"version":"0.1.0"}`} {
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodPost, "/api/admin/plugin-registry/install", strings.NewReader(body))
 		host.handleRegistryInstall(rec, req)
@@ -228,7 +228,7 @@ func TestHandleRegistryInstall_ServiceUnavailableWhenUnconfigured(t *testing.T) 
 
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/api/admin/plugin-registry/install",
-		strings.NewReader(`{"name":"demo","version":"0.1.0"}`))
+		strings.NewReader(`{"slug":"demo","version":"0.1.0"}`))
 	host.handleRegistryInstall(rec, req)
 	if rec.Code != http.StatusServiceUnavailable {
 		t.Errorf("status = %d, want 503", rec.Code)
@@ -239,7 +239,7 @@ func TestHandleRegistryInstall_VersionNotFound(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Registry detail returns versions, but not the one we asked for.
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"name":"demo","versions":[{"version":"0.2.0","sha256":"x","downloadURL":"u"}]}`))
+		_, _ = w.Write([]byte(`{"slug":"demo","versions":[{"version":"0.2.0","sha256":"x","downloadURL":"u"}]}`))
 	}))
 	t.Cleanup(upstream.Close)
 
@@ -248,7 +248,7 @@ func TestHandleRegistryInstall_VersionNotFound(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/api/admin/plugin-registry/install",
-		strings.NewReader(`{"name":"demo","version":"0.1.0"}`))
+		strings.NewReader(`{"slug":"demo","version":"0.1.0"}`))
 	host.handleRegistryInstall(rec, req)
 
 	if rec.Code != http.StatusNotFound {
@@ -267,7 +267,7 @@ func TestHandleRegistryInstall_SHA256Mismatch(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/api/admin/plugin-registry/install",
-		strings.NewReader(`{"name":"hello-world","version":"0.1.0"}`))
+		strings.NewReader(`{"slug":"hello-world","version":"0.1.0"}`))
 	host.handleRegistryInstall(rec, req)
 
 	if rec.Code != http.StatusBadGateway {
@@ -291,7 +291,7 @@ func TestHandleRegistryInstall_Success(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/api/admin/plugin-registry/install",
-		strings.NewReader(`{"name":"hello-world","version":"0.1.0"}`))
+		strings.NewReader(`{"slug":"hello-world","version":"0.1.0"}`))
 	host.handleRegistryInstall(rec, req)
 
 	if rec.Code != http.StatusOK {
@@ -304,8 +304,8 @@ func TestHandleRegistryInstall_Success(t *testing.T) {
 	if len(entries) != 1 {
 		t.Fatalf("manager has %d entries, want 1", len(entries))
 	}
-	if entries[0].Name != "hello-world" {
-		t.Errorf("entry name = %q, want hello-world", entries[0].Name)
+	if entries[0].Slug != "hello-world" {
+		t.Errorf("entry slug = %q, want hello-world", entries[0].Slug)
 	}
 	if entries[0].Version != "0.1.0" {
 		t.Errorf("entry version = %q, want 0.1.0", entries[0].Version)
@@ -331,7 +331,7 @@ func TestHandleRegistryRoute_DispatchesActions(t *testing.T) {
 	for _, tc := range cases {
 		var body io.Reader
 		if tc.method == http.MethodPost {
-			body = strings.NewReader(`{"name":"x","version":"y"}`)
+			body = strings.NewReader(`{"slug":"x","version":"y"}`)
 		}
 		rec := httptest.NewRecorder()
 		host.handleRegistryRoute(rec, httptest.NewRequest(tc.method, tc.path, body))
@@ -352,14 +352,14 @@ func TestHandleRegistryRoute_DispatchesActions(t *testing.T) {
 // The detail handler reflects the incoming request's Host header back
 // into the downloadURL so we don't have to know httptest's port in
 // advance.
-func newRegistryStub(t *testing.T, name, version string, pkg []byte, sha string) *httptest.Server {
+func newRegistryStub(t *testing.T, slug, version string, pkg []byte, sha string) *httptest.Server {
 	t.Helper()
 	mux := http.NewServeMux()
-	mux.HandleFunc("/api/plugins/"+name, func(w http.ResponseWriter, r *http.Request) {
-		downloadURL := fmt.Sprintf("http://%s/ocpkg/%s", r.Host, name)
+	mux.HandleFunc("/api/plugins/"+slug, func(w http.ResponseWriter, r *http.Request) {
+		downloadURL := fmt.Sprintf("http://%s/ocpkg/%s", r.Host, slug)
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]any{
-			"name": name,
+			"slug": slug,
 			"versions": []map[string]any{
 				{
 					"version":     version,
@@ -369,7 +369,7 @@ func newRegistryStub(t *testing.T, name, version string, pkg []byte, sha string)
 			},
 		})
 	})
-	mux.HandleFunc("/ocpkg/"+name, func(w http.ResponseWriter, _ *http.Request) {
+	mux.HandleFunc("/ocpkg/"+slug, func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/zip")
 		_, _ = w.Write(pkg)
 	})

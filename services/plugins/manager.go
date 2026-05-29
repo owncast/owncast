@@ -181,16 +181,28 @@ type Manager struct {
 	scanCh       chan struct{}      // pings to force a scan (testing / admin trigger)
 }
 
-// DiscoveredEntry is the public view of a discovered plugin — what the
-// admin UI lists.
+// DiscoveredEntry is the public view of a discovered plugin: what the
+// admin UI lists, and what the registry's install endpoint returns
+// to the host. Two name-like fields:
+//
+//   - Slug is the canonical identifier (URL segment, KV namespace,
+//     file path, registry primary key). Stable, lowercase, hyphenated.
+//   - DisplayName is the human-readable name the admin sees in lists.
+//     Set by the plugin author; can contain any characters.
+//
+// BotDisplayName, when non-empty, overrides DisplayName as the chat
+// identity for plugins that post to chat. Empty means "use
+// DisplayName" (resolved at chat-send time, not here).
 type DiscoveredEntry struct {
-	Name        string   `json:"name"`
-	Version     string   `json:"version,omitempty"`
-	Description string   `json:"description,omitempty"`
-	Permissions []string `json:"permissions,omitempty"`
-	Path        string   `json:"path"`
-	Enabled     bool     `json:"enabled"`
-	Loaded      bool     `json:"loaded"`
+	Slug           string   `json:"slug"`
+	DisplayName    string   `json:"name"`
+	BotDisplayName string   `json:"botDisplayName,omitempty"`
+	Version        string   `json:"version,omitempty"`
+	Description    string   `json:"description,omitempty"`
+	Permissions    []string `json:"permissions,omitempty"`
+	Path           string   `json:"path"`
+	Enabled        bool     `json:"enabled"`
+	Loaded         bool     `json:"loaded"`
 	// AutoDisabled is set when the dispatcher's strike system stopped
 	// invoking the plugin (too many consecutive filter failures).
 	// Enabled stays true so the admin can see what they originally chose,
@@ -308,7 +320,7 @@ func (m *Manager) List() []DiscoveredEntry {
 		}
 		out = append(out, entry)
 	}
-	sort.Slice(out, func(i, j int) bool { return out[i].Name < out[j].Name })
+	sort.Slice(out, func(i, j int) bool { return out[i].Slug < out[j].Slug })
 	return out
 }
 
@@ -444,7 +456,7 @@ func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*Discovered
 	if err != nil {
 		return nil, err
 	}
-	destPath := m.destPathForInstall(manifest.Name)
+	destPath := m.destPathForInstall(manifest.Slug)
 	if err := atomicWritePackage(m.pluginsDir, destPath, packageBytes); err != nil {
 		return nil, err
 	}
@@ -455,14 +467,14 @@ func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*Discovered
 	}
 
 	m.mu.RLock()
-	entry, ok := m.discovered[manifest.Name]
+	entry, ok := m.discovered[manifest.Slug]
 	var snapshot DiscoveredEntry
 	if ok {
 		snapshot = *entry
 	}
 	m.mu.RUnlock()
 	if !ok {
-		return nil, fmt.Errorf("scan did not pick up the installed plugin %q", manifest.Name)
+		return nil, fmt.Errorf("scan did not pick up the installed plugin %q", manifest.Slug)
 	}
 	return &snapshot, nil
 }
@@ -675,23 +687,27 @@ func (m *Manager) scan(ctx context.Context) error {
 			fmt.Fprintf(os.Stderr, "discover %s: %v\n", name, err)
 			continue
 		}
-		seen[manifest.Name] = true
+		seen[manifest.Slug] = true
 
 		hasIcon := hasPluginIcon(path)
 
 		m.mu.Lock()
-		if existing, ok := m.discovered[manifest.Name]; ok {
+		if existing, ok := m.discovered[manifest.Slug]; ok {
 			// Already discovered; refresh manifest metadata in case it changed.
+			existing.DisplayName = manifest.DisplayName
+			existing.BotDisplayName = manifest.Bot.DisplayName
 			existing.Version = manifest.Version
 			existing.Description = manifest.Description
 			existing.Permissions = manifest.Permissions
 			existing.Path = path
 			existing.AdminPages = manifest.Admin.Pages
 			existing.HasIcon = hasIcon
-			existing.PendingPermissions = pendingPermissions(manifest.Permissions, m.approvedSet[manifest.Name])
+			existing.PendingPermissions = pendingPermissions(manifest.Permissions, m.approvedSet[manifest.Slug])
 		} else {
-			m.discovered[manifest.Name] = &DiscoveredEntry{
-				Name:               manifest.Name,
+			m.discovered[manifest.Slug] = &DiscoveredEntry{
+				Slug:               manifest.Slug,
+				DisplayName:        manifest.DisplayName,
+				BotDisplayName:     manifest.Bot.DisplayName,
 				Version:            manifest.Version,
 				Description:        manifest.Description,
 				Permissions:        manifest.Permissions,
@@ -699,7 +715,7 @@ func (m *Manager) scan(ctx context.Context) error {
 				DiscoveredAt:       time.Now(),
 				AdminPages:         manifest.Admin.Pages,
 				HasIcon:            hasIcon,
-				PendingPermissions: pendingPermissions(manifest.Permissions, m.approvedSet[manifest.Name]),
+				PendingPermissions: pendingPermissions(manifest.Permissions, m.approvedSet[manifest.Slug]),
 			}
 		}
 		m.mu.Unlock()

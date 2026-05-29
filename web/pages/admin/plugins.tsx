@@ -52,6 +52,11 @@ const Plugins = () => {
   // single source of truth feeds both views.
   const [registryPlugins, setRegistryPlugins] = useState<RegistryPlugin[]>([]);
   const [registryLoading, setRegistryLoading] = useState(true);
+  // registryError is set when the registry fetch fails (network error, host
+  // returned 5xx, etc.) so the Browse tab can distinguish "the catalog is
+  // unreachable" from "the catalog is reachable but empty". `null` covers
+  // both the loading and the empty-but-reachable cases.
+  const [registryError, setRegistryError] = useState<string | null>(null);
 
   const loadPlugins = useCallback(async () => {
     try {
@@ -67,15 +72,18 @@ const Plugins = () => {
 
   // Registry fetch is independent of the installed-list fetch: a
   // misconfigured or unreachable registry shouldn't block the
-  // Installed tab. Failures are swallowed here; BrowseRegistry
-  // surfaces its own empty state when the list comes back empty.
+  // Installed tab. On failure we set registryError so the Browse tab
+  // renders a "catalog unavailable" message with a retry button,
+  // distinct from the legitimately-empty case.
   const loadRegistry = useCallback(async () => {
     setRegistryLoading(true);
     try {
       const result = await fetchData(PLUGIN_REGISTRY_LIST);
       setRegistryPlugins(Array.isArray(result) ? result : []);
-    } catch {
+      setRegistryError(null);
+    } catch (e) {
       setRegistryPlugins([]);
+      setRegistryError(e instanceof Error ? e.message : String(e));
     } finally {
       setRegistryLoading(false);
     }
@@ -86,18 +94,20 @@ const Plugins = () => {
     loadRegistry();
   }, [loadPlugins, loadRegistry]);
 
-  // Map of installed plugin name -> currently-installed version.
+  // Map of installed plugin slug -> currently-installed version.
   // Browse cards use this to decide whether to render "Install" /
-  // "Installed" / "Update".
+  // "Installed" / "Update". Keys on slug (the canonical identifier),
+  // not display name, so two plugins with the same display string
+  // don't collide.
   const installedVersions = useMemo(
     () =>
       new Map<string, string>(
-        plugins.filter(p => Boolean(p.version)).map(p => [p.name, p.version as string]),
+        plugins.filter(p => Boolean(p.version)).map(p => [p.slug, p.version as string]),
       ),
     [plugins],
   );
 
-  // Map of installed plugin name -> newer version available in the
+  // Map of installed plugin slug -> newer version available in the
   // registry. Empty when the installed and registry versions match
   // (or the plugin isn't in the registry at all). PluginsList renders
   // the entries as "update available" tags in the version line.
@@ -105,10 +115,10 @@ const Plugins = () => {
     () =>
       new Map<string, string>(
         plugins.flatMap(p => {
-          const reg = registryPlugins.find(r => r.name === p.name);
+          const reg = registryPlugins.find(r => r.slug === p.slug);
           const latest = reg?.latest?.version;
           if (p.version && latest && latest !== p.version) {
-            return [[p.name, latest] as [string, string]];
+            return [[p.slug, latest] as [string, string]];
           }
           return [];
         }),
@@ -119,11 +129,11 @@ const Plugins = () => {
   const handleToggleEnabled = async (plugin: Plugin, enabled: boolean) => {
     setTogglingNames(prev => {
       const next = new Set(prev);
-      next.add(plugin.name);
+      next.add(plugin.slug);
       return next;
     });
     try {
-      await fetchData(pluginActionUrl(plugin.name, enabled ? 'enable' : 'disable'), {
+      await fetchData(pluginActionUrl(plugin.slug, enabled ? 'enable' : 'disable'), {
         method: 'POST',
       });
       await loadPlugins();
@@ -132,7 +142,7 @@ const Plugins = () => {
     } finally {
       setTogglingNames(prev => {
         const next = new Set(prev);
-        next.delete(plugin.name);
+        next.delete(plugin.slug);
         return next;
       });
     }
@@ -179,11 +189,11 @@ const Plugins = () => {
   const handleUninstall = async (plugin: Plugin) => {
     setUninstallingNames(prev => {
       const next = new Set(prev);
-      next.add(plugin.name);
+      next.add(plugin.slug);
       return next;
     });
     try {
-      await fetchData(pluginActionUrl(plugin.name, 'uninstall'), { method: 'POST' });
+      await fetchData(pluginActionUrl(plugin.slug, 'uninstall'), { method: 'POST' });
       message.success(t(Localization.Admin.Plugins.uninstallSuccess, { name: plugin.name }));
       await loadPlugins();
     } catch (e) {
@@ -191,7 +201,7 @@ const Plugins = () => {
     } finally {
       setUninstallingNames(prev => {
         const next = new Set(prev);
-        next.delete(plugin.name);
+        next.delete(plugin.slug);
         return next;
       });
     }
@@ -200,18 +210,18 @@ const Plugins = () => {
   const handleReload = async (plugin: Plugin) => {
     setReloadingNames(prev => {
       const next = new Set(prev);
-      next.add(plugin.name);
+      next.add(plugin.slug);
       return next;
     });
     try {
-      await fetchData(pluginActionUrl(plugin.name, 'reload'), { method: 'POST' });
+      await fetchData(pluginActionUrl(plugin.slug, 'reload'), { method: 'POST' });
       await loadPlugins();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       setReloadingNames(prev => {
         const next = new Set(prev);
-        next.delete(plugin.name);
+        next.delete(plugin.slug);
         return next;
       });
     }
@@ -225,7 +235,7 @@ const Plugins = () => {
     setPendingEnable(null);
     if (!plugin) return;
     try {
-      await fetchData(pluginActionUrl(plugin.name, 'enable'), { method: 'POST' });
+      await fetchData(pluginActionUrl(plugin.slug, 'enable'), { method: 'POST' });
       message.success(t(Localization.Admin.Plugins.installEnabledSuccess, { name: plugin.name }));
       await loadPlugins();
     } catch (e) {
@@ -238,10 +248,10 @@ const Plugins = () => {
   // button and the Installed tab's "update available" tag so both
   // surface the same post-install confirmation flow.
   const installFromRegistry = useCallback(
-    async (name: string, version: string) => {
+    async (slug: string, version: string) => {
       const entry = (await fetchData(PLUGIN_REGISTRY_INSTALL, {
         method: 'POST',
-        data: { name, version },
+        data: { slug, version },
       })) as Plugin;
       message.success(t(Localization.Admin.Plugins.uploadSuccess, { name: entry.name }));
       await loadPlugins();
@@ -269,8 +279,8 @@ const Plugins = () => {
       onToggleEnabled={handleToggleEnabled}
       onReload={handleReload}
       onUninstall={handleUninstall}
-      onUpdate={(plugin, version) => installFromRegistry(plugin.name, version)}
-      onSelect={p => router.push({ pathname: '/admin/plugins/configure', query: { name: p.name } })}
+      onUpdate={(plugin, version) => installFromRegistry(plugin.slug, version)}
+      onSelect={p => router.push({ pathname: '/admin/plugins/configure', query: { slug: p.slug } })}
     />
   );
 
@@ -279,7 +289,9 @@ const Plugins = () => {
       installedVersions={installedVersions}
       registry={registryPlugins}
       registryLoading={registryLoading}
+      registryError={registryError}
       onInstall={installFromRegistry}
+      onRetry={loadRegistry}
     />
   );
 

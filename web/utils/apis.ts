@@ -68,9 +68,9 @@ export const PLUGIN_UPLOAD = `/api/admin/plugins`;
 export const PLUGIN_REGISTRY_LIST = `/api/admin/plugin-registry/list`;
 export const PLUGIN_REGISTRY_INSTALL = `/api/admin/plugin-registry/install`;
 export const pluginActionUrl = (
-  name: string,
+  slug: string,
   action: 'enable' | 'disable' | 'reload' | 'uninstall',
-) => `/api/admin/plugins/${encodeURIComponent(name)}/${action}`;
+) => `/api/admin/plugins/${encodeURIComponent(slug)}/${action}`;
 
 // Upload a new custom emoji
 export const UPLOAD_EMOJI = `${API_LOCATION}emoji/upload`;

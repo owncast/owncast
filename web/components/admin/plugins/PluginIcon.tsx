@@ -3,7 +3,7 @@ import { Plugin } from '../../../interfaces/plugin';
 import s from './PluginIcon.module.scss';
 
 export type PluginIconProps = {
-  plugin: Pick<Plugin, 'name' | 'hasIcon'>;
+  plugin: Pick<Plugin, 'slug' | 'hasIcon'>;
   // size controls which class set the wrapper uses; the default sidebar
   // entries want a small inline glyph, the plugins-list table cells want
   // a larger square.
@@ -41,7 +41,7 @@ export const PluginIcon = ({ plugin, size = 'list' }: PluginIconProps) => {
   if (plugin.hasIcon) {
     return (
       <img
-        src={`/api/plugins/${encodeURIComponent(plugin.name)}/icon`}
+        src={`/api/plugins/${encodeURIComponent(plugin.slug)}/icon`}
         alt=""
         className={className}
       />

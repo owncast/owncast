@@ -118,7 +118,7 @@ func (d *Dispatcher) Filter(ctx context.Context, eventType string, payload any) 
 		if chain[i].priority != chain[j].priority {
 			return chain[i].priority < chain[j].priority
 		}
-		return chain[i].plugin.Manifest.Name < chain[j].plugin.Manifest.Name
+		return chain[i].plugin.Manifest.Slug < chain[j].plugin.Manifest.Slug
 	})
 
 	current := payload
@@ -129,10 +129,10 @@ func (d *Dispatcher) Filter(ctx context.Context, eventType string, payload any) 
 		}
 		result, err := callOnFilter(ctx, c.plugin, eventType, current)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "plugin %s: on_filter(%s) failed (fail-open): %v\n", c.plugin.Manifest.Name, eventType, err)
+			fmt.Fprintf(os.Stderr, "plugin %s: on_filter(%s) failed (fail-open): %v\n", c.plugin.Manifest.Slug, eventType, err)
 			if c.plugin.recordFilterFailure() {
 				fmt.Fprintf(os.Stderr, "plugin %s: auto-disabled after %d consecutive filter failures\n",
-					c.plugin.Manifest.Name, FilterStrikeThreshold)
+					c.plugin.Manifest.Slug, FilterStrikeThreshold)
 			}
 			continue
 		}
@@ -145,7 +145,7 @@ func (d *Dispatcher) Filter(ctx context.Context, eventType string, payload any) 
 		case FilterDrop:
 			return nil, false, result.Reason
 		default:
-			fmt.Fprintf(os.Stderr, "plugin %s: unknown filter action %q (fail-open)\n", c.plugin.Manifest.Name, result.Action)
+			fmt.Fprintf(os.Stderr, "plugin %s: unknown filter action %q (fail-open)\n", c.plugin.Manifest.Slug, result.Action)
 		}
 	}
 	return current, true, ""
@@ -203,7 +203,7 @@ func (d *Dispatcher) Notify(ctx context.Context, eventType string, payload any) 
 		go func(p *Loaded) {
 			defer wg.Done()
 			if err := callOnEvent(ctx, p, encoded); err != nil {
-				fmt.Fprintf(os.Stderr, "plugin %s: on_event(%s) failed: %v\n", p.Manifest.Name, eventType, err)
+				fmt.Fprintf(os.Stderr, "plugin %s: on_event(%s) failed: %v\n", p.Manifest.Slug, eventType, err)
 			}
 		}(p)
 	}

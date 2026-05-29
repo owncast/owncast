@@ -57,8 +57,8 @@ func TestManager_DiscoversWithoutLoading(t *testing.T) {
 	if len(entries) != 1 {
 		t.Fatalf("expected 1 discovered, got %d", len(entries))
 	}
-	if entries[0].Name != "hello-world" {
-		t.Errorf("name: got %q want hello-world", entries[0].Name)
+	if entries[0].Slug != "hello-world" {
+		t.Errorf("slug: got %q want hello-world", entries[0].Slug)
 	}
 	if entries[0].Loaded {
 		t.Error("plugin should not be loaded — admin never enabled it")
@@ -463,8 +463,8 @@ func TestManager_Install_WritesPackageAndDiscovers(t *testing.T) {
 	if err != nil {
 		t.Fatalf("install: %v", err)
 	}
-	if entry.Name != "hello-world" {
-		t.Errorf("entry name: got %q want hello-world", entry.Name)
+	if entry.Slug != "hello-world" {
+		t.Errorf("entry slug: got %q want hello-world", entry.Slug)
 	}
 	expectedPath := filepath.Join(dir, "hello-world.ocpkg")
 	if _, err := os.Stat(expectedPath); err != nil {

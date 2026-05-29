@@ -314,15 +314,15 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
         // One entry per loaded plugin that declares at least one admin
         // page, so the admin can jump straight to a plugin's config
         // without going through the overview + Configure button. URL is
-        // a static route plus a name query param because the admin UI is
-        // statically exported and can't enumerate plugin names at build
-        // time.
+        // a static route plus a slug query param because the admin UI is
+        // statically exported and can't enumerate plugin slugs at build
+        // time. Sidebar labels use the human-readable display name.
         ...plugins
           .filter(p => (p.adminPages?.length ?? 0) > 0)
           .map(p => ({
-            key: `/admin/plugins/configure?name=${p.name}`,
+            key: `/admin/plugins/configure?slug=${p.slug}`,
             label: (
-              <Link href={{ pathname: '/admin/plugins/configure', query: { name: p.name } }}>
+              <Link href={{ pathname: '/admin/plugins/configure', query: { slug: p.slug } }}>
                 {p.name}
               </Link>
             ),
@@ -365,7 +365,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   }, []);
 
   // The per-plugin configure page is a query-string route
-  // (/admin/plugins/configure?name=...), so the literal-key match above
+  // (/admin/plugins/configure?slug=...), so the literal-key match above
   // doesn't fire when navigating to a specific plugin. Open the plugins
   // submenu whenever the URL is anywhere in /admin/plugins.
   useEffect(() => {

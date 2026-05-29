@@ -77,20 +77,20 @@ export const PluginsList = ({
                 <Text type="secondary" className={s.secondaryText}>
                   v{plugin.version}
                 </Text>
-                {availableUpdates?.has(plugin.name) && onUpdate && (
+                {availableUpdates?.has(plugin.slug) && onUpdate && (
                   <Popconfirm
                     title={t(Localization.Admin.Plugins.updateConfirmTitle, {
                       name: plugin.name,
-                      version: availableUpdates.get(plugin.name),
+                      version: availableUpdates.get(plugin.slug),
                     })}
                     okText={t(Localization.Admin.Plugins.updateConfirmOk)}
                     cancelText={t(Localization.Admin.Plugins.updateConfirmCancel)}
                     okButtonProps={{ type: 'primary' }}
-                    onConfirm={() => onUpdate(plugin, availableUpdates.get(plugin.name) as string)}
+                    onConfirm={() => onUpdate(plugin, availableUpdates.get(plugin.slug) as string)}
                   >
                     <Tag color="blue" className={s.updateTag}>
                       {t(Localization.Admin.Plugins.updateAvailable, {
-                        version: availableUpdates.get(plugin.name),
+                        version: availableUpdates.get(plugin.slug),
                       })}
                     </Tag>
                   </Popconfirm>
@@ -179,7 +179,7 @@ export const PluginsList = ({
             <Tooltip title={t(Localization.Admin.Plugins.approveTooltip)}>
               <Button
                 type="primary"
-                loading={togglingNames.has(plugin.name)}
+                loading={togglingNames.has(plugin.slug)}
                 onClick={() => onToggleEnabled(plugin, true)}
               >
                 {t(Localization.Admin.Plugins.approveButton)}
@@ -190,7 +190,7 @@ export const PluginsList = ({
         return (
           <Switch
             checked={plugin.enabled}
-            loading={togglingNames.has(plugin.name)}
+            loading={togglingNames.has(plugin.slug)}
             onChange={checked => onToggleEnabled(plugin, checked)}
             aria-label={t(Localization.Admin.Plugins.toggleAria, { name: plugin.name })}
           />
@@ -207,7 +207,7 @@ export const PluginsList = ({
             <Tooltip title={t(Localization.Admin.Plugins.reloadTooltip)}>
               <Button
                 icon={<ReloadOutlined />}
-                loading={reloadingNames.has(plugin.name)}
+                loading={reloadingNames.has(plugin.slug)}
                 onClick={() => onReload(plugin)}
                 disabled={!plugin.enabled}
               />
@@ -241,7 +241,7 @@ export const PluginsList = ({
                 <Button
                   danger
                   icon={<DeleteOutlined />}
-                  loading={uninstallingNames.has(plugin.name)}
+                  loading={uninstallingNames.has(plugin.slug)}
                   aria-label={t(Localization.Admin.Plugins.uninstallAria, { name: plugin.name })}
                 />
               </Tooltip>
@@ -254,7 +254,7 @@ export const PluginsList = ({
 
   return (
     <Table
-      rowKey={p => p.name}
+      rowKey={p => p.slug}
       columns={columns}
       dataSource={plugins}
       loading={loading}

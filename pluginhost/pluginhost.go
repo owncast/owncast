@@ -150,7 +150,7 @@ func (p *Host) actionsForPlugin(l *plugins.Loaded) []plugins.ActionButton {
 	if p.kv == nil {
 		return combined
 	}
-	raw, err := p.kv.Namespace(l.Manifest.Name).Get(runtimeActionsConfigKey)
+	raw, err := p.kv.Namespace(l.Manifest.Slug).Get(runtimeActionsConfigKey)
 	if err != nil || len(raw) == 0 {
 		return combined
 	}
@@ -339,28 +339,32 @@ func logPluginSummary(entries []plugins.DiscoveredEntry) {
 		if len(e.Permissions) > 0 {
 			permPart = "with permissions: " + strings.Join(e.Permissions, ", ")
 		}
-		log.Infof("  - %s v%s %s %s", e.Name, e.Version, status, permPart)
+		nameDisplay := e.DisplayName
+		if nameDisplay == "" {
+			nameDisplay = e.Slug
+		}
+		log.Infof("  - %s [%s] v%s %s %s", nameDisplay, e.Slug, e.Version, status, permPart)
 		if e.LastError != "" {
 			log.Warnf("    last error: %s", e.LastError)
 		}
 	}
 }
 
-// handlePluginAction dispatches POST /api/admin/plugins/<name>/<action>
+// handlePluginAction dispatches POST /api/admin/plugins/<slug>/<action>
 // to the matching Manager operation (enable, disable, reload, uninstall).
-// Lives on Host rather than inlined in AdminHandler so the switch on
-// `action` stays small and the surrounding routing is easy to read.
+// The URL segment is the plugin's slug, not its display name; Manager
+// keys every operation on slug.
 func (p *Host) handlePluginAction(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	name, action, ok := strings.Cut(strings.TrimPrefix(r.URL.Path, "/api/admin/plugins/"), "/")
-	if !ok || name == "" || action == "" {
-		http.Error(w, "expected /<name>/<action>", http.StatusBadRequest)
+	slug, action, ok := strings.Cut(strings.TrimPrefix(r.URL.Path, "/api/admin/plugins/"), "/")
+	if !ok || slug == "" || action == "" {
+		http.Error(w, "expected /<slug>/<action>", http.StatusBadRequest)
 		return
 	}
-	err, known := p.dispatchPluginAction(r.Context(), name, action)
+	err, known := p.dispatchPluginAction(r.Context(), slug, action)
 	if !known {
 		http.Error(w, "unknown action; expected enable, disable, reload, or uninstall", http.StatusBadRequest)
 		return
@@ -370,24 +374,24 @@ func (p *Host) handlePluginAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if action == "uninstall" {
-		log.Infof("plugin %q uninstalled by admin", name)
+		log.Infof("plugin %q uninstalled by admin", slug)
 	}
-	writeJSONResponse(w, http.StatusOK, map[string]string{"status": "ok", "name": name, "action": action})
+	writeJSONResponse(w, http.StatusOK, map[string]string{"status": "ok", "slug": slug, "action": action})
 }
 
 // dispatchPluginAction calls the Manager method for one of the admin
 // actions. Returns (operationError, true) for a known action, or
 // (nil, false) when action is unrecognized.
-func (p *Host) dispatchPluginAction(ctx context.Context, name, action string) (error, bool) {
+func (p *Host) dispatchPluginAction(ctx context.Context, slug, action string) (error, bool) {
 	switch action {
 	case "enable":
-		return p.manager.Enable(ctx, name), true
+		return p.manager.Enable(ctx, slug), true
 	case "disable":
-		return p.manager.Disable(ctx, name), true
+		return p.manager.Disable(ctx, slug), true
 	case "reload":
-		return p.manager.Reload(ctx, name), true
+		return p.manager.Reload(ctx, slug), true
 	case "uninstall":
-		return p.manager.Uninstall(ctx, name), true
+		return p.manager.Uninstall(ctx, slug), true
 	}
 	return nil, false
 }
@@ -428,7 +432,7 @@ func (p *Host) handlePluginUpload(w http.ResponseWriter, r *http.Request) {
 		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: err.Error()})
 		return
 	}
-	log.Infof("plugin %q v%s installed by admin", entry.Name, entry.Version)
+	log.Infof("plugin %q [%s] v%s installed by admin", entry.DisplayName, entry.Slug, entry.Version)
 	writeJSONResponse(w, http.StatusOK, entry)
 }
 
@@ -555,25 +559,29 @@ func wireChatSendHostFns(env *plugins.HostEnv, deps Deps, chatbots *pluginChatbo
 		switch req.Kind {
 		case plugins.ChatSendAction:
 			if err := chatSvc.SendSystemAction(req.Text, false); err != nil {
-				log.Errorln("plugin", req.PluginName, "chat action:", err)
+				log.Errorln("plugin", req.PluginSlug, "chat action:", err)
 			}
 		case plugins.ChatSendSystem:
 			if err := chatSvc.SendSystemMessage(req.Text, false); err != nil {
-				log.Errorln("plugin", req.PluginName, "chat system message:", err)
+				log.Errorln("plugin", req.PluginSlug, "chat system message:", err)
 			}
 		default: // ChatSendBot — post under the plugin's own chatbot identity.
-			chatbot, err := chatbots.chatbotUser(req.PluginName)
+			// Use slug for the bot's persistent identity (cache + datastore
+			// key), and BotDisplayName for the human-readable handle viewers
+			// see in chat. BotDisplayName falls back to the plugin's display
+			// name in the host fn closure, so it's always non-empty here.
+			chatbot, err := chatbots.chatbotUser(req.PluginSlug, req.BotDisplayName)
 			if err != nil {
-				log.Errorln("plugin", req.PluginName, "resolve chatbot user:", err)
+				log.Errorln("plugin", req.PluginSlug, "resolve chatbot user:", err)
 				return
 			}
 			if err := chatSvc.SendMessageAsBot(chatbot, req.Text); err != nil {
-				log.Errorln("plugin", req.PluginName, "chat send:", err)
+				log.Errorln("plugin", req.PluginSlug, "chat send:", err)
 			}
 		}
 	}
 
-	env.SendChatTo = func(pluginName string, clientID uint64, text string) {
+	env.SendChatTo = func(pluginSlug string, clientID uint64, text string) {
 		chatSvc.SendSystemMessageToClient(uint(clientID), text)
 	}
 }

@@ -1,7 +1,14 @@
 // Plugin describes a discovered plugin as returned by GET /api/admin/plugins.
-// Mirrors services/plugins.DiscoveredEntry on the backend.
+// Mirrors services/plugins.DiscoveredEntry on the backend. Two name-like
+// fields: `slug` is the canonical identifier used in URLs and action
+// endpoints; `name` is the human-readable display name shown in lists.
 export interface Plugin {
+  slug: string;
   name: string;
+  // botDisplayName, when present, is what the plugin uses as its chat
+  // identity. Empty/undefined means "use name". Shown in the admin's
+  // plugin list so the operator knows what viewers will see in chat.
+  botDisplayName?: string;
   version?: string;
   description?: string;
   permissions?: string[];
@@ -15,7 +22,7 @@ export interface Plugin {
   autoDisabled?: boolean;
   // hasIcon is true when the plugin ships an icon.png alongside its
   // manifest. The admin UI fetches the bytes from
-  // /api/plugins/<name>/icon and renders them in the list and sidebar.
+  // /api/plugins/<slug>/icon and renders them in the list and sidebar.
   hasIcon?: boolean;
   // pendingPermissions lists permissions the manifest now declares that
   // the admin has not yet approved. Non-empty means the plugin was
@@ -30,7 +37,7 @@ export interface Plugin {
 
 // PluginAdminPage is a single admin-only page declared in a plugin's
 // manifest.admin.pages entry. The body is rendered as an iframe to
-// /plugins/<plugin-name><path>.
+// /plugins/<slug><path>.
 export interface PluginAdminPage {
   title: string;
   path: string;
