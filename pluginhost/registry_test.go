@@ -134,38 +134,22 @@ func TestRegistryBase_TrimsTrailingSlash(t *testing.T) {
 	}
 }
 
-func TestRegistryBase_EmptyWhenUnset(t *testing.T) {
+func TestRegistryBase_UsesDefaultWhenUnset(t *testing.T) {
+	// Unset OWNCAST_PLUGIN_REGISTRY falls through to the public catalog
+	// so every Owncast instance gets a working Browse tab out of the
+	// box without per-deployment configuration.
 	t.Setenv("OWNCAST_PLUGIN_REGISTRY", "")
-	if got := registryBase(); got != "" {
-		t.Errorf("registryBase unset = %q, want empty", got)
+	if got := registryBase(); got != DefaultPluginRegistry {
+		t.Errorf("registryBase unset = %q, want %q", got, DefaultPluginRegistry)
 	}
 }
 
 // --- /api/admin/plugin-registry/list ---
 
-func TestHandleRegistryList_EmptyWhenUnconfigured(t *testing.T) {
-	withRegistryEnv(t, "")
-	host := newTestHost(t)
-
-	rec := httptest.NewRecorder()
-	host.handleRegistryList(rec, httptest.NewRequest(http.MethodGet, "/api/admin/plugin-registry/list", nil))
-
-	if rec.Code != http.StatusOK {
-		t.Errorf("status = %d, want 200", rec.Code)
-	}
-	var body []any
-	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
-		t.Fatalf("decode: %v (body=%q)", err, rec.Body.String())
-	}
-	if len(body) != 0 {
-		t.Errorf("body = %v, want empty array", body)
-	}
-}
-
 func TestHandleRegistryList_ProxiesUpstream(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/api/plugins" {
-			t.Errorf("upstream path = %q, want /api/plugins", r.URL.Path)
+		if r.URL.Path != "/plugins" {
+			t.Errorf("upstream path = %q, want /plugins", r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`[{"name":"demo","summary":"hi"}]`))
@@ -219,19 +203,6 @@ func TestHandleRegistryInstall_RejectsMissingFields(t *testing.T) {
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("body=%s: status = %d, want 400", body, rec.Code)
 		}
-	}
-}
-
-func TestHandleRegistryInstall_ServiceUnavailableWhenUnconfigured(t *testing.T) {
-	withRegistryEnv(t, "")
-	host := newTestHost(t)
-
-	rec := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodPost, "/api/admin/plugin-registry/install",
-		strings.NewReader(`{"slug":"demo","version":"0.1.0"}`))
-	host.handleRegistryInstall(rec, req)
-	if rec.Code != http.StatusServiceUnavailable {
-		t.Errorf("status = %d, want 503", rec.Code)
 	}
 }
 
@@ -315,7 +286,19 @@ func TestHandleRegistryInstall_Success(t *testing.T) {
 // --- /api/admin/plugin-registry/<unknown> ---
 
 func TestHandleRegistryRoute_DispatchesActions(t *testing.T) {
-	withRegistryEnv(t, "")
+	// Point at a stub that 404s the install detail lookup. That keeps
+	// the install case as a clean "registry reachable but rejects" path
+	// without depending on the (removed) unconfigured-503 behavior.
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/plugins" {
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`[]`))
+			return
+		}
+		http.NotFound(w, r)
+	}))
+	t.Cleanup(upstream.Close)
+	withRegistryEnv(t, upstream.URL)
 	host := newTestHost(t)
 
 	cases := []struct {
@@ -325,7 +308,7 @@ func TestHandleRegistryRoute_DispatchesActions(t *testing.T) {
 	}{
 		{"/api/admin/plugin-registry/list", http.MethodGet, http.StatusOK},
 		{"/api/admin/plugin-registry/list/", http.MethodGet, http.StatusOK}, // trailing-slash variant
-		{"/api/admin/plugin-registry/install", http.MethodPost, http.StatusServiceUnavailable},
+		{"/api/admin/plugin-registry/install", http.MethodPost, http.StatusBadGateway},
 		{"/api/admin/plugin-registry/unknown", http.MethodGet, http.StatusNotFound},
 	}
 	for _, tc := range cases {
@@ -344,10 +327,13 @@ func TestHandleRegistryRoute_DispatchesActions(t *testing.T) {
 // --- test helpers ---
 
 // newRegistryStub returns an httptest server that emulates the
-// directory's /api/plugins/<name> detail endpoint plus a download URL
+// directory's /plugins/<slug> detail endpoint plus a download URL
 // the install handler will GET to retrieve the .ocpkg bytes. The
-// stubbed sha256 is whatever the caller passes, so tests can force a
-// mismatch by passing a wrong digest.
+// stubbed sha256 is whatever the caller passes, so tests can force
+// a mismatch by passing a wrong digest. Note the bare /plugins
+// path: the host proxy appends `/plugins/<slug>` to its configured
+// OWNCAST_PLUGIN_REGISTRY base, treating that base as the API root
+// the same way the directory frontend treats its API_HOST.
 //
 // The detail handler reflects the incoming request's Host header back
 // into the downloadURL so we don't have to know httptest's port in
@@ -355,7 +341,7 @@ func TestHandleRegistryRoute_DispatchesActions(t *testing.T) {
 func newRegistryStub(t *testing.T, slug, version string, pkg []byte, sha string) *httptest.Server {
 	t.Helper()
 	mux := http.NewServeMux()
-	mux.HandleFunc("/api/plugins/"+slug, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/plugins/"+slug, func(w http.ResponseWriter, r *http.Request) {
 		downloadURL := fmt.Sprintf("http://%s/ocpkg/%s", r.Host, slug)
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]any{

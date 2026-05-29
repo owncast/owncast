@@ -17,11 +17,15 @@ import (
 	"github.com/owncast/owncast/services/plugins"
 )
 
-// Registry browse / install. The Owncast host doesn't know the
-// registry's actual URL at compile time; an operator sets
-// OWNCAST_PLUGIN_REGISTRY (e.g. https://owncast.directory) to enable
-// the in-admin browse feature. When unset, the browse endpoint
-// returns an empty list and the install endpoint returns 503.
+// Registry browse / install. By default the host points at the
+// public catalog (DefaultPluginRegistry); operators can override
+// with OWNCAST_PLUGIN_REGISTRY (set it to a private/self-hosted
+// directory's API base, e.g. http://localhost:8088 for a local
+// directory backend during development). The host appends bare
+// resource paths to that base (`/plugins`, `/plugins/<slug>`), so
+// the env var must point at whatever URL the registry's API answers
+// from; the platform's /api/* rewrite or its absence is the
+// operator's concern, not the host's.
 
 // registryHTTPClient has a tight timeout because a slow or unreachable
 // registry shouldn't hang the admin UI. The full install flow
@@ -29,11 +33,24 @@ import (
 // requests' worth of time.
 var registryHTTPClient = &http.Client{Timeout: 30 * time.Second}
 
+// DefaultPluginRegistry is the URL the Owncast host points at when
+// OWNCAST_PLUGIN_REGISTRY isn't set. It's the public catalog the
+// Owncast project runs, so every Owncast instance gets a working
+// Browse tab out of the box without per-deployment configuration.
+// Operators who want a different catalog (a private/self-hosted
+// directory, a staging instance, etc.) set the env var to override.
+const DefaultPluginRegistry = "https://owncast.directory/api"
+
 // registryBase reads the operator's configured registry URL from
-// OWNCAST_PLUGIN_REGISTRY, trimming any trailing slash so callers can
-// safely concatenate path segments. Empty string when unconfigured.
+// OWNCAST_PLUGIN_REGISTRY, falling back to the public catalog when
+// unset. Trims any trailing slash so callers can safely concatenate
+// path segments.
 func registryBase() string {
-	return strings.TrimRight(os.Getenv("OWNCAST_PLUGIN_REGISTRY"), "/")
+	v := os.Getenv("OWNCAST_PLUGIN_REGISTRY")
+	if v == "" {
+		v = DefaultPluginRegistry
+	}
+	return strings.TrimRight(v, "/")
 }
 
 // handleRegistryRoute dispatches /api/admin/plugin-registry/<action>
@@ -61,7 +78,7 @@ func (p *Host) handleRegistryList(w http.ResponseWriter, _ *http.Request) {
 		writeJSONResponse(w, http.StatusOK, []any{})
 		return
 	}
-	resp, err := registryHTTPClient.Get(base + "/api/plugins")
+	resp, err := registryHTTPClient.Get(base + "/plugins")
 	if err != nil {
 		writeJSONResponse(w, http.StatusBadGateway, map[string]string{jsonErrorKey: "registry fetch: " + err.Error()})
 		return
@@ -166,7 +183,7 @@ type registryDetail struct {
 // registry can return extra fields without breaking us. Slug is the
 // registry's primary identifier, matching the URL segment used here.
 func fetchRegistryDetail(base, slug string) (*registryDetail, error) {
-	resp, err := registryHTTPClient.Get(base + "/api/plugins/" + url.PathEscape(slug))
+	resp, err := registryHTTPClient.Get(base + "/plugins/" + url.PathEscape(slug))
 	if err != nil {
 		return nil, fmt.Errorf("registry fetch: %w", err)
 	}
