@@ -366,11 +366,13 @@ func main() {
 	var pluginCSSContent func() []byte
 	var pluginJSContent func() []byte
 	var pluginPageContent func() []byte
+	var pluginTabs func() []models.PluginTab
 	if pluginHostInstance != nil {
 		pluginActions = pluginHostInstance.Actions
 		pluginCSSContent = pluginHostInstance.StylesContent
 		pluginJSContent = pluginHostInstance.ScriptsContent
 		pluginPageContent = pluginHostInstance.PageContent
+		pluginTabs = pluginHostInstance.Tabs
 	}
 
 	h := handlers.NewHandlers(handlers.Deps{
@@ -396,6 +398,7 @@ func main() {
 		PluginCSSContent:        pluginCSSContent,
 		PluginJSContent:         pluginJSContent,
 		PluginPageContent:       pluginPageContent,
+		PluginTabs:              pluginTabs,
 	})
 
 	// Stage 10: serve. Blocks until shutdown.

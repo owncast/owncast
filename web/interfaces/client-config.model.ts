@@ -16,6 +16,10 @@ export interface ClientConfig {
   // pre-merges them server-side). Theme.tsx renders this as one
   // inline <style> block.
   customStyles: string;
+  // pluginTabs is the list of viewer-page tabs contributed by
+  // loaded plugins via manifest.tabs. DesktopContent / MobileContent
+  // render one tab per entry alongside the built-in tabs.
+  pluginTabs: PluginTab[];
   appearanceVariables: Map<string, string>;
   maxSocketPayloadSize: number;
   federation: Federation;
@@ -49,6 +53,14 @@ interface SocialHandle {
   icon: string;
 }
 
+// PluginTab is one viewer-page tab contributed by a plugin via
+// manifest.tabs. Mirrors models.PluginTab on the backend.
+export interface PluginTab {
+  slug: string;
+  title: string;
+  html: string;
+}
+
 export function makeEmptyClientConfig(): ClientConfig {
   return {
     name: '',
@@ -63,6 +75,7 @@ export function makeEmptyClientConfig(): ClientConfig {
     chatRequireAuthentication: false,
     externalActions: [],
     customStyles: '',
+    pluginTabs: [],
     appearanceVariables: new Map(),
     maxSocketPayloadSize: 0,
     federation: {

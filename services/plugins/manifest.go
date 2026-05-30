@@ -91,6 +91,22 @@ type Manifest struct {
 	// http.serve is not required because the HTML is inlined into
 	// the API response, not served as a URL.
 	ExtraPageContent string `json:"extraPageContent,omitempty"`
+	// Tabs declares viewer-page tabs the plugin contributes to the
+	// row of tabs Owncast renders next to chat (alongside built-ins
+	// like Followers). Each entry's `content` is a relative path to
+	// an HTML file under `assets/`; the host reads the bytes and
+	// inlines them into the tab body on /api/config. Path and
+	// extension rules match ExtraPageContent.
+	Tabs []Tab `json:"tabs,omitempty"`
+}
+
+// Tab is a single viewer-page tab a plugin contributes via
+// manifest.tabs. Title is the label shown in the tab bar; Content is
+// a relative path to an HTML file the host reads from the plugin's
+// assets/ directory and inlines into the tab body.
+type Tab struct {
+	Title   string `json:"title"`
+	Content string `json:"content"`
 }
 
 // BotConfig is the chat-bot-specific configuration for plugins that
@@ -207,7 +223,10 @@ func (m *Manifest) Validate() error {
 	if err := m.validateScripts(); err != nil {
 		return err
 	}
-	return m.validateExtraPageContent()
+	if err := m.validateExtraPageContent(); err != nil {
+		return err
+	}
+	return m.validateTabs()
 }
 
 // resolveSlug fills in m.Slug when the author didn't pin one
@@ -458,6 +477,46 @@ func (m *Manifest) validateExtraPageContent() error {
 		return fmt.Errorf("manifest.extraPageContent: %w", err)
 	}
 	m.ExtraPageContent = rewritten
+	return nil
+}
+
+// validateTabs checks manifest.tabs entries and rewrites each tab's
+// content path into the plugin's namespace. The host reads the bytes
+// from assets/ at request time and inlines the HTML into the tab
+// body on /api/config (no URL is served), so only ui.modify is
+// required.
+func (m *Manifest) validateTabs() error {
+	if len(m.Tabs) == 0 {
+		return nil
+	}
+	if !m.hasPermission(PermUIModify) {
+		return errors.New(
+			"manifest.tabs is set but the manifest does not declare " +
+				"the \"ui.modify\" permission; plugins that add tabs " +
+				"to the viewer page must opt in to ui.modify so it's " +
+				"visible to anyone reviewing the manifest that the " +
+				"plugin paints inside Owncast's chrome")
+	}
+	// Reject duplicate titles within the same plugin. The frontend
+	// derives a React key from (slug, title), and a viewer staring at
+	// a row of two identically-named tabs has no way to tell them
+	// apart anyway, so making the manifest reject this at load is
+	// strictly better than silently accepting it.
+	seenTitles := make(map[string]bool, len(m.Tabs))
+	for i, tab := range m.Tabs {
+		if strings.TrimSpace(tab.Title) == "" {
+			return fmt.Errorf("manifest.tabs[%d].title is required", i)
+		}
+		if seenTitles[tab.Title] {
+			return fmt.Errorf("manifest.tabs[%d].title %q is a duplicate; tab titles must be unique within a plugin", i, tab.Title)
+		}
+		seenTitles[tab.Title] = true
+		rewritten, err := rewritePluginAssetPath(m.Slug, tab.Content, ".html")
+		if err != nil {
+			return fmt.Errorf("manifest.tabs[%d].content: %w", i, err)
+		}
+		m.Tabs[i].Content = rewritten
+	}
 	return nil
 }
 

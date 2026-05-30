@@ -24,17 +24,21 @@ type webConfigResponse struct {
 	// devtools attribution). The viewer renders this as one inline
 	// <style> block so plugins can theme the page without each plugin
 	// needing its own <link> tag.
-	CustomStyles               string                       `json:"customStyles"`
-	StreamTitle                string                       `json:"streamTitle,omitempty"` // What's going on with the current stream
-	OfflineMessage             string                       `json:"offlineMessage"`
-	Logo                       string                       `json:"logo"`
-	Version                    string                       `json:"version"`
-	SocketHostOverride         string                       `json:"socketHostOverride,omitempty"`
-	ExtraPageContent           string                       `json:"extraPageContent"`
-	Summary                    string                       `json:"summary"`
-	Tags                       []string                     `json:"tags"`
-	SocialHandles              []models.SocialHandle        `json:"socialHandles"`
-	ExternalActions            []models.ExternalAction      `json:"externalActions"`
+	CustomStyles       string                  `json:"customStyles"`
+	StreamTitle        string                  `json:"streamTitle,omitempty"` // What's going on with the current stream
+	OfflineMessage     string                  `json:"offlineMessage"`
+	Logo               string                  `json:"logo"`
+	Version            string                  `json:"version"`
+	SocketHostOverride string                  `json:"socketHostOverride,omitempty"`
+	ExtraPageContent   string                  `json:"extraPageContent"`
+	Summary            string                  `json:"summary"`
+	Tags               []string                `json:"tags"`
+	SocialHandles      []models.SocialHandle   `json:"socialHandles"`
+	ExternalActions    []models.ExternalAction `json:"externalActions"`
+	// PluginTabs is the list of viewer-page tabs contributed by
+	// loaded plugins via manifest.tabs. The viewer page renders one
+	// tab per entry alongside the built-in tabs (Followers, About).
+	PluginTabs                 []models.PluginTab           `json:"pluginTabs"`
 	Notifications              notificationsConfigResponse  `json:"notifications"`
 	Federation                 federationConfigResponse     `json:"federation"`
 	MaxSocketPayloadSize       int                          `json:"maxSocketPayloadSize"`
@@ -143,6 +147,7 @@ func (h *Handlers) getConfigResponse() webConfigResponse {
 		ChatSpamProtectionDisabled: configRepository.GetChatSpamProtectionEnabled(),
 		ChatRequireAuthentication:  configRepository.GetChatRequireAuthentication(),
 		ExternalActions:            mergePluginActions(configRepository.GetExternalActions(), h.pluginActions),
+		PluginTabs:                 pluginTabsOrEmpty(h.pluginTabs),
 		CustomStyles:               mergePluginCSS(configRepository.GetCustomStyles(), h.pluginCSSContent),
 		MaxSocketPayloadSize:       config.MaxSocketPayloadSize,
 		Federation:                 federationResponse,
@@ -151,6 +156,21 @@ func (h *Handlers) getConfigResponse() webConfigResponse {
 		AppearanceVariables:        configRepository.GetCustomColorVariableValues(),
 		HideViewerCount:            configRepository.GetHideViewerCount(),
 	}
+}
+
+// pluginTabsOrEmpty returns the host's plugin-tab list, or an empty
+// (non-nil) slice when the getter is unset (no plugin host) or
+// returns nothing. The empty-slice contract keeps the JSON wire
+// shape stable: `pluginTabs: []` rather than `null`, so the viewer
+// doesn't need a defensive nil-check before iterating.
+func pluginTabsOrEmpty(getter func() []models.PluginTab) []models.PluginTab {
+	if getter == nil {
+		return []models.PluginTab{}
+	}
+	if t := getter(); len(t) > 0 {
+		return t
+	}
+	return []models.PluginTab{}
 }
 
 // prependPluginPageContent puts plugin-contributed HTML in front of

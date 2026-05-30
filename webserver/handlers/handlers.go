@@ -81,6 +81,11 @@ type Handlers struct {
 	// extraPageContent.
 	pluginPageContent func() []byte
 
+	// pluginTabs returns the list of viewer-page tabs contributed by
+	// loaded plugins via manifest.tabs. /api/config emits this list
+	// as `pluginTabs`; the viewer page renders one tab per entry.
+	pluginTabs func() []models.PluginTab
+
 	// previewThumbCache caches thumbnail/preview bytes for a short window
 	// so frequent polling from chat clients doesn't re-read the file
 	// every request.
@@ -130,6 +135,10 @@ type Deps struct {
 	// each loaded plugin's manifest.extraPageContent. Wired to the
 	// plugin host's PageContent() method.
 	PluginPageContent func() []byte
+	// PluginTabs returns the list of viewer-page tabs contributed by
+	// loaded plugins via manifest.tabs. Wired to the plugin host's
+	// Tabs() method.
+	PluginTabs func() []models.PluginTab
 }
 
 // HandleWebsocketConnection routes the /ws websocket upgrade to the
@@ -164,6 +173,7 @@ func NewHandlers(deps Deps) *Handlers {
 		pluginCSSContent:        deps.PluginCSSContent,
 		pluginJSContent:         deps.PluginJSContent,
 		pluginPageContent:       deps.PluginPageContent,
+		pluginTabs:              deps.PluginTabs,
 		previewThumbCache: ttlcache.New(
 			ttlcache.WithTTL[string, []byte](15),
 			ttlcache.WithCapacity[string, []byte](1),

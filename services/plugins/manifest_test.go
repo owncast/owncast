@@ -660,6 +660,104 @@ func TestParseManifest_ExtraPageContent_RejectsNonHtmlExtension(t *testing.T) {
 	}
 }
 
+func TestParseManifest_Tabs_RewritesContentPaths(t *testing.T) {
+	m, err := ParseManifest([]byte(`{
+		"api": "1", "name": "tabbed", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"tabs": [
+			{ "title": "Music", "content": "music.html" },
+			{ "title": "Photos", "content": "/photos.html" }
+		]
+	}`))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	want := []Tab{
+		{Title: "Music", Content: "/plugins/tabbed/music.html"},
+		{Title: "Photos", Content: "/plugins/tabbed/photos.html"},
+	}
+	if len(m.Tabs) != len(want) {
+		t.Fatalf("tabs count: got %d want %d", len(m.Tabs), len(want))
+	}
+	for i, w := range want {
+		if m.Tabs[i] != w {
+			t.Errorf("tabs[%d] = %+v, want %+v", i, m.Tabs[i], w)
+		}
+	}
+}
+
+func TestParseManifest_Tabs_RequiresUIModify(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "tabbed", "version": "1.0",
+		"tabs": [{ "title": "Music", "content": "music.html" }]
+	}`))
+	if err == nil {
+		t.Fatal("expected error when tabs is set without ui.modify")
+	}
+	if !strings.Contains(err.Error(), "ui.modify") {
+		t.Errorf("error should mention ui.modify, got: %v", err)
+	}
+}
+
+func TestParseManifest_Tabs_RequiresTitle(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "tabbed", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"tabs": [{ "title": "", "content": "music.html" }]
+	}`))
+	if err == nil {
+		t.Fatal("expected error when tab.title is empty")
+	}
+	if !strings.Contains(err.Error(), "title is required") {
+		t.Errorf("error should call out title, got: %v", err)
+	}
+}
+
+func TestParseManifest_Tabs_RejectsDuplicateTitles(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "tabbed", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"tabs": [
+			{ "title": "Music", "content": "a.html" },
+			{ "title": "Music", "content": "b.html" }
+		]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: duplicate tab titles")
+	}
+	if !strings.Contains(err.Error(), "duplicate") {
+		t.Errorf("error should call out duplicate, got: %v", err)
+	}
+}
+
+func TestParseManifest_Tabs_RejectsCrossPluginPath(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "tabbed", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"tabs": [{ "title": "Other", "content": "/plugins/some-other-plugin/x.html" }]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: cross-plugin tab content path")
+	}
+	if !strings.Contains(err.Error(), "another plugin's namespace") {
+		t.Errorf("error should call out cross-plugin path, got: %v", err)
+	}
+}
+
+func TestParseManifest_Tabs_RejectsNonHtmlExtension(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "tabbed", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"tabs": [{ "title": "Bad", "content": "music.txt" }]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: only .html extension allowed for tabs")
+	}
+	if !strings.Contains(err.Error(), ".html") {
+		t.Errorf("error should call out .html, got: %v", err)
+	}
+}
+
 func TestParseManifest_Network_AllowedHostsRequiredWithFetch(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "demo", "version": "1.0",

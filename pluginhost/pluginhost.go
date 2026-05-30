@@ -192,6 +192,40 @@ func (p *Host) PageContent() []byte {
 	)
 }
 
+// Tabs returns every viewer-page tab contributed by loaded plugins
+// via manifest.tabs. Each tab's content file is read from the
+// plugin's assets/ directory once per call; tabs whose file can't be
+// read are skipped (logged) so a broken file doesn't take down the
+// rest of the list. /api/config emits the result as `pluginTabs`,
+// which the viewer page renders alongside the built-in tabs.
+func (p *Host) Tabs() []models.PluginTab {
+	if p == nil || p.manager == nil {
+		return nil
+	}
+	var out []models.PluginTab
+	for _, l := range p.manager.Snapshot() {
+		if l == nil || l.Manifest == nil || l.AssetsFS == nil {
+			continue
+		}
+		slug := l.Manifest.Slug
+		pluginPrefix := "/plugins/" + slug + "/"
+		for _, tab := range l.Manifest.Tabs {
+			relPath := strings.TrimPrefix(tab.Content, pluginPrefix)
+			data, err := fs.ReadFile(l.AssetsFS, relPath)
+			if err != nil {
+				log.Warnf("plugin %s: skipping tab %q (%s): %v", slug, tab.Title, relPath, err)
+				continue
+			}
+			out = append(out, models.PluginTab{
+				Slug:  slug,
+				Title: tab.Title,
+				HTML:  string(data),
+			})
+		}
+	}
+	return out
+}
+
 // readManifestAssets walks every loaded plugin, calls pick() to get
 // the manifest entries to include (Styles or Scripts), and reads each
 // file from the plugin's AssetsFS. delimiter is a Printf format

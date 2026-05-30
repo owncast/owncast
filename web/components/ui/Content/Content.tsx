@@ -126,6 +126,7 @@ export const Content: FC = () => {
     chatRequireAuthentication,
     federation,
     notifications,
+    pluginTabs,
   } = clientConfig;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyModal, setShowNotifyModal] = useState(false);
@@ -316,6 +317,7 @@ export const Content: FC = () => {
               tags={tags}
               socialHandles={socialHandles}
               extraPageContent={extraPageContent}
+              pluginTabs={pluginTabs}
               setShowFollowModal={setShowFollowModal}
               supportFediverseFeatures={supportFediverseFeatures}
               online={online}
@@ -328,6 +330,7 @@ export const Content: FC = () => {
                 tags={tags}
                 socialHandles={socialHandles}
                 extraPageContent={extraPageContent}
+                pluginTabs={pluginTabs}
                 setShowFollowModal={setShowFollowModal}
                 supportFediverseFeatures={supportFediverseFeatures}
               />
