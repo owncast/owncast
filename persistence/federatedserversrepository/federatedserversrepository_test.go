@@ -1,32 +1,34 @@
 package federatedserversrepository
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/persistence/migrations"
+	"github.com/owncast/owncast/services/datastore"
 )
 
+var testRepo FederatedServersRepository
+
 func TestMain(m *testing.M) {
-	// Setup test database
-	dbFile, err := ioutil.TempFile(os.TempDir(), "owncast-test-federated-repo-db.db")
+	ds, err := datastore.SetupPersistence(":memory:", os.TempDir())
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(dbFile.Name())
-
-	if err := data.SetupPersistence(dbFile.Name()); err != nil {
+	if err := migrations.Run(ds.DB, os.TempDir()); err != nil {
 		panic(err)
 	}
 
-	// Setup basic config
-	configRepository := configrepository.Get()
-	configRepository.SetServerURL("https://test.owncast.server")
-	configRepository.SetFederationUsername("testuser")
+	configRepo := configrepository.New(ds)
+	configRepo.SetServerURL("https://test.owncast.server")
+	configRepo.SetFederationUsername("testuser")
+	configrepository.SetGlobalInstance(configRepo)
+
+	testRepo = New(ds)
+	SetGlobalInstance(testRepo)
 
 	m.Run()
 }

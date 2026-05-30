@@ -15,7 +15,8 @@ const (
 )
 
 func TestOTPFlowValidation(t *testing.T) {
-	r, success, err := RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
+	svc := New()
+	r, success, err := svc.RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
 	if err != nil {
 		t.Error(err)
 	}
@@ -36,7 +37,7 @@ func TestOTPFlowValidation(t *testing.T) {
 		t.Error("Timestamp is empty")
 	}
 
-	valid, registration := ValidateFediverseOTP(accessToken, r.Code)
+	valid, registration := svc.ValidateFediverseOTP(accessToken, r.Code)
 	if !valid {
 		t.Error("Code is not valid")
 	}
@@ -55,8 +56,9 @@ func TestOTPFlowValidation(t *testing.T) {
 }
 
 func TestSingleOTPFlowRequest(t *testing.T) {
-	r1, _, _ := RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
-	r2, s2, _ := RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
+	svc := New()
+	r1, _, _ := svc.RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
+	r2, s2, _ := svc.RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
 
 	if r1.Code != r2.Code {
 		t.Error("Only one registration should be permitted.")
@@ -68,14 +70,15 @@ func TestSingleOTPFlowRequest(t *testing.T) {
 }
 
 func TestAccountCaseInsensitive(t *testing.T) {
+	svc := New()
 	account := "Account"
 	accessToken := "another-fake-access-token"
-	r1, _, _ := RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
-	_, reg1 := ValidateFediverseOTP(accessToken, r1.Code)
+	r1, _, _ := svc.RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
+	_, reg1 := svc.ValidateFediverseOTP(accessToken, r1.Code)
 
 	// Simulate second auth with account in different case
-	r2, _, _ := RegisterFediverseOTP(accessToken, userID, userDisplayName, strings.ToUpper(account))
-	_, reg2 := ValidateFediverseOTP(accessToken, r2.Code)
+	r2, _, _ := svc.RegisterFediverseOTP(accessToken, userID, userDisplayName, strings.ToUpper(account))
+	_, reg2 := svc.ValidateFediverseOTP(accessToken, r2.Code)
 
 	if reg1.Account != reg2.Account {
 		t.Errorf("Account names should be case-insensitive: %s %s", reg1.Account, reg2.Account)
@@ -83,14 +86,15 @@ func TestAccountCaseInsensitive(t *testing.T) {
 }
 
 func TestLimitGlobalPendingRequests(t *testing.T) {
-	for i := 0; i < maxPendingRequests-1; i++ {
+	svc := New()
+	for i := 0; i < maxPendingRequests; i++ {
 		at, _ := utils.GenerateRandomString(10)
 		uid, _ := utils.GenerateRandomString(10)
 		account, _ := utils.GenerateRandomString(10)
 
-		_, success, error := RegisterFediverseOTP(at, uid, "userDisplayName", account)
+		_, success, error := svc.RegisterFediverseOTP(at, uid, "userDisplayName", account)
 		if !success {
-			t.Error("Registration should be permitted.", i, " of ", len(pendingAuthRequests))
+			t.Error("Registration should be permitted.", i, " of ", len(svc.pendingAuthRequests))
 		}
 		if error != nil {
 			t.Error(error)
@@ -101,7 +105,7 @@ func TestLimitGlobalPendingRequests(t *testing.T) {
 	at, _ := utils.GenerateRandomString(10)
 	uid, _ := utils.GenerateRandomString(10)
 	account, _ := utils.GenerateRandomString(10)
-	_, success, error := RegisterFediverseOTP(at, uid, "userDisplayName", account)
+	_, success, error := svc.RegisterFediverseOTP(at, uid, "userDisplayName", account)
 	if success {
 		t.Error("Registration should not be permitted.")
 	}

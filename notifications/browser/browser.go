@@ -4,19 +4,20 @@ import (
 	"encoding/json"
 
 	"github.com/SherClockHolmes/webpush-go"
-	"github.com/owncast/owncast/core/data"
 	"github.com/pkg/errors"
+
+	"github.com/owncast/owncast/services/datastore"
 )
 
 // Browser is an instance of the Browser service.
 type Browser struct {
-	datastore  *data.Datastore
+	datastore  *datastore.Datastore
 	privateKey string
 	publicKey  string
 }
 
 // New will create a new instance of the Browser service.
-func New(datastore *data.Datastore, publicKey, privateKey string) (*Browser, error) {
+func New(datastore *datastore.Datastore, publicKey, privateKey string) (*Browser, error) {
 	return &Browser{
 		datastore:  datastore,
 		privateKey: privateKey,

@@ -5,7 +5,6 @@
 # Usage:
 #   ./run.sh                                    # Run federation test with 100 users
 #   ./run.sh test-follower-validation.sh        # Run follower validation test
-#   ./run.sh test-following.sh                  # Run following (Owncast-to-Owncast) test
 #   USER_COUNT=50 ./run.sh                      # Run with 50 users
 #   KEEP_RUNNING=true ./run.sh                  # Keep servers running after test
 #
@@ -23,7 +22,7 @@ docker build -t "${IMAGE_NAME}" "${SCRIPT_DIR}"
 
 # Collect environment variables to pass through
 ENV_ARGS=()
-for var in USER_COUNT FOLLOW_DELAY KEEP_RUNNING CI PROXY_PORT SNAC_PORT OWNCAST_PORT OWNCAST2_PORT CLEAR_SHARED_INBOX_PERCENT; do
+for var in USER_COUNT FOLLOW_DELAY KEEP_RUNNING CI PROXY_PORT SNAC_PORT OWNCAST_PORT CLEAR_SHARED_INBOX_PERCENT; do
     if [[ -n "${!var}" ]]; then
         ENV_ARGS+=("-e" "${var}=${!var}")
     fi
@@ -31,6 +30,11 @@ done
 
 # Always skip interactive prompts inside the container
 ENV_ARGS+=("-e" "CI=true")
+
+# Pass the host user/group so the container can hand any files it writes into
+# the bind-mounted repo (notably Owncast's data dir) back to us on exit,
+# instead of leaving them owned by root and unremovable.
+ENV_ARGS+=("-e" "HOST_UID=$(id -u)" "-e" "HOST_GID=$(id -g)")
 
 # Port-forward when KEEP_RUNNING is set so the user can access the services
 EXTRA_ARGS=()
@@ -43,7 +47,6 @@ fi
 echo "Running test in Docker container..."
 docker run --rm \
     --add-host owncast.local:127.0.0.1 \
-    --add-host owncast2.local:127.0.0.1 \
     --add-host snac.local:127.0.0.1 \
     -v "${REPO_ROOT}:/owncast" \
     -v owncast-ap-test-gomod:/go/pkg/mod \

@@ -12,7 +12,7 @@ import (
 )
 
 const addAccessTokenForUser = `-- name: AddAccessTokenForUser :exec
-INSERT INTO user_access_tokens(token, user_id) values($1, $2)
+INSERT INTO user_access_tokens(token, user_id) values(?, ?)
 `
 
 type AddAccessTokenForUserParams struct {
@@ -26,7 +26,7 @@ func (q *Queries) AddAccessTokenForUser(ctx context.Context, arg AddAccessTokenF
 }
 
 const addAuthForUser = `-- name: AddAuthForUser :exec
-INSERT INTO auth(user_id, token, type) values($1, $2, $3)
+INSERT INTO auth(user_id, token, type) values(?, ?, ?)
 `
 
 type AddAuthForUserParams struct {
@@ -41,7 +41,7 @@ func (q *Queries) AddAuthForUser(ctx context.Context, arg AddAuthForUserParams) 
 }
 
 const addFederatedServer = `-- name: AddFederatedServer :exec
-INSERT INTO federated_servers(iri, name, logo_url, followed_at, pending, username, follow_status) values($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO federated_servers(iri, name, logo_url, followed_at, pending, username, follow_status) values(?, ?, ?, ?, ?, ?, ?)
 `
 
 type AddFederatedServerParams struct {
@@ -68,7 +68,7 @@ func (q *Queries) AddFederatedServer(ctx context.Context, arg AddFederatedServer
 }
 
 const addFollower = `-- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at, owncast_server) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at, owncast_server) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type AddFollowerParams struct {
@@ -101,7 +101,7 @@ func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error 
 }
 
 const addNotification = `-- name: AddNotification :exec
-INSERT INTO notifications (channel, destination) VALUES($1, $2)
+INSERT INTO notifications (channel, destination) VALUES(?, ?)
 `
 
 type AddNotificationParams struct {
@@ -115,7 +115,7 @@ func (q *Queries) AddNotification(ctx context.Context, arg AddNotificationParams
 }
 
 const addToAcceptedActivities = `-- name: AddToAcceptedActivities :exec
-INSERT INTO ap_accepted_activities(iri, actor, type, timestamp) values($1, $2, $3, $4)
+INSERT INTO ap_accepted_activities(iri, actor, type, timestamp) values(?, ?, ?, ?)
 `
 
 type AddToAcceptedActivitiesParams struct {
@@ -136,7 +136,7 @@ func (q *Queries) AddToAcceptedActivities(ctx context.Context, arg AddToAccepted
 }
 
 const addToOutbox = `-- name: AddToOutbox :exec
-INSERT INTO ap_outbox(iri, value, type, live_notification) values($1, $2, $3, $4)
+INSERT INTO ap_outbox(iri, value, type, live_notification) values(?, ?, ?, ?)
 `
 
 type AddToOutboxParams struct {
@@ -157,7 +157,7 @@ func (q *Queries) AddToOutbox(ctx context.Context, arg AddToOutboxParams) error 
 }
 
 const approveFederationFollower = `-- name: ApproveFederationFollower :exec
-UPDATE ap_followers SET approved_at = $1, disabled_at = null WHERE iri = $2
+UPDATE ap_followers SET approved_at = ?, disabled_at = null WHERE iri = ?
 `
 
 type ApproveFederationFollowerParams struct {
@@ -171,7 +171,7 @@ func (q *Queries) ApproveFederationFollower(ctx context.Context, arg ApproveFede
 }
 
 const banIPAddress = `-- name: BanIPAddress :exec
-INSERT INTO ip_bans(ip_address, notes) values($1, $2)
+INSERT INTO ip_bans(ip_address, notes) values(?, ?)
 `
 
 type BanIPAddressParams struct {
@@ -185,11 +185,11 @@ func (q *Queries) BanIPAddress(ctx context.Context, arg BanIPAddressParams) erro
 }
 
 const changeDisplayColor = `-- name: ChangeDisplayColor :exec
-UPDATE users SET display_color = $1 WHERE id = $2
+UPDATE users SET display_color = ? WHERE id = ?
 `
 
 type ChangeDisplayColorParams struct {
-	DisplayColor int32
+	DisplayColor int64
 	ID           string
 }
 
@@ -199,7 +199,7 @@ func (q *Queries) ChangeDisplayColor(ctx context.Context, arg ChangeDisplayColor
 }
 
 const changeDisplayName = `-- name: ChangeDisplayName :exec
-UPDATE users SET display_name = $1, previous_names = previous_names || $2, namechanged_at = $3 WHERE id = $4
+UPDATE users SET display_name = ?, previous_names = previous_names || ?, namechanged_at = ? WHERE id = ?
 `
 
 type ChangeDisplayNameParams struct {
@@ -220,7 +220,7 @@ func (q *Queries) ChangeDisplayName(ctx context.Context, arg ChangeDisplayNamePa
 }
 
 const doesInboundActivityExist = `-- name: DoesInboundActivityExist :one
-SELECT count(*) FROM ap_accepted_activities WHERE iri = $1 AND actor = $2 AND TYPE = $3
+SELECT count(*) FROM ap_accepted_activities WHERE iri = ? AND actor = ? AND TYPE = ?
 `
 
 type DoesInboundActivityExistParams struct {
@@ -237,7 +237,7 @@ func (q *Queries) DoesInboundActivityExist(ctx context.Context, arg DoesInboundA
 }
 
 const getFederatedServer = `-- name: GetFederatedServer :one
-SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE iri = $1
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE iri = ?
 `
 
 func (q *Queries) GetFederatedServer(ctx context.Context, iri string) (FederatedServer, error) {
@@ -364,12 +364,12 @@ func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]
 }
 
 const getFederationFollowersWithOffset = `-- name: GetFederationFollowersWithOffset :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null ORDER BY created_at DESC LIMIT $1 OFFSET $2
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null ORDER BY created_at DESC LIMIT ? OFFSET ?
 `
 
 type GetFederationFollowersWithOffsetParams struct {
-	Limit  int32
-	Offset int32
+	Limit  int64
+	Offset int64
 }
 
 type GetFederationFollowersWithOffsetRow struct {
@@ -414,7 +414,7 @@ func (q *Queries) GetFederationFollowersWithOffset(ctx context.Context, arg GetF
 }
 
 const getFollowerByIRI = `-- name: GetFollowerByIRI :one
-SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at, owncast_server FROM ap_followers WHERE iri = $1
+SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at, owncast_server FROM ap_followers WHERE iri = ?
 `
 
 type GetFollowerByIRIRow struct {
@@ -455,7 +455,7 @@ func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (GetFollower
 const getFollowerCount = `-- name: GetFollowerCount :one
 
 
-SElECT count(*) FROM ap_followers WHERE approved_at is not null
+SELECT count(*) FROM ap_followers WHERE approved_at is not null
 `
 
 // Queries added to query.sql must be compiled into Go code with sqlc. Read README.md for details.
@@ -472,7 +472,7 @@ SELECT iri, inbox, shared_inbox, name, username, image, first_validation_failure
 FROM ap_followers
 WHERE approved_at IS NOT NULL AND disabled_at IS NULL
 ORDER BY last_validated_at ASC NULLS FIRST
-LIMIT $1
+LIMIT ?
 `
 
 type GetFollowersToValidateRow struct {
@@ -485,7 +485,7 @@ type GetFollowersToValidateRow struct {
 	FirstValidationFailureAt sql.NullTime
 }
 
-func (q *Queries) GetFollowersToValidate(ctx context.Context, limit int32) ([]GetFollowersToValidateRow, error) {
+func (q *Queries) GetFollowersToValidate(ctx context.Context, limit int64) ([]GetFollowersToValidateRow, error) {
 	rows, err := q.db.QueryContext(ctx, getFollowersToValidate, limit)
 	if err != nil {
 		return nil, err
@@ -544,12 +544,12 @@ func (q *Queries) GetIPAddressBans(ctx context.Context) ([]IpBan, error) {
 }
 
 const getInboundActivitiesWithOffset = `-- name: GetInboundActivitiesWithOffset :many
-SELECT iri, actor, type, timestamp FROM ap_accepted_activities ORDER BY timestamp DESC LIMIT $1 OFFSET $2
+SELECT iri, actor, type, timestamp FROM ap_accepted_activities ORDER BY timestamp DESC LIMIT ? OFFSET ?
 `
 
 type GetInboundActivitiesWithOffsetParams struct {
-	Limit  int32
-	Offset int32
+	Limit  int64
+	Offset int64
 }
 
 type GetInboundActivitiesWithOffsetRow struct {
@@ -599,7 +599,7 @@ func (q *Queries) GetInboundActivityCount(ctx context.Context) (int64, error) {
 }
 
 const getLocalPostCount = `-- name: GetLocalPostCount :one
-SElECT count(*) FROM ap_outbox
+SELECT count(*) FROM ap_outbox
 `
 
 func (q *Queries) GetLocalPostCount(ctx context.Context) (int64, error) {
@@ -610,7 +610,7 @@ func (q *Queries) GetLocalPostCount(ctx context.Context) (int64, error) {
 }
 
 const getMessagesFromUser = `-- name: GetMessagesFromUser :many
-SELECT id, body, hidden_at, timestamp FROM messages WHERE eventType = 'CHAT' AND user_id = $1 ORDER BY TIMESTAMP DESC
+SELECT id, body, hidden_at, timestamp FROM messages WHERE eventType = 'CHAT' AND user_id = ? ORDER BY TIMESTAMP DESC
 `
 
 type GetMessagesFromUserRow struct {
@@ -649,7 +649,7 @@ func (q *Queries) GetMessagesFromUser(ctx context.Context, userID sql.NullString
 }
 
 const getNotificationDestinationsForChannel = `-- name: GetNotificationDestinationsForChannel :many
-SELECT destination FROM notifications WHERE channel = $1
+SELECT destination FROM notifications WHERE channel = ?
 `
 
 func (q *Queries) GetNotificationDestinationsForChannel(ctx context.Context, channel string) ([]string, error) {
@@ -676,7 +676,7 @@ func (q *Queries) GetNotificationDestinationsForChannel(ctx context.Context, cha
 }
 
 const getObjectFromOutboxByIRI = `-- name: GetObjectFromOutboxByIRI :one
-SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = $1
+SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = ?
 `
 
 type GetObjectFromOutboxByIRIRow struct {
@@ -693,12 +693,12 @@ func (q *Queries) GetObjectFromOutboxByIRI(ctx context.Context, iri string) (Get
 }
 
 const getOutboxWithOffset = `-- name: GetOutboxWithOffset :many
-SELECT value FROM ap_outbox LIMIT $1 OFFSET $2
+SELECT value FROM ap_outbox LIMIT ? OFFSET ?
 `
 
 type GetOutboxWithOffsetParams struct {
-	Limit  int32
-	Offset int32
+	Limit  int64
+	Offset int64
 }
 
 func (q *Queries) GetOutboxWithOffset(ctx context.Context, arg GetOutboxWithOffsetParams) ([][]byte, error) {
@@ -843,19 +843,20 @@ func (q *Queries) GetUniqueDeliveryInboxes(ctx context.Context) ([]string, error
 }
 
 const getUserByAccessToken = `-- name: GetUserByAccessToken :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, users.type = 'API' AS is_bot FROM users, user_access_tokens WHERE token = ? AND users.id = user_id
 `
 
 type GetUserByAccessTokenRow struct {
 	ID              string
 	DisplayName     string
-	DisplayColor    int32
+	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
 	Scopes          sql.NullString
+	IsBot           bool
 }
 
 func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUserByAccessTokenRow, error) {
@@ -871,12 +872,13 @@ func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUs
 		&i.NamechangedAt,
 		&i.AuthenticatedAt,
 		&i.Scopes,
+		&i.IsBot,
 	)
 	return i, err
 }
 
 const getUserByAuth = `-- name: GetUserByAuth :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE token = $1 AND auth.type = $2 AND users.id = auth.user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE token = ? AND auth.type = ? AND users.id = auth.user_id
 `
 
 type GetUserByAuthParams struct {
@@ -887,7 +889,7 @@ type GetUserByAuthParams struct {
 type GetUserByAuthRow struct {
 	ID              string
 	DisplayName     string
-	DisplayColor    int32
+	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
 	PreviousNames   sql.NullString
@@ -913,8 +915,43 @@ func (q *Queries) GetUserByAuth(ctx context.Context, arg GetUserByAuthParams) (G
 	return i, err
 }
 
+const getUserByID = `-- name: GetUserByID :one
+SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users WHERE id = ?
+`
+
+type GetUserByIDRow struct {
+	ID              string
+	DisplayName     string
+	DisplayColor    int64
+	CreatedAt       sql.NullTime
+	DisabledAt      sql.NullTime
+	PreviousNames   sql.NullString
+	NamechangedAt   sql.NullTime
+	AuthenticatedAt sql.NullTime
+	Scopes          sql.NullString
+	IsBot           bool
+}
+
+func (q *Queries) GetUserByID(ctx context.Context, id string) (GetUserByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
+	var i GetUserByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.DisplayName,
+		&i.DisplayColor,
+		&i.CreatedAt,
+		&i.DisabledAt,
+		&i.PreviousNames,
+		&i.NamechangedAt,
+		&i.AuthenticatedAt,
+		&i.Scopes,
+		&i.IsBot,
+	)
+	return i, err
+}
+
 const getUserDisplayNameByToken = `-- name: GetUserDisplayNameByToken :one
-SELECT display_name FROM users, user_access_tokens WHERE token = $1 AND users.id = user_id AND disabled_at = NULL
+SELECT display_name FROM users JOIN user_access_tokens ON users.id = user_access_tokens.user_id WHERE token = ? AND users.disabled_at IS NULL
 `
 
 func (q *Queries) GetUserDisplayNameByToken(ctx context.Context, token string) (string, error) {
@@ -924,8 +961,59 @@ func (q *Queries) GetUserDisplayNameByToken(ctx context.Context, token string) (
 	return display_name, err
 }
 
+const getUsers = `-- name: GetUsers :many
+SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users ORDER BY created_at DESC
+`
+
+type GetUsersRow struct {
+	ID              string
+	DisplayName     string
+	DisplayColor    int64
+	CreatedAt       sql.NullTime
+	DisabledAt      sql.NullTime
+	PreviousNames   sql.NullString
+	NamechangedAt   sql.NullTime
+	AuthenticatedAt sql.NullTime
+	Scopes          sql.NullString
+	IsBot           bool
+}
+
+func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUsersRow
+	for rows.Next() {
+		var i GetUsersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.DisplayName,
+			&i.DisplayColor,
+			&i.CreatedAt,
+			&i.DisabledAt,
+			&i.PreviousNames,
+			&i.NamechangedAt,
+			&i.AuthenticatedAt,
+			&i.Scopes,
+			&i.IsBot,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const isDisplayNameAvailable = `-- name: IsDisplayNameAvailable :one
-SELECT count(*) FROM users WHERE display_name = $1 AND ( type='API' OR authenticated_at IS NOT NULL ) AND disabled_at IS NULL
+SELECT count(*) FROM users WHERE display_name = ? AND ( type='API' OR authenticated_at IS NOT NULL ) AND disabled_at IS NULL
 `
 
 func (q *Queries) IsDisplayNameAvailable(ctx context.Context, displayName string) (int64, error) {
@@ -936,7 +1024,7 @@ func (q *Queries) IsDisplayNameAvailable(ctx context.Context, displayName string
 }
 
 const isIPAddressBlocked = `-- name: IsIPAddressBlocked :one
-SELECT count(*) FROM ip_bans WHERE ip_address = $1
+SELECT count(*) FROM ip_bans WHERE ip_address = ?
 `
 
 func (q *Queries) IsIPAddressBlocked(ctx context.Context, ipAddress string) (int64, error) {
@@ -947,7 +1035,7 @@ func (q *Queries) IsIPAddressBlocked(ctx context.Context, ipAddress string) (int
 }
 
 const rejectFederationFollower = `-- name: RejectFederationFollower :exec
-UPDATE ap_followers SET approved_at = null, disabled_at = $1 WHERE iri = $2
+UPDATE ap_followers SET approved_at = null, disabled_at = ? WHERE iri = ?
 `
 
 type RejectFederationFollowerParams struct {
@@ -961,16 +1049,16 @@ func (q *Queries) RejectFederationFollower(ctx context.Context, arg RejectFedera
 }
 
 const removeFederatedServer = `-- name: RemoveFederatedServer :exec
-DELETE FROM federated_servers WHERE id = $1
+DELETE FROM federated_servers WHERE id = ?
 `
 
-func (q *Queries) RemoveFederatedServer(ctx context.Context, id int32) error {
+func (q *Queries) RemoveFederatedServer(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, removeFederatedServer, id)
 	return err
 }
 
 const removeFollowerByIRI = `-- name: RemoveFollowerByIRI :exec
-DELETE FROM ap_followers WHERE iri = $1
+DELETE FROM ap_followers WHERE iri = ?
 `
 
 func (q *Queries) RemoveFollowerByIRI(ctx context.Context, iri string) error {
@@ -979,7 +1067,7 @@ func (q *Queries) RemoveFollowerByIRI(ctx context.Context, iri string) error {
 }
 
 const removeIPAddressBan = `-- name: RemoveIPAddressBan :exec
-DELETE FROM ip_bans WHERE ip_address = $1
+DELETE FROM ip_bans WHERE ip_address = ?
 `
 
 func (q *Queries) RemoveIPAddressBan(ctx context.Context, ipAddress string) error {
@@ -988,7 +1076,7 @@ func (q *Queries) RemoveIPAddressBan(ctx context.Context, ipAddress string) erro
 }
 
 const removeNotificationDestinationForChannel = `-- name: RemoveNotificationDestinationForChannel :exec
-DELETE FROM notifications WHERE channel = $1 AND destination = $2
+DELETE FROM notifications WHERE channel = ? AND destination = ?
 `
 
 type RemoveNotificationDestinationForChannelParams struct {
@@ -1002,7 +1090,7 @@ func (q *Queries) RemoveNotificationDestinationForChannel(ctx context.Context, a
 }
 
 const setAccessTokenToOwner = `-- name: SetAccessTokenToOwner :exec
-UPDATE user_access_tokens SET user_id = $1 WHERE token = $2
+UPDATE user_access_tokens SET user_id = ? WHERE token = ?
 `
 
 type SetAccessTokenToOwnerParams struct {
@@ -1016,7 +1104,7 @@ func (q *Queries) SetAccessTokenToOwner(ctx context.Context, arg SetAccessTokenT
 }
 
 const setUserAsAuthenticated = `-- name: SetUserAsAuthenticated :exec
-UPDATE users SET authenticated_at = CURRENT_TIMESTAMP WHERE id = $1
+UPDATE users SET authenticated_at = CURRENT_TIMESTAMP WHERE id = ?
 `
 
 func (q *Queries) SetUserAsAuthenticated(ctx context.Context, id string) error {
@@ -1025,7 +1113,7 @@ func (q *Queries) SetUserAsAuthenticated(ctx context.Context, id string) error {
 }
 
 const updateFederatedServerFollowStatus = `-- name: UpdateFederatedServerFollowStatus :exec
-UPDATE federated_servers SET follow_status = $1, pending = $2, accepted_at = $3, rejected_at = $4 WHERE iri = $5
+UPDATE federated_servers SET follow_status = ?, pending = ?, accepted_at = ?, rejected_at = ? WHERE iri = ?
 `
 
 type UpdateFederatedServerFollowStatusParams struct {
@@ -1048,7 +1136,7 @@ func (q *Queries) UpdateFederatedServerFollowStatus(ctx context.Context, arg Upd
 }
 
 const updateFederatedServerMetadata = `-- name: UpdateFederatedServerMetadata :exec
-UPDATE federated_servers SET name = $1, display_name = $2, summary = $3, logo_url = $4 WHERE iri = $5
+UPDATE federated_servers SET name = ?, display_name = ?, summary = ?, logo_url = ? WHERE iri = ?
 `
 
 type UpdateFederatedServerMetadataParams struct {
@@ -1071,7 +1159,7 @@ func (q *Queries) UpdateFederatedServerMetadata(ctx context.Context, arg UpdateF
 }
 
 const updateFederatedServerOnlineStatus = `-- name: UpdateFederatedServerOnlineStatus :exec
-UPDATE federated_servers SET is_online = $1, last_seen_online = $2, last_status_update = $3 WHERE iri = $4
+UPDATE federated_servers SET is_online = ?, last_seen_online = ?, last_status_update = ? WHERE iri = ?
 `
 
 type UpdateFederatedServerOnlineStatusParams struct {
@@ -1092,7 +1180,7 @@ func (q *Queries) UpdateFederatedServerOnlineStatus(ctx context.Context, arg Upd
 }
 
 const updateFederatedServerStatus = `-- name: UpdateFederatedServerStatus :exec
-UPDATE federated_servers SET is_online = $1, stream_title = $2, stream_description = $3, stream_tags = $4, thumbnail_url = $5, last_status_update = $6 WHERE iri = $7
+UPDATE federated_servers SET is_online = ?, stream_title = ?, stream_description = ?, stream_tags = ?, thumbnail_url = ?, last_status_update = ? WHERE iri = ?
 `
 
 type UpdateFederatedServerStatusParams struct {
@@ -1119,7 +1207,7 @@ func (q *Queries) UpdateFederatedServerStatus(ctx context.Context, arg UpdateFed
 }
 
 const updateFollowerByIRI = `-- name: UpdateFollowerByIRI :exec
-UPDATE ap_followers SET inbox = $1, shared_inbox = $2, name = $3, username = $4, image = $5 WHERE iri = $6
+UPDATE ap_followers SET inbox = ?, shared_inbox = ?, name = ?, username = ?, image = ? WHERE iri = ?
 `
 
 type UpdateFollowerByIRIParams struct {
@@ -1145,8 +1233,8 @@ func (q *Queries) UpdateFollowerByIRI(ctx context.Context, arg UpdateFollowerByI
 
 const updateFollowerValidationFailure = `-- name: UpdateFollowerValidationFailure :exec
 UPDATE ap_followers
-SET last_validated_at = $1, first_validation_failure_at = COALESCE(first_validation_failure_at, $1)
-WHERE iri = $2
+SET last_validated_at = ?1, first_validation_failure_at = COALESCE(first_validation_failure_at, ?1)
+WHERE iri = ?2
 `
 
 type UpdateFollowerValidationFailureParams struct {
@@ -1161,8 +1249,8 @@ func (q *Queries) UpdateFollowerValidationFailure(ctx context.Context, arg Updat
 
 const updateFollowerValidationSuccess = `-- name: UpdateFollowerValidationSuccess :exec
 UPDATE ap_followers
-SET last_validated_at = $1, first_validation_failure_at = NULL
-WHERE iri = $2
+SET last_validated_at = ?, first_validation_failure_at = NULL
+WHERE iri = ?
 `
 
 type UpdateFollowerValidationSuccessParams struct {

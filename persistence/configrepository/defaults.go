@@ -1,9 +1,10 @@
 package configrepository
 
 import (
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	log "github.com/sirupsen/logrus"
 )
 
 // PopulateDefaults will set default values in the database.

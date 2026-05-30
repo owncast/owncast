@@ -221,7 +221,8 @@
 		"offlineBasic": "Esta transmissão está offline. Volte em breve!",
 		"offlineFediverseOnly": "Esta transmissão está off-line. <span class='follow-link'>Siga</span> {{fediverseAccount}} no Fediverse para ver a próxima vez que {{streamer}} estiver ao vivo.",
 		"offlineNotifyAndFediverse": "Esta transmissão está offline. <span class='notify-link'>Pode ser notificado</span> na próxima vez que {{streamer}} for ao ar ou <span class='follow-link'>siga</span> {{fediverseAccount}} no Fediverse.",
-		"offlineNotifyOnly": "Esta transmissão está offline. U <span class='notify-link'>Seja notificado</span> na próxima vez que {{streamer}} for ao ar."
+		"offlineNotifyOnly": "Esta transmissão está offline. U <span class='notify-link'>Seja notificado</span> na próxima vez que {{streamer}} for ao ar.",
+		"chatEmbedTitle": "{{name}} Chat"
 	},
 	"Testing": {
 		"itemCount": "Você tem {{count}} itens",

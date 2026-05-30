@@ -85,6 +85,7 @@ func Backup(db *sql.DB, backupFile string) {
 		handleError(err)
 		return
 	}
+	defer f.Close()
 
 	// Create a gzip compression writer
 	w, err := gzip.NewWriterLevel(f, gzip.BestCompression)

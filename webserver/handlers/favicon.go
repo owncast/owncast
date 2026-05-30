@@ -6,17 +6,16 @@ import (
 	"path/filepath"
 	"strconv"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // GetFavicon will return the favicon image as a response.
-func GetFavicon(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
-	faviconFilename := configRepository.GetFaviconPath()
+func (h *Handlers) GetFavicon(w http.ResponseWriter, r *http.Request) {
+	faviconFilename := h.configRepository.GetFaviconPath()
 	if faviconFilename == "" {
 		returnDefaultFavicon(w)
 		return

@@ -10,7 +10,7 @@ import (
 
 // FederatedServer represents a federated Owncast server that we follow.
 type FederatedServer struct {
-	ID                int32      `json:"id"`
+	ID                int64      `json:"id"`
 	IRI               string     `json:"iri"`
 	Name              *string    `json:"name,omitempty"`
 	LogoURL           *string    `json:"logoUrl,omitempty"`

@@ -10,7 +10,7 @@ import (
 )
 
 type ApAcceptedActivity struct {
-	ID        int32
+	ID        int64
 	Iri       string
 	Actor     string
 	Type      string
@@ -25,13 +25,13 @@ type ApFollower struct {
 	Username                 string
 	Image                    sql.NullString
 	Request                  string
-	RequestObject            []byte
 	CreatedAt                sql.NullTime
 	ApprovedAt               sql.NullTime
 	DisabledAt               sql.NullTime
-	OwncastServer            sql.NullBool
+	RequestObject            []byte
 	LastValidatedAt          sql.NullTime
 	FirstValidationFailureAt sql.NullTime
+	OwncastServer            sql.NullBool
 }
 
 type ApOutbox struct {
@@ -43,15 +43,21 @@ type ApOutbox struct {
 }
 
 type Auth struct {
-	ID        int32
+	ID        int64
 	UserID    string
 	Token     string
 	Type      string
 	Timestamp time.Time
 }
 
+type Datastore struct {
+	Key       string
+	Value     []byte
+	Timestamp time.Time
+}
+
 type FederatedServer struct {
-	ID                int32
+	ID                int64
 	Iri               string
 	Name              sql.NullString
 	LogoUrl           sql.NullString
@@ -93,7 +99,7 @@ type Message struct {
 }
 
 type Notification struct {
-	ID          int32
+	ID          int64
 	Channel     string
 	Destination string
 	CreatedAt   sql.NullTime
@@ -102,19 +108,27 @@ type Notification struct {
 type User struct {
 	ID              string
 	DisplayName     string
-	DisplayColor    int32
+	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
-	Scopes          sql.NullString
 	AuthenticatedAt sql.NullTime
+	Scopes          sql.NullString
 	Type            sql.NullString
-	LastUsed        interface{}
+	LastUsed        sql.NullTime
 }
 
 type UserAccessToken struct {
 	Token     string
 	UserID    string
 	Timestamp time.Time
+}
+
+type Webhook struct {
+	ID        int64
+	Url       string
+	Events    string
+	Timestamp sql.NullTime
+	LastUsed  sql.NullTime
 }

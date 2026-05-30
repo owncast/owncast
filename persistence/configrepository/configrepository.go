@@ -77,7 +77,7 @@ type ConfigRepository interface {
 	GetCustomJavascript() string
 	SetVideoCodec(codec string) error
 	GetVideoCodec() string
-	VerifySettings() error
+	VerifySettings(temporaryStreamKey string) error
 	FindHighestVideoQualityIndex(qualities []models.StreamOutputVariant) (int, bool)
 	GetForbiddenUsernameList() []string
 	SetForbiddenUsernameList(usernames []string) error
@@ -131,4 +131,23 @@ type ConfigRepository interface {
 	SetPrivateKey(key string) error
 	GetFaviconPath() string
 	SetFaviconPath(favicon string) error
+}
+
+// temporaryGlobalInstance is set once during application startup so
+// helper code that has not yet been migrated to the dependency-injection
+// pattern can still reach the config repository. Get returns nil until
+// SetGlobalInstance has been called.
+var temporaryGlobalInstance ConfigRepository
+
+// SetGlobalInstance registers the application's single ConfigRepository
+// for Get to return. Called from main.go after constructing the
+// repository.
+func SetGlobalInstance(r ConfigRepository) {
+	temporaryGlobalInstance = r
+}
+
+// Get returns the global ConfigRepository registered with
+// SetGlobalInstance. Returns nil until startup has wired one in.
+func Get() ConfigRepository {
+	return temporaryGlobalInstance
 }

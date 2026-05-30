@@ -5,16 +5,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
 // GetStatus gets the status of the server.
-func GetStatus(w http.ResponseWriter, r *http.Request) {
-	response := getStatusResponse()
+func (h *Handlers) GetStatus(w http.ResponseWriter, r *http.Request) {
+	response := h.getStatusResponse()
 
 	w.Header().Set("Content-Type", "application/json")
 	middleware.DisableCache(w)
@@ -24,8 +22,8 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getStatusResponse() webStatusResponse {
-	status := core.GetStatus()
+func (h *Handlers) getStatusResponse() webStatusResponse {
+	status := h.stream.GetStatus()
 	response := webStatusResponse{
 		Online:             status.Online,
 		ServerTime:         time.Now(),
@@ -34,8 +32,7 @@ func getStatusResponse() webStatusResponse {
 		VersionNumber:      status.VersionNumber,
 		StreamTitle:        status.StreamTitle,
 	}
-	configRepository := configrepository.Get()
-	if !configRepository.GetHideViewerCount() {
+	if !h.configRepository.GetHideViewerCount() {
 		response.ViewerCount = status.ViewerCount
 	}
 	return response

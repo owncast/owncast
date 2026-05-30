@@ -221,7 +221,8 @@
 		"offlineBasic": "এই স্ট্রিম অফলাইন। কিছুক্ষণ পরে চেক করুন!",
 		"offlineFediverseOnly": "এই স্ট্রিম অফলাইন। <span class='follow-link'>ফলো করুন</span> {{fediverseAccount}} কে Fediverse এ পরবর্তী সময়ের জন্য যখন {{streamer}} লাইভ হবে তা দেখার জন্য।",
 		"offlineNotifyAndFediverse": "এই স্ট্রিম অফলাইন। আপনি <span class='notify-link'>বিজ্ঞপ্তি গ্রহণ করতে পারবেন</span> পরবর্তী সময় {{streamer}} লাইভ হলে অথবা <span class='follow-link'>ফলো করতে পারবেন</span> {{fediverseAccount}} কে Fediverse এ।",
-		"offlineNotifyOnly": "এই স্ট্রিম অফলাইন। <span class='notify-link'>বিজ্ঞপ্তি পান</span> পরবর্তী সময় {{streamer}} লাইভ হলে।"
+		"offlineNotifyOnly": "এই স্ট্রিম অফলাইন। <span class='notify-link'>বিজ্ঞপ্তি পান</span> পরবর্তী সময় {{streamer}} লাইভ হলে।",
+		"chatEmbedTitle": "{{name}} চ্যাট"
 	},
 	"Testing": {
 		"itemCount": "আপনার {{count}} টি আইটেম রয়েছে",

@@ -1,10 +1,14 @@
 import { Button, Upload, Popconfirm } from 'antd';
 import { RcFile } from 'antd/lib/upload/interface';
-import React, { useState, useRef, FC } from 'react';
+import React, { useState, FC } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';
 import { FormStatusIndicator } from './FormStatusIndicator';
-import { RESET_TIMEOUT } from '../../utils/config-constants';
+import {
+  postConfigUpdateToAPI,
+  RESET_TIMEOUT,
+  TEXTFIELD_PROPS_FAVICON,
+} from '../../utils/config-constants';
 import {
   createInputStatus,
   StatusState,
@@ -12,11 +16,16 @@ import {
   STATUS_PROCESSING,
   STATUS_SUCCESS,
 } from '../../utils/input-statuses';
-import { NEXT_PUBLIC_API_HOST } from '../../utils/apis';
+import { fetchData, NEXT_PUBLIC_API_HOST, SERVER_CONFIG_UPDATE_URL } from '../../utils/apis';
 import { Localization } from '../../types/localization';
 import { Translation } from '../ui/Translation/Translation';
 
-import { ACCEPTED_FAVICON_TYPES, MAX_FAVICON_FILESIZE, readableBytes } from '../../utils/images';
+import {
+  ACCEPTED_FAVICON_TYPES,
+  getBase64,
+  MAX_FAVICON_FILESIZE,
+  readableBytes,
+} from '../../utils/images';
 
 const LoadingOutlined = dynamic(() => import('@ant-design/icons/LoadingOutlined'), {
   ssr: false,
@@ -30,16 +39,15 @@ const UndoOutlined = dynamic(() => import('@ant-design/icons/UndoOutlined'), {
   ssr: false,
 });
 
-const ADMIN_USERNAME = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
-const ADMIN_STREAMKEY = process.env.NEXT_PUBLIC_ADMIN_STREAMKEY;
-
 export const EditFavicon: FC = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [faviconUrl, setFaviconUrl] = useState(null);
   const [faviconCachebuster, setFaviconCacheBuster] = useState(0);
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
-  const pendingFile = useRef<RcFile | null>(null);
   let resetTimer = null;
+
+  const { apiPath } = TEXTFIELD_PROPS_FAVICON;
 
   const resetStates = () => {
     setSubmitStatus(null);
@@ -47,7 +55,7 @@ export const EditFavicon: FC = () => {
     resetTimer = null;
   };
 
-  // validate file type and size
+  // validate file type and size, then create base64 encoded img
   const beforeUpload = (file: RcFile) => {
     setLoading(true);
 
@@ -82,56 +90,39 @@ export const EditFavicon: FC = () => {
         return rej();
       }
 
-      pendingFile.current = file;
-      setTimeout(() => res(), 100);
+      getBase64(file, (url: string) => {
+        setFaviconUrl(url);
+        setTimeout(() => res(), 100);
+      });
     });
   };
 
   const handleFaviconUpdate = async () => {
-    if (!pendingFile.current) {
+    if (!faviconUrl) {
       setLoading(false);
       return;
     }
 
     setSubmitStatus(createInputStatus(STATUS_PROCESSING));
-
-    const formData = new FormData();
-    formData.append('favicon', pendingFile.current);
-
-    try {
-      const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
-      const response = await fetch(`${NEXT_PUBLIC_API_HOST}api/admin/config/favicon`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Basic ${encoded}`,
-        },
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
+    await postConfigUpdateToAPI({
+      apiPath,
+      data: { value: faviconUrl },
+      onSuccess: () => {
         setSubmitStatus(createInputStatus(STATUS_SUCCESS));
+        setLoading(false);
         setFaviconCacheBuster(Math.floor(Math.random() * 100));
-      } else {
+      },
+      onError: (msg: string) => {
         setSubmitStatus(
           createInputStatus(
             STATUS_ERROR,
-            t(Localization.Admin.StatusMessages.thereWasAnError, { message: result.message }),
+            t(Localization.Admin.StatusMessages.thereWasAnError, { message: msg }),
           ),
         );
-      }
-    } catch (error) {
-      setSubmitStatus(
-        createInputStatus(
-          STATUS_ERROR,
-          t(Localization.Admin.StatusMessages.thereWasAnError, { message: error.message }),
-        ),
-      );
-    }
-
-    pendingFile.current = null;
-    setLoading(false);
+        setLoading(false);
+      },
+    });
+    setFaviconUrl(null);
     resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
   };
 
@@ -140,15 +131,9 @@ export const EditFavicon: FC = () => {
     setSubmitStatus(createInputStatus(STATUS_PROCESSING));
 
     try {
-      const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
-      const response = await fetch(`${NEXT_PUBLIC_API_HOST}api/admin/config/favicon`, {
+      const result = await fetchData(`${SERVER_CONFIG_UPDATE_URL}${apiPath}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Basic ${encoded}`,
-        },
       });
-
-      const result = await response.json();
 
       if (result.success) {
         setSubmitStatus(createInputStatus(STATUS_SUCCESS));

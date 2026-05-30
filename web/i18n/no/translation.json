@@ -221,7 +221,8 @@
 		"offlineBasic": "Denne strømmen er frakoblet. Sjekk igjen snart!",
 		"offlineFediverseOnly": "Denne strømmen er frakoblet. <span class='follow-link'>Følg</span> {{fediverseAccount}} på Fediverse for å se neste gang {{streamer}} går liv.",
 		"offlineNotifyAndFediverse": "Denne strømmen er offline. Du kan <span class='notify-link'>bli varslet</span> neste gang {{streamer}} er live, eller <span class='follow-link'>følge</span> {{fediverseAccount}} på Fediverse.",
-		"offlineNotifyOnly": "Denne strømmen er frakoblet. <span class='notify-link'>bli varslet</span> neste gang {{streamer}} går bor."
+		"offlineNotifyOnly": "Denne strømmen er frakoblet. <span class='notify-link'>bli varslet</span> neste gang {{streamer}} går bor.",
+		"chatEmbedTitle": "{{name}} Chat"
 	},
 	"Testing": {
 		"itemCount": "Du har {{count}} objekter",

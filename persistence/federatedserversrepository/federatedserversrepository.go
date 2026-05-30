@@ -12,7 +12,7 @@ type FederatedServersRepository interface {
 	GetFederatedServer(iri string) (*models.FederatedServer, error)
 	AddFederatedServer(iri, name, logoURL string, followedAt time.Time, pending bool, username, followStatus string) error
 	UpdateServerStatus(iri string, isOnline bool, metadata *models.FederatedStreamUpdate) error
-	RemoveFederatedServer(id int32) error
+	RemoveFederatedServer(id int64) error
 	RemoveFederatedServerByIRI(iri string) error
 	UpdateFollowStatus(iri, followStatus string, pending bool, acceptedAt, rejectedAt *time.Time) error
 	UpdateServerMetadata(iri, name, displayName, summary, logoURL string) error

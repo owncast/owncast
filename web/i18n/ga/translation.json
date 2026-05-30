@@ -221,7 +221,8 @@
 		"offlineBasic": "Tá an sruth seo as líne. Seiceáil arís go luath!",
 		"offlineFediverseOnly": "Tá an sruth seo as líne. <span class='follow-link'>Lean</span> {{fediverseAccount}} ar an Fediverse chun a fheiceáil an uair a bhíonn {{streamer}} ar líne.",
 		"offlineNotifyAndFediverse": "Tá an sruth seo as líne. Is féidir leat <span class='notify-link'>a bheith rabhaidh</span> an uair a bhíonn {{streamer}} ar líne nó <span class='follow-link'>lean</span> {{fediverseAccount}} ar an Fediverse.",
-		"offlineNotifyOnly": "Tá an sruth seo as líne. <span class='notify-link'>Bí rabhaidh</span> an uair a bhíonn {{streamer}} ar líne."
+		"offlineNotifyOnly": "Tá an sruth seo as líne. <span class='notify-link'>Bí rabhaidh</span> an uair a bhíonn {{streamer}} ar líne.",
+		"chatEmbedTitle": "{{name}} Comhrá"
 	},
 	"Testing": {
 		"itemCount": "Tá {{count}} réadanna agat",

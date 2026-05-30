@@ -44,12 +44,12 @@ jobs:
 
       - uses: actions/setup-go@v6
         with:
-          go-version: '1.26.1'
+          go-version: '1.26.3'
           cache: true
       - uses: actions/checkout@v6
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.11.3
+          version: v2.12.2
           only-new-issues: true
           args: --timeout=3m

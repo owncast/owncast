@@ -221,7 +221,8 @@
 		"offlineBasic": "Этот поток оффлайн. Возвращайтесь в ближайшее время!",
 		"offlineFediverseOnly": "Этот поток отключен. <span class='follow-link'>Следите за</span> {{fediverseAccount}} на Fediverse, чтобы узнать, когда {{streamer}} выйдет в эфир в следующий раз.",
 		"offlineNotifyAndFediverse": "Этот поток отключен. Вы можете <span class='notify-link'>получить уведомление о</span> следующем выходе {{streamer}} в прямой эфир или <span class='follow-link'>следить за</span> {{fediverseAccount}} на Fediverse.",
-		"offlineNotifyOnly": "Этот поток отключен. <span class='notify-link'>Получите уведомление</span>, когда {{streamer}} появится в следующий раз."
+		"offlineNotifyOnly": "Этот поток отключен. <span class='notify-link'>Получите уведомление</span>, когда {{streamer}} появится в следующий раз.",
+		"chatEmbedTitle": "{{name}} Чат"
 	},
 	"Testing": {
 		"itemCount": "У вас есть {{count}} элементов",

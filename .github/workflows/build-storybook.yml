@@ -69,7 +69,7 @@ jobs:
 
       - name: Commit changes
         if: github.repository == 'owncast/owncast'
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
           author_name: Owncast
           author_email: owncast@owncast.online

@@ -25,12 +25,12 @@ pre-commit:
     js-linter:
       glob: '*.{js,ts,jsx,tsx}'
       root: web/
-      run: npx --yes eslint --fix --ext {staged_files}
+      run: npx --yes eslint --fix {staged_files}
       stage_fixed: true
     prettier:
       glob: '*.{js,ts,jsx,tsx,css,scss}'
       run: npx --yes prettier --write {staged_files}
-      staged_fixed: true
+      stage_fixed: true
     css-linter:
       glob: '*.{css,scss}'
       root: web/
@@ -42,11 +42,14 @@ pre-commit:
       run: npx --yes knip --include dependencies,files,exports
     go-fmt:
       glob: '*.go'
-      run: GOBIN=$(pwd)/bin go install -C tools mvdan.cc/gofumpt && ./bin/gofumpt -l -w {staged_files}
+      run: ./bin/gofumpt -l -w {staged_files}
       stage_fixed: true
     golangci-lint:
       glob: '*.go'
-      run: GOBIN=$(pwd)/bin go install -C tools github.com/golangci/golangci-lint/v2/cmd/golangci-lint && ./bin/golangci-lint run ./...
+      # The tools/ subdirectory is its own Go module (dev-tooling pins);
+      # excluding it avoids golangci-lint typechecker errors when staged
+      # changes touch it.
+      run: ./bin/golangci-lint run $(echo {staged_files} | tr ' ' '\n' | xargs -n1 dirname | sort -u | grep -vE '^tools$|^tools/' || true)
     go-test:
       glob: '*.go'
       run: go test ./... > /dev/null
@@ -69,7 +72,7 @@ lint:
   commands:
     golangci-lint:
       glob: '*.go'
-      run: GOBIN=$(pwd)/bin go install -C tools github.com/golangci/golangci-lint/v2/cmd/golangci-lint && ./bin/golangci-lint run ./...
+      run: ./bin/golangci-lint run ./...
 
 # Validate commit messages per https://www.conventionalcommits.org/en/v1.0.0/
 # Install commitlint into your global npm path if you want to use it.

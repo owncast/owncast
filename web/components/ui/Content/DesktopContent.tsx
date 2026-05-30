@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import { TabsProps } from 'antd';
 import { ErrorBoundary } from 'react-error-boundary';
 import { SocialLink } from '../../../interfaces/social-link.model';
+import { PluginTab } from '../../../interfaces/client-config.model';
 import styles from './Content.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
@@ -14,6 +15,7 @@ export type DesktopContentProps = {
   tags: string[];
   socialHandles: SocialLink[];
   extraPageContent: string;
+  pluginTabs: PluginTab[];
   setShowFollowModal: (show: boolean) => void;
   supportFediverseFeatures: boolean;
   federatedServers?: any[]; // Will be properly typed when API is implemented
@@ -45,6 +47,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
   tags,
   socialHandles,
   extraPageContent,
+  pluginTabs,
   setShowFollowModal,
   supportFediverseFeatures,
   federatedServers = [],
@@ -75,6 +78,22 @@ export const DesktopContent: FC<DesktopContentProps> = ({
   if (federatedServers && federatedServers.length > 0) {
     items.push({ label: 'Featured Streams', key: '4', children: streamsTabContent });
   }
+  // Plugin-contributed tabs render after the built-ins. Key is the
+  // slug+title combination; the host's validator rejects duplicate
+  // titles within a plugin, so this pair is unique across all
+  // plugin tabs and stable across renders (no index-as-key
+  // anti-pattern).
+  (pluginTabs || []).forEach(tab => {
+    items.push({
+      label: tab.title,
+      key: `plugin-${tab.slug}-${tab.title}`,
+      children: (
+        <div className={styles.bottomPageContentContainer}>
+          <CustomPageContent content={tab.html} />
+        </div>
+      ),
+    });
+  });
 
   return (
     <ErrorBoundary

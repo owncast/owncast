@@ -4,30 +4,37 @@ import (
 	"context"
 	"time"
 
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 // SqlFederatedServersRepository is a SQL implementation of the FederatedServersRepository interface.
 type SqlFederatedServersRepository struct {
-	datastore *data.Datastore
+	datastore *datastore.Datastore
 }
 
-// NOTE: This is temporary during the transition period.
+// temporaryGlobalInstance is set once during application startup so
+// helper code that has not yet been migrated to the dependency-injection
+// pattern can still reach the federated-servers repository. Get returns
+// nil until SetGlobalInstance has been called.
 var temporaryGlobalInstance FederatedServersRepository
 
-// Get will return the federated servers repository.
+// SetGlobalInstance registers the application's single
+// FederatedServersRepository for Get to return. Called from main.go
+// after constructing the repository.
+func SetGlobalInstance(r FederatedServersRepository) {
+	temporaryGlobalInstance = r
+}
+
+// Get returns the global FederatedServersRepository registered with
+// SetGlobalInstance. Returns nil until startup has wired one in.
 func Get() FederatedServersRepository {
-	if temporaryGlobalInstance == nil {
-		i := New(data.GetDatastore())
-		temporaryGlobalInstance = i
-	}
 	return temporaryGlobalInstance
 }
 
 // New will create a new instance of the FederatedServersRepository.
-func New(datastore *data.Datastore) FederatedServersRepository {
+func New(datastore *datastore.Datastore) FederatedServersRepository {
 	return &SqlFederatedServersRepository{
 		datastore: datastore,
 	}
@@ -119,7 +126,7 @@ func (r *SqlFederatedServersRepository) UpdateServerStatus(iri string, isOnline 
 }
 
 // RemoveFederatedServer removes a federated server by ID.
-func (r *SqlFederatedServersRepository) RemoveFederatedServer(id int32) error {
+func (r *SqlFederatedServersRepository) RemoveFederatedServer(id int64) error {
 	queries := db.New(r.datastore.DB)
 	return queries.RemoveFederatedServer(context.Background(), id)
 }

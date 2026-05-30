@@ -221,7 +221,8 @@
 		"offlineBasic": "Dieser Stream ist offline. Schauen Sie bald wieder!",
 		"offlineFediverseOnly": "Dieser Stream ist offline. <span class='follow-link'>Folgen Sie</span> {{fediverseAccount}} auf der Feier, um das nächste Mal {{streamer}} live zu sehen.",
 		"offlineNotifyAndFediverse": "Dieser Stream ist offline. Sie können <span class='notify-link'>benachrichtigt werden,</span> wenn {{streamer}} das nächste Mal live geht, oder <span class='follow-link'>folgen Sie</span> {{fediverseAccount}} auf dem Fediverse.",
-		"offlineNotifyOnly": "Dieser Stream ist offline. <span class='notify-link'>Werde benachrichtigt</span> wenn {{streamer}} das nächste Mal live geht."
+		"offlineNotifyOnly": "Dieser Stream ist offline. <span class='notify-link'>Werde benachrichtigt</span> wenn {{streamer}} das nächste Mal live geht.",
+		"chatEmbedTitle": "{{name}} Chat"
 	},
 	"Testing": {
 		"itemCount": "Sie haben {{count}} Elemente",

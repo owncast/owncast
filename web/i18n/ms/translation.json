@@ -221,7 +221,8 @@
 		"offlineBasic": "Saluran ini sedang offline. Periksa kembali sebentar lagi!",
 		"offlineFediverseOnly": "Saluran ini sedang offline. <span class='follow-link'>Ikuti</span> {{fediverseAccount}} di Fediverse untuk melihat kali seterusnya {{streamer}} siaran langsung.",
 		"offlineNotifyAndFediverse": "Saluran ini sedang offline. Anda boleh <span class='notify-link'>diberitahu</span> kali seterusnya {{streamer}} siaran langsung atau <span class='follow-link'>ikuti</span> {{fediverseAccount}} di Fediverse.",
-		"offlineNotifyOnly": "Saluran ini sedang offline. <span class='notify-link'>Diberitahu</span> kali seterusnya {{streamer}} siaran langsung."
+		"offlineNotifyOnly": "Saluran ini sedang offline. <span class='notify-link'>Diberitahu</span> kali seterusnya {{streamer}} siaran langsung.",
+		"chatEmbedTitle": "{{name}} Sembang"
 	},
 	"Testing": {
 		"itemCount": "Anda mempunyai {{count}} item",

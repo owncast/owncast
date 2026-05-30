@@ -221,7 +221,8 @@
 		"offlineBasic": "此串流已離線。請稍後再回來查看！",
 		"offlineFediverseOnly": "此串流已離線。請在 Fediverse<span class='follow-link'>上追</span>蹤 {{fediverseAccount}} ，以查看 {{streamer}} 的下次直播時間。",
 		"offlineNotifyAndFediverse": "此串流已離線。您可以在 {{streamer}} 上線時<span class='notify-link'>收到通知，</span>或在 Fediverse<span class='follow-link'>上追蹤</span> {{fediverseAccount}}。",
-		"offlineNotifyOnly": "此串流已離線。下次 {{streamer}} 上線時，您<span class='notify-link'>將會收到通知</span>。"
+		"offlineNotifyOnly": "此串流已離線。下次 {{streamer}} 上線時，您<span class='notify-link'>將會收到通知</span>。",
+		"chatEmbedTitle": "{{name}} 聊天"
 	},
 	"Testing": {
 		"itemCount": "您有 {{count}} 項目",
