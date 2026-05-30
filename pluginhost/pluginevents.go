@@ -89,18 +89,22 @@ func newPluginChatFilter(pluginDispatcher *plugins.Dispatcher) dispatcher.Filter
 		if !allowed {
 			return false
 		}
-		// Only re-sanitize when a plugin actually changed the body.
 		// A plugin holding only chat.filter must not be able to
-		// inject raw HTML into a broadcast: replacing RawBody and
-		// re-running RenderAndSanitizeMessageBody puts the plugin's
-		// output through the same markdown/HTML sanitizer
-		// userMessageSent already applied. The unchanged path skips
-		// the work and keeps the already-rendered Body intact so a
-		// no-op filter doesn't re-render plain text into <p>...</p>.
+		// inject raw HTML into the broadcast. When the filter
+		// returned a modified body, run it back through
+		// RenderAndSanitize so any new <script>/<iframe>/etc the
+		// plugin tried to introduce gets stripped by the same
+		// bluemonday policy userMessageSent already applied to the
+		// original message. Skip the round-trip when nothing
+		// changed so a no-op filter doesn't re-render the body.
+		//
+		// Assign the result to msg.Body directly rather than via
+		// RenderAndSanitizeMessageBody, because that helper resets
+		// RawBody from Body first and would clobber whatever we
+		// stored.
 		next := filteredBody(final, msg.Body)
 		if next != msg.Body {
-			msg.RawBody = next
-			msg.RenderAndSanitizeMessageBody()
+			msg.Body = events.RenderAndSanitize(next)
 		}
 		return true
 	}
