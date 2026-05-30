@@ -1,7 +1,7 @@
 import React from 'react';
-import { List, Modal, Typography } from 'antd';
+import { List, Modal, Space, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
-import { Plugin } from '../../../interfaces/plugin';
+import { Plugin, PluginPermission } from '../../../interfaces/plugin';
 import { Localization } from '../../../types/localization';
 import { permissionDescriptionKey, permissionNameKey } from './permissionDescriptions';
 
@@ -49,12 +49,34 @@ export const InstallConfirmModal = ({ plugin, onCancel, onEnable }: InstallConfi
             renderItem={p => {
               const nameKey = permissionNameKey[p];
               const descKey = permissionDescriptionKey[p];
+              // network.fetch carries an extra dimension to the trust
+              // decision: which hosts the plugin is allowed to reach.
+              // Show the manifest.network.allowedHosts list under this
+              // row's description so the admin sees the host scope
+              // alongside the permission itself before approving.
+              const allowedHosts =
+                p === PluginPermission.NetworkFetch ? (plugin?.allowedHosts ?? []) : [];
+              const descText = descKey ? t(descKey) : null;
+              const description =
+                allowedHosts.length > 0 ? (
+                  <Space direction="vertical" size={4}>
+                    {descText && <span>{descText}</span>}
+                    <span>
+                      {t(Localization.Admin.Plugins.allowedHostsLabel)}{' '}
+                      {allowedHosts.map((host, idx) => (
+                        <React.Fragment key={host}>
+                          {idx > 0 && ', '}
+                          <code>{host}</code>
+                        </React.Fragment>
+                      ))}
+                    </span>
+                  </Space>
+                ) : (
+                  descText
+                );
               return (
                 <List.Item>
-                  <List.Item.Meta
-                    title={nameKey ? t(nameKey) : p}
-                    description={descKey ? t(descKey) : null}
-                  />
+                  <List.Item.Meta title={nameKey ? t(nameKey) : p} description={description} />
                 </List.Item>
               );
             }}

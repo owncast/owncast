@@ -682,8 +682,9 @@ func (m *Manager) loadInternal(ctx context.Context, name string) error {
 }
 
 // loadByPath dispatches to LoadPlugin or LoadPackage based on file suffix.
-// Sets PublicFS and AssetsFS for loose-files plugins from sibling
-// <name>-public/ and <name>-assets/ directories respectively.
+// For loose-files plugins it reads PublicFS and AssetsFS from `public/`
+// and `assets/` directories in the same parent directory as the wasm,
+// matching the layout authors keep in their plugin source tree.
 func loadByPath(ctx context.Context, env *HostEnv, path string) (*Loaded, error) {
 	switch {
 	case strings.HasSuffix(path, packageSuffix):
@@ -694,16 +695,23 @@ func loadByPath(ctx context.Context, env *HostEnv, path string) (*Loaded, error)
 		if err != nil {
 			return nil, err
 		}
-		base := strings.TrimSuffix(path, ".wasm")
-		if info, err := os.Stat(base + "-public"); err == nil && info.IsDir() {
-			loaded.PublicFS = os.DirFS(base + "-public")
+		parent := filepath.Dir(path)
+		if pub := filepath.Join(parent, "public"); dirExists(pub) {
+			loaded.PublicFS = os.DirFS(pub)
 		}
-		if info, err := os.Stat(base + "-assets"); err == nil && info.IsDir() {
-			loaded.AssetsFS = os.DirFS(base + "-assets")
+		if as := filepath.Join(parent, "assets"); dirExists(as) {
+			loaded.AssetsFS = os.DirFS(as)
 		}
 		return loaded, nil
 	}
 	return nil, fmt.Errorf("unsupported plugin file: %s", path)
+}
+
+// dirExists reports whether path is an existing directory. Pulled out
+// so loadByPath reads cleanly when it checks two sibling directories.
+func dirExists(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && info.IsDir()
 }
 
 // scan re-reads the plugins directory, updates the discovered map, and
