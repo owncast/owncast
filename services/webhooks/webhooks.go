@@ -6,11 +6,13 @@
 package webhooks
 
 import (
+	"context"
 	"sync"
 	"time"
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
+	"github.com/owncast/owncast/services/dispatcher"
 )
 
 // BaseWebhookData contains common fields shared across all webhook event data.
@@ -82,6 +84,13 @@ func (s *Service) SendEventToWebhooks(payload WebhookEvent) {
 // optional waitgroup so callers (tests, batched senders) can wait for
 // all destinations to be drained.
 func (s *Service) sendEventToWebhooks(payload WebhookEvent, wg *sync.WaitGroup) {
+	// Publish to the shared dispatcher so in-process consumers (e.g. the
+	// plugin host) see every event, even when no HTTP webhook destinations
+	// are configured for it.
+	if s.events != nil {
+		s.events.Publish(context.Background(), dispatcher.Event{Type: payload.Type, Payload: payload})
+	}
+
 	webhooks := s.webhookRepository.GetWebhooksForEvent(payload.Type)
 
 	for _, webhook := range webhooks {

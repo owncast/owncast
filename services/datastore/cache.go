@@ -24,3 +24,11 @@ func (ds *Datastore) SetCachedValue(key string, b []byte) {
 
 	ds.cache[key] = b
 }
+
+// DeleteCachedValue removes key from the cache.
+func (ds *Datastore) DeleteCachedValue(key string) {
+	ds.cacheLock.Lock()
+	defer ds.cacheLock.Unlock()
+
+	delete(ds.cache, key)
+}

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -21,6 +22,8 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/pluginhost"
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
@@ -29,6 +32,7 @@ import (
 	"github.com/owncast/owncast/services/cache"
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/datastore"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
@@ -209,6 +213,12 @@ func main() {
 		Config:           cfg,
 	})
 
+	// Shared in-process event dispatcher. Constructed before its producers
+	// and consumers so they all receive it via Deps (no post-construction
+	// wiring): webhooks publishes events to it, chat runs inbound messages
+	// through its filter chain, and the plugin host subscribes.
+	eventDispatcher := dispatcher.New()
+
 	// Stage 5: cycle-pair services. webhooks + chat both want
 	// streamSvc.GetStatus, but streamSvc consumes them in turn. Build
 	// them with a nil GetStatus and rewire in stage 7.
@@ -217,6 +227,7 @@ func main() {
 		Followers:         followersRepository,
 		ConfigRepository:  configRepository,
 		WebhookRepository: webhookRepository,
+		Events:            eventDispatcher,
 	})
 
 	chatSvc := chat.New(chat.Deps{
@@ -227,6 +238,7 @@ func main() {
 		AuthRepository:        authRepository,
 		ChatMessageRepository: chatMessageRepository,
 		UserRepository:        userRepository,
+		Events:                eventDispatcher,
 	})
 
 	// Stage 6: cycle-pair consumers. activitypub + stream sit on top of
@@ -277,6 +289,34 @@ func main() {
 	})
 	go metricsSvc.Start()
 
+	// Plugin host. Optional infrastructure: a failure here disables plugins
+	// but must not abort startup. Constructs the WASM plugin runtime, wires
+	// its host functions to the services above, and exposes the
+	// /plugins/<name>/* HTTP handler mounted by the router below.
+	var pluginContentHandler http.Handler
+	var pluginAdminHandler http.Handler
+	pluginHostInstance, err := pluginhost.New(ctx, pluginhost.Deps{
+		Datastore:               dataStore,
+		Chat:                    chatSvc,
+		Stream:                  streamSvc,
+		Activitypub:             apSvc,
+		Events:                  eventDispatcher,
+		ConfigRepository:        configRepository,
+		UserRepository:          userRepository,
+		AuthRepository:          authRepository,
+		NotificationsRepository: notificationsRepository,
+		ChatMessageRepository:   chatMessageRepository,
+		RequireAdminAuth:        mw.RequireAdminAuth,
+		IsAdminRequest:          mw.IsAdminRequest,
+	})
+	if err != nil {
+		log.Errorln("plugin host failed to start; plugins disabled:", err)
+	} else {
+		pluginContentHandler = pluginHostInstance.Handler()
+		pluginAdminHandler = pluginHostInstance.AdminHandler()
+		defer pluginHostInstance.Stop(ctx)
+	}
+
 	// Stage 9: HTTP handler set. *Handlers is the dispatcher the router
 	// binds methods on; the sub-handlers (admin, fediverse, indieauth,
 	// moderation) hold their own narrower deps.
@@ -322,6 +362,19 @@ func main() {
 		UserRepository:        userRepository,
 	})
 
+	var pluginActions func() []models.ExternalAction
+	var pluginCSSContent func() []byte
+	var pluginJSContent func() []byte
+	var pluginPageContent func() []byte
+	var pluginTabs func() []models.PluginTab
+	if pluginHostInstance != nil {
+		pluginActions = pluginHostInstance.Actions
+		pluginCSSContent = pluginHostInstance.StylesContent
+		pluginJSContent = pluginHostInstance.ScriptsContent
+		pluginPageContent = pluginHostInstance.PageContent
+		pluginTabs = pluginHostInstance.Tabs
+	}
+
 	h := handlers.NewHandlers(handlers.Deps{
 		Cache:                   cacheContainer,
 		Stream:                  streamSvc,
@@ -341,10 +394,15 @@ func main() {
 		NotificationsRepository: notificationsRepository,
 		APBuilder:               apBuilder,
 		Config:                  cfg,
+		PluginActions:           pluginActions,
+		PluginCSSContent:        pluginCSSContent,
+		PluginJSContent:         pluginJSContent,
+		PluginPageContent:       pluginPageContent,
+		PluginTabs:              pluginTabs,
 	})
 
 	// Stage 10: serve. Blocks until shutdown.
-	if err := router.Start(cfg, *enableVerboseLogging, h, mw, apSvc.Controllers()); err != nil {
+	if err := router.Start(cfg, *enableVerboseLogging, h, mw, apSvc.Controllers(), pluginContentHandler, pluginAdminHandler); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
 }

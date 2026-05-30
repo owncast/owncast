@@ -21,6 +21,7 @@ import (
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/datastore"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/webhooks"
 )
 
@@ -33,6 +34,7 @@ type Deps struct {
 	AuthRepository        authrepository.AuthRepository
 	ChatMessageRepository chatmessagerepository.ChatMessageRepository
 	UserRepository        userrepository.UserRepository
+	Events                *dispatcher.Dispatcher
 }
 
 // New constructs a chat Service. Call Start to launch the broadcast
@@ -45,6 +47,7 @@ func New(deps Deps) *Service {
 	s.authRepository = deps.AuthRepository
 	s.chatMessageRepository = deps.ChatMessageRepository
 	s.userRepository = deps.UserRepository
+	s.events = deps.Events
 	return s
 }
 
@@ -139,6 +142,50 @@ func (s *Service) SendSystemMessage(text string, ephemeral bool) error {
 	if !ephemeral {
 		s.chatMessageRepository.SaveEvent(message.ID, nil, message.Body, message.GetMessageType(), nil, message.Timestamp, nil, nil, nil, nil)
 	}
+
+	return nil
+}
+
+// SendMessageAsBot broadcasts and persists a chat message authored by a bot
+// user, running it through the same render/sanitize, broadcast, webhook, and
+// persistence path as a message from a connected client.
+//
+// The user MUST have IsBot=true. This is deliberately the only chat-send API
+// that accepts a user identity — there's no general "send as any user" path,
+// so a plugin (the only thing that can reach this) cannot impersonate a real
+// chatter. The plugin host's chatbot provisioner creates exactly one bot
+// identity per plugin (with IsBot=true and DisplayName=plugin name) and
+// passes it here when the plugin calls owncast.chat.send.
+func (s *Service) SendMessageAsBot(user *models.User, text string) error {
+	if user == nil {
+		return errors.New("SendMessageAsBot requires a user")
+	}
+	if !user.IsBot {
+		return errors.New("SendMessageAsBot: user must be a bot (IsBot=true) — impersonating a non-bot is not allowed")
+	}
+
+	event := events.UserMessageEvent{}
+	event.Body = text
+	event.SetDefaults() // generates ID + timestamp, renders and sanitizes the body
+	// SetDefaults doesn't set Type (the websocket-inbound path picks it up
+	// from the client JSON). We're synthesizing the event server-side, so set
+	// it explicitly — without this the message is stored with an empty
+	// eventType, and the web frontend can't categorize it and crashes when
+	// rendering chat history.
+	event.Type = events.MessageSent
+	event.User = user
+
+	if event.Empty() {
+		return nil
+	}
+
+	if err := s.Broadcast(event.GetBroadcastPayload()); err != nil {
+		return err
+	}
+
+	s.webhooks.SendChatEvent(&event)
+	s.chatMessagesSentCounter.Inc()
+	s.chatMessageRepository.SaveUserMessage(event)
 
 	return nil
 }

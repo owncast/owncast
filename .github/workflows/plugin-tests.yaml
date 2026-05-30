@@ -1,0 +1,75 @@
+# Runs the standalone plugin end-to-end integration tests: builds a plugin
+# from the Owncast plugin SDK, loads it into a real Owncast instance, and
+# verifies it filters chat. Mirrors the API test workflow.
+
+name: Automated plugin tests
+
+on:
+  push:
+    paths-ignore:
+      - 'web/**'
+  pull_request:
+    paths-ignore:
+      - 'web/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
+      - name: Check out pull request code
+        uses: actions/checkout@v6
+        if: github.event_name == 'pull_request'
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Fetch base branch for comparison
+        if: github.event_name == 'pull_request'
+        run: |
+          git remote add upstream https://github.com/${{ github.event.pull_request.base.repo.full_name }}.git || true
+          git fetch upstream ${{ github.event.pull_request.base.ref }}
+
+      - name: Check out repository code
+        uses: actions/checkout@v6
+        if: github.event_name == 'push'
+
+      - name: Get changed files
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v47
+        with:
+          files_yaml: |
+            src:
+              - '**/*.{go,mod,sum}'
+              - 'test/automated/plugins/**'
+
+      - uses: earthly/actions-setup@v1
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        with:
+          version: 'latest'
+
+      - name: Earthly version
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        run: earthly --version
+
+      - name: Set up QEMU
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        id: qemu
+        uses: docker/setup-qemu-action@v4
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: all
+
+      - name: Run plugin tests
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        uses: nick-fields/retry@v4
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: earthly +plugin-tests

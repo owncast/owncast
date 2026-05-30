@@ -13,6 +13,7 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
+	"github.com/owncast/owncast/services/dispatcher"
 )
 
 // Job bundles a single webhook destination + payload for a worker.
@@ -47,6 +48,11 @@ type Service struct {
 	// consulted when dispatching events as well as when marking a
 	// destination as used after a successful send.
 	webhookRepository webhookrepository.WebhookRepository
+
+	// events is the shared dispatcher every event is published to, so
+	// in-process consumers (the plugin host today, other subsystems later)
+	// receive them without this service knowing who they are.
+	events *dispatcher.Dispatcher
 }
 
 // Deps lists every collaborator a *Service needs at construction.
@@ -55,6 +61,7 @@ type Deps struct {
 	Followers         followersrepository.FollowersRepository
 	ConfigRepository  configrepository.ConfigRepository
 	WebhookRepository webhookrepository.WebhookRepository
+	Events            *dispatcher.Dispatcher
 }
 
 // New constructs an idle webhook Service. Call Start to launch the
@@ -66,6 +73,7 @@ func New(deps Deps) *Service {
 		followers:         deps.Followers,
 		configRepository:  deps.ConfigRepository,
 		webhookRepository: deps.WebhookRepository,
+		events:            deps.Events,
 	}
 }
 

@@ -225,3 +225,14 @@ hls-tests:
 	WORKDIR /build/test/automated/hls
 	RUN npm install
 	RUN ./run.sh
+
+plugin-tests:
+	FROM --platform=linux/amd64 ghcr.io/gabek/go-crosscompile:latest
+	ENV GOTOOLCHAIN=auto
+	# git clones the plugin SDK; npm builds both the SDK-compiled plugin and
+	# this test suite; gcompat lets the SDK's prebuilt extism-js (glibc) run on
+	# this musl/alpine image.
+	RUN apk add npm git gcompat font-noto && fc-cache -f
+	COPY . /build
+	WORKDIR /build/test/automated/plugins
+	RUN ./run.sh

@@ -19,6 +19,7 @@ import (
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/datastore"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/geoip"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"
@@ -51,6 +52,11 @@ type Service struct {
 	// inbound-message path to make stream-state-aware decisions
 	// (welcome messages, recent-disconnect heuristics).
 	getStatus func() models.Status
+
+	// events is the shared dispatcher. Inbound user messages are run through
+	// its filter chain before broadcast, letting consumers (the plugin host)
+	// rewrite or drop them. nil means no filtering.
+	events *dispatcher.Dispatcher
 
 	// configRepository provides server-side chat settings consulted on each
 	// inbound message (slur/spam filters, established-users-only mode,

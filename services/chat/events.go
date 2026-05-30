@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -9,7 +10,9 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/chat/events"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -162,6 +165,12 @@ func (s *Service) userMessageSent(eventData chatClientEvent) {
 
 	// Guard against nil users
 	if event.User == nil {
+		return
+	}
+
+	// Run inbound-message filters (plugin filterChatMessage handlers) before
+	// broadcast. A filter may rewrite event.Body in place or drop the message.
+	if s.events != nil && !s.events.ApplyFilters(context.Background(), dispatcher.Event{Type: models.MessageSent, Payload: &event}) {
 		return
 	}
 

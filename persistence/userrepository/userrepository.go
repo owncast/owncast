@@ -27,6 +27,7 @@ type UserRepository interface {
 	CreateAnonymousUser(displayName string) (*models.User, string, error)
 	DeleteExternalAPIUser(token string) error
 	GetDisabledUsers() []*models.User
+	GetUsers() []*models.User
 	GetExternalAPIUser() ([]models.ExternalAPIUser, error)
 	GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*models.ExternalAPIUser, error)
 	GetModeratorUsers() []*models.User
@@ -208,40 +209,55 @@ func (r *SqlUserRepository) SetEnabled(userID string, enabled bool) error {
 	return tx.Commit()
 }
 
+// userFromColumns builds a *models.User from the column set shared by the
+// sqlc user lookups (GetUserByAccessToken, GetUserByID, GetUsers). IsBot is
+// derived in SQL (users.type = 'API') so callers don't second-guess it.
+func userFromColumns(
+	id, displayName string,
+	displayColor int64,
+	createdAt, disabledAt sql.NullTime,
+	previousNames sql.NullString,
+	namechangedAt, authenticatedAt sql.NullTime,
+	scopes sql.NullString,
+	isBot bool,
+) *models.User {
+	var scopeSlice []string
+	if scopes.Valid {
+		scopeSlice = strings.Split(scopes.String, ",")
+	}
+
+	var disabled *time.Time
+	if disabledAt.Valid {
+		disabled = &disabledAt.Time
+	}
+
+	var authAt *time.Time
+	if authenticatedAt.Valid {
+		authAt = &authenticatedAt.Time
+	}
+
+	return &models.User{
+		ID:              id,
+		DisplayName:     displayName,
+		DisplayColor:    int(displayColor),
+		CreatedAt:       createdAt.Time,
+		DisabledAt:      disabled,
+		PreviousNames:   strings.Split(previousNames.String, ","),
+		NameChangedAt:   &namechangedAt.Time,
+		AuthenticatedAt: authAt,
+		Authenticated:   authAt != nil,
+		Scopes:          scopeSlice,
+		IsBot:           isBot,
+	}
+}
+
 // GetUserByToken will return a user by an access token.
 func (r *SqlUserRepository) GetUserByToken(token string) *models.User {
 	u, err := r.datastore.GetQueries().GetUserByAccessToken(context.Background(), token)
 	if err != nil {
 		return nil
 	}
-
-	var scopes []string
-	if u.Scopes.Valid {
-		scopes = strings.Split(u.Scopes.String, ",")
-	}
-
-	var disabledAt *time.Time
-	if u.DisabledAt.Valid {
-		disabledAt = &u.DisabledAt.Time
-	}
-
-	var authenticatedAt *time.Time
-	if u.AuthenticatedAt.Valid {
-		authenticatedAt = &u.AuthenticatedAt.Time
-	}
-
-	return &models.User{
-		ID:              u.ID,
-		DisplayName:     u.DisplayName,
-		DisplayColor:    int(u.DisplayColor),
-		CreatedAt:       u.CreatedAt.Time,
-		DisabledAt:      disabledAt,
-		PreviousNames:   strings.Split(u.PreviousNames.String, ","),
-		NameChangedAt:   &u.NamechangedAt.Time,
-		AuthenticatedAt: authenticatedAt,
-		Authenticated:   authenticatedAt != nil,
-		Scopes:          scopes,
-	}
+	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot)
 }
 
 // SetAccessTokenToOwner will reassign an access token to be owned by a
@@ -367,16 +383,11 @@ func (r *SqlUserRepository) setScopesOnUser(userID string, scopes []string) erro
 
 // GetUserByID will return a user by a user ID.
 func (r *SqlUserRepository) GetUserByID(id string) *models.User {
-	r.datastore.DbLock.Lock()
-	defer r.datastore.DbLock.Unlock()
-
-	query := "SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, scopes FROM users WHERE id = ?"
-	row := r.datastore.DB.QueryRow(query, id)
-	if row == nil {
-		log.Errorln(row)
+	u, err := r.datastore.GetQueries().GetUserByID(context.Background(), id)
+	if err != nil {
 		return nil
 	}
-	return r.getUserFromRow(row)
+	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot)
 }
 
 // GetDisabledUsers will return back all the currently disabled users that are not API users.
@@ -396,6 +407,21 @@ func (r *SqlUserRepository) GetDisabledUsers() []*models.User {
 		return users[i].DisabledAt.Before(*users[j].DisabledAt)
 	})
 
+	return users
+}
+
+// GetUsers will return all users, most-recently-created first.
+func (r *SqlUserRepository) GetUsers() []*models.User {
+	rows, err := r.datastore.GetQueries().GetUsers(context.Background())
+	if err != nil {
+		log.Errorln(err)
+		return nil
+	}
+
+	users := make([]*models.User, 0, len(rows))
+	for _, u := range rows {
+		users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
+	}
 	return users
 }
 
@@ -469,37 +495,6 @@ func (r *SqlUserRepository) getUsersFromRows(rows *sql.Rows) []*models.User {
 	})
 
 	return users
-}
-
-func (r *SqlUserRepository) getUserFromRow(row *sql.Row) *models.User {
-	var id string
-	var displayName string
-	var displayColor int
-	var createdAt time.Time
-	var disabledAt *time.Time
-	var previousUsernames string
-	var userNameChangedAt *time.Time
-	var scopesString *string
-
-	if err := row.Scan(&id, &displayName, &displayColor, &createdAt, &disabledAt, &previousUsernames, &userNameChangedAt, &scopesString); err != nil {
-		return nil
-	}
-
-	var scopes []string
-	if scopesString != nil {
-		scopes = strings.Split(*scopesString, ",")
-	}
-
-	return &models.User{
-		ID:            id,
-		DisplayName:   displayName,
-		DisplayColor:  displayColor,
-		CreatedAt:     createdAt,
-		DisabledAt:    disabledAt,
-		PreviousNames: strings.Split(previousUsernames, ","),
-		NameChangedAt: userNameChangedAt,
-		Scopes:        scopes,
-	}
 }
 
 // InsertExternalAPIUser will add a new API user to the database.

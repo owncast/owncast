@@ -31,6 +31,11 @@ done
 # Always skip interactive prompts inside the container
 ENV_ARGS+=("-e" "CI=true")
 
+# Pass the host user/group so the container can hand any files it writes into
+# the bind-mounted repo (notably Owncast's data dir) back to us on exit,
+# instead of leaving them owned by root and unremovable.
+ENV_ARGS+=("-e" "HOST_UID=$(id -u)" "-e" "HOST_GID=$(id -g)")
+
 # Port-forward when KEEP_RUNNING is set so the user can access the services
 EXTRA_ARGS=()
 if [[ "${KEEP_RUNNING}" == "true" ]]; then

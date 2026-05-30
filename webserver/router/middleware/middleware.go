@@ -14,6 +14,11 @@ type Middleware struct {
 	configRepository configrepository.ConfigRepository
 	authRepository   authrepository.AuthRepository
 	userRepository   userrepository.UserRepository
+	// adminSessions holds opaque admin session tokens. The admin UI mints
+	// one after authenticating with Basic Auth, and embedded contexts
+	// (plugin admin iframes) that cannot inject the Authorization header
+	// themselves authenticate via this cookie instead.
+	adminSessions *adminSessionStore
 }
 
 // Deps lists the services *Middleware consumes.
@@ -29,5 +34,6 @@ func New(deps Deps) *Middleware {
 		configRepository: deps.ConfigRepository,
 		authRepository:   deps.AuthRepository,
 		userRepository:   deps.UserRepository,
+		adminSessions:    newAdminSessionStore(),
 	}
 }

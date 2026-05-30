@@ -3,21 +3,39 @@
 # This script will download all the releases of Owncast and test them
 # to ensure that upgrades work as expected.  It will also test the
 # development branch as the final test.
-# It is hard coded to run under 64bit intel linux.
+# The release list is fetched dynamically from the GitHub API so it stays
+# current as new versions are published.
+# It is hard coded to run under 64bit intel linux, and requires curl and jq.
 
 # set -o errexit
 set -o pipefail
 
-releases=(
-	"https://github.com/owncast/owncast/releases/download/v0.0.6/owncast-0.0.6-linux-64bit.zip"
-	"https://github.com/owncast/owncast/releases/download/v0.0.7/owncast-0.0.7-linux-64bit.zip"
-	"https://github.com/owncast/owncast/releases/download/v0.0.8/owncast-0.0.8-linux-64bit.zip"
-	"https://github.com/owncast/owncast/releases/download/v0.0.9/owncast-0.0.9-linux-64bit.zip"
-	"https://github.com/owncast/owncast/releases/download/v0.0.10/owncast-0.0.10-linux-64bit.zip"
-	"https://github.com/owncast/owncast/releases/download/v0.0.11/owncast-0.0.11-linux-64bit.zip"
-	"https://github.com/owncast/owncast/releases/download/v0.0.12/owncast-0.0.12-linux-64bit.zip"
-	"https://github.com/owncast/owncast/releases/download/v0.0.13/owncast-0.0.13-linux-64bit.zip"
-)
+if ! command -v jq >/dev/null 2>&1; then
+	echo "Error: 'jq' is required to fetch the list of releases but was not found." >&2
+	exit 1
+fi
+
+# Fetch the list of linux 64-bit release download URLs from the GitHub API,
+# sorted oldest to newest. This keeps the test against the full set of
+# published releases without hard-coding versions that go out of date.
+fetch_release_urls() {
+	curl -sL -H "Accept: application/vnd.github+json" \
+		"https://api.github.com/repos/owncast/owncast/releases?per_page=100" |
+		jq -r '.[]
+			| select(.prerelease == false and .draft == false)
+			| .assets[]
+			| select(.name | test("linux-64bit\\.zip$"))
+			| .browser_download_url' |
+		sort -V
+}
+
+echo "Fetching the list of Owncast releases from GitHub..."
+mapfile -t releases < <(fetch_release_urls)
+
+if [ ${#releases[@]} -eq 0 ]; then
+	echo "Error: failed to fetch any releases from the GitHub API." >&2
+	exit 1
+fi
 
 echo "--------------------------------------------"
 echo "Owncast releases upgrade test."
@@ -51,7 +69,7 @@ test_release() {
 build_development() {
 	echo "Building test release from current development branch..."
 	cd src || exit
-	git clone https://github.com/owncast/owncast
+	git clone --depth 1 https://github.com/owncast/owncast
 	cd owncast || exit
 	earthly +package --platform="linux/amd64"
 	mv dist/owncast-develop-linux-64bit.zip ../../releases/owncast-develop-linux-64bit.zip

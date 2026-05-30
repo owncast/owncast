@@ -8,6 +8,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
@@ -53,6 +54,38 @@ type Handlers struct {
 	apBuilder               *apmodels.Builder
 	cfg                     *config.Config
 
+	// pluginActions, when non-nil, returns the current set of action
+	// buttons contributed by loaded plugins. Merged into the
+	// externalActions list returned by GetWebConfig so the viewer sees
+	// plugin actions alongside admin-defined ones. nil = no plugin host
+	// (boot disabled or failed).
+	pluginActions func() []models.ExternalAction
+
+	// pluginCSSContent, when non-nil, returns the concatenated CSS
+	// bytes contributed by loaded plugins that declared `styles` in
+	// their manifest. /api/config appends these bytes to the admin's
+	// customStyles so the viewer renders one inline <style> block
+	// covering both sources. nil = no plugin host.
+	pluginCSSContent func() []byte
+
+	// pluginJSContent mirrors pluginCSSContent for JavaScript: the
+	// concatenated JS bytes contributed by loaded plugins. The
+	// /customjavascript handler appends these to the admin's
+	// customJavascript so the viewer loads one <script> tag covering
+	// both sources.
+	pluginJSContent func() []byte
+
+	// pluginPageContent returns the concatenated HTML bytes
+	// contributed by loaded plugins via manifest.extraPageContent.
+	// /api/config prepends these bytes to the admin's rendered
+	// extraPageContent.
+	pluginPageContent func() []byte
+
+	// pluginTabs returns the list of viewer-page tabs contributed by
+	// loaded plugins via manifest.tabs. /api/config emits this list
+	// as `pluginTabs`; the viewer page renders one tab per entry.
+	pluginTabs func() []models.PluginTab
+
 	// previewThumbCache caches thumbnail/preview bytes for a short window
 	// so frequent polling from chat clients doesn't re-read the file
 	// every request.
@@ -85,6 +118,27 @@ type Deps struct {
 	NotificationsRepository notificationsrepository.NotificationsRepository
 	APBuilder               *apmodels.Builder
 	Config                  *config.Config
+	// PluginActions is an optional getter that returns action buttons
+	// contributed by loaded plugins. Wired by main.go to the plugin host's
+	// Actions() method; nil when the plugin host is disabled.
+	PluginActions func() []models.ExternalAction
+	// PluginCSSContent is an optional getter that returns the
+	// concatenated CSS bytes contributed by loaded plugins. Wired by
+	// main.go to the plugin host's StylesContent() method; nil when
+	// the plugin host is disabled.
+	PluginCSSContent func() []byte
+	// PluginJSContent mirrors PluginCSSContent for JavaScript: the
+	// concatenated JS bytes contributed by loaded plugins. Wired to
+	// the plugin host's ScriptsContent() method.
+	PluginJSContent func() []byte
+	// PluginPageContent returns the concatenated HTML bytes from
+	// each loaded plugin's manifest.extraPageContent. Wired to the
+	// plugin host's PageContent() method.
+	PluginPageContent func() []byte
+	// PluginTabs returns the list of viewer-page tabs contributed by
+	// loaded plugins via manifest.tabs. Wired to the plugin host's
+	// Tabs() method.
+	PluginTabs func() []models.PluginTab
 }
 
 // HandleWebsocketConnection routes the /ws websocket upgrade to the
@@ -115,6 +169,11 @@ func NewHandlers(deps Deps) *Handlers {
 		notificationsRepository: deps.NotificationsRepository,
 		apBuilder:               deps.APBuilder,
 		cfg:                     deps.Config,
+		pluginActions:           deps.PluginActions,
+		pluginCSSContent:        deps.PluginCSSContent,
+		pluginJSContent:         deps.PluginJSContent,
+		pluginPageContent:       deps.PluginPageContent,
+		pluginTabs:              deps.PluginTabs,
 		previewThumbCache: ttlcache.New(
 			ttlcache.WithTTL[string, []byte](15),
 			ttlcache.WithCapacity[string, []byte](1),
