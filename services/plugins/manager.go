@@ -18,6 +18,7 @@ import (
 
 	extism "github.com/extism/go-sdk"
 	"github.com/gobwas/glob"
+	log "github.com/sirupsen/logrus"
 )
 
 // Loaded represents a successfully-loaded plugin. The sidecar manifest is the
@@ -311,15 +312,43 @@ func (m *Manager) Start(ctx context.Context) error {
 	}
 	// Auto-load anything in the enabled set that isn't already loaded
 	// AND whose approved-permission set covers the current manifest.
+	// Every reason a load doesn't complete is surfaced both in the
+	// server log (so an operator inspecting `journalctl` sees it) and
+	// in the DiscoveredEntry's LastError (so the admin UI's plugin
+	// list shows a non-empty status hint). Without that, the entry
+	// sits at "enabled, not loaded" with no indication of why.
 	for name, enabled := range m.enabledSet {
 		if !enabled {
 			continue
 		}
-		if len(m.pendingForLocked(name)) > 0 {
+		if pending := m.pendingForLocked(name); len(pending) > 0 {
+			log.Warnf("plugin %s: not loaded at startup; declares unapproved permissions %s; admin needs to re-approve in the plugin's detail view",
+				name, strings.Join(pending, ", "))
+			m.mu.Lock()
+			if d, ok := m.discovered[name]; ok {
+				d.PendingPermissions = pending
+				d.LastError = "permissions need admin approval; re-enable from the plugin's detail view"
+			}
+			m.mu.Unlock()
 			continue
 		}
 		if err := m.loadInternal(ctx, name); err != nil {
-			fmt.Fprintf(os.Stderr, "plugin %s: load failed: %v\n", name, err)
+			log.Warnf("plugin %s: load failed at startup: %v", name, err)
+			// loadInternal already set LastError on the entry; the
+			// log line above adds the operator-visible trail.
+			continue
+		}
+		if _, loaded := m.loaded[name]; !loaded {
+			// Defensive: loadInternal returned nil but the plugin
+			// didn't land in m.loaded. Shouldn't happen, but if it
+			// ever does, the admin UI's "enabled, not loaded" entry
+			// gets a non-empty LastError so the bug surfaces.
+			log.Warnf("plugin %s: load returned no error but plugin is not in the loaded set", name)
+			m.mu.Lock()
+			if d, ok := m.discovered[name]; ok {
+				d.LastError = "internal: load returned no error but plugin failed to register; check the server log"
+			}
+			m.mu.Unlock()
 		}
 	}
 	scanCtx, cancel := context.WithCancel(ctx)
