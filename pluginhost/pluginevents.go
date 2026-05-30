@@ -89,7 +89,19 @@ func newPluginChatFilter(pluginDispatcher *plugins.Dispatcher) dispatcher.Filter
 		if !allowed {
 			return false
 		}
-		msg.Body = filteredBody(final, msg.Body)
+		// Only re-sanitize when a plugin actually changed the body.
+		// A plugin holding only chat.filter must not be able to
+		// inject raw HTML into a broadcast: replacing RawBody and
+		// re-running RenderAndSanitizeMessageBody puts the plugin's
+		// output through the same markdown/HTML sanitizer
+		// userMessageSent already applied. The unchanged path skips
+		// the work and keeps the already-rendered Body intact so a
+		// no-op filter doesn't re-render plain text into <p>...</p>.
+		next := filteredBody(final, msg.Body)
+		if next != msg.Body {
+			msg.RawBody = next
+			msg.RenderAndSanitizeMessageBody()
+		}
 		return true
 	}
 }

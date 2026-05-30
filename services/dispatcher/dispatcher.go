@@ -64,9 +64,14 @@ func (d *Dispatcher) AddFilter(f Filter) {
 }
 
 // Publish notifies every registered listener of event, in registration order.
+// The listener slice is copied under the lock before iteration; the
+// outer functions are called without the lock held so a listener that
+// re-publishes (or calls AddListener) doesn't deadlock, and a
+// concurrent AddListener can't mutate the slice we're iterating.
 func (d *Dispatcher) Publish(ctx context.Context, event Event) {
 	d.mu.RLock()
-	listeners := d.listeners
+	listeners := make([]Listener, len(d.listeners))
+	copy(listeners, d.listeners)
 	d.mu.RUnlock()
 
 	for _, l := range listeners {
@@ -76,10 +81,13 @@ func (d *Dispatcher) Publish(ctx context.Context, event Event) {
 
 // ApplyFilters runs event through the filter chain and reports whether it
 // survived. Filters may mutate the payload in place. With no filters
-// registered the event always passes.
+// registered the event always passes. Same copy-under-lock discipline
+// as Publish: AddFilter on another goroutine can't race with the
+// iteration here.
 func (d *Dispatcher) ApplyFilters(ctx context.Context, event Event) (allow bool) {
 	d.mu.RLock()
-	filters := d.filters
+	filters := make([]Filter, len(d.filters))
+	copy(filters, d.filters)
 	d.mu.RUnlock()
 
 	for _, f := range filters {

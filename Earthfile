@@ -233,6 +233,6 @@ plugin-tests:
 	# this test suite; gcompat lets the SDK's prebuilt extism-js (glibc) run on
 	# this musl/alpine image.
 	RUN apk add npm git gcompat font-noto && fc-cache -f
-  COPY . /build
+	COPY . /build
 	WORKDIR /build/test/automated/plugins
 	RUN ./run.sh

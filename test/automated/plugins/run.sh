@@ -15,8 +15,6 @@
 #                     (use this for local runs: PLUGIN_SDK_DIR=~/src/plugin-sdk ./run.sh)
 #   PLUGIN_SDK_REPO   git URL of the plugin SDK (default: owncast/plugin-sdk)
 #   PLUGIN_SDK_REF    branch/tag/sha to build from (default: main)
-#   PLUGIN_SDK_TOKEN  token with read access; injected for cloning the (private)
-#                     SDK over HTTPS in CI
 
 set -e
 
@@ -43,11 +41,7 @@ else
 	CLONED_SDK=1
 	# Never block on an interactive credential prompt — fail clearly instead.
 	export GIT_TERMINAL_PROMPT=0
-	clone_url="$PLUGIN_SDK_REPO"
-	if [[ -n "${PLUGIN_SDK_TOKEN:-}" ]]; then
-		clone_url="https://x-access-token:${PLUGIN_SDK_TOKEN}@${PLUGIN_SDK_REPO#https://}"
-	fi
-	git clone --depth 1 --branch "$PLUGIN_SDK_REF" "$clone_url" "$SDK_DIR"
+	git clone --depth 1 --branch "$PLUGIN_SDK_REF" "$PLUGIN_SDK_REPO" "$SDK_DIR"
 fi
 
 # Tear down the installed plugins (and the SDK clone, but never a local SDK

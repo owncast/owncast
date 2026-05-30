@@ -159,13 +159,19 @@ func callOnFilter(ctx context.Context, p *Loaded, eventType string, payload any)
 	if err != nil {
 		return nil, fmt.Errorf("marshal envelope: %w", err)
 	}
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	// Per-call deadline. The plugin's extism manifest has Timeout=10s which
-	// enabled Wazero's mid-execution cancellation; the 50ms here is what
-	// actually kicks in for filters on the chat hot path.
+	// Per-call deadline. FilterTimeout has to cover BOTH waiting for the
+	// per-plugin mutex AND the wasm call itself: an HTTP request or
+	// on_event in flight on the same plugin holds p.mu, so a naive
+	// deadline started after Lock() could let the chat hot path stall
+	// for the full duration of that other call before the filter clock
+	// even starts. Bounding both phases with one context keeps the
+	// chat path responsive even when the plugin is otherwise busy.
 	callCtx, cancel := context.WithTimeout(ctx, FilterTimeout)
 	defer cancel()
+	if err := lockWithContext(callCtx, &p.mu); err != nil {
+		return nil, fmt.Errorf("on_filter timed out after %s waiting for plugin mutex", FilterTimeout)
+	}
+	defer p.mu.Unlock()
 	_, out, err := p.plugin.CallWithContext(callCtx, "on_filter", envelope)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) || callCtx.Err() == context.DeadlineExceeded {
@@ -235,4 +241,34 @@ func callOnEvent(ctx context.Context, p *Loaded, input []byte) error {
 		}
 	}
 	return err
+}
+
+// lockWithContext attempts to acquire mu, but gives up if ctx fires
+// first. Go's sync.Mutex can't be cancelled mid-Lock, so when the
+// context expires before the lock is acquired we spawn a throwaway
+// goroutine that drops the lock as soon as the kernel eventually
+// grants it. That goroutine is bounded by the original Lock duration
+// and exits cleanly; the caller treats the timeout as an error.
+//
+// This matters for the chat filter hot path: another call on the
+// same plugin (an HTTP handler, an on_event) can hold p.mu for many
+// seconds, and a plain Lock() inside Filter would let the chat path
+// stall for that whole window before the filter's own deadline even
+// started.
+func lockWithContext(ctx context.Context, mu *sync.Mutex) error {
+	locked := make(chan struct{})
+	go func() {
+		mu.Lock()
+		close(locked)
+	}()
+	select {
+	case <-locked:
+		return nil
+	case <-ctx.Done():
+		go func() {
+			<-locked
+			mu.Unlock()
+		}()
+		return ctx.Err()
+	}
 }

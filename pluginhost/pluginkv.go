@@ -1,6 +1,9 @@
 package pluginhost
 
 import (
+	"database/sql"
+	"errors"
+
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/plugins/kv"
 )
@@ -37,9 +40,15 @@ type datastoreKVNamespace struct {
 func (n *datastoreKVNamespace) Get(key string) ([]byte, error) {
 	value, err := n.datastore.GetString(n.prefix + key)
 	if err != nil {
-		// A missing key (or unset on a fresh install) reads as nil, matching
-		// the kv.Store contract.
-		return nil, nil
+		// Only a missing key (or unset on a fresh install) reads as
+		// nil, matching the kv.Store contract. Anything else is a
+		// real persistence error (decode/type/database) that the
+		// plugin needs to see; silently translating to nil would
+		// look like data loss to the plugin.
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
 	}
 	return []byte(value), nil
 }
