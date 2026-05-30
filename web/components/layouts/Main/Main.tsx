@@ -99,6 +99,11 @@ export const Main: FC = () => {
       <PushNotificationServiceWorker />
       <TitleNotifier name={name} />
       <Theme />
+      {/*
+        /customjavascript serves the admin's custom JS followed by
+        every loaded plugin's manifest.scripts content (concatenated
+        server-side). One <script> tag covers both.
+      */}
       <Script strategy="afterInteractive" src="/customjavascript" />
       <Layout ref={layoutRef} className={styles.layout}>
         <Header

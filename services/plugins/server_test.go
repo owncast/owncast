@@ -32,7 +32,7 @@ func staticOnlyServer(t *testing.T, perms []string, assets fstest.MapFS) *Server
 		Manifest: &Manifest{
 			API: "1", DisplayName: "demo", Slug: "demo", Version: "1.0.0", Permissions: perms,
 		},
-		AssetsFS: assets,
+		PublicFS: assets,
 	}
 	return NewServer([]*Loaded{loaded})
 }
@@ -119,11 +119,12 @@ func TestServer_InjectsAdminStylesOnAdminPath(t *testing.T) {
 			API: "1", DisplayName: "demo", Slug: "demo", Version: "1.0.0",
 			Permissions: []string{"http.serve"},
 		},
-		AssetsFS: fstest.MapFS{
+		PublicFS: fstest.MapFS{
 			"admin/index.html": {Data: []byte("<html><head><title>x</title></head><body>hi</body></html>")},
 			"index.html":       {Data: []byte("<html><head></head><body>public</body></html>")},
 		},
 		adminGlobs: []glob.Glob{glob.MustCompile("/admin/*")},
+		adminPaths: []string{"/admin/*"},
 	}
 	s := NewServer([]*Loaded{loaded})
 	// IsAuthenticated returns true so the admin-path gate lets the request through.
@@ -176,26 +177,26 @@ func TestInjectAdminStyles_NoHeadStillInjects(t *testing.T) {
 	}
 }
 
-// TestServer_PathTraversal_CannotEscapeAssetsRoot verifies that traversal
+// TestServer_PathTraversal_CannotEscapePublicRoot verifies that traversal
 // attempts ("../") in the URL cannot reach files outside the plugin's
-// AssetsFS root. This is the actual security property — that the on-disk
-// boundary of the asset directory is respected.
-func TestServer_PathTraversal_CannotEscapeAssetsRoot(t *testing.T) {
+// PublicFS root. This is the actual security property — that the on-disk
+// boundary of the public directory is respected.
+func TestServer_PathTraversal_CannotEscapePublicRoot(t *testing.T) {
 	// Sibling directory layout:
 	//   <tmp>/
-	//     plugin-assets/      ← this becomes the plugin's AssetsFS
+	//     plugin-public/      ← this becomes the plugin's PublicFS
 	//       safe.txt
 	//     forbidden/
 	//       secret.txt        ← must NOT be reachable via traversal
 	root := t.TempDir()
-	pluginAssets := root + "/plugin-assets"
+	pluginPublic := root + "/plugin-public"
 	forbidden := root + "/forbidden"
-	for _, d := range []string{pluginAssets, forbidden} {
+	for _, d := range []string{pluginPublic, forbidden} {
 		if err := osMkdirAll(d); err != nil {
 			t.Fatal(err)
 		}
 	}
-	osWriteFile(t, pluginAssets+"/safe.txt", []byte("safe content"))
+	osWriteFile(t, pluginPublic+"/safe.txt", []byte("safe content"))
 	osWriteFile(t, forbidden+"/secret.txt", []byte("FORBIDDEN_CONTENT"))
 
 	loaded := &Loaded{
@@ -203,7 +204,7 @@ func TestServer_PathTraversal_CannotEscapeAssetsRoot(t *testing.T) {
 			API: "1", DisplayName: "demo", Slug: "demo", Version: "1.0.0",
 			Permissions: []string{"http.serve"},
 		},
-		AssetsFS: osDirFS(pluginAssets),
+		PublicFS: osDirFS(pluginPublic),
 	}
 	s := NewServer([]*Loaded{loaded})
 
@@ -230,7 +231,7 @@ func TestServer_PathTraversal_CannotEscapeAssetsRoot(t *testing.T) {
 		rec := httptest.NewRecorder()
 		s.ServeHTTP(rec, req)
 		if strings.Contains(rec.Body.String(), "FORBIDDEN_CONTENT") {
-			t.Errorf("%s: traversal escaped AssetsFS root: %q", p, rec.Body.String())
+			t.Errorf("%s: traversal escaped PublicFS root: %q", p, rec.Body.String())
 		}
 	}
 }

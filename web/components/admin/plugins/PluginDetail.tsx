@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
-import { Alert, Space, Table, Tabs, Tag, Typography } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Alert, Space, Spin, Table, Tabs, Tag, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import dynamic from 'next/dynamic';
-import { Plugin } from '../../../interfaces/plugin';
+import ReactMarkdown from 'react-markdown';
+import { Plugin, PluginPermission } from '../../../interfaces/plugin';
 import { Localization } from '../../../types/localization';
+import { fetchText, pluginInstructionsUrl } from '../../../utils/apis';
 import { permissionDescriptionKey } from './permissionDescriptions';
 import s from './PluginDetail.module.scss';
 
@@ -92,6 +94,46 @@ const pluginAdminUrl = (pluginSlug: string, path: string): string => {
   return `/plugins/${encodeURIComponent(pluginSlug)}${normalized}`;
 };
 
+// PluginInstructions fetches the plugin's bundled INSTRUCTIONS.md and
+// renders it as markdown. The endpoint serves raw markdown (admin-gated),
+// so we read it as text and hand it to ReactMarkdown. Fetched on mount and
+// whenever the slug changes (navigating between plugins).
+const PluginInstructions = ({ slug }: { slug: string }) => {
+  const { t } = useTranslation();
+  const [markdown, setMarkdown] = useState<string | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    setMarkdown(null);
+    setError(false);
+    fetchText(pluginInstructionsUrl(slug))
+      .then(text => {
+        if (!cancelled) setMarkdown(text);
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  if (error) {
+    return (
+      <Alert type="error" showIcon message={t(Localization.Admin.Plugins.instructionsLoadError)} />
+    );
+  }
+  if (markdown === null) {
+    return <Spin />;
+  }
+  return (
+    <div className={s.instructions}>
+      <ReactMarkdown>{markdown}</ReactMarkdown>
+    </div>
+  );
+};
+
 // PluginDetail renders the per-plugin view: metadata header + a tab for
 // each admin page declared in the plugin's manifest. Each tab body is an
 // iframe pointing at the plugin's own HTTP namespace.
@@ -126,10 +168,16 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
           key: perm,
           permission: perm,
           description: key ? t(key) : '-',
+          // network.fetch carries an extra dimension to the trust
+          // decision: which hosts the plugin is allowed to reach.
+          // Surface manifest.network.allowedHosts on this row so the
+          // admin sees the host scope alongside the permission.
+          allowedHosts:
+            perm === PluginPermission.NetworkFetch ? (plugin.allowedHosts ?? []) : undefined,
           pending: pendingSet.has(perm),
         };
       }),
-    [plugin.permissions, pendingSet, t],
+    [plugin.permissions, plugin.allowedHosts, pendingSet, t],
   );
 
   const permissionsTab = useMemo(
@@ -164,7 +212,7 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
                   dataIndex: 'permission',
                   key: 'permission',
                   width: 220,
-                  render: (v: string, row: { pending: boolean }) =>
+                  render: (v: string, row: { pending: boolean; allowedHosts?: string[] }) =>
                     row.pending ? (
                       <Space size={6}>
                         <code>{v}</code>
@@ -180,6 +228,23 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
                   title: t(Localization.Admin.Plugins.descriptionColumnHeader),
                   dataIndex: 'description',
                   key: 'description',
+                  render: (v: string, row: { allowedHosts?: string[]; pending: boolean }) =>
+                    row.allowedHosts && row.allowedHosts.length > 0 ? (
+                      <Space direction="vertical" size={4}>
+                        <span>{v}</span>
+                        <span>
+                          {t(Localization.Admin.Plugins.allowedHostsLabel)}{' '}
+                          {row.allowedHosts.map((host, idx) => (
+                            <React.Fragment key={host}>
+                              {idx > 0 && ', '}
+                              <code>{host}</code>
+                            </React.Fragment>
+                          ))}
+                        </span>
+                      </Space>
+                    ) : (
+                      v
+                    ),
                 },
               ]}
             />
@@ -215,7 +280,29 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
     [uniquePages, plugin.name],
   );
 
-  const tabs = useMemo(() => [...pageTabs, permissionsTab], [pageTabs, permissionsTab]);
+  const instructionsTab = useMemo(
+    () =>
+      plugin.hasInstructions
+        ? {
+            key: '__instructions',
+            label: (
+              <span>
+                <FileTextOutlined /> {t(Localization.Admin.Plugins.instructionsTab)}
+              </span>
+            ),
+            children: <PluginInstructions slug={plugin.slug} />,
+          }
+        : null,
+    [plugin.hasInstructions, plugin.slug, t],
+  );
+
+  const tabs = useMemo(() => {
+    const base = [...pageTabs, permissionsTab];
+    // Instructions sits as the second tab: after the first admin page (or
+    // after Permissions when the plugin declares no admin pages), so the
+    // primary page stays the landing tab.
+    return instructionsTab ? [base[0], instructionsTab, ...base.slice(1)] : base;
+  }, [instructionsTab, pageTabs, permissionsTab]);
 
   return (
     <div>

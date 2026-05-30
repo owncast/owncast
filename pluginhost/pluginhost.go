@@ -1,10 +1,12 @@
 package pluginhost
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -142,6 +144,96 @@ func (p *Host) Actions() []models.ExternalAction {
 	return out
 }
 
+// StylesContent returns the concatenated CSS bytes contributed by
+// every currently-loaded plugin. Each plugin's manifest.styles files
+// are read from the plugin's AssetsFS (the static-asset root inside
+// the ocpkg) and joined with delimiter comments naming the source
+// plugin, so devtools "view source" still attributes a rule to the
+// plugin that shipped it. The bytes are folded into the existing
+// customStyles config field at request time, so the viewer page
+// renders a single inline <style> block instead of one <link> tag
+// per plugin asset. Disabled or not-loaded plugins contribute
+// nothing.
+func (p *Host) StylesContent() []byte {
+	return p.readManifestAssets(
+		func(m *plugins.Manifest) []string { return m.Styles },
+		"/* plugin: %s — %s */\n",
+	)
+}
+
+// ScriptsContent mirrors StylesContent for manifest.scripts: returns
+// the concatenated JavaScript bytes contributed by every loaded
+// plugin, with `// plugin: <slug>` delimiters between contributions.
+// Appended to the admin's customJavascript by the /customjavascript
+// handler so the viewer page loads one script tag for both sources.
+func (p *Host) ScriptsContent() []byte {
+	return p.readManifestAssets(
+		func(m *plugins.Manifest) []string { return m.Scripts },
+		"// plugin: %s — %s\n",
+	)
+}
+
+// PageContent returns the concatenated HTML bytes contributed by
+// every loaded plugin's manifest.extraPageContent file, each preceded
+// by an `<!-- plugin: <slug> ... -->` delimiter for in-page
+// attribution. The /api/config handler prepends these bytes to the
+// admin's rendered extraPageContent so plugin HTML lands at the top
+// of the extra-content block. Markdown rendering is skipped for
+// plugin HTML so the markdown processor can't mangle it.
+func (p *Host) PageContent() []byte {
+	return p.readManifestAssets(
+		func(m *plugins.Manifest) []string {
+			if m.ExtraPageContent == "" {
+				return nil
+			}
+			return []string{m.ExtraPageContent}
+		},
+		"<!-- plugin: %s — %s -->\n",
+	)
+}
+
+// readManifestAssets walks every loaded plugin, calls pick() to get
+// the manifest entries to include (Styles or Scripts), and reads each
+// file from the plugin's AssetsFS. delimiter is a Printf format
+// taking (slug, relPath) used as a per-contribution header. Files
+// that can't be read are skipped (logged) so a broken asset doesn't
+// take down the rest of the bundle.
+//
+// The manifest entries arrive as rewritten plugin-namespace URLs
+// (e.g. "/plugins/styles-demo/theme.css"); the file inside the
+// AssetsFS lives at the path beneath the plugin prefix
+// ("theme.css"), so the lookup is a prefix strip.
+func (p *Host) readManifestAssets(pick func(*plugins.Manifest) []string, delimiter string) []byte {
+	if p == nil || p.manager == nil {
+		return nil
+	}
+	var buf bytes.Buffer
+	for _, l := range p.manager.Snapshot() {
+		if l == nil || l.Manifest == nil || l.AssetsFS == nil {
+			continue
+		}
+		entries := pick(l.Manifest)
+		if len(entries) == 0 {
+			continue
+		}
+		pluginPrefix := "/plugins/" + l.Manifest.Slug + "/"
+		for _, entry := range entries {
+			relPath := strings.TrimPrefix(entry, pluginPrefix)
+			data, err := fs.ReadFile(l.AssetsFS, relPath)
+			if err != nil {
+				log.Warnf("plugin %s: skipping asset %s: %v", l.Manifest.Slug, relPath, err)
+				continue
+			}
+			fmt.Fprintf(&buf, delimiter, l.Manifest.Slug, relPath)
+			buf.Write(data)
+			if len(data) > 0 && data[len(data)-1] != '\n' {
+				buf.WriteByte('\n')
+			}
+		}
+	}
+	return buf.Bytes()
+}
+
 // actionsForPlugin returns the plugin's manifest action list with any
 // runtime additions appended. Kept separate so Actions() reads cleanly
 // and the append logic can be tested independently.
@@ -221,6 +313,7 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 //
 //	GET  /api/admin/plugins                       list discovered plugins (admin)
 //	POST /api/admin/plugins/<name>/enable|disable|reload  toggle a plugin (admin)
+//	GET  /api/admin/plugins/<name>/instructions   bundled INSTRUCTIONS.md markdown (admin)
 //	GET  /api/plugins/actions                     merged action-button list (public)
 //
 // It's mounted by the router on the outer mux so it sits beside, not inside,
@@ -355,13 +448,39 @@ func logPluginSummary(entries []plugins.DiscoveredEntry) {
 // The URL segment is the plugin's slug, not its display name; Manager
 // keys every operation on slug.
 func (p *Host) handlePluginAction(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
 	slug, action, ok := strings.Cut(strings.TrimPrefix(r.URL.Path, "/api/admin/plugins/"), "/")
 	if !ok || slug == "" || action == "" {
 		http.Error(w, "expected /<slug>/<action>", http.StatusBadRequest)
+		return
+	}
+
+	// GET /api/admin/plugins/<slug>/instructions serves the bundled
+	// INSTRUCTIONS.md as raw markdown; the admin UI renders it in a details
+	// tab. Read fresh from disk on each request so a swapped file shows up
+	// without reloading the plugin.
+	if action == "instructions" {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		data, err := p.manager.InstructionsBytes(slug)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/markdown; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-cache")
+		// gosec G705 (XSS via taint): the route is admin-authenticated,
+		// the response Content-Type is text/markdown (not text/html), and
+		// the bytes are the admin's own uploaded INSTRUCTIONS.md content.
+		// The admin UI renders them through ReactMarkdown, which sanitizes
+		// before insertion.
+		_, _ = w.Write(data) //nolint:gosec // G705
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	err, known := p.dispatchPluginAction(r.Context(), slug, action)

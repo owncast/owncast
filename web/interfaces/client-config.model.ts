@@ -11,6 +11,10 @@ export interface ClientConfig {
   chatDisabled: boolean;
   chatRequireAuthentication: boolean;
   externalActions: any[];
+  // customStyles is the admin's CSS plus the concatenated content of
+  // every loaded plugin's manifest.styles entries (the host
+  // pre-merges them server-side). Theme.tsx renders this as one
+  // inline <style> block.
   customStyles: string;
   appearanceVariables: Map<string, string>;
   maxSocketPayloadSize: number;

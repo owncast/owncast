@@ -200,55 +200,55 @@ export const PluginsList = ({
     {
       title: '',
       key: 'actions',
-      render: (_: unknown, plugin: Plugin) => {
-        const hasAdminPages = (plugin.adminPages?.length ?? 0) > 0;
-        return (
-          <Space>
-            <Tooltip title={t(Localization.Admin.Plugins.reloadTooltip)}>
+      render: (_: unknown, plugin: Plugin) => (
+        <Space>
+          <Tooltip title={t(Localization.Admin.Plugins.reloadTooltip)}>
+            <Button
+              icon={<ReloadOutlined />}
+              loading={reloadingNames.has(plugin.slug)}
+              onClick={() => onReload(plugin)}
+              disabled={!plugin.enabled}
+            />
+          </Tooltip>
+          {/*
+              Every plugin has a details page now (permissions tab, plus an
+              instructions tab and any admin-page tabs the manifest declares),
+              so the details button is always shown.
+            */}
+          <Tooltip title={t(Localization.Admin.Plugins.openPluginAdmin)}>
+            <Button icon={<AppstoreOutlined />} onClick={() => onSelect(plugin)}>
+              {t(Localization.Admin.Plugins.configure)}
+            </Button>
+          </Tooltip>
+          <Popconfirm
+            title={
+              <div className={s.uninstallPrompt}>
+                <div className={s.uninstallPromptTitle}>
+                  {t(Localization.Admin.Plugins.uninstallConfirmTitle)}
+                </div>
+                <div className={s.uninstallPromptDescription}>
+                  {t(Localization.Admin.Plugins.uninstallConfirmDescription, {
+                    name: plugin.name,
+                  })}
+                </div>
+              </div>
+            }
+            okText={t(Localization.Admin.Plugins.uninstallConfirmOk)}
+            cancelText={t(Localization.Admin.Plugins.uninstallConfirmCancel)}
+            okButtonProps={{ danger: true }}
+            onConfirm={() => onUninstall(plugin)}
+          >
+            <Tooltip title={t(Localization.Admin.Plugins.uninstallTooltip)}>
               <Button
-                icon={<ReloadOutlined />}
-                loading={reloadingNames.has(plugin.slug)}
-                onClick={() => onReload(plugin)}
-                disabled={!plugin.enabled}
+                danger
+                icon={<DeleteOutlined />}
+                loading={uninstallingNames.has(plugin.slug)}
+                aria-label={t(Localization.Admin.Plugins.uninstallAria, { name: plugin.name })}
               />
             </Tooltip>
-            {hasAdminPages && (
-              <Tooltip title={t(Localization.Admin.Plugins.openPluginAdmin)}>
-                <Button icon={<AppstoreOutlined />} onClick={() => onSelect(plugin)}>
-                  {t(Localization.Admin.Plugins.configure)}
-                </Button>
-              </Tooltip>
-            )}
-            <Popconfirm
-              title={
-                <div className={s.uninstallPrompt}>
-                  <div className={s.uninstallPromptTitle}>
-                    {t(Localization.Admin.Plugins.uninstallConfirmTitle)}
-                  </div>
-                  <div className={s.uninstallPromptDescription}>
-                    {t(Localization.Admin.Plugins.uninstallConfirmDescription, {
-                      name: plugin.name,
-                    })}
-                  </div>
-                </div>
-              }
-              okText={t(Localization.Admin.Plugins.uninstallConfirmOk)}
-              cancelText={t(Localization.Admin.Plugins.uninstallConfirmCancel)}
-              okButtonProps={{ danger: true }}
-              onConfirm={() => onUninstall(plugin)}
-            >
-              <Tooltip title={t(Localization.Admin.Plugins.uninstallTooltip)}>
-                <Button
-                  danger
-                  icon={<DeleteOutlined />}
-                  loading={uninstallingNames.has(plugin.slug)}
-                  aria-label={t(Localization.Admin.Plugins.uninstallAria, { name: plugin.name })}
-                />
-              </Tooltip>
-            </Popconfirm>
-          </Space>
-        );
-      },
+          </Popconfirm>
+        </Space>
+      ),
     },
   ];
 

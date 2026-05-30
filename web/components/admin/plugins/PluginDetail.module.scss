@@ -23,3 +23,17 @@
   border: none;
   background: transparent;
 }
+
+// Rendered markdown of a plugin's INSTRUCTIONS.md. Constrain the line
+// length for readability and let headings/lists use their default flow.
+.instructions {
+  max-width: 760px;
+
+  img {
+    max-width: 100%;
+  }
+
+  pre {
+    overflow-x: auto;
+  }
+}

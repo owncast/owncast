@@ -10,12 +10,16 @@ import (
 	"strings"
 )
 
-// The .ocpkg ("Owncast plugin package") format is a zip archive with three
+// The .ocpkg ("Owncast plugin package") format is a zip archive with four
 // well-known entries:
 //
-//	plugin.manifest.json    — required; the sidecar manifest
-//	plugin.wasm             — required; the compiled plugin module
-//	assets/...              — optional; static files served at /plugins/<name>/
+//	plugin.manifest.json    required, the sidecar manifest
+//	plugin.wasm             required, the compiled plugin module
+//	public/...              optional, files served at /plugins/<name>/<path>
+//	assets/...              optional, files the host reads internally for
+//	                        manifest fields that inline content
+//	                        (styles, scripts, extraPageContent); never
+//	                        reachable through the plugin's URL space.
 //
 // File names inside the archive are canonical regardless of the plugin's name
 // so the host doesn't have to read the manifest to discover the wasm path.
@@ -24,6 +28,7 @@ const (
 	packageSuffix       = ".ocpkg"
 	pkgManifestFilename = "plugin.manifest.json"
 	pkgWasmFilename     = "plugin.wasm"
+	pkgPublicPrefix     = "public/"
 	pkgAssetsPrefix     = "assets/"
 )
 
@@ -64,13 +69,19 @@ func LoadPackage(ctx context.Context, env *HostEnv, path string) (*Loaded, error
 	loaded.WasmPath = path
 	loaded.pkgCloser = zr
 
-	// Mount assets/ as the plugin's static-asset root, if present. fs.Sub
-	// returns an FS that's empty (rather than failing) when the prefix
-	// doesn't exist, so we check first to keep the nil-means-no-assets
-	// invariant the Server relies on.
+	// Mount public/ as the plugin's web-served root and assets/ as
+	// the internal-only root, when each is present. fs.Sub returns
+	// an FS that's empty (rather than failing) when the prefix
+	// doesn't exist, so we check first to keep the nil-means-empty
+	// invariant the Server (PublicFS) and the manifest-asset reader
+	// (AssetsFS) rely on.
+	if hasZipDir(&zr.Reader, pkgPublicPrefix) {
+		if sub, err := fs.Sub(&zr.Reader, strings.TrimSuffix(pkgPublicPrefix, "/")); err == nil {
+			loaded.PublicFS = sub
+		}
+	}
 	if hasZipDir(&zr.Reader, pkgAssetsPrefix) {
-		sub, err := fs.Sub(&zr.Reader, strings.TrimSuffix(pkgAssetsPrefix, "/"))
-		if err == nil {
+		if sub, err := fs.Sub(&zr.Reader, strings.TrimSuffix(pkgAssetsPrefix, "/")); err == nil {
 			loaded.AssetsFS = sub
 		}
 	}

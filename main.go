@@ -363,8 +363,14 @@ func main() {
 	})
 
 	var pluginActions func() []models.ExternalAction
+	var pluginCSSContent func() []byte
+	var pluginJSContent func() []byte
+	var pluginPageContent func() []byte
 	if pluginHostInstance != nil {
 		pluginActions = pluginHostInstance.Actions
+		pluginCSSContent = pluginHostInstance.StylesContent
+		pluginJSContent = pluginHostInstance.ScriptsContent
+		pluginPageContent = pluginHostInstance.PageContent
 	}
 
 	h := handlers.NewHandlers(handlers.Deps{
@@ -387,6 +393,9 @@ func main() {
 		APBuilder:               apBuilder,
 		Config:                  cfg,
 		PluginActions:           pluginActions,
+		PluginCSSContent:        pluginCSSContent,
+		PluginJSContent:         pluginJSContent,
+		PluginPageContent:       pluginPageContent,
 	})
 
 	// Stage 10: serve. Blocks until shutdown.

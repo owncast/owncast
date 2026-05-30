@@ -71,6 +71,8 @@ export const pluginActionUrl = (
   slug: string,
   action: 'enable' | 'disable' | 'reload' | 'uninstall',
 ) => `/api/admin/plugins/${encodeURIComponent(slug)}/${action}`;
+export const pluginInstructionsUrl = (slug: string) =>
+  `/api/admin/plugins/${encodeURIComponent(slug)}/instructions`;
 
 // Upload a new custom emoji
 export const UPLOAD_EMOJI = `${API_LOCATION}emoji/upload`;
@@ -161,6 +163,33 @@ export async function fetchData(url: string, options?: FetchOptions) {
     throw new Error(message);
   }
   return json;
+}
+
+// fetchText mirrors fetchData's admin auth handling but returns the raw
+// response body as text instead of parsing JSON. Used for endpoints that
+// serve plain text/markdown (e.g. a plugin's INSTRUCTIONS.md).
+export async function fetchText(url: string, options?: FetchOptions) {
+  const { method = 'GET', auth = true } = options || {};
+
+  // eslint-disable-next-line no-undef
+  const requestOptions: RequestInit = {
+    method,
+  };
+
+  if (auth && ADMIN_USERNAME && ADMIN_STREAMKEY) {
+    const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
+    requestOptions.headers = {
+      Authorization: `Basic ${encoded}`,
+    };
+    requestOptions.mode = 'cors';
+    requestOptions.credentials = 'include';
+  }
+
+  const response = await fetch(url, requestOptions);
+  if (!response.ok) {
+    throw new Error(`An error has occurred: ${response.status}`);
+  }
+  return response.text();
 }
 
 export async function getUnauthedData(url: string, options?: FetchOptions) {

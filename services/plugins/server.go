@@ -16,7 +16,7 @@ import (
 )
 
 // Server is an http.Handler that serves /plugins/<name>/* — first by
-// looking for a static asset on the plugin's AssetsFS, then falling through
+// looking for a static asset on the plugin's PublicFS, then falling through
 // to the plugin's on_http_request wasm export. Plugins without the
 // http.serve permission produce 404 regardless.
 //
@@ -162,8 +162,8 @@ func isAllowedResponseHeader(name string) bool {
 
 // NewServer constructs an HTTP handler over a fixed plugin set. Used in
 // tests and any context where the plugin set doesn't change after
-// construction. Each plugin's AssetsFS is used for static asset serving;
-// plugins with nil AssetsFS just don't serve static files.
+// construction. Each plugin's PublicFS is used for static asset serving;
+// plugins with nil PublicFS just don't serve static files.
 func NewServer(loaded []*Loaded) *Server {
 	snap := loaded
 	return &Server{snapshot: func() []*Loaded { return snap }}
@@ -345,7 +345,7 @@ func (s *Server) tryStatic(w http.ResponseWriter, r *http.Request, loaded *Loade
 	if r.Method != http.MethodGet && r.Method != http.MethodHead {
 		return false
 	}
-	if loaded.AssetsFS == nil {
+	if loaded.PublicFS == nil {
 		return false
 	}
 
@@ -360,13 +360,13 @@ func (s *Server) tryStatic(w http.ResponseWriter, r *http.Request, loaded *Loade
 		return false
 	}
 
-	info, err := fs.Stat(loaded.AssetsFS, cleaned)
+	info, err := fs.Stat(loaded.PublicFS, cleaned)
 	if err != nil {
 		return false
 	}
 	if info.IsDir() {
 		indexPath := path.Join(cleaned, "index.html")
-		idx, err := fs.Stat(loaded.AssetsFS, indexPath)
+		idx, err := fs.Stat(loaded.PublicFS, indexPath)
 		if err != nil || idx.IsDir() {
 			return false
 		}
@@ -381,10 +381,10 @@ func (s *Server) tryStatic(w http.ResponseWriter, r *http.Request, loaded *Loade
 			http.Redirect(w, r, r.URL.Path+"/", http.StatusMovedPermanently) //nolint:gosec // G710
 			return true
 		}
-		serveAssetFile(w, r, loaded.AssetsFS, indexPath, idx, injectStyles)
+		serveAssetFile(w, r, loaded.PublicFS, indexPath, idx, injectStyles)
 		return true
 	}
-	serveAssetFile(w, r, loaded.AssetsFS, cleaned, info, injectStyles)
+	serveAssetFile(w, r, loaded.PublicFS, cleaned, info, injectStyles)
 	return true
 }
 

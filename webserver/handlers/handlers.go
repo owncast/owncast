@@ -61,6 +61,26 @@ type Handlers struct {
 	// (boot disabled or failed).
 	pluginActions func() []models.ExternalAction
 
+	// pluginCSSContent, when non-nil, returns the concatenated CSS
+	// bytes contributed by loaded plugins that declared `styles` in
+	// their manifest. /api/config appends these bytes to the admin's
+	// customStyles so the viewer renders one inline <style> block
+	// covering both sources. nil = no plugin host.
+	pluginCSSContent func() []byte
+
+	// pluginJSContent mirrors pluginCSSContent for JavaScript: the
+	// concatenated JS bytes contributed by loaded plugins. The
+	// /customjavascript handler appends these to the admin's
+	// customJavascript so the viewer loads one <script> tag covering
+	// both sources.
+	pluginJSContent func() []byte
+
+	// pluginPageContent returns the concatenated HTML bytes
+	// contributed by loaded plugins via manifest.extraPageContent.
+	// /api/config prepends these bytes to the admin's rendered
+	// extraPageContent.
+	pluginPageContent func() []byte
+
 	// previewThumbCache caches thumbnail/preview bytes for a short window
 	// so frequent polling from chat clients doesn't re-read the file
 	// every request.
@@ -97,6 +117,19 @@ type Deps struct {
 	// contributed by loaded plugins. Wired by main.go to the plugin host's
 	// Actions() method; nil when the plugin host is disabled.
 	PluginActions func() []models.ExternalAction
+	// PluginCSSContent is an optional getter that returns the
+	// concatenated CSS bytes contributed by loaded plugins. Wired by
+	// main.go to the plugin host's StylesContent() method; nil when
+	// the plugin host is disabled.
+	PluginCSSContent func() []byte
+	// PluginJSContent mirrors PluginCSSContent for JavaScript: the
+	// concatenated JS bytes contributed by loaded plugins. Wired to
+	// the plugin host's ScriptsContent() method.
+	PluginJSContent func() []byte
+	// PluginPageContent returns the concatenated HTML bytes from
+	// each loaded plugin's manifest.extraPageContent. Wired to the
+	// plugin host's PageContent() method.
+	PluginPageContent func() []byte
 }
 
 // HandleWebsocketConnection routes the /ws websocket upgrade to the
@@ -128,6 +161,9 @@ func NewHandlers(deps Deps) *Handlers {
 		apBuilder:               deps.APBuilder,
 		cfg:                     deps.Config,
 		pluginActions:           deps.PluginActions,
+		pluginCSSContent:        deps.PluginCSSContent,
+		pluginJSContent:         deps.PluginJSContent,
+		pluginPageContent:       deps.PluginPageContent,
 		previewThumbCache: ttlcache.New(
 			ttlcache.WithTTL[string, []byte](15),
 			ttlcache.WithCapacity[string, []byte](1),

@@ -16,8 +16,14 @@ import (
 )
 
 type webConfigResponse struct {
-	AppearanceVariables        map[string]string            `json:"appearanceVariables"`
-	Name                       string                       `json:"name"`
+	AppearanceVariables map[string]string `json:"appearanceVariables"`
+	Name                string            `json:"name"`
+	// CustomStyles is the admin-configured CSS plus the concatenated
+	// content of every loaded plugin's manifest.styles entries (each
+	// preceded by a `/* plugin: <slug> ... */` delimiter for
+	// devtools attribution). The viewer renders this as one inline
+	// <style> block so plugins can theme the page without each plugin
+	// needing its own <link> tag.
 	CustomStyles               string                       `json:"customStyles"`
 	StreamTitle                string                       `json:"streamTitle,omitempty"` // What's going on with the current stream
 	OfflineMessage             string                       `json:"offlineMessage"`
@@ -75,6 +81,7 @@ func (h *Handlers) GetWebConfig(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) getConfigResponse() webConfigResponse {
 	configRepository := h.configRepository
 	pageContent := utils.RenderPageContentMarkdown(configRepository.GetExtraPageBodyContent())
+	pageContent = prependPluginPageContent(pageContent, h.pluginPageContent)
 	offlineMessage := utils.RenderSimpleMarkdown(configRepository.GetCustomOfflineMessage())
 	socialHandles := configRepository.GetSocialHandles()
 	for i, handle := range socialHandles {
@@ -136,7 +143,7 @@ func (h *Handlers) getConfigResponse() webConfigResponse {
 		ChatSpamProtectionDisabled: configRepository.GetChatSpamProtectionEnabled(),
 		ChatRequireAuthentication:  configRepository.GetChatRequireAuthentication(),
 		ExternalActions:            mergePluginActions(configRepository.GetExternalActions(), h.pluginActions),
-		CustomStyles:               configRepository.GetCustomStyles(),
+		CustomStyles:               mergePluginCSS(configRepository.GetCustomStyles(), h.pluginCSSContent),
 		MaxSocketPayloadSize:       config.MaxSocketPayloadSize,
 		Federation:                 federationResponse,
 		Notifications:              notificationsResponse,
@@ -144,6 +151,53 @@ func (h *Handlers) getConfigResponse() webConfigResponse {
 		AppearanceVariables:        configRepository.GetCustomColorVariableValues(),
 		HideViewerCount:            configRepository.GetHideViewerCount(),
 	}
+}
+
+// prependPluginPageContent puts plugin-contributed HTML in front of
+// the admin's rendered extraPageContent. Plugin HTML lands at the top
+// of the extra-content block so plugins can announce themselves above
+// the admin's prose. A nil getter or empty contribution leaves the
+// admin's value untouched. A newline separates the two sources so
+// the trailing markup of one can't run into the next.
+func prependPluginPageContent(admin string, pluginHTML func() []byte) string {
+	if pluginHTML == nil {
+		return admin
+	}
+	bytes := pluginHTML()
+	if len(bytes) == 0 {
+		return admin
+	}
+	prefix := string(bytes)
+	if admin == "" {
+		return prefix
+	}
+	if prefix[len(prefix)-1] != '\n' {
+		prefix += "\n"
+	}
+	return prefix + admin
+}
+
+// mergePluginCSS appends plugin-contributed CSS bytes to the admin's
+// custom CSS so the viewer renders one inline <style> block covering
+// both. A nil getter (no plugin host) or empty contribution leaves
+// the admin's value untouched. A newline separates the two sources
+// so a stylesheet that doesn't terminate in one can't trail into the
+// plugin block.
+func mergePluginCSS(admin string, pluginCSS func() []byte) string {
+	if pluginCSS == nil {
+		return admin
+	}
+	bytes := pluginCSS()
+	if len(bytes) == 0 {
+		return admin
+	}
+	if admin == "" {
+		return string(bytes)
+	}
+	if admin[len(admin)-1] != '\n' {
+		admin += "\n"
+	}
+	return admin + string(bytes)
 }
 
 // mergePluginActions appends plugin-contributed action buttons to the

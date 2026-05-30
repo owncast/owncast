@@ -229,3 +229,90 @@ func TestReadZipFile_Missing(t *testing.T) {
 		t.Error("expected error for missing entry, got nil")
 	}
 }
+
+func TestHasPluginInstructions_Package(t *testing.T) {
+	with := buildPkg(t, map[string][]byte{
+		pkgManifestFilename:        validManifestBytes(),
+		pkgWasmFilename:            {0x00},
+		PluginInstructionsFilename: []byte("# Hello"),
+	})
+	if !hasPluginInstructions(with) {
+		t.Error("expected hasPluginInstructions=true for package with INSTRUCTIONS.md")
+	}
+
+	without := buildPkg(t, map[string][]byte{
+		pkgManifestFilename: validManifestBytes(),
+		pkgWasmFilename:     {0x00},
+	})
+	if hasPluginInstructions(without) {
+		t.Error("expected hasPluginInstructions=false for package without INSTRUCTIONS.md")
+	}
+}
+
+func TestHasPluginInstructions_LooseFiles(t *testing.T) {
+	dir := t.TempDir()
+	wasmPath := filepath.Join(dir, "demo.wasm")
+	if err := os.WriteFile(wasmPath, []byte{0x00}, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if hasPluginInstructions(wasmPath) {
+		t.Error("expected false when sibling INSTRUCTIONS.md absent")
+	}
+	if err := os.WriteFile(filepath.Join(dir, "demo."+PluginInstructionsFilename), []byte("# hi"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if !hasPluginInstructions(wasmPath) {
+		t.Error("expected true when sibling <base>.INSTRUCTIONS.md present")
+	}
+}
+
+func TestInstructionsBytes_Package(t *testing.T) {
+	body := []byte("# Setup\n\nDo the thing.")
+	path := buildPkg(t, map[string][]byte{
+		pkgManifestFilename:        validManifestBytes(),
+		pkgWasmFilename:            {0x00},
+		PluginInstructionsFilename: body,
+	})
+
+	mgr := NewManager(filepath.Dir(path), &HostEnv{})
+	if err := mgr.scan(context.Background()); err != nil {
+		t.Fatalf("scan: %v", err)
+	}
+
+	entries := mgr.List()
+	if len(entries) != 1 {
+		t.Fatalf("expected 1 discovered, got %d", len(entries))
+	}
+	if !entries[0].HasInstructions {
+		t.Error("expected HasInstructions=true in discovered entry")
+	}
+
+	got, err := mgr.InstructionsBytes("hello-world")
+	if err != nil {
+		t.Fatalf("InstructionsBytes: %v", err)
+	}
+	if !bytes.Equal(got, body) {
+		t.Errorf("instructions: got %q want %q", got, body)
+	}
+}
+
+func TestInstructionsBytes_NoInstructions(t *testing.T) {
+	path := buildPkg(t, map[string][]byte{
+		pkgManifestFilename: validManifestBytes(),
+		pkgWasmFilename:     {0x00},
+	})
+	mgr := NewManager(filepath.Dir(path), &HostEnv{})
+	if err := mgr.scan(context.Background()); err != nil {
+		t.Fatalf("scan: %v", err)
+	}
+	if _, err := mgr.InstructionsBytes("hello-world"); err == nil {
+		t.Error("expected error for plugin without instructions")
+	}
+}
+
+func TestInstructionsBytes_NotDiscovered(t *testing.T) {
+	mgr := NewManager(t.TempDir(), &HostEnv{})
+	if _, err := mgr.InstructionsBytes("ghost"); err == nil {
+		t.Error("expected error for undiscovered plugin")
+	}
+}

@@ -280,7 +280,7 @@ const Plugins = () => {
       onReload={handleReload}
       onUninstall={handleUninstall}
       onUpdate={(plugin, version) => installFromRegistry(plugin.slug, version)}
-      onSelect={p => router.push({ pathname: '/admin/plugins/configure', query: { slug: p.slug } })}
+      onSelect={p => router.push({ pathname: '/admin/plugins/configure', query: { id: p.slug } })}
     />
   );
 

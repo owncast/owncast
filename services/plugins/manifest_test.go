@@ -400,6 +400,266 @@ func TestParseManifest_UIModify_NotRequiredWhenNoUI(t *testing.T) {
 	}
 }
 
+func TestParseManifest_Styles_RewritesRelativePaths(t *testing.T) {
+	m, err := ParseManifest([]byte(`{
+		"api": "1", "name": "styled", "version": "1.0",
+		"permissions": ["ui.modify", "http.serve"],
+		"styles": ["theme.css", "/extra.css", "/plugins/styled/another.css"]
+	}`))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	want := []string{"/plugins/styled/theme.css", "/plugins/styled/extra.css", "/plugins/styled/another.css"}
+	if len(m.Styles) != len(want) {
+		t.Fatalf("styles count: got %v want %v", m.Styles, want)
+	}
+	for i, w := range want {
+		if m.Styles[i] != w {
+			t.Errorf("styles[%d] = %q, want %q", i, m.Styles[i], w)
+		}
+	}
+}
+
+func TestParseManifest_Styles_RequiresUIModify(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "styled", "version": "1.0",
+		"permissions": ["http.serve"],
+		"styles": ["theme.css"]
+	}`))
+	if err == nil {
+		t.Fatal("expected error when styles is set without ui.modify")
+	}
+	if !strings.Contains(err.Error(), "ui.modify") {
+		t.Errorf("error should mention ui.modify, got: %v", err)
+	}
+}
+
+func TestParseManifest_Styles_RequiresHttpServe(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "styled", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"styles": ["theme.css"]
+	}`))
+	if err == nil {
+		t.Fatal("expected error when styles is set without http.serve")
+	}
+	if !strings.Contains(err.Error(), "http.serve") {
+		t.Errorf("error should mention http.serve, got: %v", err)
+	}
+}
+
+func TestParseManifest_Styles_RejectsCrossPluginPath(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "styled", "version": "1.0",
+		"permissions": ["ui.modify", "http.serve"],
+		"styles": ["/plugins/some-other-plugin/theme.css"]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: cross-plugin style path")
+	}
+	if !strings.Contains(err.Error(), "another plugin's namespace") {
+		t.Errorf("error should call out cross-plugin path, got: %v", err)
+	}
+}
+
+func TestParseManifest_Styles_RejectsAbsoluteURL(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "styled", "version": "1.0",
+		"permissions": ["ui.modify", "http.serve"],
+		"styles": ["https://fonts.example.com/theme.css"]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: absolute URLs rejected for styles")
+	}
+	if !strings.Contains(err.Error(), "absolute URL") {
+		t.Errorf("error should call out absolute URL, got: %v", err)
+	}
+}
+
+func TestParseManifest_Styles_RejectsNonCssExtension(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "styled", "version": "1.0",
+		"permissions": ["ui.modify", "http.serve"],
+		"styles": ["theme.scss"]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: only .css extension allowed")
+	}
+	if !strings.Contains(err.Error(), ".css") {
+		t.Errorf("error should call out .css, got: %v", err)
+	}
+}
+
+func TestParseManifest_Scripts_RewritesRelativePaths(t *testing.T) {
+	m, err := ParseManifest([]byte(`{
+		"api": "1", "name": "scripted", "version": "1.0",
+		"permissions": ["ui.modify", "http.serve"],
+		"scripts": ["client.js", "/extra.js", "/plugins/scripted/another.js"]
+	}`))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	want := []string{"/plugins/scripted/client.js", "/plugins/scripted/extra.js", "/plugins/scripted/another.js"}
+	if len(m.Scripts) != len(want) {
+		t.Fatalf("scripts count: got %v want %v", m.Scripts, want)
+	}
+	for i, w := range want {
+		if m.Scripts[i] != w {
+			t.Errorf("scripts[%d] = %q, want %q", i, m.Scripts[i], w)
+		}
+	}
+}
+
+func TestParseManifest_Scripts_RequiresUIModify(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "scripted", "version": "1.0",
+		"permissions": ["http.serve"],
+		"scripts": ["client.js"]
+	}`))
+	if err == nil {
+		t.Fatal("expected error when scripts is set without ui.modify")
+	}
+	if !strings.Contains(err.Error(), "ui.modify") {
+		t.Errorf("error should mention ui.modify, got: %v", err)
+	}
+}
+
+func TestParseManifest_Scripts_RequiresHttpServe(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "scripted", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"scripts": ["client.js"]
+	}`))
+	if err == nil {
+		t.Fatal("expected error when scripts is set without http.serve")
+	}
+	if !strings.Contains(err.Error(), "http.serve") {
+		t.Errorf("error should mention http.serve, got: %v", err)
+	}
+}
+
+func TestParseManifest_Scripts_RejectsCrossPluginPath(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "scripted", "version": "1.0",
+		"permissions": ["ui.modify", "http.serve"],
+		"scripts": ["/plugins/some-other-plugin/client.js"]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: cross-plugin script path")
+	}
+	if !strings.Contains(err.Error(), "another plugin's namespace") {
+		t.Errorf("error should call out cross-plugin path, got: %v", err)
+	}
+}
+
+func TestParseManifest_Scripts_RejectsAbsoluteURL(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "scripted", "version": "1.0",
+		"permissions": ["ui.modify", "http.serve"],
+		"scripts": ["https://cdn.example.com/client.js"]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: absolute URLs rejected for scripts")
+	}
+	if !strings.Contains(err.Error(), "absolute URL") {
+		t.Errorf("error should call out absolute URL, got: %v", err)
+	}
+}
+
+func TestParseManifest_Scripts_RejectsNonJsExtension(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "scripted", "version": "1.0",
+		"permissions": ["ui.modify", "http.serve"],
+		"scripts": ["client.ts"]
+	}`))
+	if err == nil {
+		t.Fatal("expected error: only .js extension allowed")
+	}
+	if !strings.Contains(err.Error(), ".js") {
+		t.Errorf("error should call out .js, got: %v", err)
+	}
+}
+
+func TestParseManifest_ExtraPageContent_RewritesRelativePath(t *testing.T) {
+	m, err := ParseManifest([]byte(`{
+		"api": "1", "name": "page", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"extraPageContent": "content.html"
+	}`))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	if m.ExtraPageContent != "/plugins/page/content.html" {
+		t.Errorf("extraPageContent = %q, want /plugins/page/content.html", m.ExtraPageContent)
+	}
+}
+
+func TestParseManifest_ExtraPageContent_DoesNotRequireHttpServe(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "page", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"extraPageContent": "content.html"
+	}`))
+	if err != nil {
+		t.Errorf("extraPageContent should not require http.serve: %v", err)
+	}
+}
+
+func TestParseManifest_ExtraPageContent_RequiresUIModify(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "page", "version": "1.0",
+		"extraPageContent": "content.html"
+	}`))
+	if err == nil {
+		t.Fatal("expected error when extraPageContent is set without ui.modify")
+	}
+	if !strings.Contains(err.Error(), "ui.modify") {
+		t.Errorf("error should mention ui.modify, got: %v", err)
+	}
+}
+
+func TestParseManifest_ExtraPageContent_RejectsCrossPluginPath(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "page", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"extraPageContent": "/plugins/some-other-plugin/content.html"
+	}`))
+	if err == nil {
+		t.Fatal("expected error: cross-plugin extraPageContent path")
+	}
+	if !strings.Contains(err.Error(), "another plugin's namespace") {
+		t.Errorf("error should call out cross-plugin path, got: %v", err)
+	}
+}
+
+func TestParseManifest_ExtraPageContent_RejectsAbsoluteURL(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "page", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"extraPageContent": "https://cdn.example.com/content.html"
+	}`))
+	if err == nil {
+		t.Fatal("expected error: absolute URLs rejected for extraPageContent")
+	}
+	if !strings.Contains(err.Error(), "absolute URL") {
+		t.Errorf("error should call out absolute URL, got: %v", err)
+	}
+}
+
+func TestParseManifest_ExtraPageContent_RejectsNonHtmlExtension(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "page", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"extraPageContent": "content.htm"
+	}`))
+	if err == nil {
+		t.Fatal("expected error: only .html extension allowed")
+	}
+	if !strings.Contains(err.Error(), ".html") {
+		t.Errorf("error should call out .html, got: %v", err)
+	}
+}
+
 func TestParseManifest_Network_AllowedHostsRequiredWithFetch(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "demo", "version": "1.0",

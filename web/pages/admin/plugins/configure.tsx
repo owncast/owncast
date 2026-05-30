@@ -9,15 +9,19 @@ import { PluginDetail } from '../../../components/admin/plugins/PluginDetail';
 import { Localization } from '../../../types/localization';
 import s from './configure.module.scss';
 
-// Per-plugin admin view at /admin/plugins/configure/?slug=<plugin-slug>.
+// Per-plugin admin view at /admin/plugins/configure/?id=<plugin-id>.
+// The `id` query parameter is the plugin's slug (canonical identifier).
+// The URL param is named `id` to keep author/operator-facing surfaces
+// free of the slug jargon; internal code and the manifest still call
+// it slug.
 //
-// Why a query-string route and not a dynamic /admin/plugins/[slug]/ route:
+// Why a query-string route and not a dynamic /admin/plugins/[id]/ route:
 // the admin UI is statically exported (next.config.js sets output: 'export'
-// for non-dev), and plugin slugs are discovered at runtime by the Owncast
-// server. A dynamic Next.js route would either fail the static export or
-// require build-time enumeration we can't provide. A static page with a
-// runtime query param sidesteps both: one HTML file is generated, all
-// plugin-selection logic runs client-side off router.query.
+// for non-dev), and plugin identifiers are discovered at runtime by the
+// Owncast server. A dynamic Next.js route would either fail the static
+// export or require build-time enumeration we can't provide. A static
+// page with a runtime query param sidesteps both: one HTML file is
+// generated, all plugin-selection logic runs client-side off router.query.
 //
 // The plugin list fetch itself primes the admin session cookie as a side
 // effect of the RequireAdminAuth middleware on the host, so by the time
@@ -26,8 +30,8 @@ import s from './configure.module.scss';
 const PluginConfigurePage = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const slugParam = router.query.slug;
-  const slug = typeof slugParam === 'string' ? slugParam : undefined;
+  const idParam = router.query.id;
+  const slug = typeof idParam === 'string' ? idParam : undefined;
 
   const [plugin, setPlugin] = useState<Plugin | null>(null);
   const [loading, setLoading] = useState(true);

@@ -56,6 +56,41 @@ type Manifest struct {
 	Admin         AdminConfig            `json:"admin,omitempty"`
 	Actions       []ActionButton         `json:"actions,omitempty"`
 	Network       NetworkConfig          `json:"network,omitempty"`
+	// Styles is a list of CSS files the plugin contributes to the
+	// viewer page (the public streaming page). Each entry is a path
+	// relative to the plugin's own URL namespace: bare paths like
+	// "theme.css" and "/theme.css" auto-prefix to
+	// /plugins/<slug>/theme.css, fully-qualified plugin paths like
+	// "/plugins/<slug>/theme.css" pass through as-is, and paths in
+	// any other plugin's namespace are rejected. CSS injects into
+	// the global scope, so a plugin author can restyle anything the
+	// viewer page renders. Requires the ui.modify permission and the
+	// plugin must ship the referenced files (typically under
+	// `assets/`) with http.serve declared.
+	Styles []string `json:"styles,omitempty"`
+	// Scripts is a list of JavaScript files the plugin contributes
+	// to the viewer page. Each entry follows the same path rules as
+	// Styles (bare/relative paths auto-prefix to /plugins/<slug>/,
+	// cross-plugin and absolute http(s):// URLs are rejected) and
+	// has to end in .js. Each entry renders as a <script src=...
+	// async> tag on the viewer page, so the code runs in the same
+	// global window context as the viewer chrome. Requires the
+	// ui.modify permission (it's running inside Owncast's chrome)
+	// and http.serve (the host serves the bytes).
+	Scripts []string `json:"scripts,omitempty"`
+	// ExtraPageContent is an HTML file the plugin contributes to the
+	// viewer page's extra-content block. The host reads the file's
+	// bytes and prepends them to the admin's extraPageContent in the
+	// /api/config response (after the admin's markdown is rendered)
+	// so plugin HTML never goes through the markdown processor and
+	// can't be mangled by it. Path rules match styles/scripts (bare
+	// paths auto-prefix to /plugins/<slug>/, cross-plugin and
+	// http(s):// URLs rejected, .html extension required). Only one
+	// file per plugin so the prepended block stays predictable.
+	// Requires ui.modify (the plugin paints inside Owncast's chrome);
+	// http.serve is not required because the HTML is inlined into
+	// the API response, not served as a URL.
+	ExtraPageContent string `json:"extraPageContent,omitempty"`
 }
 
 // BotConfig is the chat-bot-specific configuration for plugins that
@@ -163,7 +198,16 @@ func (m *Manifest) Validate() error {
 	if err := m.validateNetwork(); err != nil {
 		return err
 	}
-	return m.validateActions()
+	if err := m.validateActions(); err != nil {
+		return err
+	}
+	if err := m.validateStyles(); err != nil {
+		return err
+	}
+	if err := m.validateScripts(); err != nil {
+		return err
+	}
+	return m.validateExtraPageContent()
 }
 
 // resolveSlug fills in m.Slug when the author didn't pin one
@@ -316,6 +360,136 @@ func (m *Manifest) validateActions() error {
 		m.Actions[i].Icon = rewritten
 	}
 	return nil
+}
+
+// validateStyles checks manifest.styles entries and rewrites them
+// into absolute plugin-namespace URLs. Rules mirror manifest.actions
+// (relative paths auto-prefix to /plugins/<slug>/, cross-plugin paths
+// rejected, http.serve required since the host serves the bytes), but
+// stricter on the external-URL front: http(s):// targets are rejected
+// outright. Admins reviewing the manifest see every URL that will be
+// injected into their viewer's global CSS scope, so the list should
+// be exhaustive and self-contained. Plugins that need external assets
+// (fonts, etc.) can @import or @font-face them from inside the
+// bundled CSS, which is what the admin reviewed.
+func (m *Manifest) validateStyles() error {
+	if len(m.Styles) == 0 {
+		return nil
+	}
+	if !m.hasPermission(PermUIModify) {
+		return errors.New(
+			"manifest.styles is set but the manifest does not declare " +
+				"the \"ui.modify\" permission; plugins that inject CSS " +
+				"into the viewer's global scope must opt in to ui.modify " +
+				"so it's visible to anyone reviewing the manifest that the " +
+				"plugin restyles Owncast's UI")
+	}
+	if !m.hasPermission(PermHttpServe) {
+		return errors.New(
+			"manifest.styles requires the \"http.serve\" permission so the " +
+				"host can serve the bundled CSS files at /plugins/<slug>/ " +
+				"URLs")
+	}
+	for i, raw := range m.Styles {
+		rewritten, err := rewritePluginAssetPath(m.Slug, raw, ".css")
+		if err != nil {
+			return fmt.Errorf("manifest.styles[%d]: %w", i, err)
+		}
+		m.Styles[i] = rewritten
+	}
+	return nil
+}
+
+// validateScripts checks manifest.scripts entries and rewrites them
+// into absolute plugin-namespace URLs. Same rules as validateStyles
+// applied to .js files: each becomes a <script src=...> on the viewer
+// page, which runs in the chrome's window context. Permission gating
+// matches styles (ui.modify + http.serve) since scripts can manipulate
+// anything the viewer renders.
+func (m *Manifest) validateScripts() error {
+	if len(m.Scripts) == 0 {
+		return nil
+	}
+	if !m.hasPermission(PermUIModify) {
+		return errors.New(
+			"manifest.scripts is set but the manifest does not declare " +
+				"the \"ui.modify\" permission; plugins that inject " +
+				"JavaScript into the viewer page must opt in to ui.modify " +
+				"so it's visible to anyone reviewing the manifest that the " +
+				"plugin runs code inside Owncast's chrome")
+	}
+	if !m.hasPermission(PermHttpServe) {
+		return errors.New(
+			"manifest.scripts requires the \"http.serve\" permission so " +
+				"the host can serve the bundled JavaScript files at " +
+				"/plugins/<slug>/ URLs")
+	}
+	for i, raw := range m.Scripts {
+		rewritten, err := rewritePluginAssetPath(m.Slug, raw, ".js")
+		if err != nil {
+			return fmt.Errorf("manifest.scripts[%d]: %w", i, err)
+		}
+		m.Scripts[i] = rewritten
+	}
+	return nil
+}
+
+// validateExtraPageContent checks manifest.extraPageContent and
+// rewrites it into the plugin's namespace. The file's bytes are
+// inlined into the /api/config extraPageContent response (prepended
+// to the admin's content), not served as a URL, so http.serve is not
+// required, but the same path-shape and extension rules apply for
+// consistency with styles and scripts. ui.modify is required because
+// the contributed HTML lands inside the viewer chrome.
+func (m *Manifest) validateExtraPageContent() error {
+	if m.ExtraPageContent == "" {
+		return nil
+	}
+	if !m.hasPermission(PermUIModify) {
+		return errors.New(
+			"manifest.extraPageContent is set but the manifest does not " +
+				"declare the \"ui.modify\" permission; plugins that inject " +
+				"HTML into the viewer page must opt in to ui.modify so " +
+				"it's visible to anyone reviewing the manifest that the " +
+				"plugin paints inside Owncast's chrome")
+	}
+	rewritten, err := rewritePluginAssetPath(m.Slug, m.ExtraPageContent, ".html")
+	if err != nil {
+		return fmt.Errorf("manifest.extraPageContent: %w", err)
+	}
+	m.ExtraPageContent = rewritten
+	return nil
+}
+
+// rewritePluginAssetPath normalizes a single asset entry from a
+// styles/scripts list into the plugin's /plugins/<slug>/<file>
+// namespace and enforces the extension. Shared by validateStyles and
+// validateScripts because the rules are identical apart from the file
+// extension and the error context the caller wraps around it.
+func rewritePluginAssetPath(slug, raw, requiredExt string) (string, error) {
+	if strings.TrimSpace(raw) == "" {
+		return "", errors.New("entry is empty")
+	}
+	if strings.HasPrefix(raw, "http://") || strings.HasPrefix(raw, "https://") {
+		return "", fmt.Errorf("cannot be an absolute URL (%q); bundle the file under assets/ and reference it by path", raw)
+	}
+	pluginPrefix := "/plugins/" + slug + "/"
+	path := raw
+	switch {
+	case strings.HasPrefix(path, "/plugins/"):
+		// Already-absolute plugin path: must be in our own namespace.
+	case strings.HasPrefix(path, "/"):
+		path = pluginPrefix + strings.TrimPrefix(path, "/")
+	default:
+		path = pluginPrefix + path
+	}
+	if !strings.HasPrefix(path, pluginPrefix) {
+		return "", fmt.Errorf("points at another plugin's namespace: %s", path)
+	}
+	if !strings.HasSuffix(strings.ToLower(path), requiredExt) {
+		return "", fmt.Errorf("must end in %s (got %q)", requiredExt, raw)
+	}
+	return path, nil
 }
 
 // rewriteActionIcon applies the same path-handling rules to a button's
