@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { StreamsTab, StreamsTabProps, FederatedServer } from '../components/ui/StreamsTab/StreamsTab';
+import { StreamsTab, FederatedServer } from '../components/ui/StreamsTab/StreamsTab';
 
 // Mock the Translation component
 jest.mock('../components/ui/Translation/Translation', () => ({
@@ -28,7 +28,7 @@ describe('StreamsTab', () => {
   ];
 
   it('renders loading state', () => {
-    render(<StreamsTab loading={true} />);
+    render(<StreamsTab loading />);
 
     expect(screen.getByText('Loading featured streams...')).toBeInTheDocument();
   });

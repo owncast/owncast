@@ -8,7 +8,28 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	netutils "github.com/owncast/owncast/utils"
 )
+
+// parseAndCheckFederationURL parses a federation URL, requires http or
+// https, and rejects hosts that resolve to internal addresses (loopback or
+// private). The OWNCAST_ALLOW_INTERNAL_FEDERATION env var bypasses the
+// internal-host check for integration tests (same gate used by other AP
+// outbound paths).
+func parseAndCheckFederationURL(raw string) (*url.URL, error) {
+	parsed, err := url.Parse(raw)
+	if err != nil {
+		return nil, fmt.Errorf("invalid URL %q: %w", raw, err)
+	}
+	if parsed.Scheme != "https" && parsed.Scheme != "http" {
+		return nil, fmt.Errorf("URL %q must use http or https protocol", raw)
+	}
+	if netutils.IsHostnameInternal(parsed.Hostname()) {
+		return nil, fmt.Errorf("URL %q resolves to an internal address", raw)
+	}
+	return parsed, nil
+}
 
 // NodeInfoV2 represents the nodeinfo 2.0 response structure.
 type NodeInfoV2 struct {
@@ -27,15 +48,9 @@ type NodeInfoV2 struct {
 
 // FetchNodeInfo fetches the nodeinfo from a given server URL.
 func FetchNodeInfo(serverURL string) (*NodeInfoV2, error) {
-	// Parse and validate the URL
-	parsedURL, err := url.Parse(serverURL)
+	parsedURL, err := parseAndCheckFederationURL(serverURL)
 	if err != nil {
-		return nil, fmt.Errorf("invalid server URL: %w", err)
-	}
-
-	// Ensure we're using HTTPS
-	if parsedURL.Scheme != "https" && parsedURL.Scheme != "http" {
-		return nil, errors.New("server URL must use http or https protocol")
+		return nil, err
 	}
 
 	// First, fetch the well-known nodeinfo endpoint
@@ -83,6 +98,10 @@ func FetchNodeInfo(serverURL string) (*NodeInfoV2, error) {
 
 	if nodeinfoURL == "" {
 		return nil, errors.New("nodeinfo 2.0 URL not found")
+	}
+
+	if _, err := parseAndCheckFederationURL(nodeinfoURL); err != nil {
+		return nil, fmt.Errorf("nodeinfo: %w", err)
 	}
 
 	// Fetch the actual nodeinfo

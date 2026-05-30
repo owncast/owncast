@@ -145,6 +145,10 @@ func TestValidateOwncastServer(t *testing.T) {
 }
 
 func TestFetchNodeInfo(t *testing.T) {
+	// httptest.NewServer binds to a loopback address; opt into the same
+	// integration-test bypass that the AP test scripts use.
+	t.Setenv("OWNCAST_ALLOW_INTERNAL_FEDERATION", "true")
+
 	tests := []struct {
 		name                 string
 		setupServer          func() *httptest.Server
