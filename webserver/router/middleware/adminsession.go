@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -113,16 +114,24 @@ func (m *Middleware) ensureAdminSessionCookie(w http.ResponseWriter, r *http.Req
 	if err != nil {
 		return
 	}
-	// Secure intentionally false: Owncast admin is commonly served over
-	// plain HTTP on a LAN or behind a TLS-terminating proxy. A hard Secure
-	// here would silently break those deployments; HttpOnly + SameSite=Lax
-	// are enough for this cookie's threat model.
-	http.SetCookie(w, &http.Cookie{ //nolint:gosec // G124: see comment
+	// Secure mirrors whether the request itself came in over TLS:
+	// always-on would silently break Owncast admin deployments running
+	// over plain HTTP on a LAN, and always-off downgrades cookie
+	// security on every HTTPS deployment. Reading r.TLS catches direct
+	// HTTPS; checking X-Forwarded-Proto catches the common reverse-proxy
+	// case where TLS terminates upstream.
+	secure := r.TLS != nil || strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https")
+	// gosec G124: Secure is a constant `true`/`false` rather than a
+	// literal, but it's request-scheme-aware (set when TLS is in play,
+	// cleared when the admin is on a LAN HTTP deployment). The linter
+	// can't model that and would force a single hard-coded value.
+	http.SetCookie(w, &http.Cookie{ //nolint:gosec // G124: see comment above
 		Name:     adminSessionCookieName,
 		Value:    token,
 		Path:     "/",
 		MaxAge:   int(adminSessionTTL.Seconds()),
 		HttpOnly: true,
+		Secure:   secure,
 		// SameSite=Lax so the cookie reaches same-origin iframe loads and
 		// top-level navigations triggered from the admin UI, without
 		// being sent on third-party requests.

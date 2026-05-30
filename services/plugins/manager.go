@@ -477,7 +477,26 @@ func (m *Manager) destPathForInstall(name string) string {
 // atomicWritePackage writes packageBytes to destPath via a sibling temp
 // file + rename, so a partial write never leaves a half-baked .ocpkg in
 // the plugins directory for scan to trip over.
+//
+// destPath is computed from the uploaded plugin's manifest.slug
+// (validated by slugPattern at parse time, so no slashes or dots), but
+// the safety isn't visible at the rename site. Re-validating that the
+// resolved destination sits under pluginsDir keeps the property local
+// to this function and defends against a future caller that constructs
+// destPath some other way.
 func atomicWritePackage(pluginsDir, destPath string, packageBytes []byte) error {
+	cleanDir, err := filepath.Abs(filepath.Clean(pluginsDir))
+	if err != nil {
+		return fmt.Errorf("resolve plugins dir: %w", err)
+	}
+	cleanDest, err := filepath.Abs(filepath.Clean(destPath))
+	if err != nil {
+		return fmt.Errorf("resolve install path: %w", err)
+	}
+	if !strings.HasPrefix(cleanDest, cleanDir+string(os.PathSeparator)) {
+		return fmt.Errorf("refusing to install outside plugins dir: %s", destPath)
+	}
+
 	tmpFile, err := os.CreateTemp(pluginsDir, ".upload-*"+packageSuffix)
 	if err != nil {
 		return fmt.Errorf("create temp file: %w", err)
@@ -496,8 +515,8 @@ func atomicWritePackage(pluginsDir, destPath string, packageBytes []byte) error 
 	if err := tmpFile.Close(); err != nil {
 		return fmt.Errorf("close upload: %w", err)
 	}
-	if err := os.Rename(tmpPath, destPath); err != nil {
-		return fmt.Errorf("install at %s: %w", destPath, err)
+	if err := os.Rename(tmpPath, cleanDest); err != nil {
+		return fmt.Errorf("install at %s: %w", cleanDest, err)
 	}
 	cleanup = ""
 	return nil
