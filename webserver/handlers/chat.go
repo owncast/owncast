@@ -97,6 +97,10 @@ func (h *Handlers) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Requ
 	w.Header().Set("Content-Type", "application/json")
 	middleware.DisableCache(w)
 
+	// Set the chat identity cookie so subsequent same-origin web requests
+	// (e.g. to plugin HTTP handlers) carry this user's identity.
+	utils.SetChatAccessTokenCookie(w, r, accessToken)
+
 	webutils.WriteResponse(w, response)
 }
 

@@ -8,12 +8,12 @@ import (
 func TestSSEHubPublishFansOutToSubscribers(t *testing.T) {
 	h := NewSSEHub()
 
-	a, unsubA, ok := h.Subscribe("p1", "overlay")
+	a, unsubA, _, ok := h.Subscribe("p1", "overlay")
 	if !ok {
 		t.Fatal("first subscribe should succeed")
 	}
 	defer unsubA()
-	b, unsubB, ok := h.Subscribe("p1", "overlay")
+	b, unsubB, _, ok := h.Subscribe("p1", "overlay")
 	if !ok {
 		t.Fatal("second subscribe should succeed")
 	}
@@ -37,9 +37,9 @@ func TestSSEHubPublishFansOutToSubscribers(t *testing.T) {
 func TestSSEHubIsolatesByPluginAndChannel(t *testing.T) {
 	h := NewSSEHub()
 
-	other, unsub, _ := h.Subscribe("p2", "overlay")
+	other, unsub, _, _ := h.Subscribe("p2", "overlay")
 	defer unsub()
-	wrongChannel, unsub2, _ := h.Subscribe("p1", "stats")
+	wrongChannel, unsub2, _, _ := h.Subscribe("p1", "stats")
 	defer unsub2()
 
 	// No subscribers on p1/overlay → zero deliveries, and neither of the
@@ -59,7 +59,7 @@ func TestSSEHubIsolatesByPluginAndChannel(t *testing.T) {
 func TestSSEHubUnsubscribeStopsDelivery(t *testing.T) {
 	h := NewSSEHub()
 
-	ch, unsub, _ := h.Subscribe("p1", "c")
+	ch, unsub, _, _ := h.Subscribe("p1", "c")
 	unsub()
 
 	if n := h.Publish("p1", "c", "e", []byte("d")); n != 0 {
@@ -79,9 +79,9 @@ func TestSSEHubPerPluginConnectionCap(t *testing.T) {
 	h := NewSSEHub()
 	h.maxPerPlugin = 2
 
-	_, u1, ok1 := h.Subscribe("p1", "c")
-	_, u2, ok2 := h.Subscribe("p1", "c")
-	_, _, ok3 := h.Subscribe("p1", "c")
+	_, u1, _, ok1 := h.Subscribe("p1", "c")
+	_, u2, _, ok2 := h.Subscribe("p1", "c")
+	_, _, _, ok3 := h.Subscribe("p1", "c")
 	if !ok1 || !ok2 {
 		t.Fatal("first two subscribes should succeed under the cap")
 	}
@@ -90,7 +90,7 @@ func TestSSEHubPerPluginConnectionCap(t *testing.T) {
 	}
 
 	// A different plugin is unaffected by p1's cap.
-	if _, u, ok := h.Subscribe("p2", "c"); !ok {
+	if _, u, _, ok := h.Subscribe("p2", "c"); !ok {
 		t.Fatal("other plugin should not be affected by p1's cap")
 	} else {
 		u()
@@ -98,7 +98,7 @@ func TestSSEHubPerPluginConnectionCap(t *testing.T) {
 
 	// Freeing a slot lets a new connection in.
 	u1()
-	if _, u, ok := h.Subscribe("p1", "c"); !ok {
+	if _, u, _, ok := h.Subscribe("p1", "c"); !ok {
 		t.Fatal("subscribe should succeed after a slot is freed")
 	} else {
 		u()
@@ -108,7 +108,7 @@ func TestSSEHubPerPluginConnectionCap(t *testing.T) {
 
 func TestSSEHubDropsFramesForSlowClient(t *testing.T) {
 	h := NewSSEHub()
-	_, unsub, _ := h.Subscribe("p1", "c") // never drained
+	_, unsub, _, _ := h.Subscribe("p1", "c") // never drained
 	defer unsub()
 
 	// The client buffer is 16; publishing well beyond it must not block and

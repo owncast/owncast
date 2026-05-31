@@ -97,8 +97,12 @@ that decoupling, and it lives at the boundary on purpose.
 - **Users** (`users.read` / `users.moderate`) — list/get users, set enabled,
   ban IP.
 - **Notifications** (`notifications.send`) — Discord, browser push, fediverse.
-- **Storage** — KV backed by Owncast's datastore (`newDatastoreKVStore`), and
-  `storage.upload` for plugin assets.
+- **Storage** — KV backed by Owncast's datastore (`newDatastoreKVStore`),
+  `storage.upload` for browser-accessible plugin assets (written under
+  `public/`), and `storage.fs` for a private, sandboxed filesystem
+  (`data/plugin-data/<slug>/`) the plugin can read/write/list/delete within.
+  The host rejects any `storage.fs` path that escapes the plugin's own
+  directory, and the bytes are never served over HTTP.
 - **HTTP** (`http.serve`, `http.sse`) — `req.authenticated` / `req.user` from
   Owncast's auth middleware, plus the SSE hub for server-pushed events.
 

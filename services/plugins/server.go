@@ -269,9 +269,13 @@ func (s *Server) serveAuthorized(w http.ResponseWriter, r *http.Request, p *Load
 
 // serveSSE holds a long-lived Server-Sent-Events connection open and streams
 // frames the plugin publishes to (plugin, channel). The connection is owned
-// entirely by the host: no plugin wasm call is made here and the per-plugin
-// mutex is never taken, so an idle stream costs only a goroutine. The loop
-// exits when the client disconnects (request context cancelled).
+// entirely by the host: the per-plugin mutex is never taken during streaming,
+// so an idle stream costs only a goroutine. The loop exits when the client
+// disconnects (request context cancelled).
+//
+// The plugin is notified of the connection opening and closing via the
+// sse.connect / sse.disconnect events (a single short wasm call each, around
+// the stream, not during it) so it can track who is connected.
 func (s *Server) serveSSE(w http.ResponseWriter, r *http.Request, p *Loaded, channel string) {
 	if s.SSE == nil {
 		http.Error(w, "server-sent events not available", http.StatusServiceUnavailable)
@@ -283,12 +287,21 @@ func (s *Server) serveSSE(w http.ResponseWriter, r *http.Request, p *Loaded, cha
 		return
 	}
 
-	stream, unsubscribe, ok := s.SSE.Subscribe(p.Manifest.Slug, channel)
+	stream, unsubscribe, connID, ok := s.SSE.Subscribe(p.Manifest.Slug, channel)
 	if !ok {
 		http.Error(w, "too many event-stream connections for this plugin", http.StatusServiceUnavailable)
 		return
 	}
 	defer unsubscribe()
+
+	// Resolve the connecting chat user (if any) once, and tell the plugin who
+	// connected. The matching disconnect fires when this handler returns.
+	var user *HostUser
+	if s.GetRequestUser != nil {
+		user = s.GetRequestUser(r)
+	}
+	s.notifySSEConnection(p, EventSSEConnect, channel, connID, user)
+	defer s.notifySSEConnection(p, EventSSEDisconnect, channel, connID, user)
 
 	h := w.Header()
 	h.Set("Content-Type", "text/event-stream")
@@ -316,6 +329,36 @@ func (s *Server) serveSSE(w http.ResponseWriter, r *http.Request, p *Loaded, cha
 			}
 			flusher.Flush()
 		}
+	}
+}
+
+// sseConnectionEnvelope marshals the on_event payload delivered to a plugin
+// for an SSE connect/disconnect.
+func sseConnectionEnvelope(eventType, channel string, connID uint64, user *HostUser) ([]byte, error) {
+	return json.Marshal(Envelope{
+		EventType: eventType,
+		Payload:   SSEConnectionEvent{Channel: channel, ConnectionID: connID, User: user},
+	})
+}
+
+// notifySSEConnection fires an sse.connect / sse.disconnect event to the
+// plugin that owns the channel, carrying the channel, connection id, and the
+// resolved chat user (if any). It is best-effort: a plugin that doesn't export
+// on_event or doesn't handle the event is a silent no-op, and any error is
+// logged but never affects the stream. A fresh context is used because the
+// disconnect path fires after the request context has already been cancelled.
+func (s *Server) notifySSEConnection(p *Loaded, eventType, channel string, connID uint64, user *HostUser) {
+	if p.plugin == nil || !p.plugin.FunctionExists("on_event") {
+		return
+	}
+	envelope, err := sseConnectionEnvelope(eventType, channel, connID, user)
+	if err != nil {
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), NotifyTimeout)
+	defer cancel()
+	if err := callOnEvent(ctx, p, envelope); err != nil {
+		fmt.Fprintf(os.Stderr, "plugin %s: %s notify failed: %v\n", p.Manifest.Slug, eventType, err)
 	}
 }
 
@@ -473,11 +516,21 @@ func (s *Server) serveDynamic(w http.ResponseWriter, r *http.Request, p *Loaded,
 // buildRequestEnvelope marshals the JSON envelope passed to a plugin's
 // on_http_request export.
 func (s *Server) buildRequestEnvelope(r *http.Request, requestPath string, authenticated bool, body []byte) ([]byte, error) {
+	// Redact the credentials a request may carry so a sandboxed plugin never
+	// sees the raw access token. Identity reaches the plugin only via the
+	// host-resolved, trusted req.user below. The Cookie header carries the
+	// chat identity cookie (and admin session); the accessToken query param
+	// is the legacy token source.
+	headers := flattenValues(r.Header)
+	delete(headers, "Cookie")
+	query := flattenValues(r.URL.Query())
+	delete(query, "accessToken")
+
 	envelope := map[string]any{
 		"method":        r.Method,
 		"path":          requestPath,
-		"query":         flattenValues(r.URL.Query()),
-		"headers":       flattenValues(r.Header),
+		"query":         query,
+		"headers":       headers,
 		"body":          string(body),
 		"remoteAddr":    r.RemoteAddr,
 		"authenticated": authenticated,

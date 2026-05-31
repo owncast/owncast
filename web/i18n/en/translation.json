@@ -160,6 +160,7 @@
 			"Permissions": {
 				"storageKv": "Read and write a per-plugin key-value store that persists across reloads.",
 				"storageUpload": "Upload files to Owncast’s public files area for browser-accessible URLs.",
+				"storageFs": "Read and write files in a private, server-side directory only this plugin can access.",
 				"chatSend": "Post chat messages as the plugin’s own bot identity.",
 				"chatHistory": "Read recent chat messages.",
 				"chatModerate": "Hide chat messages and ban users.",
@@ -180,6 +181,7 @@
 			"PermissionNames": {
 				"storageKv": "Store data",
 				"storageUpload": "Upload files",
+				"storageFs": "Read and write files",
 				"chatSend": "Send chat messages",
 				"chatHistory": "Read chat history",
 				"chatModerate": "Moderate chat",

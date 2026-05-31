@@ -19,9 +19,16 @@ var _ = (*http.Request)(nil) // ensure import retained for the HostEnv signature
 const (
 	PermStorageKV     = "storage.kv"
 	PermStorageUpload = "storage.upload"
-	PermChatSend      = "chat.send"
-	PermChatHistory   = "chat.history"
-	PermChatModerate  = "chat.moderate"
+	// PermStorageFS grants a plugin a private, sandboxed area on disk
+	// (data/plugin-data/<slug>/) it can read, write, list, and delete
+	// within. Unlike storage.upload (which publishes browser-accessible
+	// files under public/), this storage is server-side only and never
+	// exposed over HTTP. A plugin cannot reach outside its own directory
+	// or read another plugin's files.
+	PermStorageFS    = "storage.fs"
+	PermChatSend     = "chat.send"
+	PermChatHistory  = "chat.history"
+	PermChatModerate = "chat.moderate"
 	// PermChatFilter is required for any plugin that subscribes to
 	// filterChatMessage. The host refuses to load a plugin whose
 	// runtime-declared filter subscriptions include the chat-message
@@ -46,6 +53,10 @@ const (
 	// in the admin UI or viewer chrome without opting in explicitly.
 	PermUIModify = "ui.modify"
 )
+
+// resultErrorKey is the JSON key host functions use to return an error
+// string to the plugin in their {ok, error?} result envelope.
+const resultErrorKey = "error"
 
 // ChatSendKind distinguishes how a plugin asked to post to chat. All sends
 // post under the plugin's own chat identity — provisioned by the host at
@@ -207,6 +218,19 @@ type UploadResult struct {
 	URL string `json:"url"`
 }
 
+// SSEConnectionEvent is the payload for the sse.connect / sse.disconnect
+// events, fired when a browser opens or closes one of the plugin's
+// Server-Sent-Events streams. ConnectionID is unique for the life of the host
+// process, so a plugin can pair a disconnect with its connect and count
+// distinct connections (e.g. one user open in several tabs). User is the
+// resolved chat user when the connection carried a chat identity, and is
+// omitted for anonymous viewers.
+type SSEConnectionEvent struct {
+	Channel      string    `json:"channel"`
+	ConnectionID uint64    `json:"connectionId"`
+	User         *HostUser `json:"user,omitempty"`
+}
+
 // HostEnv is everything host functions need to do their job. Function-pointer
 // fields are wired by the host (the production Owncast binary, the demo
 // binary, or the test runner); each host function reads them lazily at call
@@ -231,8 +255,16 @@ type HostEnv struct {
 	SetUserEnabled  func(pluginName, userID string, enabled bool, reason string) // users.moderate
 	BanIP           func(pluginName, ip string)                                  // users.moderate
 	UploadStorage   func(pluginName, name string, data []byte) (string, error)   // storage.upload
-	Socials         func() []SocialHandle                                        // server.read
-	Federation      func() FederationInfo                                        // server.read
+	// Sandboxed per-plugin filesystem (storage.fs). Each plugin sees only
+	// its own directory under data/plugin-data/<slug>/; the host rejects any
+	// path that escapes it. Paths are relative to that root.
+	FSRead     func(pluginName, path string) ([]byte, error) // storage.fs
+	FSWrite    func(pluginName, path string, data []byte) error
+	FSList     func(pluginName, dir string) ([]string, error)
+	FSDelete   func(pluginName, path string) error
+	FSExists   func(pluginName, path string) (bool, error)
+	Socials    func() []SocialHandle // server.read
+	Federation func() FederationInfo // server.read
 	// WriteVideoConfig applies a partial video/transcoding configuration
 	// change. Returns an error the plugin can see if the host rejects the
 	// config (e.g. an invalid variant). videoconfig.write permission required.
@@ -326,9 +358,7 @@ func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction 
 			hostBanIP(env, manifest.Slug),
 		)
 	}
-	if granted[PermStorageUpload] {
-		fns = append(fns, hostStorageUpload(env, manifest.Slug))
-	}
+	fns = append(fns, storageHostFunctions(env, manifest, granted)...)
 	if granted[PermFediversePost] {
 		fns = append(fns, hostFediversePost(env, manifest.Slug))
 	}
@@ -342,6 +372,26 @@ func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction 
 		)
 	}
 	fns = append(fns, videoConfigHostFunctions(env, manifest, granted)...)
+	return fns
+}
+
+// storageHostFunctions returns the storage.upload / storage.fs host functions
+// a plugin is granted. Split out of BuildHostFunctions to keep that function's
+// cyclomatic complexity in check.
+func storageHostFunctions(env *HostEnv, manifest *Manifest, granted map[string]bool) []extism.HostFunction {
+	var fns []extism.HostFunction
+	if granted[PermStorageUpload] {
+		fns = append(fns, hostStorageUpload(env, manifest.Slug))
+	}
+	if granted[PermStorageFS] {
+		fns = append(fns,
+			hostFSRead(env, manifest.Slug),
+			hostFSWrite(env, manifest.Slug),
+			hostFSList(env, manifest.Slug),
+			hostFSDelete(env, manifest.Slug),
+			hostFSExists(env, manifest.Slug),
+		)
+	}
 	return fns
 }
 
@@ -706,6 +756,191 @@ func hostStorageUpload(env *HostEnv, pluginName string) extism.HostFunction {
 		},
 		[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostFSRead backs owncast.fs.read(path). Returns the file's raw bytes,
+// or 0 (null to the plugin) when the path is missing, escapes the
+// sandbox, or can't be read. Requires the storage.fs permission.
+func hostFSRead(env *HostEnv, pluginName string) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_fs_read",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			path, err := p.ReadString(stack[0])
+			if err != nil || env.FSRead == nil {
+				stack[0] = 0
+				return
+			}
+			data, err := env.FSRead(pluginName, path)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "owncast_fs_read from %s: %v\n", pluginName, err)
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostFSWrite backs owncast.fs.write(path, data). Creates parent
+// directories as needed and writes the bytes, returning a JSON
+// {ok, error?} result so the plugin can react to a rejected write
+// (sandbox escape, oversized payload, disk error). Requires storage.fs.
+func hostFSWrite(env *HostEnv, pluginName string) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_fs_write",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			path, err := p.ReadString(stack[0])
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			data, err := p.ReadBytes(stack[1])
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			result := map[string]any{"ok": true}
+			if env.FSWrite == nil {
+				result = map[string]any{"ok": false, resultErrorKey: "filesystem unavailable"}
+			} else if err := env.FSWrite(pluginName, path, data); err != nil {
+				fmt.Fprintf(os.Stderr, "owncast_fs_write from %s: %v\n", pluginName, err)
+				result = map[string]any{"ok": false, resultErrorKey: err.Error()}
+			}
+			out, err := json.Marshal(result)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(out)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostFSList backs owncast.fs.list(dir). Returns a JSON array of the
+// entry names (files and subdirectories) directly inside dir. A missing
+// directory lists as empty rather than erroring. Requires storage.fs.
+func hostFSList(env *HostEnv, pluginName string) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_fs_list",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			dir, err := p.ReadString(stack[0])
+			if err != nil || env.FSList == nil {
+				stack[0] = 0
+				return
+			}
+			names, err := env.FSList(pluginName, dir)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "owncast_fs_list from %s: %v\n", pluginName, err)
+				stack[0] = 0
+				return
+			}
+			if names == nil {
+				names = []string{}
+			}
+			data, err := json.Marshal(names)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostFSDelete backs owncast.fs.delete(path). Removes a single file or
+// empty directory, returning a JSON {ok, error?} result. Requires
+// storage.fs.
+func hostFSDelete(env *HostEnv, pluginName string) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_fs_delete",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			path, err := p.ReadString(stack[0])
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			result := map[string]any{"ok": true}
+			if env.FSDelete == nil {
+				result = map[string]any{"ok": false, resultErrorKey: "filesystem unavailable"}
+			} else if err := env.FSDelete(pluginName, path); err != nil {
+				fmt.Fprintf(os.Stderr, "owncast_fs_delete from %s: %v\n", pluginName, err)
+				result = map[string]any{"ok": false, resultErrorKey: err.Error()}
+			}
+			out, err := json.Marshal(result)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(out)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostFSExists backs owncast.fs.exists(path). Returns 1 if the path
+// exists inside the sandbox, 0 otherwise (including on a sandbox-escape
+// attempt or stat error). Requires storage.fs.
+func hostFSExists(env *HostEnv, pluginName string) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_fs_exists",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			path, err := p.ReadString(stack[0])
+			if err != nil || env.FSExists == nil {
+				stack[0] = 0
+				return
+			}
+			exists, err := env.FSExists(pluginName, path)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "owncast_fs_exists from %s: %v\n", pluginName, err)
+				stack[0] = 0
+				return
+			}
+			if exists {
+				stack[0] = 1
+			} else {
+				stack[0] = 0
+			}
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypeI32},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -1091,7 +1326,7 @@ func hostVideoConfigWrite(env *HostEnv, pluginName string) extism.HostFunction {
 			result := map[string]any{"ok": true}
 			if env.WriteVideoConfig != nil {
 				if err := env.WriteVideoConfig(pluginName, update); err != nil {
-					result = map[string]any{"ok": false, "error": err.Error()}
+					result = map[string]any{"ok": false, resultErrorKey: err.Error()}
 				}
 			}
 			data, err := json.Marshal(result)

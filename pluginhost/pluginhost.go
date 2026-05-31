@@ -640,6 +640,123 @@ func wirePluginHostEnv(env *plugins.HostEnv, deps Deps) {
 	wireUserHostFns(env, deps)
 	wireNotificationHostFns(env, deps)
 	wireRequestHostFns(env, deps)
+	wireFilesystemHostFns(env)
+}
+
+// pluginDataRootDirName is the directory under config.DataDirectory that
+// holds each plugin's private, sandboxed filesystem (storage.fs). It is
+// deliberately separate from the plugins install/scan directory
+// (config.DataDirectory/plugins) so a plugin's writable data can never be
+// mistaken for, or collide with, an installed package or its assets.
+const pluginDataRootDirName = "plugin-data"
+
+// maxPluginFileBytes caps a single storage.fs write. It bounds how much a
+// misbehaving plugin can write in one call; the host's overall disk use is
+// still the admin's responsibility.
+const maxPluginFileBytes = 50 << 20 // 50 MiB
+
+// resolvePluginSandboxPath maps a plugin-supplied relative path to an
+// absolute path inside that plugin's sandbox (root/<pluginName>), and
+// guarantees the result cannot escape it. rel is treated as rooted before
+// cleaning, so "../", absolute paths, and other traversal tricks all
+// collapse back inside the sandbox; a defensive prefix check rejects
+// anything that still lands outside. pluginName is the plugin slug, which
+// the manifest layer has already constrained to [a-z][a-z0-9-]*, so it
+// cannot itself contain separators or "..".
+func resolvePluginSandboxPath(root, pluginName, rel string) (string, error) {
+	sandbox, err := filepath.Abs(filepath.Join(root, pluginName))
+	if err != nil {
+		return "", err
+	}
+	// Rooting rel at "/" before Clean neutralizes leading "../" segments:
+	// filepath.Clean("/"+"../../etc") == "/etc", which then joins back under
+	// the sandbox rather than above it.
+	full := filepath.Join(sandbox, filepath.Clean("/"+rel))
+	if full != sandbox && !strings.HasPrefix(full, sandbox+string(os.PathSeparator)) {
+		return "", fmt.Errorf("path %q escapes the plugin sandbox", rel)
+	}
+	return full, nil
+}
+
+// wireFilesystemHostFns implements the storage.fs host functions against a
+// per-plugin sandbox directory under config.DataDirectory/plugin-data.
+func wireFilesystemHostFns(env *plugins.HostEnv) {
+	wireFilesystemHostFnsWithRoot(env, filepath.Join(config.DataDirectory, pluginDataRootDirName))
+}
+
+// wireFilesystemHostFnsWithRoot is wireFilesystemHostFns with the sandbox
+// parent directory injected, so tests can point the storage.fs functions at
+// a temp directory instead of the real data directory.
+func wireFilesystemHostFnsWithRoot(env *plugins.HostEnv, root string) {
+	env.FSRead = func(pluginName, path string) ([]byte, error) {
+		full, err := resolvePluginSandboxPath(root, pluginName, path)
+		if err != nil {
+			return nil, err
+		}
+		// gosec G304: full is confined to the plugin's sandbox by
+		// resolvePluginSandboxPath, which rejects any path that escapes it.
+		return os.ReadFile(full) //nolint:gosec // G304: path sandboxed above
+	}
+
+	env.FSWrite = func(pluginName, path string, data []byte) error {
+		if len(data) > maxPluginFileBytes {
+			return fmt.Errorf("file is %d bytes; the limit is %d", len(data), maxPluginFileBytes)
+		}
+		full, err := resolvePluginSandboxPath(root, pluginName, path)
+		if err != nil {
+			return err
+		}
+		if err := os.MkdirAll(filepath.Dir(full), 0o700); err != nil {
+			return err
+		}
+		// gosec G304: full is confined to the plugin's sandbox by
+		// resolvePluginSandboxPath, which rejects any path that escapes it.
+		return os.WriteFile(full, data, 0o600) //nolint:gosec // G304: path sandboxed above
+	}
+
+	env.FSList = func(pluginName, dir string) ([]string, error) {
+		full, err := resolvePluginSandboxPath(root, pluginName, dir)
+		if err != nil {
+			return nil, err
+		}
+		entries, err := os.ReadDir(full)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return []string{}, nil
+			}
+			return nil, err
+		}
+		names := make([]string, 0, len(entries))
+		for _, e := range entries {
+			names = append(names, e.Name())
+		}
+		return names, nil
+	}
+
+	env.FSDelete = func(pluginName, path string) error {
+		full, err := resolvePluginSandboxPath(root, pluginName, path)
+		if err != nil {
+			return err
+		}
+		// os.Remove deletes a file or an empty directory only; it won't
+		// recursively wipe a populated subtree, which keeps a single
+		// delete call from being more destructive than the plugin asked.
+		return os.Remove(full)
+	}
+
+	env.FSExists = func(pluginName, path string) (bool, error) {
+		full, err := resolvePluginSandboxPath(root, pluginName, path)
+		if err != nil {
+			return false, err
+		}
+		if _, err := os.Stat(full); err != nil {
+			if os.IsNotExist(err) {
+				return false, nil
+			}
+			return false, err
+		}
+		return true, nil
+	}
 }
 
 // wireVideoConfigHostFns wires the settable video/transcoding configuration:

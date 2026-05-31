@@ -11,6 +11,7 @@
     "PermNetworkFetch": "network.fetch",
     "PermNotificationsSend": "notifications.send",
     "PermServerRead": "server.read",
+    "PermStorageFS": "storage.fs",
     "PermStorageKV": "storage.kv",
     "PermStorageUpload": "storage.upload",
     "PermUIModify": "ui.modify",
@@ -28,6 +29,11 @@
     "owncast_delete_message",
     "owncast_emit_event",
     "owncast_fediverse_post",
+    "owncast_fs_delete",
+    "owncast_fs_exists",
+    "owncast_fs_list",
+    "owncast_fs_read",
+    "owncast_fs_write",
     "owncast_kick_client",
     "owncast_kv_get",
     "owncast_kv_set",
@@ -93,6 +99,11 @@
       "isBot": "bool",
       "previousNames": "[]string",
       "scopes": "[]string"
+    },
+    "SSEConnectionEvent": {
+      "channel": "string",
+      "connectionId": "uint64",
+      "user": "*HostUser"
     },
     "ServerInfo": {
       "name": "string",

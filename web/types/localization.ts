@@ -395,6 +395,7 @@ export const Localization = {
       Permissions: {
         storageKv: 'Admin.Plugins.Permissions.storageKv',
         storageUpload: 'Admin.Plugins.Permissions.storageUpload',
+        storageFs: 'Admin.Plugins.Permissions.storageFs',
         chatSend: 'Admin.Plugins.Permissions.chatSend',
         chatHistory: 'Admin.Plugins.Permissions.chatHistory',
         chatModerate: 'Admin.Plugins.Permissions.chatModerate',
@@ -418,6 +419,7 @@ export const Localization = {
       PermissionNames: {
         storageKv: 'Admin.Plugins.PermissionNames.storageKv',
         storageUpload: 'Admin.Plugins.PermissionNames.storageUpload',
+        storageFs: 'Admin.Plugins.PermissionNames.storageFs',
         chatSend: 'Admin.Plugins.PermissionNames.chatSend',
         chatHistory: 'Admin.Plugins.PermissionNames.chatHistory',
         chatModerate: 'Admin.Plugins.PermissionNames.chatModerate',
