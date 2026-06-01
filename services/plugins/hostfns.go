@@ -156,6 +156,13 @@ type SocialHandle struct {
 	Icon     string `json:"icon,omitempty"`
 }
 
+// Emote is one custom chat emote returned by owncast.server.emotes(): the
+// `:code:` chat clients substitute and the URL of the image it renders to.
+type Emote struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
 // FederationInfo is what owncast.server.federation() returns.
 type FederationInfo struct {
 	Enabled   bool   `json:"enabled"`
@@ -278,6 +285,7 @@ type HostEnv struct {
 	FSDelete   func(pluginName, path string) error
 	FSExists   func(pluginName, path string) (bool, error)
 	Socials    func() []SocialHandle // server.read
+	Emotes     func() []Emote        // server.read
 	Federation func() FederationInfo // server.read
 	// WriteVideoConfig applies a partial video/transcoding configuration
 	// change. Returns an error the plugin can see if the host rejects the
@@ -344,6 +352,7 @@ func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction 
 			hostStreamCurrent(env),
 			hostServerInfo(env),
 			hostServerSocials(env),
+			hostServerEmotes(env),
 			hostServerFederation(env),
 			hostStreamBroadcaster(env),
 			hostServerTags(env),
@@ -707,6 +716,36 @@ func hostServerSocials(env *HostEnv) extism.HostFunction {
 				socials = []SocialHandle{}
 			}
 			data, err := json.Marshal(socials)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+func hostServerEmotes(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_server_emotes",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			var emotes []Emote
+			if env.Emotes != nil {
+				emotes = env.Emotes()
+			}
+			if emotes == nil {
+				emotes = []Emote{}
+			}
+			data, err := json.Marshal(emotes)
 			if err != nil {
 				stack[0] = 0
 				return

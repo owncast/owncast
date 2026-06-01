@@ -44,6 +44,7 @@
     "owncast_send_chat_action",
     "owncast_send_chat_system",
     "owncast_send_chat_to",
+    "owncast_server_emotes",
     "owncast_server_federation",
     "owncast_server_info",
     "owncast_server_socials",
@@ -64,6 +65,10 @@
     "BrowserPushPayload": {
       "body": "string",
       "title": "string",
+      "url": "string"
+    },
+    "Emote": {
+      "name": "string",
       "url": "string"
     },
     "FederationInfo": {

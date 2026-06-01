@@ -996,6 +996,25 @@ func wireServerReadHostFns(env *plugins.HostEnv, deps Deps) {
 		return out
 	}
 
+	// Emotes exposes the server's custom chat emotes (the same set the public
+	// /api/emoji endpoint serves) so plugins can render or filter `:code:`
+	// emotes server-side. URLs are server-relative, matching /api/emoji.
+	env.Emotes = func() []plugins.Emote {
+		list := datastore.GetEmojiList()
+		out := make([]plugins.Emote, 0, len(list))
+		for _, e := range list {
+			emote := plugins.Emote{}
+			if e.Name != nil {
+				emote.Name = *e.Name
+			}
+			if e.Url != nil {
+				emote.URL = *e.Url
+			}
+			out = append(out, emote)
+		}
+		return out
+	}
+
 	env.Federation = func() plugins.FederationInfo {
 		return plugins.FederationInfo{
 			Enabled:   cfg.GetFederationEnabled(),
