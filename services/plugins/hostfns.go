@@ -287,6 +287,12 @@ type HostEnv struct {
 	Socials    func() []SocialHandle // server.read
 	Emotes     func() []Emote        // server.read
 	Federation func() FederationInfo // server.read
+	// ConfigValue resolves an admin-set override for one of the plugin's
+	// manifest-declared config keys (owncast.config.get). Returns the override
+	// value and true when the admin has set one; false to fall back to the
+	// manifest's declared default. Optional; nil → defaults only (the common
+	// case until an admin edits the value).
+	ConfigValue func(pluginName, key string) (any, bool)
 	// WriteVideoConfig applies a partial video/transcoding configuration
 	// change. Returns an error the plugin can see if the host rejects the
 	// config (e.g. an invalid variant). videoconfig.write permission required.
@@ -399,6 +405,10 @@ func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction 
 	// is benign — whatever the callback does still needs its own permissions —
 	// and TimerHub's per-plugin caps bound abuse.
 	fns = append(fns, hostTimerSet(env, manifest.Slug), hostTimerClear(env, manifest.Slug))
+
+	// Config is ambient too: reading the plugin's own manifest-declared config
+	// (admin override, else declared default) is benign and needs no grant.
+	fns = append(fns, hostConfigGet(env, manifest))
 	if granted[PermUIModify] {
 		fns = append(fns,
 			hostAddActions(env, manifest),
@@ -728,6 +738,53 @@ func hostServerSocials(env *HostEnv) extism.HostFunction {
 			stack[0] = offset
 		},
 		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostConfigGet returns the effective value of a manifest-declared config key
+// as JSON: the admin-set override when present, otherwise the manifest's
+// declared default. Returns 0 (→ undefined in the guest) for an unknown key or
+// a declared key with no override and no default.
+func hostConfigGet(env *HostEnv, manifest *Manifest) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_config_get",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			key, err := p.ReadString(stack[0])
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			field, declared := manifest.Config[key]
+			if !declared {
+				stack[0] = 0
+				return
+			}
+			value := field.Default
+			if env.ConfigValue != nil {
+				if override, ok := env.ConfigValue(manifest.Slug, key); ok {
+					value = override
+				}
+			}
+			if value == nil {
+				stack[0] = 0
+				return
+			}
+			data, err := json.Marshal(value)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")

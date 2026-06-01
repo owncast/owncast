@@ -26,6 +26,7 @@
     "owncast_chat_clients",
     "owncast_chat_history",
     "owncast_clear_actions",
+    "owncast_config_get",
     "owncast_delete_message",
     "owncast_emit_event",
     "owncast_fediverse_post",
