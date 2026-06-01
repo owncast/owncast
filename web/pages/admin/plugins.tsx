@@ -250,20 +250,25 @@ const Plugins = () => {
   // surface the same post-install confirmation flow.
   const installFromRegistry = useCallback(
     async (slug: string, version: string) => {
-      const entry = (await fetchData(PLUGIN_REGISTRY_INSTALL, {
-        method: 'POST',
-        data: { slug, version },
-      })) as Plugin;
-      message.success(t(Localization.Admin.Plugins.uploadSuccess, { name: entry.name }));
-      await loadPlugins();
-      await loadRegistry();
-      // Only prompt to enable for plugins that aren't already
-      // running. Updates of enabled plugins keep their enabled state
-      // unless the new manifest expanded permissions (in which case
-      // the host marks them auto-disabled and the modal shows the
-      // new perms).
-      if (!entry.enabled) {
-        setPendingEnable(entry);
+      try {
+        const entry = (await fetchData(PLUGIN_REGISTRY_INSTALL, {
+          method: 'POST',
+          data: { slug, version },
+        })) as Plugin;
+        setError(null);
+        message.success(t(Localization.Admin.Plugins.uploadSuccess, { name: entry.name }));
+        await loadPlugins();
+        await loadRegistry();
+        // Only prompt to enable for plugins that aren't already
+        // running. Updates of enabled plugins keep their enabled state
+        // unless the new manifest expanded permissions (in which case
+        // the host marks them auto-disabled and the modal shows the
+        // new perms).
+        if (!entry.enabled) {
+          setPendingEnable(entry);
+        }
+      } catch (e) {
+        setError(e instanceof Error ? e.message : String(e));
       }
     },
     [loadPlugins, loadRegistry, t],
