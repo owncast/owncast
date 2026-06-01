@@ -319,6 +319,11 @@ type HostEnv struct {
 	// the long-lived connections. Optional; nil → owncast.sse.send is a
 	// no-op even if the plugin declared http.sse.
 	SSE *SSEHub
+	// OnSSESend, when set, is invoked for every owncast.sse.send in addition to
+	// (and independently of) SSE delivery. It exists so the test harness can
+	// observe SSE output, which otherwise vanishes when no browser client is
+	// subscribed. Production leaves it nil. Optional.
+	OnSSESend func(pluginName, channel, event string, data []byte)
 	// Timer schedules host-driven callbacks (owncast.timer.*). Ambient: every
 	// plugin gets the host functions, since a plugin can't setTimeout in the
 	// sandbox. Optional; nil → owncast_timer_set reports success but never
@@ -473,6 +478,9 @@ func hostSSESend(env *HostEnv, pluginName string) extism.HostFunction {
 			data, err := p.ReadBytes(stack[2])
 			if err != nil {
 				return
+			}
+			if env.OnSSESend != nil {
+				env.OnSSESend(pluginName, channel, event, data)
 			}
 			if env.SSE == nil {
 				return
