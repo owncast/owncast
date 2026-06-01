@@ -15,11 +15,18 @@ import (
 // TypeScript interfaces (ChatMessage, ChatUser, …) so a plugin's typed
 // handlers receive exactly the documented JSON.
 
+// pluginChatMessage is the chat.message.received (and chat.filter) payload.
+// It carries the full sender identity as a nested object plus the originating
+// connection's clientId so plugins can do reliable per-user state and
+// moderation (e.g. gate on scopes) and reply privately to the sender via
+// owncast.chat.sendTo / replyTo. User is nil for the rare message with no
+// associated account.
 type pluginChatMessage struct {
-	ID        string `json:"id"`
-	User      string `json:"user"`
-	Body      string `json:"body"`
-	Timestamp string `json:"timestamp"`
+	ID        string          `json:"id"`
+	User      *pluginChatUser `json:"user,omitempty"`
+	ClientID  uint            `json:"clientId,omitempty"`
+	Body      string          `json:"body"`
+	Timestamp string          `json:"timestamp"`
 }
 
 type pluginChatUser struct {
@@ -70,10 +77,6 @@ func newPluginChatFilter(pluginDispatcher *plugins.Dispatcher) dispatcher.Filter
 		if !ok {
 			return true // not a chat message we filter; let it pass
 		}
-		user := ""
-		if msg.User != nil {
-			user = msg.User.DisplayName
-		}
 		// Carry the timestamp through so filter plugins that gate on it
 		// (slow-mode, rate-limit, etc.) can compare elapsed time. Nano-
 		// precision matters: extism-js's Date.now() returns a frozen
@@ -85,7 +88,7 @@ func newPluginChatFilter(pluginDispatcher *plugins.Dispatcher) dispatcher.Filter
 		if !msg.Timestamp.IsZero() {
 			timestamp = msg.Timestamp.UTC().Format(time.RFC3339Nano)
 		}
-		final, allowed, _ := pluginDispatcher.Filter(ctx, plugins.EventChatMessageReceived, pluginChatMessage{ID: msg.ID, User: user, Body: msg.Body, Timestamp: timestamp})
+		final, allowed, _ := pluginDispatcher.Filter(ctx, plugins.EventChatMessageReceived, pluginChatMessage{ID: msg.ID, User: toPluginChatUserPtr(msg.User), ClientID: msg.ClientID, Body: msg.Body, Timestamp: timestamp})
 		if !allowed {
 			return false
 		}
@@ -241,9 +244,12 @@ func chatMessageEvent(evt webhooks.WebhookEvent) []pluginEvent {
 	// Use RawBody (what the user actually typed), not Body (the HTML-rendered
 	// form like `<p>!broadcaster</p>`). Plugins doing command matching or
 	// content analysis want the raw text; the chat client handles rendering.
-	msg := pluginChatMessage{ID: data.ID, Body: data.RawBody, Timestamp: formatTimePtr(data.Timestamp)}
-	if data.User != nil {
-		msg.User = data.User.DisplayName
+	msg := pluginChatMessage{
+		ID:        data.ID,
+		User:      toPluginChatUserPtr(data.User),
+		ClientID:  data.ClientID,
+		Body:      data.RawBody,
+		Timestamp: formatTimePtr(data.Timestamp),
 	}
 	return []pluginEvent{{plugins.EventChatMessageReceived, msg}}
 }
@@ -266,6 +272,16 @@ func translateStreamEvent(evt webhooks.WebhookEvent) []pluginEvent {
 		return []pluginEvent{{plugins.EventStreamTitleChanged, pluginStreamTitleChange{To: to}}}
 	}
 	return nil
+}
+
+// toPluginChatUserPtr is the pointer form used by payloads where the sender
+// is optional (chat.message.received): nil user in, nil pointer out.
+func toPluginChatUserPtr(u *models.User) *pluginChatUser {
+	if u == nil {
+		return nil
+	}
+	pu := toPluginChatUser(u)
+	return &pu
 }
 
 func toPluginChatUser(u *models.User) pluginChatUser {

@@ -20,7 +20,8 @@ func TestTranslateWebhookEvent_ChatMessageOnlyForUserMessages(t *testing.T) {
 			Body:      "<p>hello</p>",
 			RawBody:   "hello",
 			Timestamp: &ts,
-			User:      &models.User{ID: "u1", DisplayName: "alice"},
+			User:      &models.User{ID: "u1", DisplayName: "alice", Scopes: []string{"MODERATOR"}, Authenticated: true},
+			ClientID:  42,
 		},
 	}
 	out := translateWebhookEvent(evt)
@@ -34,8 +35,16 @@ func TestTranslateWebhookEvent_ChatMessageOnlyForUserMessages(t *testing.T) {
 	if !ok {
 		t.Fatalf("payload type = %T want pluginChatMessage", out[0].payload)
 	}
-	if msg.ID != "m1" || msg.Body != "hello" || msg.User != "alice" {
+	if msg.ID != "m1" || msg.Body != "hello" || msg.ClientID != 42 {
 		t.Errorf("unexpected message payload: %+v", msg)
+	}
+	// The full sender identity must ride along so plugins can do reliable
+	// per-user state and scope-gated moderation without a display-name lookup.
+	if msg.User == nil {
+		t.Fatalf("message user identity was dropped")
+	}
+	if msg.User.ID != "u1" || msg.User.DisplayName != "alice" || !msg.User.IsAuthenticated || len(msg.User.Scopes) != 1 {
+		t.Errorf("unexpected user identity: %+v", msg.User)
 	}
 	if msg.Timestamp != "2026-05-27T12:00:00Z" {
 		t.Errorf("timestamp = %q", msg.Timestamp)
