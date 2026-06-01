@@ -134,6 +134,23 @@ interface FetchOptions {
   auth?: boolean;
 }
 
+export function extractAPIErrorMessage(status: number, body?: any, fallbackText = '') {
+  if (body && typeof body === 'object') {
+    if (typeof body.error === 'string' && body.error.trim() !== '') {
+      return body.error;
+    }
+    if (typeof body.message === 'string' && body.message.trim() !== '') {
+      return body.message;
+    }
+  }
+
+  if (fallbackText.trim() !== '') {
+    return fallbackText;
+  }
+
+  return `An error has occurred: ${status}`;
+}
+
 export async function fetchData(url: string, options?: FetchOptions) {
   const { data, method = 'GET', auth = true } = options || {};
 
@@ -156,11 +173,18 @@ export async function fetchData(url: string, options?: FetchOptions) {
   }
 
   const response = await fetch(url, requestOptions);
-  const json = await response.json();
+  const text = await response.text();
+  let json = {};
+  if (text) {
+    try {
+      json = JSON.parse(text);
+    } catch {
+      json = {};
+    }
+  }
 
   if (!response.ok) {
-    const message = json.message || `An error has occurred: ${response.status}`;
-    throw new Error(message);
+    throw new Error(extractAPIErrorMessage(response.status, json, text));
   }
   return json;
 }
