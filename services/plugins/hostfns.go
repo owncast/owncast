@@ -231,6 +231,20 @@ type SSEConnectionEvent struct {
 	User         *HostUser `json:"user,omitempty"`
 }
 
+// TickEvent is the payload for the once-a-second tick event, delivered to
+// plugins that subscribe (define onTick). Now is the host's wall-clock time in
+// unix milliseconds at the moment the tick fired.
+type TickEvent struct {
+	Now int64 `json:"now"`
+}
+
+// TimerFireEvent is the payload delivered (via the timer.fire event) when a
+// host-scheduled timer elapses. ID is the timer's id, which the guest SDK maps
+// back to the author's callback.
+type TimerFireEvent struct {
+	ID uint64 `json:"id"`
+}
+
 // HostEnv is everything host functions need to do their job. Function-pointer
 // fields are wired by the host (the production Owncast binary, the demo
 // binary, or the test runner); each host function reads them lazily at call
@@ -291,6 +305,11 @@ type HostEnv struct {
 	// the long-lived connections. Optional; nil → owncast.sse.send is a
 	// no-op even if the plugin declared http.sse.
 	SSE *SSEHub
+	// Timer schedules host-driven callbacks (owncast.timer.*). Ambient: every
+	// plugin gets the host functions, since a plugin can't setTimeout in the
+	// sandbox. Optional; nil → owncast_timer_set reports success but never
+	// fires (used by the test harness, which simulates fires via events).
+	Timer *TimerHub
 }
 
 // BuildHostFunctions returns the list of extism host functions a single
@@ -365,6 +384,12 @@ func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction 
 	if granted[PermHttpSSE] {
 		fns = append(fns, hostSSESend(env, manifest.Slug))
 	}
+
+	// Timers are ambient (no permission): a plugin can't setTimeout in the
+	// sandbox, so scheduling is a baseline capability. The act of scheduling
+	// is benign — whatever the callback does still needs its own permissions —
+	// and TimerHub's per-plugin caps bound abuse.
+	fns = append(fns, hostTimerSet(env, manifest.Slug), hostTimerClear(env, manifest.Slug))
 	if granted[PermUIModify] {
 		fns = append(fns,
 			hostAddActions(env, manifest),
@@ -436,6 +461,59 @@ func hostSSESend(env *HostEnv, pluginName string) extism.HostFunction {
 			env.SSE.Publish(pluginName, channel, event, data)
 		},
 		[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypePTR, extism.ValueTypePTR},
+		[]extism.ValueType{},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostTimerSet backs owncast.timer.setTimeout / setInterval. The guest passes a
+// guest-allocated id, the delay in milliseconds, and whether it repeats. The
+// host arms a timer that, on fire, calls the plugin's on_event with a
+// timer.fire event carrying the id. Returns 1 on success, 0 if the plugin is
+// at its pending-timer cap. A nil Timer (test harness) reports success so the
+// guest keeps its callback; fires are then simulated via events.
+func hostTimerSet(env *HostEnv, pluginName string) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_timer_set",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id := stack[0]
+			// Clamp the requested delay to a sane ceiling before narrowing to
+			// int64 — bounds the duration math and keeps the conversion in range.
+			rawDelayMs := stack[1]
+			if rawDelayMs > maxTimerDelayMs {
+				rawDelayMs = maxTimerDelayMs
+			}
+			delayMs := int64(rawDelayMs)
+			repeat := stack[2] == 1
+			if env.Timer == nil {
+				stack[0] = 1
+				return
+			}
+			if env.Timer.Schedule(pluginName, id, delayMs, repeat) {
+				stack[0] = 1
+			} else {
+				stack[0] = 0
+			}
+		},
+		[]extism.ValueType{extism.ValueTypeI64, extism.ValueTypeI64, extism.ValueTypeI32},
+		[]extism.ValueType{extism.ValueTypeI32},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostTimerClear backs owncast.timer.clear(id), cancelling a pending timer.
+func hostTimerClear(env *HostEnv, pluginName string) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_timer_clear",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id := stack[0]
+			if env.Timer != nil {
+				env.Timer.Clear(pluginName, id)
+			}
+		},
+		[]extism.ValueType{extism.ValueTypeI64},
 		[]extism.ValueType{},
 	)
 	fn.SetNamespace("extism:host/user")

@@ -94,6 +94,8 @@ type Host struct {
 	// buttons at runtime (e.g. an admin page that lets the streamer
 	// rename buttons without rebuilding the plugin).
 	kv kv.Store
+	// tickCancel stops the once-a-second tick goroutine when the host stops.
+	tickCancel context.CancelFunc
 }
 
 // runtimeActionsConfigKey is the reserved key inside a plugin's own
@@ -108,6 +110,9 @@ func (p *Host) Handler() http.Handler { return p.server }
 
 // Stop closes all loaded plugins.
 func (p *Host) Stop(ctx context.Context) {
+	if p.tickCancel != nil {
+		p.tickCancel()
+	}
 	p.manager.Stop(ctx)
 }
 
@@ -327,6 +332,38 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 	deps.Events.AddListener(newPluginEventListener(pluginDispatcher))
 	deps.Events.AddFilter(newPluginChatFilter(pluginDispatcher))
 
+	// Host-driven timers: plugins can't setTimeout in the sandbox, so
+	// owncast.timer.* asks the host to schedule callbacks. The hub resolves a
+	// plugin slug to its live instance to call back; cancelling a plugin's
+	// timers on unload is wired through the manager's onUnload hook.
+	timerHub := plugins.NewTimerHub(func(slug string) *plugins.Loaded {
+		for _, l := range manager.Snapshot() {
+			if l.Manifest.Slug == slug {
+				return l
+			}
+		}
+		return nil
+	})
+	env.Timer = timerHub
+	manager.SetOnUnload(timerHub.CancelForPlugin)
+
+	// Fire a once-a-second tick to plugins that subscribe (onTick), and which
+	// also drives nothing else — host-scheduled timers run independently. The
+	// goroutine is stopped when the host stops.
+	tickCtx, tickCancel := context.WithCancel(context.Background())
+	go func() {
+		t := time.NewTicker(time.Second)
+		defer t.Stop()
+		for {
+			select {
+			case <-tickCtx.Done():
+				return
+			case <-t.C:
+				pluginDispatcher.Notify(tickCtx, plugins.EventTick, plugins.TickEvent{Now: time.Now().UnixMilli()})
+			}
+		}
+	}()
+
 	server := plugins.NewLiveServer(manager.Snapshot)
 	server.SSE = sseHub
 	server.IsAuthenticated = env.IsAuthenticated
@@ -340,6 +377,7 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 		configRepository: deps.ConfigRepository,
 		requireAdminAuth: deps.RequireAdminAuth,
 		kv:               env.KV,
+		tickCancel:       tickCancel,
 	}, nil
 }
 

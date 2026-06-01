@@ -19,6 +19,7 @@ import (
 	extism "github.com/extism/go-sdk"
 	"github.com/gobwas/glob"
 	log "github.com/sirupsen/logrus"
+	"github.com/tetratelabs/wazero"
 )
 
 // Loaded represents a successfully-loaded plugin. The sidecar manifest is the
@@ -202,6 +203,23 @@ type Manager struct {
 	scanInterval time.Duration
 	cancel       context.CancelFunc // stops the scan loop
 	scanCh       chan struct{}      // pings to force a scan (testing / admin trigger)
+
+	// onUnload, if set, is called with a plugin's slug just before its
+	// instance is closed (disable, reload, disk-removal, or host stop), so
+	// host subsystems can release per-plugin resources. Timers use it to
+	// cancel a plugin's pending callbacks.
+	onUnload func(slug string)
+}
+
+// SetOnUnload registers a callback invoked with a plugin's slug right before
+// its instance is closed. Used to cancel per-plugin host resources (timers).
+func (m *Manager) SetOnUnload(fn func(slug string)) { m.onUnload = fn }
+
+// notifyUnload fires the onUnload hook for a plugin about to be closed.
+func (m *Manager) notifyUnload(l *Loaded) {
+	if m.onUnload != nil && l != nil && l.Manifest != nil {
+		m.onUnload(l.Manifest.Slug)
+	}
 }
 
 // DiscoveredEntry is the public view of a discovered plugin: what the
@@ -365,6 +383,7 @@ func (m *Manager) Stop(ctx context.Context) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for _, l := range m.loaded {
+		m.notifyUnload(l)
 		l.Close(ctx)
 	}
 	m.loaded = map[string]*Loaded{}
@@ -579,6 +598,7 @@ func (m *Manager) Disable(ctx context.Context, name string) error {
 		fmt.Fprintf(os.Stderr, "persist enabled set: %v\n", err)
 	}
 	if loaded != nil {
+		m.notifyUnload(loaded)
 		loaded.Close(ctx)
 	}
 	return nil
@@ -606,6 +626,7 @@ func (m *Manager) Uninstall(ctx context.Context, name string) error {
 	m.mu.Unlock()
 
 	if loaded != nil {
+		m.notifyUnload(loaded)
 		loaded.Close(ctx)
 	}
 
@@ -665,6 +686,7 @@ func (m *Manager) Reload(ctx context.Context, name string) error {
 	delete(m.loaded, name)
 	m.mu.Unlock()
 	if loaded != nil {
+		m.notifyUnload(loaded)
 		loaded.Close(ctx)
 	}
 
@@ -841,6 +863,7 @@ func (m *Manager) scan(ctx context.Context) error {
 		delete(m.loaded, name)
 		m.mu.Unlock()
 		if loaded != nil {
+			m.notifyUnload(loaded)
 			loaded.Close(ctx)
 		}
 	}
@@ -1106,7 +1129,13 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes [
 			break
 		}
 	}
-	p, err := extism.NewPlugin(ctx, extismManifest, extism.PluginConfig{EnableWasi: true}, hostFns)
+	// Give the guest the real host wall clock and monotonic clock so Date and
+	// performance.now() reflect actual time. Wazero's default ModuleConfig
+	// uses a frozen deterministic clock (Date.now() would otherwise return a
+	// fixed 2022 epoch). Nanosleep is deliberately NOT wired: a plugin must
+	// not be able to block inside a call and burn its call-timeout budget.
+	moduleConfig := wazero.NewModuleConfig().WithSysWalltime().WithSysNanotime()
+	p, err := extism.NewPlugin(ctx, extismManifest, extism.PluginConfig{EnableWasi: true, ModuleConfig: moduleConfig}, hostFns)
 	if err != nil {
 		return nil, fmt.Errorf("instantiate wasm: %w", err)
 	}

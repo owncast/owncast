@@ -24,6 +24,16 @@ const (
 	EventSSEConnect    = "sse.connect"
 	EventSSEDisconnect = "sse.disconnect"
 
+	// EventTick fires to every plugin that subscribes (defines onTick) once a
+	// second, for periodic work. Payload is a TickEvent.
+	EventTick = "tick"
+
+	// EventTimerFire is delivered to a plugin when one of its host-scheduled
+	// timers elapses (see TimerHub). Payload is a TimerFireEvent. Internal:
+	// the guest SDK maps the id back to the author's callback, so plugins
+	// don't subscribe to or handle this directly.
+	EventTimerFire = "timer.fire"
+
 	// Fediverse events. Engagement (follow/like/repost) carries only
 	// actor + target metadata; mention/reply also carry the post content
 	// so plugins can act on what was actually said.

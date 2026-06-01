@@ -52,6 +52,8 @@
     "owncast_storage_upload",
     "owncast_stream_broadcaster",
     "owncast_stream_current",
+    "owncast_timer_clear",
+    "owncast_timer_set",
     "owncast_user_get",
     "owncast_user_set_enabled",
     "owncast_users_list",
@@ -139,6 +141,12 @@
       "isPassthrough": "bool",
       "videoBitrate": "int",
       "width": "int"
+    },
+    "TickEvent": {
+      "now": "int64"
+    },
+    "TimerFireEvent": {
+      "id": "uint64"
     },
     "UploadResult": {
       "url": "string"
