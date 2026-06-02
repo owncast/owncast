@@ -1,4 +1,29 @@
-import { isPluginUpdateAvailable } from '../utils/apis';
+import { isNewerVersion, isPluginUpdateAvailable } from '../utils/apis';
+
+describe('isNewerVersion', () => {
+  test('candidate strictly newer is true', () => {
+    expect(isNewerVersion('1.2.4', '1.2.3')).toBe(true);
+    expect(isNewerVersion('1.3.0', '1.2.9')).toBe(true);
+    expect(isNewerVersion('2.0.0', '1.9.9')).toBe(true);
+  });
+
+  test('equal or older candidate is false', () => {
+    expect(isNewerVersion('1.2.3', '1.2.3')).toBe(false);
+    expect(isNewerVersion('1.2.2', '1.2.3')).toBe(false);
+    expect(isNewerVersion('0.2.1', '0.3.0')).toBe(false); // the dev-build/downgrade case
+  });
+
+  test('missing versions are false (no crash)', () => {
+    expect(isNewerVersion(undefined, '1.2.3')).toBe(false);
+    expect(isNewerVersion('1.2.3', undefined)).toBe(false);
+    expect(isNewerVersion('', '')).toBe(false);
+  });
+
+  test('non-semver strings are false rather than throwing', () => {
+    expect(isNewerVersion('latest', '1.2.3')).toBe(false);
+    expect(isNewerVersion('1.2.3', 'dev')).toBe(false);
+  });
+});
 
 describe('isPluginUpdateAvailable', () => {
   describe('an update is offered only when the registry version is strictly newer', () => {

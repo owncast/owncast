@@ -223,44 +223,49 @@ export async function getGithubRelease() {
   return fetchExternalData(GITHUB_RELEASE_URL);
 }
 
-function upToDate(local, remote) {
-  return !semverGt(remote, local);
+// isNewerVersion reports whether `candidate` is a strictly-newer semver than
+// `current`. The shared primitive behind both the plugin-update check and the
+// Owncast server-upgrade check. Missing or non-semver version strings can't be
+// ordered, so it returns false rather than throwing or nagging about a change
+// it can't reason about.
+export function isNewerVersion(candidate?: string, current?: string): boolean {
+  if (!candidate || !current) {
+    return false;
+  }
+  try {
+    return semverGt(candidate, current);
+  } catch {
+    return false;
+  }
 }
 
 // isPluginUpdateAvailable reports whether the registry's latest version is
 // strictly newer than what's installed. A newer local/dev build (e.g.
 // installed 0.3.0 vs a registry 0.2.1) is NOT an update — only an older
 // installed version is. Comparing with string inequality would wrongly flag a
-// dev build as "needs update" (and prompt a downgrade). Non-semver version
-// strings can't be ordered, so we conservatively report "no update" rather
-// than nagging about a change we can't reason about.
+// dev build as "needs update" (and prompt a downgrade).
 export function isPluginUpdateAvailable(
   installedVersion?: string,
   latestVersion?: string,
 ): boolean {
-  if (!installedVersion || !latestVersion) {
-    return false;
-  }
-  try {
-    return semverGt(latestVersion, installedVersion);
-  } catch {
-    return false;
-  }
+  return isNewerVersion(latestVersion, installedVersion);
 }
 
-// Make a request to the server status API and the Github releases API
-// and return a release if it's newer than the server version.
+// Make a request to the Github releases API and return the latest release
+// version if it's newer than the running server, otherwise null. Uses the same
+// semver comparison as the plugin update check (see isNewerVersion).
 export async function upgradeVersionAvailable(currentVersion) {
   const recentRelease = await getGithubRelease();
-  let recentReleaseVersion = recentRelease.tag_name;
+  let recentReleaseVersion = recentRelease?.tag_name;
+  // No/failed release info (getGithubRelease returns {} on error): nothing to
+  // offer rather than throwing on an undefined tag.
+  if (!recentReleaseVersion) {
+    return null;
+  }
 
   if (recentReleaseVersion.substr(0, 1) === 'v') {
     recentReleaseVersion = recentReleaseVersion.substr(1);
   }
 
-  if (!upToDate(currentVersion, recentReleaseVersion)) {
-    return recentReleaseVersion;
-  }
-
-  return null;
+  return isNewerVersion(recentReleaseVersion, currentVersion) ? recentReleaseVersion : null;
 }
