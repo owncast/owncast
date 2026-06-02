@@ -7,6 +7,7 @@ import { useTranslation } from 'next-export-i18n';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import {
   fetchData,
+  isPluginUpdateAvailable,
   PLUGIN_REGISTRY_INSTALL,
   PLUGIN_REGISTRY_LIST,
   PLUGIN_UPLOAD,
@@ -117,7 +118,7 @@ const Plugins = () => {
         plugins.flatMap(p => {
           const reg = registryPlugins.find(r => r.slug === p.slug);
           const latest = reg?.latest?.version;
-          if (p.version && latest && latest !== p.version) {
+          if (latest && isPluginUpdateAvailable(p.version, latest)) {
             return [[p.slug, latest] as [string, string]];
           }
           return [];

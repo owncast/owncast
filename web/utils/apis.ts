@@ -227,6 +227,27 @@ function upToDate(local, remote) {
   return !semverGt(remote, local);
 }
 
+// isPluginUpdateAvailable reports whether the registry's latest version is
+// strictly newer than what's installed. A newer local/dev build (e.g.
+// installed 0.3.0 vs a registry 0.2.1) is NOT an update — only an older
+// installed version is. Comparing with string inequality would wrongly flag a
+// dev build as "needs update" (and prompt a downgrade). Non-semver version
+// strings can't be ordered, so we conservatively report "no update" rather
+// than nagging about a change we can't reason about.
+export function isPluginUpdateAvailable(
+  installedVersion?: string,
+  latestVersion?: string,
+): boolean {
+  if (!installedVersion || !latestVersion) {
+    return false;
+  }
+  try {
+    return semverGt(latestVersion, installedVersion);
+  } catch {
+    return false;
+  }
+}
+
 // Make a request to the server status API and the Github releases API
 // and return a release if it's newer than the server version.
 export async function upgradeVersionAvailable(currentVersion) {
