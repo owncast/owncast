@@ -32,6 +32,7 @@ import (
 	"github.com/owncast/owncast/services/plugins"
 	"github.com/owncast/owncast/services/plugins/kv"
 	"github.com/owncast/owncast/services/stream"
+	"github.com/owncast/owncast/utils"
 )
 
 // pluginsEnabledConfigKey is the datastore key under which the set of
@@ -96,6 +97,10 @@ type Host struct {
 	kv kv.Store
 	// tickCancel stops the once-a-second tick goroutine when the host stops.
 	tickCancel context.CancelFunc
+	// getRequestUser resolves a viewer's chat identity from an HTTP request
+	// (via the accessToken query parameter). Used by PageContent and Tabs to
+	// pass viewer identity to dynamic onPageContent / onTabContent handlers.
+	getRequestUser func(*http.Request) *plugins.HostUser
 }
 
 // runtimeActionsConfigKey is the reserved key inside a plugin's own
@@ -179,52 +184,111 @@ func (p *Host) ScriptsContent() []byte {
 }
 
 // PageContent returns the concatenated HTML bytes contributed by
-// every loaded plugin's manifest.extraPageContent file, each preceded
+// every loaded plugin's manifest.extraPageContent, each preceded
 // by an `<!-- plugin: <slug> ... -->` delimiter for in-page
 // attribution. The /api/config handler prepends these bytes to the
 // admin's rendered extraPageContent so plugin HTML lands at the top
 // of the extra-content block. Markdown rendering is skipped for
 // plugin HTML so the markdown processor can't mangle it.
-func (p *Host) PageContent() []byte {
-	return p.readManifestAssets(
-		func(m *plugins.Manifest) []string {
-			if m.ExtraPageContent == "" {
-				return nil
-			}
-			return []string{m.ExtraPageContent}
-		},
-		"<!-- plugin: %s — %s -->\n",
-	)
-}
-
-// Tabs returns every viewer-page tab contributed by loaded plugins
-// via manifest.tabs. Each tab's content file is read from the
-// plugin's assets/ directory once per call; tabs whose file can't be
-// read are skipped (logged) so a broken file doesn't take down the
-// rest of the list. /api/config emits the result as `pluginTabs`,
-// which the viewer page renders alongside the built-in tabs.
-func (p *Host) Tabs() []models.PluginTab {
+func (p *Host) PageContent(r *http.Request) []byte {
 	if p == nil || p.manager == nil {
 		return nil
 	}
-	var out []models.PluginTab
+	var user *plugins.HostUser
+	if p.getRequestUser != nil && r != nil {
+		user = p.getRequestUser(r)
+	}
+	var buf bytes.Buffer
 	for _, l := range p.manager.Snapshot() {
-		if l == nil || l.Manifest == nil || l.AssetsFS == nil {
+		if l == nil || l.Manifest == nil || l.Manifest.ExtraPageContent == nil {
 			continue
 		}
+		epc := l.Manifest.ExtraPageContent
 		slug := l.Manifest.Slug
-		pluginPrefix := "/plugins/" + slug + "/"
-		for _, tab := range l.Manifest.Tabs {
-			relPath := strings.TrimPrefix(tab.Content, pluginPrefix)
-			data, err := fs.ReadFile(l.AssetsFS, relPath)
-			if err != nil {
-				log.Warnf("plugin %s: skipping tab %q (%s): %v", slug, tab.Title, relPath, err)
+		var html string
+		if epc.Content != "" {
+			// Static: read from assets/.
+			if l.AssetsFS == nil {
+				log.Warnf("plugin %s: extraPageContent has content but no AssetsFS", slug)
 				continue
 			}
+			pluginPrefix := "/plugins/" + slug + "/"
+			relPath := strings.TrimPrefix(epc.Content, pluginPrefix)
+			data, err := fs.ReadFile(l.AssetsFS, relPath)
+			if err != nil {
+				log.Warnf("plugin %s: skipping extraPageContent (%s): %v", slug, relPath, err)
+				continue
+			}
+			html = string(data)
+		} else {
+			// Dynamic: call on_page_content with the requesting viewer's identity.
+			var err error
+			html, err = l.CallPageContent(context.Background(), epc.Slug, user)
+			if err != nil {
+				log.Warnf("plugin %s: on_page_content(%q) error: %v", slug, epc.Slug, err)
+				continue
+			}
+		}
+		fmt.Fprintf(&buf, "<!-- plugin: %s — %s -->\n", slug, epc.Slug)
+		buf.WriteString(html)
+	}
+	return buf.Bytes()
+}
+
+// Tabs returns every viewer-page tab contributed by loaded plugins
+// via manifest.tabs. Each tab's content is either read from the
+// plugin's assets/ directory (static) or fetched by calling the
+// plugin's on_tab_content export (dynamic). Tabs whose content can't
+// be resolved are skipped (logged) so a broken file doesn't take down
+// the rest of the list. /api/config emits the result as `pluginTabs`,
+// which the viewer page renders alongside the built-in tabs.
+func (p *Host) Tabs(r *http.Request) []models.PluginTab {
+	if p == nil || p.manager == nil {
+		return nil
+	}
+	var user *plugins.HostUser
+	if p.getRequestUser != nil && r != nil {
+		user = p.getRequestUser(r)
+	}
+	var out []models.PluginTab
+	for _, l := range p.manager.Snapshot() {
+		if l == nil || l.Manifest == nil {
+			continue
+		}
+		pluginSlug := l.Manifest.Slug
+		pluginPrefix := "/plugins/" + pluginSlug + "/"
+		for _, tab := range l.Manifest.Tabs {
+			var html string
+			if tab.Content != "" {
+				// Static: read from assets/.
+				if l.AssetsFS == nil {
+					log.Warnf("plugin %s: tab %q has content but no AssetsFS", pluginSlug, tab.Title)
+					continue
+				}
+				relPath := strings.TrimPrefix(tab.Content, pluginPrefix)
+				data, err := fs.ReadFile(l.AssetsFS, relPath)
+				if err != nil {
+					log.Warnf("plugin %s: skipping tab %q (%s): %v", pluginSlug, tab.Title, relPath, err)
+					continue
+				}
+				html = string(data)
+			} else {
+				// Dynamic: call on_tab_content with the requesting viewer's identity.
+				var err error
+				html, err = l.CallTabContent(context.Background(), tab.Slug, user)
+				if err != nil {
+					log.Warnf("plugin %s: on_tab_content(%q) error: %v", pluginSlug, tab.Slug, err)
+					continue
+				}
+			}
+			// Use pluginSlug/tabSlug as the composite React key so two
+			// plugins can each have a tab with the same slug without
+			// colliding in the viewer page's tab row.
 			out = append(out, models.PluginTab{
-				Slug:  slug,
-				Title: tab.Title,
-				HTML:  string(data),
+				Slug:       pluginSlug + "/" + tab.Slug,
+				PluginSlug: pluginSlug,
+				Title:      tab.Title,
+				HTML:       html,
 			})
 		}
 	}
@@ -378,6 +442,7 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 		requireAdminAuth: deps.RequireAdminAuth,
 		kv:               env.KV,
 		tickCancel:       tickCancel,
+		getRequestUser:   env.GetRequestUser,
 	}, nil
 }
 
@@ -1170,7 +1235,7 @@ func wireRequestHostFns(env *plugins.HostEnv, deps Deps) {
 	env.IsAuthenticated = deps.IsAdminRequest
 
 	env.GetRequestUser = func(r *http.Request) *plugins.HostUser {
-		token := r.URL.Query().Get("accessToken")
+		token := utils.ChatAccessTokenFromRequest(r)
 		if token == "" {
 			return nil
 		}

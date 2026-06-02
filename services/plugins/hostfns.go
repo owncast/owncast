@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"os"
 	"strings"
@@ -335,7 +336,7 @@ type HostEnv struct {
 // plugin should be granted, based on its declared permissions. A plugin
 // only sees imports for permissions it declared; importing anything else
 // will fail to link at instantiation time.
-func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction {
+func BuildHostFunctions(env *HostEnv, manifest *Manifest, assetsFS fs.FS) []extism.HostFunction {
 	var fns []extism.HostFunction
 	granted := stringSet(manifest.Permissions)
 
@@ -414,6 +415,8 @@ func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction 
 	// Config is ambient too: reading the plugin's own manifest-declared config
 	// (admin override, else declared default) is benign and needs no grant.
 	fns = append(fns, hostConfigGet(env, manifest))
+	// Asset reading is ambient: a plugin reads only files it shipped itself.
+	fns = append(fns, hostAssetRead(assetsFS))
 	if granted[PermUIModify] {
 		fns = append(fns,
 			hostAddActions(env, manifest),
@@ -781,6 +784,42 @@ func hostConfigGet(env *HostEnv, manifest *Manifest) extism.HostFunction {
 				return
 			}
 			data, err := json.Marshal(value)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostAssetRead backs owncast.assets.read/readText. Reads a file from the
+// plugin's bundled assets/ directory. The path must be relative — no ".."
+// segments, no leading "/". Returns 0 when assetsFS is nil or the file
+// doesn't exist. Ambient — no permission required.
+func hostAssetRead(assetsFS fs.FS) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_asset_read",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			path, err := p.ReadString(stack[0])
+			if err != nil || assetsFS == nil {
+				stack[0] = 0
+				return
+			}
+			if strings.Contains(path, "..") || strings.HasPrefix(path, "/") {
+				stack[0] = 0
+				return
+			}
+			data, err := fs.ReadFile(assetsFS, path)
 			if err != nil {
 				stack[0] = 0
 				return

@@ -22,6 +22,7 @@
   },
   "hostFunctions": [
     "owncast_add_actions",
+    "owncast_asset_read",
     "owncast_ban_ip",
     "owncast_chat_clients",
     "owncast_chat_history",

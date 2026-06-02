@@ -75,17 +75,17 @@ func (h *Handlers) GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	middleware.DisableCache(w)
 	w.Header().Set("Content-Type", "application/json")
 
-	configuration := h.getConfigResponse()
+	configuration := h.getConfigResponse(r)
 
 	if err := json.NewEncoder(w).Encode(configuration); err != nil {
 		webutils.BadRequestHandler(w, err)
 	}
 }
 
-func (h *Handlers) getConfigResponse() webConfigResponse {
+func (h *Handlers) getConfigResponse(r *http.Request) webConfigResponse {
 	configRepository := h.configRepository
 	pageContent := utils.RenderPageContentMarkdown(configRepository.GetExtraPageBodyContent())
-	pageContent = prependPluginPageContent(pageContent, h.pluginPageContent)
+	pageContent = prependPluginPageContent(pageContent, r, h.pluginPageContent)
 	offlineMessage := utils.RenderSimpleMarkdown(configRepository.GetCustomOfflineMessage())
 	socialHandles := configRepository.GetSocialHandles()
 	for i, handle := range socialHandles {
@@ -147,7 +147,7 @@ func (h *Handlers) getConfigResponse() webConfigResponse {
 		ChatSpamProtectionDisabled: configRepository.GetChatSpamProtectionEnabled(),
 		ChatRequireAuthentication:  configRepository.GetChatRequireAuthentication(),
 		ExternalActions:            mergePluginActions(configRepository.GetExternalActions(), h.pluginActions),
-		PluginTabs:                 pluginTabsOrEmpty(h.pluginTabs),
+		PluginTabs:                 pluginTabsOrEmpty(r, h.pluginTabs),
 		CustomStyles:               mergePluginCSS(configRepository.GetCustomStyles(), h.pluginCSSContent),
 		MaxSocketPayloadSize:       config.MaxSocketPayloadSize,
 		Federation:                 federationResponse,
@@ -163,11 +163,11 @@ func (h *Handlers) getConfigResponse() webConfigResponse {
 // returns nothing. The empty-slice contract keeps the JSON wire
 // shape stable: `pluginTabs: []` rather than `null`, so the viewer
 // doesn't need a defensive nil-check before iterating.
-func pluginTabsOrEmpty(getter func() []models.PluginTab) []models.PluginTab {
+func pluginTabsOrEmpty(r *http.Request, getter func(*http.Request) []models.PluginTab) []models.PluginTab {
 	if getter == nil {
 		return []models.PluginTab{}
 	}
-	if t := getter(); len(t) > 0 {
+	if t := getter(r); len(t) > 0 {
 		return t
 	}
 	return []models.PluginTab{}
@@ -179,11 +179,11 @@ func pluginTabsOrEmpty(getter func() []models.PluginTab) []models.PluginTab {
 // the admin's prose. A nil getter or empty contribution leaves the
 // admin's value untouched. A newline separates the two sources so
 // the trailing markup of one can't run into the next.
-func prependPluginPageContent(admin string, pluginHTML func() []byte) string {
+func prependPluginPageContent(admin string, r *http.Request, pluginHTML func(*http.Request) []byte) string {
 	if pluginHTML == nil {
 		return admin
 	}
-	bytes := pluginHTML()
+	bytes := pluginHTML(r)
 	if len(bytes) == 0 {
 		return admin
 	}

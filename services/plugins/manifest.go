@@ -78,19 +78,13 @@ type Manifest struct {
 	// ui.modify permission (it's running inside Owncast's chrome)
 	// and http.serve (the host serves the bytes).
 	Scripts []string `json:"scripts,omitempty"`
-	// ExtraPageContent is an HTML file the plugin contributes to the
-	// viewer page's extra-content block. The host reads the file's
-	// bytes and prepends them to the admin's extraPageContent in the
-	// /api/config response (after the admin's markdown is rendered)
-	// so plugin HTML never goes through the markdown processor and
-	// can't be mangled by it. Path rules match styles/scripts (bare
-	// paths auto-prefix to /plugins/<slug>/, cross-plugin and
-	// http(s):// URLs rejected, .html extension required). Only one
-	// file per plugin so the prepended block stays predictable.
-	// Requires ui.modify (the plugin paints inside Owncast's chrome);
-	// http.serve is not required because the HTML is inlined into
-	// the API response, not served as a URL.
-	ExtraPageContent string `json:"extraPageContent,omitempty"`
+	// ExtraPageContent declares the plugin's contribution to the viewer
+	// page's extra-content block. When Content is set, the host reads
+	// that HTML file's bytes and prepends them to the admin's
+	// extraPageContent in the /api/config response. When Content is
+	// absent, the host calls on_page_content(slug, user) to get
+	// rendered HTML dynamically. Requires ui.modify.
+	ExtraPageContent *ExtraPageContent `json:"extraPageContent,omitempty"`
 	// Tabs declares viewer-page tabs the plugin contributes to the
 	// row of tabs Owncast renders next to chat (alongside built-ins
 	// like Followers). Each entry's `content` is a relative path to
@@ -100,13 +94,24 @@ type Manifest struct {
 	Tabs []Tab `json:"tabs,omitempty"`
 }
 
-// Tab is a single viewer-page tab a plugin contributes via
-// manifest.tabs. Title is the label shown in the tab bar; Content is
-// a relative path to an HTML file the host reads from the plugin's
-// assets/ directory and inlines into the tab body.
+// Tab declares one viewer-page tab. Title is the label shown in the
+// UI. Slug is the stable identifier passed to the plugin's
+// onTabContent handler. Content is the optional path to a static HTML
+// file under assets/; when omitted the host calls on_tab_content with
+// the slug to get rendered HTML.
 type Tab struct {
 	Title   string `json:"title"`
-	Content string `json:"content"`
+	Slug    string `json:"slug"`
+	Content string `json:"content,omitempty"`
+}
+
+// ExtraPageContent declares the plugin's contribution to the viewer
+// page's extra-content block. Slug identifies the slot; Content is
+// an optional static HTML file path. When Content is absent the host
+// calls on_page_content(slug, user) to get rendered HTML.
+type ExtraPageContent struct {
+	Slug    string `json:"slug"`
+	Content string `json:"content,omitempty"`
 }
 
 // BotConfig is the chat-bot-specific configuration for plugins that
@@ -403,12 +408,8 @@ func (m *Manifest) validateStyles() error {
 				"so it's visible to anyone reviewing the manifest that the " +
 				"plugin restyles Owncast's UI")
 	}
-	if !m.hasPermission(PermHttpServe) {
-		return errors.New(
-			"manifest.styles requires the \"http.serve\" permission so the " +
-				"host can serve the bundled CSS files at /plugins/<slug>/ " +
-				"URLs")
-	}
+	// http.serve is not required: the host reads each file from the plugin's
+	// assets/ directory and inlines the bytes into customStyles on /api/config.
 	for i, raw := range m.Styles {
 		rewritten, err := rewritePluginAssetPath(m.Slug, raw, ".css")
 		if err != nil {
@@ -421,10 +422,9 @@ func (m *Manifest) validateStyles() error {
 
 // validateScripts checks manifest.scripts entries and rewrites them
 // into absolute plugin-namespace URLs. Same rules as validateStyles
-// applied to .js files: each becomes a <script src=...> on the viewer
-// page, which runs in the chrome's window context. Permission gating
-// matches styles (ui.modify + http.serve) since scripts can manipulate
-// anything the viewer renders.
+// applied to .js files: each is inlined into /customjavascript and
+// runs in the viewer's window context. Only ui.modify is required;
+// http.serve is not needed since the bytes come from assets/, not a URL.
 func (m *Manifest) validateScripts() error {
 	if len(m.Scripts) == 0 {
 		return nil
@@ -437,12 +437,8 @@ func (m *Manifest) validateScripts() error {
 				"so it's visible to anyone reviewing the manifest that the " +
 				"plugin runs code inside Owncast's chrome")
 	}
-	if !m.hasPermission(PermHttpServe) {
-		return errors.New(
-			"manifest.scripts requires the \"http.serve\" permission so " +
-				"the host can serve the bundled JavaScript files at " +
-				"/plugins/<slug>/ URLs")
-	}
+	// http.serve is not required: the host reads each file from the plugin's
+	// assets/ directory and inlines the bytes into /customjavascript.
 	for i, raw := range m.Scripts {
 		rewritten, err := rewritePluginAssetPath(m.Slug, raw, ".js")
 		if err != nil {
@@ -453,15 +449,8 @@ func (m *Manifest) validateScripts() error {
 	return nil
 }
 
-// validateExtraPageContent checks manifest.extraPageContent and
-// rewrites it into the plugin's namespace. The file's bytes are
-// inlined into the /api/config extraPageContent response (prepended
-// to the admin's content), not served as a URL, so http.serve is not
-// required, but the same path-shape and extension rules apply for
-// consistency with styles and scripts. ui.modify is required because
-// the contributed HTML lands inside the viewer chrome.
 func (m *Manifest) validateExtraPageContent() error {
-	if m.ExtraPageContent == "" {
+	if m.ExtraPageContent == nil {
 		return nil
 	}
 	if !m.hasPermission(PermUIModify) {
@@ -472,19 +461,19 @@ func (m *Manifest) validateExtraPageContent() error {
 				"it's visible to anyone reviewing the manifest that the " +
 				"plugin paints inside Owncast's chrome")
 	}
-	rewritten, err := rewritePluginAssetPath(m.Slug, m.ExtraPageContent, ".html")
-	if err != nil {
-		return fmt.Errorf("manifest.extraPageContent: %w", err)
+	if err := validatePluginSlug("manifest.extraPageContent.slug", m.ExtraPageContent.Slug); err != nil {
+		return err
 	}
-	m.ExtraPageContent = rewritten
+	if m.ExtraPageContent.Content != "" {
+		rewritten, err := rewritePluginAssetPath(m.Slug, m.ExtraPageContent.Content, ".html")
+		if err != nil {
+			return fmt.Errorf("manifest.extraPageContent.content: %w", err)
+		}
+		m.ExtraPageContent.Content = rewritten
+	}
 	return nil
 }
 
-// validateTabs checks manifest.tabs entries and rewrites each tab's
-// content path into the plugin's namespace. The host reads the bytes
-// from assets/ at request time and inlines the HTML into the tab
-// body on /api/config (no URL is served), so only ui.modify is
-// required.
 func (m *Manifest) validateTabs() error {
 	if len(m.Tabs) == 0 {
 		return nil
@@ -497,25 +486,43 @@ func (m *Manifest) validateTabs() error {
 				"visible to anyone reviewing the manifest that the " +
 				"plugin paints inside Owncast's chrome")
 	}
-	// Reject duplicate titles within the same plugin. The frontend
-	// derives a React key from (slug, title), and a viewer staring at
-	// a row of two identically-named tabs has no way to tell them
-	// apart anyway, so making the manifest reject this at load is
-	// strictly better than silently accepting it.
 	seenTitles := make(map[string]bool, len(m.Tabs))
-	for i, tab := range m.Tabs {
-		if strings.TrimSpace(tab.Title) == "" {
+	seenSlugs := make(map[string]bool, len(m.Tabs))
+	for i := range m.Tabs {
+		if strings.TrimSpace(m.Tabs[i].Title) == "" {
 			return fmt.Errorf("manifest.tabs[%d].title is required", i)
 		}
-		if seenTitles[tab.Title] {
-			return fmt.Errorf("manifest.tabs[%d].title %q is a duplicate; tab titles must be unique within a plugin", i, tab.Title)
+		if seenTitles[m.Tabs[i].Title] {
+			return fmt.Errorf("manifest.tabs[%d].title %q is a duplicate; tab titles must be unique within a plugin", i, m.Tabs[i].Title)
 		}
-		seenTitles[tab.Title] = true
-		rewritten, err := rewritePluginAssetPath(m.Slug, tab.Content, ".html")
-		if err != nil {
-			return fmt.Errorf("manifest.tabs[%d].content: %w", i, err)
+		seenTitles[m.Tabs[i].Title] = true
+		if err := validatePluginSlug(fmt.Sprintf("manifest.tabs[%d].slug", i), m.Tabs[i].Slug); err != nil {
+			return err
 		}
-		m.Tabs[i].Content = rewritten
+		if seenSlugs[m.Tabs[i].Slug] {
+			return fmt.Errorf("manifest.tabs[%d].slug %q is a duplicate; tab slugs must be unique within a plugin", i, m.Tabs[i].Slug)
+		}
+		seenSlugs[m.Tabs[i].Slug] = true
+		if m.Tabs[i].Content != "" {
+			rewritten, err := rewritePluginAssetPath(m.Slug, m.Tabs[i].Content, ".html")
+			if err != nil {
+				return fmt.Errorf("manifest.tabs[%d].content: %w", i, err)
+			}
+			m.Tabs[i].Content = rewritten
+		}
+	}
+	return nil
+}
+
+// validatePluginSlug checks that s is a non-empty, valid plugin-style
+// slug (lowercase letters/digits/hyphens, starting with a letter, max
+// 64 chars). field is used in error messages.
+func validatePluginSlug(field, s string) error {
+	if strings.TrimSpace(s) == "" {
+		return fmt.Errorf("%s is required", field)
+	}
+	if !slugPattern.MatchString(s) {
+		return fmt.Errorf("%s %q must be lowercase letters, digits, and hyphens starting with a letter (max 64 chars)", field, s)
 	}
 	return nil
 }

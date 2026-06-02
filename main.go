@@ -365,8 +365,8 @@ func main() {
 	var pluginActions func() []models.ExternalAction
 	var pluginCSSContent func() []byte
 	var pluginJSContent func() []byte
-	var pluginPageContent func() []byte
-	var pluginTabs func() []models.PluginTab
+	var pluginPageContent func(*http.Request) []byte
+	var pluginTabs func(*http.Request) []models.PluginTab
 	if pluginHostInstance != nil {
 		pluginActions = pluginHostInstance.Actions
 		pluginCSSContent = pluginHostInstance.StylesContent
