@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/grafov/m3u8"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
@@ -33,11 +32,12 @@ func (s *Service) appendOfflineToVariantPlaylist(index int, playlistFilePath str
 		return
 	}
 
-	// Manually append the offline clip to the end of the media playlist.
+	// Manually append the offline fMP4 clip to the end of the media playlist.
 	_, _ = atomicWriteTmpPlaylistFile.WriteString("#EXT-X-DISCONTINUITY\n")
+	_, _ = atomicWriteTmpPlaylistFile.WriteString("#EXT-X-MAP:URI=\"offline-init.mp4\"\n")
 	// If "offline" content gets changed then change the duration below
 	_, _ = atomicWriteTmpPlaylistFile.WriteString("#EXTINF:8.000000,\n")
-	_, _ = atomicWriteTmpPlaylistFile.WriteString("offline-v2.ts\n")
+	_, _ = atomicWriteTmpPlaylistFile.WriteString("offline-v2.m4s\n")
 	_, _ = atomicWriteTmpPlaylistFile.WriteString("#EXT-X-ENDLIST\n")
 
 	if err := atomicWriteTmpPlaylistFile.Close(); err != nil {
@@ -49,48 +49,96 @@ func (s *Service) appendOfflineToVariantPlaylist(index int, playlistFilePath str
 	}
 }
 
-func (s *Service) makeVariantIndexOffline(index int, offlineFilePath string, offlineFilename string) {
+func (s *Service) makeVariantIndexOffline(index int, offlineInitSrcPath string, offlineSegmentSrcPath string) {
 	playlistFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/stream.m3u8"), index)
-	segmentFilePath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/%s"), index, offlineFilename)
 
-	if err := utils.Copy(offlineFilePath, segmentFilePath); err != nil {
+	// Copy the fMP4 init segment for offline playback.
+	initDestPath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/offline-init.mp4"), index)
+	if err := utils.Copy(offlineInitSrcPath, initDestPath); err != nil {
+		log.Warnln(err)
+	}
+	if _, err := s.storage.Save(initDestPath, 0); err != nil {
 		log.Warnln(err)
 	}
 
-	if _, err := s.storage.Save(segmentFilePath, 0); err != nil {
+	// Copy the fMP4 media segment for offline playback.
+	segmentDestPath := fmt.Sprintf(filepath.Join(config.HLSStoragePath, "%d/offline-v2.m4s"), index)
+	if err := utils.Copy(offlineSegmentSrcPath, segmentDestPath); err != nil {
+		log.Warnln(err)
+	}
+	if _, err := s.storage.Save(segmentDestPath, 0); err != nil {
 		log.Warnln(err)
 	}
 
 	if utils.DoesFileExists(playlistFilePath) {
 		s.appendOfflineToVariantPlaylist(index, playlistFilePath)
 	} else {
-		createEmptyOfflinePlaylist(playlistFilePath, offlineFilename)
+		createEmptyOfflinePlaylist(playlistFilePath)
 	}
 	if _, err := s.storage.Save(playlistFilePath, 0); err != nil {
 		log.Warnln(err)
 	}
 }
 
-func createEmptyOfflinePlaylist(playlistFilePath string, offlineFilename string) {
-	p, err := m3u8.NewMediaPlaylist(1, 1)
-	if err != nil {
-		log.Errorln(err)
-	}
-
-	// If "offline" content gets changed then change the duration below
-	if err := p.Append(offlineFilename, 8.0, ""); err != nil {
-		log.Errorln(err)
-	}
-
-	p.Close()
+func createEmptyOfflinePlaylist(playlistFilePath string) {
 	f, err := os.Create(playlistFilePath) //nolint:gosec
 	if err != nil {
 		log.Errorln(err)
+		return
 	}
-	defer f.Close()
-	if _, err := f.Write(p.Encode().Bytes()); err != nil {
-		log.Errorln(err)
+
+	// Write a minimal fMP4-compatible HLS media playlist for the offline state.
+	content := "#EXTM3U\n" +
+		"#EXT-X-VERSION:6\n" +
+		"#EXT-X-TARGETDURATION:8\n" +
+		"#EXT-X-MEDIA-SEQUENCE:0\n" +
+		"#EXT-X-MAP:URI=\"offline-init.mp4\"\n" +
+		// If "offline" content gets changed then change the duration below
+		"#EXTINF:8.000000,\n" +
+		"offline-v2.m4s\n" +
+		"#EXT-X-ENDLIST\n"
+
+	if _, err = f.WriteString(content); err != nil {
+		log.Errorln("error writing empty offline playlist:", err)
 	}
+
+	if err = f.Close(); err != nil {
+		log.Errorln("error closing offline playlist file:", err)
+	}
+}
+
+func saveOfflineFMP4ToDisk(tempDir string) (initPath string, segmentPath string, err error) {
+	initData := static.GetOfflineInitSegment()
+	initTmp, err := os.CreateTemp(tempDir, "offline-init-*.mp4")
+	if err != nil {
+		return "", "", fmt.Errorf("unable to create temp file for offline init segment: %s", err)
+	}
+
+	if _, err = initTmp.Write(initData); err != nil {
+		return "", "", fmt.Errorf("unable to write offline init segment to disk: %s", err)
+	}
+
+	if err = initTmp.Close(); err != nil {
+		return "", "", fmt.Errorf("unable to close offline init segment temp file: %s", err)
+	}
+	initPath, _ = filepath.Abs(initTmp.Name())
+
+	segData := static.GetOfflineMediaSegment()
+	segTmp, err := os.CreateTemp(tempDir, "offline-v2-*.m4s")
+	if err != nil {
+		return "", "", fmt.Errorf("unable to create temp file for offline media segment: %s", err)
+	}
+
+	if _, err = segTmp.Write(segData); err != nil {
+		return "", "", fmt.Errorf("unable to write offline media segment to disk: %s", err)
+	}
+
+	if err = segTmp.Close(); err != nil {
+		return "", "", fmt.Errorf("unable to close offline media segment temp file: %s", err)
+	}
+	segmentPath, _ = filepath.Abs(segTmp.Name())
+
+	return initPath, segmentPath, nil
 }
 
 func saveOfflineClipToDisk(tempDir, offlineFilename string) (string, error) {
