@@ -266,7 +266,9 @@ func (t *Transcoder) getFlags() *execInfo {
 	ffmpegFlags = append(ffmpegFlags, hlsOptionsString...)
 	ffmpegFlags = append(ffmpegFlags, hlsEventString...)
 	ffmpegFlags = append(ffmpegFlags, []string{
-		"-segment_format_options", "mpegts_flags=mpegts_copyts=1",
+		"-hls_segment_type", "fmp4",
+		"-hls_fmp4_init_filename", "init.mp4",
+		"-bsf:a", "aac_adtstoasc", // Convert AAC ADTS headers to ASC for fMP4 container compatibility
 	}...)
 	ffmpegFlags = append(ffmpegFlags, t.codec.ExtraArguments()...)
 
@@ -278,7 +280,7 @@ func (t *Transcoder) getFlags() *execInfo {
 		// Filenames
 		"-master_pl_name", "stream.m3u8",
 
-		"-hls_segment_filename", localListenerAddress + "/%v/stream-" + t.segmentIdentifier + "-%d.ts", // Send HLS segments back to us over HTTP
+		"-hls_segment_filename", localListenerAddress + "/%v/stream-" + t.segmentIdentifier + "-%d.m4s", // Send HLS segments back to us over HTTP
 		"-max_muxing_queue_size", "400", // Workaround for Too many packets error: https://trac.ffmpeg.org/ticket/6375?cversion=0
 
 		"-method", "PUT", // HLS results sent back to us will be over PUTs

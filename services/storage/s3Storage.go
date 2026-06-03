@@ -310,7 +310,7 @@ func (s *S3Storage) retrieveAllVideoSegments() ([]s3object, error) {
 			return nil, errors.Wrap(err, "Unable to fetch list of items in bucket for cleanup")
 		}
 		for _, item := range page.Contents {
-			if strings.HasSuffix(*item.Key, ".ts") {
+			if strings.HasSuffix(*item.Key, ".m4s") {
 				allObjects = append(allObjects, s3object{
 					key:          *item.Key,
 					lastModified: *item.LastModified,
