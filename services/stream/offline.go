@@ -32,7 +32,7 @@ func (s *Service) appendOfflineToVariantPlaylist(index int, playlistFilePath str
 		return
 	}
 
-	// Manually append the offline clip to the end of the media playlist.
+	// Manually append the offline fMP4 clip to the end of the media playlist.
 	_, _ = atomicWriteTmpPlaylistFile.WriteString("#EXT-X-DISCONTINUITY\n")
 	_, _ = fmt.Fprintf(atomicWriteTmpPlaylistFile, "#EXT-X-MAP:URI=\"%s\"\n", initFilename)
 	// If "offline" content gets changed then change the duration below

@@ -264,13 +264,16 @@ func (s *Service) applyStreamOffline() {
 		}
 	}
 
-	offlineFilename := "offline-v2.ts"
-
-	offlineFilePath, err := saveOfflineClipToDisk(s.cfg.TempDir, offlineFilename)
+	offlineInitPath, offlineSegmentPath, err := saveOfflineFMP4ToDisk()
 	if err != nil {
 		log.Errorln(err)
 		return
 	}
+	// Clean up temp files after all variants have been updated.
+	defer func() {
+		_ = os.Remove(offlineInitPath)
+		_ = os.Remove(offlineSegmentPath)
+	}()
 
 	if s.thumbnailGen != nil {
 		s.thumbnailGen.Stop()
@@ -292,7 +295,7 @@ func (s *Service) applyStreamOffline() {
 	}
 
 	for index := range s.currentBroadcast.OutputSettings {
-		s.makeVariantIndexOffline(index, offlineFilePath, offlineFilename)
+		s.makeVariantIndexOffline(index, offlineInitPath, offlineSegmentPath)
 	}
 
 	s.StartOfflineCleanupTimer()

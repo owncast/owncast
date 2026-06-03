@@ -105,7 +105,6 @@ func (g *ThumbnailGenerator) fireThumbnailGenerator(segmentPath string, variantI
 	if !utils.DoesFileExists(mostRecentFile) {
 		return nil
 	}
-
 	// fMP4 segments require the init segment to be readable by ffmpeg
 	inputArg := fmt.Sprintf("concat:%s|%s", initSegment, mostRecentFile)
 	ffmpegPath := utils.ValidatedFfmpegPath(g.configRepository.GetFfMpegPath())
