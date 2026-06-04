@@ -1,4 +1,4 @@
-import { extractAPIErrorMessage } from '../utils/apis';
+import { extractAPIErrorMessage, fetchData } from '../utils/apis';
 
 describe('extractAPIErrorMessage', () => {
   test('prefers backend error field when present', () => {
@@ -22,5 +22,26 @@ describe('extractAPIErrorMessage', () => {
 
   test('falls back to generic status when no detail exists', () => {
     expect(extractAPIErrorMessage(418, null, '')).toBe('An error has occurred: 418');
+  });
+});
+
+describe('fetchData', () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    jest.restoreAllMocks();
+  });
+
+  test('throws when a successful response contains invalid json', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => '<html>not json</html>',
+    } as Response);
+
+    await expect(fetchData('/api/admin/plugins/registry/install')).rejects.toThrow(
+      'Invalid JSON response from server',
+    );
   });
 });
