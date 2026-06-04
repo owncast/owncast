@@ -23,7 +23,10 @@ source ../tools.sh
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 PLUGIN_SDK_DIR="${PLUGIN_SDK_DIR:-}"
 PLUGIN_SDK_REPO="${PLUGIN_SDK_REPO:-https://github.com/owncast/plugin-sdk}"
-PLUGIN_SDK_REF="${PLUGIN_SDK_REF:-main}"
+# Pin the SDK examples to the last revision that still matches the host's
+# static extraPageContent/tab contract. Newer SDK main examples exercise
+# dynamic UI hooks that this branch does not implement yet.
+PLUGIN_SDK_REF="${PLUGIN_SDK_REF:-5d625a5e95ae56ae5679dae93c09575436d40174}"
 
 # SDK example plugins exercised by the tests in this directory.
 PLUGIN_NAMES=(profanity-filter echo-bot overlay styles-demo scripts-demo viewer-gate page-content-demo tabs-demo)

@@ -597,6 +597,23 @@ func TestParseManifest_ExtraPageContent_RewritesRelativePath(t *testing.T) {
 	}
 }
 
+func TestParseManifest_ExtraPageContent_AcceptsLegacyStringForm(t *testing.T) {
+	m, err := ParseManifest([]byte(`{
+		"api": "1", "name": "page", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"extraPageContent": "content.html"
+	}`))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	if m.ExtraPageContent == nil {
+		t.Fatal("extraPageContent should not be nil")
+	}
+	if m.ExtraPageContent.Content != "/plugins/page/content.html" {
+		t.Errorf("extraPageContent.content = %q, want /plugins/page/content.html", m.ExtraPageContent.Content)
+	}
+}
+
 func TestParseManifest_ExtraPageContent_DoesNotRequireHttpServe(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "page", "version": "1.0",

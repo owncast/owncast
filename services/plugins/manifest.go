@@ -117,6 +117,30 @@ type ExtraPageContent struct {
 	Content string `json:"content"`
 }
 
+// UnmarshalJSON accepts both the current object form:
+//   {"slug":"banner","content":"content.html"}
+// and the legacy string form older SDK examples emitted:
+//   "content.html"
+//
+// The host only consumes Content today, so older packages remain loadable
+// even though they never carried an explicit slot slug.
+func (e *ExtraPageContent) UnmarshalJSON(data []byte) error {
+	var legacy string
+	if err := json.Unmarshal(data, &legacy); err == nil {
+		e.Content = legacy
+		e.Slug = ""
+		return nil
+	}
+
+	type extraPageContentAlias ExtraPageContent
+	var decoded extraPageContentAlias
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	*e = ExtraPageContent(decoded)
+	return nil
+}
+
 // BotConfig is the chat-bot-specific configuration for plugins that
 // post to chat. Optional; defaults to the plugin's DisplayName when
 // unset. Wrapped in a struct so future fields (avatar URL, name
