@@ -283,6 +283,43 @@ func TestHandleRegistryInstall_Success(t *testing.T) {
 	}
 }
 
+func TestHandleRegistryInstall_RejectsUnloadablePackage(t *testing.T) {
+	wasmPath := findExampleWasm(t)
+	wasmBytes, _ := os.ReadFile(wasmPath)
+	pkg := buildPackageBytes(t, []byte(`{
+		"api": "1",
+		"name": "hello-world",
+		"version": "9.9.9",
+		"description": "mismatched manifest/runtime for registry install",
+		"permissions": []
+	}`), wasmBytes)
+	sum := sha256.Sum256(pkg)
+	sha := hex.EncodeToString(sum[:])
+
+	upstream := newRegistryStub(t, "hello-world", "9.9.9", pkg, sha)
+	withRegistryEnv(t, upstream.URL)
+	host := newTestHost(t)
+
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/admin/plugin-registry/install",
+		strings.NewReader(`{"slug":"hello-world","version":"9.9.9"}`))
+	host.handleRegistryInstall(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, want 400 (body=%s)", rec.Code, rec.Body.String())
+	}
+	body := rec.Body.String()
+	if !strings.Contains(body, "plugin cannot be installed") {
+		t.Errorf("error should say plugin cannot be installed, got %s", body)
+	}
+	if !strings.Contains(body, "manifest/runtime mismatch") {
+		t.Errorf("error should surface the load problem, got %s", body)
+	}
+	if len(host.manager.List()) != 0 {
+		t.Fatalf("unloadable package should not be installed")
+	}
+}
+
 // --- /api/admin/plugin-registry/<unknown> ---
 
 func TestHandleRegistryRoute_DispatchesActions(t *testing.T) {
