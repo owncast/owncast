@@ -180,7 +180,7 @@ func TestPluginContractMatchesSDK(t *testing.T) {
 		t.Fatalf("read plugin-contract.json: %v", err)
 	}
 
-	if string(gotJSON) != string(want) {
+	if string(gotJSON) != strings.ReplaceAll(string(want), "\r\n", "\n") {
 		t.Errorf(`Owncast's bundled plugin runtime is out of sync with the plugin SDK.
 
 The plugin host functions, permissions, or data shapes in services/plugins no
