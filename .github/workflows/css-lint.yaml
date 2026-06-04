@@ -47,6 +47,9 @@ jobs:
         uses: tj-actions/changed-files@v47
         with:
           path: 'web'
+          files_ignore: |
+            public/styles/plugin.css
+            styles/variables.css
           files_yaml: |
             src:
               - '**/*.{css,scss}'
