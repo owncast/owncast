@@ -118,9 +118,12 @@ type ExtraPageContent struct {
 }
 
 // UnmarshalJSON accepts both the current object form:
-//   {"slug":"banner","content":"content.html"}
+//
+//	{"slug":"banner","content":"content.html"}
+//
 // and the legacy string form older SDK examples emitted:
-//   "content.html"
+//
+//	"content.html"
 //
 // The host only consumes Content today, so older packages remain loadable
 // even though they never carried an explicit slot slug.

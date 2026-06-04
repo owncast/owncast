@@ -44,7 +44,11 @@ else
 	CLONED_SDK=1
 	# Never block on an interactive credential prompt — fail clearly instead.
 	export GIT_TERMINAL_PROMPT=0
-	git clone --depth 1 --branch "$PLUGIN_SDK_REF" "$PLUGIN_SDK_REPO" "$SDK_DIR"
+	git clone "$PLUGIN_SDK_REPO" "$SDK_DIR"
+	(
+		cd "$SDK_DIR"
+		git checkout "$PLUGIN_SDK_REF"
+	)
 fi
 
 # Tear down the installed plugins (and the SDK clone, but never a local SDK
