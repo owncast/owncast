@@ -702,6 +702,32 @@ func TestParseManifest_Tabs_RewritesContentPaths(t *testing.T) {
 	}
 }
 
+func TestParseManifest_Tabs_AcceptsLegacyStaticTabsWithoutSlugs(t *testing.T) {
+	m, err := ParseManifest([]byte(`{
+		"api": "1", "name": "tabbed", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"tabs": [
+			{ "title": "Music", "content": "music.html" },
+			{ "title": "Schedule", "content": "/schedule.html" }
+		]
+	}`))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	want := []Tab{
+		{Title: "Music", Slug: "music", Content: "/plugins/tabbed/music.html"},
+		{Title: "Schedule", Slug: "schedule", Content: "/plugins/tabbed/schedule.html"},
+	}
+	if len(m.Tabs) != len(want) {
+		t.Fatalf("tabs count: got %d want %d", len(m.Tabs), len(want))
+	}
+	for i, w := range want {
+		if m.Tabs[i] != w {
+			t.Errorf("tabs[%d] = %+v, want %+v", i, m.Tabs[i], w)
+		}
+	}
+}
+
 func TestParseManifest_Tabs_RequiresUIModify(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "tabbed", "version": "1.0",

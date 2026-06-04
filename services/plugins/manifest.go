@@ -541,7 +541,16 @@ func (m *Manifest) validateTabs() error {
 			return fmt.Errorf("manifest.tabs[%d].title %q is a duplicate; tab titles must be unique within a plugin", i, m.Tabs[i].Title)
 		}
 		seenTitles[m.Tabs[i].Title] = true
-		if err := validatePluginSlug(fmt.Sprintf("manifest.tabs[%d].slug", i), m.Tabs[i].Slug); err != nil {
+		if strings.TrimSpace(m.Tabs[i].Slug) == "" {
+			if m.Tabs[i].Content == "" {
+				return fmt.Errorf("manifest.tabs[%d].slug is required", i)
+			}
+			derived, err := slugify(m.Tabs[i].Title)
+			if err != nil {
+				return fmt.Errorf("manifest.tabs[%d].slug is required and could not be derived from title %q: %w", i, m.Tabs[i].Title, err)
+			}
+			m.Tabs[i].Slug = derived
+		} else if err := validatePluginSlug(fmt.Sprintf("manifest.tabs[%d].slug", i), m.Tabs[i].Slug); err != nil {
 			return err
 		}
 		if seenSlugs[m.Tabs[i].Slug] {
