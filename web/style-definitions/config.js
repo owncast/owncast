@@ -20,10 +20,9 @@ module.exports = {
       // This allows you to mix different types of files in your token source
       pattern: /\.yaml$/,
       // the parse function takes a single argument, which is an object with
-      // 2 attributes: contents which is a string of the file contents, and
-      // filePath which is the path of the file.
-      // The function is expected to return a plain object.
-      parse: ({ contents, filePath }) => yaml.parse(contents),
+      // a `contents` string (the file contents) and a `filePath`. We only
+      // need contents. The function is expected to return a plain object.
+      parse: ({ contents }) => yaml.parse(contents),
     },
   ],
   source: [`tokens/**/*.yaml`],
@@ -34,6 +33,17 @@ module.exports = {
       files: [
         {
           destination: 'variables.css',
+          format: 'css/variables',
+          options: {
+            fileHeader: 'myCustomHeader',
+          },
+        },
+        {
+          // The :root token block for the served plugin stylesheet. build.sh
+          // appends the hand-authored element baseline (plugin-elements.css)
+          // to this to form public/styles/plugin.css. Generated so the token
+          // defaults stay in sync; the element rules only reference tokens.
+          destination: 'plugin.css',
           format: 'css/variables',
           options: {
             fileHeader: 'myCustomHeader',

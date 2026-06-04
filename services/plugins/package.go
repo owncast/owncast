@@ -79,20 +79,13 @@ func LoadPackage(ctx context.Context, env *HostEnv, path string) (*Loaded, error
 	loaded.WasmPath = path
 	loaded.pkgCloser = zr
 
-	// Mount public/ as the plugin's web-served root and assets/ as
-	// the internal-only root, when each is present. fs.Sub returns
-	// an FS that's empty (rather than failing) when the prefix
-	// doesn't exist, so we check first to keep the nil-means-empty
-	// invariant the Server (PublicFS) and the manifest-asset reader
-	// (AssetsFS) rely on.
+	// Mount public/ as the plugin's web-served root. AssetsFS is already set
+	// by loadFromBytes. fs.Sub returns an FS that's empty (rather than failing)
+	// when the prefix doesn't exist, so we check first to keep the
+	// nil-means-empty invariant the Server (PublicFS) relies on.
 	if hasZipDir(&zr.Reader, pkgPublicPrefix) {
 		if sub, err := fs.Sub(&zr.Reader, strings.TrimSuffix(pkgPublicPrefix, "/")); err == nil {
 			loaded.PublicFS = sub
-		}
-	}
-	if hasZipDir(&zr.Reader, pkgAssetsPrefix) {
-		if sub, err := fs.Sub(&zr.Reader, strings.TrimSuffix(pkgAssetsPrefix, "/")); err == nil {
-			loaded.AssetsFS = sub
 		}
 	}
 

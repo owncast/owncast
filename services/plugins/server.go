@@ -74,17 +74,19 @@ const (
 )
 
 // adminStyleHrefs are the host's stylesheet URLs auto-injected into HTML
-// responses on a plugin's manifest-declared admin paths. It's a single
-// dedicated sheet that styles plain HTML elements (input, button, table,
-// label, …) with the Owncast theme tokens — not the surrounding admin's
-// AntD-specific stylesheets, which only apply to .ant-* class selectors
-// the plugin pages don't use.
+// responses on a plugin's manifest-declared admin paths. It's the shared,
+// generated plugin stylesheet (web/style-definitions builds it from the
+// design tokens, so values stay in sync) that styles plain HTML elements
+// (input, button, table, label, …) with the Owncast theme tokens — not the
+// surrounding admin's AntD-specific stylesheets, which only apply to .ant-*
+// class selectors the plugin pages don't use. The viewer-tab iframes inject
+// the same sheet, so admin and tab plugin content share one baseline.
 //
 // The file is served by the Owncast HTTP server (from web/public/styles/
-// in dev, from the bundled admin assets in prod), so the same origin-
-// relative URL works in both modes.
+// in dev, from the bundled assets in prod), so the same origin-relative URL
+// works in both modes.
 var adminStyleHrefs = []string{
-	"/styles/admin/plugin-iframe.css",
+	"/styles/plugin.css",
 }
 
 // adminStyleSnippet is the bytes injected into HTML responses on admin

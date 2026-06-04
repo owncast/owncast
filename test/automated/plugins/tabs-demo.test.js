@@ -19,7 +19,7 @@ test('/api/config pluginTabs advertises both tabs with their inlined HTML', asyn
 	const res = await request.get('/api/config').expect(200);
 	const { pluginTabs } = res.body;
 	expect(Array.isArray(pluginTabs)).toBe(true);
-	const tabs = pluginTabs.filter((t) => t.slug === PLUGIN);
+	const tabs = pluginTabs.filter((t) => t.pluginSlug === PLUGIN);
 	expect(tabs.length).toBe(2);
 
 	const music = tabs.find((t) => t.title === 'Music');
@@ -40,5 +40,5 @@ test('disabling the plugin drops its tabs from /api/config', async () => {
 	const res = await request.get('/api/config').expect(200);
 	const { pluginTabs } = res.body;
 	expect(Array.isArray(pluginTabs)).toBe(true);
-	expect(pluginTabs.find((t) => t.slug === PLUGIN)).toBeUndefined();
+	expect(pluginTabs.find((t) => t.pluginSlug === PLUGIN)).toBeUndefined();
 });

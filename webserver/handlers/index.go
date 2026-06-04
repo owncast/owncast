@@ -47,14 +47,14 @@ func (h *Handlers) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	middleware.SetHeaders(w, fmt.Sprintf("nonce-%s", nonceRandom))
 
 	if isIndexRequest {
-		h.renderIndexHtml(w, nonceRandom)
+		h.renderIndexHtml(w, r, nonceRandom)
 		return
 	}
 
 	serveWeb(w, r)
 }
 
-func (h *Handlers) renderIndexHtml(w http.ResponseWriter, nonce string) {
+func (h *Handlers) renderIndexHtml(w http.ResponseWriter, r *http.Request, nonce string) {
 	type serverSideContent struct {
 		Name             string
 		Summary          string
@@ -76,7 +76,7 @@ func (h *Handlers) renderIndexHtml(w http.ResponseWriter, nonce string) {
 		return
 	}
 
-	config := h.getConfigResponse()
+	config := h.getConfigResponse(r)
 	cb, err := json.Marshal(config)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

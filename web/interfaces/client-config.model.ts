@@ -56,7 +56,8 @@ interface SocialHandle {
 // PluginTab is one viewer-page tab contributed by a plugin via
 // manifest.tabs. Mirrors models.PluginTab on the backend.
 export interface PluginTab {
-  slug: string;
+  slug: string; // composite unique key: pluginSlug/tabSlug
+  pluginSlug: string; // source plugin identifier
   title: string;
   html: string;
 }

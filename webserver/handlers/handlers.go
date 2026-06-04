@@ -79,12 +79,12 @@ type Handlers struct {
 	// contributed by loaded plugins via manifest.extraPageContent.
 	// /api/config prepends these bytes to the admin's rendered
 	// extraPageContent.
-	pluginPageContent func() []byte
+	pluginPageContent func(*http.Request) []byte
 
 	// pluginTabs returns the list of viewer-page tabs contributed by
 	// loaded plugins via manifest.tabs. /api/config emits this list
 	// as `pluginTabs`; the viewer page renders one tab per entry.
-	pluginTabs func() []models.PluginTab
+	pluginTabs func(*http.Request) []models.PluginTab
 
 	// previewThumbCache caches thumbnail/preview bytes for a short window
 	// so frequent polling from chat clients doesn't re-read the file
@@ -134,11 +134,11 @@ type Deps struct {
 	// PluginPageContent returns the concatenated HTML bytes from
 	// each loaded plugin's manifest.extraPageContent. Wired to the
 	// plugin host's PageContent() method.
-	PluginPageContent func() []byte
+	PluginPageContent func(*http.Request) []byte
 	// PluginTabs returns the list of viewer-page tabs contributed by
 	// loaded plugins via manifest.tabs. Wired to the plugin host's
 	// Tabs() method.
-	PluginTabs func() []models.PluginTab
+	PluginTabs func(*http.Request) []models.PluginTab
 }
 
 // HandleWebsocketConnection routes the /ws websocket upgrade to the

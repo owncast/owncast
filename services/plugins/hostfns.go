@@ -291,7 +291,8 @@ type HostEnv struct {
 	// ConfigValue resolves an admin-set override for one of the plugin's
 	// manifest-declared config keys (owncast.config.get). Returns the override
 	// value and true when the admin has set one; false to fall back to the
-	// manifest's declared default. Optional; nil -> defaults only.
+	// manifest's declared default. Optional; nil → defaults only (the common
+	// case until an admin edits the value).
 	ConfigValue func(pluginName, key string) (any, bool)
 	// WriteVideoConfig applies a partial video/transcoding configuration
 	// change. Returns an error the plugin can see if the host rejects the
@@ -319,6 +320,11 @@ type HostEnv struct {
 	// the long-lived connections. Optional; nil → owncast.sse.send is a
 	// no-op even if the plugin declared http.sse.
 	SSE *SSEHub
+	// OnSSESend, when set, is invoked for every owncast.sse.send in addition to
+	// (and independently of) SSE delivery. It exists so the test harness can
+	// observe SSE output, which otherwise vanishes when no browser client is
+	// subscribed. Production leaves it nil. Optional.
+	OnSSESend func(pluginName, channel, event string, data []byte)
 	// Timer schedules host-driven callbacks (owncast.timer.*). Ambient: every
 	// plugin gets the host functions, since a plugin can't setTimeout in the
 	// sandbox. Optional; nil → owncast_timer_set reports success but never
@@ -475,6 +481,9 @@ func hostSSESend(env *HostEnv, pluginName string) extism.HostFunction {
 			data, err := p.ReadBytes(stack[2])
 			if err != nil {
 				return
+			}
+			if env.OnSSESend != nil {
+				env.OnSSESend(pluginName, channel, event, data)
 			}
 			if env.SSE == nil {
 				return
@@ -746,39 +755,9 @@ func hostServerSocials(env *HostEnv) extism.HostFunction {
 	return fn
 }
 
-func hostServerEmotes(env *HostEnv) extism.HostFunction {
-	fn := extism.NewHostFunctionWithStack(
-		"owncast_server_emotes",
-		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
-			var emotes []Emote
-			if env.Emotes != nil {
-				emotes = env.Emotes()
-			}
-			if emotes == nil {
-				emotes = []Emote{}
-			}
-			data, err := json.Marshal(emotes)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			offset, err := p.WriteBytes(data)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			stack[0] = offset
-		},
-		[]extism.ValueType{},
-		[]extism.ValueType{extism.ValueTypePTR},
-	)
-	fn.SetNamespace("extism:host/user")
-	return fn
-}
-
 // hostConfigGet returns the effective value of a manifest-declared config key
 // as JSON: the admin-set override when present, otherwise the manifest's
-// declared default. Returns 0 (undefined in the guest) for an unknown key or
+// declared default. Returns 0 (→ undefined in the guest) for an unknown key or
 // a declared key with no override and no default.
 func hostConfigGet(env *HostEnv, manifest *Manifest) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
@@ -825,8 +804,8 @@ func hostConfigGet(env *HostEnv, manifest *Manifest) extism.HostFunction {
 
 // hostAssetRead backs owncast.assets.read/readText. Reads a file from the
 // plugin's bundled assets/ directory. The path must be relative — no ".."
-// segments and no leading "/". Returns 0 when assetsFS is nil or the file is
-// unavailable. Ambient — no permission required.
+// segments, no leading "/". Returns 0 when assetsFS is nil or the file
+// doesn't exist. Ambient — no permission required.
 func hostAssetRead(assetsFS fs.FS) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_asset_read",
@@ -853,6 +832,36 @@ func hostAssetRead(assetsFS fs.FS) extism.HostFunction {
 			stack[0] = offset
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+func hostServerEmotes(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_server_emotes",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			var emotes []Emote
+			if env.Emotes != nil {
+				emotes = env.Emotes()
+			}
+			if emotes == nil {
+				emotes = []Emote{}
+			}
+			data, err := json.Marshal(emotes)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{},
 		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")

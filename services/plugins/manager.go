@@ -163,6 +163,46 @@ func (l *Loaded) IsAdminPath(path string) bool {
 	return false
 }
 
+// CallTabContent invokes the plugin's on_tab_content export with the
+// given slug and optional user, returning the rendered HTML. Returns
+// empty string when the plugin does not export on_tab_content.
+func (p *Loaded) CallTabContent(ctx context.Context, slug string, user *HostUser) (string, error) {
+	return p.callContentExport(ctx, "on_tab_content", slug, user)
+}
+
+// CallPageContent invokes the plugin's on_page_content export with
+// the given slug and optional user, returning the rendered HTML.
+// Returns empty string when the plugin does not export on_page_content.
+func (p *Loaded) CallPageContent(ctx context.Context, slug string, user *HostUser) (string, error) {
+	return p.callContentExport(ctx, "on_page_content", slug, user)
+}
+
+func (p *Loaded) callContentExport(ctx context.Context, export, slug string, user *HostUser) (string, error) {
+	p.mu.Lock()
+	pl := p.plugin
+	p.mu.Unlock()
+	if pl == nil || !pl.FunctionExists(export) {
+		return "", nil
+	}
+	req := map[string]any{"slug": slug}
+	if user != nil {
+		req["user"] = user
+	}
+	input, err := json.Marshal(req)
+	if err != nil {
+		return "", fmt.Errorf("%s: marshal input: %w", export, err)
+	}
+	callCtx, cancel := context.WithTimeout(ctx, HTTPHandlerTimeout)
+	defer cancel()
+	p.mu.Lock()
+	_, out, err := pl.CallWithContext(callCtx, export, input)
+	p.mu.Unlock()
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", export, err)
+	}
+	return string(out), nil
+}
+
 // Close releases the underlying wasm instance and any retained file handles
 // (the .ocpkg zip reader for packaged plugins). Safe to call multiple times.
 func (l *Loaded) Close(ctx context.Context) {
@@ -791,9 +831,7 @@ func loadByPath(ctx context.Context, env *HostEnv, path string) (*Loaded, error)
 		if pub := filepath.Join(parent, "public"); dirExists(pub) {
 			loaded.PublicFS = os.DirFS(pub)
 		}
-		if as := filepath.Join(parent, "assets"); dirExists(as) {
-			loaded.AssetsFS = os.DirFS(as)
-		}
+		// AssetsFS is already set by LoadPlugin from the assets/ sibling dir.
 		return loaded, nil
 	}
 	return nil, fmt.Errorf("unsupported plugin file: %s", path)
@@ -1099,10 +1137,9 @@ func pendingPermissions(manifestPerms, approved []string) []string {
 // LoadPlugin loads a single plugin given explicit wasm and manifest paths
 // (the loose-files layout). Used by the test runner so it shares the exact
 // same load + register + validate path that production uses via Start.
-//
-// AssetsFS on the returned Loaded is discovered from an `assets/` sibling
-// directory when present so the same asset-backed host APIs work for both
-// loose-file and packaged plugins.
+// Assets are discovered from an `assets/` sibling directory when present and
+// wired into the returned Loaded so the same asset-backed host APIs work for
+// both loose-file and packaged plugins.
 func LoadPlugin(ctx context.Context, env *HostEnv, wasmPath, manifestPath string) (*Loaded, error) {
 	manifestBytes, err := os.ReadFile(manifestPath) //nolint:gosec // G304: plugin paths are admin-controlled, not user input
 	if err != nil {
@@ -1210,7 +1247,7 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes [
 		adminPaths = append(adminPaths, page.Path)
 	}
 
-	return &Loaded{Manifest: manifest, plugin: p, adminGlobs: adminGlobs, adminPaths: adminPaths}, nil
+	return &Loaded{Manifest: manifest, plugin: p, adminGlobs: adminGlobs, adminPaths: adminPaths, AssetsFS: assetsFS}, nil
 }
 
 // requireChatFilterPermission rejects a runtime registration that

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Alert, Button, Card, Empty, Space, Spin, Tag, Tooltip, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { Localization } from '../../../types/localization';
+import { isPluginUpdateAvailable } from '../../../utils/apis';
 import { PuzzlePiece } from './PluginIcon';
 import { permissionDescriptionKey, permissionNameKey } from './permissionDescriptions';
 import s from './BrowseRegistry.module.scss';
@@ -143,8 +144,7 @@ export const BrowseRegistry = ({
         const installedVersion = installedVersions.get(plugin.slug);
         const latestVersion = plugin.latest?.version;
         const isInstalled = installedVersion !== undefined;
-        const hasUpdate =
-          isInstalled && latestVersion !== undefined && installedVersion !== latestVersion;
+        const hasUpdate = isInstalled && isPluginUpdateAvailable(installedVersion, latestVersion);
 
         let actionButton: React.ReactNode;
         if (!plugin.latest) {

@@ -7,6 +7,7 @@ import { SocialLink } from '../../../interfaces/social-link.model';
 import { PluginTab } from '../../../interfaces/client-config.model';
 import styles from './Content.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
+import { PluginTabFrame } from '../PluginTabFrame/PluginTabFrame';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ComponentError } from '../ComponentError/ComponentError';
 
@@ -73,7 +74,7 @@ export const MobileContent: FC<MobileContentProps> = ({
     </div>
   );
 
-  const items = [];
+  const items: NonNullable<TabsProps['items']> = [];
 
   items.push({ label: 'About', key: '0', children: aboutTabContent });
   if (supportFediverseFeatures) {
@@ -84,13 +85,19 @@ export const MobileContent: FC<MobileContentProps> = ({
   // titles within a plugin, so this pair is unique across all
   // plugin tabs and stable across renders (no index-as-key
   // anti-pattern).
+  //
+  // forceRender mounts each tab's iframe up front instead of on first
+  // activation, so the srcdoc loads and the host injects styles while the
+  // pane is still hidden — the content is ready (no load flash) the moment
+  // the user taps the tab.
   (pluginTabs || []).forEach(tab => {
     items.push({
       label: tab.title,
       key: `plugin-${tab.slug}-${tab.title}`,
+      forceRender: true,
       children: (
         <div className={styles.bottomPageContentContainer}>
-          <CustomPageContent content={tab.html} />
+          <PluginTabFrame content={tab.html} />
         </div>
       ),
     });
