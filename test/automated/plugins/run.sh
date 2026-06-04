@@ -14,7 +14,7 @@
 #   PLUGIN_SDK_DIR    path to an existing SDK checkout; if set, no clone happens
 #                     (use this for local runs: PLUGIN_SDK_DIR=~/src/plugin-sdk ./run.sh)
 #   PLUGIN_SDK_REPO   git URL of the plugin SDK (default: owncast/plugin-sdk)
-#   PLUGIN_SDK_REF    branch/tag/sha to build from (default: v0.4.2)
+#   PLUGIN_SDK_REF    branch/tag/sha to build from (default: main)
 
 set -e
 
@@ -23,10 +23,7 @@ source ../tools.sh
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 PLUGIN_SDK_DIR="${PLUGIN_SDK_DIR:-}"
 PLUGIN_SDK_REPO="${PLUGIN_SDK_REPO:-https://github.com/owncast/plugin-sdk}"
-# Pin to the latest SDK tag that matches the host's current plugin contract.
-# The SDK's main branch can move ahead independently and make this suite fail
-# for reasons unrelated to the Owncast change under test.
-PLUGIN_SDK_REF="${PLUGIN_SDK_REF:-v0.4.2}"
+PLUGIN_SDK_REF="${PLUGIN_SDK_REF:-main}"
 
 # SDK example plugins exercised by the tests in this directory.
 PLUGIN_NAMES=(profanity-filter echo-bot overlay styles-demo scripts-demo viewer-gate page-content-demo tabs-demo)
