@@ -62,7 +62,17 @@ func LoadPackage(ctx context.Context, env *HostEnv, path string) (*Loaded, error
 	}
 
 	displayName := strings.TrimSuffix(filepath.Base(path), packageSuffix)
-	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, displayName)
+
+	// Extract assetsFS from the zip before calling loadFromBytes so the
+	// owncast_asset_read host function has access to it at instantiation time.
+	var assetsFS fs.FS
+	if hasZipDir(&zr.Reader, pkgAssetsPrefix) {
+		if sub, err := fs.Sub(&zr.Reader, strings.TrimSuffix(pkgAssetsPrefix, "/")); err == nil {
+			assetsFS = sub
+		}
+	}
+
+	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, displayName, assetsFS)
 	if err != nil {
 		return nil, err
 	}

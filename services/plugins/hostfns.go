@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"os"
 	"strings"
@@ -156,6 +157,13 @@ type SocialHandle struct {
 	Icon     string `json:"icon,omitempty"`
 }
 
+// Emote is one custom chat emote returned by owncast.server.emotes(): the
+// `:code:` chat clients substitute and the URL of the image it renders to.
+type Emote struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
 // FederationInfo is what owncast.server.federation() returns.
 type FederationInfo struct {
 	Enabled   bool   `json:"enabled"`
@@ -278,7 +286,13 @@ type HostEnv struct {
 	FSDelete   func(pluginName, path string) error
 	FSExists   func(pluginName, path string) (bool, error)
 	Socials    func() []SocialHandle // server.read
+	Emotes     func() []Emote        // server.read
 	Federation func() FederationInfo // server.read
+	// ConfigValue resolves an admin-set override for one of the plugin's
+	// manifest-declared config keys (owncast.config.get). Returns the override
+	// value and true when the admin has set one; false to fall back to the
+	// manifest's declared default. Optional; nil -> defaults only.
+	ConfigValue func(pluginName, key string) (any, bool)
 	// WriteVideoConfig applies a partial video/transcoding configuration
 	// change. Returns an error the plugin can see if the host rejects the
 	// config (e.g. an invalid variant). videoconfig.write permission required.
@@ -316,7 +330,7 @@ type HostEnv struct {
 // plugin should be granted, based on its declared permissions. A plugin
 // only sees imports for permissions it declared; importing anything else
 // will fail to link at instantiation time.
-func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction {
+func BuildHostFunctions(env *HostEnv, manifest *Manifest, assetsFS fs.FS) []extism.HostFunction {
 	var fns []extism.HostFunction
 	granted := stringSet(manifest.Permissions)
 
@@ -344,6 +358,7 @@ func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction 
 			hostStreamCurrent(env),
 			hostServerInfo(env),
 			hostServerSocials(env),
+			hostServerEmotes(env),
 			hostServerFederation(env),
 			hostStreamBroadcaster(env),
 			hostServerTags(env),
@@ -390,6 +405,12 @@ func BuildHostFunctions(env *HostEnv, manifest *Manifest) []extism.HostFunction 
 	// is benign — whatever the callback does still needs its own permissions —
 	// and TimerHub's per-plugin caps bound abuse.
 	fns = append(fns, hostTimerSet(env, manifest.Slug), hostTimerClear(env, manifest.Slug))
+
+	// Config is ambient too: reading the plugin's own manifest-declared config
+	// (admin override, else declared default) is benign and needs no grant.
+	fns = append(fns, hostConfigGet(env, manifest))
+	// Asset reading is ambient: a plugin reads only files it shipped itself.
+	fns = append(fns, hostAssetRead(assetsFS))
 	if granted[PermUIModify] {
 		fns = append(fns,
 			hostAddActions(env, manifest),
@@ -719,6 +740,119 @@ func hostServerSocials(env *HostEnv) extism.HostFunction {
 			stack[0] = offset
 		},
 		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+func hostServerEmotes(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_server_emotes",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			var emotes []Emote
+			if env.Emotes != nil {
+				emotes = env.Emotes()
+			}
+			if emotes == nil {
+				emotes = []Emote{}
+			}
+			data, err := json.Marshal(emotes)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostConfigGet returns the effective value of a manifest-declared config key
+// as JSON: the admin-set override when present, otherwise the manifest's
+// declared default. Returns 0 (undefined in the guest) for an unknown key or
+// a declared key with no override and no default.
+func hostConfigGet(env *HostEnv, manifest *Manifest) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_config_get",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			key, err := p.ReadString(stack[0])
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			field, declared := manifest.Config[key]
+			if !declared {
+				stack[0] = 0
+				return
+			}
+			value := field.Default
+			if env.ConfigValue != nil {
+				if override, ok := env.ConfigValue(manifest.Slug, key); ok {
+					value = override
+				}
+			}
+			if value == nil {
+				stack[0] = 0
+				return
+			}
+			data, err := json.Marshal(value)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// hostAssetRead backs owncast.assets.read/readText. Reads a file from the
+// plugin's bundled assets/ directory. The path must be relative — no ".."
+// segments and no leading "/". Returns 0 when assetsFS is nil or the file is
+// unavailable. Ambient — no permission required.
+func hostAssetRead(assetsFS fs.FS) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_asset_read",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			path, err := p.ReadString(stack[0])
+			if err != nil || assetsFS == nil {
+				stack[0] = 0
+				return
+			}
+			if strings.Contains(path, "..") || strings.HasPrefix(path, "/") {
+				stack[0] = 0
+				return
+			}
+			data, err := fs.ReadFile(assetsFS, path)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			offset, err := p.WriteBytes(data)
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			stack[0] = offset
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")

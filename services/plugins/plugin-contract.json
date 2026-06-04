@@ -22,10 +22,12 @@
   },
   "hostFunctions": [
     "owncast_add_actions",
+    "owncast_asset_read",
     "owncast_ban_ip",
     "owncast_chat_clients",
     "owncast_chat_history",
     "owncast_clear_actions",
+    "owncast_config_get",
     "owncast_delete_message",
     "owncast_emit_event",
     "owncast_fediverse_post",
@@ -44,6 +46,7 @@
     "owncast_send_chat_action",
     "owncast_send_chat_system",
     "owncast_send_chat_to",
+    "owncast_server_emotes",
     "owncast_server_federation",
     "owncast_server_info",
     "owncast_server_socials",
@@ -64,6 +67,10 @@
     "BrowserPushPayload": {
       "body": "string",
       "title": "string",
+      "url": "string"
+    },
+    "Emote": {
+      "name": "string",
       "url": "string"
     },
     "FederationInfo": {

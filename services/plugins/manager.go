@@ -486,7 +486,15 @@ func validateUploadedPackage(ctx context.Context, env *HostEnv, packageBytes []b
 	// "install" successfully from the catalog, then only surfaces as a
 	// discovered-but-broken plugin later. The admin clicked Install, so the
 	// operation should fail up front if the package cannot be loaded.
-	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, manifest.Slug)
+	// Extract assetsFS from the zip before calling loadFromBytes so the
+	// owncast_asset_read host function has access to it at instantiation time.
+	var assetsFS fs.FS
+	if hasZipDir(zr, pkgAssetsPrefix) {
+		if sub, err := fs.Sub(zr, strings.TrimSuffix(pkgAssetsPrefix, "/")); err == nil {
+			assetsFS = sub
+		}
+	}
+	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, manifest.Slug, assetsFS)
 	if err != nil {
 		return nil, err
 	}
@@ -1092,8 +1100,9 @@ func pendingPermissions(manifestPerms, approved []string) []string {
 // (the loose-files layout). Used by the test runner so it shares the exact
 // same load + register + validate path that production uses via Start.
 //
-// AssetsFS on the returned Loaded is left nil — callers that want static
-// asset serving should populate it themselves.
+// AssetsFS on the returned Loaded is discovered from an `assets/` sibling
+// directory when present so the same asset-backed host APIs work for both
+// loose-file and packaged plugins.
 func LoadPlugin(ctx context.Context, env *HostEnv, wasmPath, manifestPath string) (*Loaded, error) {
 	manifestBytes, err := os.ReadFile(manifestPath) //nolint:gosec // G304: plugin paths are admin-controlled, not user input
 	if err != nil {
@@ -1104,7 +1113,11 @@ func LoadPlugin(ctx context.Context, env *HostEnv, wasmPath, manifestPath string
 		return nil, fmt.Errorf("read wasm %s: %w", wasmPath, err)
 	}
 	displayName := strings.TrimSuffix(filepath.Base(wasmPath), ".wasm")
-	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, displayName)
+	var assetsFS fs.FS
+	if as := filepath.Join(filepath.Dir(wasmPath), "assets"); dirExists(as) {
+		assetsFS = os.DirFS(as)
+	}
+	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, displayName, assetsFS)
 	if err != nil {
 		return nil, err
 	}
@@ -1113,13 +1126,13 @@ func LoadPlugin(ctx context.Context, env *HostEnv, wasmPath, manifestPath string
 }
 
 // loadFromBytes is the shared core of LoadPlugin and LoadPackage.
-func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes []byte, displayName string) (*Loaded, error) {
+func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes []byte, displayName string, assetsFS fs.FS) (*Loaded, error) {
 	manifest, err := ParseManifest(manifestBytes)
 	if err != nil {
 		return nil, err
 	}
 
-	hostFns := BuildHostFunctions(env, manifest)
+	hostFns := BuildHostFunctions(env, manifest, assetsFS)
 
 	extismManifest := extism.Manifest{
 		Wasm:    []extism.Wasm{extism.WasmData{Data: wasmBytes, Name: displayName}},

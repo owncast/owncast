@@ -584,13 +584,16 @@ func TestParseManifest_ExtraPageContent_RewritesRelativePath(t *testing.T) {
 	m, err := ParseManifest([]byte(`{
 		"api": "1", "name": "page", "version": "1.0",
 		"permissions": ["ui.modify"],
-		"extraPageContent": "content.html"
+		"extraPageContent": {"slug": "test-slot", "content": "content.html"}
 	}`))
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
-	if m.ExtraPageContent != "/plugins/page/content.html" {
-		t.Errorf("extraPageContent = %q, want /plugins/page/content.html", m.ExtraPageContent)
+	if m.ExtraPageContent == nil {
+		t.Fatal("extraPageContent should not be nil")
+	}
+	if m.ExtraPageContent.Content != "/plugins/page/content.html" {
+		t.Errorf("extraPageContent.content = %q, want /plugins/page/content.html", m.ExtraPageContent.Content)
 	}
 }
 
@@ -598,7 +601,7 @@ func TestParseManifest_ExtraPageContent_DoesNotRequireHttpServe(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "page", "version": "1.0",
 		"permissions": ["ui.modify"],
-		"extraPageContent": "content.html"
+		"extraPageContent": {"slug": "test-slot", "content": "content.html"}
 	}`))
 	if err != nil {
 		t.Errorf("extraPageContent should not require http.serve: %v", err)
@@ -608,7 +611,7 @@ func TestParseManifest_ExtraPageContent_DoesNotRequireHttpServe(t *testing.T) {
 func TestParseManifest_ExtraPageContent_RequiresUIModify(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "page", "version": "1.0",
-		"extraPageContent": "content.html"
+		"extraPageContent": {"slug": "test-slot", "content": "content.html"}
 	}`))
 	if err == nil {
 		t.Fatal("expected error when extraPageContent is set without ui.modify")
@@ -622,7 +625,7 @@ func TestParseManifest_ExtraPageContent_RejectsCrossPluginPath(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "page", "version": "1.0",
 		"permissions": ["ui.modify"],
-		"extraPageContent": "/plugins/some-other-plugin/content.html"
+		"extraPageContent": {"slug": "test-slot", "content": "/plugins/some-other-plugin/content.html"}
 	}`))
 	if err == nil {
 		t.Fatal("expected error: cross-plugin extraPageContent path")
@@ -636,7 +639,7 @@ func TestParseManifest_ExtraPageContent_RejectsAbsoluteURL(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "page", "version": "1.0",
 		"permissions": ["ui.modify"],
-		"extraPageContent": "https://cdn.example.com/content.html"
+		"extraPageContent": {"slug": "test-slot", "content": "https://cdn.example.com/content.html"}
 	}`))
 	if err == nil {
 		t.Fatal("expected error: absolute URLs rejected for extraPageContent")
@@ -650,7 +653,7 @@ func TestParseManifest_ExtraPageContent_RejectsNonHtmlExtension(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "page", "version": "1.0",
 		"permissions": ["ui.modify"],
-		"extraPageContent": "content.htm"
+		"extraPageContent": {"slug": "test-slot", "content": "content.htm"}
 	}`))
 	if err == nil {
 		t.Fatal("expected error: only .html extension allowed")

@@ -188,10 +188,10 @@ func (p *Host) ScriptsContent() []byte {
 func (p *Host) PageContent() []byte {
 	return p.readManifestAssets(
 		func(m *plugins.Manifest) []string {
-			if m.ExtraPageContent == "" {
+			if m.ExtraPageContent == nil || m.ExtraPageContent.Content == "" {
 				return nil
 			}
-			return []string{m.ExtraPageContent}
+			return []string{m.ExtraPageContent.Content}
 		},
 		"<!-- plugin: %s — %s -->\n",
 	)

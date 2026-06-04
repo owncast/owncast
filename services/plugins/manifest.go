@@ -90,7 +90,7 @@ type Manifest struct {
 	// Requires ui.modify (the plugin paints inside Owncast's chrome);
 	// http.serve is not required because the HTML is inlined into
 	// the API response, not served as a URL.
-	ExtraPageContent string `json:"extraPageContent,omitempty"`
+	ExtraPageContent *ExtraPageContent `json:"extraPageContent,omitempty"`
 	// Tabs declares viewer-page tabs the plugin contributes to the
 	// row of tabs Owncast renders next to chat (alongside built-ins
 	// like Followers). Each entry's `content` is a relative path to
@@ -106,6 +106,14 @@ type Manifest struct {
 // assets/ directory and inlines into the tab body.
 type Tab struct {
 	Title   string `json:"title"`
+	Content string `json:"content"`
+}
+
+// ExtraPageContent declares the plugin's contribution to the viewer
+// page's extra-content block. Slug names the target slot in the page,
+// while Content points at the HTML asset to inline.
+type ExtraPageContent struct {
+	Slug    string `json:"slug"`
 	Content string `json:"content"`
 }
 
@@ -454,14 +462,14 @@ func (m *Manifest) validateScripts() error {
 }
 
 // validateExtraPageContent checks manifest.extraPageContent and
-// rewrites it into the plugin's namespace. The file's bytes are
+// rewrites its content path into the plugin's namespace. The file's bytes are
 // inlined into the /api/config extraPageContent response (prepended
 // to the admin's content), not served as a URL, so http.serve is not
 // required, but the same path-shape and extension rules apply for
 // consistency with styles and scripts. ui.modify is required because
 // the contributed HTML lands inside the viewer chrome.
 func (m *Manifest) validateExtraPageContent() error {
-	if m.ExtraPageContent == "" {
+	if m.ExtraPageContent == nil {
 		return nil
 	}
 	if !m.hasPermission(PermUIModify) {
@@ -472,11 +480,11 @@ func (m *Manifest) validateExtraPageContent() error {
 				"it's visible to anyone reviewing the manifest that the " +
 				"plugin paints inside Owncast's chrome")
 	}
-	rewritten, err := rewritePluginAssetPath(m.Slug, m.ExtraPageContent, ".html")
+	rewritten, err := rewritePluginAssetPath(m.Slug, m.ExtraPageContent.Content, ".html")
 	if err != nil {
-		return fmt.Errorf("manifest.extraPageContent: %w", err)
+		return fmt.Errorf("manifest.extraPageContent.content: %w", err)
 	}
-	m.ExtraPageContent = rewritten
+	m.ExtraPageContent.Content = rewritten
 	return nil
 }
 
