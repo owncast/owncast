@@ -16,7 +16,7 @@ func newTestDatastore(t *testing.T) *datastore.Datastore {
 	}
 	t.Cleanup(func() {
 		if err := ds.DB.Close(); err != nil {
-			t.Fatalf("close datastore: %v", err)
+			t.Errorf("close datastore DB: %v", err)
 		}
 	})
 	return ds
