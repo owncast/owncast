@@ -8,18 +8,16 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
 )
 
 // HandleHLSRequest will manage all requests to HLS content.
-func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	// Sanity check to limit requests to HLS file types.
 	ext := filepath.Ext(r.URL.Path)
-	if ext != ".m3u8" && ext != ".m4s" && ext != ".mp4" {
+	if ext != ".m3u8" && ext != ".m4s" && ext != ".mp4" && ext != ".ts" {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -28,10 +26,25 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	relativePath := strings.Replace(requestedPath, "/hls/", "", 1)
 	fullPath := filepath.Join(config.HLSStoragePath, relativePath)
 
+	// Defense-in-depth path-traversal guard. http.ServeFile already rejects
+	// URL.Path entries containing "..", but we resolve both paths to
+	// absolute form and confirm the request stays inside HLSStoragePath
+	// rather than relying on that stdlib detail. HLS asset names never
+	// contain ".." in practice.
+	absBase, err := filepath.Abs(config.HLSStoragePath)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	absFull, err := filepath.Abs(fullPath)
+	if err != nil || (absFull != absBase && !strings.HasPrefix(absFull, absBase+string(filepath.Separator))) {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	// If using external storage then only allow requests for the
 	// master playlist at stream.m3u8, no variants or segments.
-	configRepository := configrepository.Get()
-	if configRepository.GetS3Config().Enabled && relativePath != "stream.m3u8" {
+	if h.configRepository.GetS3Config().Enabled && relativePath != "stream.m3u8" {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -46,12 +59,12 @@ func HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 
 		// Use this as an opportunity to mark this viewer as active.
 		viewer := models.GenerateViewerFromRequest(r)
-		core.SetViewerActive(&viewer)
+		h.stream.SetViewerActive(&viewer)
 	} else {
 		cacheTime := utils.GetCacheDurationSecondsForPath(relativePath)
 		w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheTime))
 	}
 
 	middleware.EnableCors(w)
-	http.ServeFile(w, r, fullPath)
+	http.ServeFile(w, r, fullPath) //nolint:gosec // G703: fullPath was verified to be inside HLSStoragePath above
 }

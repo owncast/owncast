@@ -1,0 +1,277 @@
+/*
+ * plugin-elements.css — hand-authored element baseline for plugin content.
+ *
+ * This is appended (by build.sh) to the generated :root token block to form
+ * the served plugin.css. It styles plain HTML elements (no AntD class names)
+ * with the Owncast theme tokens so a plugin author's semantic HTML adopts
+ * the native look with no CSS of their own. It only ever *references*
+ * tokens — never hard-codes values — so the generated :root defaults (and
+ * the admin's appearanceVariables/customStyles layered on top) flow through.
+ *
+ * Scope is deliberately narrow: typography, links, forms, buttons, tables,
+ * cards. Not a UI kit — just "this looks like it belongs". Plugins remain
+ * free to add their own styles on top.
+ *
+ * Note on fonts: the generated :root above already defines
+ * --font-owncast-body/-display (the theme font tokens reference them), so
+ * plugin content gets the right family. The web-font files themselves
+ * aren't loaded inside a frame, so text falls back to the system fonts in
+ * those stacks — acceptable, and the same as the prior admin stylesheet.
+ */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--theme-color-background-main);
+  color: var(--theme-color-components-text-on-light);
+  font-family: var(--theme-text-body-font-family);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--theme-text-display-font-family);
+  color: var(--theme-color-components-text-on-light);
+  margin: 0 0 12px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+h1 {
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 17px;
+}
+
+h4 {
+  font-size: 15px;
+}
+
+p {
+  margin: 0 0 12px;
+}
+
+a {
+  color: var(--theme-color-action);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--theme-color-action-hover);
+  text-decoration: underline;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--theme-color-palette-8);
+  margin: 16px 0;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: var(--theme-color-palette-14);
+  border-radius: 4px;
+}
+
+code {
+  padding: 1px 4px;
+}
+
+pre {
+  padding: 8px 12px;
+  overflow-x: auto;
+  line-height: 1.4;
+}
+
+pre code {
+  padding: 0;
+  background: transparent;
+}
+
+/* Forms — give plain inputs the same boxed look AntD uses, without the
+ * .ant-input class machinery. label/input pairs work in any layout. */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 520px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 500;
+  color: var(--theme-color-components-text-on-light);
+}
+
+/* Inputs: only target form fields, not button-like inputs. */
+input:not(
+  [type='button'],
+  [type='submit'],
+  [type='reset'],
+  [type='checkbox'],
+  [type='radio'],
+  [type='range'],
+  [type='color']
+),
+textarea,
+select {
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--theme-color-components-form-field-text);
+  background: var(--theme-color-components-form-field-background);
+  border: 1px solid var(--theme-color-components-form-field-border);
+  border-radius: var(--theme-rounded-corners);
+  padding: 6px 10px;
+  outline: none;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:not(
+    [type='button'],
+    [type='submit'],
+    [type='reset'],
+    [type='checkbox'],
+    [type='radio'],
+    [type='range'],
+    [type='color']
+  ):focus,
+textarea:focus,
+select:focus {
+  border-color: var(--theme-color-action);
+  box-shadow: 0 0 0 2px rgb(101 68 233 / 15%);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--theme-color-components-form-field-placeholder);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background: var(--theme-color-palette-14);
+  cursor: not-allowed;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Buttons — primary look, plus a secondary outline variant authors opt
+ * into with class="secondary". Mirrors AntD's primary/default split. */
+button,
+input[type='submit'],
+input[type='button'],
+input[type='reset'] {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 8px 16px;
+  border-radius: var(--theme-rounded-corners);
+  border: 1px solid var(--theme-color-components-primary-button-border);
+  background: var(--theme-color-components-primary-button-background);
+  color: var(--theme-color-components-primary-button-text);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+}
+
+button:hover,
+input[type='submit']:hover,
+input[type='button']:hover {
+  background: var(--theme-color-action-hover);
+  border-color: var(--theme-color-action-hover);
+}
+
+button:disabled,
+input[type='submit']:disabled,
+input[type='button']:disabled {
+  background: var(--theme-color-components-primary-button-background-disabled);
+  border-color: var(--theme-color-components-primary-button-border-disabled);
+  color: var(--theme-color-components-primary-button-text-disabled);
+  cursor: not-allowed;
+}
+
+button.secondary,
+input[type='reset'] {
+  background: var(--theme-color-components-secondary-button-background);
+  color: var(--theme-color-components-secondary-button-text);
+  border-color: var(--theme-color-components-secondary-button-border);
+}
+
+button.secondary:hover,
+input[type='reset']:hover {
+  background: var(--theme-color-action-hover);
+  color: var(--theme-color-components-primary-button-text);
+}
+
+/* Tables — minimal, readable. */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background: var(--theme-color-components-form-field-background);
+  border-radius: var(--theme-rounded-corners);
+  overflow: hidden;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--theme-color-palette-14);
+}
+
+th {
+  background: var(--theme-color-palette-14);
+  font-weight: 600;
+  color: var(--theme-color-components-text-on-light);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Cards — semantic <section>/<article>/<fieldset> get a soft container. */
+section,
+article,
+fieldset {
+  background: var(--theme-color-components-form-field-background);
+  border: 1px solid var(--theme-color-palette-14);
+  border-radius: var(--theme-rounded-corners);
+  padding: 16px;
+  margin: 0 0 16px;
+}
+
+fieldset legend {
+  font-weight: 600;
+  padding: 0 6px;
+}
+
+.muted {
+  color: var(--theme-color-palette-10);
+}

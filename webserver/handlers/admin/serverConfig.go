@@ -4,19 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/transcoder"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
-	log "github.com/sirupsen/logrus"
 )
 
 // GetServerConfig gets the config details of the server.
-func GetServerConfig(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
+func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
+	configRepository := a.configRepository
 	ffmpeg := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
 	usernameBlocklist := configRepository.GetForbiddenUsernameList()
 	usernameSuggestions := configRepository.GetSuggestedUsernamesList()
@@ -55,9 +54,9 @@ func GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		FFmpegPath:                ffmpeg,
 		AdminPassword:             configRepository.GetAdminPassword(),
 		StreamKeys:                configRepository.GetStreamKeys(),
-		StreamKeyOverridden:       config.TemporaryStreamKey != "",
-		WebServerPort:             config.WebServerPort,
-		WebServerIP:               config.WebServerIP,
+		StreamKeyOverridden:       a.cfg.TemporaryStreamKey != "",
+		WebServerPort:             a.cfg.WebServerPort,
+		WebServerIP:               a.cfg.WebServerIP,
 		RTMPServerPort:            configRepository.GetRTMPPortNumber(),
 		ChatDisabled:              configRepository.GetChatDisabled(),
 		ChatJoinMessagesEnabled:   configRepository.GetChatJoinPartMessagesEnabled(),

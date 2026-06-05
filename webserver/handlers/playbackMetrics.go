@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/metrics"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // ReportPlaybackMetrics will accept playback metrics from a client and save
 // them for future video health reporting.
-func ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		webutils.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
@@ -33,23 +33,23 @@ func ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 		webutils.WriteSimpleResponse(w, false, "errors field is required")
 		return
 	}
-	metrics.RegisterPlaybackErrorCount(clientID, *request.Errors)
+	h.metrics.RegisterPlaybackErrorCount(clientID, *request.Errors)
 
 	if request.Bandwidth != nil && *request.Bandwidth != 0.0 {
-		metrics.RegisterPlayerBandwidth(clientID, *request.Bandwidth)
+		h.metrics.RegisterPlayerBandwidth(clientID, *request.Bandwidth)
 	}
 
 	if request.Latency != nil && *request.Latency != 0.0 {
-		metrics.RegisterPlayerLatency(clientID, *request.Latency)
+		h.metrics.RegisterPlayerLatency(clientID, *request.Latency)
 	}
 
 	if request.DownloadDuration != nil && *request.DownloadDuration != 0.0 {
-		metrics.RegisterPlayerSegmentDownloadDuration(clientID, *request.DownloadDuration)
+		h.metrics.RegisterPlayerSegmentDownloadDuration(clientID, *request.DownloadDuration)
 	}
 
 	if request.QualityVariantChanges == nil {
 		webutils.WriteSimpleResponse(w, false, "qualityVariantChanges field is required")
 		return
 	}
-	metrics.RegisterQualityVariantChangesCount(clientID, *request.QualityVariantChanges)
+	h.metrics.RegisterQualityVariantChangesCount(clientID, *request.QualityVariantChanges)
 }

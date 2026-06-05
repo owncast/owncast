@@ -31,6 +31,7 @@ TEST_START_TIME=""
 
 # Directories
 TEMP_DIR=""
+OWNCAST_BIN=""
 OWNCAST_DB=""
 
 # PIDs
@@ -151,11 +152,12 @@ setup_temp_dir() {
 build_owncast() {
     log_info "Building Owncast..."
 
+    OWNCAST_BIN="${TEMP_DIR}/owncast"
     pushd "${REPO_ROOT}" > /dev/null
-    CGO_ENABLED=1 go build -o owncast main.go
+    CGO_ENABLED=1 go build -o "${OWNCAST_BIN}" main.go
     popd > /dev/null
 
-    log_info "Owncast built"
+    log_info "Owncast built: ${OWNCAST_BIN}"
 }
 
 start_owncast() {
@@ -164,7 +166,7 @@ start_owncast() {
     # Start Owncast with test configuration
     OWNCAST_ALLOW_INTERNAL_FEDERATION=true \
     OWNCAST_INSECURE_SKIP_VERIFY=true \
-    "${REPO_ROOT}/owncast" \
+    "${OWNCAST_BIN}" \
         -database "${OWNCAST_DB}" \
         -followervalidationinterval "${VALIDATION_INTERVAL}" \
         -enableVerboseLogging &

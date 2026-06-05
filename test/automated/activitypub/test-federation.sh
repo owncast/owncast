@@ -47,6 +47,7 @@ OWNCAST_URL="https://${OWNCAST_HOSTNAME}:${PROXY_PORT}"
 TEMP_DIR=""
 SNAC_DATA_DIR=""
 SNAC_BIN=""
+OWNCAST_BIN=""
 OWNCAST_DB=""
 
 # PIDs and state
@@ -55,6 +56,7 @@ OWNCAST_PID=""
 PROXY_PID=""
 TEST_STREAM_PID=""
 SNAC_USERNAMES=()
+CONFIRMED_FOLLOWERS=()
 
 # Colors
 RED='\033[0;31m'
@@ -182,8 +184,8 @@ install_snac2() {
 }
 
 check_certs() {
-    # Use pre-generated mkcert certificates from the script directory
-    CERT_DIR="${SCRIPT_DIR}/certs"
+    # CERT_DIR may be set by the Docker entrypoint; fall back to local certs/
+    CERT_DIR="${CERT_DIR:-${SCRIPT_DIR}/certs}"
 
     if [[ ! -f "${CERT_DIR}/cert.pem" ]] || [[ ! -f "${CERT_DIR}/key.pem" ]]; then
         log_error "Certificates not found in ${CERT_DIR}"
@@ -390,11 +392,12 @@ verify_snac_shared_inbox() {
 build_owncast() {
     log_info "Building Owncast..."
 
+    OWNCAST_BIN="${TEMP_DIR}/owncast"
     pushd "${REPO_ROOT}" > /dev/null
-    CGO_ENABLED=1 go build -o owncast main.go
+    CGO_ENABLED=1 go build -o "${OWNCAST_BIN}" main.go
     popd > /dev/null
 
-    log_info "Owncast built"
+    log_info "Owncast built: ${OWNCAST_BIN}"
 }
 
 start_owncast() {
@@ -403,7 +406,7 @@ start_owncast() {
     # Start Owncast with test environment variables and debug flags
     OWNCAST_ALLOW_INTERNAL_FEDERATION=true \
     OWNCAST_INSECURE_SKIP_VERIFY=true \
-    "${REPO_ROOT}/owncast" -database "${OWNCAST_DB}" &
+    "${OWNCAST_BIN}" -database "${OWNCAST_DB}" &
     OWNCAST_PID=$!
 
     log_info "Owncast started with PID ${OWNCAST_PID}"
@@ -539,8 +542,8 @@ send_follow_requests() {
     log_info "snac2 queue has ${queue_count} pending items"
 
     # Give snac2 background thread time to process all pending follows
-    # Wait longer for more users
-    local wait_time=$((10 + USER_COUNT / 10))
+    # Each follow requires an HTTP round-trip; scale wait with user count
+    local wait_time=$((10 + USER_COUNT / 5))
     log_info "Waiting ${wait_time}s for snac2 to process follow requests..."
     sleep "${wait_time}"
 }
@@ -562,6 +565,28 @@ verify_followers() {
     echo "${count}"
 }
 
+populate_confirmed_followers() {
+    # Query Owncast API for actual registered followers and map their IRIs
+    # back to snac2 usernames so we only check those inboxes for delivery.
+    CONFIRMED_FOLLOWERS=()
+    local auth
+    auth=$(echo -n "${ADMIN_USER}:${ADMIN_PASS}" | base64)
+
+    local response
+    response=$(curl -s "http://localhost:${OWNCAST_PORT}/api/admin/followers?limit=1000" \
+        -H "Authorization: Basic ${auth}" 2>/dev/null || echo '{"results":[]}')
+
+    # Follower IRIs look like https://snac.local:8443/username
+    while IFS= read -r iri; do
+        if [[ -n "${iri}" ]]; then
+            local username="${iri##*/}"
+            CONFIRMED_FOLLOWERS+=("${username}")
+        fi
+    done < <(echo "${response}" | jq -r '.results[]?.link // empty' 2>/dev/null)
+
+    log_info "Confirmed ${#CONFIRMED_FOLLOWERS[@]} follower usernames from Owncast API"
+}
+
 send_test_message() {
     log_info "Sending test message from Owncast..."
 
@@ -579,9 +604,16 @@ send_test_message() {
 }
 
 check_snac_inboxes_count() {
-    local users_with_messages=0
+    # Only check users confirmed as followers by Owncast, not all snac2 users.
+    # snac2's shared inbox distributes messages to all users it considers followers,
+    # which may include users whose follow hasn't been registered by Owncast yet.
+    local usernames_to_check=("${CONFIRMED_FOLLOWERS[@]}")
+    if [[ ${#usernames_to_check[@]} -eq 0 ]]; then
+        usernames_to_check=("${SNAC_USERNAMES[@]}")
+    fi
 
-    for username in "${SNAC_USERNAMES[@]}"; do
+    local users_with_messages=0
+    for username in "${usernames_to_check[@]}"; do
         if user_has_message "${username}"; then
             users_with_messages=$((users_with_messages + 1))
         fi
@@ -614,11 +646,16 @@ user_has_message() {
 check_snac_inboxes() {
     log_info "Checking snac2 user inboxes for delivered messages..." >&2
 
+    local usernames_to_check=("${CONFIRMED_FOLLOWERS[@]}")
+    if [[ ${#usernames_to_check[@]} -eq 0 ]]; then
+        usernames_to_check=("${SNAC_USERNAMES[@]}")
+    fi
+
     local users_with_messages=0
     local users_without_messages=()
-    local total=${#SNAC_USERNAMES[@]}
+    local total=${#usernames_to_check[@]}
 
-    for username in "${SNAC_USERNAMES[@]}"; do
+    for username in "${usernames_to_check[@]}"; do
         if user_has_message "${username}"; then
             users_with_messages=$((users_with_messages + 1))
         else
@@ -626,7 +663,7 @@ check_snac_inboxes() {
         fi
     done
 
-    log_test "${users_with_messages}/${total} users received the message" >&2
+    log_test "${users_with_messages}/${total} confirmed followers received the message" >&2
 
     if [[ ${#users_without_messages[@]} -gt 0 ]] && [[ ${#users_without_messages[@]} -le 10 ]]; then
         log_warn "Users missing messages: ${users_without_messages[*]}" >&2
@@ -847,7 +884,7 @@ main() {
 
     # Wait for all followers to be registered (with timeout)
     local followers=0
-    local max_wait=60  # Maximum seconds to wait for followers
+    local max_wait=$((60 + USER_COUNT))  # Scale timeout with user count
     local waited=0
     local check_interval=2
 
@@ -889,6 +926,7 @@ main() {
     echo "----------------------------------------"
     echo "STEP 4: Owncast sends message to followers"
     echo "----------------------------------------"
+    populate_confirmed_followers
     send_test_message
     echo ""
 

@@ -36,6 +36,11 @@ export const Theme: FC = () => {
 			`,
         }}
       />
+      {/*
+        customStyles is the admin's CSS followed by every loaded
+        plugin's manifest.styles content (concatenated server-side).
+        One inline <style> block carries both.
+      */}
       <style
         dangerouslySetInnerHTML={{
           __html: `

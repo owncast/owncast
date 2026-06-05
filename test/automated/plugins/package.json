@@ -1,0 +1,23 @@
+{
+	"name": "owncast-plugin-integration-tests",
+	"version": "1.0.0",
+	"private": true,
+	"description": "End-to-end tests that build a plugin from the SDK and run it inside Owncast.",
+	"scripts": {
+		"test": "jest *.test.js"
+	},
+	"license": "ISC",
+	"dependencies": {
+		"supertest": "^6.3.2",
+		"ws": "^7.5.9"
+	},
+	"devDependencies": {
+		"jest": "^29.7.0",
+		"jest-jasmine2": "^29.7.0"
+	},
+	"jest": {
+		"verbose": true,
+		"maxWorkers": 1,
+		"testRunner": "jest-jasmine2"
+	}
+}

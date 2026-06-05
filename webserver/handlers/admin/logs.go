@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/owncast/owncast/logging"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/logging"
 )
 
 // GetLogs will return all logs.
