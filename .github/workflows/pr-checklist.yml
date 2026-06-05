@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Check organization membership
         id: membership
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             try {
@@ -51,7 +51,7 @@ jobs:
       - name: Validate required checkboxes
         id: validate
         if: ${{ steps.membership.outputs.result == 'false' }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const prBody = context.payload.pull_request.body || '';
@@ -96,7 +96,7 @@ jobs:
 
       - name: Comment on PR about missing checklist
         if: ${{ always() && steps.validate.outputs.missing_checklist == 'true' }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const body =
