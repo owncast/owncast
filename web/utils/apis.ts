@@ -174,7 +174,7 @@ export async function fetchData<T = any>(url: string, options?: FetchOptions): P
 
   const response = await fetch(url, requestOptions);
   const text = await response.text();
-  let json = {} as T;
+  let json: T = {} as T;
   if (text) {
     try {
       json = JSON.parse(text) as T;

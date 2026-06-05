@@ -526,8 +526,8 @@ func validateUploadedPackage(ctx context.Context, env *HostEnv, packageBytes []b
 	// "install" successfully from the catalog, then only surfaces as a
 	// discovered-but-broken plugin later. The admin clicked Install, so the
 	// operation should fail up front if the package cannot be loaded.
-	// Extract assetsFS from the zip before calling loadFromBytes so the
-	// owncast_asset_read host function has access to it at instantiation time.
+	// Extract assetsFS from the zip before calling loadFromBytes so register()
+	// sees the same owncast_asset_read host function behavior as a real load.
 	var assetsFS fs.FS
 	if hasZipDir(zr, pkgAssetsPrefix) {
 		if sub, err := fs.Sub(zr, strings.TrimSuffix(pkgAssetsPrefix, "/")); err == nil {
