@@ -167,6 +167,7 @@ github.com/oapi-codegen/runtime v1.4.1 h1:9nwLoI+KrWxzbBcp0jO/R8uXqbik/HUyCvPeU6
 github.com/oapi-codegen/runtime v1.4.1/go.mod h1:GwV7hC2hviaMzj+ITfHVRESK5J2W/GefVwIND/bMGvU=
 github.com/oschwald/geoip2-golang v1.13.0 h1:Q44/Ldc703pasJeP5V9+aFSZFmBN7DKHbNsSFzQATJI=
 github.com/oschwald/geoip2-golang v1.13.0/go.mod h1:P9zG+54KPEFOliZ29i7SeYZ/GM6tfEL+rgSn03hYuUo=
+github.com/oschwald/geoip2-golang/v2 v2.2.0/go.mod h1:xW4tCeQiNU1gqMD1x7zEH2CDNM3d796Ls50yxYDaX0U=
 github.com/oschwald/maxminddb-golang v1.13.0 h1:R8xBorY71s84yO06NgTmQvqvTvlS/bnYZrrWX1MElnU=
 github.com/oschwald/maxminddb-golang v1.13.0/go.mod h1:BU0z8BfFVhi1LQaonTwwGQlsHUEu9pWNdMfmq4ztm0o=
 github.com/owncast/activity v1.0.1-0.20260122170223-675f6eb53e71 h1:dJ6DdVqcZjz0P7UIKPCARucmyIGNXiL7BxNfg1Ul8Gs=

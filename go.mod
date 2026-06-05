@@ -27,6 +27,7 @@ require (
 	github.com/nareix/joy5 v0.0.0-20210317075623-2c912ca30590
 	github.com/oapi-codegen/runtime v1.4.1
 	github.com/oschwald/geoip2-golang v1.13.0
+	github.com/oschwald/geoip2-golang/v2 v2.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/pressly/goose/v3 v3.27.1
 	github.com/prometheus/client_golang v1.23.2
