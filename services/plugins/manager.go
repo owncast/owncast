@@ -1137,10 +1137,9 @@ func pendingPermissions(manifestPerms, approved []string) []string {
 // LoadPlugin loads a single plugin given explicit wasm and manifest paths
 // (the loose-files layout). Used by the test runner so it shares the exact
 // same load + register + validate path that production uses via Start.
-//
-// LoadPlugin loads a single plugin given explicit wasm and manifest paths
-// (the loose-files layout). Assets are discovered from the assets/ directory
-// sibling of the wasm and wired into the plugin at load time.
+// Assets are discovered from an `assets/` sibling directory when present and
+// wired into the returned Loaded so the same asset-backed host APIs work for
+// both loose-file and packaged plugins.
 func LoadPlugin(ctx context.Context, env *HostEnv, wasmPath, manifestPath string) (*Loaded, error) {
 	manifestBytes, err := os.ReadFile(manifestPath) //nolint:gosec // G304: plugin paths are admin-controlled, not user input
 	if err != nil {

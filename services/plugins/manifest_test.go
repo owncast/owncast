@@ -593,6 +593,23 @@ func TestParseManifest_ExtraPageContent_RewritesRelativePath(t *testing.T) {
 	}
 }
 
+func TestParseManifest_ExtraPageContent_AcceptsLegacyStringForm(t *testing.T) {
+	m, err := ParseManifest([]byte(`{
+		"api": "1", "name": "page", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"extraPageContent": "content.html"
+	}`))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	if m.ExtraPageContent == nil {
+		t.Fatal("extraPageContent should not be nil")
+	}
+	if m.ExtraPageContent.Content != "/plugins/page/content.html" {
+		t.Errorf("extraPageContent.content = %q, want /plugins/page/content.html", m.ExtraPageContent.Content)
+	}
+}
+
 func TestParseManifest_ExtraPageContent_DoesNotRequireHttpServe(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "page", "version": "1.0",
@@ -674,6 +691,32 @@ func TestParseManifest_Tabs_RewritesContentPaths(t *testing.T) {
 	want := []Tab{
 		{Title: "Music", Slug: "music", Content: "/plugins/tabbed/music.html"},
 		{Title: "Photos", Slug: "photos", Content: "/plugins/tabbed/photos.html"},
+	}
+	if len(m.Tabs) != len(want) {
+		t.Fatalf("tabs count: got %d want %d", len(m.Tabs), len(want))
+	}
+	for i, w := range want {
+		if m.Tabs[i] != w {
+			t.Errorf("tabs[%d] = %+v, want %+v", i, m.Tabs[i], w)
+		}
+	}
+}
+
+func TestParseManifest_Tabs_AcceptsLegacyStaticTabsWithoutSlugs(t *testing.T) {
+	m, err := ParseManifest([]byte(`{
+		"api": "1", "name": "tabbed", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"tabs": [
+			{ "title": "Music", "content": "music.html" },
+			{ "title": "Schedule", "content": "/schedule.html" }
+		]
+	}`))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	want := []Tab{
+		{Title: "Music", Slug: "music", Content: "/plugins/tabbed/music.html"},
+		{Title: "Schedule", Slug: "schedule", Content: "/plugins/tabbed/schedule.html"},
 	}
 	if len(m.Tabs) != len(want) {
 		t.Fatalf("tabs count: got %d want %d", len(m.Tabs), len(want))

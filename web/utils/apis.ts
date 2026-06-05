@@ -179,7 +179,9 @@ export async function fetchData<T = any>(url: string, options?: FetchOptions): P
     try {
       json = JSON.parse(text) as T;
     } catch {
-      json = {} as T;
+      if (response.ok) {
+        throw new Error('Invalid JSON response from server');
+      }
     }
   }
 

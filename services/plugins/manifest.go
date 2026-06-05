@@ -81,9 +81,14 @@ type Manifest struct {
 	// ExtraPageContent declares the plugin's contribution to the viewer
 	// page's extra-content block. When Content is set, the host reads
 	// that HTML file's bytes and prepends them to the admin's
-	// extraPageContent in the /api/config response. When Content is
-	// absent, the host calls on_page_content(slug, user) to get
-	// rendered HTML dynamically. Requires ui.modify.
+	// extraPageContent in the /api/config response (after the admin's
+	// markdown is rendered) so plugin HTML never goes through the
+	// markdown processor and can't be mangled by it. Paths follow the
+	// same rules as styles/scripts (bare paths auto-prefix to
+	// /plugins/<slug>/, cross-plugin and http(s):// URLs rejected,
+	// .html extension required). When Content is absent, the host calls
+	// on_page_content(slug, user) to get rendered HTML dynamically.
+	// Requires ui.modify.
 	ExtraPageContent *ExtraPageContent `json:"extraPageContent,omitempty"`
 	// Tabs declares viewer-page tabs the plugin contributes to the
 	// row of tabs Owncast renders next to chat (alongside built-ins
@@ -106,12 +111,40 @@ type Tab struct {
 }
 
 // ExtraPageContent declares the plugin's contribution to the viewer
-// page's extra-content block. Slug identifies the slot; Content is
-// an optional static HTML file path. When Content is absent the host
-// calls on_page_content(slug, user) to get rendered HTML.
+// page's extra-content block. Slug names the target slot in the page;
+// Content is an optional static HTML asset path. When Content is
+// absent the host calls on_page_content(slug, user) to get rendered
+// HTML dynamically.
 type ExtraPageContent struct {
 	Slug    string `json:"slug"`
 	Content string `json:"content,omitempty"`
+}
+
+// UnmarshalJSON accepts both the current object form:
+//
+//	{"slug":"banner","content":"content.html"}
+//
+// and the legacy string form older SDK examples emitted:
+//
+//	"content.html"
+//
+// The host only consumes Content today, so older packages remain loadable
+// even though they never carried an explicit slot slug.
+func (e *ExtraPageContent) UnmarshalJSON(data []byte) error {
+	var legacy string
+	if err := json.Unmarshal(data, &legacy); err == nil {
+		e.Content = legacy
+		e.Slug = ""
+		return nil
+	}
+
+	type extraPageContentAlias ExtraPageContent
+	var decoded extraPageContentAlias
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	*e = ExtraPageContent(decoded)
+	return nil
 }
 
 // BotConfig is the chat-bot-specific configuration for plugins that
@@ -449,6 +482,12 @@ func (m *Manifest) validateScripts() error {
 	return nil
 }
 
+// validateExtraPageContent checks manifest.extraPageContent. Static content
+// paths are rewritten into the plugin's namespace and inlined into the
+// /api/config extraPageContent response (prepended to the admin's content),
+// so http.serve is not required, but the same path-shape and extension rules
+// apply for consistency with styles and scripts. Dynamic content omits
+// Content and instead requires a valid slot slug for on_page_content.
 func (m *Manifest) validateExtraPageContent() error {
 	if m.ExtraPageContent == nil {
 		return nil
@@ -461,15 +500,21 @@ func (m *Manifest) validateExtraPageContent() error {
 				"it's visible to anyone reviewing the manifest that the " +
 				"plugin paints inside Owncast's chrome")
 	}
-	if err := validatePluginSlug("manifest.extraPageContent.slug", m.ExtraPageContent.Slug); err != nil {
-		return err
-	}
 	if m.ExtraPageContent.Content != "" {
+		if strings.TrimSpace(m.ExtraPageContent.Slug) != "" {
+			if err := validatePluginSlug("manifest.extraPageContent.slug", m.ExtraPageContent.Slug); err != nil {
+				return err
+			}
+		}
 		rewritten, err := rewritePluginAssetPath(m.Slug, m.ExtraPageContent.Content, ".html")
 		if err != nil {
 			return fmt.Errorf("manifest.extraPageContent.content: %w", err)
 		}
 		m.ExtraPageContent.Content = rewritten
+		return nil
+	}
+	if err := validatePluginSlug("manifest.extraPageContent.slug", m.ExtraPageContent.Slug); err != nil {
+		return err
 	}
 	return nil
 }
@@ -496,7 +541,16 @@ func (m *Manifest) validateTabs() error {
 			return fmt.Errorf("manifest.tabs[%d].title %q is a duplicate; tab titles must be unique within a plugin", i, m.Tabs[i].Title)
 		}
 		seenTitles[m.Tabs[i].Title] = true
-		if err := validatePluginSlug(fmt.Sprintf("manifest.tabs[%d].slug", i), m.Tabs[i].Slug); err != nil {
+		if strings.TrimSpace(m.Tabs[i].Slug) == "" {
+			if m.Tabs[i].Content == "" {
+				return fmt.Errorf("manifest.tabs[%d].slug is required", i)
+			}
+			derived, err := slugify(m.Tabs[i].Title)
+			if err != nil {
+				return fmt.Errorf("manifest.tabs[%d].slug is required and could not be derived from title %q: %w", i, m.Tabs[i].Title, err)
+			}
+			m.Tabs[i].Slug = derived
+		} else if err := validatePluginSlug(fmt.Sprintf("manifest.tabs[%d].slug", i), m.Tabs[i].Slug); err != nil {
 			return err
 		}
 		if seenSlugs[m.Tabs[i].Slug] {

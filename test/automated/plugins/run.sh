@@ -23,7 +23,10 @@ source ../tools.sh
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 PLUGIN_SDK_DIR="${PLUGIN_SDK_DIR:-}"
 PLUGIN_SDK_REPO="${PLUGIN_SDK_REPO:-https://github.com/owncast/plugin-sdk}"
-PLUGIN_SDK_REF="${PLUGIN_SDK_REF:-main}"
+# Pin the SDK examples to the last revision that still matches the host's
+# static extraPageContent/tab contract. Newer SDK main examples exercise
+# dynamic UI hooks that this branch does not implement yet.
+PLUGIN_SDK_REF="${PLUGIN_SDK_REF:-5d625a5e95ae56ae5679dae93c09575436d40174}"
 
 # SDK example plugins exercised by the tests in this directory.
 PLUGIN_NAMES=(profanity-filter echo-bot overlay styles-demo scripts-demo viewer-gate page-content-demo tabs-demo)
@@ -41,7 +44,11 @@ else
 	CLONED_SDK=1
 	# Never block on an interactive credential prompt — fail clearly instead.
 	export GIT_TERMINAL_PROMPT=0
-	git clone --depth 1 --branch "$PLUGIN_SDK_REF" "$PLUGIN_SDK_REPO" "$SDK_DIR"
+	git clone "$PLUGIN_SDK_REPO" "$SDK_DIR"
+	(
+		cd "$SDK_DIR"
+		git checkout "$PLUGIN_SDK_REF"
+	)
 fi
 
 # Tear down the installed plugins (and the SDK clone, but never a local SDK
