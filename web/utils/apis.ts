@@ -151,7 +151,7 @@ export function extractAPIErrorMessage(status: number, body?: any, fallbackText 
   return `An error has occurred: ${status}`;
 }
 
-export async function fetchData(url: string, options?: FetchOptions) {
+export async function fetchData<T = any>(url: string, options?: FetchOptions): Promise<T> {
   const { data, method = 'GET', auth = true } = options || {};
 
   // eslint-disable-next-line no-undef
@@ -174,12 +174,12 @@ export async function fetchData(url: string, options?: FetchOptions) {
 
   const response = await fetch(url, requestOptions);
   const text = await response.text();
-  let json = {};
+  let json: T = {} as T;
   if (text) {
     try {
-      json = JSON.parse(text);
+      json = JSON.parse(text) as T;
     } catch {
-      json = {};
+      json = {} as T;
     }
   }
 
