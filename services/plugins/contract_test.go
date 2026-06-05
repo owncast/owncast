@@ -165,6 +165,10 @@ func marshalContract(t *testing.T, c contract) []byte {
 	return append(data, '\n')
 }
 
+func normalizeNewlines(b []byte) []byte {
+	return []byte(strings.ReplaceAll(string(b), "\r\n", "\n"))
+}
+
 func TestPluginContractMatchesSDK(t *testing.T) {
 	_, thisFile, _, _ := runtime.Caller(0)
 	repoRoot := filepath.Join(filepath.Dir(thisFile), "..", "..")
@@ -180,7 +184,7 @@ func TestPluginContractMatchesSDK(t *testing.T) {
 		t.Fatalf("read plugin-contract.json: %v", err)
 	}
 
-	if string(gotJSON) != string(want) {
+	if string(normalizeNewlines(gotJSON)) != string(normalizeNewlines(want)) {
 		t.Errorf(`Owncast's bundled plugin runtime is out of sync with the plugin SDK.
 
 The plugin host functions, permissions, or data shapes in services/plugins no

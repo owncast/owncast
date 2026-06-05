@@ -158,7 +158,7 @@ func (p *Host) handleRegistryInstall(w http.ResponseWriter, r *http.Request) {
 
 	entry, err := p.manager.Install(r.Context(), pkgBytes)
 	if err != nil {
-		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: err.Error()})
+		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: "plugin cannot be installed: " + err.Error()})
 		return
 	}
 	log.Infof("plugin %q [%s] v%s installed from registry by admin", entry.DisplayName, entry.Slug, entry.Version)
