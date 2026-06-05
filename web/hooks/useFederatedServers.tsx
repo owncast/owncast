@@ -26,10 +26,27 @@ export interface UseFederatedServersResult {
   removeServer: (id: string) => Promise<void>;
 }
 
+interface APIErrorResponse {
+  message?: string;
+  errorCode?: string;
+}
+
 // API endpoints - these will need to be implemented on the backend
 const API_FEDERATED_SERVERS = '/api/federation/servers';
 const API_ADD_FEDERATED_SERVER = '/api/admin/federation/servers';
 const API_REMOVE_FEDERATED_SERVER = '/api/admin/federation/servers';
+const UNSUPPORTED_FEATURED_STREAMS_ERROR_CODE = 'UNSUPPORTED_FEATURED_STREAMS';
+
+function getFederatedServerErrorMessage(
+  error: APIErrorResponse,
+  t: (key: string, query?: object) => string,
+) {
+  if (error.errorCode === UNSUPPORTED_FEATURED_STREAMS_ERROR_CODE) {
+    return t(Localization.Admin.FeaturedStreams.unsupportedFeaturedStreams);
+  }
+
+  return error.message || t(Localization.Admin.FeaturedStreams.failedToFeature);
+}
 
 export function useFederatedServers(isAdmin: boolean = false): UseFederatedServersResult {
   const { t } = useTranslation();
@@ -74,8 +91,8 @@ export function useFederatedServers(isAdmin: boolean = false): UseFederatedServe
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || t(Localization.Admin.FeaturedStreams.failedToFeature));
+      const apiError: APIErrorResponse = await response.json();
+      throw new Error(getFederatedServerErrorMessage(apiError, t));
     }
 
     // Refetch the server list
@@ -90,8 +107,8 @@ export function useFederatedServers(isAdmin: boolean = false): UseFederatedServe
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || t(Localization.Admin.FeaturedStreams.failedToUnfeature));
+      const apiError: APIErrorResponse = await response.json();
+      throw new Error(apiError.message || t(Localization.Admin.FeaturedStreams.failedToUnfeature));
     }
 
     // Refetch the server list
