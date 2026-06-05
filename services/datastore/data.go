@@ -41,8 +41,11 @@ func SetupPersistence(file, backupDirectory string) (*Datastore, error) {
 		if !utils.DoesFileExists(file) {
 			log.Traceln("Creating new database at", file)
 
-			_, err := os.Create(file) //nolint:gosec
+			createdFile, err := os.Create(file) //nolint:gosec
 			if err != nil {
+				log.Fatal(err.Error())
+			}
+			if err := createdFile.Close(); err != nil {
 				log.Fatal(err.Error())
 			}
 		}
