@@ -268,7 +268,9 @@ const Plugins = () => {
           setPendingEnable(entry);
         }
       } catch (e) {
-        setError(e instanceof Error ? e.message : String(e));
+        const msg = e instanceof Error ? e.message : String(e);
+        setError(msg);
+        message.error(msg);
       }
     },
     [loadPlugins, loadRegistry, t],

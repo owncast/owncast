@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { message } from 'antd';
 import Plugins from '../pages/admin/plugins';
 import {
   fetchData,
@@ -23,6 +24,18 @@ jest.mock('next-export-i18n', () => ({
     t: (key: string) => key,
   }),
 }));
+
+jest.mock('antd', () => {
+  const actual = jest.requireActual('antd');
+  return {
+    ...actual,
+    message: {
+      ...actual.message,
+      error: jest.fn(),
+      success: jest.fn(),
+    },
+  };
+});
 
 jest.mock('../components/layouts/AdminLayout', () => ({
   AdminLayout: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -69,6 +82,7 @@ const mockedFetchData = fetchData as jest.MockedFunction<typeof fetchData>;
 describe('Plugins admin page', () => {
   beforeEach(() => {
     mockedFetchData.mockReset();
+    jest.clearAllMocks();
   });
 
   test('surfaces registry install errors to the admin page', async () => {
@@ -94,5 +108,9 @@ describe('Plugins admin page', () => {
         screen.getByText('invalid manifest: manifest.scripts requires the "http.serve" permission'),
       ).toBeInTheDocument();
     });
+
+    expect(message.error).toHaveBeenCalledWith(
+      'invalid manifest: manifest.scripts requires the "http.serve" permission',
+    );
   });
 });

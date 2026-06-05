@@ -492,10 +492,12 @@ func (m *Manager) Enable(ctx context.Context, name string) error {
 	return err
 }
 
-// validateUploadedPackage checks an uploaded .ocpkg's bytes and returns
-// its manifest. Pulled out of Install so the validation steps and the
-// (lock + write + scan) plumbing don't combine into one long function.
-func validateUploadedPackage(packageBytes []byte) (*Manifest, error) {
+// validateUploadedPackage checks an uploaded .ocpkg's bytes, verifies the
+// wasm can complete the same register()/manifest-agreement path used by a
+// real load, and returns its manifest. Pulled out of Install so the
+// validation steps and the (lock + write + scan) plumbing don't combine into
+// one long function.
+func validateUploadedPackage(ctx context.Context, env *HostEnv, packageBytes []byte) (*Manifest, error) {
 	if len(packageBytes) == 0 {
 		return nil, fmt.Errorf("upload is empty")
 	}
@@ -510,13 +512,25 @@ func validateUploadedPackage(packageBytes []byte) (*Manifest, error) {
 	if err != nil {
 		return nil, fmt.Errorf("missing manifest: %w", err)
 	}
-	if _, err := readZipFile(zr, pkgWasmFilename); err != nil {
+	wasmBytes, err := readZipFile(zr, pkgWasmFilename)
+	if err != nil {
 		return nil, fmt.Errorf("missing compiled plugin: %w", err)
 	}
 	manifest, err := ParseManifest(manifestBytes)
 	if err != nil {
 		return nil, fmt.Errorf("invalid manifest: %w", err)
 	}
+	// Preflight the package through the real load path before we write it into
+	// the plugins directory. Without this, an .ocpkg whose manifest parses but
+	// whose wasm fails register() or disagrees with the manifest appears to
+	// "install" successfully from the catalog, then only surfaces as a
+	// discovered-but-broken plugin later. The admin clicked Install, so the
+	// operation should fail up front if the package cannot be loaded.
+	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, manifest.Slug)
+	if err != nil {
+		return nil, err
+	}
+	loaded.Close(ctx)
 	return manifest, nil
 }
 
@@ -595,7 +609,7 @@ const MaxUploadBytes = 50 * 1024 * 1024
 // named .ocpkg ends up replacing the right file. Returns the discovered
 // entry for the installed plugin.
 func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*DiscoveredEntry, error) {
-	manifest, err := validateUploadedPackage(packageBytes)
+	manifest, err := validateUploadedPackage(ctx, m.env, packageBytes)
 	if err != nil {
 		return nil, err
 	}

@@ -518,6 +518,31 @@ func TestManager_Install_RejectsMissingManifest(t *testing.T) {
 	}
 }
 
+func TestManager_Install_RejectsUnloadablePackage(t *testing.T) {
+	wasmPath := findExampleWasm(t)
+	wasmBytes, _ := os.ReadFile(wasmPath)
+
+	mgr := NewManager(t.TempDir(), &HostEnv{})
+	pkg := buildPackageBytes(t, []byte(`{
+		"api": "1",
+		"name": "hello-world",
+		"version": "9.9.9",
+		"description": "mismatched manifest/runtime for install preflight",
+		"permissions": []
+	}`), wasmBytes, nil)
+	_, err := mgr.Install(context.Background(), pkg)
+	if err == nil {
+		t.Fatal("expected error for unloadable package")
+	}
+	if !strings.Contains(err.Error(), "manifest/runtime mismatch") {
+		t.Errorf("error should mention manifest/runtime mismatch: got %v", err)
+	}
+	entries := mgr.List()
+	if len(entries) != 0 {
+		t.Fatalf("unloadable package should not be discovered, got %d entries", len(entries))
+	}
+}
+
 func TestManager_Uninstall_DeletesFileAndClearsState(t *testing.T) {
 	wasmPath := findExampleWasm(t)
 	wasmBytes, _ := os.ReadFile(wasmPath)
