@@ -140,8 +140,8 @@ func TestServer_InjectsAdminStylesOnAdminPath(t *testing.T) {
 	if !strings.Contains(rec.Body.String(), adminStyleMarker) {
 		t.Errorf("admin HTML did not contain injected stylesheet marker; body=%q", rec.Body.String())
 	}
-	if !strings.Contains(rec.Body.String(), "/styles/admin/plugin-iframe.css") {
-		t.Errorf("admin HTML missing plugin-iframe.css link; body=%q", rec.Body.String())
+	if !strings.Contains(rec.Body.String(), "/styles/plugin.css") {
+		t.Errorf("admin HTML missing plugin.css link; body=%q", rec.Body.String())
 	}
 
 	// Public path: snippet absent (we don't theme non-admin pages).

@@ -15,6 +15,9 @@
 pre-push:
   parallel: true
   commands:
+    go-test:
+      glob: '*.{go,mod,sum}'
+      run: go test ./... > /dev/null
     web-build:
       root: web/
       run: npm run build

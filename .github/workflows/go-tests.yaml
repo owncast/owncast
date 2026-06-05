@@ -3,7 +3,7 @@
 #   - Push/PR with Go file changes (*.go, go.mod, go.sum)
 #   - Skips when only web/ directory changes
 # Test Matrix:
-#   - PRs: Latest Go on Ubuntu only (fast feedback)
+#   - PRs: Ubuntu + Windows (catch cross-platform regressions before merge)
 #   - Develop/Main: Full matrix (ensure cross-platform compatibility)
 
 name: Go Tests
@@ -20,7 +20,7 @@ jobs:
   test:
     strategy:
       matrix:
-        os: ${{ github.event_name == 'pull_request' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest", "ubuntu-24.04-arm"]') }}
+        os: ${{ github.event_name == 'pull_request' && fromJSON('["ubuntu-latest", "windows-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest", "ubuntu-24.04-arm"]') }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6

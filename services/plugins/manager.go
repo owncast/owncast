@@ -19,6 +19,7 @@ import (
 	extism "github.com/extism/go-sdk"
 	"github.com/gobwas/glob"
 	log "github.com/sirupsen/logrus"
+	"github.com/tetratelabs/wazero"
 )
 
 // Loaded represents a successfully-loaded plugin. The sidecar manifest is the
@@ -162,6 +163,46 @@ func (l *Loaded) IsAdminPath(path string) bool {
 	return false
 }
 
+// CallTabContent invokes the plugin's on_tab_content export with the
+// given slug and optional user, returning the rendered HTML. Returns
+// empty string when the plugin does not export on_tab_content.
+func (p *Loaded) CallTabContent(ctx context.Context, slug string, user *HostUser) (string, error) {
+	return p.callContentExport(ctx, "on_tab_content", slug, user)
+}
+
+// CallPageContent invokes the plugin's on_page_content export with
+// the given slug and optional user, returning the rendered HTML.
+// Returns empty string when the plugin does not export on_page_content.
+func (p *Loaded) CallPageContent(ctx context.Context, slug string, user *HostUser) (string, error) {
+	return p.callContentExport(ctx, "on_page_content", slug, user)
+}
+
+func (p *Loaded) callContentExport(ctx context.Context, export, slug string, user *HostUser) (string, error) {
+	p.mu.Lock()
+	pl := p.plugin
+	p.mu.Unlock()
+	if pl == nil || !pl.FunctionExists(export) {
+		return "", nil
+	}
+	req := map[string]any{"slug": slug}
+	if user != nil {
+		req["user"] = user
+	}
+	input, err := json.Marshal(req)
+	if err != nil {
+		return "", fmt.Errorf("%s: marshal input: %w", export, err)
+	}
+	callCtx, cancel := context.WithTimeout(ctx, HTTPHandlerTimeout)
+	defer cancel()
+	p.mu.Lock()
+	_, out, err := pl.CallWithContext(callCtx, export, input)
+	p.mu.Unlock()
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", export, err)
+	}
+	return string(out), nil
+}
+
 // Close releases the underlying wasm instance and any retained file handles
 // (the .ocpkg zip reader for packaged plugins). Safe to call multiple times.
 func (l *Loaded) Close(ctx context.Context) {
@@ -202,6 +243,23 @@ type Manager struct {
 	scanInterval time.Duration
 	cancel       context.CancelFunc // stops the scan loop
 	scanCh       chan struct{}      // pings to force a scan (testing / admin trigger)
+
+	// onUnload, if set, is called with a plugin's slug just before its
+	// instance is closed (disable, reload, disk-removal, or host stop), so
+	// host subsystems can release per-plugin resources. Timers use it to
+	// cancel a plugin's pending callbacks.
+	onUnload func(slug string)
+}
+
+// SetOnUnload registers a callback invoked with a plugin's slug right before
+// its instance is closed. Used to cancel per-plugin host resources (timers).
+func (m *Manager) SetOnUnload(fn func(slug string)) { m.onUnload = fn }
+
+// notifyUnload fires the onUnload hook for a plugin about to be closed.
+func (m *Manager) notifyUnload(l *Loaded) {
+	if m.onUnload != nil && l != nil && l.Manifest != nil {
+		m.onUnload(l.Manifest.Slug)
+	}
 }
 
 // DiscoveredEntry is the public view of a discovered plugin: what the
@@ -365,6 +423,7 @@ func (m *Manager) Stop(ctx context.Context) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for _, l := range m.loaded {
+		m.notifyUnload(l)
 		l.Close(ctx)
 	}
 	m.loaded = map[string]*Loaded{}
@@ -433,10 +492,12 @@ func (m *Manager) Enable(ctx context.Context, name string) error {
 	return err
 }
 
-// validateUploadedPackage checks an uploaded .ocpkg's bytes and returns
-// its manifest. Pulled out of Install so the validation steps and the
-// (lock + write + scan) plumbing don't combine into one long function.
-func validateUploadedPackage(packageBytes []byte) (*Manifest, error) {
+// validateUploadedPackage checks an uploaded .ocpkg's bytes, verifies the
+// wasm can complete the same register()/manifest-agreement path used by a
+// real load, and returns its manifest. Pulled out of Install so the
+// validation steps and the (lock + write + scan) plumbing don't combine into
+// one long function.
+func validateUploadedPackage(ctx context.Context, env *HostEnv, packageBytes []byte) (*Manifest, error) {
 	if len(packageBytes) == 0 {
 		return nil, fmt.Errorf("upload is empty")
 	}
@@ -451,13 +512,33 @@ func validateUploadedPackage(packageBytes []byte) (*Manifest, error) {
 	if err != nil {
 		return nil, fmt.Errorf("missing manifest: %w", err)
 	}
-	if _, err := readZipFile(zr, pkgWasmFilename); err != nil {
+	wasmBytes, err := readZipFile(zr, pkgWasmFilename)
+	if err != nil {
 		return nil, fmt.Errorf("missing compiled plugin: %w", err)
 	}
 	manifest, err := ParseManifest(manifestBytes)
 	if err != nil {
 		return nil, fmt.Errorf("invalid manifest: %w", err)
 	}
+	// Preflight the package through the real load path before we write it into
+	// the plugins directory. Without this, an .ocpkg whose manifest parses but
+	// whose wasm fails register() or disagrees with the manifest appears to
+	// "install" successfully from the catalog, then only surfaces as a
+	// discovered-but-broken plugin later. The admin clicked Install, so the
+	// operation should fail up front if the package cannot be loaded.
+	// Extract assetsFS from the zip before calling loadFromBytes so register()
+	// sees the same owncast_asset_read host function behavior as a real load.
+	var assetsFS fs.FS
+	if hasZipDir(zr, pkgAssetsPrefix) {
+		if sub, err := fs.Sub(zr, strings.TrimSuffix(pkgAssetsPrefix, "/")); err == nil {
+			assetsFS = sub
+		}
+	}
+	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, manifest.Slug, assetsFS)
+	if err != nil {
+		return nil, err
+	}
+	loaded.Close(ctx)
 	return manifest, nil
 }
 
@@ -536,7 +617,7 @@ const MaxUploadBytes = 50 * 1024 * 1024
 // named .ocpkg ends up replacing the right file. Returns the discovered
 // entry for the installed plugin.
 func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*DiscoveredEntry, error) {
-	manifest, err := validateUploadedPackage(packageBytes)
+	manifest, err := validateUploadedPackage(ctx, m.env, packageBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -579,6 +660,7 @@ func (m *Manager) Disable(ctx context.Context, name string) error {
 		fmt.Fprintf(os.Stderr, "persist enabled set: %v\n", err)
 	}
 	if loaded != nil {
+		m.notifyUnload(loaded)
 		loaded.Close(ctx)
 	}
 	return nil
@@ -606,6 +688,7 @@ func (m *Manager) Uninstall(ctx context.Context, name string) error {
 	m.mu.Unlock()
 
 	if loaded != nil {
+		m.notifyUnload(loaded)
 		loaded.Close(ctx)
 	}
 
@@ -665,6 +748,7 @@ func (m *Manager) Reload(ctx context.Context, name string) error {
 	delete(m.loaded, name)
 	m.mu.Unlock()
 	if loaded != nil {
+		m.notifyUnload(loaded)
 		loaded.Close(ctx)
 	}
 
@@ -747,9 +831,7 @@ func loadByPath(ctx context.Context, env *HostEnv, path string) (*Loaded, error)
 		if pub := filepath.Join(parent, "public"); dirExists(pub) {
 			loaded.PublicFS = os.DirFS(pub)
 		}
-		if as := filepath.Join(parent, "assets"); dirExists(as) {
-			loaded.AssetsFS = os.DirFS(as)
-		}
+		// AssetsFS is already set by LoadPlugin from the assets/ sibling dir.
 		return loaded, nil
 	}
 	return nil, fmt.Errorf("unsupported plugin file: %s", path)
@@ -841,6 +923,7 @@ func (m *Manager) scan(ctx context.Context) error {
 		delete(m.loaded, name)
 		m.mu.Unlock()
 		if loaded != nil {
+			m.notifyUnload(loaded)
 			loaded.Close(ctx)
 		}
 	}
@@ -1054,9 +1137,9 @@ func pendingPermissions(manifestPerms, approved []string) []string {
 // LoadPlugin loads a single plugin given explicit wasm and manifest paths
 // (the loose-files layout). Used by the test runner so it shares the exact
 // same load + register + validate path that production uses via Start.
-//
-// AssetsFS on the returned Loaded is left nil — callers that want static
-// asset serving should populate it themselves.
+// Assets are discovered from an `assets/` sibling directory when present and
+// wired into the returned Loaded so the same asset-backed host APIs work for
+// both loose-file and packaged plugins.
 func LoadPlugin(ctx context.Context, env *HostEnv, wasmPath, manifestPath string) (*Loaded, error) {
 	manifestBytes, err := os.ReadFile(manifestPath) //nolint:gosec // G304: plugin paths are admin-controlled, not user input
 	if err != nil {
@@ -1067,7 +1150,11 @@ func LoadPlugin(ctx context.Context, env *HostEnv, wasmPath, manifestPath string
 		return nil, fmt.Errorf("read wasm %s: %w", wasmPath, err)
 	}
 	displayName := strings.TrimSuffix(filepath.Base(wasmPath), ".wasm")
-	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, displayName)
+	var assetsFS fs.FS
+	if as := filepath.Join(filepath.Dir(wasmPath), "assets"); dirExists(as) {
+		assetsFS = os.DirFS(as)
+	}
+	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, displayName, assetsFS)
 	if err != nil {
 		return nil, err
 	}
@@ -1076,13 +1163,13 @@ func LoadPlugin(ctx context.Context, env *HostEnv, wasmPath, manifestPath string
 }
 
 // loadFromBytes is the shared core of LoadPlugin and LoadPackage.
-func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes []byte, displayName string) (*Loaded, error) {
+func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes []byte, displayName string, assetsFS fs.FS) (*Loaded, error) {
 	manifest, err := ParseManifest(manifestBytes)
 	if err != nil {
 		return nil, err
 	}
 
-	hostFns := BuildHostFunctions(env, manifest)
+	hostFns := BuildHostFunctions(env, manifest, assetsFS)
 
 	extismManifest := extism.Manifest{
 		Wasm:    []extism.Wasm{extism.WasmData{Data: wasmBytes, Name: displayName}},
@@ -1106,7 +1193,13 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes [
 			break
 		}
 	}
-	p, err := extism.NewPlugin(ctx, extismManifest, extism.PluginConfig{EnableWasi: true}, hostFns)
+	// Give the guest the real host wall clock and monotonic clock so Date and
+	// performance.now() reflect actual time. Wazero's default ModuleConfig
+	// uses a frozen deterministic clock (Date.now() would otherwise return a
+	// fixed 2022 epoch). Nanosleep is deliberately NOT wired: a plugin must
+	// not be able to block inside a call and burn its call-timeout budget.
+	moduleConfig := wazero.NewModuleConfig().WithSysWalltime().WithSysNanotime()
+	p, err := extism.NewPlugin(ctx, extismManifest, extism.PluginConfig{EnableWasi: true, ModuleConfig: moduleConfig}, hostFns)
 	if err != nil {
 		return nil, fmt.Errorf("instantiate wasm: %w", err)
 	}
@@ -1154,7 +1247,7 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes [
 		adminPaths = append(adminPaths, page.Path)
 	}
 
-	return &Loaded{Manifest: manifest, plugin: p, adminGlobs: adminGlobs, adminPaths: adminPaths}, nil
+	return &Loaded{Manifest: manifest, plugin: p, adminGlobs: adminGlobs, adminPaths: adminPaths, AssetsFS: assetsFS}, nil
 }
 
 // requireChatFilterPermission rejects a runtime registration that

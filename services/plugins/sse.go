@@ -3,6 +3,7 @@ package plugins
 import (
 	"strings"
 	"sync"
+	"sync/atomic"
 )
 
 // DefaultMaxSSEConnectionsPerPlugin caps how many simultaneous
@@ -35,6 +36,9 @@ type SSEHub struct {
 	subscribers      map[string]map[*sseClient]struct{}
 	connectionCounts map[string]int
 	maxPerPlugin     int
+	// nextConnID hands out a process-unique id per connection so the host can
+	// tell a plugin which connection opened/closed (see SSEConnectionEvent).
+	nextConnID atomic.Uint64
 }
 
 // NewSSEHub constructs an empty hub with the default per-plugin connection
@@ -52,18 +56,19 @@ func sseKey(pluginName, channel string) string {
 }
 
 // Subscribe registers a browser client for (pluginName, channel). It
-// returns a receive-only channel of pre-framed SSE bytes and an unsubscribe
-// func the caller MUST invoke when the connection ends. ok is false when
-// the plugin is already at its connection cap, in which case the caller
-// should reject the request.
-func (h *SSEHub) Subscribe(pluginName, channel string) (<-chan []byte, func(), bool) {
+// returns a receive-only channel of pre-framed SSE bytes, an unsubscribe
+// func the caller MUST invoke when the connection ends, and a process-unique
+// connection id. ok is false when the plugin is already at its connection
+// cap, in which case the caller should reject the request.
+func (h *SSEHub) Subscribe(pluginName, channel string) (<-chan []byte, func(), uint64, bool) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
 	if h.connectionCounts[pluginName] >= h.maxPerPlugin {
-		return nil, nil, false
+		return nil, nil, 0, false
 	}
 
+	connID := h.nextConnID.Add(1)
 	client := &sseClient{send: make(chan []byte, 16)}
 	key := sseKey(pluginName, channel)
 	if h.subscribers[key] == nil {
@@ -87,7 +92,7 @@ func (h *SSEHub) Subscribe(pluginName, channel string) (<-chan []byte, func(), b
 		})
 	}
 
-	return client.send, unsubscribe, true
+	return client.send, unsubscribe, connID, true
 }
 
 // Publish frames event+data once and delivers it to every client subscribed

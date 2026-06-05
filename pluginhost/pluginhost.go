@@ -32,6 +32,7 @@ import (
 	"github.com/owncast/owncast/services/plugins"
 	"github.com/owncast/owncast/services/plugins/kv"
 	"github.com/owncast/owncast/services/stream"
+	"github.com/owncast/owncast/utils"
 )
 
 // pluginsEnabledConfigKey is the datastore key under which the set of
@@ -94,6 +95,12 @@ type Host struct {
 	// buttons at runtime (e.g. an admin page that lets the streamer
 	// rename buttons without rebuilding the plugin).
 	kv kv.Store
+	// tickCancel stops the once-a-second tick goroutine when the host stops.
+	tickCancel context.CancelFunc
+	// getRequestUser resolves a viewer's chat identity from an HTTP request
+	// (via the accessToken query parameter). Used by PageContent and Tabs to
+	// pass viewer identity to dynamic onPageContent / onTabContent handlers.
+	getRequestUser func(*http.Request) *plugins.HostUser
 }
 
 // runtimeActionsConfigKey is the reserved key inside a plugin's own
@@ -108,6 +115,9 @@ func (p *Host) Handler() http.Handler { return p.server }
 
 // Stop closes all loaded plugins.
 func (p *Host) Stop(ctx context.Context) {
+	if p.tickCancel != nil {
+		p.tickCancel()
+	}
 	p.manager.Stop(ctx)
 }
 
@@ -174,52 +184,111 @@ func (p *Host) ScriptsContent() []byte {
 }
 
 // PageContent returns the concatenated HTML bytes contributed by
-// every loaded plugin's manifest.extraPageContent file, each preceded
+// every loaded plugin's manifest.extraPageContent, each preceded
 // by an `<!-- plugin: <slug> ... -->` delimiter for in-page
 // attribution. The /api/config handler prepends these bytes to the
 // admin's rendered extraPageContent so plugin HTML lands at the top
 // of the extra-content block. Markdown rendering is skipped for
 // plugin HTML so the markdown processor can't mangle it.
-func (p *Host) PageContent() []byte {
-	return p.readManifestAssets(
-		func(m *plugins.Manifest) []string {
-			if m.ExtraPageContent == "" {
-				return nil
-			}
-			return []string{m.ExtraPageContent}
-		},
-		"<!-- plugin: %s — %s -->\n",
-	)
-}
-
-// Tabs returns every viewer-page tab contributed by loaded plugins
-// via manifest.tabs. Each tab's content file is read from the
-// plugin's assets/ directory once per call; tabs whose file can't be
-// read are skipped (logged) so a broken file doesn't take down the
-// rest of the list. /api/config emits the result as `pluginTabs`,
-// which the viewer page renders alongside the built-in tabs.
-func (p *Host) Tabs() []models.PluginTab {
+func (p *Host) PageContent(r *http.Request) []byte {
 	if p == nil || p.manager == nil {
 		return nil
 	}
-	var out []models.PluginTab
+	var user *plugins.HostUser
+	if p.getRequestUser != nil && r != nil {
+		user = p.getRequestUser(r)
+	}
+	var buf bytes.Buffer
 	for _, l := range p.manager.Snapshot() {
-		if l == nil || l.Manifest == nil || l.AssetsFS == nil {
+		if l == nil || l.Manifest == nil || l.Manifest.ExtraPageContent == nil {
 			continue
 		}
+		epc := l.Manifest.ExtraPageContent
 		slug := l.Manifest.Slug
-		pluginPrefix := "/plugins/" + slug + "/"
-		for _, tab := range l.Manifest.Tabs {
-			relPath := strings.TrimPrefix(tab.Content, pluginPrefix)
-			data, err := fs.ReadFile(l.AssetsFS, relPath)
-			if err != nil {
-				log.Warnf("plugin %s: skipping tab %q (%s): %v", slug, tab.Title, relPath, err)
+		var html string
+		if epc.Content != "" {
+			// Static: read from assets/.
+			if l.AssetsFS == nil {
+				log.Warnf("plugin %s: extraPageContent has content but no AssetsFS", slug)
 				continue
 			}
+			pluginPrefix := "/plugins/" + slug + "/"
+			relPath := strings.TrimPrefix(epc.Content, pluginPrefix)
+			data, err := fs.ReadFile(l.AssetsFS, relPath)
+			if err != nil {
+				log.Warnf("plugin %s: skipping extraPageContent (%s): %v", slug, relPath, err)
+				continue
+			}
+			html = string(data)
+		} else {
+			// Dynamic: call on_page_content with the requesting viewer's identity.
+			var err error
+			html, err = l.CallPageContent(context.Background(), epc.Slug, user)
+			if err != nil {
+				log.Warnf("plugin %s: on_page_content(%q) error: %v", slug, epc.Slug, err)
+				continue
+			}
+		}
+		fmt.Fprintf(&buf, "<!-- plugin: %s — %s -->\n", slug, epc.Slug)
+		buf.WriteString(html)
+	}
+	return buf.Bytes()
+}
+
+// Tabs returns every viewer-page tab contributed by loaded plugins
+// via manifest.tabs. Each tab's content is either read from the
+// plugin's assets/ directory (static) or fetched by calling the
+// plugin's on_tab_content export (dynamic). Tabs whose content can't
+// be resolved are skipped (logged) so a broken file doesn't take down
+// the rest of the list. /api/config emits the result as `pluginTabs`,
+// which the viewer page renders alongside the built-in tabs.
+func (p *Host) Tabs(r *http.Request) []models.PluginTab {
+	if p == nil || p.manager == nil {
+		return nil
+	}
+	var user *plugins.HostUser
+	if p.getRequestUser != nil && r != nil {
+		user = p.getRequestUser(r)
+	}
+	var out []models.PluginTab
+	for _, l := range p.manager.Snapshot() {
+		if l == nil || l.Manifest == nil {
+			continue
+		}
+		pluginSlug := l.Manifest.Slug
+		pluginPrefix := "/plugins/" + pluginSlug + "/"
+		for _, tab := range l.Manifest.Tabs {
+			var html string
+			if tab.Content != "" {
+				// Static: read from assets/.
+				if l.AssetsFS == nil {
+					log.Warnf("plugin %s: tab %q has content but no AssetsFS", pluginSlug, tab.Title)
+					continue
+				}
+				relPath := strings.TrimPrefix(tab.Content, pluginPrefix)
+				data, err := fs.ReadFile(l.AssetsFS, relPath)
+				if err != nil {
+					log.Warnf("plugin %s: skipping tab %q (%s): %v", pluginSlug, tab.Title, relPath, err)
+					continue
+				}
+				html = string(data)
+			} else {
+				// Dynamic: call on_tab_content with the requesting viewer's identity.
+				var err error
+				html, err = l.CallTabContent(context.Background(), tab.Slug, user)
+				if err != nil {
+					log.Warnf("plugin %s: on_tab_content(%q) error: %v", pluginSlug, tab.Slug, err)
+					continue
+				}
+			}
+			// Use pluginSlug/tabSlug as the composite React key so two
+			// plugins can each have a tab with the same slug without
+			// colliding in the viewer page's tab row.
 			out = append(out, models.PluginTab{
-				Slug:  slug,
-				Title: tab.Title,
-				HTML:  string(data),
+				Slug:       pluginSlug + "/" + tab.Slug,
+				PluginSlug: pluginSlug,
+				Title:      tab.Title,
+				HTML:       html,
 			})
 		}
 	}
@@ -327,6 +396,38 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 	deps.Events.AddListener(newPluginEventListener(pluginDispatcher))
 	deps.Events.AddFilter(newPluginChatFilter(pluginDispatcher))
 
+	// Host-driven timers: plugins can't setTimeout in the sandbox, so
+	// owncast.timer.* asks the host to schedule callbacks. The hub resolves a
+	// plugin slug to its live instance to call back; cancelling a plugin's
+	// timers on unload is wired through the manager's onUnload hook.
+	timerHub := plugins.NewTimerHub(func(slug string) *plugins.Loaded {
+		for _, l := range manager.Snapshot() {
+			if l.Manifest.Slug == slug {
+				return l
+			}
+		}
+		return nil
+	})
+	env.Timer = timerHub
+	manager.SetOnUnload(timerHub.CancelForPlugin)
+
+	// Fire a once-a-second tick to plugins that subscribe (onTick), and which
+	// also drives nothing else — host-scheduled timers run independently. The
+	// goroutine is stopped when the host stops.
+	tickCtx, tickCancel := context.WithCancel(context.Background())
+	go func() {
+		t := time.NewTicker(time.Second)
+		defer t.Stop()
+		for {
+			select {
+			case <-tickCtx.Done():
+				return
+			case <-t.C:
+				pluginDispatcher.Notify(tickCtx, plugins.EventTick, plugins.TickEvent{Now: time.Now().UnixMilli()})
+			}
+		}
+	}()
+
 	server := plugins.NewLiveServer(manager.Snapshot)
 	server.SSE = sseHub
 	server.IsAuthenticated = env.IsAuthenticated
@@ -340,6 +441,8 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 		configRepository: deps.ConfigRepository,
 		requireAdminAuth: deps.RequireAdminAuth,
 		kv:               env.KV,
+		tickCancel:       tickCancel,
+		getRequestUser:   env.GetRequestUser,
 	}, nil
 }
 
@@ -640,6 +743,123 @@ func wirePluginHostEnv(env *plugins.HostEnv, deps Deps) {
 	wireUserHostFns(env, deps)
 	wireNotificationHostFns(env, deps)
 	wireRequestHostFns(env, deps)
+	wireFilesystemHostFns(env)
+}
+
+// pluginDataRootDirName is the directory under config.DataDirectory that
+// holds each plugin's private, sandboxed filesystem (storage.fs). It is
+// deliberately separate from the plugins install/scan directory
+// (config.DataDirectory/plugins) so a plugin's writable data can never be
+// mistaken for, or collide with, an installed package or its assets.
+const pluginDataRootDirName = "plugin-data"
+
+// maxPluginFileBytes caps a single storage.fs write. It bounds how much a
+// misbehaving plugin can write in one call; the host's overall disk use is
+// still the admin's responsibility.
+const maxPluginFileBytes = 50 << 20 // 50 MiB
+
+// resolvePluginSandboxPath maps a plugin-supplied relative path to an
+// absolute path inside that plugin's sandbox (root/<pluginName>), and
+// guarantees the result cannot escape it. rel is treated as rooted before
+// cleaning, so "../", absolute paths, and other traversal tricks all
+// collapse back inside the sandbox; a defensive prefix check rejects
+// anything that still lands outside. pluginName is the plugin slug, which
+// the manifest layer has already constrained to [a-z][a-z0-9-]*, so it
+// cannot itself contain separators or "..".
+func resolvePluginSandboxPath(root, pluginName, rel string) (string, error) {
+	sandbox, err := filepath.Abs(filepath.Join(root, pluginName))
+	if err != nil {
+		return "", err
+	}
+	// Rooting rel at "/" before Clean neutralizes leading "../" segments:
+	// filepath.Clean("/"+"../../etc") == "/etc", which then joins back under
+	// the sandbox rather than above it.
+	full := filepath.Join(sandbox, filepath.Clean("/"+rel))
+	if full != sandbox && !strings.HasPrefix(full, sandbox+string(os.PathSeparator)) {
+		return "", fmt.Errorf("path %q escapes the plugin sandbox", rel)
+	}
+	return full, nil
+}
+
+// wireFilesystemHostFns implements the storage.fs host functions against a
+// per-plugin sandbox directory under config.DataDirectory/plugin-data.
+func wireFilesystemHostFns(env *plugins.HostEnv) {
+	wireFilesystemHostFnsWithRoot(env, filepath.Join(config.DataDirectory, pluginDataRootDirName))
+}
+
+// wireFilesystemHostFnsWithRoot is wireFilesystemHostFns with the sandbox
+// parent directory injected, so tests can point the storage.fs functions at
+// a temp directory instead of the real data directory.
+func wireFilesystemHostFnsWithRoot(env *plugins.HostEnv, root string) {
+	env.FSRead = func(pluginName, path string) ([]byte, error) {
+		full, err := resolvePluginSandboxPath(root, pluginName, path)
+		if err != nil {
+			return nil, err
+		}
+		// gosec G304: full is confined to the plugin's sandbox by
+		// resolvePluginSandboxPath, which rejects any path that escapes it.
+		return os.ReadFile(full) //nolint:gosec // G304: path sandboxed above
+	}
+
+	env.FSWrite = func(pluginName, path string, data []byte) error {
+		if len(data) > maxPluginFileBytes {
+			return fmt.Errorf("file is %d bytes; the limit is %d", len(data), maxPluginFileBytes)
+		}
+		full, err := resolvePluginSandboxPath(root, pluginName, path)
+		if err != nil {
+			return err
+		}
+		if err := os.MkdirAll(filepath.Dir(full), 0o700); err != nil {
+			return err
+		}
+		// gosec G304: full is confined to the plugin's sandbox by
+		// resolvePluginSandboxPath, which rejects any path that escapes it.
+		return os.WriteFile(full, data, 0o600) //nolint:gosec // G304: path sandboxed above
+	}
+
+	env.FSList = func(pluginName, dir string) ([]string, error) {
+		full, err := resolvePluginSandboxPath(root, pluginName, dir)
+		if err != nil {
+			return nil, err
+		}
+		entries, err := os.ReadDir(full)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return []string{}, nil
+			}
+			return nil, err
+		}
+		names := make([]string, 0, len(entries))
+		for _, e := range entries {
+			names = append(names, e.Name())
+		}
+		return names, nil
+	}
+
+	env.FSDelete = func(pluginName, path string) error {
+		full, err := resolvePluginSandboxPath(root, pluginName, path)
+		if err != nil {
+			return err
+		}
+		// os.Remove deletes a file or an empty directory only; it won't
+		// recursively wipe a populated subtree, which keeps a single
+		// delete call from being more destructive than the plugin asked.
+		return os.Remove(full)
+	}
+
+	env.FSExists = func(pluginName, path string) (bool, error) {
+		full, err := resolvePluginSandboxPath(root, pluginName, path)
+		if err != nil {
+			return false, err
+		}
+		if _, err := os.Stat(full); err != nil {
+			if os.IsNotExist(err) {
+				return false, nil
+			}
+			return false, err
+		}
+		return true, nil
+	}
 }
 
 // wireVideoConfigHostFns wires the settable video/transcoding configuration:
@@ -841,6 +1061,25 @@ func wireServerReadHostFns(env *plugins.HostEnv, deps Deps) {
 		return out
 	}
 
+	// Emotes exposes the server's custom chat emotes (the same set the public
+	// /api/emoji endpoint serves) so plugins can render or filter `:code:`
+	// emotes server-side. URLs are server-relative, matching /api/emoji.
+	env.Emotes = func() []plugins.Emote {
+		list := datastore.GetEmojiList()
+		out := make([]plugins.Emote, 0, len(list))
+		for _, e := range list {
+			emote := plugins.Emote{}
+			if e.Name != nil {
+				emote.Name = *e.Name
+			}
+			if e.Url != nil {
+				emote.URL = *e.Url
+			}
+			out = append(out, emote)
+		}
+		return out
+	}
+
 	env.Federation = func() plugins.FederationInfo {
 		return plugins.FederationInfo{
 			Enabled:   cfg.GetFederationEnabled(),
@@ -996,7 +1235,7 @@ func wireRequestHostFns(env *plugins.HostEnv, deps Deps) {
 	env.IsAuthenticated = deps.IsAdminRequest
 
 	env.GetRequestUser = func(r *http.Request) *plugins.HostUser {
-		token := r.URL.Query().Get("accessToken")
+		token := utils.ChatAccessTokenFromRequest(r)
 		if token == "" {
 			return nil
 		}

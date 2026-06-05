@@ -269,13 +269,24 @@ func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request)
 		return true
 	}
 
-	conn, err := upgrader.Upgrade(w, r, nil)
+	// Read the access token before upgrading so we can set the chat identity
+	// cookie on the handshake response — once the connection is upgraded the
+	// underlying ResponseWriter is hijacked and can no longer set headers.
+	// This covers returning users whose token predates the cookie, since
+	// every chat session opens a websocket with the token in the query.
+	accessToken := r.URL.Query().Get("accessToken")
+	var responseHeader http.Header
+	if accessToken != "" {
+		responseHeader = http.Header{}
+		utils.AddChatAccessTokenCookieHeader(responseHeader, r, accessToken)
+	}
+
+	conn, err := upgrader.Upgrade(w, r, responseHeader)
 	if err != nil {
 		log.Debugln(err)
 		return
 	}
 
-	accessToken := r.URL.Query().Get("accessToken")
 	if accessToken == "" {
 		log.Errorln("Access token is required")
 		// Return HTTP status code

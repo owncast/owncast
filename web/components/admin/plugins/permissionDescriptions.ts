@@ -10,6 +10,7 @@ import { Localization } from '../../../types/localization';
 export const permissionDescriptionKey: Record<string, string> = {
   [PluginPermission.StorageKV]: Localization.Admin.Plugins.Permissions.storageKv,
   [PluginPermission.StorageUpload]: Localization.Admin.Plugins.Permissions.storageUpload,
+  [PluginPermission.StorageFS]: Localization.Admin.Plugins.Permissions.storageFs,
   [PluginPermission.ChatSend]: Localization.Admin.Plugins.Permissions.chatSend,
   [PluginPermission.ChatHistory]: Localization.Admin.Plugins.Permissions.chatHistory,
   [PluginPermission.ChatModerate]: Localization.Admin.Plugins.Permissions.chatModerate,
@@ -35,6 +36,7 @@ export const permissionDescriptionKey: Record<string, string> = {
 export const permissionNameKey: Record<string, string> = {
   [PluginPermission.StorageKV]: Localization.Admin.Plugins.PermissionNames.storageKv,
   [PluginPermission.StorageUpload]: Localization.Admin.Plugins.PermissionNames.storageUpload,
+  [PluginPermission.StorageFS]: Localization.Admin.Plugins.PermissionNames.storageFs,
   [PluginPermission.ChatSend]: Localization.Admin.Plugins.PermissionNames.chatSend,
   [PluginPermission.ChatHistory]: Localization.Admin.Plugins.PermissionNames.chatHistory,
   [PluginPermission.ChatModerate]: Localization.Admin.Plugins.PermissionNames.chatModerate,

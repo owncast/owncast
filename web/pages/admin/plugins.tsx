@@ -7,6 +7,7 @@ import { useTranslation } from 'next-export-i18n';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import {
   fetchData,
+  isPluginUpdateAvailable,
   PLUGIN_REGISTRY_INSTALL,
   PLUGIN_REGISTRY_LIST,
   PLUGIN_UPLOAD,
@@ -117,7 +118,7 @@ const Plugins = () => {
         plugins.flatMap(p => {
           const reg = registryPlugins.find(r => r.slug === p.slug);
           const latest = reg?.latest?.version;
-          if (p.version && latest && latest !== p.version) {
+          if (latest && isPluginUpdateAvailable(p.version, latest)) {
             return [[p.slug, latest] as [string, string]];
           }
           return [];
@@ -249,20 +250,27 @@ const Plugins = () => {
   // surface the same post-install confirmation flow.
   const installFromRegistry = useCallback(
     async (slug: string, version: string) => {
-      const entry = (await fetchData(PLUGIN_REGISTRY_INSTALL, {
-        method: 'POST',
-        data: { slug, version },
-      })) as Plugin;
-      message.success(t(Localization.Admin.Plugins.uploadSuccess, { name: entry.name }));
-      await loadPlugins();
-      await loadRegistry();
-      // Only prompt to enable for plugins that aren't already
-      // running. Updates of enabled plugins keep their enabled state
-      // unless the new manifest expanded permissions (in which case
-      // the host marks them auto-disabled and the modal shows the
-      // new perms).
-      if (!entry.enabled) {
-        setPendingEnable(entry);
+      try {
+        const entry = (await fetchData(PLUGIN_REGISTRY_INSTALL, {
+          method: 'POST',
+          data: { slug, version },
+        })) as Plugin;
+        setError(null);
+        message.success(t(Localization.Admin.Plugins.uploadSuccess, { name: entry.name }));
+        await loadPlugins();
+        await loadRegistry();
+        // Only prompt to enable for plugins that aren't already
+        // running. Updates of enabled plugins keep their enabled state
+        // unless the new manifest expanded permissions (in which case
+        // the host marks them auto-disabled and the modal shows the
+        // new perms).
+        if (!entry.enabled) {
+          setPendingEnable(entry);
+        }
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        setError(msg);
+        message.error(msg);
       }
     },
     [loadPlugins, loadRegistry, t],

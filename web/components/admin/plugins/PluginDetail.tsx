@@ -271,7 +271,14 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
             <iframe
               title={`${plugin.name} – ${page.title}`}
               src={page.url}
-              sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+              // allow-downloads: plugin admin pages can trigger file
+              // downloads (e.g. exporting data the plugin stored).
+              // allow-modals: lets them use confirm()/alert()/prompt()
+              // for destructive-action confirmations. Both are normal
+              // capabilities of an admin page; the page is same-origin and
+              // admin-gated, so neither widens the trust boundary that
+              // allow-same-origin + allow-scripts already grants.
+              sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-downloads allow-modals"
               className={s.iframe}
             />
           ),
