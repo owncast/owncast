@@ -7,34 +7,23 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
-	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 )
 
 type SqlConfigRepository struct {
-	datastore *data.Datastore
-}
-
-// NOTE: This is temporary during the transition period.
-var temporaryGlobalInstance ConfigRepository
-
-// Get will return the user repository.
-func Get() ConfigRepository {
-	if temporaryGlobalInstance == nil {
-		i := New(data.GetDatastore())
-		temporaryGlobalInstance = i
-	}
-	return temporaryGlobalInstance
+	datastore *datastore.Datastore
 }
 
 // New will create a new instance of the UserRepository.
-func New(datastore *data.Datastore) ConfigRepository {
+func New(datastore *datastore.Datastore) ConfigRepository {
 	r := SqlConfigRepository{
 		datastore: datastore,
 	}
@@ -639,8 +628,11 @@ func (r *SqlConfigRepository) GetVideoCodec() string {
 }
 
 // VerifySettings will perform a sanity check for specific settings values.
-func (r *SqlConfigRepository) VerifySettings() error {
-	if len(r.GetStreamKeys()) == 0 && config.TemporaryStreamKey == "" {
+// temporaryStreamKey is the value of the optional --streamkey CLI flag; the
+// repository checks it alongside the persisted stream-key list to decide
+// whether the server has any usable stream key at all.
+func (r *SqlConfigRepository) VerifySettings(temporaryStreamKey string) error {
+	if len(r.GetStreamKeys()) == 0 && temporaryStreamKey == "" {
 		log.Errorln("No stream key set. Streaming is disabled. Please set one via the admin or command line arguments")
 	}
 

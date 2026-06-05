@@ -5,9 +5,13 @@ import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
 import { Layout, Menu, Alert, Button, Space, Tooltip } from 'antd';
 
+import { useTranslation } from 'next-export-i18n';
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';
-import { upgradeVersionAvailable } from '../../utils/apis';
+import { fetchData, PLUGINS_LIST, upgradeVersionAvailable } from '../../utils/apis';
+import { Plugin } from '../../interfaces/plugin';
+import { PluginIcon } from './plugins/PluginIcon';
+import { Localization } from '../../types/localization';
 import { parseSecondsToDurationString } from '../../utils/format';
 
 import { OwncastLogo } from '../common/OwncastLogo/OwncastLogo';
@@ -58,6 +62,10 @@ const ExperimentOutlined = dynamic(() => import('@ant-design/icons/ExperimentOut
   ssr: false,
 });
 
+const AppstoreOutlined = dynamic(() => import('@ant-design/icons/AppstoreOutlined'), {
+  ssr: false,
+});
+
 const EditOutlined = dynamic(() => import('@ant-design/icons/EditOutlined'), {
   ssr: false,
 });
@@ -75,6 +83,7 @@ export type MainLayoutProps = {
 };
 
 export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
+  const { t } = useTranslation();
   const context = useContext(ServerStatusContext);
   const { serverConfig, online, broadcaster, versionNumber, error: serverError } = context || {};
   const { instanceDetails, chatDisabled, federation } = serverConfig;
@@ -106,6 +115,26 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   useEffect(() => {
     checkForUpgrade();
   }, [versionNumber]);
+
+  // Plugins with declared admin pages drive the sidebar's Plugins
+  // submenu. Fetched once on mount; the admin would refresh the page to
+  // see the submenu reflect newly enabled/disabled plugins.
+  const [plugins, setPlugins] = useState<Plugin[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    fetchData(PLUGINS_LIST)
+      .then(result => {
+        if (cancelled) return;
+        setPlugins(Array.isArray(result) ? result : []);
+      })
+      .catch(() => {
+        // Sidebar still works without the submenu — the top-level Plugins
+        // link to the overview page remains. Silent on error.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     setCurrentStreamTitle(instanceDetails.streamTitle);
@@ -273,6 +302,35 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       icon: <ExperimentOutlined />,
       children: integrationsMenu,
     },
+    {
+      key: 'plugins-menu',
+      label: t(Localization.Admin.Plugins.sidebarTitle),
+      icon: <AppstoreOutlined />,
+      children: [
+        {
+          key: '/admin/plugins',
+          label: <Link href="/admin/plugins">{t(Localization.Admin.Plugins.overview)}</Link>,
+        },
+        // One entry per loaded plugin that declares at least one admin
+        // page, so the admin can jump straight to a plugin's config
+        // without going through the overview + Configure button. URL is
+        // a static route plus an id query param (the plugin's slug)
+        // because the admin UI is statically exported and can't
+        // enumerate plugin identifiers at build time. Sidebar labels use
+        // the human-readable display name.
+        ...plugins
+          .filter(p => (p.adminPages?.length ?? 0) > 0)
+          .map(p => ({
+            key: `/admin/plugins/configure?id=${p.slug}`,
+            label: (
+              <Link href={{ pathname: '/admin/plugins/configure', query: { id: p.slug } }}>
+                {p.name}
+              </Link>
+            ),
+            icon: <PluginIcon plugin={p} size="sidebar" />,
+          })),
+      ],
+    },
     upgradeVersion && {
       type: 'divider',
       key: 'upgrade-divider',
@@ -306,6 +364,16 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       }),
     );
   }, []);
+
+  // The per-plugin configure page is a query-string route
+  // (/admin/plugins/configure?id=...), so the literal-key match above
+  // doesn't fire when navigating to a specific plugin. Open the plugins
+  // submenu whenever the URL is anywhere in /admin/plugins.
+  useEffect(() => {
+    if (route && route.startsWith('/admin/plugins')) {
+      setOpenKeys(prev => (prev.includes('plugins-menu') ? prev : [...prev, 'plugins-menu']));
+    }
+  }, [route]);
 
   return (
     <Layout id="admin-page" className={appClass}>

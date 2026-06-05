@@ -6,19 +6,16 @@ import (
 	"path/filepath"
 	"strconv"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
-	log "github.com/sirupsen/logrus"
 )
 
-var _hasWarnedSVGLogo = false
-
 // GetLogo will return the logo image as a response.
-func GetLogo(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
-	imageFilename := configRepository.GetLogoPath()
+func (h *Handlers) GetLogo(w http.ResponseWriter, r *http.Request) {
+	imageFilename := h.configRepository.GetLogoPath()
 	if imageFilename == "" {
 		returnDefault(w)
 		return
@@ -47,14 +44,13 @@ func GetLogo(w http.ResponseWriter, r *http.Request) {
 // and in that case will return a default placeholder.
 // Used for sharing to external social networks that generally
 // don't support SVG.
-func GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
-	configRepository := configrepository.Get()
-	imageFilename := configRepository.GetLogoPath()
+func (h *Handlers) GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
+	imageFilename := h.configRepository.GetLogoPath()
 
 	// If the logo image is not a SVG then we can return it
 	// without any problems.
 	if imageFilename != "" && filepath.Ext(imageFilename) != ".svg" {
-		GetLogo(w, r)
+		h.GetLogo(w, r)
 		return
 	}
 
@@ -70,9 +66,11 @@ func GetCompatibleLogo(w http.ResponseWriter, r *http.Request) {
 	cacheTime := utils.GetCacheDurationSecondsForPath(imagePath)
 	writeBytesAsImage(imageBytes, contentType, w, cacheTime)
 
-	if !_hasWarnedSVGLogo {
+	h.hasWarnedSVGLogoLock.Lock()
+	defer h.hasWarnedSVGLogoLock.Unlock()
+	if !h.hasWarnedSVGLogo {
 		log.Warnf("an external site requested your logo. because many social networks do not support SVGs we returned a placeholder instead. change your current logo to a png or jpeg to be most compatible with external social networking sites.")
-		_hasWarnedSVGLogo = true
+		h.hasWarnedSVGLogo = true
 	}
 }
 

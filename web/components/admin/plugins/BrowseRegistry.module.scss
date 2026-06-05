@@ -1,0 +1,72 @@
+// Layout for the registry browse modal. The cards lay out as a
+// fixed-width icon on the left, the bulk of the metadata in the
+// middle, and a primary action on the right.
+
+.error {
+  margin-bottom: 16px;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+}
+
+.list {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.icon {
+  flex: 0 0 auto;
+
+  img {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    object-fit: contain;
+  }
+}
+
+// Puzzle-piece SVG placeholder for plugins without a bundled icon.
+// currentColor on the SVG stroke picks up the surrounding text color,
+// so it adapts to light/dark themes without per-theme styling.
+.iconFallback {
+  width: 48px;
+  height: 48px;
+  padding: 8px;
+  border-radius: 6px;
+  background: rgb(128 128 128 / 12%);
+  color: rgb(128 128 128 / 85%);
+}
+
+.body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.title {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.summary {
+  margin-bottom: 8px !important;
+}
+
+// Row of permission tags between the summary and the optional tag
+// row. Small bottom margin so the tag row underneath doesn't visually
+// merge into the permissions when both are present.
+.permissions {
+  margin-bottom: 6px;
+}
+
+.actions {
+  flex: 0 0 auto;
+  align-self: center;
+}

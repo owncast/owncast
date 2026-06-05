@@ -1,0 +1,26 @@
+package events
+
+// SetMessageVisibilityEvent is the event fired when one or more message
+// visibilities are changed.
+type SetMessageVisibilityEvent struct {
+	Event
+	UserMessageEvent
+	MessageIDs []string
+	Visible    bool
+}
+
+// GetBroadcastPayload will return the object to send to all chat users.
+func (e *SetMessageVisibilityEvent) GetBroadcastPayload() EventPayload {
+	return EventPayload{
+		payloadKeyType:      VisibiltyUpdate,
+		"id":                e.ID,
+		payloadKeyTimestamp: e.Timestamp,
+		"ids":               e.MessageIDs,
+		"visible":           e.Visible,
+	}
+}
+
+// GetMessageType will return the event type for this message.
+func (e *SetMessageVisibilityEvent) GetMessageType() EventType {
+	return VisibiltyUpdate
+}

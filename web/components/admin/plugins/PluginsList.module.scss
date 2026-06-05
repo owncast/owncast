@@ -1,0 +1,44 @@
+// PluginsList row-level styles. The table itself is AntD-managed; these
+// classes apply to specific cells (small secondary text for version /
+// description, and the inline load-error alert).
+
+.secondaryText {
+  font-size: 12px;
+}
+
+.errorAlert {
+  margin-top: 6px;
+}
+
+// Per-row layout: icon + metadata side-by-side. The icon comes from
+// PluginIcon, which falls back to a puzzle-piece SVG for plugins
+// without a bundled icon.png.
+.pluginCell {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+// Popconfirm content for the uninstall button. AntD's Popconfirm in this
+// version exposes a single `title` slot, so the two-line prompt is laid
+// out here in our own classes.
+.uninstallPrompt {
+  max-width: 320px;
+}
+
+.uninstallPromptTitle {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.uninstallPromptDescription {
+  font-weight: normal;
+  font-size: 13px;
+}
+
+// Tag rendered next to the plugin's version when the registry has a
+// newer version. Cursor-pointer to hint it's clickable (wrapped in a
+// Popconfirm).
+.updateTag {
+  cursor: pointer;
+}

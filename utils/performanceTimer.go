@@ -6,42 +6,56 @@ import (
 	"time"
 )
 
-var l = sync.Mutex{}
+// PerformanceTracker records the start times of named events and
+// maintains a small rolling sample of their durations, exposing the
+// average. State is held per-instance: construct with NewPerformanceTracker
+// and inject into the component that needs it.
+type PerformanceTracker struct {
+	lock sync.Mutex
 
-// The "start" timestamp of a timing event.
-var _pointsInTime = make(map[string]time.Time)
+	// The "start" timestamp of a timing event.
+	pointsInTime map[string]time.Time
 
-// A collection of timestamp durations for returning the average of.
-var _durationStorage = make(map[string][]float64)
+	// A collection of timestamp durations for returning the average of.
+	durationStorage map[string][]float64
+}
+
+// NewPerformanceTracker constructs an empty PerformanceTracker.
+func NewPerformanceTracker() *PerformanceTracker {
+	return &PerformanceTracker{
+		pointsInTime:    make(map[string]time.Time),
+		durationStorage: make(map[string][]float64),
+	}
+}
 
 // StartPerformanceMonitor will keep track of the start time of this event.
-func StartPerformanceMonitor(key string) {
-	l.Lock()
-	if len(_durationStorage[key]) > 20 {
-		_durationStorage[key] = removeHighValue(_durationStorage[key])
+func (t *PerformanceTracker) StartPerformanceMonitor(key string) {
+	t.lock.Lock()
+	if len(t.durationStorage[key]) > 20 {
+		t.durationStorage[key] = removeHighValue(t.durationStorage[key])
 	}
-	_pointsInTime[key] = time.Now()
-	l.Unlock()
+	t.pointsInTime[key] = time.Now()
+	t.lock.Unlock()
 }
 
 // GetAveragePerformance will return the average durations for the event.
-func GetAveragePerformance(key string) float64 {
-	timestamp := _pointsInTime[key]
+func (t *PerformanceTracker) GetAveragePerformance(key string) float64 {
+	t.lock.Lock()
+	defer t.lock.Unlock()
+
+	timestamp := t.pointsInTime[key]
 	if timestamp.IsZero() {
 		return 0
 	}
 
-	l.Lock()
-	defer l.Unlock()
-
 	delta := time.Since(timestamp).Seconds()
-	_durationStorage[key] = append(_durationStorage[key], delta)
-	if len(_durationStorage[key]) < 8 {
+	t.durationStorage[key] = append(t.durationStorage[key], delta)
+	if len(t.durationStorage[key]) < 8 {
 		return 0
 	}
-	_durationStorage[key] = removeHighValue(_durationStorage[key])
+	t.durationStorage[key] = removeHighValue(t.durationStorage[key])
 
-	return Avg(_durationStorage[key])
+	return Avg(t.durationStorage[key])
 }
 
 func removeHighValue(values []float64) []float64 {

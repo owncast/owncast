@@ -1,0 +1,7 @@
+// Loading state for /admin/plugins/configure: a centered spinner while
+// the plugin list fetch is in flight.
+
+.loading {
+  padding: 32px;
+  text-align: center;
+}

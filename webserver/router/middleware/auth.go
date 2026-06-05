@@ -5,12 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/authrepository"
-	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/owncast/owncast/persistence/userrepository"
-	"github.com/owncast/owncast/utils"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/utils"
 )
 
 // ExternalAccessTokenHandlerFunc is a function that is called after validing access.
@@ -19,16 +17,41 @@ type ExternalAccessTokenHandlerFunc func(models.ExternalAPIUser, http.ResponseWr
 // UserAccessTokenHandlerFunc is a function that is called after validing user access.
 type UserAccessTokenHandlerFunc func(models.User, http.ResponseWriter, *http.Request)
 
-// RequireAdminAuth wraps a handler requiring HTTP basic auth for it using the given
-// the stream key as the password and and a hardcoded "admin" for username.
-func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
-	configRepository := configrepository.Get()
-	return func(w http.ResponseWriter, r *http.Request) {
-		username := "admin"
-		password := configRepository.GetAdminPassword()
-		realm := "Owncast Authenticated Request"
+// adminAuthRealm is the WWW-Authenticate realm string used by every admin
+// auth challenge in Owncast. Anything that gates on admin Basic Auth (the
+// main admin API, the plugin management API, plugin admin pages) must
+// challenge with this exact realm so the browser shares one credential
+// cache across all of them.
+const adminAuthRealm = "Owncast Authenticated Request"
 
-		// Alow CORS only for localhost:3000 to support Owncast development.
+// IsAdminRequest reports whether r carries valid admin credentials. The
+// Owncast admin UI sends Basic Auth on every API call; embedded contexts
+// that cannot inject a custom Authorization header (notably plugin admin
+// iframes) authenticate via the admin session cookie instead. Shared by
+// RequireAdminAuth and any caller that needs the same check without
+// rejecting the request (e.g. a handler filling an "authenticated"
+// boolean on a downstream payload).
+func (m *Middleware) IsAdminRequest(r *http.Request) bool {
+	if user, pass, ok := r.BasicAuth(); ok {
+		if subtle.ConstantTimeCompare([]byte(user), []byte("admin")) == 1 &&
+			utils.CompareHash(m.configRepository.GetAdminPassword(), pass) == nil {
+			return true
+		}
+	}
+	return m.hasValidAdminSessionCookie(r)
+}
+
+// RequireAdminAuth wraps a handler requiring HTTP basic auth for it using
+// the admin password as the password and a hardcoded "admin" for username.
+//
+// As a side effect, a valid Basic Auth request also primes an admin
+// session cookie. Embedded contexts that can't inject the Authorization
+// header (notably plugin admin iframes) authenticate via that cookie on
+// their next same-origin request, so the user isn't prompted by the
+// browser's native Basic Auth dialog.
+func (m *Middleware) RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Allow CORS only for localhost:3000 to support Owncast development.
 		validAdminHost := "http://localhost:3000"
 		w.Header().Set("Access-Control-Allow-Origin", validAdminHost)
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -41,15 +64,18 @@ func RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		user, pass, ok := r.BasicAuth()
-
-		// Failed
-		if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(username)) != 1 || utils.CompareHash(password, pass) != nil {
-			w.Header().Set("WWW-Authenticate", `Basic realm="`+realm+`"`)
+		if !m.IsAdminRequest(r) {
+			w.Header().Set("WWW-Authenticate", `Basic realm="`+adminAuthRealm+`"`)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			log.Debugln("Failed admin authentication")
 			return
 		}
+
+		// Prime the admin session cookie if the request authenticated via
+		// Basic Auth and doesn't already carry a valid cookie. No-op when
+		// the cookie is already fresh, so most admin API calls don't pay
+		// for it (and don't rotate the token unnecessarily).
+		m.ensureAdminSessionCookie(w, r)
 
 		handler(w, r)
 	}
@@ -61,7 +87,7 @@ func accessDenied(w http.ResponseWriter) {
 }
 
 // RequireExternalAPIAccessToken will validate a 3rd party access token.
-func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHandlerFunc) http.HandlerFunc {
+func (m *Middleware) RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// We should accept 3rd party preflight OPTIONS requests.
 		if r.Method == "OPTIONS" {
@@ -83,9 +109,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 			return
 		}
 
-		userRepository := userrepository.Get()
-
-		integration, err := userRepository.GetExternalAPIUserForAccessTokenAndScope(token, scope)
+		integration, err := m.userRepository.GetExternalAPIUserForAccessTokenAndScope(token, scope)
 		if integration == nil || err != nil {
 			accessDenied(w)
 			return
@@ -96,7 +120,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 
 		handler(*integration, w, r)
 
-		if err := userRepository.SetExternalAPIUserAccessTokenAsUsed(token); err != nil {
+		if err := m.userRepository.SetExternalAPIUserAccessTokenAsUsed(token); err != nil {
 			log.Debugln("token not found when updating last_used timestamp")
 		}
 	})
@@ -104,8 +128,7 @@ func RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHand
 
 // RequireUserAccessToken will validate a provided user's access token and make sure the associated user is enabled.
 // Not to be used for validating 3rd party access.
-func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc {
-	authRepository := authrepository.Get()
+func (m *Middleware) RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accessToken := r.URL.Query().Get("accessToken")
 		if accessToken == "" {
@@ -115,7 +138,7 @@ func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc
 
 		ipAddress := utils.GetIPAddressFromRequest(r)
 		// Check if this client's IP address is banned.
-		if blocked, err := authRepository.IsIPAddressBanned(ipAddress); blocked {
+		if blocked, err := m.authRepository.IsIPAddressBanned(ipAddress); blocked {
 			log.Debugln("Client ip address has been blocked. Rejecting.")
 			accessDenied(w)
 			return
@@ -123,10 +146,8 @@ func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc
 			log.Errorln("error determining if IP address is blocked: ", err)
 		}
 
-		userRepository := userrepository.Get()
-
 		// A user is required to use the websocket
-		user := userRepository.GetUserByToken(accessToken)
+		user := m.userRepository.GetUserByToken(accessToken)
 		if user == nil || !user.IsEnabled() {
 			accessDenied(w)
 			return
@@ -138,7 +159,7 @@ func RequireUserAccessToken(handler UserAccessTokenHandlerFunc) http.HandlerFunc
 
 // RequireUserModerationScopeAccesstoken will validate a provided user's access token and make sure the associated user is enabled
 // and has "MODERATOR" scope assigned to the user.
-func RequireUserModerationScopeAccesstoken(handler http.HandlerFunc) http.HandlerFunc {
+func (m *Middleware) RequireUserModerationScopeAccesstoken(handler http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accessToken := r.URL.Query().Get("accessToken")
 		if accessToken == "" {
@@ -146,10 +167,8 @@ func RequireUserModerationScopeAccesstoken(handler http.HandlerFunc) http.Handle
 			return
 		}
 
-		userRepository := userrepository.Get()
-
 		// A user is required to use the websocket
-		user := userRepository.GetUserByToken(accessToken)
+		user := m.userRepository.GetUserByToken(accessToken)
 		if user == nil || !user.IsEnabled() || !user.IsModerator() {
 			accessDenied(w)
 			return
