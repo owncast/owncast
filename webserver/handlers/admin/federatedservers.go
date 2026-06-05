@@ -2,6 +2,7 @@ package admin
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/url"
 
@@ -9,6 +10,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/federatedserversrepository"
+	activitypubutils "github.com/owncast/owncast/services/activitypub/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
@@ -86,6 +88,10 @@ func (a *Admin) AddFederatedServer(w http.ResponseWriter, r *http.Request) {
 	isStreamConnected := a.stream.GetStatus().Online
 	if err := a.activitypub.Outbox().SendFollowRequestToOwncastServerURL(serverURL.String(), isStreamConnected); err != nil {
 		log.Errorf("Failed to send follow request to %s: %v", serverURL.String(), err)
+		if errors.Is(err, activitypubutils.ErrFeaturedStreamsUnsupported) {
+			webutils.WriteSimpleResponse(w, false, "This Owncast server does not support featured streams yet. Ask the server owner to upgrade Owncast.")
+			return
+		}
 		webutils.WriteSimpleResponse(w, false, "Failed to send follow request: "+err.Error())
 		return
 	}

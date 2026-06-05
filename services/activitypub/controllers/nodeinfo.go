@@ -58,7 +58,8 @@ func (c *Controllers) NodeInfoController(w http.ResponseWriter, r *http.Request)
 // NodeInfoV2Controller returns the V2 node info response.
 func (c *Controllers) NodeInfoV2Controller(w http.ResponseWriter, r *http.Request) {
 	type federation struct {
-		Username string `json:"username"`
+		Username        string `json:"username"`
+		FeaturedStreams int    `json:"featured_streams"`
 	}
 	type metadata struct {
 		ChatEnabled bool       `json:"chat_enabled"`
@@ -121,7 +122,8 @@ func (c *Controllers) NodeInfoV2Controller(w http.ResponseWriter, r *http.Reques
 		Metadata: metadata{
 			ChatEnabled: !c.configRepository.GetChatDisabled(),
 			Federation: federation{
-				Username: c.configRepository.GetFederationUsername(),
+				Username:        c.configRepository.GetFederationUsername(),
+				FeaturedStreams: 1,
 			},
 		},
 	}

@@ -175,8 +175,8 @@ export const FeatureStreamModal: FC<FeatureStreamModalProps> = ({ open, onCancel
             </li>
             <li>
               <Translation
-                translationKey={Localization.Admin.FeaturedStreams.requirementFederationEnabled}
-                defaultText="The stream must have federation features enabled"
+                translationKey={Localization.Admin.FeaturedStreams.requirementFeaturedStreams}
+                defaultText="The stream must support featured streams"
               />
             </li>
           </ul>
