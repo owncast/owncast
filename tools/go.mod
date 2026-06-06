@@ -5,7 +5,7 @@ go 1.26.2
 require (
 	github.com/evilmartians/lefthook v1.13.6
 	github.com/golangci/golangci-lint/v2 v2.12.2
-	github.com/oapi-codegen/oapi-codegen/v2 v2.7.0
+	github.com/oapi-codegen/oapi-codegen/v2 v2.7.1
 	github.com/sqlc-dev/sqlc v1.31.1
 	mvdan.cc/gofumpt v0.10.0
 )
