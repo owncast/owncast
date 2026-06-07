@@ -306,8 +306,6 @@ send_follow_request() {
         -H "Content-Type: application/json" \
         -d "{\"url\": \"${target_url}\"}")
 
-    local http_code
-    http_code=$(echo "${response}" | tail -1)
     local body
     body=$(echo "${response}" | sed '$d')
 
@@ -436,7 +434,8 @@ test_message_delivery_to_snac2_followers() {
 
     local auth
     auth=$(get_admin_auth)
-    local message="Following test message $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    local message
+    message="Following test message $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
     curl -s -X POST "http://localhost:${OWNCAST_PORT}/api/admin/federation/send" \
         -H "Authorization: Basic ${auth}" \
