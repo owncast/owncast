@@ -74,6 +74,20 @@ type WebhookVisibilityToggleEventData struct {
 	MessageIDs []string     `json:"ids"`
 }
 
+// WebhookFediverseEngagementFollowEventData represents Fediverse follow engagement
+// event data sent as a webhook payload. Unlike stream-state events it does not
+// embed BaseWebhookData; the live stream status is unrelated to a follow action.
+// ServerURL is included so receivers can identify which Owncast instance sent
+// the webhook.
+type WebhookFediverseEngagementFollowEventData struct {
+	ID        string    `json:"id"`
+	Timestamp time.Time `json:"timestamp"`
+	Name      string    `json:"name"`
+	Username  string    `json:"username"`
+	Image     string    `json:"image"`
+	ServerURL string    `json:"serverURL,omitempty"`
+}
+
 // SendEventToWebhooks fans an event out to every configured webhook
 // destination subscribed to that event type.
 func (s *Service) SendEventToWebhooks(payload WebhookEvent) {
