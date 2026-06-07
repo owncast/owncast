@@ -67,7 +67,7 @@ describe('StreamCard', () => {
     expect(mockOpen).toHaveBeenCalledWith(
       'https://test.example.com',
       '_blank',
-      'noopener,noreferrer'
+      'noopener,noreferrer',
     );
   });
 
@@ -106,9 +106,7 @@ describe('StreamCard', () => {
     const { container: offlineContainer } = render(<StreamCard {...defaultProps} />);
     expect(offlineContainer.querySelector('.offline')).toBeInTheDocument();
 
-    const { container: onlineContainer } = render(
-      <StreamCard {...defaultProps} isOnline={true} />
-    );
+    const { container: onlineContainer } = render(<StreamCard {...defaultProps} isOnline />);
     expect(onlineContainer.querySelector('.online')).toBeInTheDocument();
   });
 });
