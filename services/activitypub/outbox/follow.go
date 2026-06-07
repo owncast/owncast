@@ -32,6 +32,10 @@ func (s *Service) SendFollowRequestToOwncastServerURL(targetServerURL string, is
 		return fmt.Errorf("server validation failed: %w", err)
 	}
 
+	if err := utils.ValidateFeaturedStreamsSupport(nodeinfo); err != nil {
+		return fmt.Errorf("server validation failed: %w", err)
+	}
+
 	targetUsername, err := utils.ExtractFederationUsername(nodeinfo)
 	if err != nil {
 		return fmt.Errorf("failed to extract federation username: %w", err)

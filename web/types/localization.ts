@@ -304,7 +304,7 @@ export const Localization = {
       requirementOwncast: 'Admin.FeaturedStreams.requirementOwncast',
       requirementHttps: 'Admin.FeaturedStreams.requirementHttps',
       requirementDefaultPort: 'Admin.FeaturedStreams.requirementDefaultPort',
-      requirementFederationEnabled: 'Admin.FeaturedStreams.requirementFederationEnabled',
+      requirementFeaturedStreams: 'Admin.FeaturedStreams.requirementFeaturedStreams',
 
       // Validation errors
       enterStreamUrl: 'Admin.FeaturedStreams.enterStreamUrl',
@@ -318,6 +318,7 @@ export const Localization = {
       streamUnfeaturedSuccess: 'Admin.FeaturedStreams.streamUnfeaturedSuccess',
       failedToFeature: 'Admin.FeaturedStreams.failedToFeature',
       failedToUnfeature: 'Admin.FeaturedStreams.failedToUnfeature',
+      unsupportedFeaturedStreams: 'Admin.FeaturedStreams.unsupportedFeaturedStreams',
 
       // Warnings
       socialFeaturesRequired: 'Admin.FeaturedStreams.socialFeaturesRequired',

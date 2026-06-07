@@ -12,6 +12,8 @@ import (
 	netutils "github.com/owncast/owncast/utils"
 )
 
+var ErrFeaturedStreamsUnsupported = errors.New("server does not support featured streams")
+
 // parseAndCheckFederationURL parses a federation URL, requires http or
 // https, and rejects hosts that resolve to internal addresses (loopback or
 // private). The OWNCAST_ALLOW_INTERNAL_FEDERATION env var bypasses the
@@ -35,7 +37,8 @@ func parseAndCheckFederationURL(raw string) (*url.URL, error) {
 type NodeInfoV2 struct {
 	Metadata struct {
 		Federation struct {
-			Username string `json:"username"`
+			Username        string `json:"username"`
+			FeaturedStreams int    `json:"featured_streams"`
 		} `json:"federation"`
 		ChatEnabled bool `json:"chat_enabled"`
 	} `json:"metadata"`
@@ -163,6 +166,20 @@ func ValidateOwncastServer(nodeinfo *NodeInfoV2) error {
 
 	if !hasActivityPub {
 		return errors.New("server does not support ActivityPub")
+	}
+
+	return nil
+}
+
+// ValidateFeaturedStreamsSupport validates if the server supports the
+// featured-streams mini-directory functionality.
+func ValidateFeaturedStreamsSupport(nodeinfo *NodeInfoV2) error {
+	if nodeinfo == nil {
+		return errors.New("nodeinfo is nil")
+	}
+
+	if nodeinfo.Metadata.Federation.FeaturedStreams < 1 {
+		return ErrFeaturedStreamsUnsupported
 	}
 
 	return nil

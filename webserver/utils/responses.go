@@ -44,9 +44,24 @@ func WriteSimpleResponse(w http.ResponseWriter, success bool, message string) {
 		Message: message,
 	}
 
+	writeSimpleResponse(w, response)
+}
+
+// WriteSimpleResponseWithCode will return a message and machine-readable error code as a response.
+func WriteSimpleResponseWithCode(w http.ResponseWriter, success bool, message string, errorCode string) {
+	response := models.BaseAPIResponse{
+		Success:   success,
+		Message:   message,
+		ErrorCode: errorCode,
+	}
+
+	writeSimpleResponse(w, response)
+}
+
+func writeSimpleResponse(w http.ResponseWriter, response models.BaseAPIResponse) {
 	w.Header().Set("Content-Type", "application/json")
 
-	if success {
+	if response.Success {
 		w.WriteHeader(http.StatusOK)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)

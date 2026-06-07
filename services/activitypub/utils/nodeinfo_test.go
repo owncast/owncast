@@ -26,14 +26,17 @@ func TestExtractFederationUsername(t *testing.T) {
 				},
 				Metadata: struct {
 					Federation struct {
-						Username string `json:"username"`
+						Username        string `json:"username"`
+						FeaturedStreams int    `json:"featured_streams"`
 					} `json:"federation"`
 					ChatEnabled bool `json:"chat_enabled"`
 				}{
 					Federation: struct {
-						Username string `json:"username"`
+						Username        string `json:"username"`
+						FeaturedStreams int    `json:"featured_streams"`
 					}{
-						Username: "testuser",
+						Username:        "testuser",
+						FeaturedStreams: 1,
 					},
 				},
 			},
@@ -52,14 +55,17 @@ func TestExtractFederationUsername(t *testing.T) {
 				},
 				Metadata: struct {
 					Federation struct {
-						Username string `json:"username"`
+						Username        string `json:"username"`
+						FeaturedStreams int    `json:"featured_streams"`
 					} `json:"federation"`
 					ChatEnabled bool `json:"chat_enabled"`
 				}{
 					Federation: struct {
-						Username string `json:"username"`
+						Username        string `json:"username"`
+						FeaturedStreams int    `json:"featured_streams"`
 					}{
-						Username: "",
+						Username:        "",
+						FeaturedStreams: 0,
 					},
 				},
 			},
@@ -144,6 +150,68 @@ func TestValidateOwncastServer(t *testing.T) {
 	}
 }
 
+func TestValidateFeaturedStreamsSupport(t *testing.T) {
+	tests := []struct {
+		name        string
+		nodeInfo    NodeInfoV2
+		expectError bool
+	}{
+		{
+			name: "Featured streams supported",
+			nodeInfo: NodeInfoV2{
+				Metadata: struct {
+					Federation struct {
+						Username        string `json:"username"`
+						FeaturedStreams int    `json:"featured_streams"`
+					} `json:"federation"`
+					ChatEnabled bool `json:"chat_enabled"`
+				}{
+					Federation: struct {
+						Username        string `json:"username"`
+						FeaturedStreams int    `json:"featured_streams"`
+					}{
+						Username:        "testuser",
+						FeaturedStreams: 1,
+					},
+				},
+			},
+			expectError: false,
+		},
+		{
+			name: "Featured streams unsupported",
+			nodeInfo: NodeInfoV2{
+				Metadata: struct {
+					Federation struct {
+						Username        string `json:"username"`
+						FeaturedStreams int    `json:"featured_streams"`
+					} `json:"federation"`
+					ChatEnabled bool `json:"chat_enabled"`
+				}{
+					Federation: struct {
+						Username        string `json:"username"`
+						FeaturedStreams int    `json:"featured_streams"`
+					}{
+						Username:        "testuser",
+						FeaturedStreams: 0,
+					},
+				},
+			},
+			expectError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateFeaturedStreamsSupport(&tt.nodeInfo)
+			if tt.expectError && err == nil {
+				t.Errorf("ValidateFeaturedStreamsSupport() expected error but got none")
+			} else if !tt.expectError && err != nil {
+				t.Errorf("ValidateFeaturedStreamsSupport() unexpected error = %v", err)
+			}
+		})
+	}
+}
+
 func TestFetchNodeInfo(t *testing.T) {
 	// httptest.NewServer binds to a loopback address; opt into the same
 	// integration-test bypass that the AP test scripts use.
@@ -181,14 +249,17 @@ func TestFetchNodeInfo(t *testing.T) {
 							},
 							Metadata: struct {
 								Federation struct {
-									Username string `json:"username"`
+									Username        string `json:"username"`
+									FeaturedStreams int    `json:"featured_streams"`
 								} `json:"federation"`
 								ChatEnabled bool `json:"chat_enabled"`
 							}{
 								Federation: struct {
-									Username string `json:"username"`
+									Username        string `json:"username"`
+									FeaturedStreams int    `json:"featured_streams"`
 								}{
-									Username: "testuser",
+									Username:        "testuser",
+									FeaturedStreams: 1,
 								},
 							},
 							Protocols: []string{"activitypub"},
