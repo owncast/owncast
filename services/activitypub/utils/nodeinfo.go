@@ -59,6 +59,12 @@ func FetchNodeInfo(serverURL string) (*NodeInfoV2, error) {
 	// First, fetch the well-known nodeinfo endpoint
 	wellKnownURL := fmt.Sprintf("%s://%s/.well-known/nodeinfo", parsedURL.Scheme, parsedURL.Host)
 
+	// Re-validate the fully-assembled URL (not just the original input) so the
+	// internal-host check applies to the exact value we hand to the client.
+	if _, err := parseAndCheckFederationURL(wellKnownURL); err != nil {
+		return nil, fmt.Errorf("well-known nodeinfo: %w", err)
+	}
+
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 	}
