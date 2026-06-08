@@ -90,9 +90,9 @@ func TestTranslateWebhookEvent_UserJoined(t *testing.T) {
 	if len(out) != 1 || out[0].eventType != plugins.EventChatUserJoined {
 		t.Fatalf("unexpected events: %+v", out)
 	}
-	user, ok := out[0].payload.(pluginChatUser)
+	user, ok := out[0].payload.(plugins.HostChatUser)
 	if !ok {
-		t.Fatalf("payload type = %T want pluginChatUser", out[0].payload)
+		t.Fatalf("payload type = %T want plugins.HostChatUser", out[0].payload)
 	}
 	if user.ID != "u1" || user.DisplayName != "bob" || !user.IsBot || len(user.Scopes) != 1 {
 		t.Errorf("unexpected user payload: %+v", user)

@@ -179,14 +179,28 @@ type FediversePayload struct {
 	Link  string `json:"link,omitempty"`
 }
 
-// HostChatMessage is the shape returned by ChatHistory. Wider than the
-// onChatMessage event payload — production wires this to whatever the chat
+// HostChatUser is the sender identity carried by a chat message. It mirrors
+// the SDK's ChatUser TypeScript interface (and pluginhost.pluginChatUser on
+// the event path) so chat.history() hands a plugin the same nested object
+// shape its onChatMessage handler already receives.
+type HostChatUser struct {
+	ID              string   `json:"id"`
+	DisplayName     string   `json:"displayName"`
+	IsBot           bool     `json:"isBot,omitempty"`
+	IsAuthenticated bool     `json:"isAuthenticated,omitempty"`
+	Scopes          []string `json:"scopes,omitempty"`
+}
+
+// HostChatMessage is the shape returned by ChatHistory. It matches the
+// onChatMessage / chat.message.received event payload: User is the full
+// ChatUser object (nil for the rare message with no associated account),
+// not a bare display-name string. Production wires this to whatever the chat
 // repository hands back; tests construct it directly.
 type HostChatMessage struct {
-	ID        string `json:"id"`
-	User      string `json:"user"`
-	Body      string `json:"body"`
-	Timestamp string `json:"timestamp"`
+	ID        string        `json:"id"`
+	User      *HostChatUser `json:"user,omitempty"`
+	Body      string        `json:"body"`
+	Timestamp string        `json:"timestamp"`
 }
 
 // BrowserPushPayload is what a plugin asks Owncast to send via the

@@ -9,6 +9,8 @@
 name: Lint
 on:
   push:
+    branches:
+      - develop
     paths:
       - '**.go'
       - 'go.mod'

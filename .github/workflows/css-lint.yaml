@@ -10,6 +10,8 @@ name: CSS Lint and Formatting
 
 on:
   push:
+    branches:
+      - develop
     paths:
       - 'web/**'
   pull_request:

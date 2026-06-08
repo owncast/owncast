@@ -16,8 +16,9 @@ import (
 // name is what the manager keys discovered/enabled state by.
 func makePluginFiles(t *testing.T, dir, name string, wasmBytes []byte) {
 	t.Helper()
-	// Version must match what the bundled example's register() returns —
-	// the host enforces manifest/runtime agreement at load time.
+	// Slug and permissions must agree with what the bundled example's
+	// register() returns — the host enforces manifest/runtime agreement on
+	// those at load time. Version is informational and not compared.
 	manifest := map[string]any{
 		"api":         "1",
 		"name":        name,

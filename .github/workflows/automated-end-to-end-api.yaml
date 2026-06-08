@@ -12,6 +12,8 @@ name: Automated API tests
 
 on:
   push:
+    branches:
+      - develop
     paths-ignore:
       - 'web/**'
   pull_request:

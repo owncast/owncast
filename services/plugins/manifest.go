@@ -671,9 +671,12 @@ func (m *Manifest) AgreesWith(other *Manifest) error {
 	if mySlug != otherSlug {
 		return fmt.Errorf("slug mismatch: manifest=%q register=%q", mySlug, otherSlug)
 	}
-	if m.Version != other.Version {
-		return fmt.Errorf("version mismatch: manifest=%q register=%q", m.Version, other.Version)
-	}
+	// Version is intentionally not compared. It's informational metadata the
+	// host gates nothing on, and the SDK bakes it into register() output from
+	// the same manifest at build time, so a mismatch only ever indicates a
+	// stale build rather than an identity or security problem. Identity (slug)
+	// and security (permissions) are the checks that matter and are verified
+	// directly below.
 	declared := stringSet(m.Permissions)
 	for _, p := range other.Permissions {
 		if !declared[p] {

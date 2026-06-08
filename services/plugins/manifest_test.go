@@ -89,12 +89,14 @@ func TestAgreesWith_SlugMismatch(t *testing.T) {
 	}
 }
 
-func TestAgreesWith_VersionMismatch(t *testing.T) {
+func TestAgreesWith_VersionDifferenceTolerated(t *testing.T) {
+	// Version is informational metadata, not an identity or security check, so
+	// a difference between the sidecar and register() output is not a fatal
+	// mismatch. Only slug and permissions are enforced.
 	sidecar := &Manifest{API: "1", DisplayName: "demo", Version: "1.0.0"}
 	runtime := &Manifest{API: "1", DisplayName: "demo", Version: "2.0.0"}
-	err := sidecar.AgreesWith(runtime)
-	if err == nil || !strings.Contains(err.Error(), "version mismatch") {
-		t.Errorf("expected version mismatch error, got: %v", err)
+	if err := sidecar.AgreesWith(runtime); err != nil {
+		t.Errorf("version difference should be tolerated, got error: %v", err)
 	}
 }
 
