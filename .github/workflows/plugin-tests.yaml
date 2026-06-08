@@ -6,6 +6,8 @@ name: Automated plugin tests
 
 on:
   push:
+    branches:
+      - develop
     paths-ignore:
       - 'web/**'
   pull_request:

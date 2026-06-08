@@ -10,6 +10,8 @@ name: Go Tests
 
 on:
   push:
+    branches:
+      - develop
     paths-ignore:
       - 'web/**'
   pull_request:

@@ -5,6 +5,8 @@ name: 'Copilot Setup Steps'
 on:
   workflow_dispatch:
   push:
+    branches:
+      - develop
     paths:
       - .github/workflows/copilot-setup-steps.yml
   pull_request:

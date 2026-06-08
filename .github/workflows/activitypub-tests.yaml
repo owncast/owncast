@@ -2,6 +2,8 @@ name: ActivityPub Tests
 
 on:
   push:
+    branches:
+      - develop
     paths:
       - "activitypub/**"
       - "core/chat/**"
