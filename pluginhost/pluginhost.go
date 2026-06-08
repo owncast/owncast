@@ -976,7 +976,7 @@ func wireChatReadHostFns(env *plugins.HostEnv, deps Deps) {
 				Timestamp: msg.Timestamp.UTC().Format(time.RFC3339Nano),
 			}
 			if msg.User != nil {
-				hm.User = msg.User.DisplayName
+				hm.User = chatUserPtr(msg.User)
 			}
 			out = append(out, hm)
 		}

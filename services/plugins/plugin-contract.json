@@ -97,7 +97,14 @@
       "body": "string",
       "id": "string",
       "timestamp": "string",
-      "user": "string"
+      "user": "*HostChatUser"
+    },
+    "HostChatUser": {
+      "displayName": "string",
+      "id": "string",
+      "isAuthenticated": "bool",
+      "isBot": "bool",
+      "scopes": "[]string"
     },
     "HostUser": {
       "createdAt": "string",
