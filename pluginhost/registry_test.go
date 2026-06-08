@@ -286,9 +286,13 @@ func TestHandleRegistryInstall_Success(t *testing.T) {
 func TestHandleRegistryInstall_RejectsUnloadablePackage(t *testing.T) {
 	wasmPath := findExampleWasm(t)
 	wasmBytes, _ := os.ReadFile(wasmPath)
+	// Package the hello-world wasm under a slug it does NOT bake into its
+	// register() output, so the manifest/runtime agreement check fails (the
+	// wasm reports slug "hello-world"; the package claims "ghost-plugin").
 	pkg := buildPackageBytes(t, []byte(`{
 		"api": "1",
-		"name": "hello-world",
+		"name": "Ghost Plugin",
+		"slug": "ghost-plugin",
 		"version": "9.9.9",
 		"description": "mismatched manifest/runtime for registry install",
 		"permissions": []
@@ -296,13 +300,13 @@ func TestHandleRegistryInstall_RejectsUnloadablePackage(t *testing.T) {
 	sum := sha256.Sum256(pkg)
 	sha := hex.EncodeToString(sum[:])
 
-	upstream := newRegistryStub(t, "hello-world", "9.9.9", pkg, sha)
+	upstream := newRegistryStub(t, "ghost-plugin", "9.9.9", pkg, sha)
 	withRegistryEnv(t, upstream.URL)
 	host := newTestHost(t)
 
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/api/admin/plugin-registry/install",
-		strings.NewReader(`{"slug":"hello-world","version":"9.9.9"}`))
+		strings.NewReader(`{"slug":"ghost-plugin","version":"9.9.9"}`))
 	host.handleRegistryInstall(rec, req)
 
 	if rec.Code != http.StatusBadRequest {

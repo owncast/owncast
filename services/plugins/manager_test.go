@@ -524,9 +524,12 @@ func TestManager_Install_RejectsUnloadablePackage(t *testing.T) {
 	wasmBytes, _ := os.ReadFile(wasmPath)
 
 	mgr := NewManager(t.TempDir(), &HostEnv{})
+	// Package the wasm under a slug it does not bake into register() so the
+	// manifest/runtime agreement check fails (the wasm reports "hello-world").
 	pkg := buildPackageBytes(t, []byte(`{
 		"api": "1",
-		"name": "hello-world",
+		"name": "Ghost Plugin",
+		"slug": "ghost-plugin",
 		"version": "9.9.9",
 		"description": "mismatched manifest/runtime for install preflight",
 		"permissions": []

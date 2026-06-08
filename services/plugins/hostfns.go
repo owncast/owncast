@@ -540,8 +540,8 @@ func hostTimerSet(env *HostEnv, pluginName string) extism.HostFunction {
 				stack[0] = 0
 			}
 		},
-		[]extism.ValueType{extism.ValueTypeI64, extism.ValueTypeI64, extism.ValueTypeI32},
-		[]extism.ValueType{extism.ValueTypeI32},
+		[]extism.ValueType{extism.ValueTypeI64, extism.ValueTypeI64, extism.ValueTypeI64},
+		[]extism.ValueType{extism.ValueTypeI64},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -713,7 +713,7 @@ func hostUserSetEnabled(env *HostEnv, pluginName string) extism.HostFunction {
 				env.SetUserEnabled(pluginName, id, enabled, reason)
 			}
 		},
-		[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypeI32, extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypeI64, extism.ValueTypePTR},
 		[]extism.ValueType{},
 	)
 	fn.SetNamespace("extism:host/user")
@@ -1175,7 +1175,7 @@ func hostFSExists(env *HostEnv, pluginName string) extism.HostFunction {
 			}
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
-		[]extism.ValueType{extism.ValueTypeI32},
+		[]extism.ValueType{extism.ValueTypeI64},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -1287,7 +1287,7 @@ func hostChatHistory(env *HostEnv) extism.HostFunction {
 			}
 			stack[0] = offset
 		},
-		[]extism.ValueType{extism.ValueTypeI32},
+		[]extism.ValueType{extism.ValueTypeI64},
 		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
