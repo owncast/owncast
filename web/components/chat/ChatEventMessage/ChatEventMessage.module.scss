@@ -1,7 +1,6 @@
 .root {
   display: inline-flex;
   padding: 10px 0;
-  
 
   .moderatorBadge,
   .user {
@@ -9,7 +8,7 @@
     word-break: break-all;
   }
 
-  .joinMessage {
+  .message {
     font-weight: 400;
     color: var(--theme-color-components-chat-text);
     font-size: var(--chat-message-text-size);
@@ -20,8 +19,8 @@
   padding: 0 var(--chat-notification-icon-padding) 0 16px;
 }
 
-@media screen and (max-width: 350px) {
-    .icon {
-      padding-left: 0;
-    }
+@media screen and (width <= 350px) {
+  .icon {
+    padding-left: 0;
   }
+}
