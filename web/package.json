@@ -71,7 +71,7 @@
     "react-markdown": "10.1.0",
     "react-virtuoso": "4.18.7",
     "recoil": "0.7.7",
-    "regexpu-core": "^5.3.2",
+    "regexpu-core": "^6.0.0",
     "sanitize-html": "^2.11.0",
     "semver": "^7.6.3",
     "sharp": "0.34.5",
