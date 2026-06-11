@@ -138,7 +138,7 @@
     "stylelint-config-standard": "^39.0.0",
     "stylelint-config-standard-scss": "^16.0.0",
     "ts-jest": "^29.1.0",
-    "typescript": "^5.7.3"
+    "typescript": "^6.0.0"
   },
   "overrides": {
     "@emoji-mart/react": {
