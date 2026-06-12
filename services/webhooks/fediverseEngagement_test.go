@@ -22,6 +22,7 @@ func TestSendFediverseEngagementEventFollow(t *testing.T) {
 		"id": "id",
 		"image": "",
 		"name": "be",
+		"serverURL": "http://localhost:8080",
 		"timestamp": "1970-01-01T00:01:12.000000006Z",
 		"username": "be@witch.me"
 		}`)

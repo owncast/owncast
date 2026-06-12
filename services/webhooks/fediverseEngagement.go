@@ -24,8 +24,15 @@ func (s *Service) SendFediverseEngagementFollowEvent(iri string) {
 
 func (s *Service) sendFediverseEngagementEventFollow(event events.FediverseEngagementFollowEvent) {
 	webhookEvent := WebhookEvent{
-		Type:      models.FediverseEngagementFollow,
-		EventData: event,
+		Type: models.FediverseEngagementFollow,
+		EventData: &WebhookFediverseEngagementFollowEventData{
+			ID:        event.ID,
+			Timestamp: event.Timestamp,
+			Name:      event.Name,
+			Username:  event.Username,
+			Image:     event.Image,
+			ServerURL: s.serverURL(),
+		},
 	}
 
 	s.SendEventToWebhooks(webhookEvent)
