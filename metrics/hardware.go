@@ -13,9 +13,9 @@ import (
 // Max number of metrics we want to keep.
 const maxCollectionValues = 300
 
-func collectCPUUtilization() {
-	if len(metrics.CPUUtilizations) > maxCollectionValues {
-		metrics.CPUUtilizations = metrics.CPUUtilizations[1:]
+func (s *Service) collectCPUUtilization() {
+	if len(s.metrics.CPUUtilizations) > maxCollectionValues {
+		s.metrics.CPUUtilizations = s.metrics.CPUUtilizations[1:]
 	}
 
 	v, err := cpu.Percent(0, false)
@@ -32,28 +32,28 @@ func collectCPUUtilization() {
 	}
 
 	metricValue := TimestampedValue{time.Now(), value}
-	metrics.CPUUtilizations = append(metrics.CPUUtilizations, metricValue)
-	cpuUsage.Set(metricValue.Value)
+	s.metrics.CPUUtilizations = append(s.metrics.CPUUtilizations, metricValue)
+	s.cpuUsage.Set(metricValue.Value)
 }
 
-func collectRAMUtilization() {
-	if len(metrics.RAMUtilizations) > maxCollectionValues {
-		metrics.RAMUtilizations = metrics.RAMUtilizations[1:]
+func (s *Service) collectRAMUtilization() {
+	if len(s.metrics.RAMUtilizations) > maxCollectionValues {
+		s.metrics.RAMUtilizations = s.metrics.RAMUtilizations[1:]
 	}
 
 	memoryUsage, _ := mem.VirtualMemory()
 	metricValue := TimestampedValue{time.Now(), memoryUsage.UsedPercent}
-	metrics.RAMUtilizations = append(metrics.RAMUtilizations, metricValue)
+	s.metrics.RAMUtilizations = append(s.metrics.RAMUtilizations, metricValue)
 }
 
-func collectDiskUtilization() {
+func (s *Service) collectDiskUtilization() {
 	path := "./"
 	diskUse, _ := disk.Usage(path)
 
-	if len(metrics.DiskUtilizations) > maxCollectionValues {
-		metrics.DiskUtilizations = metrics.DiskUtilizations[1:]
+	if len(s.metrics.DiskUtilizations) > maxCollectionValues {
+		s.metrics.DiskUtilizations = s.metrics.DiskUtilizations[1:]
 	}
 
 	metricValue := TimestampedValue{time.Now(), diskUse.UsedPercent}
-	metrics.DiskUtilizations = append(metrics.DiskUtilizations, metricValue)
+	s.metrics.DiskUtilizations = append(s.metrics.DiskUtilizations, metricValue)
 }

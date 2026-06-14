@@ -1,0 +1,39 @@
+// PluginDetail's per-plugin view. The iframe sits flush against the
+// admin panel (no chrome of its own), and the metadata header uses a
+// scss-driven class instead of inline style props so we can keep the
+// component focused on data shape.
+
+.container {
+  width: 100%;
+}
+
+.title {
+  margin-bottom: 0;
+}
+
+.version {
+  font-size: 14px;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+.iframe {
+  width: 100%;
+  height: 70vh;
+  border: none;
+  background: transparent;
+}
+
+// Rendered markdown of a plugin's INSTRUCTIONS.md. Constrain the line
+// length for readability and let headings/lists use their default flow.
+.instructions {
+  max-width: 760px;
+
+  img {
+    max-width: 100%;
+  }
+
+  pre {
+    overflow-x: auto;
+  }
+}

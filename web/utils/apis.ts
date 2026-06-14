@@ -60,6 +60,20 @@ export const CHAT_HISTORY = `${API_LOCATION}chat/messages`;
 // Get chat history
 export const UPDATE_CHAT_MESSGAE_VIZ = `/api/admin/chat/messagevisibility`;
 
+// Plugin management endpoints. Relative URLs go through Next.js's dev proxy
+// (next.config.js rewrites /api/* to the backend), avoiding cross-origin
+// fetches; in production the admin UI is same-origin so they resolve directly.
+export const PLUGINS_LIST = `/api/admin/plugins`;
+export const PLUGIN_UPLOAD = `/api/admin/plugins`;
+export const PLUGIN_REGISTRY_LIST = `/api/admin/plugin-registry/list`;
+export const PLUGIN_REGISTRY_INSTALL = `/api/admin/plugin-registry/install`;
+export const pluginActionUrl = (
+  slug: string,
+  action: 'enable' | 'disable' | 'reload' | 'uninstall',
+) => `/api/admin/plugins/${encodeURIComponent(slug)}/${action}`;
+export const pluginInstructionsUrl = (slug: string) =>
+  `/api/admin/plugins/${encodeURIComponent(slug)}/instructions`;
+
 // Upload a new custom emoji
 export const UPLOAD_EMOJI = `${API_LOCATION}emoji/upload`;
 
@@ -120,7 +134,24 @@ interface FetchOptions {
   auth?: boolean;
 }
 
-export async function fetchData(url: string, options?: FetchOptions) {
+export function extractAPIErrorMessage(status: number, body?: any, fallbackText = '') {
+  if (body && typeof body === 'object') {
+    if (typeof body.error === 'string' && body.error.trim() !== '') {
+      return body.error;
+    }
+    if (typeof body.message === 'string' && body.message.trim() !== '') {
+      return body.message;
+    }
+  }
+
+  if (fallbackText.trim() !== '') {
+    return fallbackText;
+  }
+
+  return `An error has occurred: ${status}`;
+}
+
+export async function fetchData<T = any>(url: string, options?: FetchOptions): Promise<T> {
   const { data, method = 'GET', auth = true } = options || {};
 
   // eslint-disable-next-line no-undef
@@ -142,13 +173,49 @@ export async function fetchData(url: string, options?: FetchOptions) {
   }
 
   const response = await fetch(url, requestOptions);
-  const json = await response.json();
+  const text = await response.text();
+  let json: T = {} as T;
+  if (text) {
+    try {
+      json = JSON.parse(text) as T;
+    } catch {
+      if (response.ok) {
+        throw new Error('Invalid JSON response from server');
+      }
+    }
+  }
 
   if (!response.ok) {
-    const message = json.message || `An error has occurred: ${response.status}`;
-    throw new Error(message);
+    throw new Error(extractAPIErrorMessage(response.status, json, text));
   }
   return json;
+}
+
+// fetchText mirrors fetchData's admin auth handling but returns the raw
+// response body as text instead of parsing JSON. Used for endpoints that
+// serve plain text/markdown (e.g. a plugin's INSTRUCTIONS.md).
+export async function fetchText(url: string, options?: FetchOptions) {
+  const { method = 'GET', auth = true } = options || {};
+
+  // eslint-disable-next-line no-undef
+  const requestOptions: RequestInit = {
+    method,
+  };
+
+  if (auth && ADMIN_USERNAME && ADMIN_STREAMKEY) {
+    const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
+    requestOptions.headers = {
+      Authorization: `Basic ${encoded}`,
+    };
+    requestOptions.mode = 'cors';
+    requestOptions.credentials = 'include';
+  }
+
+  const response = await fetch(url, requestOptions);
+  if (!response.ok) {
+    throw new Error(`An error has occurred: ${response.status}`);
+  }
+  return response.text();
 }
 
 export async function getUnauthedData(url: string, options?: FetchOptions) {
@@ -182,23 +249,49 @@ export async function getGithubRelease() {
   return fetchExternalData(GITHUB_RELEASE_URL);
 }
 
-function upToDate(local, remote) {
-  return !semverGt(remote, local);
+// isNewerVersion reports whether `candidate` is a strictly-newer semver than
+// `current`. The shared primitive behind both the plugin-update check and the
+// Owncast server-upgrade check. Missing or non-semver version strings can't be
+// ordered, so it returns false rather than throwing or nagging about a change
+// it can't reason about.
+export function isNewerVersion(candidate?: string, current?: string): boolean {
+  if (!candidate || !current) {
+    return false;
+  }
+  try {
+    return semverGt(candidate, current);
+  } catch {
+    return false;
+  }
 }
 
-// Make a request to the server status API and the Github releases API
-// and return a release if it's newer than the server version.
+// isPluginUpdateAvailable reports whether the registry's latest version is
+// strictly newer than what's installed. A newer local/dev build (e.g.
+// installed 0.3.0 vs a registry 0.2.1) is NOT an update — only an older
+// installed version is. Comparing with string inequality would wrongly flag a
+// dev build as "needs update" (and prompt a downgrade).
+export function isPluginUpdateAvailable(
+  installedVersion?: string,
+  latestVersion?: string,
+): boolean {
+  return isNewerVersion(latestVersion, installedVersion);
+}
+
+// Make a request to the Github releases API and return the latest release
+// version if it's newer than the running server, otherwise null. Uses the same
+// semver comparison as the plugin update check (see isNewerVersion).
 export async function upgradeVersionAvailable(currentVersion) {
   const recentRelease = await getGithubRelease();
-  let recentReleaseVersion = recentRelease.tag_name;
+  let recentReleaseVersion = recentRelease?.tag_name;
+  // No/failed release info (getGithubRelease returns {} on error): nothing to
+  // offer rather than throwing on an undefined tag.
+  if (!recentReleaseVersion) {
+    return null;
+  }
 
   if (recentReleaseVersion.substr(0, 1) === 'v') {
     recentReleaseVersion = recentReleaseVersion.substr(1);
   }
 
-  if (!upToDate(currentVersion, recentReleaseVersion)) {
-    return recentReleaseVersion;
-  }
-
-  return null;
+  return isNewerVersion(recentReleaseVersion, currentVersion) ? recentReleaseVersion : null;
 }

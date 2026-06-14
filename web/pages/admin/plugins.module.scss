@@ -1,0 +1,12 @@
+// Plugin list page layout: the title + Refresh button row sits at the
+// top with a full-width space-between, and the page-level error alert
+// has a small breathing room above the table.
+
+.titleRow {
+  justify-content: space-between;
+  width: 100%;
+}
+
+.errorAlert {
+  margin-bottom: 16px;
+}

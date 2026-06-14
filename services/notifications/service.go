@@ -3,13 +3,14 @@ package notifications
 import (
 	"fmt"
 
-	"github.com/owncast/owncast/core/data"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/notifications/browser"
 	"github.com/owncast/owncast/notifications/discord"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
-	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 // Service defines the interface for notification operations.
@@ -26,10 +27,10 @@ type notificationService struct {
 }
 
 // New creates a new instance of the notification service.
-func New(datastore *data.Datastore) (Service, error) {
+func New(datastore *datastore.Datastore, configRepository configrepository.ConfigRepository) (Service, error) {
 	service := &notificationService{
-		repository:       notificationsrepository.New(datastore),
-		configRepository: configrepository.Get(),
+		repository:       notificationsrepository.New(datastore, configRepository),
+		configRepository: configRepository,
 	}
 
 	if err := service.setupBrowserPush(datastore); err != nil {
@@ -42,7 +43,7 @@ func New(datastore *data.Datastore) (Service, error) {
 	return service, nil
 }
 
-func (s *notificationService) setupBrowserPush(datastore *data.Datastore) error {
+func (s *notificationService) setupBrowserPush(datastore *datastore.Datastore) error {
 	if s.configRepository.GetBrowserPushConfig().Enabled {
 		publicKey, err := s.configRepository.GetBrowserPushPublicKey()
 		if err != nil || publicKey == "" {

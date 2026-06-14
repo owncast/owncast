@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
 // SetCustomColorVariableValues sets the custom color variables.
-func SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -28,8 +27,7 @@ func SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
-	if err := configRepository.SetCustomColorVariableValues(*values.Value); err != nil {
+	if err := a.configRepository.SetCustomColorVariableValues(*values.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

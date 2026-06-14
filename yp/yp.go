@@ -1,3 +1,6 @@
+// Package yp is the Owncast directory listing service. Construct via
+// New(Deps) and call Start when a stream goes live to begin pinging the
+// directory.
 package yp
 
 import (
@@ -17,14 +20,28 @@ import (
 
 const pingInterval = 4 * time.Minute
 
-var (
-	getStatus     func() models.Status
-	_inErrorState = false
-)
-
 // YP is a service for handling listing in the Owncast directory.
 type YP struct {
 	timer *time.Ticker
+
+	// getStatus returns the current stream status; consulted on each
+	// ping cycle to skip pings while offline.
+	getStatus func() models.Status
+
+	// configRepository provides directory-listing settings (enabled flag,
+	// server URL/name, registration key, etc.) read on each ping and on
+	// every YP API response.
+	configRepository configrepository.ConfigRepository
+
+	// inErrorState tracks whether we've already logged an error for the
+	// current configuration to avoid spamming the log on repeated pings.
+	inErrorState bool
+}
+
+// Deps lists the explicit dependencies for the YP service.
+type Deps struct {
+	GetStatus        func() models.Status
+	ConfigRepository configrepository.ConfigRepository
 }
 
 type ypPingResponse struct {
@@ -39,10 +56,21 @@ type ypPingRequest struct {
 	URL string `json:"url"`
 }
 
-// NewYP creates a new instance of the YP service handler.
-func NewYP(getStatusFunc func() models.Status) *YP {
-	getStatus = getStatusFunc
-	return &YP{}
+// New constructs a new instance of the YP service handler.
+func New(deps Deps) *YP {
+	return &YP{
+		getStatus:        deps.GetStatus,
+		configRepository: deps.ConfigRepository,
+	}
+}
+
+// SetGetStatus wires (or rewires) the stream-status callback. Exists
+// because yp must be constructed before stream (stream takes yp via
+// Deps), but yp needs stream.GetStatus to skip pings while offline.
+// main.go constructs yp first with a nil callback, then fills it in once
+// streamSvc exists. Must be called before Start.
+func (yp *YP) SetGetStatus(fn func() models.Status) {
+	yp.getStatus = fn
 }
 
 // Start is run when a live stream begins to start pinging YP.
@@ -61,35 +89,33 @@ func (yp *YP) Stop() {
 }
 
 func (yp *YP) ping() {
-	configRepository := configrepository.Get()
-
-	if !configRepository.GetDirectoryEnabled() {
+	if !yp.configRepository.GetDirectoryEnabled() {
 		return
 	}
 
 	// Hack: Don't allow ping'ing when offline.
 	// It shouldn't even be trying to, but on some instances the ping timer isn't stopping.
-	if !getStatus().Online {
+	if !yp.getStatus().Online {
 		return
 	}
 
-	myInstanceURL := configRepository.GetServerURL()
+	myInstanceURL := yp.configRepository.GetServerURL()
 	if myInstanceURL == "" {
 		log.Warnln("Server URL not set in the configuration. Directory access is disabled until this is set.")
 		return
 	}
 	isValidInstanceURL := isURL(myInstanceURL)
 	if myInstanceURL == "" || !isValidInstanceURL {
-		if !_inErrorState {
+		if !yp.inErrorState {
 			log.Warnln("YP Error: unable to use", myInstanceURL, "as a public instance URL. Fix this value in your configuration.")
 		}
-		_inErrorState = true
+		yp.inErrorState = true
 		return
 	}
 
-	key := configRepository.GetDirectoryRegistrationKey()
+	key := yp.configRepository.GetDirectoryRegistrationKey()
 
-	log.Traceln("Pinging YP as: ", configRepository.GetServerName(), "with key", key)
+	log.Traceln("Pinging YP as: ", yp.configRepository.GetServerName(), "with key", key)
 
 	request := ypPingRequest{
 		Key: key,
@@ -121,17 +147,17 @@ func (yp *YP) ping() {
 	}
 
 	if !pingResponse.Success {
-		if !_inErrorState {
+		if !yp.inErrorState {
 			log.Warnln("YP Ping error returned from service:", pingResponse.Error)
 		}
-		_inErrorState = true
+		yp.inErrorState = true
 		return
 	}
 
-	_inErrorState = false
+	yp.inErrorState = false
 
 	if pingResponse.Key != key {
-		if err := configRepository.SetDirectoryRegistrationKey(key); err != nil {
+		if err := yp.configRepository.SetDirectoryRegistrationKey(key); err != nil {
 			log.Errorln("unable to save directory key:", err)
 		}
 	}

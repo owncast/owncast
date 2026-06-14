@@ -12,73 +12,67 @@ const (
 	maxDiskAlertingThresholdPCT = 90
 )
 
-var (
-	inCPUAlertingState  = false
-	inRAMAlertingState  = false
-	inDiskAlertingState = false
-)
-
 var errorResetDuration = time.Minute * 5
 
 const alertingError = "The %s utilization of %f%% could cause problems with video generation and delivery. Visit the documentation at http://owncast.online/docs/troubleshooting/ if you are experiencing issues."
 
-func handleAlerting() {
-	handleCPUAlerting()
-	handleRAMAlerting()
-	handleDiskAlerting()
+func (s *Service) handleAlerting() {
+	s.handleCPUAlerting()
+	s.handleRAMAlerting()
+	s.handleDiskAlerting()
 }
 
-func handleCPUAlerting() {
-	if len(metrics.CPUUtilizations) < 2 {
+func (s *Service) handleCPUAlerting() {
+	if len(s.metrics.CPUUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(metrics.CPUUtilizations)
-	if avg > maxCPUAlertingThresholdPCT && !inCPUAlertingState {
+	avg := recentAverage(s.metrics.CPUUtilizations)
+	if avg > maxCPUAlertingThresholdPCT && !s.inCPUAlertingState {
 		log.Warnf(alertingError, "CPU", avg)
-		inCPUAlertingState = true
+		s.inCPUAlertingState = true
 
 		resetTimer := time.NewTimer(errorResetDuration)
 		go func() {
 			<-resetTimer.C
-			inCPUAlertingState = false
+			s.inCPUAlertingState = false
 		}()
 	}
 }
 
-func handleRAMAlerting() {
-	if len(metrics.RAMUtilizations) < 2 {
+func (s *Service) handleRAMAlerting() {
+	if len(s.metrics.RAMUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(metrics.RAMUtilizations)
-	if avg > maxRAMAlertingThresholdPCT && !inRAMAlertingState {
+	avg := recentAverage(s.metrics.RAMUtilizations)
+	if avg > maxRAMAlertingThresholdPCT && !s.inRAMAlertingState {
 		log.Warnf(alertingError, "memory", avg)
-		inRAMAlertingState = true
+		s.inRAMAlertingState = true
 
 		resetTimer := time.NewTimer(errorResetDuration)
 		go func() {
 			<-resetTimer.C
-			inRAMAlertingState = false
+			s.inRAMAlertingState = false
 		}()
 	}
 }
 
-func handleDiskAlerting() {
-	if len(metrics.DiskUtilizations) < 2 {
+func (s *Service) handleDiskAlerting() {
+	if len(s.metrics.DiskUtilizations) < 2 {
 		return
 	}
 
-	avg := recentAverage(metrics.DiskUtilizations)
+	avg := recentAverage(s.metrics.DiskUtilizations)
 
-	if avg > maxDiskAlertingThresholdPCT && !inDiskAlertingState {
+	if avg > maxDiskAlertingThresholdPCT && !s.inDiskAlertingState {
 		log.Warnf(alertingError, "disk", avg)
-		inDiskAlertingState = true
+		s.inDiskAlertingState = true
 
 		resetTimer := time.NewTimer(errorResetDuration)
 		go func() {
 			<-resetTimer.C
-			inDiskAlertingState = false
+			s.inDiskAlertingState = false
 		}()
 	}
 }

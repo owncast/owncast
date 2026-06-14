@@ -1,0 +1,453 @@
+/**
+ * Do not edit directly
+ * Generated on Wed, 03 Jun 2026 00:47:31 GMT
+ * 
+ * How to edit these values:
+ * Edit the corresponding token file under the style-definitions directory
+ * in the Owncast web project.
+ */
+
+:root {
+  --link-color: var(--theme-color-action);
+  --link-hover-color: var(--theme-color-action-hover);
+  --modal-header-bg: var(--theme-color-components-modal-header-background);
+  --modal-content-bg: var(--theme-color-background-main);
+  --alert-error-bg-color: var(--theme-color-palette-4);
+  --alert-error-border-color: var(--theme-color-palette-error);
+  --popover-background: var(--theme-color-components-menu-background);
+  --tag-default-color: var(--theme-color-action);
+  --border-radius-base: var(--theme-rounded-corners);
+  --background-color-light: var(--theme-color-background-main);
+  --modal-close-color: var(--theme-color-background-main);
+  --primary-color: #6544e9; /* Text link/secondary light text */
+  --primary-color-hover: #2386e2; /* Fun color 1 */
+  --primary-color-active: #7a5cf3; /* Text link hover */
+  --primary-1: #6544e9; /* Text link/secondary light text */
+  --primary-2: #2386e2; /* Fun color 1 */
+  --primary-3: #7a5cf3; /* Text link hover */
+  --primary-4: #da9eff; /* Fun color 2 */
+  --primary-5: #6544e9; /* Text link/secondary light text */
+  --primary-6: #2386e2; /* Fun color 1 */
+  --primary-7: #7a5cf3; /* Text link hover */
+  --primary-8: #da9eff; /* Fun color 2 */
+  --component-background: #e2e8f0; /* Light primary */
+  --body-background: #e2e8f0; /* Light primary */
+  --theme-rounded-corners: 5px; /* How much corners are rounded in places in the UI. */
+  --theme-unknown-1: green; /* This should never be used and it means something is wrong. */
+  --theme-unknown-2: red; /* This should never be used and it means something is wrong. */
+  --theme-text-body-font-family: var(
+    --font-owncast-body
+  ); /* The font family used for the body text. */
+  --theme-text-display-font-family: var(
+    --font-owncast-display
+  ); /* The font family used for the display/header text. */
+  --theme-color-users: var(--color-owncast-user-6); /* Colors used to display chat users. */
+  --theme-color-palette-0: var(--color-owncast-palette-0); /* Dark primary */
+  --theme-color-palette-1: var(--color-owncast-palette-1); /* Dark secondary */
+  --theme-color-palette-2: var(--color-owncast-palette-2); /* Dark alternate */
+  --theme-color-palette-3: var(--color-owncast-palette-3); /* Light primary */
+  --theme-color-palette-4: var(--color-owncast-palette-4); /* Light secondary */
+  --theme-color-palette-5: var(--color-owncast-palette-5); /* Light alternate */
+  --theme-color-palette-6: var(--color-owncast-palette-6); /* Text link/secondary light text */
+  --theme-color-palette-7: var(--color-owncast-palette-7); /* Text link hover */
+  --theme-color-palette-8: var(--color-owncast-palette-8); /* Disabled background */
+  --theme-color-palette-9: var(--color-owncast-palette-9); /* Neutral dark */
+  --theme-color-palette-10: var(--color-owncast-palette-10); /* Neutral gray light */
+  --theme-color-palette-11: var(--color-owncast-palette-11); /* Fun color 1 */
+  --theme-color-palette-12: var(--color-owncast-palette-12); /* Fun color 2 */
+  --theme-color-palette-13: var(--color-owncast-palette-13); /* Fun color 3 */
+  --theme-color-palette-14: var(--color-owncast-palette-14); /* Light background */
+  --theme-color-palette-15: var(--color-owncast-palette-15); /* Lighter background */
+  --theme-color-palette-error: var(--color-owncast-palette-error); /* Error */
+  --theme-color-palette-warning: var(--color-owncast-palette-warning); /* Warning */
+  --theme-color-background-main: var(--theme-color-palette-3); /* Light primary */
+  --theme-color-background-light: var(--theme-color-palette-3); /* Light primary */
+  --theme-color-background-header: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-action: var(--theme-color-palette-6); /* Text link/secondary light text */
+  --theme-color-action-hover: var(--theme-color-palette-7); /* Text link hover */
+  --theme-color-action-disabled: var(--theme-color-palette-8); /* Disabled background */
+  --theme-color-error: var(--theme-color-palette-error); /* Error */
+  --theme-color-warning: var(--theme-color-palette-warning); /* Warning */
+  --theme-color-components-text-on-light: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-components-text-on-dark: var(--theme-color-palette-3); /* Light primary */
+  --theme-color-components-primary-button-background: var(
+    --theme-color-action
+  ); /* Text link/secondary light text */
+  --theme-color-components-primary-button-background-disabled: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-primary-button-text: var(--theme-color-palette-4); /* Light secondary */
+  --theme-color-components-primary-button-text-disabled: var(
+    --theme-color-palette-10
+  ); /* Neutral gray light */
+  --theme-color-components-primary-button-border: var(--theme-color-action); /* Light secondary */
+  --theme-color-components-primary-button-border-disabled: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-secondary-button-background: var(
+    --theme-color-palette-4
+  ); /* Light secondary */
+  --theme-color-components-secondary-button-background-disabled: transparent;
+  --theme-color-components-secondary-button-text: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-secondary-button-text-disabled: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-secondary-button-border: var(
+    --theme-color-action
+  ); /* Text link/secondary light text */
+  --theme-color-components-secondary-button-border-disabled: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-chat-background: var(--theme-color-palette-1); /* Dark primary */
+  --theme-color-components-chat-text: var(--theme-color-palette-15); /* Lighter background */
+  --theme-color-components-content-background: var(
+    --theme-color-palette-15
+  ); /* Lighter background */
+  --theme-color-components-modal-header-background: var(
+    --theme-color-palette-1
+  ); /* Dark secondary */
+  --theme-color-components-modal-header-text: var(--theme-color-palette-3); /* Light primary */
+  --theme-color-components-modal-content-background: var(
+    --theme-color-palette-3
+  ); /* Light primary */
+  --theme-color-components-modal-content-text: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-components-menu-background: var(--theme-color-palette-3); /* Light primary */
+  --theme-color-components-menu-item-text: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-components-menu-item-bg: transparent;
+  --theme-color-components-menu-item-hover-bg: rgb(0 0 0 / 5%);
+  --theme-color-components-menu-item-focus-bg: rgb(0 0 0 / 10%);
+  --theme-color-components-form-field-background: var(
+    --theme-color-palette-4
+  ); /* Light secondary */
+  --theme-color-components-form-field-placeholder: var(
+    --theme-color-action-disabled
+  ); /* Disabled background */
+  --theme-color-components-form-field-text: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-components-form-field-border: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-components-video-background: var(--theme-color-palette-2); /* Dark alternate */
+  --theme-color-components-video-live-indicator: var(
+    --theme-color-action
+  ); /* The Live dot indicator in the control bar of the video player */
+  --theme-color-components-video-status-bar-background: var(
+    --theme-color-palette-2
+  ); /* The background color of the video status bar */
+  --theme-color-components-video-status-bar-foreground: var(
+    --theme-color-palette-4
+  ); /* The foreground color of the video status bar */
+  --color-unknown: #7a5cf3;
+  --color-unknown-2: #fffffe;
+  --color-owncast-user-0: #ff717b;
+  --color-owncast-user-1: #f4e413;
+  --color-owncast-user-2: #b99c45;
+  --color-owncast-user-3: #58f40b;
+  --color-owncast-user-4: #0bf4f4;
+  --color-owncast-user-5: #16a8f7;
+  --color-owncast-user-6: #9a92ff;
+  --color-owncast-user-7: #ff53ff;
+  --color-owncast-palette-0: #12161d; /* Dark primary */
+  --color-owncast-palette-1: #2d3748; /* Dark secondary */
+  --color-owncast-palette-2: #000; /* Dark alternate */
+  --color-owncast-palette-3: #e2e8f0; /* Light primary */
+  --color-owncast-palette-4: #fff; /* Light secondary */
+  --color-owncast-palette-5: #c3dafe; /* Light alternate */
+  --color-owncast-palette-6: #6544e9; /* Text link/secondary light text */
+  --color-owncast-palette-7: #7a5cf3; /* Text link hover */
+  --color-owncast-palette-8: #b6b3c6; /* Disabled background */
+  --color-owncast-palette-9: #39373d; /* Neutral dark */
+  --color-owncast-palette-10: #5d5f72; /* Neutral gray light */
+  --color-owncast-palette-11: #2386e2; /* Fun color 1 */
+  --color-owncast-palette-12: #da9eff; /* Fun color 2 */
+  --color-owncast-palette-13: #42bea6; /* Fun color 3 */
+  --color-owncast-palette-14: #f0f3f8; /* Light background */
+  --color-owncast-palette-15: #eff1f4; /* Lighter background */
+  --color-owncast-palette-error: #ff4b39; /* Error */
+  --color-owncast-palette-warning: #ffc655; /* Warning */
+  --font-owncast-body:
+    'Inter', system-ui, -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, 'Helvetica Neue',
+    arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  --font-owncast-display:
+    'Poppins', system-ui, -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, 'Helvetica Neue',
+    arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+}
+
+/*
+ * plugin-elements.css — hand-authored element baseline for plugin content.
+ *
+ * This is appended (by build.sh) to the generated :root token block to form
+ * the served plugin.css. It styles plain HTML elements (no AntD class names)
+ * with the Owncast theme tokens so a plugin author's semantic HTML adopts
+ * the native look with no CSS of their own. It only ever *references*
+ * tokens — never hard-codes values — so the generated :root defaults (and
+ * the admin's appearanceVariables/customStyles layered on top) flow through.
+ *
+ * Scope is deliberately narrow: typography, links, forms, buttons, tables,
+ * cards. Not a UI kit — just "this looks like it belongs". Plugins remain
+ * free to add their own styles on top.
+ *
+ * Note on fonts: the generated :root above already defines
+ * --font-owncast-body/-display (the theme font tokens reference them), so
+ * plugin content gets the right family. The web-font files themselves
+ * aren't loaded inside a frame, so text falls back to the system fonts in
+ * those stacks — acceptable, and the same as the prior admin stylesheet.
+ */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--theme-color-background-main);
+  color: var(--theme-color-components-text-on-light);
+  font-family: var(--theme-text-body-font-family);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--theme-text-display-font-family);
+  color: var(--theme-color-components-text-on-light);
+  margin: 0 0 12px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+h1 {
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 17px;
+}
+
+h4 {
+  font-size: 15px;
+}
+
+p {
+  margin: 0 0 12px;
+}
+
+a {
+  color: var(--theme-color-action);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--theme-color-action-hover);
+  text-decoration: underline;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--theme-color-palette-8);
+  margin: 16px 0;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: var(--theme-color-palette-14);
+  border-radius: 4px;
+}
+
+code {
+  padding: 1px 4px;
+}
+
+pre {
+  padding: 8px 12px;
+  overflow-x: auto;
+  line-height: 1.4;
+}
+
+pre code {
+  padding: 0;
+  background: transparent;
+}
+
+/* Forms — give plain inputs the same boxed look AntD uses, without the
+ * .ant-input class machinery. label/input pairs work in any layout. */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 520px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 500;
+  color: var(--theme-color-components-text-on-light);
+}
+
+/* Inputs: only target form fields, not button-like inputs. */
+input:not(
+  [type='button'],
+  [type='submit'],
+  [type='reset'],
+  [type='checkbox'],
+  [type='radio'],
+  [type='range'],
+  [type='color']
+),
+textarea,
+select {
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--theme-color-components-form-field-text);
+  background: var(--theme-color-components-form-field-background);
+  border: 1px solid var(--theme-color-components-form-field-border);
+  border-radius: var(--theme-rounded-corners);
+  padding: 6px 10px;
+  outline: none;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:not(
+    [type='button'],
+    [type='submit'],
+    [type='reset'],
+    [type='checkbox'],
+    [type='radio'],
+    [type='range'],
+    [type='color']
+  ):focus,
+textarea:focus,
+select:focus {
+  border-color: var(--theme-color-action);
+  box-shadow: 0 0 0 2px rgb(101 68 233 / 15%);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--theme-color-components-form-field-placeholder);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background: var(--theme-color-palette-14);
+  cursor: not-allowed;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Buttons — primary look, plus a secondary outline variant authors opt
+ * into with class="secondary". Mirrors AntD's primary/default split. */
+button,
+input[type='submit'],
+input[type='button'],
+input[type='reset'] {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 8px 16px;
+  border-radius: var(--theme-rounded-corners);
+  border: 1px solid var(--theme-color-components-primary-button-border);
+  background: var(--theme-color-components-primary-button-background);
+  color: var(--theme-color-components-primary-button-text);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+}
+
+button:hover,
+input[type='submit']:hover,
+input[type='button']:hover {
+  background: var(--theme-color-action-hover);
+  border-color: var(--theme-color-action-hover);
+}
+
+button:disabled,
+input[type='submit']:disabled,
+input[type='button']:disabled {
+  background: var(--theme-color-components-primary-button-background-disabled);
+  border-color: var(--theme-color-components-primary-button-border-disabled);
+  color: var(--theme-color-components-primary-button-text-disabled);
+  cursor: not-allowed;
+}
+
+button.secondary,
+input[type='reset'] {
+  background: var(--theme-color-components-secondary-button-background);
+  color: var(--theme-color-components-secondary-button-text);
+  border-color: var(--theme-color-components-secondary-button-border);
+}
+
+button.secondary:hover,
+input[type='reset']:hover {
+  background: var(--theme-color-action-hover);
+  color: var(--theme-color-components-primary-button-text);
+}
+
+/* Tables — minimal, readable. */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background: var(--theme-color-components-form-field-background);
+  border-radius: var(--theme-rounded-corners);
+  overflow: hidden;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--theme-color-palette-14);
+}
+
+th {
+  background: var(--theme-color-palette-14);
+  font-weight: 600;
+  color: var(--theme-color-components-text-on-light);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Cards — semantic <section>/<article>/<fieldset> get a soft container. */
+section,
+article,
+fieldset {
+  background: var(--theme-color-components-form-field-background);
+  border: 1px solid var(--theme-color-palette-14);
+  border-radius: var(--theme-rounded-corners);
+  padding: 16px;
+  margin: 0 0 16px;
+}
+
+fieldset legend {
+  font-weight: 600;
+  padding: 0 6px;
+}
+
+.muted {
+  color: var(--theme-color-palette-10);
+}

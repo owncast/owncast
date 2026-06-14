@@ -1,6 +1,9 @@
-version: 1
-packages:
-  - path: db
-    name: db
-    schema: 'db/schema.sql'
-    queries: 'db/query.sql'
+version: "2"
+sql:
+  - engine: "sqlite"
+    schema: "persistence/migrations"
+    queries: "db/query.sql"
+    gen:
+      go:
+        package: "db"
+        out: "db"

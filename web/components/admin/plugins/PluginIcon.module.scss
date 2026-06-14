@@ -1,0 +1,22 @@
+// PluginIcon: same component renders in two contexts, scaled
+// differently. The puzzle-piece SVG inherits the surrounding text
+// color via currentColor, so a missing-icon plugin matches the visual
+// weight of named-icon plugins in both the list and the sidebar.
+
+.list {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  color: var(--theme-color-text-muted, var(--theme-color-components-text-on-light, currentColor));
+}
+
+.sidebar {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  object-fit: cover;
+  vertical-align: middle;
+  margin-right: 12px;
+}

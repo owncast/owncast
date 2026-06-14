@@ -14,6 +14,8 @@ name: Javascript
 
 on:
   push:
+    branches:
+      - develop
     paths:
       - 'web/**/*.{js,ts,tsx,jsx,json,css,scss}'
       - 'web/package.json'
@@ -38,6 +40,7 @@ on:
 jobs:
   formatting:
     name: Code formatting
+    if: github.actor != 'renovate[bot]' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -122,7 +125,7 @@ jobs:
 
       - name: Commit changes
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.event_name != 'pull_request'
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
           author_name: Owncast
           author_email: owncast@owncast.online
@@ -133,6 +136,7 @@ jobs:
 
   unused-code:
     name: Test for unused code
+    if: github.actor != 'renovate[bot]' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -197,7 +201,7 @@ jobs:
   web-bundle:
     name: Build and bundle web project
     runs-on: ubuntu-latest
-    if: github.repository == 'owncast/owncast'
+    if: github.repository == 'owncast/owncast' && !cancelled()
     needs: [formatting, unused-code]
     steps:
       - id: skip_check
@@ -247,7 +251,7 @@ jobs:
         # Only commit built web project files on develop.
       - name: Commit changes
         if: ${{ github.ref == 'refs/heads/develop' }}
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
           message: 'Bundle embedded web app'
           add: 'static/web'

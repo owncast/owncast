@@ -9,6 +9,8 @@
 name: Lint
 on:
   push:
+    branches:
+      - develop
     paths:
       - '**.go'
       - 'go.mod'
@@ -44,12 +46,12 @@ jobs:
 
       - uses: actions/setup-go@v6
         with:
-          go-version: '1.25.7'
+          go-version: '1.26.4'
           cache: true
       - uses: actions/checkout@v6
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.8.0
+          version: v2.12.2
           only-new-issues: true
           args: --timeout=3m

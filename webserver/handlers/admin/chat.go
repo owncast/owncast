@@ -8,27 +8,23 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/owncast/owncast/core/chat"
-	"github.com/owncast/owncast/core/chat/events"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/authrepository"
-	"github.com/owncast/owncast/persistence/chatmessagerepository"
-	"github.com/owncast/owncast/persistence/configrepository"
-	"github.com/owncast/owncast/persistence/userrepository"
+	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
-	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 )
 
 // ExternalUpdateMessageVisibility updates an array of message IDs to have the same visiblity.
-func ExternalUpdateMessageVisibility(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
-	UpdateMessageVisibility(w, r)
+func (a *Admin) ExternalUpdateMessageVisibility(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+	a.UpdateMessageVisibility(w, r)
 }
 
 // UpdateMessageVisibility updates an array of message IDs to have the same visiblity.
-func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		// nolint:goconst
 		webutils.WriteSimpleResponse(w, false, r.Method+" not supported")
@@ -49,7 +45,7 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := chat.SetMessagesVisibility(*request.IdArray, *request.Visible); err != nil {
+	if err := a.chat.SetMessagesVisibility(*request.IdArray, *request.Visible); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -58,7 +54,7 @@ func UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
 }
 
 // BanIPAddress will manually ban an IP address.
-func BanIPAddress(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) BanIPAddress(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -69,9 +65,7 @@ func BanIPAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authRepository := authrepository.Get()
-
-	if err := authRepository.BanIPAddress(configValue.Value.(string), "manually added"); err != nil {
+	if err := a.authRepository.BanIPAddress(configValue.Value.(string), "manually added"); err != nil {
 		webutils.WriteSimpleResponse(w, false, "error saving IP address ban")
 		return
 	}
@@ -80,7 +74,7 @@ func BanIPAddress(w http.ResponseWriter, r *http.Request) {
 }
 
 // UnBanIPAddress will remove an IP address ban.
-func UnBanIPAddress(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) UnBanIPAddress(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -91,9 +85,7 @@ func UnBanIPAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authRepository := authrepository.Get()
-
-	if err := authRepository.RemoveIPAddressBan(configValue.Value.(string)); err != nil {
+	if err := a.authRepository.RemoveIPAddressBan(configValue.Value.(string)); err != nil {
 		webutils.WriteSimpleResponse(w, false, "error removing IP address ban")
 		return
 	}
@@ -102,10 +94,8 @@ func UnBanIPAddress(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetIPAddressBans will return all the banned IP addresses.
-func GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
-	authRepository := authrepository.Get()
-
-	bans, err := authRepository.GetIPAddressBans()
+func (a *Admin) GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
+	bans, err := a.authRepository.GetIPAddressBans()
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -115,7 +105,7 @@ func GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateUserEnabled enable or disable a single user by ID.
-func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		webutils.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
@@ -135,13 +125,13 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := updateUserStatus(request); err != nil {
+	if err := a.updateUserStatus(request); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	if !*request.Enabled {
-		if err := handleUserDisabling(*request.UserId); err != nil {
+		if err := a.handleUserDisabling(*request.UserId); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
@@ -150,22 +140,19 @@ func UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteSimpleResponse(w, true, fmt.Sprintf("%s enabled: %t", *request.UserId, *request.Enabled))
 }
 
-func updateUserStatus(request generated.UpdateUserEnabledJSONBody) error {
-	userRepository := userrepository.Get()
-	chatMessageRepository := chatmessagerepository.Get()
-
-	if err := userRepository.SetEnabled(*request.UserId, *request.Enabled); err != nil {
+func (a *Admin) updateUserStatus(request generated.UpdateUserEnabledJSONBody) error {
+	if err := a.userRepository.SetEnabled(*request.UserId, *request.Enabled); err != nil {
 		log.Errorln("error changing user enabled status", err)
 		return err
 	}
 
-	messageIDs, err := chatMessageRepository.GetMessageIdsForUserID(*request.UserId)
+	messageIDs, err := a.chatMessageRepository.GetMessageIdsForUserID(*request.UserId)
 	if err != nil {
 		return errors.Wrap(err, "error fetching user messages")
 	}
 
 	if !*request.Enabled && len(messageIDs) > 0 {
-		if err := chat.SetMessagesVisibility(messageIDs, *request.Enabled); err != nil {
+		if err := a.chat.SetMessagesVisibility(messageIDs, *request.Enabled); err != nil {
 			log.Errorln("error changing user messages visibility", err)
 			return err
 		}
@@ -173,8 +160,8 @@ func updateUserStatus(request generated.UpdateUserEnabledJSONBody) error {
 	return nil
 }
 
-func handleUserDisabling(userID string) error {
-	clients, err := chat.GetClientsForUser(userID)
+func (a *Admin) handleUserDisabling(userID string) error {
+	clients, err := a.chat.GetClientsForUser(userID)
 	if len(clients) == 0 {
 		return nil
 	}
@@ -184,20 +171,18 @@ func handleUserDisabling(userID string) error {
 		return err
 	}
 
-	chat.DisconnectClients(clients)
-	userRepository := userrepository.Get()
-	disconnectedUser := userRepository.GetUserByID(userID)
-	_ = chat.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
+	a.chat.DisconnectClients(clients)
+	disconnectedUser := a.userRepository.GetUserByID(userID)
+	_ = a.chat.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
 
 	localIP4Address := "127.0.0.1"
 	localIP6Address := "::1"
 
-	authRepository := authrepository.Get()
 	for _, client := range clients {
 		ipAddress := client.IPAddress
 		if ipAddress != localIP4Address && ipAddress != localIP6Address {
 			reason := fmt.Sprintf("Banning of %s", disconnectedUser.DisplayName)
-			if err := authRepository.BanIPAddress(ipAddress, reason); err != nil {
+			if err := a.authRepository.BanIPAddress(ipAddress, reason); err != nil {
 				log.Errorln("error banning IP address: ", err)
 			}
 		}
@@ -206,17 +191,15 @@ func handleUserDisabling(userID string) error {
 }
 
 // GetDisabledUsers will return all the disabled users.
-func GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	userRepository := userrepository.Get()
-
-	users := userRepository.GetDisabledUsers()
+	users := a.userRepository.GetDisabledUsers()
 	webutils.WriteResponse(w, users)
 }
 
 // UpdateUserModerator will set the moderator status for a user ID.
-func UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		webutils.WriteSimpleResponse(w, false, r.Method+" not supported")
 		return
@@ -230,16 +213,14 @@ func UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepository := userrepository.Get()
-
 	// Update the user object with new moderation access.
-	if err := userRepository.SetModerator(*req.UserId, *req.IsModerator); err != nil {
+	if err := a.userRepository.SetModerator(*req.UserId, *req.IsModerator); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
 
 	// Update the clients for this user to know about the moderator access change.
-	if err := chat.SendConnectedClientInfoToUser(*req.UserId); err != nil {
+	if err := a.chat.SendConnectedClientInfoToUser(*req.UserId); err != nil {
 		log.Debugln(err)
 	}
 
@@ -247,26 +228,23 @@ func UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetModerators will return a list of moderator users.
-func GetModerators(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) GetModerators(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	userRepository := userrepository.Get()
-
-	users := userRepository.GetModeratorUsers()
+	users := a.userRepository.GetModeratorUsers()
 	webutils.WriteResponse(w, users)
 }
 
 // GetChatMessages returns all of the chat messages, unfiltered.
-func GetChatMessages(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) GetChatMessages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	chatMessageRepository := chatmessagerepository.Get()
-	messages := chatMessageRepository.GetChatModerationHistory()
+	messages := a.chatMessageRepository.GetChatModerationHistory()
 	webutils.WriteResponse(w, messages)
 }
 
 // SendSystemMessage will send an official "SYSTEM" message to chat on behalf of your server.
-func SendSystemMessage(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SendSystemMessage(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var message events.SystemMessageEvent
@@ -275,7 +253,7 @@ func SendSystemMessage(integration models.ExternalAPIUser, w http.ResponseWriter
 		return
 	}
 
-	if err := chat.SendSystemMessage(message.Body, false); err != nil {
+	if err := a.chat.SendSystemMessage(message.Body, false); err != nil {
 		webutils.BadRequestHandler(w, err)
 	}
 
@@ -283,7 +261,7 @@ func SendSystemMessage(integration models.ExternalAPIUser, w http.ResponseWriter
 }
 
 // SendSystemMessageToConnectedClient will handle incoming requests to send a single message to a single connected client by ID.
-func SendSystemMessageToConnectedClient(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SendSystemMessageToConnectedClient(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	clientIDText, err := utils.GetURLParam(r, "clientId")
 	if err != nil {
@@ -309,18 +287,18 @@ func SendSystemMessageToConnectedClient(integration models.ExternalAPIUser, w ht
 		return
 	}
 
-	chat.SendSystemMessageToClient(uint(clientIDNumeric), *message.Body)
+	a.chat.SendSystemMessageToClient(uint(clientIDNumeric), *message.Body)
 	webutils.WriteSimpleResponse(w, true, "sent")
 }
 
 // SendUserMessage will send a message to chat on behalf of a user. *Depreciated*.
-func SendUserMessage(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SendUserMessage(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	webutils.BadRequestHandler(w, errors.New("no longer supported. see /api/integrations/chat/send"))
 }
 
 // SendIntegrationChatMessage will send a chat message on behalf of an external chat integration.
-func SendIntegrationChatMessage(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SendIntegrationChatMessage(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	name := integration.DisplayName
@@ -352,19 +330,18 @@ func SendIntegrationChatMessage(integration models.ExternalAPIUser, w http.Respo
 		IsBot:        true,
 	}
 
-	if err := chat.Broadcast(&event); err != nil {
+	if err := a.chat.BroadcastEvent(&event); err != nil {
 		webutils.BadRequestHandler(w, err)
 		return
 	}
 
-	chatMessageRepository := chatmessagerepository.Get()
-	chatMessageRepository.SaveUserMessage(event)
+	a.chatMessageRepository.SaveUserMessage(event)
 
 	webutils.WriteSimpleResponse(w, true, "sent")
 }
 
 // SendChatAction will send a generic chat action.
-func SendChatAction(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SendChatAction(integration models.ExternalAPIUser, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var message events.SystemActionEvent
@@ -376,7 +353,7 @@ func SendChatAction(integration models.ExternalAPIUser, w http.ResponseWriter, r
 	message.SetDefaults()
 	message.RenderBody()
 
-	if err := chat.SendSystemAction(message.Body, false); err != nil {
+	if err := a.chat.SendSystemAction(message.Body, false); err != nil {
 		webutils.BadRequestHandler(w, err)
 		return
 	}
@@ -386,7 +363,7 @@ func SendChatAction(integration models.ExternalAPIUser, w http.ResponseWriter, r
 
 // SetEnableEstablishedChatUserMode sets the requirement for a chat user
 // to be "established" for some time before taking part in chat.
-func SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
 	}
@@ -397,8 +374,7 @@ func SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	configRepository := configrepository.Get()
-	if err := configRepository.SetChatEstablishedUsersOnlyMode(configValue.Value.(bool)); err != nil {
+	if err := a.configRepository.SetChatEstablishedUsersOnlyMode(configValue.Value.(bool)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

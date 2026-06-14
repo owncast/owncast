@@ -1,0 +1,155 @@
+package controllers
+
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+
+	"github.com/go-fed/activity/streams"
+	"github.com/go-fed/activity/streams/vocab"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/services/activitypub/requests"
+)
+
+const (
+	outboxPageSize = 50
+)
+
+// OutboxHandler will handle requests for the local ActivityPub outbox.
+func (c *Controllers) OutboxHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	var response interface{}
+	var err error
+	if r.URL.Query().Get("page") != "" {
+		response, err = c.getOutboxPage(r.URL.Query().Get("page"), r)
+	} else {
+		response, err = c.getInitialOutboxHandler(r)
+	}
+
+	if response == nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte("internal server error"))
+		return
+	}
+
+	pathComponents := strings.Split(r.URL.Path, "/")
+	accountName := pathComponents[3]
+	actorIRI := c.builder.MakeLocalIRIForAccount(accountName)
+	publicKey := c.signer.GetPublicKey(actorIRI)
+
+	if err := requests.WriteStreamResponse(response.(vocab.Type), w, publicKey, c.signer); err != nil {
+		log.Errorln("unable to write stream response for outbox handler", err)
+	}
+}
+
+// ActorObjectHandler will handle the request for a single ActivityPub object.
+func (c *Controllers) ActorObjectHandler(w http.ResponseWriter, r *http.Request) {
+	object, _, _, err := c.persistence.GetObjectByIRI(r.URL.Path)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+		// controllers.WriteSimpleResponse(w, false, err.Error())
+	}
+
+	w.Header().Set("Content-Type", "application/activity+json")
+	if _, err := w.Write([]byte(object)); err != nil { //nolint:gosec
+		log.Errorln(err)
+	}
+}
+
+func (c *Controllers) getInitialOutboxHandler(r *http.Request) (vocab.ActivityStreamsOrderedCollection, error) {
+	collection := streams.NewActivityStreamsOrderedCollection()
+
+	idProperty := streams.NewJSONLDIdProperty()
+	id, err := c.createPageURL(r, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to create followers page property")
+	}
+	idProperty.SetIRI(id)
+	collection.SetJSONLDId(idProperty)
+
+	totalPosts, err := c.persistence.GetOutboxPostCount()
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to get outbox post count")
+	}
+	totalItemsProperty := streams.NewActivityStreamsTotalItemsProperty()
+	totalItemsProperty.Set(int(totalPosts))
+	collection.SetActivityStreamsTotalItems(totalItemsProperty)
+
+	first := streams.NewActivityStreamsFirstProperty()
+	page := "1"
+	firstIRI, err := c.createPageURL(r, &page)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to create first page property")
+	}
+
+	first.SetIRI(firstIRI)
+	collection.SetActivityStreamsFirst(first)
+
+	return collection, nil
+}
+
+func (c *Controllers) getOutboxPage(page string, r *http.Request) (vocab.ActivityStreamsOrderedCollectionPage, error) {
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to parse page number")
+	}
+
+	postCount, err := c.persistence.GetOutboxPostCount()
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to get outbox post count")
+	}
+
+	collectionPage := streams.NewActivityStreamsOrderedCollectionPage()
+	idProperty := streams.NewJSONLDIdProperty()
+	id, err := c.createPageURL(r, &page)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to create followers page ID")
+	}
+	idProperty.SetIRI(id)
+	collectionPage.SetJSONLDId(idProperty)
+
+	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
+
+	outboxItems, err := c.persistence.GetOutbox(outboxPageSize, (pageInt-1)*outboxPageSize)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to get federation followers")
+	}
+	orderedItems.AppendActivityStreamsOrderedCollection(outboxItems)
+	collectionPage.SetActivityStreamsOrderedItems(orderedItems)
+
+	partOf := streams.NewActivityStreamsPartOfProperty()
+	partOfIRI, err := c.createPageURL(r, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to create partOf property for outbox page")
+	}
+
+	partOf.SetIRI(partOfIRI)
+	collectionPage.SetActivityStreamsPartOf(partOf)
+
+	if pageInt*followersPageSize < int(postCount) {
+		next := streams.NewActivityStreamsNextProperty()
+		nextPage := fmt.Sprintf("%d", pageInt+1)
+		nextIRI, err := c.createPageURL(r, &nextPage)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to create next page property")
+		}
+
+		next.SetIRI(nextIRI)
+		collectionPage.SetActivityStreamsNext(next)
+	}
+
+	return collectionPage, nil
+}

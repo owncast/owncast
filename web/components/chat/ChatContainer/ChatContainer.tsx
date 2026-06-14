@@ -14,8 +14,7 @@ import { ChatUserMessage } from '../ChatUserMessage/ChatUserMessage';
 import { ChatTextField } from '../ChatTextField/ChatTextField';
 import { ChatModeratorNotification } from '../ChatModeratorNotification/ChatModeratorNotification';
 import { ChatSystemMessage } from '../ChatSystemMessage/ChatSystemMessage';
-import { ChatJoinMessage } from '../ChatJoinMessage/ChatJoinMessage';
-import { ChatPartMessage } from '../ChatPartMessage/ChatPartMessage';
+import { ChatEventMessage, ChatEventType } from '../ChatEventMessage/ChatEventMessage';
 import { ScrollToBotBtn } from './ScrollToBotBtn';
 import { ChatActionMessage } from '../ChatActionMessage/ChatActionMessage';
 import { ChatSocialMessage } from '../ChatSocialMessage/ChatSocialMessage';
@@ -139,7 +138,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     } = message;
     const isAuthorModerator = checkIsModerator(message);
     return (
-      <ChatJoinMessage
+      <ChatEventMessage
+        type={ChatEventType.Join}
         displayName={displayName}
         userColor={displayColor}
         isAuthorModerator={isAuthorModerator}
@@ -153,7 +153,8 @@ export const ChatContainer: FC<ChatContainerProps> = ({
     } = message;
     const isAuthorModerator = checkIsModerator(message);
     return (
-      <ChatPartMessage
+      <ChatEventMessage
+        type={ChatEventType.Part}
         displayName={displayName}
         userColor={displayColor}
         isAuthorModerator={isAuthorModerator}

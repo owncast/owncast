@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/owncast/owncast/core"
-	"github.com/owncast/owncast/metrics"
-	"github.com/owncast/owncast/persistence/configrepository"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/owncast/owncast/metrics"
 )
 
 // GetVideoPlaybackMetrics returns video playback metrics.
-func GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
+func (a *Admin) GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	type response struct {
 		Errors                []metrics.TimestampedValue `json:"errors"`
 		QualityVariantChanges []metrics.TimestampedValue `json:"qualityVariantChanges"`
@@ -34,34 +33,33 @@ func GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 
 	availableBitrates := []int{}
 	var segmentLength int
-	if core.GetCurrentBroadcast() != nil {
-		segmentLength = core.GetCurrentBroadcast().LatencyLevel.SecondsPerSegment
-		for _, variants := range core.GetCurrentBroadcast().OutputSettings {
+	if broadcast := a.stream.GetCurrentBroadcast(); broadcast != nil {
+		segmentLength = broadcast.LatencyLevel.SecondsPerSegment
+		for _, variants := range broadcast.OutputSettings {
 			availableBitrates = append(availableBitrates, variants.VideoBitrate)
 		}
 	} else {
-		configRepository := configrepository.Get()
-		segmentLength = configRepository.GetStreamLatencyLevel().SecondsPerSegment
-		for _, variants := range configRepository.GetStreamOutputVariants() {
+		segmentLength = a.configRepository.GetStreamLatencyLevel().SecondsPerSegment
+		for _, variants := range a.configRepository.GetStreamOutputVariants() {
 			availableBitrates = append(availableBitrates, variants.VideoBitrate)
 		}
 	}
 
-	errors := metrics.GetPlaybackErrorCountOverTime()
-	medianLatency := metrics.GetMedianLatencyOverTime()
-	minimumLatency := metrics.GetMinimumLatencyOverTime()
-	maximumLatency := metrics.GetMaximumLatencyOverTime()
+	errors := a.metrics.GetPlaybackErrorCountOverTime()
+	medianLatency := a.metrics.GetMedianLatencyOverTime()
+	minimumLatency := a.metrics.GetMinimumLatencyOverTime()
+	maximumLatency := a.metrics.GetMaximumLatencyOverTime()
 
-	medianDurations := metrics.GetMedianDownloadDurationsOverTime()
-	maximumDurations := metrics.GetMaximumDownloadDurationsOverTime()
-	minimumDurations := metrics.GetMinimumDownloadDurationsOverTime()
+	medianDurations := a.metrics.GetMedianDownloadDurationsOverTime()
+	maximumDurations := a.metrics.GetMaximumDownloadDurationsOverTime()
+	minimumDurations := a.metrics.GetMinimumDownloadDurationsOverTime()
 
-	minPlayerBitrate := metrics.GetSlowestDownloadRateOverTime()
-	medianPlayerBitrate := metrics.GetMedianDownloadRateOverTime()
-	maxPlayerBitrate := metrics.GetMaxDownloadRateOverTime()
-	qualityVariantChanges := metrics.GetQualityVariantChangesOverTime()
+	minPlayerBitrate := a.metrics.GetSlowestDownloadRateOverTime()
+	medianPlayerBitrate := a.metrics.GetMedianDownloadRateOverTime()
+	maxPlayerBitrate := a.metrics.GetMaxDownloadRateOverTime()
+	qualityVariantChanges := a.metrics.GetQualityVariantChangesOverTime()
 
-	representation := metrics.GetPlaybackMetricsRepresentation()
+	representation := a.metrics.GetPlaybackMetricsRepresentation()
 
 	resp := response{
 		AvailableBitrates:       availableBitrates,

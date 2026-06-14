@@ -5,6 +5,8 @@ name: 'Copilot Setup Steps'
 on:
   workflow_dispatch:
   push:
+    branches:
+      - develop
     paths:
       - .github/workflows/copilot-setup-steps.yml
   pull_request:
@@ -31,7 +33,7 @@ jobs:
       - name: Install go
         uses: actions/setup-go@v6
         with:
-          go-version: '^1'
+          go-version: '1.26.4'
           cache: true
 
       - name: Install ffmpeg

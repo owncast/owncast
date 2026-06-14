@@ -41,6 +41,7 @@ const Page = () => {
     socialHandles: [],
     externalActions: [],
     customStyles: '',
+    pluginTabs: [],
     maxSocketPayloadSize: 0,
     federation: undefined,
     notifications: undefined,

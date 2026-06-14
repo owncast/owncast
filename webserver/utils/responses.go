@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/webserver/router/middleware"
-	log "github.com/sirupsen/logrus"
 )
 
 type J map[string]interface{}
