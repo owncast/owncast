@@ -23,3 +23,8 @@ func (h *HLSHandler) VariantPlaylistWritten(localFilePath string) {
 func (h *HLSHandler) MasterPlaylistWritten(localFilePath string) {
 	h.Storage.MasterPlaylistWritten(localFilePath)
 }
+
+// InitSegmentWritten is fired when an fMP4 init segment is written to disk.
+func (h *HLSHandler) InitSegmentWritten(localFilePath string) {
+	h.Storage.SegmentWritten(localFilePath)
+}

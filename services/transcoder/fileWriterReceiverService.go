@@ -19,6 +19,7 @@ type FileWriterReceiverServiceCallback interface {
 	SegmentWritten(localFilePath string)
 	VariantPlaylistWritten(localFilePath string)
 	MasterPlaylistWritten(localFilePath string)
+	InitSegmentWritten(localFilePath string)
 }
 
 // FileWriterReceiverService accepts transcoder responses via HTTP and fires the callbacks.
@@ -92,8 +93,10 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 func (s *FileWriterReceiverService) fileWritten(path string) {
 	if utils.GetRelativePathFromAbsolutePath(path) == "hls/stream.m3u8" {
 		s.callbacks.MasterPlaylistWritten(path)
-	} else if strings.HasSuffix(path, ".ts") {
+	} else if strings.HasSuffix(path, ".m4s") {
 		s.callbacks.SegmentWritten(path)
+	} else if strings.HasSuffix(path, "init.mp4") {
+		s.callbacks.InitSegmentWritten(path)
 	} else if strings.HasSuffix(path, ".m3u8") {
 		s.callbacks.VariantPlaylistWritten(path)
 	}
