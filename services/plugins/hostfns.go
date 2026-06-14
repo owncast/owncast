@@ -346,133 +346,97 @@ type HostEnv struct {
 	Timer *TimerHub
 }
 
-// BuildHostFunctions returns the list of extism host functions a single
-// plugin should be granted, based on its declared permissions. A plugin
-// only sees imports for permissions it declared; importing anything else
-// will fail to link at instantiation time.
-func BuildHostFunctions(env *HostEnv, manifest *Manifest, assetsFS fs.FS) []extism.HostFunction {
-	var fns []extism.HostFunction
-	granted := stringSet(manifest.Permissions)
+// BuildHostFunctions returns the full set of extism host functions, built
+// once and shared across all plugins. Every function is wired
+// unconditionally; the calling plugin's identity and permission grants are
+// resolved at call time via resolveCaller, which enforces the per-function
+// permission (and logs denials) before the body runs.
+func BuildHostFunctions(env *HostEnv) []extism.HostFunction {
+	// Capacity hint for the full host-function set built below; an off-by-a-few
+	// estimate just trades one reallocation, so it needn't track exactly.
+	fns := make([]extism.HostFunction, 0, 48)
 
-	if granted[PermStorageKV] {
-		ns := env.KV.Namespace(manifest.Slug)
-		fns = append(fns, hostKVGet(ns), hostKVSet(ns))
-	}
-	if granted[PermChatSend] {
-		// Chat send fns capture both slug and chat display name in
-		// their closure: slug routes to the right bot user, display
-		// name is what chat viewers see.
-		chatDisplay := manifest.ChatDisplayName()
-		fns = append(fns,
-			hostSendChat(env.OnChat, manifest.Slug, chatDisplay),
-			hostSendChatAction(env.OnChat, manifest.Slug, chatDisplay),
-			hostSendChatSystem(env.OnChat, manifest.Slug, chatDisplay),
-			hostSendChatTo(env, manifest.Slug),
-		)
-	}
-	if granted[PermEmitEvent] {
-		fns = append(fns, hostEmitEvent(env, manifest.Slug))
-	}
-	if granted[PermServerRead] {
-		fns = append(fns,
-			hostStreamCurrent(env),
-			hostServerInfo(env),
-			hostServerSocials(env),
-			hostServerEmotes(env),
-			hostServerFederation(env),
-			hostStreamBroadcaster(env),
-			hostServerTags(env),
-		)
-	}
-	if granted[PermChatHistory] {
-		fns = append(fns, hostChatHistory(env))
-	}
-	if granted[PermChatModerate] {
-		fns = append(fns,
-			hostDeleteMessage(env, manifest.Slug),
-			hostKickClient(env, manifest.Slug),
-		)
-	}
-	if granted[PermNotificationsSend] {
-		fns = append(fns,
-			hostSendDiscord(env, manifest.Slug),
-			hostSendBrowserPush(env, manifest.Slug),
-			hostSendFediverse(env, manifest.Slug),
-		)
-	}
-	if granted[PermChatHistory] {
-		fns = append(fns, hostChatClients(env))
-	}
-	if granted[PermUsersRead] {
-		fns = append(fns, hostUsersList(env), hostUserGet(env))
-	}
-	if granted[PermUsersModerate] {
-		fns = append(fns,
-			hostUserSetEnabled(env, manifest.Slug),
-			hostBanIP(env, manifest.Slug),
-		)
-	}
-	fns = append(fns, storageHostFunctions(env, manifest, granted)...)
-	if granted[PermFediversePost] {
-		fns = append(fns, hostFediversePost(env, manifest.Slug))
-	}
-	if granted[PermHttpSSE] {
-		fns = append(fns, hostSSESend(env, manifest.Slug))
-	}
+	fns = append(fns, hostKVGet(), hostKVSet())
+	// Chat send fns resolve both slug and chat display name at call time:
+	// slug routes to the right bot user, display name is what chat viewers
+	// see.
+	fns = append(fns,
+		hostSendChat(env),
+		hostSendChatAction(env),
+		hostSendChatSystem(env),
+		hostSendChatTo(env),
+	)
+	fns = append(fns, hostEmitEvent(env))
+	fns = append(fns,
+		hostStreamCurrent(env),
+		hostServerInfo(env),
+		hostServerSocials(env),
+		hostServerEmotes(env),
+		hostServerFederation(env),
+		hostStreamBroadcaster(env),
+		hostServerTags(env),
+	)
+	fns = append(fns, hostChatHistory(env))
+	fns = append(fns,
+		hostDeleteMessage(env),
+		hostKickClient(env),
+	)
+	fns = append(fns,
+		hostSendDiscord(env),
+		hostSendBrowserPush(env),
+		hostSendFediverse(env),
+	)
+	fns = append(fns, hostChatClients(env))
+	fns = append(fns, hostUsersList(env), hostUserGet(env))
+	fns = append(fns,
+		hostUserSetEnabled(env),
+		hostBanIP(env),
+	)
+	fns = append(fns, storageHostFunctions(env)...)
+	fns = append(fns, hostFediversePost(env))
+	fns = append(fns, hostSSESend(env))
 
 	// Timers are ambient (no permission): a plugin can't setTimeout in the
 	// sandbox, so scheduling is a baseline capability. The act of scheduling
 	// is benign — whatever the callback does still needs its own permissions —
 	// and TimerHub's per-plugin caps bound abuse.
-	fns = append(fns, hostTimerSet(env, manifest.Slug), hostTimerClear(env, manifest.Slug))
+	fns = append(fns, hostTimerSet(env), hostTimerClear(env))
 
 	// Config is ambient too: reading the plugin's own manifest-declared config
 	// (admin override, else declared default) is benign and needs no grant.
-	fns = append(fns, hostConfigGet(env, manifest))
+	fns = append(fns, hostConfigGet(env))
 	// Asset reading is ambient: a plugin reads only files it shipped itself.
-	fns = append(fns, hostAssetRead(assetsFS))
-	if granted[PermUIModify] {
-		fns = append(fns,
-			hostAddActions(env, manifest),
-			hostClearActions(env, manifest.Slug),
-		)
-	}
-	fns = append(fns, videoConfigHostFunctions(env, manifest, granted)...)
+	fns = append(fns, hostAssetRead())
+	fns = append(fns,
+		hostAddActions(env),
+		hostClearActions(env),
+	)
+	fns = append(fns, videoConfigHostFunctions(env)...)
 	return fns
 }
 
 // storageHostFunctions returns the storage.upload / storage.fs host functions
 // a plugin is granted. Split out of BuildHostFunctions to keep that function's
 // cyclomatic complexity in check.
-func storageHostFunctions(env *HostEnv, manifest *Manifest, granted map[string]bool) []extism.HostFunction {
-	var fns []extism.HostFunction
-	if granted[PermStorageUpload] {
-		fns = append(fns, hostStorageUpload(env, manifest.Slug))
+func storageHostFunctions(env *HostEnv) []extism.HostFunction {
+	return []extism.HostFunction{
+		hostStorageUpload(env),
+		hostFSRead(env),
+		hostFSWrite(env),
+		hostFSList(env),
+		hostFSDelete(env),
+		hostFSExists(env),
 	}
-	if granted[PermStorageFS] {
-		fns = append(fns,
-			hostFSRead(env, manifest.Slug),
-			hostFSWrite(env, manifest.Slug),
-			hostFSList(env, manifest.Slug),
-			hostFSDelete(env, manifest.Slug),
-			hostFSExists(env, manifest.Slug),
-		)
-	}
-	return fns
 }
 
 // videoConfigHostFunctions returns the videoconfig.read / videoconfig.write
 // host functions a plugin is granted. Split out of BuildHostFunctions to keep
 // that function's cyclomatic complexity in check.
-func videoConfigHostFunctions(env *HostEnv, manifest *Manifest, granted map[string]bool) []extism.HostFunction {
-	var fns []extism.HostFunction
-	if granted[PermVideoConfigRead] {
-		fns = append(fns, hostVideoConfigRead(env))
+func videoConfigHostFunctions(env *HostEnv) []extism.HostFunction {
+	return []extism.HostFunction{
+		hostVideoConfigRead(env),
+		hostVideoConfigWrite(env),
 	}
-	if granted[PermVideoConfigWrite] {
-		fns = append(fns, hostVideoConfigWrite(env, manifest.Slug))
-	}
-	return fns
 }
 
 // hostSSESend backs owncast.sse.send(channel, event, data). It publishes a
@@ -480,10 +444,15 @@ func videoConfigHostFunctions(env *HostEnv, manifest *Manifest, granted map[stri
 // plugin's <channel> stream. Fire-and-forget: the call returns as soon as
 // the frame is queued to each client, so it never blocks the plugin on a
 // slow browser. Requires the http.sse permission.
-func hostSSESend(env *HostEnv, pluginName string) extism.HostFunction {
+func hostSSESend(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_sse_send",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_sse_send", PermHttpSSE)
+			if !ok {
+				return
+			}
+			pluginName := id.slug
 			channel, err := p.ReadString(stack[0])
 			if err != nil {
 				return
@@ -517,10 +486,16 @@ func hostSSESend(env *HostEnv, pluginName string) extism.HostFunction {
 // timer.fire event carrying the id. Returns 1 on success, 0 if the plugin is
 // at its pending-timer cap. A nil Timer (test harness) reports success so the
 // guest keeps its callback; fires are then simulated via events.
-func hostTimerSet(env *HostEnv, pluginName string) extism.HostFunction {
+func hostTimerSet(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_timer_set",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			ident, ok := resolveCaller(ctx, "owncast_timer_set", "")
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			pluginName := ident.slug
 			id := stack[0]
 			// Clamp the requested delay to a sane ceiling before narrowing to
 			// int64 — bounds the duration math and keeps the conversion in range.
@@ -548,10 +523,15 @@ func hostTimerSet(env *HostEnv, pluginName string) extism.HostFunction {
 }
 
 // hostTimerClear backs owncast.timer.clear(id), cancelling a pending timer.
-func hostTimerClear(env *HostEnv, pluginName string) extism.HostFunction {
+func hostTimerClear(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_timer_clear",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			ident, ok := resolveCaller(ctx, "owncast_timer_clear", "")
+			if !ok {
+				return
+			}
+			pluginName := ident.slug
 			id := stack[0]
 			if env.Timer != nil {
 				env.Timer.Clear(pluginName, id)
@@ -564,10 +544,16 @@ func hostTimerClear(env *HostEnv, pluginName string) extism.HostFunction {
 	return fn
 }
 
-func hostFediversePost(env *HostEnv, pluginName string) extism.HostFunction {
+func hostFediversePost(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_fediverse_post",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_fediverse_post", PermFediversePost)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			pluginName := id.slug
 			text, err := p.ReadString(stack[0])
 			if err != nil {
 				stack[0] = 0
@@ -606,6 +592,10 @@ func hostChatClients(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_chat_clients",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_chat_clients", PermChatHistory); !ok {
+				stack[0] = 0
+				return
+			}
 			var clients []HostChatClient
 			if env.ChatClients != nil {
 				clients = env.ChatClients()
@@ -636,6 +626,10 @@ func hostUsersList(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_users_list",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_users_list", PermUsersRead); !ok {
+				stack[0] = 0
+				return
+			}
 			var users []HostUser
 			if env.Users != nil {
 				users = env.Users()
@@ -666,6 +660,10 @@ func hostUserGet(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_user_get",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_user_get", PermUsersRead); !ok {
+				stack[0] = 0
+				return
+			}
 			id, err := p.ReadString(stack[0])
 			if err != nil {
 				stack[0] = 0
@@ -699,10 +697,15 @@ func hostUserGet(env *HostEnv) extism.HostFunction {
 	return fn
 }
 
-func hostUserSetEnabled(env *HostEnv, pluginName string) extism.HostFunction {
+func hostUserSetEnabled(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_user_set_enabled",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			ident, ok := resolveCaller(ctx, "owncast_user_set_enabled", PermUsersModerate)
+			if !ok {
+				return
+			}
+			pluginName := ident.slug
 			id, err := p.ReadString(stack[0])
 			if err != nil {
 				return
@@ -720,10 +723,15 @@ func hostUserSetEnabled(env *HostEnv, pluginName string) extism.HostFunction {
 	return fn
 }
 
-func hostBanIP(env *HostEnv, pluginName string) extism.HostFunction {
+func hostBanIP(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_ban_ip",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_ban_ip", PermUsersModerate)
+			if !ok {
+				return
+			}
+			pluginName := id.slug
 			ip, err := p.ReadString(stack[0])
 			if err != nil {
 				return
@@ -743,6 +751,10 @@ func hostServerSocials(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_server_socials",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_server_socials", PermServerRead); !ok {
+				stack[0] = 0
+				return
+			}
 			var socials []SocialHandle
 			if env.Socials != nil {
 				socials = env.Socials()
@@ -773,10 +785,16 @@ func hostServerSocials(env *HostEnv) extism.HostFunction {
 // as JSON: the admin-set override when present, otherwise the manifest's
 // declared default. Returns 0 (→ undefined in the guest) for an unknown key or
 // a declared key with no override and no default.
-func hostConfigGet(env *HostEnv, manifest *Manifest) extism.HostFunction {
+func hostConfigGet(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_config_get",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_config_get", "")
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			manifest := id.manifest
 			key, err := p.ReadString(stack[0])
 			if err != nil {
 				stack[0] = 0
@@ -820,10 +838,16 @@ func hostConfigGet(env *HostEnv, manifest *Manifest) extism.HostFunction {
 // plugin's bundled assets/ directory. The path must be relative — no ".."
 // segments, no leading "/". Returns 0 when assetsFS is nil or the file
 // doesn't exist. Ambient — no permission required.
-func hostAssetRead(assetsFS fs.FS) extism.HostFunction {
+func hostAssetRead() extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_asset_read",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_asset_read", "")
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			assetsFS := id.assetsFS
 			path, err := p.ReadString(stack[0])
 			if err != nil || assetsFS == nil {
 				stack[0] = 0
@@ -856,6 +880,10 @@ func hostServerEmotes(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_server_emotes",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_server_emotes", PermServerRead); !ok {
+				stack[0] = 0
+				return
+			}
 			var emotes []Emote
 			if env.Emotes != nil {
 				emotes = env.Emotes()
@@ -886,6 +914,10 @@ func hostServerFederation(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_server_federation",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_server_federation", PermServerRead); !ok {
+				stack[0] = 0
+				return
+			}
 			var info FederationInfo
 			if env.Federation != nil {
 				info = env.Federation()
@@ -909,10 +941,15 @@ func hostServerFederation(env *HostEnv) extism.HostFunction {
 	return fn
 }
 
-func hostSendFediverse(env *HostEnv, pluginName string) extism.HostFunction {
+func hostSendFediverse(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_notify_fediverse",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_notify_fediverse", PermNotificationsSend)
+			if !ok {
+				return
+			}
+			pluginName := id.slug
 			payloadBytes, err := p.ReadBytes(stack[0])
 			if err != nil {
 				return
@@ -933,10 +970,15 @@ func hostSendFediverse(env *HostEnv, pluginName string) extism.HostFunction {
 	return fn
 }
 
-func hostSendChatTo(env *HostEnv, pluginName string) extism.HostFunction {
+func hostSendChatTo(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_send_chat_to",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_send_chat_to", PermChatSend)
+			if !ok {
+				return
+			}
+			pluginName := id.slug
 			clientID := stack[0]
 			text, err := p.ReadString(stack[1])
 			if err != nil {
@@ -953,10 +995,16 @@ func hostSendChatTo(env *HostEnv, pluginName string) extism.HostFunction {
 	return fn
 }
 
-func hostStorageUpload(env *HostEnv, pluginName string) extism.HostFunction {
+func hostStorageUpload(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_storage_upload",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_storage_upload", PermStorageUpload)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			pluginName := id.slug
 			name, err := p.ReadString(stack[0])
 			if err != nil {
 				stack[0] = 0
@@ -999,10 +1047,16 @@ func hostStorageUpload(env *HostEnv, pluginName string) extism.HostFunction {
 // hostFSRead backs owncast.fs.read(path). Returns the file's raw bytes,
 // or 0 (null to the plugin) when the path is missing, escapes the
 // sandbox, or can't be read. Requires the storage.fs permission.
-func hostFSRead(env *HostEnv, pluginName string) extism.HostFunction {
+func hostFSRead(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_fs_read",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_fs_read", PermStorageFS)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			pluginName := id.slug
 			path, err := p.ReadString(stack[0])
 			if err != nil || env.FSRead == nil {
 				stack[0] = 0
@@ -1032,10 +1086,16 @@ func hostFSRead(env *HostEnv, pluginName string) extism.HostFunction {
 // directories as needed and writes the bytes, returning a JSON
 // {ok, error?} result so the plugin can react to a rejected write
 // (sandbox escape, oversized payload, disk error). Requires storage.fs.
-func hostFSWrite(env *HostEnv, pluginName string) extism.HostFunction {
+func hostFSWrite(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_fs_write",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_fs_write", PermStorageFS)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			pluginName := id.slug
 			path, err := p.ReadString(stack[0])
 			if err != nil {
 				stack[0] = 0
@@ -1075,10 +1135,16 @@ func hostFSWrite(env *HostEnv, pluginName string) extism.HostFunction {
 // hostFSList backs owncast.fs.list(dir). Returns a JSON array of the
 // entry names (files and subdirectories) directly inside dir. A missing
 // directory lists as empty rather than erroring. Requires storage.fs.
-func hostFSList(env *HostEnv, pluginName string) extism.HostFunction {
+func hostFSList(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_fs_list",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_fs_list", PermStorageFS)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			pluginName := id.slug
 			dir, err := p.ReadString(stack[0])
 			if err != nil || env.FSList == nil {
 				stack[0] = 0
@@ -1115,10 +1181,16 @@ func hostFSList(env *HostEnv, pluginName string) extism.HostFunction {
 // hostFSDelete backs owncast.fs.delete(path). Removes a single file or
 // empty directory, returning a JSON {ok, error?} result. Requires
 // storage.fs.
-func hostFSDelete(env *HostEnv, pluginName string) extism.HostFunction {
+func hostFSDelete(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_fs_delete",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_fs_delete", PermStorageFS)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			pluginName := id.slug
 			path, err := p.ReadString(stack[0])
 			if err != nil {
 				stack[0] = 0
@@ -1153,10 +1225,16 @@ func hostFSDelete(env *HostEnv, pluginName string) extism.HostFunction {
 // hostFSExists backs owncast.fs.exists(path). Returns 1 if the path
 // exists inside the sandbox, 0 otherwise (including on a sandbox-escape
 // attempt or stat error). Requires storage.fs.
-func hostFSExists(env *HostEnv, pluginName string) extism.HostFunction {
+func hostFSExists(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_fs_exists",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_fs_exists", PermStorageFS)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			pluginName := id.slug
 			path, err := p.ReadString(stack[0])
 			if err != nil || env.FSExists == nil {
 				stack[0] = 0
@@ -1181,10 +1259,15 @@ func hostFSExists(env *HostEnv, pluginName string) extism.HostFunction {
 	return fn
 }
 
-func hostDeleteMessage(env *HostEnv, pluginName string) extism.HostFunction {
+func hostDeleteMessage(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_delete_message",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			ident, ok := resolveCaller(ctx, "owncast_delete_message", PermChatModerate)
+			if !ok {
+				return
+			}
+			pluginName := ident.slug
 			id, err := p.ReadString(stack[0])
 			if err != nil {
 				return
@@ -1200,10 +1283,15 @@ func hostDeleteMessage(env *HostEnv, pluginName string) extism.HostFunction {
 	return fn
 }
 
-func hostKickClient(env *HostEnv, pluginName string) extism.HostFunction {
+func hostKickClient(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_kick_client",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_kick_client", PermChatModerate)
+			if !ok {
+				return
+			}
+			pluginName := id.slug
 			clientID := stack[0]
 			if env.KickClient != nil {
 				env.KickClient(pluginName, clientID)
@@ -1216,10 +1304,15 @@ func hostKickClient(env *HostEnv, pluginName string) extism.HostFunction {
 	return fn
 }
 
-func hostSendDiscord(env *HostEnv, pluginName string) extism.HostFunction {
+func hostSendDiscord(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_notify_discord",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_notify_discord", PermNotificationsSend)
+			if !ok {
+				return
+			}
+			pluginName := id.slug
 			text, err := p.ReadString(stack[0])
 			if err != nil {
 				return
@@ -1235,10 +1328,15 @@ func hostSendDiscord(env *HostEnv, pluginName string) extism.HostFunction {
 	return fn
 }
 
-func hostSendBrowserPush(env *HostEnv, pluginName string) extism.HostFunction {
+func hostSendBrowserPush(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_notify_browser_push",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_notify_browser_push", PermNotificationsSend)
+			if !ok {
+				return
+			}
+			pluginName := id.slug
 			payloadBytes, err := p.ReadBytes(stack[0])
 			if err != nil {
 				return
@@ -1264,6 +1362,10 @@ func hostChatHistory(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_chat_history",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_chat_history", PermChatHistory); !ok {
+				stack[0] = 0
+				return
+			}
 			limit := int(int32(stack[0])) //nolint:gosec // G115: truncation is intentional; non-positive results fall back to defaultLimit
 			if limit <= 0 {
 				limit = defaultLimit
@@ -1294,10 +1396,15 @@ func hostChatHistory(env *HostEnv) extism.HostFunction {
 	return fn
 }
 
-func hostEmitEvent(env *HostEnv, pluginName string) extism.HostFunction {
+func hostEmitEvent(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_emit_event",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_emit_event", PermEmitEvent)
+			if !ok {
+				return
+			}
+			pluginName := id.slug
 			eventType, err := p.ReadString(stack[0])
 			if err != nil {
 				return
@@ -1325,10 +1432,17 @@ func hostEmitEvent(env *HostEnv, pluginName string) extism.HostFunction {
 	return fn
 }
 
-func hostSendChat(sink func(ChatSendRequest), pluginSlug, botDisplayName string) extism.HostFunction {
+func hostSendChat(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_send_chat",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_send_chat", PermChatSend)
+			if !ok {
+				return
+			}
+			sink := env.OnChat
+			pluginSlug := id.slug
+			botDisplayName := id.chatDisplay
 			text, err := p.ReadString(stack[0])
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_send_chat: read string: %v\n", err)
@@ -1350,10 +1464,17 @@ func hostSendChat(sink func(ChatSendRequest), pluginSlug, botDisplayName string)
 	return fn
 }
 
-func hostSendChatSystem(sink func(ChatSendRequest), pluginSlug, botDisplayName string) extism.HostFunction {
+func hostSendChatSystem(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_send_chat_system",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_send_chat_system", PermChatSend)
+			if !ok {
+				return
+			}
+			sink := env.OnChat
+			pluginSlug := id.slug
+			botDisplayName := id.chatDisplay
 			body, err := p.ReadString(stack[0])
 			if err != nil {
 				return
@@ -1374,10 +1495,17 @@ func hostSendChatSystem(sink func(ChatSendRequest), pluginSlug, botDisplayName s
 	return fn
 }
 
-func hostSendChatAction(sink func(ChatSendRequest), pluginSlug, botDisplayName string) extism.HostFunction {
+func hostSendChatAction(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_send_chat_action",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_send_chat_action", PermChatSend)
+			if !ok {
+				return
+			}
+			sink := env.OnChat
+			pluginSlug := id.slug
+			botDisplayName := id.chatDisplay
 			text, err := p.ReadString(stack[0])
 			if err != nil {
 				return
@@ -1402,6 +1530,10 @@ func hostStreamCurrent(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_stream_current",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_stream_current", PermServerRead); !ok {
+				stack[0] = 0
+				return
+			}
 			var info StreamInfo
 			if env.StreamCurrent != nil {
 				info = env.StreamCurrent()
@@ -1429,6 +1561,10 @@ func hostServerInfo(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_server_info",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_server_info", PermServerRead); !ok {
+				stack[0] = 0
+				return
+			}
 			var info ServerInfo
 			if env.ServerInfo != nil {
 				info = env.ServerInfo()
@@ -1456,6 +1592,10 @@ func hostStreamBroadcaster(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_stream_broadcaster",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_stream_broadcaster", PermServerRead); !ok {
+				stack[0] = 0
+				return
+			}
 			var info StreamBroadcaster
 			if env.Broadcaster != nil {
 				info = env.Broadcaster()
@@ -1483,6 +1623,10 @@ func hostServerTags(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_server_tags",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_server_tags", PermServerRead); !ok {
+				stack[0] = 0
+				return
+			}
 			var tags []string
 			if env.Tags != nil {
 				tags = env.Tags()
@@ -1513,6 +1657,10 @@ func hostVideoConfigRead(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_video_config_read",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			if _, ok := resolveCaller(ctx, "owncast_video_config_read", PermVideoConfigRead); !ok {
+				stack[0] = 0
+				return
+			}
 			var cfg VideoConfig
 			if env.VideoConfig != nil {
 				cfg = env.VideoConfig()
@@ -1543,10 +1691,16 @@ func hostVideoConfigRead(env *HostEnv) extism.HostFunction {
 // partial video/transcoding configuration change via the host. Returns a
 // JSON {ok, error?} result so the plugin can react to a rejected config.
 // Requires the videoconfig.write permission.
-func hostVideoConfigWrite(env *HostEnv, pluginName string) extism.HostFunction {
+func hostVideoConfigWrite(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_video_config_write",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_video_config_write", PermVideoConfigWrite)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			pluginName := id.slug
 			payloadBytes, err := p.ReadBytes(stack[0])
 			if err != nil {
 				stack[0] = 0
@@ -1583,10 +1737,16 @@ func hostVideoConfigWrite(env *HostEnv, pluginName string) extism.HostFunction {
 	return fn
 }
 
-func hostKVGet(ns kv.Namespace) extism.HostFunction {
+func hostKVGet() extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_kv_get",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_kv_get", PermStorageKV)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			ns := id.kvNamespace
 			key, err := p.ReadString(stack[0])
 			if err != nil {
 				stack[0] = 0
@@ -1611,10 +1771,15 @@ func hostKVGet(ns kv.Namespace) extism.HostFunction {
 	return fn
 }
 
-func hostKVSet(ns kv.Namespace) extism.HostFunction {
+func hostKVSet() extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_kv_set",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_kv_set", PermStorageKV)
+			if !ok {
+				return
+			}
+			ns := id.kvNamespace
 			key, err := p.ReadString(stack[0])
 			if err != nil {
 				return
@@ -1649,18 +1814,23 @@ const RuntimeActionsConfigKey = "owncast.actions"
 //
 // Requires the ui.modify permission; invalid input is logged but not
 // surfaced back to the plugin.
-func hostAddActions(env *HostEnv, manifest *Manifest) extism.HostFunction {
-	pluginSlug := manifest.Slug
-	hasHTTPServe := false
-	for _, perm := range manifest.Permissions {
-		if perm == PermHttpServe {
-			hasHTTPServe = true
-			break
-		}
-	}
+func hostAddActions(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_add_actions",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_add_actions", PermUIModify)
+			if !ok {
+				return
+			}
+			manifest := id.manifest
+			pluginSlug := manifest.Slug
+			hasHTTPServe := false
+			for _, perm := range manifest.Permissions {
+				if perm == PermHttpServe {
+					hasHTTPServe = true
+					break
+				}
+			}
 			payloadBytes, err := p.ReadBytes(stack[0])
 			if err != nil {
 				return
@@ -1705,10 +1875,15 @@ func hostAddActions(env *HostEnv, manifest *Manifest) extism.HostFunction {
 // hostClearActions backs owncast.actions.clear(). Removes the runtime
 // list from the plugin's config so only manifest.actions remain in the
 // effective set returned by /api/config.
-func hostClearActions(env *HostEnv, pluginSlug string) extism.HostFunction {
+func hostClearActions(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_clear_actions",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_clear_actions", PermUIModify)
+			if !ok {
+				return
+			}
+			pluginSlug := id.slug
 			if env.KV == nil {
 				return
 			}

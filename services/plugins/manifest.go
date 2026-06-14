@@ -33,8 +33,23 @@ type ConfigField struct {
 	Description string `json:"description,omitempty"`
 }
 
+// Plugin runtimes, inferred at load time from the plugin's code file (not
+// authored in the manifest): plugin.js → "javascript" and plugin.py → "python"
+// run the author's source on the shared embedded interpreter engine, while
+// plugin.wasm → "wasm" is a self-contained module the host loads directly.
+const (
+	RuntimeWasm       = "wasm"
+	RuntimeJavaScript = "javascript"
+	RuntimePython     = "python"
+)
+
 type Manifest struct {
 	API string `json:"api"`
+	// Type is the plugin's runtime, set by the host at load time from the code
+	// artifact's filename (plugin.js/plugin.py/plugin.wasm) — NOT authored in
+	// the manifest. The json tag is retained only so any stray legacy value
+	// round-trips harmlessly; the loader always overrides it.
+	Type string `json:"type,omitempty"`
 	// DisplayName is the user-facing plugin name shown in admin lists,
 	// the Browse cards on the registry, and (by default) as the
 	// in-chat bot identity. Mapped from the JSON `name` field for
@@ -246,6 +261,9 @@ func (m *Manifest) Validate() error {
 	if err := m.resolveSlug(); err != nil {
 		return err
 	}
+	if err := m.validateConfigKeys(); err != nil {
+		return err
+	}
 	if err := m.validateAdminPages(); err != nil {
 		return err
 	}
@@ -265,6 +283,27 @@ func (m *Manifest) Validate() error {
 		return err
 	}
 	return m.validateTabs()
+}
+
+// usesSharedEngine reports whether this plugin runs on the shared embedded
+// interpreter engine (its code ships as source — plugin.js / plugin.py) rather
+// than as a self-contained wasm module. Type is set at load time from the code
+// artifact's filename, not authored in the manifest.
+func (m *Manifest) usesSharedEngine() bool {
+	return m.Type == RuntimeJavaScript || m.Type == RuntimePython
+}
+
+// validateConfigKeys rejects author config keys reserved by the host. Keys
+// starting with "__" are used to inject per-instance state (e.g. "__slug") into
+// shared-engine plugins via Extism config, and must not collide with declared
+// plugin config.
+func (m *Manifest) validateConfigKeys() error {
+	for key := range m.Config {
+		if strings.HasPrefix(key, "__") {
+			return fmt.Errorf("manifest.config key %q is reserved (keys starting with \"__\" are used internally)", key)
+		}
+	}
+	return nil
 }
 
 // resolveSlug fills in m.Slug when the author didn't pin one
