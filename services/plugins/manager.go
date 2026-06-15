@@ -1277,6 +1277,10 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 		return nil, err
 	}
 	manifest.Subscriptions = runtime.Subscriptions
+	// Command metadata is derived by the SDK and reported via register() (like
+	// subscriptions); the host aggregates it for !help. Informational only, so
+	// it isn't part of AgreesWith's security checks.
+	manifest.Commands = runtime.Commands
 
 	var adminGlobs []glob.Glob
 	var adminPaths []string

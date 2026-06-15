@@ -125,6 +125,49 @@ func filteredBody(final any, fallback string) string {
 	return fallback
 }
 
+// moderatorScope is the user scope that grants moderator privileges; mod-only
+// commands are hidden from non-moderators in the help listing.
+const moderatorScope = "MODERATOR"
+
+// newHelpResponder returns a dispatcher.Listener that answers the unified
+// `!help` chat command. The host owns !help (no plugin implements it): it
+// aggregates command metadata across all loaded plugins — which no single
+// sandboxed plugin could see — and posts the list as a system message via
+// `post`. snapshot yields the current loaded plugins; post sends a system
+// chat message.
+func newHelpResponder(snapshot func() []*plugins.Loaded, post func(text string)) dispatcher.Listener {
+	return func(ctx context.Context, e dispatcher.Event) {
+		webhookEvent, ok := e.Payload.(webhooks.WebhookEvent)
+		if !ok || webhookEvent.Type != models.MessageSent {
+			return
+		}
+		data, ok := webhookEvent.EventData.(*webhooks.WebhookChatMessage)
+		if !ok || data == nil {
+			return
+		}
+		// Ignore bot/system posts (e.g. the help message itself, or a plugin's
+		// chat.send) so !help can't be triggered by non-human messages.
+		if data.User != nil && data.User.IsBot {
+			return
+		}
+		if !plugins.IsHelpCommand(data.RawBody) {
+			return
+		}
+		isMod := false
+		if data.User != nil {
+			for _, s := range data.User.Scopes {
+				if s == moderatorScope {
+					isMod = true
+					break
+				}
+			}
+		}
+		if text := plugins.BuildHelpMessage(snapshot(), isMod); text != "" {
+			post(text)
+		}
+	}
+}
+
 // newPluginEventListener returns a dispatcher.Listener that translates each
 // Owncast event (carried as a webhooks.WebhookEvent) into the plugin SDK's
 // payload shape and dispatches it to subscribed plugins. Dispatch runs on its

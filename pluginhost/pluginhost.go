@@ -396,6 +396,15 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 	deps.Events.AddListener(newPluginEventListener(pluginDispatcher))
 	deps.Events.AddFilter(newPluginChatFilter(pluginDispatcher))
 
+	// Host-owned `!help`: list every plugin's chat commands (no single plugin
+	// can see across the sandbox, so the host aggregates and answers). Posts a
+	// system message — works even when no plugin holds chat.send.
+	deps.Events.AddListener(newHelpResponder(manager.Snapshot, func(text string) {
+		if err := deps.Chat.SendSystemMessage(text, false); err != nil {
+			log.Errorln("plugin !help:", err)
+		}
+	}))
+
 	// Host-driven timers: plugins can't setTimeout in the sandbox, so
 	// owncast.timer.* asks the host to schedule callbacks. The hub resolves a
 	// plugin slug to its live instance to call back; cancelling a plugin's

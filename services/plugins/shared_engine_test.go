@@ -229,6 +229,55 @@ module.exports = definePlugin({
 	}
 }
 
+// TestSharedEngineReportsCommands verifies command metadata declared in a
+// plugin's command table flows SDK → engine register() → host manifest, so the
+// host can build !help.
+func TestSharedEngineReportsCommands(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, _, _ := captureEnv()
+
+	jsScript := `
+const { definePlugin } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  commands: { uptime: { description: "Stream uptime", run: () => {} } },
+});`
+	js := loadShared(t, ctx, env, RuntimeJavaScript, "js-cmds", jsScript, []string{})
+	defer js.Close(ctx)
+	assertHasCommand(t, js, "uptime", "Stream uptime")
+
+	pyScript := `
+plugin.commands({"uptime": {"description": "Stream uptime", "run": lambda ctx: None}})
+`
+	py := loadShared(t, ctx, env, RuntimePython, "py-cmds", pyScript, []string{})
+	defer py.Close(ctx)
+	assertHasCommand(t, py, "uptime", "Stream uptime")
+
+	// And the host can render a unified help listing from it.
+	help := BuildHelpMessage([]*Loaded{js, py}, false)
+	if !strings.Contains(help, "`!uptime`") || !strings.Contains(help, "Stream uptime") {
+		t.Errorf("help should list the reported command:\n%s", help)
+	}
+}
+
+func assertHasCommand(t *testing.T, l *Loaded, name, desc string) {
+	t.Helper()
+	for _, c := range l.Manifest.Commands {
+		if c.Name == name {
+			if c.Description != desc {
+				t.Errorf("%s: command %q description = %q, want %q", l.Manifest.Slug, name, c.Description, desc)
+			}
+			if c.Prefix != "!" {
+				t.Errorf("%s: command %q prefix = %q, want \"!\"", l.Manifest.Slug, name, c.Prefix)
+			}
+			return
+		}
+	}
+	t.Errorf("%s: register() did not report command %q; got %+v", l.Manifest.Slug, name, l.Manifest.Commands)
+}
+
 func TestSharedEnginePythonRegister(t *testing.T) {
 	ctx := context.Background()
 	compiledEngines.resetForTest(ctx)
