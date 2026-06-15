@@ -40,8 +40,35 @@ func (q *Queries) AddAuthForUser(ctx context.Context, arg AddAuthForUserParams) 
 	return err
 }
 
+const addFederatedServer = `-- name: AddFederatedServer :exec
+INSERT INTO federated_servers(iri, name, logo_url, followed_at, pending, username, follow_status) values(?, ?, ?, ?, ?, ?, ?)
+`
+
+type AddFederatedServerParams struct {
+	Iri          string
+	Name         sql.NullString
+	LogoUrl      sql.NullString
+	FollowedAt   sql.NullTime
+	Pending      sql.NullBool
+	Username     sql.NullString
+	FollowStatus sql.NullString
+}
+
+func (q *Queries) AddFederatedServer(ctx context.Context, arg AddFederatedServerParams) error {
+	_, err := q.db.ExecContext(ctx, addFederatedServer,
+		arg.Iri,
+		arg.Name,
+		arg.LogoUrl,
+		arg.FollowedAt,
+		arg.Pending,
+		arg.Username,
+		arg.FollowStatus,
+	)
+	return err
+}
+
 const addFollower = `-- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?)
+INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at, owncast_server) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type AddFollowerParams struct {
@@ -54,6 +81,7 @@ type AddFollowerParams struct {
 	Username      string
 	Image         sql.NullString
 	ApprovedAt    sql.NullTime
+	OwncastServer sql.NullBool
 }
 
 func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error {
@@ -67,6 +95,7 @@ func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error 
 		arg.Username,
 		arg.Image,
 		arg.ApprovedAt,
+		arg.OwncastServer,
 	)
 	return err
 }
@@ -207,6 +236,88 @@ func (q *Queries) DoesInboundActivityExist(ctx context.Context, arg DoesInboundA
 	return count, err
 }
 
+const getFederatedServer = `-- name: GetFederatedServer :one
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE iri = ?
+`
+
+func (q *Queries) GetFederatedServer(ctx context.Context, iri string) (FederatedServer, error) {
+	row := q.db.QueryRowContext(ctx, getFederatedServer, iri)
+	var i FederatedServer
+	err := row.Scan(
+		&i.ID,
+		&i.Iri,
+		&i.Name,
+		&i.LogoUrl,
+		&i.IsOnline,
+		&i.StreamTitle,
+		&i.StreamDescription,
+		&i.StreamTags,
+		&i.ThumbnailUrl,
+		&i.LastSeenOnline,
+		&i.LastStatusUpdate,
+		&i.AddedAt,
+		&i.FollowedAt,
+		&i.Pending,
+		&i.Username,
+		&i.DisplayName,
+		&i.Summary,
+		&i.AcceptedAt,
+		&i.RejectedAt,
+		&i.FollowStatus,
+	)
+	return i, err
+}
+
+const getFederatedServers = `-- name: GetFederatedServers :many
+
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers ORDER BY added_at DESC
+`
+
+// Federated servers queries
+func (q *Queries) GetFederatedServers(ctx context.Context) ([]FederatedServer, error) {
+	rows, err := q.db.QueryContext(ctx, getFederatedServers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FederatedServer
+	for rows.Next() {
+		var i FederatedServer
+		if err := rows.Scan(
+			&i.ID,
+			&i.Iri,
+			&i.Name,
+			&i.LogoUrl,
+			&i.IsOnline,
+			&i.StreamTitle,
+			&i.StreamDescription,
+			&i.StreamTags,
+			&i.ThumbnailUrl,
+			&i.LastSeenOnline,
+			&i.LastStatusUpdate,
+			&i.AddedAt,
+			&i.FollowedAt,
+			&i.Pending,
+			&i.Username,
+			&i.DisplayName,
+			&i.Summary,
+			&i.AcceptedAt,
+			&i.RejectedAt,
+			&i.FollowStatus,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getFederationFollowerApprovalRequests = `-- name: GetFederationFollowerApprovalRequests :many
 SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null
 `
@@ -303,7 +414,7 @@ func (q *Queries) GetFederationFollowersWithOffset(ctx context.Context, arg GetF
 }
 
 const getFollowerByIRI = `-- name: GetFollowerByIRI :one
-SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = ?
+SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at, owncast_server FROM ap_followers WHERE iri = ?
 `
 
 type GetFollowerByIRIRow struct {
@@ -318,6 +429,7 @@ type GetFollowerByIRIRow struct {
 	CreatedAt     sql.NullTime
 	ApprovedAt    sql.NullTime
 	DisabledAt    sql.NullTime
+	OwncastServer sql.NullBool
 }
 
 func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (GetFollowerByIRIRow, error) {
@@ -335,6 +447,7 @@ func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (GetFollower
 		&i.CreatedAt,
 		&i.ApprovedAt,
 		&i.DisabledAt,
+		&i.OwncastServer,
 	)
 	return i, err
 }
@@ -601,6 +714,54 @@ func (q *Queries) GetOutboxWithOffset(ctx context.Context, arg GetOutboxWithOffs
 			return nil, err
 		}
 		items = append(items, value)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPendingFederatedServers = `-- name: GetPendingFederatedServers :many
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE pending = true ORDER BY added_at DESC
+`
+
+func (q *Queries) GetPendingFederatedServers(ctx context.Context) ([]FederatedServer, error) {
+	rows, err := q.db.QueryContext(ctx, getPendingFederatedServers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FederatedServer
+	for rows.Next() {
+		var i FederatedServer
+		if err := rows.Scan(
+			&i.ID,
+			&i.Iri,
+			&i.Name,
+			&i.LogoUrl,
+			&i.IsOnline,
+			&i.StreamTitle,
+			&i.StreamDescription,
+			&i.StreamTags,
+			&i.ThumbnailUrl,
+			&i.LastSeenOnline,
+			&i.LastStatusUpdate,
+			&i.AddedAt,
+			&i.FollowedAt,
+			&i.Pending,
+			&i.Username,
+			&i.DisplayName,
+			&i.Summary,
+			&i.AcceptedAt,
+			&i.RejectedAt,
+			&i.FollowStatus,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err
@@ -887,6 +1048,15 @@ func (q *Queries) RejectFederationFollower(ctx context.Context, arg RejectFedera
 	return err
 }
 
+const removeFederatedServer = `-- name: RemoveFederatedServer :exec
+DELETE FROM federated_servers WHERE id = ?
+`
+
+func (q *Queries) RemoveFederatedServer(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, removeFederatedServer, id)
+	return err
+}
+
 const removeFollowerByIRI = `-- name: RemoveFollowerByIRI :exec
 DELETE FROM ap_followers WHERE iri = ?
 `
@@ -939,6 +1109,100 @@ UPDATE users SET authenticated_at = CURRENT_TIMESTAMP WHERE id = ?
 
 func (q *Queries) SetUserAsAuthenticated(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, setUserAsAuthenticated, id)
+	return err
+}
+
+const updateFederatedServerFollowStatus = `-- name: UpdateFederatedServerFollowStatus :exec
+UPDATE federated_servers SET follow_status = ?, pending = ?, accepted_at = ?, rejected_at = ? WHERE iri = ?
+`
+
+type UpdateFederatedServerFollowStatusParams struct {
+	FollowStatus sql.NullString
+	Pending      sql.NullBool
+	AcceptedAt   sql.NullTime
+	RejectedAt   sql.NullTime
+	Iri          string
+}
+
+func (q *Queries) UpdateFederatedServerFollowStatus(ctx context.Context, arg UpdateFederatedServerFollowStatusParams) error {
+	_, err := q.db.ExecContext(ctx, updateFederatedServerFollowStatus,
+		arg.FollowStatus,
+		arg.Pending,
+		arg.AcceptedAt,
+		arg.RejectedAt,
+		arg.Iri,
+	)
+	return err
+}
+
+const updateFederatedServerMetadata = `-- name: UpdateFederatedServerMetadata :exec
+UPDATE federated_servers SET name = ?, display_name = ?, summary = ?, logo_url = ? WHERE iri = ?
+`
+
+type UpdateFederatedServerMetadataParams struct {
+	Name        sql.NullString
+	DisplayName sql.NullString
+	Summary     sql.NullString
+	LogoUrl     sql.NullString
+	Iri         string
+}
+
+func (q *Queries) UpdateFederatedServerMetadata(ctx context.Context, arg UpdateFederatedServerMetadataParams) error {
+	_, err := q.db.ExecContext(ctx, updateFederatedServerMetadata,
+		arg.Name,
+		arg.DisplayName,
+		arg.Summary,
+		arg.LogoUrl,
+		arg.Iri,
+	)
+	return err
+}
+
+const updateFederatedServerOnlineStatus = `-- name: UpdateFederatedServerOnlineStatus :exec
+UPDATE federated_servers SET is_online = ?, last_seen_online = ?, last_status_update = ? WHERE iri = ?
+`
+
+type UpdateFederatedServerOnlineStatusParams struct {
+	IsOnline         sql.NullBool
+	LastSeenOnline   sql.NullTime
+	LastStatusUpdate sql.NullTime
+	Iri              string
+}
+
+func (q *Queries) UpdateFederatedServerOnlineStatus(ctx context.Context, arg UpdateFederatedServerOnlineStatusParams) error {
+	_, err := q.db.ExecContext(ctx, updateFederatedServerOnlineStatus,
+		arg.IsOnline,
+		arg.LastSeenOnline,
+		arg.LastStatusUpdate,
+		arg.Iri,
+	)
+	return err
+}
+
+const updateFederatedServerStatus = `-- name: UpdateFederatedServerStatus :exec
+UPDATE federated_servers SET is_online = ?, stream_title = ?, stream_description = ?, stream_tags = ?, thumbnail_url = ?, last_status_update = ? WHERE iri = ?
+`
+
+type UpdateFederatedServerStatusParams struct {
+	IsOnline          sql.NullBool
+	StreamTitle       sql.NullString
+	StreamDescription sql.NullString
+	StreamTags        sql.NullString
+	ThumbnailUrl      sql.NullString
+	LastStatusUpdate  sql.NullTime
+	Iri               string
+}
+
+func (q *Queries) UpdateFederatedServerStatus(ctx context.Context, arg UpdateFederatedServerStatusParams) error {
+	_, err := q.db.ExecContext(ctx, updateFederatedServerStatus,
+		arg.IsOnline,
+		arg.StreamTitle,
+		arg.StreamDescription,
+		arg.StreamTags,
+		arg.ThumbnailUrl,
+		arg.LastStatusUpdate,
+		arg.Iri,
+	)
 	return err
 }
 

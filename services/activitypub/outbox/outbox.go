@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-fed/activity/streams"
@@ -44,6 +45,12 @@ type Service struct {
 	signer           *apcrypto.Signer
 	resolver         *apresolvers.Resolver
 	cfg              *config.Config
+
+	// Featured-streams ping ticker state. Touched only by
+	// StartStreamPingTicker / StopStreamPingTicker under pingTickerMu.
+	pingTicker     *time.Ticker
+	pingTickerDone chan bool
+	pingTickerMu   sync.Mutex
 }
 
 // Deps is the explicit dependency contract for outbox.

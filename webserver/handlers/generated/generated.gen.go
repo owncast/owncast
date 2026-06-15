@@ -407,6 +407,18 @@ type ServerInterface interface {
 	// Send a public message to the Fediverse from the server's user
 	// (POST /admin/federation/send)
 	SendFederatedMessage(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/federation/servers)
+	AddFederatedServerOptions(w http.ResponseWriter, r *http.Request)
+	// Add a federated server to follow
+	// (POST /admin/federation/servers)
+	AddFederatedServer(w http.ResponseWriter, r *http.Request)
+	// Remove a federated server
+	// (DELETE /admin/federation/servers/{id})
+	RemoveFederatedServer(w http.ResponseWriter, r *http.Request, id int)
+
+	// (OPTIONS /admin/federation/servers/{id})
+	RemoveFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int)
 	// Get followers
 	// (GET /admin/followers)
 	GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams)
@@ -575,6 +587,9 @@ type ServerInterface interface {
 	// Get list of custom emojis supported in the chat
 	// (GET /emoji)
 	GetCustomEmojiList(w http.ResponseWriter, r *http.Request)
+	// Get list of federated servers
+	// (GET /federation/servers)
+	GetFederatedServers(w http.ResponseWriter, r *http.Request)
 	// Gets the list of followers
 	// (GET /followers)
 	GetFollowers(w http.ResponseWriter, r *http.Request, params GetFollowersParams)
@@ -1392,6 +1407,28 @@ func (_ Unimplemented) SendFederatedMessage(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/federation/servers)
+func (_ Unimplemented) AddFederatedServerOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Add a federated server to follow
+// (POST /admin/federation/servers)
+func (_ Unimplemented) AddFederatedServer(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Remove a federated server
+// (DELETE /admin/federation/servers/{id})
+func (_ Unimplemented) RemoveFederatedServer(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/federation/servers/{id})
+func (_ Unimplemented) RemoveFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get followers
 // (GET /admin/followers)
 func (_ Unimplemented) GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams) {
@@ -1705,6 +1742,12 @@ func (_ Unimplemented) GetWebConfig(w http.ResponseWriter, r *http.Request) {
 // Get list of custom emojis supported in the chat
 // (GET /emoji)
 func (_ Unimplemented) GetCustomEmojiList(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get list of federated servers
+// (GET /federation/servers)
+func (_ Unimplemented) GetFederatedServers(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -4008,6 +4051,92 @@ func (siw *ServerInterfaceWrapper) SendFederatedMessage(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r)
 }
 
+// AddFederatedServerOptions operation middleware
+func (siw *ServerInterfaceWrapper) AddFederatedServerOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AddFederatedServerOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AddFederatedServer operation middleware
+func (siw *ServerInterfaceWrapper) AddFederatedServer(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AddFederatedServer(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RemoveFederatedServer operation middleware
+func (siw *ServerInterfaceWrapper) RemoveFederatedServer(w http.ResponseWriter, r *http.Request) {
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RemoveFederatedServer(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RemoveFederatedServerOptions operation middleware
+func (siw *ServerInterfaceWrapper) RemoveFederatedServerOptions(w http.ResponseWriter, r *http.Request) {
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RemoveFederatedServerOptions(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetFollowersAdmin operation middleware
 func (siw *ServerInterfaceWrapper) GetFollowersAdmin(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -5091,6 +5220,19 @@ func (siw *ServerInterfaceWrapper) GetCustomEmojiList(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r)
 }
 
+// GetFederatedServers operation middleware
+func (siw *ServerInterfaceWrapper) GetFederatedServers(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetFederatedServers(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetFollowers operation middleware
 func (siw *ServerInterfaceWrapper) GetFollowers(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -6155,6 +6297,18 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/admin/federation/send", wrapper.SendFederatedMessage)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/federation/servers", wrapper.AddFederatedServerOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/federation/servers", wrapper.AddFederatedServer)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/admin/federation/servers/{id}", wrapper.RemoveFederatedServer)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/federation/servers/{id}", wrapper.RemoveFederatedServerOptions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/followers", wrapper.GetFollowersAdmin)
 	})
 	r.Group(func(r chi.Router) {
@@ -6321,6 +6475,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/emoji", wrapper.GetCustomEmojiList)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/federation/servers", wrapper.GetFederatedServers)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/followers", wrapper.GetFollowers)

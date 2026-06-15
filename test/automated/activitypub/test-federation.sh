@@ -301,6 +301,7 @@ start_proxy() {
     # Set environment variables for Caddyfile
     export PROXY_PORT="${PROXY_PORT}"
     export OWNCAST_PORT="${OWNCAST_PORT}"
+    export OWNCAST2_PORT="${OWNCAST2_PORT:-8081}"  # Used by Caddyfile; not active in this test
     export SNAC_PORT="${SNAC_PORT}"
     export CERT_FILE="${CERT_DIR}/cert.pem"
     export KEY_FILE="${CERT_DIR}/key.pem"

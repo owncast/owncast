@@ -1,0 +1,25 @@
+.streamsContainer {
+  padding: 20px;
+  min-height: 400px;
+}
+
+.loadingContainer,
+.errorContainer,
+.emptyContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 40px;
+}
+
+.errorContainer {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+@media (width <= 768px) {
+  .streamsContainer {
+    padding: 12px;
+  }
+}

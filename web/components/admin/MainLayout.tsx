@@ -251,6 +251,10 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       key: '/admin/config-federation',
     },
     {
+      label: <Link href="/admin/config-featured">Featured</Link>,
+      key: '/admin/config-featured',
+    },
+    {
       label: <Link href="/admin/config-notify">Notifications</Link>,
       key: '/admin/config-notify',
     },

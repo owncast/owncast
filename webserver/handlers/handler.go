@@ -93,3 +93,27 @@ func (s *ServerInterfaceImpl) ReportPlaybackMetrics(w http.ResponseWriter, r *ht
 func (s *ServerInterfaceImpl) RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request, params generated.RegisterForLiveNotificationsParams) {
 	s.h.middleware.RequireUserAccessToken(s.h.RegisterForLiveNotifications)(w, r)
 }
+
+// Federated servers endpoints
+
+func (s *ServerInterfaceImpl) GetFederatedServers(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetFederatedServers)(w, r)
+}
+
+func (s *ServerInterfaceImpl) AddFederatedServer(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.AddFederatedServer)(w, r)
+}
+
+func (s *ServerInterfaceImpl) AddFederatedServerOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.admin.AddFederatedServerOptions(w, r)
+}
+
+func (s *ServerInterfaceImpl) RemoveFederatedServer(w http.ResponseWriter, r *http.Request, id int) {
+	s.h.middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
+		s.h.admin.RemoveFederatedServer(w, r, id)
+	})(w, r)
+}
+
+func (s *ServerInterfaceImpl) RemoveFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int) {
+	s.h.admin.RemoveFederatedServerOptions(w, r, id)
+}

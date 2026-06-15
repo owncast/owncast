@@ -24,7 +24,7 @@ UPDATE ap_followers SET approved_at = ?, disabled_at = null WHERE iri = ?;
 UPDATE ap_followers SET approved_at = null, disabled_at = ? WHERE iri = ?;
 
 -- name: GetFollowerByIRI :one
-SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at FROM ap_followers WHERE iri = ?;
+SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at, owncast_server FROM ap_followers WHERE iri = ?;
 
 -- name: GetOutboxWithOffset :many
 SELECT value FROM ap_outbox LIMIT ? OFFSET ?;
@@ -37,7 +37,7 @@ SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = ?;
 DELETE FROM ap_followers WHERE iri = ?;
 
 -- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at, owncast_server) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: AddToOutbox :exec
 INSERT INTO ap_outbox(iri, value, type, live_notification) values(?, ?, ?, ?);
@@ -136,3 +136,32 @@ UPDATE users SET display_name = ?, previous_names = previous_names || ?, namecha
 
 -- name: ChangeDisplayColor :exec
 UPDATE users SET display_color = ? WHERE id = ?;
+
+-- Federated servers queries
+
+-- name: GetFederatedServers :many
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers ORDER BY added_at DESC;
+
+-- name: GetFederatedServer :one
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE iri = ?;
+
+-- name: AddFederatedServer :exec
+INSERT INTO federated_servers(iri, name, logo_url, followed_at, pending, username, follow_status) values(?, ?, ?, ?, ?, ?, ?);
+
+-- name: UpdateFederatedServerStatus :exec
+UPDATE federated_servers SET is_online = ?, stream_title = ?, stream_description = ?, stream_tags = ?, thumbnail_url = ?, last_status_update = ? WHERE iri = ?;
+
+-- name: UpdateFederatedServerOnlineStatus :exec
+UPDATE federated_servers SET is_online = ?, last_seen_online = ?, last_status_update = ? WHERE iri = ?;
+
+-- name: RemoveFederatedServer :exec
+DELETE FROM federated_servers WHERE id = ?;
+
+-- name: UpdateFederatedServerFollowStatus :exec
+UPDATE federated_servers SET follow_status = ?, pending = ?, accepted_at = ?, rejected_at = ? WHERE iri = ?;
+
+-- name: UpdateFederatedServerMetadata :exec
+UPDATE federated_servers SET name = ?, display_name = ?, summary = ?, logo_url = ? WHERE iri = ?;
+
+-- name: GetPendingFederatedServers :many
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE pending = true ORDER BY added_at DESC;

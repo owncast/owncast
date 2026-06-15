@@ -132,8 +132,8 @@ export const OfflineMobile: StoryObj<typeof Template> = {
   globals: {
     viewport: {
       value: 'mobile1',
-      isRotated: false
-    }
+      isRotated: false,
+    },
   },
 };
 
@@ -143,8 +143,8 @@ export const OfflineTablet: StoryObj<typeof Template> = {
   globals: {
     viewport: {
       value: 'tablet',
-      isRotated: false
-    }
+      isRotated: false,
+    },
   },
 };
 
@@ -173,8 +173,8 @@ export const OnlineMobile: StoryObj<typeof Template> = {
   globals: {
     viewport: {
       value: 'mobile1',
-      isRotated: false
-    }
+      isRotated: false,
+    },
   },
 };
 
@@ -188,7 +188,7 @@ export const OnlineTablet: StoryObj<typeof Template> = {
   globals: {
     viewport: {
       value: 'tablet',
-      isRotated: false
-    }
+      isRotated: false,
+    },
   },
 };

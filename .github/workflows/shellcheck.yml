@@ -49,5 +49,8 @@ jobs:
         run: apt update && apt install -y shellcheck bash && shellcheck --version
 
       - name: Check shell scripts
-        run: shopt -s globstar && ls **/*.sh && shellcheck -x -P "SCRIPTDIR" --severity=info **/*.sh
+        # SC2329 (function never invoked) is excluded: shellcheck 0.11.0 added it
+        # but does not recognize functions invoked indirectly via `trap` (e.g. the
+        # cleanup() handlers in these test scripts), producing false positives.
+        run: shopt -s globstar && ls **/*.sh && shellcheck -x -P "SCRIPTDIR" --severity=info --exclude=SC2329 **/*.sh
         shell: bash

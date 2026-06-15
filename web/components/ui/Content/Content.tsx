@@ -38,6 +38,7 @@ import { DesktopContent } from './DesktopContent';
 import { MobileContent } from './MobileContent';
 import { ChatModal } from '../../modals/ChatModal/ChatModal';
 import { Footer } from '../Footer/Footer';
+import { useFederatedServers } from '../../../hooks/useFederatedServers';
 
 // Lazy loaded components
 const ChatContainer = dynamic(
@@ -140,6 +141,7 @@ export const Content: FC = () => {
 
   const [supportsBrowserNotifications, setSupportsBrowserNotifications] = useState(false);
   const supportFediverseFeatures = fediverseEnabled;
+  const { servers: federatedServers } = useFederatedServers();
 
   const [showChatModal, setShowChatModal] = useState(false);
 
@@ -321,6 +323,7 @@ export const Content: FC = () => {
               setShowFollowModal={setShowFollowModal}
               supportFediverseFeatures={supportFediverseFeatures}
               online={online}
+              federatedServers={federatedServers}
             />
           ) : (
             <div className={desktopStyles.bottomSectionContent}>
@@ -333,6 +336,7 @@ export const Content: FC = () => {
                 pluginTabs={pluginTabs}
                 setShowFollowModal={setShowFollowModal}
                 supportFediverseFeatures={supportFediverseFeatures}
+                federatedServers={federatedServers}
               />
             </div>
           )}

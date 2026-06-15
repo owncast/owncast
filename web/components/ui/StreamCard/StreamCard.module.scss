@@ -1,0 +1,167 @@
+.streamCard {
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  background: var(--theme-color-background-main);
+  border: 1px solid var(--theme-color-components-scrollbar-background);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  }
+
+  &.online {
+    .statusBadge {
+      :global(.ant-badge-status-text) {
+        color: var(--theme-color-palette-4);
+        font-weight: 600;
+      }
+    }
+  }
+
+  &.offline {
+    opacity: 0.8;
+
+    .coverContainer {
+      filter: grayscale(0.5);
+    }
+  }
+}
+
+.coverContainer {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; // 16:9 aspect ratio
+  background: var(--theme-color-background-header);
+  overflow: hidden;
+
+  .thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .placeholderThumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      var(--theme-color-background-header),
+      var(--theme-color-background-main)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .logoOverlay {
+      max-width: 60%;
+      max-height: 60%;
+      opacity: 0.3;
+    }
+  }
+
+  .statusBadge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgb(0 0 0 / 70%);
+    padding: 4px 12px;
+    border-radius: 4px;
+
+    :global(.ant-badge-status-dot) {
+      width: 8px;
+      height: 8px;
+    }
+
+    :global(.ant-badge-status-text) {
+      color: var(--theme-color-components-text-on-dark);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+.cardContent {
+  padding: 12px;
+
+  .serverInfo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
+
+    .serverLogo {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .textInfo {
+      flex: 1;
+      overflow: hidden;
+
+      .serverName {
+        display: block;
+        font-size: 14px;
+        line-height: 1.4;
+        color: var(--theme-color-components-text-on-light);
+      }
+
+      .streamTitle {
+        display: block;
+        font-size: 12px;
+        line-height: 1.4;
+        color: var(--theme-color-components-text-on-light-disabled);
+        margin-top: 2px;
+      }
+    }
+  }
+
+  .description {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--theme-color-components-text-on-light-disabled);
+    margin-bottom: 8px;
+  }
+
+  .tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+
+    .tag {
+      font-size: 11px;
+      padding: 2px 6px;
+      height: 20px;
+      line-height: 16px;
+      border-radius: 2px;
+      background: var(--theme-color-background-header);
+      border-color: var(--theme-color-components-scrollbar-background);
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .streamCard {
+    .cardContent {
+      padding: 10px;
+
+      .serverInfo {
+        .serverLogo {
+          width: 28px;
+          height: 28px;
+        }
+      }
+    }
+  }
+}

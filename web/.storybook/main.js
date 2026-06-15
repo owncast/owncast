@@ -3,13 +3,14 @@ module.exports = {
     previewMdx2: true,
   },
 
-  stories: ['../.storybook/stories-category-doc-pages/**/*.@(mdx|stories.js)', '../stories/**/*.stories.@(js|jsx|ts|tsx)', '../components/**/*.stories.@(js|jsx|ts|tsx)', '../pages/**/*.stories.@(js|jsx|ts|tsx)'],
-
-  addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-a11y',
-    '@storybook/addon-docs'
+  stories: [
+    '../.storybook/stories-category-doc-pages/**/*.@(mdx|stories.js)',
+    '../stories/**/*.stories.@(js|jsx|ts|tsx)',
+    '../components/**/*.stories.@(js|jsx|ts|tsx)',
+    '../pages/**/*.stories.@(js|jsx|ts|tsx)',
   ],
+
+  addons: ['@storybook/addon-links', '@storybook/addon-a11y', '@storybook/addon-docs'],
 
   webpackFinal: async (config, { configType }) => {
     // @see https://github.com/storybookjs/storybook/issues/9070
@@ -51,6 +52,6 @@ module.exports = {
   docs: {},
 
   typescript: {
-    reactDocgen: 'react-docgen-typescript'
-  }
+    reactDocgen: 'react-docgen-typescript',
+  },
 };

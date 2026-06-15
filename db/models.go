@@ -31,6 +31,7 @@ type ApFollower struct {
 	RequestObject            []byte
 	LastValidatedAt          sql.NullTime
 	FirstValidationFailureAt sql.NullTime
+	OwncastServer            sql.NullBool
 }
 
 type ApOutbox struct {
@@ -53,6 +54,29 @@ type Datastore struct {
 	Key       string
 	Value     []byte
 	Timestamp time.Time
+}
+
+type FederatedServer struct {
+	ID                int64
+	Iri               string
+	Name              sql.NullString
+	LogoUrl           sql.NullString
+	IsOnline          sql.NullBool
+	StreamTitle       sql.NullString
+	StreamDescription sql.NullString
+	StreamTags        sql.NullString
+	ThumbnailUrl      sql.NullString
+	LastSeenOnline    sql.NullTime
+	LastStatusUpdate  sql.NullTime
+	AddedAt           sql.NullTime
+	FollowedAt        sql.NullTime
+	Pending           sql.NullBool
+	Username          sql.NullString
+	DisplayName       sql.NullString
+	Summary           sql.NullString
+	AcceptedAt        sql.NullTime
+	RejectedAt        sql.NullTime
+	FollowStatus      sql.NullString
 }
 
 type IpBan struct {

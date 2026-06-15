@@ -37,6 +37,8 @@ type ActivityPubActor struct {
 	Username string
 	// FullUsername is the username@account.tld representation of the user.
 	FullUsername string
+	// IsOwncastServer indicates if this actor is an Owncast server.
+	IsOwncastServer bool
 }
 
 // ErrActorMissingRequiredField is returned when an actor is missing a required field.

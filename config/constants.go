@@ -16,6 +16,20 @@ const (
 	MaxUserColor = 7
 	// MaxChatDisplayNameLength is the maximum length of a chat display name.
 	MaxChatDisplayNameLength = 30
+
+	// ActivityPub namespace properties for Owncast metadata.
+	APOwncastNamespaceStreamStatus      = "https://owncast.online/ns#streamStatus"
+	APOwncastNamespaceStreamTitle       = "https://owncast.online/ns#streamTitle"
+	APOwncastNamespaceServerName        = "https://owncast.online/ns#serverName"
+	APOwncastNamespaceStreamDescription = "https://owncast.online/ns#streamDescription"
+	APOwncastNamespaceLogoURL           = "https://owncast.online/ns#logoUrl"
+	APOwncastNamespaceThumbnailURL      = "https://owncast.online/ns#thumbnailUrl"
+	APOwncastNamespaceStreamTags        = "https://owncast.online/ns#streamTags"
+
+	// APStreamStatusLive is the stream status value for a live stream.
+	APStreamStatusLive = "live"
+	// APStreamStatusOffline is the stream status value for an offline stream.
+	APStreamStatusOffline = "offline"
 )
 
 var (

@@ -49,7 +49,10 @@ pre-commit:
       stage_fixed: true
     golangci-lint:
       glob: '*.go'
-      run: ./bin/golangci-lint run $(echo {staged_files} | tr ' ' '\n' | xargs -n1 dirname | sort -u)
+      # The tools/ subdirectory is its own Go module (dev-tooling pins);
+      # excluding it avoids golangci-lint typechecker errors when staged
+      # changes touch it.
+      run: ./bin/golangci-lint run $(echo {staged_files} | tr ' ' '\n' | xargs -n1 dirname | sort -u | grep -vE '^tools$|^tools/' || true)
     go-test:
       glob: '*.go'
       run: go test ./... > /dev/null

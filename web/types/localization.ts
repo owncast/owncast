@@ -101,6 +101,16 @@ export const Localization = {
       source: 'Frontend.Footer.source',
     },
 
+    // Featured Streams tab component
+    StreamsTab: {
+      streams: 'Frontend.StreamsTab.streams',
+      loadingStreams: 'Frontend.StreamsTab.loadingStreams',
+      errorLoadingStreams: 'Frontend.StreamsTab.errorLoadingStreams',
+      noFeaturedStreams: 'Frontend.StreamsTab.noFeaturedStreams',
+      live: 'Frontend.StreamsTab.live',
+      offline: 'Frontend.StreamsTab.offline',
+    },
+
     // Chat message components
     Chat: {
       userJoined: 'Frontend.Chat.userJoined',
@@ -252,6 +262,68 @@ export const Localization = {
       pleaseWait: 'Admin.ViewerInfo.pleaseWait',
       noData: 'Admin.ViewerInfo.noData',
       viewers: 'Admin.ViewerInfo.viewers',
+    },
+
+    // Featured streams admin component
+    FeaturedStreams: {
+      // Page titles and descriptions
+      pageTitle: 'Admin.FeaturedStreams.pageTitle',
+      pageDescription: 'Admin.FeaturedStreams.pageDescription',
+      pageDescriptionSecondary: 'Admin.FeaturedStreams.pageDescriptionSecondary',
+
+      // Button labels
+      featureStreamButton: 'Admin.FeaturedStreams.featureStreamButton',
+      unfeatureButton: 'Admin.FeaturedStreams.unfeatureButton',
+
+      // Modal content
+      modalTitle: 'Admin.FeaturedStreams.modalTitle',
+      streamUrlLabel: 'Admin.FeaturedStreams.streamUrlLabel',
+      streamUrlPlaceholder: 'Admin.FeaturedStreams.streamUrlPlaceholder',
+      streamUrlHelp: 'Admin.FeaturedStreams.streamUrlHelp',
+      featureStreamAction: 'Admin.FeaturedStreams.featureStreamAction',
+
+      // Table headers
+      streamName: 'Admin.FeaturedStreams.streamName',
+      url: 'Admin.FeaturedStreams.url',
+      status: 'Admin.FeaturedStreams.status',
+      online: 'Admin.FeaturedStreams.online',
+      offline: 'Admin.FeaturedStreams.offline',
+      lastChecked: 'Admin.FeaturedStreams.lastChecked',
+      never: 'Admin.FeaturedStreams.never',
+      added: 'Admin.FeaturedStreams.added',
+      actions: 'Admin.FeaturedStreams.actions',
+      totalStreams: 'Admin.FeaturedStreams.totalStreams',
+
+      // Confirmation dialog
+      unfeatureConfirm: 'Admin.FeaturedStreams.unfeatureConfirm',
+      confirmYes: 'Admin.FeaturedStreams.confirmYes',
+      confirmNo: 'Admin.FeaturedStreams.confirmNo',
+
+      // Requirements
+      streamRequirements: 'Admin.FeaturedStreams.streamRequirements',
+      requirementOwncast: 'Admin.FeaturedStreams.requirementOwncast',
+      requirementHttps: 'Admin.FeaturedStreams.requirementHttps',
+      requirementDefaultPort: 'Admin.FeaturedStreams.requirementDefaultPort',
+      requirementFeaturedStreams: 'Admin.FeaturedStreams.requirementFeaturedStreams',
+
+      // Validation errors
+      enterStreamUrl: 'Admin.FeaturedStreams.enterStreamUrl',
+      enterValidUrl: 'Admin.FeaturedStreams.enterValidUrl',
+      onlyHttpsSupported: 'Admin.FeaturedStreams.onlyHttpsSupported',
+      onlyDefaultPortSupported: 'Admin.FeaturedStreams.onlyDefaultPortSupported',
+      invalidUrl: 'Admin.FeaturedStreams.invalidUrl',
+
+      // Success/Error messages
+      streamFeaturedSuccess: 'Admin.FeaturedStreams.streamFeaturedSuccess',
+      streamUnfeaturedSuccess: 'Admin.FeaturedStreams.streamUnfeaturedSuccess',
+      failedToFeature: 'Admin.FeaturedStreams.failedToFeature',
+      failedToUnfeature: 'Admin.FeaturedStreams.failedToUnfeature',
+      unsupportedFeaturedStreams: 'Admin.FeaturedStreams.unsupportedFeaturedStreams',
+
+      // Warnings
+      socialFeaturesRequired: 'Admin.FeaturedStreams.socialFeaturesRequired',
+      socialFeaturesRequiredDesc: 'Admin.FeaturedStreams.socialFeaturesRequiredDesc',
+      federationSettings: 'Admin.FeaturedStreams.federationSettings',
     },
 
     // Logging and monitoring

@@ -174,6 +174,12 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 
 	// Send delayed notification messages.
 	s.onlineTimerCancelFunc = s.startLiveStreamNotificationsTimer()
+
+	// Start the periodic Offer ping that lets peer Owncast servers
+	// refresh their featured-streams listing.
+	if s.configRepository.GetFederationEnabled() {
+		s.activitypub.StartStreamPingTicker()
+	}
 }
 
 // SetStreamAsDisconnected handles cleanup when a live stream ends.
@@ -189,6 +195,10 @@ func (s *Service) SetStreamAsDisconnected() {
 	s.stats.LastDisconnectTime = &now
 	s.stats.LastConnectTime = nil
 	s.broadcaster = nil
+
+	// Stop the federated stream-ping ticker so we don't keep advertising
+	// that we are live after the stream has ended.
+	s.activitypub.StopStreamPingTicker()
 
 	offlineFilename := "offline-v2.ts"
 

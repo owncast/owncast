@@ -2439,6 +2439,109 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /federation/servers:
+    get:
+      summary: Get list of federated servers
+      operationId: GetFederatedServers
+      tags: ['Internal', 'Federation']
+      responses:
+        '200':
+          description: List of federated servers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  servers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FederatedServer'
+        '400':
+          $ref: '#/components/responses/400'
+        default:
+          $ref: '#/components/responses/Default'
+  /admin/federation/servers:
+    post:
+      summary: Add a federated server to follow
+      operationId: AddFederatedServer
+      tags: ['Internal', 'Admin', 'Federation']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: URL of the federated Owncast server
+      responses:
+        '200':
+          description: Federated server added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: AddFederatedServerOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Federation']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/federation/servers/{id}:
+    delete:
+      summary: Remove a federated server
+      operationId: RemoveFederatedServer
+      tags: ['Internal', 'Admin', 'Federation']
+      security:
+        - BasicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the federated server to remove
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Federated server removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        '404':
+          description: Federated server not found
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: RemoveFederatedServerOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Federation']
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the federated server to remove
+          schema:
+            type: integer
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /admin/config/notifications/discord:
     post:
       summary: Configure Discord notifications
@@ -3623,6 +3726,58 @@ components:
           type: integer
         results:
           $ref: '#/components/schemas/Followers'
+    FederatedServer:
+      type: object
+      description: A federated Owncast server that we follow
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the federated server
+        iri:
+          type: string
+          format: uri
+          description: IRI/URL of the federated server
+        name:
+          type: string
+          description: Display name of the federated server
+        logoUrl:
+          type: string
+          format: uri
+          description: URL of the server's logo image
+        isOnline:
+          type: boolean
+          description: Whether the server is currently online/streaming
+        streamTitle:
+          type: string
+          description: Title of the current stream (when online)
+        streamDescription:
+          type: string
+          description: Description of the current stream (when online)
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the current stream
+        thumbnailUrl:
+          type: string
+          format: uri
+          description: URL of the current stream thumbnail
+        lastSeenOnline:
+          type: string
+          format: date-time
+          description: Last time the server was seen online
+        lastStatusUpdate:
+          type: string
+          format: date-time
+          description: Last time we received a status update
+        addedAt:
+          type: string
+          format: date-time
+          description: When we started tracking this server
+        followedAt:
+          type: string
+          format: date-time
+          description: When we started following this server
     Event:
       type: object
       properties:

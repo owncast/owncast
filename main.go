@@ -16,6 +16,7 @@ import (
 	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/persistence/federatedserversrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
@@ -34,6 +35,7 @@ import (
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/rtmp"
+	"github.com/owncast/owncast/services/stalefeaturedcheckservice"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"
@@ -172,6 +174,13 @@ func main() {
 	chatMessageRepository := chatmessagerepository.New(dataStore)
 	userRepository := userrepository.New(dataStore)
 	notificationsRepository := notificationsrepository.New(dataStore, configRepository)
+	federatedServersRepository := federatedserversrepository.New(dataStore)
+
+	// Expose globals for helper code that still uses package-level
+	// Get accessors (the featured-streams ActivityPub paths). Long term
+	// these callers move to dependency injection.
+	configrepository.SetGlobalInstance(configRepository)
+	federatedserversrepository.SetGlobalInstance(federatedServersRepository)
 
 	handleCommandLineFlags(cfg, configRepository)
 
@@ -277,6 +286,12 @@ func main() {
 		log.Fatalln("failed to start the stream service", err)
 	}
 	defer streamSvc.Stop(ctx)
+
+	// Background sweep that marks federated peer servers offline when
+	// they stop sending stream-status pings, keeping the
+	// featured-streams directory honest.
+	stalefeaturedcheckservice.Start()
+	defer stalefeaturedcheckservice.Stop()
 
 	// Stage 8: late services. metrics polls stream + chat, fediverseAuth
 	// owns OTP state for the chat-side handler.

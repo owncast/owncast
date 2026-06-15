@@ -1,5 +1,5 @@
 # Caddyfile for ActivityPub federation testing
-# Routes requests to owncast.local and snac.local to their respective backends
+# Routes requests to owncast.local, owncast2.local, and snac.local to their respective backends
 
 {
 	# Disable automatic HTTPS since we use mkcert certificates
@@ -18,10 +18,15 @@ https://:{$PROXY_PORT} {
 
 	# Route based on Host header
 	@owncast host owncast.local
+	@owncast2 host owncast2.local
 	@snac host snac.local
 
 	handle @owncast {
 		reverse_proxy localhost:{$OWNCAST_PORT}
+	}
+
+	handle @owncast2 {
+		reverse_proxy localhost:{$OWNCAST2_PORT}
 	}
 
 	handle @snac {

@@ -54,6 +54,7 @@ func TestRun_FreshDatabase(t *testing.T) {
 		"datastore", "webhooks", "users", "user_access_tokens",
 		"ap_followers", "ap_outbox", "ap_accepted_activities",
 		"notifications", "messages", "auth", "ip_bans",
+		"federated_servers",
 		"goose_db_version",
 	}
 	for _, name := range expectedTables {
@@ -67,8 +68,8 @@ func TestRun_FreshDatabase(t *testing.T) {
 		t.Error("fresh install should not have legacy config table")
 	}
 
-	if v := gooseVersion(t, db); v != 1 {
-		t.Errorf("goose version = %d, want 1", v)
+	if v := gooseVersion(t, db); v != 2 {
+		t.Errorf("goose version = %d, want 2", v)
 	}
 
 	// Calling Run a second time should be a no-op (idempotent).
@@ -91,23 +92,25 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 		t.Fatalf("Run on v9 legacy DB: %v", err)
 	}
 
-	// Goose should record the baseline.
-	if v := gooseVersion(t, db); v != 1 {
-		t.Errorf("goose version = %d, want 1", v)
+	// Goose should record the latest migration.
+	if v := gooseVersion(t, db); v != 2 {
+		t.Errorf("goose version = %d, want 2", v)
 	}
 
-	// Config version should still be 9 — the legacy bridge was not invoked.
+	// Config version should still be 9, the legacy bridge was not invoked.
 	var version int
 	mustScan(t, db.QueryRow(`SELECT value FROM config WHERE key='version'`), &version)
 	if version != 9 {
 		t.Errorf("config.version = %d, want 9", version)
 	}
 
-	// Only goose_db_version was added; no other tables were created or dropped.
+	// goose_db_version plus the federated_servers table were added by
+	// the featured-streams migration; legacy schemas already have an
+	// ap_followers.owncast_server column applied via the same migration.
 	var newTableCount int
 	mustScan(t, db.QueryRow(`SELECT count(*) FROM sqlite_master WHERE type='table'`), &newTableCount)
-	if newTableCount != tableCount+1 { // +1 for goose_db_version
-		t.Errorf("table count changed from %d to %d (expected +1 for goose_db_version)", tableCount, newTableCount)
+	if newTableCount != tableCount+2 { // +1 goose_db_version, +1 federated_servers
+		t.Errorf("table count changed from %d to %d (expected +2 for goose_db_version + federated_servers)", tableCount, newTableCount)
 	}
 }
 
@@ -137,9 +140,9 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 		t.Errorf("config.version = %d after legacy bridge, want 9", version)
 	}
 
-	// Goose should have recorded the baseline.
-	if v := gooseVersion(t, db); v != 1 {
-		t.Errorf("goose version = %d, want 1", v)
+	// Goose should have recorded the latest migration.
+	if v := gooseVersion(t, db); v != 2 {
+		t.Errorf("goose version = %d, want 2", v)
 	}
 }
 

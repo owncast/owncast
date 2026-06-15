@@ -194,6 +194,18 @@ func (s *Service) Workerpool() *workerpool.Service {
 	return s.workerpool
 }
 
+// StartStreamPingTicker begins emitting a periodic Offer activity to
+// followers so peer Owncast servers can keep their featured-stream
+// directories fresh. Safe to call repeatedly.
+func (s *Service) StartStreamPingTicker() {
+	s.outbox.StartStreamPingTicker()
+}
+
+// StopStreamPingTicker stops the recurring Offer activity.
+func (s *Service) StopStreamPingTicker() {
+	s.outbox.StopStreamPingTicker()
+}
+
 // outboundWorkerPoolSize sizes the outbound delivery pool from the
 // current follower count: base workers + 1 per 100 followers, clamped.
 // Prevents excessive resource usage on instances with many followers.

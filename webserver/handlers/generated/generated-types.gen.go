@@ -333,6 +333,48 @@ type FederatedActivity struct {
 	Type      *string    `json:"type,omitempty"`
 }
 
+// FederatedServer A federated Owncast server that we follow
+type FederatedServer struct {
+	// AddedAt When we started tracking this server
+	AddedAt *time.Time `json:"addedAt,omitempty"`
+
+	// FollowedAt When we started following this server
+	FollowedAt *time.Time `json:"followedAt,omitempty"`
+
+	// Id Unique identifier for the federated server
+	Id *int `json:"id,omitempty"`
+
+	// Iri IRI/URL of the federated server
+	Iri *string `json:"iri,omitempty"`
+
+	// IsOnline Whether the server is currently online/streaming
+	IsOnline *bool `json:"isOnline,omitempty"`
+
+	// LastSeenOnline Last time the server was seen online
+	LastSeenOnline *time.Time `json:"lastSeenOnline,omitempty"`
+
+	// LastStatusUpdate Last time we received a status update
+	LastStatusUpdate *time.Time `json:"lastStatusUpdate,omitempty"`
+
+	// LogoUrl URL of the server's logo image
+	LogoUrl *string `json:"logoUrl,omitempty"`
+
+	// Name Display name of the federated server
+	Name *string `json:"name,omitempty"`
+
+	// StreamDescription Description of the current stream (when online)
+	StreamDescription *string `json:"streamDescription,omitempty"`
+
+	// StreamTitle Title of the current stream (when online)
+	StreamTitle *string `json:"streamTitle,omitempty"`
+
+	// Tags Tags associated with the current stream
+	Tags *[]string `json:"tags,omitempty"`
+
+	// ThumbnailUrl URL of the current stream thumbnail
+	ThumbnailUrl *string `json:"thumbnailUrl,omitempty"`
+}
+
 // FederationConfig defines model for FederationConfig.
 type FederationConfig struct {
 	Account       *string `json:"account,omitempty"`
@@ -779,6 +821,12 @@ type GetFederatedActionsParams struct {
 	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// AddFederatedServerJSONBody defines parameters for AddFederatedServer.
+type AddFederatedServerJSONBody struct {
+	// Url URL of the federated Owncast server
+	Url string `json:"url"`
+}
+
 // GetFollowersAdminParams defines parameters for GetFollowersAdmin.
 type GetFollowersAdminParams struct {
 	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
@@ -1085,6 +1133,9 @@ type UploadCustomEmojiJSONRequestBody UploadCustomEmojiJSONBody
 
 // SendFederatedMessageJSONRequestBody defines body for SendFederatedMessage for application/json ContentType.
 type SendFederatedMessageJSONRequestBody = AdminConfigValue
+
+// AddFederatedServerJSONRequestBody defines body for AddFederatedServer for application/json ContentType.
+type AddFederatedServerJSONRequestBody AddFederatedServerJSONBody
 
 // ApproveFollowerJSONRequestBody defines body for ApproveFollower for application/json ContentType.
 type ApproveFollowerJSONRequestBody ApproveFollowerJSONBody
