@@ -80,6 +80,23 @@ export interface Plugin {
   lastError?: string;
   discoveredAt: string;
   adminPages?: PluginAdminPage[];
+  // commands lists the plugin's chat commands, derived by the SDK and
+  // reported via register(). Only populated once the plugin is loaded
+  // (commands aren't in the static manifest). Shown in a Commands tab on the
+  // details page and aggregated by the host for the unified !help.
+  commands?: PluginCommand[];
+}
+
+// PluginCommand is one chat command a plugin advertises, mirroring
+// services/plugins.CommandInfo. Informational: the plugin's own router does
+// the matching; this drives the admin Commands tab and the host's !help.
+export interface PluginCommand {
+  name: string;
+  prefix?: string;
+  description?: string;
+  usage?: string;
+  aliases?: string[];
+  modOnly?: boolean;
 }
 
 // PluginAdminPage is a single admin-only page declared in a plugin's

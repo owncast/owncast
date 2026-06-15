@@ -3,7 +3,7 @@ import { Alert, Space, Spin, Table, Tabs, Tag, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import dynamic from 'next/dynamic';
 import ReactMarkdown from 'react-markdown';
-import { Plugin, PluginPermission } from '../../../interfaces/plugin';
+import { Plugin, PluginCommand, PluginPermission } from '../../../interfaces/plugin';
 import { Localization } from '../../../types/localization';
 import { fetchText, pluginInstructionsUrl } from '../../../utils/apis';
 import { permissionDescriptionKey } from './permissionDescriptions';
@@ -254,6 +254,70 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
     [permissionRows, pendingSet, t],
   );
 
+  // Chat commands the plugin registered (reported via register(), so only
+  // present once the plugin is loaded). Shown as its own tab when non-empty.
+  const commandRows = useMemo(
+    () =>
+      (plugin.commands ?? []).map((cmd: PluginCommand) => ({
+        key: `${cmd.prefix ?? '!'}${cmd.name}`,
+        command: `${cmd.prefix ?? '!'}${cmd.name}`,
+        description: cmd.description ?? '',
+        usage: cmd.usage,
+        modOnly: !!cmd.modOnly,
+      })),
+    [plugin.commands],
+  );
+
+  const commandsTab = useMemo(
+    () =>
+      commandRows.length === 0
+        ? null
+        : {
+            key: '__commands',
+            label: t(Localization.Admin.Plugins.commandsTab),
+            children: (
+              <Table
+                dataSource={commandRows}
+                pagination={false}
+                size="middle"
+                columns={[
+                  {
+                    title: t(Localization.Admin.Plugins.commandColumnHeader),
+                    dataIndex: 'command',
+                    key: 'command',
+                    width: 220,
+                    render: (v: string, row: { modOnly: boolean }) => (
+                      <Space size={6}>
+                        <code>{v}</code>
+                        {row.modOnly && (
+                          <Tag color="blue">{t(Localization.Admin.Plugins.modOnlyTag)}</Tag>
+                        )}
+                      </Space>
+                    ),
+                  },
+                  {
+                    title: t(Localization.Admin.Plugins.descriptionColumnHeader),
+                    dataIndex: 'description',
+                    key: 'description',
+                    render: (v: string, row: { usage?: string }) =>
+                      row.usage ? (
+                        <Space direction="vertical" size={2}>
+                          <span>{v}</span>
+                          <Text type="secondary">
+                            <code>{row.usage}</code>
+                          </Text>
+                        </Space>
+                      ) : (
+                        v
+                      ),
+                  },
+                ]}
+              />
+            ),
+          },
+    [commandRows, t],
+  );
+
   const pageTabs = useMemo(
     () =>
       uniquePages.map(page => {
@@ -304,12 +368,12 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
   );
 
   const tabs = useMemo(() => {
-    const base = [...pageTabs, permissionsTab];
+    const base = [...pageTabs, permissionsTab, ...(commandsTab ? [commandsTab] : [])];
     // Instructions sits as the second tab: after the first admin page (or
     // after Permissions when the plugin declares no admin pages), so the
     // primary page stays the landing tab.
     return instructionsTab ? [base[0], instructionsTab, ...base.slice(1)] : base;
-  }, [instructionsTab, pageTabs, permissionsTab]);
+  }, [instructionsTab, pageTabs, permissionsTab, commandsTab]);
 
   return (
     <div>

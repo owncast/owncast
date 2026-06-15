@@ -352,6 +352,10 @@ type DiscoveredEntry struct {
 	LastError    string      `json:"lastError,omitempty"`
 	DiscoveredAt time.Time   `json:"discoveredAt"`
 	AdminPages   []AdminPage `json:"adminPages,omitempty"`
+	// Commands lists the plugin's chat commands for the admin details view.
+	// Derived by the SDK and reported via register(), so it's only known once
+	// the plugin is loaded — empty for discovered-but-not-loaded plugins.
+	Commands []CommandInfo `json:"commands,omitempty"`
 }
 
 // ScanInterval is how often the manager re-scans the plugins directory.
@@ -474,6 +478,9 @@ func (m *Manager) List() []DiscoveredEntry {
 		entry.Loaded = isLoaded
 		if isLoaded {
 			entry.AutoDisabled = l.IsDisabled()
+			// Command metadata comes from register(), so it's only available
+			// once the plugin is loaded.
+			entry.Commands = l.Manifest.Commands
 		}
 		out = append(out, entry)
 	}
