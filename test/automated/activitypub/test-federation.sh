@@ -105,6 +105,7 @@ kill_leftover_processes() {
     fi
 }
 
+# shellcheck disable=SC2329  # invoked via trap, not called directly
 cleanup() {
     log_info "Cleaning up..."
 
