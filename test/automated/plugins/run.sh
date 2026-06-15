@@ -23,10 +23,13 @@ source ../tools.sh
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 PLUGIN_SDK_DIR="${PLUGIN_SDK_DIR:-}"
 PLUGIN_SDK_REPO="${PLUGIN_SDK_REPO:-https://github.com/owncast/plugin-sdk}"
-# Pin the SDK examples to the last revision that still matches the host's
-# static extraPageContent/tab contract. Newer SDK main examples exercise
-# dynamic UI hooks that this branch does not implement yet.
-PLUGIN_SDK_REF="${PLUGIN_SDK_REF:-5d625a5e95ae56ae5679dae93c09575436d40174}"
+# Always build the examples from the latest SDK code. The host and the SDK
+# share a contract (the host-function ABI, the register()/manifest agreement,
+# the UI hooks); pinning to an old SDK revision hides breakage on either side.
+# Tracking main means a host change that diverges from the SDK — or an SDK
+# change that diverges from the host — fails this suite instead of silently
+# drifting. Override with PLUGIN_SDK_REF to reproduce against a specific ref.
+PLUGIN_SDK_REF="${PLUGIN_SDK_REF:-main}"
 
 # SDK example plugins exercised by the tests in this directory.
 PLUGIN_NAMES=(profanity-filter echo-bot overlay styles-demo scripts-demo viewer-gate page-content-demo tabs-demo)

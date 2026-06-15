@@ -17,6 +17,7 @@ mkcert -cert-file "${CERT_DIR}/cert.pem" \
 # invoking user can't remove it. Hand those artifacts back on exit. HOST_UID/
 # HOST_GID are set by run.sh; when unset (entrypoint run directly) this is a
 # no-op.
+# shellcheck disable=SC2329  # invoked via trap, not called directly
 cleanup() {
     if [[ -n "${HOST_UID}" && -n "${HOST_GID}" ]]; then
         chown -R "${HOST_UID}:${HOST_GID}" /owncast/test/automated/activitypub 2>/dev/null || true
