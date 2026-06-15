@@ -243,88 +243,78 @@ export const Content: FC = () => {
   return (
     <div className={styles.main}>
       <div className={styles.mainColumn}>
-        {appState.appLoading && (
-          <div
-            className={classnames([styles.topSectionElement, styles.centerSpinner])}
-            style={{ height: '30vh' }}
-          >
-            <Spin delay={2} size="large" tip="One moment..." />
-          </div>
-        )}
-        <Row>
-          {online && (
-            <OwncastPlayer
-              source="/hls/stream.m3u8"
-              online={online}
-              title={streamTitle || name}
-              className={styles.topSectionElement}
-            />
-          )}
-          {!online && !appState.appLoading && (
-            <div id="offline-message" style={{ width: '100%' }}>
-              <OfflineBanner
-                showsHeader={false}
-                streamName={name}
-                customText={offlineMessage}
-                notificationsEnabled={supportsBrowserNotifications}
-                fediverseAccount={fediverseAccount}
-                lastLive={lastDisconnectTime}
-                onNotifyClick={() => setShowNotifyModal(true)}
-                onFollowClick={() => setShowFollowModal(true)}
-                className={classnames([styles.topSectionElement, styles.offlineBanner])}
-              />
+        <div className={styles.scrollableContent}>
+          {appState.appLoading && (
+            <div
+              className={classnames([styles.topSectionElement, styles.centerSpinner])}
+              style={{ height: '30vh' }}
+            >
+              <Spin delay={2} size="large" tip="One moment..." />
             </div>
           )}
-        </Row>
-        <Row>
-          {isStreamLive && (
-            <Statusbar
-              online={online}
-              lastConnectTime={lastConnectTime}
-              lastDisconnectTime={lastDisconnectTime}
-              viewerCount={viewerCount}
-              className={classnames(styles.topSectionElement, styles.statusBar)}
-            />
-          )}
-        </Row>
-        <Row>
-          <ActionButtons
-            supportFediverseFeatures={supportFediverseFeatures}
-            supportsBrowserNotifications={supportsBrowserNotifications}
-            showNotifyReminder={showNotifyReminder}
-            setShowNotifyModal={setShowNotifyModal}
-            disableNotifyReminderPopup={disableNotifyReminderPopup}
-            externalActions={externalActions || []}
-            setShowFollowModal={setShowFollowModal}
-            externalActionSelected={externalActionSelected}
-          />
-        </Row>
-
-        <Modal
-          title="Browser Notifications"
-          open={showNotifyModal}
-          afterClose={() => disableNotifyReminderPopup()}
-          handleCancel={() => disableNotifyReminderPopup()}
-        >
-          <BrowserNotifyModal />
-        </Modal>
-        <Row>
-          {!name && <Skeleton active loading style={{ marginLeft: '10vw', marginRight: '10vw' }} />}
-          {isMobile ? (
-            <MobileContent
-              name={name}
-              summary={summary}
-              tags={tags}
-              socialHandles={socialHandles}
-              extraPageContent={extraPageContent}
-              pluginTabs={pluginTabs}
-              setShowFollowModal={setShowFollowModal}
+          <Row>
+            {online && (
+              <OwncastPlayer
+                source="/hls/stream.m3u8"
+                online={online}
+                title={streamTitle || name}
+                className={styles.topSectionElement}
+              />
+            )}
+            {!online && !appState.appLoading && (
+              <div id="offline-message" style={{ width: '100%' }}>
+                <OfflineBanner
+                  showsHeader={false}
+                  streamName={name}
+                  customText={offlineMessage}
+                  notificationsEnabled={supportsBrowserNotifications}
+                  fediverseAccount={fediverseAccount}
+                  lastLive={lastDisconnectTime}
+                  onNotifyClick={() => setShowNotifyModal(true)}
+                  onFollowClick={() => setShowFollowModal(true)}
+                  className={classnames([styles.topSectionElement, styles.offlineBanner])}
+                />
+              </div>
+            )}
+          </Row>
+          <Row>
+            {isStreamLive && (
+              <Statusbar
+                online={online}
+                lastConnectTime={lastConnectTime}
+                lastDisconnectTime={lastDisconnectTime}
+                viewerCount={viewerCount}
+                className={classnames(styles.topSectionElement, styles.statusBar)}
+              />
+            )}
+          </Row>
+          <Row>
+            <ActionButtons
               supportFediverseFeatures={supportFediverseFeatures}
-              online={online}
+              supportsBrowserNotifications={supportsBrowserNotifications}
+              showNotifyReminder={showNotifyReminder}
+              setShowNotifyModal={setShowNotifyModal}
+              disableNotifyReminderPopup={disableNotifyReminderPopup}
+              externalActions={externalActions || []}
+              setShowFollowModal={setShowFollowModal}
+              externalActionSelected={externalActionSelected}
             />
-          ) : (
-            <div className={desktopStyles.bottomSectionContent}>
-              <DesktopContent
+          </Row>
+
+          <Modal
+            title="Browser Notifications"
+            open={showNotifyModal}
+            afterClose={() => disableNotifyReminderPopup()}
+            handleCancel={() => disableNotifyReminderPopup()}
+          >
+            <BrowserNotifyModal />
+          </Modal>
+          <Row>
+            {!name && (
+              <Skeleton active loading style={{ marginLeft: '10vw', marginRight: '10vw' }} />
+            )}
+            {isMobile ? (
+              <MobileContent
                 name={name}
                 summary={summary}
                 tags={tags}
@@ -333,11 +323,25 @@ export const Content: FC = () => {
                 pluginTabs={pluginTabs}
                 setShowFollowModal={setShowFollowModal}
                 supportFediverseFeatures={supportFediverseFeatures}
+                online={online}
               />
-            </div>
-          )}
-        </Row>
-        <div style={{ flex: '1 1' }} />
+            ) : (
+              <div className={desktopStyles.bottomSectionContent}>
+                <DesktopContent
+                  name={name}
+                  summary={summary}
+                  tags={tags}
+                  socialHandles={socialHandles}
+                  extraPageContent={extraPageContent}
+                  pluginTabs={pluginTabs}
+                  setShowFollowModal={setShowFollowModal}
+                  supportFediverseFeatures={supportFediverseFeatures}
+                />
+              </div>
+            )}
+          </Row>
+          <div style={{ flex: '1 1' }} />
+        </div>
         <Footer />
       </div>
       {showChat && !isMobile && currentUser && (
