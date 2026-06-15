@@ -47,4 +47,11 @@ web/style-definitions/build/
 
 web/public/sw.js
 web/public/workbox-*.js
+
+# Local, platform-specific dev-tool binaries installed by `make install-tools`.
+# `/bin` (root-anchored, no trailing slash) is listed alongside `bin/` so an
+# accidental `bin` *symlink* is ignored too: a trailing-slash pattern only
+# matches real directories, which is how a `bin` symlink previously slipped
+# past .gitignore and got committed, breaking the lefthook bootstrap.
+/bin
 bin/
