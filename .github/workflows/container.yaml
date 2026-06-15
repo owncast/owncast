@@ -13,29 +13,29 @@ name: Build development container
 
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
   push:
     branches:
       - develop
     paths:
-      - '**/*.go'
-      - 'go.mod'
-      - 'go.sum'
-      - 'Dockerfile'
-      - 'Earthfile'
-      - 'build/**'
-      - '.github/workflows/container.yaml'
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
+      - "Dockerfile"
+      - "Earthfile"
+      - "build/**"
+      - ".github/workflows/container.yaml"
   pull_request:
     branches:
       - develop
     paths:
-      - '**/*.go'
-      - 'go.mod'
-      - 'go.sum'
-      - 'Dockerfile'
-      - 'Earthfile'
-      - 'build/**'
-      - '.github/workflows/container.yaml'
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
+      - "Dockerfile"
+      - "Earthfile"
+      - "build/**"
+      - ".github/workflows/container.yaml"
 
 jobs:
   Earthly:
@@ -44,7 +44,7 @@ jobs:
       - name: Set up Earthly
         uses: earthly/actions-setup@v1
         with:
-          version: 'latest' # or pin to an specific version, e.g. "v0.6.10"
+          version: "latest" # or pin to an specific version, e.g. "v0.6.10"
 
       - name: Log Earthly version
         run: earthly --version
@@ -80,10 +80,7 @@ jobs:
         if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
         env:
           GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
-          EARTHLY_BUILD_TAG: 'nightly'
-          # TEMPORARY: building nightly from the featured-streams branch to test
-          # new functionality. Revert this back to 'develop' when done.
-          EARTHLY_BUILD_BRANCH: 'gek/featured_streams_minidirectories'
+          EARTHLY_BUILD_TAG: "nightly"
           EARTHLY_PUSH: true
         uses: nick-fields/retry@v4
         with:
