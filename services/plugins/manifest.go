@@ -27,6 +27,18 @@ type Subscriptions struct {
 	Filter []Subscription `json:"filter,omitempty"`
 }
 
+// CommandInfo is one chat command a plugin advertises for the unified !help.
+// Reported by the SDK in register() output; purely informational (the plugin's
+// own router does the actual matching).
+type CommandInfo struct {
+	Name        string   `json:"name"`
+	Prefix      string   `json:"prefix,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Usage       string   `json:"usage,omitempty"`
+	Aliases     []string `json:"aliases,omitempty"`
+	ModOnly     bool     `json:"modOnly,omitempty"`
+}
+
 type ConfigField struct {
 	Type        string `json:"type"`
 	Default     any    `json:"default,omitempty"`
@@ -61,16 +73,21 @@ type Manifest struct {
 	// hyphenated, matches slugPattern. Authors can pin it via the
 	// JSON `slug` field; if empty, it's auto-derived from
 	// DisplayName at parse time by slugify.
-	Slug          string                 `json:"slug,omitempty"`
-	Version       string                 `json:"version"`
-	Description   string                 `json:"description,omitempty"`
-	Bot           BotConfig              `json:"bot,omitempty"`
-	Subscriptions Subscriptions          `json:"subscriptions"`
-	Permissions   []string               `json:"permissions,omitempty"`
-	Config        map[string]ConfigField `json:"config,omitempty"`
-	Admin         AdminConfig            `json:"admin,omitempty"`
-	Actions       []ActionButton         `json:"actions,omitempty"`
-	Network       NetworkConfig          `json:"network,omitempty"`
+	Slug          string        `json:"slug,omitempty"`
+	Version       string        `json:"version"`
+	Description   string        `json:"description,omitempty"`
+	Bot           BotConfig     `json:"bot,omitempty"`
+	Subscriptions Subscriptions `json:"subscriptions"`
+	// Commands is the plugin's chat-command metadata, derived by the SDK from
+	// its defineCommands/plugin.commands table and reported via register() (not
+	// authored in the sidecar manifest). The host aggregates these across
+	// plugins to answer a unified !help.
+	Commands    []CommandInfo          `json:"commands,omitempty"`
+	Permissions []string               `json:"permissions,omitempty"`
+	Config      map[string]ConfigField `json:"config,omitempty"`
+	Admin       AdminConfig            `json:"admin,omitempty"`
+	Actions     []ActionButton         `json:"actions,omitempty"`
+	Network     NetworkConfig          `json:"network,omitempty"`
 	// Styles is a list of CSS files the plugin contributes to the
 	// viewer page (the public streaming page). Each entry is a path
 	// relative to the plugin's own URL namespace: bare paths like
