@@ -3,6 +3,7 @@ import { Alert, Button, Card, Empty, Space, Spin, Tag, Tooltip, Typography } fro
 import { useTranslation } from 'next-export-i18n';
 import { Localization } from '../../../types/localization';
 import { isPluginUpdateAvailable } from '../../../utils/apis';
+import { readableBytes } from '../../../utils/images';
 import { PuzzlePiece } from './PluginIcon';
 import { permissionDescriptionKey, permissionNameKey } from './permissionDescriptions';
 import s from './BrowseRegistry.module.scss';
@@ -187,6 +188,9 @@ export const BrowseRegistry = ({
                 <div className={s.title}>
                   <strong>{plugin.name}</strong>
                   {plugin.latest && <Text type="secondary"> v{plugin.latest.version}</Text>}
+                  {plugin.latest?.sizeBytes ? (
+                    <Text type="secondary"> &middot; {readableBytes(plugin.latest.sizeBytes)}</Text>
+                  ) : null}
                 </div>
                 {plugin.summary && <Paragraph className={s.summary}>{plugin.summary}</Paragraph>}
                 {plugin.latest?.manifest?.permissions &&

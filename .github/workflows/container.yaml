@@ -71,13 +71,19 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v6
         if: github.event_name == 'push' || github.event_name == 'schedule'
+        with:
+          # Fetch all branches so the nightly build can check out the branch
+          # named in EARTHLY_BUILD_BRANCH below.
+          fetch-depth: 0
 
       - name: Build and push
         if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
         env:
           GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
           EARTHLY_BUILD_TAG: 'nightly'
-          EARTHLY_BUILD_BRANCH: 'develop'
+          # TEMPORARY: building nightly from the featured-streams branch to test
+          # new functionality. Revert this back to 'develop' when done.
+          EARTHLY_BUILD_BRANCH: 'gek/featured_streams_minidirectories'
           EARTHLY_PUSH: true
         uses: nick-fields/retry@v4
         with:

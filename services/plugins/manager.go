@@ -117,6 +117,30 @@ const (
 	HTTPHandlerTimeout = 5 * time.Second
 )
 
+// wasmCompilationCache is shared across every plugin instance so wazero
+// compiles a given wasm module to native code at most once for the lifetime
+// of the process. The cache is keyed on module content, so it dedupes the
+// repeated work of reloading the same plugin (dev churn, reload-on-change,
+// or running multiple instances of one plugin). It is safe for concurrent
+// use across runtimes.
+//
+// NOTE: this does NOT dedupe the interpreter engine across *different*
+// plugins — each plugin's wasm bundles the QuickJS/CPython engine together
+// with the author's code, so every plugin's bytes differ and hash to a
+// distinct cache key. Sharing the engine across distinct plugins requires
+// splitting it out of the per-plugin module; tracked separately.
+var (
+	wasmCompilationCache     wazero.CompilationCache
+	wasmCompilationCacheOnce sync.Once
+)
+
+func sharedCompilationCache() wazero.CompilationCache {
+	wasmCompilationCacheOnce.Do(func() {
+		wasmCompilationCache = wazero.NewCompilationCache()
+	})
+	return wasmCompilationCache
+}
+
 // IsDisabled reports whether the plugin has been auto-disabled by the
 // strike system. Disabled plugins are skipped by both the filter chain
 // and the notification dispatcher.
@@ -207,8 +231,17 @@ func (p *Loaded) callContentExport(ctx context.Context, export, slug string, use
 // (the .ocpkg zip reader for packaged plugins). Safe to call multiple times.
 func (l *Loaded) Close(ctx context.Context) {
 	if l.plugin != nil {
+		// Closes this instance only. For shared-engine plugins the underlying
+		// CompiledPlugin (the engine) is process-global and is never closed
+		// here; for legacy wasm plugins this closes their own runtime.
 		_ = l.plugin.Close(ctx)
 		l.plugin = nil
+	}
+	// Drop the call-time identity so any in-flight or stale host call from this
+	// plugin resolves to "not found" and fails cleanly rather than acting on a
+	// torn-down plugin.
+	if l.Manifest != nil {
+		globalPluginRegistry.remove(l.Manifest.Slug)
 	}
 	if l.pkgCloser != nil {
 		_ = l.pkgCloser.Close()
@@ -512,13 +545,17 @@ func validateUploadedPackage(ctx context.Context, env *HostEnv, packageBytes []b
 	if err != nil {
 		return nil, fmt.Errorf("missing manifest: %w", err)
 	}
-	wasmBytes, err := readZipFile(zr, pkgWasmFilename)
-	if err != nil {
-		return nil, fmt.Errorf("missing compiled plugin: %w", err)
-	}
 	manifest, err := ParseManifest(manifestBytes)
 	if err != nil {
 		return nil, fmt.Errorf("invalid manifest: %w", err)
+	}
+	codeName, runtimeType, ok := detectPackageCode(zr)
+	if !ok {
+		return nil, fmt.Errorf("missing plugin code (expected one of plugin.js, plugin.py, plugin.wasm)")
+	}
+	codeBytes, err := readZipFile(zr, codeName)
+	if err != nil {
+		return nil, fmt.Errorf("missing plugin code (%s): %w", codeName, err)
 	}
 	// Preflight the package through the real load path before we write it into
 	// the plugins directory. Without this, an .ocpkg whose manifest parses but
@@ -534,7 +571,7 @@ func validateUploadedPackage(ctx context.Context, env *HostEnv, packageBytes []b
 			assetsFS = sub
 		}
 	}
-	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, manifest.Slug, assetsFS)
+	loaded, err := loadFromBytes(ctx, env, manifestBytes, codeBytes, runtimeType, manifest.Slug, assetsFS)
 	if err != nil {
 		return nil, err
 	}
@@ -1140,69 +1177,75 @@ func pendingPermissions(manifestPerms, approved []string) []string {
 // Assets are discovered from an `assets/` sibling directory when present and
 // wired into the returned Loaded so the same asset-backed host APIs work for
 // both loose-file and packaged plugins.
-func LoadPlugin(ctx context.Context, env *HostEnv, wasmPath, manifestPath string) (*Loaded, error) {
+func LoadPlugin(ctx context.Context, env *HostEnv, artifactPath, manifestPath string) (*Loaded, error) {
 	manifestBytes, err := os.ReadFile(manifestPath) //nolint:gosec // G304: plugin paths are admin-controlled, not user input
 	if err != nil {
 		return nil, fmt.Errorf("read manifest %s: %w", manifestPath, err)
 	}
-	wasmBytes, err := os.ReadFile(wasmPath) //nolint:gosec // G304: plugin paths are admin-controlled, not user input
+	artifactBytes, err := os.ReadFile(artifactPath) //nolint:gosec // G304: plugin paths are admin-controlled, not user input
 	if err != nil {
-		return nil, fmt.Errorf("read wasm %s: %w", wasmPath, err)
+		return nil, fmt.Errorf("read plugin code %s: %w", artifactPath, err)
 	}
-	displayName := strings.TrimSuffix(filepath.Base(wasmPath), ".wasm")
+	// Infer the runtime from the artifact's extension (.js / .py / .wasm); the
+	// author doesn't declare it in the manifest.
+	runtimeType := runtimeForExt(artifactPath)
+	base := filepath.Base(artifactPath)
+	displayName := strings.TrimSuffix(base, filepath.Ext(base))
 	var assetsFS fs.FS
-	if as := filepath.Join(filepath.Dir(wasmPath), "assets"); dirExists(as) {
+	if as := filepath.Join(filepath.Dir(artifactPath), "assets"); dirExists(as) {
 		assetsFS = os.DirFS(as)
 	}
-	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, displayName, assetsFS)
+	loaded, err := loadFromBytes(ctx, env, manifestBytes, artifactBytes, runtimeType, displayName, assetsFS)
 	if err != nil {
 		return nil, err
 	}
-	loaded.WasmPath = wasmPath
+	loaded.WasmPath = artifactPath
 	return loaded, nil
 }
 
-// loadFromBytes is the shared core of LoadPlugin and LoadPackage.
-func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes []byte, displayName string, assetsFS fs.FS) (*Loaded, error) {
+// runtimeForExt maps a code artifact's file extension to its runtime:
+// .js → javascript, .py → python, anything else (.wasm) → wasm.
+func runtimeForExt(path string) string {
+	switch filepath.Ext(path) {
+	case ".js":
+		return RuntimeJavaScript
+	case ".py":
+		return RuntimePython
+	default:
+		return RuntimeWasm
+	}
+}
+
+// loadFromBytes is the shared core of LoadPlugin and LoadPackage. artifactBytes
+// is the plugin's wasm (for "wasm"/legacy) or its source (for the shared-engine
+// runtimes "javascript"/"python"); runtime — inferred by the caller from the
+// code artifact (its filename/extension), not authored in the manifest —
+// selects which. It is authoritative over any manifest-declared type.
+func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactBytes []byte, runtimeType, displayName string, assetsFS fs.FS) (*Loaded, error) {
 	manifest, err := ParseManifest(manifestBytes)
 	if err != nil {
 		return nil, err
 	}
+	manifest.Type = runtimeType
 
-	hostFns := BuildHostFunctions(env, manifest, assetsFS)
-
-	extismManifest := extism.Manifest{
-		Wasm:    []extism.Wasm{extism.WasmData{Data: wasmBytes, Name: displayName}},
-		Timeout: 10_000, // milliseconds; enables Wazero's WithCloseOnContextDone
-		// Sandbox caps. A plugin that exceeds these gets an error from the
-		// next Call; the host stays up. Defaults are generous enough for
-		// realistic plugins; per-plugin manifest overrides are a future TODO.
-		Memory: &extism.ManifestMemory{
-			MaxPages:             MaxWasmPages,               // wasm linear memory cap
-			MaxHttpResponseBytes: MaxExtismHTTPResponseBytes, // outbound http body cap
-			MaxVarBytes:          MaxExtismVarBytes,          // extism's internal Var KV
-		},
-	}
-	for _, p := range manifest.Permissions {
-		if p == PermNetworkFetch {
-			// Manifest validation already required AllowedHosts to be
-			// non-empty when network.fetch is granted, so passing the
-			// list through is safe — admins explicitly authorized this
-			// scope by approving the manifest at install time.
-			extismManifest.AllowedHosts = append([]string(nil), manifest.Network.AllowedHosts...)
-			break
-		}
-	}
-	// Give the guest the real host wall clock and monotonic clock so Date and
-	// performance.now() reflect actual time. Wazero's default ModuleConfig
-	// uses a frozen deterministic clock (Date.now() would otherwise return a
-	// fixed 2022 epoch). Nanosleep is deliberately NOT wired: a plugin must
-	// not be able to block inside a call and burn its call-timeout budget.
-	moduleConfig := wazero.NewModuleConfig().WithSysWalltime().WithSysNanotime()
-	p, err := extism.NewPlugin(ctx, extismManifest, extism.PluginConfig{EnableWasi: true, ModuleConfig: moduleConfig}, hostFns)
+	p, err := instantiate(ctx, env, manifest, manifestBytes, artifactBytes, displayName)
 	if err != nil {
-		return nil, fmt.Errorf("instantiate wasm: %w", err)
+		return nil, err
 	}
+
+	// Register the plugin's identity so shared host functions can resolve it at
+	// call time (by the slug stashed in the instance's Extism config). Done
+	// before register() because the engine bootstrap evals author top-level
+	// code during register(), which may call host functions. On any failure
+	// below, drop the identity again.
+	globalPluginRegistry.put(buildIdentity(env, manifest, assetsFS))
+	loaded := false
+	defer func() {
+		if !loaded {
+			globalPluginRegistry.remove(manifest.Slug)
+		}
+	}()
+
 	p.SetLogger(func(level extism.LogLevel, message string) {
 		fmt.Fprintf(os.Stderr, "[%s] %s\n", displayName, message)
 	})
@@ -1247,7 +1290,102 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, wasmBytes [
 		adminPaths = append(adminPaths, page.Path)
 	}
 
+	loaded = true
 	return &Loaded{Manifest: manifest, plugin: p, adminGlobs: adminGlobs, adminPaths: adminPaths, AssetsFS: assetsFS}, nil
+}
+
+// instantiate creates the extism plugin instance for a manifest: a per-plugin
+// instance of the shared engine for "js"/"python", or a self-contained module
+// for "wasm"/legacy. Either way the result is a *extism.Plugin with its
+// identity slug stashed in Config so shared host functions can resolve the
+// caller, and its per-plugin network scope applied.
+func instantiate(ctx context.Context, env *HostEnv, manifest *Manifest, manifestBytes, artifactBytes []byte, displayName string) (*extism.Plugin, error) {
+	// Give the guest the real host wall and monotonic clocks (wazero's default
+	// is a frozen 2022 clock). Nanosleep is deliberately NOT wired so a plugin
+	// can't block inside a call and burn its timeout budget.
+	moduleConfig := wazero.NewModuleConfig().WithSysWalltime().WithSysNanotime()
+
+	if manifest.usesSharedEngine() {
+		engine, err := compiledEngines.get(ctx, env, manifest.Type)
+		if err != nil {
+			return nil, err
+		}
+		inst, err := engine.Instance(ctx, extism.PluginInstanceConfig{ModuleConfig: moduleConfig})
+		if err != nil {
+			return nil, fmt.Errorf("instantiate %s engine: %w", manifest.Type, err)
+		}
+		// Inject the per-plugin script + manifest the engine bootstrap reads at
+		// runtime, plus the slug shared host functions resolve identity by.
+		inst.Config = map[string]string{
+			configKeySlug:     manifest.Slug,
+			configKeyScript:   string(artifactBytes),
+			configKeyManifest: string(manifestBytes),
+		}
+		applyNetworkScope(inst, manifest)
+		return inst, nil
+	}
+
+	// Legacy self-contained wasm: each plugin compiles into its own runtime.
+	// Share the compilation cache so reloads / repeated loads of the same
+	// module don't recompile its embedded engine.
+	extismManifest := extism.Manifest{
+		Wasm:    []extism.Wasm{extism.WasmData{Data: artifactBytes, Name: displayName}},
+		Timeout: 10_000, // milliseconds; enables Wazero's WithCloseOnContextDone
+		Memory: &extism.ManifestMemory{
+			MaxPages:             MaxWasmPages,
+			MaxHttpResponseBytes: MaxExtismHTTPResponseBytes,
+			MaxVarBytes:          MaxExtismVarBytes,
+		},
+	}
+	for _, perm := range manifest.Permissions {
+		if perm == PermNetworkFetch {
+			extismManifest.AllowedHosts = append([]string(nil), manifest.Network.AllowedHosts...)
+			break
+		}
+	}
+	pc := extism.PluginConfig{
+		EnableWasi:    true,
+		ModuleConfig:  moduleConfig,
+		RuntimeConfig: wazero.NewRuntimeConfig().WithCompilationCache(sharedCompilationCache()),
+	}
+	p, err := extism.NewPlugin(ctx, extismManifest, pc, BuildHostFunctions(env))
+	if err != nil {
+		return nil, fmt.Errorf("instantiate wasm: %w", err)
+	}
+	// Even self-contained plugins now use the shared, identity-resolving host
+	// functions, so stash the slug for the registry lookup.
+	p.Config = map[string]string{configKeySlug: manifest.Slug}
+	return p, nil
+}
+
+// applyNetworkScope sets a shared-engine instance's per-plugin AllowedHosts.
+// The compiled engine carries no host allowlist (it's one engine for many
+// plugins); each instance's network scope comes from its own manifest. Manifest
+// validation already requires AllowedHosts to be non-empty when network.fetch
+// is granted.
+func applyNetworkScope(inst *extism.Plugin, manifest *Manifest) {
+	for _, perm := range manifest.Permissions {
+		if perm == PermNetworkFetch {
+			inst.AllowedHosts = append([]string(nil), manifest.Network.AllowedHosts...)
+			return
+		}
+	}
+}
+
+// buildIdentity assembles the call-time identity shared host functions resolve
+// for a loaded plugin (see registry.go).
+func buildIdentity(env *HostEnv, manifest *Manifest, assetsFS fs.FS) *pluginIdentity {
+	id := &pluginIdentity{
+		slug:        manifest.Slug,
+		granted:     stringSet(manifest.Permissions),
+		chatDisplay: manifest.ChatDisplayName(),
+		assetsFS:    assetsFS,
+		manifest:    manifest,
+	}
+	if env != nil && env.KV != nil {
+		id.kvNamespace = env.KV.Namespace(manifest.Slug)
+	}
+	return id
 }
 
 // requireChatFilterPermission rejects a runtime registration that

@@ -27,10 +27,43 @@ import (
 const (
 	packageSuffix       = ".ocpkg"
 	pkgManifestFilename = "plugin.manifest.json"
-	pkgWasmFilename     = "plugin.wasm"
-	pkgPublicPrefix     = "public/"
-	pkgAssetsPrefix     = "assets/"
+	// Code entries. The plugin's runtime is inferred from which one is present
+	// — the author doesn't declare it in the manifest. plugin.js / plugin.py
+	// are author source run on the shared embedded engine; plugin.wasm is a
+	// self-contained module the host loads directly.
+	pkgWasmFilename = "plugin.wasm"
+	pkgJSFilename   = "plugin.js"
+	pkgPyFilename   = "plugin.py"
+	pkgPublicPrefix = "public/"
+	pkgAssetsPrefix = "assets/"
 )
+
+// codeEntries maps each canonical code-entry name to the runtime it implies,
+// in detection-precedence order.
+var codeEntries = []struct{ name, runtime string }{
+	{pkgJSFilename, RuntimeJavaScript},
+	{pkgPyFilename, RuntimePython},
+	{pkgWasmFilename, RuntimeWasm},
+}
+
+// detectPackageCode finds a package's code entry and the runtime it implies.
+func detectPackageCode(zr *zip.Reader) (name, runtime string, ok bool) {
+	for _, e := range codeEntries {
+		if zipHasFile(zr, e.name) {
+			return e.name, e.runtime, true
+		}
+	}
+	return "", "", false
+}
+
+func zipHasFile(zr *zip.Reader, name string) bool {
+	for _, f := range zr.File {
+		if f.Name == name {
+			return true
+		}
+	}
+	return false
+}
 
 // LoadPackage loads a plugin from a .ocpkg file. The archive is opened with
 // a file-backed reader so only the central directory and the manifest/wasm
@@ -56,7 +89,13 @@ func LoadPackage(ctx context.Context, env *HostEnv, path string) (*Loaded, error
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", filepath.Base(path), err)
 	}
-	wasmBytes, err := readZipFile(&zr.Reader, pkgWasmFilename)
+	// The code entry's name implies the runtime (plugin.js / plugin.py / plugin.wasm),
+	// so the author never declares it in the manifest.
+	codeName, runtimeType, ok := detectPackageCode(&zr.Reader)
+	if !ok {
+		return nil, fmt.Errorf("%s: missing plugin code (expected one of plugin.js, plugin.py, plugin.wasm)", filepath.Base(path))
+	}
+	codeBytes, err := readZipFile(&zr.Reader, codeName)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", filepath.Base(path), err)
 	}
@@ -72,7 +111,7 @@ func LoadPackage(ctx context.Context, env *HostEnv, path string) (*Loaded, error
 		}
 	}
 
-	loaded, err := loadFromBytes(ctx, env, manifestBytes, wasmBytes, displayName, assetsFS)
+	loaded, err := loadFromBytes(ctx, env, manifestBytes, codeBytes, runtimeType, displayName, assetsFS)
 	if err != nil {
 		return nil, err
 	}
