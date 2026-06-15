@@ -660,6 +660,18 @@ func (a *Admin) SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	enabledCount := 0
+	for _, variant := range videoVariants.Value {
+		if variant.Enabled {
+			enabledCount++
+		}
+	}
+
+	if enabledCount == 0 {
+		webutils.WriteSimpleResponse(w, false, "at least one output variant must be enabled")
+		return
+	}
+
 	configRepository := a.configRepository
 	if err := configRepository.SetStreamOutputVariants(videoVariants.Value); err != nil {
 		webutils.WriteSimpleResponse(w, false, "unable to update video config with provided values "+err.Error())

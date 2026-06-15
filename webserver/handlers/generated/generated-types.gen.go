@@ -528,6 +528,7 @@ type StreamOutputVariant struct {
 	AudioBitrate     *int    `json:"audioBitrate,omitempty"`
 	AudioPassthrough *bool   `json:"audioPassthrough,omitempty"`
 	CpuUsageLevel    *int    `json:"cpuUsageLevel,omitempty"`
+	Enabled          *bool   `json:"enabled,omitempty"`
 	Framerate        *int    `json:"framerate,omitempty"`
 	Name             *string `json:"name,omitempty"`
 	ScaledHeight     *int    `json:"scaledHeight,omitempty"`

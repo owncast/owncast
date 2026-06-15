@@ -260,6 +260,7 @@ export const DEFAULT_VARIANT_STATE: VideoVariant = {
   scaledHeight: null,
   scaledWidth: null,
   name: '',
+  enabled: true,
 };
 
 export const FIELD_PROPS_DISABLE_CHAT = {

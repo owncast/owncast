@@ -3910,6 +3910,8 @@ components:
           type: integer
         cpuUsageLevel:
           type: integer
+        enabled:
+          type: boolean
     LatencyLevel:
       type: object
       properties:

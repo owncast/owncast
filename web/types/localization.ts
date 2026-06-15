@@ -175,6 +175,7 @@ export const Localization = {
       bitrateGoodForSlow: 'Admin.VideoVariantForm.bitrateGoodForSlow',
       bitrateGoodForMost: 'Admin.VideoVariantForm.bitrateGoodForMost',
       bitrateGoodForHigh: 'Admin.VideoVariantForm.bitrateGoodForHigh',
+      enabled: 'Admin.VideoVariantForm.enabled',
     },
 
     // Hardware monitoring page

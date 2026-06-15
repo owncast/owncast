@@ -33,6 +33,7 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			CPUUsageLevel:      variant.CPUUsageLevel,
 			ScaledWidth:        variant.ScaledWidth,
 			ScaledHeight:       variant.ScaledHeight,
+			Enabled:            variant.Enabled,
 		})
 	}
 	response := serverConfigAdminResponse{

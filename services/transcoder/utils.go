@@ -93,10 +93,18 @@ func (t *Transcoder) handleTranscoderMessage(message string) {
 }
 
 func (t *Transcoder) createVariantDirectories() {
-	// Create private hls data dirs
+	// Create private hls data dirs for each enabled variant
 	utils.CleanupDirectory(config.HLSStoragePath)
-	if len(t.configRepository.GetStreamOutputVariants()) != 0 {
-		for index := range t.configRepository.GetStreamOutputVariants() {
+
+	enabledCount := 0
+	for _, v := range t.configRepository.GetStreamOutputVariants() {
+		if v.Enabled {
+			enabledCount++
+		}
+	}
+
+	if enabledCount != 0 {
+		for index := 0; index < enabledCount; index++ {
 			if err := os.MkdirAll(path.Join(config.HLSStoragePath, strconv.Itoa(index)), 0o750); err != nil {
 				log.Fatalln(err)
 			}

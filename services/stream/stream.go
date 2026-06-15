@@ -135,9 +135,17 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 	s.stats.LastConnectTime = &now
 	s.stats.SessionMaxViewerCount = 0
 
+	allVariants := s.configRepository.GetStreamOutputVariants()
+	enabledVariants := make([]models.StreamOutputVariant, 0, len(allVariants))
+	for _, v := range allVariants {
+		if v.Enabled {
+			enabledVariants = append(enabledVariants, v)
+		}
+	}
+
 	s.currentBroadcast = &models.CurrentBroadcast{
 		LatencyLevel:   s.configRepository.GetStreamLatencyLevel(),
-		OutputSettings: s.configRepository.GetStreamOutputVariants(),
+		OutputSettings: enabledVariants,
 	}
 
 	s.StopOfflineCleanupTimer()
