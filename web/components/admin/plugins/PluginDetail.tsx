@@ -11,6 +11,14 @@ import s from './PluginDetail.module.scss';
 
 const { Title, Text, Paragraph } = Typography;
 
+type CommandRow = {
+  key: string;
+  command: string;
+  description: string;
+  usage?: string;
+  modOnly: boolean;
+};
+
 // Manifest `icon` fields are short semantic names. Map them to AntD icons
 // so the gear/wrench/etc. a plugin author wrote shows up on the tab. Names
 // without a mapping fall through to no icon (and we'll just show the
@@ -258,13 +266,15 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
   // present once the plugin is loaded). Shown as its own tab when non-empty.
   const commandRows = useMemo(
     () =>
-      (plugin.commands ?? []).map((cmd: PluginCommand) => ({
-        key: `${cmd.prefix ?? '!'}${cmd.name}`,
-        command: `${cmd.prefix ?? '!'}${cmd.name}`,
-        description: cmd.description ?? '',
-        usage: cmd.usage,
-        modOnly: !!cmd.modOnly,
-      })),
+      (plugin.commands ?? []).map(
+        (cmd: PluginCommand): CommandRow => ({
+          key: `${cmd.prefix ?? '!'}${cmd.name}`,
+          command: `${cmd.prefix ?? '!'}${cmd.name}`,
+          description: cmd.description ?? '',
+          usage: cmd.usage,
+          modOnly: !!cmd.modOnly,
+        }),
+      ),
     [plugin.commands],
   );
 
@@ -286,7 +296,7 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
                     dataIndex: 'command',
                     key: 'command',
                     width: 220,
-                    render: (v: string, row: { modOnly: boolean }) => (
+                    render: (v: string, row: CommandRow) => (
                       <Space size={6}>
                         <code>{v}</code>
                         {row.modOnly && (
@@ -299,7 +309,7 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
                     title: t(Localization.Admin.Plugins.descriptionColumnHeader),
                     dataIndex: 'description',
                     key: 'description',
-                    render: (v: string, row: { usage?: string }) =>
+                    render: (v: string, row: CommandRow) =>
                       row.usage ? (
                         <Space direction="vertical" size={2}>
                           <span>{v}</span>
