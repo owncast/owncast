@@ -113,12 +113,6 @@
   width: 100%;
   margin-bottom: 20px;
 
-  // Keep a consistent minimum height across tabs so switching between
-  // panes with different amounts of content (e.g. a short "About" vs. a
-  // long "Followers" list) doesn't collapse/expand the layout and make
-  // the page jump around.
-  min-height: 50vh;
-
   h1,
   h2,
   h3 {
