@@ -4,6 +4,7 @@
 # This workflow builds the development container image
 # Triggers:
 #   - Nightly scheduled builds (2 AM UTC)
+#   - Manual runs from the Actions tab (workflow_dispatch)
 #   - Push/PR to develop with relevant file changes
 # Skips:
 #   - Documentation-only changes
@@ -14,6 +15,7 @@ name: Build development container
 on:
   schedule:
     - cron: "0 2 * * *"
+  workflow_dispatch:
   push:
     branches:
       - develop
@@ -50,7 +52,7 @@ jobs:
         run: earthly --version
 
       - name: Authenticate to GitHub Container Registry
-        if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
+        if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && env.GH_CR_PAT != null }}
         env:
           GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
         run: echo "${{ secrets.GH_CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
@@ -70,14 +72,14 @@ jobs:
 
       - name: Check out repository code
         uses: actions/checkout@v6
-        if: github.event_name == 'push' || github.event_name == 'schedule'
+        if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         with:
           # Fetch all branches so the nightly build can check out the branch
           # named in EARTHLY_BUILD_BRANCH below.
           fetch-depth: 0
 
       - name: Build and push
-        if: ${{ github.event_name == 'schedule' && env.GH_CR_PAT != null }}
+        if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && env.GH_CR_PAT != null }}
         env:
           GH_CR_PAT: ${{ secrets.GH_CR_PAT }}
           EARTHLY_BUILD_TAG: "nightly"
