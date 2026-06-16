@@ -25,8 +25,11 @@ type FollowersRepository interface {
 	GetCount() (int64, error)
 	// GetFollowers returns a paginated list of followers.
 	GetFollowers(limit int, offset int) ([]models.Follower, int, error)
-	// GetPendingFollowRequests returns pending follow requests.
+	// GetPendingFollowRequests returns pending (fan) follow requests.
 	GetPendingFollowRequests() ([]models.Follower, error)
+	// GetPendingFeaturedFollowRequests returns pending requests from other
+	// Owncast servers asking to feature this server's stream.
+	GetPendingFeaturedFollowRequests() ([]models.Follower, error)
 	// GetBlockedAndRejected returns blocked and rejected followers.
 	GetBlockedAndRejected() ([]models.Follower, error)
 	// GetUniqueDeliveryInboxes returns unique inbox URLs for delivery.
@@ -117,6 +120,32 @@ func (r *SqlFollowersRepository) GetPendingFollowRequests() ([]models.Follower, 
 	followers := make([]models.Follower, 0)
 
 	for _, row := range pendingFollowersResult {
+		singleFollower := models.Follower{
+			Name:        row.Name.String,
+			Username:    row.Username,
+			Image:       row.Image.String,
+			ActorIRI:    row.Iri,
+			Inbox:       row.Inbox,
+			SharedInbox: row.SharedInbox.String,
+			Timestamp:   utils.NullTime{Time: row.CreatedAt.Time, Valid: true},
+		}
+		followers = append(followers, singleFollower)
+	}
+
+	return followers, nil
+}
+
+// GetPendingFeaturedFollowRequests returns pending requests from other Owncast
+// servers asking to feature this server's stream in their directory.
+func (r *SqlFollowersRepository) GetPendingFeaturedFollowRequests() ([]models.Follower, error) {
+	pendingResult, err := r.datastore.GetQueries().GetPendingFeaturedFollowRequests(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	followers := make([]models.Follower, 0)
+
+	for _, row := range pendingResult {
 		singleFollower := models.Follower{
 			Name:        row.Name.String,
 			Username:    row.Username,
@@ -230,6 +259,7 @@ func (r *SqlFollowersRepository) GetByIRI(iri string) (*apmodels.ActivityPubActo
 		FollowRequestIri: followIRI,
 		DisabledAt:       disabledAt,
 		RequestObject:    followRequestObject,
+		IsOwncastServer:  result.OwncastServer.Bool,
 	}
 
 	return &follower, nil

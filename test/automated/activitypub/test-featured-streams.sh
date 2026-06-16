@@ -16,9 +16,10 @@
 # 2. Instance 1 adds Instance 2 via POST /api/admin/federation/servers.
 # 3. Verify Instance 2 immediately appears in Instance 1's directory listing
 #    as a pending follow (regression guard: the record must be persisted).
-# 4. Verify the follow transitions to "accepted" once Instance 2 returns its
-#    ActivityPub Accept (regression guard: the Accept must be matched to the
-#    stored record).
+# 4. Verify a featured-streams follow is NOT auto-accepted even on a public
+#    server: it stays pending until Instance 2 explicitly approves being
+#    featured, after which it transitions to "accepted" (the Accept must be
+#    matched to the stored record).
 # 5. Verify the accepted record is actually populated with the remote server's
 #    name, display name and logo (regression guard: a green "accepted" with a
 #    blank, image-less row is the broken state users hit).
@@ -293,8 +294,9 @@ configure_owncast() {
         -H "Authorization: Basic ${auth}" -H "Content-Type: application/json" \
         -d '{"value": true}' > /dev/null
 
-    # Public federation so inbound follows are auto-accepted (the directory
-    # flow relies on the Accept being returned without manual approval).
+    # Public federation: regular (fan) follows auto-accept. Featured-streams
+    # follows still require explicit approval regardless of this setting, which
+    # this test exercises below.
     curl -s -X POST "${base_url}/api/admin/config/federation/private" \
         -H "Authorization: Basic ${auth}" -H "Content-Type: application/json" \
         -d '{"value": false}' > /dev/null
@@ -315,6 +317,21 @@ add_featured_server() {
         -H "Authorization: Basic ${auth}" \
         -H "Content-Type: application/json" \
         -d "{\"url\": \"${target_url}\"}"
+}
+
+# approve_featured_request WEB_PORT ACTOR_IRI -> approves a pending request from
+# another Owncast server to feature this one (reuses the follower-approval API,
+# which records the approval and returns the ActivityPub Accept).
+approve_featured_request() {
+    local web_port=$1
+    local actor_iri=$2
+    local auth
+    auth=$(get_admin_auth)
+
+    curl -s -X POST "http://localhost:${web_port}/api/admin/followers/approve" \
+        -H "Authorization: Basic ${auth}" \
+        -H "Content-Type: application/json" \
+        -d "{\"actorIRI\": \"${actor_iri}\", \"approved\": true}"
 }
 
 # get_featured_servers WEB_PORT [auth] -> prints JSON body
@@ -415,17 +432,47 @@ test_add_persists_pending_record() {
 }
 
 test_follow_is_accepted() {
-    log_test "TEST 2: Follow transitions to accepted after remote Accept"
+    log_test "TEST 2: Featured follow requires approval, then is accepted"
+
+    local instance1_actor="${OWNCAST_URL}/federation/user/${OWNCAST_FED_USERNAME}"
+
+    # Both instances are public, so a regular fan follow would auto-accept. A
+    # featured-streams follow must NOT: instance 2 has to approve being
+    # featured first. Give the (non-)Accept time to round-trip, then confirm we
+    # are still pending.
+    sleep 8
+    local status
+    status=$(server_follow_status "$(get_featured_servers "${OWNCAST_PORT}" admin)" "${OWNCAST2_URL}")
+    if [[ "${status}" == "accepted" ]]; then
+        log_error "TEST 2 FAILED: featured follow auto-accepted without approval (status=accepted)"
+        return 1
+    fi
+    log_info "Featured follow is correctly awaiting approval (status=${status})"
+
+    # The pending request must be listed for instance 2's admin to act on.
+    local feature_requests
+    feature_requests=$(curl -s -H "Authorization: Basic $(get_admin_auth)" \
+        "http://localhost:${OWNCAST2_PORT}/api/admin/federation/feature-requests")
+    if ! echo "${feature_requests}" | jq -e --arg iri "${instance1_actor}" '.requests[]? | select(.link == $iri)' > /dev/null 2>&1; then
+        log_error "TEST 2 FAILED: instance 1's request is not listed in instance 2's feature requests"
+        log_error "Feature requests: ${feature_requests}"
+        return 1
+    fi
+    log_info "Feature request from instance 1 is listed for approval"
+
+    # Instance 2 approves instance 1's request to feature it.
+    log_info "Approving the feature request on instance 2..."
+    approve_featured_request "${OWNCAST2_PORT}" "${instance1_actor}" > /dev/null
 
     if wait_for_follow_status "${OWNCAST_PORT}" "${OWNCAST2_URL}" "accepted" 40; then
-        log_test "TEST 2 PASSED: follow to ${OWNCAST2_URL} was accepted"
+        log_test "TEST 2 PASSED: featured follow stayed pending until approved, then was accepted"
         return 0
     fi
 
-    local json status
+    local json
     json=$(get_featured_servers "${OWNCAST_PORT}" admin)
     status=$(server_follow_status "${json}" "${OWNCAST2_URL}")
-    log_error "TEST 2 FAILED: follow status is '${status}', expected 'accepted'"
+    log_error "TEST 2 FAILED: follow status is '${status}' after approval, expected 'accepted'"
     log_error "Listing: ${json}"
     return 1
 }
@@ -549,8 +596,13 @@ test_reverse_direction() {
         return 1
     fi
 
+    # Instance 1 must approve being featured by instance 2.
+    local instance2_actor="${OWNCAST2_URL}/federation/user/${OWNCAST2_FED_USERNAME}"
+    log_info "Approving the feature request on instance 1..."
+    approve_featured_request "${OWNCAST_PORT}" "${instance2_actor}" > /dev/null
+
     if wait_for_follow_status "${OWNCAST2_PORT}" "${OWNCAST_URL}" "accepted" 40; then
-        log_test "TEST 6 PASSED: instance 2 followed and accepted instance 1"
+        log_test "TEST 6 PASSED: instance 2 featured instance 1; instance 1 approved and the follow was accepted"
         return 0
     fi
 

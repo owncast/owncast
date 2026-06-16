@@ -319,7 +319,7 @@ func (q *Queries) GetFederatedServers(ctx context.Context) ([]FederatedServer, e
 }
 
 const getFederationFollowerApprovalRequests = `-- name: GetFederationFollowerApprovalRequests :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND owncast_server IS NOT 1
 `
 
 type GetFederationFollowerApprovalRequestsRow struct {
@@ -332,6 +332,10 @@ type GetFederationFollowerApprovalRequestsRow struct {
 	CreatedAt   sql.NullTime
 }
 
+// Regular (fan) follow approval requests only. Featured-streams (Owncast
+// server) requests are excluded here and surfaced separately via
+// GetPendingFeaturedFollowRequests so they can be approved from the featured
+// streams admin instead of the followers admin.
 func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]GetFederationFollowerApprovalRequestsRow, error) {
 	rows, err := q.db.QueryContext(ctx, getFederationFollowerApprovalRequests)
 	if err != nil {
@@ -720,6 +724,53 @@ func (q *Queries) GetOutboxWithOffset(ctx context.Context, arg GetOutboxWithOffs
 			return nil, err
 		}
 		items = append(items, value)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPendingFeaturedFollowRequests = `-- name: GetPendingFeaturedFollowRequests :many
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND owncast_server IS 1 ORDER BY created_at DESC
+`
+
+type GetPendingFeaturedFollowRequestsRow struct {
+	Iri         string
+	Inbox       string
+	SharedInbox sql.NullString
+	Name        sql.NullString
+	Username    string
+	Image       sql.NullString
+	CreatedAt   sql.NullTime
+}
+
+// Pending requests from other Owncast servers asking to feature this server's
+// stream in their directory. These always require explicit approval.
+func (q *Queries) GetPendingFeaturedFollowRequests(ctx context.Context) ([]GetPendingFeaturedFollowRequestsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPendingFeaturedFollowRequests)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPendingFeaturedFollowRequestsRow
+	for rows.Next() {
+		var i GetPendingFeaturedFollowRequestsRow
+		if err := rows.Scan(
+			&i.Iri,
+			&i.Inbox,
+			&i.SharedInbox,
+			&i.Name,
+			&i.Username,
+			&i.Image,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

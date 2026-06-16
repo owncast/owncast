@@ -117,3 +117,7 @@ func (s *ServerInterfaceImpl) RemoveFederatedServer(w http.ResponseWriter, r *ht
 func (s *ServerInterfaceImpl) RemoveFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int) {
 	s.h.admin.RemoveFederatedServerOptions(w, r, id)
 }
+
+func (s *ServerInterfaceImpl) GetFeatureRequests(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetFeatureRequests)(w, r)
+}

@@ -8,7 +8,9 @@ import { Localization } from '../../types/localization';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import { FederatedServersTable } from '../../components/admin/FederatedServers/FederatedServersTable';
 import { FeatureStreamModal } from '../../components/admin/FederatedServers/FeatureStreamModal';
+import { FeatureRequests } from '../../components/admin/FederatedServers/FeatureRequests';
 import { useFederatedServers } from '../../hooks/useFederatedServers';
+import { useFeatureRequests } from '../../hooks/useFeatureRequests';
 import { ServerStatusContext } from '../../utils/server-status-context';
 
 const ConfigFeatured = () => {
@@ -25,6 +27,13 @@ const ConfigFeatured = () => {
     addServer,
     removeServer,
   } = useFederatedServers(true);
+
+  const {
+    requests: featureRequests,
+    loading: requestsLoading,
+    approve: approveFeatureRequest,
+    reject: rejectFeatureRequest,
+  } = useFeatureRequests();
 
   const handleFeatureStream = async (url: string) => {
     await addServer(url);
@@ -55,6 +64,13 @@ const ConfigFeatured = () => {
       {federationEnabled ? (
         <>
           <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <FeatureRequests
+              requests={featureRequests}
+              loading={requestsLoading}
+              onApprove={approveFeatureRequest}
+              onReject={rejectFeatureRequest}
+            />
+
             <Button
               type="primary"
               icon={<PlusOutlined />}

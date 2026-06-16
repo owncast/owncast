@@ -21,7 +21,16 @@ SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_follo
 SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null;
 
 -- name: GetFederationFollowerApprovalRequests :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null;
+-- Regular (fan) follow approval requests only. Featured-streams (Owncast
+-- server) requests are excluded here and surfaced separately via
+-- GetPendingFeaturedFollowRequests so they can be approved from the featured
+-- streams admin instead of the followers admin.
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND owncast_server IS NOT 1;
+
+-- name: GetPendingFeaturedFollowRequests :many
+-- Pending requests from other Owncast servers asking to feature this server's
+-- stream in their directory. These always require explicit approval.
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND owncast_server IS 1 ORDER BY created_at DESC;
 
 -- name: ApproveFederationFollower :exec
 UPDATE ap_followers SET approved_at = ?, disabled_at = null WHERE iri = ?;

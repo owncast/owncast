@@ -29,6 +29,16 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 
 	followRequest := *follow
 
+	// Featured-streams follows (another Owncast server following us so it can
+	// list our stream in its directory) always require explicit approval,
+	// regardless of whether this server otherwise accepts follows
+	// automatically. Being featured by another server is a different
+	// relationship from gaining a fan, so the operator opts in per server. The
+	// Accept is sent later by the admin approval flow, not here.
+	if followRequest.IsOwncastServer {
+		approved = false
+	}
+
 	if err := s.followers.Add(followRequest, approved); err != nil {
 		log.Errorln("unable to save follow request", err)
 		return err

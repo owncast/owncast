@@ -324,6 +324,16 @@ export const Localization = {
       socialFeaturesRequired: 'Admin.FeaturedStreams.socialFeaturesRequired',
       socialFeaturesRequiredDesc: 'Admin.FeaturedStreams.socialFeaturesRequiredDesc',
       federationSettings: 'Admin.FeaturedStreams.federationSettings',
+
+      // Incoming feature requests (servers asking to feature this stream)
+      featureRequestsTitle: 'Admin.FeaturedStreams.featureRequestsTitle',
+      featureRequestsDescription: 'Admin.FeaturedStreams.featureRequestsDescription',
+      approveButton: 'Admin.FeaturedStreams.approveButton',
+      rejectButton: 'Admin.FeaturedStreams.rejectButton',
+      featureRequestApproved: 'Admin.FeaturedStreams.featureRequestApproved',
+      featureRequestRejected: 'Admin.FeaturedStreams.featureRequestRejected',
+      failedToApprove: 'Admin.FeaturedStreams.failedToApprove',
+      failedToReject: 'Admin.FeaturedStreams.failedToReject',
     },
 
     // Logging and monitoring

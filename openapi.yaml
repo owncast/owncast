@@ -2542,6 +2542,29 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /admin/federation/feature-requests:
+    get:
+      summary: Get pending requests from other servers to feature this server's stream
+      operationId: GetFeatureRequests
+      tags: ['Internal', 'Admin', 'Federation']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of pending feature requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requests:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Follower'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
   /admin/config/notifications/discord:
     post:
       summary: Configure Discord notifications
