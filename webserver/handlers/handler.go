@@ -97,7 +97,7 @@ func (s *ServerInterfaceImpl) RegisterForLiveNotifications(w http.ResponseWriter
 // Federated servers endpoints
 
 func (s *ServerInterfaceImpl) GetFederatedServers(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(s.h.admin.GetFederatedServers)(w, r)
+	s.h.admin.GetFederatedServers(w, r)
 }
 
 func (s *ServerInterfaceImpl) AddFederatedServer(w http.ResponseWriter, r *http.Request) {
