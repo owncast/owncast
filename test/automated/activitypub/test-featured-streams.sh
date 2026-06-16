@@ -32,6 +32,9 @@
 #    stream and verify it flips back to offline promptly (the core of the
 #    feature, both directions). Streams automatically under CI; prompts when
 #    run interactively.
+# 10. Verify a server that features another (by following it) does NOT show up
+#     in the followee's followers list or count -- a featured-streams follow is
+#     a directory relationship, not a fan follow.
 #
 # Requirements:
 # - Go, C compiler (for building Owncast)
@@ -689,6 +692,39 @@ test_live_status_flip() {
     return 0
 }
 
+test_featuring_server_hidden_from_followers() {
+    log_test "TEST 8: A server that features us is not shown as a follower"
+
+    # Instance 1 featured instance 2 by following it (TEST 1-2), so instance 1
+    # is technically a follower of instance 2. Because that is an
+    # Owncast-server (featured-streams) follow, it must NOT appear in instance
+    # 2's public followers list or follower count -- it's a directory
+    # relationship, not a fan. (Both instances only ever feature each other in
+    # this test, so the visible follower count should be zero.)
+    local actor_iri followers total failed=0
+    actor_iri="${OWNCAST_URL}/federation/user/${OWNCAST_FED_USERNAME}"
+    followers=$(curl -s "http://localhost:${OWNCAST2_PORT}/api/followers")
+    total=$(echo "${followers}" | jq -r '.total // 0' 2>/dev/null)
+
+    if echo "${followers}" | jq -e --arg iri "${actor_iri}" '.results[]? | select(.link == $iri)' > /dev/null 2>&1; then
+        log_error "TEST 8 FAILED: featuring server ${actor_iri} appears in instance 2's followers list"
+        failed=1
+    fi
+
+    if [[ "${total}" != "0" ]]; then
+        log_error "TEST 8 FAILED: instance 2 follower count is ${total}, expected 0 (its only follow is a featured-streams follow)"
+        failed=1
+    fi
+
+    if [[ ${failed} -ne 0 ]]; then
+        log_error "Followers response: ${followers}"
+        return 1
+    fi
+
+    log_test "TEST 8 PASSED: the featuring server is hidden from instance 2's followers (count=${total})"
+    return 0
+}
+
 # ==========================
 # Results
 # ==========================
@@ -776,6 +812,8 @@ main() {
     if test_reverse_direction; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
     echo ""
     if test_live_status_flip; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
+    echo ""
+    if test_featuring_server_hidden_from_followers; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
     echo ""
 
     print_results "${passed}" "${failed}"

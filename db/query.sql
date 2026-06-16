@@ -3,13 +3,19 @@
 -- Federation related queries.
 
 -- name: GetFollowerCount :one
-SELECT count(*) FROM ap_followers WHERE approved_at is not null;
+-- Featured-streams follows (another Owncast server following us so it can show
+-- our live status in its directory) are excluded: they are a directory
+-- relationship, not a fan follow, so they must not inflate the follower count.
+SELECT count(*) FROM ap_followers WHERE approved_at is not null AND owncast_server IS NOT 1;
 
 -- name: GetLocalPostCount :one
 SELECT count(*) FROM ap_outbox;
 
 -- name: GetFederationFollowersWithOffset :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null ORDER BY created_at DESC LIMIT ? OFFSET ?;
+-- Excludes featured-streams (Owncast-server) follows so they don't show up in
+-- the public or admin followers list; they are tracked as a directory
+-- relationship, not surfaced as followers.
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND owncast_server IS NOT 1 ORDER BY created_at DESC LIMIT ? OFFSET ?;
 
 -- name: GetRejectedAndBlockedFollowers :many
 SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null;

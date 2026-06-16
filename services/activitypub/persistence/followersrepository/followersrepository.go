@@ -248,7 +248,7 @@ func (r *SqlFollowersRepository) Add(follow apmodels.ActivityPubActor, approved 
 		return errors.Wrap(err, "error serializing follow request object")
 	}
 
-	return r.createFollow(follow.ActorIriString(), follow.InboxString(), follow.SharedInboxString(), follow.FollowRequestIriString(), follow.Name, follow.Username, follow.ImageString(), followRequestObject, approved)
+	return r.createFollow(follow.ActorIriString(), follow.InboxString(), follow.SharedInboxString(), follow.FollowRequestIriString(), follow.Name, follow.Username, follow.ImageString(), followRequestObject, approved, follow.IsOwncastServer)
 }
 
 // Remove removes a follow from the datastore.
@@ -309,7 +309,7 @@ func (r *SqlFollowersRepository) Update(actorIRI string, inbox string, sharedInb
 	return tx.Commit()
 }
 
-func (r *SqlFollowersRepository) createFollow(actor, inbox, sharedInbox, request, name, username, image string, requestObject []byte, approved bool) error {
+func (r *SqlFollowersRepository) createFollow(actor, inbox, sharedInbox, request, name, username, image string, requestObject []byte, approved, owncastServer bool) error {
 	r.datastore.DbLock.Lock()
 	defer r.datastore.DbLock.Unlock()
 
@@ -339,6 +339,7 @@ func (r *SqlFollowersRepository) createFollow(actor, inbox, sharedInbox, request
 		ApprovedAt:    approvedAt,
 		Request:       request,
 		RequestObject: requestObject,
+		OwncastServer: sql.NullBool{Bool: owncastServer, Valid: true},
 	}); err != nil {
 		return errors.Wrap(err, "error creating new federation follow")
 	}

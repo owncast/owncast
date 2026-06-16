@@ -364,7 +364,7 @@ func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]
 }
 
 const getFederationFollowersWithOffset = `-- name: GetFederationFollowersWithOffset :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null ORDER BY created_at DESC LIMIT ? OFFSET ?
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND owncast_server IS NOT 1 ORDER BY created_at DESC LIMIT ? OFFSET ?
 `
 
 type GetFederationFollowersWithOffsetParams struct {
@@ -382,6 +382,9 @@ type GetFederationFollowersWithOffsetRow struct {
 	CreatedAt   sql.NullTime
 }
 
+// Excludes featured-streams (Owncast-server) follows so they don't show up in
+// the public or admin followers list; they are tracked as a directory
+// relationship, not surfaced as followers.
 func (q *Queries) GetFederationFollowersWithOffset(ctx context.Context, arg GetFederationFollowersWithOffsetParams) ([]GetFederationFollowersWithOffsetRow, error) {
 	rows, err := q.db.QueryContext(ctx, getFederationFollowersWithOffset, arg.Limit, arg.Offset)
 	if err != nil {
@@ -455,11 +458,14 @@ func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (GetFollower
 const getFollowerCount = `-- name: GetFollowerCount :one
 
 
-SELECT count(*) FROM ap_followers WHERE approved_at is not null
+SELECT count(*) FROM ap_followers WHERE approved_at is not null AND owncast_server IS NOT 1
 `
 
 // Queries added to query.sql must be compiled into Go code with sqlc. Read README.md for details.
 // Federation related queries.
+// Featured-streams follows (another Owncast server following us so it can show
+// our live status in its directory) are excluded: they are a directory
+// relationship, not a fan follow, so they must not inflate the follower count.
 func (q *Queries) GetFollowerCount(ctx context.Context) (int64, error) {
 	row := q.db.QueryRowContext(ctx, getFollowerCount)
 	var count int64
