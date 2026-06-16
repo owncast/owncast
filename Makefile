@@ -7,11 +7,12 @@ GOLANGCI_LINT := $(GOBIN)/golangci-lint
 GOFUMPT := $(GOBIN)/gofumpt
 SQLC := $(GOBIN)/sqlc
 OAPI_CODEGEN := $(GOBIN)/oapi-codegen
+SHELLCHECK := $(GOBIN)/shellcheck
 
 .PHONY: install-tools install-hooks lint fmt sqlc api-generate build test clean
 
 ## Install all development tools to ./bin
-install-tools: $(LEFTHOOK) $(GOLANGCI_LINT) $(GOFUMPT) $(SQLC) $(OAPI_CODEGEN)
+install-tools: $(LEFTHOOK) $(GOLANGCI_LINT) $(GOFUMPT) $(SQLC) $(OAPI_CODEGEN) $(SHELLCHECK)
 
 $(LEFTHOOK):
 	GOBIN=$(GOBIN) go install -C tools github.com/evilmartians/lefthook
@@ -27,6 +28,9 @@ $(SQLC):
 
 $(OAPI_CODEGEN):
 	GOBIN=$(GOBIN) go install -C tools github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen
+
+$(SHELLCHECK):
+	GOBIN=$(GOBIN) go install -C tools github.com/wasilibs/go-shellcheck/cmd/shellcheck
 
 ## Install git hooks using lefthook
 install-hooks: $(LEFTHOOK)
