@@ -28,6 +28,7 @@ const API_LOGO = '/logo';
 const API_FAVICON = '/favicon';
 const API_NSFW_SWITCH = '/nsfw';
 const API_RTMP_PORT = '/rtmpserverport';
+const API_RTMP_ADDRESS = '/rtmpserverbindaddress';
 const API_SERVER_SUMMARY = '/serversummary';
 const API_SERVER_WELCOME_MESSAGE = '/welcomemessage';
 const API_SERVER_NAME = '/name';
@@ -172,6 +173,16 @@ export const TEXTFIELD_PROPS_RTMP_PORT = {
   placeholder: '1935',
   label: 'RTMP port',
   tip: 'What port should accept inbound broadcasts? Default is 1935',
+  required: true,
+  hasComplexityRequirements: false,
+};
+export const TEXTFIELD_PROPS_RTMP_ADDRESS = {
+  apiPath: API_RTMP_ADDRESS,
+  configPath: '',
+  maxLength: 30,
+  placeholder: '0.0.0.0',
+  label: 'RTMP address',
+  tip: 'What address/interface should accept inbound broadcasts? Default is 0.0.0.0',
   required: true,
   hasComplexityRequirements: false,
 };

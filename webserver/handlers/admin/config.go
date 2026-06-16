@@ -470,6 +470,26 @@ func (a *Admin) SetWebServerIP(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteSimpleResponse(w, false, "Invalid type or value, IP address must be a string")
 }
 
+// SetRTMPServerBindAddress will handle the web config request to set the inbound RTMP server ip.
+func (a *Admin) SetRTMPServerBindAddress(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	configRepository := a.configRepository
+	if err := configRepository.SetRTMPBindAddress(configValue.Value.(string)); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	webutils.WriteSimpleResponse(w, true, "rtmp address set")
+}
+
 // SetRTMPServerPort will handle the web config request to set the inbound RTMP port.
 func (a *Admin) SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {

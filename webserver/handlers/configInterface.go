@@ -216,12 +216,18 @@ func (s *ServerInterfaceImpl) SetWebServerIPOptions(w http.ResponseWriter, r *ht
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetWebServerIP)(w, r)
 }
 
+func (s *ServerInterfaceImpl) SetRTMPServerBindAddress(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetRTMPServerBindAddress)(w, r)
+}
 func (s *ServerInterfaceImpl) SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetRTMPServerPort)(w, r)
 }
 
 func (s *ServerInterfaceImpl) SetRTMPServerPortOptions(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetRTMPServerPort)(w, r)
+}
+func (s *ServerInterfaceImpl) SetRTMPServerBindAddressOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetRTMPServerBindAddress)(w, r)
 }
 
 func (s *ServerInterfaceImpl) SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {

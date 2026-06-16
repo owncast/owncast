@@ -1,9 +1,9 @@
 package rtmp
 
 import (
-	"fmt"
 	"io"
 	"net"
+	"strconv"
 	"time"
 
 	"github.com/nareix/joy5/format/flv"
@@ -23,9 +23,11 @@ func (s *Service) Start(setStreamAsConnected func(*io.PipeReader), setBroadcaste
 	s.setStreamAsConnected = setStreamAsConnected
 	s.setBroadcaster = setBroadcaster
 
+	bindAddr := s.configRepository.GetRTMPBindAddress()
 	port := s.configRepository.GetRTMPPortNumber()
+	listenAddress := net.JoinHostPort(bindAddr, strconv.Itoa(port))
 	srv := rtmp.NewServer()
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	lis, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		log.Fatal(err)
 	}
