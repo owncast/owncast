@@ -54,9 +54,15 @@ jobs:
           sudo apt-get install -y snac2 ffmpeg
 
       - name: Run setup
+        env:
+          # Authenticates the mkcert download in setup.sh against github.com
+          # to avoid the anonymous, shared-per-IP rate limit on CI runners.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd test/automated/activitypub
-          sudo ./setup.sh
+          # Preserve GITHUB_TOKEN across sudo (sudo strips env by default) so
+          # setup.sh's github.com downloads use it.
+          sudo --preserve-env=GITHUB_TOKEN ./setup.sh
 
       - name: Run federation test
         run: |
@@ -94,9 +100,15 @@ jobs:
           sudo apt-get install -y snac2 ffmpeg
 
       - name: Run setup
+        env:
+          # Authenticates the mkcert download in setup.sh against github.com
+          # to avoid the anonymous, shared-per-IP rate limit on CI runners.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd test/automated/activitypub
-          sudo ./setup.sh
+          # Preserve GITHUB_TOKEN across sudo (sudo strips env by default) so
+          # setup.sh's github.com downloads use it.
+          sudo --preserve-env=GITHUB_TOKEN ./setup.sh
 
       - name: Run chat sanitization test
         run: |
@@ -162,9 +174,15 @@ jobs:
           sudo apt-get install -y snac2 ffmpeg jq
 
       - name: Run setup
+        env:
+          # Authenticates the mkcert download in setup.sh against github.com
+          # to avoid the anonymous, shared-per-IP rate limit on CI runners.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd test/automated/activitypub
-          sudo ./setup.sh
+          # Preserve GITHUB_TOKEN across sudo (sudo strips env by default) so
+          # setup.sh's github.com downloads use it.
+          sudo --preserve-env=GITHUB_TOKEN ./setup.sh
 
       - name: Run featured streams test
         timeout-minutes: 15

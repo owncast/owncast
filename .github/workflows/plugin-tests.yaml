@@ -55,6 +55,11 @@ jobs:
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
           version: 'latest'
+          # Authenticate the action's GitHub API calls (release lookup +
+          # binary download). Without a token these are anonymous and share
+          # the runner IP's 60-requests/hour limit, which routinely trips
+          # "API rate limit exceeded". The token raises this to 5,000/hour.
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Earthly version
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'

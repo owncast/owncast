@@ -2,6 +2,18 @@
 
 set -e
 
+# When a GitHub token is available (e.g. GITHUB_TOKEN in CI), send it on
+# requests to github.com so release-asset downloads use the authenticated
+# 5,000/hour rate limit instead of the anonymous, shared-per-IP 60/hour limit
+# that frequently fails on CI runners. Local runs without a token are
+# unaffected and keep downloading anonymously. curl drops the Authorization
+# header on the cross-host redirect to the asset CDN, so the token is not
+# leaked to objects.githubusercontent.com.
+gh_curl_auth=()
+if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+	gh_curl_auth=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+fi
+
 function install_ffmpeg() {
 	# install a specific version of ffmpeg
 
@@ -48,7 +60,7 @@ function install_ffmpeg() {
 
 	echo "Downloading ffmpeg v${FFMPEG_VER} release ${FFMPEG_BUILD_VERSION} for ${ffmpeg_os}/${ffmpeg_arch}"
 	rm -rf ffmpeg.tar.gz
-	curl -sL --fail "https://github.com/owncast/ffmpeg-builds/releases/download/${FFMPEG_BUILD_VERSION}/${ffmpeg_asset}" --output ffmpeg.tar.gz >/dev/null
+	curl -sL --fail "${gh_curl_auth[@]}" "https://github.com/owncast/ffmpeg-builds/releases/download/${FFMPEG_BUILD_VERSION}/${ffmpeg_asset}" --output ffmpeg.tar.gz >/dev/null
 	tar -xzf ffmpeg.tar.gz
 	rm -f ffmpeg.tar.gz
 	chmod +x ffmpeg
