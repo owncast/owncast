@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -87,8 +88,22 @@ func (a *Admin) AddFederatedServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Persist a pending follow record before sending the Follow so the
+	// server is visible in the admin list immediately and so the Accept
+	// that comes back has a record to transition to "accepted". The
+	// record is keyed by the base server URL to match the lookups done
+	// by the Accept/Reject inbox handlers.
+	if err := repo.AddFederatedServer(serverURL.String(), "", "", time.Now(), true, "", "pending"); err != nil {
+		log.Errorf("Failed to store pending federated server %s: %v", serverURL.String(), err)
+		webutils.WriteSimpleResponse(w, false, "Failed to store federated server: "+err.Error())
+		return
+	}
+
 	isStreamConnected := a.stream.GetStatus().Online
 	if err := a.activitypub.Outbox().SendFollowRequestToOwncastServerURL(serverURL.String(), isStreamConnected); err != nil {
+		// The follow never went out, so drop the pending record we just
+		// created to keep the list honest and allow a later retry.
+		_ = repo.RemoveFederatedServerByIRI(serverURL.String())
 		log.Errorf("Failed to send follow request to %s: %v", serverURL.String(), err)
 		if errors.Is(err, activitypubutils.ErrFeaturedStreamsUnsupported) {
 			webutils.WriteSimpleResponseWithCode(w, false, "Featured streams unsupported by remote server", errCodeUnsupportedFeaturedStreams)

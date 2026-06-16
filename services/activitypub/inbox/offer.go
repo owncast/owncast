@@ -2,6 +2,8 @@ package inbox
 
 import (
 	"context"
+	"fmt"
+	"net/url"
 
 	"github.com/go-fed/activity/streams/vocab"
 	log "github.com/sirupsen/logrus"
@@ -24,8 +26,18 @@ func (s *Service) handleOfferInboxRequest(c context.Context, activity vocab.Acti
 
 	log.Debugf("Received Owncast stream ping from %s", actorIRI)
 
+	// Federated server records are keyed by the base server URL
+	// (scheme://host), matching how the Follow is initiated and how the
+	// Accept/Reject handlers look them up. The Offer's actor is the full
+	// actor IRI, so normalise it before touching the repository.
+	serverURL := serverURLFromActorIRI(actorIRI)
+	if serverURL == "" {
+		log.Debugf("Could not derive server URL from actor IRI %s, ignoring Offer", actorIRI)
+		return nil
+	}
+
 	repo := federatedserversrepository.Get()
-	if !shouldProcessOfferFromServer(repo, actorIRI) {
+	if !shouldProcessOfferFromServer(repo, serverURL) {
 		return nil
 	}
 
@@ -34,14 +46,25 @@ func (s *Service) handleOfferInboxRequest(c context.Context, activity vocab.Acti
 	update := buildStreamUpdateFromMetadata(extractedMetadata)
 
 	// Update the server status to online
-	err := repo.UpdateServerStatus(actorIRI, true, update)
+	err := repo.UpdateServerStatus(serverURL, true, update)
 	if err != nil {
 		log.Errorf("Failed to update federated server status from Offer: %v", err)
 		return err
 	}
 
-	log.Debugf("Updated federated server %s status from stream ping", actorIRI)
+	log.Debugf("Updated federated server %s status from stream ping", serverURL)
 	return nil
+}
+
+// serverURLFromActorIRI reduces a full actor IRI to the base server URL
+// (scheme://host) used as the federated_servers key. Returns an empty
+// string if the IRI cannot be parsed into a scheme and host.
+func serverURLFromActorIRI(actorIRI string) string {
+	parsed, err := url.Parse(actorIRI)
+	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
+		return ""
+	}
+	return fmt.Sprintf("%s://%s", parsed.Scheme, parsed.Host)
 }
 
 func extractActorIRI(activity vocab.ActivityStreamsOffer) (string, bool) {
@@ -69,15 +92,15 @@ func isValidOwncastStreamOffer(activity vocab.ActivityStreamsOffer) bool {
 	return ok && statusStr == "live"
 }
 
-func shouldProcessOfferFromServer(repo federatedserversrepository.FederatedServersRepository, actorIRI string) bool {
-	server, err := repo.GetFederatedServer(actorIRI)
+func shouldProcessOfferFromServer(repo federatedserversrepository.FederatedServersRepository, serverURL string) bool {
+	server, err := repo.GetFederatedServer(serverURL)
 	if err != nil || server == nil {
-		log.Debugf("Ignoring Offer activity from unfollowed server: %s", actorIRI)
+		log.Debugf("Ignoring Offer activity from unfollowed server: %s", serverURL)
 		return false
 	}
 
 	if server.Pending || server.FollowStatus == "rejected" || server.FollowStatus == "none" {
-		log.Debugf("Ignoring Offer activity from server we're not actively following: %s (status: %s)", actorIRI, server.FollowStatus)
+		log.Debugf("Ignoring Offer activity from server we're not actively following: %s (status: %s)", serverURL, server.FollowStatus)
 		return false
 	}
 

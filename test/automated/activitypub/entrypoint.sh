@@ -9,7 +9,7 @@ export CERT_DIR="/tmp/test-certs"
 mkdir -p "${CERT_DIR}"
 mkcert -cert-file "${CERT_DIR}/cert.pem" \
        -key-file "${CERT_DIR}/key.pem" \
-       owncast.local snac.local localhost 127.0.0.1
+       owncast.local owncast2.local snac.local localhost 127.0.0.1
 
 # This container runs as root and the repo is bind-mounted from the host, so
 # anything the test writes into the tree (Owncast's ./data dir, created mode

@@ -20,6 +20,9 @@ USER_COUNT=10 ./run.sh
 # Run the follower validation test
 ./run.sh test-follower-validation.sh
 
+# Run the featured streams test (two Owncast instances, no snac2)
+./run.sh test-featured-streams.sh
+
 # Keep servers running after test for debugging
 KEEP_RUNNING=true ./run.sh
 
@@ -38,8 +41,11 @@ FOLLOW_DELAY=0.2 ./run.sh
 | `PROXY_PORT` | 8443 | HTTPS proxy port |
 | `SNAC_PORT` | 9080 | snac2 HTTP port |
 | `OWNCAST_PORT` | 8080 | Owncast HTTP port |
+| `OWNCAST2_PORT` | 8081 | Second Owncast HTTP port (featured streams test only) |
 
 ## What the Test Does
+
+### `test-federation.sh` / `test-following.sh` (default, snac2-based)
 
 1. Creates a temporary snac2 instance with test users
 2. Starts an HTTPS reverse proxy for TLS termination
@@ -47,6 +53,21 @@ FOLLOW_DELAY=0.2 ./run.sh
 4. Has all snac2 users follow Owncast
 5. Sends a message from Owncast
 6. Verifies all followers received the message
+
+### `test-featured-streams.sh` (two Owncast instances)
+
+The featured-streams "mini-directory" is an Owncast-to-Owncast feature, so
+this test runs two Owncast instances (`owncast.local` and `owncast2.local`)
+behind the shared proxy. It:
+
+1. Starts both instances with federation enabled and public
+2. Has instance 1 add instance 2 via `POST /api/admin/federation/servers`
+3. Verifies instance 2 is persisted in instance 1's directory immediately
+   (a pending follow record)
+4. Verifies the follow transitions to `accepted` once instance 2 returns its
+   ActivityPub `Accept`
+5. Verifies the listing is readable on the public, unauthenticated endpoint
+6. Verifies the reverse direction (instance 2 adds instance 1) also works
 
 ## Test Results
 
