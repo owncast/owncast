@@ -59,6 +59,20 @@
   margin-bottom: 8px !important;
 }
 
+// Author-supplied screenshot/preview for the listing. Constrained so a
+// large upload can't blow out the card; object-fit:contain keeps the
+// whole image visible without cropping. Sits between the summary and
+// the permissions row.
+.preview {
+  display: block;
+  max-width: 100%;
+  max-height: 180px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  object-fit: contain;
+  background: rgb(128 128 128 / 8%);
+}
+
 // Row of permission tags between the summary and the optional tag
 // row. Small bottom margin so the tag row underneath doesn't visually
 // merge into the permissions when both are present.

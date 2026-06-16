@@ -30,6 +30,9 @@ export type RegistryPlugin = {
   homepage?: string;
   tags?: string[];
   iconURL?: string;
+  // Author-supplied screenshot/preview image for the listing. Wider
+  // than the square icon; rendered below the summary when present.
+  previewURL?: string;
   authorName?: string;
   latest?: {
     version: string;
@@ -193,6 +196,14 @@ export const BrowseRegistry = ({
                   ) : null}
                 </div>
                 {plugin.summary && <Paragraph className={s.summary}>{plugin.summary}</Paragraph>}
+                {plugin.previewURL && (
+                  <img
+                    className={s.preview}
+                    src={plugin.previewURL}
+                    alt={t(Localization.Admin.Plugins.browsePreviewAlt, { name: plugin.name })}
+                    loading="lazy"
+                  />
+                )}
                 {plugin.latest?.manifest?.permissions &&
                   plugin.latest.manifest.permissions.length > 0 && (
                     // Permissions the plugin's manifest declares, so the

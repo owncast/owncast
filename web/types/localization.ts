@@ -429,6 +429,7 @@ export const Localization = {
       browseUnavailableTitle: 'Admin.Plugins.browseUnavailableTitle',
       browseUnavailableDescription: 'Admin.Plugins.browseUnavailableDescription',
       browseUnavailableRetry: 'Admin.Plugins.browseUnavailableRetry',
+      browsePreviewAlt: 'Admin.Plugins.browsePreviewAlt',
       updateAvailable: 'Admin.Plugins.updateAvailable',
       updateConfirmTitle: 'Admin.Plugins.updateConfirmTitle',
       updateConfirmOk: 'Admin.Plugins.updateConfirmOk',

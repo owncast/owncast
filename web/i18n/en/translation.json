@@ -278,6 +278,7 @@
 			"browseUnavailableTitle": "The plugin catalog is currently unavailable",
 			"browseUnavailableDescription": "Owncast can't reach the plugin catalog right now. You can still upload .ocpkg files directly from the Installed tab.",
 			"browseUnavailableRetry": "Retry",
+			"browsePreviewAlt": "{{name}} preview screenshot",
 			"updateAvailable": "Update available: v{{version}}",
 			"updateConfirmTitle": "Update {{name}} to v{{version}}?",
 			"updateConfirmOk": "Update",
