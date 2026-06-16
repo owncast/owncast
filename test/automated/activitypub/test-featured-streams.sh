@@ -492,12 +492,13 @@ main() {
     echo "----------------------------------------"
     build_owncast
 
-    # OC1_PID/OC2_PID are read indirectly in cleanup() via ${!pid_var}.
-    # shellcheck disable=SC2034
+    # OC1_PID/OC2_PID are read indirectly in cleanup() via ${!pid_var},
+    # which shellcheck cannot trace, hence the SC2034 suppressions.
     start_owncast_instance "owncast1" "${OWNCAST_PORT}" "${OWNCAST_RTMP_PORT}"
-    OC1_PID="${OC_LAST_PID}"
     # shellcheck disable=SC2034
+    OC1_PID="${OC_LAST_PID}"
     start_owncast_instance "owncast2" "${OWNCAST2_PORT}" "${OWNCAST2_RTMP_PORT}"
+    # shellcheck disable=SC2034
     OC2_PID="${OC_LAST_PID}"
 
     configure_owncast "${OWNCAST_PORT}" "${OWNCAST_URL}" "${OWNCAST_FED_USERNAME}"
