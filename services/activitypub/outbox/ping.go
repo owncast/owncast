@@ -4,6 +4,7 @@ import (
 	"net/url"
 
 	"github.com/go-fed/activity/streams"
+	"github.com/go-fed/activity/streams/vocab"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
@@ -11,22 +12,29 @@ import (
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 )
 
-// SendStreamPing sends an Offer activity to all followers indicating
-// the stream is still live. Used by the featured-streams flow so
-// remote Owncast servers can keep their mini-directory of live
-// streams fresh without polling.
-func (s *Service) SendStreamPing() error {
-	if !s.configRepository.GetFederationEnabled() {
-		return nil
-	}
+// streamStatusActivity is satisfied by the ActivityStreams activity types used
+// to advertise stream status to followers: an Offer when going live and a
+// Leave when going offline. It captures just the setters the shared builder
+// needs so both can travel one code path.
+type streamStatusActivity interface {
+	vocab.Type
+	GetUnknownProperties() map[string]interface{}
+	SetActivityStreamsActor(vocab.ActivityStreamsActorProperty)
+	SetActivityStreamsObject(vocab.ActivityStreamsObjectProperty)
+	SetActivityStreamsTo(vocab.ActivityStreamsToProperty)
+	SetActivityStreamsCc(vocab.ActivityStreamsCcProperty)
+}
 
+// sendStreamStatusToFollowers stamps the given activity with this server's
+// identity, attaches its Owncast stream metadata (live or offline), addresses
+// it to all followers, and delivers it. logLabel is used only for log and
+// error messages. It is the shared implementation behind SendStreamPing
+// (Offer/live) and SendStreamGoingOffline (Leave/offline).
+func (s *Service) sendStreamStatusToFollowers(activity streamStatusActivity, isLive bool, logLabel string) error {
 	id := shortid.MustGenerate()
 	activityID := s.builder.MakeLocalIRIForResource(id)
 	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 	serverURL := s.configRepository.GetServerURL()
-
-	// Create the Offer activity.
-	activity := streams.NewActivityStreamsOffer()
 
 	idProperty := streams.NewJSONLDIdProperty()
 	idProperty.Set(activityID)
@@ -36,20 +44,19 @@ func (s *Service) SendStreamPing() error {
 	actorProperty.AppendIRI(localActor)
 	activity.SetActivityStreamsActor(actorProperty)
 
-	// The object of the Offer is our server URL (we're offering the
-	// live stream).
+	// The object is our server URL: we're offering (or leaving) the live
+	// directory.
 	objectProperty := streams.NewActivityStreamsObjectProperty()
 	serverIRI, err := url.Parse(serverURL)
 	if err != nil {
-		return errors.Wrap(err, "unable to parse server URL for Offer activity")
+		return errors.Wrapf(err, "unable to parse server URL for %s", logLabel)
 	}
 	objectProperty.AppendIRI(serverIRI)
 	activity.SetActivityStreamsObject(objectProperty)
 
 	// Attach Owncast metadata so receivers can populate their
-	// federated_servers table from the ping alone.
-	unknownProps := activity.GetUnknownProperties()
-	apmodels.SetOwncastMetadata(unknownProps, s.configRepository, true)
+	// federated_servers table from this activity alone.
+	apmodels.SetOwncastMetadata(activity.GetUnknownProperties(), s.configRepository, isLive)
 
 	to, cc := s.getAddressingToFollowers()
 	activity.SetActivityStreamsTo(to)
@@ -57,8 +64,8 @@ func (s *Service) SendStreamPing() error {
 
 	b, err := apmodels.Serialize(activity)
 	if err != nil {
-		log.Errorln("unable to serialize stream ping Offer activity", err)
-		return errors.Wrap(err, "unable to serialize stream ping Offer activity")
+		log.Errorln("unable to serialize "+logLabel, err)
+		return errors.Wrapf(err, "unable to serialize %s", logLabel)
 	}
 
 	if err := s.SendToFollowers(b); err != nil {
@@ -69,6 +76,31 @@ func (s *Service) SendStreamPing() error {
 		return err
 	}
 
-	log.Debugln("Sent stream ping Offer activity to all followers")
+	log.Debugln("Sent " + logLabel + " to all followers")
 	return nil
+}
+
+// SendStreamPing sends an Offer activity to all followers indicating the
+// stream is live. Used by the featured-streams flow (at go-live and on a
+// timer) so remote Owncast servers can keep their mini-directory of live
+// streams fresh without polling.
+func (s *Service) SendStreamPing() error {
+	if !s.configRepository.GetFederationEnabled() {
+		return nil
+	}
+
+	return s.sendStreamStatusToFollowers(streams.NewActivityStreamsOffer(), true, "stream ping Offer activity")
+}
+
+// SendStreamGoingOffline sends a Leave activity to all followers indicating
+// the stream has ended. This is the offline counterpart to SendStreamPing:
+// it lets peer Owncast servers drop this server from the live section of
+// their featured-streams directory immediately, rather than waiting for the
+// staleness sweep to time the entry out.
+func (s *Service) SendStreamGoingOffline() error {
+	if !s.configRepository.GetFederationEnabled() {
+		return nil
+	}
+
+	return s.sendStreamStatusToFollowers(streams.NewActivityStreamsLeave(), false, "stream-offline Leave activity")
 }

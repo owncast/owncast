@@ -175,9 +175,14 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 	// Send delayed notification messages.
 	s.onlineTimerCancelFunc = s.startLiveStreamNotificationsTimer()
 
-	// Start the periodic Offer ping that lets peer Owncast servers
-	// refresh their featured-streams listing.
+	// Let peer Owncast servers refresh their featured-streams listing.
+	// Send one Offer immediately so a go-live propagates to followers
+	// without waiting for the first periodic tick, then start the ticker
+	// to keep the listing fresh for the duration of the stream.
 	if s.configRepository.GetFederationEnabled() {
+		if err := s.activitypub.SendStreamPing(); err != nil {
+			log.Errorf("unable to send immediate go-live stream ping: %v", err)
+		}
 		s.activitypub.StartStreamPingTicker()
 	}
 }
@@ -197,8 +202,16 @@ func (s *Service) SetStreamAsDisconnected() {
 	s.broadcaster = nil
 
 	// Stop the federated stream-ping ticker so we don't keep advertising
-	// that we are live after the stream has ended.
+	// that we are live after the stream has ended, then tell followers we've
+	// gone offline so they drop us from the live section of their
+	// featured-streams directory immediately instead of waiting for the
+	// staleness sweep.
 	s.activitypub.StopStreamPingTicker()
+	if s.configRepository.GetFederationEnabled() {
+		if err := s.activitypub.SendStreamGoingOffline(); err != nil {
+			log.Errorf("unable to send stream-offline Leave activity: %v", err)
+		}
+	}
 
 	offlineFilename := "offline-v2.ts"
 

@@ -19,13 +19,26 @@
 # 4. Verify the follow transitions to "accepted" once Instance 2 returns its
 #    ActivityPub Accept (regression guard: the Accept must be matched to the
 #    stored record).
-# 5. Verify the listing is readable on the PUBLIC (unauthenticated) endpoint.
-# 6. Verify the reverse direction (Instance 2 adds Instance 1) also works.
+# 5. Verify the accepted record is actually populated with the remote server's
+#    name, display name and logo (regression guard: a green "accepted" with a
+#    blank, image-less row is the broken state users hit).
+# 6. Verify the listing exposes the documented field names the web consumes
+#    (regression guard: the API and web previously drifted onto different
+#    field names and the feature shipped broken but green).
+# 7. Verify the listing is readable on the PUBLIC (unauthenticated) endpoint.
+# 8. Verify the reverse direction (Instance 2 adds Instance 1) also works.
+# 9. Stream a real test video into Instance 2 and verify its entry in
+#    Instance 1's directory flips to live with the stream title, then stop the
+#    stream and verify it flips back to offline promptly (the core of the
+#    feature, both directions). Streams automatically under CI; prompts when
+#    run interactively.
 #
 # Requirements:
 # - Go, C compiler (for building Owncast)
 # - Caddy, mkcert
 # - curl, jq
+# - ffmpeg and a Sans font (for the live-status test stream; the Docker image
+#   installs both, see run.sh)
 
 set -e
 
@@ -53,6 +66,8 @@ SNAC_PORT="${SNAC_PORT:-9080}"
 
 ADMIN_USER="admin"
 ADMIN_PASS="abc123"
+# Default stream key for a fresh Owncast instance (config/defaults.go).
+STREAM_KEY="${STREAM_KEY:-abc123}"
 CI="${CI:-false}"
 
 # URLs (HTTPS via proxy)
@@ -66,6 +81,7 @@ PROXY_PID=""
 OC1_PID=""
 OC2_PID=""
 OC_LAST_PID=""
+TEST_STREAM_PID=""
 
 # Colors
 RED='\033[0;31m'
@@ -79,8 +95,18 @@ log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 log_test() { echo -e "${CYAN}[TEST]${NC} $1"; }
 
+# shellcheck disable=SC2329  # invoked via trap, not called directly
 cleanup() {
     log_info "Cleaning up..."
+
+    # Stop any test stream first so ffmpeg releases the RTMP connection before
+    # the Owncast instances are torn down. Kill the ffmpeg child directly too,
+    # since the ocTestStream wrapper does not forward signals to it.
+    pkill -f "rtmp://127.0.0.1:${OWNCAST2_RTMP_PORT}/live/" 2>/dev/null || true
+    if [[ -n "${TEST_STREAM_PID}" ]] && kill -0 "${TEST_STREAM_PID}" 2>/dev/null; then
+        kill "${TEST_STREAM_PID}" 2>/dev/null || true
+        wait "${TEST_STREAM_PID}" 2>/dev/null || true
+    fi
 
     for pid_var in PROXY_PID OC2_PID OC1_PID; do
         local pid="${!pid_var}"
@@ -210,7 +236,8 @@ start_owncast_instance() {
             "${OWNCAST_BIN}" \
             -database "${db}" \
             -webserverport "${web_port}" \
-            -rtmpport "${rtmp_port}"
+            -rtmpport "${rtmp_port}" \
+            -enableVerboseLogging
     ) > "${log}" 2>&1 &
     OC_LAST_PID=$!
     log_info "Owncast '${label}' PID ${OC_LAST_PID} (log: ${log})"
@@ -314,6 +341,21 @@ server_follow_status() {
     echo "$1" | jq -r --arg iri "$2" '.servers[]? | select(.iri == $iri) | .followStatus' 2>/dev/null
 }
 
+# server_object JSON IRI -> prints the compact server object (or empty)
+server_object() {
+    echo "$1" | jq -c --arg iri "$2" '.servers[]? | select(.iri == $iri)' 2>/dev/null
+}
+
+# server_field JSON IRI FIELD -> prints the value of FIELD (or empty).
+# Note: we deliberately avoid `// empty` here because jq treats a literal
+# false as "absent", which would turn isOnline=false into an empty string and
+# make an offline server indistinguishable from a missing field. Map only
+# null/missing to empty, preserving false/true and string values.
+server_field() {
+    echo "$1" | jq -r --arg iri "$2" --arg field "$3" \
+        '.servers[]? | select(.iri == $iri) | .[$field] | if . == null then empty else . end' 2>/dev/null
+}
+
 # wait_for_follow_status WEB_PORT IRI EXPECTED_STATUS TIMEOUT_SECONDS
 wait_for_follow_status() {
     local web_port=$1
@@ -385,32 +427,113 @@ test_follow_is_accepted() {
     return 1
 }
 
+test_metadata_is_populated() {
+    log_test "TEST 3: Remote server metadata (name/logo) is populated after accept"
+
+    # Once the Accept comes back, the follower resolves the remote actor and
+    # stores its username, display name and logo. If this step is skipped the
+    # directory entry is a blank row with no name and no image -- exactly the
+    # broken state users reported. A green "follow accepted" is not enough;
+    # the row has to actually carry the data the UI renders.
+    local json name displayName logoUrl
+    json=$(get_featured_servers "${OWNCAST_PORT}" admin)
+
+    name=$(server_field "${json}" "${OWNCAST2_URL}" name)
+    displayName=$(server_field "${json}" "${OWNCAST2_URL}" displayName)
+    logoUrl=$(server_field "${json}" "${OWNCAST2_URL}" logoUrl)
+
+    local failed=0
+    if [[ -z "${name}" ]]; then
+        log_error "TEST 3 FAILED: 'name' is empty; the Accept handler did not store the remote username"
+        failed=1
+    fi
+    if [[ -z "${displayName}" ]]; then
+        log_error "TEST 3 FAILED: 'displayName' is empty; the remote server's display name was not stored"
+        failed=1
+    fi
+    if [[ -z "${logoUrl}" ]]; then
+        log_error "TEST 3 FAILED: 'logoUrl' is empty; the featured stream would render with no image"
+        failed=1
+    fi
+
+    if [[ ${failed} -ne 0 ]]; then
+        log_error "Server record: $(server_object "${json}" "${OWNCAST2_URL}")"
+        return 1
+    fi
+
+    log_test "TEST 3 PASSED: name='${name}', displayName='${displayName}', logoUrl='${logoUrl}'"
+    return 0
+}
+
+test_listing_field_contract() {
+    log_test "TEST 4: Directory listing exposes the documented field contract"
+
+    # The web reads these field names verbatim (web/hooks/useFederatedServers.tsx).
+    # The whole feature shipped broken once because the API and the web had
+    # drifted onto different names, so guard the contract here: the documented
+    # names must be present and the legacy names must never come back.
+    local json server
+    json=$(get_featured_servers "${OWNCAST_PORT}" public)
+    server=$(server_object "${json}" "${OWNCAST2_URL}")
+
+    if [[ -z "${server}" ]]; then
+        log_error "TEST 4 FAILED: ${OWNCAST2_URL} not present in public listing"
+        log_error "Listing: ${json}"
+        return 1
+    fi
+
+    local failed=0 field
+    local required=(iri name displayName logoUrl isOnline addedAt followStatus)
+    for field in "${required[@]}"; do
+        if ! echo "${server}" | jq -e "has(\"${field}\")" > /dev/null 2>&1; then
+            log_error "TEST 4 FAILED: response is missing documented field '${field}'"
+            failed=1
+        fi
+    done
+
+    local forbidden=(url logo thumbnail lastChecked)
+    for field in "${forbidden[@]}"; do
+        if echo "${server}" | jq -e "has(\"${field}\")" > /dev/null 2>&1; then
+            log_error "TEST 4 FAILED: response contains legacy field '${field}' the web no longer reads"
+            failed=1
+        fi
+    done
+
+    if [[ ${failed} -ne 0 ]]; then
+        log_error "Server object: ${server}"
+        return 1
+    fi
+
+    log_test "TEST 4 PASSED: listing exposes the documented field contract"
+    return 0
+}
+
 test_public_listing_is_readable() {
-    log_test "TEST 3: Directory listing is readable without admin auth"
+    log_test "TEST 5: Directory listing is readable without admin auth"
 
     # The public watch page fetches this endpoint on load; it must not be
     # gated behind admin basic auth.
     local code
     code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${OWNCAST_PORT}/api/federation/servers")
     if [[ "${code}" != "200" ]]; then
-        log_error "TEST 3 FAILED: public listing returned HTTP ${code}, expected 200"
+        log_error "TEST 5 FAILED: public listing returned HTTP ${code}, expected 200"
         return 1
     fi
 
     local json
     json=$(get_featured_servers "${OWNCAST_PORT}" public)
     if ! server_has_iri "${json}" "${OWNCAST2_URL}"; then
-        log_error "TEST 3 FAILED: ${OWNCAST2_URL} not present in public listing"
+        log_error "TEST 5 FAILED: ${OWNCAST2_URL} not present in public listing"
         log_error "Listing: ${json}"
         return 1
     fi
 
-    log_test "TEST 3 PASSED: public listing returns the featured server"
+    log_test "TEST 5 PASSED: public listing returns the featured server"
     return 0
 }
 
 test_reverse_direction() {
-    log_test "TEST 4: Reverse direction (instance 2 adds instance 1)"
+    log_test "TEST 6: Reverse direction (instance 2 adds instance 1)"
 
     local response success message
     response=$(add_featured_server "${OWNCAST2_PORT}" "${OWNCAST_URL}")
@@ -419,21 +542,151 @@ test_reverse_direction() {
     success=$(echo "${response}" | jq -r '.success // false' 2>/dev/null)
     if [[ "${success}" != "true" ]]; then
         message=$(echo "${response}" | jq -r '.message // ""' 2>/dev/null)
-        log_error "TEST 4 FAILED: add request was not accepted: ${message}"
+        log_error "TEST 6 FAILED: add request was not accepted: ${message}"
         return 1
     fi
 
     if wait_for_follow_status "${OWNCAST2_PORT}" "${OWNCAST_URL}" "accepted" 40; then
-        log_test "TEST 4 PASSED: instance 2 followed and accepted instance 1"
+        log_test "TEST 6 PASSED: instance 2 followed and accepted instance 1"
         return 0
     fi
 
     local json status
     json=$(get_featured_servers "${OWNCAST2_PORT}" admin)
     status=$(server_follow_status "${json}" "${OWNCAST_URL}")
-    log_error "TEST 4 FAILED: follow status is '${status}', expected 'accepted'"
+    log_error "TEST 6 FAILED: follow status is '${status}', expected 'accepted'"
     log_error "Listing: ${json}"
     return 1
+}
+
+# stop_test_stream stops the running test stream, if any.
+#
+# ocTestStream.sh runs ffmpeg in the foreground without forwarding signals or
+# trapping EXIT (for the internal test-pattern path), so killing the wrapper
+# alone orphans ffmpeg and the RTMP stream keeps running -- which would leave
+# the source server live and no Leave would ever be sent. Kill the ffmpeg
+# pushing to instance 2's RTMP endpoint directly as well.
+stop_test_stream() {
+    pkill -f "rtmp://127.0.0.1:${OWNCAST2_RTMP_PORT}/live/" 2>/dev/null || true
+    if [[ -n "${TEST_STREAM_PID}" ]] && kill -0 "${TEST_STREAM_PID}" 2>/dev/null; then
+        kill "${TEST_STREAM_PID}" 2>/dev/null || true
+        wait "${TEST_STREAM_PID}" 2>/dev/null || true
+    fi
+    TEST_STREAM_PID=""
+}
+
+test_live_status_flip() {
+    log_test "TEST 7: Featured stream flips to live when the remote goes online"
+
+    # This is the heart of the feature: a featured server must show as live,
+    # with its stream metadata, while it is actually streaming. Instance 1
+    # already follows instance 2 (TEST 2), so when instance 2 goes live it
+    # sends an immediate Offer ping that should flip instance 2's row in
+    # instance 1's directory to online.
+    #
+    # In CI we stream automatically; run interactively and we ask first so a
+    # developer can decline (or watch it happen).
+    if [[ "${CI}" != "true" ]]; then
+        echo ""
+        read -p "Start a test stream on instance 2 to verify live-status propagation? [Y/n] " -n 1 -r
+        echo ""
+        if [[ "${REPLY}" =~ ^[Nn]$ ]]; then
+            log_warn "TEST 7 SKIPPED: declined to start a test stream"
+            return 0
+        fi
+    fi
+
+    if [[ ! -x "${REPO_ROOT}/test/ocTestStream.sh" ]]; then
+        log_error "TEST 7 FAILED: ${REPO_ROOT}/test/ocTestStream.sh not found or not executable"
+        return 1
+    fi
+
+    # Give instance 2 a known stream title so we can assert it propagates with
+    # the live status, rather than just trusting the boolean flag.
+    local expected_title="Featured Streams Live Test"
+    local auth
+    auth=$(get_admin_auth)
+    curl -s -X POST "http://localhost:${OWNCAST2_PORT}/api/admin/config/streamtitle" \
+        -H "Authorization: Basic ${auth}" -H "Content-Type: application/json" \
+        -d "{\"value\": \"${expected_title}\"}" > /dev/null
+
+    log_info "Starting test stream into instance 2 (rtmp port ${OWNCAST2_RTMP_PORT})..."
+    "${REPO_ROOT}/test/ocTestStream.sh" "rtmp://127.0.0.1:${OWNCAST2_RTMP_PORT}/live/${STREAM_KEY}" \
+        > "${TEMP_DIR}/teststream.log" 2>&1 &
+    TEST_STREAM_PID=$!
+
+    # Wait for instance 1 to observe instance 2 as online. The Offer fires on
+    # RTMP connect, but allow generous time for ffmpeg startup and delivery.
+    local timeout=90 waited=0 online="" json
+    while [[ ${waited} -lt ${timeout} ]]; do
+        if ! kill -0 "${TEST_STREAM_PID}" 2>/dev/null; then
+            log_error "TEST 7 FAILED: test stream process exited early. ffmpeg log:"
+            cat "${TEMP_DIR}/teststream.log"
+            TEST_STREAM_PID=""
+            return 1
+        fi
+        json=$(get_featured_servers "${OWNCAST_PORT}" admin)
+        online=$(server_field "${json}" "${OWNCAST2_URL}" isOnline)
+        if [[ "${online}" == "true" ]]; then
+            break
+        fi
+        sleep 3
+        waited=$((waited + 3))
+    done
+
+    if [[ "${online}" != "true" ]]; then
+        log_error "TEST 7 FAILED: instance 2 never showed as online on instance 1 within ${timeout}s"
+        log_error "Server record: $(server_object "${json}" "${OWNCAST2_URL}")"
+        stop_test_stream
+        return 1
+    fi
+
+    # The Offer carries stream metadata; the title we set must have propagated.
+    local title
+    title=$(server_field "$(get_featured_servers "${OWNCAST_PORT}" admin)" "${OWNCAST2_URL}" streamTitle)
+    if [[ "${title}" != "${expected_title}" ]]; then
+        log_error "TEST 7 FAILED: streamTitle is '${title}', expected '${expected_title}'"
+        stop_test_stream
+        return 1
+    fi
+
+    log_info "Instance 2 is live on instance 1 with title '${title}'; stopping the stream..."
+    stop_test_stream
+
+    # Ending the stream makes instance 2 send a Leave activity; instance 1 must
+    # flip the entry back to offline promptly, well before the 20-minute
+    # staleness sweep would otherwise time it out. The latency floor here is
+    # how long instance 2 takes to detect the RTMP disconnect and transition
+    # itself offline, so allow generous headroom and report the measured time.
+    local offline_timeout=180 offline_waited=0
+    online="true"
+    while [[ ${offline_waited} -lt ${offline_timeout} ]]; do
+        json=$(get_featured_servers "${OWNCAST_PORT}" admin)
+        online=$(server_field "${json}" "${OWNCAST2_URL}" isOnline)
+        if [[ "${online}" == "false" ]]; then
+            break
+        fi
+        sleep 3
+        offline_waited=$((offline_waited + 3))
+    done
+
+    if [[ "${online}" != "false" ]]; then
+        log_error "TEST 7 FAILED: instance 2 still shows online on instance 1 ${offline_timeout}s after the stream stopped"
+        log_error "Server record: $(server_object "${json}" "${OWNCAST2_URL}")"
+
+        # Diagnostics: did instance 2 itself go offline, and did the Leave flow?
+        local oc2_self
+        oc2_self=$(curl -s "http://localhost:${OWNCAST2_PORT}/api/status" 2>/dev/null | jq -c '{online}' 2>/dev/null)
+        log_error "Instance 2 self-reported status: ${oc2_self:-<none>}"
+        log_error "--- instance 2 log (disconnect / leave / ping) ---"
+        grep -iE "disconnect|leave|offer|ping|offline|transcoder complet|federat" "${TEMP_DIR}/owncast2.log" 2>/dev/null | tail -25 >&2 || true
+        log_error "--- instance 1 log (inbox / leave) ---"
+        grep -iE "leave|offer|offline|federated server|inbox" "${TEMP_DIR}/owncast1.log" 2>/dev/null | tail -25 >&2 || true
+        return 1
+    fi
+
+    log_test "TEST 7 PASSED: went live with title '${title}', then back offline ~${offline_waited}s after the stream ended"
+    return 0
 }
 
 # ==========================
@@ -514,9 +767,15 @@ main() {
     echo ""
     if test_follow_is_accepted; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
     echo ""
+    if test_metadata_is_populated; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
+    echo ""
+    if test_listing_field_contract; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
+    echo ""
     if test_public_listing_is_readable; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
     echo ""
     if test_reverse_direction; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
+    echo ""
+    if test_live_status_flip; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
     echo ""
 
     print_results "${passed}" "${failed}"

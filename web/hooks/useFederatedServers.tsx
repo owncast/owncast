@@ -3,17 +3,22 @@ import { message } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { Localization } from '../types/localization';
 
+// FederatedServerResponse matches the OpenAPI FederatedServer model the
+// backend serializes verbatim. The web consumes these names directly so
+// there is a single, shared vocabulary for federated-server data rather
+// than a backend set and a separate frontend set.
 export interface FederatedServerResponse {
-  id: string;
-  url: string;
-  name: string;
-  logo?: string;
+  id: number;
+  iri: string;
+  name?: string;
+  displayName?: string;
+  logoUrl?: string;
   isOnline: boolean;
   streamTitle?: string;
   streamDescription?: string;
   tags?: string[];
-  thumbnail?: string;
-  lastChecked?: string;
+  thumbnailUrl?: string;
+  lastStatusUpdate?: string;
   addedAt: string;
 }
 
@@ -23,7 +28,7 @@ export interface UseFederatedServersResult {
   error: string | null;
   refetch: () => void;
   addServer: (url: string) => Promise<void>;
-  removeServer: (id: string) => Promise<void>;
+  removeServer: (id: number) => Promise<void>;
 }
 
 interface APIErrorResponse {
@@ -100,7 +105,7 @@ export function useFederatedServers(isAdmin: boolean = false): UseFederatedServe
     message.success(t(Localization.Admin.FeaturedStreams.streamFeaturedSuccess));
   };
 
-  const removeServer = async (id: string): Promise<void> => {
+  const removeServer = async (id: number): Promise<void> => {
     const response = await fetch(`${API_REMOVE_FEDERATED_SERVER}/${id}`, {
       method: 'DELETE',
       credentials: 'include',

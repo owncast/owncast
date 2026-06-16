@@ -11,18 +11,18 @@ jest.mock('../components/ui/Translation/Translation', () => ({
 describe('StreamsTab', () => {
   const mockServers: FederatedServer[] = [
     {
-      id: '1',
+      id: 1,
       name: 'Server 1',
-      url: 'https://server1.example.com',
+      iri: 'https://server1.example.com',
       isOnline: true,
       streamTitle: 'Live Stream',
       streamDescription: 'Description',
       tags: ['gaming'],
     },
     {
-      id: '2',
+      id: 2,
       name: 'Server 2',
-      url: 'https://server2.example.com',
+      iri: 'https://server2.example.com',
       isOnline: false,
     },
   ];
@@ -58,27 +58,27 @@ describe('StreamsTab', () => {
   it('sorts servers with online servers first', () => {
     const servers: FederatedServer[] = [
       {
-        id: '1',
+        id: 1,
         name: 'Offline A',
-        url: 'https://a.example.com',
+        iri: 'https://a.example.com',
         isOnline: false,
       },
       {
-        id: '2',
+        id: 2,
         name: 'Online B',
-        url: 'https://b.example.com',
+        iri: 'https://b.example.com',
         isOnline: true,
       },
       {
-        id: '3',
+        id: 3,
         name: 'Offline C',
-        url: 'https://c.example.com',
+        iri: 'https://c.example.com',
         isOnline: false,
       },
       {
-        id: '4',
+        id: 4,
         name: 'Online A',
-        url: 'https://d.example.com',
+        iri: 'https://d.example.com',
         isOnline: true,
       },
     ];
