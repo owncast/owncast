@@ -8,6 +8,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	"github.com/pkg/errors"
 
+	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
@@ -18,8 +19,10 @@ import (
 
 // SendFollowAccept will send an accept activity to a follow request
 // from a specified local user, queuing the outbound delivery on the
-// provided workerpool.
-func SendFollowAccept(wp *workerpool.Service, inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder, signer *crypto.Signer) error {
+// provided workerpool. The Accept carries this server's current Owncast
+// stream status so a newly accepted featured-streams follower reflects our
+// live state immediately rather than waiting for the next periodic ping.
+func SendFollowAccept(wp *workerpool.Service, inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder, signer *crypto.Signer, configRepository configrepository.ConfigRepository, streamActive bool) error {
 	// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
 	if inbox.Scheme != "https" {
 		return errors.Errorf("rejecting non-HTTPS inbox URL for SSRF protection: %s", inbox.String())
@@ -28,7 +31,7 @@ func SendFollowAccept(wp *workerpool.Service, inbox *url.URL, originalFollowActi
 		return errors.Errorf("rejecting internal/loopback inbox URL for SSRF protection: %s", inbox.String())
 	}
 
-	followAccept := makeAcceptFollow(originalFollowActivity, fromLocalAccountName, builder)
+	followAccept := makeAcceptFollow(originalFollowActivity, fromLocalAccountName, builder, configRepository, streamActive)
 	localAccountIRI := builder.MakeLocalIRIForAccount(fromLocalAccountName)
 
 	var jsonmap map[string]interface{}
@@ -44,7 +47,7 @@ func SendFollowAccept(wp *workerpool.Service, inbox *url.URL, originalFollowActi
 	return nil
 }
 
-func makeAcceptFollow(originalFollowActivity vocab.ActivityStreamsFollow, fromAccountName string, builder *apmodels.Builder) vocab.ActivityStreamsAccept {
+func makeAcceptFollow(originalFollowActivity vocab.ActivityStreamsFollow, fromAccountName string, builder *apmodels.Builder, configRepository configrepository.ConfigRepository, streamActive bool) vocab.ActivityStreamsAccept {
 	acceptIDString := shortid.MustGenerate()
 	acceptID := builder.MakeLocalIRIForResource(acceptIDString)
 	actorID := builder.MakeLocalIRIForAccount(fromAccountName)
@@ -60,6 +63,10 @@ func makeAcceptFollow(originalFollowActivity vocab.ActivityStreamsFollow, fromAc
 	object := streams.NewActivityStreamsObjectProperty()
 	object.AppendActivityStreamsFollow(originalFollowActivity)
 	accept.SetActivityStreamsObject(object)
+
+	// Attach our current stream status/metadata so a featured-streams follower
+	// can show our live state the moment the follow is accepted.
+	apmodels.SetOwncastMetadata(accept.GetUnknownProperties(), configRepository, streamActive)
 
 	return accept
 }

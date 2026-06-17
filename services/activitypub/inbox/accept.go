@@ -9,6 +9,7 @@ import (
 	"github.com/go-fed/activity/streams/vocab"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/persistence/federatedserversrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 )
@@ -32,16 +33,14 @@ func (s *Service) handleAcceptInboxRequest(c context.Context, activity vocab.Act
 		return nil
 	}
 
+	// The Accept may carry the remote server's current Owncast stream status
+	// so we can reflect its live state immediately on acceptance.
+	metadata := apmodels.ParseOwncastMetadata(activity.GetUnknownProperties())
+
 	for iter := objectProp.Begin(); iter != objectProp.End(); iter = iter.Next() {
 		if iter.IsActivityStreamsFollow() {
-			s.markFederatedServerAccepted(actorIRI)
+			s.markFederatedServerAccepted(actorIRI, metadata)
 		}
-	}
-
-	unknownProps := activity.GetUnknownProperties()
-	metadata := apmodels.ParseOwncastMetadata(unknownProps)
-	if metadata.IsOwncastServer {
-		log.Debugf("Accept activity from %s contains Owncast metadata", actorIRI)
 	}
 
 	return nil
@@ -51,7 +50,7 @@ func (s *Service) handleAcceptInboxRequest(c context.Context, activity vocab.Act
 // an Accept-of-Follow: it transitions our pending follow record for the
 // remote Owncast server into the accepted state and tops up the cached
 // metadata from the resolved actor.
-func (s *Service) markFederatedServerAccepted(actorIRI string) {
+func (s *Service) markFederatedServerAccepted(actorIRI string, metadata *apmodels.OwncastMetadata) {
 	log.Debugf("Received Accept for Follow request from %s", actorIRI)
 
 	parsedIRI, err := url.Parse(actorIRI)
@@ -92,6 +91,15 @@ func (s *Service) markFederatedServerAccepted(actorIRI string) {
 		displayName := truncateMetadata(actorData.Name, maxServerNameLen)
 		if err := repo.UpdateServerMetadata(serverURL, name, displayName, displayName, logoURL); err != nil {
 			log.Errorf("Failed to update server metadata for %s: %v", serverURL, err)
+		}
+	}
+
+	// If the Accept reports the remote stream is already live, reflect that now
+	// so a server featured while already streaming doesn't appear offline until
+	// its next periodic ping.
+	if metadata != nil && metadata.StreamStatus == config.APStreamStatusLive {
+		if err := repo.UpdateServerStatus(serverURL, true, buildStreamUpdateFromMetadata(metadata)); err != nil {
+			log.Errorf("Failed to set initial online status for %s: %v", serverURL, err)
 		}
 	}
 

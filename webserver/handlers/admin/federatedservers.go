@@ -155,10 +155,30 @@ func (a *Admin) RemoveFederatedServer(w http.ResponseWriter, r *http.Request, id
 		return
 	}
 
+	// Look up the server's IRI before deleting so we can tell it to drop us
+	// as a follower.
+	var iri string
+	if servers, err := repo.GetFederatedServers(); err == nil {
+		for _, srv := range servers {
+			if srv.ID == int64(id) {
+				iri = srv.IRI
+				break
+			}
+		}
+	}
+
 	if err := repo.RemoveFederatedServer(int64(id)); err != nil {
 		log.Errorf("Failed to remove federated server with ID %d: %v", id, err)
 		webutils.WriteSimpleResponse(w, false, "Failed to remove federated server: "+err.Error())
 		return
+	}
+
+	// Send an Undo of our Follow so the remote stops treating us as a follower.
+	// Best-effort: the local removal already succeeded.
+	if iri != "" {
+		if err := a.activitypub.Outbox().SendUnfollowRequestToOwncastServerURL(iri); err != nil {
+			log.Warnf("Unfeatured %s but failed to send unfollow: %v", iri, err)
+		}
 	}
 
 	log.Infof("Removed federated server with ID: %d", id)

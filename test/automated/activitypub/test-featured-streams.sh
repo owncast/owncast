@@ -366,6 +366,19 @@ server_object() {
     echo "$1" | jq -c --arg iri "$2" '.servers[]? | select(.iri == $iri)' 2>/dev/null
 }
 
+# server_id JSON IRI -> prints the numeric id of the server with that iri
+server_id() {
+    echo "$1" | jq -r --arg iri "$2" '.servers[]? | select(.iri == $iri) | .id' 2>/dev/null
+}
+
+# remove_featured_server WEB_PORT ID -> unfeatures (and unfollows) a server
+remove_featured_server() {
+    local web_port=$1 id=$2 auth
+    auth=$(get_admin_auth)
+    curl -s -X DELETE "http://localhost:${web_port}/api/admin/federation/servers/${id}" \
+        -H "Authorization: Basic ${auth}"
+}
+
 # server_field JSON IRI FIELD -> prints the value of FIELD (or empty).
 # Note: we deliberately avoid `// empty` here because jq treats a literal
 # false as "absent", which would turn isOnline=false into an empty string and
@@ -777,6 +790,114 @@ test_featuring_server_hidden_from_followers() {
     return 0
 }
 
+test_feature_while_already_live() {
+    log_test "TEST 9: Featuring a server that is already live shows it live promptly"
+
+    if [[ "${CI}" != "true" ]]; then
+        echo ""
+        read -p "Run the 'feature while already live' test (starts a stream)? [Y/n] " -n 1 -r
+        echo ""
+        if [[ "${REPLY}" =~ ^[Nn]$ ]]; then
+            log_warn "TEST 9 SKIPPED: declined to start a test stream"
+            return 0
+        fi
+    fi
+
+    local instance1_actor="${OWNCAST_URL}/federation/user/${OWNCAST_FED_USERNAME}"
+
+    # Unfeature instance 2 first, so instance 1 is NOT a follower when instance
+    # 2 goes live (otherwise instance 2's immediate go-live ping would reach
+    # instance 1 and mask what we're testing). The unfeature sends an Undo so
+    # instance 2 drops instance 1 as a follower, enabling a clean re-follow.
+    local id
+    id=$(server_id "$(get_featured_servers "${OWNCAST_PORT}" admin)" "${OWNCAST2_URL}")
+    if [[ -z "${id}" || "${id}" == "null" ]]; then
+        log_error "TEST 9 FAILED: could not find instance 2's id to unfeature"
+        return 1
+    fi
+    log_info "Unfeaturing instance 2 (id ${id}); waiting for the Undo to propagate..."
+    remove_featured_server "${OWNCAST_PORT}" "${id}" > /dev/null
+    sleep 12
+
+    # Start instance 2 streaming while instance 1 is not following it.
+    local expected_title="Already Live Test"
+    local auth
+    auth=$(get_admin_auth)
+    curl -s -X POST "http://localhost:${OWNCAST2_PORT}/api/admin/config/streamtitle" \
+        -H "Authorization: Basic ${auth}" -H "Content-Type: application/json" \
+        -d "{\"value\": \"${expected_title}\"}" > /dev/null
+
+    log_info "Starting test stream into instance 2..."
+    "${REPO_ROOT}/test/ocTestStream.sh" "rtmp://127.0.0.1:${OWNCAST2_RTMP_PORT}/live/${STREAM_KEY}" \
+        > "${TEMP_DIR}/teststream-live.log" 2>&1 &
+    TEST_STREAM_PID=$!
+
+    local waited=0
+    while [[ ${waited} -lt 90 ]]; do
+        if [[ "$(curl -s "http://localhost:${OWNCAST2_PORT}/api/status" | jq -r '.online // false' 2>/dev/null)" == "true" ]]; then
+            break
+        fi
+        if ! kill -0 "${TEST_STREAM_PID}" 2>/dev/null; then
+            log_error "TEST 9 FAILED: test stream exited early. ffmpeg log:"
+            cat "${TEMP_DIR}/teststream-live.log"
+            TEST_STREAM_PID=""
+            return 1
+        fi
+        sleep 3
+        waited=$((waited + 3))
+    done
+    if [[ "$(curl -s "http://localhost:${OWNCAST2_PORT}/api/status" | jq -r '.online // false' 2>/dev/null)" != "true" ]]; then
+        log_error "TEST 9 FAILED: instance 2 did not go live"
+        stop_test_stream
+        return 1
+    fi
+
+    # Re-feature instance 2 while it is already live, then approve.
+    local response success
+    response=$(add_featured_server "${OWNCAST_PORT}" "${OWNCAST2_URL}")
+    success=$(echo "${response}" | jq -r '.success // false' 2>/dev/null)
+    if [[ "${success}" != "true" ]]; then
+        log_error "TEST 9 FAILED: re-feature add not accepted: $(echo "${response}" | jq -r '.message // ""')"
+        stop_test_stream
+        return 1
+    fi
+    log_info "Approving the re-feature request on instance 2..."
+    approve_featured_request "${OWNCAST2_PORT}" "${instance1_actor}" > /dev/null
+    if ! wait_for_follow_status "${OWNCAST_PORT}" "${OWNCAST2_URL}" "accepted" 40; then
+        log_error "TEST 9 FAILED: re-feature follow not accepted (the unfeature Undo may not have cleared the prior follower)"
+        stop_test_stream
+        return 1
+    fi
+
+    # Instance 1 must show instance 2 live promptly -- this can only come from
+    # the Accept's carried status, since instance 1 just started following and
+    # the next periodic ping is minutes away.
+    local online="" json
+    waited=0
+    while [[ ${waited} -lt 30 ]]; do
+        json=$(get_featured_servers "${OWNCAST_PORT}" admin)
+        online=$(server_field "${json}" "${OWNCAST2_URL}" isOnline)
+        if [[ "${online}" == "true" ]]; then
+            break
+        fi
+        sleep 3
+        waited=$((waited + 3))
+    done
+
+    if [[ "${online}" != "true" ]]; then
+        log_error "TEST 9 FAILED: instance 2 not shown live on instance 1 within 30s of acceptance"
+        log_error "Server record: $(server_object "${json}" "${OWNCAST2_URL}")"
+        stop_test_stream
+        return 1
+    fi
+
+    local title
+    title=$(server_field "$(get_featured_servers "${OWNCAST_PORT}" admin)" "${OWNCAST2_URL}" streamTitle)
+    stop_test_stream
+    log_test "TEST 9 PASSED: featured-while-live shown online ~${waited}s after accept (title='${title}')"
+    return 0
+}
+
 # ==========================
 # Results
 # ==========================
@@ -866,6 +987,8 @@ main() {
     if test_live_status_flip; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
     echo ""
     if test_featuring_server_hidden_from_followers; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
+    echo ""
+    if test_feature_while_already_live; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
     echo ""
 
     print_results "${passed}" "${failed}"

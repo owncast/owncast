@@ -59,7 +59,10 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 	actorReference := activity.GetActivityStreamsActor()
 
 	if approved {
-		if err := requests.SendFollowAccept(s.workerpool, follow.Inbox, activity, localAccountName, s.builder, s.signer); err != nil {
+		// Only non-featured (fan) follows reach the auto-accept path here;
+		// featured follows always require manual approval, so live status in
+		// this Accept isn't needed and is reported as not-live.
+		if err := requests.SendFollowAccept(s.workerpool, follow.Inbox, activity, localAccountName, s.builder, s.signer, s.configRepository, false); err != nil {
 			log.Errorln("unable to send follow accept", err)
 			return err
 		}

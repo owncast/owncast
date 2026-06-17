@@ -52,6 +52,106 @@ func (s *Service) SendFollowRequestToOwncastServerURL(targetServerURL string, is
 	return s.SendFollowToAccount(targetActorAccount, isStreamConnected)
 }
 
+// SendUnfollowRequestToOwncastServerURL sends an Undo of our Follow to the
+// given Owncast server so it stops treating us as a follower. Used when an
+// admin unfeatures a server. Best-effort: the local record is removed
+// regardless, so callers should treat a returned error as non-fatal.
+func (s *Service) SendUnfollowRequestToOwncastServerURL(targetServerURL string) error {
+	if !s.configRepository.GetFederationEnabled() {
+		return nil
+	}
+
+	parsedURL, err := url.Parse(targetServerURL)
+	if err != nil {
+		return fmt.Errorf("failed to parse target URL: %w", err)
+	}
+
+	nodeinfo, err := utils.FetchNodeInfo(targetServerURL)
+	if err != nil {
+		return fmt.Errorf("failed to fetch nodeinfo from %s: %w", targetServerURL, err)
+	}
+
+	targetUsername, err := utils.ExtractFederationUsername(nodeinfo)
+	if err != nil {
+		return fmt.Errorf("failed to extract federation username: %w", err)
+	}
+
+	account := fmt.Sprintf("%s@%s", targetUsername, parsedURL.Host)
+	links, err := webfinger.GetWebfingerLinks(account)
+	if err != nil {
+		return fmt.Errorf("failed to get webfinger links for %s: %w", account, err)
+	}
+
+	user := apmodels.MakeWebFingerRequestResponseFromData(links)
+	if user.Self == "" {
+		return fmt.Errorf("no actor IRI found in webfinger response for %s", account)
+	}
+
+	actor, err := s.resolver.GetResolvedActorFromIRI(user.Self)
+	if err != nil {
+		return fmt.Errorf("failed to resolve actor from IRI %s: %w", user.Self, err)
+	}
+
+	if !strings.EqualFold(actor.ActorIri.Host, parsedURL.Host) {
+		return fmt.Errorf("resolved actor host %q does not match server host %q", actor.ActorIri.Host, parsedURL.Host)
+	}
+	if actor.Inbox == nil {
+		return fmt.Errorf("no inbox found for actor %s", actor.ActorIri.String())
+	}
+
+	return s.sendUndoFollow(actor.ActorIri, actor.Inbox)
+}
+
+// sendUndoFollow builds and queues an Undo of a Follow whose actor is this
+// server and whose object is the given remote actor.
+func (s *Service) sendUndoFollow(targetActorIRI, inbox *url.URL) error {
+	localUsername := s.configRepository.GetFederationUsername()
+	localActorIRI := s.builder.MakeLocalIRIForAccount(localUsername)
+
+	undoID := shortid.MustGenerate()
+	undoIRI := s.builder.MakeLocalIRIForResource(fmt.Sprintf("undo/%s", undoID))
+
+	// Reconstruct the Follow being undone (actor = us, object = remote actor).
+	follow := streams.NewActivityStreamsFollow()
+	followActor := streams.NewActivityStreamsActorProperty()
+	followActor.AppendIRI(localActorIRI)
+	follow.SetActivityStreamsActor(followActor)
+	followObject := streams.NewActivityStreamsObjectProperty()
+	followObject.AppendIRI(targetActorIRI)
+	follow.SetActivityStreamsObject(followObject)
+
+	undo := streams.NewActivityStreamsUndo()
+	undoIDProperty := streams.NewJSONLDIdProperty()
+	undoIDProperty.SetIRI(undoIRI)
+	undo.SetJSONLDId(undoIDProperty)
+
+	undoActor := streams.NewActivityStreamsActorProperty()
+	undoActor.AppendIRI(localActorIRI)
+	undo.SetActivityStreamsActor(undoActor)
+
+	undoObject := streams.NewActivityStreamsObjectProperty()
+	undoObject.AppendActivityStreamsFollow(follow)
+	undo.SetActivityStreamsObject(undoObject)
+
+	undoTo := streams.NewActivityStreamsToProperty()
+	undoTo.AppendIRI(targetActorIRI)
+	undo.SetActivityStreamsTo(undoTo)
+
+	jsonData, err := apmodels.Serialize(undo)
+	if err != nil {
+		return fmt.Errorf("failed to serialize undo activity: %w", err)
+	}
+
+	req, err := s.signer.CreateSignedRequest(jsonData, inbox, localActorIRI)
+	if err != nil {
+		return fmt.Errorf("failed to create signed request: %w", err)
+	}
+
+	s.workerpool.AddToOutboundQueue(req)
+	log.Infof("Sent unfollow (Undo) to %s", targetActorIRI.String())
+	return nil
+}
+
 // SendFollowToAccount sends a Follow activity to a fediverse account
 // expressed in webfinger form (user@host).
 func (s *Service) SendFollowToAccount(targetActorAccount string, isStreamConnected bool) error {

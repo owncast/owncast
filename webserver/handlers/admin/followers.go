@@ -48,8 +48,11 @@ func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 			go a.webhooks.SendFediverseEngagementFollowEvent(*approval.ActorIRI)
 		}
 
-		// Send the approval to the follow requestor.
-		if err := requests.SendFollowAccept(a.activitypub.Workerpool(), followRequest.Inbox, followRequest.RequestObject, localAccountName, a.apBuilder, a.apSigner); err != nil {
+		// Send the approval to the follow requestor, including our current
+		// stream status so a featured-streams follower approved while we are
+		// already live shows us live immediately.
+		streamActive := a.stream.GetStatus().Online
+		if err := requests.SendFollowAccept(a.activitypub.Workerpool(), followRequest.Inbox, followRequest.RequestObject, localAccountName, a.apBuilder, a.apSigner, a.configRepository, streamActive); err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
 		}
