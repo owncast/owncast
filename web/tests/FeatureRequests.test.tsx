@@ -58,6 +58,23 @@ describe('FeatureRequests', () => {
     expect(onApprove).not.toHaveBeenCalled();
   });
 
+  it('does not render a non-http link as a clickable anchor', () => {
+    // A deliberately hostile non-http(s) link is the whole point of this test.
+    // eslint-disable-next-line no-script-url
+    const maliciousLink = 'javascript:alert(1)';
+    const malicious: FeatureRequest[] = [
+      { link: maliciousLink, name: 'Evil Server', username: 'evil' },
+    ];
+    const { container } = render(
+      <FeatureRequests requests={malicious} onApprove={onApprove} onReject={onReject} />,
+    );
+
+    // No anchor should ever carry a javascript: href.
+    expect(container.querySelector('a[href^="javascript:"]')).toBeNull();
+    // The name is still shown, just as plain text.
+    expect(screen.getByText('Evil Server')).toBeInTheDocument();
+  });
+
   it('calls onApprove with the actor IRI after confirmation', async () => {
     onApprove.mockResolvedValue(undefined);
     render(<FeatureRequests requests={requests} onApprove={onApprove} onReject={onReject} />);

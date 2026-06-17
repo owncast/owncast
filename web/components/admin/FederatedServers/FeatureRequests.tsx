@@ -5,6 +5,7 @@ import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { Translation } from '../../ui/Translation/Translation';
 import { Localization } from '../../../types/localization';
 import { FeatureRequest } from '../../../hooks/useFeatureRequests';
+import { isValidUrl } from '../../../utils/validators';
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -133,9 +134,16 @@ export const FeatureRequests: FC<FeatureRequestsProps> = ({
                 )
               }
               title={
-                <a href={request.link} target="_blank" rel="noopener noreferrer">
-                  {request.name || request.username || request.link}
-                </a>
+                // Only render the remote-supplied link as a clickable anchor
+                // when it is a valid http(s) URL; otherwise show plain text so
+                // a hostile value (e.g. a javascript: URL) can't reach href.
+                isValidUrl(request.link) ? (
+                  <a href={request.link} target="_blank" rel="noopener noreferrer">
+                    {request.name || request.username || request.link}
+                  </a>
+                ) : (
+                  <span>{request.name || request.username || request.link}</span>
+                )
               }
               description={<Text type="secondary">{request.username || request.link}</Text>}
             />

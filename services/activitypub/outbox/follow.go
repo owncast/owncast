@@ -3,6 +3,7 @@ package outbox
 import (
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/go-fed/activity/streams"
 	log "github.com/sirupsen/logrus"
@@ -69,6 +70,21 @@ func (s *Service) SendFollowToAccount(targetActorAccount string, isStreamConnect
 	actor, err := s.resolver.GetResolvedActorFromIRI(actorIRI)
 	if err != nil {
 		return fmt.Errorf("failed to resolve actor from IRI %s: %w", actorIRI, err)
+	}
+
+	// Pin the resolved actor to the host of the account we were asked to
+	// follow. The featured-streams flow always targets a server URL the admin
+	// entered, and an Owncast server's actor lives on that same host. If
+	// webfinger points us at a different host, the directory entry would link
+	// to one server while actually representing another, so refuse it. (This
+	// path is only used by featured streams; general fediverse follows, which
+	// may legitimately delegate the actor to another host, do not go through
+	// here.)
+	if at := strings.LastIndex(targetActorAccount, "@"); at != -1 {
+		expectedHost := targetActorAccount[at+1:]
+		if !strings.EqualFold(actor.ActorIri.Host, expectedHost) {
+			return fmt.Errorf("resolved actor host %q does not match requested server host %q", actor.ActorIri.Host, expectedHost)
+		}
 	}
 
 	return s.SendFollowToAccountURI(actor.ActorIri.String(), actor.Username, actor.ActorIri.Host, isStreamConnected)

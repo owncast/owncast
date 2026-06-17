@@ -117,6 +117,13 @@
         color: var(--theme-color-components-text-on-light);
       }
 
+      .serverHost {
+        display: block;
+        font-size: 11px;
+        line-height: 1.4;
+        color: var(--theme-color-components-text-on-light-disabled);
+      }
+
       .streamTitle {
         display: block;
         font-size: 12px;
