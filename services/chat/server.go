@@ -138,24 +138,30 @@ func (s *Service) Addclient(conn *websocket.Conn, user *models.User, accessToken
 		ConnectedAt: time.Now(),
 	}
 
-	shouldSendJoinedMessages := s.configRepository.GetChatJoinPartMessagesEnabled()
+	// isNewJoin tracks whether this connection is a genuinely new chat join, as
+	// opposed to an additional client for an already-connected user or a quick
+	// reconnect. The admin "show join/part messages" setting is intentionally
+	// NOT consulted here: it governs only the visible broadcast in
+	// sendUserJoinedMessage, not whether the join occurred (so webhooks still
+	// fire when join/part messages are hidden). See #4950.
+	isNewJoin := true
 
-	// If there are existing clients connected for this user do not send
-	// a user joined message. Do not put this under a mutex, as
-	// GetClientsForUser already has a lock.
+	// If there are existing clients connected for this user this is not a new
+	// join. Do not put this under a mutex, as GetClientsForUser already has a
+	// lock.
 	if existingConnectedClients, _ := s.GetClientsForUser(user.ID); len(existingConnectedClients) > 0 {
-		shouldSendJoinedMessages = false
+		isNewJoin = false
 	}
 
 	s.mu.Lock()
 	{
-		// If there is a pending disconnect timer then clear it.
-		// Do not send user joined message if enough time hasn't passed where the
-		// user chat part message hasn't been sent yet.
+		// If there is a pending disconnect timer then clear it. A quick
+		// reconnect before the part was sent is not a new join, so neither the
+		// join broadcast nor the webhook should fire for it.
 		if ticker, ok := s.userPartedTimers[user.ID]; ok {
 			ticker.Stop()
 			delete(s.userPartedTimers, user.ID)
-			shouldSendJoinedMessages = false
+			isNewJoin = false
 		}
 
 		client.Id = s.seq
@@ -172,7 +178,7 @@ func (s *Service) Addclient(conn *websocket.Conn, user *models.User, accessToken
 	client.sendConnectedClientInfo()
 
 	if s.getStatus().Online {
-		if shouldSendJoinedMessages {
+		if isNewJoin {
 			s.sendUserJoinedMessage(client)
 		}
 		s.sendWelcomeMessageToClient(client)
@@ -192,8 +198,12 @@ func (s *Service) sendUserJoinedMessage(c *Client) {
 	userJoinedEvent.User = c.User
 	userJoinedEvent.ClientID = c.Id
 
-	if err := s.Broadcast(userJoinedEvent.GetBroadcastPayload()); err != nil {
-		log.Errorln("error adding client to chat server", err)
+	// Only broadcast the visible join message when join/part messages are
+	// enabled; the webhook below fires regardless, mirroring sendUserPartedMessage (#4950).
+	if s.configRepository.GetChatJoinPartMessagesEnabled() {
+		if err := s.Broadcast(userJoinedEvent.GetBroadcastPayload()); err != nil {
+			log.Errorln("error adding client to chat server", err)
+		}
 	}
 
 	// Send chat user joined webhook
