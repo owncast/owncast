@@ -83,11 +83,14 @@ func (s *Service) markFederatedServerAccepted(actorIRI string) {
 	if actorData, err := s.resolver.GetResolvedActorFromIRI(actorIRI); err == nil {
 		var logoURL string
 		if actorData.Image != nil {
-			logoURL = actorData.Image.String()
+			logoURL = truncateMetadata(actorData.Image.String(), maxMetadataURLLen)
 		}
+		// Clamp the attacker-controlled remote actor fields before storing.
 		// Summary falls back to the display name; Owncast actors don't
 		// expose a separate summary field on the Person object.
-		if err := repo.UpdateServerMetadata(serverURL, actorData.Username, actorData.Name, actorData.Name, logoURL); err != nil {
+		name := truncateMetadata(actorData.Username, maxServerNameLen)
+		displayName := truncateMetadata(actorData.Name, maxServerNameLen)
+		if err := repo.UpdateServerMetadata(serverURL, name, displayName, displayName, logoURL); err != nil {
 			log.Errorf("Failed to update server metadata for %s: %v", serverURL, err)
 		}
 	}

@@ -3,11 +3,13 @@ package inbox
 import (
 	"context"
 	"crypto/x509"
+	"encoding/json"
 	"encoding/pem"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/go-fed/httpsig"
 	"github.com/pkg/errors"
@@ -17,11 +19,30 @@ import (
 )
 
 func (s *Service) handle(request apmodels.InboxRequest) {
-	if verified, err := s.Verify(request.Request); err != nil {
+	keyOwner, err := s.Verify(request.Request)
+	if err != nil {
 		log.Debugln("Error in attempting to verify request", err)
 		return
-	} else if !verified {
-		log.Debugln("Request failed verification", err)
+	}
+	if keyOwner == nil {
+		log.Debugln("Request failed verification")
+		return
+	}
+
+	// Bind the activity to its signer. A validly signed request may only carry
+	// activities authored by the verified key's owner; otherwise a server could
+	// sign with its own key while claiming, in the body, to be a different actor
+	// (e.g. forging a featured-stream Offer/Leave/Accept as another server). We
+	// compare origins (hostname), the standard fediverse binding, which is
+	// robust to id/fragment formatting differences. Fail closed: if no actor
+	// IRI can be determined the activity is rejected.
+	actorIRI, err := actorIRIFromActivity(request.Body)
+	if err != nil {
+		log.Warnln("rejecting inbound activity: unable to bind actor to signing key:", err)
+		return
+	}
+	if !sameActorOrigin(actorIRI, keyOwner) {
+		log.Warnf("rejecting inbound activity: actor %q does not match signing key owner %q", actorIRI, keyOwner.String())
 		return
 	}
 
@@ -30,27 +51,120 @@ func (s *Service) handle(request apmodels.InboxRequest) {
 	}
 }
 
-// Verify will Verify the http signature of an inbound request as well as
-// check it against the list of blocked domains.
+// actorIRIFromActivity extracts the top-level "actor" IRI from a raw inbound
+// ActivityPub activity. The actor may be a string IRI, an object with an "id",
+// or an array of either; the first usable IRI is returned.
+func actorIRIFromActivity(body []byte) (string, error) {
+	var envelope struct {
+		Actor json.RawMessage `json:"actor"`
+	}
+	if err := json.Unmarshal(body, &envelope); err != nil {
+		return "", errors.Wrap(err, "unable to parse activity body")
+	}
+	return iriFromRawActor(envelope.Actor)
+}
+
+func iriFromRawActor(raw json.RawMessage) (string, error) {
+	if len(raw) == 0 {
+		return "", errors.New("activity has no actor")
+	}
+
+	var asString string
+	if err := json.Unmarshal(raw, &asString); err == nil {
+		if asString == "" {
+			return "", errors.New("actor IRI is empty")
+		}
+		return asString, nil
+	}
+
+	var asObject struct {
+		ID string `json:"id"`
+	}
+	if err := json.Unmarshal(raw, &asObject); err == nil && asObject.ID != "" {
+		return asObject.ID, nil
+	}
+
+	var asArray []json.RawMessage
+	if err := json.Unmarshal(raw, &asArray); err == nil && len(asArray) > 0 {
+		return iriFromRawActor(asArray[0])
+	}
+
+	return "", errors.New("unable to determine actor IRI from activity")
+}
+
+// sameActorOrigin reports whether the activity actor IRI and the verified key
+// owner share the same host. Cross-host mismatches are rejected, which is what
+// prevents one server from forging activities as another.
+func sameActorOrigin(actorIRI string, keyOwner *url.URL) bool {
+	actor, err := url.Parse(actorIRI)
+	if err != nil {
+		return false
+	}
+	return actor.Hostname() != "" && strings.EqualFold(actor.Hostname(), keyOwner.Hostname())
+}
+
+// maxRequestDateAge / maxRequestDateSkew bound how far an inbound request's
+// signed Date may be from now. The window is generous to tolerate clock skew
+// and delivery/queue delay while still limiting how long a captured,
+// validly-signed request can be replayed.
+const (
+	maxRequestDateAge  = 1 * time.Hour
+	maxRequestDateSkew = 1 * time.Hour
+)
+
+// requestDateWithinTolerance checks that a present, parseable Date header is
+// recent. It is intentionally lenient: a missing or unparseable Date is not an
+// error (to avoid rejecting otherwise-valid federation from senders that omit
+// or format it unusually). Senders that sign a standard Date — Owncast,
+// Mastodon, etc. — get replay bounding because the signed Date can't be altered
+// without invalidating the signature.
+func requestDateWithinTolerance(request *http.Request) error {
+	dateHeader := request.Header.Get("Date")
+	if dateHeader == "" {
+		return nil
+	}
+
+	sent, err := http.ParseTime(dateHeader)
+	if err != nil {
+		log.Debugln("inbound request has an unparseable Date header, skipping freshness check:", dateHeader)
+		return nil
+	}
+
+	now := time.Now()
+	if now.Sub(sent) > maxRequestDateAge {
+		return fmt.Errorf("request Date is too old (possible replay): %s", dateHeader)
+	}
+	if sent.Sub(now) > maxRequestDateSkew {
+		return fmt.Errorf("request Date is too far in the future: %s", dateHeader)
+	}
+
+	return nil
+}
+
+// Verify validates the HTTP signature of an inbound request against the
+// signing actor's public key and checks it against blocked domains/actors. On
+// success it returns the verified key owner's actor IRI (used by the caller to
+// bind the activity's actor to its signer); on failure it returns a nil IRI
+// and an error.
 // nolint: cyclop
-func (s *Service) Verify(request *http.Request) (bool, error) {
+func (s *Service) Verify(request *http.Request) (*url.URL, error) {
 	verifier, err := httpsig.NewVerifier(request)
 	if err != nil {
-		return false, errors.Wrap(err, "failed to create key verifier for request")
+		return nil, errors.Wrap(err, "failed to create key verifier for request")
 	}
 	pubKeyID, err := url.Parse(verifier.KeyId())
 	if err != nil {
-		return false, errors.Wrap(err, "failed to parse key to get key ID")
+		return nil, errors.Wrap(err, "failed to parse key to get key ID")
 	}
 
 	// Force federation only via servers using https.
 	if pubKeyID.Scheme != "https" {
-		return false, errors.New("federated servers must use https: " + pubKeyID.String())
+		return nil, errors.New("federated servers must use https: " + pubKeyID.String())
 	}
 
 	signature := request.Header.Get("signature")
 	if signature == "" {
-		return false, errors.New("http signature header not found in request")
+		return nil, errors.New("http signature header not found in request")
 	}
 
 	var algorithmString string
@@ -65,12 +179,12 @@ func (s *Service) Verify(request *http.Request) (bool, error) {
 
 	algorithmString = strings.Trim(algorithmString, "\"")
 	if algorithmString == "" {
-		return false, errors.New("Unable to determine algorithm to verify request")
+		return nil, errors.New("Unable to determine algorithm to verify request")
 	}
 
 	publicKey, err := s.resolver.GetResolvedPublicKeyFromIRI(pubKeyID.String())
 	if err != nil {
-		return false, errors.Wrap(err, "failed to resolve actor from IRI to fetch key")
+		return nil, errors.Wrap(err, "failed to resolve actor from IRI to fetch key")
 	}
 
 	var publicKeyActorIRI *url.URL
@@ -79,33 +193,33 @@ func (s *Service) Verify(request *http.Request) (bool, error) {
 	}
 
 	if publicKeyActorIRI == nil {
-		return false, errors.New("public key owner IRI is empty")
+		return nil, errors.New("public key owner IRI is empty")
 	}
 
 	// Test to see if the actor is in the list of blocked federated domains.
 	if s.isBlockedDomain(publicKeyActorIRI.Hostname()) {
-		return false, errors.New("domain is blocked")
+		return nil, errors.New("domain is blocked")
 	}
 
 	// If actor is specifically blocked, then fail validation.
 	if blocked, err := s.isBlockedActor(publicKeyActorIRI); err != nil || blocked {
-		return false, err
+		return nil, err
 	}
 
 	key, err := apmodels.GetPublicKeyPem(publicKey)
 	if err != nil {
-		return false, errors.Wrap(err, "failed to get public key PEM")
+		return nil, errors.Wrap(err, "failed to get public key PEM")
 	}
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {
 		log.Errorln("failed to parse PEM block containing the public key")
-		return false, errors.New("failed to parse PEM block containing the public key")
+		return nil, errors.New("failed to parse PEM block containing the public key")
 	}
 
 	parsedKey, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
 		log.Errorln("failed to parse DER encoded public key: " + err.Error())
-		return false, errors.Wrap(err, "failed to parse DER encoded public key")
+		return nil, errors.Wrap(err, "failed to parse DER encoded public key")
 	}
 
 	algos := []httpsig.Algorithm{
@@ -120,13 +234,19 @@ func (s *Service) Verify(request *http.Request) (bool, error) {
 		if _, tried := triedAlgos[algorithm]; !tried {
 			err := verifier.Verify(parsedKey, algorithm)
 			if err == nil {
-				return true, nil
+				// Bound replay of captured, validly-signed requests: a replayed
+				// capture carries its original (signed) Date, so reject ones
+				// outside a tolerance window.
+				if dateErr := requestDateWithinTolerance(request); dateErr != nil {
+					return nil, dateErr
+				}
+				return publicKeyActorIRI, nil
 			}
 			triedAlgos[algorithm] = err
 		}
 	}
 
-	return false, fmt.Errorf("http signature verification error(s) for: %s: %+v", pubKeyID.String(), triedAlgos)
+	return nil, fmt.Errorf("http signature verification error(s) for: %s: %+v", pubKeyID.String(), triedAlgos)
 }
 
 func (s *Service) isBlockedDomain(domain string) bool {
