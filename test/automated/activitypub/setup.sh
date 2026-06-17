@@ -14,6 +14,17 @@ NC='\033[0m'
 log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
+# When a GitHub token is available (e.g. GITHUB_TOKEN forwarded into this
+# script in CI), authenticate downloads from github.com so they use the
+# 5,000/hour rate limit instead of the anonymous, shared-per-IP 60/hour limit
+# that frequently fails on CI runners. Local runs without a token download
+# anonymously. curl drops the Authorization header on the cross-host redirect
+# to the asset CDN, so the token is not leaked.
+gh_curl_auth=()
+if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    gh_curl_auth=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+fi
+
 if [[ ${EUID} -ne 0 ]]; then
     log_error "This script must be run as root (sudo ./setup.sh)"
     exit 1
@@ -28,7 +39,7 @@ log_info "Setting up ActivityPub federation test environment..."
 # 1. Install mkcert
 if ! command -v mkcert &> /dev/null; then
     log_info "Downloading mkcert..."
-    curl -sL "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" -o /usr/local/bin/mkcert
+    curl -sL "${gh_curl_auth[@]}" "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" -o /usr/local/bin/mkcert
     chmod +x /usr/local/bin/mkcert
 else
     log_info "mkcert already installed"
@@ -71,7 +82,7 @@ fi
 if ! command -v caddy &> /dev/null; then
     log_info "Installing Caddy..."
     CADDY_VERSION="2.8.4"
-    curl -sL "https://github.com/caddyserver/caddy/releases/download/v${CADDY_VERSION}/caddy_${CADDY_VERSION}_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin caddy
+    curl -sL "${gh_curl_auth[@]}" "https://github.com/caddyserver/caddy/releases/download/v${CADDY_VERSION}/caddy_${CADDY_VERSION}_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin caddy
     chmod +x /usr/local/bin/caddy
     log_info "Caddy installed"
 else

@@ -34,15 +34,18 @@ func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Fire fediverse engagement follow event.
-		go a.webhooks.SendFediverseEngagementFollowEvent(*approval.ActorIRI)
-
 		localAccountName := a.configRepository.GetDefaultFederationUsername()
 
 		followRequest, err := a.followersRepository.GetByIRI(*approval.ActorIRI)
 		if err != nil {
 			webutils.WriteSimpleResponse(w, false, err.Error())
 			return
+		}
+
+		// Featured-streams follows are a directory relationship, not a fan
+		// follow, so don't fire the follower webhook for them.
+		if !followRequest.IsOwncastServer {
+			go a.webhooks.SendFediverseEngagementFollowEvent(*approval.ActorIRI)
 		}
 
 		// Send the approval to the follow requestor.

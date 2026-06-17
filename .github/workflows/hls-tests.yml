@@ -32,6 +32,9 @@ env:
   S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
   S3_REGION: ${{ secrets.S3_REGION }}
   S3_SECRET: ${{ secrets.S3_SECRET }}
+  # Authenticates github.com downloads in tools.sh (ffmpeg) to avoid the
+  # anonymous, shared-per-IP rate limit on CI runners.
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   tests:

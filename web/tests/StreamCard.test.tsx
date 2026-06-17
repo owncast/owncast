@@ -25,6 +25,14 @@ describe('StreamCard', () => {
     expect(screen.getByText('OFFLINE')).toBeInTheDocument();
   });
 
+  it('shows the real server hostname so a spoofed name cannot fully masquerade', () => {
+    render(<StreamCard {...defaultProps} serverName="Totally Legit News" />);
+
+    // The display name is shown, but so is the actual hostname of the link.
+    expect(screen.getByText('Totally Legit News')).toBeInTheDocument();
+    expect(screen.getByText('test.example.com')).toBeInTheDocument();
+  });
+
   it('renders online server with stream info', () => {
     const props: StreamCardProps = {
       ...defaultProps,

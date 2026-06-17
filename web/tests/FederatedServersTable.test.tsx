@@ -29,16 +29,16 @@ jest.mock('antd', () => ({
 describe('FederatedServersTable', () => {
   const mockServers: FederatedServerData[] = [
     {
-      id: '1',
-      url: 'https://server1.example.com',
+      id: 1,
+      iri: 'https://server1.example.com',
       name: 'Server 1',
       isOnline: true,
-      lastChecked: '2024-01-01 12:00',
+      lastStatusUpdate: '2024-01-01 12:00',
       addedAt: '2023-12-01',
     },
     {
-      id: '2',
-      url: 'https://server2.example.com',
+      id: 2,
+      iri: 'https://server2.example.com',
       name: 'Server 2',
       isOnline: false,
       addedAt: '2023-12-02',
@@ -100,7 +100,7 @@ describe('FederatedServersTable', () => {
     fireEvent.click(confirmButton);
 
     await waitFor(() => {
-      expect(mockOnRemove).toHaveBeenCalledWith('1');
+      expect(mockOnRemove).toHaveBeenCalledWith(1);
     });
   });
 

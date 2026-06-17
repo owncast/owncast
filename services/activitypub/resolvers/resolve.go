@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/url"
 
 	"github.com/go-fed/activity/streams"
 	"github.com/go-fed/activity/streams/vocab"
@@ -50,7 +51,23 @@ func (r *Resolver) Resolve(c context.Context, data []byte, callbacks ...interfac
 func (r *Resolver) ResolveIRI(c context.Context, iri string, callbacks ...interface{}) error {
 	log.Debugln("Resolving", iri)
 
-	req, _ := http.NewRequest(http.MethodGet, iri, nil)
+	// Guard against SSRF: never resolve an IRI that points at an internal or
+	// loopback address. This covers all resolution, including the signing key
+	// (keyId) fetched while verifying unauthenticated inbound requests, so a
+	// crafted keyId/actor cannot make us reach internal services. The
+	// retryable client additionally re-validates each redirect hop.
+	parsedIRI, err := url.Parse(iri)
+	if err != nil {
+		return errors.Wrap(err, "unable to parse IRI for resolution")
+	}
+	if utils.IsHostnameInternal(parsedIRI.Hostname()) {
+		return errors.Errorf("refusing to resolve internal address: %s", iri)
+	}
+
+	req, err := http.NewRequestWithContext(c, http.MethodGet, iri, nil)
+	if err != nil {
+		return errors.Wrap(err, "unable to build resolution request")
+	}
 	req.Header.Set("Accept", "application/activity+json, application/ld+json")
 
 	actor := r.builder.MakeLocalIRIForAccount(r.configRepository.GetDefaultFederationUsername())
@@ -70,7 +87,9 @@ func (r *Resolver) ResolveIRI(c context.Context, iri string, callbacks ...interf
 		return errors.New("request failed with status: " + response.Status)
 	}
 
-	data, err := io.ReadAll(response.Body)
+	// Cap the response size to avoid memory exhaustion from a hostile peer.
+	const maxResolveResponseBytes = 1 << 20 // 1 MiB
+	data, err := io.ReadAll(io.LimitReader(response.Body, maxResolveResponseBytes))
 	if err != nil {
 		return err
 	}

@@ -97,6 +97,10 @@ jobs:
       - name: Run Browser tests
         if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         uses: nick-fields/retry@v4
+        env:
+          # Authenticates github.com downloads in tools.sh (ffmpeg) to avoid
+          # the anonymous, shared-per-IP rate limit on CI runners.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           timeout_minutes: 20
           max_attempts: 3

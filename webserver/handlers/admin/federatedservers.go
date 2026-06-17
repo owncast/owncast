@@ -52,6 +52,36 @@ func (a *Admin) GetFederatedServers(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetFeatureRequests returns the pending requests from other Owncast servers
+// asking to feature this server's stream in their directory. These always
+// require explicit approval (via the follower-approval endpoint) before the
+// requesting server is allowed to list us.
+func (a *Admin) GetFeatureRequests(w http.ResponseWriter, r *http.Request) {
+	requests, err := a.followersRepository.GetPendingFeaturedFollowRequests()
+	if err != nil {
+		webutils.WriteSimpleResponse(w, false, "Failed to get feature requests: "+err.Error())
+		return
+	}
+
+	// Ensure we return an empty array instead of null.
+	if requests == nil {
+		requests = []models.Follower{}
+	}
+
+	response := struct {
+		Requests interface{} `json:"requests"`
+	}{
+		Requests: requests,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Errorln("Failed to encode feature requests response:", err)
+		webutils.WriteSimpleResponse(w, false, "Failed to encode response")
+		return
+	}
+}
+
 // AddFederatedServer kicks off a Follow request to another Owncast
 // instance and stores a pending follow record.
 func (a *Admin) AddFederatedServer(w http.ResponseWriter, r *http.Request) {

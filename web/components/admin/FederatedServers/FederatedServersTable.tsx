@@ -13,19 +13,25 @@ import { Localization } from '../../../types/localization';
 import styles from './FederatedServersTable.module.scss';
 
 export interface FederatedServerData {
-  id: string;
-  url: string;
-  name: string;
+  id: number;
+  iri: string;
+  name?: string;
+  displayName?: string;
   isOnline: boolean;
-  lastChecked?: string;
+  lastStatusUpdate?: string;
   addedAt: string;
 }
 
 export interface FederatedServersTableProps {
   servers: FederatedServerData[];
   loading?: boolean;
-  onRemove: (id: string) => Promise<void>;
+  onRemove: (id: number) => Promise<void>;
 }
+
+// Prefer the human-friendly display name, fall back to the federation
+// username so the column is never blank for an accepted server.
+const serverLabel = (server: FederatedServerData): string =>
+  server.displayName || server.name || '';
 
 export const FederatedServersTable: FC<FederatedServersTableProps> = ({
   servers,
@@ -33,9 +39,9 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
   onRemove,
 }) => {
   const { t } = useTranslation();
-  const [removingId, setRemovingId] = useState<string | null>(null);
+  const [removingId, setRemovingId] = useState<number | null>(null);
 
-  const handleRemove = async (id: string) => {
+  const handleRemove = async (id: number) => {
     setRemovingId(id);
     try {
       await onRemove(id);
@@ -57,11 +63,11 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
       ),
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: FederatedServerData) => (
+      render: (_: string, record: FederatedServerData) => (
         <Space>
-          <span>{text}</span>
+          <span>{serverLabel(record)}</span>
           <a
-            href={record.url}
+            href={record.iri}
             target="_blank"
             rel="noopener noreferrer"
             onClick={e => e.stopPropagation()}
@@ -75,8 +81,8 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
       title: (
         <Translation translationKey={Localization.Admin.FeaturedStreams.url} defaultText="URL" />
       ),
-      dataIndex: 'url',
-      key: 'url',
+      dataIndex: 'iri',
+      key: 'iri',
       ellipsis: true,
     },
     {
@@ -114,8 +120,8 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
           defaultText="Last Checked"
         />
       ),
-      dataIndex: 'lastChecked',
-      key: 'lastChecked',
+      dataIndex: 'lastStatusUpdate',
+      key: 'lastStatusUpdate',
       render: (text: string) =>
         text || (
           <Translation
@@ -148,7 +154,7 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
             <Translation
               translationKey={Localization.Admin.FeaturedStreams.unfeatureConfirm}
               defaultText="Unfeature {{name}}?"
-              vars={{ name: record.name }}
+              vars={{ name: serverLabel(record) }}
             />
           }
           onConfirm={() => handleRemove(record.id)}

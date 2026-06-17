@@ -107,21 +107,60 @@ func shouldProcessOfferFromServer(repo federatedserversrepository.FederatedServe
 	return true
 }
 
+// Bounds on attacker-controlled remote metadata. A hostile peer can send
+// anything in these fields, so clamp them before storing to avoid DB bloat and
+// UI breakage.
+const (
+	maxStreamTitleLen       = 300
+	maxStreamDescriptionLen = 2000
+	maxServerNameLen        = 200
+	maxMetadataURLLen       = 2048
+	maxTags                 = 20
+	maxTagLen               = 100
+)
+
+// truncateMetadata returns s limited to max runes (UTF-8 safe).
+func truncateMetadata(s string, max int) string {
+	if max <= 0 {
+		return ""
+	}
+	r := []rune(s)
+	if len(r) <= max {
+		return s
+	}
+	return string(r[:max])
+}
+
+// clampTags limits both the number of tags and the length of each.
+func clampTags(tags []string) []string {
+	if len(tags) > maxTags {
+		tags = tags[:maxTags]
+	}
+	clamped := make([]string, 0, len(tags))
+	for _, t := range tags {
+		clamped = append(clamped, truncateMetadata(t, maxTagLen))
+	}
+	return clamped
+}
+
 func buildStreamUpdateFromMetadata(metadata *apmodels.OwncastMetadata) *models.FederatedStreamUpdate {
 	var streamTitle, streamDescription, thumbnailURL *string
 	var tags []string
 
 	if metadata.StreamTitle != "" {
-		streamTitle = &metadata.StreamTitle
+		t := truncateMetadata(metadata.StreamTitle, maxStreamTitleLen)
+		streamTitle = &t
 	}
 	if metadata.StreamDescription != "" {
-		streamDescription = &metadata.StreamDescription
+		d := truncateMetadata(metadata.StreamDescription, maxStreamDescriptionLen)
+		streamDescription = &d
 	}
 	if metadata.ThumbnailURL != "" {
-		thumbnailURL = &metadata.ThumbnailURL
+		u := truncateMetadata(metadata.ThumbnailURL, maxMetadataURLLen)
+		thumbnailURL = &u
 	}
 	if len(metadata.Tags) > 0 {
-		tags = metadata.Tags
+		tags = clampTags(metadata.Tags)
 	}
 
 	return &models.FederatedStreamUpdate{

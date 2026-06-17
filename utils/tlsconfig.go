@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net/http"
 	"os"
 	"sync"
@@ -66,6 +67,19 @@ func GetRetryableHTTPClient() *http.Client {
 		DisableKeepAlives:   false,
 	})
 	retryClient.HTTPClient.Transport = transport
+
+	// Re-validate every redirect hop so a public URL can't 302 to an internal
+	// address (SSRF). Honors OWNCAST_ALLOW_INTERNAL_FEDERATION via
+	// IsHostnameInternal, so local-instance test federation still works.
+	retryClient.HTTPClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		if len(via) >= 10 {
+			return fmt.Errorf("stopped after 10 redirects")
+		}
+		if IsHostnameInternal(req.URL.Hostname()) {
+			return fmt.Errorf("refusing to follow redirect to internal host: %s", req.URL.Hostname())
+		}
+		return nil
+	}
 
 	client := retryClient.StandardClient()
 	client.Timeout = 8 * time.Second // Short timeout - legitimate servers respond quickly

@@ -29,6 +29,16 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 
 	followRequest := *follow
 
+	// Featured-streams follows (another Owncast server following us so it can
+	// list our stream in its directory) always require explicit approval,
+	// regardless of whether this server otherwise accepts follows
+	// automatically. Being featured by another server is a different
+	// relationship from gaining a fan, so the operator opts in per server. The
+	// Accept is sent later by the admin approval flow, not here.
+	if followRequest.IsOwncastServer {
+		approved = false
+	}
+
 	if err := s.followers.Add(followRequest, approved); err != nil {
 		log.Errorln("unable to save follow request", err)
 		return err
@@ -53,7 +63,18 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 			log.Errorln("unable to send follow accept", err)
 			return err
 		}
-		go s.webhooks.SendFediverseEngagementFollowEvent(actorIRI)
+		// Don't fire the follower webhook for featured-streams follows.
+		if !followRequest.IsOwncastServer {
+			go s.webhooks.SendFediverseEngagementFollowEvent(actorIRI)
+		}
+	}
+
+	// A Follow from another Owncast server is a featured-streams directory
+	// relationship, not a fan follow. It is kept and accepted above because we
+	// need it to deliver stream-status pings to that server, but it must not
+	// be surfaced as a new follower in chat or the activity feed.
+	if followRequest.IsOwncastServer {
+		return nil
 	}
 
 	// If this request is approved and we have not previously sent an action to

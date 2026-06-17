@@ -234,6 +234,7 @@
 			"browseUnavailableTitle": "Il catalogo dei plugin non è attualmente disponibile",
 			"browseUnavailableDescription": "Owncast non può raggiungere il catalogo dei plugin in questo momento. Puoi ancora caricare i file .ocpkg direttamente dalla scheda Installata.",
 			"browseUnavailableRetry": "Riprova",
+			"browsePreviewAlt": "Schermata di anteprima di {{name}}",
 			"updateAvailable": "Aggiornamento disponibile: v{{version}}",
 			"updateConfirmTitle": "Aggiornare {{name}} a v{{version}}?",
 			"updateConfirmOk": "Aggiorna",

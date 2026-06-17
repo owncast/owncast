@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y \
     gcc make \
     curl libcurl4-openssl-dev libssl-dev \
     jq sqlite3 ffmpeg \
+    fonts-dejavu-core \
     libnss3-tools \
     lsof procps \
     && rm -rf /var/lib/apt/lists/*

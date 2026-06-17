@@ -36,6 +36,18 @@ export const StreamCard: FC<StreamCardProps> = ({
     }
   };
 
+  // The server-supplied name/logo are not trustworthy (a remote server can
+  // call itself anything), but the link target is the immutable URL the admin
+  // vetted. Surface its hostname so visitors can see where a card actually
+  // leads rather than relying on the spoofable display name.
+  const serverHost = (() => {
+    try {
+      return new URL(serverUrl).hostname;
+    } catch {
+      return serverUrl;
+    }
+  })();
+
   const cardCover = (
     <div className={styles.coverContainer}>
       {thumbnail ? (
@@ -60,6 +72,9 @@ export const StreamCard: FC<StreamCardProps> = ({
         <div className={styles.textInfo}>
           <Text strong className={styles.serverName}>
             {serverName}
+          </Text>
+          <Text type="secondary" className={styles.serverHost} ellipsis>
+            {serverHost}
           </Text>
           {isOnline && streamTitle && (
             <Text className={styles.streamTitle} ellipsis>

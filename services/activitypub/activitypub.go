@@ -206,6 +206,22 @@ func (s *Service) StopStreamPingTicker() {
 	s.outbox.StopStreamPingTicker()
 }
 
+// SendStreamPing immediately emits a single Offer activity to followers. It is
+// called at go-live so peer Owncast servers update their featured-stream
+// directories right away instead of waiting up to a full ping interval for the
+// periodic ticker to fire.
+func (s *Service) SendStreamPing() error {
+	return s.outbox.SendStreamPing()
+}
+
+// SendStreamGoingOffline emits a Leave activity to followers when the stream
+// ends so peer Owncast servers drop this server from the live section of their
+// featured-stream directories immediately, rather than waiting for the
+// staleness sweep.
+func (s *Service) SendStreamGoingOffline() error {
+	return s.outbox.SendStreamGoingOffline()
+}
+
 // outboundWorkerPoolSize sizes the outbound delivery pool from the
 // current follower count: base workers + 1 per 100 followers, clamped.
 // Prevents excessive resource usage on instances with many followers.

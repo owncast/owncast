@@ -3,19 +3,34 @@
 -- Federation related queries.
 
 -- name: GetFollowerCount :one
-SELECT count(*) FROM ap_followers WHERE approved_at is not null;
+-- Featured-streams follows (another Owncast server following us so it can show
+-- our live status in its directory) are excluded: they are a directory
+-- relationship, not a fan follow, so they must not inflate the follower count.
+SELECT count(*) FROM ap_followers WHERE approved_at is not null AND owncast_server IS NOT 1;
 
 -- name: GetLocalPostCount :one
 SELECT count(*) FROM ap_outbox;
 
 -- name: GetFederationFollowersWithOffset :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null ORDER BY created_at DESC LIMIT ? OFFSET ?;
+-- Excludes featured-streams (Owncast-server) follows so they don't show up in
+-- the public or admin followers list; they are tracked as a directory
+-- relationship, not surfaced as followers.
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND owncast_server IS NOT 1 ORDER BY created_at DESC LIMIT ? OFFSET ?;
 
 -- name: GetRejectedAndBlockedFollowers :many
 SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null;
 
 -- name: GetFederationFollowerApprovalRequests :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null;
+-- Regular (fan) follow approval requests only. Featured-streams (Owncast
+-- server) requests are excluded here and surfaced separately via
+-- GetPendingFeaturedFollowRequests so they can be approved from the featured
+-- streams admin instead of the followers admin.
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND owncast_server IS NOT 1;
+
+-- name: GetPendingFeaturedFollowRequests :many
+-- Pending requests from other Owncast servers asking to feature this server's
+-- stream in their directory. These always require explicit approval.
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND owncast_server IS 1 ORDER BY created_at DESC;
 
 -- name: ApproveFederationFollower :exec
 UPDATE ap_followers SET approved_at = ?, disabled_at = null WHERE iri = ?;

@@ -6,16 +6,23 @@ import { Localization } from '../../../types/localization';
 import styles from './StreamsTab.module.scss';
 
 export interface FederatedServer {
-  id: string;
-  name: string;
-  url: string;
-  logo?: string;
+  id: number;
+  iri: string;
+  name?: string;
+  displayName?: string;
+  logoUrl?: string;
   isOnline: boolean;
   streamTitle?: string;
   streamDescription?: string;
   tags?: string[];
-  thumbnail?: string;
+  thumbnailUrl?: string;
 }
+
+// The human-facing label for a server: prefer the display name, fall back
+// to the federation username, then an empty string so we never render
+// "undefined".
+const serverDisplayName = (server: FederatedServer): string =>
+  server.displayName || server.name || '';
 
 export interface StreamsTabProps {
   servers?: FederatedServer[];
@@ -85,7 +92,7 @@ export const StreamsTab: FC<StreamsTabProps> = ({ servers = [], loading = false,
     if (a.isOnline !== b.isOnline) {
       return a.isOnline ? -1 : 1;
     }
-    return a.name.localeCompare(b.name);
+    return serverDisplayName(a).localeCompare(serverDisplayName(b));
   });
 
   return (
@@ -94,13 +101,13 @@ export const StreamsTab: FC<StreamsTabProps> = ({ servers = [], loading = false,
         {sortedServers.map(server => (
           <Col key={server.id} xs={24} sm={12} md={8} lg={6} xl={6} xxl={4}>
             <StreamCard
-              serverName={server.name}
-              serverUrl={server.url}
-              serverLogo={server.logo}
+              serverName={serverDisplayName(server)}
+              serverUrl={server.iri}
+              serverLogo={server.logoUrl}
               streamTitle={server.streamTitle}
               streamDescription={server.streamDescription}
               tags={server.tags}
-              thumbnail={server.thumbnail}
+              thumbnail={server.thumbnailUrl}
               isOnline={server.isOnline}
             />
           </Col>
