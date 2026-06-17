@@ -184,6 +184,14 @@ func (s *ServerInterfaceImpl) ApproveFollowerOptions(w http.ResponseWriter, r *h
 	s.h.middleware.RequireAdminAuth(s.h.admin.ApproveFollower)(w, r)
 }
 
+func (s *ServerInterfaceImpl) RemoveFollower(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.RemoveFollower)(w, r)
+}
+
+func (s *ServerInterfaceImpl) RemoveFollowerOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.RemoveFollower)(w, r)
+}
+
 func (s *ServerInterfaceImpl) UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(admin.UploadCustomEmoji)(w, r)
 }

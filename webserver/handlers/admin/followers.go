@@ -67,6 +67,32 @@ func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteSimpleResponse(w, true, "follower updated")
 }
 
+// RemoveFollower removes a follower without blocking them. Unlike rejecting,
+// this deletes the follow outright (no disabled_at), so the actor is free to
+// follow again later.
+func (a *Admin) RemoveFollower(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	var request generated.RemoveFollowerJSONBody
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		webutils.WriteSimpleResponse(w, false, "unable to parse request: "+err.Error())
+		return
+	}
+	if request.ActorIRI == "" {
+		webutils.WriteSimpleResponse(w, false, "actorIRI is required")
+		return
+	}
+
+	if err := a.followersRepository.RemoveByIRI(request.ActorIRI); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	webutils.WriteSimpleResponse(w, true, "follower removed")
+}
+
 // GetPendingFollowRequests will return a list of pending follow requests.
 func (a *Admin) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
 	requests, err := a.followersRepository.GetPendingFollowRequests()

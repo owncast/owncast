@@ -116,6 +116,9 @@ export const FOLLOWERS_BLOCKED = `${API_LOCATION}followers/blocked`;
 // Approve, reject a follow request
 export const SET_FOLLOWER_APPROVAL = `${API_LOCATION}followers/approve`;
 
+// Remove a follower without blocking them (they may follow again)
+export const REMOVE_FOLLOWER = `${API_LOCATION}followers/remove`;
+
 // List of inbound federated actions that took place.
 export const FEDERATION_ACTIONS = `${API_LOCATION}federation/actions`;
 

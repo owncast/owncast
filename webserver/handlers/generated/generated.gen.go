@@ -446,6 +446,12 @@ type ServerInterface interface {
 
 	// (OPTIONS /admin/followers/pending)
 	GetPendingFollowRequestsOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/followers/remove)
+	RemoveFollowerOptions(w http.ResponseWriter, r *http.Request)
+	// Remove a follower without blocking them (they may follow again)
+	// (POST /admin/followers/remove)
+	RemoveFollower(w http.ResponseWriter, r *http.Request)
 	// Get the current hardware stats
 	// (GET /admin/hardwarestats)
 	GetHardwareStats(w http.ResponseWriter, r *http.Request)
@@ -1479,6 +1485,17 @@ func (_ Unimplemented) GetPendingFollowRequests(w http.ResponseWriter, r *http.R
 
 // (OPTIONS /admin/followers/pending)
 func (_ Unimplemented) GetPendingFollowRequestsOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/followers/remove)
+func (_ Unimplemented) RemoveFollowerOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Remove a follower without blocking them (they may follow again)
+// (POST /admin/followers/remove)
+func (_ Unimplemented) RemoveFollower(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -4314,6 +4331,38 @@ func (siw *ServerInterfaceWrapper) GetPendingFollowRequestsOptions(w http.Respon
 	handler.ServeHTTP(w, r)
 }
 
+// RemoveFollowerOptions operation middleware
+func (siw *ServerInterfaceWrapper) RemoveFollowerOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RemoveFollowerOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RemoveFollower operation middleware
+func (siw *ServerInterfaceWrapper) RemoveFollower(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RemoveFollower(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetHardwareStats operation middleware
 func (siw *ServerInterfaceWrapper) GetHardwareStats(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -6362,6 +6411,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/admin/followers/pending", wrapper.GetPendingFollowRequestsOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/followers/remove", wrapper.RemoveFollowerOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/followers/remove", wrapper.RemoveFollower)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/hardwarestats", wrapper.GetHardwareStats)

@@ -982,6 +982,44 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /admin/followers/remove:
+    post:
+      summary: Remove a follower without blocking them (they may follow again)
+      operationId: RemoveFollower
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - actorIRI
+              properties:
+                actorIRI:
+                  type: string
+                  description: IRI of the follower to remove
+      responses:
+        '200':
+          description: Follower removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: RemoveFollowerOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /admin/emoji/upload:
     post:
       summary: Upload custom emoji

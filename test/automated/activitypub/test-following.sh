@@ -61,6 +61,7 @@ log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 log_test() { echo -e "${CYAN}[TEST]${NC} $1"; }
 
+# shellcheck disable=SC2329  # invoked via trap, not called directly
 cleanup() {
     log_info "Cleaning up..."
 
@@ -505,6 +506,58 @@ test_message_delivery_to_snac2_followers() {
     return 1
 }
 
+test_remove_follower_without_ban() {
+    log_test "TEST 4: Removing a follower removes them without banning"
+
+    local auth
+    auth=$(get_admin_auth)
+
+    local followers_json link before
+    followers_json=$(curl -s "http://localhost:${OWNCAST_PORT}/api/admin/followers?limit=200" \
+        -H "Authorization: Basic ${auth}")
+    link=$(echo "${followers_json}" | jq -r '.results[0].link // empty' 2>/dev/null)
+    before=$(echo "${followers_json}" | jq -r '.total // 0' 2>/dev/null)
+
+    if [[ -z "${link}" ]]; then
+        log_error "TEST 4 FAILED: no follower available to remove"
+        return 1
+    fi
+
+    log_info "Removing follower ${link} (count before: ${before})"
+    curl -s -X POST "http://localhost:${OWNCAST_PORT}/api/admin/followers/remove" \
+        -H "Authorization: Basic ${auth}" -H "Content-Type: application/json" \
+        -d "{\"actorIRI\": \"${link}\"}" > /dev/null
+
+    # The follower count must drop.
+    local waited=0 after="${before}"
+    while [[ ${waited} -lt 20 ]]; do
+        after=$(get_follower_count)
+        if [[ "${after}" -lt "${before}" ]]; then
+            break
+        fi
+        sleep 2
+        waited=$((waited + 2))
+    done
+    if [[ "${after}" -ge "${before}" ]]; then
+        log_error "TEST 4 FAILED: follower count did not drop after removal (${before} -> ${after})"
+        return 1
+    fi
+
+    # Crucially, the removed follower must NOT appear in the blocked list:
+    # removing is not banning.
+    local blocked_json
+    blocked_json=$(curl -s "http://localhost:${OWNCAST_PORT}/api/admin/followers/blocked" \
+        -H "Authorization: Basic ${auth}")
+    if echo "${blocked_json}" | jq -e --arg link "${link}" '.[]? | select(.link == $link)' > /dev/null 2>&1; then
+        log_error "TEST 4 FAILED: removed follower ${link} was banned (present in blocked list)"
+        log_error "Blocked: ${blocked_json}"
+        return 1
+    fi
+
+    log_test "TEST 4 PASSED: follower removed (${before} -> ${after}) and not blocked"
+    return 0
+}
+
 # ==========================
 # Results
 # ==========================
@@ -594,6 +647,13 @@ main() {
     echo ""
 
     if test_message_delivery_to_snac2_followers; then
+        passed=$((passed + 1))
+    else
+        failed=$((failed + 1))
+    fi
+    echo ""
+
+    if test_remove_follower_without_ban; then
         passed=$((passed + 1))
     else
         failed=$((failed + 1))

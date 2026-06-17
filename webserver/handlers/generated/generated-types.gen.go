@@ -807,6 +807,12 @@ type ApproveFollowerJSONBody struct {
 	Approved *bool   `json:"approved,omitempty"`
 }
 
+// RemoveFollowerJSONBody defines parameters for RemoveFollower.
+type RemoveFollowerJSONBody struct {
+	// ActorIRI IRI of the follower to remove
+	ActorIRI string `json:"actorIRI"`
+}
+
 // GetViewersOverTimeParams defines parameters for GetViewersOverTime.
 type GetViewersOverTimeParams struct {
 	// WindowStart Start date in unix time
@@ -1107,6 +1113,9 @@ type AddFederatedServerJSONRequestBody AddFederatedServerJSONBody
 
 // ApproveFollowerJSONRequestBody defines body for ApproveFollower for application/json ContentType.
 type ApproveFollowerJSONRequestBody ApproveFollowerJSONBody
+
+// RemoveFollowerJSONRequestBody defines body for RemoveFollower for application/json ContentType.
+type RemoveFollowerJSONRequestBody RemoveFollowerJSONBody
 
 // CreateWebhookJSONRequestBody defines body for CreateWebhook for application/json ContentType.
 type CreateWebhookJSONRequestBody CreateWebhookJSONBody
