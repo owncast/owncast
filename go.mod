@@ -9,7 +9,7 @@ require (
 	github.com/andybalholm/cascadia v1.3.4
 	github.com/aws/aws-sdk-go-v2 v1.42.0
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.24
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.103.3
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.104.0
 	github.com/extism/go-sdk v1.7.1
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-fed/activity v1.0.1-0.20220119073622-b14b50eecad0
