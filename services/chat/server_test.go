@@ -43,6 +43,10 @@ func TestSendUserJoinedMessage_WebhookFiresRegardlessOfJoinPartSetting(t *testin
 			if err != nil {
 				t.Fatal(err)
 			}
+			// Release the DB file handle before t.TempDir's RemoveAll runs;
+			// Windows cannot delete a file that is still open (registered after
+			// t.TempDir so it runs first, LIFO).
+			t.Cleanup(func() { _ = ds.DB.Close() })
 
 			realConfig := configrepository.New(ds)
 			realConfig.SetServerURL("http://localhost:8080")
