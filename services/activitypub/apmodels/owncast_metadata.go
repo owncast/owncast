@@ -88,6 +88,9 @@ func SetOwncastMetadata(unknownProps map[string]interface{}, repo configreposito
 	// Always include current stream status
 	if isStreamConnected {
 		unknownProps[config.APOwncastNamespaceStreamStatus] = config.APStreamStatusLive
+		// The live preview thumbnail only exists while streaming. Advertise it so
+		// following servers can show a preview in their featured-streams directory.
+		unknownProps[config.APOwncastNamespaceThumbnailURL] = fmt.Sprintf("%s/thumbnail.jpg", repo.GetServerURL())
 	} else {
 		unknownProps[config.APOwncastNamespaceStreamStatus] = config.APStreamStatusOffline
 	}

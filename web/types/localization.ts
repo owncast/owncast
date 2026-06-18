@@ -288,6 +288,7 @@ export const Localization = {
       status: 'Admin.FeaturedStreams.status',
       online: 'Admin.FeaturedStreams.online',
       offline: 'Admin.FeaturedStreams.offline',
+      pendingApproval: 'Admin.FeaturedStreams.pendingApproval',
       lastChecked: 'Admin.FeaturedStreams.lastChecked',
       never: 'Admin.FeaturedStreams.never',
       added: 'Admin.FeaturedStreams.added',

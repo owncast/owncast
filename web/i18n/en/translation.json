@@ -62,6 +62,7 @@
 			"never": "Never",
 			"offline": "Offline",
 			"online": "Online",
+			"pendingApproval": "Pending approval",
 			"onlyDefaultPortSupported": "Only the default HTTPS port (443) is supported",
 			"onlyHttpsSupported": "Only HTTPS URLs are supported",
 			"pageDescription": "Feature other Owncast streams to display their streaming status on your server. When enabled, visitors can discover and navigate to other featured streams through a dedicated \"Featured\" tab on your main page.",

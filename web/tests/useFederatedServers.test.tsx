@@ -95,9 +95,11 @@ describe('useFederatedServers contract', () => {
       expect(await screen.findByText('Goodnight TV')).toBeInTheDocument();
       expect(screen.queryByText('goodnight')).not.toBeInTheDocument();
 
-      // logoUrl + thumbnailUrl must reach the rendered <img> elements.
+      // logoUrl + thumbnailUrl must reach the rendered <img> elements. The
+      // thumbnail gets a per-fetch cache-buster query appended, so match on the
+      // URL prefix rather than an exact string.
       expect(container.querySelector(`img[src="${API_SERVER.logoUrl}"]`)).toBeInTheDocument();
-      expect(container.querySelector(`img[src="${API_SERVER.thumbnailUrl}"]`)).toBeInTheDocument();
+      expect(container.querySelector(`img[src^="${API_SERVER.thumbnailUrl}"]`)).toBeInTheDocument();
 
       // isOnline drives the LIVE badge and reveals the stream title.
       expect(screen.getByText('LIVE')).toBeInTheDocument();

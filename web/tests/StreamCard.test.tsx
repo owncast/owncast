@@ -3,20 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { StreamCard, StreamCardProps } from '../components/ui/StreamCard/StreamCard';
 
-// Mock window.open
-const mockOpen = jest.fn();
-window.open = mockOpen;
-
 describe('StreamCard', () => {
   const defaultProps: StreamCardProps = {
     serverName: 'Test Server',
     serverUrl: 'https://test.example.com',
     isOnline: false,
   };
-
-  beforeEach(() => {
-    mockOpen.mockClear();
-  });
 
   it('renders offline server correctly', () => {
     render(<StreamCard {...defaultProps} />);
@@ -66,17 +58,13 @@ describe('StreamCard', () => {
     expect(logos[0]).toHaveAttribute('src', 'https://test.example.com/logo.png');
   });
 
-  it('opens server URL in new tab when clicked', () => {
+  it('links to the server URL in a new tab', () => {
     render(<StreamCard {...defaultProps} />);
 
-    const card = screen.getByRole('article');
-    fireEvent.click(card);
-
-    expect(mockOpen).toHaveBeenCalledWith(
-      'https://test.example.com',
-      '_blank',
-      'noopener,noreferrer',
-    );
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('href', 'https://test.example.com');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
   it('calls custom onClick handler when provided', () => {
@@ -88,11 +76,9 @@ describe('StreamCard', () => {
 
     render(<StreamCard {...props} />);
 
-    const card = screen.getByRole('article');
-    fireEvent.click(card);
+    fireEvent.click(screen.getByRole('article'));
 
     expect(mockOnClick).toHaveBeenCalled();
-    expect(mockOpen).not.toHaveBeenCalled();
   });
 
   it('truncates long tags list to 3 items', () => {

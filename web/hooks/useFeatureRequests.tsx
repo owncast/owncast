@@ -78,9 +78,14 @@ export function useFeatureRequests(): UseFeatureRequestsResult {
   const approve = (actorIRI: string) => respond(actorIRI, true);
   const reject = (actorIRI: string) => respond(actorIRI, false);
 
+  // Fetch once on mount. fetchRequests must NOT be a dependency here: it is a
+  // useCallback keyed on `t`, and next-export-i18n returns a fresh `t` on every
+  // render, so fetchRequests changes identity every render. Depending on it
+  // would re-run this effect on each render -> setState -> re-render -> refetch,
+  // an infinite fetch loop. Consumers refetch explicitly via approve/reject.
   useEffect(() => {
     fetchRequests();
-  }, [fetchRequests]);
+  }, []);
 
   return { requests, loading, approve, reject, refetch: fetchRequests };
 }

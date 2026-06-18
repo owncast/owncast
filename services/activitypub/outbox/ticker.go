@@ -6,7 +6,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const streamPingInterval = 5 * time.Minute
+// StreamPingInterval is how often a live server re-pings its followers with an
+// Offer carrying current stream status. Exported so the featured-streams
+// staleness check can derive its offline threshold from the same cadence.
+const StreamPingInterval = 5 * time.Minute
 
 // StartStreamPingTicker starts a recurring stream-ping Offer activity.
 // Safe to call repeatedly; subsequent calls are no-ops while the ticker
@@ -20,7 +23,7 @@ func (s *Service) StartStreamPingTicker() {
 		return
 	}
 
-	t := time.NewTicker(streamPingInterval)
+	t := time.NewTicker(StreamPingInterval)
 	done := make(chan bool)
 	s.pingTicker = t
 	s.pingTickerDone = done

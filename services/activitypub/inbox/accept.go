@@ -85,11 +85,17 @@ func (s *Service) markFederatedServerAccepted(actorIRI string, metadata *apmodel
 			logoURL = truncateMetadata(actorData.Image.String(), maxMetadataURLLen)
 		}
 		// Clamp the attacker-controlled remote actor fields before storing.
-		// Summary falls back to the display name; Owncast actors don't
-		// expose a separate summary field on the Person object.
 		name := truncateMetadata(actorData.Username, maxServerNameLen)
 		displayName := truncateMetadata(actorData.Name, maxServerNameLen)
-		if err := repo.UpdateServerMetadata(serverURL, name, displayName, displayName, logoURL); err != nil {
+		// The Accept carries the remote server's summary as stream-description
+		// metadata. Store it as the summary so the directory can show a real
+		// description even while the server is offline; fall back to the
+		// display name when the peer sends none.
+		summary := displayName
+		if metadata != nil && metadata.StreamDescription != "" {
+			summary = truncateMetadata(metadata.StreamDescription, maxStreamDescriptionLen)
+		}
+		if err := repo.UpdateServerMetadata(serverURL, name, displayName, summary, logoURL); err != nil {
 			log.Errorf("Failed to update server metadata for %s: %v", serverURL, err)
 		}
 	}

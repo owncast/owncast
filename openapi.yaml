@@ -2499,6 +2499,28 @@ paths:
         default:
           $ref: '#/components/responses/Default'
   /admin/federation/servers:
+    get:
+      summary: Get all federated servers (admin), including pending requests
+      operationId: GetAdminFederatedServers
+      tags: ['Internal', 'Admin', 'Federation']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of all federated servers, including those whose follow is still pending approval
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  servers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FederatedServer'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
     post:
       summary: Add a federated server to follow
       operationId: AddFederatedServer

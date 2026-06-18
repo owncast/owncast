@@ -15,6 +15,19 @@ import (
 	"github.com/owncast/owncast/services/activitypub/webfinger"
 )
 
+const (
+	maxFederatedServerNameLen = 200
+	maxFederatedServerURLLen  = 2048
+)
+
+// clampFederatedMetadata bounds remote-supplied strings before persisting.
+func clampFederatedMetadata(s string, max int) string {
+	if len(s) > max {
+		return s[:max]
+	}
+	return s
+}
+
 // SendFollowRequestToOwncastServerURL fetches the nodeinfo of the target
 // Owncast server, validates it, and sends an ActivityPub Follow request.
 // Used by the admin UI to follow another Owncast instance for the
@@ -215,6 +228,11 @@ func (s *Service) SendFollowToAccountURI(targetActorID, targetUsername, targetSe
 	if err != nil {
 		return fmt.Errorf("failed to parse target actor ID: %w", err)
 	}
+	// The federated_servers record is keyed by the base server URL
+	// (scheme://host) -- the same key the admin handler created it with and the
+	// Accept handler later looks it up by. The targetServerURL argument is only
+	// the host, so derive the full key here for repo lookups/updates.
+	serverKey := fmt.Sprintf("%s://%s", targetIRI.Scheme, targetIRI.Host)
 	objectProperty.AppendIRI(targetIRI)
 	followActivity.SetActivityStreamsObject(objectProperty)
 
@@ -232,7 +250,7 @@ func (s *Service) SendFollowToAccountURI(targetActorID, targetUsername, targetSe
 
 	actorResponse, err := s.resolver.GetResolvedActorFromIRI(targetActorID)
 	if err != nil {
-		_ = repo.RemoveFederatedServerByIRI(targetServerURL)
+		_ = repo.RemoveFederatedServerByIRI(serverKey)
 		return fmt.Errorf("failed to resolve target actor: %w", err)
 	}
 
@@ -240,8 +258,23 @@ func (s *Service) SendFollowToAccountURI(targetActorID, targetUsername, targetSe
 	if actorResponse.Inbox != nil {
 		inboxURL = actorResponse.Inbox.String()
 	} else {
-		_ = repo.RemoveFederatedServerByIRI(targetServerURL)
+		_ = repo.RemoveFederatedServerByIRI(serverKey)
 		return fmt.Errorf("no inbox URL found for target actor")
+	}
+
+	// Populate the pending record with the remote server's name and logo from
+	// its resolved actor, so the directory shows the server immediately instead
+	// of a blank row while the follow awaits acceptance. The actor is public, so
+	// this works before the follow is accepted. The Accept handler refreshes
+	// these values later.
+	name := clampFederatedMetadata(actorResponse.Username, maxFederatedServerNameLen)
+	displayName := clampFederatedMetadata(actorResponse.Name, maxFederatedServerNameLen)
+	var logoURL string
+	if actorResponse.Image != nil {
+		logoURL = clampFederatedMetadata(actorResponse.Image.String(), maxFederatedServerURLLen)
+	}
+	if err := repo.UpdateServerMetadata(serverKey, name, displayName, displayName, logoURL); err != nil {
+		log.Warnf("Failed to set initial metadata for featured server %s: %v", serverKey, err)
 	}
 
 	jsonData, err := apmodels.Serialize(followActivity)

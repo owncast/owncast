@@ -100,6 +100,10 @@ func (s *ServerInterfaceImpl) GetFederatedServers(w http.ResponseWriter, r *http
 	s.h.admin.GetFederatedServers(w, r)
 }
 
+func (s *ServerInterfaceImpl) GetAdminFederatedServers(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetAdminFederatedServers)(w, r)
+}
+
 func (s *ServerInterfaceImpl) AddFederatedServer(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.AddFederatedServer)(w, r)
 }

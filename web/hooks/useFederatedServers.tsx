@@ -16,6 +16,7 @@ export interface FederatedServerResponse {
   isOnline: boolean;
   streamTitle?: string;
   streamDescription?: string;
+  summary?: string;
   tags?: string[];
   thumbnailUrl?: string;
   lastStatusUpdate?: string;
@@ -36,11 +37,18 @@ interface APIErrorResponse {
   errorCode?: string;
 }
 
-// API endpoints - these will need to be implemented on the backend
+// API endpoints. The public list is filtered to accepted servers only; the
+// admin list also includes servers whose follow is still pending approval.
 const API_FEDERATED_SERVERS = '/api/federation/servers';
+const API_ADMIN_FEDERATED_SERVERS = '/api/admin/federation/servers';
 const API_ADD_FEDERATED_SERVER = '/api/admin/federation/servers';
 const API_REMOVE_FEDERATED_SERVER = '/api/admin/federation/servers';
 const UNSUPPORTED_FEATURED_STREAMS_ERROR_CODE = 'UNSUPPORTED_FEATURED_STREAMS';
+
+// Poll the directory so a featured server going live/offline is reflected
+// without a page reload. Directory status changes less often than viewer
+// counts, so this is lighter than the main status poll.
+const FEDERATED_SERVERS_POLL_INTERVAL = 60_000;
 
 function getFederatedServerErrorMessage(
   error: APIErrorResponse,
@@ -64,14 +72,33 @@ export function useFederatedServers(isAdmin: boolean = false): UseFederatedServe
     setError(null);
 
     try {
-      const response = await fetch(API_FEDERATED_SERVERS);
+      // Admins fetch the full list (including pending) from the authenticated
+      // endpoint; the public viewer fetches only accepted servers.
+      const response = isAdmin
+        ? await fetch(API_ADMIN_FEDERATED_SERVERS, { credentials: 'include' })
+        : await fetch(API_FEDERATED_SERVERS);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch servers: ${response.statusText}`);
       }
 
       const data = await response.json();
-      setServers(data.servers || []);
+      // The remote thumbnail URL is static (e.g. .../thumbnail.jpg), so the
+      // browser would serve a cached image on every poll. Stamp a per-fetch
+      // cache-buster so each refresh pulls the current live thumbnail.
+      const cacheBuster = Date.now();
+      const fetchedServers: FederatedServerResponse[] = (data.servers || []).map(
+        (server: FederatedServerResponse) =>
+          server.thumbnailUrl
+            ? {
+                ...server,
+                thumbnailUrl: `${server.thumbnailUrl}${
+                  server.thumbnailUrl.includes('?') ? '&' : '?'
+                }cb=${cacheBuster}`,
+              }
+            : server,
+      );
+      setServers(fetchedServers);
     } catch (err: any) {
       const errorMessage = err.message || t(Localization.Admin.FeaturedStreams.failedToFeature);
       setError(errorMessage);
@@ -120,8 +147,16 @@ export function useFederatedServers(isAdmin: boolean = false): UseFederatedServe
     await fetchServers();
   };
 
+  // Fetch on mount, then poll so the directory reflects servers going
+  // live/offline without a reload. fetchServers is intentionally NOT a
+  // dependency: it is recreated every render (it closes over `t`), so depending
+  // on it would re-run this effect each render -> setState -> re-render ->
+  // refetch, an infinite loop (the trap that previously hit useFeatureRequests).
+  // The mount-time closure is sufficient; it only calls stable state setters.
   useEffect(() => {
     fetchServers();
+    const intervalId = setInterval(fetchServers, FEDERATED_SERVERS_POLL_INTERVAL);
+    return () => clearInterval(intervalId);
   }, []);
 
   return {

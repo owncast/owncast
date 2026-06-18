@@ -14,6 +14,7 @@ export interface FederatedServer {
   isOnline: boolean;
   streamTitle?: string;
   streamDescription?: string;
+  summary?: string;
   tags?: string[];
   thumbnailUrl?: string;
 }
@@ -105,7 +106,7 @@ export const StreamsTab: FC<StreamsTabProps> = ({ servers = [], loading = false,
               serverUrl={server.iri}
               serverLogo={server.logoUrl}
               streamTitle={server.streamTitle}
-              streamDescription={server.streamDescription}
+              streamDescription={server.streamDescription || server.summary}
               tags={server.tags}
               thumbnail={server.thumbnailUrl}
               isOnline={server.isOnline}

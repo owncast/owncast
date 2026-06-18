@@ -6,16 +6,22 @@ import (
 
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/federatedserversrepository"
+	"github.com/owncast/owncast/services/activitypub/outbox"
 	log "github.com/sirupsen/logrus"
 )
 
 const (
 	// staleThreshold is the duration after which a server is considered offline
-	// if no status update has been received.
-	staleThreshold = 20 * time.Minute
+	// if no status update has been received. A live server re-pings its
+	// followers every outbox.StreamPingInterval, so this allows two consecutive
+	// missed pings (plus a minute of grace for delivery jitter) before marking
+	// it offline.
+	staleThreshold = 2*outbox.StreamPingInterval + time.Minute
 
-	// checkInterval is how often we check for stale servers.
-	checkInterval = 10 * time.Minute
+	// checkInterval is how often we check for stale servers. Kept well below
+	// staleThreshold so a server is marked offline promptly after it crosses
+	// the threshold rather than up to a full check cycle later.
+	checkInterval = 1 * time.Minute
 )
 
 var (
@@ -61,7 +67,7 @@ func Start() {
 		}
 	}()
 
-	log.Infoln("Started stale featured server checker (10 minute interval)")
+	log.Infof("Started stale featured server checker (%s interval, %s offline threshold)", checkInterval, staleThreshold)
 }
 
 // Stop halts the stale server checker if it is running.

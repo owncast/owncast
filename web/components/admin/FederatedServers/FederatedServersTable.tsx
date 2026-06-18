@@ -6,6 +6,7 @@ import {
   LinkOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  ClockCircleOutlined,
 } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { Translation } from '../../ui/Translation/Translation';
@@ -20,6 +21,7 @@ export interface FederatedServerData {
   isOnline: boolean;
   lastStatusUpdate?: string;
   addedAt: string;
+  followStatus?: string;
 }
 
 export interface FederatedServersTableProps {
@@ -94,24 +96,39 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
       ),
       dataIndex: 'isOnline',
       key: 'isOnline',
-      render: (isOnline: boolean) => (
-        <Tag
-          icon={isOnline ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
-          color={isOnline ? 'success' : 'default'}
-        >
-          {isOnline ? (
-            <Translation
-              translationKey={Localization.Admin.FeaturedStreams.online}
-              defaultText="Online"
-            />
-          ) : (
-            <Translation
-              translationKey={Localization.Admin.FeaturedStreams.offline}
-              defaultText="Offline"
-            />
-          )}
-        </Tag>
-      ),
+      render: (isOnline: boolean, record: FederatedServerData) => {
+        // A server we've requested to feature but which hasn't accepted our
+        // follow yet isn't live anywhere yet -- surface that it's awaiting the
+        // remote server's approval instead of showing a misleading Offline.
+        if (record.followStatus && record.followStatus !== 'accepted') {
+          return (
+            <Tag icon={<ClockCircleOutlined />} color="warning">
+              <Translation
+                translationKey={Localization.Admin.FeaturedStreams.pendingApproval}
+                defaultText="Pending approval"
+              />
+            </Tag>
+          );
+        }
+        return (
+          <Tag
+            icon={isOnline ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
+            color={isOnline ? 'success' : 'default'}
+          >
+            {isOnline ? (
+              <Translation
+                translationKey={Localization.Admin.FeaturedStreams.online}
+                defaultText="Online"
+              />
+            ) : (
+              <Translation
+                translationKey={Localization.Admin.FeaturedStreams.offline}
+                defaultText="Offline"
+              />
+            )}
+          </Tag>
+        );
+      },
     },
     {
       title: (

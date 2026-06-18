@@ -3,6 +3,7 @@ package admin
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -18,26 +19,64 @@ import (
 
 const errCodeUnsupportedFeaturedStreams = "UNSUPPORTED_FEATURED_STREAMS"
 
-// GetFederatedServers returns the list of federated servers we are
-// following for the featured-streams mini-directory.
+// GetFederatedServers returns the PUBLIC featured-streams directory. It only
+// includes servers whose follow has been accepted by the remote server: a
+// server we have merely requested to feature (still pending approval) must not
+// be advertised to viewers as featured until it has consented. Use
+// GetAdminFederatedServers for the full admin-facing list.
 func (a *Admin) GetFederatedServers(w http.ResponseWriter, r *http.Request) {
+	servers, err := getFederatedServersList()
+	if err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	accepted := make([]models.FederatedServer, 0, len(servers))
+	for _, s := range servers {
+		if s.FollowStatus == "accepted" {
+			accepted = append(accepted, s)
+		}
+	}
+
+	writeFederatedServersResponse(w, accepted)
+}
+
+// GetAdminFederatedServers returns the full federated-servers list for the
+// admin UI, including entries whose follow is still pending approval (shown in
+// the admin as "pending approval") and any rejected ones. This endpoint
+// requires admin auth; the public directory (GetFederatedServers) is filtered
+// to accepted servers only.
+func (a *Admin) GetAdminFederatedServers(w http.ResponseWriter, r *http.Request) {
+	servers, err := getFederatedServersList()
+	if err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	writeFederatedServersResponse(w, servers)
+}
+
+// getFederatedServersList fetches all federated server records, normalising a
+// nil slice to empty.
+func getFederatedServersList() ([]models.FederatedServer, error) {
 	repo := federatedserversrepository.Get()
 	if repo == nil {
-		webutils.WriteSimpleResponse(w, false, "Federated servers repository is not initialised")
-		return
+		return nil, fmt.Errorf("federated servers repository is not initialised")
 	}
 
 	servers, err := repo.GetFederatedServers()
 	if err != nil {
-		webutils.WriteSimpleResponse(w, false, "Failed to get federated servers: "+err.Error())
-		return
+		return nil, fmt.Errorf("failed to get federated servers: %w", err)
 	}
 
-	// Ensure we return an empty array instead of null.
 	if servers == nil {
 		servers = []models.FederatedServer{}
 	}
+	return servers, nil
+}
 
+// writeFederatedServersResponse encodes the standard {servers: [...]} body.
+func writeFederatedServersResponse(w http.ResponseWriter, servers []models.FederatedServer) {
 	response := struct {
 		Servers interface{} `json:"servers"`
 	}{

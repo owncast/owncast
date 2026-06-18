@@ -28,14 +28,6 @@ export const StreamCard: FC<StreamCardProps> = ({
   isOnline,
   onClick,
 }) => {
-  const handleClick = () => {
-    if (onClick) {
-      onClick();
-    } else {
-      window.open(serverUrl, '_blank', 'noopener,noreferrer');
-    }
-  };
-
   // The server-supplied name/logo are not trustworthy (a remote server can
   // call itself anything), but the link target is the immutable URL the admin
   // vetted. Surface its hostname so visitors can see where a card actually
@@ -48,9 +40,13 @@ export const StreamCard: FC<StreamCardProps> = ({
     }
   })();
 
+  // Show the live stream thumbnail only while the server is live; when offline
+  // (or if no thumbnail is available) fall back to the server logo. Gating on
+  // isOnline rather than thumbnail presence avoids showing a stale preview for
+  // a server that has since gone offline.
   const cardCover = (
     <div className={styles.coverContainer}>
-      {thumbnail ? (
+      {isOnline && thumbnail ? (
         <img alt={serverName} src={thumbnail} className={styles.thumbnail} />
       ) : (
         <div className={styles.placeholderThumbnail}>
@@ -83,8 +79,8 @@ export const StreamCard: FC<StreamCardProps> = ({
           )}
         </div>
       </div>
-      {isOnline && streamDescription && (
-        <Paragraph ellipsis={{ rows: 2 }} className={styles.description}>
+      {streamDescription && (
+        <Paragraph ellipsis={{ rows: 3 }} className={styles.description}>
           {streamDescription}
         </Paragraph>
       )}
@@ -100,19 +96,29 @@ export const StreamCard: FC<StreamCardProps> = ({
     </div>
   );
 
+  // Render the card as a real anchor so the destination is visible on hover
+  // (status bar), supports middle-click / open-in-new-tab, and is keyboard
+  // focusable. The link target is the vetted, immutable server URL.
   return (
-    <Card
-      hoverable
-      role="article"
-      className={classNames(styles.streamCard, {
-        [styles.online]: isOnline,
-        [styles.offline]: !isOnline,
-      })}
-      cover={cardCover}
-      onClick={handleClick}
-      bodyStyle={{ padding: 0 }}
+    <a
+      className={styles.cardLink}
+      href={serverUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={onClick}
     >
-      {cardDescription}
-    </Card>
+      <Card
+        hoverable
+        role="article"
+        className={classNames(styles.streamCard, {
+          [styles.online]: isOnline,
+          [styles.offline]: !isOnline,
+        })}
+        cover={cardCover}
+        bodyStyle={{ padding: 0 }}
+      >
+        {cardDescription}
+      </Card>
+    </a>
   );
 };
