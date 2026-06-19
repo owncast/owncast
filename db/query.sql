@@ -337,3 +337,61 @@ UPDATE federated_servers SET name = ?, display_name = ?, summary = ?, logo_url =
 
 -- name: GetPendingFederatedServers :many
 SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE pending = true ORDER BY added_at DESC;
+
+-- Recording, replay and clip related queries.
+
+-- name: GetStreams :many
+SELECT id, stream_title, start_time, end_time FROM streams ORDER BY start_time DESC;
+
+-- name: GetStreamById :one
+SELECT id, stream_title, start_time, end_time FROM streams WHERE id = ? LIMIT 1;
+
+-- name: GetOutputConfigurationsForStreamId :many
+SELECT id, stream_id, variant_id, name, segment_duration, bitrate, framerate, resolution_width, resolution_height FROM video_segment_output_configuration WHERE stream_id = ?;
+
+-- name: GetOutputConfigurationForId :one
+SELECT id, stream_id, variant_id, name, segment_duration, bitrate, framerate, resolution_width, resolution_height FROM video_segment_output_configuration WHERE id = ?;
+
+-- name: GetSegmentsForOutputId :many
+SELECT id, stream_id, output_configuration_id, path, timestamp FROM video_segments WHERE output_configuration_id = ? ORDER BY timestamp ASC;
+
+-- name: GetSegmentsForOutputIdAndWindow :many
+SELECT id, stream_id, output_configuration_id, path, relative_timestamp, timestamp FROM video_segments WHERE output_configuration_id = @output_configuration_id AND relative_timestamp >= @start_seconds AND relative_timestamp <= @end_seconds ORDER BY relative_timestamp ASC;
+
+-- name: InsertStream :exec
+INSERT INTO streams (id, stream_title, start_time, end_time) VALUES(?, ?, ?, ?);
+
+-- name: InsertOutputConfiguration :exec
+INSERT INTO video_segment_output_configuration (id, variant_id, stream_id, name, segment_duration, bitrate, framerate, resolution_width, resolution_height, timestamp) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+-- name: InsertSegment :exec
+INSERT INTO video_segments (id, stream_id, output_configuration_id, path, relative_timestamp, timestamp) VALUES(?, ?, ?, ?, ?, ?);
+
+-- name: SetStreamEnded :exec
+UPDATE streams SET end_time = ? WHERE id = ?;
+
+-- name: InsertClip :exec
+INSERT INTO replay_clips (id, stream_id, clip_title, relative_start_time, relative_end_time, timestamp) VALUES(?, ?, ?, ?, ?, ?);
+
+-- name: GetAllClips :many
+SELECT rc.id AS id, rc.clip_title, rc.stream_id, rc.relative_start_time, rc.relative_end_time, (rc.relative_end_time - rc.relative_start_time) AS duration_seconds, rc.timestamp, s.stream_title AS stream_title
+	FROM replay_clips rc
+	JOIN streams s ON rc.stream_id = s.id
+	ORDER BY rc.timestamp DESC;
+
+-- name: GetAllClipsForStream :many
+SELECT rc.id AS clip_id, rc.stream_id, rc.clipped_by, rc.clip_title, rc.relative_start_time, rc.relative_end_time, rc.timestamp,
+	s.stream_title AS stream_title
+	FROM replay_clips rc
+	JOIN streams s ON rc.stream_id = s.id
+	WHERE rc.stream_id = ?
+	ORDER BY rc.timestamp DESC;
+
+-- name: GetClip :one
+SELECT id AS clip_id, stream_id, clipped_by, clip_title, timestamp AS clip_timestamp, relative_start_time, relative_end_time FROM replay_clips WHERE id = ?;
+
+-- name: GetFinalSegmentForStream :one
+SELECT id, stream_id, output_configuration_id, path, relative_timestamp, timestamp FROM video_segments WHERE stream_id = ? ORDER BY relative_timestamp DESC LIMIT 1;
+
+-- name: FixUnfinishedStreams :exec
+UPDATE streams SET end_time = (SELECT MAX(timestamp) FROM video_segments WHERE stream_id = streams.id) WHERE end_time IS NULL;

@@ -392,6 +392,22 @@ type ChatMessages_Item struct {
 	union json.RawMessage
 }
 
+// Clip A clip created from a window of a recorded stream
+type Clip struct {
+	ClippedBy       *string `json:"clipped_by,omitempty"`
+	DurationSeconds *int    `json:"durationSeconds,omitempty"`
+	Id              *string `json:"id,omitempty"`
+
+	// Manifest Path to the clip's HLS master playlist
+	Manifest          *string  `json:"manifest,omitempty"`
+	RelativeEndTime   *float32 `json:"relativeEndTime,omitempty"`
+	RelativeStartTime *float32 `json:"relativeStartTime,omitempty"`
+	StreamId          *string  `json:"stream_id,omitempty"`
+	StreamTitle       *string  `json:"stream_title,omitempty"`
+	Timestamp         *string  `json:"timestamp,omitempty"`
+	Title             *string  `json:"title,omitempty"`
+}
+
 // CmcdReport A CMCD v2 (CTA-5004-A) report keyed by CMCD key names. Any valid CMCD key is accepted; the keys below are the ones consumed.
 type CmcdReport struct {
 	// Bs Buffer starvation occurred
@@ -786,6 +802,18 @@ type PlaybackMetrics struct {
 
 	// QualityVariantChanges Quality variant switches since the previous report, not a running total.
 	QualityVariantChanges float64 `json:"qualityVariantChanges"`
+}
+
+// Replay A recorded stream that can be replayed
+type Replay struct {
+	EndTime    *string `json:"endTime,omitempty"`
+	Id         *string `json:"id,omitempty"`
+	InProgress *bool   `json:"inProgress,omitempty"`
+
+	// Manifest Path to the replay's HLS master playlist
+	Manifest  *string `json:"manifest,omitempty"`
+	StartTime *string `json:"startTime,omitempty"`
+	Title     *string `json:"title,omitempty"`
 }
 
 // S3Info defines model for S3Info.
@@ -1245,6 +1273,14 @@ type UpdateUserEnabledParams struct {
 	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
 }
 
+// AddClipJSONBody defines parameters for AddClip.
+type AddClipJSONBody struct {
+	ClipTitle                *string  `json:"clipTitle,omitempty"`
+	RelativeEndTimeSeconds   *float32 `json:"relativeEndTimeSeconds,omitempty"`
+	RelativeStartTimeSeconds *float32 `json:"relativeStartTimeSeconds,omitempty"`
+	StreamId                 *string  `json:"streamId,omitempty"`
+}
+
 // GetFollowersParams defines parameters for GetFollowers.
 type GetFollowersParams struct {
 	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
@@ -1502,6 +1538,9 @@ type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
 
 // UpdateUserEnabledJSONRequestBody defines body for UpdateUserEnabled for application/json ContentType.
 type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody
+
+// AddClipJSONRequestBody defines body for AddClip for application/json ContentType.
+type AddClipJSONRequestBody AddClipJSONBody
 
 // SendChatActionJSONRequestBody defines body for SendChatAction for application/json ContentType.
 type SendChatActionJSONRequestBody = MessageEvent

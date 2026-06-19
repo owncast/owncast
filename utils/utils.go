@@ -308,12 +308,20 @@ func VerifyFFMpegPath(path string) error {
 	return nil
 }
 
-// CleanupDirectory removes all contents within the directory, or creates it if it does not exist. Throws fatal error on failure.
-func CleanupDirectory(path string) {
-	log.Traceln("Cleaning", path)
+// CleanupDirectory removes all contents within the directory, or creates it if
+// it does not exist. Throws fatal error on failure. When keepOldFiles is true
+// the existing contents are preserved (used when replay features are enabled
+// and previously recorded video must not be wiped between streams).
+func CleanupDirectory(path string, keepOldFiles bool) {
 	if err := os.MkdirAll(path, 0o750); err != nil {
 		log.Fatalf("Unable to create '%s'. Please check the ownership and permissions: %s\n", path, err)
 	}
+
+	if keepOldFiles {
+		return
+	}
+
+	log.Traceln("Cleaning", path)
 	entries, err := os.ReadDir(path)
 	if err != nil {
 		log.Fatalf("Unable to read contents of '%s'. Please check the ownership and permissions: %s\n", path, err)
@@ -324,6 +332,34 @@ func CleanupDirectory(path string) {
 			log.Fatalf("Unable to remove file or directory contained in '%s'. Please check the ownership and permissions: %s\n", path, err)
 		}
 	}
+}
+
+// RoundUpToNearest rounds x up to the nearest multiple of `to`.
+func RoundUpToNearest(x float32, to int) int {
+	if to == 0 {
+		return int(math.Ceil(float64(x)))
+	}
+
+	xInt := int(math.Ceil(float64(x)))
+
+	if xInt%to == 0 {
+		return xInt
+	}
+	return xInt + to - xInt%to
+}
+
+// RoundDownToNearest rounds x down to the nearest multiple of `to`.
+func RoundDownToNearest(x float32, to int) int {
+	if to == 0 {
+		return int(math.Floor(float64(x)))
+	}
+
+	xInt := int(math.Floor(float64(x)))
+
+	if xInt%to == 0 {
+		return xInt
+	}
+	return xInt - xInt%to
 }
 
 // FindInSlice will return if a string is in a slice, and the index of that string.

@@ -3989,9 +3989,117 @@ paths:
                 $ref: '#/components/schemas/BaseAPIResponse'
         '400':
           $ref: '#/components/responses/400'
+  /replays:
+    get:
+      summary: Get a list of all available stream replays
+      description: Requires the experimental replay features to be enabled, otherwise responds with 404.
+      operationId: GetReplays
+      tags: ['Internal']
+      responses:
+        '200':
+          description: List of replayable streams
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Replay'
+        '404':
+          description: Replay features are not enabled
+  /clips:
+    get:
+      summary: Get a list of all created clips
+      description: Requires the experimental replay features to be enabled, otherwise responds with 404.
+      operationId: GetAllClips
+      tags: ['Internal']
+      responses:
+        '200':
+          description: List of clips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Clip'
+        '404':
+          description: Replay features are not enabled
+  /clip:
+    post:
+      summary: Create a clip from a recorded stream
+      description: Requires the experimental replay features to be enabled, otherwise responds with 404.
+      operationId: AddClip
+      tags: ['Internal']
+      requestBody:
+        description: The stream and time window (in seconds, relative to the start of the stream) to clip.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                streamId:
+                  type: string
+                clipTitle:
+                  type: string
+                relativeStartTimeSeconds:
+                  type: number
+                relativeEndTimeSeconds:
+                  type: number
+      responses:
+        '200':
+          description: Clip created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          description: Replay features are not enabled
 
 components:
   schemas:
+    Replay:
+      type: object
+      description: A recorded stream that can be replayed
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+        inProgress:
+          type: boolean
+        manifest:
+          type: string
+          description: Path to the replay's HLS master playlist
+    Clip:
+      type: object
+      description: A clip created from a window of a recorded stream
+      properties:
+        id:
+          type: string
+        stream_id:
+          type: string
+        clipped_by:
+          type: string
+        title:
+          type: string
+        stream_title:
+          type: string
+        relativeStartTime:
+          type: number
+        relativeEndTime:
+          type: number
+        durationSeconds:
+          type: integer
+        manifest:
+          type: string
+          description: Path to the clip's HLS master playlist
+        timestamp:
+          type: string
     Error:
       type: object
       description: Structure for an error response

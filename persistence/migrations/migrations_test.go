@@ -56,6 +56,8 @@ func TestRun_FreshDatabase(t *testing.T) {
 		"notifications", "messages", "auth", "ip_bans",
 		"federated_servers",
 		"ap_delivery_queue",
+		"streams", "video_segment_output_configuration",
+		"video_segments", "replay_clips",
 		"goose_db_version",
 	}
 	for _, name := range expectedTables {
@@ -69,8 +71,8 @@ func TestRun_FreshDatabase(t *testing.T) {
 		t.Error("fresh install should not have legacy config table")
 	}
 
-	if v := gooseVersion(t, db); v != 6 {
-		t.Errorf("goose version = %d, want 6", v)
+	if v := gooseVersion(t, db); v != 7 {
+		t.Errorf("goose version = %d, want 7", v)
 	}
 
 	// Calling Run a second time should be a no-op (idempotent).
@@ -94,8 +96,8 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	}
 
 	// Goose should record the latest migration.
-	if v := gooseVersion(t, db); v != 6 {
-		t.Errorf("goose version = %d, want 6", v)
+	if v := gooseVersion(t, db); v != 7 {
+		t.Errorf("goose version = %d, want 7", v)
 	}
 
 	// Config version should still be 9, the legacy bridge was not invoked.
@@ -105,12 +107,13 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 		t.Errorf("config.version = %d, want 9", version)
 	}
 
-	// goose_db_version, federated_servers, and the durable ActivityPub
-	// delivery queue are added to a legacy schema.
+	// goose_db_version, federated_servers, the durable ActivityPub
+	// delivery queue, and the four replay tables are added to a legacy
+	// schema.
 	var newTableCount int
 	mustScan(t, db.QueryRow(`SELECT count(*) FROM sqlite_master WHERE type='table'`), &newTableCount)
-	if newTableCount != tableCount+3 {
-		t.Errorf("table count changed from %d to %d (expected +3)", tableCount, newTableCount)
+	if newTableCount != tableCount+7 {
+		t.Errorf("table count changed from %d to %d (expected +7)", tableCount, newTableCount)
 	}
 }
 
@@ -141,8 +144,8 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 	}
 
 	// Goose should have recorded the latest migration.
-	if v := gooseVersion(t, db); v != 6 {
-		t.Errorf("goose version = %d, want 6", v)
+	if v := gooseVersion(t, db); v != 7 {
+		t.Errorf("goose version = %d, want 7", v)
 	}
 }
 

@@ -34,6 +34,7 @@ import (
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/dispatcher"
+	"github.com/owncast/owncast/services/replays"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stalefeaturedcheckservice"
 	"github.com/owncast/owncast/services/stream"
@@ -62,6 +63,7 @@ var (
 	webServerIPOverride            = flag.String("webserverip", "", "Force web server to listen on this IP address")
 	rtmpPortOverride               = flag.Int("rtmpport", 0, "Set listen port for the RTMP server")
 	followerValidationIntervalSecs = flag.Int("followervalidationinterval", 0, "Set follower validation interval in seconds")
+	enableReplayFeatures           = flag.Bool("enableReplayFeatures", false, "Enable experimental stream replay, recording and clip features")
 )
 
 // nolint:cyclop
@@ -126,6 +128,7 @@ func main() {
 	}
 
 	cfg.EnableDebugFeatures = *enableDebugOptions
+	config.EnableReplayFeatures = *enableReplayFeatures
 
 	if *dbFile != "" {
 		cfg.DatabaseFilePath = *dbFile
@@ -175,6 +178,12 @@ func main() {
 	userRepository := userrepository.New(dataStore)
 	notificationsRepository := notificationsrepository.New(dataStore, configRepository)
 	federatedServersRepository := federatedserversrepository.New(dataStore)
+
+	// Replay subsystem (stream recording, replays, clips). Constructed
+	// regardless of the feature flag so the wiring is uniform; the flag gates
+	// whether it actually records anything and whether its routes are served.
+	replaysSvc := replays.New(dataStore, configRepository)
+	replaysSvc.Setup()
 
 	// Expose globals for helper code that still uses package-level
 	// Get accessors (the featured-streams ActivityPub paths). Long term
@@ -275,6 +284,7 @@ func main() {
 		Datastore:        dataStore,
 		ConfigRepository: configRepository,
 		Config:           cfg,
+		Replays:          replaysSvc,
 	})
 
 	// Stage 7: resolve the stream-status cycle. webhooks/chat/yp each
@@ -405,6 +415,7 @@ func main() {
 	h := handlers.NewHandlers(handlers.Deps{
 		Cache:                   cacheContainer,
 		Stream:                  streamSvc,
+		Replays:                 replaysSvc,
 		Chat:                    chatSvc,
 		Admin:                   adminHandlers,
 		Activitypub:             apSvc,

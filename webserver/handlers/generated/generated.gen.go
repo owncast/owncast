@@ -641,6 +641,12 @@ type ServerInterface interface {
 	// UpdateUserEnabled Enable/disable a user
 	// (POST /chat/users/setenabled)
 	UpdateUserEnabled(w http.ResponseWriter, r *http.Request, params UpdateUserEnabledParams)
+	// AddClip Create a clip from a recorded stream
+	// (POST /clip)
+	AddClip(w http.ResponseWriter, r *http.Request)
+	// GetAllClips Get a list of all created clips
+	// (GET /clips)
+	GetAllClips(w http.ResponseWriter, r *http.Request)
 	// GetWebConfig Get the web config
 	// (GET /config)
 	GetWebConfig(w http.ResponseWriter, r *http.Request)
@@ -743,6 +749,9 @@ type ServerInterface interface {
 	// RemoteFollow Request remote follow
 	// (POST /remotefollow)
 	RemoteFollow(w http.ResponseWriter, r *http.Request)
+	// GetReplays Get a list of all available stream replays
+	// (GET /replays)
+	GetReplays(w http.ResponseWriter, r *http.Request)
 	// GetAllSocialPlatforms Get all social platforms
 	// (GET /socialplatforms)
 	GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request)
@@ -1919,6 +1928,18 @@ func (_ Unimplemented) UpdateUserEnabled(w http.ResponseWriter, r *http.Request,
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// AddClip Create a clip from a recorded stream
+// (POST /clip)
+func (_ Unimplemented) AddClip(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetAllClips Get a list of all created clips
+// (GET /clips)
+func (_ Unimplemented) GetAllClips(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // GetWebConfig Get the web config
 // (GET /config)
 func (_ Unimplemented) GetWebConfig(w http.ResponseWriter, r *http.Request) {
@@ -2104,6 +2125,12 @@ func (_ Unimplemented) Ping(w http.ResponseWriter, r *http.Request) {
 // RemoteFollow Request remote follow
 // (POST /remotefollow)
 func (_ Unimplemented) RemoteFollow(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetReplays Get a list of all available stream replays
+// (GET /replays)
+func (_ Unimplemented) GetReplays(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -5234,6 +5261,32 @@ func (siw *ServerInterfaceWrapper) UpdateUserEnabled(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r)
 }
 
+// AddClip operation middleware
+func (siw *ServerInterfaceWrapper) AddClip(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AddClip(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAllClips operation middleware
+func (siw *ServerInterfaceWrapper) GetAllClips(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAllClips(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetWebConfig operation middleware
 func (siw *ServerInterfaceWrapper) GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -5775,6 +5828,19 @@ func (siw *ServerInterfaceWrapper) Ping(w http.ResponseWriter, r *http.Request) 
 func (siw *ServerInterfaceWrapper) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.RemoteFollow(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetReplays operation middleware
+func (siw *ServerInterfaceWrapper) GetReplays(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetReplays(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6683,6 +6749,15 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/auth/fediverse/verify", wrapper.VerifyFediverseOTPRequest)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/replays", wrapper.GetReplays)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/clips", wrapper.GetAllClips)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/clip", wrapper.AddClip)
 	})
 
 	return r

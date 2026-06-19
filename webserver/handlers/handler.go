@@ -78,6 +78,18 @@ func (s *ServerInterfaceImpl) Ping(w http.ResponseWriter, r *http.Request) {
 	s.h.Ping(w, r)
 }
 
+func (s *ServerInterfaceImpl) GetReplays(w http.ResponseWriter, r *http.Request) {
+	s.h.GetReplays(w, r)
+}
+
+func (s *ServerInterfaceImpl) GetAllClips(w http.ResponseWriter, r *http.Request) {
+	s.h.GetAllClips(w, r)
+}
+
+func (s *ServerInterfaceImpl) AddClip(w http.ResponseWriter, r *http.Request) {
+	s.h.AddClip(w, r)
+}
+
 func (s *ServerInterfaceImpl) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	s.h.RemoteFollow(w, r)
 }

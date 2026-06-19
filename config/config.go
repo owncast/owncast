@@ -99,6 +99,12 @@ var BuildPlatform = "dev"
 // the runtime, owns its value.
 var EnableAutoUpdate = false
 
+// EnableReplayFeatures enables the experimental stream replay, recording, and
+// clip functionality. Disabled by default; toggled by the
+// -enableReplayFeatures command line flag. When disabled, recorded video is
+// never written to the database and the replay/clip HTTP endpoints return 404.
+var EnableReplayFeatures = false
+
 // GetCommit will return an identifier used for identifying the point in time this build took place.
 func GetCommit() string {
 	if GitCommit == "" {
