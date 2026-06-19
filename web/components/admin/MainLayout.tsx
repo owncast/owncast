@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
-import { Layout, Menu, Alert, Button, Space, Tooltip } from 'antd';
+import { Layout, Menu, Alert, Button, Space, Tooltip, Badge } from 'antd';
 
 import { useTranslation } from 'next-export-i18n';
 import classNames from 'classnames';
@@ -21,6 +21,7 @@ import { AlertMessageContext } from '../../utils/alert-message-context';
 import { TextFieldWithSubmit } from './TextFieldWithSubmit';
 import { TEXTFIELD_PROPS_STREAM_TITLE } from '../../utils/config-constants';
 import { ComposeFederatedPost } from './ComposeFederatedPost';
+import { usePendingFeatureRequestCount } from '../../hooks/useFeatureRequests';
 import { UpdateArgs } from '../../types/config-section';
 import { FatalErrorStateModal } from '../modals/FatalErrorStateModal/FatalErrorStateModal';
 
@@ -74,6 +75,10 @@ const DownloadOutlined = dynamic(() => import('@ant-design/icons/DownloadOutline
   ssr: false,
 });
 
+const StarOutlined = dynamic(() => import('@ant-design/icons/StarOutlined'), {
+  ssr: false,
+});
+
 const FediverseOutlined = dynamic(() => import('../../assets/images/icons/fediverse.svg'), {
   ssr: false,
 });
@@ -88,6 +93,9 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   const { serverConfig, online, broadcaster, versionNumber, error: serverError } = context || {};
   const { instanceDetails, chatDisabled, federation } = serverConfig;
   const { enabled: federationEnabled } = federation;
+
+  // Drives the badge on the Featured Streams sidebar item.
+  const pendingFeatureRequestCount = usePendingFeatureRequestCount(federationEnabled);
 
   const [currentStreamTitle, setCurrentStreamTitle] = useState('');
   const [postModalDisplayed, setPostModalDisplayed] = useState(false);
@@ -251,10 +259,6 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       key: '/admin/config-federation',
     },
     {
-      label: <Link href="/admin/config-featured">Featured</Link>,
-      key: '/admin/config-featured',
-    },
-    {
       label: <Link href="/admin/config-notify">Notifications</Link>,
       key: '/admin/config-notify',
     },
@@ -287,6 +291,22 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
           <FediverseOutlined />
         </span>
       ),
+    },
+    federationEnabled && {
+      key: '/admin/config-featured',
+      label: (
+        <Link href="/admin/config-featured">
+          Featured Streams
+          {pendingFeatureRequestCount > 0 && (
+            <Badge
+              count={pendingFeatureRequestCount}
+              size="small"
+              style={{ marginInlineStart: 8 }}
+            />
+          )}
+        </Link>
+      ),
+      icon: <StarOutlined />,
     },
     {
       key: 'configuration',

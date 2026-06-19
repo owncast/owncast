@@ -25,6 +25,9 @@ export interface UseFeatureRequestsResult {
 const API_FEATURE_REQUESTS = '/api/admin/federation/feature-requests';
 const API_APPROVE_FOLLOWER = '/api/admin/followers/approve';
 
+// How often the sidebar badge re-checks for pending requests.
+const PENDING_REQUESTS_POLL_INTERVAL = 60_000;
+
 // useFeatureRequests fetches pending requests from other servers to feature
 // this stream and lets the admin approve or reject them. Approval reuses the
 // follower-approval endpoint, which records the approval and returns the
@@ -88,4 +91,46 @@ export function useFeatureRequests(): UseFeatureRequestsResult {
   }, []);
 
   return { requests, loading, approve, reject, refetch: fetchRequests };
+}
+
+// usePendingFeatureRequestCount returns how many feature requests are waiting
+// for the admin to approve, polling so the sidebar badge stays current. It is
+// deliberately silent: a transient failure should never raise a toast from the
+// layout, and it does nothing while federation is disabled (the endpoint
+// requires it). Pass federationEnabled so the count clears and the polling
+// stops when federation is off.
+export function usePendingFeatureRequestCount(enabled: boolean): number {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!enabled) {
+      setCount(0);
+      return undefined;
+    }
+
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const response = await fetch(API_FEATURE_REQUESTS, { credentials: 'include' });
+        if (!response.ok) {
+          return;
+        }
+        const data = await response.json();
+        if (!cancelled) {
+          setCount((data.requests || []).length);
+        }
+      } catch {
+        // Silent: the badge is a hint, not a place to surface fetch errors.
+      }
+    };
+
+    load();
+    const intervalId = setInterval(load, PENDING_REQUESTS_POLL_INTERVAL);
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, [enabled]);
+
+  return count;
 }
