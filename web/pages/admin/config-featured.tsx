@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { Typography, Alert, Button, Space, Tabs } from 'antd';
+import { Typography, Alert, Button, Space, Tabs, Badge } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import React, { ReactElement, useContext, useState } from 'react';
@@ -48,6 +48,18 @@ const ConfigFeatured = () => {
     setModalOpen(false);
   };
 
+  // Counts shown in the tab labels so the operator can see the size of each
+  // list at a glance without opening it. "Featuring you" combines the pending
+  // requests and the directories already listing this server, since both live
+  // under that tab.
+  const featuredCount = federatedServers.length;
+  const pendingRequestCount = featureRequests.length;
+  const featuringYouCount = pendingRequestCount + directoryFollowers.length;
+
+  // Neutral count chip so it doesn't compete with the red attention dot used to
+  // flag pending requests below.
+  const countBadgeStyle = { backgroundColor: '#8c8c8c' };
+
   return (
     <div>
       <Title>
@@ -77,10 +89,15 @@ const ConfigFeatured = () => {
               {
                 key: 'featuring',
                 label: (
-                  <Translation
-                    translationKey={Localization.Admin.FeaturedStreams.streamsYouFeatureTab}
-                    defaultText="Streams you feature"
-                  />
+                  <Space size={8}>
+                    <Translation
+                      translationKey={Localization.Admin.FeaturedStreams.streamsYouFeatureTab}
+                      defaultText="Streams you feature"
+                    />
+                    {featuredCount > 0 && (
+                      <Badge count={featuredCount} overflowCount={999} style={countBadgeStyle} />
+                    )}
+                  </Space>
                 ),
                 children: (
                   <Space direction="vertical" size="large" style={{ width: '100%' }}>
@@ -107,10 +124,23 @@ const ConfigFeatured = () => {
               {
                 key: 'featuring-you',
                 label: (
-                  <Translation
-                    translationKey={Localization.Admin.FeaturedStreams.featuringYouTab}
-                    defaultText="Featuring you"
-                  />
+                  <Space size={8}>
+                    {/* Red dot on the title draws the eye when requests are
+                        waiting for approval; it clears once none are pending. */}
+                    <Badge dot={pendingRequestCount > 0} offset={[2, 0]}>
+                      <Translation
+                        translationKey={Localization.Admin.FeaturedStreams.featuringYouTab}
+                        defaultText="Featuring you"
+                      />
+                    </Badge>
+                    {featuringYouCount > 0 && (
+                      <Badge
+                        count={featuringYouCount}
+                        overflowCount={999}
+                        style={countBadgeStyle}
+                      />
+                    )}
+                  </Space>
                 ),
                 children: (
                   <Space direction="vertical" size="large" style={{ width: '100%' }}>
