@@ -19,6 +19,7 @@ func (r *SqlConfigRepository) PopulateDefaults() {
 	_ = r.SetStreamKeys(defaults.StreamKeys)
 	_ = r.SetHTTPPortNumber(float64(defaults.WebServerPort))
 	_ = r.SetRTMPPortNumber(float64(defaults.RTMPServerPort))
+	_ = r.SetRTMPBindAddress("0.0.0.0")
 	_ = r.SetLogoPath(defaults.Logo)
 	_ = r.SetServerMetadataTags([]string{"owncast", "streaming"})
 	_ = r.SetServerSummary(defaults.Summary)

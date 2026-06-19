@@ -58,6 +58,7 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		WebServerPort:             a.cfg.WebServerPort,
 		WebServerIP:               a.cfg.WebServerIP,
 		RTMPServerPort:            configRepository.GetRTMPPortNumber(),
+		RTMPServerAddress:         configRepository.GetRTMPBindAddress(),
 		ChatDisabled:              configRepository.GetChatDisabled(),
 		ChatJoinMessagesEnabled:   configRepository.GetChatJoinPartMessagesEnabled(),
 		SocketHostOverride:        configRepository.GetWebsocketOverrideHost(),
@@ -123,6 +124,7 @@ type serverConfigAdminResponse struct {
 	StreamKeys                []generated.StreamKey       `json:"streamKeys"`
 	VideoSettings             videoSettings               `json:"videoSettings"`
 	RTMPServerPort            int                         `json:"rtmpServerPort"`
+	RTMPServerAddress         string                      `json:"rtmpServerAddress"`
 	WebServerPort             int                         `json:"webServerPort"`
 	ChatDisabled              bool                        `json:"chatDisabled"`
 	ChatJoinMessagesEnabled   bool                        `json:"chatJoinMessagesEnabled"`

@@ -269,6 +269,20 @@ func (r *SqlConfigRepository) SetRTMPPortNumber(port float64) error {
 	return r.datastore.SetNumber(rtmpPortNumberKey, port)
 }
 
+// GetRTMPBindAddress will return the server RTMP bind address.
+func (r *SqlConfigRepository) GetRTMPBindAddress() string {
+	address, err := r.datastore.GetString(rtmpBindAddressKey)
+	if err != nil || address == "" {
+		return "0.0.0.0"
+	}
+	return address
+}
+
+// SetRTMPBindAddress will set the server RTMP address.
+func (r *SqlConfigRepository) SetRTMPBindAddress(address string) error {
+	return r.datastore.SetString(rtmpBindAddressKey, address)
+}
+
 // GetServerMetadataTags will return the metadata tags.
 func (r *SqlConfigRepository) GetServerMetadataTags() []string {
 	tagsString, err := r.datastore.GetString(serverMetadataTagsKey)

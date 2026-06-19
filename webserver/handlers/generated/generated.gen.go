@@ -283,6 +283,12 @@ type ServerInterface interface {
 	// (POST /admin/config/pagecontent)
 	SetExtraPageContent(w http.ResponseWriter, r *http.Request)
 
+	// (OPTIONS /admin/config/rtmpserverbindaddress)
+	SetRTMPServerBindAddressOptions(w http.ResponseWriter, r *http.Request)
+	// Update RTMP server bind address
+	// (POST /admin/config/rtmpserverbindaddress)
+	SetRTMPServerBindAddress(w http.ResponseWriter, r *http.Request)
+
 	// (OPTIONS /admin/config/rtmpserverport)
 	SetRTMPServerPortOptions(w http.ResponseWriter, r *http.Request)
 	// Update RTMP post
@@ -1192,6 +1198,17 @@ func (_ Unimplemented) SetExtraPageContentOptions(w http.ResponseWriter, r *http
 // Change the extra page content in memory
 // (POST /admin/config/pagecontent)
 func (_ Unimplemented) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/rtmpserverbindaddress)
+func (_ Unimplemented) SetRTMPServerBindAddressOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update RTMP server bind address
+// (POST /admin/config/rtmpserverbindaddress)
+func (_ Unimplemented) SetRTMPServerBindAddress(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3402,6 +3419,38 @@ func (siw *ServerInterfaceWrapper) SetExtraPageContent(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetExtraPageContent(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetRTMPServerBindAddressOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetRTMPServerBindAddressOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetRTMPServerBindAddressOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetRTMPServerBindAddress operation middleware
+func (siw *ServerInterfaceWrapper) SetRTMPServerBindAddress(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetRTMPServerBindAddress(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6366,6 +6415,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/pagecontent", wrapper.SetExtraPageContent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/rtmpserverbindaddress", wrapper.SetRTMPServerBindAddressOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/rtmpserverbindaddress", wrapper.SetRTMPServerBindAddress)
 	})
 	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/admin/config/rtmpserverport", wrapper.SetRTMPServerPortOptions)

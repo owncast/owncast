@@ -138,6 +138,7 @@ export interface ConfigDetails {
   ffmpegPath: string;
   instanceDetails: ConfigInstanceDetailsFields;
   rtmpServerPort: string;
+  rtmpServerAddress: string;
   s3: S3Field;
   streamKeys: StreamKey[];
   streamKeyOverridden: boolean;

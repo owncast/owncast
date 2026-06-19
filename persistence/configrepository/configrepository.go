@@ -35,6 +35,8 @@ type ConfigRepository interface {
 	SetHTTPListenAddress(address string) error
 	GetRTMPPortNumber() int
 	SetRTMPPortNumber(port float64) error
+	GetRTMPBindAddress() string
+	SetRTMPBindAddress(address string) error
 	GetServerMetadataTags() []string
 	SetServerMetadataTags(tags []string) error
 	GetDirectoryEnabled() bool

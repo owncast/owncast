@@ -133,6 +133,7 @@ type AdminServerConfig struct {
 	HideViewerCount         *bool                     `json:"hideViewerCount,omitempty"`
 	InstanceDetails         *AdminWebConfig           `json:"instanceDetails,omitempty"`
 	Notifications           *AdminNotificationsConfig `json:"notifications,omitempty"`
+	RtmpServerAddress       *string                   `json:"rtmpServerAddress,omitempty"`
 	RtmpServerPort          *int                      `json:"rtmpServerPort,omitempty"`
 	S3                      *S3Info                   `json:"s3,omitempty"`
 	SocketHostOverride      *string                   `json:"socketHostOverride,omitempty"`
@@ -1095,6 +1096,9 @@ type SetCustomOfflineMessageJSONRequestBody = AdminConfigValue
 
 // SetExtraPageContentJSONRequestBody defines body for SetExtraPageContent for application/json ContentType.
 type SetExtraPageContentJSONRequestBody = AdminConfigValue
+
+// SetRTMPServerBindAddressJSONRequestBody defines body for SetRTMPServerBindAddress for application/json ContentType.
+type SetRTMPServerBindAddressJSONRequestBody = AdminConfigValue
 
 // SetRTMPServerPortJSONRequestBody defines body for SetRTMPServerPort for application/json ContentType.
 type SetRTMPServerPortJSONRequestBody = AdminConfigValue
