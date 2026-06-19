@@ -335,8 +335,10 @@ approve_featured_request() {
 }
 
 # get_featured_servers WEB_PORT [auth] -> prints JSON body
-# When the second argument is "admin" the request is authenticated; otherwise
-# it hits the public, unauthenticated endpoint.
+# When the second argument is "admin" it hits the authenticated admin endpoint,
+# which returns the full list including servers whose follow is still pending
+# approval. Otherwise it hits the public, unauthenticated endpoint, which is
+# filtered to accepted servers only.
 get_featured_servers() {
     local web_port=$1
     local mode="${2:-public}"
@@ -344,7 +346,7 @@ get_featured_servers() {
     if [[ "${mode}" == "admin" ]]; then
         local auth
         auth=$(get_admin_auth)
-        curl -s "http://localhost:${web_port}/api/federation/servers" \
+        curl -s "http://localhost:${web_port}/api/admin/federation/servers" \
             -H "Authorization: Basic ${auth}"
     else
         curl -s "http://localhost:${web_port}/api/federation/servers"
