@@ -34,6 +34,12 @@ type FollowersRepository interface {
 	GetBlockedAndRejected() ([]models.Follower, error)
 	// GetUniqueDeliveryInboxes returns unique inbox URLs for delivery.
 	GetUniqueDeliveryInboxes() ([]string, error)
+	// GetUniqueDirectoryDeliveryInboxes returns unique inbox URLs for approved
+	// directory followers only, the recipients of Offer/Leave stream pings.
+	GetUniqueDirectoryDeliveryInboxes() ([]string, error)
+	// GetApprovedDirectoryFollowers returns approved directories that are
+	// featuring/listing this server.
+	GetApprovedDirectoryFollowers() ([]models.Follower, error)
 	// GetByIRI returns a single follower by IRI.
 	GetByIRI(iri string) (*apmodels.ActivityPubActor, error)
 	// Add saves a new follow to the datastore.
@@ -191,6 +197,36 @@ func (r *SqlFollowersRepository) GetUniqueDeliveryInboxes() ([]string, error) {
 	return r.datastore.GetQueries().GetUniqueDeliveryInboxes(ctx)
 }
 
+// GetUniqueDirectoryDeliveryInboxes returns unique inbox URLs for approved
+// directory followers only. The Offer/Leave stream pings are delivered here.
+func (r *SqlFollowersRepository) GetUniqueDirectoryDeliveryInboxes() ([]string, error) {
+	ctx := context.Background()
+	return r.datastore.GetQueries().GetUniqueDirectoryDeliveryInboxes(ctx)
+}
+
+// GetApprovedDirectoryFollowers returns approved directories that are featuring
+// this server, for the admin to review and remove.
+func (r *SqlFollowersRepository) GetApprovedDirectoryFollowers() ([]models.Follower, error) {
+	result, err := r.datastore.GetQueries().GetApprovedDirectoryFollowers(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	followers := make([]models.Follower, 0)
+	for _, row := range result {
+		followers = append(followers, models.Follower{
+			Name:        row.Name.String,
+			Username:    row.Username,
+			Image:       row.Image.String,
+			ActorIRI:    row.Iri,
+			Inbox:       row.Inbox,
+			SharedInbox: row.SharedInbox.String,
+			Timestamp:   utils.NullTime{Time: row.CreatedAt.Time, Valid: true},
+		})
+	}
+	return followers, nil
+}
+
 // GetByIRI returns a single follower by IRI.
 func (r *SqlFollowersRepository) GetByIRI(iri string) (*apmodels.ActivityPubActor, error) {
 	result, err := r.datastore.GetQueries().GetFollowerByIRI(context.Background(), iri)
@@ -259,7 +295,7 @@ func (r *SqlFollowersRepository) GetByIRI(iri string) (*apmodels.ActivityPubActo
 		FollowRequestIri: followIRI,
 		DisabledAt:       disabledAt,
 		RequestObject:    followRequestObject,
-		IsOwncastServer:  result.OwncastServer.Bool,
+		IsDirectory:      result.Directory.Bool,
 	}
 
 	return &follower, nil
@@ -278,7 +314,7 @@ func (r *SqlFollowersRepository) Add(follow apmodels.ActivityPubActor, approved 
 		return errors.Wrap(err, "error serializing follow request object")
 	}
 
-	return r.createFollow(follow.ActorIriString(), follow.InboxString(), follow.SharedInboxString(), follow.FollowRequestIriString(), follow.Name, follow.Username, follow.ImageString(), followRequestObject, approved, follow.IsOwncastServer)
+	return r.createFollow(follow.ActorIriString(), follow.InboxString(), follow.SharedInboxString(), follow.FollowRequestIriString(), follow.Name, follow.Username, follow.ImageString(), followRequestObject, approved, follow.IsDirectory)
 }
 
 // Remove removes a follow from the datastore.
@@ -339,7 +375,7 @@ func (r *SqlFollowersRepository) Update(actorIRI string, inbox string, sharedInb
 	return tx.Commit()
 }
 
-func (r *SqlFollowersRepository) createFollow(actor, inbox, sharedInbox, request, name, username, image string, requestObject []byte, approved, owncastServer bool) error {
+func (r *SqlFollowersRepository) createFollow(actor, inbox, sharedInbox, request, name, username, image string, requestObject []byte, approved, directory bool) error {
 	r.datastore.DbLock.Lock()
 	defer r.datastore.DbLock.Unlock()
 
@@ -369,7 +405,7 @@ func (r *SqlFollowersRepository) createFollow(actor, inbox, sharedInbox, request
 		ApprovedAt:    approvedAt,
 		Request:       request,
 		RequestObject: requestObject,
-		OwncastServer: sql.NullBool{Bool: owncastServer, Valid: true},
+		Directory:     sql.NullBool{Bool: directory, Valid: true},
 	}); err != nil {
 		return errors.Wrap(err, "error creating new federation follow")
 	}

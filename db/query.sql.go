@@ -68,7 +68,7 @@ func (q *Queries) AddFederatedServer(ctx context.Context, arg AddFederatedServer
 }
 
 const addFollower = `-- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at, owncast_server) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at, directory) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type AddFollowerParams struct {
@@ -81,7 +81,7 @@ type AddFollowerParams struct {
 	Username      string
 	Image         sql.NullString
 	ApprovedAt    sql.NullTime
-	OwncastServer sql.NullBool
+	Directory     sql.NullBool
 }
 
 func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error {
@@ -95,7 +95,7 @@ func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error 
 		arg.Username,
 		arg.Image,
 		arg.ApprovedAt,
-		arg.OwncastServer,
+		arg.Directory,
 	)
 	return err
 }
@@ -236,6 +236,53 @@ func (q *Queries) DoesInboundActivityExist(ctx context.Context, arg DoesInboundA
 	return count, err
 }
 
+const getApprovedDirectoryFollowers = `-- name: GetApprovedDirectoryFollowers :many
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS NOT NULL AND disabled_at IS NULL AND directory IS 1 ORDER BY created_at DESC
+`
+
+type GetApprovedDirectoryFollowersRow struct {
+	Iri         string
+	Inbox       string
+	SharedInbox sql.NullString
+	Name        sql.NullString
+	Username    string
+	Image       sql.NullString
+	CreatedAt   sql.NullTime
+}
+
+// Approved directories that are featuring/listing this server. Shown in the
+// admin so the operator can review and remove them.
+func (q *Queries) GetApprovedDirectoryFollowers(ctx context.Context) ([]GetApprovedDirectoryFollowersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getApprovedDirectoryFollowers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetApprovedDirectoryFollowersRow
+	for rows.Next() {
+		var i GetApprovedDirectoryFollowersRow
+		if err := rows.Scan(
+			&i.Iri,
+			&i.Inbox,
+			&i.SharedInbox,
+			&i.Name,
+			&i.Username,
+			&i.Image,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getFederatedServer = `-- name: GetFederatedServer :one
 SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE iri = ?
 `
@@ -319,7 +366,7 @@ func (q *Queries) GetFederatedServers(ctx context.Context) ([]FederatedServer, e
 }
 
 const getFederationFollowerApprovalRequests = `-- name: GetFederationFollowerApprovalRequests :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND owncast_server IS NOT 1
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND directory IS NOT 1
 `
 
 type GetFederationFollowerApprovalRequestsRow struct {
@@ -368,7 +415,7 @@ func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]
 }
 
 const getFederationFollowersWithOffset = `-- name: GetFederationFollowersWithOffset :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND owncast_server IS NOT 1 ORDER BY created_at DESC LIMIT ? OFFSET ?
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1 ORDER BY created_at DESC LIMIT ? OFFSET ?
 `
 
 type GetFederationFollowersWithOffsetParams struct {
@@ -421,7 +468,7 @@ func (q *Queries) GetFederationFollowersWithOffset(ctx context.Context, arg GetF
 }
 
 const getFollowerByIRI = `-- name: GetFollowerByIRI :one
-SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at, owncast_server FROM ap_followers WHERE iri = ?
+SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at, directory FROM ap_followers WHERE iri = ?
 `
 
 type GetFollowerByIRIRow struct {
@@ -436,7 +483,7 @@ type GetFollowerByIRIRow struct {
 	CreatedAt     sql.NullTime
 	ApprovedAt    sql.NullTime
 	DisabledAt    sql.NullTime
-	OwncastServer sql.NullBool
+	Directory     sql.NullBool
 }
 
 func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (GetFollowerByIRIRow, error) {
@@ -454,7 +501,7 @@ func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (GetFollower
 		&i.CreatedAt,
 		&i.ApprovedAt,
 		&i.DisabledAt,
-		&i.OwncastServer,
+		&i.Directory,
 	)
 	return i, err
 }
@@ -462,7 +509,7 @@ func (q *Queries) GetFollowerByIRI(ctx context.Context, iri string) (GetFollower
 const getFollowerCount = `-- name: GetFollowerCount :one
 
 
-SELECT count(*) FROM ap_followers WHERE approved_at is not null AND owncast_server IS NOT 1
+SELECT count(*) FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1
 `
 
 // Queries added to query.sql must be compiled into Go code with sqlc. Read README.md for details.
@@ -735,7 +782,7 @@ func (q *Queries) GetOutboxWithOffset(ctx context.Context, arg GetOutboxWithOffs
 }
 
 const getPendingFeaturedFollowRequests = `-- name: GetPendingFeaturedFollowRequests :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND owncast_server IS 1 ORDER BY created_at DESC
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND directory IS 1 ORDER BY created_at DESC
 `
 
 type GetPendingFeaturedFollowRequestsRow struct {
@@ -878,6 +925,35 @@ SELECT COALESCE(shared_inbox, inbox) as delivery_inbox FROM ap_followers WHERE a
 
 func (q *Queries) GetUniqueDeliveryInboxes(ctx context.Context) ([]string, error) {
 	rows, err := q.db.QueryContext(ctx, getUniqueDeliveryInboxes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var delivery_inbox string
+		if err := rows.Scan(&delivery_inbox); err != nil {
+			return nil, err
+		}
+		items = append(items, delivery_inbox)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUniqueDirectoryDeliveryInboxes = `-- name: GetUniqueDirectoryDeliveryInboxes :many
+SELECT COALESCE(shared_inbox, inbox) as delivery_inbox FROM ap_followers WHERE approved_at is not null AND directory IS 1 GROUP BY delivery_inbox
+`
+
+// Approved directory followers only. The Offer/Leave stream pings are delivered
+// here, not to fan followers, who only need the go-live Create/Note.
+func (q *Queries) GetUniqueDirectoryDeliveryInboxes(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getUniqueDirectoryDeliveryInboxes)
 	if err != nil {
 		return nil, err
 	}

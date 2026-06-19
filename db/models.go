@@ -31,7 +31,7 @@ type ApFollower struct {
 	RequestObject            []byte
 	LastValidatedAt          sql.NullTime
 	FirstValidationFailureAt sql.NullTime
-	OwncastServer            sql.NullBool
+	Directory                sql.NullBool
 }
 
 type ApOutbox struct {

@@ -68,8 +68,8 @@ func TestRun_FreshDatabase(t *testing.T) {
 		t.Error("fresh install should not have legacy config table")
 	}
 
-	if v := gooseVersion(t, db); v != 2 {
-		t.Errorf("goose version = %d, want 2", v)
+	if v := gooseVersion(t, db); v != 3 {
+		t.Errorf("goose version = %d, want 3", v)
 	}
 
 	// Calling Run a second time should be a no-op (idempotent).
@@ -93,8 +93,8 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	}
 
 	// Goose should record the latest migration.
-	if v := gooseVersion(t, db); v != 2 {
-		t.Errorf("goose version = %d, want 2", v)
+	if v := gooseVersion(t, db); v != 3 {
+		t.Errorf("goose version = %d, want 3", v)
 	}
 
 	// Config version should still be 9, the legacy bridge was not invoked.
@@ -141,8 +141,8 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 	}
 
 	// Goose should have recorded the latest migration.
-	if v := gooseVersion(t, db); v != 2 {
-		t.Errorf("goose version = %d, want 2", v)
+	if v := gooseVersion(t, db); v != 3 {
+		t.Errorf("goose version = %d, want 3", v)
 	}
 }
 

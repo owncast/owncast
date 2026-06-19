@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { Typography, Alert, Button, Space } from 'antd';
+import { Typography, Alert, Button, Space, Tabs } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import React, { ReactElement, useContext, useState } from 'react';
@@ -9,8 +9,10 @@ import { AdminLayout } from '../../components/layouts/AdminLayout';
 import { FederatedServersTable } from '../../components/admin/FederatedServers/FederatedServersTable';
 import { FeatureStreamModal } from '../../components/admin/FederatedServers/FeatureStreamModal';
 import { FeatureRequests } from '../../components/admin/FederatedServers/FeatureRequests';
+import { DirectoryListings } from '../../components/admin/FederatedServers/DirectoryListings';
 import { useFederatedServers } from '../../hooks/useFederatedServers';
 import { useFeatureRequests } from '../../hooks/useFeatureRequests';
+import { useDirectoryFollowers } from '../../hooks/useDirectoryFollowers';
 import { ServerStatusContext } from '../../utils/server-status-context';
 
 const ConfigFeatured = () => {
@@ -34,6 +36,12 @@ const ConfigFeatured = () => {
     approve: approveFeatureRequest,
     reject: rejectFeatureRequest,
   } = useFeatureRequests();
+
+  const {
+    directories: directoryFollowers,
+    loading: directoriesLoading,
+    remove: removeDirectoryFollower,
+  } = useDirectoryFollowers();
 
   const handleFeatureStream = async (url: string) => {
     await addServer(url);
@@ -63,32 +71,66 @@ const ConfigFeatured = () => {
 
       {federationEnabled ? (
         <>
-          <Space direction="vertical" size="large" style={{ width: '100%' }}>
-            <FeatureRequests
-              requests={featureRequests}
-              loading={requestsLoading}
-              onApprove={approveFeatureRequest}
-              onReject={rejectFeatureRequest}
-            />
+          <Tabs
+            defaultActiveKey="featuring"
+            items={[
+              {
+                key: 'featuring',
+                label: (
+                  <Translation
+                    translationKey={Localization.Admin.FeaturedStreams.streamsYouFeatureTab}
+                    defaultText="Streams you feature"
+                  />
+                ),
+                children: (
+                  <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={() => setModalOpen(true)}
+                      size="large"
+                    >
+                      <Translation
+                        translationKey={Localization.Admin.FeaturedStreams.featureStreamButton}
+                        defaultText="Feature Live Stream"
+                      />
+                    </Button>
 
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setModalOpen(true)}
-              size="large"
-            >
-              <Translation
-                translationKey={Localization.Admin.FeaturedStreams.featureStreamButton}
-                defaultText="Feature Live Stream"
-              />
-            </Button>
+                    <FederatedServersTable
+                      servers={federatedServers}
+                      loading={serversLoading}
+                      onRemove={removeServer}
+                    />
+                  </Space>
+                ),
+              },
+              {
+                key: 'featuring-you',
+                label: (
+                  <Translation
+                    translationKey={Localization.Admin.FeaturedStreams.featuringYouTab}
+                    defaultText="Featuring you"
+                  />
+                ),
+                children: (
+                  <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                    <FeatureRequests
+                      requests={featureRequests}
+                      loading={requestsLoading}
+                      onApprove={approveFeatureRequest}
+                      onReject={rejectFeatureRequest}
+                    />
 
-            <FederatedServersTable
-              servers={federatedServers}
-              loading={serversLoading}
-              onRemove={removeServer}
-            />
-          </Space>
+                    <DirectoryListings
+                      directories={directoryFollowers}
+                      loading={directoriesLoading}
+                      onRemove={removeDirectoryFollower}
+                    />
+                  </Space>
+                ),
+              },
+            ]}
+          />
 
           <FeatureStreamModal
             open={modalOpen}

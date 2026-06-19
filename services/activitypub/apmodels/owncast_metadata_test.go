@@ -222,13 +222,13 @@ func TestSetBasicOwncastMetadata(t *testing.T) {
 
 func TestParseOwncastMetadata(t *testing.T) {
 	tests := []struct {
-		name          string
-		unknownProps  map[string]interface{}
-		expected      *OwncastMetadata
-		expectOwncast bool
+		name            string
+		unknownProps    map[string]interface{}
+		expected        *OwncastMetadata
+		expectDirectory bool
 	}{
 		{
-			name: "parse full metadata",
+			name: "parse full stream metadata without directory marker",
 			unknownProps: map[string]interface{}{
 				config.APOwncastNamespaceStreamStatus:      "live",
 				config.APOwncastNamespaceStreamTitle:       "Test Stream",
@@ -246,9 +246,42 @@ func TestParseOwncastMetadata(t *testing.T) {
 				LogoURL:           "https://example.com/logo.png",
 				ThumbnailURL:      "https://example.com/thumb.png",
 				Tags:              []string{"gaming", "tech"},
-				IsOwncastServer:   true,
+				IsDirectory:       false,
 			},
-			expectOwncast: true,
+			// Stream fields alone no longer flag a peer as a directory.
+			expectDirectory: false,
+		},
+		{
+			name: "parse directory marker",
+			unknownProps: map[string]interface{}{
+				config.APOwncastNamespaceDirectory: true,
+			},
+			expected: &OwncastMetadata{
+				IsDirectory: true,
+			},
+			expectDirectory: true,
+		},
+		{
+			name: "parse directory marker with server metadata",
+			unknownProps: map[string]interface{}{
+				config.APOwncastNamespaceDirectory:  true,
+				config.APOwncastNamespaceServerName: "Some Directory",
+			},
+			expected: &OwncastMetadata{
+				ServerName:  "Some Directory",
+				IsDirectory: true,
+			},
+			expectDirectory: true,
+		},
+		{
+			name: "parse directory marker sent as string true",
+			unknownProps: map[string]interface{}{
+				config.APOwncastNamespaceDirectory: "true",
+			},
+			expected: &OwncastMetadata{
+				IsDirectory: true,
+			},
+			expectDirectory: true,
 		},
 		{
 			name: "parse partial metadata",
@@ -259,17 +292,17 @@ func TestParseOwncastMetadata(t *testing.T) {
 			expected: &OwncastMetadata{
 				ServerName:        "Test Server",
 				StreamDescription: "Test Description",
-				IsOwncastServer:   true,
+				IsDirectory:       false,
 			},
-			expectOwncast: true,
+			expectDirectory: false,
 		},
 		{
 			name:         "parse empty metadata",
 			unknownProps: map[string]interface{}{},
 			expected: &OwncastMetadata{
-				IsOwncastServer: false,
+				IsDirectory: false,
 			},
-			expectOwncast: false,
+			expectDirectory: false,
 		},
 		{
 			name: "parse metadata with wrong types",
@@ -278,10 +311,10 @@ func TestParseOwncastMetadata(t *testing.T) {
 				config.APOwncastNamespaceServerName:   "Test Server",
 			},
 			expected: &OwncastMetadata{
-				ServerName:      "Test Server",
-				IsOwncastServer: true,
+				ServerName:  "Test Server",
+				IsDirectory: false,
 			},
-			expectOwncast: true,
+			expectDirectory: false,
 		},
 		{
 			name: "parse metadata with invalid tags",
@@ -290,10 +323,10 @@ func TestParseOwncastMetadata(t *testing.T) {
 				config.APOwncastNamespaceStreamTags: "not an array", // Wrong type
 			},
 			expected: &OwncastMetadata{
-				ServerName:      "Test Server",
-				IsOwncastServer: true,
+				ServerName:  "Test Server",
+				IsDirectory: false,
 			},
-			expectOwncast: true,
+			expectDirectory: false,
 		},
 		{
 			name: "parse metadata with mixed tag types",
@@ -302,11 +335,11 @@ func TestParseOwncastMetadata(t *testing.T) {
 				config.APOwncastNamespaceStreamTags: []interface{}{"gaming", 123, "tech"}, // Mixed types
 			},
 			expected: &OwncastMetadata{
-				ServerName:      "Test Server",
-				Tags:            []string{"gaming", "tech"}, // Only string values
-				IsOwncastServer: true,
+				ServerName:  "Test Server",
+				Tags:        []string{"gaming", "tech"}, // Only string values
+				IsDirectory: false,
 			},
-			expectOwncast: true,
+			expectDirectory: false,
 		},
 	}
 
@@ -314,8 +347,8 @@ func TestParseOwncastMetadata(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			metadata := ParseOwncastMetadata(tt.unknownProps)
 
-			if metadata.IsOwncastServer != tt.expectOwncast {
-				t.Errorf("Expected IsOwncastServer=%v, got %v", tt.expectOwncast, metadata.IsOwncastServer)
+			if metadata.IsDirectory != tt.expectDirectory {
+				t.Errorf("Expected IsDirectory=%v, got %v", tt.expectDirectory, metadata.IsDirectory)
 			}
 
 			if tt.expected.StreamStatus != "" && metadata.StreamStatus != tt.expected.StreamStatus {
@@ -401,8 +434,10 @@ func TestRoundTripMetadata(t *testing.T) {
 		t.Errorf("Round trip failed for Tags: expected %d tags, got %d", len(repo.serverMetadataTags), len(metadata.Tags))
 	}
 
-	if !metadata.IsOwncastServer {
-		t.Error("Round trip failed: IsOwncastServer should be true")
+	// Stream metadata alone does not make a peer a directory; only the explicit
+	// ns#directory marker does, and the round-trip helper does not set it.
+	if metadata.IsDirectory {
+		t.Error("Round trip of stream metadata should not be flagged as a directory")
 	}
 }
 

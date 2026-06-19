@@ -335,6 +335,19 @@ export const Localization = {
       featureRequestRejected: 'Admin.FeaturedStreams.featureRequestRejected',
       failedToApprove: 'Admin.FeaturedStreams.failedToApprove',
       failedToReject: 'Admin.FeaturedStreams.failedToReject',
+
+      // Tabs splitting streams you feature from directories featuring you
+      streamsYouFeatureTab: 'Admin.FeaturedStreams.streamsYouFeatureTab',
+      featuringYouTab: 'Admin.FeaturedStreams.featuringYouTab',
+
+      // Directories that are featuring/listing this server
+      directoryListingsTitle: 'Admin.FeaturedStreams.directoryListingsTitle',
+      directoryListingsDescription: 'Admin.FeaturedStreams.directoryListingsDescription',
+      directoryListingsEmpty: 'Admin.FeaturedStreams.directoryListingsEmpty',
+      removeFromDirectoryButton: 'Admin.FeaturedStreams.removeFromDirectoryButton',
+      removeFromDirectoryConfirm: 'Admin.FeaturedStreams.removeFromDirectoryConfirm',
+      directoryRemoved: 'Admin.FeaturedStreams.directoryRemoved',
+      failedToRemoveDirectory: 'Admin.FeaturedStreams.failedToRemoveDirectory',
     },
 
     // Logging and monitoring

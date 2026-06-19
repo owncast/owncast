@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/services/activitypub/requests"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -42,9 +44,9 @@ func (a *Admin) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Featured-streams follows are a directory relationship, not a fan
-		// follow, so don't fire the follower webhook for them.
-		if !followRequest.IsOwncastServer {
+		// Directory follows are a listing relationship, not a fan follow, so
+		// don't fire the follower webhook for them.
+		if !followRequest.IsDirectory {
 			go a.webhooks.SendFediverseEngagementFollowEvent(*approval.ActorIRI)
 		}
 
@@ -85,6 +87,17 @@ func (a *Admin) RemoveFollower(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// If this follower is a directory that is listing us, tell it we no longer
+	// accept its follow so it drops our entry, rather than leaving us showing
+	// offline in its listing forever. Best effort: we still remove the follower
+	// locally even if the Reject cannot be queued.
+	if follower, err := a.followersRepository.GetByIRI(request.ActorIRI); err == nil && follower != nil && follower.IsDirectory {
+		localAccountName := a.configRepository.GetDefaultFederationUsername()
+		if rejectErr := requests.SendFollowReject(a.activitypub.Workerpool(), follower.Inbox, follower.RequestObject, localAccountName, a.apBuilder, a.apSigner); rejectErr != nil {
+			log.Errorln("unable to send follow reject to directory", request.ActorIRI, rejectErr)
+		}
+	}
+
 	if err := a.followersRepository.RemoveByIRI(request.ActorIRI); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
@@ -102,6 +115,20 @@ func (a *Admin) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request)
 	}
 
 	webutils.WriteResponse(w, requests)
+}
+
+// GetDirectoryFollowers returns the directories that are featuring/listing this
+// server: approved followers that identified themselves with the ns#directory
+// marker. The operator can review them here and remove any with the existing
+// RemoveFollower endpoint.
+func (a *Admin) GetDirectoryFollowers(w http.ResponseWriter, r *http.Request) {
+	followers, err := a.followersRepository.GetApprovedDirectoryFollowers()
+	if err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	webutils.WriteResponse(w, followers)
 }
 
 // GetBlockedAndRejectedFollowers will return blocked and rejected followers.

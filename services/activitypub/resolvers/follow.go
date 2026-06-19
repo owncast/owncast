@@ -26,7 +26,8 @@ func (r *Resolver) MakeFollowRequest(c context.Context, activity vocab.ActivityS
 	username := person.Username
 	fullUsername := fmt.Sprintf("%s@%s", username, hostname)
 
-	// Check if this is an Owncast server by looking for custom properties in the follow request
+	// Check whether the follower identified itself as a directory by looking for
+	// the ns#directory marker on the follow request.
 	unknownProps := activity.GetUnknownProperties()
 	metadata := apmodels.ParseOwncastMetadata(unknownProps)
 
@@ -39,7 +40,7 @@ func (r *Resolver) MakeFollowRequest(c context.Context, activity vocab.ActivityS
 		Username:         fullUsername,
 		Image:            person.Image,
 		RequestObject:    activity,
-		IsOwncastServer:  metadata.IsOwncastServer,
+		IsDirectory:      metadata.IsDirectory,
 	}
 
 	return &followRequest, nil

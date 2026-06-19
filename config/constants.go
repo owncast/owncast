@@ -25,6 +25,12 @@ const (
 	APOwncastNamespaceLogoURL           = "https://owncast.online/ns#logoUrl"
 	APOwncastNamespaceThumbnailURL      = "https://owncast.online/ns#thumbnailUrl"
 	APOwncastNamespaceStreamTags        = "https://owncast.online/ns#streamTags"
+	// APOwncastNamespaceDirectory marks a Follow as coming from a directory (or an
+	// Owncast server featuring another). Its presence is what makes the receiver
+	// hold the follow for operator approval and, once approved, send it stream
+	// pings. Unlike the stream-metadata fields above, a directory has no stream of
+	// its own, so this explicit marker is how it identifies itself.
+	APOwncastNamespaceDirectory = "https://owncast.online/ns#directory"
 
 	// APStreamStatusLive is the stream status value for a live stream.
 	APStreamStatusLive = "live"

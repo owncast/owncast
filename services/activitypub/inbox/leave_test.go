@@ -65,8 +65,9 @@ func TestHandleLeaveActivityWithMetadata(t *testing.T) {
 		t.Errorf("Expected stream title 'Remote Stream', got '%s'", metadata.StreamTitle)
 	}
 
-	if !metadata.IsOwncastServer {
-		t.Error("Expected IsOwncastServer to be true")
+	// A Leave carries stream metadata but is not a directory marker.
+	if metadata.IsDirectory {
+		t.Error("Expected IsDirectory to be false for a stream Leave")
 	}
 }
 
@@ -95,9 +96,9 @@ func TestHandleLeaveActivityWithoutMetadata(t *testing.T) {
 	unknownProps := activity.GetUnknownProperties()
 	metadata := apmodels.ParseOwncastMetadata(unknownProps)
 
-	// Should not be recognized as Owncast server without metadata
-	if metadata.IsOwncastServer {
-		t.Error("Expected IsOwncastServer to be false when no Owncast metadata present")
+	// Should not be flagged as a directory without the directory marker.
+	if metadata.IsDirectory {
+		t.Error("Expected IsDirectory to be false when no directory marker present")
 	}
 }
 
@@ -141,9 +142,9 @@ func TestHandleLeaveActivityWithPartialMetadata(t *testing.T) {
 		t.Errorf("Expected empty logo URL, got '%s'", metadata.LogoURL)
 	}
 
-	// Should still be recognized as Owncast server with partial metadata
-	if !metadata.IsOwncastServer {
-		t.Error("Expected IsOwncastServer to be true with partial Owncast metadata")
+	// Partial stream metadata still does not make a Leave a directory marker.
+	if metadata.IsDirectory {
+		t.Error("Expected IsDirectory to be false for a stream Leave")
 	}
 }
 
@@ -249,7 +250,7 @@ func TestUpdateFederatedServerStatusFunction(t *testing.T) {
 				StreamDescription: "Test Description",
 				LogoURL:           "https://example.com/logo.png",
 				Tags:              []string{"test", "stream"},
-				IsOwncastServer:   true,
+				IsDirectory:       true,
 			},
 			wantErr: false,
 		},
@@ -257,8 +258,8 @@ func TestUpdateFederatedServerStatusFunction(t *testing.T) {
 			name:     "update with minimal metadata",
 			actorIRI: "https://example.com/federation/user/test",
 			metadata: &apmodels.OwncastMetadata{
-				StreamStatus:    "offline",
-				IsOwncastServer: true,
+				StreamStatus: "offline",
+				IsDirectory:  true,
 			},
 			wantErr: false,
 		},
@@ -266,9 +267,9 @@ func TestUpdateFederatedServerStatusFunction(t *testing.T) {
 			name:     "update with empty actor IRI",
 			actorIRI: "",
 			metadata: &apmodels.OwncastMetadata{
-				StreamStatus:    "offline",
-				ServerName:      "Test Server",
-				IsOwncastServer: true,
+				StreamStatus: "offline",
+				ServerName:   "Test Server",
+				IsDirectory:  true,
 			},
 			wantErr: false, // We don't error on empty IRI in current implementation
 		},
@@ -358,7 +359,8 @@ func TestLeaveActivityMetadataRoundTrip(t *testing.T) {
 		}
 	}
 
-	if !parsedMetadata.IsOwncastServer {
-		t.Error("Round trip failed: IsOwncastServer should be true")
+	// Stream metadata round-trips without the directory marker.
+	if parsedMetadata.IsDirectory {
+		t.Error("Round trip of stream metadata should not be flagged as a directory")
 	}
 }

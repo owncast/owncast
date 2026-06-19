@@ -176,6 +176,14 @@ func (s *ServerInterfaceImpl) GetBlockedAndRejectedFollowersOptions(w http.Respo
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetBlockedAndRejectedFollowers)(w, r)
 }
 
+func (s *ServerInterfaceImpl) GetDirectoryFollowers(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetDirectoryFollowers)(w, r)
+}
+
+func (s *ServerInterfaceImpl) GetDirectoryFollowersOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetDirectoryFollowers)(w, r)
+}
+
 func (s *ServerInterfaceImpl) ApproveFollower(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.ApproveFollower)(w, r)
 }

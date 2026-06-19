@@ -6,7 +6,7 @@
 -- Featured-streams follows (another Owncast server following us so it can show
 -- our live status in its directory) are excluded: they are a directory
 -- relationship, not a fan follow, so they must not inflate the follower count.
-SELECT count(*) FROM ap_followers WHERE approved_at is not null AND owncast_server IS NOT 1;
+SELECT count(*) FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1;
 
 -- name: GetLocalPostCount :one
 SELECT count(*) FROM ap_outbox;
@@ -15,7 +15,7 @@ SELECT count(*) FROM ap_outbox;
 -- Excludes featured-streams (Owncast-server) follows so they don't show up in
 -- the public or admin followers list; they are tracked as a directory
 -- relationship, not surfaced as followers.
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND owncast_server IS NOT 1 ORDER BY created_at DESC LIMIT ? OFFSET ?;
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1 ORDER BY created_at DESC LIMIT ? OFFSET ?;
 
 -- name: GetRejectedAndBlockedFollowers :many
 SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null;
@@ -25,12 +25,12 @@ SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHE
 -- server) requests are excluded here and surfaced separately via
 -- GetPendingFeaturedFollowRequests so they can be approved from the featured
 -- streams admin instead of the followers admin.
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND owncast_server IS NOT 1;
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND directory IS NOT 1;
 
 -- name: GetPendingFeaturedFollowRequests :many
 -- Pending requests from other Owncast servers asking to feature this server's
 -- stream in their directory. These always require explicit approval.
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND owncast_server IS 1 ORDER BY created_at DESC;
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS null AND disabled_at is null AND directory IS 1 ORDER BY created_at DESC;
 
 -- name: ApproveFederationFollower :exec
 UPDATE ap_followers SET approved_at = ?, disabled_at = null WHERE iri = ?;
@@ -39,7 +39,7 @@ UPDATE ap_followers SET approved_at = ?, disabled_at = null WHERE iri = ?;
 UPDATE ap_followers SET approved_at = null, disabled_at = ? WHERE iri = ?;
 
 -- name: GetFollowerByIRI :one
-SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at, owncast_server FROM ap_followers WHERE iri = ?;
+SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at, directory FROM ap_followers WHERE iri = ?;
 
 -- name: GetOutboxWithOffset :many
 SELECT value FROM ap_outbox LIMIT ? OFFSET ?;
@@ -52,7 +52,7 @@ SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = ?;
 DELETE FROM ap_followers WHERE iri = ?;
 
 -- name: AddFollower :exec
-INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at, owncast_server) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name, username, image, approved_at, directory) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: AddToOutbox :exec
 INSERT INTO ap_outbox(iri, value, type, live_notification) values(?, ?, ?, ?);
@@ -91,6 +91,16 @@ WHERE iri = @iri;
 
 -- name: GetUniqueDeliveryInboxes :many
 SELECT COALESCE(shared_inbox, inbox) as delivery_inbox FROM ap_followers WHERE approved_at is not null GROUP BY delivery_inbox;
+
+-- name: GetUniqueDirectoryDeliveryInboxes :many
+-- Approved directory followers only. The Offer/Leave stream pings are delivered
+-- here, not to fan followers, who only need the go-live Create/Note.
+SELECT COALESCE(shared_inbox, inbox) as delivery_inbox FROM ap_followers WHERE approved_at is not null AND directory IS 1 GROUP BY delivery_inbox;
+
+-- name: GetApprovedDirectoryFollowers :many
+-- Approved directories that are featuring/listing this server. Shown in the
+-- admin so the operator can review and remove them.
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at IS NOT NULL AND disabled_at IS NULL AND directory IS 1 ORDER BY created_at DESC;
 
 -- name: BanIPAddress :exec
 INSERT INTO ip_bans(ip_address, notes) values(?, ?);

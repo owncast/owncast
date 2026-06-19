@@ -282,14 +282,34 @@ func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
 // SendToFollowers sends an arbitrary payload to all follower inboxes,
 // preferring shared inboxes to reduce outbound request count.
 func (s *Service) SendToFollowers(payload []byte) error {
-	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
-
 	// Prefer shared inboxes over individual inboxes.
 	inboxes, err := s.followers.GetUniqueDeliveryInboxes()
 	if err != nil {
 		log.Errorln("unable to fetch delivery inboxes", err)
 		return errors.New("unable to fetch delivery inboxes to send payload to")
 	}
+
+	return s.sendToInboxes(payload, inboxes)
+}
+
+// SendToDirectoryFollowers sends a payload only to approved directory followers,
+// the servers that identified themselves with the ns#directory marker. The
+// Offer/Leave stream pings use this so fan followers are not sent directory
+// traffic they have no use for.
+func (s *Service) SendToDirectoryFollowers(payload []byte) error {
+	inboxes, err := s.followers.GetUniqueDirectoryDeliveryInboxes()
+	if err != nil {
+		log.Errorln("unable to fetch directory delivery inboxes", err)
+		return errors.New("unable to fetch directory delivery inboxes to send payload to")
+	}
+
+	return s.sendToInboxes(payload, inboxes)
+}
+
+// sendToInboxes signs and queues the payload for delivery to each of the given
+// inbox URLs, preferring shared inboxes and spreading the work into batches.
+func (s *Service) sendToInboxes(payload []byte, inboxes []string) error {
+	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 
 	// Batch size and delay to prevent resource exhaustion during
 	// delivery; spreads CPU load from cryptographic signing over time.

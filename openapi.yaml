@@ -945,6 +945,33 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /admin/followers/directory:
+    get:
+      summary: Get directories that are featuring/listing this server
+      operationId: GetDirectoryFollowers
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of directories featuring this server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Followers'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetDirectoryFollowersOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /admin/followers/approve:
     post:
       summary: Set the following state of a follower or follow request

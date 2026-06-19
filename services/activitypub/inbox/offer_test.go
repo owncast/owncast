@@ -74,8 +74,10 @@ func TestHandleOfferActivityWithMetadata(t *testing.T) {
 		t.Errorf("Expected 3 tags, got %d", len(metadata.Tags))
 	}
 
-	if !metadata.IsOwncastServer {
-		t.Error("Expected IsOwncastServer to be true")
+	// An Offer carries stream metadata but is not a directory marker, so it must
+	// not be flagged as a directory.
+	if metadata.IsDirectory {
+		t.Error("Expected IsDirectory to be false for a stream Offer")
 	}
 }
 
@@ -104,9 +106,9 @@ func TestHandleOfferActivityWithoutMetadata(t *testing.T) {
 	unknownProps := activity.GetUnknownProperties()
 	metadata := apmodels.ParseOwncastMetadata(unknownProps)
 
-	// Should not be recognized as Owncast server without metadata
-	if metadata.IsOwncastServer {
-		t.Error("Expected IsOwncastServer to be false when no Owncast metadata present")
+	// Should not be flagged as a directory without the directory marker.
+	if metadata.IsDirectory {
+		t.Error("Expected IsDirectory to be false when no directory marker present")
 	}
 }
 
@@ -136,9 +138,9 @@ func TestHandleOfferActivityWithOfflineStatus(t *testing.T) {
 		t.Errorf("Expected stream status 'offline', got '%s'", metadata.StreamStatus)
 	}
 
-	// The handler should ignore offers with offline status since offers are for live streams
-	if metadata.IsOwncastServer {
-		t.Log("Metadata parsed correctly as Owncast server")
+	// Regardless of stream status, an Offer is not a directory marker.
+	if metadata.IsDirectory {
+		t.Error("Expected IsDirectory to be false for a stream Offer")
 	}
 }
 
@@ -303,7 +305,9 @@ func TestOfferActivityMetadataRoundTrip(t *testing.T) {
 		}
 	}
 
-	if !parsedMetadata.IsOwncastServer {
-		t.Error("Round trip failed: IsOwncastServer should be true")
+	// Stream metadata round-trips without the directory marker, so the result is
+	// not a directory.
+	if parsedMetadata.IsDirectory {
+		t.Error("Round trip of stream metadata should not be flagged as a directory")
 	}
 }

@@ -26,10 +26,12 @@ type streamStatusActivity interface {
 }
 
 // sendStreamStatusToFollowers stamps the given activity with this server's
-// identity, attaches its Owncast stream metadata (live or offline), addresses
-// it to all followers, and delivers it. logLabel is used only for log and
-// error messages. It is the shared implementation behind SendStreamPing
-// (Offer/live) and SendStreamGoingOffline (Leave/offline).
+// identity, attaches its Owncast stream metadata (live or offline), and
+// delivers it to directory followers only (the servers listing this stream).
+// Fan followers learn about going live from the Create/Note post instead, so
+// they are deliberately excluded here. logLabel is used only for log and error
+// messages. It is the shared implementation behind SendStreamPing (Offer/live)
+// and SendStreamGoingOffline (Leave/offline).
 func (s *Service) sendStreamStatusToFollowers(activity streamStatusActivity, isLive bool, logLabel string) error {
 	id := shortid.MustGenerate()
 	activityID := s.builder.MakeLocalIRIForResource(id)
@@ -68,7 +70,7 @@ func (s *Service) sendStreamStatusToFollowers(activity streamStatusActivity, isL
 		return errors.Wrapf(err, "unable to serialize %s", logLabel)
 	}
 
-	if err := s.SendToFollowers(b); err != nil {
+	if err := s.SendToDirectoryFollowers(b); err != nil {
 		return err
 	}
 
@@ -76,14 +78,14 @@ func (s *Service) sendStreamStatusToFollowers(activity streamStatusActivity, isL
 		return err
 	}
 
-	log.Debugln("Sent " + logLabel + " to all followers")
+	log.Debugln("Sent " + logLabel + " to directory followers")
 	return nil
 }
 
-// SendStreamPing sends an Offer activity to all followers indicating the
+// SendStreamPing sends an Offer activity to directory followers indicating the
 // stream is live. Used by the featured-streams flow (at go-live and on a
-// timer) so remote Owncast servers can keep their mini-directory of live
-// streams fresh without polling.
+// timer) so directories can keep their list of live streams fresh without
+// polling.
 func (s *Service) SendStreamPing() error {
 	if !s.configRepository.GetFederationEnabled() {
 		return nil
@@ -92,11 +94,11 @@ func (s *Service) SendStreamPing() error {
 	return s.sendStreamStatusToFollowers(streams.NewActivityStreamsOffer(), true, "stream ping Offer activity")
 }
 
-// SendStreamGoingOffline sends a Leave activity to all followers indicating
-// the stream has ended. This is the offline counterpart to SendStreamPing:
-// it lets peer Owncast servers drop this server from the live section of
-// their featured-streams directory immediately, rather than waiting for the
-// staleness sweep to time the entry out.
+// SendStreamGoingOffline sends a Leave activity to directory followers
+// indicating the stream has ended. This is the offline counterpart to
+// SendStreamPing: it lets directories drop this server from the live section
+// of their list immediately, rather than waiting for the staleness sweep to
+// time the entry out.
 func (s *Service) SendStreamGoingOffline() error {
 	if !s.configRepository.GetFederationEnabled() {
 		return nil

@@ -444,6 +444,12 @@ type ServerInterface interface {
 
 	// (OPTIONS /admin/followers/blocked)
 	GetBlockedAndRejectedFollowersOptions(w http.ResponseWriter, r *http.Request)
+	// Get directories that are featuring/listing this server
+	// (GET /admin/followers/directory)
+	GetDirectoryFollowers(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/followers/directory)
+	GetDirectoryFollowersOptions(w http.ResponseWriter, r *http.Request)
 	// Get a list of pending follow requests
 	// (GET /admin/followers/pending)
 	GetPendingFollowRequests(w http.ResponseWriter, r *http.Request)
@@ -1484,6 +1490,17 @@ func (_ Unimplemented) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *
 
 // (OPTIONS /admin/followers/blocked)
 func (_ Unimplemented) GetBlockedAndRejectedFollowersOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get directories that are featuring/listing this server
+// (GET /admin/followers/directory)
+func (_ Unimplemented) GetDirectoryFollowers(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/followers/directory)
+func (_ Unimplemented) GetDirectoryFollowersOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -4352,6 +4369,38 @@ func (siw *ServerInterfaceWrapper) GetBlockedAndRejectedFollowersOptions(w http.
 	handler.ServeHTTP(w, r)
 }
 
+// GetDirectoryFollowers operation middleware
+func (siw *ServerInterfaceWrapper) GetDirectoryFollowers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetDirectoryFollowers(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetDirectoryFollowersOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetDirectoryFollowersOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetDirectoryFollowersOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetPendingFollowRequests operation middleware
 func (siw *ServerInterfaceWrapper) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -6479,6 +6528,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/admin/followers/blocked", wrapper.GetBlockedAndRejectedFollowersOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/followers/directory", wrapper.GetDirectoryFollowers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/followers/directory", wrapper.GetDirectoryFollowersOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/followers/pending", wrapper.GetPendingFollowRequests)

@@ -101,8 +101,9 @@ func TestLeaveActivityWithMetadata(t *testing.T) {
 		}
 	}
 
-	if !metadata.IsOwncastServer {
-		t.Error("Expected IsOwncastServer to be true")
+	// A Leave carries stream metadata but is not a directory marker.
+	if metadata.IsDirectory {
+		t.Error("Expected IsDirectory to be false for a stream Leave")
 	}
 }
 
