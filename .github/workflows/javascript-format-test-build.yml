@@ -17,24 +17,24 @@ on:
     branches:
       - develop
     paths:
-      - 'web/**/*.{js,ts,tsx,jsx,json,css,scss}'
-      - 'web/package.json'
-      - 'web/package-lock.json'
-      - 'web/.eslintrc.js'
-      - 'web/.prettierrc.js'
-      - 'web/tsconfig.json'
-      - 'web/next.config.js'
+      - 'web/**/*.js'
+      - 'web/**/*.ts'
+      - 'web/**/*.tsx'
+      - 'web/**/*.jsx'
+      - 'web/**/*.json'
+      - 'web/**/*.css'
+      - 'web/**/*.scss'
       - '.github/workflows/javascript-format-test-build.yml'
 
   pull_request:
     paths:
-      - 'web/**/*.{js,ts,tsx,jsx,json,css,scss}'
-      - 'web/package.json'
-      - 'web/package-lock.json'
-      - 'web/.eslintrc.js'
-      - 'web/.prettierrc.js'
-      - 'web/tsconfig.json'
-      - 'web/next.config.js'
+      - 'web/**/*.js'
+      - 'web/**/*.ts'
+      - 'web/**/*.tsx'
+      - 'web/**/*.jsx'
+      - 'web/**/*.json'
+      - 'web/**/*.css'
+      - 'web/**/*.scss'
       - '.github/workflows/javascript-format-test-build.yml'
 
 jobs:
