@@ -1,17 +1,48 @@
 package transcoder
 
 import (
+	log "github.com/sirupsen/logrus"
+
 	"github.com/owncast/owncast/models"
 )
+
+// Recorder is notified of recorded HLS activity so a stream can be replayed
+// later. The replay subsystem implements it; it is optional and only set when
+// replay features are enabled. Defined here (rather than imported from the
+// replays package) to keep the transcoder free of a dependency on it.
+type Recorder interface {
+	// SegmentWritten is called with the public path of each stored segment.
+	SegmentWritten(path string)
+	// StreamEnded is called when the live stream ends.
+	StreamEnded()
+}
 
 // HLSHandler gets told about available HLS playlists and segments.
 type HLSHandler struct {
 	Storage models.StorageProvider
+
+	// Recorder, when non-nil, records each written segment for later replay.
+	Recorder Recorder
+}
+
+// StreamEnded notes the end of the stream in the recorder, if one is set.
+func (h *HLSHandler) StreamEnded() {
+	if h.Recorder != nil {
+		h.Recorder.StreamEnded()
+	}
 }
 
 // SegmentWritten is fired when a HLS segment is written to disk.
 func (h *HLSHandler) SegmentWritten(localFilePath string) {
-	h.Storage.SegmentWritten(localFilePath)
+	remotePath, err := h.Storage.SegmentWritten(localFilePath)
+	if err != nil {
+		log.Debugln(err, localFilePath)
+		return
+	}
+
+	if h.Recorder != nil {
+		h.Recorder.SegmentWritten(remotePath)
+	}
 }
 
 // VariantPlaylistWritten is fired when a HLS variant playlist is written to disk.

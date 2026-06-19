@@ -93,16 +93,18 @@ func (s *S3Storage) Setup() error {
 	return nil
 }
 
-// SegmentWritten is called when a single segment of video is written.
-func (s *S3Storage) SegmentWritten(localFilePath string) {
+// SegmentWritten is called when a single segment of video is written. It
+// returns the absolute remote URL the uploaded segment is served from.
+func (s *S3Storage) SegmentWritten(localFilePath string) (string, error) {
 	index := utils.GetIndexFromFilePath(localFilePath)
 	performanceMonitorKey := "s3upload-" + index
 	s.performanceTracker.StartPerformanceMonitor(performanceMonitorKey)
 
 	// Upload the segment
-	if _, err := s.Save(localFilePath, 0); err != nil {
+	remotePath, err := s.Save(localFilePath, 0)
+	if err != nil {
 		log.Errorln(err)
-		return
+		return "", err
 	}
 	averagePerformance := s.performanceTracker.GetAveragePerformance(performanceMonitorKey)
 
@@ -122,9 +124,11 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 		s.queuedPlaylistUpdates[playlistPath] = playlistPath
 		if pErr, ok := err.(*os.PathError); ok {
 			log.Debugln(pErr.Path, "does not yet exist locally when trying to upload to S3 storage.")
-			return
+			return remotePath, nil
 		}
 	}
+
+	return remotePath, nil
 }
 
 // VariantPlaylistWritten is called when a variant hls playlist is written.
@@ -205,6 +209,12 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 
 // Cleanup will fire the different cleanup tasks required.
 func (s *S3Storage) Cleanup() error {
+	// If we're recording for replay, don't prune old segments; they must be
+	// kept so completed streams remain replayable.
+	if config.EnableReplayFeatures {
+		return nil
+	}
+
 	if err := s.RemoteCleanup(); err != nil {
 		log.Errorln(err)
 	}

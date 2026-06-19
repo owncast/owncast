@@ -57,6 +57,15 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 	// Return HLS video
 	r.HandleFunc("/hls/*", h.HandleHLSRequest)
 
+	// Public HLS playback for stream replays and clips. These are not /api
+	// routes (they return HLS playlists, not JSON), so like /hls they're bound
+	// directly here rather than through the OpenAPI handler. The handler
+	// methods gate on the replay feature flag and return 404 when it's off.
+	// Subtree matches cover /replay/{streamId}[/{outputConfigId}] and
+	// /clip/{clipId}[/{outputConfigId}].
+	r.HandleFunc("/replay/*", h.GetReplay)
+	r.HandleFunc("/clip/*", h.GetClip)
+
 	// The admin web app.
 	r.HandleFunc("/admin/*", mw.RequireAdminAuth(h.IndexHandler))
 

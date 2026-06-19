@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 )
 
@@ -27,11 +28,14 @@ func (s *LocalStorage) Setup() error {
 	return nil
 }
 
-// SegmentWritten is called when a single segment of video is written.
-func (s *LocalStorage) SegmentWritten(localFilePath string) {
+// SegmentWritten is called when a single segment of video is written. It
+// returns the public (relative) path the segment is served from.
+func (s *LocalStorage) SegmentWritten(localFilePath string) (string, error) {
 	if _, err := s.Save(localFilePath, 0); err != nil {
 		log.Warnln(err)
+		return "", err
 	}
+	return localFilePath, nil
 }
 
 // VariantPlaylistWritten is called when a variant hls playlist is written.
@@ -63,6 +67,12 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 
 // Cleanup will remove old files from the storage provider.
 func (s *LocalStorage) Cleanup() error {
+	// If we're recording for replay, don't prune old segments; they must be
+	// kept on disk so completed streams remain replayable.
+	if config.EnableReplayFeatures {
+		return nil
+	}
+
 	// Determine how many files we should keep on disk
 	maxNumber := s.configRepository.GetStreamLatencyLevel().SegmentCount
 	buffer := 10

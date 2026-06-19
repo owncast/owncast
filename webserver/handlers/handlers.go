@@ -18,6 +18,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/cache"
 	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/services/replays"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/webserver/handlers/admin"
 	"github.com/owncast/owncast/webserver/handlers/auth/fediverse"
@@ -37,6 +38,7 @@ import (
 type Handlers struct {
 	cache                   *cache.Container
 	stream                  *stream.Service
+	replays                 *replays.Service
 	chat                    *chat.Service
 	admin                   *admin.Admin
 	activitypub             *activitypub.Service
@@ -102,6 +104,7 @@ type Handlers struct {
 type Deps struct {
 	Cache                   *cache.Container
 	Stream                  *stream.Service
+	Replays                 *replays.Service
 	Chat                    *chat.Service
 	Admin                   *admin.Admin
 	Activitypub             *activitypub.Service
@@ -153,6 +156,7 @@ func NewHandlers(deps Deps) *Handlers {
 	return &Handlers{
 		cache:                   deps.Cache,
 		stream:                  deps.Stream,
+		replays:                 deps.Replays,
 		chat:                    deps.Chat,
 		admin:                   deps.Admin,
 		activitypub:             deps.Activitypub,

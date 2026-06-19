@@ -18,6 +18,7 @@ import (
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/geoip"
+	"github.com/owncast/owncast/services/replays"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/services/webhooks"
@@ -78,6 +79,13 @@ type Service struct {
 	handler    transcoder.HLSHandler
 	fileWriter *transcoder.FileWriterReceiverService
 
+	// replays is the optional replay subsystem. When non-nil and replay
+	// features are enabled, streams are recorded for later playback.
+	replays *replays.Service
+	// recorder records the segments of the currently-live stream. Set on
+	// stream-connect when replay features are enabled, nil'd on disconnect.
+	recorder *replays.HLSRecorder
+
 	// thumbnailGen owns the periodic thumbnail+preview snapshotter that
 	// runs while a stream is online. Lazily started on stream-connect,
 	// stopped on stream-disconnect.
@@ -133,6 +141,7 @@ type Deps struct {
 	Datastore        *datastore.Datastore
 	ConfigRepository configrepository.ConfigRepository
 	Config           *config.Config
+	Replays          *replays.Service
 }
 
 // New constructs an idle stream Service. Call Start(ctx) to bring up the
@@ -149,6 +158,7 @@ func New(deps Deps) *Service {
 		datastore:        deps.Datastore,
 		configRepository: deps.ConfigRepository,
 		cfg:              deps.Config,
+		replays:          deps.Replays,
 	}
 	// The local engine binds the in-process RTMP listener and routes inbound
 	// connections back through the service's StreamEvents handlers.
