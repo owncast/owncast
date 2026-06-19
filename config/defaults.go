@@ -32,6 +32,7 @@ type Defaults struct {
 
 	Tags               []string
 	RTMPServerPort     int
+	RTMPBindAddress    string
 	SegmentsInPlaylist int
 
 	SegmentLengthSeconds int

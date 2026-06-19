@@ -14,6 +14,7 @@ const (
 	httpListenAddressKey            = "http_listen_address"
 	websocketHostOverrideKey        = "websocket_host_override"
 	rtmpPortNumberKey               = "rtmp_port_number"
+	rtmpBindAddressKey              = "rtmp_bind_address"
 	serverMetadataTagsKey           = "server_metadata_tags"
 	directoryEnabledKey             = "directory_enabled"
 	directoryRegistrationKeyKey     = "directory_registration_key"

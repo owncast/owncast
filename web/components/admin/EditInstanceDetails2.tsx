@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Collapse, Typography } from 'antd';
-import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD, TEXTFIELD_TYPE_URL } from './TextField';
+import { TEXTFIELD_TYPE_NUMBER, TEXTFIELD_TYPE_PASSWORD, TEXTFIELD_TYPE_TEXT, TEXTFIELD_TYPE_URL } from './TextField';
 import { TextFieldWithSubmit } from './TextFieldWithSubmit';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
@@ -11,6 +11,7 @@ import {
   TEXTFIELD_PROPS_ADMIN_PASSWORD,
   TEXTFIELD_PROPS_WEB_PORT,
   TEXTFIELD_PROPS_VIDEO_SERVING_ENDPOINT,
+  TEXTFIELD_PROPS_RTMP_ADDRESS,
 } from '../../utils/config-constants';
 import { UpdateArgs } from '../../types/config-section';
 import { ResetYP } from './ResetYP';
@@ -32,6 +33,7 @@ export default function EditInstanceDetails() {
     yp,
     socketHostOverride,
     videoServingEndpoint,
+    rtmpServerAddress,
   } = serverConfig;
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export default function EditInstanceDetails() {
       webServerPort,
       socketHostOverride,
       videoServingEndpoint,
+      rtmpServerAddress
     });
   }, [serverConfig]);
 
@@ -108,6 +111,15 @@ export default function EditInstanceDetails() {
         value={formDataValues.rtmpServerPort}
         initialValue={rtmpServerPort}
         type={TEXTFIELD_TYPE_NUMBER}
+        onChange={handleFieldChange}
+        onSubmit={showConfigurationRestartMessage}
+      />
+      <TextFieldWithSubmit
+        fieldName="rtmpServerAddress"
+        {...TEXTFIELD_PROPS_RTMP_ADDRESS}
+        value={formDataValues.rtmpServerAddress}
+        initialValue={rtmpServerAddress}
+        type={TEXTFIELD_TYPE_TEXT}
         onChange={handleFieldChange}
         onSubmit={showConfigurationRestartMessage}
       />
