@@ -49,12 +49,16 @@ jobs:
         uses: tj-actions/changed-files@v47
         with:
           path: 'web'
-          files_ignore: |
-            public/styles/plugin.css
-            styles/variables.css
+          # Negation patterns must live inside the files_yaml group; the
+          # top-level files_ignore option is not applied when files_yaml is
+          # used. These two are generated style-dictionary outputs and are in
+          # .stylelintignore, so passing them to stylelint aborts the run with
+          # AllFilesIgnoredError.
           files_yaml: |
             src:
               - '**/*.{css,scss}'
+              - '!public/styles/plugin.css'
+              - '!styles/variables.css'
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -71,4 +75,4 @@ jobs:
 
       - name: Run Stylelint
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
-        run: npx stylelint ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
+        run: npx stylelint --allow-empty-input ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
