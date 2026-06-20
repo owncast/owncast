@@ -98,12 +98,13 @@ type AdminConfigValue_Value struct {
 
 // AdminFederationConfig defines model for AdminFederationConfig.
 type AdminFederationConfig struct {
-	BlockedDomains *[]string `json:"blockedDomains,omitempty"`
-	Enabled        *bool     `json:"enabled,omitempty"`
-	GoLiveMessage  *string   `json:"goLiveMessage,omitempty"`
-	IsPrivate      *bool     `json:"isPrivate,omitempty"`
-	ShowEngagement *bool     `json:"showEngagement,omitempty"`
-	Username       *string   `json:"username,omitempty"`
+	BlockedDomains   *[]string `json:"blockedDomains,omitempty"`
+	Enabled          *bool     `json:"enabled,omitempty"`
+	GoLiveMessage    *string   `json:"goLiveMessage,omitempty"`
+	HideFollowersTab *bool     `json:"hideFollowersTab,omitempty"`
+	IsPrivate        *bool     `json:"isPrivate,omitempty"`
+	ShowEngagement   *bool     `json:"showEngagement,omitempty"`
+	Username         *string   `json:"username,omitempty"`
 }
 
 // AdminLog defines model for AdminLog.
@@ -380,9 +381,10 @@ type FederatedServer struct {
 
 // FederationConfig defines model for FederationConfig.
 type FederationConfig struct {
-	Account       *string `json:"account,omitempty"`
-	Enabled       *bool   `json:"enabled,omitempty"`
-	FollowerCount *int    `json:"followerCount,omitempty"`
+	Account          *string `json:"account,omitempty"`
+	Enabled          *bool   `json:"enabled,omitempty"`
+	FollowerCount    *int    `json:"followerCount,omitempty"`
+	HideFollowersTab *bool   `json:"hideFollowersTab,omitempty"`
 }
 
 // Follower defines model for Follower.

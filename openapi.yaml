@@ -4112,6 +4112,8 @@ components:
           type: integer
         enabled:
           type: boolean
+        hideFollowersTab:
+          type: boolean
     AuthenticationConfig:
       type: object
       properties:
@@ -4635,6 +4637,8 @@ components:
         isPrivate:
           type: boolean
         showEngagement:
+          type: boolean
+        hideFollowersTab:
           type: boolean
     AdminVideoSettings:
       type: object
