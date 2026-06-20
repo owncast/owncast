@@ -1,6 +1,6 @@
 /**
  * Do not edit directly
- * Generated on Wed, 03 Jun 2026 00:47:31 GMT
+ * This file is generated from the token sources under style-definitions/.
  * 
  * How to edit these values:
  * Edit the corresponding token file under the style-definitions directory
@@ -11,14 +11,14 @@
   --link-color: var(--theme-color-action);
   --link-hover-color: var(--theme-color-action-hover);
   --modal-header-bg: var(--theme-color-components-modal-header-background);
-  --modal-content-bg: var(--theme-color-background-main);
+  --modal-content-bg: var(--theme-color-components-modal-content-background);
   --alert-error-bg-color: var(--theme-color-palette-4);
   --alert-error-border-color: var(--theme-color-palette-error);
   --popover-background: var(--theme-color-components-menu-background);
   --tag-default-color: var(--theme-color-action);
   --border-radius-base: var(--theme-rounded-corners);
   --background-color-light: var(--theme-color-background-main);
-  --modal-close-color: var(--theme-color-background-main);
+  --modal-close-color: var(--theme-color-components-modal-header-text);
   --primary-color: #6544e9; /* Text link/secondary light text */
   --primary-color-hover: #2386e2; /* Fun color 1 */
   --primary-color-active: #7a5cf3; /* Text link hover */
@@ -32,7 +32,7 @@
   --primary-8: #da9eff; /* Fun color 2 */
   --component-background: #e2e8f0; /* Light primary */
   --body-background: #e2e8f0; /* Light primary */
-  --theme-rounded-corners: 5px; /* How much corners are rounded in places in the UI. */
+  --theme-rounded-corners: 9px; /* How much corners are rounded in places in the UI. */
   --theme-unknown-1: green; /* This should never be used and it means something is wrong. */
   --theme-unknown-2: red; /* This should never be used and it means something is wrong. */
   --theme-text-body-font-family: var(
@@ -41,7 +41,14 @@
   --theme-text-display-font-family: var(
     --font-owncast-display
   ); /* The font family used for the display/header text. */
-  --theme-color-users: var(--color-owncast-user-6); /* Colors used to display chat users. */
+  --theme-color-users-0: var(--color-owncast-user-0);
+  --theme-color-users-1: var(--color-owncast-user-1);
+  --theme-color-users-2: var(--color-owncast-user-2);
+  --theme-color-users-3: var(--color-owncast-user-3);
+  --theme-color-users-4: var(--color-owncast-user-4);
+  --theme-color-users-5: var(--color-owncast-user-5);
+  --theme-color-users-6: var(--color-owncast-user-6);
+  --theme-color-users-7: var(--color-owncast-user-7);
   --theme-color-palette-0: var(--color-owncast-palette-0); /* Dark primary */
   --theme-color-palette-1: var(--color-owncast-palette-1); /* Dark secondary */
   --theme-color-palette-2: var(--color-owncast-palette-2); /* Dark alternate */
@@ -106,18 +113,22 @@
     --theme-color-palette-15
   ); /* Lighter background */
   --theme-color-components-modal-header-background: var(
-    --theme-color-palette-1
-  ); /* Dark secondary */
-  --theme-color-components-modal-header-text: var(--theme-color-palette-3); /* Light primary */
-  --theme-color-components-modal-content-background: var(
-    --theme-color-palette-3
+    --theme-color-background-header
+  ); /* Dark primary */
+  --theme-color-components-modal-header-text: var(
+    --theme-color-components-text-on-dark
   ); /* Light primary */
-  --theme-color-components-modal-content-text: var(--theme-color-palette-0); /* Dark primary */
+  --theme-color-components-modal-content-background: var(
+    --theme-color-components-content-background
+  ); /* Lighter background */
+  --theme-color-components-modal-content-text: var(
+    --theme-color-components-text-on-light
+  ); /* Dark primary */
   --theme-color-components-menu-background: var(--theme-color-palette-3); /* Light primary */
   --theme-color-components-menu-item-text: var(--theme-color-palette-0); /* Dark primary */
   --theme-color-components-menu-item-bg: transparent;
-  --theme-color-components-menu-item-hover-bg: rgb(0 0 0 / 5%);
-  --theme-color-components-menu-item-focus-bg: rgb(0 0 0 / 10%);
+  --theme-color-components-menu-item-hover-bg: rgba(0, 0, 0, 0.05);
+  --theme-color-components-menu-item-focus-bg: rgba(0, 0, 0, 0.1);
   --theme-color-components-form-field-background: var(
     --theme-color-palette-4
   ); /* Light secondary */
@@ -148,9 +159,9 @@
   --color-owncast-user-7: #ff53ff;
   --color-owncast-palette-0: #12161d; /* Dark primary */
   --color-owncast-palette-1: #2d3748; /* Dark secondary */
-  --color-owncast-palette-2: #000; /* Dark alternate */
+  --color-owncast-palette-2: #000000; /* Dark alternate */
   --color-owncast-palette-3: #e2e8f0; /* Light primary */
-  --color-owncast-palette-4: #fff; /* Light secondary */
+  --color-owncast-palette-4: #ffffff; /* Light secondary */
   --color-owncast-palette-5: #c3dafe; /* Light alternate */
   --color-owncast-palette-6: #6544e9; /* Text link/secondary light text */
   --color-owncast-palette-7: #7a5cf3; /* Text link hover */
@@ -165,15 +176,14 @@
   --color-owncast-palette-error: #ff4b39; /* Error */
   --color-owncast-palette-warning: #ffc655; /* Warning */
   --font-owncast-body:
-    'Inter', system-ui, -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, 'Helvetica Neue',
-    arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
   --font-owncast-display:
-    'Poppins', system-ui, -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, 'Helvetica Neue',
-    arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
 }
-
 /*
  * plugin-elements.css — hand-authored element baseline for plugin content.
  *
