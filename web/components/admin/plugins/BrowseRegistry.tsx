@@ -195,6 +195,11 @@ export const BrowseRegistry = ({
                     <Text type="secondary"> &middot; {readableBytes(plugin.latest.sizeBytes)}</Text>
                   ) : null}
                 </div>
+                {plugin.authorName && (
+                  <Text type="secondary" className={s.author}>
+                    {t(Localization.Admin.Plugins.browseAuthor, { name: plugin.authorName })}
+                  </Text>
+                )}
                 {plugin.summary && <Paragraph className={s.summary}>{plugin.summary}</Paragraph>}
                 {plugin.previewURL && (
                   <img
