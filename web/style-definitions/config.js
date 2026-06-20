@@ -3,8 +3,12 @@ const StyleDictionary = require('style-dictionary');
 
 StyleDictionary.registerFileHeader({
   name: 'myCustomHeader',
-  fileHeader: defaultMessage => [
-    ...defaultMessage,
+  // Intentionally omit Style Dictionary's default "Generated on <timestamp>"
+  // line. The timestamp made every regeneration produce a diff, so the
+  // committed outputs could never be reproduced byte-for-byte from the source.
+  fileHeader: () => [
+    `Do not edit directly`,
+    `This file is generated from the token sources under style-definitions/.`,
     ``,
     `How to edit these values:`,
     `Edit the corresponding token file under the style-definitions directory`,
