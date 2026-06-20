@@ -9,7 +9,7 @@ link-hover-color:
 modal-header-bg:
   value: 'var(--theme-color-components-modal-header-background)'
 modal-content-bg:
-  value: 'var(--theme-color-background-main)'
+  value: 'var(--theme-color-components-modal-content-background)'
 alert-error-bg-color:
   value: 'var(--theme-color-palette-4)'
 alert-error-border-color:
@@ -23,7 +23,7 @@ border-radius-base:
 background-color-light:
   value: 'var(--theme-color-background-main)'
 modal-close-color:
-  value: 'var(--theme-color-background-main)'
+  value: 'var(--theme-color-components-modal-header-text)'
 
 # This values need to be statically assigned at build time and cannot be
 # overridden by the user at runtime.
