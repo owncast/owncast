@@ -19,11 +19,16 @@
  * those stacks — acceptable, and the same as the prior admin stylesheet.
  */
 
+/* Transparent so the host panel/page paints the background and the plugin
+ * content reads as part of the page rather than a boxed-in white pane. The
+ * viewer frame sits on the soft content panel; the admin frame sits on the
+ * admin page background. Keeping this in the stylesheet (rather than only the
+ * viewer's JS) means the admin frame blends in too. */
 html,
 body {
   margin: 0;
   padding: 0;
-  background: var(--theme-color-background-main);
+  background: transparent;
   color: var(--theme-color-components-text-on-light);
   font-family: var(--theme-text-body-font-family);
   font-size: 14px;
@@ -230,11 +235,13 @@ input[type='reset']:hover {
   color: var(--theme-color-components-primary-button-text);
 }
 
-/* Tables — minimal, readable. */
+/* Tables — minimal, readable. Card-toned background (not opaque white) so
+ * tables sit on the panel the way native content does. */
 table {
   border-collapse: collapse;
   width: 100%;
-  background: var(--theme-color-components-form-field-background);
+  background: var(--theme-color-background-main);
+  border: 1px solid rgb(0 0 0 / 12%);
   border-radius: var(--theme-rounded-corners);
   overflow: hidden;
 }
@@ -256,12 +263,21 @@ tr:last-child td {
   border-bottom: none;
 }
 
-/* Cards — semantic <section>/<article>/<fieldset> get a soft container. */
+/* Sectioning content sits flush on the host panel, exactly like native tab
+ * content (the About tab, etc.) does. No card chrome: a plugin that wraps its
+ * markup in a <section>/<article> shouldn't pick up a stray colored box with a
+ * border and a second layer of padding nested inside the panel. Just vertical
+ * rhythm between blocks. */
 section,
-article,
+article {
+  margin: 0 0 16px;
+}
+
+/* <fieldset> is a genuine form-grouping element, so keep it as a light bordered
+ * box — but transparent, so it groups without painting its own panel color. */
 fieldset {
-  background: var(--theme-color-components-form-field-background);
-  border: 1px solid var(--theme-color-palette-14);
+  background: transparent;
+  border: 1px solid rgb(0 0 0 / 12%);
   border-radius: var(--theme-rounded-corners);
   padding: 16px;
   margin: 0 0 16px;
@@ -274,4 +290,74 @@ fieldset legend {
 
 .muted {
   color: var(--theme-color-palette-10);
+}
+
+/* ---------------------------------------------------------------------------
+ * Opt-in helper classes.
+ *
+ * The element baseline above already makes plain semantic HTML look native, so
+ * a plugin needs none of these. They exist for authors who want the native
+ * building blocks — a card surface, a responsive card grid, pill tags, simple
+ * layout — without hand-copying theme values. Everything references theme
+ * tokens, so it re-themes along with the host. Documented at
+ * https://owncast.online/docs/plugins/ui.
+ * ------------------------------------------------------------------------ */
+
+/* Card — the native card surface (the same look as the followers and featured
+ * streams cards). Opt in with class="card"; a plain <section>/<article> stays
+ * flush on the panel by design. */
+.card {
+  background: var(--theme-color-background-main);
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: var(--theme-rounded-corners);
+  padding: 16px;
+}
+
+/* Add "interactive" to a clickable card for the native hover lift. */
+.card.interactive {
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.card.interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+}
+
+/* Responsive card grid, mirroring the native followers/streams layout: fills
+ * as many ~260px columns as fit and collapses to one column on a narrow
+ * frame. Drop .card children straight in. */
+.card-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+}
+
+/* Pill tag/badge, matching the tags on the native stream cards. */
+.tag {
+  display: inline-block;
+  height: 20px;
+  padding: 0 8px;
+  font-size: 11px;
+  line-height: 20px;
+  color: var(--theme-color-components-text-on-dark);
+  background: var(--theme-color-palette-10);
+  border-radius: 10px;
+}
+
+/* Layout — a vertical stack and a horizontal row, each with a sensible gap.
+ * Compose them for most plugin layouts without writing flexbox by hand. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
