@@ -10,7 +10,8 @@ const PLUGIN_STYLESHEET = '/styles/plugin.css';
 // A self-contained mirror of PluginTabFrame's rendering: a srcdoc iframe with
 // the baseline linked into its head, a transparent background so the host
 // panel shows through, and auto-sizing to content. It deliberately omits
-// PluginTabFrame's Recoil reads (appearanceVariables / customStyles) so the
+// PluginTabFrame's Recoil reads (pluginStyles / appearanceVariables /
+// customStyles) so the
 // story has no store dependency and stays a pure stylesheet preview.
 const PluginFramePreview: FC<{ html: string }> = ({ html }) => {
   const frameRef = useRef<HTMLIFrameElement>(null);

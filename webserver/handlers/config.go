@@ -18,13 +18,18 @@ import (
 type webConfigResponse struct {
 	AppearanceVariables map[string]string `json:"appearanceVariables"`
 	Name                string            `json:"name"`
-	// CustomStyles is the admin-configured CSS plus the concatenated
-	// content of every loaded plugin's manifest.styles entries (each
-	// preceded by a `/* plugin: <slug> ... */` delimiter for
-	// devtools attribution). The viewer renders this as one inline
-	// <style> block so plugins can theme the page without each plugin
-	// needing its own <link> tag.
-	CustomStyles       string                  `json:"customStyles"`
+	// CustomStyles is the admin-configured custom CSS. The viewer
+	// renders it last in the appearance cascade (after plugin styles
+	// and the appearance-variable block), so an admin's explicit CSS
+	// wins over a plugin's styling.
+	CustomStyles string `json:"customStyles"`
+	// PluginStyles is the concatenated CSS contributed by every loaded
+	// plugin: each plugin's manifest.styles entries followed by its
+	// on_page_styles output, each preceded by a `/* plugin: <slug> ... */`
+	// delimiter for devtools attribution. The viewer renders this as a
+	// baseline <style> block *before* the admin's appearance variables
+	// and custom CSS, so admin settings layer on top and win on overlap.
+	PluginStyles       string                  `json:"pluginStyles"`
 	StreamTitle        string                  `json:"streamTitle,omitempty"` // What's going on with the current stream
 	OfflineMessage     string                  `json:"offlineMessage"`
 	Logo               string                  `json:"logo"`
@@ -148,7 +153,8 @@ func (h *Handlers) getConfigResponse(r *http.Request) webConfigResponse {
 		ChatRequireAuthentication:  configRepository.GetChatRequireAuthentication(),
 		ExternalActions:            mergePluginActions(configRepository.GetExternalActions(), h.pluginActions),
 		PluginTabs:                 pluginTabsOrEmpty(r, h.pluginTabs),
-		CustomStyles:               mergePluginCSS(configRepository.GetCustomStyles(), h.pluginCSSContent),
+		CustomStyles:               configRepository.GetCustomStyles(),
+		PluginStyles:               pluginStylesString(h.pluginCSSContent),
 		MaxSocketPayloadSize:       config.MaxSocketPayloadSize,
 		Federation:                 federationResponse,
 		Notifications:              notificationsResponse,
@@ -197,27 +203,17 @@ func prependPluginPageContent(admin string, r *http.Request, pluginHTML func(*ht
 	return prefix + admin
 }
 
-// mergePluginCSS appends plugin-contributed CSS bytes to the admin's
-// custom CSS so the viewer renders one inline <style> block covering
-// both. A nil getter (no plugin host) or empty contribution leaves
-// the admin's value untouched. A newline separates the two sources
-// so a stylesheet that doesn't terminate in one can't trail into the
-// plugin block.
-func mergePluginCSS(admin string, pluginCSS func() []byte) string {
+// pluginStylesString returns the plugin-contributed CSS bytes as a
+// string for the viewer's pluginStyles field. The viewer renders this
+// as a baseline <style> block ahead of the admin's appearance
+// variables and custom CSS, so admin settings layer on top. A nil
+// getter (no plugin host) or empty contribution yields an empty
+// string.
+func pluginStylesString(pluginCSS func() []byte) string {
 	if pluginCSS == nil {
-		return admin
+		return ""
 	}
-	bytes := pluginCSS()
-	if len(bytes) == 0 {
-		return admin
-	}
-	if admin == "" {
-		return string(bytes)
-	}
-	if admin[len(admin)-1] != '\n' {
-		admin += "\n"
-	}
-	return admin + string(bytes)
+	return string(pluginCSS())
 }
 
 // mergePluginActions appends plugin-contributed action buttons to the

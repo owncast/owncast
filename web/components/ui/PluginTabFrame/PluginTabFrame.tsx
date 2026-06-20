@@ -15,19 +15,34 @@ const PLUGIN_STYLESHEET = '/styles/plugin.css';
 // The cascade we want inside the frame, bottom to top:
 //   1. plugin.css          — element baseline + token defaults.
 //   2. author's own styles — in their HTML, so they override the baseline.
-//   3. appearanceVariables — the admin's :root variable overrides.
-//   4. customStyles        — the admin's custom CSS.
+//   3. pluginStyles        — other loaded plugins' page CSS (e.g. a theme),
+//                            so the tab inherits the same baseline theming
+//                            as the main page.
+//   4. appearanceVariables — the admin's :root variable overrides.
+//   5. customStyles        — the admin's custom CSS.
 //
-// All four are injected by the host (the author writes none of it). We inject
+// All of it is injected by the host (the author writes none of it). We inject
 // into the DOM rather than string-templating the srcdoc because the author's
 // HTML may be a full document with its own <head>: the parser always
 // synthesizes exactly one <head>, so inserting at head.firstChild reliably
 // places plugin.css ahead of the author's own head styles (lowest layer)
-// regardless of how their markup is shaped. The runtime layers (3, 4) are
-// appended last so they win, and set via textContent so a stray </style> in
-// customStyles can't break out of the tag.
-const injectStyles = (doc: Document, appearanceVars: string, customStyles: string) => {
-  // Appended after the author's content → highest priority.
+// regardless of how their markup is shaped. The runtime layers (3, 4, 5) are
+// appended last so they win, in priority order, and set via textContent so a
+// stray </style> in any of them can't break out of the tag. Admin layers
+// (4, 5) come after plugin styles (3) so the admin wins on overlap, matching
+// the main-page cascade.
+const injectStyles = (
+  doc: Document,
+  pluginStyles: string,
+  appearanceVars: string,
+  customStyles: string,
+) => {
+  // Appended after the author's content, low to high priority.
+  if (pluginStyles) {
+    const plugins = doc.createElement('style');
+    plugins.textContent = pluginStyles;
+    doc.head.appendChild(plugins);
+  }
   if (appearanceVars) {
     const vars = doc.createElement('style');
     vars.textContent = `:root { ${appearanceVars} }`;
@@ -70,7 +85,7 @@ export const PluginTabFrame: FC<PluginTabFrameProps> = ({ content }) => {
   const observerRef = useRef<ResizeObserver | null>(null);
 
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const { appearanceVariables, customStyles } = clientConfig;
+  const { appearanceVariables, customStyles, pluginStyles } = clientConfig;
   const appearanceVars = Object.keys(appearanceVariables || {})
     .filter(variable => !!appearanceVariables[variable])
     .map(variable => `--${variable}: ${appearanceVariables[variable]}`)
@@ -85,7 +100,7 @@ export const PluginTabFrame: FC<PluginTabFrameProps> = ({ content }) => {
     if (!iframe || !doc || !win) return;
 
     applyBase(doc);
-    injectStyles(doc, appearanceVars, customStyles);
+    injectStyles(doc, pluginStyles, appearanceVars, customStyles);
     // The container behind the frame paints the panel background; let it
     // show through.
     doc.documentElement.style.background = 'transparent';

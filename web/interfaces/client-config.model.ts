@@ -11,11 +11,15 @@ export interface ClientConfig {
   chatDisabled: boolean;
   chatRequireAuthentication: boolean;
   externalActions: any[];
-  // customStyles is the admin's CSS plus the concatenated content of
-  // every loaded plugin's manifest.styles entries (the host
-  // pre-merges them server-side). Theme.tsx renders this as one
-  // inline <style> block.
+  // customStyles is the admin's custom CSS. Theme.tsx renders it last
+  // in the appearance cascade (after pluginStyles and the appearance
+  // variables), so it wins over plugin styling on overlap.
   customStyles: string;
+  // pluginStyles is the concatenated CSS contributed by loaded plugins
+  // (manifest.styles + on_page_styles output). Theme.tsx renders it as
+  // a baseline <style> block before the appearance variables and
+  // customStyles, so admin appearance settings layer on top.
+  pluginStyles: string;
   // pluginTabs is the list of viewer-page tabs contributed by
   // loaded plugins via manifest.tabs. DesktopContent / MobileContent
   // render one tab per entry alongside the built-in tabs.
@@ -76,6 +80,7 @@ export function makeEmptyClientConfig(): ClientConfig {
     chatRequireAuthentication: false,
     externalActions: [],
     customStyles: '',
+    pluginStyles: '',
     pluginTabs: [],
     appearanceVariables: new Map(),
     maxSocketPayloadSize: 0,
