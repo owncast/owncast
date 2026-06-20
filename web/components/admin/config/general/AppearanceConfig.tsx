@@ -1,6 +1,6 @@
-import React, { FC, useContext, useCallback, useEffect, useState } from 'react';
+import React, { FC, useContext, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Button, Col, Collapse, Row, Slider, Space } from 'antd';
+import { Alert, Button, Col, Collapse, Row, Slider, Space, Tooltip } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Title from 'antd/lib/typography/Title';
 import { useTranslation } from 'next-export-i18n';
@@ -28,6 +28,10 @@ interface AppearanceVariable {
 
 type ColorCollectionProps = {
   variables: { name; description; value }[];
+  // overrides maps a variable name (without the leading `--`) to the
+  // display names of enabled plugins that also set it, so each swatch
+  // can flag that a plugin is styling that color too.
+  overrides: Record<string, string[]>;
   updateColor: (variable: string, color: string, description: string) => void;
 };
 
@@ -82,11 +86,13 @@ const ColorPicker = React.memo(
     value,
     name,
     description,
+    alsoSetBy,
     onChange,
   }: {
     value: string;
     name: string;
     description: string;
+    alsoSetBy?: string[];
     onChange: (name: string, value: string, description: string) => void;
   }) => (
     <Col span={3} key={name}>
@@ -100,11 +106,22 @@ const ColorPicker = React.memo(
         onChange={e => onChange(name, e.target.value, description)}
       />
       <div style={{ padding: '2px' }}>{description}</div>
+      {alsoSetBy && alsoSetBy.length > 0 && (
+        <Tooltip
+          title={`Your value takes priority here. Use “Reset to Defaults” to fall back to ${alsoSetBy.join(
+            ', ',
+          )}'s color.`}
+        >
+          <div style={{ padding: '2px', fontSize: 11, opacity: 0.7 }}>
+            also set by {alsoSetBy.join(', ')}
+          </div>
+        </Tooltip>
+      )}
     </Col>
   ),
 );
 
-const ColorCollection: FC<ColorCollectionProps> = ({ variables, updateColor }) => {
+const ColorCollection: FC<ColorCollectionProps> = ({ variables, overrides, updateColor }) => {
   const cc = variables.map(colorVar => {
     const { name, description, value } = colorVar;
 
@@ -114,6 +131,7 @@ const ColorCollection: FC<ColorCollectionProps> = ({ variables, updateColor }) =
         value={value}
         name={name}
         description={description}
+        alsoSetBy={overrides[name]}
         onChange={updateColor}
       />
     );
@@ -127,8 +145,24 @@ export default function Appearance() {
   const { t } = useTranslation();
   const serverStatusData = useContext(ServerStatusContext);
   const { serverConfig, setFieldInConfigState } = serverStatusData;
-  const { instanceDetails } = serverConfig;
+  const { instanceDetails, styleContributors = [] } = serverConfig;
   const { appearanceVariables } = instanceDetails;
+
+  // Map each appearance variable a plugin declares to the plugins that
+  // set it, so each swatch can flag "also set by <plugin>". Plugin
+  // styles render below the admin's appearance variables, so the admin's
+  // value wins; the badge tells the admin a plugin is also driving that
+  // color and that resetting falls back to the plugin's value.
+  const pluginVarOverrides = useMemo(() => {
+    const m: Record<string, string[]> = {};
+    styleContributors.forEach(plugin => {
+      (plugin.declaredVars || []).forEach(variable => {
+        if (!m[variable]) m[variable] = [];
+        m[variable].push(plugin.name);
+      });
+    });
+    return m;
+  }, [styleContributors]);
 
   const [defaultValues, setDefaultValues] = useState<Record<string, AppearanceVariable>>();
   const [customValues, setCustomValues] = useState<Record<string, AppearanceVariable>>();
@@ -246,6 +280,18 @@ export default function Appearance() {
       <Space direction="vertical">
         <Title>Customize Appearance</Title>
         <Paragraph>The following colors are used across the user interface.</Paragraph>
+        {styleContributors.length > 0 && (
+          <Alert
+            type="info"
+            showIcon
+            message="A plugin is styling your site"
+            description={`${styleContributors.map(p => p.name).join(', ')} ${
+              styleContributors.length === 1
+                ? 'is applying its own styles'
+                : 'are applying their own styles'
+            } to your site, combined with the colors you set here. Your settings are applied on top, so they win where they overlap. If the page doesn't look the way you expect, use “Reset to Defaults” below to let the plugin styling show through, or disable the plugin from the Plugins page.`}
+          />
+        )}
         <div>
           <Collapse defaultActiveKey={['1']}>
             <Panel header={<strong>Section Colors</strong>} key="1">
@@ -256,6 +302,7 @@ export default function Appearance() {
               <Row gutter={[16, 16]}>
                 <ColorCollection
                   variables={transformToColorMap(componentColorVariables)}
+                  overrides={pluginVarOverrides}
                   updateColor={updateColor}
                 />
               </Row>
@@ -264,6 +311,7 @@ export default function Appearance() {
               <Row gutter={[16, 16]}>
                 <ColorCollection
                   variables={transformToColorMap(chatColorVariables)}
+                  overrides={pluginVarOverrides}
                   updateColor={updateColor}
                 />
               </Row>

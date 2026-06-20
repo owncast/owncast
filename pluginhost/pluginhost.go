@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -205,6 +207,98 @@ func (p *Host) dynamicStyles() []byte {
 		}
 	}
 	return buf.Bytes()
+}
+
+// themeVarDeclRe matches a theme custom-property declaration in CSS,
+// e.g. `--theme-color-action:` or `--theme-rounded-corners:`. The
+// capture group is the variable name without the leading `--`, which
+// matches the keys the admin Appearance UI uses for its color swatches
+// (e.g. "theme-color-action").
+var themeVarDeclRe = regexp.MustCompile(`--(theme-color-[a-z0-9-]+|theme-rounded-corners)\s*:`)
+
+// StyleContributors returns one entry per enabled plugin (holding
+// ui.modify) that contributes any CSS to the viewer page, covering both
+// static manifest.styles and on_page_styles output — the same sources
+// StylesContent concatenates. Plugins that contribute nothing are
+// omitted, so a non-empty result means the admin's appearance settings
+// are being combined with plugin styling. The viewer renders plugin
+// styles below the admin's appearance variables and custom CSS, so the
+// admin wins on overlap; this report lets the admin UI say so and point
+// at the affected swatches.
+func (p *Host) StyleContributors() []models.PluginStyleInfo {
+	if p == nil || p.manager == nil {
+		return nil
+	}
+	var out []models.PluginStyleInfo
+	for _, l := range p.manager.Snapshot() {
+		if l == nil || l.Manifest == nil {
+			continue
+		}
+		if !manifestHasPermission(l.Manifest, plugins.PermUIModify) {
+			continue
+		}
+		css := p.pluginStyleCSS(l)
+		if len(css) == 0 {
+			continue
+		}
+		out = append(out, models.PluginStyleInfo{
+			Slug:         l.Manifest.Slug,
+			Name:         l.Manifest.DisplayName,
+			DeclaredVars: declaredThemeVars(css),
+		})
+	}
+	return out
+}
+
+// pluginStyleCSS returns the CSS a single plugin contributes to the
+// viewer page: its static manifest.styles files (read from the plugin's
+// AssetsFS) followed by its on_page_styles output. It mirrors the
+// per-plugin slice of StylesContent/dynamicStyles so the admin-facing
+// token scan sees exactly what the viewer renders.
+func (p *Host) pluginStyleCSS(l *plugins.Loaded) []byte {
+	var buf bytes.Buffer
+	if l.AssetsFS != nil {
+		pluginPrefix := "/plugins/" + l.Manifest.Slug + "/"
+		for _, entry := range l.Manifest.Styles {
+			relPath := strings.TrimPrefix(entry, pluginPrefix)
+			data, err := fs.ReadFile(l.AssetsFS, relPath)
+			if err != nil {
+				continue
+			}
+			buf.Write(data)
+			if len(data) > 0 && data[len(data)-1] != '\n' {
+				buf.WriteByte('\n')
+			}
+		}
+	}
+	if css, err := l.CallPageStyles(context.Background()); err == nil && css != "" {
+		buf.WriteString(css)
+	}
+	return buf.Bytes()
+}
+
+// declaredThemeVars returns the sorted, de-duplicated set of theme
+// custom-property names declared in a CSS blob (without the leading
+// `--`), e.g. ["theme-color-action", "theme-rounded-corners"]. The
+// names match the keys the admin Appearance UI uses, so it can badge
+// the swatches a plugin also sets.
+func declaredThemeVars(css []byte) []string {
+	matches := themeVarDeclRe.FindAllSubmatch(css, -1)
+	if len(matches) == 0 {
+		return nil
+	}
+	seen := make(map[string]struct{}, len(matches))
+	var vars []string
+	for _, m := range matches {
+		name := string(m[1])
+		if _, ok := seen[name]; ok {
+			continue
+		}
+		seen[name] = struct{}{}
+		vars = append(vars, name)
+	}
+	sort.Strings(vars)
+	return vars
 }
 
 // ScriptsContent mirrors StylesContent for manifest.scripts: returns

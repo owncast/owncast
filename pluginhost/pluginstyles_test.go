@@ -33,6 +33,39 @@ func TestWriteWrappedScript(t *testing.T) {
 	}
 }
 
+func TestDeclaredThemeVars(t *testing.T) {
+	css := []byte(`:root {
+		--theme-color-action: #33d17a;
+		--theme-color-background-main:#0b1020;
+		--theme-rounded-corners: 8px;
+		--not-a-theme-var: red;
+	}
+	.foo { color: var(--theme-color-action); } /* a use, not a decl */
+	:root { --theme-color-action: #fff; } /* duplicate decl */`)
+
+	got := declaredThemeVars(css)
+	want := []string{
+		"theme-color-action",
+		"theme-color-background-main",
+		"theme-rounded-corners",
+	}
+	if len(got) != len(want) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	for i := range want {
+		// declaredThemeVars sorts its output, so positions are stable.
+		if got[i] != want[i] {
+			t.Errorf("var %d: got %q, want %q", i, got[i], want[i])
+		}
+	}
+
+	// CSS with no theme declarations (only a var() use) yields nil so the
+	// admin UI shows no swatch badges.
+	if vars := declaredThemeVars([]byte(`.x { color: var(--theme-color-action); }`)); vars != nil {
+		t.Errorf("expected nil for a var() use with no declaration, got %v", vars)
+	}
+}
+
 func TestManifestHasPermission(t *testing.T) {
 	m := &plugins.Manifest{Permissions: []string{"storage.kv", "ui.modify"}}
 	if !manifestHasPermission(m, plugins.PermUIModify) {

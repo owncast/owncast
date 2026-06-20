@@ -3,6 +3,7 @@ package admin
 import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/metrics"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -42,6 +43,15 @@ type Admin struct {
 	apBuilder             *apmodels.Builder
 	apSigner              *apcrypto.Signer
 	cfg                   *config.Config
+
+	// pluginStyleContributors, when non-nil, returns the per-plugin
+	// page-styling report (which enabled plugins emit CSS and which
+	// appearance tokens they set). Wired to the plugin host's
+	// StyleContributors() method; nil when the plugin host is disabled.
+	// GetServerConfig emits it as `styleContributors` so the admin
+	// Appearance UI can flag plugin styling that combines with the
+	// admin's own colors.
+	pluginStyleContributors func() []models.PluginStyleInfo
 }
 
 // Deps lists every service a *Admin consumes. New deps appear here as
@@ -62,25 +72,31 @@ type Deps struct {
 	APBuilder             *apmodels.Builder
 	APSigner              *apcrypto.Signer
 	Config                *config.Config
+	// PluginStyleContributors is an optional getter that returns the
+	// per-plugin page-styling report. Wired by main.go to the plugin
+	// host's StyleContributors() method; nil when the plugin host is
+	// disabled.
+	PluginStyleContributors func() []models.PluginStyleInfo
 }
 
 // New constructs the dependency-bearing admin handler set.
 func New(deps Deps) *Admin {
 	return &Admin{
-		stream:                deps.Stream,
-		rtmp:                  deps.Rtmp,
-		activitypub:           deps.Activitypub,
-		webhooks:              deps.Webhooks,
-		chat:                  deps.Chat,
-		metrics:               deps.Metrics,
-		configRepository:      deps.ConfigRepository,
-		authRepository:        deps.AuthRepository,
-		followersRepository:   deps.FollowersRepository,
-		webhookRepository:     deps.WebhookRepository,
-		chatMessageRepository: deps.ChatMessageRepository,
-		userRepository:        deps.UserRepository,
-		apBuilder:             deps.APBuilder,
-		apSigner:              deps.APSigner,
-		cfg:                   deps.Config,
+		stream:                  deps.Stream,
+		rtmp:                    deps.Rtmp,
+		activitypub:             deps.Activitypub,
+		webhooks:                deps.Webhooks,
+		chat:                    deps.Chat,
+		metrics:                 deps.Metrics,
+		configRepository:        deps.ConfigRepository,
+		authRepository:          deps.AuthRepository,
+		followersRepository:     deps.FollowersRepository,
+		webhookRepository:       deps.WebhookRepository,
+		chatMessageRepository:   deps.ChatMessageRepository,
+		userRepository:          deps.UserRepository,
+		apBuilder:               deps.APBuilder,
+		apSigner:                deps.APSigner,
+		cfg:                     deps.Config,
+		pluginStyleContributors: deps.PluginStyleContributors,
 	}
 }

@@ -79,6 +79,7 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		},
 		S3:                 configRepository.GetS3Config(),
 		ExternalActions:    configRepository.GetExternalActions(),
+		StyleContributors:  a.styleContributorsOrEmpty(),
 		SupportedCodecs:    transcoder.GetCodecs(ffmpeg),
 		VideoCodec:         configRepository.GetVideoCodec(),
 		ForbiddenUsernames: usernameBlocklist,
@@ -105,6 +106,21 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// styleContributorsOrEmpty returns the plugin page-styling report, or
+// an empty (non-nil) slice when the getter is unset (no plugin host) or
+// returns nothing. The empty-slice contract keeps the JSON wire shape
+// stable: `styleContributors: []` rather than null, so the admin UI
+// doesn't need a defensive nil-check before iterating.
+func (a *Admin) styleContributorsOrEmpty() []models.PluginStyleInfo {
+	if a.pluginStyleContributors == nil {
+		return []models.PluginStyleInfo{}
+	}
+	if c := a.pluginStyleContributors(); len(c) > 0 {
+		return c
+	}
+	return []models.PluginStyleInfo{}
+}
+
 type serverConfigAdminResponse struct {
 	InstanceDetails           webConfigResponse           `json:"instanceDetails"`
 	Notifications             notificationsConfigResponse `json:"notifications"`
@@ -119,6 +135,7 @@ type serverConfigAdminResponse struct {
 	Federation                federationConfigResponse    `json:"federation"`
 	SupportedCodecs           []string                    `json:"supportedCodecs"`
 	ExternalActions           []models.ExternalAction     `json:"externalActions"`
+	StyleContributors         []models.PluginStyleInfo    `json:"styleContributors"`
 	ForbiddenUsernames        []string                    `json:"forbiddenUsernames"`
 	SuggestedUsernames        []string                    `json:"suggestedUsernames"`
 	StreamKeys                []generated.StreamKey       `json:"streamKeys"`

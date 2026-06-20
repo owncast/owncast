@@ -96,6 +96,19 @@ export interface ExternalAction {
   openExternally: boolean;
 }
 
+// PluginStyleInfo describes the page styling one enabled plugin
+// contributes. The Appearance config uses it to tell the admin that
+// plugin styles are combined with their own colors, and to flag the
+// swatches a plugin also sets. declaredVars holds the theme custom
+// properties the plugin declares (without the leading `--`, e.g.
+// "theme-color-action"); it can be empty when a plugin styles the page
+// without touching a recognized appearance token.
+export interface PluginStyleInfo {
+  slug: string;
+  name: string;
+  declaredVars: string[];
+}
+
 export interface Federation {
   enabled: boolean;
   isPrivate: boolean;
@@ -135,6 +148,7 @@ export interface StreamKey {
 
 export interface ConfigDetails {
   externalActions: ExternalAction[];
+  styleContributors: PluginStyleInfo[];
   ffmpegPath: string;
   instanceDetails: ConfigInstanceDetailsFields;
   rtmpServerPort: string;

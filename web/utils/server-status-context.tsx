@@ -65,6 +65,7 @@ const initialServerConfigState: ConfigDetails = {
     discord: { enabled: false, webhook: '', goLiveMessage: '' },
   },
   externalActions: [],
+  styleContributors: [],
   supportedCodecs: [],
   videoCodec: '',
   forbiddenUsernames: [],

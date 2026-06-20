@@ -335,22 +335,41 @@ func main() {
 	// Stage 9: HTTP handler set. *Handlers is the dispatcher the router
 	// binds methods on; the sub-handlers (admin, fediverse, indieauth,
 	// moderation) hold their own narrower deps.
+	// Plugin host getters: nil when the plugin host is disabled (boot
+	// off or failed). Wired into both the admin handler set (for the
+	// appearance style-contributors report) and the viewer handler set.
+	var pluginActions func() []models.ExternalAction
+	var pluginCSSContent func() []byte
+	var pluginJSContent func() []byte
+	var pluginPageContent func(*http.Request) []byte
+	var pluginTabs func(*http.Request) []models.PluginTab
+	var pluginStyleContributors func() []models.PluginStyleInfo
+	if pluginHostInstance != nil {
+		pluginActions = pluginHostInstance.Actions
+		pluginCSSContent = pluginHostInstance.StylesContent
+		pluginJSContent = pluginHostInstance.ScriptsContent
+		pluginPageContent = pluginHostInstance.PageContent
+		pluginTabs = pluginHostInstance.Tabs
+		pluginStyleContributors = pluginHostInstance.StyleContributors
+	}
+
 	adminHandlers := admin.New(admin.Deps{
-		Stream:                streamSvc,
-		Rtmp:                  rtmpSvc,
-		Activitypub:           apSvc,
-		Webhooks:              webhooksSvc,
-		Chat:                  chatSvc,
-		Metrics:               metricsSvc,
-		ConfigRepository:      configRepository,
-		AuthRepository:        authRepository,
-		FollowersRepository:   followersRepository,
-		WebhookRepository:     webhookRepository,
-		ChatMessageRepository: chatMessageRepository,
-		UserRepository:        userRepository,
-		APBuilder:             apBuilder,
-		APSigner:              apSigner,
-		Config:                cfg,
+		Stream:                  streamSvc,
+		Rtmp:                    rtmpSvc,
+		Activitypub:             apSvc,
+		Webhooks:                webhooksSvc,
+		Chat:                    chatSvc,
+		Metrics:                 metricsSvc,
+		ConfigRepository:        configRepository,
+		AuthRepository:          authRepository,
+		FollowersRepository:     followersRepository,
+		WebhookRepository:       webhookRepository,
+		ChatMessageRepository:   chatMessageRepository,
+		UserRepository:          userRepository,
+		APBuilder:               apBuilder,
+		APSigner:                apSigner,
+		Config:                  cfg,
+		PluginStyleContributors: pluginStyleContributors,
 	})
 
 	fediverseAuthSvc := fediverseauth.New()
@@ -376,19 +395,6 @@ func main() {
 		ChatMessageRepository: chatMessageRepository,
 		UserRepository:        userRepository,
 	})
-
-	var pluginActions func() []models.ExternalAction
-	var pluginCSSContent func() []byte
-	var pluginJSContent func() []byte
-	var pluginPageContent func(*http.Request) []byte
-	var pluginTabs func(*http.Request) []models.PluginTab
-	if pluginHostInstance != nil {
-		pluginActions = pluginHostInstance.Actions
-		pluginCSSContent = pluginHostInstance.StylesContent
-		pluginJSContent = pluginHostInstance.ScriptsContent
-		pluginPageContent = pluginHostInstance.PageContent
-		pluginTabs = pluginHostInstance.Tabs
-	}
 
 	h := handlers.NewHandlers(handlers.Deps{
 		Cache:                   cacheContainer,
