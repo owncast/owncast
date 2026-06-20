@@ -21,6 +21,26 @@ pre-push:
     web-build:
       root: web/
       run: npm run build
+    # End-to-end plugin suite: builds the SDK example plugins, installs them
+    # into a real Owncast instance, and asserts on the live HTTP/API surface.
+    # `go test` and the web build don't cover this — a change to the plugin
+    # API contract (e.g. moving plugin CSS out of /api/config customStyles
+    # into a separate pluginStyles field) leaves both green while breaking
+    # these tests, which previously only ran in CI. Scoped to plugin code so
+    # it doesn't fire on unrelated Go changes: the plugin host/services, the
+    # integration tests themselves, and the two handlers that serialize
+    # plugin output into the endpoints these tests hit (/api/config and
+    # /customjavascript). Heavy (clones the SDK, downloads ffmpeg, builds the
+    # server); set PLUGIN_SDK_DIR to a local SDK checkout to skip the clone,
+    # or push with --no-verify to bypass.
+    plugin-integration:
+      glob:
+        - 'pluginhost/**'
+        - 'services/plugins/**'
+        - 'test/automated/plugins/**'
+        - 'webserver/handlers/config.go'
+        - 'webserver/handlers/customJavascript.go'
+      run: cd test/automated/plugins && ./run.sh
 
 pre-commit:
   parallel: true
