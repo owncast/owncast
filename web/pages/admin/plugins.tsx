@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Alert, Button, message, Space, Tabs, Typography, Upload } from 'antd';
 import type { UploadProps } from 'antd';
 import dynamic from 'next/dynamic';
@@ -11,10 +11,10 @@ import {
   PLUGIN_REGISTRY_INSTALL,
   PLUGIN_REGISTRY_LIST,
   PLUGIN_UPLOAD,
-  PLUGINS_LIST,
   pluginActionUrl,
 } from '../../utils/apis';
 import { Plugin } from '../../interfaces/plugin';
+import { PluginsContext } from '../../utils/plugins-context';
 import { PluginsList } from '../../components/admin/plugins/PluginsList';
 import { BrowseRegistry, RegistryPlugin } from '../../components/admin/plugins/BrowseRegistry';
 import { InstallConfirmModal } from '../../components/admin/plugins/InstallConfirmModal';
@@ -29,8 +29,17 @@ const UploadOutlined = dynamic(() => import('@ant-design/icons/UploadOutlined'),
 const Plugins = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const [plugins, setPlugins] = useState<Plugin[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Installed plugins come from the shared context so the sidebar and
+  // this page stay in sync: any install/uninstall here calls loadPlugins
+  // (the context reload) and the sidebar's submenu updates with it.
+  const {
+    plugins,
+    loading,
+    error: pluginsLoadError,
+    reload: loadPlugins,
+  } = useContext(PluginsContext);
+  // Local error for action failures (toggle/reload/uninstall/install).
+  // Load failures surface via pluginsLoadError from the context.
   const [error, setError] = useState<string | null>(null);
   // Names of plugins whose enable/disable POST is in flight. Drives the per-row
   // spinner on the Switch so the admin sees the action is happening (the
@@ -59,18 +68,6 @@ const Plugins = () => {
   // both the loading and the empty-but-reachable cases.
   const [registryError, setRegistryError] = useState<string | null>(null);
 
-  const loadPlugins = useCallback(async () => {
-    try {
-      const result = await fetchData(PLUGINS_LIST);
-      setPlugins(Array.isArray(result) ? result : []);
-      setError(null);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   // Registry fetch is independent of the installed-list fetch: a
   // misconfigured or unreachable registry shouldn't block the
   // Installed tab. On failure we set registryError so the Browse tab
@@ -90,10 +87,11 @@ const Plugins = () => {
     }
   }, []);
 
+  // The installed list loads via PluginsContext on mount; this page only
+  // needs to kick off the registry fetch.
   useEffect(() => {
-    loadPlugins();
     loadRegistry();
-  }, [loadPlugins, loadRegistry]);
+  }, [loadRegistry]);
 
   // Map of installed plugin slug -> currently-installed version.
   // Browse cards use this to decide whether to render "Install" /
@@ -323,13 +321,13 @@ const Plugins = () => {
       <Title>{t(Localization.Admin.Plugins.pageTitle)}</Title>
       <Paragraph>{t(Localization.Admin.Plugins.pageDescription)}</Paragraph>
 
-      {error && (
+      {(error || pluginsLoadError) && (
         <Alert
           type="error"
           showIcon
           closable
           message={t(Localization.Admin.Plugins.errorTitle)}
-          description={error}
+          description={error || pluginsLoadError}
           onClose={() => setError(null)}
           className={s.errorAlert}
         />

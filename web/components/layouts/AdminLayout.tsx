@@ -2,6 +2,7 @@
 import { FC, ReactElement } from 'react';
 import ServerStatusProvider from '../../utils/server-status-context';
 import AlertMessageProvider from '../../utils/alert-message-context';
+import PluginsProvider from '../../utils/plugins-context';
 import { MainLayout } from '../admin/MainLayout';
 
 /*
@@ -30,7 +31,9 @@ export const AdminLayout: FC<AdminLayoutProps> = ({ page }) => (
 
     <ServerStatusProvider>
       <AlertMessageProvider>
-        <MainLayout>{page}</MainLayout>
+        <PluginsProvider>
+          <MainLayout>{page}</MainLayout>
+        </PluginsProvider>
       </AlertMessageProvider>
     </ServerStatusProvider>
   </>

@@ -8,8 +8,8 @@ import { Layout, Menu, Alert, Button, Space, Tooltip, Badge } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';
-import { fetchData, PLUGINS_LIST, upgradeVersionAvailable } from '../../utils/apis';
-import { Plugin } from '../../interfaces/plugin';
+import { upgradeVersionAvailable } from '../../utils/apis';
+import { PluginsContext } from '../../utils/plugins-context';
 import { PluginIcon } from './plugins/PluginIcon';
 import { Localization } from '../../types/localization';
 import { parseSecondsToDurationString } from '../../utils/format';
@@ -125,24 +125,10 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   }, [versionNumber]);
 
   // Plugins with declared admin pages drive the sidebar's Plugins
-  // submenu. Fetched once on mount; the admin would refresh the page to
-  // see the submenu reflect newly enabled/disabled plugins.
-  const [plugins, setPlugins] = useState<Plugin[]>([]);
-  useEffect(() => {
-    let cancelled = false;
-    fetchData(PLUGINS_LIST)
-      .then(result => {
-        if (cancelled) return;
-        setPlugins(Array.isArray(result) ? result : []);
-      })
-      .catch(() => {
-        // Sidebar still works without the submenu — the top-level Plugins
-        // link to the overview page remains. Silent on error.
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // submenu. Read from the shared PluginsContext so an install or
+  // uninstall on the Plugins page updates the submenu live, without the
+  // admin needing to refresh the whole page.
+  const { plugins } = useContext(PluginsContext);
 
   useEffect(() => {
     setCurrentStreamTitle(instanceDetails.streamTitle);
