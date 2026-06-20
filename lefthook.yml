@@ -37,7 +37,11 @@ pre-commit:
     css-linter:
       glob: '*.{css,scss}'
       root: web/
-      run: npx --yes stylelint --fix {staged_files}
+      # --allow-empty-input: when the only staged CSS is generated output
+      # (e.g. styles/variables.css, public/styles/plugin.css), every file is
+      # skipped via .stylelintignore. Without this flag stylelint exits
+      # non-zero with AllFilesIgnoredError and aborts the commit.
+      run: npx --yes stylelint --fix --allow-empty-input {staged_files}
       stage_fixed: true
     js-unused:
       glob: '*.{js,ts,jsx,tsx}'
