@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Plugin styling is active",
+      "pluginStylingDescription": "These plugins are applying their own styles to your site, combined with the colors you set here: {{plugins}}. Your settings are applied on top, so they win where they overlap. If the page doesn't look the way you expect, use Reset to Defaults below to let the plugin styling show through, or disable the plugin from the Plugins page.",
+      "alsoSetByPlugin": "also set by {{plugins}}",
+      "alsoSetByPluginTooltip": "Your value takes priority here. Use Reset to Defaults to fall back to the color from {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Create New Access token",
       "nameDescription": "The name will be displayed as the chat user when sending messages with this access token.",

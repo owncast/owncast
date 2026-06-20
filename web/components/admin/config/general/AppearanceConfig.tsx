@@ -94,31 +94,34 @@ const ColorPicker = React.memo(
     description: string;
     alsoSetBy?: string[];
     onChange: (name: string, value: string, description: string) => void;
-  }) => (
-    <Col span={3} key={name}>
-      <input
-        type="color"
-        id={name}
-        name={description}
-        title={description}
-        value={value}
-        className={s.colorPicker}
-        onChange={e => onChange(name, e.target.value, description)}
-      />
-      <div style={{ padding: '2px' }}>{description}</div>
-      {alsoSetBy && alsoSetBy.length > 0 && (
-        <Tooltip
-          title={`Your value takes priority here. Use “Reset to Defaults” to fall back to ${alsoSetBy.join(
-            ', ',
-          )}'s color.`}
-        >
-          <div style={{ padding: '2px', fontSize: 11, opacity: 0.7 }}>
-            also set by {alsoSetBy.join(', ')}
-          </div>
-        </Tooltip>
-      )}
-    </Col>
-  ),
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <Col span={3} key={name}>
+        <input
+          type="color"
+          id={name}
+          name={description}
+          title={description}
+          value={value}
+          className={s.colorPicker}
+          onChange={e => onChange(name, e.target.value, description)}
+        />
+        <div style={{ padding: '2px' }}>{description}</div>
+        {alsoSetBy && alsoSetBy.length > 0 && (
+          <Tooltip
+            title={t(Localization.Admin.Appearance.alsoSetByPluginTooltip, {
+              plugins: alsoSetBy.join(', '),
+            })}
+          >
+            <div style={{ padding: '2px', fontSize: 11, opacity: 0.7 }}>
+              {t(Localization.Admin.Appearance.alsoSetByPlugin, { plugins: alsoSetBy.join(', ') })}
+            </div>
+          </Tooltip>
+        )}
+      </Col>
+    );
+  },
 );
 
 const ColorCollection: FC<ColorCollectionProps> = ({ variables, overrides, updateColor }) => {
@@ -284,12 +287,10 @@ export default function Appearance() {
           <Alert
             type="info"
             showIcon
-            message="A plugin is styling your site"
-            description={`${styleContributors.map(p => p.name).join(', ')} ${
-              styleContributors.length === 1
-                ? 'is applying its own styles'
-                : 'are applying their own styles'
-            } to your site, combined with the colors you set here. Your settings are applied on top, so they win where they overlap. If the page doesn't look the way you expect, use “Reset to Defaults” below to let the plugin styling show through, or disable the plugin from the Plugins page.`}
+            message={t(Localization.Admin.Appearance.pluginStylingActive)}
+            description={t(Localization.Admin.Appearance.pluginStylingDescription, {
+              plugins: styleContributors.map(p => p.name).join(', '),
+            })}
           />
         )}
         <div>

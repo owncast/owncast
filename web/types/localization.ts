@@ -156,6 +156,14 @@ export const Localization = {
     settings: 'Admin.settings',
     overriddenViaCommandLine: 'Admin.overriddenViaCommandLine',
 
+    // Appearance page
+    Appearance: {
+      pluginStylingActive: 'Admin.Appearance.pluginStylingActive',
+      pluginStylingDescription: 'Admin.Appearance.pluginStylingDescription',
+      alsoSetByPlugin: 'Admin.Appearance.alsoSetByPlugin',
+      alsoSetByPluginTooltip: 'Admin.Appearance.alsoSetByPluginTooltip',
+    },
+
     Chat: {
       moderationMessagesSent: 'Admin.Chat.moderationMessagesSent',
       moderationMessagesSent_one: 'Admin.Chat.moderationMessagesSent_one',
