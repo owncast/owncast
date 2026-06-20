@@ -227,6 +227,43 @@ func (p *Loaded) callContentExport(ctx context.Context, export, slug string, use
 	return string(out), nil
 }
 
+// CallPageStyles invokes the plugin's on_page_styles export, returning the
+// CSS the plugin wants inlined into the viewer page's customStyles. The host
+// calls this for every enabled plugin that holds ui.modify; a plugin opts in
+// simply by exporting the function. Returns empty string when the plugin does
+// not export on_page_styles. Unlike on_page_content, the call takes no slug or
+// user — dynamic styles are global so the /api/config response stays cacheable.
+func (p *Loaded) CallPageStyles(ctx context.Context) (string, error) {
+	return p.callVoidExport(ctx, "on_page_styles")
+}
+
+// CallPageScripts mirrors CallPageStyles for the plugin's on_page_scripts
+// export, returning JavaScript to append to the viewer's customJavascript.
+func (p *Loaded) CallPageScripts(ctx context.Context) (string, error) {
+	return p.callVoidExport(ctx, "on_page_scripts")
+}
+
+// callVoidExport invokes an export that takes no input and returns a string.
+// Used by the global, user-agnostic dynamic-content hooks (on_page_styles,
+// on_page_scripts). Returns empty string when the plugin doesn't export it.
+func (p *Loaded) callVoidExport(ctx context.Context, export string) (string, error) {
+	p.mu.Lock()
+	pl := p.plugin
+	p.mu.Unlock()
+	if pl == nil || !pl.FunctionExists(export) {
+		return "", nil
+	}
+	callCtx, cancel := context.WithTimeout(ctx, HTTPHandlerTimeout)
+	defer cancel()
+	p.mu.Lock()
+	_, out, err := pl.CallWithContext(callCtx, export, nil)
+	p.mu.Unlock()
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", export, err)
+	}
+	return string(out), nil
+}
+
 // Close releases the underlying wasm instance and any retained file handles
 // (the .ocpkg zip reader for packaged plugins). Safe to call multiple times.
 func (l *Loaded) Close(ctx context.Context) {

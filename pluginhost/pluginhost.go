@@ -165,10 +165,46 @@ func (p *Host) Actions() []models.ExternalAction {
 // per plugin asset. Disabled or not-loaded plugins contribute
 // nothing.
 func (p *Host) StylesContent() []byte {
-	return p.readManifestAssets(
+	out := p.readManifestAssets(
 		func(m *plugins.Manifest) []string { return m.Styles },
 		"/* plugin: %s — %s */\n",
 	)
+	return append(out, p.dynamicStyles()...)
+}
+
+// dynamicStyles returns the CSS contributed at request time by every enabled
+// plugin's on_page_styles export. The host calls the export for any plugin
+// holding ui.modify; a plugin opts in just by exporting the function (no
+// manifest field). Output is appended after the static manifest.styles bytes,
+// so a plugin can ship a static base and have the hook return only the
+// selected override — the later rule wins in the cascade.
+func (p *Host) dynamicStyles() []byte {
+	if p == nil || p.manager == nil {
+		return nil
+	}
+	var buf bytes.Buffer
+	for _, l := range p.manager.Snapshot() {
+		if l == nil || l.Manifest == nil {
+			continue
+		}
+		if !manifestHasPermission(l.Manifest, plugins.PermUIModify) {
+			continue
+		}
+		css, err := l.CallPageStyles(context.Background())
+		if err != nil {
+			log.Warnf("plugin %s: on_page_styles error: %v", l.Manifest.Slug, err)
+			continue
+		}
+		if css == "" {
+			continue
+		}
+		fmt.Fprintf(&buf, "/* plugin: %s — dynamic */\n", l.Manifest.Slug)
+		buf.WriteString(css)
+		if css[len(css)-1] != '\n' {
+			buf.WriteByte('\n')
+		}
+	}
+	return buf.Bytes()
 }
 
 // ScriptsContent mirrors StylesContent for manifest.scripts: returns
@@ -176,11 +212,68 @@ func (p *Host) StylesContent() []byte {
 // plugin, with `// plugin: <slug>` delimiters between contributions.
 // Appended to the admin's customJavascript by the /customjavascript
 // handler so the viewer page loads one script tag for both sources.
+//
+// Each plugin's contribution — static manifest.scripts files and the
+// dynamic on_page_scripts output alike — is wrapped in a try/catch so a
+// runtime error in one plugin's script doesn't abort the rest of the
+// shared bundle (and with it the viewer page). Syntax errors are not
+// isolated: parsing the bundle fails before any try block runs.
 func (p *Host) ScriptsContent() []byte {
-	return p.readManifestAssets(
-		func(m *plugins.Manifest) []string { return m.Scripts },
-		"// plugin: %s — %s\n",
-	)
+	if p == nil || p.manager == nil {
+		return nil
+	}
+	var buf bytes.Buffer
+	for _, l := range p.manager.Snapshot() {
+		if l == nil || l.Manifest == nil {
+			continue
+		}
+		slug := l.Manifest.Slug
+		if l.AssetsFS != nil {
+			pluginPrefix := "/plugins/" + slug + "/"
+			for _, entry := range l.Manifest.Scripts {
+				relPath := strings.TrimPrefix(entry, pluginPrefix)
+				data, err := fs.ReadFile(l.AssetsFS, relPath)
+				if err != nil {
+					log.Warnf("plugin %s: skipping asset %s: %v", slug, relPath, err)
+					continue
+				}
+				writeWrappedScript(&buf, slug, relPath, data)
+			}
+		}
+		if manifestHasPermission(l.Manifest, plugins.PermUIModify) {
+			js, err := l.CallPageScripts(context.Background())
+			if err != nil {
+				log.Warnf("plugin %s: on_page_scripts error: %v", slug, err)
+			} else if js != "" {
+				writeWrappedScript(&buf, slug, "dynamic", []byte(js))
+			}
+		}
+	}
+	return buf.Bytes()
+}
+
+// writeWrappedScript appends one plugin script contribution, wrapped in a
+// try/catch keyed to the plugin slug so a thrown error is logged to the
+// browser console instead of breaking later plugins' scripts.
+func writeWrappedScript(buf *bytes.Buffer, slug, source string, code []byte) {
+	fmt.Fprintf(buf, "// plugin: %s — %s\ntry {\n", slug, source)
+	buf.Write(code)
+	if len(code) > 0 && code[len(code)-1] != '\n' {
+		buf.WriteByte('\n')
+	}
+	fmt.Fprintf(buf, "} catch (e) { console.error(%q, e); }\n", "owncast plugin "+slug+" script error:")
+}
+
+// manifestHasPermission reports whether the manifest declares perm. Used to
+// gate the dynamic style/script hooks on ui.modify at call time, since those
+// hooks have no manifest field whose validation could enforce it at load.
+func manifestHasPermission(m *plugins.Manifest, perm string) bool {
+	for _, granted := range m.Permissions {
+		if granted == perm {
+			return true
+		}
+	}
+	return false
 }
 
 // PageContent returns the concatenated HTML bytes contributed by
