@@ -59,6 +59,10 @@ type federationConfigResponse struct {
 	Account       string `json:"account,omitempty"`
 	FollowerCount int    `json:"followerCount,omitempty"`
 	Enabled       bool   `json:"enabled"`
+	// HideFollowersTab hides the public "Followers" tab on the viewer
+	// page while leaving the rest of the social/Fediverse features
+	// (following, go-live posts, engagement) active.
+	HideFollowersTab bool `json:"hideFollowersTab"`
 }
 
 type browserNotificationsConfigResponse struct {
@@ -112,9 +116,10 @@ func (h *Handlers) getConfigResponse(r *http.Request) webConfigResponse {
 		serverURL, _ := url.Parse(serverURLString)
 		account := fmt.Sprintf("%s@%s", configRepository.GetDefaultFederationUsername(), serverURL.Host)
 		federationResponse = federationConfigResponse{
-			Enabled:       federationEnabled,
-			FollowerCount: int(followerCount),
-			Account:       account,
+			Enabled:          federationEnabled,
+			FollowerCount:    int(followerCount),
+			Account:          account,
+			HideFollowersTab: configRepository.GetFederationHideFollowersTab(),
 		}
 	}
 

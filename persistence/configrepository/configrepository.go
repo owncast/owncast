@@ -97,6 +97,8 @@ type ConfigRepository interface {
 	GetFederationIsPrivate() bool
 	SetFederationShowEngagement(showEngagement bool) error
 	GetFederationShowEngagement() bool
+	SetFederationHideFollowersTab(hidden bool) error
+	GetFederationHideFollowersTab() bool
 	SetBlockedFederatedDomains(domains []string) error
 	GetBlockedFederatedDomains() []string
 	SetChatJoinMessagesEnabled(enabled bool) error

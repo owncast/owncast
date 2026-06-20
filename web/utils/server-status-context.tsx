@@ -58,6 +58,7 @@ const initialServerConfigState: ConfigDetails = {
     username: '',
     goLiveMessage: '',
     showEngagement: true,
+    hideFollowersTab: false,
     blockedDomains: [],
   },
   notifications: {

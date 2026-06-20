@@ -352,6 +352,14 @@ func (s *ServerInterfaceImpl) SetFederationShowEngagementOptions(w http.Response
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetFederationShowEngagement)(w, r)
 }
 
+func (s *ServerInterfaceImpl) SetFederationHideFollowersTab(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetFederationHideFollowersTab)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetFederationHideFollowersTabOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetFederationHideFollowersTab)(w, r)
+}
+
 func (s *ServerInterfaceImpl) SetFederationUsername(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetFederationUsername)(w, r)
 }

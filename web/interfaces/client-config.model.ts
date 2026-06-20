@@ -40,6 +40,9 @@ interface Federation {
   enabled: boolean;
   account: string;
   followerCount: number;
+  // hideFollowersTab hides the public "Followers" tab on the viewer
+  // page while leaving the rest of the social features active.
+  hideFollowersTab: boolean;
 }
 
 interface Notifications {
@@ -88,6 +91,7 @@ export function makeEmptyClientConfig(): ClientConfig {
       enabled: false,
       account: '',
       followerCount: 0,
+      hideFollowersTab: false,
     },
     notifications: {
       browser: {

@@ -34,6 +34,7 @@ const defaultFederationConfig = {
 	enabled: false,
 	isPrivate: false,
 	showEngagement: true,
+	hideFollowersTab: false,
 	goLiveMessage: "I've gone live!",
 	username: 'streamer',
 	blockedDomains: [],
@@ -130,6 +131,7 @@ const newFederationConfig = {
 	username: randomString(),
 	goLiveMessage: randomString(),
 	showEngagement: !defaultFederationConfig.showEngagement,
+	hideFollowersTab: !defaultFederationConfig.hideFollowersTab,
 	blockedDomains: [randomString() + '.tld', randomString() + '.tld'],
 };
 
@@ -184,6 +186,9 @@ test('verify default admin configuration', async () => {
 	expect(res.body.federation.isPrivate).toBe(defaultFederationConfig.isPrivate);
 	expect(res.body.federation.showEngagement).toBe(
 		defaultFederationConfig.showEngagement,
+	);
+	expect(res.body.federation.hideFollowersTab).toBe(
+		defaultFederationConfig.hideFollowersTab,
 	);
 	expect(res.body.federation.goLiveMessage).toBe(
 		defaultFederationConfig.goLiveMessage,
@@ -282,6 +287,13 @@ test('toggle federation engagement', async () => {
 	const res = await sendAdminRequest(
 		'config/federation/showengagement',
 		newFederationConfig.showEngagement,
+	);
+});
+
+test('toggle federation hide followers tab', async () => {
+	await sendAdminRequest(
+		'config/federation/hidefollowers',
+		newFederationConfig.hideFollowersTab,
 	);
 });
 
@@ -488,6 +500,9 @@ test('verify updated admin configuration', async () => {
 	expect(res.body.federation.showEngagement).toBe(
 		newFederationConfig.showEngagement,
 	);
+	expect(res.body.federation.hideFollowersTab).toBe(
+		newFederationConfig.hideFollowersTab,
+	);
 	expect(res.body.federation.blockedDomains).toStrictEqual(
 		newFederationConfig.blockedDomains,
 	);
@@ -501,6 +516,9 @@ test('verify updated frontend configuration', async () => {
 			expect(res.body.name).toBe(newServerName);
 			expect(res.body.logo).toBe('/logo');
 			expect(res.body.socialHandles).toStrictEqual(newSocialHandles);
+			expect(res.body.federation.hideFollowersTab).toBe(
+				newFederationConfig.hideFollowersTab,
+			);
 		});
 });
 

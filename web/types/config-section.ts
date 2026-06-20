@@ -115,6 +115,7 @@ export interface Federation {
   username: string;
   goLiveMessage: string;
   showEngagement: boolean;
+  hideFollowersTab: boolean;
   blockedDomains: string[];
 }
 

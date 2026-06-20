@@ -1058,6 +1058,9 @@ type SetFederationBlockDomainsJSONRequestBody = AdminConfigValue
 // SetFederationEnabledJSONRequestBody defines body for SetFederationEnabled for application/json ContentType.
 type SetFederationEnabledJSONRequestBody = AdminConfigValue
 
+// SetFederationHideFollowersTabJSONRequestBody defines body for SetFederationHideFollowersTab for application/json ContentType.
+type SetFederationHideFollowersTabJSONRequestBody = AdminConfigValue
+
 // SetFederationGoLiveMessageJSONRequestBody defines body for SetFederationGoLiveMessage for application/json ContentType.
 type SetFederationGoLiveMessageJSONRequestBody = AdminConfigValue
 

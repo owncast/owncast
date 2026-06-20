@@ -18,7 +18,7 @@ export type DesktopContentProps = {
   extraPageContent: string;
   pluginTabs: PluginTab[];
   setShowFollowModal: (show: boolean) => void;
-  supportFediverseFeatures: boolean;
+  showFollowersTab: boolean;
   federatedServers?: any[]; // Will be properly typed when API is implemented
 };
 
@@ -50,7 +50,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
   extraPageContent,
   pluginTabs,
   setShowFollowModal,
-  supportFediverseFeatures,
+  showFollowersTab,
   federatedServers = [],
 }) => {
   const aboutTabContent = (
@@ -75,7 +75,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
   if (extraPageContent) {
     items.push({ label: 'About', key: '2', children: aboutTabContent });
   }
-  if (supportFediverseFeatures) {
+  if (showFollowersTab) {
     items.push({ label: 'Followers', key: '3', children: followersTabContent });
   }
   // Add Featured tab if there are featured streams

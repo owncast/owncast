@@ -205,6 +205,12 @@ type ServerInterface interface {
 	// (POST /admin/config/federation/enable)
 	SetFederationEnabled(w http.ResponseWriter, r *http.Request)
 
+	// (OPTIONS /admin/config/federation/hidefollowers)
+	SetFederationHideFollowersTabOptions(w http.ResponseWriter, r *http.Request)
+	// Set if the public followers tab is hidden on the web UI
+	// (POST /admin/config/federation/hidefollowers)
+	SetFederationHideFollowersTab(w http.ResponseWriter, r *http.Request)
+
 	// (OPTIONS /admin/config/federation/livemessage)
 	SetFederationGoLiveMessageOptions(w http.ResponseWriter, r *http.Request)
 	// Set federated go live message
@@ -1055,6 +1061,17 @@ func (_ Unimplemented) SetFederationEnabledOptions(w http.ResponseWriter, r *htt
 // Enable/disable federation features
 // (POST /admin/config/federation/enable)
 func (_ Unimplemented) SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/federation/hidefollowers)
+func (_ Unimplemented) SetFederationHideFollowersTabOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set if the public followers tab is hidden on the web UI
+// (POST /admin/config/federation/hidefollowers)
+func (_ Unimplemented) SetFederationHideFollowersTab(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3003,6 +3020,38 @@ func (siw *ServerInterfaceWrapper) SetFederationEnabled(w http.ResponseWriter, r
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetFederationHideFollowersTabOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationHideFollowersTabOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationHideFollowersTabOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetFederationHideFollowersTab operation middleware
+func (siw *ServerInterfaceWrapper) SetFederationHideFollowersTab(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetFederationHideFollowersTab(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6337,6 +6386,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/federation/enable", wrapper.SetFederationEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/federation/hidefollowers", wrapper.SetFederationHideFollowersTabOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/federation/hidefollowers", wrapper.SetFederationHideFollowersTab)
 	})
 	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/admin/config/federation/livemessage", wrapper.SetFederationGoLiveMessageOptions)
