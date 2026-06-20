@@ -70,7 +70,7 @@ describe('modal theming', () => {
       '--theme-color-components-content-background',
     ],
     ['--theme-color-components-modal-content-text', '--theme-color-components-text-on-light'],
-    ['--theme-color-components-modal-header-background', '--theme-color-background-header'],
+    ['--theme-color-components-modal-header-background', '--theme-color-background-secondary'],
     ['--theme-color-components-modal-header-text', '--theme-color-components-text-on-dark'],
   ];
 

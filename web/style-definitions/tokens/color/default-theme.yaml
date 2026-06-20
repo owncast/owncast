@@ -107,6 +107,12 @@ theme:
       header:
         value: 'var(--theme-color-palette-0)'
         comment: '{theme.color.palette.0.comment}'
+      # Secondary dark surface, a lighter dark blue than the near-black
+      # header/footer. Used by surfaces that sit on top of the page rather than
+      # framing it, such as the modal header.
+      secondary:
+        value: 'var(--theme-color-palette-1)'
+        comment: '{theme.color.palette.1.comment}'
 
     action:
       value: 'var(--theme-color-palette-6)'
@@ -186,14 +192,15 @@ theme:
           comment: '{theme.color.palette.15.comment}'
 
       # Modal colors follow the admin-configurable theme rather than fixed
-      # palette entries so modals respect a custom appearance. The header
-      # mirrors the page header/footer and the body mirrors the page content
-      # area, including their respective text colors.
+      # palette entries so modals respect a custom appearance. The header is the
+      # secondary dark surface (a dark blue, distinct from the near-black page
+      # header/footer) and the body mirrors the page content area, including
+      # their respective text colors.
       modal:
         header:
           background:
-            value: 'var(--theme-color-background-header)'
-            comment: '{theme.color.palette.0.comment}'
+            value: 'var(--theme-color-background-secondary)'
+            comment: '{theme.color.palette.1.comment}'
           text:
             value: 'var(--theme-color-components-text-on-dark)'
             comment: '{theme.color.palette.3.comment}'
