@@ -53,6 +53,7 @@ const API_FEDERATION_PRIVATE = '/federation/private';
 const API_FEDERATION_USERNAME = '/federation/username';
 const API_FEDERATION_GOLIVE_MESSAGE = '/federation/livemessage';
 const API_FEDERATION_SHOW_ENGAGEMENT = '/federation/showengagement';
+const API_FEDERATION_HIDE_FOLLOWERS = '/federation/hidefollowers';
 export const API_FEDERATION_BLOCKED_DOMAINS = '/federation/blockdomains';
 
 const TEXTFIELD_TYPE_URL = 'url';
@@ -358,6 +359,14 @@ export const FIELD_PROPS_SHOW_FEDERATION_ENGAGEMENT = {
   configPath: 'federation',
   label: 'Show engagement',
   tip: 'Following, liking and sharing will appear in the chat feed.',
+  useSubmit: true,
+};
+
+export const FIELD_PROPS_FEDERATION_HIDE_FOLLOWERS = {
+  apiPath: API_FEDERATION_HIDE_FOLLOWERS,
+  configPath: 'federation',
+  label: 'Hide followers',
+  tip: 'Hide the public "Followers" tab on your stream page. Social features stay enabled.',
   useSubmit: true,
 };
 

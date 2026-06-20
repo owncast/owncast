@@ -2446,6 +2446,35 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /admin/config/federation/hidefollowers:
+    post:
+      summary: Set if the public followers tab is hidden on the web UI
+      operationId: SetFederationHideFollowersTab
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Federation hide followers tab set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetFederationHideFollowersTabOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /admin/config/federation/username:
     post:
       summary: Set local federated username
@@ -4083,6 +4112,8 @@ components:
           type: integer
         enabled:
           type: boolean
+        hideFollowersTab:
+          type: boolean
     AuthenticationConfig:
       type: object
       properties:
@@ -4606,6 +4637,8 @@ components:
         isPrivate:
           type: boolean
         showEngagement:
+          type: boolean
+        hideFollowersTab:
           type: boolean
     AdminVideoSettings:
       type: object

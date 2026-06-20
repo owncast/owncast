@@ -16,6 +16,7 @@ import {
   TEXTFIELD_PROPS_FEDERATION_DEFAULT_USER,
   FIELD_PROPS_FEDERATION_IS_PRIVATE,
   FIELD_PROPS_SHOW_FEDERATION_ENGAGEMENT,
+  FIELD_PROPS_FEDERATION_HIDE_FOLLOWERS,
   TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL,
   FIELD_PROPS_FEDERATION_BLOCKED_DOMAINS,
   postConfigUpdateToAPI,
@@ -100,8 +101,15 @@ const ConfigFederation = () => {
   const [blockedDomainSaveState, setBlockedDomainSaveState] = useState(null);
 
   const { federation, yp, instanceDetails } = serverConfig;
-  const { enabled, isPrivate, username, goLiveMessage, showEngagement, blockedDomains } =
-    federation;
+  const {
+    enabled,
+    isPrivate,
+    username,
+    goLiveMessage,
+    showEngagement,
+    hideFollowersTab,
+    blockedDomains,
+  } = federation;
   const { instanceUrl } = yp;
   const { nsfw } = instanceDetails;
 
@@ -257,6 +265,7 @@ const ConfigFederation = () => {
       username,
       goLiveMessage,
       showEngagement,
+      hideFollowersTab,
       blockedDomains,
       nsfw,
       instanceUrl: yp.instanceUrl,
@@ -364,6 +373,12 @@ const ConfigFederation = () => {
             fieldName="showEngagement"
             {...FIELD_PROPS_SHOW_FEDERATION_ENGAGEMENT}
             checked={formDataValues.showEngagement}
+            disabled={!enabled}
+          />
+          <ToggleSwitch
+            fieldName="hideFollowersTab"
+            {...FIELD_PROPS_FEDERATION_HIDE_FOLLOWERS}
+            checked={formDataValues.hideFollowersTab}
             disabled={!enabled}
           />
         </Col>

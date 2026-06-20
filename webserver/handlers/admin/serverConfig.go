@@ -85,12 +85,13 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ForbiddenUsernames: usernameBlocklist,
 		SuggestedUsernames: usernameSuggestions,
 		Federation: federationConfigResponse{
-			Enabled:        configRepository.GetFederationEnabled(),
-			IsPrivate:      configRepository.GetFederationIsPrivate(),
-			Username:       configRepository.GetFederationUsername(),
-			GoLiveMessage:  configRepository.GetFederationGoLiveMessage(),
-			ShowEngagement: configRepository.GetFederationShowEngagement(),
-			BlockedDomains: configRepository.GetBlockedFederatedDomains(),
+			Enabled:          configRepository.GetFederationEnabled(),
+			IsPrivate:        configRepository.GetFederationIsPrivate(),
+			Username:         configRepository.GetFederationUsername(),
+			GoLiveMessage:    configRepository.GetFederationGoLiveMessage(),
+			ShowEngagement:   configRepository.GetFederationShowEngagement(),
+			HideFollowersTab: configRepository.GetFederationHideFollowersTab(),
+			BlockedDomains:   configRepository.GetBlockedFederatedDomains(),
 		},
 		Notifications: notificationsConfigResponse{
 			Discord: configRepository.GetDiscordConfig(),
@@ -183,12 +184,13 @@ type yp struct {
 }
 
 type federationConfigResponse struct {
-	Username       string   `json:"username"`
-	GoLiveMessage  string   `json:"goLiveMessage"`
-	BlockedDomains []string `json:"blockedDomains"`
-	Enabled        bool     `json:"enabled"`
-	IsPrivate      bool     `json:"isPrivate"`
-	ShowEngagement bool     `json:"showEngagement"`
+	Username         string   `json:"username"`
+	GoLiveMessage    string   `json:"goLiveMessage"`
+	BlockedDomains   []string `json:"blockedDomains"`
+	Enabled          bool     `json:"enabled"`
+	IsPrivate        bool     `json:"isPrivate"`
+	ShowEngagement   bool     `json:"showEngagement"`
+	HideFollowersTab bool     `json:"hideFollowersTab"`
 }
 
 type notificationsConfigResponse struct {

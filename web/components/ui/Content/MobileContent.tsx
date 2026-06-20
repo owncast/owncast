@@ -19,7 +19,7 @@ export type MobileContentProps = {
   extraPageContent: string;
   pluginTabs: PluginTab[];
   setShowFollowModal: (show: boolean) => void;
-  supportFediverseFeatures: boolean;
+  showFollowersTab: boolean;
   online: boolean;
   federatedServers?: any[]; // Will be properly typed when API is implemented
 };
@@ -60,7 +60,7 @@ export const MobileContent: FC<MobileContentProps> = ({
   extraPageContent,
   pluginTabs,
   setShowFollowModal,
-  supportFediverseFeatures,
+  showFollowersTab,
   online,
   federatedServers = [],
 }) => {
@@ -89,7 +89,7 @@ export const MobileContent: FC<MobileContentProps> = ({
   const items: NonNullable<TabsProps['items']> = [];
 
   items.push({ label: 'About', key: '0', children: aboutTabContent });
-  if (supportFediverseFeatures) {
+  if (showFollowersTab) {
     items.push({ label: 'Followers', key: '1', children: followersTabContent });
   }
   // Add Featured tab if there are featured streams

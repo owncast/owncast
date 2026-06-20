@@ -97,6 +97,24 @@ func (a *Admin) SetFederationShowEngagement(w http.ResponseWriter, r *http.Reque
 	webutils.WriteSimpleResponse(w, true, "federation show engagement saved")
 }
 
+// SetFederationHideFollowersTab will set if the followers tab is hidden on the public web UI.
+func (a *Admin) SetFederationHideFollowersTab(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	if err := a.configRepository.SetFederationHideFollowersTab(configValue.Value.(bool)); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+	webutils.WriteSimpleResponse(w, true, "federation hide followers tab saved")
+}
+
 // SetFederationUsername will set the local actor username used for federation activities.
 func (a *Admin) SetFederationUsername(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {

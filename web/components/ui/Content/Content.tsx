@@ -132,7 +132,7 @@ export const Content: FC = () => {
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyModal, setShowNotifyModal] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
-  const { account: fediverseAccount, enabled: fediverseEnabled } = federation;
+  const { account: fediverseAccount, enabled: fediverseEnabled, hideFollowersTab } = federation;
   const { browser: browserNotifications } = notifications;
   const { enabled: browserNotificationsEnabled } = browserNotifications;
   const { online: isStreamLive } = serverStatus;
@@ -141,6 +141,10 @@ export const Content: FC = () => {
 
   const [supportsBrowserNotifications, setSupportsBrowserNotifications] = useState(false);
   const supportFediverseFeatures = fediverseEnabled;
+  // The Followers tab can be hidden independently of the rest of the
+  // social features: federation stays on (follow button, go-live posts,
+  // engagement) but the public followers list is not shown.
+  const showFollowersTab = fediverseEnabled && !hideFollowersTab;
   const { servers: federatedServers } = useFederatedServers();
 
   const [showChatModal, setShowChatModal] = useState(false);
@@ -321,7 +325,7 @@ export const Content: FC = () => {
               extraPageContent={extraPageContent}
               pluginTabs={pluginTabs}
               setShowFollowModal={setShowFollowModal}
-              supportFediverseFeatures={supportFediverseFeatures}
+              showFollowersTab={showFollowersTab}
               online={online}
               federatedServers={federatedServers}
             />
@@ -335,7 +339,7 @@ export const Content: FC = () => {
                 extraPageContent={extraPageContent}
                 pluginTabs={pluginTabs}
                 setShowFollowModal={setShowFollowModal}
-                supportFediverseFeatures={supportFediverseFeatures}
+                showFollowersTab={showFollowersTab}
                 federatedServers={federatedServers}
               />
             </div>

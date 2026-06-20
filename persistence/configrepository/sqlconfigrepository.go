@@ -843,6 +843,21 @@ func (r *SqlConfigRepository) GetFederationShowEngagement() bool {
 	return true
 }
 
+// SetFederationHideFollowersTab will set if the followers tab is hidden on the web UI.
+func (r *SqlConfigRepository) SetFederationHideFollowersTab(hidden bool) error {
+	return r.datastore.SetBool(federationHideFollowersTabKey, hidden)
+}
+
+// GetFederationHideFollowersTab will return if the followers tab is hidden on the web UI.
+func (r *SqlConfigRepository) GetFederationHideFollowersTab() bool {
+	hidden, err := r.datastore.GetBool(federationHideFollowersTabKey)
+	if err == nil {
+		return hidden
+	}
+
+	return false
+}
+
 // SetBlockedFederatedDomains will set the blocked federated domains.
 func (r *SqlConfigRepository) SetBlockedFederatedDomains(domains []string) error {
 	return r.datastore.SetString(federationBlockedDomainsKey, strings.Join(domains, ","))
