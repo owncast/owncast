@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "สไตล์ของปลั๊กอินเปิดใช้งานอยู่",
+      "pluginStylingDescription": "ปลั๊กอินเหล่านี้กำลังใช้สไตล์ของตัวเองกับเว็บไซต์ของคุณ ร่วมกับสีที่คุณตั้งไว้ที่นี่: {{plugins}} การตั้งค่าของคุณจะใช้โดยมีลำดับความสำคัญสูงกว่า ดังนั้นจึงมีความสำคัญเมื่อมีการทับซ้อน หากหน้าเว็บไม่ดูตามที่คุณคาดหวังให้ใช้การรีเซ็ตค่าเป็นค่าเริ่มต้นด้านล่างเพื่อให้สไตล์ของปลั๊กอินแสดงผล หรือปิดปลั๊กอินจากหน้าปลั๊กอิน",
+      "alsoSetByPlugin": "ซึ่งยังตั้งโดย {{plugins}}",
+      "alsoSetByPluginTooltip": "ค่าของคุณมีความสำคัญมากขึ้นที่นี่ ใช้การรีเซ็ตค่าเป็นค่าเริ่มต้นเพื่อกลับไปใช้สีจาก {{plugins}}"
+    },
     "AccessTokens": {
       "createNewAccessToken": "สร้างโทเค็นการเข้าถึงใหม่",
       "nameDescription": "ชื่อจะถูกแสดงเป็นผู้ใช้แชทเมื่อส่งข้อความด้วยโทเค็นการเข้าถึงนี้",
@@ -49,9 +55,12 @@
       "confirmYes": "ใช่",
       "enterStreamUrl": "กรุณาใส่ URL ของสตรีม",
       "enterValidUrl": "กรุณาใส่ URL ที่ถูกต้อง",
-      "failedToApprove": "<strong><em>การแปล Admin.FeaturedStreams.failedToApprove หายไป: โปรดรายงาน</em></strong>",
+      "failedToApprove": "ไม่สามารถอนุมัติคำขอฟีเจอร์ได้",
       "failedToFeature": "ไม่สามารถทำให้สตรีมเป็นที่เด่นได้",
-      "failedToUnfeature": "<strong><em>ขาดการแปล Admin.FeaturedStreams.failedToUnfeature: กรุณารายงาน</em></strong>",
+      "failedToReject": "ไม่สามารถปฏิเสธคำขอฟีเจอร์ได้",
+      "failedToUnfeature": "ไม่สามารถยกเลิกฟีเจอร์จากสตรีมได้",
+      "featureRequestApproved": "คำขอฟีเจอร์ได้รับการอนุมัติแล้ว",
+      "featureRequestRejected": "คำขอฟีเจอร์ถูกปฏิเสธ",
       "featureRequestsDescription": "เซิร์ฟเวอร์ Owncast เหล่านี้ได้ขอให้แสดงสตรีมของคุณในไดเรกทอรีสตรีมที่มีชื่อเด่น อนุมัติเซิร์ฟเวอร์เพื่อให้แสดงสถานะการถ่ายทอดสดของคุณได้",
       "featureRequestsTitle": "คำขอให้แสดงสตรีมของคุณ",
       "streamsYouFeatureTab": "สตรีมที่คุณแนะนำ",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "ฟีเจอร์สังคมต้องได้รับการเปิดใช้งาน",
       "socialFeaturesRequiredDesc": "ก่อนที่คุณจะสามารถฟีเจอร์สตรีมอื่น ๆ ได้.",
       "status": "สถานะ",
-      "streamFeaturedSuccess": "<strong><em>ขาดการแปล Admin.FeaturedStreams.streamFeaturedSuccess: กรุณารายงาน</em></strong>",
+      "streamFeaturedSuccess": "ฟีเจอร์ได้รับการนำเสนอในสตรีมแล้ว",
       "streamName": "ชื่อสตรีม",
       "streamRequirements": "ข้อกำหนดของสตรีม",
-      "streamUnfeaturedSuccess": "<strong><em>ขาดการแปล Admin.FeaturedStreams.streamUnfeaturedSuccess: กรุณารายงาน</em></strong>",
+      "streamUnfeaturedSuccess": "ฟีเจอร์ถูกยกเลิกจากสตรีมแล้ว",
       "streamUrlHelp": "กรุณาใส่ URL ของสตรีม Owncast (ตัวอย่างเช่น stream.example.com)",
       "streamUrlLabel": "URL ของสตรีม",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "ติดตั้ง",
       "browseInstalled": "ติดตั้งแล้ว",
       "browsePreviewAlt": "ภาพหน้าจอแสดงตัวอย่างของ {{name}}",
+      "browseAuthor": "โดย {{name}}",
       "browseUnavailableDescription": "Owncast ไม่สามารถเข้าถึงแค็ตตาล็อกปลั๊กอินได้ในขณะนี้ คุณยังสามารถอัปโหลดไฟล์ .ocpkg โดยตรงจากแท็บที่ติดตั้งได้",
       "browseUnavailableRetry": "ลองใหม่",
       "browseUnavailableTitle": "แค็ตตาล็อกปลั๊กอินไม่สามารถใช้ได้ในขณะนี้",

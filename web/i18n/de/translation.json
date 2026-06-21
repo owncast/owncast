@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Plugin-Styling ist aktiv",
+      "pluginStylingDescription": "Diese Plugins wenden ihre eigenen Stile auf Ihre Website an, kombiniert mit den Farben, die Sie hier festgelegt haben: {{plugins}}. Ihre Einstellungen werden oben angewendet, so dass sie gewinnen, wo sie sich überlappen. Wenn die Seite nicht so aussieht wie Sie es erwarten, verwenden Sie Zurücksetzen auf Standards, um das Styling des Plugins durch die Seite zeigen zu lassen, oder deaktivieren Sie das Plugin von der Plugin-Seite.",
+      "alsoSetByPlugin": "auch von {{plugins}} gesetzt",
+      "alsoSetByPluginTooltip": "Ihr Wert hat hier Priorität. Verwenden Sie Zurücksetzen auf Standards, um auf die Farbe von {{plugins}} zurückzufallen."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Neues Zugriffstoken erstellen",
       "nameDescription": "Der Name wird als Chat-Benutzer angezeigt, wenn Nachrichten mit diesem Zugangs-Token gesendet werden.",
@@ -49,9 +55,12 @@
       "confirmYes": "Ja",
       "enterStreamUrl": "Bitte geben Sie eine Stream-URL ein",
       "enterValidUrl": "Bitte geben Sie eine gültige URL ein",
-      "failedToApprove": "<strong><em>Fehlender Übersetzungsadministrator.FeaturedStreams.failedToApprove: Bitte melden Sie</em></strong>",
+      "failedToApprove": "Fehler beim Bestätigen der Feature-Anfrage",
       "failedToFeature": "Fehler beim Feature Stream",
-      "failedToUnfeature": "<strong><em>Fehlender Übersetzungsadministrator.FeaturedStreams.failedToUnfeature: Bitte melden Sie</em></strong>",
+      "failedToReject": "Fehler beim Zurückweisen der Feature-Anfrage",
+      "failedToUnfeature": "Fehler beim Entfernen des Streams",
+      "featureRequestApproved": "Feature-Anfrage genehmigt",
+      "featureRequestRejected": "Feature-Anfrage abgelehnt",
       "featureRequestsDescription": "Diese Owncast-Server haben darum gebeten, deinen Stream in ihrem vorgestellten Stream-Verzeichnis anzuzeigen. Überprüfen Sie einen Server, um den Live-Status anzeigen zu lassen.",
       "featureRequestsTitle": "Anfragen nach Funktion deines Streams",
       "streamsYouFeatureTab": "Streams die du hast",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Soziale Merkmale müssen aktiviert werden",
       "socialFeaturesRequiredDesc": "bevor du andere Streams anbieten kannst.",
       "status": "Status",
-      "streamFeaturedSuccess": "<strong><em>Fehlender Übersetzungsadministrator.FeaturedStreams.streamFeaturedErfolg: Bitte melden Sie</em></strong>",
+      "streamFeaturedSuccess": "Stream vorgestellt",
       "streamName": "Streamname",
       "streamRequirements": "Streamvoraussetzungen",
-      "streamUnfeaturedSuccess": "<strong><em>Fehlender Übersetzungsadministrator.FeaturedStreams.streamUnfeaturedSuccess: Bitte melden Sie</em></strong>",
+      "streamUnfeaturedSuccess": "Stream nicht markiert",
       "streamUrlHelp": "Geben Sie die URL eines Owncast-Streams ein (z.B. stream.example.com)",
       "streamUrlLabel": "Stream-URL",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Installieren",
       "browseInstalled": "Installiert",
       "browsePreviewAlt": "{{name}} Screenshot",
+      "browseAuthor": "von {{name}}",
       "browseUnavailableDescription": "Owncast kann momentan nicht auf den Plugin-Katalog zugreifen. Sie können weiterhin .ocpkg-Dateien direkt über die Registerkarte Installiert hochladen.",
       "browseUnavailableRetry": "Wiederholen",
       "browseUnavailableTitle": "Der Plugin-Katalog ist derzeit nicht verfügbar",

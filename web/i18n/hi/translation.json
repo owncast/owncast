@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "प्लगइन स्टाइलिंग सक्रिय है",
+      "pluginStylingDescription": "ये प्लगइन आपकी साइट पर अपने स्वयं के स्टाइल लागू कर रहे हैं, जो आपके द्वारा यहाँ सेट किए गए रंगों के साथ मिलकर हैं: {{plugins}}। आपकी सेटिंग्स ऊपर लागू होती हैं, इसलिए जहाँ वे ओवरलैप होती हैं, वे जीत जाती हैं। यदि पृष्ठ वैसा नहीं दिखता जैसा आप अपेक्षा करते हैं, तो नीचे दिए गए डिफ़ॉल्ट पर रीसेट करें ताकि प्लगइन स्टाइलिंग दिख सके, या प्लगइन को प्लगइन्स पृष्ठ से बंद करें।",
+      "alsoSetByPlugin": "जिसे {{plugins}} द्वारा भी सेट किया गया है",
+      "alsoSetByPluginTooltip": "आपका मान यहाँ प्राथमिकता लेता है। डिफ़ॉल्ट पर रीसेट करें ताकि {{plugins}} से रंग पर वापस जाएं।"
+    },
     "AccessTokens": {
       "createNewAccessToken": "नई एक्सेस टोकन बनाएं",
       "nameDescription": "यह नाम इस एक्सेस टोकन के साथ संदेश भेजने पर चैट उपयोगकर्ता के रूप में प्रदर्शित होगा।",
@@ -49,9 +55,12 @@
       "confirmYes": "हाँ",
       "enterStreamUrl": "कृपया एक स्ट्रीम URL दर्ज करें",
       "enterValidUrl": "कृपया एक मान्य URL दर्ज करें",
-      "failedToApprove": "<strong><em>अनुवाद गायब है Admin.FeaturedStreams.failedToApprove: कृपया रिपोर्ट करें</em></strong>",
+      "failedToApprove": "विशेषता अनुरोध को स्वीकार करने में विफल",
       "failedToFeature": "स्ट्रीम को फ़ीचर करने में विफल",
-      "failedToUnfeature": "<strong><em>अनुवाद गायब है Admin.FeaturedStreams.failedToUnfeature: कृपया रिपोर्ट करें</em></strong>",
+      "failedToReject": "विशेषता अनुरोध को अस्वीकृत करने में विफल",
+      "failedToUnfeature": "स्ट्रीम को विशेषता मुक्त करने में विफल",
+      "featureRequestApproved": "विशेषता अनुरोध स्वीकृत",
+      "featureRequestRejected": "विशेषता अनुरोध अस्वीकृत",
       "featureRequestsDescription": "ये Owncast सर्वर आपके स्ट्रीम को उनके विशेष स्ट्रीम निर्देशिका में दिखाने के लिए अनुरोध कर रहे हैं। किसी सर्वर को अनुमोदित करें ताकि यह आपकी लाइव स्थिति दिखा सके।",
       "featureRequestsTitle": "आपके स्ट्रीम को प्रदर्शित करने के लिए अनुरोध",
       "streamsYouFeatureTab": "आपकी फीचर्ड स्ट्रीम्स",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "सोशल फीचर्स को सक्षम किया जाना चाहिए",
       "socialFeaturesRequiredDesc": "अन्य स्ट्रीम को फीचर करने से पहले।",
       "status": "स्थिति",
-      "streamFeaturedSuccess": "<strong><em>अनुवाद गायब है Admin.FeaturedStreams.streamFeaturedSuccess: कृपया रिपोर्ट करें</em></strong>",
+      "streamFeaturedSuccess": "स्ट्रीम को विशेषता दिया गया",
       "streamName": "स्ट्रीम नाम",
       "streamRequirements": "स्ट्रीम आवश्यकताएँ",
-      "streamUnfeaturedSuccess": "<strong><em>अनुवाद गायब है Admin.FeaturedStreams.streamUnfeaturedSuccess: कृपया रिपोर्ट करें</em></strong>",
+      "streamUnfeaturedSuccess": "स्ट्रीम को विशेषता मुक्त किया गया",
       "streamUrlHelp": "एक Owncast स्ट्रीम का URL दर्ज करें (जैसे, stream.example.com)",
       "streamUrlLabel": "स्ट्रीम URL",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "स्थापित करें",
       "browseInstalled": "स्थापित",
       "browsePreviewAlt": "{{name}} पूर्वावलोकन स्क्रीनशॉट",
+      "browseAuthor": "द्वारा {{name}}",
       "browseUnavailableDescription": "Owncast वर्तमान में प्लगइन कैटलॉग तक पहुँच नहीं पा रहा है। आप अभी भी स्थापित टैब से .ocpkg फ़ाइलें सीधे अपलोड कर सकते हैं।",
       "browseUnavailableRetry": "फिर से प्रयास करें",
       "browseUnavailableTitle": "प्लगइन कैटलॉग वर्तमान में अनुपलब्ध है",

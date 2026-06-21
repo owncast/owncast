@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Styling của plugin đang được kích hoạt",
+      "pluginStylingDescription": "Các plugin này đang áp dụng kiểu dáng của riêng chúng vào trang web của bạn, kết hợp với các màu sắc mà bạn đã đặt ở đây: {{plugins}}. Các cài đặt của bạn được áp dụng ở trên cùng, vì vậy chúng ưu tiên khi bị chồng chéo. Nếu trang không trông như bạn mong đợi, hãy sử dụng Đặt lại về Mặc định bên dưới để cho phép kiểu dáng của plugin hiển thị, hoặc vô hiệu hóa plugin từ trang Plugins.",
+      "alsoSetByPlugin": "cũng được đặt bởi {{plugins}}",
+      "alsoSetByPluginTooltip": "Giá trị của bạn có ưu tiên ở đây. Sử dụng Đặt lại về Mặc định để quay lại màu sắc từ {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Tạo mã truy cập mới",
       "nameDescription": "Tên sẽ được hiển thị như người dùng chat khi gửi tin nhắn với mã truy cập này.",
@@ -49,9 +55,12 @@
       "confirmYes": "Có",
       "enterStreamUrl": "Vui lòng nhập một URL phát lại",
       "enterValidUrl": "Vui lòng nhập một URL hợp lệ",
-      "failedToApprove": "<strong><em>Thiếu bản dịch Admin.FeaturedStreams.failedToApprove: Vui lòng báo cáo</em></strong>",
+      "failedToApprove": "Không thể phê duyệt yêu cầu tính năng",
       "failedToFeature": "Không thể phát sóng stream",
-      "failedToUnfeature": "<strong><em>Thiếu bản dịch Admin.FeaturedStreams.failedToUnfeature: Vui lòng báo cáo</em></strong>",
+      "failedToReject": "Không thể từ chối yêu cầu tính năng",
+      "failedToUnfeature": "Không thể bỏ tính năng của luồng",
+      "featureRequestApproved": "Yêu cầu tính năng đã được phê duyệt",
+      "featureRequestRejected": "Yêu cầu tính năng đã bị từ chối",
       "featureRequestsDescription": "Các máy chủ Owncast này đã yêu cầu hiển thị luồng của bạn trong thư mục luồng nổi bật của họ. Phê duyệt một máy chủ để cho phép nó hiển thị trạng thái trực tiếp của bạn.",
       "featureRequestsTitle": "Yêu cầu hiển thị luồng của bạn",
       "streamsYouFeatureTab": "Luồng bạn giới thiệu",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Các tính năng xã hội phải được kích hoạt",
       "socialFeaturesRequiredDesc": "trước khi bạn có thể phát các stream khác.",
       "status": "Trạng thái",
-      "streamFeaturedSuccess": "<strong><em>Thiếu bản dịch Admin.FeaturedStreams.streamFeaturedSuccess: Vui lòng báo cáo</em></strong>",
+      "streamFeaturedSuccess": "Luồng đã được nổi bật",
       "streamName": "Tên Stream",
       "streamRequirements": "Các yêu cầu về Stream",
-      "streamUnfeaturedSuccess": "<strong><em>Thiếu bản dịch Admin.FeaturedStreams.streamUnfeaturedSuccess: Vui lòng báo cáo</em></strong>",
+      "streamUnfeaturedSuccess": "Luồng đã không còn nổi bật",
       "streamUrlHelp": "Nhập URL của một stream Owncast (ví dụ: stream.example.com)",
       "streamUrlLabel": "URL Stream",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Cài đặt",
       "browseInstalled": "Đã cài đặt",
       "browsePreviewAlt": "Ảnh chụp màn hình xem trước của {{name}}",
+      "browseAuthor": "bởi {{name}}",
       "browseUnavailableDescription": "Owncast không thể kết nối với danh mục plugin ngay bây giờ. Bạn vẫn có thể tải tệp .ocpkg trực tiếp từ tab Đã cài đặt.",
       "browseUnavailableRetry": "Thử lại",
       "browseUnavailableTitle": "Danh mục plugin hiện không khả dụng",

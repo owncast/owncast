@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Plugin estilizatzea aktibatuta dago",
+      "pluginStylingDescription": "Plugin hauek zure webgunean euren estiloak aplikatzen ari dira, hemen ezarritako koloreekin batera: {{plugins}}. Zure ezarpenak goitik aplikatzen dira, beraz, estali egiten dutenean irabazten dute. Orria espero zenuen moduan itxura ez badu, erabili behean dauden Hasi ezarpenak itzuli plugin estilizatzea iragartzeko, edo desgaitu plugin-a Plugins orrian.",
+      "alsoSetByPlugin": "ere ezarritakoa {{plugins}}",
+      "alsoSetByPluginTooltip": "Zure balioa lehentasuna du hemen. Erabili Hasi ezarpenak itzuli {{plugins}}-eko kolorea berreskuratzeko."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Sortu Sarbide Token Berri bat",
       "nameDescription": "Izena txat erabiltzaile gisa agertuko da, sarbide token honekin mezuak bidaltzean.",
@@ -49,9 +55,12 @@
       "confirmYes": "Bai",
       "enterStreamUrl": "Mesedez, sartu iturburu edo zein URL",
       "enterValidUrl": "Mesedez, sartu baliozko URL bat",
-      "failedToApprove": "<strong><em>Itzulpen falta Admin.FeaturedStreams.failedToApprove: Mesedez, jakinarazi</em></strong>",
+      "failedToApprove": "Ez da ezarpen eskaera onartu",
       "failedToFeature": "Ezin izan da iturburu edo zein stream-a funtzionalizatu",
-      "failedToUnfeature": "<strong><em>Itzulpen falta Admin.FeaturedStreams.failedToUnfeature: Mesedez, jakinarazi</em></strong>",
+      "failedToReject": "Ez da ezarpen eskaera baztertzen",
+      "failedToUnfeature": "Ez da igorpena ezarri",
+      "featureRequestApproved": "Ezarpen eskaera onartuta",
+      "featureRequestRejected": "Ezarpen eskaera baztertuta",
       "featureRequestsDescription": "Owncast zerbitzari hauek zure irabazi zuzenean erakusteko eskatu dute bere ezagutzako irabazi bidez. Onartu zerbitzari bat zure egoera bizia erakusteko.",
       "featureRequestsTitle": "Zure irabaziak ezagutzekoa izateko eskaerak",
       "streamsYouFeatureTab": "Zuk ezarritako iturriak",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Gizarte ezaugarriak aktibatuta egon behar dira",
       "socialFeaturesRequiredDesc": "beste korronte batzuk iragarkitzat jarri ahal izateko.",
       "status": "Estatua",
-      "streamFeaturedSuccess": "<strong><em>Itzulpen falta Admin.FeaturedStreams.streamFeaturedSuccess: Mesedez, jakinarazi</em></strong>",
+      "streamFeaturedSuccess": "Igoera ezarrita",
       "streamName": "Korronte Izen",
       "streamRequirements": "Korronte Eskakizunak",
-      "streamUnfeaturedSuccess": "<strong><em>Itzulpen falta Admin.FeaturedStreams.streamUnfeaturedSuccess: Mesedez, jakinarazi</em></strong>",
+      "streamUnfeaturedSuccess": "Igoera ez da ezarri",
       "streamUrlHelp": "Sartu Owncast korronte baten URLa (adibidez, stream.example.com)",
       "streamUrlLabel": "Korronte URL",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Instalatu",
       "browseInstalled": "Instalatuta",
       "browsePreviewAlt": "{{name}} aurrebista irudi",
+      "browseAuthor": "{{name}} bidez",
       "browseUnavailableDescription": "Owncast-ek ezin du plugin katalogora iritsi oraintsu. Hala ere, .ocpkg fitxategiak zuzenean igotzea eskubidea uzten duzun bitartean.",
       "browseUnavailableRetry": "Saiatu berriro",
       "browseUnavailableTitle": "Plugin katalogoa oraingoz ez dago eskuragarri",

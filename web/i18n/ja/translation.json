@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "プラグインのスタイリングが有効です",
+      "pluginStylingDescription": "これらのプラグインは、あなたがここで設定した色と組み合わせて、あなたのサイトに独自のスタイルを適用しています: {{plugins}}。 あなたの設定は上に適用されるので、それらが重なり合うところで勝利します。 ページが期待通りに表示されない場合は、以下の「デフォルトにリセット」を使用してプラグインのスタイルを表示します。 またはプラグインページからプラグインを無効にします。",
+      "alsoSetByPlugin": "また、 {{plugins}} が設定しました",
+      "alsoSetByPluginTooltip": "ここでは値が優先されます。デフォルトのリセットを使用して、 {{plugins}} から色に戻ります。"
+    },
     "AccessTokens": {
       "createNewAccessToken": "新しいアクセストークンを作成",
       "nameDescription": "このアクセストークンでメッセージを送信するときに、チャットユーザーとして名前が表示されます。",
@@ -49,9 +55,12 @@
       "confirmYes": "はい",
       "enterStreamUrl": "ストリームURLを入力してください",
       "enterValidUrl": "有効な URL を入力してください",
-      "failedToApprove": "<strong><em>翻訳管理者が見つかりません。注目ストリーム.failedTo承認:</em></strong>",
+      "failedToApprove": "機能リクエストの承認に失敗しました",
       "failedToFeature": "フィーチャーストリームに失敗しました",
-      "failedToUnfeature": "<strong><em>翻訳管理者が見つかりません。FeaturedStreams.failedToUnfeature:</em></strong>",
+      "failedToReject": "機能リクエストを拒否できませんでした",
+      "failedToUnfeature": "ストリームの機能解除に失敗しました",
+      "featureRequestApproved": "機能のリクエストが承認されました",
+      "featureRequestRejected": "機能のリクエストが拒否されました",
       "featureRequestsDescription": "これらのOwncastサーバーは、あなたのストリームをそれらのフィーチャーストリームディレクトリに表示するように求めています。あなたのライブステータスを表示するようにサーバーを承認してください。",
       "featureRequestsTitle": "あなたのストリームをフィーチャーするリクエスト",
       "streamsYouFeatureTab": "あなたがフィーチャーしたストリーミング",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "ソーシャル機能を有効にする必要があります",
       "socialFeaturesRequiredDesc": "他のストリームを特集する前に",
       "status": "ステータス",
-      "streamFeaturedSuccess": "<strong><em>不足している翻訳管理者.FeaturedStreams.streamFeatureD成功:</em></strong>",
+      "streamFeaturedSuccess": "ストリームの特徴",
       "streamName": "ストリーム名",
       "streamRequirements": "配信要件",
-      "streamUnfeaturedSuccess": "<strong><em>不足している翻訳管理者.FeaturedStreams.streamUnfeaturedSuccess: Please report</em></strong>",
+      "streamUnfeaturedSuccess": "ストリーム未公開",
       "streamUrlHelp": "Owncast ストリームの URL を入力します。(例: stream.example.com)",
       "streamUrlLabel": "ストリーム URL",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "インストール",
       "browseInstalled": "インストール済み",
       "browsePreviewAlt": "{{name}} スクリーンショットのプレビュー",
+      "browseAuthor": "作成者： {{name}}",
       "browseUnavailableDescription": "現在、Owncastはプラグインカタログにアクセスできません。インストール済みタブから.ocpkgファイルを直接アップロードすることができます。",
       "browseUnavailableRetry": "再試行する",
       "browseUnavailableTitle": "プラグインカタログは現在利用できません",

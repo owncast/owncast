@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "插件樣式已啟用",
+      "pluginStylingDescription": "這些插件正在為您的網站應用自定義樣式，並與您在這裡設置的顏色結合：{{plugins}}。您的設置將優先應用，因此在重疊的地方它們將占優。如果頁面看起來與您預期的不相符，請使用下面的「重置為默認值」以顯示插件樣式，或在插件頁面禁用該插件。",
+      "alsoSetByPlugin": "也由 {{plugins}} 設置",
+      "alsoSetByPluginTooltip": "您的值在此優先。使用「重置為默認值」以回退至 {{plugins}} 提供的顏色。"
+    },
     "AccessTokens": {
       "createNewAccessToken": "創建新訪問令牌",
       "nameDescription": "當使用此訪問令牌發送訊息時，名稱將顯示為聊天用戶。",
@@ -49,9 +55,12 @@
       "confirmYes": "是",
       "enterStreamUrl": "請輸入一個串流 URL",
       "enterValidUrl": "請輸入一個有效的 URL",
-      "failedToApprove": "<strong><em>缺少翻譯 Admin.FeaturedStreams.failedToApprove: 請報告</em></strong>",
+      "failedToApprove": "無法批准功能請求",
       "failedToFeature": "無法將串流設為特色",
-      "failedToUnfeature": "<strong><em>缺少翻譯 Admin.FeaturedStreams.failedToUnfeature: 請報告</em></strong>",
+      "failedToReject": "無法拒絕功能請求",
+      "failedToUnfeature": "無法取消特色流",
+      "featureRequestApproved": "功能請求已批准",
+      "featureRequestRejected": "功能請求已拒絕",
       "featureRequestsDescription": "這些 Owncast 伺服器請求顯示您的串流在他們的特色串流目錄中。批准伺服器以讓其顯示您的即時狀態。",
       "featureRequestsTitle": "要求特色您的串流",
       "streamsYouFeatureTab": "您所展示的串流",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "必須啟用社交功能",
       "socialFeaturesRequiredDesc": "然後您才能將其他串流設為特色。",
       "status": "狀態",
-      "streamFeaturedSuccess": "<strong><em>缺少翻譯 Admin.FeaturedStreams.streamFeaturedSuccess: 請報告</em></strong>",
+      "streamFeaturedSuccess": "流已被標記為特色",
       "streamName": "串流名稱",
       "streamRequirements": "串流需求",
-      "streamUnfeaturedSuccess": "<strong><em>缺少翻譯 Admin.FeaturedStreams.streamUnfeaturedSuccess: 請報告</em></strong>",
+      "streamUnfeaturedSuccess": "流已取消特色",
       "streamUrlHelp": "輸入 Owncast 串流的 URL (例如，stream.example.com)",
       "streamUrlLabel": "串流 URL",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "安裝",
       "browseInstalled": "已安裝",
       "browsePreviewAlt": "{{name}} 預覽截圖",
+      "browseAuthor": "由 {{name}}",
       "browseUnavailableDescription": "Owncast 目前無法訪問插件目錄。您仍然可以直接從已安裝選項卡上傳 .ocpkg 文件。",
       "browseUnavailableRetry": "重試",
       "browseUnavailableTitle": "插件目錄當前不可用",

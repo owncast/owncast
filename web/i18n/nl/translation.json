@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Plugin styling is actief",
+      "pluginStylingDescription": "Deze plug-ins passen hun eigen stijlen toe op je site, gecombineerd met de kleuren die je hier hebt ingesteld: {{plugins}}. Je instellingen worden bovenaan, dus winnen ze waar ze elkaar overlappen. Als de pagina niet lijkt zoals u verwacht, gebruik dan Reset naar Standaard om de plugin styling door te laten zien, of deactiveer de plugin van de Plugins pagina.",
+      "alsoSetByPlugin": "ook ingesteld door {{plugins}}",
+      "alsoSetByPluginTooltip": "Uw waarde heeft hier prioriteit. Gebruik Reset naar Standaard om terug te vallen naar de kleur van de {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Nieuwe toegangstoken aanmaken",
       "nameDescription": "De naam zal worden weergegeven als de chat-gebruiker bij het verzenden van berichten met deze toegangstoken.",
@@ -49,9 +55,12 @@
       "confirmYes": "ja",
       "enterStreamUrl": "Voer een stream URL in",
       "enterValidUrl": "Voer een geldige URL in",
-      "failedToApprove": "<strong><em>Ontbrekende vertaling Admin.FeaturedStreams.failedToApprove: Rapporteer</em></strong>",
+      "failedToApprove": "Het goedkeuren van de feature aanvraag is mislukt",
       "failedToFeature": "Functie stream mislukt",
-      "failedToUnfeature": "<strong><em>Ontbrekende vertaling Admin.FeaturedStreams.failedToUnfeature: Rapporteer</em></strong>",
+      "failedToReject": "Kon de feature aanvraag niet afwijzen",
+      "failedToUnfeature": "Het loskoppelen van de stream is mislukt",
+      "featureRequestApproved": "Featureverzoek goedgekeurd",
+      "featureRequestRejected": "Feature verzoek afgewezen",
       "featureRequestsDescription": "Deze Owncast servers hebben gevraagd om je stream te laten zien in hun featured streams map. Goedkeuren een server om het je live status te laten zien.",
       "featureRequestsTitle": "Verzoeken om uw stream in te stellen",
       "streamsYouFeatureTab": "Streams die u gebruikt",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Sociale functies moeten ingeschakeld zijn",
       "socialFeaturesRequiredDesc": "voordat je andere streams kunt uitzenden.",
       "status": "status",
-      "streamFeaturedSuccess": "<strong><em>Ontbrekende vertaling Admin.FeaturedStreams.streamFeaturedSuccess: Rapporteer</em></strong>",
+      "streamFeaturedSuccess": "Stream Aanbevolen",
       "streamName": "Stream Naam",
       "streamRequirements": "Stream Requirements",
-      "streamUnfeaturedSuccess": "<strong><em>Ontbrekende vertaling Admin.FeaturedStreams.streamUnfeaturedSuccess: Rapporteer</em></strong>",
+      "streamUnfeaturedSuccess": "Stream niet aanbevolen",
       "streamUrlHelp": "Voer de URL in van een Owncast stream (bijv. stream.example.com)",
       "streamUrlLabel": "Stream URL",
       "streamUrlPlaceholder": "stream.voorbeeld.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Installeren",
       "browseInstalled": "Geinstalleerd",
       "browsePreviewAlt": "{{name}} voorbeeld schermafbeelding",
+      "browseAuthor": "door {{name}}",
       "browseUnavailableDescription": "Owncast kan de plugin catalogus momenteel niet bereiken. U kunt nog steeds .ocpkg bestanden direct vanuit het tabblad Geïnstalleerde bestanden uploaden.",
       "browseUnavailableRetry": "Opnieuw",
       "browseUnavailableTitle": "De plugin catalogus is momenteel niet beschikbaar",

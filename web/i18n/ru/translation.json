@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Плагин активен",
+      "pluginStylingDescription": "Эти плагины применяют свои собственные стили к вашему сайту, в сочетании с цветами, которые вы указали здесь: {{plugins}}. Ваши настройки применяются сверху, чтобы победить там, где они перекрываются. Если страница не выглядит так, как вы ожидаете, используйте Сброс по умолчанию ниже, чтобы плагин показывал стили плагина, или отключить плагин на странице плагины.",
+      "alsoSetByPlugin": "также установлено {{plugins}}",
+      "alsoSetByPluginTooltip": "Здесь ваше значение приобретает приоритет. Используйте Сброс по умолчанию, чтобы вернуться к цвету с {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Создать новый токен доступа",
       "nameDescription": "Имя будет отображаться в качестве пользователя чата при отправке сообщений с этим маркером доступа.",
@@ -49,9 +55,12 @@
       "confirmYes": "Да",
       "enterStreamUrl": "Пожалуйста, введите URL потока",
       "enterValidUrl": "Пожалуйста, введите правильный URL",
-      "failedToApprove": "<strong><em>Отсутствует Администратор перевода. FeaturedStreams.failedToApprove: Пожалуйста, сообщите</em></strong>",
+      "failedToApprove": "Не удалось одобрить запрос на функцию",
       "failedToFeature": "Не удалось создать поток",
-      "failedToUnfeature": "<strong><em>Отсутствует Admin.FeaturedStreams.failedToUnfeature: Пожалуйста, сообщите о проекте</em></strong>",
+      "failedToReject": "Не удалось отклонить запрос на функцию",
+      "failedToUnfeature": "Не удалось удалить поток",
+      "featureRequestApproved": "Запрос функции одобрен",
+      "featureRequestRejected": "Запрос функции отклонен",
       "featureRequestsDescription": "Эти серверы Owncast попросили показать ваш поток в их каталоге избранных потоков. Одобрите сервер, чтобы позволить ему отобразить ваш живой статус.",
       "featureRequestsTitle": "Запросы на добавление вашего потока",
       "streamsYouFeatureTab": "Потоки вашей функции",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Социальные функции должны быть включены",
       "socialFeaturesRequiredDesc": "прежде чем вы сможете использовать другие потоки.",
       "status": "Статус",
-      "streamFeaturedSuccess": "<strong><em>Отсутствует перевод Admin.FeaturedStreams.streamFeaturedSuccess: Пожалуйста, сообщите</em></strong>",
+      "streamFeaturedSuccess": "Потоковая лента",
       "streamName": "Имя потока",
       "streamRequirements": "Требования трансляции",
-      "streamUnfeaturedSuccess": "<strong><em>Отсутствует перевод Admin.FeaturedStreams.streamUnfeaturedSuccess: Пожалуйста, сообщите</em></strong>",
+      "streamUnfeaturedSuccess": "Поток не Рекомендуется",
       "streamUrlHelp": "Введите URL Owncast потока (например, stream.example.com)",
       "streamUrlLabel": "URL потока",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Установить",
       "browseInstalled": "Установлено",
       "browsePreviewAlt": "Скриншот {{name}}",
+      "browseAuthor": "от {{name}}",
       "browseUnavailableDescription": "Owncast не может подключиться к каталогу плагинов прямо сейчас. Вы все еще можете загрузить файлы .ocpkg непосредственно из установленной вкладки.",
       "browseUnavailableRetry": "Повторить",
       "browseUnavailableTitle": "Каталог плагинов в настоящее время недоступен",

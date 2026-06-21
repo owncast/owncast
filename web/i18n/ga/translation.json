@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Tá stíl na plugain gníomhach",
+      "pluginStylingDescription": "Tá na plugain seo ag cur a stíleanna féin i bhfeidhm ar do shuíomh, i gcomhcheangal le na dathanna a leagann tú anseo: {{plugins}}. Cuireadh do shocruithe i bhfeidhm ar bharr, mar sin tá bua ag na stíleanna nuair a bhíonn siad ag comhoibriú. Má tá cuma an leathanach difriúil ó do raon, úsáidíodh an Reset go dtí na Defaults thíos le go mbeadh na stíleanna plugain le feiceáil, nó dhún iad an breiseán ó leathanach na gclón.",
+      "alsoSetByPlugin": "craoladh freisin ag {{plugins}}",
+      "alsoSetByPluginTooltip": "Tógann do luach tosaíocht anseo. Úsáid an Reset go dtí na Defaults chun cuimhneamh ar an dath ó {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Cruthaigh Nuashonrú Rochtana Nua",
       "nameDescription": "Tá an t-ainm le taispeáint mar úsáideoir comhrá nuair a bhíonn teachtaireachtaí á seoladh le chéile seo rochtana.",
@@ -49,9 +55,12 @@
       "confirmYes": "Sea",
       "enterStreamUrl": "Le do thoil, cuir isteach URL sruth",
       "enterValidUrl": "Le do thoil, cuir isteach URL sásta",
-      "failedToApprove": "<strong><em>Teanga atá ar iarraidh Admin.FeaturedStreams.failedToApprove: Tuairiscigh le do thoil</em></strong>",
+      "failedToApprove": "Teip ar an iarratas gné a cheadú",
       "failedToFeature": "Níor éirigh le sruth a chur chun cinn",
-      "failedToUnfeature": "<strong><em>Comhoibrithe atá in easnamh Admin.FeaturedStreams.failedToUnfeature: Tuairiscigh le do thoil</em></strong>",
+      "failedToReject": "Teip ar an iarratas gné a dhiúltú",
+      "failedToUnfeature": "Teip ar an sruth a chur ag deireadh na gné",
+      "featureRequestApproved": "Iarratas gné ceadaithe",
+      "featureRequestRejected": "Iarratas gné diúltaithe",
       "featureRequestsDescription": "Tá na freastalaithe Owncast seo ag iarraidh do shruth a thaispeáint ina n-eisiltí gréasáin. Glac le freastalaí chun ligean dó do stádas beo a thaispeáint.",
       "featureRequestsTitle": "Iarratais chun do shruth a thaispeáint",
       "streamsYouFeatureTab": "Sruthanna atá á gcur i láthair agat",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Ní mór do ghnéithe sóisialta a bheith gníomhachtaithe",
       "socialFeaturesRequiredDesc": "sula bhféadfaidh tú streamanna eile a shannadh.",
       "status": "Stádas",
-      "streamFeaturedSuccess": "<strong><em>Comhoibrithe atá in easnamh Admin.FeaturedStreams.streamFeaturedSuccess: Tuairiscigh le do thoil</em></strong>",
+      "streamFeaturedSuccess": "Sruth faoi ghlas",
       "streamName": "Ainm na Sruth",
       "streamRequirements": "Éilimh na Srutha",
-      "streamUnfeaturedSuccess": "<strong><em>Comhoibrithe atá in easnamh Admin.FeaturedStreams.streamUnfeaturedSuccess: Tuairiscigh le do thoil</em></strong>",
+      "streamUnfeaturedSuccess": "Sruth neamhghlas",
       "streamUrlHelp": "Cuir isteach URL sruth Owncast (m.sh., stream.example.com)",
       "streamUrlLabel": "URL na Srutha",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Suiteáil",
       "browseInstalled": "Shuiteáil",
       "browsePreviewAlt": "screenshot réamhamhair {{name}}",
+      "browseAuthor": "le {{name}}",
       "browseUnavailableDescription": "Ní féidir le Owncast an chatalóg breiseán a bhaint amach faoi láthair. Is féidir leat fós .ocpkg comhoibrithe a uaslódáil go díreach ó charr ar shuíomh.",
       "browseUnavailableRetry": "Iarracht arís",
       "browseUnavailableTitle": "Níl an chatalóg breiseán ar fáil faoi láthair",
