@@ -525,6 +525,38 @@ func (m *Manager) List() []DiscoveredEntry {
 	return out
 }
 
+// ActiveAuthGate returns the slug of the enabled auth.gate plugin (if any) and
+// whether it is currently loaded. The viewer-auth gate middleware calls this on
+// every request, so it scans under a read lock without allocating the full
+// List(). Only one auth.gate plugin can be enabled at a time (see Enable), so
+// the first match is authoritative.
+func (m *Manager) ActiveAuthGate() (slug string, loaded bool) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	for name, on := range m.enabledSet {
+		if !on {
+			continue
+		}
+		d := m.discovered[name]
+		if d == nil || !hasPerm(d.Permissions, PermAuthGate) {
+			continue
+		}
+		_, isLoaded := m.loaded[name]
+		return d.Slug, isLoaded
+	}
+	return "", false
+}
+
+// hasPerm reports whether perms contains want.
+func hasPerm(perms []string, want string) bool {
+	for _, p := range perms {
+		if p == want {
+			return true
+		}
+	}
+	return false
+}
+
 // Snapshot returns the currently-loaded plugins. Dispatcher and Server call
 // this on every operation so changes from Enable/Disable take effect
 // without restarting anything.
@@ -554,6 +586,19 @@ func (m *Manager) Enable(ctx context.Context, name string) error {
 		if _, ok := m.loaded[name]; ok {
 			m.mu.Unlock()
 			return nil
+		}
+	}
+	// Only one auth.gate plugin may be enabled at a time — the viewer-auth gate
+	// is singular (two gates would be ambiguous). Refuse to enable a second.
+	if hasPerm(d.Permissions, PermAuthGate) {
+		for other, on := range m.enabledSet {
+			if !on || other == name {
+				continue
+			}
+			if od := m.discovered[other]; od != nil && hasPerm(od.Permissions, PermAuthGate) {
+				m.mu.Unlock()
+				return fmt.Errorf("cannot enable %q: another authentication-gate plugin (%q) is already enabled; disable it first", d.Slug, od.Slug)
+			}
 		}
 	}
 	m.enabledSet[name] = true

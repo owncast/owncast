@@ -3,6 +3,8 @@ package pluginhost
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -103,6 +105,14 @@ type Host struct {
 	// (via the accessToken query parameter). Used by PageContent and Tabs to
 	// pass viewer identity to dynamic onPageContent / onTabContent handlers.
 	getRequestUser func(*http.Request) *plugins.HostUser
+	// authSecret is the HMAC key the viewer-auth gate uses to mint and verify
+	// session cookies. The same persisted secret is used by GrantSession (wired
+	// into the host env). Empty if it could not be established.
+	authSecret []byte
+	// userByToken resolves a viewer's identity from their access token, used by
+	// the onAuthCheck re-validation hook to build the identity it passes the
+	// gate plugin.
+	userByToken func(token string) *plugins.HostUser
 }
 
 // runtimeActionsConfigKey is the reserved key inside a plugin's own
@@ -630,6 +640,14 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 	server.RequireAdmin = deps.RequireAdminAuth
 	server.GetRequestUser = env.GetRequestUser
 
+	// The gate session signing secret is read once here (idempotent: it returns
+	// the persisted secret, generating one on first use) so the gate middleware
+	// and GrantSession share the same key.
+	authSecret, err := ensureSigningSecret(deps.Datastore)
+	if err != nil {
+		log.Errorln("plugin auth: could not establish session signing secret:", err)
+	}
+
 	return &Host{
 		manager:          manager,
 		server:           server,
@@ -639,6 +657,15 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 		kv:               env.KV,
 		tickCancel:       tickCancel,
 		getRequestUser:   env.GetRequestUser,
+		authSecret:       authSecret,
+		userByToken: func(token string) *plugins.HostUser {
+			u := deps.UserRepository.GetUserByToken(token)
+			if u == nil {
+				return nil
+			}
+			hu := toHostUser(u)
+			return &hu
+		},
 	}, nil
 }
 
@@ -1358,6 +1385,96 @@ func wireUserHostFns(env *plugins.HostEnv, deps Deps) {
 	}
 }
 
+// pluginAuthSigningSecretKey is where the gate session signing secret is
+// persisted. Generated once on first use; rotating it (clearing the row)
+// invalidates every outstanding session.
+const pluginAuthSigningSecretKey = "plugin_auth_signing_secret"
+
+// ensureSigningSecret returns the persisted gate session signing secret,
+// generating and storing one on first use.
+func ensureSigningSecret(ds *datastore.Datastore) ([]byte, error) {
+	if hexStr, err := ds.GetString(pluginAuthSigningSecretKey); err == nil && hexStr != "" {
+		if b, derr := hex.DecodeString(hexStr); derr == nil && len(b) > 0 {
+			return b, nil
+		}
+	}
+	secret := make([]byte, 32)
+	if _, err := rand.Read(secret); err != nil {
+		return nil, err
+	}
+	if err := ds.SetString(pluginAuthSigningSecretKey, hex.EncodeToString(secret)); err != nil {
+		return nil, err
+	}
+	return secret, nil
+}
+
+// wireAuthHostFns wires the viewer-authentication host functions: register an
+// authenticated user for an external (plugin-provided) identity, and mint a
+// signed gate session for them.
+func wireAuthHostFns(env *plugins.HostEnv, deps Deps) {
+	users := deps.UserRepository
+
+	secret, err := ensureSigningSecret(deps.Datastore)
+	if err != nil {
+		log.Errorln("plugin auth: could not establish session signing secret:", err)
+		// Leave RegisterUser/GrantSession unset: the host functions then report
+		// "not available" to the plugin rather than minting unsigned sessions.
+		return
+	}
+
+	env.RegisterUser = func(pluginName, authID, displayName string, scopes []string) (string, error) {
+		// Namespace the external identity by plugin slug so two auth plugins
+		// can't collide on, or impersonate, each other's users.
+		namespaced := pluginName + ":" + authID
+		var userID string
+		if existing := users.GetUserByAuth(namespaced, models.PluginAuth); existing != nil {
+			userID = existing.ID
+		} else {
+			user, _, err := users.CreateAnonymousUser(displayName)
+			if err != nil {
+				return "", err
+			}
+			if err := users.AddAuth(user.ID, namespaced, models.PluginAuth); err != nil {
+				return "", err
+			}
+			if err := users.SetUserAsAuthenticated(user.ID); err != nil {
+				log.Errorln("plugin", pluginName, "set user authenticated:", err)
+			}
+			userID = user.ID
+		}
+		// Map the provider's roles onto Owncast scopes (e.g. MODERATOR). Applied
+		// on every login so a role change upstream takes effect. Invalid scopes
+		// are rejected rather than silently stored.
+		if len(scopes) > 0 {
+			if users.HasValidScopes(scopes) {
+				if err := users.SetUserScopes(userID, scopes); err != nil {
+					log.Errorln("plugin", pluginName, "set user scopes:", err)
+				}
+			} else {
+				log.Errorln("plugin", pluginName, "ignoring invalid scopes:", scopes)
+			}
+		}
+		return userID, nil
+	}
+
+	env.GrantSession = func(pluginName, userID string, ttlSeconds int64) (string, error) {
+		// Mint an access token for this session and carry it (signed) in the
+		// cookie, so the chat /ws path can resolve the viewer via the existing
+		// GetUserByToken lookup. Login is infrequent, so a token per session is
+		// acceptable.
+		token, err := utils.GenerateAccessToken()
+		if err != nil {
+			return "", err
+		}
+		if err := users.AddAccessTokenForUser(token, userID); err != nil {
+			return "", err
+		}
+		ttl := plugins.ClampSessionTTL(ttlSeconds)
+		exp := time.Now().Add(ttl).Unix()
+		return plugins.SignSession(secret, token, exp), nil
+	}
+}
+
 func wireNotificationHostFns(env *plugins.HostEnv, deps Deps) {
 	cfg := deps.ConfigRepository
 
@@ -1432,6 +1549,14 @@ func wireRequestHostFns(env *plugins.HostEnv, deps Deps) {
 
 	env.GetRequestUser = func(r *http.Request) *plugins.HostUser {
 		token := utils.ChatAccessTokenFromRequest(r)
+		if token == "" {
+			// Fall back to the viewer-auth gate session: the gate middleware
+			// verified the signed cookie and stashed the access token it
+			// carries in the request context. This is what lets a plugin's
+			// onHttpRequest (and page/tab content) see req.user for a viewer
+			// who authenticated through the gate rather than via a chat token.
+			token = plugins.SessionTokenFromContext(r.Context())
+		}
 		if token == "" {
 			return nil
 		}

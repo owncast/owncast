@@ -492,6 +492,10 @@ func (s *Server) serveDynamic(w http.ResponseWriter, r *http.Request, p *Loaded,
 
 	callCtx, cancel := context.WithTimeout(r.Context(), HTTPHandlerTimeout)
 	defer cancel()
+	// Seed a request-scoped sink so owncast.auth.grantSession/endSession (called
+	// from inside the wasm) can hand session cookies back to be set on the
+	// response after the call returns.
+	callCtx, sink := withAuthSink(callCtx)
 	p.mu.Lock()
 	_, out, err := p.plugin.CallWithContext(callCtx, "on_http_request", envelopeJSON)
 	p.mu.Unlock()
@@ -512,7 +516,25 @@ func (s *Server) serveDynamic(w http.ResponseWriter, r *http.Request, p *Loaded,
 		return
 	}
 
-	writePluginHTTPResponse(w, out, injectStyles)
+	writePluginHTTPResponse(w, out, injectStyles, sink.cookies(RequestIsSecure(r)))
+}
+
+// CallAuthCheck invokes the on_auth_check export of the loaded plugin with the
+// given slug, passing the identity envelope and returning the raw verdict JSON.
+// Used by the viewer-auth gate to re-validate a session on page load. Returns
+// an error if the plugin isn't loaded or doesn't implement the hook (the caller
+// fails closed on error).
+func (s *Server) CallAuthCheck(ctx context.Context, slug string, input []byte) ([]byte, error) {
+	p := s.lookup(slug)
+	if p == nil || p.plugin == nil || !p.plugin.FunctionExists("on_auth_check") {
+		return nil, fmt.Errorf("auth check unavailable for plugin %q", slug)
+	}
+	callCtx, cancel := context.WithTimeout(ctx, HTTPHandlerTimeout)
+	defer cancel()
+	p.mu.Lock()
+	_, out, err := p.plugin.CallWithContext(callCtx, "on_auth_check", input)
+	p.mu.Unlock()
+	return out, err
 }
 
 // buildRequestEnvelope marshals the JSON envelope passed to a plugin's
@@ -552,7 +574,7 @@ func (s *Server) buildRequestEnvelope(r *http.Request, requestPath string, authe
 // text/html) to include the host's admin stylesheet links — same behavior
 // as static HTML assets, so a plugin returning admin HTML from
 // on_http_request gets the iframe theme automatically.
-func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles bool) {
+func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles bool, sessionCookies []*http.Cookie) {
 	var resp struct {
 		Status  int               `json:"status"`
 		Headers map[string]string `json:"headers"`
@@ -581,8 +603,37 @@ func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles boo
 		}
 		w.Header().Set(k, v)
 	}
+	// Core owns the gate session cookie: drop any plugin-supplied value for it,
+	// then set the host-minted cookies (grant/clear) the plugin asked for via
+	// owncast.auth.grantSession / endSession.
+	if len(sessionCookies) > 0 {
+		stripSetCookie(w.Header(), SessionCookieName)
+		for _, c := range sessionCookies {
+			http.SetCookie(w, c)
+		}
+	}
 	w.WriteHeader(resp.Status)
 	_, _ = io.WriteString(w, body)
+}
+
+// stripSetCookie removes any existing Set-Cookie header values for the named
+// cookie, so a plugin cannot forge or clobber a core-owned cookie.
+func stripSetCookie(h http.Header, name string) {
+	existing := h.Values("Set-Cookie")
+	if len(existing) == 0 {
+		return
+	}
+	kept := existing[:0:0]
+	prefix := name + "="
+	for _, v := range existing {
+		if !strings.HasPrefix(v, prefix) {
+			kept = append(kept, v)
+		}
+	}
+	h.Del("Set-Cookie")
+	for _, v := range kept {
+		h.Add("Set-Cookie", v)
+	}
 }
 
 // responseIsHTML reports whether the plugin-declared headers identify the

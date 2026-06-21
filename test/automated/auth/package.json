@@ -1,0 +1,19 @@
+{
+  "name": "owncast-auth-gate-integration-tests",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest *.test.js"
+  },
+  "dependencies": {
+    "supertest": "^6.3.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-jasmine2": "^29.7.0"
+  },
+  "jest": {
+    "verbose": true,
+    "maxWorkers": 1,
+    "testRunner": "jest-jasmine2"
+  }
+}

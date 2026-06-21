@@ -42,6 +42,8 @@ type UserRepository interface {
 	HasValidScopes(scopes []string) bool
 	GetUserByAuth(authToken string, authType models.AuthType) *models.User
 	AddAuth(userID, authToken string, authType models.AuthType) error
+	AddAccessTokenForUser(accessToken, userID string) error
+	SetUserScopes(userID string, scopes []string) error
 	SetExternalAPIUserAccessTokenAsUsed(token string) error
 	GetUsersCount() int
 }
@@ -148,6 +150,12 @@ func (r *SqlUserRepository) addAccessTokenForUser(accessToken, userID string) er
 		Token:  accessToken,
 		UserID: userID,
 	})
+}
+
+// AddAccessTokenForUser associates a new access token with an existing user.
+// Used by the viewer-auth gate to mint a session token the gate cookie carries.
+func (r *SqlUserRepository) AddAccessTokenForUser(accessToken, userID string) error {
+	return r.addAccessTokenForUser(accessToken, userID)
 }
 
 func (r *SqlUserRepository) create(user *models.User) error {
@@ -311,6 +319,14 @@ func (r *SqlUserRepository) GetUserByAuth(authToken string, authType models.Auth
 		AuthenticatedAt: &u.AuthenticatedAt.Time,
 		Scopes:          scopes,
 	}
+}
+
+// SetUserScopes replaces a user's full scope set. Used by viewer-auth plugins
+// (owncast.users.register) to map an external provider's roles onto Owncast
+// scopes (e.g. granting MODERATOR). Callers should validate with
+// HasValidScopes first.
+func (r *SqlUserRepository) SetUserScopes(userID string, scopes []string) error {
+	return r.setScopesOnUser(userID, scopes)
 }
 
 // SetModerator will add or remove moderator status for a single user by ID.

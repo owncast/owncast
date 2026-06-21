@@ -27,6 +27,8 @@ export const permissionDescriptionKey: Record<string, string> = {
   [PluginPermission.VideoConfigWrite]: Localization.Admin.Plugins.Permissions.videoconfigWrite,
   [PluginPermission.UIModify]: Localization.Admin.Plugins.Permissions.uiModify,
   [PluginPermission.ChatFilter]: Localization.Admin.Plugins.Permissions.chatFilter,
+  [PluginPermission.UsersRegister]: Localization.Admin.Plugins.Permissions.usersRegister,
+  [PluginPermission.AuthGate]: Localization.Admin.Plugins.Permissions.authGate,
 };
 
 // permissionNameKey maps a permission identifier to the i18n key for
@@ -54,4 +56,6 @@ export const permissionNameKey: Record<string, string> = {
   [PluginPermission.VideoConfigWrite]: Localization.Admin.Plugins.PermissionNames.videoconfigWrite,
   [PluginPermission.UIModify]: Localization.Admin.Plugins.PermissionNames.uiModify,
   [PluginPermission.ChatFilter]: Localization.Admin.Plugins.PermissionNames.chatFilter,
+  [PluginPermission.UsersRegister]: Localization.Admin.Plugins.PermissionNames.usersRegister,
+  [PluginPermission.AuthGate]: Localization.Admin.Plugins.PermissionNames.authGate,
 };

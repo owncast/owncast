@@ -16,6 +16,7 @@ export const PluginPermission = {
   ChatFilter: 'chat.filter',
   UsersRead: 'users.read',
   UsersModerate: 'users.moderate',
+  UsersRegister: 'users.register',
   NetworkFetch: 'network.fetch',
   EventsEmit: 'events.emit',
   HttpServe: 'http.serve',
@@ -26,6 +27,7 @@ export const PluginPermission = {
   NotificationsSend: 'notifications.send',
   FediversePost: 'fediverse.post',
   UIModify: 'ui.modify',
+  AuthGate: 'auth.gate',
 } as const;
 
 // The const above and this type intentionally share a name: TypeScript

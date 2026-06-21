@@ -21,6 +21,7 @@ import (
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/geoip"
+	plugins "github.com/owncast/owncast/services/plugins"
 	"github.com/owncast/owncast/services/webhooks"
 	"github.com/owncast/owncast/utils"
 )
@@ -289,6 +290,12 @@ func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request)
 	if accessToken != "" {
 		responseHeader = http.Header{}
 		utils.AddChatAccessTokenCookieHeader(responseHeader, r, accessToken)
+	} else if t := plugins.SessionTokenFromContext(r.Context()); t != "" {
+		// Viewer authenticated through the plugin auth gate: the signed gate
+		// session cookie (already verified by the gate middleware) carries the
+		// access token, surfaced here via the request context. No query param
+		// and no extra cookie needed — the gate cookie is the credential.
+		accessToken = t
 	}
 
 	conn, err := upgrader.Upgrade(w, r, responseHeader)

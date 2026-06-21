@@ -44,9 +44,20 @@ const (
 	PermNotificationsSend = "notifications.send"
 	PermUsersRead         = "users.read"
 	PermUsersModerate     = "users.moderate"
-	PermFediversePost     = "fediverse.post"
-	PermVideoConfigRead   = "videoconfig.read"
-	PermVideoConfigWrite  = "videoconfig.write"
+	// PermUsersRegister lets a plugin create/find an authenticated user for an
+	// external identity (owncast.users.register) — the same find-or-link pattern
+	// IndieAuth and Fediverse auth use, exposed to plugins as a new AuthType.
+	// Separate from auth.gate so a non-gating plugin (e.g. a "verified member"
+	// badge) can establish identity without gating the whole site.
+	PermUsersRegister = "users.register"
+	// PermAuthGate marks a plugin as a viewer-authentication gate and grants
+	// owncast.auth.grantSession / owncast.auth.endSession. Declaring it does
+	// nothing on its own; the gate only goes live when an admin enables the
+	// plugin, and only one auth.gate plugin may be enabled at a time.
+	PermAuthGate         = "auth.gate"
+	PermFediversePost    = "fediverse.post"
+	PermVideoConfigRead  = "videoconfig.read"
+	PermVideoConfigWrite = "videoconfig.write"
 	// PermUIModify lets a plugin add UI surfaces to Owncast: admin pages
 	// (manifest.admin.pages) and viewer action buttons (manifest.actions).
 	// A plugin can serve HTTP on /plugins/<name>/ without this permission
@@ -286,11 +297,27 @@ type HostEnv struct {
 	KickClient      func(pluginName string, clientID uint64) // chat.moderate
 	SendDiscord     func(pluginName, text string)            // notifications.send
 	SendBrowserPush func(pluginName string, p BrowserPushPayload)
-	Users           func() []HostUser                                            // users.read
-	UserGet         func(id string) (HostUser, bool)                             // users.read
-	SetUserEnabled  func(pluginName, userID string, enabled bool, reason string) // users.moderate
-	BanIP           func(pluginName, ip string)                                  // users.moderate
-	UploadStorage   func(pluginName, name string, data []byte) (string, error)   // storage.upload
+	Users           func() []HostUser                // users.read
+	UserGet         func(id string) (HostUser, bool) // users.read
+	// RegisterUser finds-or-creates an authenticated Owncast user for an external
+	// identity (users.register). pluginName namespaces authID internally so two
+	// auth plugins can't collide on, or spoof, each other's identities. Returns
+	// the Owncast user ID. Optional; nil → the host function reports an error to
+	// the plugin.
+	RegisterUser func(pluginName, authID, displayName string, scopes []string) (userID string, err error)
+	// GrantSession mints a signed, stateless session token for an
+	// already-registered user (auth.gate). ttlSeconds of 0 means the host
+	// default. It returns the token; the host function attaches it as a cookie
+	// to the in-flight onHttpRequest response (via the request-scoped sink).
+	// Optional; nil → the host function reports an error to the plugin.
+	GrantSession func(pluginName, userID string, ttlSeconds int64) (token string, err error)
+	// EndSession is an optional server-side hook on logout (auth.gate). The
+	// cookie itself is cleared via the request-scoped sink regardless; this is
+	// for any additional cleanup. Optional; nil → no-op.
+	EndSession     func(pluginName string)
+	SetUserEnabled func(pluginName, userID string, enabled bool, reason string) // users.moderate
+	BanIP          func(pluginName, ip string)                                  // users.moderate
+	UploadStorage  func(pluginName, name string, data []byte) (string, error)   // storage.upload
 	// Sandboxed per-plugin filesystem (storage.fs). Each plugin sees only
 	// its own directory under data/plugin-data/<slug>/; the host rejects any
 	// path that escapes it. Paths are relative to that root.
@@ -388,6 +415,11 @@ func BuildHostFunctions(env *HostEnv) []extism.HostFunction {
 	)
 	fns = append(fns, hostChatClients(env))
 	fns = append(fns, hostUsersList(env), hostUserGet(env))
+	fns = append(fns,
+		hostUsersRegister(env),
+		hostAuthGrantSession(env),
+		hostAuthEndSession(env),
+	)
 	fns = append(fns,
 		hostUserSetEnabled(env),
 		hostBanIP(env),
@@ -692,6 +724,156 @@ func hostUserGet(env *HostEnv) extism.HostFunction {
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+// UserRegisterRequest is the JSON payload a plugin sends to owncast.users.register.
+type UserRegisterRequest struct {
+	AuthID      string   `json:"authId"`
+	DisplayName string   `json:"displayName,omitempty"`
+	Scopes      []string `json:"scopes,omitempty"`
+}
+
+// UserRegisterResult is the JSON envelope returned to the plugin: the resolved
+// Owncast user ID on success, or a human-readable error.
+type UserRegisterResult struct {
+	UserID string `json:"userId,omitempty"`
+	Error  string `json:"error,omitempty"`
+}
+
+// GrantSessionRequest is the JSON payload a plugin sends to owncast.auth.grantSession.
+type GrantSessionRequest struct {
+	UserID string `json:"userId"`
+	TTL    int64  `json:"ttl,omitempty"` // seconds; 0 = host default
+}
+
+// authResult is the {error?} envelope returned by grantSession.
+type authResult struct {
+	Error string `json:"error,omitempty"`
+}
+
+// writeJSON marshals v and writes it into plugin memory, returning the offset
+// (0 on failure) for the host function's PTR return slot.
+func writeJSON(p *extism.CurrentPlugin, v any) uint64 {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return 0
+	}
+	offset, err := p.WriteBytes(data)
+	if err != nil {
+		return 0
+	}
+	return offset
+}
+
+func hostUsersRegister(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_users_register",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			ident, ok := resolveCaller(ctx, "owncast_users_register", PermUsersRegister)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			raw, err := p.ReadString(stack[0])
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			var req UserRegisterRequest
+			if err := json.Unmarshal([]byte(raw), &req); err != nil {
+				stack[0] = writeJSON(p, UserRegisterResult{Error: "invalid request: " + err.Error()})
+				return
+			}
+			if req.AuthID == "" {
+				stack[0] = writeJSON(p, UserRegisterResult{Error: "authId is required"})
+				return
+			}
+			if env.RegisterUser == nil {
+				stack[0] = writeJSON(p, UserRegisterResult{Error: "users.register is not available on this host"})
+				return
+			}
+			userID, err := env.RegisterUser(ident.slug, req.AuthID, req.DisplayName, req.Scopes)
+			if err != nil {
+				stack[0] = writeJSON(p, UserRegisterResult{Error: err.Error()})
+				return
+			}
+			stack[0] = writeJSON(p, UserRegisterResult{UserID: userID})
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+func hostAuthGrantSession(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_auth_grant_session",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			ident, ok := resolveCaller(ctx, "owncast_auth_grant_session", PermAuthGate)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			raw, err := p.ReadString(stack[0])
+			if err != nil {
+				stack[0] = 0
+				return
+			}
+			var req GrantSessionRequest
+			if err := json.Unmarshal([]byte(raw), &req); err != nil {
+				stack[0] = writeJSON(p, authResult{Error: "invalid request: " + err.Error()})
+				return
+			}
+			if req.UserID == "" {
+				stack[0] = writeJSON(p, authResult{Error: "userId is required"})
+				return
+			}
+			if env.GrantSession == nil {
+				stack[0] = writeJSON(p, authResult{Error: "auth.gate is not available on this host"})
+				return
+			}
+			token, err := env.GrantSession(ident.slug, req.UserID, req.TTL)
+			if err != nil {
+				stack[0] = writeJSON(p, authResult{Error: err.Error()})
+				return
+			}
+			// Hand the freshly-minted token to the request-scoped sink so the
+			// HTTP layer can set the cookie on the response after the wasm
+			// returns. Absent in non-HTTP contexts (e.g. the test harness).
+			if sink := authSinkFrom(ctx); sink != nil {
+				sink.grant(token, ClampSessionTTL(req.TTL))
+			}
+			stack[0] = writeJSON(p, authResult{})
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+func hostAuthEndSession(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_auth_end_session",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			ident, ok := resolveCaller(ctx, "owncast_auth_end_session", PermAuthGate)
+			if !ok {
+				return
+			}
+			if env.EndSession != nil {
+				env.EndSession(ident.slug)
+			}
+			// Clear the session cookie on the in-flight response.
+			if sink := authSinkFrom(ctx); sink != nil {
+				sink.end()
+			}
+		},
+		[]extism.ValueType{},
+		[]extism.ValueType{},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn

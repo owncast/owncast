@@ -1,5 +1,6 @@
 {
   "permissions": {
+    "PermAuthGate": "auth.gate",
     "PermChatFilter": "chat.filter",
     "PermChatHistory": "chat.history",
     "PermChatModerate": "chat.moderate",
@@ -17,12 +18,15 @@
     "PermUIModify": "ui.modify",
     "PermUsersModerate": "users.moderate",
     "PermUsersRead": "users.read",
+    "PermUsersRegister": "users.register",
     "PermVideoConfigRead": "videoconfig.read",
     "PermVideoConfigWrite": "videoconfig.write"
   },
   "hostFunctions": [
     "owncast_add_actions",
     "owncast_asset_read",
+    "owncast_auth_end_session",
+    "owncast_auth_grant_session",
     "owncast_ban_ip",
     "owncast_chat_clients",
     "owncast_chat_history",
@@ -60,6 +64,7 @@
     "owncast_user_get",
     "owncast_user_set_enabled",
     "owncast_users_list",
+    "owncast_users_register",
     "owncast_video_config_read",
     "owncast_video_config_write"
   ],
@@ -83,6 +88,10 @@
       "image": "string",
       "link": "string",
       "type": "string"
+    },
+    "GrantSessionRequest": {
+      "ttl": "int64",
+      "userId": "string"
     },
     "HostChatClient": {
       "connectedAt": "string",
@@ -165,6 +174,15 @@
     "UploadResult": {
       "url": "string"
     },
+    "UserRegisterRequest": {
+      "authId": "string",
+      "displayName": "string",
+      "scopes": "[]string"
+    },
+    "UserRegisterResult": {
+      "error": "string",
+      "userId": "string"
+    },
     "VideoConfig": {
       "codec": "string",
       "latencyLevel": "int",
@@ -174,6 +192,9 @@
       "codec": "*string",
       "latencyLevel": "*int",
       "variants": "[]StreamVariant"
+    },
+    "authResult": {
+      "error": "string"
     }
   }
 }

@@ -310,6 +310,7 @@ func main() {
 	// /plugins/<name>/* HTTP handler mounted by the router below.
 	var pluginContentHandler http.Handler
 	var pluginAdminHandler http.Handler
+	var viewerAuthGate func(http.Handler) http.Handler
 	pluginHostInstance, err := pluginhost.New(ctx, pluginhost.Deps{
 		Datastore:               dataStore,
 		Chat:                    chatSvc,
@@ -329,6 +330,7 @@ func main() {
 	} else {
 		pluginContentHandler = pluginHostInstance.Handler()
 		pluginAdminHandler = pluginHostInstance.AdminHandler()
+		viewerAuthGate = pluginHostInstance.AuthGateMiddleware()
 		defer pluginHostInstance.Stop(ctx)
 	}
 
@@ -423,7 +425,7 @@ func main() {
 	})
 
 	// Stage 10: serve. Blocks until shutdown.
-	if err := router.Start(cfg, *enableVerboseLogging, h, mw, apSvc.Controllers(), pluginContentHandler, pluginAdminHandler); err != nil {
+	if err := router.Start(cfg, *enableVerboseLogging, h, mw, apSvc.Controllers(), pluginContentHandler, pluginAdminHandler, viewerAuthGate); err != nil {
 		log.Fatalln("failed to start/run the router", err)
 	}
 }

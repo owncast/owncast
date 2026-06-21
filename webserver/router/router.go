@@ -26,7 +26,7 @@ import (
 // mw carries the methodified HTTP middleware (admin basic-auth, federation
 // content-type gating). apc carries the methodified ActivityPub HTTP
 // handler set.
-func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, mw *middleware.Middleware, apc *apcontrollers.Controllers, pluginContent http.Handler, pluginAdmin http.Handler) error {
+func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, mw *middleware.Middleware, apc *apcontrollers.Controllers, pluginContent http.Handler, pluginAdmin http.Handler, viewerAuthGate func(http.Handler) http.Handler) error {
 	// @behlers New Router
 	r := chi.NewRouter()
 
@@ -35,6 +35,15 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 		r.Use(chiMW.RequestLogger(&chiMW.DefaultLogFormatter{Logger: log.StandardLogger(), NoColor: true}))
 	}
 	r.Use(chiMW.Recoverer)
+
+	// Viewer-authentication gate (from a plugin holding auth.gate). Mounted
+	// ahead of every route so an unauthenticated visitor can't reach the page,
+	// the video, chat, or the API. No-op while no such plugin is enabled; it
+	// internally exempts the gate plugin's own routes, /admin, and
+	// self-credentialed requests.
+	if viewerAuthGate != nil {
+		r.Use(viewerAuthGate)
+	}
 
 	addStaticFileEndpoints(r, h, apc)
 

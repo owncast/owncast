@@ -176,7 +176,9 @@
         "usersModerate": "Moderate users",
         "usersRead": "Read user list",
         "videoconfigRead": "Read video settings",
-        "videoconfigWrite": "Change video settings"
+        "videoconfigWrite": "Change video settings",
+        "usersRegister": "Sign in viewers",
+        "authGate": "Gate viewer access"
       },
       "Permissions": {
         "chatFilter": "Inspect and modify chat messages before they are broadcast, or drop them entirely.",
@@ -197,7 +199,9 @@
         "usersModerate": "Disable or re-enable chat users.",
         "usersRead": "Read the chat user list and per-user details.",
         "videoconfigRead": "Read stream and video output configuration (encoders, variants).",
-        "videoconfigWrite": "Modify stream and video output configuration."
+        "videoconfigWrite": "Modify stream and video output configuration.",
+        "usersRegister": "Create and sign in Owncast users for an external identity (such as an OAuth or social account).",
+        "authGate": "Require every viewer to sign in through this plugin before they can access the site."
       },
       "allowedHostsLabel": "Allowed hosts:",
       "approveButton": "Approve",

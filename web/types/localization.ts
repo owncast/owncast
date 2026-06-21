@@ -521,6 +521,8 @@ export const Localization = {
         videoconfigWrite: 'Admin.Plugins.Permissions.videoconfigWrite',
         uiModify: 'Admin.Plugins.Permissions.uiModify',
         chatFilter: 'Admin.Plugins.Permissions.chatFilter',
+        usersRegister: 'Admin.Plugins.Permissions.usersRegister',
+        authGate: 'Admin.Plugins.Permissions.authGate',
       },
       // Short plain-language labels for each permission. Shown on
       // permission Tags in the plugins list with the full description
@@ -545,6 +547,8 @@ export const Localization = {
         videoconfigWrite: 'Admin.Plugins.PermissionNames.videoconfigWrite',
         uiModify: 'Admin.Plugins.PermissionNames.uiModify',
         chatFilter: 'Admin.Plugins.PermissionNames.chatFilter',
+        usersRegister: 'Admin.Plugins.PermissionNames.usersRegister',
+        authGate: 'Admin.Plugins.PermissionNames.authGate',
       },
     },
   },
