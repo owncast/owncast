@@ -201,7 +201,7 @@
         "videoconfigRead": "Read stream and video output configuration (encoders, variants).",
         "videoconfigWrite": "Modify stream and video output configuration.",
         "usersRegister": "Create and sign in Owncast users for an external identity (such as an OAuth or social account).",
-        "authGate": "Require every viewer to sign in through this plugin before they can access the site."
+        "authGate": "Act as a viewer-authentication gate, signing viewers in and controlling their access to the site."
       },
       "allowedHostsLabel": "Allowed hosts:",
       "approveButton": "Approve",
