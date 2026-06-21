@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "نمط الإضافات نشط",
+      "pluginStylingDescription": "هذه الإضافات تطبق أنماطها الخاصة على موقعك، مقترنة بالألوان التي قمت بتعيينها هنا: {{plugins}}. يتم تطبيق الإعدادات الخاصة بك في الأعلى، لذلك فهي تفوز حيثما تتداخل مع الإعدادات. إذا كانت الصفحة لا تبدو على النحو الذي تتوقعه، استخدم إعادة التعيين إلى الإعدادات الافتراضية أدناه للسماح لعرض تصميم الإضافات من خلاله، أو تعطيل الملحق من صفحة الإضافات.",
+      "alsoSetByPlugin": "أيضًا تم تعيينه بواسطة {{plugins}}",
+      "alsoSetByPluginTooltip": "القيمة الخاصة بك لها الأولوية هنا. استخدم إعادة التعيين إلى الإعدادات الافتراضية للعودة إلى اللون من {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "إنشاء رمز وصول جديد",
       "nameDescription": "سيتم عرض الاسم كمستخدم دردشة عند إرسال الرسائل مع هذا الرمز المميز الوصول.",
@@ -49,9 +55,12 @@
       "confirmYes": "نعم",
       "enterStreamUrl": "الرجاء إدخال عنوان URL للبث",
       "enterValidUrl": "الرجاء إدخال عنوان URL صالح",
-      "failedToApprove": "<strong><em>مفقودة Admin.FeaturedStreams.failedToApprove: الرجاء الإبلاغ</em></strong>",
+      "failedToApprove": "فشل في الموافقة على طلب الميزة",
       "failedToFeature": "فشل في بث الميزة",
-      "failedToUnfeature": "<strong><em>مفقود الترجمة Admin.FeaturedStreams.failedTounfeature: الرجاء الإبلاغ</em></strong>",
+      "failedToReject": "فشل في رفض طلب الميزة",
+      "failedToUnfeature": "فشل في إلغاء ميزة البث",
+      "featureRequestApproved": "تمت الموافقة على طلب الميزة",
+      "featureRequestRejected": "تم رفض طلب الميزة",
       "featureRequestsDescription": "خوادم Owncast هذه طلبت إظهار البث الخاص بك في دليل البث المميز. اوافق على خادم للسماح له بعرض حالتك المباشرة.",
       "featureRequestsTitle": "طلبات لميزة البث الخاص بك",
       "streamsYouFeatureTab": "البث الذي تميزه",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "يجب تمكين الميزات الاجتماعية",
       "socialFeaturesRequiredDesc": "قبل أن تتمكن من عرض تيارات أخرى.",
       "status": "الحالة",
-      "streamFeaturedSuccess": "<strong><em>مفقودة Admin.FeaturedStreams.streamFeaturedSucces: الرجاء الإبلاغ</em></strong>",
+      "streamFeaturedSuccess": "البث المميز",
       "streamName": "اسم البث",
       "streamRequirements": "متطلبات البث",
-      "streamUnfeaturedSuccess": "<strong><em>مفقودة Admin.FeaturedStreams.streamunfeaturedSucces: الرجاء الإبلاغ</em></strong>",
+      "streamUnfeaturedSuccess": "بث غير مميز",
       "streamUrlHelp": "أدخل عنوان URL لتدفق Owncast (على سبيل المثال: stream.example.com)",
       "streamUrlLabel": "رابط البث",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "تثبيت",
       "browseInstalled": "مثبت",
       "browsePreviewAlt": "{{name}} معاينة لقطة الشاشة",
+      "browseAuthor": "بواسطة {{name}}",
       "browseUnavailableDescription": "لا يمكن الوصول إلى الكتالوج المساعد الآن. لا يزال يمكنك تحميل ملفات .ocpkg مباشرة من علامة التبويب المثبتة.",
       "browseUnavailableRetry": "إعادة المحاولة",
       "browseUnavailableTitle": "الكتالوج المساعد غير متوفر حاليا",

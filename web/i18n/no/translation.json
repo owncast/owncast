@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Plug-stil er aktiv",
+      "pluginStylingDescription": "Disse programtilleggene bruker sine egne stiler på ditt nettsted, kombinert med fargene du angav her: {{plugins}}. Dine innstillinger brukes øverst, så de vinn hvor de overlapper. Hvis siden ikke ser ut til hvordan du forventer, bruk Tilbakestill til standardverdier nedenfor for å la plugin styling vises gjennom, eller deaktivere utvidelsen fra utvidelsessiden.",
+      "alsoSetByPlugin": "også satt av {{plugins}}",
+      "alsoSetByPluginTooltip": "Verdien tar prioritet her. Bruk Tilbakestill til standard å falle tilbake til fargen fra {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Opprett nytt tilgangstoken",
       "nameDescription": "Navnet vil bli vist som sludrebruker når du sender meldinger med denne tilgangskoden.",
@@ -49,9 +55,12 @@
       "confirmYes": "Ja",
       "enterStreamUrl": "Vennligst skriv inn en stream-URL",
       "enterValidUrl": "Vennligst skriv inn en gyldig URL",
-      "failedToApprove": "<strong><em>Mangler oversettelse Admin.FeaturedStreams.failedToApprove: Rapport</em></strong>",
+      "failedToApprove": "Kunne ikke godkjenne funksjonsforespørselen",
       "failedToFeature": "Kan ikke vise strøm",
-      "failedToUnfeature": "<strong><em>mangler oversettelse Admin.FeaturedStreams.failedToUnfeature: rapporter</em></strong>",
+      "failedToReject": "Kunne ikke avvise funksjonsforespørselen",
+      "failedToUnfeature": "Kan ikke fjerne strømmen",
+      "featureRequestApproved": "Forespør godkjent",
+      "featureRequestRejected": "Forespørsel om egenskap avvist",
       "featureRequestsDescription": "Disse Owncast serverne har bedt om å vise din strøm i sin utvalgte stream-mappe. Godkjenn en server for å la den vise din status i sanntid.",
       "featureRequestsTitle": "Forespørsler om å få fram din strøm",
       "streamsYouFeatureTab": "Funksjon for videostrømmer",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Sosiale funksjoner må være aktivert",
       "socialFeaturesRequiredDesc": "før du kan få med deg andre strømninger.",
       "status": "Status:",
-      "streamFeaturedSuccess": "<strong><em>mangler oversettelse Admin.FeaturedStreams.streamFeaturedSuccess: rapport</em></strong>",
+      "streamFeaturedSuccess": "Strøm utvalgt",
       "streamName": "Navn på strøm",
       "streamRequirements": "Strøm Krav",
-      "streamUnfeaturedSuccess": "<strong><em>mangler oversettelse Admin.FeaturedStreams.streamUnfeaturedSuccess: rapport</em></strong>",
+      "streamUnfeaturedSuccess": "Strøm ikke utvalgt",
       "streamUrlHelp": "Skriv inn en URL til en Owncast stream (f.eks stream.example.com)",
       "streamUrlLabel": "Strøm URL",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Installer",
       "browseInstalled": "Installert",
       "browsePreviewAlt": "{{name}} forhåndsvisningsbilde",
+      "browseAuthor": "av {{name}}",
       "browseUnavailableDescription": "Owncast kan ikke nå plugin katalogen akkurat nå. Du kan fortsatt laste opp .ocpkg-filer direkte fra den installerte fanen.",
       "browseUnavailableRetry": "Prøv igjen",
       "browseUnavailableTitle": "Utvidelsens katalog er utilgjengelig",

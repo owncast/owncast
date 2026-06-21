@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Styling dodatka je aktivan",
+      "pluginStylingDescription": "Ovi dodaci primjenjuju vlastite stilove na vašu stranicu, u kombinaciji s bojama koje ste ovdje postavili: {{plugins}}. Vaša podešavanja se primjenjuju na vrh, tako da pobjeđuju kada se preklapaju. Ako stranica ne izgleda onako kako očekujete, upotrijebite opciju Vratite na zadano ispod kako biste dopustili da stil dodatka bude vidljiv, ili onemogućite dodatak s stranice Dodaci.",
+      "alsoSetByPlugin": "također postavljen od {{plugins}}",
+      "alsoSetByPluginTooltip": "Vaša vrijednost ima prioritet ovdje. Upotrijebite opciju Vratite na zadano da biste se vratili na boju iz {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Kreiraj novi pristupni token",
       "nameDescription": "Ime će se prikazivati kao korisnik chata prilikom slanja poruka s ovim pristupnim tokenom.",
@@ -49,9 +55,12 @@
       "confirmYes": "Da",
       "enterStreamUrl": "Molimo unesite URL toka",
       "enterValidUrl": "Molimo unesite valjani URL",
-      "failedToApprove": "<strong><em>Nedostaje prijevod Admin.FeaturedStreams.failedToApprove: Molimo prijavite</em></strong>",
+      "failedToApprove": "Nije uspjelo odobriti zahtjev za značajkom",
       "failedToFeature": "Neuspjeh u isticanju toka",
-      "failedToUnfeature": "<strong><em>Nedostaje prijevod Admin.FeaturedStreams.failedToUnfeature: Molimo prijavite</em></strong>",
+      "failedToReject": "Nije uspjelo odbiti zahtjev za značajkom",
+      "failedToUnfeature": "Nije uspjelo ukloniti značajku sa strema",
+      "featureRequestApproved": "Zahtjev za značajkom odobren",
+      "featureRequestRejected": "Zahtjev za značajkom odbijen",
       "featureRequestsDescription": "Ovi Owncast poslužitelji su zatražili da vaš stream prikaže u svom direktoriju istaknutih streamova. Odobrite poslužitelj kako bi mogao prikazati vaš status uživo.",
       "featureRequestsTitle": "Zahtevi za isticanje vašeg streama",
       "streamsYouFeatureTab": "Struje koje predstavljate",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Društvene značajke moraju biti omogućene",
       "socialFeaturesRequiredDesc": "prije nego što možete istaknuti druge streamove.",
       "status": "Status",
-      "streamFeaturedSuccess": "<strong><em>Nedostaje prijevod Admin.FeaturedStreams.streamFeaturedSuccess: Molimo prijavite</em></strong>",
+      "streamFeaturedSuccess": "Stream je postao istaknut",
       "streamName": "Ime Streama",
       "streamRequirements": "Zahtjevi za Stream",
-      "streamUnfeaturedSuccess": "<strong><em>Nedostaje prijevod Admin.FeaturedStreams.streamUnfeaturedSuccess: Molimo prijavite</em></strong>",
+      "streamUnfeaturedSuccess": "Stream je uklonjen iz istaknutih",
       "streamUrlHelp": "Unesite URL Owncast streama (npr., stream.example.com)",
       "streamUrlLabel": "URL Streama",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Instaliraj",
       "browseInstalled": "Instalirano",
       "browsePreviewAlt": "{{name}} pregled snimke zaslona",
+      "browseAuthor": "od {{name}}",
       "browseUnavailableDescription": "Owncast trenutno ne može doći do kataloga dodataka. I dalje možete učitati .ocpkg datoteke iz Osvježenog taba.",
       "browseUnavailableRetry": "Ponovno pokušajte",
       "browseUnavailableTitle": "Katalog dodataka trenutno nije dostupan",

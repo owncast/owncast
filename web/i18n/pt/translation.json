@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "O estilo de plugins está ativo",
+      "pluginStylingDescription": "Estes plugins estão aplicando seus próprios estilos para o seu site, combinados com as cores que você definiu aqui: {{plugins}}. As suas configurações estão aplicadas no topo, por isso elas ganham onde se sobrepõem. Se a página não olhar como você espera, use Reset para os padrões abaixo para deixar o estilo do plugin exibir, ou desative o plugin na página de Plugins.",
+      "alsoSetByPlugin": "também definido por {{plugins}}",
+      "alsoSetByPluginTooltip": "O seu valor tem prioridade aqui. Use Resetar aos padrões para voltar à cor de {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Criar novo token de acesso",
       "nameDescription": "O nome será exibido como o usuário do chat ao enviar mensagens com esse token de acesso.",
@@ -49,9 +55,12 @@
       "confirmYes": "sim",
       "enterStreamUrl": "Por favor, insira uma URL de transmissão",
       "enterValidUrl": "Por favor, insira uma URL válida",
-      "failedToApprove": "<strong><em>Falta tradução Admin.FeaturedStreams.failedToApprove: Por favor, reporte</em></strong>",
+      "failedToApprove": "Falha ao aprovar a solicitação de recurso",
       "failedToFeature": "Falha ao transmitir recursos",
-      "failedToUnfeature": "<strong><em>Falta tradução Admin.FeaturedStreams.failedToUnfeature: Por favor, reporte</em></strong>",
+      "failedToReject": "Falha ao rejeitar a solicitação de recurso",
+      "failedToUnfeature": "Falha ao descaracterizar o fluxo",
+      "featureRequestApproved": "Solicitação de recurso aprovada",
+      "featureRequestRejected": "Solicitação de recurso rejeitada",
       "featureRequestsDescription": "Estes servidores do Owncast pediram para mostrar o seu stream em seu diretório de transmissões destaques. Aprove um servidor para permitir que exiba seu status de produção.",
       "featureRequestsTitle": "Solicitações para destacar seu stream",
       "streamsYouFeatureTab": "Transmissões do seu recurso",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "As funcionalidades sociais devem estar ativadas",
       "socialFeaturesRequiredDesc": "antes de você poder destacar outros streams.",
       "status": "SItuação",
-      "streamFeaturedSuccess": "<strong><em>Falta tradução Admin.FeaturedStreams.streamFeaturedSuccess: Por favor, reporte</em></strong>",
+      "streamFeaturedSuccess": "Transmissão em destaque",
       "streamName": "Corrente Nome",
       "streamRequirements": "Requisitos de fluxo",
-      "streamUnfeaturedSuccess": "<strong><em>Falta tradução Admin.FeaturedStreams.streamUnfeaturedSuccess: Por favor, reporte</em></strong>",
+      "streamUnfeaturedSuccess": "Transmissão sem destaque",
       "streamUrlHelp": "Digite a URL de um stream do Owncast (por exemplo, stream.exemplo.com)",
       "streamUrlLabel": "URL da transmissão",
       "streamUrlPlaceholder": "stream.exemplo.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Instale",
       "browseInstalled": "Instalado",
       "browsePreviewAlt": "Pré-visualização de captura {{name}}",
+      "browseAuthor": "por {{name}}",
       "browseUnavailableDescription": "Owncast não pode acessar o catálogo de plugins agora. Você ainda pode fazer upload de arquivos .ocpkg diretamente da aba instalada.",
       "browseUnavailableRetry": "Repetir",
       "browseUnavailableTitle": "O catálogo de plugins está indisponível no momento",

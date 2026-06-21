@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Styl wtyczki jest aktywny",
+      "pluginStylingDescription": "Te wtyczki stosują własne style do Twojej witryny, w połączeniu z kolorami, które tutaj ustawiłeś: {{plugins}}. Twoje ustawienia są nakładane na górze, więc wygrywają tam, gdzie się nakładają. Jeśli strona nie wygląda tak, jak się spodziewasz, użyj Resetuj do ustawień domyślnych poniżej, aby umożliwić pokazywanie stylu wtyczki, lub wyłącz wtyczkę ze strony wtyczek.",
+      "alsoSetByPlugin": "ustawione również przez {{plugins}}",
+      "alsoSetByPluginTooltip": "Twoja wartość nabiera tu priorytetu. Użyj Resetowania ustawień domyślnych, aby powrócić do koloru z {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Utwórz nowy token dostępu",
       "nameDescription": "Nazwa będzie wyświetlana jako użytkownik czatu podczas wysyłania wiadomości z tym tokenem dostępu.",
@@ -49,9 +55,12 @@
       "confirmYes": "Tak",
       "enterStreamUrl": "Wprowadź adres URL strumienia",
       "enterValidUrl": "Wprowadź poprawny adres URL",
-      "failedToApprove": "<strong><em>Brak tłumaczenia Admin.FeaturedStreams.failedToApprove: Proszę zgłosić</em></strong>",
+      "failedToApprove": "Nie udało się zatwierdzić żądania funkcji",
       "failedToFeature": "Nie udało się wyświetlić strumienia",
-      "failedToUnfeature": "<strong><em>Brakuje tłumaczenia Admin.FeaturedStreams.failedToUnfeature: Proszę zgłosić</em></strong>",
+      "failedToReject": "Nie udało się odrzucić żądania funkcji",
+      "failedToUnfeature": "Nie udało się wyłączyć strumienia",
+      "featureRequestApproved": "Prośba o funkcję zatwierdzona",
+      "featureRequestRejected": "Prośba o funkcję odrzucona",
       "featureRequestsDescription": "Te serwery Owncast poprosiły o pokazanie strumienia w katalogu polecanych strumieni. Zatwierdź serwer, aby wyświetlić swój status na żywo.",
       "featureRequestsTitle": "Prośby o włączenie strumienia",
       "streamsYouFeatureTab": "Strumienie które posiadasz",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Funkcje społecznościowe muszą być włączone",
       "socialFeaturesRequiredDesc": "zanim będziesz mógł korzystać z innych strumieni.",
       "status": "Status",
-      "streamFeaturedSuccess": "<strong><em>Brak tłumaczenia Admin.FeaturedStreams.streamFeaturedSukces: Zgłoś</em></strong>",
+      "streamFeaturedSuccess": "Stream polecany",
       "streamName": "Nazwa strumienia",
       "streamRequirements": "Wymagania strumienia",
-      "streamUnfeaturedSuccess": "<strong><em>Brak tłumaczenia Admin.FeaturedStreams.streamUnfeaturedSukces: Zgłoś</em></strong>",
+      "streamUnfeaturedSuccess": "Strumień niepolecany",
       "streamUrlHelp": "Wprowadź adres URL strumienia Owncast (np. stream.example.com)",
       "streamUrlLabel": "URL strumienia",
       "streamUrlPlaceholder": "stream.przykład.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Zainstaluj",
       "browseInstalled": "Zainstalowane",
       "browsePreviewAlt": "{{name}} podgląd zrzutu ekranu",
+      "browseAuthor": "przez {{name}}",
       "browseUnavailableDescription": "Owncast nie może teraz dotrzeć do katalogu wtyczek. Nadal możesz przesłać pliki .ocpkg bezpośrednio z zainstalowanej karty.",
       "browseUnavailableRetry": "Ponów próbę",
       "browseUnavailableTitle": "Katalog wtyczek jest obecnie niedostępny",

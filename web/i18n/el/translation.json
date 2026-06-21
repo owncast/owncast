@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Το πρόσθετο στυλ είναι ενεργό",
+      "pluginStylingDescription": "Αυτά τα πρόσθετα εφαρμόζουν τα δικά τους στυλ στον ιστότοπό σας, συνδυασμένα με τα χρώματα που ορίσατε εδώ: {{plugins}}. Οι ρυθμίσεις σας εφαρμόζονται από πάνω, επομένως κερδίζουν εκεί που επικαλύπτονται. Αν η σελίδα δεν φαίνεται όπως περιμένατε, χρησιμοποιήστε την επιλογή Επαναφορά στις προεπιλογές παρακάτω για να επιτρέψετε στο στυλ του πρόσθετου να εμφανιστεί, ή απενεργοποιήστε το πρόσθετο από τη σελίδα Προσθέτων.",
+      "alsoSetByPlugin": "Ορίστηκε επίσης από {{plugins}}",
+      "alsoSetByPluginTooltip": "Η αξία σας έχει προτεραιότητα εδώ. Χρησιμοποιήστε την Επαναφορά στις Προεπιλογές για να πέσετε πίσω στο χρώμα από το {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Δημιουργία νέου διακριτικού πρόσβασης",
       "nameDescription": "Το όνομα θα εμφανίζεται ως ο χρήστης συνομιλίας κατά την αποστολή μηνυμάτων με αυτό το διακριτικό πρόσβασης.",
@@ -49,9 +55,12 @@
       "confirmYes": "Ναι",
       "enterStreamUrl": "Παρακαλώ εισάγετε μια ροή URL",
       "enterValidUrl": "Παρακαλώ εισάγετε μια έγκυρη διεύθυνση URL",
-      "failedToApprove": "<strong><em>Λείπει η μετάφραση Admin.FeaturedStreams.failedApprove: Παρακαλώ αναφέρετε</em></strong>",
+      "failedToApprove": "Αποτυχία έγκρισης του αιτήματος λειτουργίας",
       "failedToFeature": "Αποτυχία ροής χαρακτηριστικού",
-      "failedToUnfeature": "<strong><em>Λείπει η μετάφραση Admin.FeaturedStreams.failedToUnfeature: Παρακαλώ αναφέρετε</em></strong>",
+      "failedToReject": "Αποτυχία απόρριψης του αιτήματος λειτουργίας",
+      "failedToUnfeature": "Αποτυχία κατάργησης λειτουργίας της ροής",
+      "featureRequestApproved": "Εγκρίθηκε αίτημα χαρακτηριστικών",
+      "featureRequestRejected": "Το αίτημα χαρακτηριστικών απορρίφθηκε",
       "featureRequestsDescription": "Αυτοί οι διακομιστές Owncast ζήτησαν να εμφανίσουν τη ροή σας στον κατάλογο των επιλεγμένων ροών τους. Εγκρίνετε έναν διακομιστή για να τον επιτρέψετε να εμφανίζει τη ζωντανή κατάστασή σας.",
       "featureRequestsTitle": "Αιτήματα για να χαρακτηριστεί η ροή σας",
       "streamsYouFeatureTab": "Μεταδόσεις που διαθέτεις",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Τα κοινωνικά χαρακτηριστικά πρέπει να είναι ενεργοποιημένα",
       "socialFeaturesRequiredDesc": "πριν μπορείτε να χαρακτηρίσετε άλλες ροές.",
       "status": "Κατάσταση",
-      "streamFeaturedSuccess": "<strong><em>Λείπει η μετάφραση Admin.FeaturedStreams.streamFeaturedSuccess: Παρακαλώ αναφέρετε</em></strong>",
+      "streamFeaturedSuccess": "Προτεινόμενη ροή",
       "streamName": "Όνομα Ροής",
       "streamRequirements": "Απαιτήσεις Ροής",
-      "streamUnfeaturedSuccess": "<strong><em>Λείπει η μετάφραση Admin.FeaturedStreams.streamUnfeaturedSuccess: Παρακαλώ αναφέρετε</em></strong>",
+      "streamUnfeaturedSuccess": "Μη χαρακτηριστική ροή",
       "streamUrlHelp": "Εισάγετε το URL μιας ροής Owncast (π.χ., stream.example.com)",
       "streamUrlLabel": "URL Ροής",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Εγκατάσταση",
       "browseInstalled": "Εγκατεστημένο",
       "browsePreviewAlt": "Στιγμιότυπο προεπισκόπησης {{name}}",
+      "browseAuthor": "από {{name}}",
       "browseUnavailableDescription": "Το Owncast δεν μπορεί να φτάσει στον κατάλογο προσθέτων αυτή τη στιγμή. Μπορείτε ακόμα να ανεβάσετε αρχεία .ocpkg απευθείας από την καρτέλα Εγκατεστημένη.",
       "browseUnavailableRetry": "Επανάληψη",
       "browseUnavailableTitle": "Ο κατάλογος πρόσθετων δεν είναι διαθέσιμος αυτήν τη στιγμή",

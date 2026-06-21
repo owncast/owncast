@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Gaya pemalam sedang aktif",
+      "pluginStylingDescription": "Pemalam ini menerapkan gaya mereka sendiri ke laman anda, digabungkan dengan warna yang anda tetapkan di sini: {{plugins}}. Tetapan anda diterapkan di atas, jadi mereka menang di kawasan yang bertindih. Jika halaman tidak kelihatan seperti yang anda jangkakan, gunakan Tetapkan semula kepada Lalai di bawah untuk membiarkan gaya pemalam ditunjukkan, atau lumpuhkan pemalam dari halaman Pemalam.",
+      "alsoSetByPlugin": "juga ditetapkan oleh {{plugins}}",
+      "alsoSetByPluginTooltip": "Nilai anda mempunyai keutamaan di sini. Gunakan Tetapkan semula kepada Lalai untuk kembali kepada warna dari {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Buat Token Akses Baru",
       "nameDescription": "Nama ini akan dipaparkan sebagai pengguna chat semasa menghantar mesej dengan token akses ini.",
@@ -49,9 +55,12 @@
       "confirmYes": "Ya",
       "enterStreamUrl": "Sila masukkan URL aliran",
       "enterValidUrl": "Sila masukkan URL yang sah",
-      "failedToApprove": "<strong><em>Terjemahan tidak ada Admin.FeaturedStreams.failedToApprove: Sila laporkan</em></strong>",
+      "failedToApprove": "Gagal meluluskan permintaan ciri",
       "failedToFeature": "Gagal untuk menampilkan aliran",
-      "failedToUnfeature": "<strong><em>Terjemahan hilang Admin.FeaturedStreams.failedToUnfeature: Sila laporkan</em></strong>",
+      "failedToReject": "Gagal menolak permintaan ciri",
+      "failedToUnfeature": "Gagal mengeluarkan ciri daripada siaran",
+      "featureRequestApproved": "Permintaan ciri diluluskan",
+      "featureRequestRejected": "Permintaan ciri ditolak",
       "featureRequestsDescription": "Pelayan Owncast ini telah meminta untuk menunjukkan siaran anda dalam direktori siaran featured mereka. Luluskan sebuah pelayan untuk membenarkannya memaparkan status langsung anda.",
       "featureRequestsTitle": "Permintaan untuk menampilkan siaran anda",
       "streamsYouFeatureTab": "Aliran yang anda tampilkan",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Ciri sosial mesti diaktifkan",
       "socialFeaturesRequiredDesc": "sebelum anda boleh mengetengahkan aliran lain.",
       "status": "Status",
-      "streamFeaturedSuccess": "<strong><em>Terjemahan hilang Admin.FeaturedStreams.streamFeaturedSuccess: Sila laporkan</em></strong>",
+      "streamFeaturedSuccess": "Siaran ditandakan",
       "streamName": "Nama Aliran",
       "streamRequirements": "Keperluan Aliran",
-      "streamUnfeaturedSuccess": "<strong><em>Terjemahan hilang Admin.FeaturedStreams.streamUnfeaturedSuccess: Sila laporkan</em></strong>",
+      "streamUnfeaturedSuccess": "Siaran dikeluarkan daripada tawaran",
       "streamUrlHelp": "Masukkan URL aliran Owncast (contoh, stream.example.com)",
       "streamUrlLabel": "URL Aliran",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "Pasang",
       "browseInstalled": "Dipasang",
       "browsePreviewAlt": "tangkap layar pratonton {{name}}",
+      "browseAuthor": "oleh {{name}}",
       "browseUnavailableDescription": "Owncast tidak dapat menghubungi katalog plugin pada masa ini. Anda masih boleh memuat naik fail .ocpkg secara langsung dari tab Dipasang.",
       "browseUnavailableRetry": "Cuba semula",
       "browseUnavailableTitle": "Katalog plugin kini tidak tersedia",

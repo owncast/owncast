@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "Plugin styling är aktiv",
+      "pluginStylingDescription": "Dessa plugins tillämpar sina egna stilar på din webbplats, i kombination med de färger du anger här: {{plugins}}. Dina inställningar tillämpas på toppen, så de vinner där de överlappar varandra. Om sidan inte ser ut som du förväntar dig, använd Återställ till standard nedan för att låta plugin styling visa genom, eller inaktivera plugin från Plugins sidan.",
+      "alsoSetByPlugin": "även satt av {{plugins}}",
+      "alsoSetByPluginTooltip": "Ditt värde prioriteras här. Använd Återställ till standard för att falla tillbaka till färgen från {{plugins}}."
+    },
     "AccessTokens": {
       "createNewAccessToken": "Skapa ny åtkomsttoken",
       "nameDescription": "Namnet kommer att visas som chattanvändare när du skickar meddelanden med denna åtkomsttoken.",
@@ -49,9 +55,12 @@
       "confirmYes": "Ja",
       "enterStreamUrl": "Ange en ström-URL",
       "enterValidUrl": "Ange en giltig URL",
-      "failedToApprove": "<strong><em>Översättningsadministratör.FeaturedStreams.failedToApprove: Please report</em></strong>",
+      "failedToApprove": "Det gick inte att godkänna funktionsförfrågan",
       "failedToFeature": "Det gick inte att funktionen strömmas",
-      "failedToUnfeature": "<strong><em>Översättningsadministratör.FeaturedStreams.failedToUnfeature: Please report</em></strong>",
+      "failedToReject": "Det gick inte att avvisa funktionsförfrågan",
+      "failedToUnfeature": "Det gick inte att ta bort strömmen",
+      "featureRequestApproved": "Funktionsbegäran godkänd",
+      "featureRequestRejected": "Funktionsbegäran avvisad",
       "featureRequestsDescription": "Dessa Owncast-servrar har bett om att visa din ström i deras katalog för utvalda strömmar. Godkänn en server för att låta den visa din live-status.",
       "featureRequestsTitle": "Förfrågningar om att visa din ström",
       "streamsYouFeatureTab": "Strömmar du har",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "Sociala funktioner måste vara aktiverade",
       "socialFeaturesRequiredDesc": "innan du kan visa andra strömmar.",
       "status": "Status",
-      "streamFeaturedSuccess": "<strong><em>Saknad översättningsadministratör.FeaturedStreams.streamFeaturedSuccess: Please report</em></strong>",
+      "streamFeaturedSuccess": "Utvald ström",
       "streamName": "Stream Namn",
       "streamRequirements": "Krav på strömning",
-      "streamUnfeaturedSuccess": "<strong><em>Saknad översättningsadministratör.FeaturedStreams.streamUnfeaturedFramgång: Vänligen rapportera</em></strong>",
+      "streamUnfeaturedSuccess": "Ström ej utvald",
       "streamUrlHelp": "Ange URL:en till en Owncast stream (t.ex., stream.example.com)",
       "streamUrlLabel": "Strömma URL",
       "streamUrlPlaceholder": "stream.exempel.se",
@@ -197,6 +206,7 @@
       "browseInstall": "Installera",
       "browseInstalled": "Installerad",
       "browsePreviewAlt": "{{name}} förhandsgranska skärmdump",
+      "browseAuthor": "av {{name}}",
       "browseUnavailableDescription": "Owncast kan inte nå plugin-katalogen just nu. Du kan fortfarande ladda upp .ocpkg-filer direkt från fliken Installerad.",
       "browseUnavailableRetry": "Försök igen",
       "browseUnavailableTitle": "Instickskatalogen är för närvarande inte tillgänglig",

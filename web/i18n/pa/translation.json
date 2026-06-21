@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "ਪਲੱਗਿਨ ਸਟਾਇਲਿੰਗ ਸਿਰਜੀਤ ਹੈ",
+      "pluginStylingDescription": "ਇਹਨਾਂ ਪਲੱਗਿਨਾਂ ਦਾ ਆਪਣੇ ਸਟਾਇਲ ਤੁਹਾਡੇ ਸਾਈਟ ਨੂੰ ਲਾਗੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, ਜਿਸ ਨੂੰ ਤੁਸੀਂ ਇੱਥੇ ਸੈੱਟ ਕੀਤੇ ਰੰਗਾਂ ਨਾਲ ਮਿਲਾਇਆ ਗਿਆ ਹੈ: {{plugins}}। ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਜ਼ ਉੱਪਰ ਲਾਗੂ ਹੁੰਦੀਆਂ ਹਨ, ਇਸ ਲਈ ਜਿਹੜੀਆਂ ਇਹਨੂੰ ਢੱਕਦੀਆਂ ਹਨ, ਉਹ ਜਿੱਤ ਜਾਂਦੀਆਂ ਹਨ। ਜੇ ਪੇਜ ਤੁਹਾਡੇ ਉਮੀਦ ਤਰੀਕੇ ਨਾਲ ਨਹੀਂ ਦਿੱਖ ਰਿਹਾ, ਤਾਂ ਹੇਠਾਂ ਮੂਲਾਂ 'ਤੇ ਮੁੜ ਜਾਓ ਦੀ ਵਰਤੋਂ ਕਰੋ ਤਾਂ ਜੋ ਪਲੱਗਿਨ ਸਟਾਇਲਿੰਗ ਚਮਕੇ, ਜਾਂ ਪਲੱਗਿਨ ਨੂੰ ਪਲੱਗਿਨ ਪੇਜ ਤੋਂ ਅਸਮਰੱਥ ਕਰੋ।",
+      "alsoSetByPlugin": "ਹੇਠਾਂ ਦਿੱਤਾ गया {{plugins}} ਦੁਆਰਾ ਵੀ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ",
+      "alsoSetByPluginTooltip": "ਤੁਹਾਡਾ ਮੁੱਲ ਇੱਥੇ ਪ੍ਰਾਥਮਿਕਤਾ ਲੈਂਦਾ ਹੈ। {{plugins}} ਤੋਂ ਰੰਗ ਉੱਪਰ ਮੁੜ ਜਾਣ ਲਈ ਮੂਲਾਂ 'ਤੇ ਮੁੜ ਜਾਓ ਦੀ ਵਰਤੋਂ ਕਰੋ।"
+    },
     "AccessTokens": {
       "createNewAccessToken": "ਨਵਾਂ ਐਕਸੈਸ ਟੋਕਨ ਬਣਾਓ",
       "nameDescription": "ਇਹ ਨਾਮ ਐਕਸੈਸ ਟੋਕਨ ਨਾਲ ਸੁਨੇਹੇ ਭੇਜਣ ਵੇਲੇ ਚੈਟ ਉਪਭੋਗਤਾ ਵਜੋਂ ਦਰਸਾਇਆ ਜਾਵੇਗਾ।",
@@ -49,9 +55,12 @@
       "confirmYes": "ਹਾਂ",
       "enterStreamUrl": "ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਸਟ੍ਰੀਮ URL ਦਰਜ ਕਰੋ",
       "enterValidUrl": "ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਮਾਨਯੋਗ URL ਦਰਜ ਕਰੋ",
-      "failedToApprove": "<strong><em>ਗੁਆਚੀ ਅਨੁਵਾਦ Admin.FeaturedStreams.failedToApprove: ਕਿਰਪਾ ਕਰਕੇ ਰਿਪੋਰਟ ਕਰੋ</em></strong>",
+      "failedToApprove": "ਫੀਚਰ ਦੀ ਬੇਨਤੀ ਨੂੰ ਮਨਜ਼ੂਰ ਕਰਨ ਵਿੱਚ ਅਸਫਲ",
       "failedToFeature": "ਸਟ੍ਰੀਮ ਨੂੰ ਫੀਚਰ ਕਰਨ ਵਿੱਚ ਅਸਫਲ",
-      "failedToUnfeature": "<strong><em>ਅਨੁਵਾਦ ਗੁੰਮ ਹੈ Admin.FeaturedStreams.failedToUnfeature: ਕਿਰਪਾ ਕਰਕੇ ਰਿਪੋਰਟ ਕਰੋ</em></strong>",
+      "failedToReject": "ਫੀਚਰ ਦੀ ਬੇਨਤੀ ਨੂੰ ਰੱਦ ਕਰਨ ਵਿੱਚ ਅਸਫਲ",
+      "failedToUnfeature": "ਸਟ੍ਰੀਮ ਨੂੰ ਫੀਚਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ",
+      "featureRequestApproved": "ਫੀਚਰ ਦੀ ਬੇਨਤੀ ਮਨਜ਼ੂਰ ਹੋ ਗਈ",
+      "featureRequestRejected": "ਫੀਚਰ ਦੀ ਬੇਨਤੀ ਰੱਦ ਕੀਤੀ ਗਈ",
       "featureRequestsDescription": "ਇਨ੍ਹਾਂ Owncast ਸਰਵਰਾਂ ਨੇ ਆਪਣੇ ਫੀਚਰਡ ਸ੍ਰੋਤਾਂ ਦੇ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਤੁਹਾਡਾ ਸਟਰੀਮ ਵੇਖਾਉਣ ਲਈ ਬੇਨਤੀ ਕੀਤੀ ਹੈ। ਇੱਕ ਸਰਵਰ ਨੂੰ ਮਨਜ਼ੂਰ ਕਰੋ ਤਾਂ ਜੋ ਇਹ ನಿಮ್ಮ ਜੀਵੰਤ ਸਥਿਤੀ ਦਰਸਾ ਸਕੇ।",
       "featureRequestsTitle": "ਤੁਹਾਡੇ ਸਟਰੀਮ ਨੂੰ ਫੀਚਰ ਕਰਨ ਲਈ ਬੇਨਤੀਆਂ",
       "streamsYouFeatureTab": "ਤੁਸੀਂ ਜੋ ਸਟ੍ਰੀਮ ਕੰਮ ਕਰਦੇ ਹੋ",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "ਸਮਾਜਿਕ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਜਾਣਾ ਚਾਹੀਦਾ ਹੈ",
       "socialFeaturesRequiredDesc": "ਹੋਰ ਸਟਰਿਮ ਨੂੰ ਸ਼ਾਮਿਲ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ।",
       "status": "ਦਰਜਾ",
-      "streamFeaturedSuccess": "<strong><em>ਅਨੁਵਾਦ ਗੁੰਮ ਹੈ Admin.FeaturedStreams.streamFeaturedSuccess: ਕਿਰਪਾ ਕਰਕੇ ਰਿਪੋਰਟ ਕਰੋ</em></strong>",
+      "streamFeaturedSuccess": "ਸਟ੍ਰੀਮ ਫੀਚਰ ਕਰ ਦਿੱਤੀ ਗਈ",
       "streamName": "ਸਟ੍ਰੀਮ ਨਾਮ",
       "streamRequirements": "ਸਟ੍ਰੀਮ ਦੀਆਂ ਲੋੜਾਂ",
-      "streamUnfeaturedSuccess": "<strong><em>ਅਨੁਵਾਦ ਗੁੰਮ ਹੈ Admin.FeaturedStreams.streamUnfeaturedSuccess: ਕਿਰਪਾ ਕਰਕੇ ਰਿਪੋਰਟ ਕਰੋ</em></strong>",
+      "streamUnfeaturedSuccess": "ਸਟ੍ਰੀਮ ਨੂੰ ਫੀਚਰ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ",
       "streamUrlHelp": "ਇੱਕ Owncast ਸਟਰਿਮ ਦਾ URL ਦਾਖਲ ਕਰੋ (ਜਿਵੇਂ, stream.example.com)",
       "streamUrlLabel": "ਸਟ੍ਰੀਮ URL",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "ਸਥਾਪਿਤ ਕਰੋ",
       "browseInstalled": "ਸਥਾਪਿਤ",
       "browsePreviewAlt": "{{name}} ਦਾ ਪ੍ਰੀਵਿਊ ਸਕ੍ਰੀਨਸ਼ੌਟ",
+      "browseAuthor": "{{name}} ਵੱਲੋਂ",
       "browseUnavailableDescription": "Owncast ਇਸ ਸਮੇਂ ਪਲੱਗਇਨ ਕੈਟਾਲੌਗ ਤੱਕ ਨਹੀਂ ਪੁੱਜ ਸਕਦਾ। ਤੁਸੀਂ ਫਿਰ ਵੀ ਸਥਾਪਿਤ ਟੈਬ ਤੋਂ ਸਿੱਧੇ .ocpkg ਫਾਇਲਾਂ ਅਪਲੋਡ ਕਰ ਸਕਦੇ ਹੋ।",
       "browseUnavailableRetry": "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
       "browseUnavailableTitle": "ਪਲੱਗਇਨ ਕੈਟਾਲੌਗ ਇਸ ਵੇਲੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",

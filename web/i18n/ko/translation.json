@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "플러그인 스타일링이 활성화되어 있습니다",
+      "pluginStylingDescription": "이 플러그인들은 여기 설정한 색상과 결합하여 귀하의 사이트에 고유한 스타일을 적용하고 있습니다: {{plugins}}. 귀하의 설정이 우선 적용되므로 겹치는 부분에서 이깁니다. 페이지가 예상한 대로 보이지 않으면 아래의 기본값으로 재설정을 사용하여 플러그인 스타일링이 나타나도록 하거나 플러그인 페이지에서 플러그인을 비활성화하십시오.",
+      "alsoSetByPlugin": "또한 {{plugins}}에 의해 설정됨",
+      "alsoSetByPluginTooltip": "여기서는 귀하의 값이 우선합니다. 기본값으로 재설정을 사용하여 {{plugins}}의 색상으로 돌아가십시오."
+    },
     "AccessTokens": {
       "createNewAccessToken": "새 액세스 토큰 만들기",
       "nameDescription": "이 액세스 토큰으로 메시지를 보낼 때 채팅 사용자로 표시됩니다.",
@@ -49,9 +55,12 @@
       "confirmYes": "예",
       "enterStreamUrl": "스트림 URL을 입력하세요",
       "enterValidUrl": "유효한 URL을 입력하세요",
-      "failedToApprove": "<strong><em>누락된 번역 Admin.FeaturedStreams.failedToApprove: 보고해 주세요</em></strong>",
+      "failedToApprove": "기능 요청을 승인하지 못했습니다.",
       "failedToFeature": "스트림을 특징짓지 못했습니다",
-      "failedToUnfeature": "<strong><em>번역이 누락되었습니다 Admin.FeaturedStreams.failedToUnfeature: 신고해 주세요</em></strong>",
+      "failedToReject": "기능 요청을 거부하지 못했습니다.",
+      "failedToUnfeature": "스트림에서 기능을 제거하지 못했습니다.",
+      "featureRequestApproved": "기능 요청이 승인되었습니다.",
+      "featureRequestRejected": "기능 요청이 거부되었습니다.",
       "featureRequestsDescription": "이 Owncast 서버가 귀하의 스트림을 그들의 추천 스트림 디렉토리에 표시해 달라고 요청했습니다. 서버를 승인하면 실시간 상태를 표시할 수 있습니다.",
       "featureRequestsTitle": "귀하의 스트림을 특징으로 할 요청",
       "streamsYouFeatureTab": "당신이 추천하는 스트림",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "소셜 기능이 활성화되어야 합니다.",
       "socialFeaturesRequiredDesc": "다른 스트림을 기능 추가하기 전에.",
       "status": "상태",
-      "streamFeaturedSuccess": "<strong><em>번역이 누락되었습니다 Admin.FeaturedStreams.streamFeaturedSuccess: 신고해 주세요</em></strong>",
+      "streamFeaturedSuccess": "스트림이 기능 표시되었습니다.",
       "streamName": "스트림 이름",
       "streamRequirements": "스트림 요구 사항",
-      "streamUnfeaturedSuccess": "<strong><em>번역이 누락되었습니다 Admin.FeaturedStreams.streamUnfeaturedSuccess: 신고해 주세요</em></strong>",
+      "streamUnfeaturedSuccess": "스트림의 기능이 제거되었습니다.",
       "streamUrlHelp": "Owncast 스트림의 URL을 입력하세요(예: stream.example.com)",
       "streamUrlLabel": "스트림 URL",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "설치",
       "browseInstalled": "설치됨",
       "browsePreviewAlt": "{{name}} 미리보기 스크린샷",
+      "browseAuthor": "{{name}}에 의해",
       "browseUnavailableDescription": "Owncast가 지금 플러그인 카탈로그에 접근할 수 없습니다. 여전히 설치된 탭에서 .ocpkg 파일을 직접 업로드할 수 있습니다.",
       "browseUnavailableRetry": "다시 시도",
       "browseUnavailableTitle": "플러그인 카탈로그를 현재 사용할 수 없습니다",

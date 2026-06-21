@@ -1,5 +1,11 @@
 {
   "Admin": {
+    "Appearance": {
+      "pluginStylingActive": "প্লাগইন স্টাইলিং সক্রিয় আছে",
+      "pluginStylingDescription": "এই প্লাগইনগুলি আপনার সাইটে তাদের নিজস্ব স্টাইল প্রয়োগ করছে, এখানে আপনি যে রঙগুলি সেট করেছেন: {{plugins}} এর সাথে মিলিয়ে। আপনার সেটিংস শীর্ষে প্রয়োগ করা হয়, তাই যেখানে তারা অতিক্রম করে সেখানে তারা জয়ী হয়। যদি পৃষ্ঠাটি আপনি যেমন প্রত্যাশা করেন তেমন মনে না হয়, তাহলে প্লাগইন স্টাইলিং প্রদর্শনের জন্য নিচের রিসেট সেটিংস ব্যবহার করুন বা প্লাগইনকে প্লাগইন পেজ থেকে নিষ্ক্রিয় করুন।",
+      "alsoSetByPlugin": "এছাড়াও সেট করা হয়েছে {{plugins}} দ্বারা",
+      "alsoSetByPluginTooltip": "আপনার মান এখানে অগ্রাধিকার পায়। {{plugins}} থেকে রঙে ফিরে আসতে রিসেট সেটিংস ব্যবহার করুন।"
+    },
     "AccessTokens": {
       "createNewAccessToken": "নতুন অ্যাক্সেস টোকেন তৈরি করুন",
       "nameDescription": "এই অ্যাক্সেস টোকেন দিয়ে বার্তা পাঠানোর সময় নামটি চ্যাট ব্যবহারকারী হিসাবে প্রদর্শিত হবে।",
@@ -49,9 +55,12 @@
       "confirmYes": "হ্যাঁ",
       "enterStreamUrl": "একটি স্ট্রীম URL প্রবেশ করুন",
       "enterValidUrl": "একটি বৈধ URL প্রবেশ করুন",
-      "failedToApprove": "<strong><em>অনুবাদ অভাবিত Admin.FeaturedStreams.failedToApprove: দয়া করে রিপোর্ট করুন</em></strong>",
+      "failedToApprove": "ফিচার অনুরোধ অনুমোদনে ব্যর্থ",
       "failedToFeature": "স্ট্রীম ফিচার করতে ব্যর্থ",
-      "failedToUnfeature": "<strong><em>অনুবাদ অনুপস্থিত Admin.FeaturedStreams.failedToUnfeature: দয়া করে রিপোর্ট করুন</em></strong>",
+      "failedToReject": "ফিচার অনুরোধ অস্বীকারে ব্যর্থ",
+      "failedToUnfeature": "স্ট্রীমটি ফিচার মুক্ত করতে ব্যর্থ",
+      "featureRequestApproved": "ফিচার অনুরোধ অনুমোদিত",
+      "featureRequestRejected": "ফিচার অনুরোধ অস্বীকৃত",
       "featureRequestsDescription": "এই Owncast সার্ভারগুলি আপনার স্ট্রিম তাদের বৈশিষ্ট্যযুক্ত স্ট্রিম ডিরেক্টরিতে দেখানোর জন্য অনুমতি চেয়েছে। একটি সার্ভারকে অনুমোদন করুন যাতে এটি আপনার লাইভ স্ট্যাটাস দেখাতে পারে।",
       "featureRequestsTitle": "আপনার স্ট্রিম বৈশিষ্ট্য দেওয়ার অনুরোধসমূহ",
       "streamsYouFeatureTab": "আপনার বৈশিষ্ট্যযুক্ত স্ট্রিম",
@@ -85,10 +94,10 @@
       "socialFeaturesRequired": "সামাজিক ফিচারগুলি সক্ষম থাকতে হবে",
       "socialFeaturesRequiredDesc": "অন্য স্ট্রিমগুলি ফিচার করার আগে।",
       "status": "স্ট্যাটাস",
-      "streamFeaturedSuccess": "<strong><em>অনুবাদ অনুপস্থিত Admin.FeaturedStreams.streamFeaturedSuccess: দয়া করে রিপোর্ট করুন</em></strong>",
+      "streamFeaturedSuccess": "স্ট্রীমটি ফিচার করা হয়েছে",
       "streamName": "স্ট্রিমের নাম",
       "streamRequirements": "স্ট্রিমের প্রয়োজনীয়তা",
-      "streamUnfeaturedSuccess": "<strong><em>অনুবাদ অনুপস্থিত Admin.FeaturedStreams.streamUnfeaturedSuccess: দয়া করে রিপোর্ট করুন</em></strong>",
+      "streamUnfeaturedSuccess": "স্ট্রীমটি ফিচার মুক্ত করা হয়েছে",
       "streamUrlHelp": "একটি Owncast স্ট্রিমের URL প্রবেশ করুন (যেমন, stream.example.com)",
       "streamUrlLabel": "স্ট্রিম URL",
       "streamUrlPlaceholder": "stream.example.com",
@@ -197,6 +206,7 @@
       "browseInstall": "ইনস্টল করুন",
       "browseInstalled": "ইনস্টল করা",
       "browsePreviewAlt": "{{name}} প্রিভিউ স্ক্রীনশট",
+      "browseAuthor": "{{name}} দ্বারা",
       "browseUnavailableDescription": "Owncast এই মুহুর্তে প্লাগইন ক্যাটালগে পৌঁছাতে পারছে না। আপনি ইনস্টল করা ট্যাব থেকে সরাসরি .ocpkg ফাইল আপলোড করতে পারেন।",
       "browseUnavailableRetry": "পুনরায় চেষ্টা করুন",
       "browseUnavailableTitle": "প্লাগইন ক্যাটালগ বর্তমানে উপলব্ধ নয়",
