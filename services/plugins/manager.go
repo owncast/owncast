@@ -393,6 +393,21 @@ type DiscoveredEntry struct {
 	// Derived by the SDK and reported via register(), so it's only known once
 	// the plugin is loaded — empty for discovered-but-not-loaded plugins.
 	Commands []CommandInfo `json:"commands,omitempty"`
+	// Config is the plugin's manifest-declared config schema (key → field with
+	// type/default/description). The admin UI auto-renders an editable settings
+	// form from it; the saved values are read back by owncast.config.get().
+	Config map[string]ConfigField `json:"config,omitempty"`
+}
+
+// ConfigSchema returns a discovered plugin's manifest config schema (nil if the
+// plugin is unknown or declares no config).
+func (m *Manager) ConfigSchema(slug string) map[string]ConfigField {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if d, ok := m.discovered[slug]; ok {
+		return d.Config
+	}
+	return nil
 }
 
 // ScanInterval is how often the manager re-scans the plugins directory.
@@ -1012,6 +1027,7 @@ func (m *Manager) scan(ctx context.Context) error {
 			existing.HasInstructions = hasInstructions
 			existing.PendingPermissions = pendingPermissions(manifest.Permissions, m.approvedSet[manifest.Slug])
 			existing.AllowedHosts = manifest.Network.AllowedHosts
+			existing.Config = manifest.Config
 		} else {
 			m.discovered[manifest.Slug] = &DiscoveredEntry{
 				Slug:               manifest.Slug,
@@ -1027,6 +1043,7 @@ func (m *Manager) scan(ctx context.Context) error {
 				HasIcon:            hasIcon,
 				HasInstructions:    hasInstructions,
 				PendingPermissions: pendingPermissions(manifest.Permissions, m.approvedSet[manifest.Slug]),
+				Config:             manifest.Config,
 			}
 		}
 		m.mu.Unlock()

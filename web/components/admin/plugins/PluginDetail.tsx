@@ -7,6 +7,7 @@ import { Plugin, PluginCommand, PluginPermission } from '../../../interfaces/plu
 import { Localization } from '../../../types/localization';
 import { fetchText, pluginInstructionsUrl } from '../../../utils/apis';
 import { permissionDescriptionKey } from './permissionDescriptions';
+import { PluginConfigForm } from './PluginConfigForm';
 import s from './PluginDetail.module.scss';
 
 const { Title, Text, Paragraph } = Typography;
@@ -377,13 +378,37 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
     [plugin.hasInstructions, plugin.slug, t],
   );
 
+  // Auto-generated settings form, rendered from the plugin's manifest `config`
+  // schema. Only shown when the plugin declares config fields — no plugin HTML
+  // required.
+  const configTab = useMemo(
+    () =>
+      plugin.config && Object.keys(plugin.config).length > 0
+        ? {
+            key: '__config',
+            label: (
+              <span>
+                <SettingOutlined /> {t(Localization.Admin.Plugins.configTab)}
+              </span>
+            ),
+            children: <PluginConfigForm plugin={plugin} />,
+          }
+        : null,
+    [plugin, t],
+  );
+
   const tabs = useMemo(() => {
-    const base = [...pageTabs, permissionsTab, ...(commandsTab ? [commandsTab] : [])];
+    const base = [
+      ...pageTabs,
+      permissionsTab,
+      ...(configTab ? [configTab] : []),
+      ...(commandsTab ? [commandsTab] : []),
+    ];
     // Instructions sits as the second tab: after the first admin page (or
     // after Permissions when the plugin declares no admin pages), so the
     // primary page stays the landing tab.
     return instructionsTab ? [base[0], instructionsTab, ...base.slice(1)] : base;
-  }, [instructionsTab, pageTabs, permissionsTab, commandsTab]);
+  }, [instructionsTab, pageTabs, permissionsTab, configTab, commandsTab]);
 
   return (
     <div>

@@ -121,6 +121,60 @@ type Host struct {
 // manifest.actions ++ this list on every /api/config request.
 const runtimeActionsConfigKey = "owncast.actions"
 
+// runtimeConfigKey is the reserved key inside a plugin's own config namespace
+// that holds the admin-set overrides for its manifest-declared config fields.
+// The admin config form writes this; owncast.config.get reads it (via the
+// wired env.ConfigValue) so a plugin sees the admin's values, falling back to
+// the manifest default for any key the admin hasn't set.
+const runtimeConfigKey = "owncast.config"
+
+// readConfigOverrides returns the admin-set config overrides for a plugin from
+// its KV namespace, or nil when none are set / the store is unavailable.
+func readConfigOverrides(store kv.Store, slug string) map[string]any {
+	if store == nil {
+		return nil
+	}
+	raw, err := store.Namespace(slug).Get(runtimeConfigKey)
+	if err != nil || len(raw) == 0 {
+		return nil
+	}
+	var m map[string]any
+	if err := json.Unmarshal(raw, &m); err != nil {
+		return nil
+	}
+	return m
+}
+
+// coerceConfigValue validates an incoming admin-set value against a config
+// field's declared type and returns the normalized value to store. JSON decodes
+// numbers as float64 and booleans as bool; we accept those and reject mismatches
+// so a plugin's config.get sees the type it declared. Unknown/blank types pass
+// through unchanged.
+func coerceConfigValue(fieldType string, v any) (any, error) {
+	switch fieldType {
+	case "string":
+		s, ok := v.(string)
+		if !ok {
+			return nil, fmt.Errorf("expected a string")
+		}
+		return s, nil
+	case "number":
+		f, ok := v.(float64)
+		if !ok {
+			return nil, fmt.Errorf("expected a number")
+		}
+		return f, nil
+	case "boolean":
+		b, ok := v.(bool)
+		if !ok {
+			return nil, fmt.Errorf("expected a boolean")
+		}
+		return b, nil
+	default:
+		return v, nil
+	}
+}
+
 // Handler is the http.Handler for /plugins/<name>/* (static assets, dynamic
 // on_http_request, and the reserved _sse endpoint).
 func (p *Host) Handler() http.Handler { return p.server }
@@ -839,6 +893,15 @@ func (p *Host) handlePluginAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// GET/POST /api/admin/plugins/<slug>/config reads and writes the admin's
+	// overrides for the plugin's manifest-declared config fields. The admin UI
+	// auto-renders a form from the schema (returned with the plugin list) and
+	// saves through here.
+	if action == "config" {
+		p.handlePluginConfig(w, r, slug)
+		return
+	}
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -856,6 +919,76 @@ func (p *Host) handlePluginAction(w http.ResponseWriter, r *http.Request) {
 		log.Infof("plugin %q uninstalled by admin", slug)
 	}
 	writeJSONResponse(w, http.StatusOK, map[string]string{"status": "ok", "slug": slug, "action": action})
+}
+
+// handlePluginConfig serves the admin config form's backend:
+//
+//	GET  /api/admin/plugins/<slug>/config  → current effective values
+//	     (admin override if set, else the manifest default) per declared key
+//	POST /api/admin/plugins/<slug>/config  → save overrides ({key: value})
+//
+// POST validates each key against the manifest schema (declared + correct
+// type) and persists the result in the plugin's KV namespace, where
+// owncast.config.get reads it back.
+func (p *Host) handlePluginConfig(w http.ResponseWriter, r *http.Request, slug string) {
+	schema := p.manager.ConfigSchema(slug)
+	if schema == nil {
+		// Unknown plugin, or one that declares no config — nothing to edit.
+		http.NotFound(w, r)
+		return
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		overrides := readConfigOverrides(p.kv, slug)
+		out := make(map[string]any, len(schema))
+		for key, field := range schema {
+			if v, ok := overrides[key]; ok {
+				out[key] = v
+			} else {
+				out[key] = field.Default
+			}
+		}
+		writeJSONResponse(w, http.StatusOK, out)
+
+	case http.MethodPost:
+		var incoming map[string]any
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<20)).Decode(&incoming); err != nil {
+			http.Error(w, "invalid JSON body", http.StatusBadRequest)
+			return
+		}
+		saved := make(map[string]any, len(incoming))
+		for key, raw := range incoming {
+			field, declared := schema[key]
+			if !declared {
+				writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: fmt.Sprintf("unknown config key %q", key)})
+				return
+			}
+			v, err := coerceConfigValue(field.Type, raw)
+			if err != nil {
+				writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: fmt.Sprintf("config %q: %v", key, err)})
+				return
+			}
+			saved[key] = v
+		}
+		data, err := json.Marshal(saved)
+		if err != nil {
+			http.Error(w, "internal error", http.StatusInternalServerError)
+			return
+		}
+		if p.kv == nil {
+			http.Error(w, "config storage unavailable", http.StatusInternalServerError)
+			return
+		}
+		if err := p.kv.Namespace(slug).Set(runtimeConfigKey, data); err != nil {
+			writeJSONResponse(w, http.StatusInternalServerError, map[string]string{jsonErrorKey: err.Error()})
+			return
+		}
+		writeJSONResponse(w, http.StatusOK, map[string]string{"status": "ok", "slug": slug})
+
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
 }
 
 // dispatchPluginAction calls the Manager method for one of the admin
@@ -964,7 +1097,16 @@ func wirePluginHostEnv(env *plugins.HostEnv, deps Deps) {
 	wireServerReadHostFns(env, deps)
 	wireVideoConfigHostFns(env, deps)
 	wireUserHostFns(env, deps)
+	wireAuthHostFns(env, deps)
 	wireNotificationHostFns(env, deps)
+
+	// Resolve admin-set config overrides for owncast.config.get. Without this
+	// the host returns manifest defaults only; with it, values saved via the
+	// admin config form take effect. Reads the plugin's own KV namespace.
+	env.ConfigValue = func(slug, key string) (any, bool) {
+		v, ok := readConfigOverrides(env.KV, slug)[key]
+		return v, ok
+	}
 	wireRequestHostFns(env, deps)
 	wireFilesystemHostFns(env)
 }

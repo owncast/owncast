@@ -82,11 +82,26 @@ export interface Plugin {
   lastError?: string;
   discoveredAt: string;
   adminPages?: PluginAdminPage[];
+  // config is the plugin's manifest-declared settings schema (key → field).
+  // The admin auto-renders an editable form from it; saved values are read
+  // back by the plugin via owncast.config.get(). Absent when the plugin
+  // declares no config.
+  config?: Record<string, PluginConfigField>;
   // commands lists the plugin's chat commands, derived by the SDK and
   // reported via register(). Only populated once the plugin is loaded
   // (commands aren't in the static manifest). Shown in a Commands tab on the
   // details page and aggregated by the host for the unified !help.
   commands?: PluginCommand[];
+}
+
+// PluginConfigField is one entry in a plugin's manifest `config` schema,
+// mirroring services/plugins.ConfigField. `type` drives which input the admin
+// form renders (string → text, number → numeric, boolean → switch); `default`
+// is shown until an admin saves an override.
+export interface PluginConfigField {
+  type: string;
+  default?: any;
+  description?: string;
 }
 
 // PluginCommand is one chat command a plugin advertises, mirroring
