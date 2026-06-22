@@ -176,7 +176,9 @@
         "usersModerate": "Gebruikers modereren",
         "usersRead": "Gebruikerslijst lezen",
         "videoconfigRead": "Video-instellingen lezen",
-        "videoconfigWrite": "Video-instellingen wijzigen"
+        "videoconfigWrite": "Video-instellingen wijzigen",
+        "usersRegister": "Log in kijkers",
+        "authGate": "Toegang tot Gate viewer"
       },
       "Permissions": {
         "chatFilter": "Controleer en wijzig de chatberichten voordat ze worden uitgezonden of laat ze volledig vallen.",
@@ -197,7 +199,9 @@
         "usersModerate": "Chatgebruikers uitschakelen of opnieuw inschakelen.",
         "usersRead": "Lees de chat gebruikerslijst en details per gebruiker.",
         "videoconfigRead": "Lees de stream en video uitvoer configuratie (encoders, varianten).",
-        "videoconfigWrite": "Wijzig de uitvoerconfiguratie van stream en video."
+        "videoconfigWrite": "Wijzig de uitvoerconfiguratie van stream en video.",
+        "usersRegister": "Maak en log in als Owncast gebruikers voor een externe identiteit (zoals een OAuth of een sociale account).",
+        "authGate": "Handel als een kijkers-authenticatie poort, het ondertekent kijkers en bepaal hun toegang tot de site."
       },
       "allowedHostsLabel": "Toegestane hosts:",
       "approveButton": "Goedkeuren",
@@ -213,6 +217,12 @@
       "browseUpdate": "Bijwerken naar v{{version}}",
       "commandColumnHeader": "Opdracht",
       "commandsTab": "Opdrachten",
+      "configTab": "Instellingen",
+      "configSave": "Opslaan",
+      "configSaved": "Instellingen opgeslagen.",
+      "configSaveError": "Instellingen konden niet worden opgeslagen.",
+      "configLoadError": "Kan instellingen niet laden.",
+      "configEmpty": "Deze plugin heeft geen configureerbare instellingen.",
       "configure": "Configureren",
       "descriptionColumnHeader": "Beschrijving",
       "enabledColumn": "Ingeschakeld",

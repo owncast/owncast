@@ -176,7 +176,9 @@
         "usersModerate": "اعداد المستخدمين",
         "usersRead": "قراءة قائمة المستخدمين",
         "videoconfigRead": "قراءة إعدادات الفيديو",
-        "videoconfigWrite": "تغيير إعدادات الفيديو"
+        "videoconfigWrite": "تغيير إعدادات الفيديو",
+        "usersRegister": "تسجيل دخول المشاهدين",
+        "authGate": "وصول عارض البوابة"
       },
       "Permissions": {
         "chatFilter": "فحص وتعديل رسائل الدردشة قبل بثها، أو إسقاطها بالكامل.",
@@ -197,7 +199,9 @@
         "usersModerate": "تعطيل أو إعادة تمكين مستخدمي الدردشة.",
         "usersRead": "قراءة قائمة المستخدم للمحادثة وتفاصيل كل مستخدم.",
         "videoconfigRead": "قراءة إعدادات البث وإخراج الفيديو (الترميز والمتغيرات).",
-        "videoconfigWrite": "تعديل تكوين إخراج البث والفيديو."
+        "videoconfigWrite": "تعديل تكوين إخراج البث والفيديو.",
+        "usersRegister": "إنشاء وتسجيل الدخول للمستخدمين المملوكين للحصول على هوية خارجية (مثل حساب OAuth أو حساب اجتماعي).",
+        "authGate": "يعمل بمثابة بوابة مصادقة المشاهدين وتوقيع المشاهدين في الدخول إلى الموقع ومراقبته."
       },
       "allowedHostsLabel": "المستضيفون المسموح بهم:",
       "approveButton": "الموافقة",
@@ -213,6 +217,12 @@
       "browseUpdate": "تحديث إلى v{{version}}",
       "commandColumnHeader": "أمر",
       "commandsTab": "الأوامر",
+      "configTab": "الإعدادات",
+      "configSave": "حفظ",
+      "configSaved": "تم حفظ الإعدادات.",
+      "configSaveError": "تعذر حفظ الإعدادات.",
+      "configLoadError": "تعذر تحميل الإعدادات.",
+      "configEmpty": "هذه الإضافة لا تحتوي على إعدادات قابلة للتكوين.",
       "configure": "تكوين",
       "descriptionColumnHeader": "الوصف",
       "enabledColumn": "تمكين",

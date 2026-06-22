@@ -176,7 +176,9 @@
         "usersModerate": "Erabiltzaileak moderatu",
         "usersRead": "Erabiltzaile zerrenda irakurri",
         "videoconfigRead": "Bideo ezarpenak irakurri",
-        "videoconfigWrite": "Bideo ezarpenak aldatzeko"
+        "videoconfigWrite": "Bideo ezarpenak aldatzeko",
+        "usersRegister": "Ikusleen saioa hasi",
+        "authGate": "Sarrera atea ikusleen"
       },
       "Permissions": {
         "chatFilter": "Iruzkin mezuak ikusi eta aldatzeko aukera eman aurretik, edo guztiz ezabatu.",
@@ -197,7 +199,9 @@
         "usersModerate": "Desaktibatu edo berriz aktibatu iruzkin erabiltzaileak.",
         "usersRead": "Irakurri iruzkin erabiltzaileen zerrenda eta per-erabiltzaile xehetasunak.",
         "videoconfigRead": "Ur stream eta bideo irteera konfigurazioa irakurri (encoder, aldaerak).",
-        "videoconfigWrite": "Ur stream eta bideo irteera konfigurazioa aldatzeko."
+        "videoconfigWrite": "Ur stream eta bideo irteera konfigurazioa aldatzeko.",
+        "usersRegister": "Sortu eta saioa hasi Owncast erabiltzaileak identitate kanpoko batentzat (OAuth edo gizarte kontu bat bezala).",
+        "authGate": "Ikusleak autentifikatzeko ate gisa jardun, ikusleak saioa hasten eta haien sarrera kontrolatzen."
       },
       "allowedHostsLabel": "Baimendutako ostatua:",
       "approveButton": "Onartu",
@@ -213,6 +217,12 @@
       "browseUpdate": "Eguneratu v{{version}}-ra",
       "commandColumnHeader": "Agindua",
       "commandsTab": "Aginduak",
+      "configTab": "Ezarpenak",
+      "configSave": "Gorde",
+      "configSaved": "Ezarpenak gorde dira.",
+      "configSaveError": "Ez dira ezarpenak gorde.",
+      "configLoadError": "Ez dira ezarpenak kargatu.",
+      "configEmpty": "Plugina ez du konfiguratzeko ezarpenik.",
       "configure": "Konfigura",
       "descriptionColumnHeader": "Deskribapena",
       "enabledColumn": "Aktibatuta",

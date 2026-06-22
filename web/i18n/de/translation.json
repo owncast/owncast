@@ -176,7 +176,9 @@
         "usersModerate": "Benutzer moderieren",
         "usersRead": "Benutzerliste lesen",
         "videoconfigRead": "Video-Einstellungen lesen",
-        "videoconfigWrite": "Videoeinstellungen ändern"
+        "videoconfigWrite": "Videoeinstellungen ändern",
+        "usersRegister": "Zuschauer anmelden",
+        "authGate": "Tor-Viewer-Zugriff"
       },
       "Permissions": {
         "chatFilter": "Prüfen und ändern Sie Chat-Nachrichten, bevor sie gesendet werden, oder lassen Sie sie ganz ab.",
@@ -197,7 +199,9 @@
         "usersModerate": "Chat-Benutzer deaktivieren oder reaktivieren.",
         "usersRead": "Lesen Sie die Chat-Benutzerliste und die Details pro Benutzer.",
         "videoconfigRead": "Liest die Stream- und Video-Ausgabekonfiguration (Encoder, Variante).",
-        "videoconfigWrite": "Ändern Sie die Stream- und Video-Ausgabe-Konfiguration."
+        "videoconfigWrite": "Ändern Sie die Stream- und Video-Ausgabe-Konfiguration.",
+        "usersRegister": "Erstellen und Anmelden von Owncast-Benutzern für eine externe Identität (wie z. B. ein OAuth oder ein soziales Konto).",
+        "authGate": "Handeln Sie als Zuschauerauthentifizierungstor, unterschreiben Sie die Zuschauer und kontrollieren den Zugriff auf die Website."
       },
       "allowedHostsLabel": "Erlaubte Hosts:",
       "approveButton": "Bestätigen",
@@ -213,6 +217,12 @@
       "browseUpdate": "Aktualisieren auf v{{version}}",
       "commandColumnHeader": "Befehl",
       "commandsTab": "Befehle",
+      "configTab": "Einstellungen",
+      "configSave": "Speichern",
+      "configSaved": "Einstellungen gespeichert.",
+      "configSaveError": "Einstellungen konnten nicht gespeichert werden.",
+      "configLoadError": "Einstellungen konnten nicht geladen werden.",
+      "configEmpty": "Dieses Plugin hat keine konfigurierbaren Einstellungen.",
       "configure": "Konfigurieren",
       "descriptionColumnHeader": "Beschreibung",
       "enabledColumn": "Aktiviert",

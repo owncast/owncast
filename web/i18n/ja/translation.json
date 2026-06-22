@@ -176,7 +176,9 @@
         "usersModerate": "ユーザーをモデレートする",
         "usersRead": "ユーザーリストの読み取り",
         "videoconfigRead": "ビデオ設定の読み取り",
-        "videoconfigWrite": "動画の設定を変更する"
+        "videoconfigWrite": "動画の設定を変更する",
+        "usersRegister": "視聴者にサインイン",
+        "authGate": "ゲートビューアーアクセス"
       },
       "Permissions": {
         "chatFilter": "チャットメッセージがブロードキャストされる前にチェックおよび変更するか、完全に削除します。",
@@ -197,7 +199,9 @@
         "usersModerate": "チャットユーザーを無効にするか再度有効にします。",
         "usersRead": "チャットユーザーリストとユーザー毎の詳細をお読みください。",
         "videoconfigRead": "ストリームとビデオ出力構成(エンコーダ、バリアント)を読み込みます。",
-        "videoconfigWrite": "ストリームとビデオ出力の設定を変更します。"
+        "videoconfigWrite": "ストリームとビデオ出力の設定を変更します。",
+        "usersRegister": "(OAuth やソーシャルアカウントなどの)外部アイデンティティのための Owncast ユーザを作成およびサインインします。",
+        "authGate": "閲覧者認証のゲートとして機能し、サイトへのアクセスを管理します。"
       },
       "allowedHostsLabel": "許可されたホスト:",
       "approveButton": "承認",
@@ -213,6 +217,12 @@
       "browseUpdate": "v{{version}} に更新",
       "commandColumnHeader": "(Command)",
       "commandsTab": "マーク",
+      "configTab": "設定",
+      "configSave": "保存",
+      "configSaved": "設定を保存しました",
+      "configSaveError": "設定を保存できませんでした。",
+      "configLoadError": "設定を読み込めませんでした。",
+      "configEmpty": "このプラグインには設定可能な設定がありません。",
       "configure": "設定",
       "descriptionColumnHeader": "説明",
       "enabledColumn": "有効",

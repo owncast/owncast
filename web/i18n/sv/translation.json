@@ -176,7 +176,9 @@
         "usersModerate": "Måttlig användare",
         "usersRead": "Läsa användarlista",
         "videoconfigRead": "Läs videoinställningar",
-        "videoconfigWrite": "Ändra videoinställningar"
+        "videoconfigWrite": "Ändra videoinställningar",
+        "usersRegister": "Logga in tittare",
+        "authGate": "Åtkomst till portvisare"
       },
       "Permissions": {
         "chatFilter": "Inspektera och ändra chattmeddelanden innan de sänds eller släpp dem helt.",
@@ -197,7 +199,9 @@
         "usersModerate": "Inaktivera eller återaktivera chattanvändare.",
         "usersRead": "Läs listan över chattanvändare och detaljer per användare.",
         "videoconfigRead": "Läs ström- och videoutgång konfiguration (kodare, varianter).",
-        "videoconfigWrite": "Ändra ström- och videoutmatningskonfiguration."
+        "videoconfigWrite": "Ändra ström- och videoutmatningskonfiguration.",
+        "usersRegister": "Skapa och logga in Owncast-användare för en extern identitet (t.ex. ett OAuth eller ett socialt konto).",
+        "authGate": "Agera som en tittarautentiseringsgrind, signera tittare in och kontrollera deras tillgång till webbplatsen."
       },
       "allowedHostsLabel": "Tillåtna värdar:",
       "approveButton": "Godkänn",
@@ -213,6 +217,12 @@
       "browseUpdate": "Uppdatera till v{{version}}",
       "commandColumnHeader": "Kommando",
       "commandsTab": "Kommandon",
+      "configTab": "Inställningar",
+      "configSave": "Spara",
+      "configSaved": "Inställningar sparade.",
+      "configSaveError": "Kunde inte spara inställningar.",
+      "configLoadError": "Kunde inte ladda inställningar.",
+      "configEmpty": "Denna plugin har inga konfigurerbara inställningar.",
       "configure": "Konfigurera",
       "descriptionColumnHeader": "Beskrivning",
       "enabledColumn": "Aktiverad",

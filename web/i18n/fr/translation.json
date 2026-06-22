@@ -176,7 +176,9 @@
         "usersModerate": "Modérer les utilisateurs",
         "usersRead": "Lire la liste des utilisateurs",
         "videoconfigRead": "Lire les paramètres vidéo",
-        "videoconfigWrite": "Modifier les paramètres vidéo"
+        "videoconfigWrite": "Modifier les paramètres vidéo",
+        "usersRegister": "Connecter les téléspectateurs",
+        "authGate": "Accès à la visionneuse de portail"
       },
       "Permissions": {
         "chatFilter": "Inspecter, modifier ou supprimer les messages de chat avant qu'ils ne soient affichés.",
@@ -197,7 +199,9 @@
         "usersModerate": "Désactiver ou réactiver les utilisateurs du chat.",
         "usersRead": "Lire la liste des utilisateurs du chat et leurs infos.",
         "videoconfigRead": "Lire la configuration du stream et de la vidéo (encodeurs, variants).",
-        "videoconfigWrite": "Modifier la configuration du stream et de la vidéo."
+        "videoconfigWrite": "Modifier la configuration du stream et de la vidéo.",
+        "usersRegister": "Créez et connectez des utilisateurs Owncast pour une identité externe (comme un OAuth ou un compte social).",
+        "authGate": "Agir en tant que portail d'authentification du lecteur, en signant les téléspectateurs et en contrôlant leur accès au site."
       },
       "allowedHostsLabel": "Hôtes autorisés :",
       "approveButton": "Approuver",
@@ -213,6 +217,12 @@
       "browseUpdate": "Mettre à jour vers v{{version}}",
       "commandColumnHeader": "Commandes",
       "commandsTab": "Commandes",
+      "configTab": "Réglages",
+      "configSave": "Enregistrer",
+      "configSaved": "Paramètres enregistrés.",
+      "configSaveError": "Impossible d'enregistrer les paramètres.",
+      "configLoadError": "Impossible de charger les paramètres.",
+      "configEmpty": "Ce plugin n'a pas de paramètres configurables.",
       "configure": "Configurer",
       "descriptionColumnHeader": "Description",
       "enabledColumn": "Activé",

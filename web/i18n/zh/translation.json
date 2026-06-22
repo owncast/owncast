@@ -176,7 +176,9 @@
         "usersModerate": "管理用戶",
         "usersRead": "讀取用戶列表",
         "videoconfigRead": "讀取視頻設置",
-        "videoconfigWrite": "更改視頻設置"
+        "videoconfigWrite": "更改視頻設置",
+        "usersRegister": "簽入觀眾",
+        "authGate": "門戶觀眾訪問"
       },
       "Permissions": {
         "chatFilter": "檢查和修改聊天消息，或將其完全刪除。",
@@ -197,7 +199,9 @@
         "usersModerate": "禁用或重新啟用聊天用戶。",
         "usersRead": "讀取聊天用戶列表和每個用戶的詳細信息。",
         "videoconfigRead": "讀取流和視頻輸出配置（編碼器，變體）。",
-        "videoconfigWrite": "修改流和視頻輸出配置。"
+        "videoconfigWrite": "修改流和視頻輸出配置。",
+        "usersRegister": "為外部身份（如 OAuth 或社交帳戶）創建並簽入 Owncast 用戶。",
+        "authGate": "作為觀眾身份驗證門戶，讓觀眾簽入並控制他們對網站的訪問。"
       },
       "allowedHostsLabel": "允許的主機：",
       "approveButton": "批准",
@@ -213,6 +217,12 @@
       "browseUpdate": "更新到 v{{version}}",
       "commandColumnHeader": "命令",
       "commandsTab": "命令",
+      "configTab": "設定",
+      "configSave": "保存",
+      "configSaved": "設定已保存。",
+      "configSaveError": "無法儲存設定。",
+      "configLoadError": "無法載入設定。",
+      "configEmpty": "此外掛程式沒有可設定的選項。",
       "configure": "設定",
       "descriptionColumnHeader": "描述",
       "enabledColumn": "啟用",

@@ -176,7 +176,9 @@
         "usersModerate": "사용자 조정",
         "usersRead": "사용자 목록 읽기",
         "videoconfigRead": "비디오 설정 읽기",
-        "videoconfigWrite": "비디오 설정 변경"
+        "videoconfigWrite": "비디오 설정 변경",
+        "usersRegister": "시청자 로그인",
+        "authGate": "게이트 시청자 접근"
       },
       "Permissions": {
         "chatFilter": "방송 전에 채팅 메시지를 검사하고 수정하거나 전혀 표시하지 않도록 설정합니다.",
@@ -197,7 +199,9 @@
         "usersModerate": "채팅 사용자를 비활성화 또는 다시 활성화합니다.",
         "usersRead": "채팅 사용자 목록 및 사용자별 세부정보를 읽습니다.",
         "videoconfigRead": "스트림 및 비디오 출력 구성(인코더, 변형)을 읽습니다.",
-        "videoconfigWrite": "스트림 및 비디오 출력 구성을 수정합니다."
+        "videoconfigWrite": "스트림 및 비디오 출력 구성을 수정합니다.",
+        "usersRegister": "외부 아이덴티티(예: OAuth 또는 소셜 계정)에 대해 Owncast 사용자를 생성하고 로그인합니다.",
+        "authGate": "시청자 인증 게이트 역할, 시청자를 로그인하고 웹사이트 접근을 제어합니다."
       },
       "allowedHostsLabel": "허용된 호스트:",
       "approveButton": "승인",
@@ -213,6 +217,12 @@
       "browseUpdate": "v{{version}}로 업데이트",
       "commandColumnHeader": "명령어",
       "commandsTab": "명령",
+      "configTab": "설정",
+      "configSave": "저장",
+      "configSaved": "설정이 저장되었습니다.",
+      "configSaveError": "설정을 저장할 수 없습니다.",
+      "configLoadError": "설정을 불러올 수 없습니다.",
+      "configEmpty": "이 플러그인에는 설정할 수 있는 항목이 없습니다.",
       "configure": "구성하기",
       "descriptionColumnHeader": "설명",
       "enabledColumn": "활성화됨",

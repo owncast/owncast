@@ -176,7 +176,9 @@
         "usersModerate": "Moderacja użytkowników",
         "usersRead": "Czytaj listę użytkowników",
         "videoconfigRead": "Odczyt ustawień wideo",
-        "videoconfigWrite": "Zmień ustawienia wideo"
+        "videoconfigWrite": "Zmień ustawienia wideo",
+        "usersRegister": "Zaloguj się do przeglądarki",
+        "authGate": "Dostęp do przeglądarki bramy"
       },
       "Permissions": {
         "chatFilter": "Przeglądaj i modyfikuj wiadomości czatu przed ich nadawaniem lub wyrzucaj je całkowicie.",
@@ -197,7 +199,9 @@
         "usersModerate": "Wyłącz lub ponownie włącz użytkowników czatu.",
         "usersRead": "Przeczytaj listę użytkowników czatu i szczegóły dla użytkownika.",
         "videoconfigRead": "Konfiguracja wyjścia strumienia i wideo (enkodery, warianty).",
-        "videoconfigWrite": "Modyfikuj konfigurację wyjściową strumienia i wideo."
+        "videoconfigWrite": "Modyfikuj konfigurację wyjściową strumienia i wideo.",
+        "usersRegister": "Utwórz i zaloguj użytkowników Owncast dla zewnętrznej tożsamości (takich jak OAuth lub konto społecznościowe).",
+        "authGate": "Działaj jako bramka uwierzytelniania widza, podpisuje widzów i kontroluje ich dostęp do witryny."
       },
       "allowedHostsLabel": "Dozwolone hosty:",
       "approveButton": "Zatwierdź",
@@ -213,6 +217,12 @@
       "browseUpdate": "Aktualizacja do wersji{{version}}",
       "commandColumnHeader": "Polecenie",
       "commandsTab": "Polecenia",
+      "configTab": "Ustawienia",
+      "configSave": "Zapisz",
+      "configSaved": "Zapisano ustawienia.",
+      "configSaveError": "Nie można zapisać ustawień.",
+      "configLoadError": "Nie można załadować ustawień.",
+      "configEmpty": "Ta wtyczka nie ma konfigurowalnych ustawień.",
       "configure": "Skonfiguruj",
       "descriptionColumnHeader": "Opis",
       "enabledColumn": "Włączone",
