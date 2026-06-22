@@ -368,16 +368,16 @@ func sseConnectionEnvelope(eventType, channel string, connID uint64, user *HostU
 // logged but never affects the stream. A fresh context is used because the
 // disconnect path fires after the request context has already been cancelled.
 func (s *Server) notifySSEConnection(p *Loaded, eventType, channel string, connID uint64, user *HostUser) {
-	if p.plugin == nil || !p.plugin.FunctionExists("on_event") {
-		return
-	}
 	envelope, err := sseConnectionEnvelope(eventType, channel, connID, user)
 	if err != nil {
 		return
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), NotifyTimeout)
 	defer cancel()
-	if err := callOnEvent(ctx, p, envelope); err != nil {
+	// callOnEvent guards the instance under the lock; a not-loaded or
+	// non-exporting plugin is a silent no-op on this best-effort path.
+	if err := callOnEvent(ctx, p, envelope); err != nil &&
+		!errors.Is(err, errPluginNotLoaded) && !errors.Is(err, errPluginNoSuchExport) {
 		fmt.Fprintf(os.Stderr, "plugin %s: %s notify failed: %v\n", p.Manifest.Slug, eventType, err)
 	}
 }
@@ -484,10 +484,13 @@ func isHTMLName(name string) bool {
 }
 
 func (s *Server) serveDynamic(w http.ResponseWriter, r *http.Request, p *Loaded, requestPath string, authenticated bool, injectStyles bool) {
-	// p.plugin can be nil during shutdown (Loaded.Close clears it) or in
-	// tests that only exercise the static path. Either way, no plugin
-	// instance means no dynamic handler.
-	if p.plugin == nil || !p.plugin.FunctionExists("on_http_request") {
+	// Snapshot the instance under the lock: Loaded.Close may clear it during
+	// shutdown (and tests may exercise only the static path). Reading p.plugin
+	// unlocked raced with that write. No instance means no dynamic handler.
+	p.mu.Lock()
+	pl := p.plugin
+	p.mu.Unlock()
+	if pl == nil || !pl.FunctionExists("on_http_request") {
 		http.NotFound(w, r)
 		return
 	}
@@ -515,7 +518,7 @@ func (s *Server) serveDynamic(w http.ResponseWriter, r *http.Request, p *Loaded,
 	// response after the call returns.
 	callCtx, sink := withAuthSink(callCtx)
 	p.mu.Lock()
-	_, out, err := p.plugin.CallWithContext(callCtx, "on_http_request", envelopeJSON)
+	_, out, err := pl.CallWithContext(callCtx, "on_http_request", envelopeJSON)
 	p.mu.Unlock()
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) || callCtx.Err() == context.DeadlineExceeded {
@@ -544,13 +547,19 @@ func (s *Server) serveDynamic(w http.ResponseWriter, r *http.Request, p *Loaded,
 // fails closed on error).
 func (s *Server) CallAuthCheck(ctx context.Context, slug string, input []byte) ([]byte, error) {
 	p := s.lookup(slug)
-	if p == nil || p.plugin == nil || !p.plugin.FunctionExists("on_auth_check") {
+	if p == nil {
+		return nil, fmt.Errorf("auth check unavailable for plugin %q", slug)
+	}
+	p.mu.Lock()
+	pl := p.plugin
+	p.mu.Unlock()
+	if pl == nil || !pl.FunctionExists("on_auth_check") {
 		return nil, fmt.Errorf("auth check unavailable for plugin %q", slug)
 	}
 	callCtx, cancel := context.WithTimeout(ctx, HTTPHandlerTimeout)
 	defer cancel()
 	p.mu.Lock()
-	_, out, err := p.plugin.CallWithContext(callCtx, "on_auth_check", input)
+	_, out, err := pl.CallWithContext(callCtx, "on_auth_check", input)
 	p.mu.Unlock()
 	return out, err
 }

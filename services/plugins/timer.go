@@ -3,6 +3,7 @@ package plugins
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"sync"
@@ -165,7 +166,8 @@ func (h *TimerHub) fire(e *timerEntry) {
 				Payload:   TimerFireEvent{ID: e.id},
 			})
 			if err == nil {
-				if err := callOnEvent(context.Background(), loaded, envelope); err != nil {
+				if err := callOnEvent(context.Background(), loaded, envelope); err != nil &&
+					!errors.Is(err, errPluginNotLoaded) && !errors.Is(err, errPluginNoSuchExport) {
 					fmt.Fprintf(os.Stderr, "plugin %s: timer %d fire failed: %v\n", e.slug, e.id, err)
 				}
 			}

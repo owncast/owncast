@@ -129,6 +129,11 @@ func (d *Dispatcher) Filter(ctx context.Context, eventType string, payload any) 
 		}
 		result, err := callOnFilter(ctx, c.plugin, eventType, current)
 		if err != nil {
+			// A plugin torn down mid-chain (or one exporting no filter) is a
+			// benign no-op, not a fault: don't log it or count it as a strike.
+			if errors.Is(err, errPluginNotLoaded) || errors.Is(err, errPluginNoSuchExport) {
+				continue
+			}
 			fmt.Fprintf(os.Stderr, "plugin %s: on_filter(%s) failed (fail-open): %v\n", c.plugin.Manifest.Slug, eventType, err)
 			if c.plugin.recordFilterFailure() {
 				fmt.Fprintf(os.Stderr, "plugin %s: auto-disabled after %d consecutive filter failures\n",
@@ -152,9 +157,6 @@ func (d *Dispatcher) Filter(ctx context.Context, eventType string, payload any) 
 }
 
 func callOnFilter(ctx context.Context, p *Loaded, eventType string, payload any) (*FilterResult, error) {
-	if !p.plugin.FunctionExists("on_filter") {
-		return nil, fmt.Errorf("plugin does not export on_filter")
-	}
 	envelope, err := json.Marshal(Envelope{EventType: eventType, Payload: payload})
 	if err != nil {
 		return nil, fmt.Errorf("marshal envelope: %w", err)
@@ -172,7 +174,17 @@ func callOnFilter(ctx context.Context, p *Loaded, eventType string, payload any)
 		return nil, fmt.Errorf("on_filter timed out after %s waiting for plugin mutex", FilterTimeout)
 	}
 	defer p.mu.Unlock()
-	_, out, err := p.plugin.CallWithContext(callCtx, "on_filter", envelope)
+	// Snapshot the instance under the lock: a concurrent Loaded.Close may have
+	// torn it down. Reading p.plugin before the lock raced with that write and
+	// could nil-deref.
+	pl := p.plugin
+	if pl == nil {
+		return nil, errPluginNotLoaded
+	}
+	if !pl.FunctionExists("on_filter") {
+		return nil, errPluginNoSuchExport
+	}
+	_, out, err := pl.CallWithContext(callCtx, "on_filter", envelope)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) || callCtx.Err() == context.DeadlineExceeded {
 			return nil, fmt.Errorf("on_filter timed out after %s", FilterTimeout)
@@ -208,7 +220,15 @@ func (d *Dispatcher) Notify(ctx context.Context, eventType string, payload any) 
 		wg.Add(1)
 		go func(p *Loaded) {
 			defer wg.Done()
-			if err := callOnEvent(ctx, p, encoded); err != nil {
+			// A plugin must never take down the host. A panic in this goroutine
+			// can't be recovered by the caller, so recover it here.
+			defer func() {
+				if rec := recover(); rec != nil {
+					fmt.Fprintf(os.Stderr, "plugin %s: on_event(%s) panicked: %v\n", p.Manifest.Slug, eventType, rec)
+				}
+			}()
+			if err := callOnEvent(ctx, p, encoded); err != nil &&
+				!errors.Is(err, errPluginNotLoaded) && !errors.Is(err, errPluginNoSuchExport) {
 				fmt.Fprintf(os.Stderr, "plugin %s: on_event(%s) failed: %v\n", p.Manifest.Slug, eventType, err)
 			}
 		}(p)
@@ -225,16 +245,32 @@ func subscribed(subs []Subscription, eventType string) bool {
 	return false
 }
 
+// errPluginNotLoaded / errPluginNoSuchExport are benign "nothing to do"
+// sentinels from the per-plugin call helpers: the instance was torn down by a
+// concurrent Close, or the plugin doesn't export the requested function. Best-
+// effort callers (Notify, SSE connect/disconnect) skip logging them.
+var (
+	errPluginNotLoaded    = errors.New("plugin is not loaded")
+	errPluginNoSuchExport = errors.New("plugin does not export the requested function")
+)
+
 func callOnEvent(ctx context.Context, p *Loaded, input []byte) error {
-	if !p.plugin.FunctionExists("on_event") {
-		return fmt.Errorf("plugin does not export on_event")
-	}
 	// Extism plugins are not safe for concurrent calls; serialize per-plugin.
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	// Snapshot the instance under the lock: a concurrent Loaded.Close may have
+	// torn it down. Reading p.plugin before the lock raced with that write and
+	// could nil-deref.
+	pl := p.plugin
+	if pl == nil {
+		return errPluginNotLoaded
+	}
+	if !pl.FunctionExists("on_event") {
+		return errPluginNoSuchExport
+	}
 	callCtx, cancel := context.WithTimeout(ctx, NotifyTimeout)
 	defer cancel()
-	_, _, err := p.plugin.CallWithContext(callCtx, "on_event", input)
+	_, _, err := pl.CallWithContext(callCtx, "on_event", input)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) || callCtx.Err() == context.DeadlineExceeded {
 			return fmt.Errorf("on_event timed out after %s", NotifyTimeout)

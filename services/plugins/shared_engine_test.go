@@ -119,6 +119,44 @@ module.exports = definePlugin({
 	}
 }
 
+// TestDispatchCloseRace exercises the C1 lifecycle race: tearing a plugin down
+// (Loaded.Close) while events are concurrently dispatched to it must neither
+// data-race on the instance pointer nor nil-deref. Run under -race to catch the
+// field race; before the snapshot-under-lock fix this also panicked (an
+// unrecovered panic on the dispatch goroutine crashed the whole host).
+func TestDispatchCloseRace(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, _, _ := captureEnv()
+	script := `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage(msg) { owncast.chat.send("ok"); }
+});`
+	loaded := loadShared(t, ctx, env, RuntimeJavaScript, "racer", script, []string{PermChatSend})
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{loaded} })
+
+	var wg sync.WaitGroup
+	// Many dispatchers fanning on_event out to the plugin...
+	for i := 0; i < 50; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+		}()
+	}
+	// ...while it is torn down underneath them. The dispatches that land after
+	// Close must safely no-op rather than crash.
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		loaded.Close(ctx)
+	}()
+	wg.Wait()
+}
+
 // TestManifestParse covers the R4 reserved-config-key guard and confirms the
 // manifest no longer requires (or validates) a "type" field — the runtime is
 // inferred from the code artifact at load time.

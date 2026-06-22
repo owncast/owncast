@@ -267,12 +267,20 @@ func (p *Loaded) callVoidExport(ctx context.Context, export string) (string, err
 // Close releases the underlying wasm instance and any retained file handles
 // (the .ocpkg zip reader for packaged plugins). Safe to call multiple times.
 func (l *Loaded) Close(ctx context.Context) {
-	if l.plugin != nil {
+	// Clear the instance pointer under the lock so concurrent dispatch
+	// goroutines (which read p.plugin under the same lock) never observe a torn
+	// instance. Close the wasm instance OUTSIDE the lock: l.plugin.Close can
+	// block on an in-flight call that itself holds l.mu, so closing under the
+	// lock would deadlock.
+	l.mu.Lock()
+	pl := l.plugin
+	l.plugin = nil
+	l.mu.Unlock()
+	if pl != nil {
 		// Closes this instance only. For shared-engine plugins the underlying
 		// CompiledPlugin (the engine) is process-global and is never closed
 		// here; for legacy wasm plugins this closes their own runtime.
-		_ = l.plugin.Close(ctx)
-		l.plugin = nil
+		_ = pl.Close(ctx)
 	}
 	// Drop the call-time identity so any in-flight or stale host call from this
 	// plugin resolves to "not found" and fails cleanly rather than acting on a
