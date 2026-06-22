@@ -3,6 +3,7 @@ package plugins
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 )
@@ -43,8 +44,17 @@ func TestVerifySession_Tampered(t *testing.T) {
 	if _, ok := VerifySession([]byte("other-secret"), tok, now); ok {
 		t.Fatal("expected rejection under a different secret")
 	}
-	// Flipped last byte of the signature.
-	bad := tok[:len(tok)-1] + map[bool]string{true: "A", false: "B"}[tok[len(tok)-1] != 'A']
+	// Tampered signature: flip the FIRST signature character. (Not the last —
+	// for a 32-byte HMAC the final base64 character carries only 4 significant
+	// bits, so several characters decode to the same signature; flipping it is
+	// sometimes a no-op, which made this test flaky. The first character always
+	// changes a decoded byte.)
+	dot := strings.IndexByte(tok, '.')
+	repl := byte('A')
+	if tok[dot+1] == 'A' {
+		repl = 'B'
+	}
+	bad := tok[:dot+1] + string(repl) + tok[dot+2:]
 	if _, ok := VerifySession(secret, bad, now); ok {
 		t.Fatal("expected rejection of a tampered signature")
 	}

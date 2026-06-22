@@ -102,7 +102,7 @@ func VerifySession(secret []byte, token string, nowUnix int64) (userID string, o
 // plain-HTTP requests, since many deployments terminate TLS at a proxy and
 // serve the app over HTTP internally (the proxy hop is the secure boundary).
 func NewSessionCookie(token string, ttl time.Duration, secure bool) *http.Cookie {
-	return &http.Cookie{
+	return &http.Cookie{ //nolint:gosec // G124: Secure is intentionally set only on HTTPS requests; see comment above.
 		Name:     SessionCookieName,
 		Value:    token,
 		Path:     "/",
@@ -115,7 +115,7 @@ func NewSessionCookie(token string, ttl time.Duration, secure bool) *http.Cookie
 
 // clearSessionCookie expires the gate session cookie (logout).
 func ClearSessionCookie(secure bool) *http.Cookie {
-	return &http.Cookie{
+	return &http.Cookie{ //nolint:gosec // G124: Secure matches the session cookie it clears; intentionally HTTPS-only (see NewSessionCookie).
 		Name:     SessionCookieName,
 		Value:    "",
 		Path:     "/",
