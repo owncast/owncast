@@ -236,6 +236,71 @@ func TestServer_PathTraversal_CannotEscapePublicRoot(t *testing.T) {
 	}
 }
 
+// TestServer_AdminGate_NotBypassableByTraversal verifies that a path-normalization
+// trick cannot reach an admin-gated static asset unauthenticated. The bug: the
+// admin gate checked the raw rest path while the static server resolved a
+// separately path.Clean'd path, so a request whose decoded path contained "..",
+// "." or "//" (e.g. arriving percent-encoded as %2e%2e) evaded IsAdminPath yet
+// still resolved to the protected file. ServeHTTP now normalizes once up front
+// so the gate and the file server can't disagree.
+func TestServer_AdminGate_NotBypassableByTraversal(t *testing.T) {
+	loaded := &Loaded{
+		Manifest: &Manifest{
+			API: "1", DisplayName: "demo", Slug: "demo", Version: "1.0.0",
+			Permissions: []string{"http.serve"},
+		},
+		PublicFS: fstest.MapFS{
+			"admin/secret.txt": {Data: []byte("ADMIN_SECRET")},
+			"public.txt":       {Data: []byte("public ok")},
+		},
+		adminGlobs: []glob.Glob{glob.MustCompile("/admin/*")},
+		adminPaths: []string{"/admin/*"},
+	}
+	s := NewServer([]*Loaded{loaded})
+	s.IsAuthenticated = func(*http.Request) bool { return false }
+	// An unauthenticated admin gate: anything routed through RequireAdmin is
+	// blocked, so a 401 (or anything that isn't the secret) means "gated".
+	s.RequireAdmin = func(http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, _ *http.Request) {
+			http.Error(w, "admin required", http.StatusUnauthorized)
+		}
+	}
+
+	// Baselines: a public file is served, the admin file is gated when hit directly.
+	{
+		rec := httptest.NewRecorder()
+		s.ServeHTTP(rec, httptest.NewRequest("GET", "/plugins/demo/public.txt", nil))
+		if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), "public ok") {
+			t.Fatalf("baseline public file broken: status=%d body=%q", rec.Code, rec.Body.String())
+		}
+	}
+	{
+		rec := httptest.NewRecorder()
+		s.ServeHTTP(rec, httptest.NewRequest("GET", "/plugins/demo/admin/secret.txt", nil))
+		if strings.Contains(rec.Body.String(), "ADMIN_SECRET") {
+			t.Fatalf("baseline admin gate broken: secret served directly: %q", rec.Body.String())
+		}
+	}
+
+	// Every normalization trick must resolve to the admin path (and be gated),
+	// never slip the secret out unauthenticated. URL.Path is set directly to the
+	// decoded form net/http hands ServeHTTP for the matching %xx-encoded request.
+	for _, p := range []string{
+		"/plugins/demo/x/../admin/secret.txt",
+		"/plugins/demo/./admin/secret.txt",
+		"/plugins/demo//admin/secret.txt",
+		"/plugins/demo/admin/../admin/secret.txt",
+	} {
+		req := httptest.NewRequest("GET", "/plugins/demo/", nil)
+		req.URL.Path = p
+		rec := httptest.NewRecorder()
+		s.ServeHTTP(rec, req)
+		if strings.Contains(rec.Body.String(), "ADMIN_SECRET") {
+			t.Errorf("%s: admin gate bypassed, secret leaked: status=%d body=%q", p, rec.Code, rec.Body.String())
+		}
+	}
+}
+
 func TestServer_NonGetFallsThroughStatic(t *testing.T) {
 	// POST to a static asset path shouldn't serve the file. (Static is
 	// read-only; non-GET/HEAD requests fall through to the dynamic handler.)

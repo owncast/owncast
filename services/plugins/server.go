@@ -181,7 +181,25 @@ func NewLiveServer(snapshot func() []*Loaded) *Server {
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Path: /plugins/<name>/<rest>. We're mounted at /plugins/, so
 	// r.URL.Path starts with /plugins/. Strip and split.
-	rel := strings.TrimPrefix(r.URL.Path, "/plugins/")
+	//
+	// Normalize once, up front, and route everything off this single value.
+	// r.URL.Path is already percent-decoded by net/http, so path.Clean here
+	// collapses any "..", "." or "//" segments — including ones that arrived
+	// percent-encoded (e.g. "%2e%2e"), which slip past the outer mux because it
+	// only cleans the *escaped* path. Without this, the admin-path gate
+	// (IsAdminPath, on raw rest) and the static file server (tryStatic, which
+	// cleans separately) could disagree on what the path is, letting an
+	// admin-gated asset be reached unauthenticated via
+	// "/plugins/<name>/%2e%2e/admin/...".
+	//
+	// path.Clean drops a trailing slash, but that slash is meaningful here (it
+	// drives directory-index serving and the "/admin/" admin-page glob match),
+	// so preserve it the way net/http's own cleanPath does.
+	cleanedPath := path.Clean(r.URL.Path)
+	if cleanedPath != "/" && strings.HasSuffix(r.URL.Path, "/") {
+		cleanedPath += "/"
+	}
+	rel := strings.TrimPrefix(cleanedPath, "/plugins/")
 	parts := strings.SplitN(rel, "/", 2)
 	if parts[0] == "" {
 		http.NotFound(w, r)
