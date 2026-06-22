@@ -70,6 +70,47 @@ func validManifestBytes() []byte {
 	}`)
 }
 
+// TestValidateUploadedPackage_PreservesLiveIdentity is the C2 regression: the
+// install preflight loads the uploaded package through the real load path,
+// which put/removes the slug in the process-global identity registry. It must
+// NOT evict a still-running plugin of the same slug (an update), which would
+// leave the live instance unable to resolve its own host calls until a reload.
+func TestValidateUploadedPackage_PreservesLiveIdentity(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	const slug = "c2-live"
+	env, _, _ := captureEnv()
+
+	// Stand in for a live, enabled instance registered for host-call routing.
+	liveID := &pluginIdentity{slug: slug, granted: map[string]bool{PermChatSend: true}}
+	globalPluginRegistry.put(liveID)
+	t.Cleanup(func() { globalPluginRegistry.remove(slug) })
+
+	// Preflight an "update" .ocpkg for the SAME slug.
+	pkgPath := buildPkg(t, map[string][]byte{
+		"plugin.manifest.json": []byte(`{"api":"1","name":"C2 Live","slug":"c2-live","version":"0.2.0"}`),
+		"plugin.js":            []byte(`const { definePlugin } = require("@owncast/plugin-sdk"); module.exports = definePlugin({});`),
+	})
+	pkgBytes, err := os.ReadFile(pkgPath)
+	if err != nil {
+		t.Fatalf("read pkg: %v", err)
+	}
+
+	if _, err := validateUploadedPackage(ctx, env, pkgBytes); err != nil {
+		t.Fatalf("validateUploadedPackage: %v", err)
+	}
+
+	got, ok := globalPluginRegistry.get(slug)
+	if !ok {
+		t.Fatal("preflight removed the live plugin's identity from the registry")
+	}
+	if got != liveID {
+		t.Fatal("preflight left a stale (preflight) identity instead of the live one")
+	}
+}
+
 func TestLoadPackage_MissingManifest(t *testing.T) {
 	path := buildPkg(t, map[string][]byte{
 		pkgWasmFilename: {0x00}, // not parsed; the manifest check fails first

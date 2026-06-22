@@ -683,11 +683,31 @@ func validateUploadedPackage(ctx context.Context, env *HostEnv, packageBytes []b
 			assetsFS = sub
 		}
 	}
+	// The plugin registry is process-global and keyed by slug: loadFromBytes
+	// put()s the slug and the trailing Close() remove()s it. If a plugin of this
+	// slug is already loaded and enabled, this throwaway preflight would delete
+	// the live instance's identity, after which every gated host call from the
+	// still-running plugin resolves as "not found" and silently no-ops until a
+	// reload. Snapshot the existing entry and restore it after the preflight.
+	//
+	// ponytail: this still points the slug at the preflight identity *during*
+	// the load itself, which is harmless in practice (same slug and KV
+	// namespace; the new manifest's permission set differs only for the tens of
+	// ms of a manual install). If that window ever matters, load the preflight
+	// under an isolated registry key instead of the real slug.
+	prevID, hadPrev := globalPluginRegistry.get(manifest.Slug)
+	restoreLiveIdentity := func() {
+		if hadPrev {
+			globalPluginRegistry.put(prevID)
+		}
+	}
 	loaded, err := loadFromBytes(ctx, env, manifestBytes, codeBytes, runtimeType, manifest.Slug, assetsFS)
 	if err != nil {
+		restoreLiveIdentity()
 		return nil, err
 	}
 	loaded.Close(ctx)
+	restoreLiveIdentity()
 	return manifest, nil
 }
 
