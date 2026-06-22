@@ -1530,7 +1530,7 @@ func wireUserHostFns(env *plugins.HostEnv, deps Deps) {
 // pluginAuthSigningSecretKey is where the gate session signing secret is
 // persisted. Generated once on first use; rotating it (clearing the row)
 // invalidates every outstanding session.
-const pluginAuthSigningSecretKey = "plugin_auth_signing_secret"
+const pluginAuthSigningSecretKey = "plugin_auth_signing_secret" //nolint:gosec // G101: datastore key name, not a credential.
 
 // ensureSigningSecret returns the persisted gate session signing secret,
 // generating and storing one on first use.

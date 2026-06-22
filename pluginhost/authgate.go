@@ -60,8 +60,12 @@ var gateExemptions = []gateExemption{
 	{"admin", exemptAdminRoutes},
 	{"static-assets", exemptStaticAssets},
 	{"active-gate-plugin", exemptActiveGatePluginRoutes},
-	{"self-credentialed", exemptSelfCredentialed},
+	{"external-api", exemptExternalAPIRoutes},
 }
+
+// externalAPIPrefix is the namespace for third-party API routes. Each handler
+// there validates its own access token via RequireExternalAPIAccessToken.
+const externalAPIPrefix = "/api/integrations/"
 
 // webFS is the embedded web build (rooted at web/), resolved once. We test
 // request paths against it to decide what's a static asset.
@@ -113,11 +117,21 @@ func exemptActiveGatePluginRoutes(r *http.Request, gateSlug string) bool {
 	return r.URL.Path == base || strings.HasPrefix(r.URL.Path, base+"/")
 }
 
-// exemptSelfCredentialed: requests carrying their own credential (admin Basic
-// auth, external-API Bearer tokens) are left for the downstream handler's own
-// auth to evaluate, rather than bounced to the viewer login screen.
-func exemptSelfCredentialed(r *http.Request, _ string) bool {
-	return r.Header.Get("Authorization") != ""
+// exemptExternalAPIRoutes: the external-API (third-party token) routes under
+// /api/integrations/ carry their own Bearer token, validated per-route by
+// RequireExternalAPIAccessToken. A token client carries no session cookie, so
+// gating these would bounce a valid API call into the HTML login screen; a
+// token-less call still hits the route's own 401. (Admin Basic-auth /
+// admin-session routes are exempted separately by exemptAdminRoutes.)
+//
+// Scoped to that namespace on purpose. An earlier version exempted ANY request
+// carrying an Authorization header, on any path. But the viewer page (/) and
+// the HLS handlers never inspect Authorization, so "Authorization: anything"
+// let an anonymous visitor walk straight through the gate to the page and the
+// live video. Gating is opt-out: a credential a route never checks must never
+// be a bypass on that route.
+func exemptExternalAPIRoutes(r *http.Request, _ string) bool {
+	return strings.HasPrefix(r.URL.Path, externalAPIPrefix)
 }
 
 // gateExemptionFor returns the name of the first exemption that applies, or ""
@@ -214,6 +228,7 @@ func (h *Host) AuthGateMiddleware() func(http.Handler) http.Handler {
 				// Redirect navigations; 401 anything else so XHR/API callers
 				// get a status they can act on instead of an HTML body.
 				if r.Method == http.MethodGet || r.Method == http.MethodHead {
+					//nolint:gosec // G710: loginURL is a same-origin /plugins/<slug>/ path with a query-escaped return_to, not attacker-controlled.
 					http.Redirect(w, r, loginURL, http.StatusFound)
 				} else {
 					http.Error(w, "authentication required", http.StatusUnauthorized)

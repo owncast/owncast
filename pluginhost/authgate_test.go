@@ -34,7 +34,11 @@ func TestDecideGate(t *testing.T) {
 		{"no session redirects to login", newReq("GET", "/", ""), "github-auth", true, true, false, gateLogin},
 		{"valid session allowed", newReq("GET", "/hls/0.ts", ""), "github-auth", true, true, true, gateAllow},
 		{"valid session survives a gate-plugin outage", newReq("GET", "/", ""), "github-auth", false, true, true, gateAllow},
-		{"authorization header allowed (self-credentialed)", newReq("GET", "/api/integrations/foo", "Bearer xyz"), "github-auth", true, true, false, gateAllow},
+		{"external-api route allowed", newReq("GET", "/api/integrations/status", "Bearer xyz"), "github-auth", true, true, false, gateAllow},
+		// An Authorization header must NOT be a bypass on routes that never
+		// check it — these are the gate-defeat vectors the exemption scoping fixes.
+		{"auth header on viewer page is gated", newReq("GET", "/", "Bearer xyz"), "github-auth", true, true, false, gateLogin},
+		{"auth header on HLS segment is gated", newReq("GET", "/hls/0.ts", "anything"), "github-auth", true, true, false, gateLogin},
 	}
 
 	for _, tc := range cases {
@@ -72,7 +76,12 @@ func TestGateExemptions(t *testing.T) {
 		{"active gate plugin root", req("/plugins/g", ""), "g", "active-gate-plugin"},
 		{"active gate plugin subpath", req("/plugins/g/callback", ""), "g", "active-gate-plugin"},
 		{"a different plugin is NOT exempt", req("/plugins/other/x", ""), "g", ""},
-		{"self-credentialed", req("/api/x", "Bearer t"), "g", "self-credentialed"},
+		{"external-api route exempt", req("/api/integrations/status", "Bearer t"), "g", "external-api"},
+		{"external-api route exempt even without a header (route 401s itself)", req("/api/integrations/status", ""), "g", "external-api"},
+		// An Authorization header is NOT a bypass off the external-API namespace.
+		{"auth header on viewer page is NOT a bypass", req("/", "Bearer t"), "g", ""},
+		{"auth header on HLS is NOT a bypass", req("/hls/0.ts", "Bearer t"), "g", ""},
+		{"auth header on public api/config is NOT a bypass", req("/api/config", "Bearer t"), "g", ""},
 		// Real files in the embedded web build are exempt (resolved by fs.Stat).
 		{"admin stylesheet exempt", req("/styles/admin/chat.css", ""), "g", "static-assets"},
 		{"service worker exempt", req("/sw.js", ""), "g", "static-assets"},
