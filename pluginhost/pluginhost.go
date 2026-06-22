@@ -1600,6 +1600,13 @@ func wireAuthHostFns(env *plugins.HostEnv, deps Deps) {
 	}
 
 	env.GrantSession = func(pluginName, userID string, ttlSeconds int64) (string, error) {
+		// Only mint a session for a user THIS plugin registered. RegisterUser
+		// namespaces every plugin identity by slug; mirror that here so a gate
+		// plugin can't grant a session impersonating an arbitrary existing user
+		// (e.g. a moderator) just by naming their id.
+		if !users.UserRegisteredByPlugin(pluginName, userID) {
+			return "", fmt.Errorf("user %q was not registered by plugin %q", userID, pluginName)
+		}
 		// Mint an access token for this session and carry it (signed) in the
 		// cookie, so the chat /ws path can resolve the viewer via the existing
 		// GetUserByToken lookup. Login is infrequent, so a token per session is

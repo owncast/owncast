@@ -219,6 +219,23 @@ func (q *Queries) ChangeDisplayName(ctx context.Context, arg ChangeDisplayNamePa
 	return err
 }
 
+const countUserAuthByTypeAndTokenPrefix = `-- name: CountUserAuthByTypeAndTokenPrefix :one
+SELECT count(*) FROM auth WHERE user_id = ? AND type = ? AND token LIKE ?
+`
+
+type CountUserAuthByTypeAndTokenPrefixParams struct {
+	UserID string
+	Type   string
+	Token  string
+}
+
+func (q *Queries) CountUserAuthByTypeAndTokenPrefix(ctx context.Context, arg CountUserAuthByTypeAndTokenPrefixParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countUserAuthByTypeAndTokenPrefix, arg.UserID, arg.Type, arg.Token)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const doesInboundActivityExist = `-- name: DoesInboundActivityExist :one
 SELECT count(*) FROM ap_accepted_activities WHERE iri = ? AND actor = ? AND TYPE = ?
 `

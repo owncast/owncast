@@ -129,6 +129,9 @@ INSERT INTO auth(user_id, token, type) values(?, ?, ?);
 -- name: GetUserByAuth :one
 SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE token = ? AND auth.type = ? AND users.id = auth.user_id;
 
+-- name: CountUserAuthByTypeAndTokenPrefix :one
+SELECT count(*) FROM auth WHERE user_id = ? AND type = ? AND token LIKE ?;
+
 -- name: AddAccessTokenForUser :exec
 INSERT INTO user_access_tokens(token, user_id) values(?, ?);
 

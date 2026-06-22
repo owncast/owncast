@@ -42,6 +42,7 @@ type UserRepository interface {
 	HasValidScopes(scopes []string) bool
 	GetUserByAuth(authToken string, authType models.AuthType) *models.User
 	AddAuth(userID, authToken string, authType models.AuthType) error
+	UserRegisteredByPlugin(pluginName, userID string) bool
 	AddAccessTokenForUser(accessToken, userID string) error
 	SetUserScopes(userID string, scopes []string) error
 	SetExternalAPIUserAccessTokenAsUsed(token string) error
@@ -290,6 +291,29 @@ func (r *SqlUserRepository) AddAuth(userID, authToken string, authType models.Au
 		Token:  authToken,
 		Type:   string(authType),
 	})
+}
+
+// UserRegisteredByPlugin reports whether userID belongs to a user the named
+// plugin registered via owncast.users.register — i.e. the user has a
+// plugin.auth identity namespaced to that plugin's slug (RegisterUser stores
+// it as "<slug>:<authId>"). The viewer-auth gate uses this to confine
+// owncast.auth.grantSession to a plugin's own users, so a gate plugin can't
+// mint a session impersonating an arbitrary existing user (e.g. a moderator).
+//
+// Matching on the "<slug>:" prefix is safe: plugin slugs are validated to
+// lowercase letters/digits/hyphens, so they can't carry SQL LIKE wildcards.
+// Fails closed (returns false) on any query error.
+func (r *SqlUserRepository) UserRegisteredByPlugin(pluginName, userID string) bool {
+	count, err := r.datastore.GetQueries().CountUserAuthByTypeAndTokenPrefix(context.Background(), db.CountUserAuthByTypeAndTokenPrefixParams{
+		UserID: userID,
+		Type:   string(models.PluginAuth),
+		Token:  pluginName + ":%",
+	})
+	if err != nil {
+		log.Errorln("checking plugin user ownership:", err)
+		return false
+	}
+	return count > 0
 }
 
 // GetUserByAuth will return an existing user given auth details if a user
@@ -583,6 +607,12 @@ func (r *SqlUserRepository) DeleteExternalAPIUser(token string) error {
 }
 
 // GetExternalAPIUserForAccessTokenAndScope will determine if a specific token has access to perform a scoped action.
+//
+// Only true third-party API integrations (users.type = 'API', created via the
+// admin Access Tokens UI) may authenticate to the scoped external API. Without
+// the type filter, any user that happened to carry an admin scope on a regular
+// access token — e.g. a user created and granted a session by a viewer-auth
+// plugin — would also pass, which is not the intent of this Bearer-token API.
 func (r *SqlUserRepository) GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*models.ExternalAPIUser, error) {
 	// This will split the scopes from comma separated to individual rows
 	// so we can efficiently find if a token supports a single scope.
@@ -621,6 +651,8 @@ FROM
         scopes || ','
       FROM
         users AS u
+      WHERE
+        u.type = 'API'
       UNION ALL
       SELECT
         id,
