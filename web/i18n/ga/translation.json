@@ -176,7 +176,9 @@
         "usersModerate": "Déanaigh suirbhé ar úsáideoirí",
         "usersRead": "Léigh liosta na n-úsáideoirí",
         "videoconfigRead": "Léigh socruithe físe",
-        "videoconfigWrite": "Athraigh socruithe físe"
+        "videoconfigWrite": "Athraigh socruithe físe",
+        "usersRegister": "Cláraigh ar lucht féachana",
+        "authGate": "Rochtain lucht féachana a chosc"
       },
       "Permissions": {
         "chatFilter": "Scrios agus athraigh teachtaireachtaí comhrá sula dtuairiscítear iad, nó baineann iad go hiomlán.",
@@ -197,7 +199,9 @@
         "usersModerate": "Dún nó ath-oscail úsáideoirí comhrá.",
         "usersRead": "Léigh liosta na n-úsáideoirí comhrá agus sonraí gach úsáideora.",
         "videoconfigRead": "Léigh confhigiú rian agus comhoiriúnacht físe (encoders, éagsúlachtaí).",
-        "videoconfigWrite": "Athraigh comhoiriúnacht rian agus físe."
+        "videoconfigWrite": "Athraigh comhoiriúnacht rian agus físe.",
+        "usersRegister": "Cruthaigh agus cláraigh úsáideoirí Owncast le haghaidh aithint sheachtrach (mar shampla, cuntas OAuth nó sóisialta).",
+        "authGate": "Feidhmiú mar ghoirtean fíordheimhnithe lucht féachana, ag clárú lucht féachana agus ag rialú a rochtain ar an suíomh."
       },
       "allowedHostsLabel": "Óstáin cheadaithe:",
       "approveButton": "Ceadaigh",
@@ -213,6 +217,12 @@
       "browseUpdate": "Nuashonrú chuig v{{version}}",
       "commandColumnHeader": "Conas",
       "commandsTab": "Conas",
+      "configTab": "Socruithe",
+      "configSave": "Sábháil",
+      "configSaved": "Socruithe sábháilte.",
+      "configSaveError": "Níorbh fhéidir na socruithe a shábháil.",
+      "configLoadError": "Níorbh fhéidir na socruithe a لódáil.",
+      "configEmpty": "Níl socruithe inchoigeartaithe ag an bplean gníomhach seo.",
       "configure": "Conifigh",
       "descriptionColumnHeader": "Cur síos",
       "enabledColumn": "Níos mó",

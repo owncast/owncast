@@ -176,7 +176,9 @@
         "usersModerate": "Moderirajte korisnike",
         "usersRead": "Čitajte popis korisnika",
         "videoconfigRead": "Čitajte postavke videa",
-        "videoconfigWrite": "Promijenite postavke videa"
+        "videoconfigWrite": "Promijenite postavke videa",
+        "usersRegister": "Prijavite se gledatelji",
+        "authGate": "Pristup gledateljima preko vrata"
       },
       "Permissions": {
         "chatFilter": "Ispitajte i modificirajte poruke u chatu prije nego što budu emitirane, ili ih potpuno uklonite.",
@@ -197,7 +199,9 @@
         "usersModerate": "Onemogućite ili ponovo omogućite korisnike chata.",
         "usersRead": "Čitajte popis korisnika chata i pojedinosti po korisniku.",
         "videoconfigRead": "Čitajte konfiguraciju streaminga i video izlaza (enkodirane, varijante).",
-        "videoconfigWrite": "Modificirajte konfiguraciju streaminga i video izlaza."
+        "videoconfigWrite": "Modificirajte konfiguraciju streaminga i video izlaza.",
+        "usersRegister": "Stvaranje i prijava Owncast korisnika za vanjski identitet (kao što je OAuth ili društveni račun).",
+        "authGate": "Djelujte kao vrata za autentifikaciju gledatelja, prijavljujući gledatelje i kontrolirajući njihov pristup stranici."
       },
       "allowedHostsLabel": "Dozvoljeni hostovi:",
       "approveButton": "Odobri",
@@ -213,6 +217,12 @@
       "browseUpdate": "Ažuriraj na v{{version}}",
       "commandColumnHeader": "Komanda",
       "commandsTab": "Komande",
+      "configTab": "Postavke",
+      "configSave": "Spremi",
+      "configSaved": "Postavke spremljene.",
+      "configSaveError": "Nije moguće spremiti postavke.",
+      "configLoadError": "Nije moguće učitati postavke.",
+      "configEmpty": "Ova ekstenzija nema konfigurabilne postavke.",
       "configure": "Konfiguriraj",
       "descriptionColumnHeader": "Opis",
       "enabledColumn": "Omogućeno",

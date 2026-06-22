@@ -176,7 +176,9 @@
         "usersModerate": "Moderer brukere",
         "usersRead": "Les brukerliste",
         "videoconfigRead": "Les videoinnstillinger",
-        "videoconfigWrite": "Endre videoinnstillinger"
+        "videoconfigWrite": "Endre videoinnstillinger",
+        "usersRegister": "Logg inn seere",
+        "authGate": "Gi seertilgang"
       },
       "Permissions": {
         "chatFilter": "Inspiser og endre chatte meldinger før de sendes, eller slipp dem helt.",
@@ -197,7 +199,9 @@
         "usersModerate": "Deaktiver eller reaktivere prat brukere.",
         "usersRead": "Les brukerlisten i chat og per bruker.",
         "videoconfigRead": "Les konfigurasjonen for stream- og videoutdata (koder, varianter).",
-        "videoconfigWrite": "Endre strøm- og videoutgangskonfigurasjonen."
+        "videoconfigWrite": "Endre strøm- og videoutgangskonfigurasjonen.",
+        "usersRegister": "Opprett og logg inn i Owncast brukere for en ekstern identitet (for eksempel en OAuth- eller social account).",
+        "authGate": "Act as a viewer-authentication gate, sign viewers in and controlling their access to the site."
       },
       "allowedHostsLabel": "Tillatte verter:",
       "approveButton": "Godkjenn",
@@ -213,6 +217,12 @@
       "browseUpdate": "Oppdater til v{{version}}",
       "commandColumnHeader": "Kommando",
       "commandsTab": "Kommandoer",
+      "configTab": "Innstillinger",
+      "configSave": "Lagre",
+      "configSaved": "Innstillinger lagret.",
+      "configSaveError": "Kan ikke lagre innstillingene.",
+      "configLoadError": "Kunne ikke laste inn innstillinger.",
+      "configEmpty": "Dette programtillegget har ingen konfigurerbare innstillinger.",
       "configure": "Konfigurer",
       "descriptionColumnHeader": "Beskrivelse",
       "enabledColumn": "Aktivert",

@@ -176,7 +176,9 @@
         "usersModerate": "Quản lý người dùng",
         "usersRead": "Đọc danh sách người dùng",
         "videoconfigRead": "Đọc cài đặt video",
-        "videoconfigWrite": "Thay đổi cài đặt video"
+        "videoconfigWrite": "Thay đổi cài đặt video",
+        "usersRegister": "Đăng nhập người xem",
+        "authGate": "Cấp quyền truy cập người xem"
       },
       "Permissions": {
         "chatFilter": "Kiểm tra và chỉnh sửa tin nhắn trò chuyện trước khi chúng được phát sóng, hoặc xóa bỏ hoàn toàn chúng.",
@@ -197,7 +199,9 @@
         "usersModerate": "Vô hiệu hóa hoặc kích hoạt lại người dùng trò chuyện.",
         "usersRead": "Đọc danh sách người dùng trò chuyện và các chi tiết per-user.",
         "videoconfigRead": "Đọc cấu hình đầu vào và video (bộ mã hóa, biến thể).",
-        "videoconfigWrite": "Chỉnh sửa cấu hình đầu vào và video."
+        "videoconfigWrite": "Chỉnh sửa cấu hình đầu vào và video.",
+        "usersRegister": "Tạo và đăng nhập người dùng Owncast cho một danh tính bên ngoài (như tài khoản OAuth hoặc tài khoản xã hội).",
+        "authGate": "Đóng vai trò như một cổng xác thực người xem, đăng nhập người xem và kiểm soát quyền truy cập của họ vào trang web."
       },
       "allowedHostsLabel": "Các máy chủ được phép:",
       "approveButton": "Phê duyệt",
@@ -213,6 +217,12 @@
       "browseUpdate": "Cập nhật lên v{{version}}",
       "commandColumnHeader": "Lệnh",
       "commandsTab": "Lệnh",
+      "configTab": "Cài đặt",
+      "configSave": "Lưu",
+      "configSaved": "Cài đặt đã được lưu.",
+      "configSaveError": "Không thể lưu cài đặt.",
+      "configLoadError": "Không thể tải cài đặt.",
+      "configEmpty": "Plugin này không có cài đặt có thể cấu hình.",
       "configure": "Cấu hình",
       "descriptionColumnHeader": "Mô tả",
       "enabledColumn": "Đã kích hoạt",

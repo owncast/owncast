@@ -176,7 +176,9 @@
         "usersModerate": "Utenti moderati",
         "usersRead": "Leggi elenco utenti",
         "videoconfigRead": "Leggi impostazioni video",
-        "videoconfigWrite": "Modifica impostazioni video"
+        "videoconfigWrite": "Modifica impostazioni video",
+        "usersRegister": "Accedi agli spettatori",
+        "authGate": "Accesso visore cancello"
       },
       "Permissions": {
         "chatFilter": "Ispezionare e modificare i messaggi di chat prima che vengano trasmessi, o abbandonarli completamente.",
@@ -197,7 +199,9 @@
         "usersModerate": "Disabilita o riabilita gli utenti di chat.",
         "usersRead": "Leggi l'elenco degli utenti della chat e i dettagli per utente.",
         "videoconfigRead": "Leggere la configurazione di output stream e video (encoder, varianti).",
-        "videoconfigWrite": "Modificare la configurazione di output stream e video."
+        "videoconfigWrite": "Modificare la configurazione di output stream e video.",
+        "usersRegister": "Crea e accedi agli utenti di Owncast per un'identità esterna (come un OAuth o un account sociale).",
+        "authGate": "Agisci come un cancello di autenticazione del telespettatore, firma gli spettatori e controlla il loro accesso al sito."
       },
       "allowedHostsLabel": "Host ammessi:",
       "approveButton": "Approva",
@@ -213,6 +217,12 @@
       "browseUpdate": "Aggiorna a v{{version}}",
       "commandColumnHeader": "Comando",
       "commandsTab": "Comandi",
+      "configTab": "Impostazioni",
+      "configSave": "Salva",
+      "configSaved": "Impostazioni salvate.",
+      "configSaveError": "Impossibile salvare le impostazioni.",
+      "configLoadError": "Impossibile caricare le impostazioni.",
+      "configEmpty": "Questo plugin non ha impostazioni configurabili.",
       "configure": "Configura",
       "descriptionColumnHeader": "Descrizione",
       "enabledColumn": "Abilitato",

@@ -176,7 +176,9 @@
         "usersModerate": "Moderasi pengguna",
         "usersRead": "Baca senarai pengguna",
         "videoconfigRead": "Baca tetapan video",
-        "videoconfigWrite": "Ubah tetapan video"
+        "videoconfigWrite": "Ubah tetapan video",
+        "usersRegister": "Tandakan masuk penonton",
+        "authGate": "Akses penonton Gate"
       },
       "Permissions": {
         "chatFilter": "Periksa dan ubah mesej sembang sebelum ia disiarkan, atau drop mereka sepenuhnya.",
@@ -197,7 +199,9 @@
         "usersModerate": "Matikan atau hidupkan semula pengguna sembang.",
         "usersRead": "Baca senarai pengguna sembang dan butiran per pengguna.",
         "videoconfigRead": "Baca konfigurasi output aliran dan video (pengekod, variasi).",
-        "videoconfigWrite": "Ubah suai konfigurasi output aliran dan video."
+        "videoconfigWrite": "Ubah suai konfigurasi output aliran dan video.",
+        "usersRegister": "Cipta dan tandakan masuk pengguna Owncast untuk identiti luar (seperti akaun OAuth atau sosial).",
+        "authGate": "Bertindak sebagai pintu autentikasi penonton, menandakan masuk penonton dan mengawal akses mereka ke laman web."
       },
       "allowedHostsLabel": "Hos yang dibenarkan:",
       "approveButton": "Lulus",
@@ -213,6 +217,12 @@
       "browseUpdate": "Kemas kini kepada v{{version}}",
       "commandColumnHeader": "Perintah",
       "commandsTab": "Perintah",
+      "configTab": "Tetapan",
+      "configSave": "Simpan",
+      "configSaved": "Tetapan disimpan.",
+      "configSaveError": "Tidak dapat menyimpan tetapan.",
+      "configLoadError": "Tidak dapat memuat tetapan.",
+      "configEmpty": "Plugin ini tiada tetapan yang boleh dikonfigurasi.",
       "configure": "Konfigurasikan",
       "descriptionColumnHeader": "Penerangan",
       "enabledColumn": "Dihidupkan",
