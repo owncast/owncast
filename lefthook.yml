@@ -105,9 +105,24 @@ lint:
       run: ./bin/golangci-lint run ./...
 
 # Validate commit messages per https://www.conventionalcommits.org/en/v1.0.0/
-# Install commitlint into your global npm path if you want to use it.
-# npm install -g @commitlint/{config-conventional,cli}
+# Uses commitlint when it's installed (npm install -g @commitlint/{config-conventional,cli}),
+# and otherwise falls back to a self-contained Conventional Commits check so the
+# format is enforced even without the global npm install.
 commit-msg:
   commands:
     'lint commit message':
-      run: if command -v commitlint >/dev/null 2>&1; then commitlint --edit {1}; fi
+      run: |
+        if command -v commitlint >/dev/null 2>&1; then
+          commitlint --edit {1}
+        else
+          subject=$(sed -n '1p' {1})
+          case "$subject" in
+            *WIP*|"Merge "*|"Revert "*|"fixup! "*|"squash! "*) exit 0 ;;
+          esac
+          if ! printf '%s' "$subject" | grep -qE '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([^)]+\))?!?: .+'; then
+            echo "Commit message must follow Conventional Commits: type(scope): summary" >&2
+            echo "  allowed types: build chore ci docs feat fix perf refactor revert style test" >&2
+            echo "  got: $subject" >&2
+            exit 1
+          fi
+        fi
