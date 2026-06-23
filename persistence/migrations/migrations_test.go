@@ -68,8 +68,8 @@ func TestRun_FreshDatabase(t *testing.T) {
 		t.Error("fresh install should not have legacy config table")
 	}
 
-	if v := gooseVersion(t, db); v != 3 {
-		t.Errorf("goose version = %d, want 3", v)
+	if v := gooseVersion(t, db); v != 4 {
+		t.Errorf("goose version = %d, want 4", v)
 	}
 
 	// Calling Run a second time should be a no-op (idempotent).
@@ -93,8 +93,8 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	}
 
 	// Goose should record the latest migration.
-	if v := gooseVersion(t, db); v != 3 {
-		t.Errorf("goose version = %d, want 3", v)
+	if v := gooseVersion(t, db); v != 4 {
+		t.Errorf("goose version = %d, want 4", v)
 	}
 
 	// Config version should still be 9, the legacy bridge was not invoked.
@@ -141,8 +141,58 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 	}
 
 	// Goose should have recorded the latest migration.
-	if v := gooseVersion(t, db); v != 3 {
-		t.Errorf("goose version = %d, want 3", v)
+	if v := gooseVersion(t, db); v != 4 {
+		t.Errorf("goose version = %d, want 4", v)
+	}
+}
+
+// TestRun_BackfillsLinkedIdentities verifies that the 00004 migration upgrades
+// existing auth rows in place: token becomes auth_key, provider is set, and the
+// IndieAuth/Fediverse freebies (profile_url / handle) are backfilled — so
+// returning users keep their linked identity across the upgrade.
+func TestRun_BackfillsLinkedIdentities(t *testing.T) {
+	db := openTestDB(t)
+	createV9Schema(t, db) // auth table here still has the old "token" column
+
+	// Seed one identity per built-in provider, as a pre-goose install would.
+	mustExec(t, db, `INSERT INTO auth(user_id, token, type) VALUES('u-indie', 'https://me.example.com', 'indieauth')`)
+	mustExec(t, db, `INSERT INTO auth(user_id, token, type) VALUES('u-fedi', '@me@host.example', 'fediverse')`)
+
+	if err := Run(db, t.TempDir()); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+
+	// IndieAuth: auth_key carried over, provider=type, profile_url=auth_key,
+	// no handle, consent off.
+	var authKey, provider string
+	var profileURL, handle sql.NullString
+	var isPublic bool
+	mustScan(t, db.QueryRow(`SELECT auth_key, provider, profile_url, handle, is_public FROM auth WHERE user_id='u-indie'`),
+		&authKey, &provider, &profileURL, &handle, &isPublic)
+	if authKey != "https://me.example.com" || provider != "indieauth" {
+		t.Errorf("indieauth row: auth_key=%q provider=%q", authKey, provider)
+	}
+	if !profileURL.Valid || profileURL.String != "https://me.example.com" {
+		t.Errorf("indieauth profile_url = %v, want the me URL", profileURL)
+	}
+	if handle.Valid {
+		t.Errorf("indieauth handle should be NULL, got %q", handle.String)
+	}
+	if isPublic {
+		t.Errorf("indieauth is_public = %v, want false", isPublic)
+	}
+
+	// Fediverse: handle backfilled from auth_key, no profile_url (resolved later).
+	mustScan(t, db.QueryRow(`SELECT auth_key, provider, profile_url, handle, is_public FROM auth WHERE user_id='u-fedi'`),
+		&authKey, &provider, &profileURL, &handle, &isPublic)
+	if authKey != "@me@host.example" || provider != "fediverse" {
+		t.Errorf("fediverse row: auth_key=%q provider=%q", authKey, provider)
+	}
+	if profileURL.Valid {
+		t.Errorf("fediverse profile_url should be NULL, got %q", profileURL.String)
+	}
+	if !handle.Valid || handle.String != "@me@host.example" {
+		t.Errorf("fediverse handle = %v, want the account", handle)
 	}
 }
 

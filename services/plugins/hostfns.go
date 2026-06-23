@@ -300,11 +300,13 @@ type HostEnv struct {
 	Users           func() []HostUser                // users.read
 	UserGet         func(id string) (HostUser, bool) // users.read
 	// RegisterUser finds-or-creates an authenticated Owncast user for an external
-	// identity (users.register). pluginName namespaces authID internally so two
-	// auth plugins can't collide on, or spoof, each other's identities. Returns
-	// the Owncast user ID. Optional; nil → the host function reports an error to
-	// the plugin.
-	RegisterUser func(pluginName, authID, displayName string, scopes []string) (userID string, err error)
+	// identity (users.register). pluginName is the verified calling slug; it
+	// scopes the identity so two auth plugins can't collide on, or spoof, each
+	// other's users. req carries the plugin-supplied identity (authId, optional
+	// display name, scopes, and optional public-profile fields). Returns the
+	// Owncast user ID. Optional; nil → the host function reports an error to the
+	// plugin.
+	RegisterUser func(pluginName string, req UserRegisterRequest) (userID string, err error)
 	// GrantSession mints a signed, stateless session token for an
 	// already-registered user (auth.gate). ttlSeconds of 0 means the host
 	// default. It returns the token; the host function attaches it as a cookie
@@ -730,10 +732,19 @@ func hostUserGet(env *HostEnv) extism.HostFunction {
 }
 
 // UserRegisterRequest is the JSON payload a plugin sends to owncast.users.register.
+//
+// The optional ProfileURL/Handle/Public fields describe a public verified
+// identity: where it links, how to label it, and whether the user agreed to
+// surface it. A gate-only plugin leaves them empty and nothing shows publicly;
+// an identity plugin (GitHub, Fediverse, ...) fills them in. The host pins the
+// provider to the calling plugin's slug, so it is not part of this payload.
 type UserRegisterRequest struct {
 	AuthID      string   `json:"authId"`
 	DisplayName string   `json:"displayName,omitempty"`
 	Scopes      []string `json:"scopes,omitempty"`
+	ProfileURL  string   `json:"profileUrl,omitempty"`
+	Handle      string   `json:"handle,omitempty"`
+	Public      bool     `json:"public,omitempty"`
 }
 
 // UserRegisterResult is the JSON envelope returned to the plugin: the resolved
@@ -795,7 +806,7 @@ func hostUsersRegister(env *HostEnv) extism.HostFunction {
 				stack[0] = writeJSON(p, UserRegisterResult{Error: "users.register is not available on this host"})
 				return
 			}
-			userID, err := env.RegisterUser(ident.slug, req.AuthID, req.DisplayName, req.Scopes)
+			userID, err := env.RegisterUser(ident.slug, req)
 			if err != nil {
 				stack[0] = writeJSON(p, UserRegisterResult{Error: err.Error()})
 				return

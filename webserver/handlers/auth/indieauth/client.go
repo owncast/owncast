@@ -116,9 +116,10 @@ func (h *Handler) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Otherwise, save this as new auth.
+	// Otherwise, save this as new auth. The IndieAuth "me" URL is both the auth
+	// key and the public profile link, so record it as the profile URL too.
 	log.Debug("indieauth token does not already exist, saving it as a new one for the current user")
-	if err := h.userRepository.AddAuth(request.UserID, response.Me, models.IndieAuth); err != nil {
+	if err := h.userRepository.AddAuth(request.UserID, response.Me, models.IndieAuth, &models.LinkedIdentityFields{ProfileURL: response.Me}); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

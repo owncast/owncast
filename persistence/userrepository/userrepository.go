@@ -43,7 +43,8 @@ type UserRepository interface {
 	SetUserAsAuthenticated(userID string) error
 	HasValidScopes(scopes []string) bool
 	GetUserByAuth(authToken string, authType models.AuthType) *models.User
-	AddAuth(userID, authToken string, authType models.AuthType) error
+	GetUserByPluginAuth(pluginName, authKey string) *models.User
+	AddAuth(userID, authKey string, authType models.AuthType, fields *models.LinkedIdentityFields) error
 	UserRegisteredByPlugin(pluginName, userID string) bool
 	AddAccessTokenForUser(accessToken, userID string) error
 	SetUserScopes(userID string, scopes []string) error
@@ -286,30 +287,54 @@ func (r *SqlUserRepository) SetUserAsAuthenticated(userID string) error {
 	return errors.Wrap(r.datastore.GetQueries().SetUserAsAuthenticated(context.Background(), userID), "unable to set user as authenticated")
 }
 
-// AddAuth will add an external authentication token and type for a user.
-func (r *SqlUserRepository) AddAuth(userID, authToken string, authType models.AuthType) error {
+// AddAuth links an external authentication identity to a user. authKey is the
+// value matched at login (the IndieAuth/Fediverse identity, or a plugin's raw
+// external id). fields carries the optional linked-identity metadata (provider,
+// profile URL, handle, public consent) and may be nil for a bare identity, in
+// which case provider defaults to the auth type.
+func (r *SqlUserRepository) AddAuth(userID, authKey string, authType models.AuthType, fields *models.LinkedIdentityFields) error {
+	provider := string(authType)
+	var profileURL, handle sql.NullString
+	var isPublic bool
+	if fields != nil {
+		if fields.Provider != "" {
+			provider = fields.Provider
+		}
+		if fields.ProfileURL != "" {
+			profileURL = sql.NullString{String: fields.ProfileURL, Valid: true}
+		}
+		if fields.Handle != "" {
+			handle = sql.NullString{String: fields.Handle, Valid: true}
+		}
+		isPublic = fields.Public
+	}
+
 	return r.datastore.GetQueries().AddAuthForUser(context.Background(), db.AddAuthForUserParams{
-		UserID: userID,
-		Token:  authToken,
-		Type:   string(authType),
+		UserID:     userID,
+		AuthKey:    authKey,
+		Type:       string(authType),
+		Provider:   provider,
+		ProfileUrl: profileURL,
+		Handle:     handle,
+		IsPublic:   isPublic,
 	})
 }
 
 // UserRegisteredByPlugin reports whether userID belongs to a user the named
 // plugin registered via owncast.users.register — i.e. the user has a
-// plugin.auth identity namespaced to that plugin's slug (RegisterUser stores
-// it as "<slug>:<authId>"). The viewer-auth gate uses this to confine
-// owncast.auth.grantSession to a plugin's own users, so a gate plugin can't
-// mint a session impersonating an arbitrary existing user (e.g. a moderator).
+// plugin.auth identity whose provider is that plugin's slug. The viewer-auth
+// gate uses this to confine owncast.auth.grantSession to a plugin's own users,
+// so a gate plugin can't mint a session impersonating an arbitrary existing
+// user (e.g. a moderator).
 //
-// Matching on the "<slug>:" prefix is safe: plugin slugs are validated to
-// lowercase letters/digits/hyphens, so they can't carry SQL LIKE wildcards.
-// Fails closed (returns false) on any query error.
+// The match is an exact equality on (type='plugin.auth', provider=slug): type
+// keeps built-in identities out of reach even if a plugin's slug is "indieauth"
+// or "fediverse". Fails closed (returns false) on any query error.
 func (r *SqlUserRepository) UserRegisteredByPlugin(pluginName, userID string) bool {
-	count, err := r.datastore.GetQueries().CountUserAuthByTypeAndTokenPrefix(context.Background(), db.CountUserAuthByTypeAndTokenPrefixParams{
-		UserID: userID,
-		Type:   string(models.PluginAuth),
-		Token:  pluginName + ":%",
+	count, err := r.datastore.GetQueries().CountUserAuthByProvider(context.Background(), db.CountUserAuthByProviderParams{
+		UserID:   userID,
+		Type:     string(models.PluginAuth),
+		Provider: pluginName,
 	})
 	if err != nil {
 		log.Errorln("checking plugin user ownership:", err)
@@ -319,32 +344,35 @@ func (r *SqlUserRepository) UserRegisteredByPlugin(pluginName, userID string) bo
 }
 
 // GetUserByAuth will return an existing user given auth details if a user
-// has previously authenticated with that method.
+// has previously authenticated with that method. For built-in providers the
+// auth key (IndieAuth website / Fediverse handle) plus type uniquely identify
+// the row. Plugin auth must use GetUserByPluginAuth so the lookup is scoped to
+// the registering plugin's slug.
 func (r *SqlUserRepository) GetUserByAuth(authToken string, authType models.AuthType) *models.User {
 	u, err := r.datastore.GetQueries().GetUserByAuth(context.Background(), db.GetUserByAuthParams{
-		Token: authToken,
-		Type:  string(authType),
+		AuthKey: authToken,
+		Type:    string(authType),
 	})
 	if err != nil {
 		return nil
 	}
+	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, false)
+}
 
-	var scopes []string
-	if u.Scopes.Valid {
-		scopes = strings.Split(u.Scopes.String, ",")
+// GetUserByPluginAuth returns the user a viewer-auth plugin registered for the
+// given raw external id, scoped to that plugin's slug. It is the find half of
+// owncast.users.register's find-or-create, and the (provider, auth_key) scoping
+// keeps two plugins that mint the same external id from resolving each other's
+// users.
+func (r *SqlUserRepository) GetUserByPluginAuth(pluginName, authKey string) *models.User {
+	u, err := r.datastore.GetQueries().GetUserByPluginAuth(context.Background(), db.GetUserByPluginAuthParams{
+		Provider: pluginName,
+		AuthKey:  authKey,
+	})
+	if err != nil {
+		return nil
 	}
-
-	return &models.User{
-		ID:              u.ID,
-		DisplayName:     u.DisplayName,
-		DisplayColor:    int(u.DisplayColor),
-		CreatedAt:       u.CreatedAt.Time,
-		DisabledAt:      &u.DisabledAt.Time,
-		PreviousNames:   strings.Split(u.PreviousNames.String, ","),
-		NameChangedAt:   &u.NamechangedAt.Time,
-		AuthenticatedAt: &u.AuthenticatedAt.Time,
-		Scopes:          scopes,
-	}
+	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, false)
 }
 
 // SetUserScopes replaces a user's full scope set. Used by viewer-auth plugins
@@ -538,7 +566,7 @@ func (r *SqlUserRepository) attachAuthProviders(ctx context.Context, users []*mo
 	byUser := map[string][]string{}
 	seen := map[string]map[string]bool{}
 	for _, a := range authRows {
-		label := authProviderLabel(a.Type, a.Token)
+		label := authProviderLabel(a.Type, a.Provider)
 		if seen[a.UserID] == nil {
 			seen[a.UserID] = map[string]bool{}
 		}
@@ -557,17 +585,17 @@ func (r *SqlUserRepository) attachAuthProviders(ctx context.Context, users []*mo
 }
 
 // authProviderLabel turns an auth row into a human-friendly provider name. For
-// plugin auth the token is namespaced as "<plugin-slug>:<externalId>", so the
-// plugin slug is surfaced rather than the opaque "plugin.auth" type.
-func authProviderLabel(authType, token string) string {
+// plugin auth the provider column holds the plugin slug, so the slug is
+// surfaced rather than the opaque "plugin.auth" type.
+func authProviderLabel(authType, provider string) string {
 	switch models.AuthType(authType) {
 	case models.IndieAuth:
 		return "IndieAuth"
 	case models.Fediverse:
 		return "Fediverse"
 	case models.PluginAuth:
-		if i := strings.IndexByte(token, ':'); i > 0 {
-			return token[:i]
+		if provider != "" {
+			return provider
 		}
 		return "Plugin"
 	default:

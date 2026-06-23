@@ -177,6 +177,9 @@
     "UserRegisterRequest": {
       "authId": "string",
       "displayName": "string",
+      "handle": "string",
+      "profileUrl": "string",
+      "public": "bool",
       "scopes": "[]string"
     },
     "UserRegisterResult": {

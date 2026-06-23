@@ -129,9 +129,11 @@ func (h *Handler) VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	// Otherwise, save this as new auth.
+	// Otherwise, save this as new auth. The @me@host account is the auth key and
+	// the human-readable handle; the public profile URL is left to be resolved
+	// from the handle (webfinger) when the public badge UI needs it.
 	log.Debug("fediverse account does not already exist, saving it as a new one for the current user")
-	if err := h.userRepository.AddAuth(authRegistration.UserID, authRegistration.Account, models.Fediverse); err != nil {
+	if err := h.userRepository.AddAuth(authRegistration.UserID, authRegistration.Account, models.Fediverse, &models.LinkedIdentityFields{Handle: authRegistration.Account}); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

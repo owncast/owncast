@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -1635,6 +1636,25 @@ func validatePluginGrantedScopes(scopes []string) error {
 	return nil
 }
 
+// validateProfileURL rejects a plugin-supplied profile URL that isn't a plain
+// http(s) link. The URL is stored as a verified identity and rendered as a
+// clickable public link later, so a non-http scheme (javascript:, data:) or a
+// hostless value must fail at registration rather than ship to a browser. An
+// empty URL is allowed: a gate-only plugin surfaces nothing publicly.
+func validateProfileURL(profileURL string) error {
+	if profileURL == "" {
+		return nil
+	}
+	u, err := url.Parse(profileURL)
+	if err != nil {
+		return fmt.Errorf("invalid profile URL: %w", err)
+	}
+	if (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+		return fmt.Errorf("profile URL must be an http(s) link")
+	}
+	return nil
+}
+
 // wireAuthHostFns wires the viewer-authentication host functions: register an
 // authenticated user for an external (plugin-provided) identity, and mint a
 // signed gate session for them.
@@ -1649,37 +1669,63 @@ func wireAuthHostFns(env *plugins.HostEnv, deps Deps) {
 		return
 	}
 
-	env.RegisterUser = func(pluginName, authID, displayName string, scopes []string) (string, error) {
-		// Validate requested scopes against the plugin-grantable allow-list
+	env.RegisterUser = func(pluginName string, req plugins.UserRegisterRequest) (string, error) {
+		// Validate requested scopes and the profile URL against their boundaries
 		// BEFORE creating any user, so a disallowed scope (e.g. HAS_ADMIN_ACCESS)
-		// fails cleanly without leaving an orphan account.
-		if err := validatePluginGrantedScopes(scopes); err != nil {
+		// or a bad URL fails cleanly without leaving an orphan account.
+		if err := validatePluginGrantedScopes(req.Scopes); err != nil {
 			return "", err
 		}
-		// Namespace the external identity by plugin slug so two auth plugins
-		// can't collide on, or impersonate, each other's users.
-		namespaced := pluginName + ":" + authID
+		if err := validateProfileURL(req.ProfileURL); err != nil {
+			return "", err
+		}
+		// The identity is keyed by (provider=plugin slug, auth_key=authId), so
+		// two auth plugins can't collide on, or impersonate, each other's users.
 		var userID string
-		if existing := users.GetUserByAuth(namespaced, models.PluginAuth); existing != nil {
+		if existing := users.GetUserByPluginAuth(pluginName, req.AuthID); existing != nil {
 			userID = existing.ID
 		} else {
-			user, _, err := users.CreateAnonymousUser(displayName)
+			user, _, err := users.CreateAnonymousUser(req.DisplayName)
 			if err != nil {
 				return "", err
 			}
-			if err := users.AddAuth(user.ID, namespaced, models.PluginAuth); err != nil {
-				return "", err
+			// Profile fields are captured at registration only. is_public is the
+			// user's consent and must not be silently re-flipped by the plugin on
+			// later logins; profileUrl/handle staleness is a worthwhile trade for
+			// not adding an update path until the public UI needs one.
+			// ponytail: capture-on-create; add UpdateAuth when the badge UI lands.
+			fields := &models.LinkedIdentityFields{
+				Provider:   pluginName,
+				ProfileURL: req.ProfileURL,
+				Handle:     req.Handle,
+				Public:     req.Public,
 			}
-			if err := users.SetUserAsAuthenticated(user.ID); err != nil {
-				log.Errorln("plugin", pluginName, "set user authenticated:", err)
+			if err := users.AddAuth(user.ID, req.AuthID, models.PluginAuth, fields); err != nil {
+				// AddAuth failed after the user was created — most likely a
+				// concurrent registration won the race against the unique plugin
+				// identity index. Don't leave the half-built user (with its access
+				// token) orphaned: drop it, and if the identity now resolves, adopt
+				// the winner so the racing login still succeeds as one user.
+				if delErr := users.DeleteUser(user.ID); delErr != nil {
+					log.Errorln("plugin", pluginName, "cleanup user after failed auth link:", delErr)
+				}
+				winner := users.GetUserByPluginAuth(pluginName, req.AuthID)
+				if winner == nil {
+					return "", err
+				}
+				userID = winner.ID
+			} else {
+				if err := users.SetUserAsAuthenticated(user.ID); err != nil {
+					log.Errorln("plugin", pluginName, "set user authenticated:", err)
+				}
+				userID = user.ID
 			}
-			userID = user.ID
 		}
 		// Map the provider's roles onto Owncast scopes (e.g. MODERATOR), applied
 		// on every login so an upstream role change takes effect. The scopes
 		// were allow-listed above.
-		if len(scopes) > 0 {
-			if err := users.SetUserScopes(userID, scopes); err != nil {
+		if len(req.Scopes) > 0 {
+			if err := users.SetUserScopes(userID, req.Scopes); err != nil {
 				log.Errorln("plugin", pluginName, "set user scopes:", err)
 			}
 		}
