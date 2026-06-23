@@ -15,6 +15,12 @@
 pre-push:
   parallel: true
   commands:
+    ensure-npm:
+      run: |
+        command -v npm >/dev/null 2>&1 || {
+          echo 'npm not found in PATH; it is required to run these hooks. Install Node.js/npm, or bypass with: git push --no-verify' >&2
+          exit 1
+        }
     go-test:
       glob: '*.{go,mod,sum}'
       run: go test ./... > /dev/null
@@ -45,6 +51,12 @@ pre-push:
 pre-commit:
   parallel: true
   commands:
+    ensure-npm:
+      run: |
+        command -v npm >/dev/null 2>&1 || {
+          echo 'npm not found in PATH; it is required to run these hooks. Install Node.js/npm, or bypass with: git commit --no-verify' >&2
+          exit 1
+        }
     js-linter:
       glob: '*.{js,ts,jsx,tsx}'
       root: web/
