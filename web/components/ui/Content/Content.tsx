@@ -161,10 +161,13 @@ export const Content: FC = () => {
       updatedUrl.searchParams.append('instance', currentBrowserWindowUrl);
 
       if (currentUser) {
-        const { displayName } = currentUser;
+        const { id, displayName } = currentUser;
 
-        // Append url and username to params so the link knows where we came from and who we are.
+        // Append url, username and userId to params so the link knows where we
+        // came from and who we are. Display names are not unique, so userId
+        // gives external actions a stable identifier for the chat user.
         updatedUrl.searchParams.append('username', displayName);
+        updatedUrl.searchParams.append('userId', id);
       }
       const fullUrl = updatedUrl.toString();
       // Overwrite URL with the updated one that includes the params.
