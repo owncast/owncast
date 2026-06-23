@@ -28,6 +28,8 @@ type UserRepository interface {
 	DeleteExternalAPIUser(token string) error
 	GetDisabledUsers() []*models.User
 	GetUsers() []*models.User
+	GetUsersPaginated(offset int, limit int, search string, status string) ([]*models.User, int, error)
+	DeleteUser(userID string) error
 	GetExternalAPIUser() ([]models.ExternalAPIUser, error)
 	GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*models.ExternalAPIUser, error)
 	GetModeratorUsers() []*models.User
@@ -463,6 +465,154 @@ func (r *SqlUserRepository) GetUsers() []*models.User {
 		users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
 	}
 	return users
+}
+
+// GetUsersPaginated returns a page of users of every type (chat viewers,
+// authenticated/plugin users, and API integrations), most-recently-created
+// first, filtered to display names containing search and an optional status
+// ("" / "all" = every user; else "active", "banned", "moderators", "bots"). It also
+// returns the total number of users matching the filter so the admin
+// user-management page can paginate. The search arg is always Valid (even when
+// empty) so the LIKE binds to ” and matches every user rather than NULL.
+func (r *SqlUserRepository) GetUsersPaginated(offset int, limit int, search string, status string) ([]*models.User, int, error) {
+	if limit <= 0 {
+		limit = 50
+	}
+	if offset < 0 {
+		offset = 0
+	}
+
+	ctx := context.Background()
+	searchArg := sql.NullString{String: search, Valid: true}
+
+	total, err := r.datastore.GetQueries().CountUsers(ctx, db.CountUsersParams{
+		Search: searchArg,
+		Status: status,
+	})
+	if err != nil {
+		return nil, 0, errors.Wrap(err, "unable to count users")
+	}
+
+	rows, err := r.datastore.GetQueries().GetUsersPaginated(ctx, db.GetUsersPaginatedParams{
+		Search:     searchArg,
+		Status:     status,
+		PageLimit:  int64(limit),
+		PageOffset: int64(offset),
+	})
+	if err != nil {
+		return nil, 0, errors.Wrap(err, "unable to query users")
+	}
+
+	users := make([]*models.User, 0, len(rows))
+	for _, u := range rows {
+		users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
+	}
+
+	if err := r.attachAuthProviders(ctx, users); err != nil {
+		return nil, 0, err
+	}
+
+	return users, int(total), nil
+}
+
+// attachAuthProviders fills each user's AuthProviders with friendly labels for
+// the external auth methods they signed in with (IndieAuth, Fediverse, or a
+// viewer-auth plugin's slug). One query covers the whole page; anonymous users
+// have no auth rows and are left with an empty slice.
+func (r *SqlUserRepository) attachAuthProviders(ctx context.Context, users []*models.User) error {
+	if len(users) == 0 {
+		return nil
+	}
+
+	ids := make([]string, 0, len(users))
+	for _, u := range users {
+		ids = append(ids, u.ID)
+	}
+
+	authRows, err := r.datastore.GetQueries().GetAuthForUsers(ctx, ids)
+	if err != nil {
+		return errors.Wrap(err, "unable to load user auth providers")
+	}
+
+	// Distinct provider labels per user id.
+	byUser := map[string][]string{}
+	seen := map[string]map[string]bool{}
+	for _, a := range authRows {
+		label := authProviderLabel(a.Type, a.Token)
+		if seen[a.UserID] == nil {
+			seen[a.UserID] = map[string]bool{}
+		}
+		if seen[a.UserID][label] {
+			continue
+		}
+		seen[a.UserID][label] = true
+		byUser[a.UserID] = append(byUser[a.UserID], label)
+	}
+
+	for _, u := range users {
+		u.AuthProviders = byUser[u.ID]
+	}
+
+	return nil
+}
+
+// authProviderLabel turns an auth row into a human-friendly provider name. For
+// plugin auth the token is namespaced as "<plugin-slug>:<externalId>", so the
+// plugin slug is surfaced rather than the opaque "plugin.auth" type.
+func authProviderLabel(authType, token string) string {
+	switch models.AuthType(authType) {
+	case models.IndieAuth:
+		return "IndieAuth"
+	case models.Fediverse:
+		return "Fediverse"
+	case models.PluginAuth:
+		if i := strings.IndexByte(token, ':'); i > 0 {
+			return token[:i]
+		}
+		return "Plugin"
+	default:
+		return authType
+	}
+}
+
+// DeleteUser permanently removes a user along with everything tied to their
+// identity: access tokens, external/plugin auth identities, and chat messages.
+// Unlike SetEnabled(false) (a reversible ban), this cannot be undone. All
+// removals run on a single transaction (via the sqlc Queries.WithTx) so a user
+// is never left half-deleted.
+func (r *SqlUserRepository) DeleteUser(userID string) error {
+	r.datastore.DbLock.Lock()
+	defer r.datastore.DbLock.Unlock()
+
+	tx, err := r.datastore.DB.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback() //nolint
+
+	q := r.datastore.GetQueries().WithTx(tx)
+	ctx := context.Background()
+
+	// Remove rows that reference the user before the user row itself.
+	if err := q.DeleteUserAccessTokens(ctx, userID); err != nil {
+		return errors.Wrap(err, "unable to delete user access tokens")
+	}
+	if err := q.DeleteUserAuth(ctx, userID); err != nil {
+		return errors.Wrap(err, "unable to delete user auth")
+	}
+	if err := q.DeleteUserMessages(ctx, sql.NullString{String: userID, Valid: true}); err != nil {
+		return errors.Wrap(err, "unable to delete user messages")
+	}
+
+	rowsDeleted, err := q.DeleteUserByID(ctx, userID)
+	if err != nil {
+		return errors.Wrap(err, "unable to delete user")
+	}
+	if rowsDeleted == 0 {
+		return errors.New("user " + userID + " not found")
+	}
+
+	return tx.Commit()
 }
 
 // GetModeratorUsers will return a list of users with moderator access.

@@ -427,6 +427,13 @@ export const Localization = {
       selectAll: 'Admin.AccessTokens.selectAll',
     },
 
+    // Users management page
+    Users: {
+      pageTitle: 'Admin.Users.pageTitle',
+      pageDescription: 'Admin.Users.pageDescription',
+      searchPlaceholder: 'Admin.Users.searchPlaceholder',
+    },
+
     // Plugins admin (overview list, per-plugin detail, sidebar submenu)
     Plugins: {
       sidebarTitle: 'Admin.Plugins.sidebarTitle',

@@ -19,6 +19,7 @@ type User struct {
 	DisplayName     string     `json:"displayName"`
 	PreviousNames   []string   `json:"previousNames"`
 	Scopes          []string   `json:"scopes,omitempty"`
+	AuthProviders   []string   `json:"authProviders,omitempty"`
 	DisplayColor    int        `json:"displayColor"`
 	IsBot           bool       `json:"isBot"`
 	Authenticated   bool       `json:"authenticated"`

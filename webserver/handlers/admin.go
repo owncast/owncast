@@ -136,6 +136,22 @@ func (s *ServerInterfaceImpl) GetModeratorsOptions(w http.ResponseWriter, r *htt
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetModerators)(w, r)
 }
 
+func (s *ServerInterfaceImpl) GetUsers(w http.ResponseWriter, r *http.Request, params generated.GetUsersParams) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetUsers)(w, r)
+}
+
+func (s *ServerInterfaceImpl) GetUsersOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetUsers)(w, r)
+}
+
+func (s *ServerInterfaceImpl) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.DeleteUser)(w, r)
+}
+
+func (s *ServerInterfaceImpl) DeleteUserOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.DeleteUser)(w, r)
+}
+
 func (s *ServerInterfaceImpl) GetLogs(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(admin.GetLogs)(w, r)
 }

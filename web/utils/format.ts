@@ -1,4 +1,16 @@
+import { format } from 'date-fns';
 import UAParser from 'ua-parser-js';
+
+// formatDisplayDate renders a user timestamp, including the year only when it
+// is not the current year. Shared by the admin user views.
+export function formatDisplayDate(date: string | Date) {
+  const d = new Date(date);
+  if (d.getFullYear() !== new Date().getFullYear()) {
+    return format(new Date(date), 'MMM d, yyyy H:mma');
+  }
+
+  return format(new Date(date), 'MMM d H:mma');
+}
 
 export function formatIPAddress(ipAddress: string): string {
   const ipAddressComponents = ipAddress.split(':');

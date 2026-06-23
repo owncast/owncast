@@ -132,6 +132,11 @@ SELECT users.id, display_name, display_color, users.created_at, disabled_at, pre
 -- name: CountUserAuthByTypeAndTokenPrefix :one
 SELECT count(*) FROM auth WHERE user_id = ? AND type = ? AND token LIKE ?;
 
+-- name: GetAuthForUsers :many
+-- External auth identities (type + token) for the given users, so the admin
+-- user list can show how each authenticated user signed in.
+SELECT user_id, type, token FROM auth WHERE user_id IN (sqlc.slice('user_ids'));
+
 -- name: AddAccessTokenForUser :exec
 INSERT INTO user_access_tokens(token, user_id) values(?, ?);
 
@@ -164,6 +169,49 @@ UPDATE users SET display_name = ?, previous_names = previous_names || ?, namecha
 
 -- name: ChangeDisplayColor :exec
 UPDATE users SET display_color = ? WHERE id = ?;
+
+-- name: GetUsersPaginated :many
+-- A page of users of every type (chat viewers, authenticated/plugin users, and
+-- API integrations), newest first, filtered to display names containing
+-- @search and an optional @status: '' or 'all' = every user; otherwise
+-- 'active' (not banned), 'banned' (disabled), 'moderators', or 'bots' (API
+-- users). An empty @search matches every user (LIKE '%%').
+SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
+FROM users
+WHERE display_name LIKE '%' || @search || '%'
+  AND (
+    @status = '' OR @status = 'all'
+    OR (@status = 'active' AND disabled_at IS NULL)
+    OR (@status = 'banned' AND disabled_at IS NOT NULL)
+    OR (@status = 'bots' AND type = 'API')
+    OR (@status = 'moderators' AND scopes LIKE '%MODERATOR%')
+  )
+ORDER BY created_at DESC
+LIMIT @page_limit OFFSET @page_offset;
+
+-- name: CountUsers :one
+-- Total number of users matching the same @search/@status filter as GetUsersPaginated.
+SELECT count(*) FROM users
+WHERE display_name LIKE '%' || @search || '%'
+  AND (
+    @status = '' OR @status = 'all'
+    OR (@status = 'active' AND disabled_at IS NULL)
+    OR (@status = 'banned' AND disabled_at IS NOT NULL)
+    OR (@status = 'bots' AND type = 'API')
+    OR (@status = 'moderators' AND scopes LIKE '%MODERATOR%')
+  );
+
+-- name: DeleteUserAccessTokens :exec
+DELETE FROM user_access_tokens WHERE user_id = ?;
+
+-- name: DeleteUserAuth :exec
+DELETE FROM auth WHERE user_id = ?;
+
+-- name: DeleteUserMessages :exec
+DELETE FROM messages WHERE user_id = ?;
+
+-- name: DeleteUserByID :execrows
+DELETE FROM users WHERE id = ?;
 
 -- Federated servers queries
 

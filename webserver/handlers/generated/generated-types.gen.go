@@ -66,6 +66,33 @@ func (e WebhookEventType) Valid() bool {
 	}
 }
 
+// Defines values for GetUsersParamsStatus.
+const (
+	Active     GetUsersParamsStatus = "active"
+	All        GetUsersParamsStatus = "all"
+	Banned     GetUsersParamsStatus = "banned"
+	Bots       GetUsersParamsStatus = "bots"
+	Moderators GetUsersParamsStatus = "moderators"
+)
+
+// Valid indicates whether the value is a known member of the GetUsersParamsStatus enum.
+func (e GetUsersParamsStatus) Valid() bool {
+	switch e {
+	case Active:
+		return true
+	case All:
+		return true
+	case Banned:
+		return true
+	case Bots:
+		return true
+	case Moderators:
+		return true
+	default:
+		return false
+	}
+}
+
 // ActionMessage defines model for ActionMessage.
 type ActionMessage struct {
 	Body      *string `json:"body,omitempty"`
@@ -516,6 +543,12 @@ type PaginatedFollowers struct {
 	Total   *int       `json:"total,omitempty"`
 }
 
+// PaginatedUsers defines model for PaginatedUsers.
+type PaginatedUsers struct {
+	Results *Users `json:"results,omitempty"`
+	Total   *int   `json:"total,omitempty"`
+}
+
 // PlaybackMetrics defines model for PlaybackMetrics.
 type PlaybackMetrics struct {
 	Bandwidth             *float64 `json:"bandwidth,omitempty"`
@@ -599,6 +632,8 @@ type TimestampedValue struct {
 
 // User defines model for User.
 type User struct {
+	// AuthProviders Friendly names of the external auth methods this user signed in with (e.g. IndieAuth, Fediverse, or a plugin slug). Absent for anonymous users.
+	AuthProviders *[]string `json:"authProviders,omitempty"`
 	Authenticated *bool     `json:"authenticated,omitempty"`
 	CreatedAt     *string   `json:"createdAt,omitempty"`
 	DisabledAt    *string   `json:"disabledAt,omitempty"`
@@ -854,6 +889,26 @@ type ApproveFollowerJSONBody struct {
 type RemoveFollowerJSONBody struct {
 	// ActorIRI IRI of the follower to remove
 	ActorIRI string `json:"actorIRI"`
+}
+
+// GetUsersParams defines parameters for GetUsers.
+type GetUsersParams struct {
+	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Search Filter to users whose display name contains this substring
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Status Filter users by status
+	Status *GetUsersParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+}
+
+// GetUsersParamsStatus defines parameters for GetUsers.
+type GetUsersParamsStatus string
+
+// DeleteUserJSONBody defines parameters for DeleteUser.
+type DeleteUserJSONBody struct {
+	UserId *string `json:"userId,omitempty"`
 }
 
 // GetViewersOverTimeParams defines parameters for GetViewersOverTime.
@@ -1170,6 +1225,9 @@ type ApproveFollowerJSONRequestBody ApproveFollowerJSONBody
 
 // RemoveFollowerJSONRequestBody defines body for RemoveFollower for application/json ContentType.
 type RemoveFollowerJSONRequestBody RemoveFollowerJSONBody
+
+// DeleteUserJSONRequestBody defines body for DeleteUser for application/json ContentType.
+type DeleteUserJSONRequestBody DeleteUserJSONBody
 
 // CreateWebhookJSONRequestBody defines body for CreateWebhook for application/json ContentType.
 type CreateWebhookJSONRequestBody CreateWebhookJSONBody

@@ -789,6 +789,82 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /admin/users:
+    get:
+      summary: Get a paginated list of all users
+      operationId: GetUsers
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - in: query
+          name: search
+          description: Filter to users whose display name contains this substring
+          schema:
+            type: string
+        - in: query
+          name: status
+          description: Filter users by status
+          schema:
+            type: string
+            enum: [all, active, banned, moderators, bots]
+      responses:
+        '200':
+          description: A paginated list of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsers'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetUsersOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/users/delete:
+    post:
+      summary: Permanently delete a user and all of their data
+      operationId: DeleteUser
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: User was successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: DeleteUserOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /admin/logs:
     get:
       summary: Get all logs
@@ -3852,6 +3928,11 @@ components:
           type: array
           items:
             type: string
+        authProviders:
+          type: array
+          description: Friendly names of the external auth methods this user signed in with (e.g. IndieAuth, Fediverse, or a plugin slug). Absent for anonymous users.
+          items:
+            type: string
         displayColor:
           type: integer
         isBot:
@@ -3862,6 +3943,13 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/User'
+    PaginatedUsers:
+      type: object
+      properties:
+        total:
+          type: integer
+        results:
+          $ref: '#/components/schemas/Users'
     Follower:
       type: object
       properties:

@@ -35,6 +35,10 @@ const HomeOutlined = dynamic(() => import('@ant-design/icons/HomeOutlined'), {
   ssr: false,
 });
 
+const TeamOutlined = dynamic(() => import('@ant-design/icons/TeamOutlined'), {
+  ssr: false,
+});
+
 const LineChartOutlined = dynamic(() => import('@ant-design/icons/LineChartOutlined'), {
   ssr: false,
 });
@@ -195,10 +199,6 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       key: '/admin/chat/messages',
     },
     {
-      label: <Link href="/admin/chat/users">Users</Link>,
-      key: '/admin/chat/users',
-    },
-    {
       label: <Link href="/admin/chat/emojis">Emojis</Link>,
       key: '/admin/chat/emojis',
     },
@@ -257,11 +257,16 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       icon: <LineChartOutlined />,
       key: '/admin/viewer-info',
     },
+    {
+      label: <Link href="/admin/users">Users</Link>,
+      icon: <TeamOutlined />,
+      key: '/admin/users',
+    },
     !chatDisabled && {
-      label: <span>Chat &amp; Users</span>,
+      label: <span>Chat</span>,
       icon: <MessageOutlined />,
       children: chatMenu,
-      key: 'chat-and-users',
+      key: 'chat',
     },
     federationEnabled && {
       key: '/admin/federation/followers',

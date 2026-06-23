@@ -9,8 +9,7 @@ import { BanUserButton } from './BanUserButton';
 import { ModeratorUserButton } from './ModeratorUserButton';
 
 import { User, UserConnectionInfo } from '../../types/chat';
-import { formatDisplayDate } from './UserTable';
-import { formatUAstring } from '../../utils/format';
+import { formatDisplayDate, formatUAstring } from '../../utils/format';
 
 export type UserPopoverProps = {
   user: User;

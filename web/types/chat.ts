@@ -17,6 +17,10 @@ export interface User {
   previousNames: [string];
   nameChangedAt: Date;
   scopes?: [string];
+  displayColor?: number;
+  isBot?: boolean;
+  authenticated?: boolean;
+  authProviders?: string[];
 }
 
 export interface UsernameHistory {

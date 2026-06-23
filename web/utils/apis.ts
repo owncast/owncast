@@ -27,9 +27,6 @@ export const ACTIVE_VIEWER_DETAILS = `${API_LOCATION}viewers`;
 // Get currently connected chat clients
 export const CONNECTED_CLIENTS = `${API_LOCATION}chat/clients`;
 
-// Get list of disabled/blocked chat users
-export const DISABLED_USERS = `${API_LOCATION}chat/users/disabled`;
-
 // Disable/enable a single user
 export const USER_ENABLED_TOGGLE = `${API_LOCATION}chat/users/setenabled`;
 
@@ -42,8 +39,11 @@ export const BANNED_IP_REMOVE = `${API_LOCATION}chat/users/ipbans/remove`;
 // Disable/enable a single user
 export const USER_SET_MODERATOR = `${API_LOCATION}chat/users/setmoderator`;
 
-// Get list of moderators
-export const MODERATORS = `${API_LOCATION}chat/users/moderators`;
+// Get a paginated list of all users
+export const USERS = `${API_LOCATION}users`;
+
+// Permanently delete a user
+export const DELETE_USER = `${API_LOCATION}users/delete`;
 
 // Get hardware stats
 export const HARDWARE_STATS = `${API_LOCATION}hardwarestats`;
