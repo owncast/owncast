@@ -37,24 +37,24 @@ export type TextFieldProps = {
 };
 
 export const TextField: FC<TextFieldProps> = ({
-  className,
-  disabled,
+  className = '',
+  disabled = false,
   fieldName,
-  label,
-  maxLength,
-  onBlur,
-  onChange,
-  onPressEnter,
-  onHandleSubmit,
-  pattern,
-  placeholder,
-  required,
-  status,
-  tip,
-  type,
-  useTrim,
-  value,
-  hasComplexityRequirements,
+  label = '',
+  maxLength = 255,
+  onBlur = () => {},
+  onChange = () => {},
+  onPressEnter = () => {},
+  onHandleSubmit = () => {},
+  pattern = '',
+  placeholder = '',
+  required = false,
+  status = null,
+  tip = '',
+  type = TEXTFIELD_TYPE_TEXT,
+  useTrim = false,
+  value = '',
+  hasComplexityRequirements = false,
 }) => {
   const [hasPwdChanged, setHasPwdChanged] = useState(false);
   const [showPwdButton, setShowPwdButton] = useState(false);
@@ -211,29 +211,4 @@ export const TextField: FC<TextFieldProps> = ({
       )}
     </div>
   );
-};
-
-TextField.defaultProps = {
-  className: '',
-  disabled: false,
-  label: '',
-  maxLength: 255,
-
-  placeholder: '',
-  required: false,
-  status: null,
-  tip: '',
-  type: TEXTFIELD_TYPE_TEXT,
-  value: '',
-
-  pattern: '',
-  useTrim: false,
-  useTrimLead: false,
-  hasComplexityRequirements: false,
-
-  onSubmit: () => {},
-  onBlur: () => {},
-  onChange: () => {},
-  onPressEnter: () => {},
-  onHandleSubmit: () => {},
 };
