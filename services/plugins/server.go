@@ -630,14 +630,15 @@ func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles boo
 		}
 		w.Header().Set(k, v)
 	}
-	// Core owns the gate session cookie: drop any plugin-supplied value for it,
-	// then set the host-minted cookies (grant/clear) the plugin asked for via
-	// owncast.auth.grantSession / endSession.
-	if len(sessionCookies) > 0 {
-		stripSetCookie(w.Header(), SessionCookieName)
-		for _, c := range sessionCookies {
-			http.SetCookie(w, c)
-		}
+	// Core owns the gate session cookie. ALWAYS drop any plugin-supplied value
+	// for it — set-cookie is an allowed response header, so a plugin without
+	// auth.gate could otherwise overwrite a viewer's valid owncast_session with
+	// garbage and log them out. Then set the host-minted cookies (grant/clear)
+	// the plugin asked for via owncast.auth.grantSession / endSession (an empty
+	// slice for any plugin that didn't, which is the common case).
+	stripSetCookie(w.Header(), SessionCookieName)
+	for _, c := range sessionCookies {
+		http.SetCookie(w, c)
 	}
 	w.WriteHeader(resp.Status)
 	_, _ = io.WriteString(w, body)

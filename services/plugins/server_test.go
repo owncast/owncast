@@ -301,6 +301,23 @@ func TestServer_AdminGate_NotBypassableByTraversal(t *testing.T) {
 	}
 }
 
+// TestWritePluginHTTPResponse_StripsCoreSessionCookie is the A4 regression: a
+// plugin (even one without auth.gate, so sessionCookies is empty) must not be
+// able to set or clobber the core-owned owncast_session cookie via a Set-Cookie
+// response header.
+func TestWritePluginHTTPResponse_StripsCoreSessionCookie(t *testing.T) {
+	out := []byte(`{"status":200,"headers":{"Set-Cookie":"` + SessionCookieName + `=forged; Path=/"},"body":"ok"}`)
+	rec := httptest.NewRecorder()
+
+	writePluginHTTPResponse(rec, out, false, nil /* no host-minted session cookies */)
+
+	for _, c := range rec.Result().Cookies() {
+		if c.Name == SessionCookieName {
+			t.Fatalf("plugin-set %s cookie was not stripped: %q", SessionCookieName, c.Value)
+		}
+	}
+}
+
 func TestServer_NonGetFallsThroughStatic(t *testing.T) {
 	// POST to a static asset path shouldn't serve the file. (Static is
 	// read-only; non-GET/HEAD requests fall through to the dynamic handler.)
