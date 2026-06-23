@@ -98,19 +98,20 @@ func (d *Dispatcher) Dispatch(ctx context.Context, eventType string, payload any
 	d.Notify(ctx, eventType, final)
 }
 
-// Filter runs the ordered filter chain for an event. Plugin errors are
-// fail-open — the event passes through that plugin unchanged. Returns the
-// final payload, whether the event survived, and a drop reason if not.
-func (d *Dispatcher) Filter(ctx context.Context, eventType string, payload any) (any, bool, string) {
-	type subbed struct {
-		plugin   *Loaded
-		priority int
-	}
-	var chain []subbed
+// filterEntry is a plugin in an event's filter chain, paired with its priority.
+type filterEntry struct {
+	plugin   *Loaded
+	priority int
+}
+
+// filterChain returns the plugins subscribed to eventType's filter, ordered by
+// priority (lower first), then slug for a stable tie-break.
+func (d *Dispatcher) filterChain(eventType string) []filterEntry {
+	var chain []filterEntry
 	for _, p := range d.snapshot() {
 		for _, s := range p.Manifest.Subscriptions.Filter {
 			if s.Event == eventType {
-				chain = append(chain, subbed{p, s.Priority})
+				chain = append(chain, filterEntry{p, s.Priority})
 			}
 		}
 	}
@@ -120,9 +121,23 @@ func (d *Dispatcher) Filter(ctx context.Context, eventType string, payload any) 
 		}
 		return chain[i].plugin.Manifest.Slug < chain[j].plugin.Manifest.Slug
 	})
+	return chain
+}
 
+// Filter runs the ordered filter chain for an event. Plugin errors are
+// fail-open — the event passes through that plugin unchanged. Returns the
+// final payload, whether the event survived, and a drop reason if not.
+func (d *Dispatcher) Filter(ctx context.Context, eventType string, payload any) (any, bool, string) {
+	chain := d.filterChain(eventType)
+	emitter := emittingPluginSlug(ctx)
 	current := payload
 	for _, c := range chain {
+		if c.plugin.Manifest.Slug == emitter {
+			// Re-entrant self-delivery from the plugin's own synchronous emit;
+			// see Notify. (The filter lock is already cancellable, so this is a
+			// correctness/clarity guard rather than a deadlock fix.)
+			continue
+		}
 		if c.plugin.IsDisabled() {
 			// Auto-disabled by the strike system; skip silently.
 			continue
@@ -212,9 +227,17 @@ func (d *Dispatcher) Notify(ctx context.Context, eventType string, payload any) 
 		return
 	}
 
+	emitter := emittingPluginSlug(ctx)
 	var wg sync.WaitGroup
 	for _, p := range d.snapshot() {
 		if !subscribed(p.Manifest.Subscriptions.Notify, eventType) {
+			continue
+		}
+		if p.Manifest.Slug == emitter {
+			// This dispatch is the plugin's own synchronous owncast.emit
+			// re-entering while its wasm call still holds p.mu; delivering back
+			// into it would block on that held mutex and deadlock. A plugin does
+			// not receive its own in-call emission.
 			continue
 		}
 		wg.Add(1)
@@ -254,9 +277,29 @@ var (
 	errPluginNoSuchExport = errors.New("plugin does not export the requested function")
 )
 
+// emittingPluginSlug returns the slug of the plugin whose synchronous
+// owncast.emit re-entered the dispatcher on this stack, or "" when the dispatch
+// was initiated by the host (tick, chat, moderation, …). The extism go-sdk
+// injects the calling plugin into the context for the duration of the emit host
+// call, so callerIdentity resolves it here.
+func emittingPluginSlug(ctx context.Context) string {
+	if id, ok := callerIdentity(ctx); ok && id != nil {
+		return id.slug
+	}
+	return ""
+}
+
 func callOnEvent(ctx context.Context, p *Loaded, input []byte) error {
 	// Extism plugins are not safe for concurrent calls; serialize per-plugin.
-	p.mu.Lock()
+	// Bound the lock acquisition by the call deadline (mirrors callOnFilter):
+	// the Notify/Filter self-skip stops the common direct self-emit from
+	// deadlocking, and this backstops any indirect re-entrant cycle
+	// (A emits -> B -> emits -> A) at NotifyTimeout instead of a permanent hang.
+	callCtx, cancel := context.WithTimeout(ctx, NotifyTimeout)
+	defer cancel()
+	if err := lockWithContext(callCtx, &p.mu); err != nil {
+		return fmt.Errorf("on_event timed out after %s waiting for plugin mutex", NotifyTimeout)
+	}
 	defer p.mu.Unlock()
 	// Snapshot the instance under the lock: a concurrent Loaded.Close may have
 	// torn it down. Reading p.plugin before the lock raced with that write and
@@ -268,8 +311,6 @@ func callOnEvent(ctx context.Context, p *Loaded, input []byte) error {
 	if !pl.FunctionExists("on_event") {
 		return errPluginNoSuchExport
 	}
-	callCtx, cancel := context.WithTimeout(ctx, NotifyTimeout)
-	defer cancel()
 	_, _, err := pl.CallWithContext(callCtx, "on_event", input)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) || callCtx.Err() == context.DeadlineExceeded {

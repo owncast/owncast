@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 )
 
 // captureEnv returns a HostEnv whose OnChat records every send, plus the slice
@@ -155,6 +156,43 @@ module.exports = definePlugin({
 		loaded.Close(ctx)
 	}()
 	wg.Wait()
+}
+
+// TestEmitSelfSubscriptionDoesNotDeadlock is the C3 regression: a plugin that
+// emits an event it is itself subscribed to (notify) must not deadlock. The
+// synchronous owncast.emit re-enters the dispatcher while the plugin's on_event
+// call still holds its mutex; delivering the event back into the same plugin
+// would block on that mutex forever (and, from the tick, freeze onTick for
+// every plugin). Notify skips self-delivery on the emit chain.
+func TestEmitSelfSubscriptionDoesNotDeadlock(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, _, _ := captureEnv()
+	// Emits "ping" on every chat message AND subscribes (notify) to "ping".
+	script := `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage(msg) { owncast.events.emit("ping", {}); },
+  on: { ping(payload) {} },
+});`
+	loaded := loadShared(t, ctx, env, RuntimeJavaScript, "echoer", script, []string{PermEmitEvent})
+	defer loaded.Close(ctx)
+
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{loaded} })
+	env.Emit = d.Dispatch // route owncast.emit through the dispatcher, as in production
+
+	done := make(chan struct{})
+	go func() {
+		d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-time.After(10 * time.Second):
+		t.Fatal("Dispatch deadlocked on a re-entrant self-subscribed emit")
+	}
 }
 
 // TestManifestParse covers the R4 reserved-config-key guard and confirms the
