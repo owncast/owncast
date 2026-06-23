@@ -669,7 +669,13 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 		return nil
 	})
 	env.Timer = timerHub
-	manager.SetOnUnload(timerHub.CancelForPlugin)
+	// On unload (disable/reload/uninstall/disk-removal) cancel the plugin's
+	// pending timers AND close its open SSE streams, so neither lingers after
+	// the plugin is gone.
+	manager.SetOnUnload(func(slug string) {
+		timerHub.CancelForPlugin(slug)
+		sseHub.CloseForPlugin(slug)
+	})
 
 	// Fire a once-a-second tick to plugins that subscribe (onTick), and which
 	// also drives nothing else — host-scheduled timers run independently. The

@@ -338,7 +338,11 @@ func (s *Server) serveSSE(w http.ResponseWriter, r *http.Request, p *Loaded, cha
 		select {
 		case <-ctx.Done():
 			return
-		case frame := <-stream:
+		case frame, ok := <-stream:
+			if !ok {
+				// The hub closed the stream (plugin disabled/reloaded/uninstalled).
+				return
+			}
 			if _, err := w.Write(frame); err != nil {
 				return
 			}

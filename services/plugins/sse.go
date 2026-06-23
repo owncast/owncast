@@ -82,17 +82,48 @@ func (h *SSEHub) Subscribe(pluginName, channel string) (<-chan []byte, func(), u
 		once.Do(func() {
 			h.mu.Lock()
 			defer h.mu.Unlock()
-			if subs, ok := h.subscribers[key]; ok {
-				delete(subs, client)
-				if len(subs) == 0 {
-					delete(h.subscribers, key)
-				}
+			subs, ok := h.subscribers[key]
+			if !ok {
+				return // already torn down (e.g. CloseForPlugin closed the stream)
 			}
-			h.connectionCounts[pluginName]--
+			if _, present := subs[client]; !present {
+				return
+			}
+			delete(subs, client)
+			if len(subs) == 0 {
+				delete(h.subscribers, key)
+			}
+			// Guard against a count that CloseForPlugin already cleared, so a
+			// late unsubscribe can't drive it negative.
+			if h.connectionCounts[pluginName] > 0 {
+				h.connectionCounts[pluginName]--
+			}
 		})
 	}
 
 	return client.send, unsubscribe, connID, true
+}
+
+// CloseForPlugin terminates every open SSE connection for a plugin: it closes
+// each client's send channel (signalling the serving goroutine to exit) and
+// drops the plugin's subscriptions and connection count. Called when a plugin
+// is disabled, reloaded, or uninstalled so its streams don't linger as zombies
+// — emitting keep-alives forever and holding slots against the per-plugin cap
+// across a re-enable. Safe to call when the plugin has no connections.
+func (h *SSEHub) CloseForPlugin(pluginName string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	prefix := pluginName + "\x00"
+	for key, subs := range h.subscribers {
+		if !strings.HasPrefix(key, prefix) {
+			continue
+		}
+		for client := range subs {
+			close(client.send)
+		}
+		delete(h.subscribers, key)
+	}
+	delete(h.connectionCounts, pluginName)
 }
 
 // Publish frames event+data once and delivers it to every client subscribed

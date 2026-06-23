@@ -3,7 +3,44 @@ package plugins
 import (
 	"strings"
 	"testing"
+	"time"
 )
+
+// TestSSEHub_CloseForPlugin is the C5 regression: disabling/uninstalling a
+// plugin must tear down its open SSE streams (closing the serving goroutines'
+// channels) and free its connection slots, rather than leaving zombies that
+// emit keep-alives forever and hold slots against the per-plugin cap.
+func TestSSEHub_CloseForPlugin(t *testing.T) {
+	h := NewSSEHub()
+	stream, unsub, _, ok := h.Subscribe("p", "overlay")
+	if !ok {
+		t.Fatal("subscribe failed")
+	}
+
+	h.CloseForPlugin("p")
+
+	// The serving goroutine learns to exit via a closed stream channel.
+	select {
+	case _, open := <-stream:
+		if open {
+			t.Fatal("expected the stream channel to be closed")
+		}
+	case <-time.After(time.Second):
+		t.Fatal("CloseForPlugin did not close the stream channel")
+	}
+
+	// The serving goroutine's deferred unsubscribe still runs after the close;
+	// it must not drive the connection count negative.
+	unsub()
+	if c := h.connectionCounts["p"]; c != 0 {
+		t.Fatalf("connection count should be 0 after close + unsubscribe, got %d", c)
+	}
+
+	// A torn-down plugin's slots are freed for a clean re-enable.
+	if _, _, _, ok := h.Subscribe("p", "overlay"); !ok {
+		t.Fatal("re-subscribe after CloseForPlugin should succeed")
+	}
+}
 
 func TestSSEHubPublishFansOutToSubscribers(t *testing.T) {
 	h := NewSSEHub()
