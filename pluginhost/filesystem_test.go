@@ -3,6 +3,7 @@ package pluginhost
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -140,5 +141,40 @@ func TestFilesystemHostFns_RejectsOversizedWrite(t *testing.T) {
 	tooBig := make([]byte, maxPluginFileBytes+1)
 	if err := env.FSWrite("demo", "big.bin", tooBig); err == nil {
 		t.Fatalf("expected oversized write to be rejected")
+	}
+}
+
+// C8 regression: the per-file cap alone lets a plugin fill the disk with many
+// files, so a per-plugin aggregate quota must reject a write once the sandbox
+// total would exceed it — and overwriting an existing file in place must not
+// (it doesn't grow the total).
+func TestFilesystemHostFns_EnforcesAggregateQuota(t *testing.T) {
+	root := t.TempDir()
+	env := &plugins.HostEnv{}
+	wireFilesystemHostFnsWithRoot(env, root)
+
+	// A ~40 MiB chunk; under the 50 MiB per-file cap, so each write is allowed
+	// individually until the 256 MiB plugin quota is reached.
+	chunk := make([]byte, 40<<20)
+	writes := 0
+	var lastErr error
+	for i := 0; i < 12; i++ { // 12 * 40 MiB = 480 MiB, well past the 256 MiB quota
+		if err := env.FSWrite("hog", strconv.Itoa(i)+".bin", chunk); err != nil {
+			lastErr = err
+			break
+		}
+		writes++
+	}
+	if lastErr == nil {
+		t.Fatal("expected the aggregate quota to reject a write before 480 MiB")
+	}
+	if writes == 0 || writes > 7 { // 256 MiB / 40 MiB ~= 6 files fit
+		t.Fatalf("quota kicked in at the wrong point: %d writes succeeded", writes)
+	}
+
+	// Overwriting an existing file in place doesn't grow the total, so it's
+	// allowed even at the quota.
+	if err := env.FSWrite("hog", "0.bin", chunk); err != nil {
+		t.Fatalf("in-place overwrite at quota should be allowed: %v", err)
 	}
 }

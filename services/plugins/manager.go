@@ -100,6 +100,15 @@ const (
 	// chat messages, etc. — which are small in any realistic case.
 	MaxFilterOutputBytes = 1 << 20 // 1 MiB
 
+	// MaxKVKeyBytes / MaxKVValueBytes bound a single storage.kv entry. The
+	// backing store is the shared server datastore, so an unbounded value would
+	// let one plugin grow the host DB without limit.
+	// ponytail: this bounds per-entry size, not the total number of keys — the
+	// kv.Namespace interface can't enumerate keys. Add a per-namespace
+	// key-count/byte cap (needs backend support) if that's ever abused.
+	MaxKVKeyBytes   = 1 << 10   // 1 KiB
+	MaxKVValueBytes = 256 << 10 // 256 KiB
+
 	// MaxHTTPHandlerOutputBytes caps the JSON envelope a plugin returns
 	// from on_http_request (status + headers + body). Sized to leave
 	// headroom over MaxHTTPResponseBodyBytes (server.go); the inner body

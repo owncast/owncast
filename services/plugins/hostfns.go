@@ -1970,6 +1970,14 @@ func hostKVSet() extism.HostFunction {
 			if err != nil {
 				return
 			}
+			if len(key) > MaxKVKeyBytes {
+				fmt.Fprintf(os.Stderr, "owncast_kv_set from %s: key is %d bytes, limit is %d — dropped\n", id.slug, len(key), MaxKVKeyBytes)
+				return
+			}
+			if len(val) > MaxKVValueBytes {
+				fmt.Fprintf(os.Stderr, "owncast_kv_set from %s: value is %d bytes, limit is %d — dropped\n", id.slug, len(val), MaxKVValueBytes)
+				return
+			}
 			if err := ns.Set(key, val); err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_kv_set: %v\n", err)
 			}

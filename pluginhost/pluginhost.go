@@ -1125,9 +1125,41 @@ func wirePluginHostEnv(env *plugins.HostEnv, deps Deps) {
 const pluginDataRootDirName = "plugin-data"
 
 // maxPluginFileBytes caps a single storage.fs write. It bounds how much a
-// misbehaving plugin can write in one call; the host's overall disk use is
-// still the admin's responsibility.
+// misbehaving plugin can write in one call.
 const maxPluginFileBytes = 50 << 20 // 50 MiB
+
+// maxPluginDataBytes caps a plugin's total storage.fs footprint, so it can't
+// fill the host disk with many files that each fit under maxPluginFileBytes.
+const maxPluginDataBytes = 256 << 20 // 256 MiB per plugin
+
+// dirSize returns the total size of regular files under dir, or 0 if dir does
+// not exist yet.
+// ponytail: O(files) walk on every write; if a plugin writes heavily into a
+// large tree, switch to a cached running total per sandbox.
+func dirSize(dir string) (int64, error) {
+	var total int64
+	err := filepath.WalkDir(dir, func(_ string, d os.DirEntry, err error) error {
+		if err != nil {
+			if os.IsNotExist(err) {
+				return nil // sandbox not created yet, or an entry vanished mid-walk
+			}
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		info, err := d.Info()
+		if err != nil {
+			if os.IsNotExist(err) {
+				return nil
+			}
+			return err
+		}
+		total += info.Size()
+		return nil
+	})
+	return total, err
+}
 
 // resolvePluginSandboxPath maps a plugin-supplied relative path to an
 // absolute path inside that plugin's sandbox (root/<pluginName>), and
@@ -1150,6 +1182,25 @@ func resolvePluginSandboxPath(root, pluginName, rel string) (string, error) {
 		return "", fmt.Errorf("path %q escapes the plugin sandbox", rel)
 	}
 	return full, nil
+}
+
+// fsQuotaCheck rejects a write that would push the plugin's sandbox over the
+// aggregate quota. full is the absolute path being written; when it already
+// exists it's excluded from the current total, since the write overwrites it
+// in place rather than growing the footprint.
+func fsQuotaCheck(root, pluginName, full string, addBytes int) error {
+	used, err := dirSize(filepath.Join(root, pluginName))
+	if err != nil {
+		return err
+	}
+	var existing int64
+	if info, statErr := os.Stat(full); statErr == nil && !info.IsDir() {
+		existing = info.Size()
+	}
+	if used-existing+int64(addBytes) > maxPluginDataBytes {
+		return fmt.Errorf("write would exceed the plugin's %d-byte storage quota", maxPluginDataBytes)
+	}
+	return nil
 }
 
 // wireFilesystemHostFns implements the storage.fs host functions against a
@@ -1178,6 +1229,11 @@ func wireFilesystemHostFnsWithRoot(env *plugins.HostEnv, root string) {
 		}
 		full, err := resolvePluginSandboxPath(root, pluginName, path)
 		if err != nil {
+			return err
+		}
+		// Enforce the per-plugin aggregate quota: the single-file cap alone
+		// still lets a plugin fill the disk with many files.
+		if err := fsQuotaCheck(root, pluginName, full, len(data)); err != nil {
 			return err
 		}
 		if err := os.MkdirAll(filepath.Dir(full), 0o700); err != nil {
