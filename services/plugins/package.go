@@ -5,9 +5,22 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"io/fs"
 	"path/filepath"
 	"strings"
+)
+
+// Decompressed-size caps for the entries the host reads out of an .ocpkg. The
+// archive itself is capped (MaxUploadBytes), but a small compressed entry can
+// inflate to gigabytes (a zip bomb) and OOM the host, so every read of a
+// decompressed entry is bounded. The manifest cap is the tightest because the
+// manifest is re-read on every plugins-directory scan.
+const (
+	maxManifestEntryBytes     = 4 << 20   // 4 MiB
+	maxCodeEntryBytes         = 128 << 20 // 128 MiB (self-contained wasm can be large)
+	maxIconEntryBytes         = 8 << 20   // 8 MiB
+	maxInstructionsEntryBytes = 2 << 20   // 2 MiB
 )
 
 // The .ocpkg ("Owncast plugin package") format is a zip archive with four
@@ -85,7 +98,7 @@ func LoadPackage(ctx context.Context, env *HostEnv, path string) (*Loaded, error
 		}
 	}()
 
-	manifestBytes, err := readZipFile(&zr.Reader, pkgManifestFilename)
+	manifestBytes, err := readZipFile(&zr.Reader, pkgManifestFilename, maxManifestEntryBytes)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", filepath.Base(path), err)
 	}
@@ -95,7 +108,7 @@ func LoadPackage(ctx context.Context, env *HostEnv, path string) (*Loaded, error
 	if !ok {
 		return nil, fmt.Errorf("%s: missing plugin code (expected one of plugin.js, plugin.py, plugin.wasm)", filepath.Base(path))
 	}
-	codeBytes, err := readZipFile(&zr.Reader, codeName)
+	codeBytes, err := readZipFile(&zr.Reader, codeName, maxCodeEntryBytes)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", filepath.Base(path), err)
 	}
@@ -143,14 +156,14 @@ func readManifestFromPackage(path string) (*Manifest, error) {
 		return nil, fmt.Errorf("open %s as zip: %w", path, err)
 	}
 	defer zr.Close()
-	manifestBytes, err := readZipFile(&zr.Reader, pkgManifestFilename)
+	manifestBytes, err := readZipFile(&zr.Reader, pkgManifestFilename, maxManifestEntryBytes)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", filepath.Base(path), err)
 	}
 	return ParseManifest(manifestBytes)
 }
 
-func readZipFile(zr *zip.Reader, name string) ([]byte, error) {
+func readZipFile(zr *zip.Reader, name string, maxBytes int64) ([]byte, error) {
 	for _, f := range zr.File {
 		if f.Name == name {
 			rc, err := f.Open()
@@ -158,9 +171,15 @@ func readZipFile(zr *zip.Reader, name string) ([]byte, error) {
 				return nil, fmt.Errorf("open %s: %w", name, err)
 			}
 			defer rc.Close()
+			// Bound the DECOMPRESSED size: read one byte past the cap so we can
+			// tell "exactly at the cap" from "over it" without trusting the
+			// zip header's claimed size.
 			buf := &bytes.Buffer{}
-			if _, err := buf.ReadFrom(rc); err != nil {
+			if _, err := buf.ReadFrom(io.LimitReader(rc, maxBytes+1)); err != nil {
 				return nil, fmt.Errorf("read %s: %w", name, err)
+			}
+			if int64(buf.Len()) > maxBytes {
+				return nil, fmt.Errorf("%s exceeds the %d-byte limit", name, maxBytes)
 			}
 			return buf.Bytes(), nil
 		}

@@ -653,7 +653,7 @@ func validateUploadedPackage(ctx context.Context, env *HostEnv, packageBytes []b
 	if err != nil {
 		return nil, fmt.Errorf("not a valid .ocpkg: %w", err)
 	}
-	manifestBytes, err := readZipFile(zr, pkgManifestFilename)
+	manifestBytes, err := readZipFile(zr, pkgManifestFilename, maxManifestEntryBytes)
 	if err != nil {
 		return nil, fmt.Errorf("missing manifest: %w", err)
 	}
@@ -665,7 +665,7 @@ func validateUploadedPackage(ctx context.Context, env *HostEnv, packageBytes []b
 	if !ok {
 		return nil, fmt.Errorf("missing plugin code (expected one of plugin.js, plugin.py, plugin.wasm)")
 	}
-	codeBytes, err := readZipFile(zr, codeName)
+	codeBytes, err := readZipFile(zr, codeName, maxCodeEntryBytes)
 	if err != nil {
 		return nil, fmt.Errorf("missing plugin code (%s): %w", codeName, err)
 	}
@@ -1615,7 +1615,8 @@ func (m *Manager) IconBytes(name string) ([]byte, error) {
 				return nil, fmt.Errorf("open icon entry: %w", err)
 			}
 			defer rc.Close()
-			return io.ReadAll(rc)
+			// Bound the decompressed read so a zip-bomb icon entry can't OOM the host.
+			return io.ReadAll(io.LimitReader(rc, maxIconEntryBytes))
 		}
 		return nil, fmt.Errorf("plugin %q icon entry vanished between scan and read", name)
 	case strings.HasSuffix(path, ".wasm"):
@@ -1694,7 +1695,8 @@ func (m *Manager) InstructionsBytes(name string) ([]byte, error) {
 				return nil, fmt.Errorf("open instructions entry: %w", err)
 			}
 			defer rc.Close()
-			return io.ReadAll(rc)
+			// Bound the decompressed read so a zip-bomb entry can't OOM the host.
+			return io.ReadAll(io.LimitReader(rc, maxInstructionsEntryBytes))
 		}
 		return nil, fmt.Errorf("plugin %q instructions entry vanished between scan and read", name)
 	case strings.HasSuffix(path, ".wasm"):

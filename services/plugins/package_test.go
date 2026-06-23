@@ -266,8 +266,34 @@ func TestReadZipFile_Missing(t *testing.T) {
 	if err != nil {
 		t.Fatalf("zip reader: %v", err)
 	}
-	if _, err := readZipFile(zr, "missing.txt"); err == nil {
+	if _, err := readZipFile(zr, "present.txt", maxManifestEntryBytes); err == nil {
+		_ = err // present entry reads fine
+	}
+	if _, err := readZipFile(zr, "missing.txt", maxManifestEntryBytes); err == nil {
 		t.Error("expected error for missing entry, got nil")
+	}
+}
+
+// TestReadZipFile_RejectsOversizedEntry is the C6 (zip-bomb) regression: a
+// highly compressible entry that inflates past the cap must be rejected rather
+// than read into memory in full.
+func TestReadZipFile_RejectsOversizedEntry(t *testing.T) {
+	const cap = 1 << 20 // 1 MiB cap for the test
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	w, _ := zw.Create("big.bin")
+	// 8 MiB of zeros compresses to a few KB but decompresses past the 1 MiB cap.
+	if _, err := w.Write(make([]byte, 8<<20)); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	zw.Close()
+
+	zr, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
+	if err != nil {
+		t.Fatalf("zip reader: %v", err)
+	}
+	if _, err := readZipFile(zr, "big.bin", cap); err == nil {
+		t.Fatal("expected oversized decompressed entry to be rejected")
 	}
 }
 
