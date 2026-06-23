@@ -404,6 +404,13 @@ func (m *Manifest) validateAdminPages() error {
 		if page.Path == "" {
 			return fmt.Errorf("manifest.admin.pages[%d].path is required", i)
 		}
+		// Must be rooted. The auth gate matches request paths (which always
+		// start with "/") against this glob and its "<path>/" descendant prefix;
+		// an unrooted value like "admin" matches neither "/admin" nor
+		// "/admin/...", silently leaving the intended subtree unauthenticated.
+		if !strings.HasPrefix(page.Path, "/") {
+			return fmt.Errorf("manifest.admin.pages[%d].path %q must start with \"/\"", i, page.Path)
+		}
 	}
 	return nil
 }

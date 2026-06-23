@@ -231,6 +231,30 @@ func TestParseManifest_Action_ExternalURLPreserved(t *testing.T) {
 	}
 }
 
+func TestParseManifest_AdminPage_MustBeRooted(t *testing.T) {
+	// An unrooted admin-page path matches neither "/admin" nor "/admin/..." in
+	// the auth gate, silently leaving the subtree unauthenticated, so it's
+	// rejected at load.
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "stats", "version": "1.0",
+		"admin": {"pages": [{"title": "Dash", "path": "admin"}]}
+	}`))
+	if err == nil {
+		t.Fatal("expected error: unrooted admin page path")
+	}
+	if !strings.Contains(err.Error(), "must start with") {
+		t.Errorf("error should explain the rooting requirement, got: %v", err)
+	}
+
+	// A rooted path is accepted.
+	if _, err := ParseManifest([]byte(`{
+		"api": "1", "name": "stats", "version": "1.0",
+		"admin": {"pages": [{"title": "Dash", "path": "/admin/*"}]}
+	}`)); err != nil {
+		t.Errorf("rooted admin page path should be valid, got: %v", err)
+	}
+}
+
 func TestParseManifest_Action_MissingHttpServePerm(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
