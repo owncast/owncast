@@ -23,6 +23,10 @@ USER_COUNT=10 ./run.sh
 # Run the featured streams test (two Owncast instances, no snac2)
 ./run.sh test-featured-streams.sh
 
+# Run the user-authentication tests
+./run.sh test-fediverse-otp.sh   # Fediverse OTP login (uses snac2)
+./run.sh test-indieauth.sh       # IndieAuth login (uses a fake provider, no snac2)
+
 # Keep servers running after test for debugging
 KEEP_RUNNING=true ./run.sh
 
@@ -68,6 +72,38 @@ behind the shared proxy. It:
    ActivityPub `Accept`
 5. Verifies the listing is readable on the public, unauthenticated endpoint
 6. Verifies the reverse direction (instance 2 adds instance 1) also works
+
+### `test-fediverse-otp.sh` (Fediverse authentication, snac2-based)
+
+End-to-end test of logging in with a Fediverse account, with no backend stubs.
+It:
+
+1. Registers an anonymous chat user on Owncast (gets an access token)
+2. Requests a Fediverse OTP for a snac2 account; Owncast delivers the code as a
+   real ActivityPub direct message (webfinger + signed inbox POST)
+3. Reads the delivered code back out of snac2's stored DM
+4. Submits the code to Owncast's verify endpoint
+5. Verifies the admin users API now reports the user as authenticated with a
+   `Fediverse` provider
+
+### `test-indieauth.sh` (IndieAuth authentication, fake provider, no snac2)
+
+End-to-end test of logging in with IndieAuth against a fake provider hosted by
+the Caddy proxy at `indieauth.local` (see `Caddyfile.indieauth`). The provider
+serves a discovery document, auto-approves the authorization request, and
+returns a canonical `me` on code exchange. The test:
+
+1. Registers an anonymous chat user on Owncast
+2. Starts the IndieAuth flow pointed at the fake provider; Owncast discovers its
+   authorization endpoint and returns a redirect URL
+3. Follows the redirect like a browser would, through the provider and back to
+   Owncast's callback, where Owncast exchanges the code and links the identity
+4. Verifies the admin users API now reports the user as authenticated with an
+   `IndieAuth` provider
+
+Neither auth test changes the backend: `OWNCAST_ALLOW_INTERNAL_FEDERATION` lets
+Owncast accept the local test hosts, and the mkcert CA makes its outbound HTTPS
+calls trust the test certificates.
 
 ## Test Results
 

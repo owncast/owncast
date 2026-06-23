@@ -1,0 +1,102 @@
+# Runs the end-to-end viewer-authentication ("auth gate") integration tests:
+# builds two auth.gate plugins from the Owncast plugin SDK (a shared-password
+# gate and an OAuth gate), loads them into a real Owncast instance, and verifies
+# the gate blocks viewers until they authenticate while admin stays reachable.
+# The OAuth suite authenticates against a real node-oidc-provider instance.
+# Mirrors the HLS test workflow (a self-contained ./run.sh).
+
+name: Auth gate tests
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'test/automated/auth/**'
+      - '.github/workflows/auth-tests.yml'
+  pull_request:
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'test/automated/auth/**'
+      - '.github/workflows/auth-tests.yml'
+
+env:
+  # Authenticates github.com downloads in tools.sh (ffmpeg) to avoid the
+  # anonymous, shared-per-IP rate limit on CI runners.
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
+      - name: Check out pull request code
+        uses: actions/checkout@v6
+        if: github.event_name == 'pull_request'
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Fetch base branch for comparison
+        if: github.event_name == 'pull_request'
+        run: |
+          git remote add upstream https://github.com/${{ github.event.pull_request.base.repo.full_name }}.git || true
+          git fetch upstream ${{ github.event.pull_request.base.ref }}
+
+      - name: Check out repository code
+        uses: actions/checkout@v6
+        if: github.event_name == 'push'
+
+      - name: Get changed files
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v47
+        with:
+          files_yaml: |
+            src:
+              - '**/*.{go,mod,sum}'
+              - 'test/automated/auth/**'
+
+      - uses: actions/setup-go@v6
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        with:
+          go-version: '1.26.4'
+          cache: true
+
+      # The plugin SDK build (owncast-plugin) and the OAuth provider
+      # (node-oidc-provider) both require a recent Node; the runner default may
+      # be older, so pin it.
+      - uses: actions/setup-node@v4
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        with:
+          node-version: '24'
+
+      - name: Cache node modules
+        uses: actions/cache@v5
+        env:
+          cache-name: cache-node-modules-auth-tests
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('test/automated/auth/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Auth gate tests (shared-password + OAuth)
+        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        uses: nick-fields/retry@v4
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: cd test/automated/auth && ./run.sh

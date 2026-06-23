@@ -56,17 +56,23 @@ chown "${ACTUAL_USER}:${ACTUAL_USER}" "${SCRIPT_DIR}/certs"
 sudo -u "${ACTUAL_USER}" CAROOT="${ACTUAL_HOME}/.local/share/mkcert" mkcert \
     -cert-file "${SCRIPT_DIR}/certs/cert.pem" \
     -key-file "${SCRIPT_DIR}/certs/key.pem" \
-    owncast.local owncast2.local snac.local localhost 127.0.0.1
+    owncast.local owncast2.local snac.local indieauth.local localhost 127.0.0.1
 
 # 4. Add hosts entries
 if ! grep -q "owncast.local" /etc/hosts; then
     log_info "Adding hosts entries..."
-    echo "127.0.0.1 owncast.local owncast2.local snac.local" >> /etc/hosts
+    echo "127.0.0.1 owncast.local owncast2.local snac.local indieauth.local" >> /etc/hosts
 elif ! grep -q "owncast2.local" /etc/hosts; then
     log_info "Adding owncast2.local hosts entry..."
     echo "127.0.0.1 owncast2.local" >> /etc/hosts
 else
     log_info "Hosts entries already exist"
+fi
+# indieauth.local (used by the IndieAuth auth test) may be missing on installs
+# whose hosts line predates it; ensure it independently.
+if ! grep -q "indieauth.local" /etc/hosts; then
+    log_info "Adding indieauth.local hosts entry..."
+    echo "127.0.0.1 indieauth.local" >> /etc/hosts
 fi
 
 # 5. Check for snac2

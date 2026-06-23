@@ -1,0 +1,17 @@
+{
+  "api": "1",
+  "name": "OAuth Gate Test",
+  "slug": "oauth-gate-test",
+  "version": "0.1.0",
+  "description": "Test-only viewer-auth gate that signs viewers in against an internal OAuth2/OIDC provider using the standard authorization-code flow. Used by the OAuth auth-plugin integration test; not for production.",
+  "permissions": [
+    "auth.gate",
+    "users.register",
+    "http.serve",
+    "network.fetch",
+    "storage.kv"
+  ],
+  "network": {
+    "allowedHosts": ["localhost", "127.0.0.1", "localhost:9876", "127.0.0.1:9876"]
+  }
+}

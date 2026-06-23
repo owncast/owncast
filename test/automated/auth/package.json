@@ -9,7 +9,8 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "jest-jasmine2": "^29.7.0"
+    "jest-jasmine2": "^29.7.0",
+    "oidc-provider": "^9.0.0"
   },
   "jest": {
     "verbose": true,

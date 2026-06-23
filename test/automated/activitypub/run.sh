@@ -50,6 +50,7 @@ docker run --rm \
     --add-host owncast.local:127.0.0.1 \
     --add-host owncast2.local:127.0.0.1 \
     --add-host snac.local:127.0.0.1 \
+    --add-host indieauth.local:127.0.0.1 \
     -v "${REPO_ROOT}:/owncast" \
     -v owncast-ap-test-gomod:/go/pkg/mod \
     -v owncast-ap-test-gobuild:/root/.cache/go-build \

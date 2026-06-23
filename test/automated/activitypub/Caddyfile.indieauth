@@ -1,0 +1,68 @@
+# Caddyfile for the IndieAuth end-to-end auth test.
+#
+# Fronts Owncast (owncast.local) and a self-contained FAKE IndieAuth provider
+# (indieauth.local) over HTTPS using the harness's mkcert certificates. The
+# fake provider implements just enough of IndieAuth for Owncast's client flow:
+#
+#   GET  /        discovery document advertising the authorization_endpoint
+#   GET  /auth    authorize: bounce the browser back to the client's
+#                 redirect_uri with a code (auto-approve, no UI)
+#   POST /auth    code exchange: return the canonical profile URL ("me"),
+#                 which must equal the host Owncast was pointed at
+#
+# PKCE is intentionally not enforced here — the provider's job is only to give
+# Owncast's client a protocol-correct response so the full discover -> redirect
+# -> callback -> exchange -> identity-link path can be exercised against a real
+# HTTPS host.
+{
+	auto_https off
+	admin off
+	log {
+		level error
+	}
+}
+
+https://:{$PROXY_PORT} {
+	tls {$CERT_FILE} {$KEY_FILE}
+
+	# Owncast under test.
+	@owncast host owncast.local
+	handle @owncast {
+		reverse_proxy localhost:{$OWNCAST_PORT}
+	}
+
+	# Fake IndieAuth provider: discovery document.
+	@ia_discovery {
+		host indieauth.local
+		path /
+	}
+	handle @ia_discovery {
+		header Content-Type text/html
+		respond `<!doctype html><html><head><link rel="authorization_endpoint" href="https://indieauth.local:{$PROXY_PORT}/auth"></head><body>fake indieauth provider</body></html>` 200
+	}
+
+	# Fake IndieAuth provider: authorize (browser leg) -> redirect back with a code.
+	@ia_auth_get {
+		host indieauth.local
+		path /auth
+		method GET
+	}
+	handle @ia_auth_get {
+		redir {http.request.uri.query.redirect_uri}?code=fakecode&state={http.request.uri.query.state} 302
+	}
+
+	# Fake IndieAuth provider: code exchange -> return the profile URL.
+	@ia_auth_post {
+		host indieauth.local
+		path /auth
+		method POST
+	}
+	handle @ia_auth_post {
+		header Content-Type application/json
+		respond `{"me":"https://indieauth.local:{$PROXY_PORT}/"}` 200
+	}
+
+	handle {
+		respond "Unknown host or path" 404
+	}
+}
