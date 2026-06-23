@@ -12,6 +12,27 @@ import (
 	"time"
 )
 
+// TestSnapshot_OmitsStrikeDisabledPlugins is the C4 regression: a plugin the
+// strike system auto-disabled must drop out of Snapshot, which every dispatch
+// and serve path reads from, so it stops doing all work (not just filtering).
+func TestSnapshot_OmitsStrikeDisabledPlugins(t *testing.T) {
+	m := NewManager(t.TempDir(), &HostEnv{})
+	active := &Loaded{Manifest: &Manifest{Slug: "active"}}
+	struck := &Loaded{Manifest: &Manifest{Slug: "struck"}}
+	struck.disabled.Store(true)
+	m.loaded["active"] = active
+	m.loaded["struck"] = struck
+
+	got := m.Snapshot()
+	if len(got) != 1 || got[0].Manifest.Slug != "active" {
+		var slugs []string
+		for _, l := range got {
+			slugs = append(slugs, l.Manifest.Slug)
+		}
+		t.Fatalf("Snapshot should omit strike-disabled plugins; got %v", slugs)
+	}
+}
+
 // makePluginFiles drops a sidecar wasm + manifest pair into dir. The manifest
 // name is what the manager keys discovered/enabled state by.
 func makePluginFiles(t *testing.T, dir, name string, wasmBytes []byte) {

@@ -142,8 +142,9 @@ func sharedCompilationCache() wazero.CompilationCache {
 }
 
 // IsDisabled reports whether the plugin has been auto-disabled by the
-// strike system. Disabled plugins are skipped by both the filter chain
-// and the notification dispatcher.
+// strike system. Disabled plugins are omitted from Manager.Snapshot, so they
+// are skipped by every dispatch and serve path (filter chain, notifications,
+// HTTP/SSE routing, timers, and CSS/JS/tab/action contributions).
 func (l *Loaded) IsDisabled() bool {
 	return l.disabled.Load()
 }
@@ -580,14 +581,23 @@ func hasPerm(perms []string, want string) bool {
 	return false
 }
 
-// Snapshot returns the currently-loaded plugins. Dispatcher and Server call
-// this on every operation so changes from Enable/Disable take effect
+// Snapshot returns the currently-loaded, active plugins. Dispatcher and Server
+// call this on every operation so changes from Enable/Disable take effect
 // without restarting anything.
+//
+// Strike-disabled plugins are omitted: a plugin auto-disabled by the strike
+// system must stop doing ALL work — events, HTTP/SSE, timers, and CSS/JS/tab
+// contributions all dispatch off this snapshot — not just drop out of the
+// filter chain. (The admin UI still sees them via List(), which reports
+// AutoDisabled separately.)
 func (m *Manager) Snapshot() []*Loaded {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	out := make([]*Loaded, 0, len(m.loaded))
 	for _, l := range m.loaded {
+		if l.IsDisabled() {
+			continue
+		}
 		out = append(out, l)
 	}
 	return out
