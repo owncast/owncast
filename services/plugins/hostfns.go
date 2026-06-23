@@ -836,17 +836,24 @@ func hostAuthGrantSession(env *HostEnv) extism.HostFunction {
 				stack[0] = writeJSON(p, authResult{Error: "auth.gate is not available on this host"})
 				return
 			}
+			// A session is only meaningful when there's an in-flight response to
+			// attach the cookie to, i.e. inside on_http_request (which seeds the
+			// sink). Reject other contexts BEFORE minting a token, so a plugin
+			// can't silently mint DB-backed access tokens from a timer or event
+			// handler where no cookie is ever set.
+			sink := authSinkFrom(ctx)
+			if sink == nil {
+				stack[0] = writeJSON(p, authResult{Error: "grantSession is only available inside an on_http_request handler"})
+				return
+			}
 			token, err := env.GrantSession(ident.slug, req.UserID, req.TTL)
 			if err != nil {
 				stack[0] = writeJSON(p, authResult{Error: err.Error()})
 				return
 			}
 			// Hand the freshly-minted token to the request-scoped sink so the
-			// HTTP layer can set the cookie on the response after the wasm
-			// returns. Absent in non-HTTP contexts (e.g. the test harness).
-			if sink := authSinkFrom(ctx); sink != nil {
-				sink.grant(token, ClampSessionTTL(req.TTL))
-			}
+			// HTTP layer can set the cookie on the response after the wasm returns.
+			sink.grant(token, ClampSessionTTL(req.TTL))
 			stack[0] = writeJSON(p, authResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
@@ -1589,6 +1596,10 @@ func hostEmitEvent(env *HostEnv) extism.HostFunction {
 			pluginName := id.slug
 			eventType, err := p.ReadString(stack[0])
 			if err != nil {
+				return
+			}
+			if reservedEventTypes[eventType] {
+				fmt.Fprintf(os.Stderr, "owncast_emit_event from %s: %q is a reserved host event type and cannot be emitted by a plugin\n", pluginName, eventType)
 				return
 			}
 			payloadBytes, err := p.ReadBytes(stack[1])

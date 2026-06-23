@@ -159,6 +159,11 @@ func (h *SSEHub) Publish(pluginName, channel, event string, data []byte) int {
 // per newline) and terminated by a blank line.
 func frameSSE(event string, data []byte) []byte {
 	var b strings.Builder
+	// Strip CR/LF from the plugin-supplied event name so it can't inject extra
+	// SSE fields or frames into the host-written stream (the data lines below
+	// are already split per newline, so only the event name needs sanitizing).
+	event = strings.ReplaceAll(event, "\r", "")
+	event = strings.ReplaceAll(event, "\n", "")
 	if event != "" {
 		b.WriteString("event: ")
 		b.WriteString(event)

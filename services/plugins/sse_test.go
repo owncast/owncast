@@ -42,6 +42,28 @@ func TestSSEHub_CloseForPlugin(t *testing.T) {
 	}
 }
 
+// TestFrameSSE_SanitizesEventName is the B5 regression: a plugin-supplied event
+// name containing newlines must not inject extra SSE fields/frames. After
+// sanitizing, the frame has exactly one event line and one data line.
+func TestFrameSSE_SanitizesEventName(t *testing.T) {
+	frame := string(frameSSE("evil\ndata: injected\nevent: spoof", []byte("real")))
+	var eventLines, dataLines int
+	for _, ln := range strings.Split(strings.TrimRight(frame, "\n"), "\n") {
+		if strings.HasPrefix(ln, "event: ") {
+			eventLines++
+		}
+		if strings.HasPrefix(ln, "data: ") {
+			dataLines++
+		}
+	}
+	if eventLines != 1 {
+		t.Fatalf("expected exactly 1 event line, got %d:\n%q", eventLines, frame)
+	}
+	if dataLines != 1 {
+		t.Fatalf("event-name newline injected extra data lines (%d):\n%q", dataLines, frame)
+	}
+}
+
 func TestSSEHubPublishFansOutToSubscribers(t *testing.T) {
 	h := NewSSEHub()
 

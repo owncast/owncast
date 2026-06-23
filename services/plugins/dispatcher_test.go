@@ -8,6 +8,28 @@ import (
 	"time"
 )
 
+// TestReservedEventTypes_CoversCoreEvents is the B4 guard: the set the emit
+// host function rejects must include every built-in event type, so a plugin
+// can't forge a core event onto other plugins. Catches a new Event* constant
+// added without updating the reserved set.
+func TestReservedEventTypes_CoversCoreEvents(t *testing.T) {
+	for _, e := range []string{
+		EventChatMessageReceived, EventChatUserJoined, EventChatUserParted,
+		EventChatUserRenamed, EventChatMessageModerated, EventStreamStarted,
+		EventStreamStopped, EventStreamTitleChanged, EventSSEConnect,
+		EventSSEDisconnect, EventTick, EventTimerFire, EventFediverseFollow,
+		EventFediverseLike, EventFediverseRepost, EventFediverseMention,
+		EventFediverseReply,
+	} {
+		if !reservedEventTypes[e] {
+			t.Errorf("core event %q must be reserved (plugins must not be able to emit it)", e)
+		}
+	}
+	if reservedEventTypes["my.plugin.custom"] {
+		t.Error("a plugin's custom event type must not be treated as reserved")
+	}
+}
+
 // TestFilterTimeoutErrorShape verifies the error-string the dispatcher
 // produces when CallWithContext returns a deadline-exceeded error. The
 // real Wazero-level cancellation is verified separately by integration

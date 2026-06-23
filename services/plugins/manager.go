@@ -183,6 +183,12 @@ func (l *Loaded) recordFilterSuccess() {
 // explicit wildcard). Used by Server to require authentication on
 // admin-only routes.
 func (l *Loaded) IsAdminPath(path string) bool {
+	// Match case-insensitively: the gate must fire even if a request uses a
+	// different case than the manifest's declared path (e.g. "/Admin/x" vs a
+	// declared "/admin/*"), since a plugin that routes case-insensitively would
+	// otherwise serve admin content to an unauthenticated caller. The glob
+	// patterns and prefixes are lowered at load to match (see loadFromBytes).
+	path = strings.ToLower(path)
 	for i, g := range l.adminGlobs {
 		if g.Match(path) {
 			return true
@@ -1438,13 +1444,16 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 	var adminGlobs []glob.Glob
 	var adminPaths []string
 	for _, page := range manifest.Admin.Pages {
-		g, err := glob.Compile(page.Path)
+		// Lower the pattern so admin-path matching is case-insensitive (see
+		// IsAdminPath); the request path is lowered there to match.
+		lowered := strings.ToLower(page.Path)
+		g, err := glob.Compile(lowered)
 		if err != nil {
 			_ = p.Close(ctx)
 			return nil, fmt.Errorf("manifest.admin.pages: invalid path glob %q: %w", page.Path, err)
 		}
 		adminGlobs = append(adminGlobs, g)
-		adminPaths = append(adminPaths, page.Path)
+		adminPaths = append(adminPaths, lowered)
 	}
 
 	loaded = true

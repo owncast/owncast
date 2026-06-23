@@ -318,6 +318,25 @@ func TestWritePluginHTTPResponse_StripsCoreSessionCookie(t *testing.T) {
 	}
 }
 
+// TestIsAdminPath_CaseInsensitive is the A5 regression: the admin gate must
+// fire regardless of the request path's case, so a case-insensitively-routing
+// plugin can't be tricked into serving admin content via "/Admin/...".
+func TestIsAdminPath_CaseInsensitive(t *testing.T) {
+	// adminGlobs/adminPaths are stored lowered by loadFromBytes; mirror that.
+	l := &Loaded{
+		adminGlobs: []glob.Glob{glob.MustCompile("/admin/*")},
+		adminPaths: []string{"/admin/*"},
+	}
+	for _, p := range []string{"/admin/secret", "/Admin/secret", "/ADMIN/secret"} {
+		if !l.IsAdminPath(p) {
+			t.Errorf("%q should be gated as an admin path", p)
+		}
+	}
+	if l.IsAdminPath("/public/x") {
+		t.Error("/public/x should not be gated")
+	}
+}
+
 func TestServer_NonGetFallsThroughStatic(t *testing.T) {
 	// POST to a static asset path shouldn't serve the file. (Static is
 	// read-only; non-GET/HEAD requests fall through to the dynamic handler.)
