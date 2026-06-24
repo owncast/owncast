@@ -809,7 +809,7 @@ paths:
           description: Filter users by status
           schema:
             type: string
-            enum: [all, active, banned, moderators, bots]
+            enum: [all, active, bots]
       responses:
         '200':
           description: A paginated list of users

@@ -255,9 +255,7 @@ WHERE display_name LIKE '%' || ?1 || '%'
   AND (
     ?2 = '' OR ?2 = 'all'
     OR (?2 = 'active' AND disabled_at IS NULL)
-    OR (?2 = 'banned' AND disabled_at IS NOT NULL)
     OR (?2 = 'bots' AND type = 'API')
-    OR (?2 = 'moderators' AND scopes LIKE '%MODERATOR%')
   )
 `
 
@@ -1332,9 +1330,7 @@ WHERE display_name LIKE '%' || ?1 || '%'
   AND (
     ?2 = '' OR ?2 = 'all'
     OR (?2 = 'active' AND disabled_at IS NULL)
-    OR (?2 = 'banned' AND disabled_at IS NOT NULL)
     OR (?2 = 'bots' AND type = 'API')
-    OR (?2 = 'moderators' AND scopes LIKE '%MODERATOR%')
   )
 ORDER BY created_at DESC
 LIMIT ?4 OFFSET ?3
@@ -1363,8 +1359,10 @@ type GetUsersPaginatedRow struct {
 // A page of users of every type (chat viewers, authenticated/plugin users, and
 // API integrations), newest first, filtered to display names containing
 // @search and an optional @status: ” or 'all' = every user; otherwise
-// 'active' (not banned), 'banned' (disabled), 'moderators', or 'bots' (API
-// users). An empty @search matches every user (LIKE '%%').
+// 'active' (not banned) or 'bots' (API users). An empty @search matches every
+// user (LIKE '%%'). The complete banned and moderator sets come from
+// GetDisabledUsers and GetModeratorUsers instead, since those need every match
+// rather than a page.
 func (q *Queries) GetUsersPaginated(ctx context.Context, arg GetUsersPaginatedParams) ([]GetUsersPaginatedRow, error) {
 	rows, err := q.db.QueryContext(ctx, getUsersPaginated,
 		arg.Search,

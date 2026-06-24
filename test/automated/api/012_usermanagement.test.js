@@ -60,24 +60,26 @@ test('authProviders is empty for an anonymous user', async () => {
 	expect(match[0].authProviders || []).toHaveLength(0);
 });
 
-test('status=moderators filter includes a moderator', async () => {
+// Moderators and banned users come from their own endpoints, which return the
+// complete set rather than a page of the users API.
+test('moderators list includes a promoted moderator', async () => {
 	await sendAdminPayload('chat/users/setmoderator', {
 		userId: userId,
 		isModerator: true,
 	});
-	const response = await getAdminResponse(
-		'users?status=moderators&search=' + encodeURIComponent(displayName),
-	);
-	const match = response.body.results.filter((user) => user.id === userId);
+	const response = await getAdminResponse('chat/users/moderators');
+	const match = response.body.filter((user) => user.id === userId);
 	expect(match).toHaveLength(1);
 });
 
-test('status=banned excludes an active user', async () => {
-	const response = await getAdminResponse(
-		'users?status=banned&search=' + encodeURIComponent(displayName),
-	);
-	const match = response.body.results.filter((user) => user.id === userId);
-	expect(match).toHaveLength(0);
+test('banned list includes a disabled user', async () => {
+	await sendAdminPayload('chat/users/setenabled', {
+		userId: userId,
+		enabled: false,
+	});
+	const response = await getAdminResponse('chat/users/disabled');
+	const match = response.body.filter((user) => user.id === userId);
+	expect(match).toHaveLength(1);
 });
 
 test('status=bots excludes a normal user', async () => {

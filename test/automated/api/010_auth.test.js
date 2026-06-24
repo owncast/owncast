@@ -23,7 +23,7 @@ const paths = [
 	'/admin/federation/followers/',
 	'/admin/chat/messages',
 	'/admin/viewer-info/',
-	'/admin/chat/users/',
+	'/admin/users/',
 	'/admin/stream-health',
 	'/admin/hardware-info/',
 	// Some APIs too

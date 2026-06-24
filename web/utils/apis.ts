@@ -45,6 +45,12 @@ export const USERS = `${API_LOCATION}users`;
 // Permanently delete a user
 export const DELETE_USER = `${API_LOCATION}users/delete`;
 
+// Get the full list of disabled/banned users
+export const DISABLED_USERS = `${API_LOCATION}chat/users/disabled`;
+
+// Get the full list of moderators
+export const MODERATORS = `${API_LOCATION}chat/users/moderators`;
+
 // Get hardware stats
 export const HARDWARE_STATS = `${API_LOCATION}hardwarestats`;
 

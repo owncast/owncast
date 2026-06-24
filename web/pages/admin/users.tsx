@@ -4,7 +4,14 @@ import { ColumnsType, SortOrder } from 'antd/lib/table/interface';
 import { useTranslation } from 'next-export-i18n';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import { ServerStatusContext } from '../../utils/server-status-context';
-import { USERS, CONNECTED_CLIENTS, BANNED_IPS, fetchData } from '../../utils/apis';
+import {
+  USERS,
+  MODERATORS,
+  DISABLED_USERS,
+  CONNECTED_CLIENTS,
+  BANNED_IPS,
+  fetchData,
+} from '../../utils/apis';
 import { User, Client } from '../../types/chat';
 import { formatDisplayDate } from '../../utils/format';
 import { ClientTable } from '../../components/admin/ClientTable';
@@ -19,8 +26,6 @@ const LIVE_FETCH_INTERVAL = 10 * 1000; // 10 sec
 const STATUS_OPTIONS = [
   { value: 'all', label: 'All' },
   { value: 'active', label: 'Active' },
-  { value: 'banned', label: 'Banned' },
-  { value: 'moderators', label: 'Moderators' },
   { value: 'bots', label: 'Bots' },
 ];
 
@@ -36,6 +41,10 @@ export default function UsersAdmin() {
   const [search, setSearch] = useState<string>('');
   const [status, setStatus] = useState<string>('all');
   const [loading, setLoading] = useState<boolean>(false);
+
+  // Exhaustive lists (the paginated endpoint can't return a complete set).
+  const [moderators, setModerators] = useState<User[]>([]);
+  const [bannedUsers, setBannedUsers] = useState<User[]>([]);
 
   // Live tabs state (connected clients + IP bans).
   const [clients, setClients] = useState<Client[]>([]);
@@ -67,6 +76,23 @@ export default function UsersAdmin() {
     }
   };
 
+  // Moderators and banned users are complete sets, not pages, so they come from
+  // their dedicated endpoints rather than the paginated users API.
+  const getLists = async () => {
+    try {
+      setModerators((await fetchData(MODERATORS, { auth: true })) || []);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('error fetching moderators', e);
+    }
+    try {
+      setBannedUsers((await fetchData(DISABLED_USERS, { auth: true })) || []);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('error fetching banned users', e);
+    }
+  };
+
   const getLiveInfo = async () => {
     try {
       setClients(await fetchData(CONNECTED_CLIENTS));
@@ -82,9 +108,20 @@ export default function UsersAdmin() {
     }
   };
 
+  // A user action (ban, moderator toggle, delete) can move a user between the
+  // paginated view and either list, so refresh all three.
+  const refresh = () => {
+    getUsers();
+    getLists();
+  };
+
   useEffect(() => {
     getUsers();
   }, [currentPage, search, status]);
+
+  useEffect(() => {
+    getLists();
+  }, []);
 
   useEffect(() => {
     getLiveInfo();
@@ -144,7 +181,7 @@ export default function UsersAdmin() {
       title: '',
       key: 'actions',
       className: 'actions-col',
-      render: (_, user) => <UserActionsDropdown user={user} onChanged={getUsers} />,
+      render: (_, user) => <UserActionsDropdown user={user} onChanged={refresh} />,
     },
   ];
 
@@ -221,8 +258,30 @@ export default function UsersAdmin() {
     </p>
   );
 
+  // Full, unpaginated tables for the dedicated lists.
+  const listTable = (data: User[]) => (
+    <Table
+      className="table-container"
+      columns={columns}
+      dataSource={data}
+      size="small"
+      rowKey="id"
+      pagination={{ pageSize: PAGE_SIZE, showSizeChanger: false, hideOnSinglePage: true }}
+    />
+  );
+
   const items = [
     { label: t('All Users'), key: 'all', children: allUsersTab },
+    {
+      label: <span>{`${t('Moderators')} (${moderators.length})`}</span>,
+      key: 'moderators',
+      children: listTable(moderators),
+    },
+    {
+      label: <span>{`${t('Banned')} (${bannedUsers.length})`}</span>,
+      key: 'banned',
+      children: listTable(bannedUsers),
+    },
     {
       label: <span>{`${t('Connected')} (${online ? clients.length : t('offline')})`}</span>,
       key: 'connected',

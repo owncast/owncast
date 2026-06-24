@@ -180,17 +180,17 @@ UPDATE users SET display_color = ? WHERE id = ?;
 -- A page of users of every type (chat viewers, authenticated/plugin users, and
 -- API integrations), newest first, filtered to display names containing
 -- @search and an optional @status: '' or 'all' = every user; otherwise
--- 'active' (not banned), 'banned' (disabled), 'moderators', or 'bots' (API
--- users). An empty @search matches every user (LIKE '%%').
+-- 'active' (not banned) or 'bots' (API users). An empty @search matches every
+-- user (LIKE '%%'). The complete banned and moderator sets come from
+-- GetDisabledUsers and GetModeratorUsers instead, since those need every match
+-- rather than a page.
 SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
 FROM users
 WHERE display_name LIKE '%' || @search || '%'
   AND (
     @status = '' OR @status = 'all'
     OR (@status = 'active' AND disabled_at IS NULL)
-    OR (@status = 'banned' AND disabled_at IS NOT NULL)
     OR (@status = 'bots' AND type = 'API')
-    OR (@status = 'moderators' AND scopes LIKE '%MODERATOR%')
   )
 ORDER BY created_at DESC
 LIMIT @page_limit OFFSET @page_offset;
@@ -202,9 +202,7 @@ WHERE display_name LIKE '%' || @search || '%'
   AND (
     @status = '' OR @status = 'all'
     OR (@status = 'active' AND disabled_at IS NULL)
-    OR (@status = 'banned' AND disabled_at IS NOT NULL)
     OR (@status = 'bots' AND type = 'API')
-    OR (@status = 'moderators' AND scopes LIKE '%MODERATOR%')
   );
 
 -- name: DeleteUserAccessTokens :exec
