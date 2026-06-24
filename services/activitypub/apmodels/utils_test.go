@@ -106,6 +106,37 @@ func TestGetIRIStringFromObjectPropertyWithValidIRI(t *testing.T) {
 	}
 }
 
+// Regression test for issue #4825: an Announce whose object (or actor) is an
+// inlined object rather than an IRI reference. The element is non-nil but
+// GetIRI() returns nil, which crashed v0.2.4 via .At(0).GetIRI().String().
+func TestGetIRIFromObjectPropertyWithEmbeddedObject(t *testing.T) {
+	object := streams.NewActivityStreamsObjectProperty()
+	object.AppendActivityStreamsNote(streams.NewActivityStreamsNote())
+
+	_, err := GetIRIFromObjectProperty(object)
+	if !errors.Is(err, ErrMissingIRI) {
+		t.Errorf("GetIRIFromObjectProperty with embedded object error = %v, want ErrMissingIRI", err)
+	}
+
+	if _, err := GetIRIStringFromObjectProperty(object); !errors.Is(err, ErrMissingIRI) {
+		t.Errorf("GetIRIStringFromObjectProperty with embedded object error = %v, want ErrMissingIRI", err)
+	}
+}
+
+func TestGetIRIFromActorPropertyWithEmbeddedObject(t *testing.T) {
+	actor := streams.NewActivityStreamsActorProperty()
+	actor.AppendActivityStreamsPerson(streams.NewActivityStreamsPerson())
+
+	_, err := GetIRIFromActorProperty(actor)
+	if !errors.Is(err, ErrMissingIRI) {
+		t.Errorf("GetIRIFromActorProperty with embedded object error = %v, want ErrMissingIRI", err)
+	}
+
+	if _, err := GetIRIStringFromActorProperty(actor); !errors.Is(err, ErrMissingIRI) {
+		t.Errorf("GetIRIStringFromActorProperty with embedded object error = %v, want ErrMissingIRI", err)
+	}
+}
+
 func TestGetIRIFromJSONLDIdPropertyWithNil(t *testing.T) {
 	_, err := GetIRIFromJSONLDIdProperty(nil)
 	if err == nil {
