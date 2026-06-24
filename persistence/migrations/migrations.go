@@ -52,7 +52,7 @@ func Run(db *sql.DB, backupDirectory string) error {
 	}
 
 	if legacyVersion > 0 && legacyVersion < legacyBaselineVersion {
-		log.Infof("Legacy schema at version %d; upgrading to %d before handing off to goose",
+		log.Debugf("Legacy schema at version %d; upgrading to %d before handing off to goose",
 			legacyVersion, legacyBaselineVersion)
 		if err := legacymigrations.MigrateDatabaseSchema(db, backupDirectory, legacyVersion, legacyBaselineVersion); err != nil {
 			return fmt.Errorf("legacy schema catch-up: %w", err)
@@ -106,5 +106,5 @@ func (gooseLogger) Printf(format string, v ...interface{}) {
 	if strings.Contains(fmt.Sprintf(format, v...), "no migrations to run") {
 		return
 	}
-	log.Infof(format, v...)
+	log.Debugf(format, v...)
 }

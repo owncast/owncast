@@ -21,7 +21,7 @@ func migrateDatastoreValues(datastore *datastore.Datastore, configRepository Con
 	}
 
 	for v := currentVersion; v < datastoreValuesVersion; v++ {
-		log.Infof("Migration datastore values from %d to %d\n", int(v), int(v+1))
+		log.Debugf("Migration datastore values from %d to %d\n", int(v), int(v+1))
 		switch v {
 		case 0:
 			migrateToDatastoreValues1(datastore)
