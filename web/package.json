@@ -137,7 +137,7 @@
     "prettier": "3.8.4",
     "sass": "1.100.0",
     "storybook": "^9.1.13",
-    "style-dictionary": "3.9.2",
+    "style-dictionary": "5.5.0",
     "style-loader": "4.0.0",
     "stylelint": "^16.0.0",
     "stylelint-config-standard": "^39.0.0",
