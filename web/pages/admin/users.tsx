@@ -17,6 +17,7 @@ import { formatDateOnly } from '../../utils/format';
 import { ClientTable } from '../../components/admin/ClientTable';
 import { BannedIPsTable } from '../../components/admin/BannedIPsTable';
 import { UserActionsDropdown } from '../../components/admin/UserActionsDropdown';
+import { UserDetailsModal } from '../../components/admin/UserDetailsModal';
 import { Translation } from '../../components/ui/Translation/Translation';
 import { Localization } from '../../types/localization';
 
@@ -53,6 +54,10 @@ export default function UsersAdmin() {
   // Live tabs state (connected clients + IP bans).
   const [clients, setClients] = useState<Client[]>([]);
   const [ipBans, setIPBans] = useState([]);
+
+  // The user whose detail modal is open (null when closed). Set by clicking a
+  // table row.
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const getUsers = async () => {
     setLoading(true);
@@ -186,9 +191,25 @@ export default function UsersAdmin() {
       title: '',
       key: 'actions',
       className: 'actions-col',
-      render: (_, user) => <UserActionsDropdown user={user} onChanged={refresh} />,
+      // Stop clicks in the actions cell from also opening the row's detail modal.
+      render: (_, user) => (
+        <span
+          onClick={e => e.stopPropagation()}
+          onKeyDown={e => e.stopPropagation()}
+          role="presentation"
+        >
+          <UserActionsDropdown user={user} onChanged={refresh} />
+        </span>
+      ),
     },
   ];
+
+  // Clicking a row opens that user's detail modal. Shared by the paginated "All
+  // Users" table and the Moderators/Banned list tables.
+  const rowInteraction = (record: User) => ({
+    onClick: () => setSelectedUser(record),
+    style: { cursor: 'pointer' },
+  });
 
   // The "All Users" table is server-paginated, so its Created column sorts via
   // the API across every page rather than only the rows in hand. The dedicated
@@ -238,6 +259,7 @@ export default function UsersAdmin() {
         dataSource={users}
         size="small"
         rowKey="id"
+        onRow={rowInteraction}
         pagination={{
           current: currentPage,
           pageSize: PAGE_SIZE,
@@ -294,6 +316,7 @@ export default function UsersAdmin() {
       dataSource={data}
       size="small"
       rowKey="id"
+      onRow={rowInteraction}
       pagination={{ pageSize: PAGE_SIZE, showSizeChanger: false, hideOnSinglePage: true }}
     />
   );
@@ -328,6 +351,18 @@ export default function UsersAdmin() {
         <Translation translationKey={Localization.Admin.Users.pageTitle} defaultText="Users" />
       </Typography.Title>
       <Tabs defaultActiveKey="all" items={items} />
+      {selectedUser && (
+        <UserDetailsModal
+          user={selectedUser}
+          open
+          onClose={() => {
+            setSelectedUser(null);
+            // A ban or moderator change made from the modal should be reflected
+            // in the lists.
+            refresh();
+          }}
+        />
+      )}
     </div>
   );
 }
