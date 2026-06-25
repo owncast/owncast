@@ -49,3 +49,4 @@ Do not access the web application via http://localhost:8080 or build the web pro
 13. You should never commit the `static/web` directory to the repository. It is generated from the `web` directory and should be ignored in your commits.
 14. Don't use emoji in code comments or commit messages. That's lame.
 15. User interface components should use Ant Design v4 components, not Ant Design v5.
+16. Database schema changes (new tables, columns, indexes) are made by adding a new numbered goose migration in `persistence/migrations/`. Never edit a shipped migration. Queries live in `db/query.sql`; after changing schema or queries run `make sqlc` to regenerate the type-safe Go. Don't hand-write raw SQL in Go. See `db/README.md` for the full walkthrough.
