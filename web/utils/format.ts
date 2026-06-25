@@ -12,6 +12,12 @@ export function formatDisplayDate(date: string | Date) {
   return format(new Date(date), 'MMM d H:mma');
 }
 
+// formatDateOnly renders just the calendar date (no time of day), e.g.
+// "Jun 25, 2026". Used for the admin user table's "Created" column.
+export function formatDateOnly(date: string | Date) {
+  return format(new Date(date), 'MMM d, yyyy');
+}
+
 export function formatIPAddress(ipAddress: string): string {
   const ipAddressComponents = ipAddress.split(':');
 

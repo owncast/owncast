@@ -810,6 +810,13 @@ paths:
           schema:
             type: string
             enum: [all, active, bots]
+        - in: query
+          name: sort
+          description: Sort direction by creation date (defaults to newest first)
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
       responses:
         '200':
           description: A paginated list of users

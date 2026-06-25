@@ -183,7 +183,9 @@ UPDATE users SET display_color = ? WHERE id = ?;
 -- 'active' (not banned) or 'bots' (API users). An empty @search matches every
 -- user (LIKE '%%'). The complete banned and moderator sets come from
 -- GetDisabledUsers and GetModeratorUsers instead, since those need every match
--- rather than a page.
+-- rather than a page. GetUsersPaginatedAsc is the oldest-first counterpart;
+-- the two exist as separate queries because sqlc can't bind a sort direction
+-- into ORDER BY.
 SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
 FROM users
 WHERE display_name LIKE '%' || @search || '%'
@@ -193,6 +195,20 @@ WHERE display_name LIKE '%' || @search || '%'
     OR (@status = 'bots' AND type = 'API')
   )
 ORDER BY created_at DESC
+LIMIT @page_limit OFFSET @page_offset;
+
+-- name: GetUsersPaginatedAsc :many
+-- Oldest-first counterpart to GetUsersPaginated. Same @search/@status filter,
+-- only the created_at ordering differs.
+SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
+FROM users
+WHERE display_name LIKE '%' || @search || '%'
+  AND (
+    @status = '' OR @status = 'all'
+    OR (@status = 'active' AND disabled_at IS NULL)
+    OR (@status = 'bots' AND type = 'API')
+  )
+ORDER BY created_at ASC
 LIMIT @page_limit OFFSET @page_offset;
 
 -- name: CountUsers :one

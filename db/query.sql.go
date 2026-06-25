@@ -1362,7 +1362,9 @@ type GetUsersPaginatedRow struct {
 // 'active' (not banned) or 'bots' (API users). An empty @search matches every
 // user (LIKE '%%'). The complete banned and moderator sets come from
 // GetDisabledUsers and GetModeratorUsers instead, since those need every match
-// rather than a page.
+// rather than a page. GetUsersPaginatedAsc is the oldest-first counterpart;
+// the two exist as separate queries because sqlc can't bind a sort direction
+// into ORDER BY.
 func (q *Queries) GetUsersPaginated(ctx context.Context, arg GetUsersPaginatedParams) ([]GetUsersPaginatedRow, error) {
 	rows, err := q.db.QueryContext(ctx, getUsersPaginated,
 		arg.Search,
@@ -1377,6 +1379,80 @@ func (q *Queries) GetUsersPaginated(ctx context.Context, arg GetUsersPaginatedPa
 	var items []GetUsersPaginatedRow
 	for rows.Next() {
 		var i GetUsersPaginatedRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.DisplayName,
+			&i.DisplayColor,
+			&i.CreatedAt,
+			&i.DisabledAt,
+			&i.PreviousNames,
+			&i.NamechangedAt,
+			&i.AuthenticatedAt,
+			&i.Scopes,
+			&i.IsBot,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUsersPaginatedAsc = `-- name: GetUsersPaginatedAsc :many
+SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
+FROM users
+WHERE display_name LIKE '%' || ?1 || '%'
+  AND (
+    ?2 = '' OR ?2 = 'all'
+    OR (?2 = 'active' AND disabled_at IS NULL)
+    OR (?2 = 'bots' AND type = 'API')
+  )
+ORDER BY created_at ASC
+LIMIT ?4 OFFSET ?3
+`
+
+type GetUsersPaginatedAscParams struct {
+	Search     sql.NullString
+	Status     interface{}
+	PageOffset int64
+	PageLimit  int64
+}
+
+type GetUsersPaginatedAscRow struct {
+	ID              string
+	DisplayName     string
+	DisplayColor    int64
+	CreatedAt       sql.NullTime
+	DisabledAt      sql.NullTime
+	PreviousNames   sql.NullString
+	NamechangedAt   sql.NullTime
+	AuthenticatedAt sql.NullTime
+	Scopes          sql.NullString
+	IsBot           bool
+}
+
+// Oldest-first counterpart to GetUsersPaginated. Same @search/@status filter,
+// only the created_at ordering differs.
+func (q *Queries) GetUsersPaginatedAsc(ctx context.Context, arg GetUsersPaginatedAscParams) ([]GetUsersPaginatedAscRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUsersPaginatedAsc,
+		arg.Search,
+		arg.Status,
+		arg.PageOffset,
+		arg.PageLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUsersPaginatedAscRow
+	for rows.Next() {
+		var i GetUsersPaginatedAscRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.DisplayName,

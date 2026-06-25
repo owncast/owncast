@@ -28,7 +28,7 @@ type UserRepository interface {
 	DeleteExternalAPIUser(token string) error
 	GetDisabledUsers() []*models.User
 	GetUsers() []*models.User
-	GetUsersPaginated(offset int, limit int, search string, status string) ([]*models.User, int, error)
+	GetUsersPaginated(offset int, limit int, search string, status string, sort string) ([]*models.User, int, error)
 	DeleteUser(userID string) error
 	GetExternalAPIUser() ([]models.ExternalAPIUser, error)
 	GetExternalAPIUserForAccessTokenAndScope(token string, scope string) (*models.ExternalAPIUser, error)
@@ -496,13 +496,14 @@ func (r *SqlUserRepository) GetUsers() []*models.User {
 }
 
 // GetUsersPaginated returns a page of users of every type (chat viewers,
-// authenticated/plugin users, and API integrations), most-recently-created
-// first, filtered to display names containing search and an optional status
-// ("" / "all" = every user; else "active", "banned", "moderators", "bots"). It also
-// returns the total number of users matching the filter so the admin
-// user-management page can paginate. The search arg is always Valid (even when
-// empty) so the LIKE binds to ” and matches every user rather than NULL.
-func (r *SqlUserRepository) GetUsersPaginated(offset int, limit int, search string, status string) ([]*models.User, int, error) {
+// authenticated/plugin users, and API integrations), filtered to display names
+// containing search and an optional status ("" / "all" = every user; else
+// "active", "banned", "moderators", "bots"). The page is ordered by creation
+// date: sort == "asc" is oldest-first, anything else is most-recently-created
+// first. It also returns the total number of users matching the filter so the
+// admin user-management page can paginate. The search arg is always Valid (even
+// when empty) so the LIKE binds to ” and matches every user rather than NULL.
+func (r *SqlUserRepository) GetUsersPaginated(offset int, limit int, search string, status string, sort string) ([]*models.User, int, error) {
 	if limit <= 0 {
 		limit = 50
 	}
@@ -521,19 +522,33 @@ func (r *SqlUserRepository) GetUsersPaginated(offset int, limit int, search stri
 		return nil, 0, errors.Wrap(err, "unable to count users")
 	}
 
-	rows, err := r.datastore.GetQueries().GetUsersPaginated(ctx, db.GetUsersPaginatedParams{
-		Search:     searchArg,
-		Status:     status,
-		PageLimit:  int64(limit),
-		PageOffset: int64(offset),
-	})
-	if err != nil {
-		return nil, 0, errors.Wrap(err, "unable to query users")
-	}
-
-	users := make([]*models.User, 0, len(rows))
-	for _, u := range rows {
-		users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
+	users := make([]*models.User, 0, limit)
+	if sort == "asc" {
+		rows, err := r.datastore.GetQueries().GetUsersPaginatedAsc(ctx, db.GetUsersPaginatedAscParams{
+			Search:     searchArg,
+			Status:     status,
+			PageLimit:  int64(limit),
+			PageOffset: int64(offset),
+		})
+		if err != nil {
+			return nil, 0, errors.Wrap(err, "unable to query users")
+		}
+		for _, u := range rows {
+			users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
+		}
+	} else {
+		rows, err := r.datastore.GetQueries().GetUsersPaginated(ctx, db.GetUsersPaginatedParams{
+			Search:     searchArg,
+			Status:     status,
+			PageLimit:  int64(limit),
+			PageOffset: int64(offset),
+		})
+		if err != nil {
+			return nil, 0, errors.Wrap(err, "unable to query users")
+		}
+		for _, u := range rows {
+			users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
+		}
 	}
 
 	if err := r.attachAuthProviders(ctx, users); err != nil {

@@ -30,7 +30,14 @@ func (a *Admin) GetUsers(w http.ResponseWriter, r *http.Request) {
 	search := query.Get("search")
 	status := query.Get("status")
 
-	users, total, err := a.userRepository.GetUsersPaginated(offset, limit, search, status)
+	// Only "asc" (oldest first) flips the ordering; everything else, including
+	// an empty value, keeps the default newest-first sort.
+	sort := query.Get("sort")
+	if sort != "asc" {
+		sort = "desc"
+	}
+
+	users, total, err := a.userRepository.GetUsersPaginated(offset, limit, search, status, sort)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return

@@ -60,6 +60,32 @@ test('authProviders is empty for an anonymous user', async () => {
 	expect(match[0].authProviders || []).toHaveLength(0);
 });
 
+test('sort orders the page by creation date in both directions', async () => {
+	const asc = await getAdminResponse('users?offset=0&limit=50&sort=asc');
+	const desc = await getAdminResponse('users?offset=0&limit=50&sort=desc');
+
+	const ascTimes = asc.body.results.map((user) =>
+		new Date(user.createdAt).getTime(),
+	);
+	const descTimes = desc.body.results.map((user) =>
+		new Date(user.createdAt).getTime(),
+	);
+
+	// Each page is monotonically ordered by creation date.
+	for (let i = 1; i < ascTimes.length; i++) {
+		expect(ascTimes[i]).toBeGreaterThanOrEqual(ascTimes[i - 1]);
+	}
+	for (let i = 1; i < descTimes.length; i++) {
+		expect(descTimes[i]).toBeLessThanOrEqual(descTimes[i - 1]);
+	}
+
+	// Omitting sort keeps the default newest-first order, i.e. sort=desc.
+	const def = await getAdminResponse('users?offset=0&limit=50');
+	expect(def.body.results.map((user) => user.id)).toEqual(
+		desc.body.results.map((user) => user.id),
+	);
+});
+
 // Moderators and banned users come from their own endpoints, which return the
 // complete set rather than a page of the users API.
 test('moderators list includes a promoted moderator', async () => {

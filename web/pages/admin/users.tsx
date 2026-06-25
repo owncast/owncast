@@ -13,7 +13,7 @@ import {
   fetchData,
 } from '../../utils/apis';
 import { User, Client } from '../../types/chat';
-import { formatDisplayDate } from '../../utils/format';
+import { formatDateOnly } from '../../utils/format';
 import { ClientTable } from '../../components/admin/ClientTable';
 import { BannedIPsTable } from '../../components/admin/BannedIPsTable';
 import { UserActionsDropdown } from '../../components/admin/UserActionsDropdown';
@@ -40,6 +40,10 @@ export default function UsersAdmin() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState<string>('');
   const [status, setStatus] = useState<string>('all');
+  // Server-side sort of the paginated list by creation date ('desc' = newest
+  // first, 'asc' = oldest first). The API sorts across every page, not just the
+  // rows already fetched.
+  const [sort, setSort] = useState<'asc' | 'desc'>('desc');
   const [loading, setLoading] = useState<boolean>(false);
 
   // Exhaustive lists (the paginated endpoint can't return a complete set).
@@ -56,6 +60,7 @@ export default function UsersAdmin() {
       const params = new URLSearchParams({
         offset: String((currentPage - 1) * PAGE_SIZE),
         limit: String(PAGE_SIZE),
+        sort,
       });
       if (search) {
         params.set('search', search);
@@ -117,7 +122,7 @@ export default function UsersAdmin() {
 
   useEffect(() => {
     getUsers();
-  }, [currentPage, search, status]);
+  }, [currentPage, search, status, sort]);
 
   useEffect(() => {
     getLists();
@@ -172,7 +177,7 @@ export default function UsersAdmin() {
       title: 'Created',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (date: Date) => formatDisplayDate(date),
+      render: (date: Date) => formatDateOnly(date),
       sorter: (a: User, b: User) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       sortDirections: ['descend', 'ascend'] as SortOrder[],
@@ -184,6 +189,16 @@ export default function UsersAdmin() {
       render: (_, user) => <UserActionsDropdown user={user} onChanged={refresh} />,
     },
   ];
+
+  // The "All Users" table is server-paginated, so its Created column sorts via
+  // the API across every page rather than only the rows in hand. The dedicated
+  // Moderators/Banned tables hold complete sets, so they keep the shared
+  // client-side sorter from `columns`.
+  const usersColumns: ColumnsType<User> = columns.map(col =>
+    col.key === 'createdAt'
+      ? { ...col, sorter: true, sortOrder: (sort === 'asc' ? 'ascend' : 'descend') as SortOrder }
+      : col,
+  );
 
   const allUsersTab = (
     <>
@@ -219,7 +234,7 @@ export default function UsersAdmin() {
       <Table
         loading={loading}
         className="table-container"
-        columns={columns}
+        columns={usersColumns}
         dataSource={users}
         size="small"
         rowKey="id"
@@ -230,7 +245,20 @@ export default function UsersAdmin() {
           showSizeChanger: false,
           hideOnSinglePage: true,
         }}
-        onChange={pagination => setCurrentPage(pagination.current || 1)}
+        onChange={(pagination, _filters, sorter) => {
+          // A sort change resets to the first page; a page change keeps the
+          // current sort.
+          const activeSorter = Array.isArray(sorter) ? sorter[0] : sorter;
+          if (activeSorter?.columnKey === 'createdAt') {
+            const nextSort = activeSorter.order === 'ascend' ? 'asc' : 'desc';
+            if (nextSort !== sort) {
+              setSort(nextSort);
+              setCurrentPage(1);
+              return;
+            }
+          }
+          setCurrentPage(pagination.current || 1);
+        }}
       />
     </>
   );

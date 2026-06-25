@@ -93,6 +93,24 @@ func (e GetUsersParamsStatus) Valid() bool {
 	}
 }
 
+// Defines values for GetUsersParamsSort.
+const (
+	Asc  GetUsersParamsSort = "asc"
+	Desc GetUsersParamsSort = "desc"
+)
+
+// Valid indicates whether the value is a known member of the GetUsersParamsSort enum.
+func (e GetUsersParamsSort) Valid() bool {
+	switch e {
+	case Asc:
+		return true
+	case Desc:
+		return true
+	default:
+		return false
+	}
+}
+
 // ActionMessage defines model for ActionMessage.
 type ActionMessage struct {
 	Body      *string `json:"body,omitempty"`
@@ -901,10 +919,16 @@ type GetUsersParams struct {
 
 	// Status Filter users by status
 	Status *GetUsersParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Sort Sort direction by creation date (defaults to newest first)
+	Sort *GetUsersParamsSort `form:"sort,omitempty" json:"sort,omitempty"`
 }
 
 // GetUsersParamsStatus defines parameters for GetUsers.
 type GetUsersParamsStatus string
+
+// GetUsersParamsSort defines parameters for GetUsers.
+type GetUsersParamsSort string
 
 // DeleteUserJSONBody defines parameters for DeleteUser.
 type DeleteUserJSONBody struct {
