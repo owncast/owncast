@@ -68,11 +68,9 @@ func (e WebhookEventType) Valid() bool {
 
 // Defines values for GetUsersParamsStatus.
 const (
-	Active     GetUsersParamsStatus = "active"
-	All        GetUsersParamsStatus = "all"
-	Banned     GetUsersParamsStatus = "banned"
-	Bots       GetUsersParamsStatus = "bots"
-	Moderators GetUsersParamsStatus = "moderators"
+	Active GetUsersParamsStatus = "active"
+	All    GetUsersParamsStatus = "all"
+	Bots   GetUsersParamsStatus = "bots"
 )
 
 // Valid indicates whether the value is a known member of the GetUsersParamsStatus enum.
@@ -82,11 +80,7 @@ func (e GetUsersParamsStatus) Valid() bool {
 		return true
 	case All:
 		return true
-	case Banned:
-		return true
 	case Bots:
-		return true
-	case Moderators:
 		return true
 	default:
 		return false
@@ -920,6 +914,7 @@ type GetViewersOverTimeParams struct {
 // CreateWebhookJSONBody defines parameters for CreateWebhook.
 type CreateWebhookJSONBody struct {
 	Events *[]WebhookEventType `json:"events,omitempty"`
+	Secret *string             `json:"secret,omitempty"`
 	Url    *string             `json:"url,omitempty"`
 }
 

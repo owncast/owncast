@@ -22,6 +22,7 @@ import { Translation } from '../../components/ui/Translation/Translation';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import { ServerStatusContext } from '../../utils/server-status-context';
+import { TextField, TEXTFIELD_TYPE_PASSWORD } from '../../components/admin/TextField';
 
 const { Title, Paragraph } = Typography;
 
@@ -74,7 +75,7 @@ function convertEventStringToTag(eventString: string) {
 }
 interface Props {
   onCancel: () => void;
-  onOk: any; // todo: make better type
+  onOk: (url: string, events: string[], webhookSecret: string) => void
   open: boolean;
 }
 
@@ -84,6 +85,7 @@ const NewWebhookModal = (props: Props) => {
 
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [webhookUrl, setWebhookUrl] = useState('');
+  const [webhookSecret, setWebhookSecret] = useState('')
 
   const { serverConfig } = useContext(ServerStatusContext);
 
@@ -101,10 +103,11 @@ const NewWebhookModal = (props: Props) => {
   }
 
   function save() {
-    onOk(webhookUrl, selectedEvents);
+    onOk(webhookUrl, selectedEvents, webhookSecret);
 
     // Reset the modal
     setWebhookUrl('');
+    setWebhookSecret('')
     setSelectedEvents(null);
   }
 
@@ -142,6 +145,19 @@ const NewWebhookModal = (props: Props) => {
           onChange={input => setWebhookUrl(input.currentTarget.value.trim())}
           type="url"
           pattern={DEFAULT_TEXTFIELD_URL_PATTERN}
+        />
+      </div>
+
+      <p>
+        <Translation translationKey={Localization.Admin.Webhooks.webhookSecret} />
+      </p>
+      <div>
+        <TextField
+        fieldName='webhook-secret'
+        value={webhookSecret}
+        placeholder={"****"}
+        type={TEXTFIELD_TYPE_PASSWORD}
+        onChange={input => setWebhookSecret(input.value.trim())}
         />
       </div>
 
@@ -190,11 +206,11 @@ const Webhooks = () => {
     }
   }
 
-  async function handleSave(url: string, events: string[]) {
+  async function handleSave(url: string, events: string[], webhookSecret: string) {
     try {
       const newHook = await fetchData(CREATE_WEBHOOK, {
         method: 'POST',
-        data: { url, events },
+        data: { url, events, secret: webhookSecret },
       });
       setWebhooks(webhooks.concat(newHook));
     } catch (error) {
@@ -206,9 +222,9 @@ const Webhooks = () => {
     setIsModalOpen(true);
   };
 
-  const handleModalSaveButton = (url, events) => {
+  const handleModalSaveButton = (url, events, webhookSecret) => {
     setIsModalOpen(false);
-    handleSave(url, events);
+    handleSave(url, events, webhookSecret);
   };
 
   const handleModalCancelButton = () => {

@@ -12,8 +12,9 @@ import (
 )
 
 type createWebhookRequest struct {
-	URL    string             `json:"url"`
-	Events []models.EventType `json:"events"`
+	URL           string             `json:"url"`
+	Events        []models.EventType `json:"events"`
+	WebhookSecret string             `json:"secret"`
 }
 
 // CreateWebhook will add a single webhook.

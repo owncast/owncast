@@ -2939,6 +2939,8 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/WebhookEventType'
+                secret:
+                  type: string
       responses:
         '200':
           description: The new webhook

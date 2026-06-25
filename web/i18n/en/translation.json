@@ -326,6 +326,7 @@
 			"viewers": "Viewers"
 		},
 		"Webhooks": {
+			"webhookSecret": "Set up a new webhook secret",
 			"createNewWebhook": "Create New Webhook",
 			"selectAll": "Select all",
 			"selectEvents": "Select the events that will be sent to this webhook.",
