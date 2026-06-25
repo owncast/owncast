@@ -69,6 +69,35 @@ func TestSingleOTPFlowRequest(t *testing.T) {
 	}
 }
 
+func TestReplacePendingWhenAccountDiffers(t *testing.T) {
+	svc := New()
+	token := "retry-token"
+
+	first, _, _ := svc.RegisterFediverseOTP(token, userID, userDisplayName, "wrong@example.com")
+
+	// A different account replaces the pending request with a fresh code.
+	second, ok, _ := svc.RegisterFediverseOTP(token, userID, userDisplayName, "right@example.com")
+	if !ok {
+		t.Fatal("a request for a different account should replace the pending one")
+	}
+	if second.Code == first.Code {
+		t.Error("replacement should issue a new code")
+	}
+
+	// The same account is still blocked from re-sending.
+	if _, ok, _ := svc.RegisterFediverseOTP(token, userID, userDisplayName, "right@example.com"); ok {
+		t.Error("a duplicate request for the same account should be blocked")
+	}
+
+	// Only the replacement code is valid now.
+	if valid, _ := svc.ValidateFediverseOTP(token, first.Code); valid {
+		t.Error("the replaced code should no longer validate")
+	}
+	if valid, _ := svc.ValidateFediverseOTP(token, second.Code); !valid {
+		t.Error("the replacement code should validate")
+	}
+}
+
 func TestAccountCaseInsensitive(t *testing.T) {
 	svc := New()
 	account := "Account"

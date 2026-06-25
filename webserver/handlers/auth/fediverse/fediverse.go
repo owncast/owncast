@@ -101,7 +101,7 @@ func (h *Handler) VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Reque
 	accessToken := r.URL.Query().Get("accessToken")
 	valid, authRegistration := h.fediverseAuth.ValidateFediverseOTP(accessToken, *req.Code)
 	if !valid {
-		w.WriteHeader(http.StatusForbidden)
+		webutils.WriteSimpleResponse(w, false, "Incorrect or expired code. Please request a new one and try again.")
 		return
 	}
 

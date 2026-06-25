@@ -3847,8 +3847,6 @@ paths:
                 $ref: '#/components/schemas/BaseAPIResponse'
         '400':
           $ref: '#/components/responses/400'
-        '403':
-          $ref: '#/components/responses/403'
 
 components:
   schemas:

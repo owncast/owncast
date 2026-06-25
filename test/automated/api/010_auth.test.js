@@ -51,3 +51,15 @@ paths.forEach((path) => {
 		expect([200, 301]).toContain(r.status);
 	});
 });
+
+// A wrong or expired fediverse OTP code returns a JSON error rather than a
+// bodyless 403 the web client can't parse. Regression test for #4696.
+test('fediverse verify with a bad code returns a JSON error', async () => {
+	const r = await request
+		.post('/api/auth/fediverse/verify?accessToken=nonexistent-token')
+		.send({ code: '000000' })
+		.expect(400);
+	expect(r.body.success).toBe(false);
+	expect(typeof r.body.message).toBe('string');
+	expect(r.body.message.length).toBeGreaterThan(0);
+});

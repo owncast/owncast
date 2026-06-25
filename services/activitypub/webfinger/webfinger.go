@@ -46,12 +46,10 @@ func GetWebfingerLinks(account string) ([]map[string]interface{}, error) {
 	query.Add("resource", fmt.Sprintf("acct:%s", account))
 	requestURL.RawQuery = query.Encode()
 
-	// Do not support redirects.
-	client := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
+	// Follow redirects (e.g. subdomain -> canonical domain, as Mastodon does).
+	// GetRetryableHTTPClient re-validates each hop against the internal-host
+	// check to prevent SSRF and caps the redirect count.
+	client := utils.GetRetryableHTTPClient()
 
 	req, err := http.NewRequest("GET", requestURL.String(), nil)
 	if err != nil {

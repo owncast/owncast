@@ -68,10 +68,21 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
       body: JSON.stringify(data),
     });
 
-    const content = await rawResponse.json();
+    let content: { message?: string } = {};
+    try {
+      content = await rawResponse.json();
+    } catch {
+      // Non-JSON response; the status check below handles it.
+    }
+
     if (content.message) {
+      // Callers set the error message, so just surface it.
       setLoading(false);
-      throw new Error(content.message); // let the callers handle setting error message since they already are
+      throw new Error(content.message);
+    }
+    if (!rawResponse.ok) {
+      setLoading(false);
+      throw new Error('Something went wrong. Please try again.');
     }
   };
 
@@ -87,7 +98,7 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
       window.location.href = '/';
     } catch (e) {
       console.error(e);
-      setErrorMessage(e.toString());
+      setErrorMessage(e.message);
     }
     setLoading(false);
   };
@@ -108,7 +119,7 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
       setVerifyingCode(true);
     } catch (e) {
       console.error(e);
-      setErrorMessage(e.toString());
+      setErrorMessage(e.message);
     }
     setLoading(false);
   };

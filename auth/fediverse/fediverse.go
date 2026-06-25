@@ -69,19 +69,24 @@ func (s *Service) runExpiredRequestPruner() {
 // RegisterFediverseOTP will start the OTP flow for a user, creating a new
 // code and returning it to be sent to a destination.
 func (s *Service) RegisterFediverseOTP(accessToken, userID, userDisplayName, account string) (OTPRegistration, bool, error) {
-	request, requestExists := s.pendingAuthRequests[accessToken]
-
-	// If a request is already registered and has not expired then return that
-	// existing request.
-	if requestExists && time.Since(request.Timestamp) < registrationTimeout {
-		return request, false, nil
-	}
+	account = strings.ToLower(account)
 
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	if len(s.pendingAuthRequests)+1 > maxPendingRequests {
-		return request, false, errors.New("too many pending requests, please try again later")
+	existing, exists := s.pendingAuthRequests[accessToken]
+
+	// Block a duplicate request for the same account so we don't re-send a code,
+	// but allow a request for a different account to replace a pending one so a
+	// user who entered the wrong address can immediately retry.
+	if exists && time.Since(existing.Timestamp) < registrationTimeout && existing.Account == account {
+		return existing, false, nil
+	}
+
+	// Only the global cap applies when adding a new entry; replacing one does
+	// not grow the map.
+	if !exists && len(s.pendingAuthRequests)+1 > maxPendingRequests {
+		return OTPRegistration{}, false, errors.New("too many pending requests, please try again later")
 	}
 
 	code, _ := createCode()
@@ -89,7 +94,7 @@ func (s *Service) RegisterFediverseOTP(accessToken, userID, userDisplayName, acc
 		Code:            code,
 		UserID:          userID,
 		UserDisplayName: userDisplayName,
-		Account:         strings.ToLower(account),
+		Account:         account,
 		Timestamp:       time.Now(),
 	}
 	s.pendingAuthRequests[accessToken] = r
@@ -99,14 +104,13 @@ func (s *Service) RegisterFediverseOTP(accessToken, userID, userDisplayName, acc
 
 // ValidateFediverseOTP will verify a OTP code for a auth request.
 func (s *Service) ValidateFediverseOTP(accessToken, code string) (bool, *OTPRegistration) {
-	request, ok := s.pendingAuthRequests[accessToken]
+	s.lock.Lock()
+	defer s.lock.Unlock()
 
+	request, ok := s.pendingAuthRequests[accessToken]
 	if !ok || request.Code != code || time.Since(request.Timestamp) > registrationTimeout {
 		return false, nil
 	}
-
-	s.lock.Lock()
-	defer s.lock.Unlock()
 
 	delete(s.pendingAuthRequests, accessToken)
 	return true, &request
