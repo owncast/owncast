@@ -13,11 +13,12 @@ import (
 )
 
 type WebhookRepository interface {
-	InsertWebhook(url string, events []models.EventType) (int, error)
+	InsertWebhook(url string, events []models.EventType, secret string) (int, error)
 	DeleteWebhook(id int) error
 	GetWebhooksForEvent(event models.EventType) []models.Webhook
 	GetWebhooks() ([]models.Webhook, error)
 	SetWebhookAsUsed(webhook models.Webhook) error
+	GetWebhookSecretByID(id int) (string, error)
 }
 
 type SqlWebhookRepository struct {
@@ -34,7 +35,7 @@ func New(datastore *datastore.Datastore) WebhookRepository {
 }
 
 // InsertWebhook will add a new webhook to the database.
-func (r *SqlWebhookRepository) InsertWebhook(url string, events []models.EventType) (int, error) {
+func (r *SqlWebhookRepository) InsertWebhook(url string, events []models.EventType, secret string) (int, error) {
 	log.Traceln("Adding new webhook")
 
 	eventsString := strings.Join(events, ",")
@@ -43,13 +44,13 @@ func (r *SqlWebhookRepository) InsertWebhook(url string, events []models.EventTy
 	if err != nil {
 		return 0, err
 	}
-	stmt, err := tx.Prepare("INSERT INTO webhooks(url, events) values(?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO webhooks(url, events, secret) values(?, ?, ?)")
 	if err != nil {
 		return 0, err
 	}
 	defer stmt.Close()
 
-	insertResult, err := stmt.Exec(url, eventsString)
+	insertResult, err := stmt.Exec(url, eventsString, secret)
 	if err != nil {
 		return 0, err
 	}
@@ -145,7 +146,7 @@ func (r *SqlWebhookRepository) GetWebhooksForEvent(event models.EventType) []mod
 func (r *SqlWebhookRepository) GetWebhooks() ([]models.Webhook, error) { //nolint
 	webhooks := make([]models.Webhook, 0)
 
-	query := "SELECT * FROM webhooks"
+	query := "SELECT id, url, events, timestamp, last_used FROM webhooks"
 
 	rows, err := r.datastore.DB.Query(query)
 	if err != nil {
@@ -215,4 +216,18 @@ func (r *SqlWebhookRepository) SetWebhookAsUsed(webhook models.Webhook) error {
 	}
 
 	return nil
+}
+
+// GetSecretByID retrieves only the secret string for a specific webhook ID.
+func (r *SqlWebhookRepository) GetWebhookSecretByID(id int) (string, error) {
+	var secret string
+
+	query := `SELECT secret FROM webhooks WHERE id = ? LIMIT 1`
+
+	err := r.datastore.DB.QueryRow(query, id).Scan(&secret)
+	if err != nil {
+		return "", err
+	}
+
+	return secret, nil
 }

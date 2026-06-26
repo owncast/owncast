@@ -75,7 +75,7 @@ function convertEventStringToTag(eventString: string) {
 }
 interface Props {
   onCancel: () => void;
-  onOk: (url: string, events: string[], webhookSecret: string) => void
+  onOk: (url: string, events: string[], webhookSecret: string) => void;
   open: boolean;
 }
 
@@ -85,7 +85,7 @@ const NewWebhookModal = (props: Props) => {
 
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [webhookUrl, setWebhookUrl] = useState('');
-  const [webhookSecret, setWebhookSecret] = useState('')
+  const [webhookSecret, setWebhookSecret] = useState('');
 
   const { serverConfig } = useContext(ServerStatusContext);
 
@@ -107,7 +107,7 @@ const NewWebhookModal = (props: Props) => {
 
     // Reset the modal
     setWebhookUrl('');
-    setWebhookSecret('')
+    setWebhookSecret('');
     setSelectedEvents(null);
   }
 
@@ -153,11 +153,11 @@ const NewWebhookModal = (props: Props) => {
       </p>
       <div>
         <TextField
-        fieldName='webhook-secret'
-        value={webhookSecret}
-        placeholder={"****"}
-        type={TEXTFIELD_TYPE_PASSWORD}
-        onChange={input => setWebhookSecret(input.value.trim())}
+          fieldName="webhook-secret"
+          value={webhookSecret}
+          placeholder="****"
+          type={TEXTFIELD_TYPE_PASSWORD}
+          onChange={input => setWebhookSecret(input.value.trim())}
         />
       </div>
 

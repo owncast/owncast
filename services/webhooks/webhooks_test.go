@@ -89,7 +89,7 @@ func TestPublicSend(t *testing.T) {
 
 	webhooksRepo := webhookrepository.New(testDatastore)
 
-	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
+	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent}, "abc123")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -167,7 +167,7 @@ func TestRouting(t *testing.T) {
 	webhooksRepo := webhookrepository.New(testDatastore)
 
 	for _, eventType := range eventTypes {
-		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
+		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType}, "abc123")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -210,7 +210,7 @@ func TestMultiple(t *testing.T) {
 	webhooksRepo := webhookrepository.New(testDatastore)
 
 	for i := 0; i < times; i++ {
-		hook, err := webhooksRepo.InsertWebhook(fmt.Sprintf("%v/%v", svr.URL, i), []models.EventType{models.MessageSent})
+		hook, err := webhooksRepo.InsertWebhook(fmt.Sprintf("%v/%v", svr.URL, i), []models.EventType{models.MessageSent}, "abc123")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -250,7 +250,7 @@ func TestTimestamps(t *testing.T) {
 	webhooksRepo := webhookrepository.New(testDatastore)
 
 	for i, eventType := range eventTypes {
-		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
+		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType}, "abc123")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -350,7 +350,7 @@ func TestParallel(t *testing.T) {
 
 	webhooksRepo := webhookrepository.New(testDatastore)
 
-	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
+	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent}, "abc123")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -388,7 +388,7 @@ func checkPayload(t *testing.T, eventType models.EventType, send func(), expecte
 	webhooksRepo := webhookrepository.New(testDatastore)
 
 	// Subscribe to the webhook.
-	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{eventType})
+	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{eventType}, "abc123")
 	if err != nil {
 		t.Fatal(err)
 	}

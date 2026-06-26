@@ -245,7 +245,7 @@ func TestWebhookHasServerStatus(t *testing.T) {
 	webhooksRepo := webhookrepository.New(testDatastore)
 
 	// Subscribe to the webhook.
-	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.UserJoined})
+	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.UserJoined}, "abc123")
 	if err != nil {
 		t.Fatal(err)
 	}
