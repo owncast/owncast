@@ -69,8 +69,11 @@ func (h *Handler) RegisterFediverseOTPRequest(u models.User, w http.ResponseWrit
 		return
 	}
 
+	// A false success with no error means a valid code is already pending for
+	// this account. Don't send a second message, but let the user proceed to
+	// enter the code they already received instead of dead-ending them.
 	if !success {
-		webutils.WriteSimpleResponse(w, false, "Could not register auth request. One may already be pending. Try again later.")
+		webutils.WriteSimpleResponse(w, true, "")
 		return
 	}
 
