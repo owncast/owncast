@@ -18,7 +18,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/grafov/m3u8 v0.12.1
 	github.com/hashicorp/go-retryablehttp v0.7.8
-	github.com/jellydator/ttlcache/v3 v3.4.0
+	github.com/jellydator/ttlcache/v3 v3.4.1
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/mattn/go-sqlite3 v1.14.45
 	github.com/microcosm-cc/bluemonday v1.0.27
