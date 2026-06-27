@@ -78,8 +78,24 @@ function start_owncast() {
 	SERVER_PID=$!
 	popd >/dev/null
 
-	sleep 5
-
+	# Wait for the API to actually come up instead of a blind sleep. The server
+	# runs in the background, so `set -e` can't see it crash; without this, a
+	# failed start (most commonly port 8080/1935 already in use by another
+	# Owncast) leaves the suite running against a stale instance and producing
+	# confusing, unrelated test failures. Fail loudly and early instead.
+	echo "Waiting for owncast to be ready on :8080..."
+	for _ in $(seq 1 30); do
+		if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+			echo "ERROR: owncast exited during startup. Is port 8080 or 1935 already in use by another instance?" >&2
+			exit 1
+		fi
+		if curl -fsS -o /dev/null "http://localhost:8080/api/status" 2>/dev/null; then
+			return 0
+		fi
+		sleep 1
+	done
+	echo "ERROR: owncast did not become ready on :8080 within 30s." >&2
+	exit 1
 }
 
 function start_stream() {
