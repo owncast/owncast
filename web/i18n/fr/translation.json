@@ -298,7 +298,7 @@
 			"videoCodecUpdated": "Codec vidéo mis à jour."
 		},
 		"Users": {
-			"pageDescription": "Tout le monde connu de votre serveur: spectateurs de chat, utilisateurs authentifiés et créés par des plugins, et intégrations d'API. Changez l'accès des modérateurs, bannissez, ou supprimez définitivement les utilisateurs.",
+			"pageDescription": "Tous les utilisateurs connus de votre serveur : viewers du chat, utilisateurs authentifiés, utilisateurs créés par des plugins et utilisateurs utilisés par les intégrations API. Vous pouvez gérer les droits de modération, bannir ou supprimer les utilisateurs définitivement.",
 			"pageTitle": "Utilisateurs"
 		},
 		"VideoVariantForm": {
@@ -333,9 +333,9 @@
 		},
 		"deleteEmoji": "Supprimer l'émote",
 		"emojiPageDescription": "Ajoutez ici des émotes personnalisées pour votre chat. Le nom de l'émote sera généré à partir du nom de fichier (sans l'extension). Les noms d'émotes sont insensibles à la casse : assurez-vous que toutes les émotes ont un nom de fichier unique.",
-		"emojiUploadBulkGuide": "Vous voulez envoyer des émotes personnalisées en vrac ? Consultez notre <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">doc sur les émotes</a>.",
+		"emojiUploadBulkGuide": "Si vous souhaitez ajouter plusieurs émotes en une fois, consultez notre <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">doc sur les émotes</a>.",
 		"emojis": "Émotes",
-		"uploadNewEmoji": "Ajouter une nouvelle émote"
+		"uploadNewEmoji": "Ajouter une émote"
 	},
 	"Common": {
 		"poweredByOwncastVersion": "Ce site utilise <a href='https://owncast.online'>Owncast v{{versionNumber}}</a>"
