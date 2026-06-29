@@ -145,8 +145,8 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 
 	go func() {
 		s.transcoder = transcoder.NewTranscoder(s.cfg, s.configRepository)
-		s.transcoder.TranscoderCompleted = func(error) {
-			s.StreamDisconnected(nil)
+		s.transcoder.TranscoderCompleted = func(err error) {
+			s.StreamDisconnected(err)
 			s.transcoder = nil
 		}
 		s.transcoder.SetStdin(rtmpOut)

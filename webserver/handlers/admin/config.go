@@ -1060,7 +1060,7 @@ func (a *Admin) SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 
 	keys := make([]models.StreamKey, 0, len(*streamKeys.Value))
 	for _, streamKey := range *streamKeys.Value {
-		if *streamKey.Key == "" {
+		if streamKey.Key == nil || *streamKey.Key == "" {
 			webutils.WriteSimpleResponse(w, false, "stream key cannot be empty")
 			return
 		}
