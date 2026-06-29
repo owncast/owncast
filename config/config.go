@@ -42,6 +42,13 @@ type Config struct {
 	// listener and read by the transcoder when it spins up.
 	InternalHLSListenerPort string
 
+	// InternalHLSListenerHost is the interface the in-process HLS receiver
+	// binds to, and the host the transcoder's ffmpeg PUTs finished segments
+	// to. Defaults to 127.0.0.1, where receiver and transcoder share one
+	// box. A remote-engine deployment that PUTs HLS across the network sets
+	// this to a reachable interface.
+	InternalHLSListenerHost string
+
 	// EnableDebugFeatures prints additional data to help in debugging.
 	EnableDebugFeatures bool
 
@@ -66,6 +73,7 @@ func NewDefault() *Config {
 		WebServerPort:           8080,
 		WebServerIP:             "0.0.0.0",
 		InternalHLSListenerPort: "8927",
+		InternalHLSListenerHost: "127.0.0.1",
 		EnableDebugFeatures:     false,
 		TemporaryStreamKey:      "",
 		// FollowerValidationInterval defaults to 0; consumers use their

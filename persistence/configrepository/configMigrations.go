@@ -5,8 +5,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/datastore"
-	"github.com/owncast/owncast/webserver/handlers/generated"
 )
 
 const (
@@ -65,7 +65,7 @@ func migrateToDatastoreValues2(datastore *datastore.Datastore, configRepository 
 	// Avoids double hashing the password
 	_ = datastore.SetString("admin_password_key", oldAdminPassword)
 	comment := "Default stream key"
-	_ = configRepository.SetStreamKeys([]generated.StreamKey{
+	_ = configRepository.SetStreamKeys([]models.StreamKey{
 		{Key: &oldAdminPassword, Comment: &comment},
 	})
 }

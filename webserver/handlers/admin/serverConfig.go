@@ -9,7 +9,6 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
-	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
 )
 
@@ -139,7 +138,7 @@ type serverConfigAdminResponse struct {
 	StyleContributors         []models.PluginStyleInfo    `json:"styleContributors"`
 	ForbiddenUsernames        []string                    `json:"forbiddenUsernames"`
 	SuggestedUsernames        []string                    `json:"suggestedUsernames"`
-	StreamKeys                []generated.StreamKey       `json:"streamKeys"`
+	StreamKeys                []models.StreamKey          `json:"streamKeys"`
 	VideoSettings             videoSettings               `json:"videoSettings"`
 	RTMPServerPort            int                         `json:"rtmpServerPort"`
 	RTMPServerAddress         string                      `json:"rtmpServerAddress"`

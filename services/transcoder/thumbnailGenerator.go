@@ -10,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
-	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -20,11 +20,11 @@ import (
 type ThumbnailGenerator struct {
 	timer            *time.Ticker
 	cfg              *config.Config
-	configRepository configrepository.ConfigRepository
+	configRepository models.EngineConfig
 }
 
 // NewThumbnailGenerator returns an idle generator. Call Start to begin.
-func NewThumbnailGenerator(cfg *config.Config, configRepository configrepository.ConfigRepository) *ThumbnailGenerator {
+func NewThumbnailGenerator(cfg *config.Config, configRepository models.EngineConfig) *ThumbnailGenerator {
 	return &ThumbnailGenerator{cfg: cfg, configRepository: configRepository}
 }
 

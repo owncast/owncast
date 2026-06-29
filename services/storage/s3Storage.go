@@ -16,7 +16,7 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -49,7 +49,7 @@ type S3Storage struct {
 
 	lock sync.Mutex
 
-	configRepository configrepository.ConfigRepository
+	configRepository models.EngineConfig
 
 	performanceTracker *utils.PerformanceTracker
 
@@ -57,7 +57,7 @@ type S3Storage struct {
 }
 
 // NewS3Storage returns a new S3Storage instance.
-func NewS3Storage(configRepository configrepository.ConfigRepository) *S3Storage {
+func NewS3Storage(configRepository models.EngineConfig) *S3Storage {
 	return &S3Storage{
 		queuedPlaylistUpdates: make(map[string]string),
 		lock:                  sync.Mutex{},

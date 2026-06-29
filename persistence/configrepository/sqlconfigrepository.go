@@ -15,7 +15,6 @@ import (
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
-	"github.com/owncast/owncast/webserver/handlers/generated"
 )
 
 type SqlConfigRepository struct {
@@ -1010,22 +1009,22 @@ func (r *SqlConfigRepository) GetCustomColorVariableValues() map[string]string {
 }
 
 // GetStreamKeys will return valid stream keys.
-func (r *SqlConfigRepository) GetStreamKeys() []generated.StreamKey {
+func (r *SqlConfigRepository) GetStreamKeys() []models.StreamKey {
 	configEntry, err := r.datastore.Get(streamKeysKey)
 	if err != nil {
-		return []generated.StreamKey{}
+		return []models.StreamKey{}
 	}
 
-	var streamKeys []generated.StreamKey
+	var streamKeys []models.StreamKey
 	if err := configEntry.GetObject(&streamKeys); err != nil {
-		return []generated.StreamKey{}
+		return []models.StreamKey{}
 	}
 
 	return streamKeys
 }
 
 // SetStreamKeys will set valid stream keys.
-func (r *SqlConfigRepository) SetStreamKeys(actions []generated.StreamKey) error {
+func (r *SqlConfigRepository) SetStreamKeys(actions []models.StreamKey) error {
 	configEntry := models.ConfigEntry{Key: streamKeysKey, Value: actions}
 	return r.datastore.Save(configEntry)
 }

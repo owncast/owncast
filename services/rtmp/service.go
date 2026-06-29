@@ -13,7 +13,6 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 // Service owns the RTMP listener and the single in-flight inbound
@@ -44,7 +43,7 @@ type Service struct {
 
 	// configRepository is consulted at listener bind for the RTMP port and at
 	// connect time for the list of valid stream keys.
-	configRepository configrepository.ConfigRepository
+	configRepository models.EngineConfig
 
 	// cfg supplies the optional temporary stream key override set at
 	// startup via the --streamkey CLI flag.
@@ -53,7 +52,7 @@ type Service struct {
 
 // Deps is the explicit dependency contract for the RTMP service.
 type Deps struct {
-	ConfigRepository configrepository.ConfigRepository
+	ConfigRepository models.EngineConfig
 	Config           *config.Config
 }
 

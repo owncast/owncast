@@ -46,7 +46,7 @@ func (s *FileWriterReceiverService) SetupFileWriterReceiverService(callbacks Fil
 	httpServer := http.NewServeMux()
 	httpServer.HandleFunc("/", s.uploadHandler)
 
-	localListenerAddress := "127.0.0.1:0"
+	localListenerAddress := net.JoinHostPort(s.cfg.InternalHLSListenerHost, "0")
 
 	listener, err := net.Listen("tcp", localListenerAddress)
 	if err != nil {
