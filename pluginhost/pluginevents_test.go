@@ -83,18 +83,18 @@ func TestTranslateWebhookEvent_UserJoined(t *testing.T) {
 	evt := webhooks.WebhookEvent{
 		Type: models.UserJoined,
 		EventData: &webhooks.WebhookUserJoinedEventData{
-			User: &models.User{ID: "u1", DisplayName: "bob", IsBot: true, Scopes: []string{"MODERATOR"}},
+			User: &models.User{ID: "u1", DisplayName: "bob", DisplayColor: 5, IsBot: true, Scopes: []string{"MODERATOR"}},
 		},
 	}
 	out := translateWebhookEvent(evt)
 	if len(out) != 1 || out[0].eventType != plugins.EventChatUserJoined {
 		t.Fatalf("unexpected events: %+v", out)
 	}
-	user, ok := out[0].payload.(plugins.HostChatUser)
+	user, ok := out[0].payload.(plugins.HostUser)
 	if !ok {
-		t.Fatalf("payload type = %T want plugins.HostChatUser", out[0].payload)
+		t.Fatalf("payload type = %T want plugins.HostUser", out[0].payload)
 	}
-	if user.ID != "u1" || user.DisplayName != "bob" || !user.IsBot || len(user.Scopes) != 1 {
+	if user.ID != "u1" || user.DisplayName != "bob" || user.DisplayColor != 5 || !user.IsBot || len(user.Scopes) != 1 {
 		t.Errorf("unexpected user payload: %+v", user)
 	}
 }

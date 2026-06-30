@@ -106,18 +106,12 @@
       "body": "string",
       "id": "string",
       "timestamp": "string",
-      "user": "*HostChatUser"
-    },
-    "HostChatUser": {
-      "displayName": "string",
-      "id": "string",
-      "isAuthenticated": "bool",
-      "isBot": "bool",
-      "scopes": "[]string"
+      "user": "*HostUser"
     },
     "HostUser": {
       "createdAt": "string",
       "disabledAt": "string",
+      "displayColor": "int",
       "displayName": "string",
       "id": "string",
       "isAuthenticated": "bool",

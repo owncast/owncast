@@ -12,7 +12,7 @@ import (
 )
 
 // Plugin-facing event payload shapes. These mirror the plugin SDK's
-// TypeScript interfaces (ChatMessage, ChatUser, …) so a plugin's typed
+// TypeScript interfaces (ChatMessage, User, …) so a plugin's typed
 // handlers receive exactly the documented JSON.
 
 // pluginChatMessage is the chat.message.received (and chat.filter) payload.
@@ -22,27 +22,27 @@ import (
 // owncast.chat.sendTo / replyTo. User is nil for the rare message with no
 // associated account.
 type pluginChatMessage struct {
-	ID        string                `json:"id"`
-	User      *plugins.HostChatUser `json:"user,omitempty"`
-	ClientID  uint                  `json:"clientId,omitempty"`
-	Body      string                `json:"body"`
-	Timestamp string                `json:"timestamp"`
+	ID        string            `json:"id"`
+	User      *plugins.HostUser `json:"user,omitempty"`
+	ClientID  uint              `json:"clientId,omitempty"`
+	Body      string            `json:"body"`
+	Timestamp string            `json:"timestamp"`
 }
 
-// The chat-user wire shape lives once, as plugins.HostChatUser (the type
-// chat.history() also returns). These event payloads reuse it directly rather
-// than redeclaring it, so there is a single source of truth for what a plugin
-// sees as a chat user.
+// The user wire shape lives once, as plugins.HostUser (the type chat.history()
+// and the users.list()/get() directory also return). These event payloads
+// reuse it directly rather than redeclaring it, so there is a single source of
+// truth for what a plugin sees as a user.
 
 type pluginChatUserRename struct {
-	User         plugins.HostChatUser `json:"user"`
-	PreviousName string               `json:"previousName"`
+	User         plugins.HostUser `json:"user"`
+	PreviousName string           `json:"previousName"`
 }
 
 type pluginChatMessageModeration struct {
-	MessageID string                `json:"messageId"`
-	Visible   bool                  `json:"visible"`
-	Moderator *plugins.HostChatUser `json:"moderator,omitempty"`
+	MessageID string            `json:"messageId"`
+	Visible   bool              `json:"visible"`
+	Moderator *plugins.HostUser `json:"moderator,omitempty"`
 }
 
 type pluginStreamLifecycleEvent struct {
@@ -85,7 +85,7 @@ func newPluginChatFilter(pluginDispatcher *plugins.Dispatcher) dispatcher.Filter
 		if !msg.Timestamp.IsZero() {
 			timestamp = msg.Timestamp.UTC().Format(time.RFC3339Nano)
 		}
-		final, allowed, _ := pluginDispatcher.Filter(ctx, plugins.EventChatMessageReceived, pluginChatMessage{ID: msg.ID, User: chatUserPtr(msg.User), ClientID: msg.ClientID, Body: msg.Body, Timestamp: timestamp})
+		final, allowed, _ := pluginDispatcher.Filter(ctx, plugins.EventChatMessageReceived, pluginChatMessage{ID: msg.ID, User: toHostUserPtr(msg.User), ClientID: msg.ClientID, Body: msg.Body, Timestamp: timestamp})
 		if !allowed {
 			return false
 		}
@@ -223,21 +223,21 @@ func translateChatEvent(evt webhooks.WebhookEvent) []pluginEvent {
 		if !ok {
 			return nil
 		}
-		return []pluginEvent{{plugins.EventChatUserJoined, chatUser(data.User)}}
+		return []pluginEvent{{plugins.EventChatUserJoined, toHostUser(data.User)}}
 
 	case models.UserParted:
 		data, ok := evt.EventData.(*webhooks.WebhookUserPartEventData)
 		if !ok {
 			return nil
 		}
-		return []pluginEvent{{plugins.EventChatUserParted, chatUser(data.User)}}
+		return []pluginEvent{{plugins.EventChatUserParted, toHostUser(data.User)}}
 
 	case models.UserNameChanged:
 		data, ok := evt.EventData.(*webhooks.WebhookNameChangeEventData)
 		if !ok {
 			return nil
 		}
-		user := chatUser(data.User)
+		user := toHostUser(data.User)
 		user.DisplayName = data.NewName
 		return []pluginEvent{{plugins.EventChatUserRenamed, pluginChatUserRename{
 			User:         user,
@@ -249,11 +249,7 @@ func translateChatEvent(evt webhooks.WebhookEvent) []pluginEvent {
 		if !ok {
 			return nil
 		}
-		var moderator *plugins.HostChatUser
-		if data.User != nil {
-			m := chatUser(data.User)
-			moderator = &m
-		}
+		moderator := toHostUserPtr(data.User)
 		// Owncast toggles a set of IDs at once; the SDK payload is
 		// per-message, so fan one event out per affected message.
 		out := make([]pluginEvent, 0, len(data.MessageIDs))
@@ -286,7 +282,7 @@ func chatMessageEvent(evt webhooks.WebhookEvent) []pluginEvent {
 	// content analysis want the raw text; the chat client handles rendering.
 	msg := pluginChatMessage{
 		ID:        data.ID,
-		User:      chatUserPtr(data.User),
+		User:      toHostUserPtr(data.User),
 		ClientID:  data.ClientID,
 		Body:      data.RawBody,
 		Timestamp: formatTimePtr(data.Timestamp),
@@ -312,34 +308,6 @@ func translateStreamEvent(evt webhooks.WebhookEvent) []pluginEvent {
 		return []pluginEvent{{plugins.EventStreamTitleChanged, pluginStreamTitleChange{To: to}}}
 	}
 	return nil
-}
-
-// chatUser projects Owncast's models.User (the source of truth, user.go) onto
-// the curated plugins.HostChatUser wire shape. This is the single place that
-// maps an Owncast user to what a plugin sees — every chat payload (the
-// onChatMessage event, joins/parts/renames/moderation, and chat.history())
-// goes through here, so the exposed surface can't drift between them.
-func chatUser(u *models.User) plugins.HostChatUser {
-	if u == nil {
-		return plugins.HostChatUser{}
-	}
-	return plugins.HostChatUser{
-		ID:              u.ID,
-		DisplayName:     u.DisplayName,
-		IsBot:           u.IsBot,
-		IsAuthenticated: u.Authenticated,
-		Scopes:          u.Scopes,
-	}
-}
-
-// chatUserPtr is the pointer form for payloads where the sender is optional
-// (chat.message.received, moderation, chat.history()): nil user in, nil out.
-func chatUserPtr(u *models.User) *plugins.HostChatUser {
-	if u == nil {
-		return nil
-	}
-	cu := chatUser(u)
-	return &cu
 }
 
 // previousName returns the user's most recent prior display name, the closest

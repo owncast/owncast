@@ -1403,9 +1403,7 @@ func wireChatReadHostFns(env *plugins.HostEnv, deps Deps) {
 				Body:      msg.Body,
 				Timestamp: msg.Timestamp.UTC().Format(time.RFC3339Nano),
 			}
-			if msg.User != nil {
-				hm.User = chatUserPtr(msg.User)
-			}
+			hm.User = toHostUserPtr(msg.User)
 			out = append(out, hm)
 		}
 		if limit > 0 && len(out) > limit {
@@ -1851,21 +1849,42 @@ func wireRequestHostFns(env *plugins.HostEnv, deps Deps) {
 	}
 }
 
-// toHostUser maps an Owncast user model onto the plugin-facing HostUser.
+// toHostUser maps an Owncast user model onto the plugin-facing HostUser. It is
+// the single projection of an Owncast user to what a plugin sees: the sender
+// identity on every chat payload (chat.message.received, joins/parts/renames/
+// moderation, chat.history()) and the record returned by Users() / UserGet(),
+// so the exposed surface can't drift between them. A nil user maps to the zero
+// HostUser.
 func toHostUser(u *models.User) plugins.HostUser {
+	if u == nil {
+		return plugins.HostUser{}
+	}
 	hu := plugins.HostUser{
 		ID:              u.ID,
 		DisplayName:     u.DisplayName,
+		DisplayColor:    u.DisplayColor,
 		PreviousNames:   u.PreviousNames,
 		Scopes:          u.Scopes,
 		IsBot:           u.IsBot,
 		IsAuthenticated: u.Authenticated,
-		CreatedAt:       u.CreatedAt.UTC().Format(time.RFC3339Nano),
+	}
+	if !u.CreatedAt.IsZero() {
+		hu.CreatedAt = u.CreatedAt.UTC().Format(time.RFC3339Nano)
 	}
 	if u.DisabledAt != nil {
 		hu.DisabledAt = u.DisabledAt.UTC().Format(time.RFC3339Nano)
 	}
 	return hu
+}
+
+// toHostUserPtr is the pointer form for payloads where the user is optional
+// (chat.message.received, moderation, chat.history()): nil user in, nil out.
+func toHostUserPtr(u *models.User) *plugins.HostUser {
+	if u == nil {
+		return nil
+	}
+	hu := toHostUser(u)
+	return &hu
 }
 
 // uploadPluginAsset writes a plugin upload under the public files directory

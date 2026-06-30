@@ -190,28 +190,16 @@ type FediversePayload struct {
 	Link  string `json:"link,omitempty"`
 }
 
-// HostChatUser is the sender identity carried by a chat message. It mirrors
-// the SDK's ChatUser TypeScript interface (and pluginhost.pluginChatUser on
-// the event path) so chat.history() hands a plugin the same nested object
-// shape its onChatMessage handler already receives.
-type HostChatUser struct {
-	ID              string   `json:"id"`
-	DisplayName     string   `json:"displayName"`
-	IsBot           bool     `json:"isBot,omitempty"`
-	IsAuthenticated bool     `json:"isAuthenticated,omitempty"`
-	Scopes          []string `json:"scopes,omitempty"`
-}
-
 // HostChatMessage is the shape returned by ChatHistory. It matches the
-// onChatMessage / chat.message.received event payload: User is the full
-// ChatUser object (nil for the rare message with no associated account),
-// not a bare display-name string. Production wires this to whatever the chat
-// repository hands back; tests construct it directly.
+// onChatMessage / chat.message.received event payload: User is the full User
+// object (nil for the rare message with no associated account), not a bare
+// display-name string. Production wires this to whatever the chat repository
+// hands back; tests construct it directly.
 type HostChatMessage struct {
-	ID        string        `json:"id"`
-	User      *HostChatUser `json:"user,omitempty"`
-	Body      string        `json:"body"`
-	Timestamp string        `json:"timestamp"`
+	ID        string    `json:"id"`
+	User      *HostUser `json:"user,omitempty"`
+	Body      string    `json:"body"`
+	Timestamp string    `json:"timestamp"`
 }
 
 // BrowserPushPayload is what a plugin asks Owncast to send via the
@@ -222,10 +210,14 @@ type BrowserPushPayload struct {
 	URL   string `json:"url,omitempty"`
 }
 
-// HostUser is the shape returned by Users() / UserGet().
+// HostUser is the single plugin-facing user shape: the sender identity carried
+// by every chat payload (chat.message.received, joins/parts/renames/moderation,
+// chat.history()) and the record returned by Users() / UserGet(). It mirrors
+// the SDK's User TypeScript interface.
 type HostUser struct {
 	ID              string   `json:"id"`
 	DisplayName     string   `json:"displayName"`
+	DisplayColor    int      `json:"displayColor"`
 	PreviousNames   []string `json:"previousNames,omitempty"`
 	CreatedAt       string   `json:"createdAt,omitempty"`
 	DisabledAt      string   `json:"disabledAt,omitempty"` // ISO-8601 if banned, empty otherwise
