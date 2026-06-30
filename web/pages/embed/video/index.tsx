@@ -48,6 +48,11 @@ export default function VideoEmbed() {
   );
 
   const initiallyMuted = query.initiallyMuted === 'true';
+  // An embed may override the instance autoplay setting via ?autoplay=,
+  // falling back to the configured value for anything unrecognized.
+  const autoplayOverride = ['off', 'always', 'sound-only'].includes(query.autoplay)
+    ? query.autoplay
+    : autoplay;
   const supportsSocialFollow = socialEnabled && query.supportsSocialFollow !== 'false';
 
   const loadingState = <Skeleton active style={{ padding: '10px' }} paragraph={{ rows: 10 }} />;
@@ -80,7 +85,7 @@ export default function VideoEmbed() {
         online={online}
         initiallyMuted={initiallyMuted}
         title={streamTitle || name}
-        autoplay={autoplay}
+        autoplay={autoplayOverride}
       />
       <Statusbar
         online={online}

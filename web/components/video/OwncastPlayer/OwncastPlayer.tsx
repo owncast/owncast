@@ -246,6 +246,17 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     autoplayMode = 'play';
   }
 
+  // Respect the viewer's data-saver and reduced-motion preferences: if either is
+  // set, do not autoplay regardless of the instance setting and let them press
+  // play. Guarded because this runs during render (no window during SSR).
+  if (autoplayMode !== false && typeof window !== 'undefined') {
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const nav = navigator as Navigator & { connection?: { saveData?: boolean } };
+    if (prefersReducedMotion || nav.connection?.saveData === true) {
+      autoplayMode = false;
+    }
+  }
+
   const videoJsOptions = {
     autoplay: autoplayMode,
     controls: true,
