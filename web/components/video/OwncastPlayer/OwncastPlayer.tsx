@@ -8,6 +8,7 @@ import { VideoJS } from '../VideoJS/VideoJS';
 import ViewerPing from '../viewer-ping';
 import { VideoPoster } from '../VideoPoster/VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
+import { autoplayModeForSetting } from '../../../utils/autoplay';
 import { isVideoPlayingAtom, clockSkewAtom } from '../../stores/ClientConfigStore';
 import PlaybackMetrics from '../metrics/playback';
 import { createVideoSettingsMenuButton } from '../settings-menu';
@@ -236,26 +237,21 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     enableOnContentEditable: false,
   });
 
-  // Map the instance autoplay setting to a video.js autoplay value:
-  // off -> no autoplay; always -> 'any' (try sound, fall back to muted);
-  // sound-only -> 'play' (sound when the browser allows it, otherwise stay paused).
-  let autoplayMode: string | boolean = false;
-  if (autoplay === 'always') {
-    autoplayMode = 'any';
-  } else if (autoplay === 'sound-only') {
-    autoplayMode = 'play';
-  }
-
-  // Respect the viewer's data-saver and reduced-motion preferences: if either is
-  // set, do not autoplay regardless of the instance setting and let them press
-  // play. Guarded because this runs during render (no window during SSR).
-  if (autoplayMode !== false && typeof window !== 'undefined') {
-    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const nav = navigator as Navigator & { connection?: { saveData?: boolean } };
-    if (prefersReducedMotion || nav.connection?.saveData === true) {
-      autoplayMode = false;
-    }
-  }
+  // Resolve the video.js autoplay value from the instance setting, honoring the
+  // viewer's data-saver and reduced-motion preferences. Guarded because this
+  // runs during render (no window during SSR).
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const navConnection =
+    typeof navigator !== 'undefined'
+      ? (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
+      : undefined;
+  const autoplayMode = autoplayModeForSetting(autoplay, {
+    prefersReducedMotion,
+    saveData: navConnection?.saveData === true,
+  });
 
   const videoJsOptions = {
     autoplay: autoplayMode,
