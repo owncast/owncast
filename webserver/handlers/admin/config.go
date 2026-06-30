@@ -1058,15 +1058,17 @@ func (a *Admin) SetStreamKeys(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	keys := make([]models.StreamKey, 0, len(*streamKeys.Value))
 	for _, streamKey := range *streamKeys.Value {
-		if *streamKey.Key == "" {
+		if streamKey.Key == nil || *streamKey.Key == "" {
 			webutils.WriteSimpleResponse(w, false, "stream key cannot be empty")
 			return
 		}
+		keys = append(keys, models.StreamKey{Key: streamKey.Key, Comment: streamKey.Comment})
 	}
 
 	configRepository := a.configRepository
-	if err := configRepository.SetStreamKeys(*streamKeys.Value); err != nil {
+	if err := configRepository.SetStreamKeys(keys); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

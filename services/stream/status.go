@@ -35,9 +35,10 @@ func (s *Service) GetCurrentBroadcast() *models.CurrentBroadcast {
 	return s.currentBroadcast
 }
 
-// setBroadcaster records the metadata of the inbound RTMP source. Called
-// by the RTMP server's on-connect callback.
-func (s *Service) setBroadcaster(broadcaster models.Broadcaster) {
+// BroadcasterSet records the metadata of the inbound source. Implements
+// StreamEvents; the local engine calls it from the RTMP metadata callback, a
+// remote engine from its signaling channel.
+func (s *Service) BroadcasterSet(broadcaster models.Broadcaster) {
 	s.broadcaster = &broadcaster
 }
 

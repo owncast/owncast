@@ -53,8 +53,12 @@ func (s *Service) Start(_ context.Context) error {
 		log.Errorln(err)
 	}
 
-	// start the rtmp server
-	go s.rtmp.Start(s.setStreamAsConnected, s.setBroadcaster)
+	// Begin accepting an inbound broadcast through the stream engine. The
+	// local engine binds the in-process RTMP listener; lifecycle is reported
+	// back to this service via the StreamEvents methods.
+	if err := s.engine.Start(); err != nil {
+		return err
+	}
 
 	rtmpPort := s.configRepository.GetRTMPPortNumber()
 	if rtmpPort != 1935 {
@@ -127,18 +131,52 @@ func (s *Service) resetDirectories() {
 	}
 }
 
-// setStreamAsConnected is the RTMP server's on-connect callback.
+// setStreamAsConnected is the local engine's RTMP on-connect callback. It
+// reports the broadcast online (StreamConnected) and then spins up the
+// in-process transcoder + thumbnail generator fed by the inbound RTMP pipe.
 func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
+	broadcast := &models.CurrentBroadcast{
+		LatencyLevel:   s.configRepository.GetStreamLatencyLevel(),
+		OutputSettings: s.configRepository.GetStreamOutputVariants(),
+	}
+	s.StreamConnected(broadcast)
+
+	segmentPath := config.HLSStoragePath
+
+	go func() {
+		s.transcoder = transcoder.NewTranscoder(s.cfg, s.configRepository)
+		s.transcoder.TranscoderCompleted = func(err error) {
+			s.StreamDisconnected(err)
+			s.transcoder = nil
+		}
+		s.transcoder.SetStdin(rtmpOut)
+		s.transcoder.Start(true)
+	}()
+
+	selectedThumbnailVideoQualityIndex, isVideoPassthrough := s.configRepository.FindHighestVideoQualityIndex(broadcast.OutputSettings)
+	s.thumbnailGen = transcoder.NewThumbnailGenerator(s.cfg, s.configRepository)
+	s.thumbnailGen.Start(segmentPath, selectedThumbnailVideoQualityIndex, isVideoPassthrough)
+}
+
+// StreamConnected records a broadcast going live and runs the always-on
+// go-live side effects. Implements StreamEvents; the local engine calls it
+// in-process, a remote engine over its signaling channel.
+func (s *Service) StreamConnected(broadcast *models.CurrentBroadcast) {
+	s.currentBroadcast = broadcast
+	s.applyStreamOnline()
+}
+
+// applyStreamOnline runs the always-on side effects of a stream going live:
+// stats, cleanup/notification timers, storage setup, and the chat / webhook /
+// federation go-live announcements. It deliberately excludes the transcoder
+// and thumbnail pipeline (engine work), so a remote engine can drive just
+// these reactions through StreamConnected.
+func (s *Service) applyStreamOnline() {
 	now := utils.NullTime{Time: time.Now(), Valid: true}
 	s.stats.StreamConnected = true
 	s.stats.LastDisconnectTime = nil
 	s.stats.LastConnectTime = &now
 	s.stats.SessionMaxViewerCount = 0
-
-	s.currentBroadcast = &models.CurrentBroadcast{
-		LatencyLevel:   s.configRepository.GetStreamLatencyLevel(),
-		OutputSettings: s.configRepository.GetStreamOutputVariants(),
-	}
 
 	s.StopOfflineCleanupTimer()
 	s.startOnlineCleanupTimer()
@@ -147,27 +185,11 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 		go s.yp.Start()
 	}
 
-	segmentPath := config.HLSStoragePath
-
 	if err := s.setupStorage(); err != nil {
 		log.Fatalln("failed to setup the storage", err)
 	}
 
-	go func() {
-		s.transcoder = transcoder.NewTranscoder(s.cfg, s.configRepository)
-		s.transcoder.TranscoderCompleted = func(error) {
-			s.SetStreamAsDisconnected()
-			s.transcoder = nil
-			s.currentBroadcast = nil
-		}
-		s.transcoder.SetStdin(rtmpOut)
-		s.transcoder.Start(true)
-	}()
-
 	go s.webhooks.SendStreamStatusEvent(models.StreamStarted)
-	selectedThumbnailVideoQualityIndex, isVideoPassthrough := s.configRepository.FindHighestVideoQualityIndex(s.currentBroadcast.OutputSettings)
-	s.thumbnailGen = transcoder.NewThumbnailGenerator(s.cfg, s.configRepository)
-	s.thumbnailGen.Start(segmentPath, selectedThumbnailVideoQualityIndex, isVideoPassthrough)
 
 	_ = s.chat.SendSystemAction("Stay tuned, the stream is **starting**!", true)
 	s.chat.SendAllWelcomeMessage()
@@ -187,8 +209,16 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 	}
 }
 
-// SetStreamAsDisconnected handles cleanup when a live stream ends.
-func (s *Service) SetStreamAsDisconnected() {
+// StreamDisconnected records a broadcast ending and clears the in-flight
+// broadcast settings. Implements StreamEvents; the local engine calls it when
+// the transcoder exits, a remote engine when its stream goes offline.
+func (s *Service) StreamDisconnected(_ error) {
+	s.applyStreamOffline()
+	s.currentBroadcast = nil
+}
+
+// applyStreamOffline handles the always-on cleanup when a live stream ends.
+func (s *Service) applyStreamOffline() {
 	_ = s.chat.SendSystemAction("The stream is ending.", true)
 
 	now := utils.NullTime{Time: time.Now(), Valid: true}

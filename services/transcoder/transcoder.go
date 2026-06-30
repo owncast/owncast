@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"net"
 	"os/exec"
 	"runtime"
 	"strconv"
@@ -16,7 +17,6 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/logging"
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -44,7 +44,7 @@ type Transcoder struct {
 
 	// configRepository provides ffmpeg path, latency level, output variants,
 	// and codec selection consulted at Start.
-	configRepository configrepository.ConfigRepository
+	configRepository models.EngineConfig
 
 	stdin *io.PipeReader
 
@@ -65,6 +65,7 @@ type Transcoder struct {
 	ffmpegPath           string
 	segmentIdentifier    string
 	internalListenerPort string
+	internalListenerHost string
 	input                string
 	segmentOutputPath    string
 	variants             []HLSVariant
@@ -208,8 +209,11 @@ func (t *Transcoder) GetString() string {
 }
 
 func (t *Transcoder) getFlags() *execInfo {
-	port := t.internalListenerPort
-	localListenerAddress := "http://127.0.0.1:" + port
+	host := t.internalListenerHost
+	if host == "" {
+		host = "127.0.0.1"
+	}
+	localListenerAddress := "http://" + net.JoinHostPort(host, t.internalListenerPort)
 
 	hlsOptionFlags := []string{
 		"program_date_time",
@@ -329,7 +333,7 @@ func getVariantFromConfigQuality(quality models.StreamOutputVariant, index int) 
 }
 
 // NewTranscoder will return a new Transcoder, populated by the config.
-func NewTranscoder(cfg *config.Config, configRepository configrepository.ConfigRepository) *Transcoder {
+func NewTranscoder(cfg *config.Config, configRepository models.EngineConfig) *Transcoder {
 	ffmpegPath := utils.ValidatedFfmpegPath(configRepository.GetFfMpegPath())
 
 	transcoder := new(Transcoder)
@@ -337,6 +341,7 @@ func NewTranscoder(cfg *config.Config, configRepository configrepository.ConfigR
 	transcoder.configRepository = configRepository
 	transcoder.ffmpegPath = ffmpegPath
 	transcoder.internalListenerPort = cfg.InternalHLSListenerPort
+	transcoder.internalListenerHost = cfg.InternalHLSListenerHost
 
 	transcoder.currentStreamOutputSettings = configRepository.GetStreamOutputVariants()
 	transcoder.currentLatencyLevel = configRepository.GetStreamLatencyLevel()
@@ -516,6 +521,12 @@ func (t *Transcoder) SetIdentifier(output string) {
 // SetInternalHTTPPort will set the port to be used for internal communication.
 func (t *Transcoder) SetInternalHTTPPort(port string) {
 	t.internalListenerPort = port
+}
+
+// SetInternalHTTPHost sets the host the transcoder PUTs finished HLS output
+// to. Defaults to 127.0.0.1 when unset.
+func (t *Transcoder) SetInternalHTTPHost(host string) {
+	t.internalListenerHost = host
 }
 
 // SetCodec will set the codec to be used for the transocder.

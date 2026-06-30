@@ -12,7 +12,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
-	"github.com/owncast/owncast/webserver/handlers/generated"
 )
 
 // Start binds the RTMP listener and runs the accept loop. Blocks until
@@ -71,7 +70,7 @@ func (s *Service) handleConn(c *rtmp.Conn, nc net.Conn) {
 
 	// If a stream key override was specified then use that instead.
 	if s.cfg.TemporaryStreamKey != "" {
-		validStreamingKeys = []generated.StreamKey{{Key: &s.cfg.TemporaryStreamKey}}
+		validStreamingKeys = []models.StreamKey{{Key: &s.cfg.TemporaryStreamKey}}
 	}
 
 	for _, key := range validStreamingKeys {

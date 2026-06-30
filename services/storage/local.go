@@ -7,17 +7,17 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/models"
 )
 
 // LocalStorage represents an instance of the local storage provider for HLS video.
 type LocalStorage struct {
 	host             string
-	configRepository configrepository.ConfigRepository
+	configRepository models.EngineConfig
 }
 
 // NewLocalStorage returns a new LocalStorage instance.
-func NewLocalStorage(configRepository configrepository.ConfigRepository) *LocalStorage {
+func NewLocalStorage(configRepository models.EngineConfig) *LocalStorage {
 	return &LocalStorage{configRepository: configRepository}
 }
 

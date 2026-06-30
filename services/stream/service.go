@@ -116,6 +116,10 @@ type Service struct {
 	// debug flag) shared with transcoder/thumbnail children spawned by
 	// the stream lifecycle.
 	cfg *config.Config
+
+	// engine drives broadcaster ingest + transcoding. The local engine runs
+	// it in-process; lifecycle is reported back via the StreamEvents methods.
+	engine StreamEngine
 }
 
 // Deps is the explicit-dependency contract the service requires at
@@ -134,7 +138,7 @@ type Deps struct {
 // New constructs an idle stream Service. Call Start(ctx) to bring up the
 // storage backend, transcoder, RTMP listener, and associated lifecycle.
 func New(deps Deps) *Service {
-	return &Service{
+	s := &Service{
 		geoIPClient:      geoip.NewClient(),
 		fileWriter:       transcoder.NewFileWriterReceiverService(deps.Config),
 		rtmp:             deps.Rtmp,
@@ -146,4 +150,12 @@ func New(deps Deps) *Service {
 		configRepository: deps.ConfigRepository,
 		cfg:              deps.Config,
 	}
+	// The local engine binds the in-process RTMP listener and routes inbound
+	// connections back through the service's StreamEvents handlers.
+	s.engine = &localStreamEngine{
+		rtmp:          deps.Rtmp,
+		onConnect:     s.setStreamAsConnected,
+		onBroadcaster: s.BroadcasterSet,
+	}
+	return s
 }
