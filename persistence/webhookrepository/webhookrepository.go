@@ -146,7 +146,7 @@ func (r *SqlWebhookRepository) GetWebhooksForEvent(event models.EventType) []mod
 func (r *SqlWebhookRepository) GetWebhooks() ([]models.Webhook, error) { //nolint
 	webhooks := make([]models.Webhook, 0)
 
-	query := "SELECT id, url, events, timestamp, last_used FROM webhooks"
+	query := "SELECT * FROM webhooks"
 
 	rows, err := r.datastore.DB.Query(query)
 	if err != nil {
@@ -160,8 +160,9 @@ func (r *SqlWebhookRepository) GetWebhooks() ([]models.Webhook, error) { //nolin
 		var events string
 		var timestampString string
 		var lastUsedString *string
+		var webhookSecret string
 
-		if err := rows.Scan(&id, &url, &events, &timestampString, &lastUsedString); err != nil {
+		if err := rows.Scan(&id, &url, &events, &timestampString, &lastUsedString, &webhookSecret); err != nil {
 			log.Error("There is a problem reading the database.", err)
 			return webhooks, err
 		}
@@ -178,11 +179,12 @@ func (r *SqlWebhookRepository) GetWebhooks() ([]models.Webhook, error) { //nolin
 		}
 
 		singleWebhook := models.Webhook{
-			ID:        id,
-			URL:       url,
-			Events:    strings.Split(events, ","),
-			Timestamp: timestamp,
-			LastUsed:  lastUsed,
+			ID:            id,
+			URL:           url,
+			Events:        strings.Split(events, ","),
+			Timestamp:     timestamp,
+			LastUsed:      lastUsed,
+			WebhookSecret: webhookSecret,
 		}
 
 		webhooks = append(webhooks, singleWebhook)

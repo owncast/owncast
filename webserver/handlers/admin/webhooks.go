@@ -39,11 +39,12 @@ func (a *Admin) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	webutils.WriteResponse(w, models.Webhook{
-		ID:        newWebhookID,
-		URL:       request.URL,
-		Events:    request.Events,
-		Timestamp: time.Now(),
-		LastUsed:  nil,
+		ID:            newWebhookID,
+		URL:           request.URL,
+		Events:        request.Events,
+		Timestamp:     time.Now(),
+		LastUsed:      nil,
+		WebhookSecret: request.WebhookSecret,
 	})
 }
 

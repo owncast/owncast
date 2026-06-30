@@ -11,6 +11,7 @@ import {
   Tag,
   Typography,
   Tooltip,
+  message,
 } from 'antd';
 import dynamic from 'next/dynamic';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
@@ -23,6 +24,7 @@ import { Translation } from '../../components/ui/Translation/Translation';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { TextField, TEXTFIELD_TYPE_PASSWORD } from '../../components/admin/TextField';
+import { EyeOutlined } from '@ant-design/icons';
 
 const { Title, Paragraph } = Typography;
 
@@ -73,6 +75,17 @@ function convertEventStringToTag(eventString: string) {
     </Tooltip>
   );
 }
+
+export const generateRndSecret = () => {
+  let defaultSecret = '';
+  const s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+  defaultSecret = Array.apply(20, Array(30))
+    .map(() => s.charAt(Math.floor(Math.random() * s.length)))
+    .join('');
+  return defaultSecret;
+};
+
 interface Props {
   onCancel: () => void;
   onOk: (url: string, events: string[], webhookSecret: string) => void;
@@ -82,10 +95,11 @@ interface Props {
 const NewWebhookModal = (props: Props) => {
   const { onOk, onCancel, open } = props;
   const { t } = useTranslation();
+  const defaultWebhookSecret = generateRndSecret();
 
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [webhookUrl, setWebhookUrl] = useState('');
-  const [webhookSecret, setWebhookSecret] = useState('');
+  const [webhookSecret, setWebhookSecret] = useState(defaultWebhookSecret);
 
   const { serverConfig } = useContext(ServerStatusContext);
 
@@ -107,12 +121,12 @@ const NewWebhookModal = (props: Props) => {
 
     // Reset the modal
     setWebhookUrl('');
-    setWebhookSecret('');
+    setWebhookSecret(generateRndSecret());
     setSelectedEvents(null);
   }
 
   const okButtonProps = {
-    disabled: selectedEvents?.length === 0 || !isValidUrl(webhookUrl),
+    disabled: selectedEvents?.length === 0 || !isValidUrl(webhookUrl) || webhookSecret.length == 0,
   };
 
   const checkboxes = events
@@ -179,6 +193,7 @@ const NewWebhookModal = (props: Props) => {
 const Webhooks = () => {
   const [webhooks, setWebhooks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showSecretMap, setShowSecretMap] = useState({});
 
   function handleError(error) {
     console.error('error', error);
@@ -231,6 +246,13 @@ const Webhooks = () => {
     setIsModalOpen(false);
   };
 
+  const handleToggleShowSecret = key => {
+    setShowSecretMap({
+      ...showSecretMap,
+      [key]: !showSecretMap[key],
+    });
+  };
+
   const columns = [
     {
       title: '',
@@ -260,6 +282,33 @@ const Webhooks = () => {
           }
         </>
       ),
+    },
+    {
+      title: 'Webhook Secret',
+      dataIndex: 'secret',
+      onCell: () => ({
+        style: { minWidth: 200 },
+      }),      
+      key: 'secret',
+      render: secret => (
+        <Space direction="horizontal">
+          <Paragraph
+            copyable={{
+              text: secret,
+              onCopy: () => message.success('Copied to clipboard'),
+            }}
+          >
+            {showSecretMap[secret] ? secret : '**********'}
+          </Paragraph>
+
+          <Button
+            type="link"
+            style={{ top: '-7px' }}
+            icon={<EyeOutlined />}
+            onClick={() => handleToggleShowSecret(secret)}
+          />
+        </Space>
+      )
     },
   ];
 
