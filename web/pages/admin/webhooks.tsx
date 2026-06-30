@@ -14,6 +14,7 @@ import {
   message,
 } from 'antd';
 import dynamic from 'next/dynamic';
+import { EyeOutlined } from '@ant-design/icons';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'next-export-i18n';
 import { CREATE_WEBHOOK, DELETE_WEBHOOK, fetchData, WEBHOOKS } from '../../utils/apis';
@@ -24,7 +25,6 @@ import { Translation } from '../../components/ui/Translation/Translation';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { TextField, TEXTFIELD_TYPE_PASSWORD } from '../../components/admin/TextField';
-import { EyeOutlined } from '@ant-design/icons';
 
 const { Title, Paragraph } = Typography;
 
@@ -126,7 +126,7 @@ const NewWebhookModal = (props: Props) => {
   }
 
   const okButtonProps = {
-    disabled: selectedEvents?.length === 0 || !isValidUrl(webhookUrl) || webhookSecret.length == 0,
+    disabled: selectedEvents?.length === 0 || !isValidUrl(webhookUrl) || webhookSecret.length === 0,
   };
 
   const checkboxes = events
@@ -288,7 +288,7 @@ const Webhooks = () => {
       dataIndex: 'secret',
       onCell: () => ({
         style: { minWidth: 200 },
-      }),      
+      }),
       key: 'secret',
       render: secret => (
         <Space direction="horizontal">
@@ -308,7 +308,7 @@ const Webhooks = () => {
             onClick={() => handleToggleShowSecret(secret)}
           />
         </Space>
-      )
+      ),
     },
   ];
 
