@@ -4,6 +4,7 @@ import { FC } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { IndieAuthModal } from '../IndieAuthModal/IndieAuthModal';
 import { FediAuthModal } from '../FediAuthModal/FediAuthModal';
+import { getPendingFediverseAuth } from '../../../utils/fediverseAuthSession';
 
 import styles from './AuthModal.module.scss';
 import {
@@ -67,6 +68,10 @@ export const AuthModal: FC<AuthModalProps> = ({ forceTabs }) => {
     { label: fediAuthTabTitle, key: '2', children: fediAuthTab },
   ];
 
+  // If a fediverse verification is still in progress (restored after a reload),
+  // open straight to that tab so the recovered code-entry step is visible.
+  const defaultActiveKey = getPendingFediverseAuth() ? '2' : '1';
+
   return (
     <ErrorBoundary
       // eslint-disable-next-line react/no-unstable-nested-components
@@ -80,7 +85,7 @@ export const AuthModal: FC<AuthModalProps> = ({ forceTabs }) => {
     >
       <div>
         <Tabs
-          defaultActiveKey="1"
+          defaultActiveKey={defaultActiveKey}
           items={items}
           type="card"
           size="small"
