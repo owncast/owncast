@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import React, { FC, useContext, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -27,6 +28,7 @@ export type OwncastPlayerProps = {
   source: string;
   online: boolean;
   initiallyMuted?: boolean;
+  autoplay?: string;
   title: string;
   className?: string;
 };
@@ -35,6 +37,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   source,
   online,
   initiallyMuted = false,
+  autoplay = 'off',
   title,
   className,
 }) => {
@@ -172,6 +175,44 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     }
   };
 
+  const setupUnmuteButton = (player, videojs) => {
+    const VJSButtonClass = videojs.getComponent('Button');
+
+    class UnmuteButton extends VJSButtonClass {
+      constructor() {
+        super(player);
+      }
+
+      // eslint-disable-next-line class-methods-use-this
+      handleClick() {
+        player.muted(false);
+        if (player.volume() === 0) {
+          const saved = parseFloat(getLocalStorage(PLAYER_VOLUME));
+          player.volume(saved > 0 ? saved : 0.7);
+        }
+      }
+    }
+
+    const unmuteButton = new UnmuteButton();
+    unmuteButton.addClass('vjs-big-unmute-button');
+    unmuteButton.controlText('Unmute');
+    player.addChild(unmuteButton);
+
+    // Mirror the big play button: show a large, obvious unmute affordance only
+    // while the stream is autoplaying muted. When paused, the native big play
+    // button already covers that case, so this stays hidden.
+    const updateUnmuteButton = () => {
+      if (!player.paused() && (player.muted() || player.volume() === 0)) {
+        unmuteButton.show();
+      } else {
+        unmuteButton.hide();
+      }
+    };
+
+    player.on(['playing', 'pause', 'ended', 'volumechange'], updateUnmuteButton);
+    updateUnmuteButton();
+  };
+
   // Register keyboard shortcut for the space bar to toggle playback
   useHotkeys('space', e => {
     e.preventDefault();
@@ -195,8 +236,18 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     enableOnContentEditable: false,
   });
 
+  // Map the instance autoplay setting to a video.js autoplay value:
+  // off -> no autoplay; always -> 'any' (try sound, fall back to muted);
+  // sound-only -> 'play' (sound when the browser allows it, otherwise stay paused).
+  let autoplayMode: string | boolean = false;
+  if (autoplay === 'always') {
+    autoplayMode = 'any';
+  } else if (autoplay === 'sound-only') {
+    autoplayMode = 'play';
+  }
+
   const videoJsOptions = {
-    autoplay: false,
+    autoplay: autoplayMode,
     controls: true,
     responsive: true,
     fluid: false,
@@ -235,6 +286,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     playerRef.current = player;
     setSavedVolume();
     setupAirplay(player, videojs);
+    setupUnmuteButton(player, videojs);
 
     // You can handle player events here, for example:
     player.on('waiting', () => {

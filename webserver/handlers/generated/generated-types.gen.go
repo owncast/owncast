@@ -15,6 +15,48 @@ const (
 	BearerAuthScopes bearerAuthContextKey = "BearerAuth.Scopes"
 )
 
+// Defines values for AdminWebConfigAutoplay.
+const (
+	AdminWebConfigAutoplayAlways    AdminWebConfigAutoplay = "always"
+	AdminWebConfigAutoplayOff       AdminWebConfigAutoplay = "off"
+	AdminWebConfigAutoplaySoundOnly AdminWebConfigAutoplay = "sound-only"
+)
+
+// Valid indicates whether the value is a known member of the AdminWebConfigAutoplay enum.
+func (e AdminWebConfigAutoplay) Valid() bool {
+	switch e {
+	case AdminWebConfigAutoplayAlways:
+		return true
+	case AdminWebConfigAutoplayOff:
+		return true
+	case AdminWebConfigAutoplaySoundOnly:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for WebConfigAutoplay.
+const (
+	WebConfigAutoplayAlways    WebConfigAutoplay = "always"
+	WebConfigAutoplayOff       WebConfigAutoplay = "off"
+	WebConfigAutoplaySoundOnly WebConfigAutoplay = "sound-only"
+)
+
+// Valid indicates whether the value is a known member of the WebConfigAutoplay enum.
+func (e WebConfigAutoplay) Valid() bool {
+	switch e {
+	case WebConfigAutoplayAlways:
+		return true
+	case WebConfigAutoplayOff:
+		return true
+	case WebConfigAutoplaySoundOnly:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for WebhookEventType.
 const (
 	CHAT                      WebhookEventType = "CHAT"
@@ -210,21 +252,25 @@ type AdminVideoSettings struct {
 
 // AdminWebConfig defines model for AdminWebConfig.
 type AdminWebConfig struct {
-	AppearanceVariables *map[string]string `json:"appearanceVariables,omitempty"`
-	CustomJavascript    *string            `json:"customJavascript,omitempty"`
-	CustomStyles        *string            `json:"customStyles,omitempty"`
-	ExtraPageContent    *string            `json:"extraPageContent,omitempty"`
-	Logo                *string            `json:"logo,omitempty"`
-	Name                *string            `json:"name,omitempty"`
-	Nsfw                *bool              `json:"nsfw,omitempty"`
-	OfflineMessage      *string            `json:"offlineMessage,omitempty"`
-	SocialHandles       *[]SocialHandle    `json:"socialHandles,omitempty"`
-	StreamTitle         *string            `json:"streamTitle,omitempty"`
-	Summary             *string            `json:"summary,omitempty"`
-	Tags                *[]string          `json:"tags,omitempty"`
-	Version             *string            `json:"version,omitempty"`
-	WelcomeMessage      *string            `json:"welcomeMessage,omitempty"`
+	AppearanceVariables *map[string]string      `json:"appearanceVariables,omitempty"`
+	Autoplay            *AdminWebConfigAutoplay `json:"autoplay,omitempty"`
+	CustomJavascript    *string                 `json:"customJavascript,omitempty"`
+	CustomStyles        *string                 `json:"customStyles,omitempty"`
+	ExtraPageContent    *string                 `json:"extraPageContent,omitempty"`
+	Logo                *string                 `json:"logo,omitempty"`
+	Name                *string                 `json:"name,omitempty"`
+	Nsfw                *bool                   `json:"nsfw,omitempty"`
+	OfflineMessage      *string                 `json:"offlineMessage,omitempty"`
+	SocialHandles       *[]SocialHandle         `json:"socialHandles,omitempty"`
+	StreamTitle         *string                 `json:"streamTitle,omitempty"`
+	Summary             *string                 `json:"summary,omitempty"`
+	Tags                *[]string               `json:"tags,omitempty"`
+	Version             *string                 `json:"version,omitempty"`
+	WelcomeMessage      *string                 `json:"welcomeMessage,omitempty"`
 }
+
+// AdminWebConfigAutoplay defines model for AdminWebConfig.Autoplay.
+type AdminWebConfigAutoplay string
 
 // AdminYPInfo defines model for AdminYPInfo.
 type AdminYPInfo struct {
@@ -698,6 +744,7 @@ type Viewer struct {
 type WebConfig struct {
 	AppearanceVariables *map[string]string    `json:"appearanceVariables,omitempty"`
 	Authentication      *AuthenticationConfig `json:"authentication,omitempty"`
+	Autoplay            *WebConfigAutoplay    `json:"autoplay,omitempty"`
 	ChatDisabled        *bool                 `json:"chatDisabled,omitempty"`
 
 	// ChatRequireAuthentication Whether users must authenticate before sending chat messages
@@ -720,6 +767,9 @@ type WebConfig struct {
 	Tags                      *[]string           `json:"tags,omitempty"`
 	Version                   *string             `json:"version,omitempty"`
 }
+
+// WebConfigAutoplay defines model for WebConfig.Autoplay.
+type WebConfigAutoplay string
 
 // Webhook defines model for Webhook.
 type Webhook struct {
@@ -1085,6 +1135,9 @@ type SetAdminPasswordJSONRequestBody = AdminConfigValue
 
 // SetCustomColorVariableValuesJSONRequestBody defines body for SetCustomColorVariableValues for application/json ContentType.
 type SetCustomColorVariableValuesJSONRequestBody SetCustomColorVariableValuesJSONBody
+
+// SetAutoplayJSONRequestBody defines body for SetAutoplay for application/json ContentType.
+type SetAutoplayJSONRequestBody = AdminConfigValue
 
 // SetChatDisabledJSONRequestBody defines body for SetChatDisabled for application/json ContentType.
 type SetChatDisabledJSONRequestBody = AdminConfigValue

@@ -106,6 +106,12 @@ type ServerInterface interface {
 	// (POST /admin/config/appearance)
 	SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request)
 
+	// (OPTIONS /admin/config/autoplay)
+	SetAutoplayOptions(w http.ResponseWriter, r *http.Request)
+	// Update autoplay behavior
+	// (POST /admin/config/autoplay)
+	SetAutoplay(w http.ResponseWriter, r *http.Request)
+
 	// (OPTIONS /admin/config/chat/disable)
 	SetChatDisabledOptions(w http.ResponseWriter, r *http.Request)
 	// Disable chat
@@ -891,6 +897,17 @@ func (_ Unimplemented) SetCustomColorVariableValuesOptions(w http.ResponseWriter
 // Set style/color/css values
 // (POST /admin/config/appearance)
 func (_ Unimplemented) SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/autoplay)
+func (_ Unimplemented) SetAutoplayOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update autoplay behavior
+// (POST /admin/config/autoplay)
+func (_ Unimplemented) SetAutoplay(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2553,6 +2570,40 @@ func (siw *ServerInterfaceWrapper) SetCustomColorVariableValues(w http.ResponseW
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetCustomColorVariableValues(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetAutoplayOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetAutoplayOptions(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetAutoplayOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetAutoplay operation middleware
+func (siw *ServerInterfaceWrapper) SetAutoplay(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetAutoplay(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6692,6 +6743,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/appearance", wrapper.SetCustomColorVariableValues)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/autoplay", wrapper.SetAutoplayOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/autoplay", wrapper.SetAutoplay)
 	})
 	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/admin/config/chat/disable", wrapper.SetChatDisabledOptions)

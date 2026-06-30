@@ -24,7 +24,7 @@ export default function VideoEmbed() {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
 
-  const { name, summary, offlineMessage, federation } = clientConfig;
+  const { name, summary, offlineMessage, federation, autoplay } = clientConfig;
 
   const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } = status;
   const online = useRecoilValue<boolean>(isOnlineSelector);
@@ -80,6 +80,7 @@ export default function VideoEmbed() {
         online={online}
         initiallyMuted={initiallyMuted}
         title={streamTitle || name}
+        autoplay={autoplay}
       />
       <Statusbar
         online={online}

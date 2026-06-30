@@ -2159,6 +2159,35 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /admin/config/autoplay:
+    post:
+      summary: Update autoplay behavior
+      operationId: SetAutoplay
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Autoplay setting updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetAutoplayOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /admin/config/directoryenabled:
     post:
       summary: Update directory enabled
@@ -4158,6 +4187,9 @@ components:
           description: Whether users must authenticate before sending chat messages
         nsfw:
           type: boolean
+        autoplay:
+          type: string
+          enum: ['off', 'always', 'sound-only']
         authentication:
           $ref: '#/components/schemas/AuthenticationConfig'
     SocialHandle:
@@ -4702,6 +4734,9 @@ components:
             $ref: '#/components/schemas/SocialHandle'
         nsfw:
           type: boolean
+        autoplay:
+          type: string
+          enum: ['off', 'always', 'sound-only']
     AdminNotificationsConfig:
       type: object
       properties:

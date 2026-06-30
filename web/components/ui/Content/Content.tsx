@@ -128,6 +128,7 @@ export const Content: FC = () => {
     federation,
     notifications,
     pluginTabs,
+    autoplay,
   } = clientConfig;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyModal, setShowNotifyModal] = useState(false);
@@ -266,6 +267,7 @@ export const Content: FC = () => {
               source="/hls/stream.m3u8"
               online={online}
               title={streamTitle || name}
+              autoplay={autoplay}
               className={styles.topSectionElement}
             />
           )}

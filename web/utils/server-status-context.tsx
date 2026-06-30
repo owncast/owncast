@@ -17,6 +17,7 @@ const initialServerConfigState: ConfigDetails = {
     logo: '',
     name: '',
     nsfw: false,
+    autoplay: 'off',
     socialHandles: [],
     streamTitle: '',
     summary: '',

@@ -256,6 +256,14 @@ func (s *ServerInterfaceImpl) SetNSFWOptions(w http.ResponseWriter, r *http.Requ
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetNSFW)(w, r)
 }
 
+func (s *ServerInterfaceImpl) SetAutoplay(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetAutoplay)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetAutoplayOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetAutoplay)(w, r)
+}
+
 func (s *ServerInterfaceImpl) SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetDirectoryEnabled)(w, r)
 }
