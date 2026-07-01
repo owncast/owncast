@@ -21,7 +21,7 @@ export const FatalErrorStateModal: FC<FatalErrorStateModalProps> = ({ title, mes
     <Modal
       title={title}
       footer={null}
-      closable={true}
+      closable
       keyboard={false}
       width={900}
       centered
