@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "البث المميز",
 			"streamName": "اسم البث",
 			"streamRequirements": "متطلبات البث",
+			"streamTitle": "عنوان البث",
 			"streamUnfeaturedSuccess": "بث غير مميز",
 			"streamUrlHelp": "أدخل عنوان URL لتدفق Owncast (على سبيل المثال: stream.example.com)",
 			"streamUrlLabel": "رابط البث",
@@ -326,6 +327,7 @@
 			"viewers": "المشاهدون"
 		},
 		"Webhooks": {
+			"webhookSecret": "إعداد سر ويب هوك جديد",
 			"createNewWebhook": "إنشاء Webhook جديد",
 			"selectAll": "حدد الكل",
 			"selectEvents": "حدد الأحداث التي سيتم إرسالها إلى هذا webhook.",

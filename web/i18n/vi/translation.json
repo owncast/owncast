@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Luồng đã được nổi bật",
 			"streamName": "Tên Stream",
 			"streamRequirements": "Các yêu cầu về Stream",
+			"streamTitle": "Tiêu đề luồng",
 			"streamUnfeaturedSuccess": "Luồng đã không còn nổi bật",
 			"streamUrlHelp": "Nhập URL của một stream Owncast (ví dụ: stream.example.com)",
 			"streamUrlLabel": "URL Stream",
@@ -326,6 +327,7 @@
 			"viewers": "Người xem"
 		},
 		"Webhooks": {
+			"webhookSecret": "Thiết lập bí mật webhook mới",
 			"createNewWebhook": "Tạo Webhook mới",
 			"selectAll": "Chọn tất cả",
 			"selectEvents": "Chọn các sự kiện sẽ được gửi đến webhook này.",

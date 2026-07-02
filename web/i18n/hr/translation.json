@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Stream je postao istaknut",
 			"streamName": "Ime Streama",
 			"streamRequirements": "Zahtjevi za Stream",
+			"streamTitle": "Naziv streama",
 			"streamUnfeaturedSuccess": "Stream je uklonjen iz istaknutih",
 			"streamUrlHelp": "Unesite URL Owncast streama (npr., stream.example.com)",
 			"streamUrlLabel": "URL Streama",
@@ -326,6 +327,7 @@
 			"viewers": "Gledatelji"
 		},
 		"Webhooks": {
+			"webhookSecret": "Postavite novu tajnu za webhook",
 			"createNewWebhook": "Kreiraj novi Webhook",
 			"selectAll": "Odaberi sve",
 			"selectEvents": "Odaberite događaje koji će biti poslani ovom webhooku.",

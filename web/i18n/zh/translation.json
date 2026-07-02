@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "流已被標記為特色",
 			"streamName": "串流名稱",
 			"streamRequirements": "串流需求",
+			"streamTitle": "串流標題",
 			"streamUnfeaturedSuccess": "流已取消特色",
 			"streamUrlHelp": "輸入 Owncast 串流的 URL (例如，stream.example.com)",
 			"streamUrlLabel": "串流 URL",
@@ -326,6 +327,7 @@
 			"viewers": "瀏覽者"
 		},
 		"Webhooks": {
+			"webhookSecret": "設置新的 webhook 密鑰",
 			"createNewWebhook": "創建新 Webhook",
 			"selectAll": "全選",
 			"selectEvents": "選擇將發送到此 webhook 的事件。",

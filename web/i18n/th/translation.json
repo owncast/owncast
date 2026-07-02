@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "ฟีเจอร์ได้รับการนำเสนอในสตรีมแล้ว",
 			"streamName": "ชื่อสตรีม",
 			"streamRequirements": "ข้อกำหนดของสตรีม",
+			"streamTitle": "ชื่อสตรีม",
 			"streamUnfeaturedSuccess": "ฟีเจอร์ถูกยกเลิกจากสตรีมแล้ว",
 			"streamUrlHelp": "กรุณาใส่ URL ของสตรีม Owncast (ตัวอย่างเช่น stream.example.com)",
 			"streamUrlLabel": "URL ของสตรีม",
@@ -326,6 +327,7 @@
 			"viewers": "ผู้ชม"
 		},
 		"Webhooks": {
+			"webhookSecret": "ตั้งค่าเว็บฮุกลับใหม่",
 			"createNewWebhook": "สร้าง Webhook ใหม่",
 			"selectAll": "เลือกทั้งหมด",
 			"selectEvents": "เลือกเหตุการณ์ที่จะส่งไปยัง webhook นี้",

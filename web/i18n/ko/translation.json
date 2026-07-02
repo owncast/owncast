@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "스트림이 기능 표시되었습니다.",
 			"streamName": "스트림 이름",
 			"streamRequirements": "스트림 요구 사항",
+			"streamTitle": "스트림 제목",
 			"streamUnfeaturedSuccess": "스트림의 기능이 제거되었습니다.",
 			"streamUrlHelp": "Owncast 스트림의 URL을 입력하세요(예: stream.example.com)",
 			"streamUrlLabel": "스트림 URL",
@@ -326,6 +327,7 @@
 			"viewers": "시청자"
 		},
 		"Webhooks": {
+			"webhookSecret": "새 웹후크 비밀을 설정하십시오.",
 			"createNewWebhook": "새 웹훅 만들기",
 			"selectAll": "모두 선택",
 			"selectEvents": "이 웹훅에 전송될 이벤트를 선택하세요.",
