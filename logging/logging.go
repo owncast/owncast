@@ -39,6 +39,9 @@ func Setup(logDirectory string, enableDebugOptions bool, enableVerboseLogging bo
 		}
 	}
 
+	removeStaleRotationFiles(getLogFilePath(logDirectory))
+	removeStaleRotationFiles(GetTranscoderLogFilePath(logDirectory))
+
 	// Write logs to a file
 	path := getLogFilePath(logDirectory)
 	writer, _ := rotatelogs.New(
@@ -80,6 +83,24 @@ func Setup(logDirectory string, enableDebugOptions bool, enableVerboseLogging bo
 	}
 
 	Logger = _logger
+}
+
+// removeStaleRotationFiles deletes leftover rotatelogs lock and symlink
+// staging files for the given log path. They can survive a previous run
+// that was killed mid-rotation, and a stale lock file blocks every future
+// rotation of that file with a "failed to rotate" error.
+func removeStaleRotationFiles(logFilePath string) {
+	for _, suffix := range []string{"_lock", "_symlink"} {
+		matches, err := filepath.Glob(logFilePath + ".*" + suffix)
+		if err != nil {
+			continue
+		}
+		for _, staleFile := range matches {
+			if err := os.Remove(staleFile); err != nil {
+				log.Debugln("unable to remove stale log rotation file", staleFile, err)
+			}
+		}
+	}
 }
 
 // Fire runs for every logging request.
