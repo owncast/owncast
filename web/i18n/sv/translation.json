@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Utvald ström",
 			"streamName": "Stream Namn",
 			"streamRequirements": "Krav på strömning",
+			"streamTitle": "Stream Titel",
 			"streamUnfeaturedSuccess": "Ström ej utvald",
 			"streamUrlHelp": "Ange URL:en till en Owncast stream (t.ex., stream.example.com)",
 			"streamUrlLabel": "Strömma URL",
@@ -326,6 +327,7 @@
 			"viewers": "Tittare"
 		},
 		"Webhooks": {
+			"webhookSecret": "Ställ in en ny hemlighet för webhook",
 			"createNewWebhook": "Skapa ny webhook",
 			"selectAll": "Markera alla",
 			"selectEvents": "Välj händelser som kommer att skickas till denna webhook.",

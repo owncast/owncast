@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Потоковая лента",
 			"streamName": "Имя потока",
 			"streamRequirements": "Требования трансляции",
+			"streamTitle": "Название потока",
 			"streamUnfeaturedSuccess": "Поток не Рекомендуется",
 			"streamUrlHelp": "Введите URL Owncast потока (например, stream.example.com)",
 			"streamUrlLabel": "URL потока",
@@ -326,6 +327,7 @@
 			"viewers": "Просмотры"
 		},
 		"Webhooks": {
+			"webhookSecret": "Настроить новый секретный вебхук",
 			"createNewWebhook": "Создать новый вебхук",
 			"selectAll": "Выбрать все",
 			"selectEvents": "Выберите события, которые будут отправлены на этот вебхук.",

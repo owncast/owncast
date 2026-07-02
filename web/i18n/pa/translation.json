@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "ਸਟ੍ਰੀਮ ਫੀਚਰ ਕਰ ਦਿੱਤੀ ਗਈ",
 			"streamName": "ਸਟ੍ਰੀਮ ਨਾਮ",
 			"streamRequirements": "ਸਟ੍ਰੀਮ ਦੀਆਂ ਲੋੜਾਂ",
+			"streamTitle": "ਸਤ੍ਰੀਮ ਟਾਈਟਲ",
 			"streamUnfeaturedSuccess": "ਸਟ੍ਰੀਮ ਨੂੰ ਫੀਚਰ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ",
 			"streamUrlHelp": "ਇੱਕ Owncast ਸਟਰਿਮ ਦਾ URL ਦਾਖਲ ਕਰੋ (ਜਿਵੇਂ, stream.example.com)",
 			"streamUrlLabel": "ਸਟ੍ਰੀਮ URL",
@@ -326,6 +327,7 @@
 			"viewers": "ਦਰਸ਼ਕ"
 		},
 		"Webhooks": {
+			"webhookSecret": "ਨਵਾਂ ਵੈਬਹੂਕ ਗੁਪਤ ਕੋਡ ਸੈਟ ਕਰੋ",
 			"createNewWebhook": "ਨਵਾਂ ਵੈੱਬਹੂੰਕ ਬਣਾਓ",
 			"selectAll": "ਸਾਰੇ ਚੁਣੋ",
 			"selectEvents": "ਉਹ ਇਵੈਂਟ ਚੁਣੋ ਜੋ ਇਸ ਵੈੱਬਹੂੰਕ ਲਈ ਭੇਜੇ ਜਾਣਗੇ।",

@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "स्ट्रीम को विशेषता दिया गया",
 			"streamName": "स्ट्रीम नाम",
 			"streamRequirements": "स्ट्रीम आवश्यकताएँ",
+			"streamTitle": "धारा शीर्षक",
 			"streamUnfeaturedSuccess": "स्ट्रीम को विशेषता मुक्त किया गया",
 			"streamUrlHelp": "एक Owncast स्ट्रीम का URL दर्ज करें (जैसे, stream.example.com)",
 			"streamUrlLabel": "स्ट्रीम URL",
@@ -326,6 +327,7 @@
 			"viewers": "दर्शक"
 		},
 		"Webhooks": {
+			"webhookSecret": "एक नया वेबहुक रहस्य सेट करें",
 			"createNewWebhook": "नई वेबहुक बनाएं",
 			"selectAll": "सभी चयनित करें",
 			"selectEvents": "उन घटनाओं का चयन करें जो इस वेबहुक को भेजी जाएँगी।",

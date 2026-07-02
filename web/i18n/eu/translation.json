@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Igoera ezarrita",
 			"streamName": "Korronte Izen",
 			"streamRequirements": "Korronte Eskakizunak",
+			"streamTitle": "Kanalaren Izenburua",
 			"streamUnfeaturedSuccess": "Igoera ez da ezarri",
 			"streamUrlHelp": "Sartu Owncast korronte baten URLa (adibidez, stream.example.com)",
 			"streamUrlLabel": "Korronte URL",
@@ -326,6 +327,7 @@
 			"viewers": "Ikusleak"
 		},
 		"Webhooks": {
+			"webhookSecret": "Ezarri webhooks berri batentzat sekretua",
 			"createNewWebhook": "Sortu Webhook Berri bat",
 			"selectAll": "Aukeratu guztiak",
 			"selectEvents": "Aukeratu webhook honetara bidalitako gertaerak.",

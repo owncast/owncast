@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Προτεινόμενη ροή",
 			"streamName": "Όνομα Ροής",
 			"streamRequirements": "Απαιτήσεις Ροής",
+			"streamTitle": "Τίτλος Ροής",
 			"streamUnfeaturedSuccess": "Μη χαρακτηριστική ροή",
 			"streamUrlHelp": "Εισάγετε το URL μιας ροής Owncast (π.χ., stream.example.com)",
 			"streamUrlLabel": "URL Ροής",
@@ -326,6 +327,7 @@
 			"viewers": "Θεατές"
 		},
 		"Webhooks": {
+			"webhookSecret": "Ρυθμίστε ένα νέο μυστικό webhook",
 			"createNewWebhook": "Δημιουργία Νέου Webhook",
 			"selectAll": "Επιλογή όλων",
 			"selectEvents": "Επιλέξτε τα γεγονότα που θα σταλούν σε αυτό το webhook.",
