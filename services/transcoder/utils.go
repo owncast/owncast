@@ -57,6 +57,29 @@ var ignoredErrors = []string{
 	"Failed to allocate a vaapi/nv12 frame from a fixed pool of hardware frames.",
 }
 
+// Levels emitted by ffmpeg's "level" loglevel flag that are diagnostic
+// output only, not problems to surface to the owncast log.
+var quietLogLevels = []string{"[info]", "[verbose]", "[debug]", "[trace]"}
+
+var surfacedLogLevels = []string{"[warning] ", "[error] ", "[fatal] ", "[panic] "}
+
+// surfaceableTranscoderMessage reports whether a transcoder stderr line
+// represents a problem worth surfacing to the owncast log. It returns the
+// message with its level tag removed so it matches the message shapes
+// errorMap and ignoredErrors expect. Untagged lines are surfaced as-is.
+func surfaceableTranscoderMessage(line string) (string, bool) {
+	for _, level := range quietLogLevels {
+		if strings.Contains(line, level) {
+			return "", false
+		}
+	}
+	message := line
+	for _, level := range surfacedLogLevels {
+		message = strings.Replace(message, level, "", 1)
+	}
+	return message, true
+}
+
 func (t *Transcoder) handleTranscoderMessage(message string) {
 	log.Debugln(message)
 

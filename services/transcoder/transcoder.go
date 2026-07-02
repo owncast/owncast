@@ -6,10 +6,10 @@ import (
 	"io"
 	"net"
 	"os/exec"
-	"runtime"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
@@ -26,11 +26,10 @@ const ffmpegFlagMap = "-map"
 type execInfo struct {
 	binPath string
 	command []string
-	environ []string
 }
 
 func (e *execInfo) String() string {
-	return strings.Join(e.environ, " ") + " " + e.binPath + " " + strings.Join(e.command, " ")
+	return e.binPath + " " + strings.Join(e.command, " ")
 }
 
 // Transcoder is a single instance of a video transcoder.
@@ -159,7 +158,6 @@ func (t *Transcoder) Start(shouldLog bool) {
 	}
 
 	t.commandExec = exec.Command(flags.binPath, flags.command...) // nolint: gosec
-	t.commandExec.Env = flags.environ
 
 	if t.stdin != nil {
 		t.commandExec.Stdin = t.stdin
@@ -175,11 +173,17 @@ func (t *Transcoder) Start(shouldLog bool) {
 		log.Panicln(err, command)
 	}
 
+	transcoderLog := logging.GetTranscoderLogWriter(t.cfg.LogDirectory)
+	fmt.Fprintf(transcoderLog, "ffmpeg started on %s\nCommand line:\n%s\n", time.Now().Format(time.RFC3339), command)
+
 	go func() {
 		scanner := bufio.NewScanner(stdout)
 		for scanner.Scan() {
 			line := scanner.Text()
-			t.handleTranscoderMessage(line)
+			fmt.Fprintln(transcoderLog, line)
+			if message, ok := surfaceableTranscoderMessage(line); ok {
+				t.handleTranscoderMessage(message)
+			}
 		}
 	}()
 
@@ -241,17 +245,11 @@ func (t *Transcoder) getFlags() *execInfo {
 		hlsOptionsString = append(hlsOptionsString, "-hls_flags", strings.Join(hlsOptionFlags, "+"))
 	}
 
-	logPath := logging.GetTranscoderLogFilePath(t.cfg.LogDirectory)
-	reportEnv := fmt.Sprintf(`FFREPORT=file=%s:level=32`, logPath)
-	if runtime.GOOS == "windows" {
-		logPath = strings.ReplaceAll(logPath, "\\", "/")
-		reportEnv = fmt.Sprintf(`FFREPORT=file=%s:level=32`, logPath)
-	}
-	environ := []string{
-		reportEnv,
-	}
 	ffmpegFlags := make([]string, 0, 64)
-	ffmpegFlags = append(ffmpegFlags, "-hide_banner", "-loglevel", "warning")
+	// level+info tags each stderr line with its log level so the scanner can
+	// separate diagnostic output (kept in transcoder.log) from problems that
+	// get surfaced to the owncast log.
+	ffmpegFlags = append(ffmpegFlags, "-hide_banner", "-nostats", "-loglevel", "level+info")
 	ffmpegFlags = append(ffmpegFlags, t.codec.GlobalFlags()...)
 	ffmpegFlags = append(ffmpegFlags, []string{
 		"-fflags", "+genpts", // Generate presentation time stamp if missing
@@ -293,7 +291,6 @@ func (t *Transcoder) getFlags() *execInfo {
 	return &execInfo{
 		binPath: t.ffmpegPath,
 		command: ffmpegFlags,
-		environ: environ,
 	}
 }
 
