@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Stream Aanbevolen",
 			"streamName": "Stream Naam",
 			"streamRequirements": "Stream Requirements",
+			"streamTitle": "Stream Titel",
 			"streamUnfeaturedSuccess": "Stream niet aanbevolen",
 			"streamUrlHelp": "Voer de URL in van een Owncast stream (bijv. stream.example.com)",
 			"streamUrlLabel": "Stream URL",
@@ -326,6 +327,7 @@
 			"viewers": "Kijkers"
 		},
 		"Webhooks": {
+			"webhookSecret": "Een nieuwe webhook geheim instellen",
 			"createNewWebhook": "Maak nieuwe Webhook",
 			"selectAll": "Alles selecteren",
 			"selectEvents": "Selecteer de gebeurtenissen die naar deze webhook worden verzonden.",

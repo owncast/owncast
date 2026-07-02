@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Stream polecany",
 			"streamName": "Nazwa strumienia",
 			"streamRequirements": "Wymagania strumienia",
+			"streamTitle": "Tytuł strumienia",
 			"streamUnfeaturedSuccess": "Strumień niepolecany",
 			"streamUrlHelp": "Wprowadź adres URL strumienia Owncast (np. stream.example.com)",
 			"streamUrlLabel": "URL strumienia",
@@ -326,6 +327,7 @@
 			"viewers": "Widzowie"
 		},
 		"Webhooks": {
+			"webhookSecret": "Skonfiguruj nowy sekret webhooka",
 			"createNewWebhook": "Utwórz nowy Webhook",
 			"selectAll": "Zaznacz wszystkie",
 			"selectEvents": "Wybierz wydarzenia, które zostaną wysłane do tego webhooka.",

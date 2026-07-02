@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Sruth faoi ghlas",
 			"streamName": "Ainm na Sruth",
 			"streamRequirements": "Éilimh na Srutha",
+			"streamTitle": "Teideal Sruth",
 			"streamUnfeaturedSuccess": "Sruth neamhghlas",
 			"streamUrlHelp": "Cuir isteach URL sruth Owncast (m.sh., stream.example.com)",
 			"streamUrlLabel": "URL na Srutha",
@@ -326,6 +327,7 @@
 			"viewers": "Lucht féachana"
 		},
 		"Webhooks": {
+			"webhookSecret": "Socraigh rún nua do webhook",
 			"createNewWebhook": "Cruthaigh Webhook Nua",
 			"selectAll": "Roghnaigh gach",
 			"selectEvents": "Roghnaigh na himeachtaí a bheidh á seoladh chuig an webhook seo.",

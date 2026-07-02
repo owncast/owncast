@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Strøm utvalgt",
 			"streamName": "Navn på strøm",
 			"streamRequirements": "Strøm Krav",
+			"streamTitle": "Strøm tittel",
 			"streamUnfeaturedSuccess": "Strøm ikke utvalgt",
 			"streamUrlHelp": "Skriv inn en URL til en Owncast stream (f.eks stream.example.com)",
 			"streamUrlLabel": "Strøm URL",
@@ -326,6 +327,7 @@
 			"viewers": "Seere"
 		},
 		"Webhooks": {
+			"webhookSecret": "Sett opp en ny webhook hemmelig",
 			"createNewWebhook": "Lag ny Webhook",
 			"selectAll": "Velg alle",
 			"selectEvents": "Velg hendelsene som skal sendes til denne webhooken.",

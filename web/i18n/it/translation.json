@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Stream in evidenza",
 			"streamName": "Nome Stream",
 			"streamRequirements": "Requisiti Di Flusso",
+			"streamTitle": "Titolo Del Flusso",
 			"streamUnfeaturedSuccess": "Stream dismesso",
 			"streamUrlHelp": "Inserisci l'URL di un flusso Owncast (ad esempio, stream.example.com)",
 			"streamUrlLabel": "Url Del Flusso",
@@ -326,6 +327,7 @@
 			"viewers": "Visualizzatori"
 		},
 		"Webhooks": {
+			"webhookSecret": "Imposta un nuovo webhook segreto",
 			"createNewWebhook": "Crea Nuovo Webhook",
 			"selectAll": "Seleziona tutto",
 			"selectEvents": "Seleziona gli eventi che verranno inviati a questo webhook.",

@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Siaran ditandakan",
 			"streamName": "Nama Aliran",
 			"streamRequirements": "Keperluan Aliran",
+			"streamTitle": "Tajuk Aliran",
 			"streamUnfeaturedSuccess": "Siaran dikeluarkan daripada tawaran",
 			"streamUrlHelp": "Masukkan URL aliran Owncast (contoh, stream.example.com)",
 			"streamUrlLabel": "URL Aliran",
@@ -326,6 +327,7 @@
 			"viewers": "Penonton"
 		},
 		"Webhooks": {
+			"webhookSecret": "Tetapkan rahsia webhook baharu",
 			"createNewWebhook": "Buat Webhook Baru",
 			"selectAll": "Pilih semua",
 			"selectEvents": "Pilih acara yang akan dihantar ke webhook ini.",

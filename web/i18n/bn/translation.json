@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "স্ট্রীমটি ফিচার করা হয়েছে",
 			"streamName": "স্ট্রিমের নাম",
 			"streamRequirements": "স্ট্রিমের প্রয়োজনীয়তা",
+			"streamTitle": "স্ট্রীমের শিরোনাম",
 			"streamUnfeaturedSuccess": "স্ট্রীমটি ফিচার মুক্ত করা হয়েছে",
 			"streamUrlHelp": "একটি Owncast স্ট্রিমের URL প্রবেশ করুন (যেমন, stream.example.com)",
 			"streamUrlLabel": "স্ট্রিম URL",
@@ -326,6 +327,7 @@
 			"viewers": "দর্শকরা"
 		},
 		"Webhooks": {
+			"webhookSecret": "একটি নতুন webhook গোপন বিষয় সেট আপ করুন",
 			"createNewWebhook": "নতুন ওয়েবহুক তৈরি করুন",
 			"selectAll": "সব নির্বাচিত করুন",
 			"selectEvents": "যে ইভেন্টগুলি এই ওয়েবহুকে পাঠানো হবে তা নির্বাচন করুন।",

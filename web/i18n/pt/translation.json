@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Transmissão em destaque",
 			"streamName": "Corrente Nome",
 			"streamRequirements": "Requisitos de fluxo",
+			"streamTitle": "Título da transmissão",
 			"streamUnfeaturedSuccess": "Transmissão sem destaque",
 			"streamUrlHelp": "Digite a URL de um stream do Owncast (por exemplo, stream.exemplo.com)",
 			"streamUrlLabel": "URL da transmissão",
@@ -326,6 +327,7 @@
 			"viewers": "Espectadores"
 		},
 		"Webhooks": {
+			"webhookSecret": "Configurar um novo segredo de webhook",
 			"createNewWebhook": "Criar novo webhook",
 			"selectAll": "Selecionar todos",
 			"selectEvents": "Selecione os eventos que serão enviados para este webhook.",

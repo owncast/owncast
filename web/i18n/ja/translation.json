@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "ストリームの特徴",
 			"streamName": "ストリーム名",
 			"streamRequirements": "配信要件",
+			"streamTitle": "ストリームタイトル",
 			"streamUnfeaturedSuccess": "ストリーム未公開",
 			"streamUrlHelp": "Owncast ストリームの URL を入力します。(例: stream.example.com)",
 			"streamUrlLabel": "ストリーム URL",
@@ -326,6 +327,7 @@
 			"viewers": "閲覧者"
 		},
 		"Webhooks": {
+			"webhookSecret": "新しいWebhookシークレットを設定",
 			"createNewWebhook": "新しいWebhookを作成",
 			"selectAll": "すべて選択",
 			"selectEvents": "このWebhookに送信されるイベントを選択します。",
