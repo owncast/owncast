@@ -34,6 +34,16 @@
 			"pluginStylingActive": "ਪਲੱਗਿਨ ਸਟਾਇਲਿੰਗ ਸਿਰਜੀਤ ਹੈ",
 			"pluginStylingDescription": "ਇਹਨਾਂ ਪਲੱਗਿਨਾਂ ਦਾ ਆਪਣੇ ਸਟਾਇਲ ਤੁਹਾਡੇ ਸਾਈਟ ਨੂੰ ਲਾਗੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, ਜਿਸ ਨੂੰ ਤੁਸੀਂ ਇੱਥੇ ਸੈੱਟ ਕੀਤੇ ਰੰਗਾਂ ਨਾਲ ਮਿਲਾਇਆ ਗਿਆ ਹੈ: {{plugins}}। ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਜ਼ ਉੱਪਰ ਲਾਗੂ ਹੁੰਦੀਆਂ ਹਨ, ਇਸ ਲਈ ਜਿਹੜੀਆਂ ਇਹਨੂੰ ਢੱਕਦੀਆਂ ਹਨ, ਉਹ ਜਿੱਤ ਜਾਂਦੀਆਂ ਹਨ। ਜੇ ਪੇਜ ਤੁਹਾਡੇ ਉਮੀਦ ਤਰੀਕੇ ਨਾਲ ਨਹੀਂ ਦਿੱਖ ਰਿਹਾ, ਤਾਂ ਹੇਠਾਂ ਮੂਲਾਂ 'ਤੇ ਮੁੜ ਜਾਓ ਦੀ ਵਰਤੋਂ ਕਰੋ ਤਾਂ ਜੋ ਪਲੱਗਿਨ ਸਟਾਇਲਿੰਗ ਚਮਕੇ, ਜਾਂ ਪਲੱਗਿਨ ਨੂੰ ਪਲੱਗਿਨ ਪੇਜ ਤੋਂ ਅਸਮਰੱਥ ਕਰੋ।"
 		},
+		"Autoplay": {
+			"description": "ਇਸ ਗੱਲ ਦਾ ਚੋਣ ਕਰੋ ਕਿ ਕਿastream ਆਪਣੀ ਆਪ ਖੁਲ੍ਹਦੀ ਹੈ ਜਦੋਂ ਕੋਈ ਦਰਸ਼ਕ ਤੁਹਾਡੇ ਪੇਜ਼ ਨੂੰ ਖੋਲ੍ਹਦਾ ਹੈ।",
+			"optionAlwaysDescription": "ਇਹestream ਹਮੇਸ਼ਾ ਤਾਂ ਸਮੇਂ ਖੁਦ ਹੀ ਸ਼ੁਰੂ ਹੁੰਦੀ ਹੈ ਜਦੋਂ ਕੋਈ ਸਮਾਰਥ ਸੰਭਾਲ ਖੋਲ੍ਹਦਾ ਹੈ। ਇਹ ਉਥੇ ਆਵਾਜ਼ ਨਾਲ ਵਿਖਾਈ ਦਿੰਦੀ ਹੈ ਜਿੱਥੇ ਬ੍ਰਾਊਜ਼ਰ ਆਵਾਜ਼ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ, ਅਤੇ ਸਬ 곳 ਹੋਟੀਆਂ ਬਿਨਾਂ ਮੋਟ ਹੈ।",
+			"optionAlwaysLabel": "ਹਮੇਸ਼ਾਂ",
+			"optionOffDescription": "ਦਰਸ਼ਕਾਂ ਖੇਡਣਾ ਦਬਾਉਣਗੇ.",
+			"optionOffLabel": "ਕਦੇ ਨਹੀਂ",
+			"optionSoundOnlyDescription": "ਇਹstream ਆਪਣੇ ਆਪ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ, ਪਰ ਸਿਰਫ ਜਦੋਂ ਦਰਸ਼ਕ ਦਾ ਬ੍ਰਾਊਜ਼ਰ ਆਵਾਜ਼ ਦੇ ਸਮਰਥਨ ਕਰਦਾ ਹੈ। ਨਹੀਂ ਤਾਂ ਦਰਸ਼ਕ ਖੇਡਣਾ ਦਬਾਉਂਦਾ ਹੈ। ਇਹ ਕਦੇ ਵੀ ਬਿਨਾ ਆਵਾਜ਼ ਸ਼ੁਰੂ ਨਹੀਂ ਹੁੰਦਾ। ਵੱਖ-ਵੱਖ ਬ੍ਰਾਊਜ਼ਰ ਇਹ ਚੰਗੀ ਤਰ੍ਹਾਂ ਕਰਦੇ ਹਨ।",
+			"optionSoundOnlyLabel": "ਸਿਰਫ ਜੇ ਆਵਾਜ਼ ਉਪਲਬਧ ਹੋਵੇ",
+			"title": "ਆਟੋਪਲੇ"
+		},
 		"EditFavicon": {
 			"label": "ਫੇਵਿਕਨ",
 			"resetButton": "ਰੀਸੈਟ",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "ਸਥਾਪਿਤ ਕੀਤਾ {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "ਆਟੋਪਲੇ ਸੈਟਿੰਗ ਅਪਡੇਟ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ।",
 			"convertingEmoji": "ਈਮੇਜੀ ਨੂੰ ਬਦਲਣਾ...",
 			"deletingEmoji": "ਐਮੋਜੀ ਮਿਟਾਈ ਰਹੀ ਹੈ...",
 			"emojiDeleted": "ਐਮੋਜੀ ਮਿੱਟਾਈ ਗਈ।",
@@ -422,7 +433,8 @@
 		"offlineBasic": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। ਜਲਦੀ ਹੀ ਵਾਪਸ ਆਓ!",
 		"offlineFediverseOnly": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। ਜਅਦੋ {{streamer}} ਲਾਈਵ ਹੋਵੇਗਾ, ਗੇਰੀ ਮਨੱਤਾ ਤੋਂ <span class='follow-link'>ਜਾਣੋ</span>।",
 		"offlineNotifyAndFediverse": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। ਜਦੋਂ {{streamer}} ਲਾਈਵ ਹੋਵੇਗਾ, ਤੁਸੀਂ <span class='notify-link'>ਜਾਣੋ</span> ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ <span class='follow-link'>ਫਾਲੋ</span> {{fediverseAccount}} ਫੈਡੀਵਰਸ 'ਤੇ।",
-		"offlineNotifyOnly": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। <span class='notify-link'>ਜਾਣੋ</span> ਜਦੋਂ {{streamer}} ਲਾਈਵ ਹੋਵੇਗਾ।"
+		"offlineNotifyOnly": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। <span class='notify-link'>ਜਾਣੋ</span> ਜਦੋਂ {{streamer}} ਲਾਈਵ ਹੋਵੇਗਾ।",
+		"unmute": "ਅਨਮੂਟ"
 	},
 	"Testing": {
 		"itemCount": "ਤੁਹਾਡੇ ਕੋਲ {{count}} ਆਈਟਮ ਹਨ",

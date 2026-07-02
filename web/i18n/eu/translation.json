@@ -34,6 +34,16 @@
 			"pluginStylingActive": "Plugin estilizatzea aktibatuta dago",
 			"pluginStylingDescription": "Plugin hauek zure webgunean euren estiloak aplikatzen ari dira, hemen ezarritako koloreekin batera: {{plugins}}. Zure ezarpenak goitik aplikatzen dira, beraz, estali egiten dutenean irabazten dute. Orria espero zenuen moduan itxura ez badu, erabili behean dauden Hasi ezarpenak itzuli plugin estilizatzea iragartzeko, edo desgaitu plugin-a Plugins orrian."
 		},
+		"Autoplay": {
+			"description": "Hautatu non ikuskizuna automatikoki hasteko orduan ikusleak zure orria irekitzen duen.",
+			"optionAlwaysDescription": "Ikuskizuna beti hasteko da orduan norbait orria irekitzen duen unean. Egonkor jartzen da soinua onartzen duen nabigatzailean, eta isilpean hasteko leku guztietan.",
+			"optionAlwaysLabel": "Betiko",
+			"optionOffDescription": "Ikusleek play botoia sakatu beharko dute ikusteko hasteko.",
+			"optionOffLabel": "Ez never",
+			"optionSoundOnlyDescription": "Ikuskizuna automatikoki hasten da, baina ikuslearen nabigatzaileak soinua play egiteko baimentzen duenean baino ez. Bestela ikusleak play botoia sakatu beharko du. Sekula ez da isilpean hasiko. Nabigatzaile desberdinek hau modu desberdinean kudeatzen dute.",
+			"optionSoundOnlyLabel": "Soinua bakarrik erabilgarri denean",
+			"title": "Autoplay"
+		},
 		"EditFavicon": {
 			"label": "Favicon",
 			"resetButton": "Birsortu",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "Instalatuta {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Autoplay ezarpena eguneratua.",
 			"convertingEmoji": "Emojiak itxuratzen...",
 			"deletingEmoji": "Emoji ezabatzen...",
 			"emojiDeleted": "Emoji ezabatu da.",
@@ -422,7 +433,8 @@
 		"offlineBasic": "Torrente hau offline dago. Itzuli laster!",
 		"offlineFediverseOnly": "Torrente hau offline dago. <span class='follow-link'>Jarraitzaile</span> {{fediverseAccount}} Fediversen hurrengoa {{streamer}} zuzenean joan denean ikusteko.",
 		"offlineNotifyAndFediverse": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean edo <span class='follow-link'>jarraitu</span> {{fediverseAccount}} Fediversen.",
-		"offlineNotifyOnly": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean."
+		"offlineNotifyOnly": "Torrente hau offline dago. <span class='notify-link'>Jakinarazi</span> hurrengoa {{streamer}} zuzenean joan denean.",
+		"unmute": "Desmuta"
 	},
 	"Testing": {
 		"itemCount": "{{count}} elementu dituzu",

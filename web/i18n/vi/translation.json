@@ -34,6 +34,16 @@
 			"pluginStylingActive": "Styling của plugin đang được kích hoạt",
 			"pluginStylingDescription": "Các plugin này đang áp dụng kiểu dáng của riêng chúng vào trang web của bạn, kết hợp với các màu sắc mà bạn đã đặt ở đây: {{plugins}}. Các cài đặt của bạn được áp dụng ở trên cùng, vì vậy chúng ưu tiên khi bị chồng chéo. Nếu trang không trông như bạn mong đợi, hãy sử dụng Đặt lại về Mặc định bên dưới để cho phép kiểu dáng của plugin hiển thị, hoặc vô hiệu hóa plugin từ trang Plugins."
 		},
+		"Autoplay": {
+			"description": "Chọn xem liệu luồng có bắt đầu phát tự động khi một người xem mở trang của bạn hay không.",
+			"optionAlwaysDescription": "Luồng luôn bắt đầu tự động ngay khi ai đó mở trang. Nó phát có âm thanh ở những nơi mà trình duyệt cho phép, và bắt đầu tắt âm ở khắp các nơi khác.",
+			"optionAlwaysLabel": "Luôn luôn",
+			"optionOffDescription": "Người xem sẽ nhấn phát để bắt đầu xem.",
+			"optionOffLabel": "Không bao giờ",
+			"optionSoundOnlyDescription": "Luồng tự động bắt đầu, nhưng chỉ khi trình duyệt của người xem cho phép âm thanh phát. Nếu không, người xem sẽ nhấn phát. Nó không bao giờ bắt đầu một cách im lặng. Các trình duyệt khác nhau xử lý điều này khác nhau.",
+			"optionSoundOnlyLabel": "Chỉ khi âm thanh có sẵn",
+			"title": "Phát tự động"
+		},
 		"EditFavicon": {
 			"label": "Favicon",
 			"resetButton": "Đặt lại",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "Đã cài đặt {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Cài đặt phát tự động đã được cập nhật.",
 			"convertingEmoji": "Đang chuyển đổi emoji...",
 			"deletingEmoji": "Đang xóa emoji...",
 			"emojiDeleted": "Emoji đã bị xóa.",
@@ -422,7 +433,8 @@
 		"offlineBasic": "Luồng này đang ngoại tuyến. Hãy quay lại sau!",
 		"offlineFediverseOnly": "Luồng này đang ngoại tuyến. <span class='follow-link'>Theo dõi</span> {{fediverseAccount}} trên Fediverse để xem lần tới {{streamer}} trực tiếp.",
 		"offlineNotifyAndFediverse": "Luồng này đang ngoại tuyến. Bạn có thể <span class='notify-link'>được thông báo</span> khi {{streamer}} trực tiếp hoặc <span class='follow-link'>theo dõi</span> {{fediverseAccount}} trên Fediverse.",
-		"offlineNotifyOnly": "Luồng này đang ngoại tuyến. <span class='notify-link'>Được thông báo</span> khi {{streamer}} trực tiếp."
+		"offlineNotifyOnly": "Luồng này đang ngoại tuyến. <span class='notify-link'>Được thông báo</span> khi {{streamer}} trực tiếp.",
+		"unmute": "Bỏ tắt âm"
 	},
 	"Testing": {
 		"itemCount": "Bạn có {{count}} mục",

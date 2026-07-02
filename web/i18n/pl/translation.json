@@ -34,6 +34,16 @@
 			"pluginStylingActive": "Styl wtyczki jest aktywny",
 			"pluginStylingDescription": "Te wtyczki stosują własne style do Twojej witryny, w połączeniu z kolorami, które tutaj ustawiłeś: {{plugins}}. Twoje ustawienia są nakładane na górze, więc wygrywają tam, gdzie się nakładają. Jeśli strona nie wygląda tak, jak się spodziewasz, użyj Resetuj do ustawień domyślnych poniżej, aby umożliwić pokazywanie stylu wtyczki, lub wyłącz wtyczkę ze strony wtyczek."
 		},
+		"Autoplay": {
+			"description": "Wybierz, czy strumień zaczyna grać samodzielnie, gdy przeglądarka otworzy stronę.",
+			"optionAlwaysDescription": "Strumień zawsze rozpoczyna się w chwili otwarcia strony. Odtwarza się z dźwiękiem gdzie pozwala na to przeglądarka i rozpoczyna wyciszenie wszędzie indziej.",
+			"optionAlwaysLabel": "Zawsze",
+			"optionOffDescription": "Widzowie naciśną odtwarzanie, aby rozpocząć oglądanie.",
+			"optionOffLabel": "Nigdy",
+			"optionSoundOnlyDescription": "Strumień zaczyna się samodzielnie, ale tylko wtedy, gdy przeglądarka przeglądarki pozwala również na odtwarzanie dźwięku. W przeciwnym razie przeglądarka wciśnie gra. Nigdy nie zaczyna się milczenie. Różne przeglądarki radzą to inaczej.",
+			"optionSoundOnlyLabel": "Tylko jeśli dźwięk jest dostępny",
+			"title": "Automatyczne odtwarzanie"
+		},
 		"EditFavicon": {
 			"label": "Favicon",
 			"resetButton": "Reset",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "Zainstalowano {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Ustawienia automatycznego odtwarzania zaktualizowane.",
 			"convertingEmoji": "Konwertowanie emotikony...",
 			"deletingEmoji": "Usuwanie emotikony...",
 			"emojiDeleted": "Emoji usunięto",
@@ -422,7 +433,8 @@
 		"offlineBasic": "Ten strumień jest offline. Sprawdź wkrótce!",
 		"offlineFediverseOnly": "Ten strumień jest offline. <span class='follow-link'>Śledź</span> {{fediverseAccount}} na Fediwerse, aby zobaczyć kiedy następny {{streamer}} będzie na żywo.",
 		"offlineNotifyAndFediverse": "Ten strumień jest offline. Możesz <span class='notify-link'>zostać powiadomiony</span> następnym razem, gdy {{streamer}} pojawi się lub <span class='follow-link'>podążaj za</span> {{fediverseAccount}} na Fediverse.",
-		"offlineNotifyOnly": "Ta transmisja jest wyłączona. <span class='notify-link'>Otrzymaj powiadomienie</span>, gdy następnym razem strona {{streamer}} zostanie uruchomiona."
+		"offlineNotifyOnly": "Ta transmisja jest wyłączona. <span class='notify-link'>Otrzymaj powiadomienie</span>, gdy następnym razem strona {{streamer}} zostanie uruchomiona.",
+		"unmute": "Wyłącz wyciszenie"
 	},
 	"Testing": {
 		"itemCount": "Masz {{count}} przedmiotów",

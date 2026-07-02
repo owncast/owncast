@@ -34,6 +34,16 @@
 			"pluginStylingActive": "Plug-stil er aktiv",
 			"pluginStylingDescription": "Disse programtilleggene bruker sine egne stiler på ditt nettsted, kombinert med fargene du angav her: {{plugins}}. Dine innstillinger brukes øverst, så de vinn hvor de overlapper. Hvis siden ikke ser ut til hvordan du forventer, bruk Tilbakestill til standardverdier nedenfor for å la plugin styling vises gjennom, eller deaktivere utvidelsen fra utvidelsessiden."
 		},
+		"Autoplay": {
+			"description": "Velg om strømmen begynner å spille av seg selv når en seer åpnet.",
+			"optionAlwaysDescription": "Strømmen starter alltid på sitt eget øyeblikk noen åpner siden. Spiller det med lyd der nettleseren tillater det, og starter demper overalt.",
+			"optionAlwaysLabel": "Alltid",
+			"optionOffDescription": "Seere vil trykke på spille for å se på.",
+			"optionOffLabel": "Aldri",
+			"optionSoundOnlyDescription": "Strømmen starter på egenhånd, men bare når leserens nettleser tillater lyd å spille av også. Ellers trykker viewer spillet. Det starter aldri stille. Forskjellige nettlesere håndterer dette annerledes.",
+			"optionSoundOnlyLabel": "Bare hvis lyden er tilgjengelig",
+			"title": "Autoavspilling"
+		},
 		"EditFavicon": {
 			"label": "Favikon",
 			"resetButton": "Reset",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "Installert {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Innstillinger for automatisk avspilling oppdatert.",
 			"convertingEmoji": "Konverterer emoji...",
 			"deletingEmoji": "Sletter emoji...",
 			"emojiDeleted": "Emoji slettet",
@@ -422,7 +433,8 @@
 		"offlineBasic": "Denne strømmen er frakoblet. Sjekk igjen snart!",
 		"offlineFediverseOnly": "Denne strømmen er frakoblet. <span class='follow-link'>Følg</span> {{fediverseAccount}} på Fediverse for å se neste gang {{streamer}} går liv.",
 		"offlineNotifyAndFediverse": "Denne strømmen er offline. Du kan <span class='notify-link'>bli varslet</span> neste gang {{streamer}} er live, eller <span class='follow-link'>følge</span> {{fediverseAccount}} på Fediverse.",
-		"offlineNotifyOnly": "Denne strømmen er frakoblet. <span class='notify-link'>bli varslet</span> neste gang {{streamer}} går bor."
+		"offlineNotifyOnly": "Denne strømmen er frakoblet. <span class='notify-link'>bli varslet</span> neste gang {{streamer}} går bor.",
+		"unmute": "Udemp"
 	},
 	"Testing": {
 		"itemCount": "Du har {{count}} objekter",
