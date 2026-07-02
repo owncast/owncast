@@ -19,6 +19,7 @@ export interface FederatedServerData {
   name?: string;
   displayName?: string;
   isOnline: boolean;
+  streamTitle?: string;
   lastStatusUpdate?: string;
   addedAt: string;
   followStatus?: string;
@@ -129,6 +130,21 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
           </Tag>
         );
       },
+    },
+    {
+      title: (
+        <Translation
+          translationKey={Localization.Admin.FeaturedStreams.streamTitle}
+          defaultText="Stream Title"
+        />
+      ),
+      dataIndex: 'streamTitle',
+      key: 'streamTitle',
+      ellipsis: true,
+      // Only a live server has a current stream title; hide it for offline or
+      // pending servers so a stale title isn't shown.
+      render: (streamTitle: string, record: FederatedServerData) =>
+        record.isOnline ? streamTitle || '' : '',
     },
     {
       title: (

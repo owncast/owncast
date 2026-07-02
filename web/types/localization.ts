@@ -292,6 +292,7 @@ export const Localization = {
 
       // Table headers
       streamName: 'Admin.FeaturedStreams.streamName',
+      streamTitle: 'Admin.FeaturedStreams.streamTitle',
       url: 'Admin.FeaturedStreams.url',
       status: 'Admin.FeaturedStreams.status',
       online: 'Admin.FeaturedStreams.online',

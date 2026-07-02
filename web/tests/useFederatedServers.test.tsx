@@ -128,12 +128,17 @@ describe('useFederatedServers contract', () => {
       // isOnline -> "Online"; lastStatusUpdate -> the Last Checked column.
       expect(screen.getByText('Online')).toBeInTheDocument();
       expect(screen.getByText(API_SERVER.lastStatusUpdate)).toBeInTheDocument();
+
+      // isOnline also surfaces the federated stream title in its column.
+      expect(screen.getByText(API_SERVER.streamTitle)).toBeInTheDocument();
     });
 
-    it('shows "Never" for last checked when the server has no status update', async () => {
+    it('shows "Never" for last checked and hides the stream title when offline', async () => {
       mockFetchServers({ ...API_SERVER, isOnline: false, lastStatusUpdate: undefined });
       render(<AdminHarness />);
       expect(await screen.findByText('Never')).toBeInTheDocument();
+      // An offline server's stream title must not be shown.
+      expect(screen.queryByText(API_SERVER.streamTitle)).not.toBeInTheDocument();
     });
   });
 });

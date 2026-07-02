@@ -96,6 +96,7 @@
 			"streamFeaturedSuccess": "Stream featured",
 			"streamName": "Stream Name",
 			"streamRequirements": "Stream Requirements",
+			"streamTitle": "Stream Title",
 			"streamUnfeaturedSuccess": "Stream unfeatured",
 			"streamUrlHelp": "Enter the URL of an Owncast stream (e.g., stream.example.com)",
 			"streamUrlLabel": "Stream URL",
