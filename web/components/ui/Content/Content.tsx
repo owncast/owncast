@@ -22,6 +22,7 @@ import {
   isChatAvailableSelector,
   visibleChatMessagesSelector,
   chatAuthenticatedAtom,
+  isClientConfigLoadedAtom,
 } from '../../stores/ClientConfigStore';
 import { ClientConfig } from '../../../interfaces/client-config.model';
 
@@ -110,6 +111,7 @@ export const Content: FC = () => {
   const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
   const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
   const online = useRecoilValue<boolean>(isOnlineSelector);
+  const configLoaded = useRecoilValue<boolean>(isClientConfigLoadedAtom);
   const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
   const isUserAuthenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
 
@@ -262,7 +264,7 @@ export const Content: FC = () => {
           </div>
         )}
         <Row>
-          {online && (
+          {online && configLoaded && (
             <OwncastPlayer
               source="/hls/stream.m3u8"
               online={online}

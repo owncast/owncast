@@ -13,7 +13,11 @@ type AutoplayMode = false | 'any' | 'play';
 // preferred) gets no autoplay regardless of the configured setting.
 export function autoplayModeForSetting(
   setting: string,
-  preferences: { prefersReducedMotion?: boolean; saveData?: boolean } = {},
+  preferences: {
+    prefersReducedMotion?: boolean;
+    saveData?: boolean;
+    startsInaudible?: boolean;
+  } = {},
 ): AutoplayMode {
   if (preferences.prefersReducedMotion || preferences.saveData) {
     return false;
@@ -22,7 +26,11 @@ export function autoplayModeForSetting(
     return 'any';
   }
   if (setting === 'sound-only') {
-    return 'play';
+    // "Only with sound" must never start silently. If the player would begin
+    // inaudible (an embed asking to start muted, or a persisted volume of 0),
+    // a play attempt can succeed silently anyway: Firefox permits autoplay of
+    // muted or volume-0 media. So don't attempt autoplay at all.
+    return preferences.startsInaudible ? false : 'play';
   }
   return false;
 }

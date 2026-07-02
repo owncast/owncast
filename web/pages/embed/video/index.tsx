@@ -6,6 +6,7 @@ import { Skeleton } from 'antd';
 import {
   clientConfigStateAtom,
   ClientConfigStore,
+  isClientConfigLoadedAtom,
   isOnlineSelector,
   serverStatusState,
   appStateAtom,
@@ -24,6 +25,7 @@ export default function VideoEmbed() {
   const status = useRecoilValue<ServerStatus>(serverStatusState);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
+  const configLoaded = useRecoilValue<boolean>(isClientConfigLoadedAtom);
 
   const { name, summary, offlineMessage, federation, autoplay } = clientConfig;
 
@@ -96,7 +98,9 @@ export default function VideoEmbed() {
   );
 
   const getView = () => {
-    if (appState.appLoading) {
+    // Wait for the config too: the player's video.js options (autoplay among
+    // them) are init-only, so it must not mount with default config values.
+    if (appState.appLoading || !configLoaded) {
       return loadingState;
     }
     if (online) {

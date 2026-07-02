@@ -26,6 +26,20 @@ describe('autoplayModeForSetting', () => {
     expect(autoplayModeForSetting('sound-only', { saveData: true })).toBe(false);
   });
 
+  test('an inaudible start suppresses sound-only autoplay', () => {
+    // A persisted mute (volume 0) or an embed starting muted would let the
+    // browser autoplay silently, violating "never starts silently".
+    expect(autoplayModeForSetting('sound-only', { startsInaudible: true })).toBe(false);
+  });
+
+  test('an inaudible start does not affect always', () => {
+    expect(autoplayModeForSetting('always', { startsInaudible: true })).toBe('any');
+  });
+
+  test('an audible start keeps sound-only autoplay', () => {
+    expect(autoplayModeForSetting('sound-only', { startsInaudible: false })).toBe('play');
+  });
+
   test('preferences left unset do not change the mapping', () => {
     expect(autoplayModeForSetting('always', { prefersReducedMotion: false, saveData: false })).toBe(
       'any',

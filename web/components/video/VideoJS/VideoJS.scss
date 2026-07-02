@@ -47,10 +47,11 @@
   }
 
   // Big unmute affordance shown while the stream autoplays muted. It fills the
-  // whole player frame so clicking anywhere unmutes, with the muted-volume glyph
-  // centered and drawn in the action color like the big play button. It sits
-  // below the control bar (z-index) so the controls stay usable, and is its own
-  // class because video.js force hides .vjs-big-play-button once playback has
+  // whole player frame so clicking anywhere unmutes, with the muted-speaker
+  // icon (antd MutedFilled, injected as inline SVG in OwncastPlayer) centered
+  // and drawn in the action color like the big play button. It sits below the
+  // control bar (z-index) so the controls stay usable, and is its own class
+  // because video.js force hides .vjs-big-play-button once playback has
   // started. Visibility is toggled in OwncastPlayer.
   .vjs-big-unmute-button.vjs-control {
     position: absolute;
@@ -74,30 +75,22 @@
       justify-content: center;
     }
 
-    .vjs-icon-placeholder::before {
-      position: static;
-      width: auto;
+    .vjs-icon-placeholder svg {
+      width: clamp(2rem, 30vmin, 9rem);
       height: auto;
-      font-family: VideoJS, serif;
-      font-size: clamp(2rem, 38vmin, 11rem);
-      line-height: 1;
-      content: '\f104';
-      color: var(--theme-color-action);
-      -webkit-text-stroke: 2px black;
-      text-shadow:
-        2px 6px 22px #000000e6,
-        0 2px 8px #000c;
+
+      // fill is currentColor, so the theme action color set on the button
+      // flows into the glyph.
+      filter: drop-shadow(2px 6px 22px #000000e6) drop-shadow(0 2px 8px #000c);
       transform-origin: center center;
       transition:
         transform 0.2s ease-in-out,
-        text-shadow 0.2s ease-in-out;
+        filter 0.2s ease-in-out;
     }
 
-    &:hover .vjs-icon-placeholder::before {
+    &:hover .vjs-icon-placeholder svg {
       transform: scale(1.25);
-      text-shadow:
-        2px 9px 30px #000000f2,
-        0 3px 12px #000000e6;
+      filter: drop-shadow(2px 9px 30px #000000f2) drop-shadow(0 3px 12px #000000e6);
     }
 
     &.vjs-hidden {

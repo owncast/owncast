@@ -197,6 +197,16 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     const unmuteButton = new UnmuteButton();
     unmuteButton.addClass('vjs-big-unmute-button');
     unmuteButton.controlText('Unmute');
+    // The overlay glyph is antd's MutedFilled speaker (the icon family used by
+    // the rest of the UI) instead of the video.js icon font. Inlined as SVG
+    // because this button renders into video.js DOM, outside React. Path from
+    // @ant-design/icons-svg MutedFilled. fill=currentColor picks up the theme
+    // action color set in VideoJS.scss.
+    const iconPlaceholder = unmuteButton.el().querySelector('.vjs-icon-placeholder');
+    if (iconPlaceholder) {
+      iconPlaceholder.innerHTML =
+        '<svg viewBox="64 64 896 896" fill="currentColor" fill-rule="evenodd" aria-hidden="true" focusable="false"><path d="M771.91 115a31.65 31.65 0 00-17.42 5.27L400 351.97H236a16 16 0 00-16 16v288.06a16 16 0 0016 16h164l354.5 231.7a31.66 31.66 0 0017.42 5.27c16.65 0 32.08-13.25 32.08-32.06V147.06c0-18.8-15.44-32.06-32.09-32.06"></path></svg>';
+    }
     player.addChild(unmuteButton);
 
     // Mirror the big play button: show a large, obvious unmute affordance only
@@ -248,9 +258,15 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     typeof navigator !== 'undefined'
       ? (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
       : undefined;
+  // The player restores the persisted volume on ready, and a mute is persisted
+  // as volume 0. Starting muted (embed request) or at volume 0 makes a
+  // sound-only autoplay attempt succeed silently in Firefox, which allows
+  // inaudible autoplay, so the mapping needs to know about it.
+  const savedVolume = typeof window !== 'undefined' ? getLocalStorage(PLAYER_VOLUME) : null;
   const autoplayMode = autoplayModeForSetting(autoplay, {
     prefersReducedMotion,
     saveData: navConnection?.saveData === true,
+    startsInaudible: initiallyMuted || (savedVolume !== null && Number(savedVolume) === 0),
   });
 
   const videoJsOptions = {

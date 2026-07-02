@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useState } from 'react';
+import { FC, useContext, useEffect } from 'react';
 import { atom, selector, useRecoilState, useSetRecoilState, RecoilEnv } from 'recoil';
 import { useMachine } from '@xstate/react';
 import { makeEmptyClientConfig, ClientConfig } from '../../interfaces/client-config.model';
@@ -92,6 +92,14 @@ export const serverStatusState = atom<ServerStatus>({
 export const clientConfigStateAtom = atom({
   key: 'clientConfigState',
   default: initialConfig,
+});
+
+// Whether the client config has been populated, via hydration or the API.
+// Consumers that must not act on default config values (like the player,
+// whose video.js options are init-only) gate on this.
+export const isClientConfigLoadedAtom = atom<boolean>({
+  key: 'clientConfigLoaded',
+  default: hasHydratedConfig,
 });
 
 export const accessTokenAtom = atom<string>({
@@ -222,7 +230,7 @@ export const ClientConfigStore: FC = () => {
   const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
   const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
   const setHiddenMessageIds = useSetRecoilState<string[]>(removedMessageIdsAtom);
-  const [hasLoadedConfig, setHasLoadedConfig] = useState(hasHydratedConfig);
+  const [hasLoadedConfig, setHasLoadedConfig] = useRecoilState<boolean>(isClientConfigLoadedAtom);
 
   let ws: WebsocketService;
 
