@@ -1,8 +1,13 @@
 import { Alert, Button, Input, Space, Spin, Collapse } from 'antd';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import styles from './FediAuthModal.module.scss';
 import { isValidFediverseAccount } from '../../../utils/validators';
+import {
+  getPendingFediverseAuth,
+  setPendingFediverseAuth,
+  clearPendingFediverseAuth,
+} from '../../../utils/fediverseAuthSession';
 
 const { Panel } = Collapse;
 
@@ -29,6 +34,17 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
   const [account, setAccount] = useState('');
   const [code, setCode] = useState('');
   const [verifyingCode, setVerifyingCode] = useState(false);
+
+  // Restore an in-progress verification if the viewer left and came back (e.g.
+  // backgrounded the tab to copy their code) within the OTP lifetime.
+  useEffect(() => {
+    const pending = getPendingFediverseAuth();
+    if (pending) {
+      setAccount(pending.account);
+      setValid(isValidFediverseAccount(pending.account));
+      setVerifyingCode(true);
+    }
+  }, []);
 
   const message = !authenticated ? (
     <span>
@@ -94,7 +110,8 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
     try {
       await makeRequest(url, data);
 
-      // Success. Reload the page.
+      // Verified. Drop the persisted state and reload the page.
+      clearPendingFediverseAuth();
       window.location.href = '/';
     } catch (e) {
       console.error(e);
@@ -116,6 +133,7 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
 
     try {
       await makeRequest(url, data);
+      setPendingFediverseAuth(normalizedAccount);
       setVerifyingCode(true);
     } catch (e) {
       console.error(e);
