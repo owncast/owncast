@@ -34,6 +34,16 @@
 			"pluginStylingActive": "插件樣式已啟用",
 			"pluginStylingDescription": "這些插件正在為您的網站應用自定義樣式，並與您在這裡設置的顏色結合：{{plugins}}。您的設置將優先應用，因此在重疊的地方它們將占優。如果頁面看起來與您預期的不相符，請使用下面的「重置為默認值」以顯示插件樣式，或在插件頁面禁用該插件。"
 		},
+		"Autoplay": {
+			"description": "選擇是否當觀眾打開你的頁面時，流媒體自動開始播放。",
+			"optionAlwaysDescription": "當有人打開頁面時，流媒體總是自動開始播放。它在瀏覽器允許的地方有聲音，並在其餘地方靜音開始播放。",
+			"optionAlwaysLabel": "始終",
+			"optionOffDescription": "觀眾需要按下播放以開始觀看。",
+			"optionOffLabel": "從不",
+			"optionSoundOnlyDescription": "流媒體自動開始播放，但僅當觀眾的瀏覽器允許聲音播放時。如果不允許，觀眾需要按下播放。它從不靜音開始。不同的瀏覽器對此處理不同。",
+			"optionSoundOnlyLabel": "僅在聲音可用時",
+			"title": "自動播放"
+		},
 		"EditFavicon": {
 			"label": "網站圖標",
 			"resetButton": "重置",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "已安裝 {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "自動播放設置已更新。",
 			"convertingEmoji": "轉換表情符號...",
 			"deletingEmoji": "正在刪除表情符號...",
 			"emojiDeleted": "表情符號已刪除。",
@@ -422,7 +433,8 @@
 		"offlineBasic": "此串流已離線。請稍後再回來查看！",
 		"offlineFediverseOnly": "此串流已離線。請在 Fediverse<span class='follow-link'>上追</span>蹤 {{fediverseAccount}} ，以查看 {{streamer}} 的下次直播時間。",
 		"offlineNotifyAndFediverse": "此串流已離線。您可以在 {{streamer}} 上線時<span class='notify-link'>收到通知，</span>或在 Fediverse<span class='follow-link'>上追蹤</span> {{fediverseAccount}}。",
-		"offlineNotifyOnly": "此串流已離線。下次 {{streamer}} 上線時，您<span class='notify-link'>將會收到通知</span>。"
+		"offlineNotifyOnly": "此串流已離線。下次 {{streamer}} 上線時，您<span class='notify-link'>將會收到通知</span>。",
+		"unmute": "取消靜音"
 	},
 	"Testing": {
 		"itemCount": "您有 {{count}} 項目",

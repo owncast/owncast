@@ -34,6 +34,16 @@
 			"pluginStylingActive": "El estilo del plugin está activo",
 			"pluginStylingDescription": "Estos plugins están aplicando sus propios estilos a tu sitio, combinados con los colores que estableces aquí: {{plugins}}. Sus ajustes se aplican en la parte superior, así que ganan donde se superponen. Si la página no se ve como espera, utilice Restablecer a los valores por defecto a continuación para dejar que el estilo del plugin se muestre a través de la pantalla, o deshabilitar el plugin de la página de Plugins."
 		},
+		"Autoplay": {
+			"description": "Elija si el flujo comienza a jugar por sí mismo cuando un visor abre su página.",
+			"optionAlwaysDescription": "El flujo siempre comienza por sí mismo el momento en que alguien abre la página. Juega con sonido donde el navegador lo permite, y comienza silenciado en cualquier otro lugar.",
+			"optionAlwaysLabel": "Siempre",
+			"optionOffDescription": "Los visualizadores presionarán Play para empezar a ver.",
+			"optionOffLabel": "Nunca",
+			"optionSoundOnlyDescription": "La corriente comienza por sí sola, pero sólo cuando el navegador del visor permite reproducir sonido también. De lo contrario, el visor presiona el juego. Nunca se inicia silenciosamente. Diferentes navegadores manejan esto de forma diferente.",
+			"optionSoundOnlyLabel": "Sólo si el sonido está disponible",
+			"title": "Autoreproducción"
+		},
 		"EditFavicon": {
 			"label": "Favicon",
 			"resetButton": "Reset",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "Instalado {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Configuración de reproducción automática.",
 			"convertingEmoji": "Convirtiendo emoji...",
 			"deletingEmoji": "Eliminando emoji...",
 			"emojiDeleted": "Emoji eliminado",
@@ -422,7 +433,8 @@
 		"offlineBasic": "Esta corriente está fuera de línea. ¡Vuelve pronto!",
 		"offlineFediverseOnly": "Este stream está fuera de línea. <span class='follow-link'>Sigue</span> {{fediverseAccount}} en el Fediverso para ver la próxima vez que {{streamer}} se ponga en directo.",
 		"offlineNotifyAndFediverse": "Esta transmisión está desconectada. Puede <span class='notify-link'>recibir una notificación</span> la próxima vez que {{streamer}} salga en directo o <span class='follow-link'>seguir</span> {{fediverseAccount}} en Fediverse.",
-		"offlineNotifyOnly": "Este stream está desconectado. <span class='notify-link'>Ser notificado</span> la próxima vez que {{streamer}} vaya en directo."
+		"offlineNotifyOnly": "Este stream está desconectado. <span class='notify-link'>Ser notificado</span> la próxima vez que {{streamer}} vaya en directo.",
+		"unmute": "Reactivar"
 	},
 	"Testing": {
 		"itemCount": "Tienes {{count}} elementos",

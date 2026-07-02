@@ -34,6 +34,16 @@
 			"pluginStylingActive": "प्लगइन स्टाइलिंग सक्रिय है",
 			"pluginStylingDescription": "ये प्लगइन आपकी साइट पर अपने स्वयं के स्टाइल लागू कर रहे हैं, जो आपके द्वारा यहाँ सेट किए गए रंगों के साथ मिलकर हैं: {{plugins}}। आपकी सेटिंग्स ऊपर लागू होती हैं, इसलिए जहाँ वे ओवरलैप होती हैं, वे जीत जाती हैं। यदि पृष्ठ वैसा नहीं दिखता जैसा आप अपेक्षा करते हैं, तो नीचे दिए गए डिफ़ॉल्ट पर रीसेट करें ताकि प्लगइन स्टाइलिंग दिख सके, या प्लगइन को प्लगइन्स पृष्ठ से बंद करें।"
 		},
+		"Autoplay": {
+			"description": "चुनें कि क्या स्ट्रीम अपने आप खेलना शुरू करती है जब कोई दर्शक आपका पृष्ठ खोलता है।",
+			"optionAlwaysDescription": "जब कोई पृष्ठ खोलता है, तो स्ट्रीम हमेशा अपने आप शुरू होती है। जहाँ ब्राउज़र अनुमति देता है, यह ध्वनि के साथ खेलता है, और अन्य सभी जगह म्यूट में शुरू होता है।",
+			"optionAlwaysLabel": "हमेशा",
+			"optionOffDescription": "दर्शक देखना शुरू करने के लिए प्ले पर दबाएंगे।",
+			"optionOffLabel": "कभी नहीं",
+			"optionSoundOnlyDescription": "स्ट्रीम अपने आप शुरू होती है, लेकिन केवल जब दर्शक के ब्राउज़र में ध्वनि खेलने की अनुमति होती है। अन्यथा दर्शक प्ले पर दबाते हैं। यह कभी भी चुपचाप शुरू नहीं होता है। विभिन्न ब्राउज़र इसे अलग-अलग तरीके से संभालते हैं।",
+			"optionSoundOnlyLabel": "केवल अगर ध्वनि उपलब्ध है",
+			"title": "स्वत: चलाना"
+		},
 		"EditFavicon": {
 			"label": "फ़ेविकॉन",
 			"resetButton": "रीसेट करें",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "स्थापित {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "स्वत: चलाने की सेटिंग अपडेट की गई।",
 			"convertingEmoji": "इमोजी को बदलना...",
 			"deletingEmoji": "इमोजी हटा रहे हैं...",
 			"emojiDeleted": "इमोजी हटा दिया गया।",
@@ -422,7 +433,8 @@
 		"offlineBasic": "यह स्ट्रीम ऑफ़लाइन है। कृपया जल्द ही वापस आएं!",
 		"offlineFediverseOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='follow-link'>अनुसरण करें</span> {{fediverseAccount}} Fediverse पर अगली बार देखने के लिए जब {{streamer}} लाइव जाएं।",
 		"offlineNotifyAndFediverse": "यह स्ट्रीम ऑफ़लाइन है। आप अगले बार जब {{streamer}} लाइव जाएं तो <span class='notify-link'>सूचित</span> हो सकते हैं या <span class='follow-link'>अनुसरण</span> कर सकते हैं {{fediverseAccount}} को Fediverse पर।",
-		"offlineNotifyOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='notify-link'>सूचित हों</span> अगली बार जब {{streamer}} लाइव जाएं।"
+		"offlineNotifyOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='notify-link'>सूचित हों</span> अगली बार जब {{streamer}} लाइव जाएं।",
+		"unmute": "अनम्यूट करें"
 	},
 	"Testing": {
 		"itemCount": "आपके पास {{count}} आइटम हैं",

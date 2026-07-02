@@ -34,6 +34,16 @@
 			"pluginStylingActive": "Plugin styling är aktiv",
 			"pluginStylingDescription": "Dessa plugins tillämpar sina egna stilar på din webbplats, i kombination med de färger du anger här: {{plugins}}. Dina inställningar tillämpas på toppen, så de vinner där de överlappar varandra. Om sidan inte ser ut som du förväntar dig, använd Återställ till standard nedan för att låta plugin styling visa genom, eller inaktivera plugin från Plugins sidan."
 		},
+		"Autoplay": {
+			"description": "Välj om strömmen börjar spelas på egen hand när en tittare öppnar din sida.",
+			"optionAlwaysDescription": "Strömmen startar alltid på egen hand så fort någon öppnar sidan. Det leker med ljud där webbläsaren tillåter det, och börjar tystad överallt annat.",
+			"optionAlwaysLabel": "Alltid",
+			"optionOffDescription": "Tittare kommer att trycka på spela för att börja titta.",
+			"optionOffLabel": "Aldrig",
+			"optionSoundOnlyDescription": "Strömmen startar på egen hand, men bara när tittarens webbläsare tillåter ljud att spela också. Annars trycker tittaren på. Det börjar aldrig tyst. Olika webbläsare hanterar detta annorlunda.",
+			"optionSoundOnlyLabel": "Endast om ljud är tillgängligt",
+			"title": "Autospela"
+		},
 		"EditFavicon": {
 			"label": "Favicon",
 			"resetButton": "Reset",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "Installerad {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Autoplay-inställningen uppdaterad.",
 			"convertingEmoji": "Konverterar emoji...",
 			"deletingEmoji": "Tar bort emoji...",
 			"emojiDeleted": "Emoji borttagen",
@@ -422,7 +433,8 @@
 		"offlineBasic": "Denna ström är offline. Kom tillbaka snart!",
 		"offlineFediverseOnly": "Denna ström är offline. <span class='follow-link'>Följ</span> {{fediverseAccount}} på Fediverse för att se nästa gång {{streamer}} går live.",
 		"offlineNotifyAndFediverse": "Denna ström är offline. Du kan <span class='notify-link'>meddelas</span> nästa gång {{streamer}} går live eller <span class='follow-link'>följ</span> {{fediverseAccount}} på Fediverse.",
-		"offlineNotifyOnly": "Denna ström är offline. <span class='notify-link'>meddelas</span> nästa gång {{streamer}} går live."
+		"offlineNotifyOnly": "Denna ström är offline. <span class='notify-link'>meddelas</span> nästa gång {{streamer}} går live.",
+		"unmute": "Avtysta"
 	},
 	"Testing": {
 		"itemCount": "Du har {{count}} objekt",

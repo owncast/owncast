@@ -34,6 +34,16 @@
 			"pluginStylingActive": "Styling dodatka je aktivan",
 			"pluginStylingDescription": "Ovi dodaci primjenjuju vlastite stilove na vašu stranicu, u kombinaciji s bojama koje ste ovdje postavili: {{plugins}}. Vaša podešavanja se primjenjuju na vrh, tako da pobjeđuju kada se preklapaju. Ako stranica ne izgleda onako kako očekujete, upotrijebite opciju Vratite na zadano ispod kako biste dopustili da stil dodatka bude vidljiv, ili onemogućite dodatak s stranice Dodaci."
 		},
+		"Autoplay": {
+			"description": "Odaberite hoće li se stream automatski pokrenuti kada gledatelj otvori vašu stranicu.",
+			"optionAlwaysDescription": "Stream se uvijek automatski pokreće u trenutku kada netko otvori stranicu. Svira sa zvukom gdje je to dopušteno od strane preglednika, a svugdje drugdje počinje bez zvuka.",
+			"optionAlwaysLabel": "Uvijek",
+			"optionOffDescription": "Gledatelji će pritisnuti reprodukciju kako bi započeli gledanje.",
+			"optionOffLabel": "Nikada",
+			"optionSoundOnlyDescription": "Stream se pokreće automatski, ali samo kada preglednik gledatelja dopušta da se zvuk također reprodukuje. Inače, gledatelj pritisne reprodukciju. Nikada ne počinje tiho. Različiti preglednici to drugačije obrađuju.",
+			"optionSoundOnlyLabel": "Samo ako je zvuk dostupan",
+			"title": "Automatsko reprodukcija"
+		},
 		"EditFavicon": {
 			"label": "Favicon",
 			"resetButton": "Resetirati",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "Instaliran {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Postavka automatskog reprodukcije je ažurirana.",
 			"convertingEmoji": "Pretvaranje emojija...",
 			"deletingEmoji": "Brišem emoji...",
 			"emojiDeleted": "Emoji izbrisan.",
@@ -422,7 +433,8 @@
 		"offlineBasic": "Ovaj stream je offline. Provjerite ponovno uskoro!",
 		"offlineFediverseOnly": "Ovaj stream je offline. <span class='follow-link'>Pratite</span> {{fediverseAccount}} na Fediversu kako biste vidjeli kada {{streamer}} ponovno ide uživo.",
 		"offlineNotifyAndFediverse": "Ovaj stream je offline. Možete <span class='notify-link'>biti obaviješteni</span> kada {{streamer}} ponovno ide uživo ili <span class='follow-link'>pratiti</span> {{fediverseAccount}} na Fediversu.",
-		"offlineNotifyOnly": "Ovaj stream je offline. <span class='notify-link'>Budite obaviješteni</span> kada {{streamer}} ponovno ide uživo."
+		"offlineNotifyOnly": "Ovaj stream je offline. <span class='notify-link'>Budite obaviješteni</span> kada {{streamer}} ponovno ide uživo.",
+		"unmute": "Uključi zvuk"
 	},
 	"Testing": {
 		"itemCount": "Imate {{count}} stavki",

@@ -34,6 +34,16 @@
 			"pluginStylingActive": "プラグインのスタイリングが有効です",
 			"pluginStylingDescription": "これらのプラグインは、あなたがここで設定した色と組み合わせて、あなたのサイトに独自のスタイルを適用しています: {{plugins}}。 あなたの設定は上に適用されるので、それらが重なり合うところで勝利します。 ページが期待通りに表示されない場合は、以下の「デフォルトにリセット」を使用してプラグインのスタイルを表示します。 またはプラグインページからプラグインを無効にします。"
 		},
+		"Autoplay": {
+			"description": "視聴者がページを開いたときにストリームが独自で再生を開始するかどうかを選択します。",
+			"optionAlwaysDescription": "ストリームは、誰かがページを開いた瞬間にいつも独自に開始されます。 それはブラウザがそれを可能にする音で再生し、他のどこでもミュートされ始めます。",
+			"optionAlwaysLabel": "常に表示",
+			"optionOffDescription": "視聴者は再生を押して視聴を開始します。",
+			"optionOffLabel": "一切なし",
+			"optionSoundOnlyDescription": "ストリームは単独で開始しますが、視聴者のブラウザがサウンドを再生できる場合に限ります。 それ以外の場合、ビューアは再生を押します。それは決して静かに開始されません。異なるブラウザはこれを異なって処理します。",
+			"optionSoundOnlyLabel": "サウンドが利用可能な場合のみ",
+			"title": "自動再生"
+		},
 		"EditFavicon": {
 			"label": "ファビコン",
 			"resetButton": "Reset",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "インストール済み {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "自動再生の設定を更新しました。",
 			"convertingEmoji": "絵文字を変換しています...",
 			"deletingEmoji": "絵文字を削除しています...",
 			"emojiDeleted": "絵文字を削除しました",
@@ -422,7 +433,8 @@
 		"offlineBasic": "このストリームはオフラインです。もう一度お試しください！",
 		"offlineFediverseOnly": "このストリームはオフラインです。 <span class='follow-link'></span> {{fediverseAccount}} をFediverse でフォローして、次回 {{streamer}} がライブになるのを確認します。",
 		"offlineNotifyAndFediverse": "このストリームはオフラインです。次回のライブ配信は {{streamer}} <span class='notify-link'>に通知さ</span>れるか、Fediverse で {{fediverseAccount}} を<span class='follow-link'>フォローして</span>ください。",
-		"offlineNotifyOnly": "このストリームはオフラインです。 <span class='notify-link'></span> 次回 {{streamer}} がライブになるときに通知されます。"
+		"offlineNotifyOnly": "このストリームはオフラインです。 <span class='notify-link'></span> 次回 {{streamer}} がライブになるときに通知されます。",
+		"unmute": "ミュート解除"
 	},
 	"Testing": {
 		"itemCount": "{{count}} 個のアイテムがあります",

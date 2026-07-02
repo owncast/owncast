@@ -34,6 +34,16 @@
 			"pluginStylingActive": "Plugin styling is actief",
 			"pluginStylingDescription": "Deze plug-ins passen hun eigen stijlen toe op je site, gecombineerd met de kleuren die je hier hebt ingesteld: {{plugins}}. Je instellingen worden bovenaan, dus winnen ze waar ze elkaar overlappen. Als de pagina niet lijkt zoals u verwacht, gebruik dan Reset naar Standaard om de plugin styling door te laten zien, of deactiveer de plugin van de Plugins pagina."
 		},
+		"Autoplay": {
+			"description": "Kies of de stream zelfstandig begint te spelen wanneer een kijker de pagina opent.",
+			"optionAlwaysDescription": "De stream begint altijd op zichzelf het moment dat iemand de pagina opent. Het speelt met geluid waar de browser het toestaat en begint overal anders.",
+			"optionAlwaysLabel": "altijd",
+			"optionOffDescription": "Kijkers zullen drukken op afspelen om te beginnen met kijken.",
+			"optionOffLabel": "Nooit",
+			"optionSoundOnlyDescription": "De stream begint op zichzelf, maar alleen als de browser van de kijker het geluid ook laat spelen. Anders strijkt de viewer op spelen. Het begint nooit stil. Verschillende browsers handelen hier anders over.",
+			"optionSoundOnlyLabel": "Alleen als geluid beschikbaar is",
+			"title": "Automatisch afspelen"
+		},
 		"EditFavicon": {
 			"label": "Favicon",
 			"resetButton": "Reset",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "Geïnstalleerde {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Autoplay-instelling bijgewerkt.",
 			"convertingEmoji": "Emoji converteren...",
 			"deletingEmoji": "Emoji verwijderen...",
 			"emojiDeleted": "Emoji verwijderd",
@@ -422,7 +433,8 @@
 		"offlineBasic": "Deze stream is offline. Kom snel terug!",
 		"offlineFediverseOnly": "Deze stream is offline. <span class='follow-link'>Volg</span> {{fediverseAccount}} op de Fediverse om de volgende keer dat {{streamer}} live gaat te zien.",
 		"offlineNotifyAndFediverse": "Deze stream is offline. U kunt <span class='notify-link'>een bericht ontvangen</span> wanneer {{streamer}} weer live gaat of {{fediverseAccount}} <span class='follow-link'>volgen</span> op de Fediverse.",
-		"offlineNotifyOnly": "Deze stream is offline. <span class='notify-link'>Krijg een melding</span> de volgende keer dat {{streamer}} live gaat."
+		"offlineNotifyOnly": "Deze stream is offline. <span class='notify-link'>Krijg een melding</span> de volgende keer dat {{streamer}} live gaat.",
+		"unmute": "Deblokkeer"
 	},
 	"Testing": {
 		"itemCount": "Je hebt {{count}} items",
