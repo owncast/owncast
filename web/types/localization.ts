@@ -32,6 +32,7 @@ export const Localization = {
     skipToPlayer: 'Skip to player',
     skipToContent: 'Skip to page content',
     skipToFooter: 'Skip to footer',
+    showAllTabs: 'Frontend.showAllTabs',
 
     // Social and external services
     stayUpdated: 'Stay updated!',
