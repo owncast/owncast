@@ -34,6 +34,16 @@
 			"pluginStylingActive": "O estilo de plugins está ativo",
 			"pluginStylingDescription": "Estes plugins estão aplicando seus próprios estilos para o seu site, combinados com as cores que você definiu aqui: {{plugins}}. As suas configurações estão aplicadas no topo, por isso elas ganham onde se sobrepõem. Se a página não olhar como você espera, use Reset para os padrões abaixo para deixar o estilo do plugin exibir, ou desative o plugin na página de Plugins."
 		},
+		"Autoplay": {
+			"description": "Escolha se a transmissão começa a ser reproduzida por conta própria quando um visualizador abre a sua página.",
+			"optionAlwaysDescription": "O fluxo sempre começa por sua conta no momento em que alguém abre a página. Ele toca com som onde o navegador o permite, e começa a calar em qualquer outro lugar.",
+			"optionAlwaysLabel": "sempre",
+			"optionOffDescription": "Os espectadores irão pressionar play para começar a assistir.",
+			"optionOffLabel": "nunca",
+			"optionSoundOnlyDescription": "O fluxo inicia por conta própria, mas somente quando o navegador do visualizador permite que o som seja reproduzido também. Caso contrário, o visualizador pressiona o reproduzir. Ele nunca começa silenciosamente. Navegadores diferentes manipulam isto de maneira diferente.",
+			"optionSoundOnlyLabel": "Somente se o som estiver disponível",
+			"title": "Reprodução automática"
+		},
 		"EditFavicon": {
 			"label": "Favicon:",
 			"resetButton": "Reset",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "{{name}} Instalado"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Configuração de reprodução automática atualizada.",
 			"convertingEmoji": "Convertendo emoji...",
 			"deletingEmoji": "Excluindo emoji...",
 			"emojiDeleted": "Emoji excluído",
@@ -422,7 +433,8 @@
 		"offlineBasic": "Esta transmissão está offline. Volte em breve!",
 		"offlineFediverseOnly": "Esta transmissão está off-line. <span class='follow-link'>Siga</span> {{fediverseAccount}} no Fediverse para ver a próxima vez que {{streamer}} estiver ao vivo.",
 		"offlineNotifyAndFediverse": "Esta transmissão está offline. <span class='notify-link'>Pode ser notificado</span> na próxima vez que {{streamer}} for ao ar ou <span class='follow-link'>siga</span> {{fediverseAccount}} no Fediverse.",
-		"offlineNotifyOnly": "Esta transmissão está offline. U <span class='notify-link'>Seja notificado</span> na próxima vez que {{streamer}} for ao ar."
+		"offlineNotifyOnly": "Esta transmissão está offline. U <span class='notify-link'>Seja notificado</span> na próxima vez que {{streamer}} for ao ar.",
+		"unmute": "Desbloquear"
 	},
 	"Testing": {
 		"itemCount": "Você tem {{count}} itens",

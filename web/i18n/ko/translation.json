@@ -34,6 +34,16 @@
 			"pluginStylingActive": "플러그인 스타일링이 활성화되어 있습니다",
 			"pluginStylingDescription": "이 플러그인들은 여기 설정한 색상과 결합하여 귀하의 사이트에 고유한 스타일을 적용하고 있습니다: {{plugins}}. 귀하의 설정이 우선 적용되므로 겹치는 부분에서 이깁니다. 페이지가 예상한 대로 보이지 않으면 아래의 기본값으로 재설정을 사용하여 플러그인 스타일링이 나타나도록 하거나 플러그인 페이지에서 플러그인을 비활성화하십시오."
 		},
+		"Autoplay": {
+			"description": "시청자가 귀하의 페이지를 열면 스트림이 자동으로 재생되는지 선택하십시오.",
+			"optionAlwaysDescription": "스트림은 누군가 페이지를 열면 항상 자동으로 시작됩니다. 브라우저가 허용하는 경우 소리가 함께 재생되며, 그렇지 않은 경우에는 음소거로 시작됩니다.",
+			"optionAlwaysLabel": "항상",
+			"optionOffDescription": "시청자는 시청을 시작하기 위해 재생 버튼을 눌러야 합니다.",
+			"optionOffLabel": "절대",
+			"optionSoundOnlyDescription": "스트림은 자동으로 시작되지만, 시청자의 브라우저가 소리를 재생하는 것을 허용하는 경우에만 그렇습니다. 그렇지 않으면 시청자가 재생 버튼을 눌러야 하며, 결코 음소거로 시작하지 않습니다. 서로 다른 브라우저에서 이 기능을 다르게 처리합니다.",
+			"optionSoundOnlyLabel": "소리가 유효한 경우에만",
+			"title": "자동 재생"
+		},
 		"EditFavicon": {
 			"label": "파비콘",
 			"resetButton": "재설정",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "설치됨 {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "자동 재생 설정이 업데이트되었습니다.",
 			"convertingEmoji": "이모지 변환 중...",
 			"deletingEmoji": "이모지를 삭제하는 중...",
 			"emojiDeleted": "이모지가 삭제되었습니다.",
@@ -422,7 +433,8 @@
 		"offlineBasic": "이 스트림은 오프라인 상태입니다. 곧 다시 확인해주세요!",
 		"offlineFediverseOnly": "이 스트림은 오프라인 상태입니다. 다음 번 {{streamer}} 라이브 방송을 보려면 Fediverse에서 {{fediverseAccount}} <span class='follow-link'>팔로우하세요</span>.",
 		"offlineNotifyAndFediverse": "이 스트림은 오프라인 상태입니다. 다음 번에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받거나 페디버스에서 {{fediverseAccount}} 을 <span class='follow-link'>팔로우하세요</span>.",
-		"offlineNotifyOnly": "이 스트림은 오프라인 상태입니다. 다음에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받으세요."
+		"offlineNotifyOnly": "이 스트림은 오프라인 상태입니다. 다음에 {{streamer}} 가 생방송될 때 <span class='notify-link'>알림을</span> 받으세요.",
+		"unmute": "음소거 해제"
 	},
 	"Testing": {
 		"itemCount": "귀하는 {{count}} 개 항목이 있습니다",

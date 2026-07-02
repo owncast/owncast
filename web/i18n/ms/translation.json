@@ -34,6 +34,16 @@
 			"pluginStylingActive": "Gaya pemalam sedang aktif",
 			"pluginStylingDescription": "Pemalam ini menerapkan gaya mereka sendiri ke laman anda, digabungkan dengan warna yang anda tetapkan di sini: {{plugins}}. Tetapan anda diterapkan di atas, jadi mereka menang di kawasan yang bertindih. Jika halaman tidak kelihatan seperti yang anda jangkakan, gunakan Tetapkan semula kepada Lalai di bawah untuk membiarkan gaya pemalam ditunjukkan, atau lumpuhkan pemalam dari halaman Pemalam."
 		},
+		"Autoplay": {
+			"description": "Pilih sama ada aliran bermula secara automatik apabila penonton membuka halaman anda.",
+			"optionAlwaysDescription": "Aliran sentiasa bermula secara automatik sebaik sahaja seseorang membuka halaman. Ia dimainkan dengan bunyi di mana pelayar membenarkannya, dan bermula tanpa bunyi di tempat lain.",
+			"optionAlwaysLabel": "Sentiasa",
+			"optionOffDescription": "Penonton akan menekan main untuk mula menonton.",
+			"optionOffLabel": "Tidak pernah",
+			"optionSoundOnlyDescription": "Aliran bermula secara automatik, tetapi hanya apabila pelayar penonton membenarkan bunyi dimainkan juga. Jika tidak, penonton menekan main. Ia tidak pernah bermula dalam keadaan senyap. Pelayar yang berbeza mengendalikan ini dengan cara yang berbeza.",
+			"optionSoundOnlyLabel": "Hanya jika bunyi tersedia",
+			"title": "Main secara automatik"
+		},
 		"EditFavicon": {
 			"label": "Favicon",
 			"resetButton": "Set semula",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "Dipasang {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Tetapan main secara automatik telah dikemas kini.",
 			"convertingEmoji": "Menukar emoji...",
 			"deletingEmoji": "Memadam emoji...",
 			"emojiDeleted": "Emoji dipadam",
@@ -422,7 +433,8 @@
 		"offlineBasic": "Saluran ini sedang offline. Periksa kembali sebentar lagi!",
 		"offlineFediverseOnly": "Saluran ini sedang offline. <span class='follow-link'>Ikuti</span> {{fediverseAccount}} di Fediverse untuk melihat kali seterusnya {{streamer}} siaran langsung.",
 		"offlineNotifyAndFediverse": "Saluran ini sedang offline. Anda boleh <span class='notify-link'>diberitahu</span> kali seterusnya {{streamer}} siaran langsung atau <span class='follow-link'>ikuti</span> {{fediverseAccount}} di Fediverse.",
-		"offlineNotifyOnly": "Saluran ini sedang offline. <span class='notify-link'>Diberitahu</span> kali seterusnya {{streamer}} siaran langsung."
+		"offlineNotifyOnly": "Saluran ini sedang offline. <span class='notify-link'>Diberitahu</span> kali seterusnya {{streamer}} siaran langsung.",
+		"unmute": "Nyahsenyap"
 	},
 	"Testing": {
 		"itemCount": "Anda mempunyai {{count}} item",

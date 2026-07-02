@@ -34,6 +34,16 @@
 			"pluginStylingActive": "Plugin-Styling ist aktiv",
 			"pluginStylingDescription": "Diese Plugins wenden ihre eigenen Stile auf Ihre Website an, kombiniert mit den Farben, die Sie hier festgelegt haben: {{plugins}}. Ihre Einstellungen werden oben angewendet, so dass sie gewinnen, wo sie sich überlappen. Wenn die Seite nicht so aussieht wie Sie es erwarten, verwenden Sie Zurücksetzen auf Standards, um das Styling des Plugins durch die Seite zeigen zu lassen, oder deaktivieren Sie das Plugin von der Plugin-Seite."
 		},
+		"Autoplay": {
+			"description": "Legen Sie fest, ob der Stream selbst beginnt, wenn ein Betrachter Ihre Seite öffnet.",
+			"optionAlwaysDescription": "Der Stream beginnt immer auf eigene Faust, wenn jemand die Seite öffnet. Es spielt mit Klang, wo der Browser es zulässt, und startet überall anders.",
+			"optionAlwaysLabel": "Immer",
+			"optionOffDescription": "Die Zuschauer drücken die Wiedergabe, um mit der Beobachtung zu beginnen.",
+			"optionOffLabel": "Nie",
+			"optionSoundOnlyDescription": "Der Stream startet eigenständig, aber nur, wenn der Browser des Betrachters es zulässt, dass auch der Ton abgespielt wird. Andernfalls drückt der Betrachter das Abspielen. Es beginnt nie still. Verschiedene Browser gehen anders damit um.",
+			"optionSoundOnlyLabel": "Nur wenn Ton verfügbar ist",
+			"title": "Autoplay"
+		},
 		"EditFavicon": {
 			"label": "Févicon",
 			"resetButton": "Reset",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "Installierter {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Autoplay Einstellung aktualisiert.",
 			"convertingEmoji": "Konvertiere Emoji...",
 			"deletingEmoji": "Emoji wird gelöscht...",
 			"emojiDeleted": "Emoji gelöscht",
@@ -422,7 +433,8 @@
 		"offlineBasic": "Dieser Stream ist offline. Schauen Sie bald wieder!",
 		"offlineFediverseOnly": "Dieser Stream ist offline. <span class='follow-link'>Folgen Sie</span> {{fediverseAccount}} auf der Feier, um das nächste Mal {{streamer}} live zu sehen.",
 		"offlineNotifyAndFediverse": "Dieser Stream ist offline. Sie können <span class='notify-link'>benachrichtigt werden,</span> wenn {{streamer}} das nächste Mal live geht, oder <span class='follow-link'>folgen Sie</span> {{fediverseAccount}} auf dem Fediverse.",
-		"offlineNotifyOnly": "Dieser Stream ist offline. <span class='notify-link'>Werde benachrichtigt</span> wenn {{streamer}} das nächste Mal live geht."
+		"offlineNotifyOnly": "Dieser Stream ist offline. <span class='notify-link'>Werde benachrichtigt</span> wenn {{streamer}} das nächste Mal live geht.",
+		"unmute": "Entstumm"
 	},
 	"Testing": {
 		"itemCount": "Sie haben {{count}} Elemente",

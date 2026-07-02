@@ -34,6 +34,16 @@
 			"pluginStylingActive": "نمط الإضافات نشط",
 			"pluginStylingDescription": "هذه الإضافات تطبق أنماطها الخاصة على موقعك، مقترنة بالألوان التي قمت بتعيينها هنا: {{plugins}}. يتم تطبيق الإعدادات الخاصة بك في الأعلى، لذلك فهي تفوز حيثما تتداخل مع الإعدادات. إذا كانت الصفحة لا تبدو على النحو الذي تتوقعه، استخدم إعادة التعيين إلى الإعدادات الافتراضية أدناه للسماح لعرض تصميم الإضافات من خلاله، أو تعطيل الملحق من صفحة الإضافات."
 		},
+		"Autoplay": {
+			"description": "اختر ما إذا كان البث يبدأ التشغيل بنفسه عندما يفتح أحد المشاهدين صفحتك.",
+			"optionAlwaysDescription": "يبدأ البث دائما بنفسه اللحظة التي يفتح فيها شخص ما الصفحة. إنه يشغل الصوت حيث يسمح به المتصفح، ويبدأ الصمت في كل مكان آخر.",
+			"optionAlwaysLabel": "دائما",
+			"optionOffDescription": "سوف يضغط المشاهدون على التشغيل لبدء المشاهدة.",
+			"optionOffLabel": "لا",
+			"optionSoundOnlyDescription": "يبدأ البث من تلقاء نفسه، ولكن فقط عندما يسمح متصفح المشاهد بتشغيل الصوت أيضا. وإلا فإن المشاهد يضغط على اللعب. لا يبدأ الصمت أبداً. المتصفحات المختلفة تتعامل مع هذا بطريقة مختلفة.",
+			"optionSoundOnlyLabel": "فقط إذا كان الصوت متوفر",
+			"title": "تشغيل تلقائي"
+		},
 		"EditFavicon": {
 			"label": "فافيتشون",
 			"resetButton": "Reset",
@@ -282,6 +292,7 @@
 			"uploadSuccess": "تم تثبيت {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "تم تحديث إعدادات التشغيل التلقائي.",
 			"convertingEmoji": "تحويل الإيموجي...",
 			"deletingEmoji": "حذف الإيموجي...",
 			"emojiDeleted": "تم حذف الرمز التعبيري",
@@ -422,7 +433,8 @@
 		"offlineBasic": "هذا البث غير متصل. تحقق قريباً!",
 		"offlineFediverseOnly": "هذا البث غير متصل. <span class='follow-link'>تابع</span> {{fediverseAccount}} على فيديفيرس لرؤية المرة القادمة التي يذهب فيها {{streamer}} للحياة.",
 		"offlineNotifyAndFediverse": "هذا البث غير متصل بالإنترنت. يمكنك أن تتلقى <span class='notify-link'>إشعارًا</span> في المرة القادمة {{streamer}} أو <span class='follow-link'>متابعة</span> {{fediverseAccount}} على موقع Fediverse.",
-		"offlineNotifyOnly": "هذا البث غير متصل بالإنترنت. <span class='notify-link'>كن على علم</span> في المرة القادمة التي يتم فيها البث المباشر {{streamer}} ."
+		"offlineNotifyOnly": "هذا البث غير متصل بالإنترنت. <span class='notify-link'>كن على علم</span> في المرة القادمة التي يتم فيها البث المباشر {{streamer}} .",
+		"unmute": "إلغاء الكتم"
 	},
 	"Testing": {
 		"itemCount": "لديك عناصر {{count}}",
