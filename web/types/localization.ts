@@ -26,6 +26,7 @@ export const Localization = {
     notify: 'Notify',
     follow: 'Follow',
     connected: 'Connected',
+    unmute: 'Frontend.unmute',
 
     // Navigation and accessibility
     skipToPlayer: 'Skip to player',

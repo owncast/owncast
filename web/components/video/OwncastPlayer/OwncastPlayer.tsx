@@ -2,6 +2,7 @@
 import React, { FC, useContext, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useTranslation } from 'next-export-i18n';
 import classNames from 'classnames';
 import { ErrorBoundary } from 'react-error-boundary';
 import { VideoJS } from '../VideoJS/VideoJS';
@@ -9,6 +10,7 @@ import ViewerPing from '../viewer-ping';
 import { VideoPoster } from '../VideoPoster/VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 import { autoplayModeForSetting } from '../../../utils/autoplay';
+import { Localization } from '../../../types/localization';
 import { isVideoPlayingAtom, clockSkewAtom } from '../../stores/ClientConfigStore';
 import PlaybackMetrics from '../metrics/playback';
 import { createVideoSettingsMenuButton } from '../settings-menu';
@@ -46,6 +48,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   const playerRef = React.useRef(null);
   const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
   const clockSkew = useRecoilValue<Number>(clockSkewAtom);
+  const { t } = useTranslation();
 
   const setSavedVolume = () => {
     try {
@@ -196,7 +199,11 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
 
     const unmuteButton = new UnmuteButton();
     unmuteButton.addClass('vjs-big-unmute-button');
-    unmuteButton.controlText('Unmute');
+    // Localize the control text (exposed to assistive tech and tooltips),
+    // falling back to English when the key has no translation, mirroring the
+    // Translation component's missing-key behavior.
+    const unmuteLabel = t(Localization.Frontend.unmute);
+    unmuteButton.controlText(unmuteLabel === Localization.Frontend.unmute ? 'Unmute' : unmuteLabel);
     // The overlay glyph is antd's MutedFilled speaker (the icon family used by
     // the rest of the UI) instead of the video.js icon font. Inlined as SVG
     // because this button renders into video.js DOM, outside React. Path from
