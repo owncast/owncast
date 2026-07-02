@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/go-fed/activity/streams"
+	"code.superseriousbusiness.org/activity/streams"
 )
 
 // testInbox carries no deps. Every assertion in this file exercises an

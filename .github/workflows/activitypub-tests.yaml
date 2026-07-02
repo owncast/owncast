@@ -5,24 +5,28 @@ on:
     branches:
       - develop
     paths:
-      - "activitypub/**"
-      - "core/chat/**"
+      - "services/activitypub/**"
+      - "services/chat/**"
       - "config/**"
       - "main.go"
+      - "go.mod"
+      - "go.sum"
       - "webserver/**"
       - "auth/**"
-      - "persistence/userrepository/**"
+      - "persistence/**"
       - "test/automated/activitypub/**"
       - ".github/workflows/activitypub-tests.yaml"
   pull_request:
     paths:
-      - "activitypub/**"
-      - "core/chat/**"
+      - "services/activitypub/**"
+      - "services/chat/**"
       - "config/**"
       - "main.go"
+      - "go.mod"
+      - "go.sum"
       - "webserver/**"
       - "auth/**"
-      - "persistence/userrepository/**"
+      - "persistence/**"
       - "test/automated/activitypub/**"
       - ".github/workflows/activitypub-tests.yaml"
 

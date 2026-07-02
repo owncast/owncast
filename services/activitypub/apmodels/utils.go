@@ -7,8 +7,8 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/go-fed/activity/streams"
-	"github.com/go-fed/activity/streams/vocab"
+	"code.superseriousbusiness.org/activity/streams"
+	"code.superseriousbusiness.org/activity/streams/vocab"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/utils"

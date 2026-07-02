@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/go-fed/activity/streams/vocab"
+	"code.superseriousbusiness.org/activity/streams/vocab"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"

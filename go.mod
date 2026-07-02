@@ -3,6 +3,7 @@ module github.com/owncast/owncast
 go 1.26.2
 
 require (
+	code.superseriousbusiness.org/activity v1.19.0
 	github.com/CAFxX/httpcompression v0.0.9
 	github.com/SherClockHolmes/webpush-go v1.4.0
 	github.com/TwiN/go-away v1.8.1
@@ -12,7 +13,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.103.3
 	github.com/extism/go-sdk v1.7.1
 	github.com/go-chi/chi/v5 v5.2.4
-	github.com/go-fed/activity v1.0.1-0.20220119073622-b14b50eecad0
 	github.com/go-fed/httpsig v1.1.0
 	github.com/gobwas/glob v0.2.3
 	github.com/gorilla/websocket v1.5.3
@@ -96,5 +96,3 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/go-fed/activity => github.com/owncast/activity v1.0.1-0.20260122170223-675f6eb53e71

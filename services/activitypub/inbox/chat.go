@@ -3,7 +3,7 @@ package inbox
 import (
 	"fmt"
 
-	"github.com/go-fed/activity/streams/vocab"
+	"code.superseriousbusiness.org/activity/streams/vocab"
 	"github.com/microcosm-cc/bluemonday"
 
 	"github.com/owncast/owncast/services/chat/events"
