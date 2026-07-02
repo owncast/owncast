@@ -2,7 +2,6 @@ package configrepository
 
 import (
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/owncast/owncast/services/datastore"
@@ -10,8 +9,7 @@ import (
 
 func newAutoplayTestRepo(t *testing.T) ConfigRepository {
 	t.Helper()
-	dir := t.TempDir()
-	ds, err := datastore.SetupPersistence(filepath.Join(dir, "autoplay-test.db"), os.TempDir())
+	ds, err := datastore.SetupPersistence(":memory:", os.TempDir())
 	if err != nil {
 		t.Fatalf("failed to set up datastore: %v", err)
 	}
