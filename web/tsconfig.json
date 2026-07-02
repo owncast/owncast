@@ -18,5 +18,5 @@
     "noUnusedParameters": true,
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/constants.js", "scripts/i18n-extract.js"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "storybook-static"]
 }
