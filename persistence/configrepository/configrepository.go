@@ -52,6 +52,8 @@ type ConfigRepository interface {
 	SetLastDisconnectTime(disconnectTime time.Time) error
 	SetNSFW(isNSFW bool) error
 	GetNSFW() bool
+	GetAutoplay() string
+	SetAutoplay(value string) error
 	SetFfmpegPath(path string) error
 	GetFfMpegPath() string
 	GetS3Config() models.S3

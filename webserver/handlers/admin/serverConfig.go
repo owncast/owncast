@@ -46,6 +46,7 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			Logo:                configRepository.GetLogoPath(),
 			SocialHandles:       configRepository.GetSocialHandles(),
 			NSFW:                configRepository.GetNSFW(),
+			Autoplay:            configRepository.GetAutoplay(),
 			CustomStyles:        configRepository.GetCustomStyles(),
 			CustomJavascript:    configRepository.GetCustomJavascript(),
 			AppearanceVariables: configRepository.GetCustomColorVariableValues(),
@@ -174,6 +175,7 @@ type webConfigResponse struct {
 	Tags                []string              `json:"tags"`
 	SocialHandles       []models.SocialHandle `json:"socialHandles"`
 	NSFW                bool                  `json:"nsfw"`
+	Autoplay            string                `json:"autoplay"`
 }
 
 type yp struct {

@@ -34,6 +34,7 @@ export interface ConfigInstanceDetailsFields {
   logo: string;
   name: string;
   nsfw: boolean;
+  autoplay: string;
   socialHandles: SocialHandle[];
   streamTitle: string;
   summary: string;

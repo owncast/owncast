@@ -6,6 +6,7 @@ export interface ClientConfig {
   logo: string;
   tags: string[];
   nsfw: boolean;
+  autoplay: string;
   extraPageContent: string;
   socialHandles: SocialHandle[];
   chatDisabled: boolean;
@@ -77,6 +78,7 @@ export function makeEmptyClientConfig(): ClientConfig {
     logo: '',
     tags: [],
     nsfw: false,
+    autoplay: 'off',
     extraPageContent: '',
     socialHandles: [],
     chatDisabled: false,

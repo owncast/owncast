@@ -52,6 +52,7 @@ type webConfigResponse struct {
 	ChatSpamProtectionDisabled bool                         `json:"chatSpamProtectionDisabled"`
 	ChatRequireAuthentication  bool                         `json:"chatRequireAuthentication"`
 	NSFW                       bool                         `json:"nsfw"`
+	Autoplay                   string                       `json:"autoplay"`
 	Authentication             authenticationConfigResponse `json:"authentication"`
 }
 
@@ -149,6 +150,7 @@ func (h *Handlers) getConfigResponse(r *http.Request) webConfigResponse {
 		Tags:                       configRepository.GetServerMetadataTags(),
 		Version:                    config.GetReleaseString(),
 		NSFW:                       configRepository.GetNSFW(),
+		Autoplay:                   configRepository.GetAutoplay(),
 		SocketHostOverride:         configRepository.GetWebsocketOverrideHost(),
 		ExtraPageContent:           pageContent,
 		StreamTitle:                configRepository.GetStreamTitle(),

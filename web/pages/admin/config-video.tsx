@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 import { CodecSelector as VideoCodecSelector } from '../../components/admin/CodecSelector';
 import { VideoLatency } from '../../components/admin/VideoLatency';
 import { CurrentVariantsTable } from '../../components/admin/CurrentVariantsTable';
+import { AutoplaySelector } from '../../components/admin/AutoplaySelector';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 
@@ -36,6 +37,10 @@ export default function ConfigVideoSettings() {
         <Col md={24} lg={12}>
           <div className="form-module latency-module">
             <VideoLatency />
+          </div>
+
+          <div className="form-module autoplay-module">
+            <AutoplaySelector />
           </div>
 
           <Collapse className="advanced-settings codec-module">

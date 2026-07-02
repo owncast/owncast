@@ -26,6 +26,7 @@ export const Localization = {
     notify: 'Notify',
     follow: 'Follow',
     connected: 'Connected',
+    unmute: 'Frontend.unmute',
 
     // Navigation and accessibility
     skipToPlayer: 'Skip to player',
@@ -162,6 +163,18 @@ export const Localization = {
       pluginStylingDescription: 'Admin.Appearance.pluginStylingDescription',
       alsoSetByPlugin: 'Admin.Appearance.alsoSetByPlugin',
       alsoSetByPluginTooltip: 'Admin.Appearance.alsoSetByPluginTooltip',
+    },
+
+    // AutoplaySelector component specific keys
+    Autoplay: {
+      title: 'Admin.Autoplay.title',
+      description: 'Admin.Autoplay.description',
+      optionOffLabel: 'Admin.Autoplay.optionOffLabel',
+      optionOffDescription: 'Admin.Autoplay.optionOffDescription',
+      optionAlwaysLabel: 'Admin.Autoplay.optionAlwaysLabel',
+      optionAlwaysDescription: 'Admin.Autoplay.optionAlwaysDescription',
+      optionSoundOnlyLabel: 'Admin.Autoplay.optionSoundOnlyLabel',
+      optionSoundOnlyDescription: 'Admin.Autoplay.optionSoundOnlyDescription',
     },
 
     Chat: {
@@ -374,6 +387,7 @@ export const Localization = {
       tagsUpdated: 'Admin.StatusMessages.tagsUpdated',
       variantsUpdated: 'Admin.StatusMessages.variantsUpdated',
       videoCodecUpdated: 'Admin.StatusMessages.videoCodecUpdated',
+      autoplayUpdated: 'Admin.StatusMessages.autoplayUpdated',
       latencyBufferUpdated: 'Admin.StatusMessages.latencyBufferUpdated',
       deletingEmoji: 'Admin.StatusMessages.deletingEmoji',
       emojiDeleted: 'Admin.StatusMessages.emojiDeleted',

@@ -37,6 +37,7 @@ const Page = () => {
     logo: '',
     tags: [],
     nsfw: false,
+    autoplay: 'off',
     extraPageContent: '',
     socialHandles: [],
     externalActions: [],
