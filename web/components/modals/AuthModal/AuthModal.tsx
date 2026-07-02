@@ -69,8 +69,9 @@ export const AuthModal: FC<AuthModalProps> = ({ forceTabs }) => {
   ];
 
   // If a fediverse verification is still in progress (restored after a reload),
-  // open straight to that tab so the recovered code-entry step is visible.
-  const defaultActiveKey = getPendingFediverseAuth() ? '2' : '1';
+  // open straight to that tab so the recovered code-entry step is visible. Only
+  // when federation is enabled, since the FediAuth tab is unreachable otherwise.
+  const defaultActiveKey = fediverseEnabled && getPendingFediverseAuth() ? '2' : '1';
 
   return (
     <ErrorBoundary

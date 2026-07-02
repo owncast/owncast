@@ -25,6 +25,11 @@ describe('parsePendingFediverseAuth', () => {
     expect(parsePendingFediverseAuth(raw, now)).toBeNull();
   });
 
+  test('drops entries with a future or non-finite timestamp', () => {
+    expect(parsePendingFediverseAuth(JSON.stringify({ account, ts: now + 1 }), now)).toBeNull();
+    expect(parsePendingFediverseAuth(`{"account":"${account}","ts":1e999}`, now)).toBeNull();
+  });
+
   test('returns null for missing or malformed data', () => {
     expect(parsePendingFediverseAuth(null, now)).toBeNull();
     expect(parsePendingFediverseAuth('not json', now)).toBeNull();

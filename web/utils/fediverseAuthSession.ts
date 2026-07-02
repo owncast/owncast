@@ -36,6 +36,12 @@ export function parsePendingFediverseAuth(
     return null;
   }
 
+  // Reject non-finite or future timestamps so a bad value can't pin the modal
+  // open forever (Infinity or a future ts never crosses the expiry check).
+  if (!Number.isFinite(parsed.ts) || parsed.ts > now) {
+    return null;
+  }
+
   if (now - parsed.ts > PENDING_FEDIVERSE_AUTH_EXPIRY_MS) {
     return null;
   }
