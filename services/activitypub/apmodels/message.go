@@ -3,8 +3,8 @@ package apmodels
 import (
 	"net/url"
 
-	"github.com/go-fed/activity/streams"
-	"github.com/go-fed/activity/streams/vocab"
+	"code.superseriousbusiness.org/activity/streams"
+	"code.superseriousbusiness.org/activity/streams/vocab"
 )
 
 // CreateCreateActivity will create a new Create Activity model with the provided ID and IRI.

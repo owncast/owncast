@@ -1,6 +1,7 @@
 package apmodels
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -8,8 +9,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-fed/activity/streams"
-	"github.com/go-fed/activity/streams/vocab"
+	"code.superseriousbusiness.org/activity/streams"
+	"code.superseriousbusiness.org/activity/streams/vocab"
 
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/crypto"
@@ -681,5 +682,88 @@ func TestSafeAccessorsWithOptionalNilFields(t *testing.T) {
 	// Actor should still be valid (only ActorIri and Inbox are required)
 	if !actor.IsValid() {
 		t.Error("Actor with ActorIri and Inbox should be valid even with nil optional fields")
+	}
+}
+
+// Tests for shared inbox extraction (getSharedInboxFromEntity via
+// NewActivityPubActorFromEntity). Entities are resolved from raw actor JSON
+// the same way inbound remote actors are, so these cover the wire-parse path.
+
+// makeRemoteActorJSON returns a minimal Mastodon-style Person document.
+// endpointsFragment is inserted verbatim after the publicKey (e.g.
+// `,"endpoints": {"sharedInbox": "..."}`) or left empty to omit the property.
+func makeRemoteActorJSON(endpointsFragment string) string {
+	return `{
+		"@context": ["https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"],
+		"type": "Person",
+		"id": "https://remote.example/users/alice",
+		"inbox": "https://remote.example/users/alice/inbox",
+		"preferredUsername": "alice",
+		"publicKey": {
+			"id": "https://remote.example/users/alice#main-key",
+			"owner": "https://remote.example/users/alice",
+			"publicKeyPem": "-----BEGIN PUBLIC KEY-----\nfake\n-----END PUBLIC KEY-----\n"
+		}` + endpointsFragment + `
+	}`
+}
+
+func TestNewActivityPubActorFromEntitySharedInbox(t *testing.T) {
+	tests := []struct {
+		name            string
+		actorJSON       string
+		wantSharedInbox string
+	}{
+		{
+			name:            "endpoints with sharedInbox",
+			actorJSON:       makeRemoteActorJSON(`,"endpoints": {"sharedInbox": "https://remote.example/inbox"}`),
+			wantSharedInbox: "https://remote.example/inbox",
+		},
+		{
+			name:            "no endpoints property",
+			actorJSON:       makeRemoteActorJSON(""),
+			wantSharedInbox: "",
+		},
+		{
+			name:            "endpoints present but empty",
+			actorJSON:       makeRemoteActorJSON(`,"endpoints": {}`),
+			wantSharedInbox: "",
+		},
+		{
+			name:            "endpoints is an IRI string",
+			actorJSON:       makeRemoteActorJSON(`,"endpoints": "https://remote.example/endpoints"`),
+			wantSharedInbox: "",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var jsonMap map[string]interface{}
+			if err := json.Unmarshal([]byte(tc.actorJSON), &jsonMap); err != nil {
+				t.Fatalf("failed to unmarshal actor JSON: %v", err)
+			}
+
+			entityType, err := streams.ToType(context.Background(), jsonMap)
+			if err != nil {
+				t.Fatalf("streams.ToType failed to resolve actor JSON: %v", err)
+			}
+
+			entity, ok := entityType.(ExternalEntity)
+			if !ok {
+				t.Fatalf("resolved type %T does not satisfy ExternalEntity", entityType)
+			}
+
+			actor, err := NewActivityPubActorFromEntity(entity)
+			if err != nil {
+				t.Fatalf("NewActivityPubActorFromEntity returned error: %v", err)
+			}
+
+			got := ""
+			if actor.SharedInbox != nil {
+				got = actor.SharedInbox.String()
+			}
+			if got != tc.wantSharedInbox {
+				t.Errorf("SharedInbox = %q, want %q", got, tc.wantSharedInbox)
+			}
+		})
 	}
 }

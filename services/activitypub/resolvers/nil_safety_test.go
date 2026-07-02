@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/go-fed/activity/streams"
+	"code.superseriousbusiness.org/activity/streams"
 )
 
 func mustParseURL(s string) *url.URL {

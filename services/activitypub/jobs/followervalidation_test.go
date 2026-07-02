@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-fed/activity/streams"
+	"code.superseriousbusiness.org/activity/streams"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"

@@ -3,8 +3,8 @@ package outbox
 import (
 	"testing"
 
-	"github.com/go-fed/activity/streams"
-	"github.com/go-fed/activity/streams/vocab"
+	"code.superseriousbusiness.org/activity/streams"
+	"code.superseriousbusiness.org/activity/streams/vocab"
 )
 
 // testOutbox carries no deps. Every assertion in this file exercises
