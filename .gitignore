@@ -31,7 +31,7 @@ hls/
 !test/automated/hls/
 dist/
 data/
-transcoder.log
+transcoder.log*
 owncast.log*
 chat.db
 .yp.key
