@@ -122,10 +122,12 @@ func (s *Service) sendWebhook(job Job) error {
 	}
 
 	req, err := http.NewRequest("POST", job.webhook.URL, bytes.NewReader(jsonText))
+	signature, err := s.generateSignature(jsonText, job)
 	if err != nil {
 		return err
 	}
 
+	req.Header.Set("owncast-signature", signature)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}

@@ -65,7 +65,7 @@ func TestSendUserJoinedMessage_WebhookFiresRegardlessOfJoinPartSetting(t *testin
 			}))
 			defer svr.Close()
 
-			if _, err := webhookRepo.InsertWebhook(svr.URL, []models.EventType{models.UserJoined}); err != nil {
+			if _, err := webhookRepo.InsertWebhook(svr.URL, []models.EventType{models.UserJoined}, "abc123"); err != nil {
 				t.Fatal(err)
 			}
 

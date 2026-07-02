@@ -411,6 +411,7 @@ export const Localization = {
 
     // Webhooks page
     Webhooks: {
+      webhookSecret: 'Admin.Webhooks.webhookSecret',
       createNewWebhook: 'Admin.Webhooks.createNewWebhook',
       webhookUrlPlaceholder: 'Admin.Webhooks.webhookUrlPlaceholder',
       selectEvents: 'Admin.Webhooks.selectEvents',

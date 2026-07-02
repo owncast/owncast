@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -89,7 +90,7 @@ func TestPublicSend(t *testing.T) {
 
 	webhooksRepo := webhookrepository.New(testDatastore)
 
-	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
+	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent}, "abc123")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -167,7 +168,7 @@ func TestRouting(t *testing.T) {
 	webhooksRepo := webhookrepository.New(testDatastore)
 
 	for _, eventType := range eventTypes {
-		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
+		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType}, "abc123")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -210,7 +211,7 @@ func TestMultiple(t *testing.T) {
 	webhooksRepo := webhookrepository.New(testDatastore)
 
 	for i := 0; i < times; i++ {
-		hook, err := webhooksRepo.InsertWebhook(fmt.Sprintf("%v/%v", svr.URL, i), []models.EventType{models.MessageSent})
+		hook, err := webhooksRepo.InsertWebhook(fmt.Sprintf("%v/%v", svr.URL, i), []models.EventType{models.MessageSent}, "abc123")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -250,7 +251,7 @@ func TestTimestamps(t *testing.T) {
 	webhooksRepo := webhookrepository.New(testDatastore)
 
 	for i, eventType := range eventTypes {
-		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType})
+		hook, err := webhooksRepo.InsertWebhook(svr.URL+"/"+eventType, []models.EventType{eventType}, "abc123")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -350,7 +351,7 @@ func TestParallel(t *testing.T) {
 
 	webhooksRepo := webhookrepository.New(testDatastore)
 
-	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent})
+	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{models.MessageSent}, "abc123")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -388,7 +389,7 @@ func checkPayload(t *testing.T, eventType models.EventType, send func(), expecte
 	webhooksRepo := webhookrepository.New(testDatastore)
 
 	// Subscribe to the webhook.
-	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{eventType})
+	hook, err := webhooksRepo.InsertWebhook(svr.URL, []models.EventType{eventType}, "abc123")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -424,4 +425,56 @@ func checkPayload(t *testing.T, eventType models.EventType, send func(), expecte
 		}
 		t.Errorf("Expected difference from actual payload:\n%s", out.Bytes())
 	}
+}
+
+func TestSendWebhookWithAuthentication(t *testing.T) {
+	secret := "abc123"
+	eventsCount := testSvc.workerPoolSize + 1
+
+	var wg sync.WaitGroup
+	wg.Add(eventsCount)
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer wg.Done()
+		bodyBytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Fatalf("failed to read webhook body: %v", err)
+		}
+
+		signatureHeader := r.Header.Get("owncast-signature")
+		if signatureHeader == "" {
+			t.Error("Missing webhook authentication headers")
+		}
+
+		valid, err := VerifySignature(string(bodyBytes), signatureHeader, secret)
+
+		if err != nil || valid == false {
+			t.Errorf("Signature mismatch")
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	webhooksRepo := webhookrepository.New(testDatastore)
+	hook, err := webhooksRepo.InsertWebhook(server.URL, []models.EventType{models.MessageSent}, secret)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func() {
+		if err := webhooksRepo.DeleteWebhook(hook); err != nil {
+			t.Error(err)
+		}
+	}()
+
+	for i := 0; i < eventsCount; i++ {
+		wh := WebhookEvent{
+			EventData: struct{}{},
+			Type:      models.MessageSent,
+		}
+		testSvc.SendEventToWebhooks(wh)
+	}
+
+	wg.Wait()
 }
