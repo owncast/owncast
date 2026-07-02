@@ -1,10 +1,13 @@
-import React, { ComponentType, FC } from 'react';
+import React, { ComponentType, FC, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { TabsProps } from 'antd';
+import { Button, Dropdown } from 'antd';
+import type { TabsProps } from 'antd';
+import { useTranslation } from 'next-export-i18n';
 import { ErrorBoundary } from 'react-error-boundary';
 import classNames from 'classnames';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import { PluginTab } from '../../../interfaces/client-config.model';
+import { Localization } from '../../../types/localization';
 import styles from './Content.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { PluginTabFrame } from '../PluginTabFrame/PluginTabFrame';
@@ -27,6 +30,10 @@ export type MobileContentProps = {
 // lazy loaded components
 
 const Tabs: ComponentType<TabsProps> = dynamic(() => import('antd').then(mod => mod.Tabs), {
+  ssr: false,
+});
+
+const UnorderedListOutlined = dynamic(() => import('@ant-design/icons/UnorderedListOutlined'), {
   ssr: false,
 });
 
@@ -64,6 +71,9 @@ export const MobileContent: FC<MobileContentProps> = ({
   online,
   federatedServers = [],
 }) => {
+  const { t } = useTranslation();
+  const [activeKey, setActiveKey] = useState('0');
+
   const aboutTabContent = (
     <>
       <ContentHeader name={name} summary={summary} tags={tags} links={socialHandles} logo="/logo" />
@@ -119,6 +129,31 @@ export const MobileContent: FC<MobileContentProps> = ({
     });
   });
 
+  // Menu listing every tab so any of them stays reachable when the tab
+  // bar overflows the screen. rc-tabs turns its own "more" dropdown off
+  // on mobile devices, leaving swipe-scrolling as the only way to reach
+  // far tabs. This button is shown via CSS only while the tab bar
+  // actually overflows (the nav-wrap ping classes).
+  const translatedShowAllTabs = t(Localization.Frontend.showAllTabs);
+  const showAllTabsLabel =
+    translatedShowAllTabs === Localization.Frontend.showAllTabs
+      ? 'Show all tabs'
+      : translatedShowAllTabs;
+
+  const allTabsMenu = (
+    <Dropdown
+      menu={{
+        items: items.map(({ key, label }) => ({ key, label })),
+        onClick: ({ key }) => setActiveKey(key),
+        selectedKeys: [activeKey],
+      }}
+      placement="bottomRight"
+      trigger={['click']}
+    >
+      <Button type="text" icon={<UnorderedListOutlined />} aria-label={showAllTabsLabel} />
+    </Dropdown>
+  );
+
   return (
     <ErrorBoundary
       // eslint-disable-next-line react/no-unstable-nested-components
@@ -128,7 +163,12 @@ export const MobileContent: FC<MobileContentProps> = ({
     >
       {items.length > 1 ? (
         <div className={classNames([styles.lowerSectionMobileTabbed, online && styles.online])}>
-          <Tabs defaultActiveKey="0" items={items} />
+          <Tabs
+            activeKey={activeKey}
+            onChange={setActiveKey}
+            items={items}
+            tabBarExtraContent={{ right: allTabsMenu }}
+          />
         </div>
       ) : (
         <div>{aboutTabContent}</div>
