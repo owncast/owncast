@@ -12,8 +12,9 @@ import (
 )
 
 type createWebhookRequest struct {
-	URL    string             `json:"url"`
-	Events []models.EventType `json:"events"`
+	URL           string             `json:"url"`
+	Events        []models.EventType `json:"events"`
+	WebhookSecret string             `json:"secret"`
 }
 
 // CreateWebhook will add a single webhook.
@@ -31,18 +32,19 @@ func (a *Admin) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newWebhookID, err := a.webhookRepository.InsertWebhook(request.URL, request.Events)
+	newWebhookID, err := a.webhookRepository.InsertWebhook(request.URL, request.Events, request.WebhookSecret)
 	if err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return
 	}
 
 	webutils.WriteResponse(w, models.Webhook{
-		ID:        newWebhookID,
-		URL:       request.URL,
-		Events:    request.Events,
-		Timestamp: time.Now(),
-		LastUsed:  nil,
+		ID:            newWebhookID,
+		URL:           request.URL,
+		Events:        request.Events,
+		Timestamp:     time.Now(),
+		LastUsed:      nil,
+		WebhookSecret: request.WebhookSecret,
 	})
 }
 
