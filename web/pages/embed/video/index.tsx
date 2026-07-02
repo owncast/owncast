@@ -6,6 +6,7 @@ import { Skeleton } from 'antd';
 import {
   clientConfigStateAtom,
   ClientConfigStore,
+  isClientConfigLoadedAtom,
   isOnlineSelector,
   serverStatusState,
   appStateAtom,
@@ -18,13 +19,15 @@ import { AppStateOptions } from '../../../components/stores/application-state';
 import { Theme } from '../../../components/theme/Theme';
 import styles from './VideoEmbed.module.scss';
 import { OfflineEmbed } from '../../../components/ui/OfflineEmbed/OfflineEmbed';
+import { resolveAutoplaySetting } from '../../../utils/autoplay';
 
 export default function VideoEmbed() {
   const status = useRecoilValue<ServerStatus>(serverStatusState);
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
+  const configLoaded = useRecoilValue<boolean>(isClientConfigLoadedAtom);
 
-  const { name, summary, offlineMessage, federation } = clientConfig;
+  const { name, summary, offlineMessage, federation, autoplay } = clientConfig;
 
   const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } = status;
   const online = useRecoilValue<boolean>(isOnlineSelector);
@@ -48,6 +51,9 @@ export default function VideoEmbed() {
   );
 
   const initiallyMuted = query.initiallyMuted === 'true';
+  // An embed may override the instance autoplay setting via ?autoplay=,
+  // falling back to the configured value for anything unrecognized.
+  const autoplayOverride = resolveAutoplaySetting(query.autoplay, autoplay);
   const supportsSocialFollow = socialEnabled && query.supportsSocialFollow !== 'false';
 
   const loadingState = <Skeleton active style={{ padding: '10px' }} paragraph={{ rows: 10 }} />;
@@ -80,6 +86,7 @@ export default function VideoEmbed() {
         online={online}
         initiallyMuted={initiallyMuted}
         title={streamTitle || name}
+        autoplay={autoplayOverride}
       />
       <Statusbar
         online={online}
@@ -91,7 +98,9 @@ export default function VideoEmbed() {
   );
 
   const getView = () => {
-    if (appState.appLoading) {
+    // Wait for the config too: the player's video.js options (autoplay among
+    // them) are init-only, so it must not mount with default config values.
+    if (appState.appLoading || !configLoaded) {
       return loadingState;
     }
     if (online) {

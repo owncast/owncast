@@ -422,6 +422,20 @@ func (r *SqlConfigRepository) GetNSFW() bool {
 	return nsfw
 }
 
+// SetAutoplay sets the viewer autoplay behavior ("off", "always", "sound-only").
+func (r *SqlConfigRepository) SetAutoplay(value string) error {
+	return r.datastore.SetString(autoplayKey, value)
+}
+
+// GetAutoplay returns the viewer autoplay behavior, defaulting to "off".
+func (r *SqlConfigRepository) GetAutoplay() string {
+	value, err := r.datastore.GetString(autoplayKey)
+	if err != nil {
+		return "off"
+	}
+	return value
+}
+
 // SetFfmpegPath will set the custom ffmpeg path.
 func (r *SqlConfigRepository) SetFfmpegPath(path string) error {
 	return r.datastore.SetString(ffmpegPathKey, path)

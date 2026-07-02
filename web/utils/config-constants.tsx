@@ -21,6 +21,7 @@ export const API_CHAT_FORBIDDEN_USERNAMES = '/chat/forbiddenusernames';
 export const API_CHAT_SUGGESTED_USERNAMES = '/chat/suggestedusernames';
 export const API_EXTERNAL_ACTIONS = '/externalactions';
 export const API_VIDEO_CODEC = '/video/codec';
+export const API_AUTOPLAY = '/autoplay';
 
 const API_FFMPEG = '/ffmpegpath';
 const API_INSTANCE_URL = '/serverurl';

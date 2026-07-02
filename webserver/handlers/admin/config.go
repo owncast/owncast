@@ -386,6 +386,39 @@ func (a *Admin) SetNSFW(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteSimpleResponse(w, true, "changed")
 }
 
+// SetAutoplay will handle the web config request to set the viewer autoplay behavior.
+func (a *Admin) SetAutoplay(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	value, ok := configValue.Value.(string)
+	if !ok {
+		webutils.WriteSimpleResponse(w, false, "invalid autoplay value")
+		return
+	}
+
+	switch value {
+	case "off", "always", "sound-only":
+	default:
+		webutils.WriteSimpleResponse(w, false, "invalid autoplay value")
+		return
+	}
+
+	configRepository := a.configRepository
+	if err := configRepository.SetAutoplay(value); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	webutils.WriteSimpleResponse(w, true, "changed")
+}
+
 // SetFfmpegPath will handle the web config request to validate and set an updated copy of ffmpg.
 func (a *Admin) SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
