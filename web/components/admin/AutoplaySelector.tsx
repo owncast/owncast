@@ -1,5 +1,5 @@
 import { Select, Typography } from 'antd';
-import React, { FC, useContext, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'next-export-i18n';
 import { API_AUTOPLAY, postConfigUpdateToAPI, RESET_TIMEOUT } from '../../utils/config-constants';
 import {
@@ -39,7 +39,7 @@ const AUTOPLAY_OPTIONS = [
     labelDefault: 'Only if sound is available',
     descriptionKey: Localization.Admin.Autoplay.optionSoundOnlyDescription,
     descriptionDefault:
-      "The always stream starts on its own, but only when the viewer's browser allows sound to play as well. Otherwise the viewer presses play. It never starts silently. Different browsers handle this differently.",
+      "The stream starts on its own, but only when the viewer's browser allows sound to play as well. Otherwise the viewer presses play. It never starts silently. Different browsers handle this differently.",
   },
 ];
 
@@ -56,16 +56,32 @@ export const AutoplaySelector: FC<AutoplaySelectorProps> = () => {
   const [submitStatus, setSubmitStatus] = useState<StatusState>(null);
   const [selectedAutoplay, setSelectedAutoplay] = useState(autoplay);
 
-  let resetTimer = null;
+  const resetTimer = useRef<number | null>(null);
 
   useEffect(() => {
     setSelectedAutoplay(autoplay);
   }, [autoplay]);
 
-  const resetStates = () => {
-    setSubmitStatus(null);
-    resetTimer = null;
-    clearTimeout(resetTimer);
+  // Clear any pending status reset on unmount.
+  useEffect(
+    () => () => {
+      if (resetTimer.current !== null) {
+        window.clearTimeout(resetTimer.current);
+      }
+    },
+    [],
+  );
+
+  // Hide the save status after a delay, replacing any timer from an earlier
+  // save so repeated saves can't race to clear a newer status.
+  const scheduleStatusReset = () => {
+    if (resetTimer.current !== null) {
+      window.clearTimeout(resetTimer.current);
+    }
+    resetTimer.current = window.setTimeout(() => {
+      setSubmitStatus(null);
+      resetTimer.current = null;
+    }, RESET_TIMEOUT);
   };
 
   async function save(value: string) {
@@ -78,11 +94,11 @@ export const AutoplaySelector: FC<AutoplaySelectorProps> = () => {
         setSubmitStatus(
           createInputStatus(STATUS_SUCCESS, t(Localization.Admin.StatusMessages.autoplayUpdated)),
         );
-        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+        scheduleStatusReset();
       },
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
-        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+        scheduleStatusReset();
       },
     });
   }
