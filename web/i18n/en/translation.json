@@ -34,6 +34,14 @@
 			"pluginStylingActive": "Plugin styling is active",
 			"pluginStylingDescription": "These plugins are applying their own styles to your site, combined with the colors you set here: {{plugins}}. Your settings are applied on top, so they win where they overlap. If the page doesn't look the way you expect, use Reset to Defaults below to let the plugin styling show through, or disable the plugin from the Plugins page."
 		},
+		"Autoplay": {
+			"description": "Choose whether the stream starts playing on its own when a viewer opens your page.",
+			"optionAlwaysDescription": "The stream starts on its own the moment someone opens the page. It plays with sound where the browser allows it, and starts muted with a large one-tap unmute button everywhere else, so it always plays.",
+			"optionAlwaysLabel": "Always",
+			"optionOffDescription": "Viewers press play to start watching. Uses the least bandwidth, since video only loads when someone chooses to watch.",
+			"optionOffLabel": "Never",
+			"title": "Autoplay"
+		},
 		"EditFavicon": {
 			"label": "Favicon",
 			"resetButton": "Reset",
@@ -282,6 +290,7 @@
 			"uploadSuccess": "Installed {{name}}"
 		},
 		"StatusMessages": {
+			"autoplayUpdated": "Autoplay setting updated.",
 			"convertingEmoji": "Converting emoji...",
 			"deletingEmoji": "Deleting emoji...",
 			"emojiDeleted": "Emoji deleted",
