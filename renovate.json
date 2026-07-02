@@ -52,7 +52,6 @@
         "@videojs/themes",
         "@joeattardi/emoji-button",
         "preact",
-        "github.com/go-fed/activity",
         "go"
       ],
       "enabled": false

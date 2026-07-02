@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-fed/activity/streams/vocab"
+	"code.superseriousbusiness.org/activity/streams/vocab"
 	"github.com/pkg/errors"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"

@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/go-fed/activity/streams"
+	"code.superseriousbusiness.org/activity/streams"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"

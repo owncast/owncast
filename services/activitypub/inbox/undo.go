@@ -5,7 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/go-fed/activity/streams/vocab"
+	"code.superseriousbusiness.org/activity/streams/vocab"
 )
 
 func (s *Service) handleUndoInboxRequest(c context.Context, activity vocab.ActivityStreamsUndo) error {

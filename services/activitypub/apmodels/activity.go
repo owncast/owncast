@@ -4,8 +4,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/go-fed/activity/streams"
-	"github.com/go-fed/activity/streams/vocab"
+	"code.superseriousbusiness.org/activity/streams"
+	"code.superseriousbusiness.org/activity/streams/vocab"
 )
 
 // PrivacyAudience represents the audience for an activity.

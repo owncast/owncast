@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/go-fed/activity/streams"
-	"github.com/go-fed/activity/streams/vocab"
+	"code.superseriousbusiness.org/activity/streams"
+	"code.superseriousbusiness.org/activity/streams/vocab"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
@@ -155,11 +155,16 @@ func getNameFromEntity(entity ExternalEntity) string {
 // getSharedInboxFromEntity extracts the optional shared inbox URL from an entity.
 func getSharedInboxFromEntity(entity ExternalEntity) *url.URL {
 	endpointsProp := entity.GetActivityStreamsEndpoints()
-	if endpointsProp == nil || !endpointsProp.IsActivityStreamsEndpoints() {
+	if endpointsProp == nil || endpointsProp.Empty() {
 		return nil
 	}
 
-	endpoints := endpointsProp.Get()
+	iter := endpointsProp.At(0)
+	if !iter.IsActivityStreamsEndpoints() {
+		return nil
+	}
+
+	endpoints := iter.Get()
 	if endpoints == nil {
 		return nil
 	}
