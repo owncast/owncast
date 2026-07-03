@@ -28,7 +28,7 @@ require (
 	github.com/oapi-codegen/runtime v1.4.2
 	github.com/oschwald/geoip2-golang v1.13.0
 	github.com/pkg/errors v0.9.1
-	github.com/pressly/goose/v3 v3.27.1
+	github.com/pressly/goose/v3 v3.27.2
 	github.com/prometheus/client_golang v1.23.2
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/schollz/sqlite3dump v1.3.1
