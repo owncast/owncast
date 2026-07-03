@@ -88,7 +88,8 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
 
   const startLatencyCompensator = () => {
     if (latencyCompensator) {
-      latencyCompensator.stop();
+      // Fully tear down the old instance so its check timer doesn't leak.
+      latencyCompensator.disable();
     }
 
     latencyCompensatorEnabled = true;
