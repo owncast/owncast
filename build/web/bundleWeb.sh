@@ -28,8 +28,20 @@ if [ ! "$OFFLINE" ]; then
 fi
 
 echo "Building owncast web..."
-rm -rf .next
-node_modules/.bin/next build | grep info
+rm -rf .next out
+# No output filtering: piping through grep hid real build errors, and under
+# pipefail a successful build with no matching lines would fail the script.
+node_modules/.bin/next build
+
+# Guard against a build that "succeeds" without producing the static export.
+# Known failure mode: unsupported node versions (e.g. v23) make next build
+# exit 0 after seconds having compiled nothing. Check before touching the
+# existing bundle so a bad build never deletes a working static/web.
+if [ ! -d ./out ]; then
+	echo "ERROR: next build produced no ./out directory despite exiting successfully." >&2
+	echo "This usually means the node version in use ($(node -v)) is unsupported by this Next.js version." >&2
+	exit 1
+fi
 
 echo "Copying web project to dist directory..."
 
