@@ -30,16 +30,25 @@ else
 	echo "Google Chrome not found. Using Electron."
 fi
 
-# Bundle the updated web code into the server codebase.
+# Bundle the updated web code into the server codebase. This is the slowest
+# step of a run (npm install + a full Next.js production build), so say so
+# up front and keep the noisy build output in a log instead of silently
+# swallowing it: a silent multi-minute pause reads as a hang.
 if [ -z "$SKIP_BUILD" ]; then
-	echo "Bundling web code into server..."
+	WEB_BUILD_LOG="/tmp/owncast-bundle-web.log"
+	echo "Bundling web code into server. This takes a few minutes with no output;"
+	echo "progress is logged to ${WEB_BUILD_LOG}. Use SKIP_BUILD=1 to reuse the current bundle."
 
 	# Change to the root directory of the repository
-	pushd "$(git rev-parse --show-toplevel)"
+	pushd "$(git rev-parse --show-toplevel)" >/dev/null
 
-	./build/web/bundleWeb.sh >/dev/null
+	if ! ./build/web/bundleWeb.sh >"$WEB_BUILD_LOG" 2>&1; then
+		echo "ERROR: web bundle build failed. Last lines of ${WEB_BUILD_LOG}:" >&2
+		tail -30 "$WEB_BUILD_LOG" >&2
+		exit 1
+	fi
 
-	popd
+	popd >/dev/null
 else
 	echo "Skipping web build..."
 fi
