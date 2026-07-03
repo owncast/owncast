@@ -103,8 +103,18 @@ function start_stream() {
 	../../ocTestStream.sh &
 	STREAM_PID=$!
 
-	echo "Waiting for stream to start..."
-	sleep 12
+	# Wait for the stream to actually go live instead of a blind sleep: the
+	# online player tests assert on UI that only renders once the API reports
+	# the stream online.
+	echo "Waiting for stream to go live..."
+	for _ in $(seq 1 30); do
+		if curl -fsS "http://localhost:8080/api/status" 2>/dev/null | grep -q '"online":true'; then
+			return 0
+		fi
+		sleep 1
+	done
+	echo "ERROR: stream did not go live within 30s." >&2
+	exit 1
 }
 
 function update_storage_config() {
@@ -132,9 +142,9 @@ function kill_with_kids() {
 
 function finish() {
 	echo "Cleaning up..."
-	kill_with_kids "$STREAM_PID"
-	kill "$SERVER_PID" &>/dev/null || true
-	wait "$SERVER_PID" &>/dev/null || true
+	kill_with_kids "${STREAM_PID:-}"
+	kill "${SERVER_PID:-}" &>/dev/null || true
+	wait "${SERVER_PID:-}" &>/dev/null || true
 	rm -fr "$TEMP_DB"
 }
 

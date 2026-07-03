@@ -1,5 +1,4 @@
 import { setup } from '../../support/setup.js';
-import fetchData from '../../support/fetchData.js';
 import filterTests from '../../support/filterTests';
 
 setup();
@@ -52,15 +51,13 @@ filterTests(['desktop'], () => {
 			cy.get('#name-change-field').type('{selectall}');
 			cy.get('#name-change-field').type('my-new-name');
 			cy.get('#name-change-submit').click();
-			cy.wait(1500);
+			// The rename round-trips over the chat websocket and updates the
+			// user menu, so assert on that instead of sleeping.
+			cy.get('#user-menu').should('contain', 'my-new-name');
 		});
 
 		it('Should change to custom websocket host', () => {
-			fetchData('http://localhost:8080/api/admin/config/sockethostoverride', {
-				method: 'POST',
-				data: { value: 'ws://localhost:8080' },
-			});
-			cy.wait(1500);
+			cy.setConfig('sockethostoverride', 'ws://localhost:8080');
 		});
 
 		it('Refresh page with new socket host', () => {

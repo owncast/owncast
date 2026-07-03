@@ -1,28 +1,26 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+// Custom Cypress commands shared by all specs.
 
-import 'cypress-audit/commands';
-import '@cypress-audit/lighthouse/commands';
+const ADMIN_USERNAME = 'admin';
+const ADMIN_STREAMKEY = 'abc123';
+
+// Set an Owncast admin config value and wait for the server to acknowledge
+// it. Unlike a fire-and-forget fetch, this is properly chained into the
+// Cypress command queue, so later visits observe the new config.
+Cypress.Commands.add('setConfig', (path, value) => {
+	cy.request({
+		method: 'POST',
+		url: `http://localhost:8080/api/admin/config/${path}`,
+		auth: { username: ADMIN_USERNAME, password: ADMIN_STREAMKEY },
+		body: { value },
+	});
+});
+
+// Make an authenticated request to an Owncast admin API endpoint.
+Cypress.Commands.add('adminRequest', (method, url, body) => {
+	cy.request({
+		method,
+		url,
+		auth: { username: ADMIN_USERNAME, password: ADMIN_STREAMKEY },
+		body,
+	});
+});

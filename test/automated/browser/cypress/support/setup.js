@@ -7,12 +7,14 @@ export function setup() {
 
 	Cypress.on(
 		'uncaught:exception',
-		(err) => !err.message.includes('ResizeObserver loop limit exceeded')
+		(err) => !err.message.includes('ResizeObserver loop limit exceeded'),
 	);
 
 	describe('Listen for errors', () => {
 		afterEach(() => {
-			cy.wait(1000).then(() => {
+			// Give any in-flight async work a beat to surface console errors
+			// before asserting. Kept short: this runs after every single test.
+			cy.wait(300).then(() => {
 				expect(windowErrorSpy).to.not.be.called;
 			});
 		});
