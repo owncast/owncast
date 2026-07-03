@@ -1,17 +1,29 @@
 /* eslint-disable max-classes-per-file */
+import { getLocalStorage } from '../../utils/localStorage';
+
+export const LATENCY_COMPENSATION_ENABLED = 'latencyCompensatorEnabled';
+
+const toggleBadgeStyle = (enabled: boolean): string =>
+  `display: inline-block; min-width: 34px; text-align: center; padding: 1px 8px; ` +
+  `border-radius: 9px; font-size: 0.75em; font-weight: 600; letter-spacing: 0.5px; ${
+    enabled
+      ? 'background: #12b76a; color: #fff; border: 1px solid #12b76a;'
+      : 'background: transparent; color: #999; border: 1px solid #777;'
+  }`;
+
 export function createVideoSettingsMenuButton(
   player,
   videojs,
   qualities,
   latencyItemPressed: () => boolean,
-): any {
+): unknown {
   const VjsMenuItem = videojs.getComponent('MenuItem');
   const MenuItem = videojs.getComponent('MenuItem');
   const MenuButtonClass = videojs.getComponent('MenuButton');
 
   class MenuSeparator extends VjsMenuItem {
     // eslint-disable-next-line no-useless-constructor
-    constructor(p: any, options: { selectable: boolean }) {
+    constructor(p: unknown, options: { selectable: boolean }) {
       super(p, options);
     }
 
@@ -22,13 +34,49 @@ export function createVideoSettingsMenuButton(
     }
   }
 
-  const lowLatencyItem = new MenuItem(player, {
+  // The "Minimize latency" toggle renders its own on/off pill so the state
+  // is obvious at a glance, instead of relying on the subtle vjs-selected
+  // styling.
+  class LowLatencyMenuItem extends VjsMenuItem {
+    // eslint-disable-next-line no-useless-constructor
+    constructor(p: unknown, options: { selectable: boolean; label: string }) {
+      super(p, options);
+    }
+
+    createEl(tag = 'button', props = {}, attributes = {}) {
+      const el = super.createEl(tag, props, attributes);
+      el.setAttribute(
+        'title',
+        'Experimental: slightly speeds up playback to keep you closer to live',
+      );
+      el.innerHTML =
+        '<span style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 10px;">' +
+        '<span>Minimize latency</span>' +
+        `<span class="latency-toggle-state" style="${toggleBadgeStyle(false)}">OFF</span>` +
+        '</span>';
+      return el;
+    }
+
+    setToggleState(enabled: boolean) {
+      this.selected(enabled);
+      const badge = this.el().querySelector('.latency-toggle-state') as HTMLElement | null;
+      if (badge) {
+        badge.textContent = enabled ? 'ON' : 'OFF';
+        badge.setAttribute('style', toggleBadgeStyle(enabled));
+      }
+    }
+  }
+
+  const lowLatencyItem = new LowLatencyMenuItem(player, {
     selectable: true,
-    label: 'minimize latency (experimental)',
+    label: 'Minimize latency',
   });
+  // Reflect the saved preference: the player auto-starts the compensator
+  // from local storage, and the menu item should agree with it on load.
+  lowLatencyItem.setToggleState(getLocalStorage(LATENCY_COMPENSATION_ENABLED) === 'true');
   lowLatencyItem.on('click', () => {
     const enabled: boolean = latencyItemPressed();
-    lowLatencyItem.selected(enabled);
+    lowLatencyItem.setToggleState(enabled);
   });
 
   const separator = new MenuSeparator(player, {
