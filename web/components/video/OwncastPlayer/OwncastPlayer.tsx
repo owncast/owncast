@@ -13,14 +13,13 @@ import { autoplayModeForSetting } from '../../../utils/autoplay';
 import { Localization } from '../../../types/localization';
 import { isVideoPlayingAtom, clockSkewAtom } from '../../stores/ClientConfigStore';
 import PlaybackMetrics from '../metrics/playback';
-import { createVideoSettingsMenuButton } from '../settings-menu';
+import { createVideoSettingsMenuButton, LATENCY_COMPENSATION_ENABLED } from '../settings-menu';
 import LatencyCompensator from '../latencyCompensator';
 import styles from './OwncastPlayer.module.scss';
 import { VideoSettingsServiceContext } from '../../../services/video-settings-service';
 import { ComponentError } from '../../ui/ComponentError/ComponentError';
 
 const PLAYER_VOLUME = 'owncast_volume';
-const LATENCY_COMPENSATION_ENABLED = 'latencyCompensatorEnabled';
 
 const ping = new ViewerPing();
 let playbackMetrics = null;
