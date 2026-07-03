@@ -19,6 +19,17 @@ source ../tools.sh
 
 GROUP_FILTER="${1:-}"
 
+# Fail fast if node/npm aren't on PATH: the web bundle, dependency install
+# and Cypress all need them. Without this check a shell that hasn't
+# initialized nvm (this is usually an nvm-managed machine) dies inside the
+# web build with no useful error.
+if ! command -v npm >/dev/null || ! command -v node >/dev/null; then
+	echo "ERROR: node/npm not found in PATH." >&2
+	echo "If node is managed by nvm, initialize nvm in this shell (or 'nvm use') and re-run." >&2
+	exit 1
+fi
+echo "Using node $(node -v) / npm $(npm -v) from $(command -v node)"
+
 BUILD_ID=$((RANDOM % 7200 + 600))
 CYPRESS_RECORD_KEY="e9c8b547-7a8f-452d-8c53-fd7531491e3b"
 BROWSER="electron" # Default. Will try to use Google Chrome.

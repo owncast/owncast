@@ -22,7 +22,9 @@ cd web
 
 if [ ! "$OFFLINE" ]; then
 	echo "Installing npm modules for the owncast web..."
-	npm --silent install 2>/dev/null
+	# Keep stderr: discarding it turns real failures (wrong node version,
+	# missing npm, registry errors) into a silent exit.
+	npm --silent install
 fi
 
 echo "Building owncast web..."
