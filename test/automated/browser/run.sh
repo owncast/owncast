@@ -7,6 +7,7 @@ set -o pipefail
 source ../tools.sh
 
 BUILD_ID=$((RANDOM % 7200 + 600))
+CYPRESS_RECORD_KEY="e9c8b547-7a8f-452d-8c53-fd7531491e3b"
 BROWSER="electron" # Default. Will try to use Google Chrome.
 
 if hash google-chrome 2>/dev/null; then
@@ -41,18 +42,34 @@ fi
 
 set -o nounset
 
+# Run one cypress group. Cloud recording (and the flags that require it) is
+# CI-only: local runs stay fast and work offline.
+#   run_cypress <group> <tags-env> <spec-glob> [extra cypress args...]
+run_cypress() {
+	local group=$1 tags=$2 spec=$3
+	shift 3
+
+	local args=(--browser "$BROWSER" --env "tags=$tags" --spec "$spec")
+	if [ -n "${CI:-}" ]; then
+		args+=(--record --key "$CYPRESS_RECORD_KEY" --parallel --ci-build-id "$BUILD_ID" --group "$group" --tag "${group/-/,}")
+	fi
+
+	npx cypress run "${args[@]}" "$@"
+}
+
 install_ffmpeg
 
 start_owncast
 
-# Run cypress browser tests for desktop
-npx cypress run --parallel --browser "$BROWSER" --group "desktop-offline" --env tags=desktop --ci-build-id $BUILD_ID --tag "desktop,offline" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/offline/*.cy.js"
-# Run cypress browser tests for mobile
-npx cypress run --parallel --browser "$BROWSER" --group "mobile-offline" --env tags=mobile --ci-build-id $BUILD_ID --tag "mobile,offline" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/offline/*.cy.js" --config viewportWidth=375,viewportHeight=667
+run_cypress "desktop-offline" desktop "cypress/e2e/offline/*.cy.js"
+run_cypress "mobile-offline" mobile "cypress/e2e/offline/*.cy.js" --config viewportWidth=375,viewportHeight=667
+
+# Admin UI tests: desktop-only smoke coverage of the Ant Design-heavy admin
+# interface. Real federation protocol tests live in test/automated/activitypub/.
+run_cypress "desktop-admin" desktop "cypress/e2e/admin/*.cy.js"
 
 start_stream
 
-# Run cypress browser tests for desktop
-npx cypress run --parallel --browser "$BROWSER" --group "desktop-online" --env tags=desktop --ci-build-id $BUILD_ID --tag "desktop,online" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/online/*.cy.js"
-# Run cypress browser tests for mobile
-npx cypress run --parallel --browser "$BROWSER" --group "mobile-online" --env tags=mobile --ci-build-id $BUILD_ID --tag "mobile,online" --record --key e9c8b547-7a8f-452d-8c53-fd7531491e3b --spec "cypress/e2e/online/*.cy.js" --config viewportWidth=375,viewportHeight=667
+run_cypress "desktop-online" desktop "cypress/e2e/online/*.cy.js"
+run_cypress "mobile-online" mobile "cypress/e2e/online/*.cy.js" --config viewportWidth=375,viewportHeight=667
+
