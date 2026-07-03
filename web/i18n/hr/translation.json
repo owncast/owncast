@@ -434,6 +434,7 @@
 		"offlineFediverseOnly": "Ovaj stream je offline. <span class='follow-link'>Pratite</span> {{fediverseAccount}} na Fediversu kako biste vidjeli kada {{streamer}} ponovno ide uživo.",
 		"offlineNotifyAndFediverse": "Ovaj stream je offline. Možete <span class='notify-link'>biti obaviješteni</span> kada {{streamer}} ponovno ide uživo ili <span class='follow-link'>pratiti</span> {{fediverseAccount}} na Fediversu.",
 		"offlineNotifyOnly": "Ovaj stream je offline. <span class='notify-link'>Budite obaviješteni</span> kada {{streamer}} ponovno ide uživo.",
+		"showAllTabs": "Prikaži sve kartice",
 		"unmute": "Uključi zvuk"
 	},
 	"Testing": {

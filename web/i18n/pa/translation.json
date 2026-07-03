@@ -434,6 +434,7 @@
 		"offlineFediverseOnly": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। ਜਅਦੋ {{streamer}} ਲਾਈਵ ਹੋਵੇਗਾ, ਗੇਰੀ ਮਨੱਤਾ ਤੋਂ <span class='follow-link'>ਜਾਣੋ</span>।",
 		"offlineNotifyAndFediverse": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। ਜਦੋਂ {{streamer}} ਲਾਈਵ ਹੋਵੇਗਾ, ਤੁਸੀਂ <span class='notify-link'>ਜਾਣੋ</span> ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ <span class='follow-link'>ਫਾਲੋ</span> {{fediverseAccount}} ਫੈਡੀਵਰਸ 'ਤੇ।",
 		"offlineNotifyOnly": "ਇਹ ਸਟ੍ਰੀਮ ਅਫਲਾਈਨ ਹੈ। <span class='notify-link'>ਜਾਣੋ</span> ਜਦੋਂ {{streamer}} ਲਾਈਵ ਹੋਵੇਗਾ।",
+		"showAllTabs": "ਸਾਰੇ ਟੈਬ ਦਿਖਾਓ",
 		"unmute": "ਅਨਮੂਟ"
 	},
 	"Testing": {
