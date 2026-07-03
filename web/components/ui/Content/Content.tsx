@@ -37,7 +37,6 @@ import { ExternalAction } from '../../../interfaces/external-action';
 import { Modal } from '../Modal/Modal';
 import { DesktopContent } from './DesktopContent';
 import { MobileContent } from './MobileContent';
-import { ChatModal } from '../../modals/ChatModal/ChatModal';
 import { Footer } from '../Footer/Footer';
 import { useFederatedServers } from '../../../hooks/useFederatedServers';
 
@@ -73,6 +72,13 @@ const OwncastPlayer = dynamic(
   {
     ssr: false,
     loading: () => <Skeleton loading active paragraph={{ rows: 12 }} />,
+  },
+);
+
+const ChatModal = dynamic(
+  () => import('../../modals/ChatModal/ChatModal').then(mod => mod.ChatModal),
+  {
+    ssr: false,
   },
 );
 

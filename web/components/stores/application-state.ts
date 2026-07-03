@@ -28,14 +28,14 @@ export function makeEmptyAppState(): AppStateOptions {
   };
 }
 
-const OFFLINE_STATE: AppStateOptions = {
+export const OFFLINE_STATE: AppStateOptions = {
   chatAvailable: false,
   chatLoading: false,
   videoAvailable: false,
   appLoading: false,
 };
 
-const ONLINE_STATE: AppStateOptions = {
+export const ONLINE_STATE: AppStateOptions = {
   chatAvailable: true,
   chatLoading: false,
   videoAvailable: true,
