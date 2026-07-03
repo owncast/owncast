@@ -434,6 +434,7 @@
 		"offlineFediverseOnly": "Le stream est hors ligne. <span class='follow-link'>Suivez-le</span> {{fediverseAccount}} sur le Fédiverse pour être notifié lorsque {{streamer}} est en ligne !",
 		"offlineNotifyAndFediverse": "Ce stream est hors ligne. Vous pouvez <span class='notify-link'>être notifié</span> la prochaine fois que {{streamer}} sera en direct ou <span class='follow-link'>suivre</span> {{fediverseAccount}} sur le Fediverse.",
 		"offlineNotifyOnly": "Ce flux est hors ligne. <span class='notify-link'>Recevez une notification</span> la prochaine fois que {{streamer}} sera en ligne.",
+		"showAllTabs": "Afficher tous les onglets",
 		"unmute": "Rétablir le son"
 	},
 	"Testing": {

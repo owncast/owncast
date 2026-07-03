@@ -434,6 +434,7 @@
 		"offlineFediverseOnly": "Luồng này đang ngoại tuyến. <span class='follow-link'>Theo dõi</span> {{fediverseAccount}} trên Fediverse để xem lần tới {{streamer}} trực tiếp.",
 		"offlineNotifyAndFediverse": "Luồng này đang ngoại tuyến. Bạn có thể <span class='notify-link'>được thông báo</span> khi {{streamer}} trực tiếp hoặc <span class='follow-link'>theo dõi</span> {{fediverseAccount}} trên Fediverse.",
 		"offlineNotifyOnly": "Luồng này đang ngoại tuyến. <span class='notify-link'>Được thông báo</span> khi {{streamer}} trực tiếp.",
+		"showAllTabs": "Hiện tất cả các tab",
 		"unmute": "Bỏ tắt âm"
 	},
 	"Testing": {

@@ -434,6 +434,7 @@
 		"offlineFediverseOnly": "此串流已離線。請在 Fediverse<span class='follow-link'>上追</span>蹤 {{fediverseAccount}} ，以查看 {{streamer}} 的下次直播時間。",
 		"offlineNotifyAndFediverse": "此串流已離線。您可以在 {{streamer}} 上線時<span class='notify-link'>收到通知，</span>或在 Fediverse<span class='follow-link'>上追蹤</span> {{fediverseAccount}}。",
 		"offlineNotifyOnly": "此串流已離線。下次 {{streamer}} 上線時，您<span class='notify-link'>將會收到通知</span>。",
+		"showAllTabs": "顯示所有標籤",
 		"unmute": "取消靜音"
 	},
 	"Testing": {
