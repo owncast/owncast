@@ -434,6 +434,7 @@
 		"offlineFediverseOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='follow-link'>अनुसरण करें</span> {{fediverseAccount}} Fediverse पर अगली बार देखने के लिए जब {{streamer}} लाइव जाएं।",
 		"offlineNotifyAndFediverse": "यह स्ट्रीम ऑफ़लाइन है। आप अगले बार जब {{streamer}} लाइव जाएं तो <span class='notify-link'>सूचित</span> हो सकते हैं या <span class='follow-link'>अनुसरण</span> कर सकते हैं {{fediverseAccount}} को Fediverse पर।",
 		"offlineNotifyOnly": "यह स्ट्रीम ऑफ़लाइन है। <span class='notify-link'>सूचित हों</span> अगली बार जब {{streamer}} लाइव जाएं।",
+		"showAllTabs": "सभी टैब दिखाएं",
 		"unmute": "अनम्यूट करें"
 	},
 	"Testing": {

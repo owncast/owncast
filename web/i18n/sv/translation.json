@@ -434,6 +434,7 @@
 		"offlineFediverseOnly": "Denna ström är offline. <span class='follow-link'>Följ</span> {{fediverseAccount}} på Fediverse för att se nästa gång {{streamer}} går live.",
 		"offlineNotifyAndFediverse": "Denna ström är offline. Du kan <span class='notify-link'>meddelas</span> nästa gång {{streamer}} går live eller <span class='follow-link'>följ</span> {{fediverseAccount}} på Fediverse.",
 		"offlineNotifyOnly": "Denna ström är offline. <span class='notify-link'>meddelas</span> nästa gång {{streamer}} går live.",
+		"showAllTabs": "Visa alla flikar",
 		"unmute": "Avtysta"
 	},
 	"Testing": {
