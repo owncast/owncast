@@ -3,6 +3,16 @@ module.exports = {
     previewMdx2: true,
   },
 
+  // Admin components build their API URLs from NEXT_PUBLIC_API_HOST
+  // (utils/apis.ts). Next.js loads it from .env.development/.env.production,
+  // but Storybook does not, leaving it undefined and producing fetches to
+  // "/undefinedapi/admin/...". Default it to "/" so admin page stories fetch
+  // "/api/admin/..." and per-story msw handlers can intercept them.
+  env: config => ({
+    ...config,
+    NEXT_PUBLIC_API_HOST: config.NEXT_PUBLIC_API_HOST || '/',
+  }),
+
   stories: [
     '../.storybook/stories-category-doc-pages/**/*.@(mdx|stories.js)',
     '../stories/**/*.stories.@(js|jsx|ts|tsx)',
