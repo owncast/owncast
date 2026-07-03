@@ -29,6 +29,13 @@ filterTests(['mobile'], () => {
 			cy.get('#chat-input').should('be.visible');
 		});
 
+		it('Can send a chat message from the mobile chat modal', () => {
+			cy.get('#chat-input-content-editable').type('mobile e2e message{enter}');
+			cy.contains('.chat-message_user', 'mobile e2e message').should(
+				'be.visible',
+			);
+		});
+
 		it('Chat user menu should be visible', () => {
 			cy.get('#chat-modal-user-menu').should('be.visible');
 		});

@@ -18,6 +18,11 @@ describe(`Online readwrite chat embed`, () => {
 		cy.contains('joined the chat').should('be.visible');
 	});
 
+	it('Can send a chat message from the embed', () => {
+		cy.get('#chat-input-content-editable').type('embed e2e message{enter}');
+		cy.contains('.chat-message_user', 'embed e2e message').should('be.visible');
+	});
+
 	it('Click on user menu', () => {
 		cy.get('#user-menu').click();
 	});

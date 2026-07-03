@@ -43,6 +43,9 @@ test/automated/browser/screenshots
 lefthook-local.yml
 test/automated/browser/cypress/screenshots
 test/automated/browser/cypress/videos
+test/automated/browser/cypress/results
+# ffmpeg binaries downloaded into the test suites by test/automated/tools.sh
+test/**/ffmpeg
 web/style-definitions/build/
 
 web/public/sw.js

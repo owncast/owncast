@@ -63,5 +63,17 @@ filterTests(['desktop'], () => {
 		it('Refresh page with new socket host', () => {
 			cy.visit('http://localhost:8080');
 		});
+
+		it('Can send a chat message over the overridden websocket host', () => {
+			// Round-trips a real message: typed into the input, sent over the
+			// overridden socket, broadcast back, and rendered in the feed
+			// under the name set earlier in this spec.
+			cy.get('#chat-input-content-editable').type(
+				'e2e message via custom socket{enter}',
+			);
+			cy.contains('.chat-message_user', 'e2e message via custom socket')
+				.should('be.visible')
+				.and('contain', 'my-new-name');
+		});
 	});
 });
