@@ -54,6 +54,12 @@ SELECT value FROM ap_outbox WHERE type = 'Note' LIMIT ? OFFSET ?;
 -- name: GetObjectFromOutboxByIRI :one
 SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = ?;
 
+-- name: GetNoteFromOutboxByIRI :one
+-- Like GetObjectFromOutboxByIRI but only matches posts (Notes). Used to
+-- decide whether an object may be quoted: stamps and directory pings are
+-- stored in the same table and are not quotable.
+SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = ? AND type = 'Note';
+
 -- name: RemoveFollowerByIRI :exec
 DELETE FROM ap_followers WHERE iri = ?;
 

@@ -851,6 +851,26 @@ func (q *Queries) GetMessagesFromUser(ctx context.Context, userID sql.NullString
 	return items, nil
 }
 
+const getNoteFromOutboxByIRI = `-- name: GetNoteFromOutboxByIRI :one
+SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = ? AND type = 'Note'
+`
+
+type GetNoteFromOutboxByIRIRow struct {
+	Value            []byte
+	LiveNotification sql.NullBool
+	CreatedAt        sql.NullTime
+}
+
+// Like GetObjectFromOutboxByIRI but only matches posts (Notes). Used to
+// decide whether an object may be quoted: stamps and directory pings are
+// stored in the same table and are not quotable.
+func (q *Queries) GetNoteFromOutboxByIRI(ctx context.Context, iri string) (GetNoteFromOutboxByIRIRow, error) {
+	row := q.db.QueryRowContext(ctx, getNoteFromOutboxByIRI, iri)
+	var i GetNoteFromOutboxByIRIRow
+	err := row.Scan(&i.Value, &i.LiveNotification, &i.CreatedAt)
+	return i, err
+}
+
 const getNotificationDestinationsForChannel = `-- name: GetNotificationDestinationsForChannel :many
 SELECT destination FROM notifications WHERE channel = ?
 `

@@ -36,11 +36,12 @@ func (s *Service) handleQuoteRequestInboxRequest(c context.Context, activity voc
 
 	localAccountName := s.configRepository.GetDefaultFederationUsername()
 
-	// Only posts we know about are quotable, only while our posts are public,
-	// and only when the operator has quoting enabled. In private federation
-	// mode posts are follower-only, so quoting them would leak them to a
-	// wider audience.
-	if _, _, _, objectErr := s.persistence.GetObjectByIRI(quotedPostIRI.String()); objectErr != nil || s.configRepository.GetFederationIsPrivate() || !s.configRepository.GetFederationEnableQuotes() {
+	// Only posts (Notes) we authored are quotable, only while our posts are
+	// public, and only when the operator has quoting enabled. The outbox store
+	// also holds non-post objects like QuoteAuthorization stamps, which must
+	// not be quotable themselves. In private federation mode posts are
+	// follower-only, so quoting them would leak them to a wider audience.
+	if _, _, _, noteErr := s.persistence.GetNoteByIRI(quotedPostIRI.String()); noteErr != nil || s.configRepository.GetFederationIsPrivate() || !s.configRepository.GetFederationEnableQuotes() {
 		return requests.SendQuoteRequestReject(s.workerpool, actor.Inbox, activity, localAccountName, s.builder, s.signer)
 	}
 
