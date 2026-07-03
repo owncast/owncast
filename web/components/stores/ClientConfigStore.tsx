@@ -12,8 +12,6 @@ import appStateModel, {
   AppStateEvent,
   AppStateOptions,
   makeEmptyAppState,
-  ONLINE_STATE,
-  OFFLINE_STATE,
 } from './application-state';
 import { setLocalStorage, getLocalStorage } from '../../utils/localStorage';
 import {
@@ -35,9 +33,12 @@ RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 const SERVER_STATUS_POLL_DURATION = 5000;
 
-// Helper to safely parse hydration data from window object
-// This runs during module initialization so data is available for first render
-// Returns both the config and whether parsing succeeded
+// Helper to safely parse hydration data injected into the page by the Owncast
+// server (see ServerRenderedHydration). Read from a mount effect, never during
+// render: the statically-exported HTML was built with empty config/status, so
+// initializing state from this data during hydration makes React's first
+// render differ from the server HTML (React errors #418/#423/#425).
+// Returns both the config and whether parsing succeeded.
 const getInitialConfig = (): { config: ClientConfig; success: boolean } => {
   if (typeof window !== 'undefined' && (window as any).configHydration) {
     try {
@@ -66,13 +67,6 @@ const getInitialStatus = (): { status: ServerStatus; success: boolean } => {
   return { status: makeEmptyServerStatus(), success: false };
 };
 
-// Cache the initial values to avoid re-parsing
-const configResult = getInitialConfig();
-const statusResult = getInitialStatus();
-const initialConfig = configResult.config;
-const initialStatus = statusResult.status;
-const hasHydratedConfig = configResult.success;
-const hasHydratedStatus = statusResult.success;
 const ACCESS_TOKEN_KEY = 'accessToken';
 
 let serverStatusRefreshPoll: ReturnType<typeof setInterval>;
@@ -83,17 +77,19 @@ const serverConnectivityError = `Cannot connect to the Owncast service. Please c
 
 // Server status is what gets updated such as viewer count, durations,
 // stream title, online/offline state, etc.
-// Initialize with hydration data if available for faster first render.
+// Starts empty to match the statically-exported HTML; hydration data and API
+// polls fill it in after mount.
 export const serverStatusState = atom<ServerStatus>({
   key: 'serverStatusState',
-  default: initialStatus,
+  default: makeEmptyServerStatus(),
 });
 
 // The config that comes from the API.
-// Initialize with hydration data if available for faster first render.
+// Starts empty to match the statically-exported HTML; hydration data or the
+// API fills it in after mount.
 export const clientConfigStateAtom = atom({
   key: 'clientConfigState',
-  default: initialConfig,
+  default: makeEmptyClientConfig(),
 });
 
 // Whether the client config has been populated, via hydration or the API.
@@ -101,7 +97,7 @@ export const clientConfigStateAtom = atom({
 // whose video.js options are init-only) gate on this.
 export const isClientConfigLoadedAtom = atom<boolean>({
   key: 'clientConfigLoaded',
-  default: hasHydratedConfig,
+  default: false,
 });
 
 export const accessTokenAtom = atom<string>({
@@ -136,17 +132,12 @@ export const websocketServiceAtom = atom<WebsocketService>({
   dangerouslyAllowMutability: true,
 });
 
-// When server-rendered hydration data is available the online/offline state is
-// already known at first render, so skip the "loading" app state entirely and
-// render the player or offline banner immediately instead of a spinner.
-const initialAppState =
-  hasHydratedConfig && hasHydratedStatus
-    ? { ...(initialStatus.online ? ONLINE_STATE : OFFLINE_STATE) }
-    : makeEmptyAppState();
-
+// Starts in the "loading" app state to match the statically-exported HTML;
+// the hydration mount effect in ClientConfigStore transitions it to
+// online/offline immediately after mount.
 export const appStateAtom = atom<AppStateOptions>({
   key: 'appState',
-  default: initialAppState,
+  default: makeEmptyAppState(),
 });
 
 export const isMobileAtom = atom<boolean | undefined>({
@@ -453,26 +444,42 @@ export const ClientConfigStore: FC = () => {
     }
   };
 
-  // Handle initial state machine transition when hydration data was available.
-  // The atoms are already initialized with hydration data at module load time,
-  // so we just need to update the app state machine and calculate clock skew.
+  // Apply the server-injected hydration data (window.configHydration /
+  // window.statusHydration) after mount. This fills in real config and
+  // status without waiting on an API round trip, while keeping React's
+  // hydration pass identical to the statically-exported HTML.
   useEffect(() => {
-    if (hasHydratedConfig && hasHydratedStatus) {
-      // Transition app state machine based on hydrated status
-      const events = [AppStateEvent.Loaded];
-      if (initialStatus.online) {
-        events.push(AppStateEvent.Online);
-      } else {
-        events.push(AppStateEvent.Offline);
-      }
-      sendEvent(events);
+    const { config, success: hasHydratedConfig } = getInitialConfig();
+    const { status, success: hasHydratedStatus } = getInitialStatus();
 
-      // Calculate clock skew from hydrated server time
-      if (initialStatus.serverTime) {
-        const clockSkew = new Date(initialStatus.serverTime).getTime() - Date.now();
+    if (hasHydratedConfig) {
+      setClientConfig(config);
+      setHasLoadedConfig(true);
+    } else {
+      updateClientConfig();
+    }
+
+    handleUserRegistration();
+
+    if (hasHydratedStatus) {
+      handleStatusChange(status);
+      setServerStatus(status);
+      if (status.serverTime) {
+        const clockSkew = new Date(status.serverTime).getTime() - Date.now();
         setClockSkew(clockSkew);
       }
+    } else {
+      updateServerStatus();
     }
+
+    clearInterval(serverStatusRefreshPoll);
+    serverStatusRefreshPoll = setInterval(() => {
+      updateServerStatus();
+    }, SERVER_STATUS_POLL_DURATION);
+
+    return () => {
+      clearInterval(serverStatusRefreshPoll);
+    };
   }, []);
 
   useEffect(() => {
@@ -494,26 +501,6 @@ export const ClientConfigStore: FC = () => {
 
     startChat();
   }, [hasLoadedConfig, accessToken]);
-
-  useEffect(() => {
-    // Only fetch config from API if not hydrated from server
-    if (!hasHydratedConfig) {
-      updateClientConfig();
-    }
-    handleUserRegistration();
-    // Only fetch status from API if not hydrated from server
-    if (!hasHydratedStatus) {
-      updateServerStatus();
-    }
-    clearInterval(serverStatusRefreshPoll);
-    serverStatusRefreshPoll = setInterval(() => {
-      updateServerStatus();
-    }, SERVER_STATUS_POLL_DURATION);
-
-    return () => {
-      clearInterval(serverStatusRefreshPoll);
-    };
-  }, []);
 
   useEffect(() => {
     if (accessToken) {
