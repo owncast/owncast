@@ -132,6 +132,13 @@ class PlaybackMetrics {
   }
 
   handleBuffering() {
+    // A waiting event that fires while the player is seeking is the fetch at
+    // a seek discontinuity (the viewer scrubbed, or the latency compensator
+    // jumped forward), not a playback interruption. Genuine starvation fires
+    // with seeking() false, so only count those as errors.
+    if (this.player.seeking()) {
+      return;
+    }
     this.incrementErrorCount(1);
     this.setIsBuffering(true);
   }
