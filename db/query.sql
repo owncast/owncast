@@ -9,7 +9,10 @@
 SELECT count(*) FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1;
 
 -- name: GetLocalPostCount :one
-SELECT count(*) FROM ap_outbox;
+-- Only posts (Notes) count: the outbox table also stores other
+-- dereferenceable objects, such as QuoteAuthorization stamps, that are not
+-- posts and must not inflate the public post count.
+SELECT count(*) FROM ap_outbox WHERE type = 'Note';
 
 -- name: GetFederationFollowersWithOffset :many
 -- Excludes featured-streams (Owncast-server) follows so they don't show up in
@@ -42,7 +45,10 @@ UPDATE ap_followers SET approved_at = null, disabled_at = ? WHERE iri = ?;
 SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at, directory FROM ap_followers WHERE iri = ?;
 
 -- name: GetOutboxWithOffset :many
-SELECT value FROM ap_outbox LIMIT ? OFFSET ?;
+-- Only posts (Notes) are listed in the public outbox collection. Other stored
+-- objects, such as QuoteAuthorization stamps, stay fetchable by IRI but are
+-- not part of the collection.
+SELECT value FROM ap_outbox WHERE type = 'Note' LIMIT ? OFFSET ?;
 
 
 -- name: GetObjectFromOutboxByIRI :one

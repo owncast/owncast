@@ -123,6 +123,11 @@ func (s *Service) SendLive() error {
 	activity.SetActivityStreamsTo(to)
 	activity.SetActivityStreamsCc(cc)
 
+	// Public posts opt in to being quoted (FEP-044f).
+	if !s.configRepository.GetFederationIsPrivate() {
+		note = apmodels.MakeNoteQuotable(note)
+	}
+
 	note.SetActivityStreamsTag(tagProp)
 
 	// Attach an image along with the Federated message.
@@ -229,6 +234,11 @@ func (s *Service) SendPublicMessage(textContent string) error {
 	note.SetActivityStreamsCc(cc)
 	activity.SetActivityStreamsTo(to)
 	activity.SetActivityStreamsCc(cc)
+
+	// Public posts opt in to being quoted (FEP-044f).
+	if !s.configRepository.GetFederationIsPrivate() {
+		note = apmodels.MakeNoteQuotable(note)
+	}
 
 	b, err := apmodels.Serialize(activity)
 	if err != nil {

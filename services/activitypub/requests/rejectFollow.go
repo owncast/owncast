@@ -6,12 +6,10 @@ import (
 
 	"code.superseriousbusiness.org/activity/streams"
 	"code.superseriousbusiness.org/activity/streams/vocab"
-	"github.com/pkg/errors"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
-	"github.com/owncast/owncast/utils"
 
 	"github.com/teris-io/shortid"
 )
@@ -25,11 +23,8 @@ import (
 // Fediverse sends when an account removes one of its followers.
 func SendFollowReject(wp *workerpool.Service, inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder, signer *crypto.Signer) error {
 	// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
-	if inbox.Scheme != "https" {
-		return errors.Errorf("rejecting non-HTTPS inbox URL for SSRF protection: %s", inbox.String())
-	}
-	if utils.IsHostnameInternal(inbox.Hostname()) {
-		return errors.Errorf("rejecting internal/loopback inbox URL for SSRF protection: %s", inbox.String())
+	if err := validateRemoteInbox(inbox); err != nil {
+		return err
 	}
 
 	followReject := makeRejectFollow(originalFollowActivity, fromLocalAccountName, builder)

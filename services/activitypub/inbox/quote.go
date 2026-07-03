@@ -1,0 +1,62 @@
+package inbox
+
+import (
+	"context"
+
+	"code.superseriousbusiness.org/activity/streams/vocab"
+	"github.com/pkg/errors"
+	"github.com/teris-io/shortid"
+
+	"github.com/owncast/owncast/services/activitypub/apmodels"
+	"github.com/owncast/owncast/services/activitypub/requests"
+)
+
+// handleQuoteRequestInboxRequest handles an inbound QuoteRequest (FEP-044f):
+// a remote user asking permission to quote one of our posts. Our public
+// posts are quotable by anyone, so any request targeting a post we actually
+// authored is accepted and answered with a verifiable QuoteAuthorization
+// stamp. Requests for unknown posts, or any request while federation is
+// private, are rejected so the pending quote clears on the remote end.
+func (s *Service) handleQuoteRequestInboxRequest(c context.Context, activity vocab.GoToSocialQuoteRequest) error {
+	actor, err := s.resolver.GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
+	if err != nil {
+		return errors.Wrap(err, "unable to resolve actor of quote request")
+	}
+
+	// object = the post being quoted, instrument = the quote post itself.
+	quotedPostIRI, err := apmodels.GetIRIFromObjectProperty(activity.GetActivityStreamsObject())
+	if err != nil {
+		return errors.Wrap(err, "quote request is missing object IRI")
+	}
+
+	quotePostIRI, err := apmodels.GetIRIFromInstrumentProperty(activity.GetActivityStreamsInstrument())
+	if err != nil {
+		return errors.Wrap(err, "quote request is missing instrument IRI")
+	}
+
+	localAccountName := s.configRepository.GetDefaultFederationUsername()
+
+	// Only posts we know about are quotable, and only while our posts are
+	// public. In private federation mode posts are follower-only, so quoting
+	// them would leak them to a wider audience.
+	if _, _, _, objectErr := s.persistence.GetObjectByIRI(quotedPostIRI.String()); objectErr != nil || s.configRepository.GetFederationIsPrivate() {
+		return requests.SendQuoteRequestReject(s.workerpool, actor.Inbox, activity, localAccountName, s.builder, s.signer)
+	}
+
+	// Store the QuoteAuthorization stamp so other servers can fetch it by IRI
+	// to verify the quote was approved.
+	stampIRI := s.builder.MakeLocalIRIForResource(shortid.MustGenerate())
+	localActorIRI := s.builder.MakeLocalIRIForAccount(localAccountName)
+	stamp := apmodels.MakeQuoteAuthorization(stampIRI, localActorIRI, quotePostIRI, quotedPostIRI)
+
+	stampBytes, err := apmodels.Serialize(stamp)
+	if err != nil {
+		return errors.Wrap(err, "unable to serialize quote authorization")
+	}
+
+	if err := s.persistence.AddToOutbox(stampIRI.String(), stampBytes, stamp.GetTypeName(), false); err != nil {
+		return errors.Wrap(err, "unable to store quote authorization")
+	}
+
+	return requests.SendQuoteRequestAccept(s.workerpool, actor.Inbox, activity, stampIRI, localAccountName, s.builder, s.signer)
+}
