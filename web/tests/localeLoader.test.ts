@@ -156,6 +156,33 @@ describe('loadViewerLocale', () => {
     expect(second.replace).not.toHaveBeenCalled();
     expect(i18n.translations.fr).toBeUndefined();
   });
+
+  test('a no-op first call does not consume the once-guard', async () => {
+    // Regression guard for the PR review comment: the guard flips only when
+    // a load actually starts, so an English first evaluation must leave the
+    // loader available for a later call on the same module instance.
+    setBrowserLanguage('en-US');
+    const { load, shouldClean, i18n } = freshModules();
+    const first = makeRouter({});
+    await load(first.router);
+
+    expect(first.replace).not.toHaveBeenCalled();
+    expect(Object.keys(i18n.translations)).toEqual(['en']);
+
+    // Same module instance, now with a loadable browser locale.
+    setBrowserLanguage('de-DE');
+    const second = makeRouter({});
+    await load(second.router);
+
+    expect(i18n.translations.de).toBeDefined();
+    expect(second.replace).toHaveBeenCalledTimes(1);
+    expect(second.replace).toHaveBeenCalledWith({ query: { lang: 'de' } }, undefined, {
+      shallow: true,
+      scroll: false,
+    });
+    expect(shouldClean('de')).toBe(true);
+    expect(shouldClean('de')).toBe(false);
+  });
 });
 
 describe('shouldCleanUrlAfterFlip', () => {

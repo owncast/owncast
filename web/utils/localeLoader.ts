@@ -85,7 +85,6 @@ export const loadViewerLocale = async (router: NextRouter): Promise<void> => {
   if (loadStarted || typeof window === 'undefined') {
     return;
   }
-  loadStarted = true;
 
   const queryLang = typeof router.query.lang === 'string' ? router.query.lang : undefined;
   const browserLanguage = window.navigator.languages?.[0] || window.navigator.language;
@@ -93,6 +92,12 @@ export const loadViewerLocale = async (router: NextRouter): Promise<void> => {
   if (!locale || i18n.translations[locale]) {
     return;
   }
+  // Marked only once real work begins: a no-op evaluation (English browser,
+  // unknown locale, catalog already present) leaves the loader available for
+  // a later call that does name a loadable locale. Everything before this
+  // line is synchronous, so a double invocation (React strict mode) can't
+  // start the load twice.
+  loadStarted = true;
 
   try {
     // The locale is only known at runtime (browser language or ?lang=), so a
