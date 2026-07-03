@@ -123,8 +123,8 @@ func (s *Service) SendLive() error {
 	activity.SetActivityStreamsTo(to)
 	activity.SetActivityStreamsCc(cc)
 
-	// Public posts opt in to being quoted (FEP-044f).
-	if !s.configRepository.GetFederationIsPrivate() {
+	// Public posts opt in to being quoted (FEP-044f) when the operator allows it.
+	if s.configRepository.GetFederationEnableQuotes() && !s.configRepository.GetFederationIsPrivate() {
 		note = apmodels.MakeNoteQuotable(note)
 	}
 
@@ -235,8 +235,8 @@ func (s *Service) SendPublicMessage(textContent string) error {
 	activity.SetActivityStreamsTo(to)
 	activity.SetActivityStreamsCc(cc)
 
-	// Public posts opt in to being quoted (FEP-044f).
-	if !s.configRepository.GetFederationIsPrivate() {
+	// Public posts opt in to being quoted (FEP-044f) when the operator allows it.
+	if s.configRepository.GetFederationEnableQuotes() && !s.configRepository.GetFederationIsPrivate() {
 		note = apmodels.MakeNoteQuotable(note)
 	}
 

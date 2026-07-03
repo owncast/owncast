@@ -2,7 +2,7 @@ var request = require('supertest');
 const parseJson = require('parse-json');
 const jsonfile = require('jsonfile');
 const Ajv = require('ajv-draft-04');
-const sendAdminRequest = require('./lib/admin').sendAdminRequest;
+const { sendAdminRequest, getAdminResponse } = require('./lib/admin');
 
 request = request('http://127.0.0.1:8080');
 
@@ -55,6 +55,16 @@ test('set required parameters and enable federation', async () => {
 	await sendAdminRequest('config/federation/enable', true);
 });
 
+test('set and verify the federation quotes toggle', async () => {
+	await sendAdminRequest('config/federation/enablequotes', false);
+	let res = await getAdminResponse('serverconfig');
+	expect(res.body.federation.enableQuotes).toBe(false);
+
+	await sendAdminRequest('config/federation/enablequotes', true);
+	res = await getAdminResponse('serverconfig');
+	expect(res.body.federation.enableQuotes).toBe(true);
+});
+
 test('verify responses of /.well-known/webfinger when federation is enabled', async () => {
 	const resNoResource = request.get('/.well-known/webfinger').expect(400);
 	const resBadResource = request
@@ -65,7 +75,7 @@ test('verify responses of /.well-known/webfinger when federation is enabled', as
 			'/.well-known/webfinger?resource=notacct:' +
 				fediUsername +
 				'@' +
-				serverName
+				serverName,
 		)
 		.expect(400);
 	const resBadServer = request
@@ -73,7 +83,7 @@ test('verify responses of /.well-known/webfinger when federation is enabled', as
 			'/.well-known/webfinger?resource=acct:' +
 				fediUsername +
 				'@not' +
-				serverName
+				serverName,
 		)
 		.expect(404);
 	const resBadUser = request
@@ -81,12 +91,12 @@ test('verify responses of /.well-known/webfinger when federation is enabled', as
 			'/.well-known/webfinger?resource=acct:not' +
 				fediUsername +
 				'@' +
-				serverName
+				serverName,
 		)
 		.expect(404);
 	const resNoAccept = request
 		.get(
-			'/.well-known/webfinger?resource=acct:' + fediUsername + '@' + serverName
+			'/.well-known/webfinger?resource=acct:' + fediUsername + '@' + serverName,
 		)
 		.expect(200)
 		.expect('Content-Type', /json/)
@@ -95,7 +105,7 @@ test('verify responses of /.well-known/webfinger when federation is enabled', as
 		});
 	const resWithAccept = request
 		.get(
-			'/.well-known/webfinger?resource=acct:' + fediUsername + '@' + serverName
+			'/.well-known/webfinger?resource=acct:' + fediUsername + '@' + serverName,
 		)
 		.expect(200)
 		.set('Accept', 'application/json')

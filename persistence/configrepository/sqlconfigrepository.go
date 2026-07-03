@@ -856,6 +856,21 @@ func (r *SqlConfigRepository) GetFederationShowEngagement() bool {
 	return true
 }
 
+// SetFederationEnableQuotes will set if posts from this server can be quoted.
+func (r *SqlConfigRepository) SetFederationEnableQuotes(enabled bool) error {
+	return r.datastore.SetBool(federationEnableQuotesKey, enabled)
+}
+
+// GetFederationEnableQuotes will return if posts from this server can be quoted.
+func (r *SqlConfigRepository) GetFederationEnableQuotes() bool {
+	enabled, err := r.datastore.GetBool(federationEnableQuotesKey)
+	if err == nil {
+		return enabled
+	}
+
+	return true
+}
+
 // SetFederationHideFollowersTab will set if the followers tab is hidden on the web UI.
 func (r *SqlConfigRepository) SetFederationHideFollowersTab(hidden bool) error {
 	return r.datastore.SetBool(federationHideFollowersTabKey, hidden)

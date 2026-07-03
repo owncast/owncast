@@ -90,6 +90,7 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			Username:         configRepository.GetFederationUsername(),
 			GoLiveMessage:    configRepository.GetFederationGoLiveMessage(),
 			ShowEngagement:   configRepository.GetFederationShowEngagement(),
+			EnableQuotes:     configRepository.GetFederationEnableQuotes(),
 			HideFollowersTab: configRepository.GetFederationHideFollowersTab(),
 			BlockedDomains:   configRepository.GetBlockedFederatedDomains(),
 		},
@@ -191,6 +192,7 @@ type federationConfigResponse struct {
 	Enabled          bool     `json:"enabled"`
 	IsPrivate        bool     `json:"isPrivate"`
 	ShowEngagement   bool     `json:"showEngagement"`
+	EnableQuotes     bool     `json:"enableQuotes"`
 	HideFollowersTab bool     `json:"hideFollowersTab"`
 }
 

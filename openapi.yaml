@@ -2558,6 +2558,35 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /admin/config/federation/enablequotes:
+    post:
+      summary: Set if posts from this server can be quoted
+      operationId: SetFederationEnableQuotes
+      tags: ['Internal', 'Admin', 'Social']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Federation quotes set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetFederationEnableQuotesOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Social']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /admin/config/federation/hidefollowers:
     post:
       summary: Set if the public followers tab is hidden on the web UI
@@ -4767,6 +4796,8 @@ components:
         isPrivate:
           type: boolean
         showEngagement:
+          type: boolean
+        enableQuotes:
           type: boolean
         hideFollowersTab:
           type: boolean
