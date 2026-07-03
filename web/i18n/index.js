@@ -1,59 +1,20 @@
-const ar = require('./ar/translation.json');
-const bn = require('./bn/translation.json');
-const de = require('./de/translation.json');
-const el = require('./el/translation.json');
+// Only English ships in the main javascript bundle. Every other locale is
+// fetched on demand by utils/localeLoader, which webpack splits into one
+// small chunk per language, patched into `translations` at runtime. This
+// keeps ~500KB of catalogs out of the code that has to download and parse
+// before the page becomes interactive.
 const en = require('./en/translation.json');
-const es = require('./es/translation.json');
-const fr = require('./fr/translation.json');
-const ga = require('./ga/translation.json');
-const hi = require('./hi/translation.json');
-const hr = require('./hr/translation.json');
-const it = require('./it/translation.json');
-const ja = require('./ja/translation.json');
-const ko = require('./ko/translation.json');
-const ms = require('./ms/translation.json');
-const nl = require('./nl/translation.json');
-const no = require('./no/translation.json');
-const pa = require('./pa/translation.json');
-const pl = require('./pl/translation.json');
-const pt = require('./pt/translation.json');
-const ru = require('./ru/translation.json');
-const sv = require('./sv/translation.json');
-const th = require('./th/translation.json');
-const vi = require('./vi/translation.json');
-const zh = require('./zh/translation.json');
 
 const i18n = {
   translations: {
-    ar,
-    bn,
-    de,
-    el,
     en,
-    es,
-    fr,
-    ga,
-    hi,
-    hr,
-    it,
-    ja,
-    ko,
-    ms,
-    nl,
-    no,
-    pa,
-    pl,
-    pt,
-    ru,
-    sv,
-    th,
-    vi,
-    zh,
   },
   defaultLang: 'en',
+  // Browser-language detection is handled by utils/localeLoader so the
+  // catalog can be fetched first. The library's own detection only ever
+  // sees English until that catalog arrives.
   useBrowserDefault: true,
-  // optional property, will default to "query" if not set
-  languageDataStore: 'query' || 'localStorage',
+  languageDataStore: 'query',
 };
 
 module.exports = i18n;

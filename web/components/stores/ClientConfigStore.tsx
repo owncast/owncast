@@ -12,6 +12,8 @@ import appStateModel, {
   AppStateEvent,
   AppStateOptions,
   makeEmptyAppState,
+  ONLINE_STATE,
+  OFFLINE_STATE,
 } from './application-state';
 import { setLocalStorage, getLocalStorage } from '../../utils/localStorage';
 import {
@@ -134,9 +136,17 @@ export const websocketServiceAtom = atom<WebsocketService>({
   dangerouslyAllowMutability: true,
 });
 
+// When server-rendered hydration data is available the online/offline state is
+// already known at first render, so skip the "loading" app state entirely and
+// render the player or offline banner immediately instead of a spinner.
+const initialAppState =
+  hasHydratedConfig && hasHydratedStatus
+    ? { ...(initialStatus.online ? ONLINE_STATE : OFFLINE_STATE) }
+    : makeEmptyAppState();
+
 export const appStateAtom = atom<AppStateOptions>({
   key: 'appState',
-  default: makeEmptyAppState(),
+  default: initialAppState,
 });
 
 export const isMobileAtom = atom<boolean | undefined>({
