@@ -80,6 +80,11 @@ export const UserDropdown: FC<UserDropdownProps> = ({
 }) => {
   const [showNameChangeModal, setShowNameChangeModal] = useState<boolean>(false);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+  // Latch: once the auth modal has been opened, keep it mounted so in-flight
+  // auth state survives close/reopen (the v4 shell used destroyOnClose=false;
+  // the v6 AuthModal keeps children mounted after first open by default, but
+  // must not be unmounted by conditional rendering).
+  const [authModalMounted, setAuthModalMounted] = useState<boolean>(false);
   const [chatState, setChatState] = useRecoilState(chatStateAtom);
   const [popupWindow, setPopupWindow] = useState<Window>(null);
   const appState = useRecoilValue<AppStateOptions>(appStateAtom);
@@ -92,6 +97,12 @@ export const UserDropdown: FC<UserDropdownProps> = ({
       setShowAuthModal(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (showAuthModal) {
+      setAuthModalMounted(true);
+    }
+  }, [showAuthModal]);
 
   const toggleChatVisibility = () => {
     // If we don't support the hide chat option then don't do anything.
@@ -219,15 +230,9 @@ export const UserDropdown: FC<UserDropdownProps> = ({
         >
           <NameChangeModal closeModal={closeChangeNameModal} />
         </Modal>
-        <Modal
-          title="Authenticate"
-          open={showAuthModal}
-          handleCancel={() => setShowAuthModal(false)}
-          maskClosable={false}
-          destroyOnClose={false}
-        >
-          <AuthModal />
-        </Modal>
+        {(showAuthModal || authModalMounted) && (
+          <AuthModal open={showAuthModal} handleClose={() => setShowAuthModal(false)} />
+        )}
       </div>
     </ErrorBoundary>
   );

@@ -41,20 +41,27 @@ const defaultTheme = antd6DefaultTheme as ThemeConfig;
 // design tokens. Only variables relevant to migrated components are mapped;
 // extend this as more components move to v6.
 type TokenOverrides = NonNullable<ThemeConfig['token']>;
-type ModalOverrides = NonNullable<NonNullable<ThemeConfig['components']>['Modal']>;
+type ComponentOverrides = NonNullable<ThemeConfig['components']>;
+type ModalOverrides = NonNullable<ComponentOverrides['Modal']>;
+type TabsOverrides = NonNullable<ComponentOverrides['Tabs']>;
 
 function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
   const vars = appearanceVariables || {};
   const token: TokenOverrides = { ...defaultTheme.token };
   const modal: ModalOverrides = { ...defaultTheme.components?.Modal };
+  const tabs: TabsOverrides = { ...defaultTheme.components?.Tabs };
 
   if (vars['theme-color-action']) {
     token.colorPrimary = vars['theme-color-action'];
     token.colorLink = vars['theme-color-action'];
+    tabs.itemActiveColor = vars['theme-color-action'];
+    tabs.itemSelectedColor = vars['theme-color-action'];
+    tabs.inkBarColor = vars['theme-color-action'];
   }
   if (vars['theme-color-action-hover']) {
     token.colorLinkHover = vars['theme-color-action-hover'];
     token.colorLinkActive = vars['theme-color-action-hover'];
+    tabs.itemHoverColor = vars['theme-color-action-hover'];
   }
   if (vars['theme-color-background-main']) {
     token.colorBgLayout = vars['theme-color-background-main'];
@@ -84,7 +91,7 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
 
   return {
     token,
-    components: { Modal: modal },
+    components: { Modal: modal, Tabs: tabs },
     // Component style RULES come from the pre-extracted styles/antd6.css
     // (see build-scripts/extract-antd6-styles.js); the runtime only injects
     // the CSS-variable VALUES derived from the tokens above, which is what

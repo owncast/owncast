@@ -1,9 +1,8 @@
-import { Alert, Input, Space, Spin, Collapse, Typography, Button } from 'antd';
+import { Alert, Input, Space, Spin, Collapse, Typography, Button } from 'antd6';
 import dynamic from 'next/dynamic';
 import React, { FC, useState } from 'react';
 import { isValidUrl } from '../../../utils/validators';
 
-const { Panel } = Collapse;
 const { Link } = Typography;
 
 // Lazy loaded components
@@ -118,7 +117,7 @@ export const IndieAuthModal: FC<IndieAuthModalProps> = ({
 
   return (
     <Spin spinning={loading}>
-      <Space direction="vertical">
+      <Space orientation="vertical">
         {message}
         {errorMessageText && (
           <Alert message="Error" description={errorMessageText} type="error" showIcon />
@@ -139,22 +138,30 @@ export const IndieAuthModal: FC<IndieAuthModalProps> = ({
           }
         />
 
-        <Collapse ghost>
-          <Panel key="header" header="Learn more about using IndieAuth to authenticate with chat.">
-            <p>
-              IndieAuth allows for a completely independent and decentralized way of identifying
-              yourself using your own domain.
-            </p>
-
-            <p>
-              If you run an Owncast instance, you can use that domain here. Otherwise,{' '}
-              <Link href="https://indieauth.net/#providers">
-                learn more about how you can support IndieAuth
-              </Link>
-              .
-            </p>
-          </Panel>
-        </Collapse>
+        <Collapse
+          ghost
+          items={[
+            {
+              key: 'header',
+              label: 'Learn more about using IndieAuth to authenticate with chat.',
+              children: (
+                <>
+                  <p>
+                    IndieAuth allows for a completely independent and decentralized way of
+                    identifying yourself using your own domain.
+                  </p>
+                  <p>
+                    If you run an Owncast instance, you can use that domain here. Otherwise,{' '}
+                    <Link href="https://indieauth.net/#providers">
+                      learn more about how you can support IndieAuth
+                    </Link>
+                    .
+                  </p>
+                </>
+              ),
+            },
+          ]}
+        />
         <div>
           <strong>Note</strong>: This is for authentication purposes only, and no personal
           information will be accessed or stored.

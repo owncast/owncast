@@ -119,6 +119,9 @@ const INCLUDED_COMPONENTS = [
   'Spin',
   // Browser notifications modal (components/modals/BrowserNotifyModal)
   // (uses the same set as above)
+  // Auth modal (components/modals/AuthModal + FediAuthModal + IndieAuthModal)
+  'Tabs',
+  'Collapse',
 ];
 
 const unknown = INCLUDED_COMPONENTS.filter(name => !antd[name]);
