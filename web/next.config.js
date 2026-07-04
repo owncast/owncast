@@ -108,6 +108,11 @@ module.exports = async phase => {
         swcMinify: true,
         transpilePackages: [
           'antd',
+          // antd v6, installed under the "antd6" alias during the
+          // incremental v4 -> v6 migration, and its scoped rc-component
+          // dependencies.
+          'antd6',
+          '@rc-component',
           '@ant-design',
           'rc-util',
           'rc-pagination',
