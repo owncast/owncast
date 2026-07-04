@@ -20,6 +20,12 @@
       "titleColor": "#e2e8f0",
       "contentBg": "#e2e8f0",
       "wireframe": true
+    },
+    "Tabs": {
+      "itemActiveColor": "#6544e9",
+      "itemSelectedColor": "#6544e9",
+      "itemHoverColor": "#7a5cf3",
+      "inkBarColor": "#6544e9"
     }
   }
 }
