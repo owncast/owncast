@@ -1,4 +1,4 @@
-import { MenuProps, Dropdown, Button } from 'antd';
+import { MenuProps, Dropdown, Button } from 'antd6';
 import classnames from 'classnames';
 
 import { useRecoilState, useRecoilValue } from 'recoil';

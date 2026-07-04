@@ -44,12 +44,14 @@ type TokenOverrides = NonNullable<ThemeConfig['token']>;
 type ComponentOverrides = NonNullable<ThemeConfig['components']>;
 type ModalOverrides = NonNullable<ComponentOverrides['Modal']>;
 type TabsOverrides = NonNullable<ComponentOverrides['Tabs']>;
+type DropdownOverrides = NonNullable<ComponentOverrides['Dropdown']>;
 
 function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
   const vars = appearanceVariables || {};
   const token: TokenOverrides = { ...defaultTheme.token };
   const modal: ModalOverrides = { ...defaultTheme.components?.Modal };
   const tabs: TabsOverrides = { ...defaultTheme.components?.Tabs };
+  const dropdown: DropdownOverrides = { ...defaultTheme.components?.Dropdown };
 
   if (vars['theme-color-action']) {
     token.colorPrimary = vars['theme-color-action'];
@@ -89,9 +91,19 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
     modal.contentBg = vars['theme-color-components-modal-content-background'];
   }
 
+  if (vars['theme-color-components-menu-background']) {
+    dropdown.colorBgElevated = vars['theme-color-components-menu-background'];
+  }
+  if (vars['theme-color-components-menu-item-text']) {
+    dropdown.colorText = vars['theme-color-components-menu-item-text'];
+  }
+  if (vars['theme-color-components-menu-item-hover-bg']) {
+    dropdown.controlItemBgHover = vars['theme-color-components-menu-item-hover-bg'];
+  }
+
   return {
     token,
-    components: { Modal: modal, Tabs: tabs },
+    components: { Modal: modal, Tabs: tabs, Dropdown: dropdown },
     // Component style RULES come from the pre-extracted styles/antd6.css
     // (see build-scripts/extract-antd6-styles.js); the runtime only injects
     // the CSS-variable VALUES derived from the tokens above, which is what

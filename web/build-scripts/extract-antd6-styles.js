@@ -122,6 +122,9 @@ const INCLUDED_COMPONENTS = [
   // Auth modal (components/modals/AuthModal + FediAuthModal + IndieAuthModal)
   'Tabs',
   'Collapse',
+  // User dropdown (components/common/UserDropdown)
+  'Dropdown',
+  'Menu',
 ];
 
 const unknown = INCLUDED_COMPONENTS.filter(name => !antd[name]);
