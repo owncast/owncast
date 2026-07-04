@@ -68,11 +68,21 @@ function install_ffmpeg() {
 }
 
 function start_owncast() {
+	# Refuse to run if something already answers on the test port. The
+	# readiness check below polls http://localhost:8080, so a pre-existing
+	# server (most commonly a `go run main.go` dev backend) would answer it
+	# and the whole suite would silently run against that instance and its
+	# database instead of the throwaway one started here.
+	if curl -fsS -o /dev/null "http://localhost:8080/api/status" 2>/dev/null; then
+		echo "ERROR: something is already serving http://localhost:8080." >&2
+		echo "Stop it before running this suite (it would be tested, and its database modified, instead of the throwaway test instance)." >&2
+		exit 1
+	fi
+
 	# Build and run owncast from source
 	echo "Building owncast..."
 	pushd "$(git rev-parse --show-toplevel)" >/dev/null
 	CGO_ENABLED=1 go build -o owncast main.go
-
 	echo "Running owncast..."
 	./owncast -database "$TEMP_DB" &
 	SERVER_PID=$!
