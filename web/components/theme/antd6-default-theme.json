@@ -26,6 +26,10 @@
       "itemSelectedColor": "#6544e9",
       "itemHoverColor": "#7a5cf3",
       "inkBarColor": "#6544e9"
+    },
+    "Dropdown": {
+      "fontSize": 13,
+      "paddingBlock": 5
     }
   }
 }
