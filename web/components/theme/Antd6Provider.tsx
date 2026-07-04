@@ -4,14 +4,16 @@ import type { ThemeConfig } from 'antd6';
 import { useRecoilValue } from 'recoil';
 import { ClientConfig } from '../../interfaces/client-config.model';
 import { clientConfigStateAtom } from '../stores/ClientConfigStore';
+import antd6DefaultTheme from './antd6-default-theme.json';
 
 /*
 Theme bridge for Ant Design v6 components during the incremental v4 -> v6
 migration.
 
 antd v6 is installed under the npm alias "antd6" so it can coexist with v4.
-Components migrated to v6 must be wrapped in this provider. It does two
-things:
+There is exactly ONE instance of this provider, mounted in pages/_app.tsx
+(and mirrored as a Storybook decorator in .storybook/preview.js); migrated
+components just import from "antd6". It does two things:
 
 1. Scopes v6 under the "ant6" class prefix so the global v4 Less styles
 	 (.ant-*) cannot bleed into v6 components, and vice versa. When the
@@ -22,41 +24,17 @@ things:
 	 customizations arrive through clientConfig.appearanceVariables (the same
 	 values Theme.tsx sets as CSS variables) and override the defaults.
 
-v6 runs in CSS-variables mode by default, so token changes apply live
-without style recomputation.
+Component style RULES are pre-extracted at build time into styles/antd6.css
+(zeroRuntime mode); the runtime injects only the CSS-variable values for the
+tokens, so theme changes apply live with no runtime style generation.
 */
 
 export const ANTD6_PREFIX = 'ant6';
 
-// Defaults mirroring web/style-definitions/tokens (default theme). If the
-// style-dictionary defaults change, these need to change with them.
-const defaultTheme: ThemeConfig = {
-  token: {
-    colorPrimary: '#6544e9',
-    colorLink: '#6544e9',
-    colorLinkHover: '#7a5cf3',
-    colorLinkActive: '#7a5cf3',
-    borderRadius: 9,
-    colorBgContainer: '#ffffff',
-    colorBgLayout: '#e2e8f0',
-    colorBgElevated: '#ffffff',
-    colorText: '#12161d',
-    colorTextSecondary: '#5d5f72',
-    colorError: '#ff4b39',
-    colorWarning: '#ffc655',
-    fontFamily:
-      "Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
-  },
-  components: {
-    Modal: {
-      headerBg: '#2d3748',
-      titleColor: '#e2e8f0',
-      contentBg: '#e2e8f0',
-      // v4-style modal chrome: distinct header bar with its own background.
-      wireframe: true,
-    },
-  },
-};
+// Defaults mirroring web/style-definitions/tokens (default theme). The JSON
+// is shared with build-scripts/extract-antd6-styles.js, which bakes these
+// values into the pre-extracted stylesheet as the pre-hydration fallback.
+const defaultTheme = antd6DefaultTheme as ThemeConfig;
 
 // Map the admin-customizable Owncast appearance variables (documented at
 // https://owncast.online and set as CSS variables by Theme.tsx) onto v6
@@ -104,7 +82,19 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
     modal.contentBg = vars['theme-color-components-modal-content-background'];
   }
 
-  return { token, components: { Modal: modal } };
+  return {
+    token,
+    components: { Modal: modal },
+    // Component style RULES come from the pre-extracted styles/antd6.css
+    // (see build-scripts/extract-antd6-styles.js); the runtime only injects
+    // the CSS-variable VALUES derived from the tokens above, which is what
+    // keeps dynamic theming working with no runtime rule generation and no
+    // FOUC on statically exported pages.
+    zeroRuntime: true,
+    // Must match the extraction script: without the hash class, selectors in
+    // the static CSS line up with the classes components render.
+    hashed: false,
+  };
 }
 
 export type Antd6ProviderProps = {

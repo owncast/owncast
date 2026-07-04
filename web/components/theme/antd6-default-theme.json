@@ -1,0 +1,25 @@
+{
+  "token": {
+    "colorPrimary": "#6544e9",
+    "colorLink": "#6544e9",
+    "colorLinkHover": "#7a5cf3",
+    "colorLinkActive": "#7a5cf3",
+    "borderRadius": 9,
+    "colorBgContainer": "#ffffff",
+    "colorBgLayout": "#e2e8f0",
+    "colorBgElevated": "#ffffff",
+    "colorText": "#12161d",
+    "colorTextSecondary": "#5d5f72",
+    "colorError": "#ff4b39",
+    "colorWarning": "#ffc655",
+    "fontFamily": "Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif"
+  },
+  "components": {
+    "Modal": {
+      "headerBg": "#2d3748",
+      "titleColor": "#e2e8f0",
+      "contentBg": "#e2e8f0",
+      "wireframe": true
+    }
+  }
+}

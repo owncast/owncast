@@ -13,7 +13,8 @@
 		"i18n/index.js",
 		"i18next-parser.config.mjs",
 		"types/index.ts",
-		"scripts/i18n-extract.js"
+		"scripts/i18n-extract.js",
+		"build-scripts/extract-antd6-styles.js"
 	],
 	"ignoreDependencies": [
 		"@fontsource/inter",

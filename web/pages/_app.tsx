@@ -6,6 +6,8 @@ import '../styles/variables.css';
 import '../styles/global.less';
 import '../styles/globals.scss';
 import '../styles/ant-overrides.scss';
+// Pre-extracted Ant Design v6 styles (see build-scripts/extract-antd6-styles.js).
+import '../styles/antd6.css';
 
 // TODO: Move this videojs sass to the player component.
 import '../components/video/VideoJS/VideoJS.scss';
