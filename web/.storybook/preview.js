@@ -1,6 +1,9 @@
 import '../styles/variables.css';
 import '../styles/global.less';
 import '../styles/theme.less';
+// Pre-extracted Ant Design v6 styles: required in zeroRuntime mode (see
+// build-scripts/extract-antd6-styles.js).
+import '../styles/antd6.css';
 import './preview.scss';
 import { themes } from 'storybook/theming';
 import { DocsContainer } from './storybook-theme';
