@@ -57,6 +57,8 @@ const FollowModal = dynamic(
   },
 );
 
+// The notify modal renders its own antd v6 modal shell; it mounts nothing
+// until opened, so no loading skeleton.
 const BrowserNotifyModal = dynamic(
   () =>
     import('../../modals/BrowserNotifyModal/BrowserNotifyModal').then(
@@ -64,7 +66,6 @@ const BrowserNotifyModal = dynamic(
     ),
   {
     ssr: false,
-    loading: () => <Skeleton loading active paragraph={{ rows: 6 }} />,
   },
 );
 
@@ -320,14 +321,12 @@ export const Content: FC = () => {
           />
         </Row>
 
-        <Modal
-          title="Browser Notifications"
-          open={showNotifyModal}
-          afterClose={() => disableNotifyReminderPopup()}
-          handleCancel={() => disableNotifyReminderPopup()}
-        >
-          <BrowserNotifyModal />
-        </Modal>
+        {showNotifyModal && (
+          <BrowserNotifyModal
+            open={showNotifyModal}
+            handleClose={() => disableNotifyReminderPopup()}
+          />
+        )}
         <Row>
           {!name && <Skeleton active loading style={{ marginLeft: '10vw', marginRight: '10vw' }} />}
           {isMobile ? (

@@ -7,6 +7,9 @@ import { DocsContainer } from './storybook-theme';
 import { INITIAL_VIEWPORTS } from 'storybook/viewport';
 import _ from 'lodash';
 import { initialize, mswLoader } from 'msw-storybook-addon';
+import React from 'react';
+import { RecoilRoot } from 'recoil';
+import { Antd6Provider } from '../components/theme/Antd6Provider';
 
 /**
  * Takes an entry of a viewport (from Object.entries()) and converts it
@@ -104,3 +107,20 @@ export const parameters = {
 };
 
 export const loaders = [mswLoader];
+
+// Mirror the app-wide providers from pages/_app.tsx: components migrated to
+// Ant Design v6 (imported from "antd6") rely on Antd6Provider for the ant6
+// class prefix and the Owncast theme tokens. Without this decorator those
+// stories would render unprefixed and unthemed, and v4's global Less styles
+// would bleed into them. Antd6Provider reads Recoil state, so a RecoilRoot
+// wraps it (stories with their own RecoilRoot simply nest; that is
+// supported).
+export const decorators = [
+  Story => (
+    <RecoilRoot>
+      <Antd6Provider>
+        <Story />
+      </Antd6Provider>
+    </RecoilRoot>
+  ),
+];
