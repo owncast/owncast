@@ -17,6 +17,7 @@ import { RecoilRoot } from 'recoil';
 import { useRouter } from 'next/router';
 import { useSelectedLanguage } from 'next-export-i18n';
 import { loadViewerLocale, shouldCleanUrlAfterFlip } from '../utils/localeLoader';
+import { Antd6Provider } from '../components/theme/Antd6Provider';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -61,7 +62,12 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       <LocaleSync />
       {layout(
         <RecoilRoot>
-          <Component {...pageProps} />
+          {/* Single app-wide theme bridge for Ant Design v6 components.
+              Anything that imports from "antd6" is automatically scoped and
+              themed; components never wrap themselves. */}
+          <Antd6Provider>
+            <Component {...pageProps} />
+          </Antd6Provider>
         </RecoilRoot>,
       )}
     </>

@@ -48,11 +48,12 @@ const ChatContainer = dynamic(
   },
 );
 
+// The follow modal renders its own antd v6 modal shell (the first surface
+// migrated to v6), so it mounts nothing until opened; no loading skeleton.
 const FollowModal = dynamic(
   () => import('../../modals/FollowModal/FollowModal').then(mod => mod.FollowModal),
   {
     ssr: false,
-    loading: () => <Skeleton loading active paragraph={{ rows: 8 }} />,
   },
 );
 
@@ -380,18 +381,14 @@ export const Content: FC = () => {
           setExternalActionToDisplay={setExternalActionToDisplay}
         />
       )}
-      <Modal
-        title={`Follow ${name}`}
-        open={showFollowModal}
-        handleCancel={() => setShowFollowModal(false)}
-        width="550px"
-      >
+      {showFollowModal && (
         <FollowModal
+          open={showFollowModal}
           account={fediverseAccount}
           name={name}
           handleClose={() => setShowFollowModal(false)}
         />
-      </Modal>
+      )}
       {isMobile && showChatModal && chatState === ChatState.VISIBLE && (
         <ChatModal
           messages={messages}
