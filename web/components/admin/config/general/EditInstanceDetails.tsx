@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, FC } from 'react';
-import { Button, Modal, Typography } from 'antd';
+import { Button, Modal, Typography } from 'antd6';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';

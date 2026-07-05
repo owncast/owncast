@@ -121,6 +121,23 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
   };
 }
 
+// Static APIs (message, notification, Modal.confirm) render into their own
+// detached React root, outside the provider tree above. Configure that
+// holder once so statics get the same class prefix and default theme;
+// without this they fall back to the unscoped "ant" prefix and collide
+// with the v4 global styles.
+ConfigProvider.config({
+  holderRender: node => (
+    <ConfigProvider
+      prefixCls={ANTD6_PREFIX}
+      iconPrefixCls={`${ANTD6_PREFIX}icon`}
+      theme={buildTheme({})}
+    >
+      {node}
+    </ConfigProvider>
+  ),
+});
+
 export type Antd6ProviderProps = {
   children: ReactNode;
 };

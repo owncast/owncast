@@ -58,10 +58,10 @@ filterTests(['desktop'], () => {
 		});
 
 		it('Can switch between the configuration tabs', () => {
-			cy.get('.config-public-details-page .ant-tabs-tab')
+			cy.get('.config-public-details-page .ant6-tabs-tab')
 				.contains('Appearance')
 				.click();
-			cy.get('.config-public-details-page .ant-tabs-tab-active').should(
+			cy.get('.config-public-details-page .ant6-tabs-tab-active').should(
 				'contain',
 				'Appearance',
 			);

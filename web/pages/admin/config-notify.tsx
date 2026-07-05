@@ -1,4 +1,4 @@
-import { Alert, Button, Col, Row, Typography } from 'antd';
+import { Alert, Button, Col, Row, Typography } from 'antd6';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 

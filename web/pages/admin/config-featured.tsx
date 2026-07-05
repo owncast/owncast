@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { Typography, Alert, Button, Space, Tabs, Badge } from 'antd';
+import { Typography, Alert, Button, Space, Tabs, Badge } from 'antd6';
 import { PlusOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import React, { ReactElement, useContext, useState } from 'react';

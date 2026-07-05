@@ -1,6 +1,6 @@
 // Custom component for AntDesign Button that makes an api call, then displays a confirmation icon upon
 import React, { useState, useEffect, FC } from 'react';
-import { Button, Tooltip } from 'antd';
+import { Button, Tooltip } from 'antd6';
 
 import dynamic from 'next/dynamic';
 import { fetchData, UPDATE_CHAT_MESSGAE_VIZ } from '../../utils/apis';

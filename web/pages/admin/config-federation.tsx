@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { Typography, Modal, Button, Row, Col, Alert } from 'antd';
+import { Typography, Modal, Button, Row, Col, Alert } from 'antd6';
 import React, { ReactElement, useContext, useEffect, useState, FC } from 'react';
 import {
   TEXTFIELD_TYPE_TEXT,

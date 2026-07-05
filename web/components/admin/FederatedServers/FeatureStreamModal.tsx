@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Modal, Form, Input, Alert, Typography } from 'antd';
+import { Modal, Form, Input, Alert, Typography } from 'antd6';
 import { useTranslation } from 'next-export-i18n';
 import { isValidUrl } from '../../../utils/validators';
 import { Translation } from '../../ui/Translation/Translation';

@@ -1,4 +1,4 @@
-import { Modal, Button } from 'antd';
+import { Modal, Button } from 'antd6';
 
 import { FC } from 'react';
 import dynamic from 'next/dynamic';

@@ -140,6 +140,20 @@ const INCLUDED_COMPONENTS = [
   'Layout',
   'Badge',
   'Tooltip',
+  // Remaining admin pages and components (bulk batch: cards, stats, lists,
+  // uploads-adjacent chrome, static message/notification holders)
+  'Card',
+  'Statistic',
+  'Avatar',
+  'List',
+  'Skeleton',
+  'Divider',
+  'Result',
+  'Progress',
+  'Empty',
+  'Checkbox',
+  'message',
+  'notification',
 ];
 
 const unknown = INCLUDED_COMPONENTS.filter(name => !antd[name]);

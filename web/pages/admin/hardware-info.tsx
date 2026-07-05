@@ -1,4 +1,4 @@
-import { Row, Col, Typography, Alert, Spin } from 'antd';
+import { Row, Col, Typography, Alert, Spin } from 'antd6';
 import React, { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';

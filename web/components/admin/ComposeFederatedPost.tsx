@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 
-import { Button, Input, Modal } from 'antd';
+import { Button, Input, Modal } from 'antd6';
 import { STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';
 import { fetchData, FEDERATION_MESSAGE_SEND } from '../../utils/apis';
 

@@ -1,7 +1,7 @@
 // This displays a clickable user name (or whatever children element you provide), and displays a simple tooltip of created time. OnClick a modal with more information about the user is displayed.
 
 import { useState, ReactNode, FC } from 'react';
-import { Tooltip } from 'antd';
+import { Tooltip } from 'antd6';
 import { format } from 'date-fns';
 
 import { UserDetailsModal } from './UserDetailsModal';
