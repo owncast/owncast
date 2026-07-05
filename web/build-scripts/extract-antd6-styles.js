@@ -125,6 +125,11 @@ const INCLUDED_COMPONENTS = [
   // User dropdown (components/common/UserDropdown)
   'Dropdown',
   'Menu',
+  // Admin form wrappers (components/admin/TextField, ToggleSwitch,
+  // TextFieldWithSubmit)
+  'Form',
+  'InputNumber',
+  'Switch',
 ];
 
 const unknown = INCLUDED_COMPONENTS.filter(name => !antd[name]);

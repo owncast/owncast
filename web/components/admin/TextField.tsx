@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { Input, Form, InputNumber, Button } from 'antd';
+import { Input, Form, InputNumber, Button } from 'antd6';
 import { FieldUpdaterFunc } from '../../types/config-section';
 import { StatusState } from '../../utils/input-statuses';
 import { FormStatusIndicator } from './FormStatusIndicator';
