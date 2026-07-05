@@ -1,6 +1,5 @@
-import { Button, Card, Col, Divider, Result, Row } from 'antd';
-import Meta from 'antd/lib/card/Meta';
-import Title from 'antd/lib/typography/Title';
+import { Button, Card, Col, Divider, Result, Row } from 'antd6';
+import Title from 'antd6/lib/typography/Title';
 
 import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
@@ -245,7 +244,11 @@ export default function Help() {
         {questions.map(question => (
           <Col xs={24} lg={12} key={question.title}>
             <Card>
-              <Meta avatar={question.icon} title={question.title} description={question.content} />
+              <Card.Meta
+                avatar={question.icon}
+                title={question.title}
+                description={question.content}
+              />
             </Card>
           </Col>
         ))}
@@ -256,7 +259,11 @@ export default function Help() {
         {otherResources.map(question => (
           <Col xs={24} lg={12} key={question.title}>
             <Card>
-              <Meta avatar={question.icon} title={question.title} description={question.content} />
+              <Card.Meta
+                avatar={question.icon}
+                title={question.title}
+                description={question.content}
+              />
             </Card>
           </Col>
         ))}

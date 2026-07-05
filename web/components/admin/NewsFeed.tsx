@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable react/no-danger */
 import React, { useState, useEffect, FC } from 'react';
-import { Collapse, Typography, Skeleton } from 'antd';
+import { Collapse, Typography, Skeleton } from 'antd6';
 import { format } from 'date-fns';
 
 import { useTranslation } from 'next-export-i18n';

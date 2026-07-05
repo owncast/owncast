@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { Button } from 'antd';
+import { Button } from 'antd6';
 import { FeatureStreamModal, FeatureStreamModalProps } from './FeatureStreamModal';
 
 export default {

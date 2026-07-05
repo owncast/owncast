@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { Alert, Spin } from 'antd';
+import { Alert, Spin } from 'antd6';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-export-i18n';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';

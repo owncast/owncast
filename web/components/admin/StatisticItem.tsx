@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 // TODO: This component should be cleaned up and usage should be re-examined. The types should be reconsidered as well.
 
-import { Typography, Statistic, Card, Progress } from 'antd';
+import { Typography, Statistic, Card, Progress } from 'antd6';
 import { FC } from 'react';
 
 const { Text } = Typography;

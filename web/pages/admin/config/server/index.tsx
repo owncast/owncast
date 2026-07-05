@@ -1,5 +1,5 @@
 import React, { ReactElement, useContext } from 'react';
-import { Tabs } from 'antd';
+import { Tabs } from 'antd6';
 
 import StreamKeys from '../../../../components/admin/config/server/StreamKeys';
 import ServerConfig from '../../../../components/admin/config/server/ServerConfig';

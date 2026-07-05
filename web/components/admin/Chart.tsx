@@ -15,7 +15,7 @@ import {
   ChartOptions,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { Button } from 'antd';
+import { Button } from 'antd6';
 
 ChartJS.register(
   CategoryScale,
@@ -173,7 +173,7 @@ export const Chart: FC<ChartProps> = ({
       <Button
         size="small"
         onClick={downloadChart}
-        type="ghost"
+        ghost
         icon={<DownloadOutlined />}
         className="download-btn"
       />

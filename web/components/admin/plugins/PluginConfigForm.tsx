@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Alert, Button, Form, Input, InputNumber, Spin, Switch, Typography, message } from 'antd';
+import { Alert, Button, Form, Input, InputNumber, Spin, Switch, Typography, message } from 'antd6';
 import { useTranslation } from 'next-export-i18n';
 import { Plugin } from '../../../interfaces/plugin';
 import { Localization } from '../../../types/localization';

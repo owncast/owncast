@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { List, Button, Avatar, Typography, Popconfirm, message } from 'antd';
+import { List, Button, Avatar, Typography, Popconfirm, message } from 'antd6';
 import { useTranslation } from 'next-export-i18n';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { Translation } from '../../ui/Translation/Translation';

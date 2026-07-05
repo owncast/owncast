@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Collapse, Typography } from 'antd';
+import { Collapse, Typography } from 'antd6';
 import {
   TEXTFIELD_TYPE_NUMBER,
   TEXTFIELD_TYPE_PASSWORD,

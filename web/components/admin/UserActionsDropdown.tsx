@@ -1,4 +1,5 @@
-import { Button, Dropdown, Menu, Modal } from 'antd';
+import { Button, Dropdown, Modal } from 'antd6';
+import type { MenuProps } from 'antd6';
 import { FC, ReactNode } from 'react';
 import dynamic from 'next/dynamic';
 import { USER_ENABLED_TOGGLE, USER_SET_MODERATOR, DELETE_USER, fetchData } from '../../utils/apis';
@@ -106,32 +107,28 @@ export const UserActionsDropdown: FC<UserActionsDropdownProps> = ({ user, onChan
       onOk: () => runAction(DELETE_USER, { userId: user.id }),
     });
 
-  const menu = (
-    <Menu
-      items={[
-        {
-          key: 'moderator',
-          label: isModerator ? 'Remove moderator' : 'Add moderator',
-          onClick: onModerator,
-        },
-        {
-          key: 'ban',
-          label: isEnabled ? 'Ban user' : 'Unban user',
-          onClick: onBan,
-        },
-        { type: 'divider' },
-        {
-          key: 'delete',
-          label: 'Delete user',
-          danger: true,
-          onClick: onDelete,
-        },
-      ]}
-    />
-  );
+  const menuItems: MenuProps['items'] = [
+    {
+      key: 'moderator',
+      label: isModerator ? 'Remove moderator' : 'Add moderator',
+      onClick: onModerator,
+    },
+    {
+      key: 'ban',
+      label: isEnabled ? 'Ban user' : 'Unban user',
+      onClick: onBan,
+    },
+    { type: 'divider' },
+    {
+      key: 'delete',
+      label: 'Delete user',
+      danger: true,
+      onClick: onDelete,
+    },
+  ];
 
   return (
-    <Dropdown overlay={menu} trigger={['click']}>
+    <Dropdown menu={{ items: menuItems }} trigger={['click']}>
       <Button size="small">
         Actions <DownOutlined />
       </Button>

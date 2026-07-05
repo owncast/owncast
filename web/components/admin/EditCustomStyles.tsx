@@ -1,6 +1,6 @@
 // EDIT CUSTOM CSS STYLES
 import React, { useState, useEffect, useContext, FC } from 'react';
-import { Typography, Button } from 'antd';
+import { Typography, Button } from 'antd6';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { css } from '@codemirror/lang-css';
