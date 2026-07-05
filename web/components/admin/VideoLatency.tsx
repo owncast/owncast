@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, FC } from 'react';
-import { Typography, Slider } from 'antd';
+import { Typography, Slider } from 'antd6';
 import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { AlertMessageContext } from '../../utils/alert-message-context';
@@ -126,7 +126,7 @@ export const VideoLatency: FC = () => {
 
       <div className="segment-slider-container">
         <Slider
-          tipFormatter={value => SLIDER_COMMENTS[value]}
+          tooltip={{ formatter: value => SLIDER_COMMENTS[value] }}
           onChange={handleChange}
           min={0}
           max={4}

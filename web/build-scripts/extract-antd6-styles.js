@@ -130,6 +130,12 @@ const INCLUDED_COMPONENTS = [
   'Form',
   'InputNumber',
   'Switch',
+  // Admin select/slider/tag wrappers (CodecSelector, AutoplaySelector,
+  // VideoLatency, EditValueArray)
+  'Select',
+  'Slider',
+  'Tag',
+  'Popconfirm',
 ];
 
 const unknown = INCLUDED_COMPONENTS.filter(name => !antd[name]);
