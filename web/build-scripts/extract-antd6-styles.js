@@ -136,6 +136,10 @@ const INCLUDED_COMPONENTS = [
   'Slider',
   'Tag',
   'Popconfirm',
+  // Admin main layout (components/admin/MainLayout)
+  'Layout',
+  'Badge',
+  'Tooltip',
 ];
 
 const unknown = INCLUDED_COMPONENTS.filter(name => !antd[name]);

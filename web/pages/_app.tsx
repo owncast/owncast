@@ -62,16 +62,15 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <>
       <LocaleSync />
-      {layout(
-        <RecoilRoot>
-          {/* Single app-wide theme bridge for Ant Design v6 components.
-              Anything that imports from "antd6" is automatically scoped and
-              themed; components never wrap themselves. */}
-          <Antd6Provider>
-            <Component {...pageProps} />
-          </Antd6Provider>
-        </RecoilRoot>,
-      )}
+      {/* RecoilRoot and the Ant Design v6 theme bridge wrap the page
+          layout too, not just the page component: layouts attached via
+          getLayout (e.g. the admin's AdminLayout/MainLayout) also render
+          antd6 components and must be inside the provider, or they fall
+          back to the unscoped default prefix and collide with v4's global
+          styles. */}
+      <RecoilRoot>
+        <Antd6Provider>{layout(<Component {...pageProps} />)}</Antd6Provider>
+      </RecoilRoot>
     </>
   );
 }
