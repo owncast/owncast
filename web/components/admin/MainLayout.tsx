@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
-import { Layout, Menu, Alert, Button, Space, Tooltip, Badge } from 'antd';
+import { Layout, Menu, Alert, Button, Space, Tooltip, Badge } from 'antd6';
 
 import { useTranslation } from 'next-export-i18n';
 import classNames from 'classnames';
@@ -347,7 +347,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       ],
     },
     upgradeVersion && {
-      type: 'divider',
+      type: 'divider' as const,
       key: 'upgrade-divider',
     },
     upgradeVersion && {
@@ -420,7 +420,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
 
       <Layout className="layout-main">
         <Header className="layout-header">
-          <Space direction="horizontal">
+          <Space orientation="horizontal">
             <Tooltip title="Compose post to your social followers">
               <Button
                 type="link"
@@ -443,7 +443,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
               onChange={handleStreamTitleChanged}
             />
           </div>
-          <Space direction="horizontal">{statusIndicator}</Space>
+          <Space orientation="horizontal">{statusIndicator}</Space>
         </Header>
 
         {headerAlertMessage}
