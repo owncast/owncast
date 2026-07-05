@@ -9260,6 +9260,7 @@ textarea.ant6-input-filled.ant6-input-status-warning:not(.ant6-input-disabled),
   }
 }
 .css-var-R0.ant6-tabs-css-var {
+  --ant-6-color-border-secondary: rgba(0, 0, 0, 0.1);
   --ant-6-tabs-z-index-popup: 1050;
   --ant-6-tabs-card-bg: rgba(0, 0, 0, 0.02);
   --ant-6-tabs-card-height: 40px;

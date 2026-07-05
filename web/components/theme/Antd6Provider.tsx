@@ -100,6 +100,11 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
   if (vars['theme-color-components-menu-item-hover-bg']) {
     dropdown.controlItemBgHover = vars['theme-color-components-menu-item-hover-bg'];
   }
+  if (vars['theme-color-components-menu-item-focus-bg']) {
+    // v4 themed the tab bar divider with this variable (ant-overrides.scss
+    // .ant-tabs-nav::before); the v6 equivalent is the Tabs border token.
+    tabs.colorBorderSecondary = vars['theme-color-components-menu-item-focus-bg'];
+  }
 
   return {
     token,

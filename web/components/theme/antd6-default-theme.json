@@ -25,7 +25,8 @@
       "itemActiveColor": "#6544e9",
       "itemSelectedColor": "#6544e9",
       "itemHoverColor": "#7a5cf3",
-      "inkBarColor": "#6544e9"
+      "inkBarColor": "#6544e9",
+      "colorBorderSecondary": "rgba(0, 0, 0, 0.1)"
     },
     "Dropdown": {
       "fontSize": 13,
