@@ -172,6 +172,31 @@ func GetIRIStringFromObjectProperty(object vocab.ActivityStreamsObjectProperty) 
 	return iri.String(), nil
 }
 
+// GetIRIFromInstrumentProperty safely extracts the IRI identifying the first
+// value of an ActivityStreamsInstrumentProperty. The value may be a plain IRI
+// or an embedded object carrying its own id, as Mastodon sends for the quote
+// post inside a QuoteRequest.
+func GetIRIFromInstrumentProperty(instrument vocab.ActivityStreamsInstrumentProperty) (*url.URL, error) {
+	if instrument == nil || instrument.Len() == 0 {
+		return nil, fmt.Errorf("%w: instrument property is empty or nil", ErrMissingIRI)
+	}
+	first := instrument.At(0)
+	if first == nil {
+		return nil, fmt.Errorf("%w: instrument property first element is nil", ErrMissingIRI)
+	}
+	if first.IsIRI() {
+		iri := first.GetIRI()
+		if iri == nil {
+			return nil, fmt.Errorf("%w: instrument IRI is nil", ErrMissingIRI)
+		}
+		return iri, nil
+	}
+	if t := first.GetType(); t != nil {
+		return GetIRIFromJSONLDIdProperty(t.GetJSONLDId())
+	}
+	return nil, fmt.Errorf("%w: instrument has neither IRI nor embedded object", ErrMissingIRI)
+}
+
 // GetIRIFromJSONLDIdProperty safely extracts the IRI from a JSONLDIdProperty.
 // Returns the IRI and nil error on success, or nil and an error if the IRI cannot be extracted.
 func GetIRIFromJSONLDIdProperty(id vocab.JSONLDIdProperty) (*url.URL, error) {

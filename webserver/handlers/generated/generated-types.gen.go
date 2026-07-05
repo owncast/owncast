@@ -180,6 +180,7 @@ type AdminConfigValue_Value struct {
 // AdminFederationConfig defines model for AdminFederationConfig.
 type AdminFederationConfig struct {
 	BlockedDomains   *[]string `json:"blockedDomains,omitempty"`
+	EnableQuotes     *bool     `json:"enableQuotes,omitempty"`
 	Enabled          *bool     `json:"enabled,omitempty"`
 	GoLiveMessage    *string   `json:"goLiveMessage,omitempty"`
 	HideFollowersTab *bool     `json:"hideFollowersTab,omitempty"`
@@ -1186,6 +1187,9 @@ type SetFederationBlockDomainsJSONRequestBody = AdminConfigValue
 
 // SetFederationEnabledJSONRequestBody defines body for SetFederationEnabled for application/json ContentType.
 type SetFederationEnabledJSONRequestBody = AdminConfigValue
+
+// SetFederationEnableQuotesJSONRequestBody defines body for SetFederationEnableQuotes for application/json ContentType.
+type SetFederationEnableQuotesJSONRequestBody = AdminConfigValue
 
 // SetFederationHideFollowersTabJSONRequestBody defines body for SetFederationHideFollowersTab for application/json ContentType.
 type SetFederationHideFollowersTabJSONRequestBody = AdminConfigValue

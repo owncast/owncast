@@ -104,6 +104,14 @@ func (s *Service) GetObjectByIRI(iri string) (string, bool, time.Time, error) {
 	return string(row.Value), row.LiveNotification.Bool, row.CreatedAt.Time, err
 }
 
+// GetNoteByIRI returns a single stored post (Note) by its IRI. Other objects
+// in the outbox store, such as QuoteAuthorization stamps and directory pings,
+// are not returned.
+func (s *Service) GetNoteByIRI(iri string) (string, bool, time.Time, error) {
+	row, err := s.datastore.GetQueries().GetNoteFromOutboxByIRI(context.Background(), iri)
+	return string(row.Value), row.LiveNotification.Bool, row.CreatedAt.Time, err
+}
+
 // GetLocalPostCount returns the number of posts existing locally.
 func (s *Service) GetLocalPostCount() (int64, error) {
 	ctx := context.Background()

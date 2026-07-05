@@ -2,6 +2,7 @@
 
 set -e
 
+# shellcheck disable=SC1091  # tools.sh is sourced at runtime; not available to the linter
 source ../tools.sh
 
 # Install the node test framework

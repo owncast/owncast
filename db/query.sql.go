@@ -41,7 +41,8 @@ type AddAuthForUserParams struct {
 }
 
 func (q *Queries) AddAuthForUser(ctx context.Context, arg AddAuthForUserParams) error {
-	_, err := q.db.ExecContext(ctx, addAuthForUser,
+	_, err := q.db.ExecContext(
+		ctx, addAuthForUser,
 		arg.UserID,
 		arg.AuthKey,
 		arg.Type,
@@ -68,7 +69,8 @@ type AddFederatedServerParams struct {
 }
 
 func (q *Queries) AddFederatedServer(ctx context.Context, arg AddFederatedServerParams) error {
-	_, err := q.db.ExecContext(ctx, addFederatedServer,
+	_, err := q.db.ExecContext(
+		ctx, addFederatedServer,
 		arg.Iri,
 		arg.Name,
 		arg.LogoUrl,
@@ -98,7 +100,8 @@ type AddFollowerParams struct {
 }
 
 func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error {
-	_, err := q.db.ExecContext(ctx, addFollower,
+	_, err := q.db.ExecContext(
+		ctx, addFollower,
 		arg.Iri,
 		arg.Inbox,
 		arg.SharedInbox,
@@ -139,7 +142,8 @@ type AddToAcceptedActivitiesParams struct {
 }
 
 func (q *Queries) AddToAcceptedActivities(ctx context.Context, arg AddToAcceptedActivitiesParams) error {
-	_, err := q.db.ExecContext(ctx, addToAcceptedActivities,
+	_, err := q.db.ExecContext(
+		ctx, addToAcceptedActivities,
 		arg.Iri,
 		arg.Actor,
 		arg.Type,
@@ -160,7 +164,8 @@ type AddToOutboxParams struct {
 }
 
 func (q *Queries) AddToOutbox(ctx context.Context, arg AddToOutboxParams) error {
-	_, err := q.db.ExecContext(ctx, addToOutbox,
+	_, err := q.db.ExecContext(
+		ctx, addToOutbox,
 		arg.Iri,
 		arg.Value,
 		arg.Type,
@@ -223,7 +228,8 @@ type ChangeDisplayNameParams struct {
 }
 
 func (q *Queries) ChangeDisplayName(ctx context.Context, arg ChangeDisplayNameParams) error {
-	_, err := q.db.ExecContext(ctx, changeDisplayName,
+	_, err := q.db.ExecContext(
+		ctx, changeDisplayName,
 		arg.DisplayName,
 		arg.PreviousNames,
 		arg.NamechangedAt,
@@ -793,9 +799,12 @@ func (q *Queries) GetInboundActivityCount(ctx context.Context) (int64, error) {
 }
 
 const getLocalPostCount = `-- name: GetLocalPostCount :one
-SELECT count(*) FROM ap_outbox
+SELECT count(*) FROM ap_outbox WHERE type = 'Note'
 `
 
+// Only posts (Notes) count: the outbox table also stores other
+// dereferenceable objects, such as QuoteAuthorization stamps, that are not
+// posts and must not inflate the public post count.
 func (q *Queries) GetLocalPostCount(ctx context.Context) (int64, error) {
 	row := q.db.QueryRowContext(ctx, getLocalPostCount)
 	var count int64
@@ -840,6 +849,26 @@ func (q *Queries) GetMessagesFromUser(ctx context.Context, userID sql.NullString
 		return nil, err
 	}
 	return items, nil
+}
+
+const getNoteFromOutboxByIRI = `-- name: GetNoteFromOutboxByIRI :one
+SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = ? AND type = 'Note'
+`
+
+type GetNoteFromOutboxByIRIRow struct {
+	Value            []byte
+	LiveNotification sql.NullBool
+	CreatedAt        sql.NullTime
+}
+
+// Like GetObjectFromOutboxByIRI but only matches posts (Notes). Used to
+// decide whether an object may be quoted: stamps and directory pings are
+// stored in the same table and are not quotable.
+func (q *Queries) GetNoteFromOutboxByIRI(ctx context.Context, iri string) (GetNoteFromOutboxByIRIRow, error) {
+	row := q.db.QueryRowContext(ctx, getNoteFromOutboxByIRI, iri)
+	var i GetNoteFromOutboxByIRIRow
+	err := row.Scan(&i.Value, &i.LiveNotification, &i.CreatedAt)
+	return i, err
 }
 
 const getNotificationDestinationsForChannel = `-- name: GetNotificationDestinationsForChannel :many
@@ -887,7 +916,7 @@ func (q *Queries) GetObjectFromOutboxByIRI(ctx context.Context, iri string) (Get
 }
 
 const getOutboxWithOffset = `-- name: GetOutboxWithOffset :many
-SELECT value FROM ap_outbox LIMIT ? OFFSET ?
+SELECT value FROM ap_outbox WHERE type = 'Note' LIMIT ? OFFSET ?
 `
 
 type GetOutboxWithOffsetParams struct {
@@ -895,6 +924,9 @@ type GetOutboxWithOffsetParams struct {
 	Offset int64
 }
 
+// Only posts (Notes) are listed in the public outbox collection. Other stored
+// objects, such as QuoteAuthorization stamps, stay fetchable by IRI but are
+// not part of the collection.
 func (q *Queries) GetOutboxWithOffset(ctx context.Context, arg GetOutboxWithOffsetParams) ([][]byte, error) {
 	rows, err := q.db.QueryContext(ctx, getOutboxWithOffset, arg.Limit, arg.Offset)
 	if err != nil {
@@ -1366,7 +1398,8 @@ type GetUsersPaginatedRow struct {
 // the two exist as separate queries because sqlc can't bind a sort direction
 // into ORDER BY.
 func (q *Queries) GetUsersPaginated(ctx context.Context, arg GetUsersPaginatedParams) ([]GetUsersPaginatedRow, error) {
-	rows, err := q.db.QueryContext(ctx, getUsersPaginated,
+	rows, err := q.db.QueryContext(
+		ctx, getUsersPaginated,
 		arg.Search,
 		arg.Status,
 		arg.PageOffset,
@@ -1440,7 +1473,8 @@ type GetUsersPaginatedAscRow struct {
 // Oldest-first counterpart to GetUsersPaginated. Same @search/@status filter,
 // only the created_at ordering differs.
 func (q *Queries) GetUsersPaginatedAsc(ctx context.Context, arg GetUsersPaginatedAscParams) ([]GetUsersPaginatedAscRow, error) {
-	rows, err := q.db.QueryContext(ctx, getUsersPaginatedAsc,
+	rows, err := q.db.QueryContext(
+		ctx, getUsersPaginatedAsc,
 		arg.Search,
 		arg.Status,
 		arg.PageOffset,
@@ -1591,7 +1625,8 @@ type UpdateFederatedServerFollowStatusParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerFollowStatus(ctx context.Context, arg UpdateFederatedServerFollowStatusParams) error {
-	_, err := q.db.ExecContext(ctx, updateFederatedServerFollowStatus,
+	_, err := q.db.ExecContext(
+		ctx, updateFederatedServerFollowStatus,
 		arg.FollowStatus,
 		arg.Pending,
 		arg.AcceptedAt,
@@ -1614,7 +1649,8 @@ type UpdateFederatedServerMetadataParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerMetadata(ctx context.Context, arg UpdateFederatedServerMetadataParams) error {
-	_, err := q.db.ExecContext(ctx, updateFederatedServerMetadata,
+	_, err := q.db.ExecContext(
+		ctx, updateFederatedServerMetadata,
 		arg.Name,
 		arg.DisplayName,
 		arg.Summary,
@@ -1636,7 +1672,8 @@ type UpdateFederatedServerOnlineStatusParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerOnlineStatus(ctx context.Context, arg UpdateFederatedServerOnlineStatusParams) error {
-	_, err := q.db.ExecContext(ctx, updateFederatedServerOnlineStatus,
+	_, err := q.db.ExecContext(
+		ctx, updateFederatedServerOnlineStatus,
 		arg.IsOnline,
 		arg.LastSeenOnline,
 		arg.LastStatusUpdate,
@@ -1660,7 +1697,8 @@ type UpdateFederatedServerStatusParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerStatus(ctx context.Context, arg UpdateFederatedServerStatusParams) error {
-	_, err := q.db.ExecContext(ctx, updateFederatedServerStatus,
+	_, err := q.db.ExecContext(
+		ctx, updateFederatedServerStatus,
 		arg.IsOnline,
 		arg.StreamTitle,
 		arg.StreamDescription,
@@ -1686,7 +1724,8 @@ type UpdateFollowerByIRIParams struct {
 }
 
 func (q *Queries) UpdateFollowerByIRI(ctx context.Context, arg UpdateFollowerByIRIParams) error {
-	_, err := q.db.ExecContext(ctx, updateFollowerByIRI,
+	_, err := q.db.ExecContext(
+		ctx, updateFollowerByIRI,
 		arg.Inbox,
 		arg.SharedInbox,
 		arg.Name,

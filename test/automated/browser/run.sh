@@ -3,6 +3,7 @@
 set -o errexit
 set -o pipefail
 
+# shellcheck disable=SC1091  # tools.sh is sourced at runtime; not available to the linter
 source ../tools.sh
 
 BUILD_ID=$((RANDOM % 7200 + 600))

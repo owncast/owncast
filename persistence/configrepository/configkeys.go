@@ -42,6 +42,7 @@ const (
 	federationPrivateKey            = "federation_private"
 	federationGoLiveMessageKey      = "federation_go_live_message"
 	federationShowEngagementKey     = "federation_show_engagement"
+	federationEnableQuotesKey       = "federation_enable_quotes"
 	federationHideFollowersTabKey   = "federation_hide_followers_tab"
 	federationBlockedDomainsKey     = "federation_blocked_domains"
 	suggestedUsernamesKey           = "suggested_usernames"
