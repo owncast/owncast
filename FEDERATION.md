@@ -13,6 +13,7 @@ This document describes how Owncast federates with other ActivityPub servers, fo
 
 - [FEP-67ff: FEDERATION.md](https://codeberg.org/fediverse/fep/src/branch/main/fep/67ff/fep-67ff.md)
 - [FEP-f1d5: NodeInfo in Fediverse Software](https://codeberg.org/fediverse/fep/src/branch/main/fep/f1d5/fep-f1d5.md)
+- [FEP-044f: Consent-respecting quote posts](https://codeberg.org/fediverse/fep/src/branch/main/fep/044f/fep-044f.md)
 
 ## Actor
 
@@ -41,6 +42,9 @@ Owncast actors do not follow other actors. The `following` collection endpoint r
 | `Undo` | `Follow` | No | Yes | Removes the follower. |
 | `Like` | `Note` | No | Yes | Optionally displayed in live chat. |
 | `Announce` | `Note` | No | Yes | Optionally displayed in live chat. |
+| `QuoteRequest` | `Note` | No | Yes | A remote user asking to quote one of our posts (FEP-044f). |
+| `Accept` | `QuoteRequest` | Yes | No | Sent when the quoted post exists and quoting is allowed. Carries the `QuoteAuthorization` stamp IRI in `result`. |
+| `Reject` | `QuoteRequest` | Yes | No | Sent for unknown posts, while in private mode, or when quoting is disabled. |
 
 Owncast is a broadcast-only service. It does not follow other actors or accept incoming posts.
 
@@ -52,6 +56,7 @@ Posts from Owncast are `Note` objects with:
 - `attachment`: `Image` object with stream thumbnail (for go-live posts)
 - `tag`: Array containing `Hashtag` and `Mention` objects
 - `sensitive`: `true` if the stream is marked NSFW
+- `interactionPolicy`: Declares that anyone may quote the post (`canQuote` with `automaticApproval` set to the public collection), attached to public posts unless the operator disables quoting
 
 ### Go-Live Announcements
 
@@ -64,6 +69,16 @@ When a stream starts, Owncast sends a `Create(Note)` containing:
 ### Hashtags
 
 Hashtags use `toot:Hashtag` type and link to `https://directory.owncast.online/tags/{tag}` for discovery across Owncast instances.
+
+## Quote Posts
+
+Owncast implements the quoted-server side of [FEP-044f](https://codeberg.org/fediverse/fep/src/branch/main/fep/044f/fep-044f.md): remote users can quote Owncast posts with the consent flow used by Mastodon 4.5+ and GoToSocial.
+
+- Public posts carry an `interactionPolicy` advertising that quoting is automatically approved for anyone.
+- An inbound `QuoteRequest` for a post this server authored is answered with an `Accept` whose `result` is the IRI of a stored `QuoteAuthorization` stamp. The stamp is dereferenceable at that IRI so third-party servers can verify the quote was approved.
+- A `QuoteRequest` for an unknown object, any request while private mode is enabled, or any request while the operator has disabled quoting receives a `Reject`.
+- Quoting can be turned off by the operator in the admin under the Social configuration ("Allow quotes"). It is enabled by default.
+- Owncast does not author quote posts and does not revoke previously issued stamps.
 
 ## Addressing
 

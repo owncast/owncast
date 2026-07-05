@@ -46,7 +46,7 @@ func (s *Service) handle(request apmodels.InboxRequest) {
 		return
 	}
 
-	if err := s.resolver.Resolve(context.Background(), request.Body, s.handleUpdateRequest, s.handleFollowInboxRequest, s.handleLikeRequest, s.handleAnnounceRequest, s.handleUndoInboxRequest, s.handleCreateRequest, s.handleOfferInboxRequest, s.handleAcceptInboxRequest, s.handleRejectInboxRequest, s.handleLeaveInboxRequest); err != nil {
+	if err := s.resolver.Resolve(context.Background(), request.Body, s.handleUpdateRequest, s.handleFollowInboxRequest, s.handleLikeRequest, s.handleAnnounceRequest, s.handleUndoInboxRequest, s.handleCreateRequest, s.handleOfferInboxRequest, s.handleAcceptInboxRequest, s.handleRejectInboxRequest, s.handleLeaveInboxRequest, s.handleQuoteRequestInboxRequest); err != nil {
 		log.Debugln("resolver error:", err)
 	}
 }

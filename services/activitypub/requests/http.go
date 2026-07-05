@@ -12,6 +12,9 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/services/activitypub/crypto"
+	"github.com/owncast/owncast/utils"
+
+	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -72,4 +75,16 @@ func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL, si
 	}
 
 	return req, nil
+}
+
+// validateRemoteInbox rejects inbox URLs that could be used for SSRF:
+// non-HTTPS schemes and internal/loopback hosts.
+func validateRemoteInbox(inbox *url.URL) error {
+	if inbox.Scheme != "https" {
+		return errors.Errorf("rejecting non-HTTPS inbox URL for SSRF protection: %s", inbox.String())
+	}
+	if utils.IsHostnameInternal(inbox.Hostname()) {
+		return errors.Errorf("rejecting internal/loopback inbox URL for SSRF protection: %s", inbox.String())
+	}
+	return nil
 }

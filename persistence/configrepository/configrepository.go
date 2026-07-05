@@ -98,6 +98,8 @@ type ConfigRepository interface {
 	GetFederationIsPrivate() bool
 	SetFederationShowEngagement(showEngagement bool) error
 	GetFederationShowEngagement() bool
+	SetFederationEnableQuotes(enabled bool) error
+	GetFederationEnableQuotes() bool
 	SetFederationHideFollowersTab(hidden bool) error
 	GetFederationHideFollowersTab() bool
 	SetBlockedFederatedDomains(domains []string) error

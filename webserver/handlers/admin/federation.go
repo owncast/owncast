@@ -97,6 +97,30 @@ func (a *Admin) SetFederationShowEngagement(w http.ResponseWriter, r *http.Reque
 	webutils.WriteSimpleResponse(w, true, "federation show engagement saved")
 }
 
+// SetFederationEnableQuotes will set if posts from this server can be quoted.
+func (a *Admin) SetFederationEnableQuotes(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	enabled, ok := configValue.Value.(bool)
+	if !ok {
+		webutils.WriteSimpleResponse(w, false, "invalid value for federation enable quotes")
+		return
+	}
+
+	if err := a.configRepository.SetFederationEnableQuotes(enabled); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+	webutils.WriteSimpleResponse(w, true, "federation enable quotes saved")
+}
+
 // SetFederationHideFollowersTab will set if the followers tab is hidden on the public web UI.
 func (a *Admin) SetFederationHideFollowersTab(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {

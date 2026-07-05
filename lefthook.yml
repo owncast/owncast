@@ -46,7 +46,10 @@ pre-push:
         - 'test/automated/plugins/**'
         - 'webserver/handlers/config.go'
         - 'webserver/handlers/customJavascript.go'
-      run: cd test/automated/plugins && ./run.sh
+      # The {push_files} reference is what makes the glob scoping above take
+      # effect: lefthook only skips a command on no matching files when the
+      # run string uses a files template. The file list itself is unused.
+      run: 'true "{push_files}" && cd test/automated/plugins && ./run.sh'
 
 pre-commit:
   parallel: true

@@ -54,6 +54,7 @@ const API_FEDERATION_PRIVATE = '/federation/private';
 const API_FEDERATION_USERNAME = '/federation/username';
 const API_FEDERATION_GOLIVE_MESSAGE = '/federation/livemessage';
 const API_FEDERATION_SHOW_ENGAGEMENT = '/federation/showengagement';
+const API_FEDERATION_ENABLE_QUOTES = '/federation/enablequotes';
 const API_FEDERATION_HIDE_FOLLOWERS = '/federation/hidefollowers';
 export const API_FEDERATION_BLOCKED_DOMAINS = '/federation/blockdomains';
 
@@ -360,6 +361,14 @@ export const FIELD_PROPS_SHOW_FEDERATION_ENGAGEMENT = {
   configPath: 'federation',
   label: 'Show engagement',
   tip: 'Following, liking and sharing will appear in the chat feed.',
+  useSubmit: true,
+};
+
+export const FIELD_PROPS_FEDERATION_ENABLE_QUOTES = {
+  apiPath: API_FEDERATION_ENABLE_QUOTES,
+  configPath: 'federation',
+  label: 'Allow quotes',
+  tip: 'Let people on the Fediverse quote your posts in their own.',
   useSubmit: true,
 };
 

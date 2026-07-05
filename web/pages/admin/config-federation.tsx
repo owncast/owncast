@@ -16,6 +16,7 @@ import {
   TEXTFIELD_PROPS_FEDERATION_DEFAULT_USER,
   FIELD_PROPS_FEDERATION_IS_PRIVATE,
   FIELD_PROPS_SHOW_FEDERATION_ENGAGEMENT,
+  FIELD_PROPS_FEDERATION_ENABLE_QUOTES,
   FIELD_PROPS_FEDERATION_HIDE_FOLLOWERS,
   TEXTFIELD_PROPS_FEDERATION_INSTANCE_URL,
   FIELD_PROPS_FEDERATION_BLOCKED_DOMAINS,
@@ -107,6 +108,7 @@ const ConfigFederation = () => {
     username,
     goLiveMessage,
     showEngagement,
+    enableQuotes,
     hideFollowersTab,
     blockedDomains,
   } = federation;
@@ -265,6 +267,7 @@ const ConfigFederation = () => {
       username,
       goLiveMessage,
       showEngagement,
+      enableQuotes,
       hideFollowersTab,
       blockedDomains,
       nsfw,
@@ -373,6 +376,12 @@ const ConfigFederation = () => {
             fieldName="showEngagement"
             {...FIELD_PROPS_SHOW_FEDERATION_ENGAGEMENT}
             checked={formDataValues.showEngagement}
+            disabled={!enabled}
+          />
+          <ToggleSwitch
+            fieldName="enableQuotes"
+            {...FIELD_PROPS_FEDERATION_ENABLE_QUOTES}
+            checked={formDataValues.enableQuotes}
             disabled={!enabled}
           />
           <ToggleSwitch

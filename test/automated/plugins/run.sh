@@ -18,6 +18,15 @@
 
 set -e
 
+# When a git hook (lefthook pre-push) runs this script, git exports GIT_DIR
+# and friends pointing at this repository. They leak into every git command
+# below, so the SDK clone's `git checkout` would target the Owncast repo
+# instead of the clone. From a git worktree GIT_DIR is an absolute path and
+# the checkout fails outright. Drop them so git commands resolve their
+# repository from the working directory.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE
+
+# shellcheck disable=SC1091  # tools.sh is sourced at runtime; not available to the linter
 source ../tools.sh
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
