@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button } from 'antd6';
 import classNames from 'classnames';
 import React, { FC, useContext, useEffect, useState } from 'react';
 import { UpdateArgs } from '../../types/config-section';
