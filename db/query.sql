@@ -337,3 +337,79 @@ UPDATE federated_servers SET name = ?, display_name = ?, summary = ?, logo_url =
 
 -- name: GetPendingFederatedServers :many
 SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE pending = true ORDER BY added_at DESC;
+
+-- Scheduled stream events (schedule feature).
+
+-- name: AddStreamEventSeries :exec
+INSERT INTO stream_event_series(id, name, description, recurrence, duration_minutes) VALUES(?, ?, ?, ?, ?);
+
+-- name: GetStreamEventSeries :one
+SELECT * FROM stream_event_series WHERE id = ?;
+
+-- name: GetAllStreamEventSeries :many
+SELECT * FROM stream_event_series ORDER BY created_at;
+
+-- name: GetActiveStreamEventSeries :many
+SELECT * FROM stream_event_series WHERE active = TRUE ORDER BY created_at;
+
+-- name: UpdateStreamEventSeries :exec
+UPDATE stream_event_series SET name = ?, description = ?, recurrence = ?, duration_minutes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+
+-- name: SetStreamEventSeriesActive :exec
+UPDATE stream_event_series SET active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+
+-- name: DeleteStreamEventSeries :exec
+DELETE FROM stream_event_series WHERE id = ?;
+
+-- name: AddStreamEvent :execrows
+-- INSERT OR IGNORE keeps materialization idempotent: re-expanding a series
+-- hits the UNIQUE(series_id, original_start) index and skips existing rows.
+INSERT OR IGNORE INTO stream_events(id, series_id, original_start, name, description, start_time, duration_minutes, timezone) VALUES(?, ?, ?, ?, ?, ?, ?, ?);
+
+-- name: GetStreamEvent :one
+SELECT * FROM stream_events WHERE id = ?;
+
+-- name: GetStreamEventsInRange :many
+SELECT * FROM stream_events WHERE start_time >= ? AND start_time < ? ORDER BY start_time;
+
+-- name: GetStreamEventsForSeries :many
+SELECT * FROM stream_events WHERE series_id = ? ORDER BY start_time;
+
+-- name: UpdateStreamEventDetails :exec
+UPDATE stream_events SET name = ?, description = ?, duration_minutes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+
+-- name: CancelStreamEvent :exec
+-- The row is kept: it holds the federation state needed to announce the
+-- cancellation, and its original_start keeps the materializer from
+-- re-creating the slot.
+UPDATE stream_events SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+
+-- name: MoveStreamEvent :exec
+-- original_start is deliberately untouched: it is the identity the
+-- materializer keys on, so the vacated slot is not re-inserted.
+UPDATE stream_events SET start_time = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+
+-- name: DeleteStreamEvent :exec
+DELETE FROM stream_events WHERE id = ?;
+
+-- name: DeleteUnfederatedFutureStreamEventsForSeries :exec
+-- Series edits regenerate only rows nobody has seen: future occurrences that
+-- never federated. Announced rows stay and get Update/Delete activities.
+-- Cancelled rows also stay, whatever their federation state: deleting one
+-- would let the materializer resurrect the slot as a fresh scheduled row.
+DELETE FROM stream_events WHERE series_id = ? AND federated_at IS NULL AND start_time > ? AND status != 'cancelled';
+
+-- name: GetNextUpcomingStreamEvents :many
+SELECT * FROM stream_events WHERE status = 'scheduled' AND start_time > ? ORDER BY start_time LIMIT ?;
+
+-- name: GetStreamEventsToFederate :many
+SELECT * FROM stream_events WHERE federated_at IS NULL AND status = 'scheduled' AND start_time > ? ORDER BY start_time;
+
+-- name: SetStreamEventFederatedAt :exec
+UPDATE stream_events SET federated_at = ? WHERE id = ?;
+
+-- name: GetStreamEventsNeedingReminder :many
+SELECT * FROM stream_events WHERE reminder_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time;
+
+-- name: SetStreamEventReminderSentAt :exec
+UPDATE stream_events SET reminder_sent_at = ? WHERE id = ?;

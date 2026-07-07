@@ -127,6 +127,65 @@ func (q *Queries) AddNotification(ctx context.Context, arg AddNotificationParams
 	return err
 }
 
+const addStreamEvent = `-- name: AddStreamEvent :execrows
+INSERT OR IGNORE INTO stream_events(id, series_id, original_start, name, description, start_time, duration_minutes, timezone) VALUES(?, ?, ?, ?, ?, ?, ?, ?)
+`
+
+type AddStreamEventParams struct {
+	ID              string
+	SeriesID        sql.NullString
+	OriginalStart   sql.NullTime
+	Name            string
+	Description     string
+	StartTime       time.Time
+	DurationMinutes int64
+	Timezone        string
+}
+
+// INSERT OR IGNORE keeps materialization idempotent: re-expanding a series
+// hits the UNIQUE(series_id, original_start) index and skips existing rows.
+func (q *Queries) AddStreamEvent(ctx context.Context, arg AddStreamEventParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, addStreamEvent,
+		arg.ID,
+		arg.SeriesID,
+		arg.OriginalStart,
+		arg.Name,
+		arg.Description,
+		arg.StartTime,
+		arg.DurationMinutes,
+		arg.Timezone,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+const addStreamEventSeries = `-- name: AddStreamEventSeries :exec
+
+INSERT INTO stream_event_series(id, name, description, recurrence, duration_minutes) VALUES(?, ?, ?, ?, ?)
+`
+
+type AddStreamEventSeriesParams struct {
+	ID              string
+	Name            string
+	Description     string
+	Recurrence      string
+	DurationMinutes int64
+}
+
+// Scheduled stream events (schedule feature).
+func (q *Queries) AddStreamEventSeries(ctx context.Context, arg AddStreamEventSeriesParams) error {
+	_, err := q.db.ExecContext(ctx, addStreamEventSeries,
+		arg.ID,
+		arg.Name,
+		arg.Description,
+		arg.Recurrence,
+		arg.DurationMinutes,
+	)
+	return err
+}
+
 const addToAcceptedActivities = `-- name: AddToAcceptedActivities :exec
 INSERT INTO ap_accepted_activities(iri, actor, type, timestamp) values(?, ?, ?, ?)
 `
@@ -194,6 +253,18 @@ type BanIPAddressParams struct {
 
 func (q *Queries) BanIPAddress(ctx context.Context, arg BanIPAddressParams) error {
 	_, err := q.db.ExecContext(ctx, banIPAddress, arg.IpAddress, arg.Notes)
+	return err
+}
+
+const cancelStreamEvent = `-- name: CancelStreamEvent :exec
+UPDATE stream_events SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE id = ?
+`
+
+// The row is kept: it holds the federation state needed to announce the
+// cancellation, and its original_start keeps the materializer from
+// re-creating the slot.
+func (q *Queries) CancelStreamEvent(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, cancelStreamEvent, id)
 	return err
 }
 
@@ -359,6 +430,42 @@ func (q *Queries) DeferActivityPubDelivery(ctx context.Context, arg DeferActivit
 	return result.RowsAffected()
 }
 
+const deleteStreamEvent = `-- name: DeleteStreamEvent :exec
+DELETE FROM stream_events WHERE id = ?
+`
+
+func (q *Queries) DeleteStreamEvent(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteStreamEvent, id)
+	return err
+}
+
+const deleteStreamEventSeries = `-- name: DeleteStreamEventSeries :exec
+DELETE FROM stream_event_series WHERE id = ?
+`
+
+func (q *Queries) DeleteStreamEventSeries(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteStreamEventSeries, id)
+	return err
+}
+
+const deleteUnfederatedFutureStreamEventsForSeries = `-- name: DeleteUnfederatedFutureStreamEventsForSeries :exec
+DELETE FROM stream_events WHERE series_id = ? AND federated_at IS NULL AND start_time > ? AND status != 'cancelled'
+`
+
+type DeleteUnfederatedFutureStreamEventsForSeriesParams struct {
+	SeriesID  sql.NullString
+	StartTime time.Time
+}
+
+// Series edits regenerate only rows nobody has seen: future occurrences that
+// never federated. Announced rows stay and get Update/Delete activities.
+// Cancelled rows also stay, whatever their federation state: deleting one
+// would let the materializer resurrect the slot as a fresh scheduled row.
+func (q *Queries) DeleteUnfederatedFutureStreamEventsForSeries(ctx context.Context, arg DeleteUnfederatedFutureStreamEventsForSeriesParams) error {
+	_, err := q.db.ExecContext(ctx, deleteUnfederatedFutureStreamEventsForSeries, arg.SeriesID, arg.StartTime)
+	return err
+}
+
 const deleteUserAccessTokens = `-- name: DeleteUserAccessTokens :exec
 DELETE FROM user_access_tokens WHERE user_id = ?
 `
@@ -441,6 +548,78 @@ func (q *Queries) FailActivityPubDelivery(ctx context.Context, arg FailActivityP
 		return 0, err
 	}
 	return result.RowsAffected()
+}
+
+const getActiveStreamEventSeries = `-- name: GetActiveStreamEventSeries :many
+SELECT id, name, description, recurrence, duration_minutes, active, created_at, updated_at FROM stream_event_series WHERE active = TRUE ORDER BY created_at
+`
+
+func (q *Queries) GetActiveStreamEventSeries(ctx context.Context) ([]StreamEventSeries, error) {
+	rows, err := q.db.QueryContext(ctx, getActiveStreamEventSeries)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEventSeries
+	for rows.Next() {
+		var i StreamEventSeries
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Recurrence,
+			&i.DurationMinutes,
+			&i.Active,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllStreamEventSeries = `-- name: GetAllStreamEventSeries :many
+SELECT id, name, description, recurrence, duration_minutes, active, created_at, updated_at FROM stream_event_series ORDER BY created_at
+`
+
+func (q *Queries) GetAllStreamEventSeries(ctx context.Context) ([]StreamEventSeries, error) {
+	rows, err := q.db.QueryContext(ctx, getAllStreamEventSeries)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEventSeries
+	for rows.Next() {
+		var i StreamEventSeries
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Recurrence,
+			&i.DurationMinutes,
+			&i.Active,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getApprovedDirectoryFollowers = `-- name: GetApprovedDirectoryFollowers :many
@@ -962,6 +1141,52 @@ func (q *Queries) GetMessagesFromUser(ctx context.Context, userID sql.NullString
 	return items, nil
 }
 
+const getNextUpcomingStreamEvents = `-- name: GetNextUpcomingStreamEvents :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE status = 'scheduled' AND start_time > ? ORDER BY start_time LIMIT ?
+`
+
+type GetNextUpcomingStreamEventsParams struct {
+	StartTime time.Time
+	Limit     int64
+}
+
+func (q *Queries) GetNextUpcomingStreamEvents(ctx context.Context, arg GetNextUpcomingStreamEventsParams) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getNextUpcomingStreamEvents, arg.StartTime, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getNoteFromOutboxByIRI = `-- name: GetNoteFromOutboxByIRI :one
 SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = ? AND type = 'Note'
 `
@@ -1185,6 +1410,225 @@ func (q *Queries) GetRejectedAndBlockedFollowers(ctx context.Context) ([]GetReje
 			&i.Image,
 			&i.CreatedAt,
 			&i.DisabledAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStreamEvent = `-- name: GetStreamEvent :one
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE id = ?
+`
+
+func (q *Queries) GetStreamEvent(ctx context.Context, id string) (StreamEvent, error) {
+	row := q.db.QueryRowContext(ctx, getStreamEvent, id)
+	var i StreamEvent
+	err := row.Scan(
+		&i.ID,
+		&i.SeriesID,
+		&i.OriginalStart,
+		&i.Name,
+		&i.Description,
+		&i.StartTime,
+		&i.DurationMinutes,
+		&i.Timezone,
+		&i.Status,
+		&i.FederatedAt,
+		&i.ReminderSentAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getStreamEventSeries = `-- name: GetStreamEventSeries :one
+SELECT id, name, description, recurrence, duration_minutes, active, created_at, updated_at FROM stream_event_series WHERE id = ?
+`
+
+func (q *Queries) GetStreamEventSeries(ctx context.Context, id string) (StreamEventSeries, error) {
+	row := q.db.QueryRowContext(ctx, getStreamEventSeries, id)
+	var i StreamEventSeries
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Recurrence,
+		&i.DurationMinutes,
+		&i.Active,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getStreamEventsForSeries = `-- name: GetStreamEventsForSeries :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE series_id = ? ORDER BY start_time
+`
+
+func (q *Queries) GetStreamEventsForSeries(ctx context.Context, seriesID sql.NullString) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getStreamEventsForSeries, seriesID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStreamEventsInRange = `-- name: GetStreamEventsInRange :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE start_time >= ? AND start_time < ? ORDER BY start_time
+`
+
+type GetStreamEventsInRangeParams struct {
+	StartTime   time.Time
+	StartTime_2 time.Time
+}
+
+func (q *Queries) GetStreamEventsInRange(ctx context.Context, arg GetStreamEventsInRangeParams) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getStreamEventsInRange, arg.StartTime, arg.StartTime_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStreamEventsNeedingReminder = `-- name: GetStreamEventsNeedingReminder :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE reminder_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time
+`
+
+type GetStreamEventsNeedingReminderParams struct {
+	StartTime   time.Time
+	StartTime_2 time.Time
+}
+
+func (q *Queries) GetStreamEventsNeedingReminder(ctx context.Context, arg GetStreamEventsNeedingReminderParams) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getStreamEventsNeedingReminder, arg.StartTime, arg.StartTime_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStreamEventsToFederate = `-- name: GetStreamEventsToFederate :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE federated_at IS NULL AND status = 'scheduled' AND start_time > ? ORDER BY start_time
+`
+
+func (q *Queries) GetStreamEventsToFederate(ctx context.Context, startTime time.Time) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getStreamEventsToFederate, startTime)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -1657,6 +2101,22 @@ func (q *Queries) IsIPAddressBlocked(ctx context.Context, ipAddress string) (int
 	return count, err
 }
 
+const moveStreamEvent = `-- name: MoveStreamEvent :exec
+UPDATE stream_events SET start_time = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+`
+
+type MoveStreamEventParams struct {
+	StartTime time.Time
+	ID        string
+}
+
+// original_start is deliberately untouched: it is the identity the
+// materializer keys on, so the vacated slot is not re-inserted.
+func (q *Queries) MoveStreamEvent(ctx context.Context, arg MoveStreamEventParams) error {
+	_, err := q.db.ExecContext(ctx, moveStreamEvent, arg.StartTime, arg.ID)
+	return err
+}
+
 const queueActivityPubDelivery = `-- name: QueueActivityPubDelivery :one
 INSERT INTO ap_delivery_queue (
     inbox,
@@ -1809,6 +2269,48 @@ type SetAccessTokenToOwnerParams struct {
 
 func (q *Queries) SetAccessTokenToOwner(ctx context.Context, arg SetAccessTokenToOwnerParams) error {
 	_, err := q.db.ExecContext(ctx, setAccessTokenToOwner, arg.UserID, arg.Token)
+	return err
+}
+
+const setStreamEventFederatedAt = `-- name: SetStreamEventFederatedAt :exec
+UPDATE stream_events SET federated_at = ? WHERE id = ?
+`
+
+type SetStreamEventFederatedAtParams struct {
+	FederatedAt sql.NullTime
+	ID          string
+}
+
+func (q *Queries) SetStreamEventFederatedAt(ctx context.Context, arg SetStreamEventFederatedAtParams) error {
+	_, err := q.db.ExecContext(ctx, setStreamEventFederatedAt, arg.FederatedAt, arg.ID)
+	return err
+}
+
+const setStreamEventReminderSentAt = `-- name: SetStreamEventReminderSentAt :exec
+UPDATE stream_events SET reminder_sent_at = ? WHERE id = ?
+`
+
+type SetStreamEventReminderSentAtParams struct {
+	ReminderSentAt sql.NullTime
+	ID             string
+}
+
+func (q *Queries) SetStreamEventReminderSentAt(ctx context.Context, arg SetStreamEventReminderSentAtParams) error {
+	_, err := q.db.ExecContext(ctx, setStreamEventReminderSentAt, arg.ReminderSentAt, arg.ID)
+	return err
+}
+
+const setStreamEventSeriesActive = `-- name: SetStreamEventSeriesActive :exec
+UPDATE stream_event_series SET active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+`
+
+type SetStreamEventSeriesActiveParams struct {
+	Active bool
+	ID     string
+}
+
+func (q *Queries) SetStreamEventSeriesActive(ctx context.Context, arg SetStreamEventSeriesActiveParams) error {
+	_, err := q.db.ExecContext(ctx, setStreamEventSeriesActive, arg.Active, arg.ID)
 	return err
 }
 
@@ -1969,5 +2471,49 @@ type UpdateFollowerValidationSuccessParams struct {
 
 func (q *Queries) UpdateFollowerValidationSuccess(ctx context.Context, arg UpdateFollowerValidationSuccessParams) error {
 	_, err := q.db.ExecContext(ctx, updateFollowerValidationSuccess, arg.LastValidatedAt, arg.Iri)
+	return err
+}
+
+const updateStreamEventDetails = `-- name: UpdateStreamEventDetails :exec
+UPDATE stream_events SET name = ?, description = ?, duration_minutes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+`
+
+type UpdateStreamEventDetailsParams struct {
+	Name            string
+	Description     string
+	DurationMinutes int64
+	ID              string
+}
+
+func (q *Queries) UpdateStreamEventDetails(ctx context.Context, arg UpdateStreamEventDetailsParams) error {
+	_, err := q.db.ExecContext(ctx, updateStreamEventDetails,
+		arg.Name,
+		arg.Description,
+		arg.DurationMinutes,
+		arg.ID,
+	)
+	return err
+}
+
+const updateStreamEventSeries = `-- name: UpdateStreamEventSeries :exec
+UPDATE stream_event_series SET name = ?, description = ?, recurrence = ?, duration_minutes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+`
+
+type UpdateStreamEventSeriesParams struct {
+	Name            string
+	Description     string
+	Recurrence      string
+	DurationMinutes int64
+	ID              string
+}
+
+func (q *Queries) UpdateStreamEventSeries(ctx context.Context, arg UpdateStreamEventSeriesParams) error {
+	_, err := q.db.ExecContext(ctx, updateStreamEventSeries,
+		arg.Name,
+		arg.Description,
+		arg.Recurrence,
+		arg.DurationMinutes,
+		arg.ID,
+	)
 	return err
 }

@@ -63,6 +63,7 @@ func TestRun_FreshDatabase(t *testing.T) {
 		"notifications", "messages", "auth", "ip_bans",
 		"federated_servers",
 		"ap_delivery_queue",
+		"stream_event_series", "stream_events",
 		"goose_db_version",
 	}
 	for _, name := range expectedTables {
@@ -116,12 +117,12 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 		t.Errorf("config.version = %d, want 9", version)
 	}
 
-	// goose_db_version, federated_servers, and the durable ActivityPub
-	// delivery queue are added to a legacy schema.
+	// goose_db_version, federated_servers, the durable ActivityPub delivery
+	// queue, and the scheduled-streams tables are added to a legacy schema.
 	var newTableCount int
 	mustScan(t, db.QueryRow(`SELECT count(*) FROM sqlite_master WHERE type='table'`), &newTableCount)
-	if newTableCount != tableCount+3 {
-		t.Errorf("table count changed from %d to %d (expected +3)", tableCount, newTableCount)
+	if newTableCount != tableCount+5 {
+		t.Errorf("table count changed from %d to %d (expected +5)", tableCount, newTableCount)
 	}
 
 	if !columnExists(t, db, "users", "disabled_reason") {
