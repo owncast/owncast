@@ -21,7 +21,10 @@ const UserColor: FC<UserColorProps> = ({ color }) => {
     textAlign: 'center',
     backgroundColor: `var(--theme-color-users-${color})`,
     width: '100%',
-    height: '100%',
+    // A concrete height: 100% collapses to zero inside antd v6's select
+    // content box, which sizes by line height rather than an explicit
+    // height like v4's selection item did.
+    height: '1.4em',
   };
   return <div style={style} />;
 };
@@ -142,11 +145,11 @@ export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
         <Select
           style={{ width: 120 }}
           onChange={handleColorChange}
-          defaultValue={displayColor.toString()}
+          defaultValue={displayColor?.toString()}
           className={styles.colorDropdown}
         >
           {colorOptions.map(e => (
-            <Option key={e.toString()} title={e}>
+            <Option key={e.toString()} value={e.toString()} title={e.toString()}>
               <UserColor color={e} aria-label={e.toString()} />
             </Option>
           ))}
