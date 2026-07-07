@@ -109,6 +109,33 @@ type Notification struct {
 	CreatedAt   sql.NullTime
 }
 
+type StreamEvent struct {
+	ID              string
+	SeriesID        sql.NullString
+	OriginalStart   sql.NullTime
+	Name            string
+	Description     string
+	StartTime       time.Time
+	DurationMinutes int64
+	Timezone        string
+	Status          string
+	FederatedAt     sql.NullTime
+	ReminderSentAt  sql.NullTime
+	CreatedAt       sql.NullTime
+	UpdatedAt       sql.NullTime
+}
+
+type StreamEventSeries struct {
+	ID              string
+	Name            string
+	Description     string
+	Recurrence      string
+	DurationMinutes int64
+	Active          bool
+	CreatedAt       sql.NullTime
+	UpdatedAt       sql.NullTime
+}
+
 type User struct {
 	ID              string
 	DisplayName     string

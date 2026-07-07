@@ -55,6 +55,7 @@ func TestRun_FreshDatabase(t *testing.T) {
 		"ap_followers", "ap_outbox", "ap_accepted_activities",
 		"notifications", "messages", "auth", "ip_bans",
 		"federated_servers",
+		"stream_event_series", "stream_events",
 		"goose_db_version",
 	}
 	for _, name := range expectedTables {
@@ -68,8 +69,8 @@ func TestRun_FreshDatabase(t *testing.T) {
 		t.Error("fresh install should not have legacy config table")
 	}
 
-	if v := gooseVersion(t, db); v != 5 {
-		t.Errorf("goose version = %d, want 5", v)
+	if v := gooseVersion(t, db); v != 6 {
+		t.Errorf("goose version = %d, want 6", v)
 	}
 
 	// Calling Run a second time should be a no-op (idempotent).
@@ -93,8 +94,8 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	}
 
 	// Goose should record the latest migration.
-	if v := gooseVersion(t, db); v != 5 {
-		t.Errorf("goose version = %d, want 5", v)
+	if v := gooseVersion(t, db); v != 6 {
+		t.Errorf("goose version = %d, want 6", v)
 	}
 
 	// Config version should still be 9, the legacy bridge was not invoked.
@@ -105,12 +106,14 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	}
 
 	// goose_db_version plus the federated_servers table were added by
-	// the featured-streams migration; legacy schemas already have an
-	// ap_followers.owncast_server column applied via the same migration.
+	// the featured-streams migration, and the scheduled-streams migration
+	// added stream_event_series plus stream_events; legacy schemas already
+	// have an ap_followers.owncast_server column applied via the
+	// featured-streams migration.
 	var newTableCount int
 	mustScan(t, db.QueryRow(`SELECT count(*) FROM sqlite_master WHERE type='table'`), &newTableCount)
-	if newTableCount != tableCount+2 { // +1 goose_db_version, +1 federated_servers
-		t.Errorf("table count changed from %d to %d (expected +2 for goose_db_version + federated_servers)", tableCount, newTableCount)
+	if newTableCount != tableCount+4 { // +goose_db_version, +federated_servers, +stream_event_series, +stream_events
+		t.Errorf("table count changed from %d to %d (expected +4 for goose_db_version + federated_servers + stream_event_series + stream_events)", tableCount, newTableCount)
 	}
 }
 
@@ -141,8 +144,8 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 	}
 
 	// Goose should have recorded the latest migration.
-	if v := gooseVersion(t, db); v != 5 {
-		t.Errorf("goose version = %d, want 5", v)
+	if v := gooseVersion(t, db); v != 6 {
+		t.Errorf("goose version = %d, want 6", v)
 	}
 }
 
