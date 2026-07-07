@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Table, Space, Button, Typography, Alert, Input, Form, message } from 'antd';
+import { Table, Space, Button, Typography, Alert, Input, Form, message } from 'antd6';
 import dynamic from 'next/dynamic';
 import { ServerStatusContext } from '../../../../utils/server-status-context';
 

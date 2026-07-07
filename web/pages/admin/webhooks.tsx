@@ -12,7 +12,7 @@ import {
   Typography,
   Tooltip,
   message,
-} from 'antd';
+} from 'antd6';
 import dynamic from 'next/dynamic';
 import { EyeOutlined } from '@ant-design/icons';
 import React, { ReactElement, useContext, useEffect, useState } from 'react';

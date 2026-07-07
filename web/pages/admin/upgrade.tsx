@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ReactElement } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Table, Typography } from 'antd';
+import { Table, Typography } from 'antd6';
 import { getGithubRelease } from '../../utils/apis';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';

@@ -1,5 +1,4 @@
-import { Button, Card, Col, Divider, Result, Row } from 'antd6';
-import Title from 'antd6/lib/typography/Title';
+import { Button, Card, Col, Divider, Result, Row, Typography } from 'antd6';
 
 import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
@@ -7,6 +6,8 @@ import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';
 import { Localization } from '../../types/localization';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
+
+const { Title } = Typography;
 
 // Lazy loaded components
 

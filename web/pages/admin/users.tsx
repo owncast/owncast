@@ -1,6 +1,6 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
-import { Table, Input, Select, Tag, Space, Typography, Tabs } from 'antd';
-import { ColumnsType, SortOrder } from 'antd/lib/table/interface';
+import { Table, Input, Select, Tag, Space, Typography, Tabs } from 'antd6';
+import { ColumnsType, SortOrder } from 'antd6/lib/table/interface';
 import { useTranslation } from 'next-export-i18n';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import { ServerStatusContext } from '../../utils/server-status-context';

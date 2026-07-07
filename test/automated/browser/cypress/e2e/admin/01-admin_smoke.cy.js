@@ -74,7 +74,7 @@ filterTests(['desktop'], () => {
 				auth: ADMIN_AUTH,
 			});
 			cy.get('#admin-page').should('exist');
-			cy.get('.ant-table').should('exist');
+			cy.get('.ant6-table').should('exist');
 		});
 	});
 });

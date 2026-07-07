@@ -1,8 +1,6 @@
 import React, { FC, useContext, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Alert, Button, Col, Collapse, Row, Slider, Space, Tooltip } from 'antd6';
-import Paragraph from 'antd6/lib/typography/Paragraph';
-import Title from 'antd6/lib/typography/Title';
+import { Alert, Button, Col, Collapse, Row, Slider, Space, Tooltip, Typography } from 'antd6';
 import { useTranslation } from 'next-export-i18n';
 import { EditCustomStyles } from '../../EditCustomStyles';
 import s from './appearance.module.scss';
@@ -18,6 +16,7 @@ import { ServerStatusContext } from '../../../../utils/server-status-context';
 import { FormStatusIndicator } from '../../FormStatusIndicator';
 
 const { Panel } = Collapse;
+const { Title, Paragraph } = Typography;
 
 const ENDPOINT = '/appearance';
 
