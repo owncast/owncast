@@ -217,10 +217,14 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       label: <Link href="/admin/logs">Logs</Link>,
       key: '/admin/logs',
     },
-    federationEnabled && {
-      label: <Link href="/admin/federation/actions">Social Actions</Link>,
-      key: '/admin/federation/actions',
-    },
+    ...(federationEnabled
+      ? [
+          {
+            label: <Link href="/admin/federation/actions">Social Actions</Link>,
+            key: '/admin/federation/actions',
+          },
+        ]
+      : []),
   ];
 
   const configurationMenu = [
@@ -262,43 +266,55 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       icon: <TeamOutlined />,
       key: '/admin/users',
     },
-    !chatDisabled && {
-      label: <span>Chat</span>,
-      icon: <MessageOutlined />,
-      children: chatMenu,
-      key: 'chat',
-    },
-    federationEnabled && {
-      key: '/admin/federation/followers',
-      label: <Link href="/admin/federation/followers">Followers</Link>,
-      icon: (
-        <span
-          role="img"
-          aria-label="message"
-          className="anticon anticon-message ant-menu-item-icon"
-        >
-          {/* Wrapping the icon in span for consistency with other icons used
-            directly from antd */}
-          <FediverseOutlined />
-        </span>
-      ),
-    },
-    federationEnabled && {
-      key: '/admin/config-featured',
-      label: (
-        <Link href="/admin/config-featured">
-          Featured Streams
-          {pendingFeatureRequestCount > 0 && (
-            <Badge
-              count={pendingFeatureRequestCount}
-              size="small"
-              style={{ marginInlineStart: 8 }}
-            />
-          )}
-        </Link>
-      ),
-      icon: <StarOutlined />,
-    },
+    ...(!chatDisabled
+      ? [
+          {
+            label: <span>Chat</span>,
+            icon: <MessageOutlined />,
+            children: chatMenu,
+            key: 'chat',
+          },
+        ]
+      : []),
+    ...(federationEnabled
+      ? [
+          {
+            key: '/admin/federation/followers',
+            label: <Link href="/admin/federation/followers">Followers</Link>,
+            icon: (
+              <span
+                role="img"
+                aria-label="message"
+                className="anticon anticon-message ant-menu-item-icon"
+              >
+                {/* Wrapping the icon in span for consistency with other icons used
+                directly from antd */}
+                <FediverseOutlined />
+              </span>
+            ),
+          },
+        ]
+      : []),
+    ...(federationEnabled
+      ? [
+          {
+            key: '/admin/config-featured',
+            label: (
+              <Link href="/admin/config-featured">
+                Featured Streams
+                {pendingFeatureRequestCount > 0 && (
+                  <Badge
+                    count={pendingFeatureRequestCount}
+                    size="small"
+                    style={{ marginInlineStart: 8 }}
+                  />
+                )}
+              </Link>
+            ),
+            icon: <StarOutlined />,
+          },
+        ]
+      : []),
     {
       key: 'configuration',
       label: 'Configuration',
@@ -346,19 +362,27 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
           })),
       ],
     },
-    upgradeVersion && {
-      type: 'divider' as const,
-      key: 'upgrade-divider',
-    },
-    upgradeVersion && {
-      key: '/admin/upgrade',
-      label: (
-        <Link href="/admin/upgrade">
-          <strong>{upgradeMessage}</strong>
-        </Link>
-      ),
-      icon: <DownloadOutlined />,
-    },
+    ...(upgradeVersion
+      ? [
+          {
+            type: 'divider' as const,
+            key: 'upgrade-divider',
+          },
+        ]
+      : []),
+    ...(upgradeVersion
+      ? [
+          {
+            key: '/admin/upgrade',
+            label: (
+              <Link href="/admin/upgrade">
+                <strong>{upgradeMessage}</strong>
+              </Link>
+            ),
+            icon: <DownloadOutlined />,
+          },
+        ]
+      : []),
     {
       key: '/admin/help',
       label: <Link href="/admin/help">Help</Link>,
