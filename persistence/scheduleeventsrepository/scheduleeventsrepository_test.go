@@ -426,7 +426,7 @@ func TestGetEventsNeedingReminderSelectsOnce(t *testing.T) {
 }
 
 func TestGetCurrentOrUpcomingEventsEndTimePredicate(t *testing.T) {
-	repo := Get()
+	repo := testRepo
 
 	// The SQL predicate compares stored end times against this bound
 	// instant, so nothing here races the wall clock. Every helper event
@@ -488,7 +488,7 @@ func TestGetCurrentOrUpcomingEventsEndTimePredicate(t *testing.T) {
 }
 
 func TestGetCurrentOrUpcomingEventsDensePastNextEvent(t *testing.T) {
-	repo := Get()
+	repo := testRepo
 
 	now := time.Date(2035, 4, 10, 18, 0, 0, 0, time.UTC)
 

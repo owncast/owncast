@@ -93,7 +93,7 @@ func (a *Admin) UpsertScheduledEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schedule.Refresh()
+	a.schedule.Refresh()
 	a.writeAdminSchedule(w)
 }
 
@@ -336,7 +336,7 @@ func (a *Admin) DeleteScheduledEvent(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	schedule.Refresh()
+	a.schedule.Refresh()
 	a.writeAdminSchedule(w)
 }
 
