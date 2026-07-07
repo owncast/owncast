@@ -82,7 +82,7 @@ export default function Help() {
       return;
     }
     upgradeVersionAvailable(versionNumber)
-      .then(setUpgradeVersion)
+      .then(result => setUpgradeVersion(result || ''))
       .catch(() => {
         // Not being able to check for updates is not a problem worth surfacing
         // on the help page.
@@ -301,7 +301,12 @@ export default function Help() {
           style={{ marginBottom: '16px' }}
           message={t(Localization.Admin.Help.gettingStarted)}
           action={
-            <Button size="small" href={docsUrl('/quickstart')} target="_blank" rel="noopener">
+            <Button
+              size="small"
+              href={docsUrl('/quickstart')}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {t(Localization.Admin.Help.gettingStartedLink)}
             </Button>
           }
