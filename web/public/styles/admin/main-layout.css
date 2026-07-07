@@ -28,6 +28,29 @@
   color: var(--theme-color-components-text-on-dark);
 }
 
+/* v4's global overrides removed the light-theme selected/hover pill
+   backgrounds and used the palette hover color on the dark sidebar
+   (ant-overrides.scss, removed with v4). Restate them scoped to the
+   admin menu: the v6 pill colors are designed for light surfaces and
+   read wrong on the dark sider. */
+.app-container .menu-container .ant-menu-item-selected {
+  background-color: unset;
+}
+
+/* The hover/active rules use !important on purpose: v6's own hover
+   selectors carry :not() filters with higher specificity, and chasing
+   their selector shape would break silently on antd updates. Same
+   approach as the menu divider rules below. */
+.app-container .menu-container .ant-menu-item:hover,
+.app-container .menu-container .ant-menu-submenu-title:hover {
+  color: var(--theme-color-palette-12) !important;
+  background-color: unset !important;
+}
+
+.app-container .menu-container .ant-menu-submenu-title:active {
+  background: var(--theme-color-palette-12) !important;
+}
+
 .app-container h1.owncast-title {
   padding: 1rem;
   padding-bottom: 4px;
