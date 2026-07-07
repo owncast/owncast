@@ -18,7 +18,7 @@ filterTests(['mobile'], () => {
 		});
 
 		it('Mobile chat modal should be visible', () => {
-			cy.get('.ant-modal').should('be.visible');
+			cy.get('.ant6-modal').should('be.visible');
 		});
 
 		it('Chat container should be visible', () => {

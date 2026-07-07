@@ -17,8 +17,8 @@ jest.mock('next/router', () => ({
   }),
 }));
 
-jest.mock('antd', () => ({
-  ...jest.requireActual('antd'),
+jest.mock('antd6', () => ({
+  ...jest.requireActual('antd6'),
   message: { success: jest.fn(), error: jest.fn() },
 }));
 

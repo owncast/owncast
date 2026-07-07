@@ -161,6 +161,9 @@ const INCLUDED_COMPONENTS = [
   'Table',
   'Pagination',
   'Upload',
+  // Viewer batch (chat text field emoji picker, moderation menus, stream
+  // cards, follower collection, offline banner, viewer layout)
+  'Popover',
 ];
 
 const unknown = INCLUDED_COMPONENTS.filter(name => !antd[name]);

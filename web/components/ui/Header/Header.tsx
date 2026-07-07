@@ -1,4 +1,4 @@
-import { Tooltip, Avatar } from 'antd';
+import { Tooltip, Avatar } from 'antd6';
 import { FC, useEffect, useState } from 'react';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';

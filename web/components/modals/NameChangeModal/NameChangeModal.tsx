@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Input, Button, Select, Form } from 'antd';
+import { Input, Button, Select, Form } from 'antd6';
 import { useTranslation } from 'next-export-i18n';
 import { MessageType } from '../../../interfaces/socket-events';
 import WebsocketService from '../../../services/websocket-service';

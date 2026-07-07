@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Pagination, Spin } from 'antd';
+import { Pagination, Spin } from 'antd6';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Follower } from '../../../../interfaces/follower';
 import { SingleFollower } from '../SingleFollower/SingleFollower';

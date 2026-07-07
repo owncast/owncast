@@ -20,7 +20,7 @@
 
   &.online {
     .statusBadge {
-      :global(.ant-badge-status-text) {
+      :global(.ant6-badge-status-text) {
         color: var(--theme-color-palette-4);
         font-weight: 600;
       }
@@ -82,12 +82,12 @@
     padding: 4px 12px;
     border-radius: 4px;
 
-    :global(.ant-badge-status-dot) {
+    :global(.ant6-badge-status-dot) {
       width: 8px;
       height: 8px;
     }
 
-    :global(.ant-badge-status-text) {
+    :global(.ant6-badge-status-text) {
       color: var(--theme-color-components-text-on-dark);
       font-size: 12px;
       font-weight: 500;
