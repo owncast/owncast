@@ -103,7 +103,7 @@ export const parameters = {
     light: { ...themes.normal },
   },
   viewport: {
-    viewports: flatMapObject(INITIAL_VIEWPORTS, convertToLandscapeAndPortraitEntries),
+    options: flatMapObject(INITIAL_VIEWPORTS, convertToLandscapeAndPortraitEntries),
   },
 };
 
