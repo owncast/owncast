@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Space, Typography } from 'antd6';
+import { Modal, Space, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { Plugin, PluginPermission } from '../../../interfaces/plugin';
 import { Localization } from '../../../types/localization';

@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction } from 'react';
 import dynamic from 'next/dynamic';
-import { Skeleton } from 'antd6';
+import { Skeleton } from 'antd';
 import { ExternalAction, ExternalActionUtils } from '../../../interfaces/external-action';
 import { ActionButtonMenu } from '../../action-buttons/ActionButtonMenu/ActionButtonMenu';
 import { ActionButtonRow } from '../../action-buttons/ActionButtonRow/ActionButtonRow';

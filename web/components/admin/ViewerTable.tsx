@@ -1,5 +1,5 @@
-import { Table } from 'antd6';
-import { SortOrder } from 'antd6/lib/table/interface';
+import { Table } from 'antd';
+import { SortOrder } from 'antd/lib/table/interface';
 import { formatDistanceToNow } from 'date-fns';
 import { FC } from 'react';
 import { User } from '../../types/chat';

@@ -14,10 +14,9 @@
 		"i18next-parser.config.mjs",
 		"types/index.ts",
 		"scripts/i18n-extract.js",
-		"build-scripts/extract-antd6-styles.js"
+		"build-scripts/extract-antd-styles.js"
 	],
 	"ignoreDependencies": [
-		"antd",
 		"@fontsource/inter",
 		"@fontsource/poppins",
 		"yaml",

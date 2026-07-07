@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-export-i18n';
-import { Card, Col, Row, Typography } from 'antd6';
+import { Card, Col, Row, Typography } from 'antd';
 import Link from 'next/link';
 import { FC, useContext } from 'react';
 import dynamic from 'next/dynamic';

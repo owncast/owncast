@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-css-tags */
 import React, { useState, useEffect, useContext, ReactElement } from 'react';
-import { Skeleton, Card, Statistic, Row, Col } from 'antd6';
+import { Skeleton, Card, Statistic, Row, Col } from 'antd';
 import { formatDistanceToNow, formatRelative } from 'date-fns';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';

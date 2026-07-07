@@ -1,4 +1,4 @@
-import { Row, Spin, Typography, Button, Alert, Modal } from 'antd6';
+import { Row, Spin, Typography, Button, Alert, Modal } from 'antd';
 import React, { FC, useState } from 'react';
 import UploadOutlined from '@ant-design/icons/lib/icons/UploadOutlined';
 import PlusSquareOutlined from '@ant-design/icons/lib/icons/PlusSquareOutlined';
@@ -311,11 +311,10 @@ const NotifyModalContent = () => {
 };
 
 /*
-Browser notifications modal, on Ant Design v6 (theming and the ant6 class
-prefix come from the app-wide Antd6Provider in pages/_app.tsx). Renders its
-own v6 Modal shell instead of the shared v4 ui/Modal. The #modal-container
-identifier is part of the documented CSS customization contract, so it is
-preserved inside the shell.
+Browser notifications modal (theming comes from the app-wide AntdProvider in
+pages/_app.tsx). Renders its own Modal shell instead of the shared ui/Modal.
+The #modal-container identifier is part of the documented CSS customization
+contract, so it is preserved inside the shell.
 */
 export type BrowserNotifyModalProps = {
   open: boolean;

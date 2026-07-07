@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Button, Popconfirm, Space, Switch, Table, Tag, Tooltip, Typography } from 'antd6';
+import { Alert, Button, Popconfirm, Space, Switch, Table, Tag, Tooltip, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import dynamic from 'next/dynamic';
 import { Plugin } from '../../../interfaces/plugin';

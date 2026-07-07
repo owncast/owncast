@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Button, Card, Empty, Space, Spin, Tag, Tooltip, Typography } from 'antd6';
+import { Alert, Button, Card, Empty, Space, Spin, Tag, Tooltip, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { Localization } from '../../../types/localization';
 import { isPluginUpdateAvailable } from '../../../utils/apis';

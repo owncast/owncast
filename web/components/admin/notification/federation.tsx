@@ -1,4 +1,4 @@
-import { Button, Typography } from 'antd6';
+import { Button, Typography } from 'antd';
 import React, { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
 import { ServerStatusContext } from '../../../utils/server-status-context';

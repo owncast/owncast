@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React, { FC, useState } from 'react';
-import { Typography, Tag } from 'antd6';
+import { Typography, Tag } from 'antd';
 
 import { TextField } from './TextField';
 import { UpdateArgs } from '../../types/config-section';

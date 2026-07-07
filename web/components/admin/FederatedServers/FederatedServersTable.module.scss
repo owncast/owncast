@@ -1,19 +1,19 @@
 .table {
   :global {
-    .ant6-table {
+    .ant-table {
       background: var(--theme-color-background-main);
     }
 
-    .ant6-table-thead > tr > th {
+    .ant-table-thead > tr > th {
       background: var(--theme-color-background-header);
       color: var(--theme-color-components-text-on-dark);
     }
 
-    .ant6-table-tbody > tr > td {
+    .ant-table-tbody > tr > td {
       border-color: var(--theme-color-components-scrollbar-background);
     }
 
-    .ant6-table-tbody > tr:hover > td {
+    .ant-table-tbody > tr:hover > td {
       background: var(--theme-color-background-header);
     }
   }

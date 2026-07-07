@@ -3,12 +3,11 @@
 
 // order matters!
 import '../styles/variables.css';
-import '../styles/global.less';
 import '../styles/globals.scss';
-// Pre-extracted Ant Design v6 styles (see build-scripts/extract-antd6-styles.js).
-import '../styles/antd6.css';
-// The override sheet loads after both antd generations so its equal-specificity
-// rules (v4 .ant-* and ported v6 .ant6-*) win the cascade.
+// Pre-extracted Ant Design styles (see build-scripts/extract-antd-styles.js).
+import '../styles/antd.css';
+// The override sheet loads after antd.css so its equal-specificity rules win
+// the cascade.
 import '../styles/ant-overrides.scss';
 
 // TODO: Move this videojs sass to the player component.
@@ -21,7 +20,7 @@ import { RecoilRoot } from 'recoil';
 import { useRouter } from 'next/router';
 import { useSelectedLanguage } from 'next-export-i18n';
 import { loadViewerLocale, shouldCleanUrlAfterFlip } from '../utils/localeLoader';
-import { Antd6Provider } from '../components/theme/Antd6Provider';
+import { AntdProvider } from '../components/theme/AntdProvider';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -64,14 +63,13 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <>
       <LocaleSync />
-      {/* RecoilRoot and the Ant Design v6 theme bridge wrap the page
-          layout too, not just the page component: layouts attached via
-          getLayout (e.g. the admin's AdminLayout/MainLayout) also render
-          antd6 components and must be inside the provider, or they fall
-          back to the unscoped default prefix and collide with v4's global
-          styles. */}
+      {/* RecoilRoot and the Ant Design theme bridge wrap the page layout
+          too, not just the page component: layouts attached via getLayout
+          (e.g. the admin's AdminLayout/MainLayout) also render antd
+          components and must be inside the provider to receive the Owncast
+          theme tokens. */}
       <RecoilRoot>
-        <Antd6Provider>{layout(<Component {...pageProps} />)}</Antd6Provider>
+        <AntdProvider>{layout(<Component {...pageProps} />)}</AntdProvider>
       </RecoilRoot>
     </>
   );

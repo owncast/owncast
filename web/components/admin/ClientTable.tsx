@@ -1,6 +1,6 @@
-import { Input, Table } from 'antd6';
-import { FilterDropdownProps, SortOrder } from 'antd6/lib/table/interface';
-import { ColumnsType } from 'antd6/es/table';
+import { Input, Table } from 'antd';
+import { FilterDropdownProps, SortOrder } from 'antd/lib/table/interface';
+import { ColumnsType } from 'antd/es/table';
 import { formatDistanceToNow } from 'date-fns';
 import { FC } from 'react';
 import dynamic from 'next/dynamic';

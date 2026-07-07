@@ -20,19 +20,11 @@
   color: var(--theme-color-palette-12);
 }
 
-/* Ant Design v6 (ant6 prefix) equivalents for the migrated admin sidebar
-   menu. Remove the .ant-menu rules when v4 is gone. */
-.app-container .menu-container .ant6-menu-item-selected:not(.ant6-menu-item-only-child),
-.ant6-menu-item a:hover,
-.ant6-menu-item a::before {
-  color: var(--theme-color-palette-12);
-}
-
 /* v4 menu items inherited the sidebar's on-dark text color; v6 sets an
    explicit per-item color, so restate the inherited intent. The v6 rules
    are :where()-wrapped (zero specificity), so this scoped rule wins. */
-.app-container .menu-container .ant6-menu-item,
-.app-container .menu-container .ant6-menu-submenu-title {
+.app-container .menu-container .ant-menu-item,
+.app-container .menu-container .ant-menu-submenu-title {
   color: var(--theme-color-components-text-on-dark);
 }
 
@@ -197,33 +189,16 @@
   line-height: 1;
 }
 
-.ant-select:not(.ant-select-customize-input) .ant-select-selector {
-  background-color: var(--theme-color-components-form-field-background);
-}
-
 .ant-menu-item a,
 .ant-menu-submenu-expand-icon,
 .ant-menu-submenu-arrow {
   color: unset;
 }
 
-.ant6-menu-item a,
-.ant6-menu-submenu-expand-icon,
-.ant6-menu-submenu-arrow {
-  color: unset;
-}
-
-.ant-modal-title {
-  color: var(--theme-color-components-modal-header-text);
-}
-
 /* Custom upgrade menu divider - partial width */
 .menu-container .ant-menu-item-divider,
 .menu-container li.ant-menu-item-divider,
-.menu-container .ant-menu-inline .ant-menu-item-divider,
-.menu-container .ant6-menu-item-divider,
-.menu-container li.ant6-menu-item-divider,
-.menu-container .ant6-menu-inline .ant6-menu-item-divider {
+.menu-container .ant-menu-inline .ant-menu-item-divider {
   margin: 8px 16px !important;
   width: calc(100% - 32px) !important;
   background-color: rgb(255 255 255 / 20%) !important;

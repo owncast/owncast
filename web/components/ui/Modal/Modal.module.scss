@@ -19,28 +19,28 @@
 }
 
 .modal {
-  :global(.ant6-modal-header) {
+  :global(.ant-modal-header) {
     color: var(--theme-color-components-modal-header-text);
     font-family: var(--theme-text-display-font-family);
     padding: 1rem 1.25rem;
   }
 
-  :global(.ant6-modal-title) {
+  :global(.ant-modal-title) {
     color: var(--theme-color-components-modal-header-text);
     font-size: 17px;
     font-weight: 600;
   }
 
-  :global(.ant6-modal-body) {
+  :global(.ant-modal-body) {
     overflow: auto;
     border-radius: 0 0 var(--theme-rounded-corners) var(--theme-rounded-corners);
   }
 
-  :global(.ant6-modal-close-x) {
+  :global(.ant-modal-close-x) {
     font-size: 12px;
   }
 
-  :global(.ant6-modal) {
+  :global(.ant-modal) {
     color: var(--theme-color-components-text-on-light);
 
     h1 {
@@ -48,7 +48,7 @@
     }
   }
 
-  :global(.ant6-modal-container) {
+  :global(.ant-modal-content) {
     box-shadow:
       3px 15px 15px -3px rgb(0 0 0 / 15%),
       0 4px 6px -2px rgb(0 0 0 / 8%);

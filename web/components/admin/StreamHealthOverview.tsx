@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Col, Row, Statistic, Typography } from 'antd6';
+import { Alert, Button, Card, Col, Row, Statistic, Typography } from 'antd';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { FC, useContext } from 'react';

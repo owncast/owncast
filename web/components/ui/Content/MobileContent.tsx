@@ -1,7 +1,7 @@
 import React, { ComponentType, FC, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Button, Dropdown } from 'antd6';
-import type { TabsProps } from 'antd6';
+import { Button, Dropdown } from 'antd';
+import type { TabsProps } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { ErrorBoundary } from 'react-error-boundary';
 import classNames from 'classnames';
@@ -29,7 +29,7 @@ export type MobileContentProps = {
 
 // lazy loaded components
 
-const Tabs: ComponentType<TabsProps> = dynamic(() => import('antd6').then(mod => mod.Tabs), {
+const Tabs: ComponentType<TabsProps> = dynamic(() => import('antd').then(mod => mod.Tabs), {
   ssr: false,
 });
 

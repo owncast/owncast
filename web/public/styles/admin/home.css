@@ -14,19 +14,6 @@
   margin-top: 0;
 }
 
-.home-container .stream-details > .ant-card-bordered {
-  border-color: rgb(255 255 255 / 10%);
-}
-
-.home-container .ant-card-small > .ant-card-head {
-  background-color: var(--primary-3);
-}
-
-#admin-page .ant-card-body {
-  background-color: var(--theme-color-palette-15);
-  border-radius: var(--theme-rounded-corners);
-}
-
 #admin-page .line-chart-container {
   background-color: var(--theme-color-palette-15);
   border-radius: var(--theme-rounded-corners);
@@ -37,10 +24,6 @@
   background-color: var(--theme-color-palette-15);
 }
 
-#admin-page .ant-btn-default {
-  background-color: var(--theme-color-palette-14);
-}
-
 .home-container .outbound-details {
   margin-bottom: 1em;
 }
@@ -49,10 +32,6 @@
   background-color: var(--theme-color-palette-15);
   border-radius: var(--theme-rounded-corners);
   padding: 1em;
-}
-
-.offline-content .list-section > .ant-card {
-  margin-bottom: 1em;
 }
 
 .offline-intro {
@@ -103,6 +82,27 @@
   font-size: 0.75em;
 }
 
+.home-container .stream-details > .ant-card-bordered {
+  border-color: rgb(255 255 255 / 10%);
+}
+
+.home-container .ant-card-small > .ant-card-head {
+  background-color: var(--primary-3);
+}
+
+#admin-page .ant-card-body {
+  background-color: var(--theme-color-palette-15);
+  border-radius: var(--theme-rounded-corners);
+}
+
+#admin-page .ant-btn-default {
+  background-color: var(--theme-color-palette-14);
+}
+
+.offline-content .list-section > .ant-card {
+  margin-bottom: 1em;
+}
+
 .ant-collapse > .ant-collapse-item:last-child,
 .ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
   background-color: var(--theme-color-background-main);
@@ -110,40 +110,5 @@
 }
 
 .ant-card-body {
-  /* background-color: var(--theme-color-palette-5); */
-  border: 1px solid var(--theme-color-palette-15);
-}
-
-/* Ant Design v6 (ant6 prefix) equivalents of the .ant-card/.ant-collapse/
-   .ant-btn rules above, for admin surfaces migrated to v6. Remove the v4
-   rules when v4 is gone. */
-.home-container .stream-details > .ant6-card-bordered {
-  border-color: rgb(255 255 255 / 10%);
-}
-
-.home-container .ant6-card-small > .ant6-card-head {
-  background-color: var(--primary-3);
-}
-
-#admin-page .ant6-card-body {
-  background-color: var(--theme-color-palette-15);
-  border-radius: var(--theme-rounded-corners);
-}
-
-#admin-page .ant6-btn-default {
-  background-color: var(--theme-color-palette-14);
-}
-
-.offline-content .list-section > .ant6-card {
-  margin-bottom: 1em;
-}
-
-.ant6-collapse > .ant6-collapse-item:last-child,
-.ant6-collapse > .ant6-collapse-item:last-child > .ant6-collapse-header {
-  background-color: var(--theme-color-background-main);
-  border-radius: var(--theme-rounded-corners);
-}
-
-.ant6-card-body {
   border: 1px solid var(--theme-color-palette-15);
 }

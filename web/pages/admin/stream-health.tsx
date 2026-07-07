@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 // import { BulbOutlined, LaptopOutlined, SaveOutlined } from '@ant-design/icons';
-import { Row, Col, Typography, Space, Statistic, Card, Alert, Spin } from 'antd6';
+import { Row, Col, Typography, Space, Statistic, Card, Alert, Spin } from 'antd';
 import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { fetchData, FETCH_INTERVAL, API_STREAM_HEALTH_METRICS } from '../../utils/apis';

@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from 'antd6';
+import { Button, ButtonProps } from 'antd';
 
 import { FC } from 'react';
 import dynamic from 'next/dynamic';

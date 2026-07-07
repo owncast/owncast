@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactElement } from 'react';
-import { Table, Typography, Button } from 'antd6';
+import { Table, Typography, Button } from 'antd';
 import classNames from 'classnames';
-import { ColumnsType } from 'antd6/es/table';
+import { ColumnsType } from 'antd/es/table';
 import { format } from 'date-fns';
 
 import dynamic from 'next/dynamic';

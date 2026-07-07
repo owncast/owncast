@@ -1,4 +1,4 @@
-import { Alert, Button } from 'antd6';
+import { Alert, Button } from 'antd';
 import { FC } from 'react';
 import Translation from '../Translation/Translation';
 import { Localization } from '../../../types/localization';

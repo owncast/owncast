@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Alert, Button, message, Space, Tabs, Typography, Upload } from 'antd6';
-import type { UploadProps } from 'antd6';
+import { Alert, Button, message, Space, Tabs, Typography, Upload } from 'antd';
+import type { UploadProps } from 'antd';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-export-i18n';

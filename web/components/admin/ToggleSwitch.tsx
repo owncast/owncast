@@ -3,7 +3,7 @@
 // If `useSubmit` is true then it will automatically post to the config API onChange.
 
 import React, { useState, useContext, FC } from 'react';
-import { Switch } from 'antd6';
+import { Switch } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import {
   createInputStatus,

@@ -1,6 +1,6 @@
 // EDIT CUSTOM DETAILS ON YOUR PAGE
 import React, { useState, useEffect, useContext } from 'react';
-import { Typography, Button } from 'antd6';
+import { Typography, Button } from 'antd';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';

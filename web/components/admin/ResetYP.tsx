@@ -1,4 +1,4 @@
-import { Popconfirm, Button, Typography } from 'antd6';
+import { Popconfirm, Button, Typography } from 'antd';
 import { FC, useContext, useState } from 'react';
 import { useTranslation } from 'next-export-i18n';
 import { AlertMessageContext } from '../../utils/alert-message-context';

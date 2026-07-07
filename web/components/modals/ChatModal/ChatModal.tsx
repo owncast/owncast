@@ -1,4 +1,4 @@
-import { Modal } from 'antd6';
+import { Modal } from 'antd';
 import { FC } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 

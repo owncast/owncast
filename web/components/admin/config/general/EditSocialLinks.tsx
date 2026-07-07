@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Typography, Table, Button, Modal, Input } from 'antd6';
-import { ColumnsType } from 'antd6/lib/table';
+import { Typography, Table, Button, Modal, Input } from 'antd';
+import { ColumnsType } from 'antd/lib/table';
 import dynamic from 'next/dynamic';
 import { SocialDropdown } from '../../SocialDropdown';
 import { fetchData, SOCIAL_PLATFORMS_LIST } from '../../../../utils/apis';

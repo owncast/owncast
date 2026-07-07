@@ -1,8 +1,8 @@
 // Updating a variant will post ALL the variants in an array as an update to the API.
 
 import React, { FC, useContext, useState } from 'react';
-import { Typography, Table, Modal, Button, Alert } from 'antd6';
-import { ColumnsType } from 'antd6/lib/table';
+import { Typography, Table, Modal, Button, Alert } from 'antd';
+import { ColumnsType } from 'antd/lib/table';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../utils/server-status-context';

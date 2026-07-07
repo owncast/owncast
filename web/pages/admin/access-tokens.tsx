@@ -11,7 +11,7 @@ import {
   Row,
   Col,
   Tooltip,
-} from 'antd6';
+} from 'antd';
 
 import { format } from 'date-fns';
 

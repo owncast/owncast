@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { message } from 'antd6';
+import { message } from 'antd';
 import Plugins from '../pages/admin/plugins';
 import {
   fetchData,
@@ -25,8 +25,8 @@ jest.mock('next-export-i18n', () => ({
   }),
 }));
 
-jest.mock('antd6', () => {
-  const actual = jest.requireActual('antd6');
+jest.mock('antd', () => {
+  const actual = jest.requireActual('antd');
   return {
     ...actual,
     message: {

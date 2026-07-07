@@ -1,6 +1,6 @@
 import React, { FC, useContext, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Alert, Button, Col, Collapse, Row, Slider, Space, Tooltip, Typography } from 'antd6';
+import { Alert, Button, Col, Collapse, Row, Slider, Space, Tooltip, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { EditCustomStyles } from '../../EditCustomStyles';
 import s from './appearance.module.scss';

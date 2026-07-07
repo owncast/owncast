@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/nextjs';
-import { Button, Modal, message, notification } from 'antd6';
+import { Button, Modal, message, notification } from 'antd';
 
 // Exercises antd's imperative feedback surfaces (message toasts,
 // notifications, Modal.confirm) so they have a visual baseline. These render

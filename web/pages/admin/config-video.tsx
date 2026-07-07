@@ -1,4 +1,4 @@
-import { Col, Collapse, Row, Typography } from 'antd6';
+import { Col, Collapse, Row, Typography } from 'antd';
 import React, { ReactElement } from 'react';
 import { CodecSelector as VideoCodecSelector } from '../../components/admin/CodecSelector';
 import { VideoLatency } from '../../components/admin/VideoLatency';

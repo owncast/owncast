@@ -1,4 +1,4 @@
-import { Popover } from 'antd6';
+import { Popover } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import sanitizeHtml from 'sanitize-html';

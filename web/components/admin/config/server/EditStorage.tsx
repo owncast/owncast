@@ -1,4 +1,4 @@
-import { Button, Collapse } from 'antd6';
+import { Button, Collapse } from 'antd';
 import classNames from 'classnames';
 import React, { useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'next-export-i18n';

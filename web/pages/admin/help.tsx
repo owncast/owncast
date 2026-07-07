@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Result, Row, Typography } from 'antd6';
+import { Button, Card, Col, Divider, Result, Row, Typography } from 'antd';
 
 import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';

@@ -1,13 +1,13 @@
 .inputGroup {
-  :global(.ant6-input-affix-wrapper) {
+  :global(.ant-input-affix-wrapper) {
     border-width: 2px;
   }
 
-  :global(.ant6-input-show-count-suffix) {
+  :global(.ant-input-show-count-suffix) {
     font-size: 11px;
   }
 
-  :global(.ant6-btn-primary) {
+  :global(.ant-btn-primary) {
     font-weight: 600;
   }
 }
@@ -15,7 +15,7 @@
 .colorChange {
   padding-top: 8px;
 
-  :global(.ant6-form-item-label) {
+  :global(.ant-form-item-label) {
     z-index: 1000;
     margin-bottom: 0;
 
@@ -26,8 +26,8 @@
 }
 
 .colorDropdown {
-  :global(.ant6-select):not(.ant6-select-customize-input) {
-    :global(.ant6-select-content) {
+  :global(.ant-select):not(.ant-select-customize-input) {
+    :global(.ant-select-content) {
       padding-left: 0;
       border-width: 2px;
     }

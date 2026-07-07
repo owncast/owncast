@@ -1,40 +1,30 @@
 import { FC, ReactNode, useMemo } from 'react';
-import { ConfigProvider } from 'antd6';
-import type { ThemeConfig } from 'antd6';
+import { ConfigProvider } from 'antd';
+import type { ThemeConfig } from 'antd';
 import { useRecoilValue } from 'recoil';
 import { ClientConfig } from '../../interfaces/client-config.model';
 import { clientConfigStateAtom } from '../stores/ClientConfigStore';
-import antd6DefaultTheme from './antd6-default-theme.json';
+import antdDefaultTheme from './antd-default-theme.json';
 
 /*
-Theme bridge for Ant Design v6 components during the incremental v4 -> v6
-migration.
+Theme bridge for Ant Design.
 
-antd v6 is installed under the npm alias "antd6" so it can coexist with v4.
 There is exactly ONE instance of this provider, mounted in pages/_app.tsx
-(and mirrored as a Storybook decorator in .storybook/preview.js); migrated
-components just import from "antd6". It does two things:
+(and mirrored as a Storybook decorator in .storybook/preview.js). It maps
+the Owncast theme onto antd design tokens: static defaults below mirror
+web/style-definitions default theme values; runtime admin customizations
+arrive through clientConfig.appearanceVariables (the same values Theme.tsx
+sets as CSS variables) and override the defaults.
 
-1. Scopes v6 under the "ant6" class prefix so the global v4 Less styles
-	 (.ant-*) cannot bleed into v6 components, and vice versa. When the
-	 migration is complete and v4 is removed, drop the prefix.
-
-2. Maps the Owncast theme onto v6 design tokens. Static defaults below
-	 mirror web/style-definitions default theme values; runtime admin
-	 customizations arrive through clientConfig.appearanceVariables (the same
-	 values Theme.tsx sets as CSS variables) and override the defaults.
-
-Component style RULES are pre-extracted at build time into styles/antd6.css
+Component style RULES are pre-extracted at build time into styles/antd.css
 (zeroRuntime mode); the runtime injects only the CSS-variable values for the
 tokens, so theme changes apply live with no runtime style generation.
 */
 
-export const ANTD6_PREFIX = 'ant6';
-
 // Defaults mirroring web/style-definitions/tokens (default theme). The JSON
-// is shared with build-scripts/extract-antd6-styles.js, which bakes these
+// is shared with build-scripts/extract-antd-styles.js, which bakes these
 // values into the pre-extracted stylesheet as the pre-hydration fallback.
-const defaultTheme = antd6DefaultTheme as ThemeConfig;
+const defaultTheme = antdDefaultTheme as ThemeConfig;
 
 // Map the admin-customizable Owncast appearance variables (documented at
 // https://owncast.online and set as CSS variables by Theme.tsx) onto v6
@@ -109,8 +99,8 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
   return {
     token,
     components: { Modal: modal, Tabs: tabs, Dropdown: dropdown },
-    // Component style RULES come from the pre-extracted styles/antd6.css
-    // (see build-scripts/extract-antd6-styles.js); the runtime only injects
+    // Component style RULES come from the pre-extracted styles/antd.css
+    // (see build-scripts/extract-antd-styles.js); the runtime only injects
     // the CSS-variable VALUES derived from the tokens above, which is what
     // keeps dynamic theming working with no runtime rule generation and no
     // FOUC on statically exported pages.
@@ -123,26 +113,17 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
 
 // Static APIs (message, notification, Modal.confirm) render into their own
 // detached React root, outside the provider tree above. Configure that
-// holder once so statics get the same class prefix and default theme;
-// without this they fall back to the unscoped "ant" prefix and collide
-// with the v4 global styles.
+// holder once so statics get the default theme; without this they render
+// unthemed.
 ConfigProvider.config({
-  holderRender: node => (
-    <ConfigProvider
-      prefixCls={ANTD6_PREFIX}
-      iconPrefixCls={`${ANTD6_PREFIX}icon`}
-      theme={buildTheme({})}
-    >
-      {node}
-    </ConfigProvider>
-  ),
+  holderRender: node => <ConfigProvider theme={buildTheme({})}>{node}</ConfigProvider>,
 });
 
-export type Antd6ProviderProps = {
+export type AntdProviderProps = {
   children: ReactNode;
 };
 
-export const Antd6Provider: FC<Antd6ProviderProps> = ({ children }) => {
+export const AntdProvider: FC<AntdProviderProps> = ({ children }) => {
   const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
   const { appearanceVariables } = clientConfig;
 
@@ -150,9 +131,5 @@ export const Antd6Provider: FC<Antd6ProviderProps> = ({ children }) => {
   const appearanceKey = JSON.stringify(appearanceVariables);
   const theme = useMemo(() => buildTheme(appearanceVariables), [appearanceKey]);
 
-  return (
-    <ConfigProvider prefixCls={ANTD6_PREFIX} iconPrefixCls={`${ANTD6_PREFIX}icon`} theme={theme}>
-      {children}
-    </ConfigProvider>
-  );
+  return <ConfigProvider theme={theme}>{children}</ConfigProvider>;
 };

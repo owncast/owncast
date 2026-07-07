@@ -1,4 +1,4 @@
-import { Modal, Button } from 'antd6';
+import { Modal, Button } from 'antd';
 import { FC } from 'react';
 import dynamic from 'next/dynamic';
 import { USER_ENABLED_TOGGLE, fetchData } from '../../utils/apis';
