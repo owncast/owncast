@@ -4,7 +4,7 @@ import { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
-import { Button, Typography } from 'antd';
+import { Button, Typography } from 'antd6';
 import styles from './OfflineEmbed.module.scss';
 import { Modal } from '../Modal/Modal';
 

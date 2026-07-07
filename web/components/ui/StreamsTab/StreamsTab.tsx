@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { Row, Col, Empty, Spin, Alert } from 'antd';
+import { Row, Col, Empty, Spin, Alert } from 'antd6';
 import { StreamCard } from '../StreamCard/StreamCard';
 import { Translation } from '../Translation/Translation';
 import { Localization } from '../../../types/localization';

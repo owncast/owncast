@@ -1,4 +1,4 @@
-import { Avatar, Col, Row } from 'antd';
+import { Avatar, Col, Row } from 'antd6';
 import React, { FC } from 'react';
 import cn from 'classnames';
 import { Follower } from '../../../../interfaces/follower';

@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button } from 'antd6';
 import dynamic from 'next/dynamic';
 import { FC } from 'react';
 import styles from './ChatContainer.module.scss';

@@ -1,4 +1,4 @@
-import { Spin, Modal as AntModal } from 'antd';
+import { Spin, Modal as AntModal } from 'antd6';
 import React, { FC, ReactNode, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ComponentError } from '../ComponentError/ComponentError';

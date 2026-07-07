@@ -32,6 +32,6 @@ describe(`Online readwrite chat embed`, () => {
 	});
 
 	it('Close name change modal', () => {
-		cy.get('.ant-modal-close-x').click();
+		cy.get('.ant6-modal-close-x').click();
 	});
 });

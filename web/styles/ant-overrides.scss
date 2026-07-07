@@ -248,3 +248,36 @@ th {
 .ant-collapse > .ant-collapse-item {
   background: var(--theme-color-palette-14);
 }
+
+/* ------------------------- //
+ANT DESIGN V6 (ant6 prefix)
+Equivalents of the rules above for surfaces migrated to v6. Structural and
+error-palette rules only; color theming for v6 flows through the design
+tokens in components/theme/Antd6Provider.tsx instead. Remove the v4 rules
+when v4 is gone.
+// ------------------------- */
+
+.ant6-layout-header {
+  line-height: unset;
+  height: auto;
+}
+
+.ant6-alert-error {
+  .ant6-alert-icon {
+    color: var(--theme-color-palette-error);
+  }
+
+  .ant6-alert-title {
+    color: var(--theme-color-palette-error);
+  }
+}
+
+// Lower the z-index so it renders under modals.
+.ant6-popover {
+  z-index: 800;
+}
+
+.ant6-table-wrapper td.ant6-table-column-sort,
+.ant6-table-wrapper .ant6-table-thead th.ant6-table-column-sort {
+  background-color: unset;
+}

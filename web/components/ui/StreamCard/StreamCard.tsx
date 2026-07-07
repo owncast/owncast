@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Card, Tag, Typography, Badge } from 'antd';
+import { Card, Tag, Typography, Badge } from 'antd6';
 import classNames from 'classnames';
 import styles from './StreamCard.module.scss';
 

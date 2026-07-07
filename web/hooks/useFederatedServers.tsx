@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { message } from 'antd';
+import { message } from 'antd6';
 import { useTranslation } from 'next-export-i18n';
 import { Localization } from '../types/localization';
 

@@ -17,6 +17,7 @@
 		"build-scripts/extract-antd6-styles.js"
 	],
 	"ignoreDependencies": [
+		"antd",
 		"@fontsource/inter",
 		"@fontsource/poppins",
 		"yaml",

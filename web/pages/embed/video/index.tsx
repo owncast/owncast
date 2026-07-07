@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import { useRouter } from 'next/router';
-import { Skeleton } from 'antd';
+import { Skeleton } from 'antd6';
 import {
   clientConfigStateAtom,
   ClientConfigStore,
