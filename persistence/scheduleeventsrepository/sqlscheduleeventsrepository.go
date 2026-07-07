@@ -18,24 +18,6 @@ type SqlScheduleEventsRepository struct {
 	datastore *datastore.Datastore
 }
 
-// temporaryGlobalInstance is set once during application startup so helper
-// code that has not yet been migrated to the dependency-injection pattern
-// can still reach the schedule-events repository.
-var temporaryGlobalInstance ScheduleEventsRepository
-
-// SetGlobalInstance registers the application's single
-// ScheduleEventsRepository for Get to return. Called from main.go after
-// constructing the repository.
-func SetGlobalInstance(r ScheduleEventsRepository) {
-	temporaryGlobalInstance = r
-}
-
-// Get returns the global ScheduleEventsRepository registered with
-// SetGlobalInstance. Returns nil until startup has wired one in.
-func Get() ScheduleEventsRepository {
-	return temporaryGlobalInstance
-}
-
 // New will create a new instance of the ScheduleEventsRepository.
 func New(datastore *datastore.Datastore) ScheduleEventsRepository {
 	return &SqlScheduleEventsRepository{
@@ -150,12 +132,11 @@ func (r *SqlScheduleEventsRepository) AddOneOffEvent(name, description string, s
 	if err != nil {
 		return "", err
 	}
-	// A one-off has no legitimate INSERT OR IGNORE path (NULL series and
-	// original_start never collide in the unique index), so an ignored
-	// insert can only mean the generated id hit an existing row. Returning
-	// that id would point the caller at somebody else's event.
+	// The insert's conflict clause targets only (series_id, original_start),
+	// which one-offs (both NULL) never trip, so a collision on the generated
+	// id surfaces as an error above rather than an ignored row.
 	if inserted == 0 {
-		return "", errors.New("scheduled event id collision")
+		return "", errors.New("scheduled event was not inserted")
 	}
 	return id, nil
 }
