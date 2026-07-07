@@ -319,6 +319,18 @@ type ServerInterface interface {
 	// (POST /admin/config/s3)
 	SetS3Configuration(w http.ResponseWriter, r *http.Request)
 
+	// (OPTIONS /admin/config/schedule/enabled)
+	SetScheduleEnabledOptions(w http.ResponseWriter, r *http.Request)
+	// Enable or disable the schedule feature
+	// (POST /admin/config/schedule/enabled)
+	SetScheduleEnabled(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/schedule/remindermessage)
+	SetScheduleReminderMessageOptions(w http.ResponseWriter, r *http.Request)
+	// Set the message posted to the Fediverse before a scheduled event starts
+	// (POST /admin/config/schedule/remindermessage)
+	SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request)
+
 	// (OPTIONS /admin/config/serversummary)
 	SetServerSummaryOptions(w http.ResponseWriter, r *http.Request)
 	// Change the server summary
@@ -525,6 +537,30 @@ type ServerInterface interface {
 	// Endpoint to interface with Prometheus
 	// (PUT /admin/prometheus)
 	PutPrometheusAPI(w http.ResponseWriter, r *http.Request)
+	// Get every scheduled event and recurring series for the admin
+	// (GET /admin/schedule)
+	GetAdminSchedule(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/schedule)
+	GetAdminScheduleOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/schedule/event)
+	UpsertScheduledEventOptions(w http.ResponseWriter, r *http.Request)
+	// Create or update a scheduled event or recurring series
+	// (POST /admin/schedule/event)
+	UpsertScheduledEvent(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/schedule/event/delete)
+	DeleteScheduledEventOptions(w http.ResponseWriter, r *http.Request)
+	// Delete or cancel a scheduled event or recurring series
+	// (POST /admin/schedule/event/delete)
+	DeleteScheduledEvent(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/schedule/preview)
+	PreviewScheduleRecurrenceOptions(w http.ResponseWriter, r *http.Request)
+	// Preview the occurrences a recurrence rule would produce
+	// (POST /admin/schedule/preview)
+	PreviewScheduleRecurrence(w http.ResponseWriter, r *http.Request)
 	// Get the current server config
 	// (GET /admin/serverconfig)
 	GetServerConfig(w http.ResponseWriter, r *http.Request)
@@ -723,6 +759,12 @@ type ServerInterface interface {
 	// Request remote follow
 	// (POST /remotefollow)
 	RemoteFollow(w http.ResponseWriter, r *http.Request)
+	// Get the public schedule of upcoming and recent stream events
+	// (GET /schedule)
+	GetSchedule(w http.ResponseWriter, r *http.Request, params GetScheduleParams)
+
+	// (OPTIONS /schedule)
+	GetScheduleOptions(w http.ResponseWriter, r *http.Request)
 	// Get all social platforms
 	// (GET /socialplatforms)
 	GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request)
@@ -1297,6 +1339,28 @@ func (_ Unimplemented) SetS3Configuration(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/schedule/enabled)
+func (_ Unimplemented) SetScheduleEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Enable or disable the schedule feature
+// (POST /admin/config/schedule/enabled)
+func (_ Unimplemented) SetScheduleEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/schedule/remindermessage)
+func (_ Unimplemented) SetScheduleReminderMessageOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Set the message posted to the Fediverse before a scheduled event starts
+// (POST /admin/config/schedule/remindermessage)
+func (_ Unimplemented) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // (OPTIONS /admin/config/serversummary)
 func (_ Unimplemented) SetServerSummaryOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
@@ -1680,6 +1744,50 @@ func (_ Unimplemented) PutPrometheusAPI(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// Get every scheduled event and recurring series for the admin
+// (GET /admin/schedule)
+func (_ Unimplemented) GetAdminSchedule(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/schedule)
+func (_ Unimplemented) GetAdminScheduleOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/schedule/event)
+func (_ Unimplemented) UpsertScheduledEventOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create or update a scheduled event or recurring series
+// (POST /admin/schedule/event)
+func (_ Unimplemented) UpsertScheduledEvent(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/schedule/event/delete)
+func (_ Unimplemented) DeleteScheduledEventOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete or cancel a scheduled event or recurring series
+// (POST /admin/schedule/event/delete)
+func (_ Unimplemented) DeleteScheduledEvent(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/schedule/preview)
+func (_ Unimplemented) PreviewScheduleRecurrenceOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Preview the occurrences a recurrence rule would produce
+// (POST /admin/schedule/preview)
+func (_ Unimplemented) PreviewScheduleRecurrence(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Get the current server config
 // (GET /admin/serverconfig)
 func (_ Unimplemented) GetServerConfig(w http.ResponseWriter, r *http.Request) {
@@ -2050,6 +2158,17 @@ func (_ Unimplemented) Ping(w http.ResponseWriter, r *http.Request) {
 // Request remote follow
 // (POST /remotefollow)
 func (_ Unimplemented) RemoteFollow(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get the public schedule of upcoming and recent stream events
+// (GET /schedule)
+func (_ Unimplemented) GetSchedule(w http.ResponseWriter, r *http.Request, params GetScheduleParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /schedule)
+func (_ Unimplemented) GetScheduleOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3705,6 +3824,70 @@ func (siw *ServerInterfaceWrapper) SetS3Configuration(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r)
 }
 
+// SetScheduleEnabledOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleEnabledOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleEnabled operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleEnabled(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleReminderMessageOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleReminderMessageOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleReminderMessageOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleReminderMessage operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleReminderMessage(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // SetServerSummaryOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetServerSummaryOptions(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -4879,6 +5062,134 @@ func (siw *ServerInterfaceWrapper) PostPrometheusAPI(w http.ResponseWriter, r *h
 func (siw *ServerInterfaceWrapper) PutPrometheusAPI(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PutPrometheusAPI(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAdminSchedule operation middleware
+func (siw *ServerInterfaceWrapper) GetAdminSchedule(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAdminSchedule(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAdminScheduleOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetAdminScheduleOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAdminScheduleOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpsertScheduledEventOptions operation middleware
+func (siw *ServerInterfaceWrapper) UpsertScheduledEventOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpsertScheduledEventOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpsertScheduledEvent operation middleware
+func (siw *ServerInterfaceWrapper) UpsertScheduledEvent(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpsertScheduledEvent(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteScheduledEventOptions operation middleware
+func (siw *ServerInterfaceWrapper) DeleteScheduledEventOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteScheduledEventOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteScheduledEvent operation middleware
+func (siw *ServerInterfaceWrapper) DeleteScheduledEvent(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteScheduledEvent(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PreviewScheduleRecurrenceOptions operation middleware
+func (siw *ServerInterfaceWrapper) PreviewScheduleRecurrenceOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PreviewScheduleRecurrenceOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PreviewScheduleRecurrence operation middleware
+func (siw *ServerInterfaceWrapper) PreviewScheduleRecurrence(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PreviewScheduleRecurrence(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6300,6 +6611,64 @@ func (siw *ServerInterfaceWrapper) RemoteFollow(w http.ResponseWriter, r *http.R
 	handler.ServeHTTP(w, r)
 }
 
+// GetSchedule operation middleware
+func (siw *ServerInterfaceWrapper) GetSchedule(w http.ResponseWriter, r *http.Request) {
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetScheduleParams
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetSchedule(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetScheduleOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetScheduleOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetScheduleOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetAllSocialPlatforms operation middleware
 func (siw *ServerInterfaceWrapper) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -6769,6 +7138,18 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/admin/config/s3", wrapper.SetS3Configuration)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/schedule/enabled", wrapper.SetScheduleEnabledOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/schedule/enabled", wrapper.SetScheduleEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/schedule/remindermessage", wrapper.SetScheduleReminderMessageOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/schedule/remindermessage", wrapper.SetScheduleReminderMessage)
+	})
+	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/admin/config/serversummary", wrapper.SetServerSummaryOptions)
 	})
 	r.Group(func(r chi.Router) {
@@ -6976,6 +7357,30 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Put(options.BaseURL+"/admin/prometheus", wrapper.PutPrometheusAPI)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/schedule", wrapper.GetAdminSchedule)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/schedule", wrapper.GetAdminScheduleOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/schedule/event", wrapper.UpsertScheduledEventOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/schedule/event", wrapper.UpsertScheduledEvent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/schedule/event/delete", wrapper.DeleteScheduledEventOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/schedule/event/delete", wrapper.DeleteScheduledEvent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/schedule/preview", wrapper.PreviewScheduleRecurrenceOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/schedule/preview", wrapper.PreviewScheduleRecurrence)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/serverconfig", wrapper.GetServerConfig)
 	})
 	r.Group(func(r chi.Router) {
@@ -7172,6 +7577,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/remotefollow", wrapper.RemoteFollow)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/schedule", wrapper.GetSchedule)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/schedule", wrapper.GetScheduleOptions)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/socialplatforms", wrapper.GetAllSocialPlatforms)
