@@ -8,6 +8,11 @@ import (
 	"strconv"
 	"time"
 
+	// Embed IANA timezone data so recurrence expansion with named zones
+	// (e.g. America/Los_Angeles) works on hosts without a system tzdata,
+	// notably stock Windows.
+	_ "time/tzdata"
+
 	log "github.com/sirupsen/logrus"
 
 	fediverseauth "github.com/owncast/owncast/auth/fediverse"
@@ -18,6 +23,7 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/federatedserversrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
+	"github.com/owncast/owncast/persistence/scheduleeventsrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 
@@ -175,12 +181,14 @@ func main() {
 	userRepository := userrepository.New(dataStore)
 	notificationsRepository := notificationsrepository.New(dataStore, configRepository)
 	federatedServersRepository := federatedserversrepository.New(dataStore)
+	scheduleEventsRepository := scheduleeventsrepository.New(dataStore)
 
 	// Expose globals for helper code that still uses package-level
 	// Get accessors (the featured-streams ActivityPub paths). Long term
 	// these callers move to dependency injection.
 	configrepository.SetGlobalInstance(configRepository)
 	federatedserversrepository.SetGlobalInstance(federatedServersRepository)
+	scheduleeventsrepository.SetGlobalInstance(scheduleEventsRepository)
 
 	handleCommandLineFlags(cfg, configRepository)
 
