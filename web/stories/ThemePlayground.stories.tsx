@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/nextjs';
 import { useSetRecoilState } from 'recoil';
 import {
   Alert,
