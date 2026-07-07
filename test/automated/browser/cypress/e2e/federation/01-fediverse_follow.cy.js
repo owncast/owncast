@@ -69,7 +69,7 @@ filterTests(['desktop'], () => {
 			// The table lists the follower's name and actor URL. Any follower
 			// from the harness domain proves persistence without coupling this
 			// test to the actor created by the previous one.
-			cy.get('.ant-table').should('contain', '127.0.0.1:9443/actor/');
+			cy.get('.ant6-table').should('contain', '127.0.0.1:9443/actor/');
 		});
 	});
 });

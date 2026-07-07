@@ -144,3 +144,53 @@
 .ant-dropdown-menu-submenu-title-selected {
   background-color: #f5f0ff;
 }
+
+/* Ant Design v6 (ant6 prefix) equivalents of the .ant-table/.ant-btn/
+   .ant-dropdown rules above, for admin surfaces migrated to v6. Remove the
+   v4 rules when v4 is gone. */
+.chat-messages .ant6-table-cell .name-col {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.chat-messages .ant6-table-cell .toggle-col label {
+  font-size: 0.7rem;
+}
+
+.chat-messages .ant6-table-cell .message-contents {
+  overflow: auto;
+  max-height: 200px;
+}
+
+.chat-messages .ant6-table-cell .message-contents img {
+  position: relative;
+  margin-top: -5px;
+  max-height: 50px;
+  max-width: 50px;
+  padding: 0.25rem;
+}
+
+.chat-messages .ant6-table-cell .message-contents p {
+  margin-bottom: 0;
+}
+
+.ant6-table-filter-dropdown {
+  max-width: 250px;
+}
+
+.toggle-switch .ant6-btn .ant6icon {
+  opacity: 0.5;
+}
+
+.toggle-switch .ant6-btn:hover .ant6icon {
+  opacity: 1;
+}
+
+.toggle-switch .ant6-btn-text:hover {
+  background-color: var(--theme-color-palette-10);
+}
+
+.ant6-dropdown-menu-item-selected,
+.ant6-dropdown-menu-submenu-title-selected {
+  background-color: #f5f0ff;
+}

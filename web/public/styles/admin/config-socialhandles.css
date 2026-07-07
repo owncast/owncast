@@ -9,6 +9,7 @@
   padding: 0.25em;
   line-height: normal;
 }
+
 .social-option .ant-select-item-option-content .option-icon,
 .social-option .ant-select-selection-item .option-icon,
 .social-dropdown .ant-select-item-option-content .option-icon,
@@ -17,6 +18,7 @@
   width: 1.5em;
   line-height: normal;
 }
+
 .social-option .ant-select-item-option-content .option-label,
 .social-option .ant-select-selection-item .option-label,
 .social-dropdown .ant-select-item-option-content .option-label,
@@ -24,31 +26,68 @@
   display: inline-block;
   margin-left: 1em;
   line-height: normal;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
+
 .social-links-edit-container .social-handles-table .social-handle-cell {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
 }
+
 .social-links-edit-container .social-handles-table .social-handle-cell .option-icon {
   height: 2em;
   width: 2em;
   line-height: normal;
 }
+
 .social-links-edit-container .social-handles-table .social-handle-cell .option-label {
   display: flex;
   flex-direction: column;
   margin: 0 0 0 1em;
   line-height: 2;
   font-size: 0.85em;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
+
 .social-links-edit-container .social-handles-table .actions {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
   width: 6em;
+}
+
+/* Ant Design v6 (ant6 prefix) equivalents of the .ant-select rules above,
+   for admin surfaces migrated to v6. Remove the v4 rules when v4 is gone. */
+.social-option .ant6-select-item-option-content,
+.social-option .ant6-select-selection-item,
+.social-dropdown .ant6-select-item-option-content,
+.social-dropdown .ant6-select-selection-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.25em;
+  line-height: normal;
+}
+
+.social-option .ant6-select-item-option-content .option-icon,
+.social-option .ant6-select-selection-item .option-icon,
+.social-dropdown .ant6-select-item-option-content .option-icon,
+.social-dropdown .ant6-select-selection-item .option-icon {
+  height: 1.5em;
+  width: 1.5em;
+  line-height: normal;
+}
+
+.social-option .ant6-select-item-option-content .option-label,
+.social-option .ant6-select-selection-item .option-label,
+.social-dropdown .ant6-select-item-option-content .option-label,
+.social-dropdown .ant6-select-selection-item .option-label {
+  display: inline-block;
+  margin-left: 1em;
+  line-height: normal;
+  overflow-wrap: anywhere;
 }

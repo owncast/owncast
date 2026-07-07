@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Space, Spin, Table, Tabs, Tag, Typography } from 'antd';
+import { Alert, Space, Spin, Table, Tabs, Tag, Typography } from 'antd6';
 import { useTranslation } from 'next-export-i18n';
 import dynamic from 'next/dynamic';
 import ReactMarkdown from 'react-markdown';
@@ -267,15 +267,13 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
   // present once the plugin is loaded). Shown as its own tab when non-empty.
   const commandRows = useMemo(
     () =>
-      (plugin.commands ?? []).map(
-        (cmd: PluginCommand): CommandRow => ({
-          key: `${cmd.prefix ?? '!'}${cmd.name}`,
-          command: `${cmd.prefix ?? '!'}${cmd.name}`,
-          description: cmd.description ?? '',
-          usage: cmd.usage,
-          modOnly: !!cmd.modOnly,
-        }),
-      ),
+      (plugin.commands ?? []).map((cmd: PluginCommand): CommandRow => ({
+        key: `${cmd.prefix ?? '!'}${cmd.name}`,
+        command: `${cmd.prefix ?? '!'}${cmd.name}`,
+        description: cmd.description ?? '',
+        usage: cmd.usage,
+        modOnly: !!cmd.modOnly,
+      })),
     [plugin.commands],
   );
 

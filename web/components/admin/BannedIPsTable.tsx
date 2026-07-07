@@ -1,5 +1,5 @@
-import { Table, Button } from 'antd';
-import { SortOrder } from 'antd/lib/table/interface';
+import { Table, Button } from 'antd6';
+import { SortOrder } from 'antd6/lib/table/interface';
 import { format } from 'date-fns';
 import React, { FC } from 'react';
 import dynamic from 'next/dynamic';

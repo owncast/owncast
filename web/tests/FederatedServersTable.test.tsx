@@ -18,8 +18,8 @@ jest.mock('next/router', () => ({
 }));
 
 // Mock antd message
-jest.mock('antd', () => ({
-  ...jest.requireActual('antd'),
+jest.mock('antd6', () => ({
+  ...jest.requireActual('antd6'),
   message: {
     success: jest.fn(),
     error: jest.fn(),
@@ -127,7 +127,7 @@ describe('FederatedServersTable', () => {
 
   it('handles removal error gracefully', async () => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
-    const { message: antdMessage } = require('antd');
+    const { message: antdMessage } = require('antd6');
     mockOnRemove.mockRejectedValue(new Error('Removal failed'));
 
     render(<FederatedServersTable servers={mockServers} onRemove={mockOnRemove} />);

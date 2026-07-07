@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Table, Button, Space, Tag, Popconfirm, message } from 'antd';
+import { Table, Button, Space, Tag, Popconfirm, message } from 'antd6';
 import { useTranslation } from 'next-export-i18n';
 import {
   DeleteOutlined,
@@ -8,7 +8,7 @@ import {
   CloseCircleOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd6/es/table';
 import { Translation } from '../../ui/Translation/Translation';
 import { Localization } from '../../../types/localization';
 import styles from './FederatedServersTable.module.scss';
