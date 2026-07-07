@@ -242,6 +242,20 @@ func (r *SqlScheduleEventsRepository) DeleteUnfederatedFutureEventsForSeries(ser
 	})
 }
 
+// GetCurrentOrUpcomingEvents returns scheduled occurrences that are still
+// running (start plus duration in the future) or upcoming, soonest first.
+func (r *SqlScheduleEventsRepository) GetCurrentOrUpcomingEvents(now time.Time, limit int) ([]models.ScheduledEvent, error) {
+	queries := db.New(r.datastore.DB)
+	rows, err := queries.GetCurrentOrUpcomingStreamEvents(context.Background(), db.GetCurrentOrUpcomingStreamEventsParams{
+		Datetime: now.UTC(),
+		Limit:    int64(limit),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return eventsFromRows(rows), nil
+}
+
 // GetNextUpcomingEvents returns the next scheduled (not cancelled)
 // occurrences starting after the given instant.
 func (r *SqlScheduleEventsRepository) GetNextUpcomingEvents(after time.Time, limit int) ([]models.ScheduledEvent, error) {

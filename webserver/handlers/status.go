@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/owncast/owncast/services/schedule"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -35,7 +36,28 @@ func (h *Handlers) getStatusResponse() webStatusResponse {
 	if !h.configRepository.GetHideViewerCount() {
 		response.ViewerCount = status.ViewerCount
 	}
+
+	if h.configRepository.GetScheduleEnabled() {
+		if event := schedule.GetUpcomingEvent(); event != nil {
+			response.ScheduledEvent = &scheduledEventStatusResponse{
+				ID:        event.ID,
+				Name:      event.Name,
+				StartTime: event.StartTime,
+				ChatOpen:  schedule.IsChatOpenForEvent(event, time.Now()),
+			}
+		}
+	}
 	return response
+}
+
+// scheduledEventStatusResponse is the tiny next-event summary carried by the
+// frequently-polled status endpoint. It drives the offline countdown and the
+// pre-event chat window without any extra polling.
+type scheduledEventStatusResponse struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	StartTime time.Time `json:"startTime"`
+	ChatOpen  bool      `json:"chatOpen"`
 }
 
 type webStatusResponse struct {
@@ -47,4 +69,6 @@ type webStatusResponse struct {
 	StreamTitle   string `json:"streamTitle"`
 	ViewerCount   int    `json:"viewerCount,omitempty"`
 	Online        bool   `json:"online"`
+
+	ScheduledEvent *scheduledEventStatusResponse `json:"scheduledEvent,omitempty"`
 }
