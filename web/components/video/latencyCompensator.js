@@ -121,14 +121,15 @@ export function latencyThresholds(segmentDurationSec, worstRebufferLatencyMs, tr
 // The band adjusted for what the buffer can actually afford. Near the live
 // edge, latency can only be reduced by spending buffer, and the buffer floor
 // caps how much is spendable: the lowest reachable latency is
-// latency − (buffer − floor). The effective minimum never sits below that,
-// so the natural stopping point of a catch-up is always INSIDE the band and
-// the resting state is silent instead of chattering on the start threshold.
+// latency − (bufferTrough − floor). The trough (min of recent raw samples,
+// rev 10) is what stalls, so it — never the mean — is the spendable figure:
+// the natural stopping point of a catch-up leaves the raw sawtooth resting
+// ON the floor instead of half a segment below it.
 export function effectiveLatencyBand(
   segmentDurationSec,
   worstRebufferLatencyMs,
   latencyMs,
-  playableBufferSec,
+  bufferTroughSec,
   trusted = false,
 ) {
   let { minLatencyMs, maxLatencyMs } = latencyThresholds(
@@ -137,9 +138,9 @@ export function effectiveLatencyBand(
     trusted,
   );
 
-  if (Number.isFinite(latencyMs) && Number.isFinite(playableBufferSec)) {
+  if (Number.isFinite(latencyMs) && Number.isFinite(bufferTroughSec)) {
     const reachableMinMs =
-      latencyMs - (playableBufferSec - bufferFloorSeconds(segmentDurationSec, trusted)) * 1000;
+      latencyMs - (bufferTroughSec - bufferFloorSeconds(segmentDurationSec, trusted)) * 1000;
     if (reachableMinMs > minLatencyMs) {
       minLatencyMs = reachableMinMs;
       if (minLatencyMs >= maxLatencyMs) {
@@ -158,7 +159,10 @@ contract the tests pin down.
 
 inputs = {
   latencyMs,              // smoothed latency estimate, or null if unknown
-  playableBufferSec,      // mean of the last 4 buffer samples (smoothed)
+  playableBufferSec,      // mean of the last 4 buffer samples (display/trend)
+  bufferTroughSec,        // min of the last 4 raw buffer samples (rev 10):
+                          // the sawtooth trough is what stalls, so every
+                          // floor comparison and spend budget uses it
   playableBufferRawSec,   // instantaneous buffered seconds ahead of the playhead
   bufferTrendSec,         // mean(last 4) − mean(the 4 before); smoothed trend
   bandwidthRatio,         // conservative download:bitrate ratio, or null
@@ -180,6 +184,7 @@ export function decide(inputs) {
   const {
     latencyMs,
     playableBufferSec,
+    bufferTroughSec,
     playableBufferRawSec,
     bufferTrendSec,
     bandwidthRatio,
@@ -209,8 +214,17 @@ export function decide(inputs) {
   const floor = bufferFloorSeconds(segmentDurationSec, trusted);
   const idle = reason => ({ type: running ? 'stop' : 'none', reason });
 
+  // The trough of the recent raw samples: stable under check/segment cadence
+  // aliasing (min of a window covering the beat cycle), phase-robust when
+  // segment duration matches the check interval, and strictly conservative.
+  const trough = Number.isFinite(bufferTroughSec)
+    ? bufferTroughSec
+    : Math.min(rawSec, playableBufferSec);
+
   // Below the buffer floor we never spend buffer, no matter the latency.
-  if (playableBufferSec < floor) {
+  // The floor binds the TROUGH: resting at mean==floor still leaves the raw
+  // sawtooth dipping half a segment below it every cycle (rev 10 incident).
+  if (trough < floor) {
     return idle('buffer at floor');
   }
 
@@ -222,20 +236,38 @@ export function decide(inputs) {
     return idle('buffer shrinking');
   }
 
-  const { minLatencyMs, maxLatencyMs } = effectiveLatencyBand(
+  // Two views of the effective band (rev 10):
+  // - the SPEND band, from the trough: where spending must stop. Safety.
+  // - the START band, from the mean: how eager starts are. Churn control,
+  //   exactly as eager as rev 9 — starting isn't the dangerous act,
+  //   spending below the floor is.
+  const spendBand = effectiveLatencyBand(
+    segmentDurationSec,
+    worstRebufferLatencyMs,
+    latencyMs,
+    trough,
+    trusted,
+  );
+  const startBand = effectiveLatencyBand(
     segmentDurationSec,
     worstRebufferLatencyMs,
     latencyMs,
     playableBufferSec,
     trusted,
   );
+  const { minLatencyMs } = spendBand;
 
   if (latencyMs <= minLatencyMs) {
-    return idle('at target latency');
+    const base = latencyThresholds(segmentDurationSec, worstRebufferLatencyMs, trusted);
+    return idle(
+      latencyMs <= base.minLatencyMs ? 'at target latency' : 'buffer spent down to the floor',
+    );
   }
 
-  // Hysteresis: inside the band we only keep going if already running.
-  if (latencyMs <= maxLatencyMs && !running) {
+  // Hysteresis: inside the band we only keep going if already running. The
+  // EFFECTIVE band on purpose: its degenerate max (min + 3000) means a start
+  // must be worth >= 3s of gain — resting states never chase crumbs.
+  if (latencyMs <= startBand.maxLatencyMs && !running) {
     return { type: 'none', reason: 'inside latency band' };
   }
 
@@ -248,15 +280,15 @@ export function decide(inputs) {
   // Jump: only when very far behind, under pristine conditions, and always
   // forward, landing inside buffered content with the floor left intact.
   if (
-    latencyMs > maxLatencyMs + MAX_JUMP_LATENCY &&
+    latencyMs > startBand.maxLatencyMs + MAX_JUMP_LATENCY &&
     rebufferEvents === 0 &&
     stableChecks >= CONSECUTIVE_STABLE_CHECKS &&
     msSinceLastJump > MAX_JUMP_FREQUENCY &&
-    playableBufferSec >= floor + 2 * segmentDurationSec
+    trough >= floor + 2 * segmentDurationSec
   ) {
     const aheadSec = Math.min(
       // Keep at least the buffer floor after landing.
-      playableBufferSec - floor,
+      trough - floor,
       // Don't jump past the target latency.
       (latencyMs - minLatencyMs) / 1000 - segmentDurationSec,
     );
@@ -286,18 +318,19 @@ export function decide(inputs) {
     // hovering at the floor causes engage/stop flapping. (Kept as a plain
     // gate on purpose: folding it into the band geometry bars any catch-up
     // gaining less than the band's degenerate 3s offset.)
-    if (playableBufferSec < floor + segmentDurationSec / 2) {
+    if (trough < floor + segmentDurationSec / 2) {
       return { type: 'none', reason: 'buffer too close to floor to start' };
     }
   }
 
   // Taper toward 1.0 as we approach the target so we never overshoot into
-  // the thin-buffer zone at full speed.
-  const distance = Math.min((latencyMs - minLatencyMs) / (maxLatencyMs - minLatencyMs), 1);
-  const boostCap = Math.min(
-    MAX_SPEEDUP_RATE - 1,
-    BUFFER_BOOST_PER_SECOND * (playableBufferSec - floor),
+  // the thin-buffer zone at full speed. Distance and stop point come from
+  // the SPEND band: the trough is the budget being spent.
+  const distance = Math.min(
+    (latencyMs - minLatencyMs) / (spendBand.maxLatencyMs - minLatencyMs),
+    1,
   );
+  const boostCap = Math.min(MAX_SPEEDUP_RATE - 1, BUFFER_BOOST_PER_SECOND * (trough - floor));
   const rate = Math.round((1 + Math.max(boostCap, 0) * distance) * 10000) / 10000;
 
   if (rate < MIN_ACTIONABLE_RATE) {
@@ -378,6 +411,27 @@ function persistRebufferEvents(events) {
   }
 }
 
+// Enable or disable one VHS representation without flushing the buffer.
+// The rendition mixin's rep.enabled() triggers fastQualityChange_ ->
+// resetEverything(), discarding all buffered content ahead of the playhead;
+// writing playlist.disabled (the flag VHS's isEnabled() consults) applies
+// the restriction at the next natural segment selection instead. Falls back
+// to rep.enabled() when the playlist object isn't exposed.
+function setRepresentationEnabled(rep, enabled) {
+  const playlist = rep && rep.playlist;
+  if (playlist && typeof playlist === 'object') {
+    if (enabled) {
+      delete playlist.disabled;
+    } else {
+      playlist.disabled = true;
+    }
+    return;
+  }
+  if (rep && typeof rep.enabled === 'function') {
+    rep.enabled(enabled);
+  }
+}
+
 class LatencyCompensator {
   constructor(player, options = {}) {
     this.player = player;
@@ -418,6 +472,7 @@ class LatencyCompensator {
     // Last decision and the signals that produced it, for stats consumers.
     this.lastAction = null;
     this.lastPlayableBufferSec = null;
+    this.lastBufferTroughSec = null;
     this.lastBufferFloorSec = null;
 
     // Recent rebuffering events: { latencyMs: number|null, atMs: number }.
@@ -601,6 +656,8 @@ class LatencyCompensator {
       // cycle for both 2s and 4s segments.
       const history = this.playableBufferHistory;
       const playableBufferSec = mean(history.slice(-4));
+      // The trough of the same window: what the floor actually binds (rev 10).
+      const bufferTroughSec = Math.min(...history.slice(-4));
       const bufferTrendSec =
         history.length >= 8 ? playableBufferSec - mean(history.slice(-8, -4)) : 0;
 
@@ -640,13 +697,14 @@ class LatencyCompensator {
 
       const floor = bufferFloorSeconds(segmentDurationSec, this.trusted);
       const healthy =
-        playableBufferSec >= floor && bufferTrendSec >= -bufferShrinkLimit(segmentDurationSec);
+        bufferTroughSec >= floor && bufferTrendSec >= -bufferShrinkLimit(segmentDurationSec);
       this.consecutiveStableChecks = healthy ? this.consecutiveStableChecks + 1 : 0;
 
       const worstRebufferLatencyMs = this.worstRebufferLatency();
       const action = decide({
         latencyMs,
         playableBufferSec,
+        bufferTroughSec,
         playableBufferRawSec,
         bufferTrendSec,
         bandwidthRatio,
@@ -662,16 +720,27 @@ class LatencyCompensator {
 
       this.lastAction = action;
       this.lastPlayableBufferSec = playableBufferSec;
+      this.lastBufferTroughSec = bufferTroughSec;
       this.lastBufferFloorSec = floor;
 
-      const { minLatencyMs, maxLatencyMs } = effectiveLatencyBand(
+      // Stats report the pair a viewer cares about: the stop point comes
+      // from the SPEND band (trough), the start threshold from the START
+      // band (mean) — matching what decide() acts on.
+      const { minLatencyMs: minEndingLatencyMs } = effectiveLatencyBand(
+        segmentDurationSec,
+        worstRebufferLatencyMs,
+        latencyMs,
+        bufferTroughSec,
+        this.trusted,
+      );
+      const { maxLatencyMs: maxStartingLatencyMs } = effectiveLatencyBand(
         segmentDurationSec,
         worstRebufferLatencyMs,
         latencyMs,
         playableBufferSec,
         this.trusted,
       );
-      this.reportStats(minLatencyMs, maxLatencyMs);
+      this.reportStats(minEndingLatencyMs, maxStartingLatencyMs);
 
       switch (action.type) {
         case 'timeout':
@@ -694,9 +763,9 @@ class LatencyCompensator {
         'latency',
         latencyMs / 1000,
         'min',
-        minLatencyMs / 1000,
+        minEndingLatencyMs / 1000,
         'max',
-        maxLatencyMs / 1000,
+        maxStartingLatencyMs / 1000,
         'playable',
         playableBufferSec,
         'action',
@@ -1041,6 +1110,15 @@ class LatencyCompensator {
   // rendition so the freed headroom goes toward catching up; "current"
   // only blocks upswitches. All renditions are restored the moment
   // compensation stops.
+  //
+  // Restrictions are applied by setting playlist.disabled directly (the
+  // flag VHS's own isEnabled() reads), NOT through rep.enabled(): the
+  // rendition mixin's enabled() triggers fastQualityChange_ ->
+  // mainSegmentLoader.resetEverything(), which DISCARDS the entire forward
+  // buffer. Observed live (rev 10 incident): the flush at pin/unpin dumped
+  // ~7s of buffer and stalled a marginal connection — at the exact moments
+  // the compensator engaged or let go. The direct flag applies at the next
+  // natural segment selection instead: splice-free, buffer preserved.
 
   enableOnlyLowQualityPlayback() {
     this.setQualityPinned(true);
@@ -1068,7 +1146,7 @@ class LatencyCompensator {
           return; // can't tell what "current" is; leave renditions alone
         }
         representations.forEach(rep => {
-          rep.enabled((rep.bandwidth || 0) <= currentBandwidth);
+          setRepresentationEnabled(rep, (rep.bandwidth || 0) <= currentBandwidth);
         });
         return;
       }
@@ -1077,7 +1155,7 @@ class LatencyCompensator {
         (a.bandwidth || 0) <= (b.bandwidth || 0) ? a : b,
       );
       representations.forEach(rep => {
-        rep.enabled(pinned ? rep === lowest : true);
+        setRepresentationEnabled(rep, pinned ? rep === lowest : true);
       });
     } catch {
       // Renditions API unavailable; quality pinning is best-effort.
@@ -1115,6 +1193,7 @@ class LatencyCompensator {
       action: this.lastAction,
       targetRate: this.targetPlaybackRate,
       playableBufferSeconds: this.lastPlayableBufferSec,
+      bufferTroughSeconds: this.lastBufferTroughSec,
       bufferFloorSeconds: this.lastBufferFloorSec,
       trusted: this.trusted,
     };
