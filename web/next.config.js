@@ -104,9 +104,7 @@ module.exports = async phase => {
         unoptimized: true,
       },
       swcMinify: true,
-      // rc-util stays while the direct @ant-design/icons@4 dependency needs it:
-      // its extensionless ESM imports only resolve when webpack transpiles them.
-      transpilePackages: ['antd', '@rc-component', '@ant-design', 'rc-util'],
+      transpilePackages: ['antd', '@rc-component', '@ant-design'],
       webpack(config) {
         config.module.rules.push({
           test: /\.svg$/i,

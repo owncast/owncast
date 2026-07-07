@@ -1,7 +1,6 @@
 import { Row, Spin, Typography, Button, Alert, Modal } from 'antd';
 import React, { FC, useState } from 'react';
-import UploadOutlined from '@ant-design/icons/lib/icons/UploadOutlined';
-import PlusSquareOutlined from '@ant-design/icons/lib/icons/PlusSquareOutlined';
+import { PlusSquareOutlined, UploadOutlined } from '@ant-design/icons';
 import { useRecoilValue } from 'recoil';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'next-export-i18n';
