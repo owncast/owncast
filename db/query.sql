@@ -298,9 +298,12 @@ UPDATE stream_event_series SET active = ?, updated_at = CURRENT_TIMESTAMP WHERE 
 DELETE FROM stream_event_series WHERE id = ?;
 
 -- name: AddStreamEvent :execrows
--- INSERT OR IGNORE keeps materialization idempotent: re-expanding a series
--- hits the UNIQUE(series_id, original_start) index and skips existing rows.
-INSERT OR IGNORE INTO stream_events(id, series_id, original_start, name, description, start_time, duration_minutes, timezone) VALUES(?, ?, ?, ?, ?, ?, ?, ?);
+-- The targeted conflict clause keeps materialization idempotent:
+-- re-expanding a series hits the UNIQUE(series_id, original_start) index
+-- and skips existing rows, while any other conflict (a generated primary
+-- key colliding with an existing row) still errors instead of silently
+-- reporting the slot as pre-existing.
+INSERT INTO stream_events(id, series_id, original_start, name, description, start_time, duration_minutes, timezone) VALUES(?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(series_id, original_start) DO NOTHING;
 
 -- name: GetStreamEvent :one
 SELECT * FROM stream_events WHERE id = ?;
