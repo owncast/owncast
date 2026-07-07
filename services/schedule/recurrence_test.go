@@ -30,9 +30,8 @@ func TestMain(m *testing.M) {
 	configrepository.SetGlobalInstance(configRepo)
 
 	testRepo = scheduleeventsrepository.New(ds)
-	scheduleeventsrepository.SetGlobalInstance(testRepo)
 
-	m.Run()
+	os.Exit(m.Run())
 }
 
 // mustAddSeries creates a series through the repository and deactivates it at
