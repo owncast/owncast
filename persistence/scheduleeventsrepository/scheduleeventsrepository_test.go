@@ -29,9 +29,8 @@ func TestMain(m *testing.M) {
 	configrepository.SetGlobalInstance(configRepo)
 
 	testRepo = New(ds)
-	SetGlobalInstance(testRepo)
 
-	m.Run()
+	os.Exit(m.Run())
 }
 
 func containsSeriesID(series []models.ScheduledEventSeries, id string) bool {
@@ -62,7 +61,7 @@ func mustAddOneOffEvent(t *testing.T, name string, start time.Time) string {
 }
 
 func TestSeriesCRUDRoundtrip(t *testing.T) {
-	repo := Get()
+	repo := testRepo
 
 	recurrence := "DTSTART;TZID=America/Los_Angeles:20270301T180000\nRRULE:FREQ=WEEKLY;BYDAY=MO"
 	id, err := repo.AddSeries("series-crud original", "first description", recurrence, 90)
@@ -183,7 +182,7 @@ func TestSeriesCRUDRoundtrip(t *testing.T) {
 }
 
 func TestOneOffEventCRUDRoundtrip(t *testing.T) {
-	repo := Get()
+	repo := testRepo
 
 	la, err := time.LoadLocation("America/Los_Angeles")
 	if err != nil {
@@ -278,7 +277,7 @@ func TestOneOffEventCRUDRoundtrip(t *testing.T) {
 }
 
 func TestGetEventsInRangeHalfOpen(t *testing.T) {
-	repo := Get()
+	repo := testRepo
 
 	la, err := time.LoadLocation("America/Los_Angeles")
 	if err != nil {
@@ -315,7 +314,7 @@ func TestGetEventsInRangeHalfOpen(t *testing.T) {
 }
 
 func TestGetEventsToFederateSelectsOnce(t *testing.T) {
-	repo := Get()
+	repo := testRepo
 
 	startingAfter := time.Date(2032, 1, 1, 0, 0, 0, 0, time.UTC)
 
@@ -365,7 +364,7 @@ func TestGetEventsToFederateSelectsOnce(t *testing.T) {
 }
 
 func TestGetEventsNeedingReminderSelectsOnce(t *testing.T) {
-	repo := Get()
+	repo := testRepo
 
 	startAfter := time.Date(2033, 6, 1, 12, 0, 0, 0, time.UTC)
 	startBefore := startAfter.Add(30 * time.Minute)
