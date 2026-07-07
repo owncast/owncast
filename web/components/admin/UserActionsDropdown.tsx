@@ -23,7 +23,7 @@ export type UserActionsDropdownProps = {
 // UserActionsDropdown collapses the per-user moderation actions (moderator
 // toggle, ban/unban, delete) into a single dropdown. Every action confirms
 // before it runs, and calls onChanged so the caller can refresh its data.
-export const UserActionsDropdown: FC<UserActionsDropdownProps> = ({ user, onChanged }) => {
+export const UserActionsDropdown: FC<UserActionsDropdownProps> = ({ user, onChanged = null }) => {
   const isEnabled = !user.disabledAt;
   const isModerator = user.scopes?.includes('MODERATOR');
 
@@ -134,8 +134,4 @@ export const UserActionsDropdown: FC<UserActionsDropdownProps> = ({ user, onChan
       </Button>
     </Dropdown>
   );
-};
-
-UserActionsDropdown.defaultProps = {
-  onChanged: null,
 };

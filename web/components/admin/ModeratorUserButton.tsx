@@ -31,7 +31,7 @@ export type ModeratorUserButtonProps = {
   onClick?: () => void;
 };
 
-export const ModeratorUserButton: FC<ModeratorUserButtonProps> = ({ user, onClick }) => {
+export const ModeratorUserButton: FC<ModeratorUserButtonProps> = ({ user, onClick = null }) => {
   async function buttonClicked({ id }, setAsModerator: Boolean): Promise<Boolean> {
     const data = {
       userId: id,
@@ -107,8 +107,4 @@ export const ModeratorUserButton: FC<ModeratorUserButtonProps> = ({ user, onClic
       {actionString}
     </Button>
   );
-};
-
-ModeratorUserButton.defaultProps = {
-  onClick: null,
 };
