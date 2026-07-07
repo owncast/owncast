@@ -369,17 +369,6 @@ export default function Help() {
       <Divider />
       <Title level={2}>{t(Localization.Admin.Help.supportInfo)}</Title>
       <Paragraph>{t(Localization.Admin.Help.supportInfoDescription)}</Paragraph>
-      <pre
-        style={{
-          maxHeight: '300px',
-          overflow: 'auto',
-          padding: '1em',
-          border: '1px solid rgba(128, 128, 128, 0.4)',
-          borderRadius: '4px',
-        }}
-      >
-        {supportInfo}
-      </pre>
       <Button type="primary" icon={<CopyOutlined />} onClick={copySupportInfo}>
         {t(Localization.Admin.Help.copySupportInfo)}
       </Button>

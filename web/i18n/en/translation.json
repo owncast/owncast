@@ -154,7 +154,7 @@
 			"releaseNotes": "Release notes",
 			"searchPlaceholder": "Search the documentation",
 			"supportInfo": "Support info",
-			"supportInfoDescription": "Include this when reporting a bug or asking for help. Review it before sharing.",
+			"supportInfoDescription": "Copy your server's version, video configuration and recent errors to include when reporting a bug or asking for help.",
 			"taskApis": "Build add-ons with the developer APIs",
 			"taskBroadcasting": "Connect your broadcasting software",
 			"taskChat": "Manage chat and moderation",
