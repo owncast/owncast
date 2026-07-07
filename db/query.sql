@@ -335,6 +335,13 @@ DELETE FROM stream_events WHERE id = ?;
 -- would let the materializer resurrect the slot as a fresh scheduled row.
 DELETE FROM stream_events WHERE series_id = ? AND federated_at IS NULL AND start_time > ? AND status != 'cancelled';
 
+-- name: GetCurrentOrUpcomingStreamEvents :many
+-- Events that are still running (start + duration in the future) or have
+-- not started yet. Powers the status endpoint's next-event answer, so a
+-- stream that starts late keeps its chat window open until the event's
+-- scheduled end passes.
+SELECT * FROM stream_events WHERE status = 'scheduled' AND datetime(start_time, '+' || duration_minutes || ' minutes') > datetime(?) ORDER BY start_time LIMIT ?;
+
 -- name: GetNextUpcomingStreamEvents :many
 SELECT * FROM stream_events WHERE status = 'scheduled' AND start_time > ? ORDER BY start_time LIMIT ?;
 

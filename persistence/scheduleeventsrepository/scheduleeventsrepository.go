@@ -39,6 +39,9 @@ type ScheduleEventsRepository interface {
 	// has been told about, so an edited series can regenerate them. Announced
 	// (federated) rows are kept for Update/Delete activities.
 	DeleteUnfederatedFutureEventsForSeries(seriesID string, after time.Time) error
+	// GetCurrentOrUpcomingEvents returns scheduled occurrences that are
+	// still running or have not started, soonest first.
+	GetCurrentOrUpcomingEvents(now time.Time, limit int) ([]models.ScheduledEvent, error)
 	GetNextUpcomingEvents(after time.Time, limit int) ([]models.ScheduledEvent, error)
 	GetEventsToFederate(startingAfter time.Time) ([]models.ScheduledEvent, error)
 	SetEventFederatedAt(id string, t time.Time) error

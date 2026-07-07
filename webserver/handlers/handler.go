@@ -100,6 +100,16 @@ func (s *ServerInterfaceImpl) GetFederatedServers(w http.ResponseWriter, r *http
 	s.h.admin.GetFederatedServers(w, r)
 }
 
+// Schedule endpoints
+
+func (s *ServerInterfaceImpl) GetSchedule(w http.ResponseWriter, r *http.Request, params generated.GetScheduleParams) {
+	s.h.GetSchedule(w, r, params)
+}
+
+func (s *ServerInterfaceImpl) GetScheduleOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.GetSchedule(w, r, generated.GetScheduleParams{})
+}
+
 func (s *ServerInterfaceImpl) GetAdminFederatedServers(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetAdminFederatedServers)(w, r)
 }

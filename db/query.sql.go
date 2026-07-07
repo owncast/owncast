@@ -607,6 +607,56 @@ func (q *Queries) GetAuthForUsers(ctx context.Context, userIds []string) ([]GetA
 	return items, nil
 }
 
+const getCurrentOrUpcomingStreamEvents = `-- name: GetCurrentOrUpcomingStreamEvents :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE status = 'scheduled' AND datetime(start_time, '+' || duration_minutes || ' minutes') > datetime(?) ORDER BY start_time LIMIT ?
+`
+
+type GetCurrentOrUpcomingStreamEventsParams struct {
+	Datetime interface{}
+	Limit    int64
+}
+
+// Events that are still running (start + duration in the future) or have
+// not started yet. Powers the status endpoint's next-event answer, so a
+// stream that starts late keeps its chat window open until the event's
+// scheduled end passes.
+func (q *Queries) GetCurrentOrUpcomingStreamEvents(ctx context.Context, arg GetCurrentOrUpcomingStreamEventsParams) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getCurrentOrUpcomingStreamEvents, arg.Datetime, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getFederatedServer = `-- name: GetFederatedServer :one
 SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE iri = ?
 `
