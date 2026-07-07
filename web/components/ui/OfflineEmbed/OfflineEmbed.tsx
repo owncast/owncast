@@ -4,12 +4,12 @@ import { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
-import { Button, Typography } from 'antd6';
+import { Button, Typography } from 'antd';
 import styles from './OfflineEmbed.module.scss';
 import { Modal } from '../Modal/Modal';
 
 // The follow form is antd v6 (the first surface migrated off v4); theming
-// comes from the app-wide Antd6Provider in pages/_app.tsx. Load the form
+// comes from the app-wide AntdProvider in pages/_app.tsx. Load the form
 // lazily so its chunk is only fetched when someone opens the follow modal.
 const FollowForm = dynamic(
   () => import('../../modals/FollowModal/FollowForm').then(mod => mod.FollowForm),

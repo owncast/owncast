@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import { FC } from 'react';
-import { Modal, Space } from 'antd6';
+import { Modal, Space } from 'antd';
 import styles from './FollowModal.module.scss';
 import { FollowForm } from './FollowForm';
 import { Translation } from '../../ui/Translation/Translation';
@@ -8,7 +8,7 @@ import { Localization } from '../../../types/localization';
 
 /*
 First production surface migrated to Ant Design v6. Theming and class-prefix
-scoping come from the app-wide Antd6Provider mounted in pages/_app.tsx.
+scoping come from the app-wide AntdProvider mounted in pages/_app.tsx.
 Unlike the other modals, which render inside the shared v4 ui/Modal shell,
 this component renders its own v6 Modal so the whole follow experience
 (modal chrome + form controls) is themed through v6 design tokens.

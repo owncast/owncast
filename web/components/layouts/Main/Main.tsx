@@ -4,7 +4,7 @@
 import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
 import { FC, useEffect, useRef } from 'react';
-import { Layout } from 'antd6';
+import { Layout } from 'antd';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import { ErrorBoundary } from 'react-error-boundary';

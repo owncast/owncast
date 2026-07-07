@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Select } from 'antd6';
+import { Select } from 'antd';
 import { SocialHandleDropdownItem } from '../../types/config-section';
 import { OTHER_SOCIAL_HANDLE_OPTION } from '../../utils/config-constants';
 

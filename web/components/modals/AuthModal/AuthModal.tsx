@@ -1,4 +1,4 @@
-import { Modal, Tabs } from 'antd6';
+import { Modal, Tabs } from 'antd';
 import { useRecoilValue } from 'recoil';
 import { FC } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';

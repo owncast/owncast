@@ -28,26 +28,26 @@ filterTests(['desktop'], () => {
 				cy.visit('http://localhost:8080/');
 
 				// Open the auth modal from the user menu and pick FediAuth. The
-				// auth modal runs on Ant Design v6 (ant6- class prefix).
+				// auth modal runs on Ant Design v6 (ant- class prefix).
 				cy.get('#user-menu').click();
 				cy.contains('Authenticate').click();
-				cy.contains('.ant6-tabs-tab', 'FediAuth').click();
+				cy.contains('.ant-tabs-tab', 'FediAuth').click();
 
 				// Request a code for the remote account. Scope to the active tab
 				// pane: antd keeps the inactive IndieAuth pane mounted, and it
 				// contains its own search input and button.
-				cy.get('.ant6-modal .ant6-tabs-content-active').within(() => {
+				cy.get('.ant-modal .ant-tabs-content-active').within(() => {
 					cy.get('input[placeholder="youraccount@yourserver.com"]').type(
 						actor.account,
 					);
-					cy.get('.ant6-input-search-btn').click();
+					cy.get('.ant-input-search-btn').click();
 				});
 
 				// The code travels over real federation: WebFinger, actor
 				// resolution, then a signed DM into the harness inbox.
 				cy.task('fediverse:waitForOTPCode', { actorName: actor.name }).then(
 					(code) => {
-						cy.get('.ant6-modal .ant6-tabs-content-active').within(() => {
+						cy.get('.ant-modal .ant-tabs-content-active').within(() => {
 							cy.get('input[placeholder="123456"]').type(code);
 							cy.contains('button', 'Verify Code').click();
 						});
@@ -56,7 +56,7 @@ filterTests(['desktop'], () => {
 
 				// Successful verification reloads the page; the auth modal from
 				// the old document is gone once the new one is active.
-				cy.get('.ant6-modal', { timeout: 15000 }).should('not.exist');
+				cy.get('.ant-modal', { timeout: 15000 }).should('not.exist');
 				cy.get('#user-menu').should('be.visible');
 
 				// Visual proof: messages from this user now carry the

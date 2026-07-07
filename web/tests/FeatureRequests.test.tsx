@@ -8,8 +8,8 @@ jest.mock('next/router', () => ({
   useRouter: () => ({ query: {}, pathname: '/', asPath: '/', push: jest.fn(), replace: jest.fn() }),
 }));
 
-jest.mock('antd6', () => ({
-  ...jest.requireActual('antd6'),
+jest.mock('antd', () => ({
+  ...jest.requireActual('antd'),
   message: { success: jest.fn(), error: jest.fn() },
 }));
 

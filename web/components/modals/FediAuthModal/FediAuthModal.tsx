@@ -1,4 +1,4 @@
-import { Alert, Button, Input, Space, Spin, Collapse } from 'antd6';
+import { Alert, Button, Input, Space, Spin, Collapse } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import styles from './FediAuthModal.module.scss';

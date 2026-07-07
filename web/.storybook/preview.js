@@ -1,9 +1,7 @@
 import '../styles/variables.css';
-import '../styles/global.less';
-import '../styles/theme.less';
-// Pre-extracted Ant Design v6 styles: required in zeroRuntime mode (see
-// build-scripts/extract-antd6-styles.js).
-import '../styles/antd6.css';
+// Pre-extracted Ant Design styles: required in zeroRuntime mode (see
+// build-scripts/extract-antd-styles.js).
+import '../styles/antd.css';
 import './preview.scss';
 import { themes } from 'storybook/theming';
 import { DocsContainer } from './storybook-theme';
@@ -12,7 +10,7 @@ import _ from 'lodash';
 import { initialize, mswLoader } from 'msw-storybook-addon';
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { Antd6Provider } from '../components/theme/Antd6Provider';
+import { AntdProvider } from '../components/theme/AntdProvider';
 
 /**
  * Takes an entry of a viewport (from Object.entries()) and converts it
@@ -111,19 +109,17 @@ export const parameters = {
 
 export const loaders = [mswLoader];
 
-// Mirror the app-wide providers from pages/_app.tsx: components migrated to
-// Ant Design v6 (imported from "antd6") rely on Antd6Provider for the ant6
-// class prefix and the Owncast theme tokens. Without this decorator those
-// stories would render unprefixed and unthemed, and v4's global Less styles
-// would bleed into them. Antd6Provider reads Recoil state, so a RecoilRoot
-// wraps it (stories with their own RecoilRoot simply nest; that is
-// supported).
+// Mirror the app-wide providers from pages/_app.tsx: antd components rely on
+// AntdProvider for the Owncast theme tokens. Without this decorator those
+// stories would render unthemed. AntdProvider reads Recoil state, so a
+// RecoilRoot wraps it (stories with their own RecoilRoot simply nest; that
+// is supported).
 export const decorators = [
   Story => (
     <RecoilRoot>
-      <Antd6Provider>
+      <AntdProvider>
         <Story />
-      </Antd6Provider>
+      </AntdProvider>
     </RecoilRoot>
   ),
 ];

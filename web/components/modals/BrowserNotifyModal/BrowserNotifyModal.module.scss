@@ -6,11 +6,11 @@
   margin-bottom: 1.25rem;
   font-family: var(--theme-text-display-font-family);
 
-  :global(.ant6-alert-message) {
+  :global(.ant-alert-title) {
     font-size: 14px;
   }
 
-  :global(.ant6-alert-description) {
+  :global(.ant-alert-description) {
     font-size: 12px;
     font-family: monospace;
   }

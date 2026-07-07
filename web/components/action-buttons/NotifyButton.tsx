@@ -1,4 +1,4 @@
-import { Button } from 'antd6';
+import { Button } from 'antd';
 import { FC } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';

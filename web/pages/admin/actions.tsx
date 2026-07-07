@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, Input, Modal, Select, Space, Table, Typography } from 'antd6';
+import { Button, Checkbox, Form, Input, Modal, Select, Space, Table, Typography } from 'antd';
 import CodeMirror from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { html as codeMirrorHTML } from '@codemirror/lang-html';

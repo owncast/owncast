@@ -15,7 +15,7 @@ import {
   ChartOptions,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { Button } from 'antd6';
+import { Button } from 'antd';
 
 ChartJS.register(
   CategoryScale,

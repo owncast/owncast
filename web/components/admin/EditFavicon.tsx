@@ -1,5 +1,5 @@
-import { Button, Upload, Popconfirm } from 'antd6';
-import { RcFile } from 'antd6/lib/upload/interface';
+import { Button, Upload, Popconfirm } from 'antd';
+import { RcFile } from 'antd/lib/upload/interface';
 import React, { useState, FC } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';

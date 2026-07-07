@@ -33,13 +33,13 @@ filterTests(['desktop'], () => {
 				'Integrations',
 				'Help',
 			].forEach((item) => {
-				cy.get('#admin-page .ant6-menu').contains(item).should('exist');
+				cy.get('#admin-page .ant-menu').contains(item).should('exist');
 			});
 		});
 
 		it('Shows the Fediverse sections when federation is enabled', () => {
-			cy.get('#admin-page .ant6-menu').contains('Followers').should('exist');
-			cy.get('#admin-page .ant6-menu')
+			cy.get('#admin-page .ant-menu').contains('Followers').should('exist');
+			cy.get('#admin-page .ant-menu')
 				.contains('Featured Streams')
 				.should('exist');
 		});
@@ -51,17 +51,17 @@ filterTests(['desktop'], () => {
 
 	describe('General configuration page', () => {
 		it('Can navigate to the General configuration page', () => {
-			cy.get('#admin-page .ant6-menu').contains('Configuration').click();
-			cy.get('#admin-page .ant6-menu').contains('General').click();
+			cy.get('#admin-page .ant-menu').contains('Configuration').click();
+			cy.get('#admin-page .ant-menu').contains('General').click();
 			cy.url().should('include', '/admin/config/general');
 			cy.get('.config-public-details-page').should('exist');
 		});
 
 		it('Can switch between the configuration tabs', () => {
-			cy.get('.config-public-details-page .ant6-tabs-tab')
+			cy.get('.config-public-details-page .ant-tabs-tab')
 				.contains('Appearance')
 				.click();
-			cy.get('.config-public-details-page .ant6-tabs-tab-active').should(
+			cy.get('.config-public-details-page .ant-tabs-tab-active').should(
 				'contain',
 				'Appearance',
 			);
@@ -74,7 +74,7 @@ filterTests(['desktop'], () => {
 				auth: ADMIN_AUTH,
 			});
 			cy.get('#admin-page').should('exist');
-			cy.get('.ant6-table').should('exist');
+			cy.get('.ant-table').should('exist');
 		});
 	});
 });

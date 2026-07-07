@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Space, Spin, Table, Tabs, Tag, Typography } from 'antd6';
+import { Alert, Space, Spin, Table, Tabs, Tag, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import dynamic from 'next/dynamic';
 import ReactMarkdown from 'react-markdown';

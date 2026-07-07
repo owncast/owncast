@@ -1,4 +1,4 @@
-import { Button } from 'antd6';
+import { Button } from 'antd';
 import { FC } from 'react';
 import cn from 'classnames';
 import { ExternalAction } from '../../../interfaces/external-action';

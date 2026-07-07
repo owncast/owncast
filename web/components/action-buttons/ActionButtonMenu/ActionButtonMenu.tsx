@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Button, Dropdown } from 'antd6';
+import { Button, Dropdown } from 'antd';
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';
 import styles from './ActionButtonMenu.module.scss';

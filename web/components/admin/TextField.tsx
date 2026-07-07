@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { Input, Form, InputNumber, Button } from 'antd6';
+import { Input, Form, InputNumber, Button } from 'antd';
 import { FieldUpdaterFunc } from '../../types/config-section';
 import { StatusState } from '../../utils/input-statuses';
 import { FormStatusIndicator } from './FormStatusIndicator';
@@ -95,10 +95,7 @@ export const TextField: FC<TextFieldProps> = ({
   const passwordComplexityRules = [];
   // display the appropriate Ant text field
   let Field = Input as
-    | typeof Input
-    | typeof InputNumber
-    | typeof Input.TextArea
-    | typeof Input.Password;
+    typeof Input | typeof InputNumber | typeof Input.TextArea | typeof Input.Password;
   let fieldProps = {};
   if (type === TEXTFIELD_TYPE_TEXTAREA) {
     Field = Input.TextArea;

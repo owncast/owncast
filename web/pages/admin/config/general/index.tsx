@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Tabs } from 'antd6';
+import { Tabs } from 'antd';
 
 import GeneralConfig from '../../../../components/admin/config/general/GeneralConfig';
 import AppearanceConfig from '../../../../components/admin/config/general/AppearanceConfig';

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';
 import { useRouter } from 'next/router';
-import { Layout, Menu, Alert, Button, Space, Tooltip, Badge } from 'antd6';
+import { Layout, Menu, Alert, Button, Space, Tooltip, Badge } from 'antd';
 
 import { useTranslation } from 'next-export-i18n';
 import classNames from 'classnames';

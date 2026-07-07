@@ -4,7 +4,7 @@
 // the admin users table (opened by clicking a row).
 
 import { FC } from 'react';
-import { Divider, Modal, Typography, Row, Col, Space } from 'antd6';
+import { Divider, Modal, Typography, Row, Col, Space } from 'antd';
 import { format, formatDistanceToNow } from 'date-fns';
 import { uniq } from 'lodash';
 

@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react';
 import cn from 'classnames';
-import { Tooltip } from 'antd6';
+import { Tooltip } from 'antd';
 import { useRecoilValue } from 'recoil';
 import dynamic from 'next/dynamic';
 import { Interweave } from 'interweave';

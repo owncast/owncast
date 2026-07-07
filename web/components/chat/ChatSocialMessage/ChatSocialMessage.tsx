@@ -1,4 +1,4 @@
-import { Avatar, Col, Row } from 'antd6';
+import { Avatar, Col, Row } from 'antd';
 import dynamic from 'next/dynamic';
 import React, { FC } from 'react';
 import cn from 'classnames';

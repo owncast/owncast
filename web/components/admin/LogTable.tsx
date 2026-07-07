@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
-import { Table, Tag, Typography } from 'antd6';
+import { Table, Tag, Typography } from 'antd';
 import Linkify from 'react-linkify';
-import { SortOrder, TablePaginationConfig } from 'antd6/lib/table/interface';
+import { SortOrder, TablePaginationConfig } from 'antd/lib/table/interface';
 import { format } from 'date-fns';
 import { useTranslation } from 'next-export-i18n';
 import { Localization } from '../../types/localization';

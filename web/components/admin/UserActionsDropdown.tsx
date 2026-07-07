@@ -1,5 +1,5 @@
-import { Button, Dropdown, Modal } from 'antd6';
-import type { MenuProps } from 'antd6';
+import { Button, Dropdown, Modal } from 'antd';
+import type { MenuProps } from 'antd';
 import { FC, ReactNode } from 'react';
 import dynamic from 'next/dynamic';
 import { USER_ENABLED_TOGGLE, USER_SET_MODERATOR, DELETE_USER, fetchData } from '../../utils/apis';

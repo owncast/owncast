@@ -1,6 +1,6 @@
 import React, { ComponentType, FC } from 'react';
 import dynamic from 'next/dynamic';
-import { TabsProps } from 'antd6';
+import { TabsProps } from 'antd';
 import { ErrorBoundary } from 'react-error-boundary';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import { PluginTab } from '../../../interfaces/client-config.model';
@@ -24,7 +24,7 @@ export type DesktopContentProps = {
 
 // lazy loaded components
 
-const Tabs: ComponentType<TabsProps> = dynamic(() => import('antd6').then(mod => mod.Tabs), {
+const Tabs: ComponentType<TabsProps> = dynamic(() => import('antd').then(mod => mod.Tabs), {
   ssr: false,
 });
 

@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Typography } from 'antd6';
+import { Typography } from 'antd';
 import EditSocialLinks from '../../components/admin/config/general/EditSocialLinks';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';

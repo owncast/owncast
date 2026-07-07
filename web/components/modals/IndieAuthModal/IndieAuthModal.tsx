@@ -1,4 +1,4 @@
-import { Alert, Input, Space, Spin, Collapse, Typography, Button } from 'antd6';
+import { Alert, Input, Space, Spin, Collapse, Typography, Button } from 'antd';
 import dynamic from 'next/dynamic';
 import React, { FC, useState } from 'react';
 import { isValidUrl } from '../../../utils/validators';
