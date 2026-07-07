@@ -25,14 +25,14 @@ export type EditStringArrayProps = {
 
 export const EditValueArray: FC<EditStringArrayProps> = ({
   title,
-  description,
+  description = null,
   placeholder,
-  maxLength,
+  maxLength = 50,
   values,
   handleDeleteIndex,
   handleCreateString,
-  submitStatus,
-  continuousStatusMessage,
+  submitStatus = null,
+  continuousStatusMessage = null,
 }) => {
   const [newStringInput, setNewStringInput] = useState<string>('');
 
@@ -83,11 +83,4 @@ export const EditValueArray: FC<EditStringArrayProps> = ({
       </div>
     </div>
   );
-};
-
-EditValueArray.defaultProps = {
-  maxLength: 50,
-  description: null,
-  submitStatus: null,
-  continuousStatusMessage: null,
 };
