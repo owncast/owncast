@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/nextjs';
 import { StreamsTab, StreamsTabProps, FederatedServer } from './StreamsTab';
 
 export default {

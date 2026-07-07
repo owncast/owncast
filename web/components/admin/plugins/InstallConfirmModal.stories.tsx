@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/nextjs';
 import { InstallConfirmModal, InstallConfirmModalProps } from './InstallConfirmModal';
 import { Plugin, PluginPermission } from '../../../interfaces/plugin';
 
