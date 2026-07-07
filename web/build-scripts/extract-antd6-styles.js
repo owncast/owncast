@@ -147,7 +147,6 @@ const INCLUDED_COMPONENTS = [
   'Card',
   'Statistic',
   'Avatar',
-  'List',
   'Skeleton',
   'Divider',
   'Result',

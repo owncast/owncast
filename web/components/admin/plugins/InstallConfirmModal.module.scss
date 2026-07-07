@@ -1,0 +1,20 @@
+// Bordered permission list, replacing the antd List component (deprecated in
+// v6) with semantic markup.
+.permissions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--theme-color-components-scrollbar-background);
+  border-radius: var(--theme-rounded-corners);
+}
+
+.permission {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 16px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--theme-color-components-scrollbar-background);
+  }
+}

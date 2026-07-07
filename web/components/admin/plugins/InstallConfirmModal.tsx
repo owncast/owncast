@@ -1,11 +1,12 @@
 import React from 'react';
-import { List, Modal, Space, Typography } from 'antd6';
+import { Modal, Space, Typography } from 'antd6';
 import { useTranslation } from 'next-export-i18n';
 import { Plugin, PluginPermission } from '../../../interfaces/plugin';
 import { Localization } from '../../../types/localization';
 import { permissionDescriptionKey, permissionNameKey } from './permissionDescriptions';
+import styles from './InstallConfirmModal.module.scss';
 
-const { Paragraph } = Typography;
+const { Paragraph, Text } = Typography;
 
 export type InstallConfirmModalProps = {
   // The just-installed plugin, or null when the modal should be
@@ -42,11 +43,8 @@ export const InstallConfirmModal = ({ plugin, onCancel, onEnable }: InstallConfi
       ) : (
         <>
           <Paragraph>{t(Localization.Admin.Plugins.installConfirmPrompt)}</Paragraph>
-          <List
-            size="small"
-            bordered
-            dataSource={permissions}
-            renderItem={p => {
+          <ul className={styles.permissions}>
+            {permissions.map(p => {
               const nameKey = permissionNameKey[p];
               const descKey = permissionDescriptionKey[p];
               // network.fetch carries an extra dimension to the trust
@@ -59,7 +57,7 @@ export const InstallConfirmModal = ({ plugin, onCancel, onEnable }: InstallConfi
               const descText = descKey ? t(descKey) : null;
               const description =
                 allowedHosts.length > 0 ? (
-                  <Space direction="vertical" size={4}>
+                  <Space orientation="vertical" size={4}>
                     {descText && <span>{descText}</span>}
                     <span>
                       {t(Localization.Admin.Plugins.allowedHostsLabel)}{' '}
@@ -75,12 +73,13 @@ export const InstallConfirmModal = ({ plugin, onCancel, onEnable }: InstallConfi
                   descText
                 );
               return (
-                <List.Item>
-                  <List.Item.Meta title={nameKey ? t(nameKey) : p} description={description} />
-                </List.Item>
+                <li key={p} className={styles.permission}>
+                  <span>{nameKey ? t(nameKey) : p}</span>
+                  {description && <Text type="secondary">{description}</Text>}
+                </li>
               );
-            }}
-          />
+            })}
+          </ul>
         </>
       )}
     </Modal>
