@@ -139,13 +139,16 @@ func (s *Service) GetUpcomingEvent() *models.ScheduledEvent {
 
 	now := time.Now()
 	events, err := s.repo.GetCurrentOrUpcomingEvents(now, 1)
+
+	// Cache the answer, including a failed one: the status endpoint polls
+	// every few seconds, and a transient database error should back off
+	// for the TTL instead of re-querying and logging on every poll.
+	s.upcomingFetchedAt = now
+	s.upcomingEvent = nil
 	if err != nil {
 		log.Errorf("unable to fetch the next scheduled stream event: %v", err)
 		return nil
 	}
-
-	s.upcomingFetchedAt = now
-	s.upcomingEvent = nil
 	if len(events) > 0 {
 		s.upcomingEvent = &events[0]
 	}
