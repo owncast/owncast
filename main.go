@@ -23,6 +23,7 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/federatedserversrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
+	"github.com/owncast/owncast/persistence/scheduleeventsrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 
@@ -181,6 +182,7 @@ func main() {
 	userRepository := userrepository.New(dataStore)
 	notificationsRepository := notificationsrepository.New(dataStore, configRepository)
 	federatedServersRepository := federatedserversrepository.New(dataStore)
+	scheduleEventsRepository := scheduleeventsrepository.New(dataStore)
 
 	// Expose globals for helper code that still uses package-level
 	// Get accessors (the featured-streams ActivityPub paths). Long term
@@ -301,8 +303,9 @@ func main() {
 
 	// Materializes scheduled stream occurrences from recurring series and
 	// keeps the next-event answer warm for the status endpoint.
-	schedule.Start()
-	defer schedule.Stop()
+	scheduleSvc := schedule.New(schedule.Deps{ScheduleEventsRepository: scheduleEventsRepository})
+	scheduleSvc.Start()
+	defer scheduleSvc.Stop()
 
 	// Stage 8: late services. metrics polls stream + chat, fediverseAuth
 	// owns OTP state for the chat-side handler.
@@ -380,6 +383,7 @@ func main() {
 		ChatMessageRepository:    chatMessageRepository,
 		UserRepository:           userRepository,
 		ScheduleEventsRepository: scheduleEventsRepository,
+		Schedule:                 scheduleSvc,
 		APBuilder:                apBuilder,
 		APSigner:                 apSigner,
 		Config:                   cfg,
@@ -428,6 +432,7 @@ func main() {
 		UserRepository:           userRepository,
 		NotificationsRepository:  notificationsRepository,
 		ScheduleEventsRepository: scheduleEventsRepository,
+		Schedule:                 scheduleSvc,
 		APBuilder:                apBuilder,
 		Config:                   cfg,
 		PluginActions:            pluginActions,
