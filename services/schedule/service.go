@@ -28,42 +28,58 @@ const (
 	upcomingCacheTTL = 10 * time.Second
 )
 
-var (
+// Service owns the scheduled streams background loop: materializing
+// occurrence rows from recurring series and answering "what's next" for the
+// status endpoint. Construct with New in main.go and inject into consumers.
+type Service struct {
+	repo scheduleeventsrepository.ScheduleEventsRepository
+
+	tickerMutex sync.Mutex
 	ticker      *time.Ticker
 	tickerDone  chan bool
-	tickerMutex sync.Mutex
 
 	upcomingMutex     sync.Mutex
 	upcomingEvent     *models.ScheduledEvent
 	upcomingFetchedAt time.Time
-)
+}
 
-// Start begins the scheduled streams background loop: materializing
-// occurrence rows from recurring series. Runs even while the feature toggle
-// is off so the schedule is current the moment an admin enables it; the
-// HTTP layer owns hiding disabled state from the public.
-func Start() {
-	tickerMutex.Lock()
-	defer tickerMutex.Unlock()
+// Deps lists everything a schedule Service consumes.
+type Deps struct {
+	ScheduleEventsRepository scheduleeventsrepository.ScheduleEventsRepository
+}
 
-	if ticker != nil {
+// New constructs the schedule service.
+func New(deps Deps) *Service {
+	return &Service{
+		repo: deps.ScheduleEventsRepository,
+	}
+}
+
+// Start begins the background loop. Runs even while the feature toggle is
+// off so the schedule is current the moment an admin enables it; the HTTP
+// layer owns hiding disabled state from the public.
+func (s *Service) Start() {
+	s.tickerMutex.Lock()
+	defer s.tickerMutex.Unlock()
+
+	if s.ticker != nil {
 		log.Debugln("Schedule service already running")
 		return
 	}
 
-	ticker = time.NewTicker(tickInterval)
-	tickerDone = make(chan bool)
+	s.ticker = time.NewTicker(tickInterval)
+	s.tickerDone = make(chan bool)
 
-	done := tickerDone
-	t := ticker
+	done := s.tickerDone
+	ticker := s.ticker
 
 	go func() {
-		tick()
+		s.tick()
 
 		for {
 			select {
-			case <-t.C:
-				tick()
+			case <-ticker.C:
+				s.tick()
 			case <-done:
 				return
 			}
@@ -74,26 +90,21 @@ func Start() {
 }
 
 // Stop halts the schedule service if it is running.
-func Stop() {
-	tickerMutex.Lock()
-	defer tickerMutex.Unlock()
+func (s *Service) Stop() {
+	s.tickerMutex.Lock()
+	defer s.tickerMutex.Unlock()
 
-	if ticker != nil {
-		ticker.Stop()
-		close(tickerDone)
-		ticker = nil
-		tickerDone = nil
+	if s.ticker != nil {
+		s.ticker.Stop()
+		close(s.tickerDone)
+		s.ticker = nil
+		s.tickerDone = nil
 		log.Infoln("Stopped schedule service")
 	}
 }
 
-func tick() {
-	repo := scheduleeventsrepository.Get()
-	if repo == nil {
-		return
-	}
-
-	inserted, err := MaterializeAllSeries(repo, time.Now(), MaterializationHorizon)
+func (s *Service) tick() {
+	inserted, err := MaterializeAllSeries(s.repo, time.Now(), MaterializationHorizon)
 	if err != nil {
 		log.Errorf("unable to materialize scheduled stream events: %v", err)
 	}
@@ -101,15 +112,15 @@ func tick() {
 		log.Debugf("Materialized %d scheduled stream event(s)", inserted)
 	}
 
-	Refresh()
+	s.Refresh()
 }
 
 // Refresh invalidates the cached next-event answer. Called after admin
 // mutations so the status API reflects changes immediately.
-func Refresh() {
-	upcomingMutex.Lock()
-	defer upcomingMutex.Unlock()
-	upcomingFetchedAt = time.Time{}
+func (s *Service) Refresh() {
+	s.upcomingMutex.Lock()
+	defer s.upcomingMutex.Unlock()
+	s.upcomingFetchedAt = time.Time{}
 }
 
 // GetUpcomingEvent returns the current-or-next scheduled (not cancelled)
@@ -118,32 +129,27 @@ func Refresh() {
 // end-time predicate lives in SQL, so one row is always the exact answer.
 // Returns nil when nothing is current or upcoming. Backed by a short-lived
 // cache: the status endpoint is polled every few seconds by every viewer.
-func GetUpcomingEvent() *models.ScheduledEvent {
-	upcomingMutex.Lock()
-	defer upcomingMutex.Unlock()
+func (s *Service) GetUpcomingEvent() *models.ScheduledEvent {
+	s.upcomingMutex.Lock()
+	defer s.upcomingMutex.Unlock()
 
-	if time.Since(upcomingFetchedAt) < upcomingCacheTTL {
-		return upcomingEvent
-	}
-
-	repo := scheduleeventsrepository.Get()
-	if repo == nil {
-		return nil
+	if time.Since(s.upcomingFetchedAt) < upcomingCacheTTL {
+		return s.upcomingEvent
 	}
 
 	now := time.Now()
-	events, err := repo.GetCurrentOrUpcomingEvents(now, 1)
+	events, err := s.repo.GetCurrentOrUpcomingEvents(now, 1)
 	if err != nil {
 		log.Errorf("unable to fetch the next scheduled stream event: %v", err)
 		return nil
 	}
 
-	upcomingFetchedAt = now
-	upcomingEvent = nil
+	s.upcomingFetchedAt = now
+	s.upcomingEvent = nil
 	if len(events) > 0 {
-		upcomingEvent = &events[0]
+		s.upcomingEvent = &events[0]
 	}
-	return upcomingEvent
+	return s.upcomingEvent
 }
 
 // IsChatOpenForEvent reports whether the pre-event chat window is open: the

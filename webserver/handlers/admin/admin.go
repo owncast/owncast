@@ -16,6 +16,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/rtmp"
+	"github.com/owncast/owncast/services/schedule"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
 )
@@ -42,6 +43,7 @@ type Admin struct {
 	chatMessageRepository    chatmessagerepository.ChatMessageRepository
 	userRepository           userrepository.UserRepository
 	scheduleEventsRepository scheduleeventsrepository.ScheduleEventsRepository
+	schedule                 *schedule.Service
 	apBuilder                *apmodels.Builder
 	apSigner                 *apcrypto.Signer
 	cfg                      *config.Config
@@ -72,6 +74,7 @@ type Deps struct {
 	ChatMessageRepository    chatmessagerepository.ChatMessageRepository
 	UserRepository           userrepository.UserRepository
 	ScheduleEventsRepository scheduleeventsrepository.ScheduleEventsRepository
+	Schedule                 *schedule.Service
 	APBuilder                *apmodels.Builder
 	APSigner                 *apcrypto.Signer
 	Config                   *config.Config
@@ -98,6 +101,7 @@ func New(deps Deps) *Admin {
 		chatMessageRepository:    deps.ChatMessageRepository,
 		userRepository:           deps.UserRepository,
 		scheduleEventsRepository: deps.ScheduleEventsRepository,
+		schedule:                 deps.Schedule,
 		apBuilder:                deps.APBuilder,
 		apSigner:                 deps.APSigner,
 		cfg:                      deps.Config,

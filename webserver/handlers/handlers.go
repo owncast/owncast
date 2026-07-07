@@ -19,6 +19,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/cache"
 	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/services/schedule"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/webserver/handlers/admin"
 	"github.com/owncast/owncast/webserver/handlers/auth/fediverse"
@@ -53,6 +54,7 @@ type Handlers struct {
 	userRepository           userrepository.UserRepository
 	notificationsRepository  notificationsrepository.NotificationsRepository
 	scheduleEventsRepository scheduleeventsrepository.ScheduleEventsRepository
+	schedule                 *schedule.Service
 	apBuilder                *apmodels.Builder
 	cfg                      *config.Config
 
@@ -119,6 +121,7 @@ type Deps struct {
 	UserRepository           userrepository.UserRepository
 	NotificationsRepository  notificationsrepository.NotificationsRepository
 	ScheduleEventsRepository scheduleeventsrepository.ScheduleEventsRepository
+	Schedule                 *schedule.Service
 	APBuilder                *apmodels.Builder
 	Config                   *config.Config
 	// PluginActions is an optional getter that returns action buttons
@@ -171,6 +174,7 @@ func NewHandlers(deps Deps) *Handlers {
 		userRepository:           deps.UserRepository,
 		notificationsRepository:  deps.NotificationsRepository,
 		scheduleEventsRepository: deps.ScheduleEventsRepository,
+		schedule:                 deps.Schedule,
 		apBuilder:                deps.APBuilder,
 		cfg:                      deps.Config,
 		pluginActions:            deps.PluginActions,

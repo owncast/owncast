@@ -302,8 +302,9 @@ func main() {
 
 	// Materializes scheduled stream occurrences from recurring series and
 	// keeps the next-event answer warm for the status endpoint.
-	schedule.Start()
-	defer schedule.Stop()
+	scheduleSvc := schedule.New(schedule.Deps{ScheduleEventsRepository: scheduleEventsRepository})
+	scheduleSvc.Start()
+	defer scheduleSvc.Stop()
 
 	// Stage 8: late services. metrics polls stream + chat, fediverseAuth
 	// owns OTP state for the chat-side handler.
@@ -384,6 +385,7 @@ func main() {
 		ChatMessageRepository:    chatMessageRepository,
 		UserRepository:           userRepository,
 		ScheduleEventsRepository: scheduleEventsRepository,
+		Schedule:                 scheduleSvc,
 		APBuilder:                apBuilder,
 		APSigner:                 apSigner,
 		Config:                   cfg,
@@ -432,6 +434,7 @@ func main() {
 		UserRepository:           userRepository,
 		NotificationsRepository:  notificationsRepository,
 		ScheduleEventsRepository: scheduleEventsRepository,
+		Schedule:                 scheduleSvc,
 		APBuilder:                apBuilder,
 		Config:                   cfg,
 		PluginActions:            pluginActions,

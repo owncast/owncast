@@ -37,8 +37,8 @@ func (h *Handlers) getStatusResponse() webStatusResponse {
 		response.ViewerCount = status.ViewerCount
 	}
 
-	if h.configRepository.GetScheduleEnabled() {
-		if event := schedule.GetUpcomingEvent(); event != nil {
+	if h.configRepository.GetScheduleEnabled() && h.schedule != nil {
+		if event := h.schedule.GetUpcomingEvent(); event != nil {
 			response.ScheduledEvent = &scheduledEventStatusResponse{
 				ID:        event.ID,
 				Name:      event.Name,
