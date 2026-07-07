@@ -371,7 +371,11 @@ const EventModal = (props: EventModalProps) => {
           <p>{t(Localization.Admin.Schedule.nextOccurrences)}</p>
           <ul>
             {preview.map(occurrence => (
-              <li key={occurrence}>{new Date(occurrence).toLocaleString()}</li>
+              // Render in the rule's own timezone: these are that zone's
+              // wall times, and the browser's zone would mislead.
+              <li key={occurrence}>
+                {new Date(occurrence).toLocaleString(undefined, { timeZone: timezone })}
+              </li>
             ))}
           </ul>
         </>
@@ -440,25 +444,30 @@ const Schedule = () => {
 
   const eventColumns = [
     {
-      title: 'Name',
+      title: t(Localization.Admin.Schedule.columnName),
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'When',
+      title: t(Localization.Admin.Schedule.columnWhen),
       dataIndex: 'startTime',
       key: 'startTime',
+      // Render the wall time in the event's own timezone so the value
+      // matches the zone label beside it, wherever the admin's browser is.
       render: (startTime: string, record: ScheduledEvent) =>
-        `${new Date(startTime).toLocaleString()} (${record.timezone})`,
+        `${new Date(startTime).toLocaleString(undefined, { timeZone: record.timezone })} (${
+          record.timezone
+        })`,
     },
     {
-      title: 'Duration',
+      title: t(Localization.Admin.Schedule.columnDuration),
       dataIndex: 'durationMinutes',
       key: 'durationMinutes',
-      render: (minutes: number) => `${minutes} min`,
+      render: (minutes: number) =>
+        t(Localization.Admin.Schedule.durationValue, { minutes: `${minutes}` }),
     },
     {
-      title: 'Status',
+      title: t(Localization.Admin.Schedule.columnStatus),
       key: 'status',
       render: (_, record: ScheduledEvent) => (
         <>
@@ -502,21 +511,22 @@ const Schedule = () => {
 
   const seriesColumns = [
     {
-      title: 'Name',
+      title: t(Localization.Admin.Schedule.columnName),
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Repeats',
+      title: t(Localization.Admin.Schedule.columnRepeats),
       dataIndex: 'recurrence',
       key: 'recurrence',
       render: (recurrence: string) => describeRecurrence(recurrence),
     },
     {
-      title: 'Duration',
+      title: t(Localization.Admin.Schedule.columnDuration),
       dataIndex: 'durationMinutes',
       key: 'durationMinutes',
-      render: (minutes: number) => `${minutes} min`,
+      render: (minutes: number) =>
+        t(Localization.Admin.Schedule.durationValue, { minutes: `${minutes}` }),
     },
     {
       title: '',

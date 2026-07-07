@@ -519,6 +519,13 @@ export const Localization = {
       statusScheduled: 'Admin.Schedule.statusScheduled',
       statusCancelled: 'Admin.Schedule.statusCancelled',
       statusRecurring: 'Admin.Schedule.statusRecurring',
+      sidebarTitle: 'Admin.Schedule.sidebarTitle',
+      columnName: 'Admin.Schedule.columnName',
+      columnWhen: 'Admin.Schedule.columnWhen',
+      columnDuration: 'Admin.Schedule.columnDuration',
+      columnStatus: 'Admin.Schedule.columnStatus',
+      columnRepeats: 'Admin.Schedule.columnRepeats',
+      durationValue: 'Admin.Schedule.durationValue',
     },
 
     // Access Tokens page

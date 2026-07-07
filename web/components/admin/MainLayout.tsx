@@ -321,7 +321,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       : []),
     {
       key: '/admin/schedule',
-      label: <Link href="/admin/schedule">Schedule</Link>,
+      label: <Link href="/admin/schedule">{t(Localization.Admin.Schedule.sidebarTitle)}</Link>,
       icon: <CalendarOutlined />,
     },
     {

@@ -3,15 +3,19 @@
 // time in an arbitrary IANA timezone to a UTC instant without a timezone
 // library.
 
-export const WEEKDAYS = [
-  { code: 'MO', label: 'Mon' },
-  { code: 'TU', label: 'Tue' },
-  { code: 'WE', label: 'Wed' },
-  { code: 'TH', label: 'Thu' },
-  { code: 'FR', label: 'Fri' },
-  { code: 'SA', label: 'Sat' },
-  { code: 'SU', label: 'Sun' },
-];
+// WEEKDAY_CODES are the RRULE BYDAY codes in display order. 2024-01-01 was
+// a Monday, so day i of that week renders code i's localized label.
+const WEEKDAY_CODES = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
+
+// WEEKDAYS pairs each RRULE code with a short weekday label in the
+// browser's own locale, derived through Intl so the chips localize without
+// a translation table.
+export const WEEKDAYS = WEEKDAY_CODES.map((code, index) => ({
+  code,
+  label: new Intl.DateTimeFormat(undefined, { weekday: 'short', timeZone: 'UTC' }).format(
+    new Date(Date.UTC(2024, 0, 1 + index)),
+  ),
+}));
 
 const WEEKDAY_LABELS: Record<string, string> = {
   MO: 'Mon',
