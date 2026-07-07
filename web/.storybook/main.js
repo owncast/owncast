@@ -1,8 +1,4 @@
 module.exports = {
-  features: {
-    previewMdx2: true,
-  },
-
   // Admin components build their API URLs from NEXT_PUBLIC_API_HOST
   // (utils/apis.ts). Next.js loads it from .env.development/.env.production,
   // but Storybook does not, leaving it undefined and producing fetches to

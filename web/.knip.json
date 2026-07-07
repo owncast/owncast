@@ -23,8 +23,6 @@
 		"sharp",
 		"workbox-precaching",
 		"workbox-window",
-		"@storybook/cli",
-		"@storybook/mdx2-csf",
 		"@mdx-js/react",
 		"@svgr/webpack",
 		"@types/markdown-it",
