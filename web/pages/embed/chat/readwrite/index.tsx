@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { useEffect } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'next-export-i18n';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { ChatMessage } from '../../../../interfaces/chat-message.model';
 import { ChatContainer } from '../../../../components/chat/ChatContainer/ChatContainer';
 import {
@@ -95,7 +95,7 @@ export default function ReadWriteChatEmbed() {
       <ErrorBoundary
         // eslint-disable-next-line react/no-unstable-nested-components
         fallbackRender={({ error }) => (
-          <ComponentError componentName="ReadWriteChatEmbed" message={error.message} />
+          <ComponentError componentName="ReadWriteChatEmbed" message={getErrorMessage(error)} />
         )}
       >
         <div className="embed-container">

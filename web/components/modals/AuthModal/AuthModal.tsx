@@ -1,7 +1,7 @@
 import { Modal, Tabs } from 'antd';
 import { useRecoilValue } from 'recoil';
 import { FC } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { IndieAuthModal } from '../IndieAuthModal/IndieAuthModal';
 import { FediAuthModal } from '../FediAuthModal/FediAuthModal';
 import { getPendingFediverseAuth } from '../../../utils/fediverseAuthSession';
@@ -90,7 +90,7 @@ export const AuthModal: FC<AuthModalProps> = ({ open, handleClose, forceTabs }) 
         fallbackRender={({ error, resetErrorBoundary }) => (
           <ComponentError
             componentName="AuthModal"
-            message={error.message}
+            message={getErrorMessage(error)}
             retryFunction={resetErrorBoundary}
           />
         )}

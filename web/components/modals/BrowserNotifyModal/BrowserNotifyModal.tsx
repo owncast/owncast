@@ -2,7 +2,7 @@ import { Row, Spin, Typography, Button, Alert, Modal } from 'antd';
 import React, { FC, useState } from 'react';
 import { PlusSquareOutlined, UploadOutlined } from '@ant-design/icons';
 import { useRecoilValue } from 'recoil';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { useTranslation } from 'next-export-i18n';
 import { accessTokenAtom, clientConfigStateAtom } from '../../stores/ClientConfigStore';
 import {
@@ -270,7 +270,7 @@ const NotifyModalContent = () => {
       fallbackRender={({ error: e, resetErrorBoundary }) => (
         <ComponentError
           componentName="BrowserNotifyModal"
-          message={e.message}
+          message={getErrorMessage(e)}
           retryFunction={resetErrorBoundary}
         />
       )}

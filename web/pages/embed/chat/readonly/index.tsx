@@ -1,7 +1,7 @@
 import { useRecoilValue } from 'recoil';
 import Head from 'next/head';
 import { useTranslation } from 'next-export-i18n';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { ChatMessage } from '../../../../interfaces/chat-message.model';
 import { ChatContainer } from '../../../../components/chat/ChatContainer/ChatContainer';
 import {
@@ -35,7 +35,7 @@ export default function ReadOnlyChatEmbed() {
       <ErrorBoundary
         // eslint-disable-next-line react/no-unstable-nested-components
         fallbackRender={({ error }) => (
-          <ComponentError componentName="ReadOnlyChatEmbed" message={error.message} />
+          <ComponentError componentName="ReadOnlyChatEmbed" message={getErrorMessage(error)} />
         )}
       >
         <ClientConfigStore />

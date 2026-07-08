@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { Pagination, Spin } from 'antd';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { Follower } from '../../../../interfaces/follower';
 import { SingleFollower } from '../SingleFollower/SingleFollower';
 import styles from './FollowerCollection.module.scss';
@@ -72,7 +72,7 @@ export const FollowerCollection: FC<FollowerCollectionProps> = ({ name, onFollow
       fallbackRender={({ error, resetErrorBoundary }) => (
         <ComponentError
           componentName="FollowerCollection"
-          message={error.message}
+          message={getErrorMessage(error)}
           retryFunction={resetErrorBoundary}
         />
       )}

@@ -1,6 +1,6 @@
 import { Modal } from 'antd';
 import { FC } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 
 import styles from './ChatModal.module.scss';
 
@@ -41,7 +41,7 @@ export const ChatModal: FC<ChatModalProps> = ({
       fallbackRender={({ error, resetErrorBoundary }) => (
         <ComponentError
           componentName="ChatModal"
-          message={error.message}
+          message={getErrorMessage(error)}
           retryFunction={resetErrorBoundary}
         />
       )}

@@ -5,7 +5,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { FC, useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import dynamic from 'next/dynamic';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import {
   ChatState,
   chatStateAtom,
@@ -204,7 +204,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
       fallbackRender={({ error, resetErrorBoundary }) => (
         <ComponentError
           componentName="UserDropdown"
-          message={error.message}
+          message={getErrorMessage(error)}
           retryFunction={resetErrorBoundary}
         />
       )}
