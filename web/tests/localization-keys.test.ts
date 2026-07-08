@@ -223,20 +223,28 @@ describe('Localization Keys Cross-Language Validation', () => {
         name: 'Admin.Help.title',
       },
       {
-        key: Localization.Admin.Help.configureInstance,
-        name: 'Admin.Help.configureInstance',
+        key: Localization.Admin.Help.searchPlaceholder,
+        name: 'Admin.Help.searchPlaceholder',
       },
       {
         key: Localization.Admin.Help.learnMore,
         name: 'Admin.Help.learnMore',
       },
       {
-        key: Localization.Admin.Help.configureBroadcasting,
-        name: 'Admin.Help.configureBroadcasting',
+        key: Localization.Admin.Help.openSettings,
+        name: 'Admin.Help.openSettings',
       },
       {
-        key: Localization.Admin.Help.troubleshooting,
-        name: 'Admin.Help.troubleshooting',
+        key: Localization.Admin.Help.fixButton,
+        name: 'Admin.Help.fixButton',
+      },
+      {
+        key: Localization.Admin.Help.communityButton,
+        name: 'Admin.Help.communityButton',
+      },
+      {
+        key: Localization.Admin.Help.copySupportInfo,
+        name: 'Admin.Help.copySupportInfo',
       },
       {
         key: Localization.Admin.Help.documentation,
