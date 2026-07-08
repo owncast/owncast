@@ -23,7 +23,11 @@ class InlineStylesHead extends Head {
           dangerouslySetInnerHTML={{
             // Rebase relative url() refs (fonts) against the css chunk's
             // real directory: inlined into the document they would resolve
-            // from / and 404, silently dropping the web fonts.
+            // from / and 404, silently dropping the web fonts. The path is
+            // deliberately a static '.next': production builds always emit
+            // there (the OWNCAST_DEV_DISTDIR override in next.config.js is
+            // dev-phase only), and a dynamic path here makes Turbopack's
+            // file tracing scan the whole project.
             __html: readFileSync(join(process.cwd(), '.next', file), 'utf-8').replace(
               /url\((["']?)\.\.\//g,
               'url($1/_next/static/',
