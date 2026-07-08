@@ -9,7 +9,7 @@ import { INITIAL_VIEWPORTS } from 'storybook/viewport';
 import _ from 'lodash';
 import { initialize, mswLoader } from 'msw-storybook-addon';
 import React from 'react';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { AntdProvider } from '../components/theme/AntdProvider';
 
 /**
@@ -111,15 +111,15 @@ export const loaders = [mswLoader];
 
 // Mirror the app-wide providers from pages/_app.tsx: antd components rely on
 // AntdProvider for the Owncast theme tokens. Without this decorator those
-// stories would render unthemed. AntdProvider reads Recoil state, so a
-// RecoilRoot wraps it (stories with their own RecoilRoot simply nest; that
+// stories would render unthemed. AntdProvider reads jotai atoms, so a
+// Provider wraps it (stories with their own Provider simply nest; that
 // is supported).
 export const decorators = [
   Story => (
-    <RecoilRoot>
+    <Provider>
       <AntdProvider>
         <Story />
       </AntdProvider>
-    </RecoilRoot>
+    </Provider>
   ),
 ];

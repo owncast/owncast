@@ -1,8 +1,7 @@
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import Head from 'next/head';
 import { useTranslation } from 'next-export-i18n';
 import { ErrorBoundary } from 'react-error-boundary';
-import { ChatMessage } from '../../../../interfaces/chat-message.model';
 import { ChatContainer } from '../../../../components/chat/ChatContainer/ChatContainer';
 import {
   ClientConfigStore,
@@ -11,16 +10,15 @@ import {
   clientConfigStateAtom,
   isChatAvailableSelector,
 } from '../../../../components/stores/ClientConfigStore';
-import { ClientConfig } from '../../../../interfaces/client-config.model';
 import { Theme } from '../../../../components/theme/Theme';
 import { ComponentError } from '../../../../components/ui/ComponentError/ComponentError';
 import { Localization } from '../../../../types/localization';
 
 export default function ReadOnlyChatEmbed() {
-  const currentUser = useRecoilValue(currentUserAtom);
-  const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
-  const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const isChatAvailable = useRecoilValue(isChatAvailableSelector);
+  const currentUser = useAtomValue(currentUserAtom);
+  const messages = useAtomValue(visibleChatMessagesSelector);
+  const clientConfig = useAtomValue(clientConfigStateAtom);
+  const isChatAvailable = useAtomValue(isChatAvailableSelector);
 
   const { name } = clientConfig;
   const { t } = useTranslation();

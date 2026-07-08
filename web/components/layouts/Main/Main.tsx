@@ -1,7 +1,7 @@
 /* eslint-disable react/no-invalid-html-attribute */
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-unescaped-entities */
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import Head from 'next/head';
 import { FC, useEffect, useRef } from 'react';
 import { Layout } from 'antd';
@@ -18,17 +18,13 @@ import {
 } from '../../stores/ClientConfigStore';
 import { Content } from '../../ui/Content/Content';
 import { Header } from '../../ui/Header/Header';
-import { ClientConfig } from '../../../interfaces/client-config.model';
-import { DisplayableError } from '../../../types/displayable-error';
 import setupNoLinkReferrer from '../../../utils/no-link-referrer';
 import { TitleNotifier } from '../../TitleNotifier/TitleNotifier';
 import { ServerRenderedHydration } from '../../ServerRendered/ServerRenderedHydration';
 import { Theme } from '../../theme/Theme';
 import styles from './Main.module.scss';
 import { PushNotificationServiceWorker } from '../../workers/PushNotificationServiceWorker/PushNotificationServiceWorker';
-import { AppStateOptions } from '../../stores/application-state';
 import { Noscript } from '../../ui/Noscript/Noscript';
-import { ServerStatus } from '../../../interfaces/server-status.model';
 
 // Lazy loaded components
 
@@ -43,12 +39,12 @@ const FatalErrorStateModal = dynamic(
 );
 
 export const Main: FC = () => {
-  const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const clientStatus = useRecoilValue<ServerStatus>(serverStatusState);
+  const clientConfig = useAtomValue(clientConfigStateAtom);
+  const clientStatus = useAtomValue(serverStatusState);
   const { name } = clientConfig;
-  const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
-  const fatalError = useRecoilValue<DisplayableError>(fatalErrorStateAtom);
-  const appState = useRecoilValue<AppStateOptions>(appStateAtom);
+  const isChatAvailable = useAtomValue(isChatAvailableSelector);
+  const fatalError = useAtomValue(fatalErrorStateAtom);
+  const appState = useAtomValue(appStateAtom);
   const layoutRef = useRef<HTMLDivElement>(null);
   const { chatDisabled } = clientConfig;
   const { videoAvailable } = appState;

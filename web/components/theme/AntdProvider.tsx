@@ -1,8 +1,7 @@
 import { FC, ReactNode, useMemo } from 'react';
 import { ConfigProvider } from 'antd';
 import type { ThemeConfig } from 'antd';
-import { useRecoilValue } from 'recoil';
-import { ClientConfig } from '../../interfaces/client-config.model';
+import { useAtomValue } from 'jotai';
 import { clientConfigStateAtom } from '../stores/ClientConfigStore';
 import antdDefaultTheme from './antd-default-theme.json';
 
@@ -124,7 +123,7 @@ export type AntdProviderProps = {
 };
 
 export const AntdProvider: FC<AntdProviderProps> = ({ children }) => {
-  const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
+  const clientConfig = useAtomValue(clientConfigStateAtom);
   const { appearanceVariables } = clientConfig;
 
   // Stringify so the memo reacts to content changes, not object identity.

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot, useSetRecoilState } from 'recoil';
+import { Provider, useSetAtom } from 'jotai';
 import ReadOnlyPage from '../pages/embed/chat/readonly/index';
 import { ChatMessage } from '../interfaces/chat-message.model';
 import { chatMessagesAtom } from '../components/stores/ClientConfigStore';
@@ -18,7 +18,7 @@ const testMessages =
 const messages: ChatMessage[] = JSON.parse(testMessages);
 
 const Page = () => {
-  const setMessages = useSetRecoilState(chatMessagesAtom);
+  const setMessages = useSetAtom(chatMessagesAtom);
   useEffect(() => {
     setMessages(messages);
   }, []);
@@ -27,9 +27,9 @@ const Page = () => {
 };
 
 const Template: StoryFn<typeof ReadOnlyPage> = () => (
-  <RecoilRoot>
+  <Provider>
     <Page />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const Example = {

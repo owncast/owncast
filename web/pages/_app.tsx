@@ -22,7 +22,7 @@ import '../components/video/VideoJS/VideoJS.scss';
 import { AppProps } from 'next/app';
 import { ReactElement, ReactNode, useEffect } from 'react';
 import { NextPage } from 'next';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { useRouter } from 'next/router';
 import { useSelectedLanguage } from 'next-export-i18n';
 import { loadViewerLocale, shouldCleanUrlAfterFlip } from '../utils/localeLoader';
@@ -79,14 +79,14 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <>
       <LocaleSync />
-      {/* RecoilRoot and the Ant Design theme bridge wrap the page layout
+      {/* The jotai Provider and the Ant Design theme bridge wrap the page layout
           too, not just the page component: layouts attached via getLayout
           (e.g. the admin's AdminLayout/MainLayout) also render antd
           components and must be inside the provider to receive the Owncast
           theme tokens. */}
-      <RecoilRoot>
+      <Provider>
         <AntdProvider>{layout(<Component {...pageProps} />)}</AntdProvider>
-      </RecoilRoot>
+      </Provider>
     </>
   );
 }

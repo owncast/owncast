@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unknown-property */
 import { useEffect } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/router';
 import { Skeleton } from 'antd';
 import {
@@ -13,24 +13,21 @@ import {
 } from '../../../components/stores/ClientConfigStore';
 import { Statusbar } from '../../../components/ui/Statusbar/Statusbar';
 import { OwncastPlayer } from '../../../components/video/OwncastPlayer/OwncastPlayer';
-import { ClientConfig } from '../../../interfaces/client-config.model';
-import { ServerStatus } from '../../../interfaces/server-status.model';
-import { AppStateOptions } from '../../../components/stores/application-state';
 import { Theme } from '../../../components/theme/Theme';
 import styles from './VideoEmbed.module.scss';
 import { OfflineEmbed } from '../../../components/ui/OfflineEmbed/OfflineEmbed';
 import { resolveAutoplaySetting } from '../../../utils/autoplay';
 
 export default function VideoEmbed() {
-  const status = useRecoilValue<ServerStatus>(serverStatusState);
-  const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const appState = useRecoilValue<AppStateOptions>(appStateAtom);
-  const configLoaded = useRecoilValue<boolean>(isClientConfigLoadedAtom);
+  const status = useAtomValue(serverStatusState);
+  const clientConfig = useAtomValue(clientConfigStateAtom);
+  const appState = useAtomValue(appStateAtom);
+  const configLoaded = useAtomValue(isClientConfigLoadedAtom);
 
   const { name, summary, offlineMessage, federation, autoplay } = clientConfig;
 
   const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } = status;
-  const online = useRecoilValue<boolean>(isOnlineSelector);
+  const online = useAtomValue(isOnlineSelector);
   const { enabled: socialEnabled } = federation;
 
   const router = useRouter();

@@ -1,9 +1,8 @@
 import { CSSProperties, FC, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import { Input, Button, Select, Form } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { MessageType } from '../../../interfaces/socket-events';
-import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom, currentUserAtom } from '../../stores/ClientConfigStore';
 import { validateDisplayName } from '../../../utils/displayNameValidation';
 import { Translation } from '../../ui/Translation/Translation';
@@ -35,8 +34,8 @@ type NameChangeModalProps = {
 
 export const NameChangeModal: FC<NameChangeModalProps> = ({ closeModal }) => {
   const { t } = useTranslation();
-  const currentUser = useRecoilValue(currentUserAtom);
-  const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
+  const currentUser = useAtomValue(currentUserAtom);
+  const websocketService = useAtomValue(websocketServiceAtom);
   const [newName, setNewName] = useState<string>(currentUser?.displayName || '');
 
   const characterLimit = 30;

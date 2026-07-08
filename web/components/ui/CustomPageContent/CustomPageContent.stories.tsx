@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { CustomPageContent } from './CustomPageContent';
 
 const meta = {
@@ -12,9 +12,9 @@ const meta = {
 export default meta;
 
 const Template: StoryFn<typeof CustomPageContent> = args => (
-  <RecoilRoot>
+  <Provider>
     <CustomPageContent {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const Example1 = {

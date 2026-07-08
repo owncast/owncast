@@ -1,5 +1,6 @@
 import { Meta, StoryFn, StoryObj } from '@storybook/nextjs';
-import { MutableSnapshot, RecoilRoot } from 'recoil';
+import { Provider, createStore } from 'jotai';
+import type { Store } from 'jotai/vanilla/store';
 import { makeEmptyClientConfig } from '../../../interfaces/client-config.model';
 import { ServerStatus, makeEmptyServerStatus } from '../../../interfaces/server-status.model';
 import {
@@ -40,7 +41,7 @@ export default meta;
 // @ts-ignore
 window.WebSocket = class {};
 
-type StateInitializer = (mutableState: MutableSnapshot) => void;
+type StateInitializer = (store: Store) => void;
 
 const composeStateInitializers =
   (...fns: Array<StateInitializer>): StateInitializer =>
@@ -62,7 +63,7 @@ const onlineServerStatus: ServerStatus = {
   viewerCount: 5,
 };
 
-const initializeDefaultState = (mutableState: MutableSnapshot) => {
+const initializeDefaultState = (mutableState: Store) => {
   mutableState.set(appStateAtom, {
     videoAvailable: false,
     chatAvailable: false,
@@ -96,21 +97,28 @@ const Template: StoryFn<typeof Main> = ({
   ServerStatusServiceMock = DefaultServerStatusServiceMock,
   ...args
 }: {
-  initializeState: (mutableState: MutableSnapshot) => void;
+  initializeState: (store: Store) => void;
   ServerStatusServiceMock: ServerStatusStaticService;
-}) => (
-  <RecoilRoot initializeState={composeStateInitializers(initializeDefaultState, initializeState)}>
-    <ClientConfigServiceContext.Provider value={ClientConfigServiceMock}>
-      <ChatServiceContext.Provider value={ChatServiceMock}>
-        <ServerStatusServiceContext.Provider value={ServerStatusServiceMock}>
-          <VideoSettingsServiceContext.Provider value={VideoSettingsServiceMock}>
-            <Main {...args} />
-          </VideoSettingsServiceContext.Provider>
-        </ServerStatusServiceContext.Provider>
-      </ChatServiceContext.Provider>
-    </ClientConfigServiceContext.Provider>
-  </RecoilRoot>
-);
+}) => {
+  // A fresh store per story render replaces RecoilRoot's initializeState:
+  // state is seeded before anything renders, so the mocked values never
+  // flash their defaults.
+  const store = createStore();
+  composeStateInitializers(initializeDefaultState, initializeState)(store);
+  return (
+    <Provider store={store}>
+      <ClientConfigServiceContext.Provider value={ClientConfigServiceMock}>
+        <ChatServiceContext.Provider value={ChatServiceMock}>
+          <ServerStatusServiceContext.Provider value={ServerStatusServiceMock}>
+            <VideoSettingsServiceContext.Provider value={VideoSettingsServiceMock}>
+              <Main {...args} />
+            </VideoSettingsServiceContext.Provider>
+          </ServerStatusServiceContext.Provider>
+        </ChatServiceContext.Provider>
+      </ClientConfigServiceContext.Provider>
+    </Provider>
+  );
+};
 
 export const OfflineDesktop: StoryObj<typeof Template> = {
   render: Template,
@@ -124,7 +132,7 @@ export const OfflineMobile: StoryObj<typeof Template> = {
   render: Template,
 
   args: {
-    initializeState: (mutableState: MutableSnapshot) => {
+    initializeState: (mutableState: Store) => {
       mutableState.set(isMobileAtom, true);
     },
   },
@@ -165,7 +173,7 @@ export const OnlineMobile: StoryObj<typeof Template> = {
 
   args: {
     ServerStatusServiceMock: OnlineServerStatusServiceMock,
-    initializeState: (mutableState: MutableSnapshot) => {
+    initializeState: (mutableState: Store) => {
       mutableState.set(isMobileAtom, true);
     },
   },

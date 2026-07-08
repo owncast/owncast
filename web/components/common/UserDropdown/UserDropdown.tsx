@@ -1,7 +1,7 @@
 import { MenuProps, Dropdown, Button } from 'antd';
 import classnames from 'classnames';
 
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useAtom, useAtomValue } from 'jotai';
 import { FC, useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import dynamic from 'next/dynamic';
@@ -13,7 +13,6 @@ import {
   appStateAtom,
 } from '../../stores/ClientConfigStore';
 import styles from './UserDropdown.module.scss';
-import { AppStateOptions } from '../../stores/application-state';
 import { ComponentError } from '../../ui/ComponentError/ComponentError';
 import { getPendingFediverseAuth } from '../../../utils/fediverseAuthSession';
 
@@ -85,9 +84,9 @@ export const UserDropdown: FC<UserDropdownProps> = ({
   // the v6 AuthModal keeps children mounted after first open by default, but
   // must not be unmounted by conditional rendering).
   const [authModalMounted, setAuthModalMounted] = useState<boolean>(false);
-  const [chatState, setChatState] = useRecoilState(chatStateAtom);
+  const [chatState, setChatState] = useAtom(chatStateAtom);
   const [popupWindow, setPopupWindow] = useState<Window>(null);
-  const appState = useRecoilValue<AppStateOptions>(appStateAtom);
+  const appState = useAtomValue(appStateAtom);
 
   // Reopen the auth modal on load if a fediverse verification was still in
   // progress, so a viewer who reloaded mid-flow (issue #4887) lands back on the
@@ -159,7 +158,7 @@ export const UserDropdown: FC<UserDropdownProps> = ({
     [chatState === ChatState.VISIBLE],
   );
 
-  const currentUser = useRecoilValue(currentUserAtom);
+  const currentUser = useAtomValue(currentUserAtom);
   if (!currentUser) {
     return null;
   }

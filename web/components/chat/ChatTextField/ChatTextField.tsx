@@ -1,13 +1,12 @@
 import { Popover } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useAtom, useAtomValue } from 'jotai';
 import sanitizeHtml from 'sanitize-html';
 import Graphemer from 'graphemer';
 
 import dynamic from 'next/dynamic';
 import classNames from 'classnames';
 import ContentEditable from './ContentEditable';
-import WebsocketService from '../../../services/websocket-service';
 import { websocketServiceAtom, chatInputDraftAtom } from '../../stores/ClientConfigStore';
 import { MessageType } from '../../../interfaces/socket-events';
 import styles from './ChatTextField.module.scss';
@@ -126,9 +125,9 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({
   focusInput,
   disabledPlaceholder,
 }) => {
-  const [inputDraft, setInputDraft] = useRecoilState(chatInputDraftAtom);
+  const [inputDraft, setInputDraft] = useAtom(chatInputDraftAtom);
   const [characterCount, setCharacterCount] = useState(defaultText?.length);
-  const websocketService = useRecoilValue<WebsocketService>(websocketServiceAtom);
+  const websocketService = useAtomValue(websocketServiceAtom);
   const [contentEditable, setContentEditable] = useState(null);
   const [customEmoji, setCustomEmoji] = useState([]);
 
@@ -229,7 +228,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({
       }
     }
 
-    // Persist draft to Recoil state so it survives mobile/desktop mode switches
+    // Persist draft to the shared draft atom so it survives mobile/desktop mode switches
     setInputDraft(contentEditable.innerHTML);
   };
 
@@ -241,7 +240,7 @@ export const ChatTextField: FC<ChatTextFieldProps> = ({
     document.getElementById('chat-input-content-editable').focus({ preventScroll: true });
   }, []);
 
-  // Restore draft from Recoil state when component mounts (e.g., after mobile/desktop switch)
+  // Restore draft from the shared draft atom when component mounts (e.g., after mobile/desktop switch)
   useEffect(() => {
     if (contentEditable && inputDraft) {
       contentEditable.innerHTML = inputDraft;
