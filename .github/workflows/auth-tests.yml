@@ -70,7 +70,7 @@ jobs:
       - uses: actions/setup-go@v6
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
-          go-version: '1.26.4'
+          go-version: '1.26.5'
           cache: true
 
       # The plugin SDK build (owncast-plugin) and the OAuth provider
