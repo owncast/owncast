@@ -22,6 +22,7 @@ package scheduler
 import (
 	"context"
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/go-co-op/gocron/v2"
@@ -56,6 +57,9 @@ type Service struct {
 	engine gocron.Scheduler
 	ctx    context.Context
 	cancel context.CancelFunc
+
+	stoppedMutex sync.Mutex
+	stopped      bool
 }
 
 // New constructs the scheduler.
@@ -77,6 +81,12 @@ func New() (*Service, error) {
 // Start; jobs registered after Start (but before Stop) are picked up
 // immediately. Names must be unique and intervals positive.
 func (s *Service) Register(job Job) error {
+	s.stoppedMutex.Lock()
+	stopped := s.stopped
+	s.stoppedMutex.Unlock()
+	if stopped {
+		return errors.New("scheduler is stopped and cannot register " + job.Name)
+	}
 	if job.Name == "" {
 		return errors.New("scheduler job needs a name")
 	}
@@ -130,8 +140,12 @@ func (s *Service) Start() {
 
 // Stop cancels the job context and shuts the engine down, waiting for
 // in-flight runs to finish. A stopped Service is permanently done: it
-// cannot be restarted, and Register calls after Stop are silent no-ops.
+// cannot be restarted, and Register calls after Stop return an error.
 func (s *Service) Stop() {
+	s.stoppedMutex.Lock()
+	s.stopped = true
+	s.stoppedMutex.Unlock()
+
 	s.cancel()
 	if err := s.engine.Shutdown(); err != nil {
 		log.Errorf("error shutting down scheduler: %v", err)

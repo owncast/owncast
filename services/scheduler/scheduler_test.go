@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"context"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -269,6 +270,34 @@ func TestRegisterAfterStart(t *testing.T) {
 
 	waitFor(t, 3*time.Second, func() bool { return runs.Load() >= 2 },
 		"job registered after Start to run at least twice")
+}
+
+func TestRegisterAfterStopErrors(t *testing.T) {
+	s := newService(t)
+	s.Start()
+	s.Stop()
+
+	var runs atomic.Int32
+	err := s.Register(Job{
+		Name:       "toolate",
+		Interval:   20 * time.Millisecond,
+		RunAtStart: true,
+		Run:        func(ctx context.Context) { runs.Add(1) },
+	})
+	if err == nil {
+		t.Fatal("Register after Stop returned nil error, want error")
+	}
+	if !strings.Contains(err.Error(), "toolate") {
+		t.Errorf("Register after Stop error %q does not mention the job name", err)
+	}
+
+	// The rejected job must never actually run. RunAtStart plus a tiny
+	// interval means any incorrect scheduling would fire well within
+	// this window.
+	time.Sleep(200 * time.Millisecond)
+	if got := runs.Load(); got != 0 {
+		t.Errorf("job registered after Stop ran %d time(s), want 0", got)
+	}
 }
 
 func TestStatuses(t *testing.T) {
