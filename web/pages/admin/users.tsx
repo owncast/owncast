@@ -58,6 +58,9 @@ export default function UsersAdmin() {
   // The user whose detail modal is open (null when closed). Set by clicking a
   // table row.
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  // Tab the admin explicitly clicked; until then the active tab follows live
+  // status (Connected while streaming, All Users otherwise).
+  const [activeTab, setActiveTab] = useState<string>(null);
 
   const getUsers = async () => {
     setLoading(true);
@@ -322,6 +325,11 @@ export default function UsersAdmin() {
   );
 
   const items = [
+    {
+      label: <span>{`${t('Connected')} (${online ? clients.length : t('offline')})`}</span>,
+      key: 'connected',
+      children: connectedTab,
+    },
     { label: t('All Users'), key: 'all', children: allUsersTab },
     {
       label: <span>{`${t('Moderators')} (${moderators.length})`}</span>,
@@ -332,11 +340,6 @@ export default function UsersAdmin() {
       label: <span>{`${t('Banned')} (${bannedUsers.length})`}</span>,
       key: 'banned',
       children: listTable(bannedUsers),
-    },
-    {
-      label: <span>{`${t('Connected')} (${online ? clients.length : t('offline')})`}</span>,
-      key: 'connected',
-      children: connectedTab,
     },
     {
       label: <span>{`${t('IP Bans')} (${ipBans.length})`}</span>,
@@ -350,7 +353,11 @@ export default function UsersAdmin() {
       <Typography.Title level={3}>
         <Translation translationKey={Localization.Admin.Users.pageTitle} defaultText="Users" />
       </Typography.Title>
-      <Tabs defaultActiveKey="all" items={items} />
+      <Tabs
+        activeKey={activeTab ?? (online ? 'connected' : 'all')}
+        onChange={setActiveTab}
+        items={items}
+      />
       {selectedUser && (
         <UserDetailsModal
           user={selectedUser}
