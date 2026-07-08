@@ -13,6 +13,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.103.3
 	github.com/extism/go-sdk v1.7.1
 	github.com/go-chi/chi/v5 v5.2.4
+	github.com/go-co-op/gocron/v2 v2.21.2
 	github.com/go-fed/httpsig v1.1.0
 	github.com/gobwas/glob v0.2.3
 	github.com/gorilla/websocket v1.5.3
@@ -73,6 +74,7 @@ require (
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/ianlancetaylor/demangle v0.0.0-20240805132620-81f5be970eca // indirect
+	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/klauspost/compress v1.18.5 // indirect
 	github.com/lestrrat-go/strftime v1.1.1 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
@@ -84,6 +86,7 @@ require (
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.66.1 // indirect
 	github.com/prometheus/procfs v0.20.1 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	github.com/tetratelabs/wabin v0.0.0-20230304001439-f6f874872834 // indirect
 	github.com/tklauser/go-sysconf v0.3.15 // indirect

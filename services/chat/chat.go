@@ -63,8 +63,6 @@ func (s *Service) SetGetStatus(fn func() models.Status) {
 // Start initializes persistence, launches the broadcast loop, and
 // registers the Prometheus counter. Safe to call once.
 func (s *Service) Start() error {
-	s.setupPersistence()
-
 	go s.Run()
 
 	log.Traceln("Chat server started with max connection count of", s.maxSocketConnectionLimit)
