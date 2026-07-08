@@ -42,6 +42,7 @@ import (
 	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/schedule"
+	"github.com/owncast/owncast/services/scheduler"
 	"github.com/owncast/owncast/services/stalefeaturedcheckservice"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
@@ -295,17 +296,37 @@ func main() {
 	}
 	defer streamSvc.Stop(ctx)
 
-	// Background sweep that marks federated peer servers offline when
-	// they stop sending stream-status pings, keeping the
-	// featured-streams directory honest.
-	stalefeaturedcheckservice.Start()
-	defer stalefeaturedcheckservice.Stop()
+	// The central scheduler owns all recurring background work. Services
+	// expose an idempotent job method plus an interval constant, and get
+	// registered here.
+	schedulerSvc, err := scheduler.New()
+	if err != nil {
+		log.Fatalln("failed to create the scheduler", err)
+	}
 
 	// Materializes scheduled stream occurrences from recurring series and
 	// keeps the next-event answer warm for the status endpoint.
 	scheduleSvc := schedule.New(schedule.Deps{ScheduleEventsRepository: scheduleEventsRepository})
-	scheduleSvc.Start()
-	defer scheduleSvc.Stop()
+
+	// Marks federated peer servers offline when they stop sending
+	// stream-status pings, keeping the featured-streams directory honest.
+	staleFeaturedSvc := stalefeaturedcheckservice.New(stalefeaturedcheckservice.Deps{
+		ConfigRepository:           configRepository,
+		FederatedServersRepository: federatedServersRepository,
+	})
+
+	schedulerJobs := []scheduler.Job{
+		{Name: "schedule-materializer", Interval: schedule.MaterializationInterval, RunAtStart: true, Run: scheduleSvc.RunMaterialization},
+		{Name: "stale-featured-servers", Interval: stalefeaturedcheckservice.CheckInterval, RunAtStart: true, Run: staleFeaturedSvc.Run},
+		{Name: "chat-data-pruner", Interval: chat.DataPruneInterval, RunAtStart: true, Run: chatSvc.RunDataPruner},
+	}
+	for _, job := range schedulerJobs {
+		if err := schedulerSvc.Register(job); err != nil {
+			log.Fatalln("failed to register scheduler job", job.Name, err)
+		}
+	}
+	schedulerSvc.Start()
+	defer schedulerSvc.Stop()
 
 	// Stage 8: late services. metrics polls stream + chat, fediverseAuth
 	// owns OTP state for the chat-side handler.

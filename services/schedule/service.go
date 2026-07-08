@@ -1,6 +1,7 @@
 package schedule
 
 import (
+	"context"
 	"sync"
 	"time"
 
@@ -18,25 +19,21 @@ const (
 	// treated as open for early arrivals.
 	chatOpenLeadTime = 10 * time.Minute
 
-	// tickInterval is how often the scheduler materializes occurrences.
-	// Each tick is idempotent and driven purely from table state, so a
-	// missed or repeated tick never corrupts anything.
-	tickInterval = 1 * time.Minute
+	// MaterializationInterval is how often RunMaterialization should run,
+	// registered on the central scheduler by main.go.
+	MaterializationInterval = 1 * time.Minute
 
 	// upcomingCacheTTL bounds how stale the next-event answer served to
 	// the 5s status poll may be. Admin mutations bypass it via Refresh.
 	upcomingCacheTTL = 10 * time.Second
 )
 
-// Service owns the scheduled streams background loop: materializing
-// occurrence rows from recurring series and answering "what's next" for the
-// status endpoint. Construct with New in main.go and inject into consumers.
+// Service owns scheduled streams behavior: materializing occurrence rows
+// from recurring series (as a job on the central scheduler) and answering
+// "what's next" for the status endpoint. Construct with New in main.go and
+// inject into consumers.
 type Service struct {
 	repo scheduleeventsrepository.ScheduleEventsRepository
-
-	tickerMutex sync.Mutex
-	ticker      *time.Ticker
-	tickerDone  chan bool
 
 	upcomingMutex     sync.Mutex
 	upcomingEvent     *models.ScheduledEvent
@@ -55,55 +52,13 @@ func New(deps Deps) *Service {
 	}
 }
 
-// Start begins the background loop. Runs even while the feature toggle is
-// off so the schedule is current the moment an admin enables it; the HTTP
-// layer owns hiding disabled state from the public.
-func (s *Service) Start() {
-	s.tickerMutex.Lock()
-	defer s.tickerMutex.Unlock()
-
-	if s.ticker != nil {
-		log.Debugln("Schedule service already running")
-		return
-	}
-
-	s.ticker = time.NewTicker(tickInterval)
-	s.tickerDone = make(chan bool)
-
-	done := s.tickerDone
-	ticker := s.ticker
-
-	go func() {
-		s.tick()
-
-		for {
-			select {
-			case <-ticker.C:
-				s.tick()
-			case <-done:
-				return
-			}
-		}
-	}()
-
-	log.Infof("Started schedule service (%s interval, %s materialization horizon)", tickInterval, MaterializationHorizon)
-}
-
-// Stop halts the schedule service if it is running.
-func (s *Service) Stop() {
-	s.tickerMutex.Lock()
-	defer s.tickerMutex.Unlock()
-
-	if s.ticker != nil {
-		s.ticker.Stop()
-		close(s.tickerDone)
-		s.ticker = nil
-		s.tickerDone = nil
-		log.Infoln("Stopped schedule service")
-	}
-}
-
-func (s *Service) tick() {
+// RunMaterialization is the scheduler job body: it expands recurring
+// series into occurrence rows up to the horizon and refreshes the cached
+// next-event answer. Idempotent and driven purely from table state, so a
+// missed or repeated run never corrupts anything. Runs even while the
+// feature toggle is off so the schedule is current the moment an admin
+// enables it; the HTTP layer owns hiding disabled state from the public.
+func (s *Service) RunMaterialization(_ context.Context) {
 	inserted, err := MaterializeAllSeries(s.repo, time.Now(), MaterializationHorizon)
 	if err != nil {
 		log.Errorf("unable to materialize scheduled stream events: %v", err)

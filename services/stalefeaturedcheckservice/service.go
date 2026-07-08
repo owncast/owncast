@@ -1,7 +1,11 @@
+// Package stalefeaturedcheckservice marks featured federated servers
+// offline when they stop sending status updates, keeping the
+// featured-streams directory honest. It runs as a job on the central
+// scheduler.
 package stalefeaturedcheckservice
 
 import (
-	"sync"
+	"context"
 	"time"
 
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -18,78 +22,44 @@ const (
 	// it offline.
 	staleThreshold = 2*outbox.StreamPingInterval + time.Minute
 
-	// checkInterval is how often we check for stale servers. Kept well below
-	// staleThreshold so a server is marked offline promptly after it crosses
-	// the threshold rather than up to a full check cycle later.
-	checkInterval = 1 * time.Minute
+	// CheckInterval is how often Run should execute, registered on the
+	// central scheduler by main.go. Kept well below staleThreshold so a
+	// server is marked offline promptly after it crosses the threshold
+	// rather than up to a full check cycle later.
+	CheckInterval = 1 * time.Minute
 )
 
-var (
-	stalenessChecker      *time.Ticker
-	stalenessCheckerDone  chan bool
-	stalenessCheckerMutex sync.Mutex
-)
-
-// Start begins checking for stale federated servers in the background.
-func Start() {
-	stalenessCheckerMutex.Lock()
-	defer stalenessCheckerMutex.Unlock()
-
-	configRepository := configrepository.Get()
-	if !configRepository.GetFederationEnabled() {
-		return
-	}
-
-	// Don't start if already running
-	if stalenessChecker != nil {
-		log.Debugln("Stale featured server checker already running")
-		return
-	}
-
-	stalenessChecker = time.NewTicker(checkInterval)
-	stalenessCheckerDone = make(chan bool)
-
-	// Capture the done channel in a local variable to avoid race conditions
-	done := stalenessCheckerDone
-	ticker := stalenessChecker
-
-	go func() {
-		// Run immediately on start
-		checkAndMarkStaleServers()
-
-		for {
-			select {
-			case <-ticker.C:
-				checkAndMarkStaleServers()
-			case <-done:
-				return
-			}
-		}
-	}()
-
-	log.Infof("Started stale featured server checker (%s interval, %s offline threshold)", checkInterval, staleThreshold)
+// Service sweeps featured federated servers for staleness. Construct with
+// New in main.go and register Run on the scheduler.
+type Service struct {
+	configRepository           configrepository.ConfigRepository
+	federatedServersRepository federatedserversrepository.FederatedServersRepository
 }
 
-// Stop halts the stale server checker if it is running.
-func Stop() {
-	stalenessCheckerMutex.Lock()
-	defer stalenessCheckerMutex.Unlock()
+// Deps lists everything the service consumes.
+type Deps struct {
+	ConfigRepository           configrepository.ConfigRepository
+	FederatedServersRepository federatedserversrepository.FederatedServersRepository
+}
 
-	if stalenessChecker != nil {
-		stalenessChecker.Stop()
-		close(stalenessCheckerDone)
-		stalenessChecker = nil
-		stalenessCheckerDone = nil
-		log.Infoln("Stopped stale featured server checker")
+// New constructs the stale featured server checker.
+func New(deps Deps) *Service {
+	return &Service{
+		configRepository:           deps.ConfigRepository,
+		federatedServersRepository: deps.FederatedServersRepository,
 	}
 }
 
-// checkAndMarkStaleServers checks all online federated servers and marks them as offline
-// if they haven't sent a status update within the stale threshold.
-func checkAndMarkStaleServers() {
-	repo := federatedserversrepository.Get()
+// Run is the scheduler job body. It no-ops while federation is disabled,
+// which also means enabling federation at runtime starts sweeping on the
+// next tick instead of requiring a restart like the old self-gating ticker
+// did.
+func (s *Service) Run(_ context.Context) {
+	if !s.configRepository.GetFederationEnabled() {
+		return
+	}
 
-	servers, err := repo.GetFederatedServers()
+	servers, err := s.federatedServersRepository.GetFederatedServers()
 	if err != nil {
 		log.Errorf("Failed to get federated servers for staleness check: %v", err)
 		return
@@ -115,7 +85,7 @@ func checkAndMarkStaleServers() {
 			log.Infof("Marking federated server %s as offline due to staleness (%v since last update)",
 				server.IRI, timeSinceLastUpdate)
 
-			err := repo.UpdateServerStatus(server.IRI, false, nil)
+			err := s.federatedServersRepository.UpdateServerStatus(server.IRI, false, nil)
 			if err != nil {
 				log.Errorf("Failed to mark server %s as offline: %v", server.IRI, err)
 			} else {
