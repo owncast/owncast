@@ -1,6 +1,6 @@
 import { Virtuoso } from 'react-virtuoso';
 import { useState, useMemo, useRef, CSSProperties, FC, useEffect } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { Interweave } from 'interweave';
 import {
   ConnectedClientInfoEvent,
@@ -359,7 +359,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
       fallbackRender={({ error, resetErrorBoundary }) => (
         <ComponentError
           componentName="ChatContainer"
-          message={error.message}
+          message={getErrorMessage(error)}
           retryFunction={resetErrorBoundary}
         />
       )}

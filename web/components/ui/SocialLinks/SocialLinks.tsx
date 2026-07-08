@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { FC } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import { ComponentError } from '../ComponentError/ComponentError';
 import styles from './SocialLinks.module.scss';
@@ -20,7 +20,7 @@ export const SocialLinks: FC<SocialLinksProps> = ({ links }) => {
       fallbackRender={({ error, resetErrorBoundary }) => (
         <ComponentError
           componentName="SocialLinks"
-          message={error.message}
+          message={getErrorMessage(error)}
           retryFunction={resetErrorBoundary}
         />
       )}

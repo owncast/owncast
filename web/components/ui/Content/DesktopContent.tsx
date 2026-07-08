@@ -1,7 +1,7 @@
 import React, { ComponentType, FC } from 'react';
 import dynamic from 'next/dynamic';
 import { TabsProps } from 'antd';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import { PluginTab } from '../../../interfaces/client-config.model';
 import styles from './Content.module.scss';
@@ -111,7 +111,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
       fallbackRender={({ error, resetErrorBoundary }) => (
         <ComponentError
           componentName="DesktopContent"
-          message={error.message}
+          message={getErrorMessage(error)}
           retryFunction={resetErrorBoundary}
         />
       )}
