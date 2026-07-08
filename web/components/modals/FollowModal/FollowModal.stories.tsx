@@ -4,7 +4,12 @@ import FollowModalMock from '../../../stories/assets/mocks/follow-modal.png';
 
 const Example = () => (
   <div>
-    <FollowModal handleClose={null} account="@fake@server.name" name="Fake Owncast Server" />
+    <FollowModal
+      open
+      handleClose={() => {}}
+      account="@fake@server.name"
+      name="Fake Owncast Server"
+    />
   </div>
 );
 

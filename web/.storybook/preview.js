@@ -1,12 +1,16 @@
 import '../styles/variables.css';
-import '../styles/global.less';
-import '../styles/theme.less';
+// Pre-extracted Ant Design styles: required in zeroRuntime mode (see
+// build-scripts/extract-antd-styles.js).
+import '../styles/antd.css';
 import './preview.scss';
 import { themes } from 'storybook/theming';
 import { DocsContainer } from './storybook-theme';
 import { INITIAL_VIEWPORTS } from 'storybook/viewport';
 import _ from 'lodash';
 import { initialize, mswLoader } from 'msw-storybook-addon';
+import React from 'react';
+import { RecoilRoot } from 'recoil';
+import { AntdProvider } from '../components/theme/AntdProvider';
 
 /**
  * Takes an entry of a viewport (from Object.entries()) and converts it
@@ -99,8 +103,30 @@ export const parameters = {
     light: { ...themes.normal },
   },
   viewport: {
-    viewports: flatMapObject(INITIAL_VIEWPORTS, convertToLandscapeAndPortraitEntries),
+    // Keep the base viewport keys (stories reference 'tablet', 'mobile1', ...)
+    // and add the rotated variants; replacing `options` wholesale would drop
+    // the base names and every viewport-pinned story would silently render
+    // at the default desktop width (Chromatic captures included).
+    options: {
+      ...INITIAL_VIEWPORTS,
+      ...flatMapObject(INITIAL_VIEWPORTS, convertToLandscapeAndPortraitEntries),
+    },
   },
 };
 
 export const loaders = [mswLoader];
+
+// Mirror the app-wide providers from pages/_app.tsx: antd components rely on
+// AntdProvider for the Owncast theme tokens. Without this decorator those
+// stories would render unthemed. AntdProvider reads Recoil state, so a
+// RecoilRoot wraps it (stories with their own RecoilRoot simply nest; that
+// is supported).
+export const decorators = [
+  Story => (
+    <RecoilRoot>
+      <AntdProvider>
+        <Story />
+      </AntdProvider>
+    </RecoilRoot>
+  ),
+];

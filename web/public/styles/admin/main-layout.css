@@ -8,16 +8,13 @@
   background-color: var(--theme-color-palette-1);
 }
 
+/* The sider menu runs antd's dark theme; its colors come from the Menu
+   design tokens in components/theme/AntdProvider.tsx (dark item colors,
+   transparent backgrounds, the selected-item edge bar). Only the menu
+   root background is cleared here so the sider color shows through. */
 .app-container .menu-container {
   border-color: transparent;
   background-color: unset;
-  color: var(--theme-color-components-text-on-dark);
-}
-
-.app-container .menu-container .ant-menu-item-selected:not(.ant-menu-item-only-child),
-.ant-menu-item a:hover,
-.ant-menu-item a::before {
-  color: var(--theme-color-palette-12);
 }
 
 .app-container h1.owncast-title {
@@ -179,20 +176,6 @@
   margin: 0;
   margin-left: 0.5em;
   line-height: 1;
-}
-
-.ant-select:not(.ant-select-customize-input) .ant-select-selector {
-  background-color: var(--theme-color-components-form-field-background);
-}
-
-.ant-menu-item a,
-.ant-menu-submenu-expand-icon,
-.ant-menu-submenu-arrow {
-  color: unset;
-}
-
-.ant-modal-title {
-  color: var(--theme-color-components-modal-header-text);
 }
 
 /* Custom upgrade menu divider - partial width */

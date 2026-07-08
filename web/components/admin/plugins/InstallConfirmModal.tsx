@@ -1,11 +1,12 @@
 import React from 'react';
-import { List, Modal, Space, Typography } from 'antd';
+import { Modal, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { Plugin, PluginPermission } from '../../../interfaces/plugin';
 import { Localization } from '../../../types/localization';
 import { permissionDescriptionKey, permissionNameKey } from './permissionDescriptions';
+import styles from './InstallConfirmModal.module.scss';
 
-const { Paragraph } = Typography;
+const { Paragraph, Text } = Typography;
 
 export type InstallConfirmModalProps = {
   // The just-installed plugin, or null when the modal should be
@@ -42,11 +43,8 @@ export const InstallConfirmModal = ({ plugin, onCancel, onEnable }: InstallConfi
       ) : (
         <>
           <Paragraph>{t(Localization.Admin.Plugins.installConfirmPrompt)}</Paragraph>
-          <List
-            size="small"
-            bordered
-            dataSource={permissions}
-            renderItem={p => {
+          <ul className={styles.permissions}>
+            {permissions.map(p => {
               const nameKey = permissionNameKey[p];
               const descKey = permissionDescriptionKey[p];
               // network.fetch carries an extra dimension to the trust
@@ -57,11 +55,12 @@ export const InstallConfirmModal = ({ plugin, onCancel, onEnable }: InstallConfi
               const allowedHosts =
                 p === PluginPermission.NetworkFetch ? (plugin?.allowedHosts ?? []) : [];
               const descText = descKey ? t(descKey) : null;
-              const description =
-                allowedHosts.length > 0 ? (
-                  <Space direction="vertical" size={4}>
-                    {descText && <span>{descText}</span>}
-                    <span>
+              return (
+                <li key={p} className={styles.permission}>
+                  <span>{nameKey ? t(nameKey) : p}</span>
+                  {descText && <Text type="secondary">{descText}</Text>}
+                  {allowedHosts.length > 0 && (
+                    <Text type="secondary">
                       {t(Localization.Admin.Plugins.allowedHostsLabel)}{' '}
                       {allowedHosts.map((host, idx) => (
                         <React.Fragment key={host}>
@@ -69,18 +68,12 @@ export const InstallConfirmModal = ({ plugin, onCancel, onEnable }: InstallConfi
                           <code>{host}</code>
                         </React.Fragment>
                       ))}
-                    </span>
-                  </Space>
-                ) : (
-                  descText
-                );
-              return (
-                <List.Item>
-                  <List.Item.Meta title={nameKey ? t(nameKey) : p} description={description} />
-                </List.Item>
+                    </Text>
+                  )}
+                </li>
               );
-            }}
-          />
+            })}
+          </ul>
         </>
       )}
     </Modal>

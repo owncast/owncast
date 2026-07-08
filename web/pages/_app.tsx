@@ -3,8 +3,11 @@
 
 // order matters!
 import '../styles/variables.css';
-import '../styles/global.less';
 import '../styles/globals.scss';
+// Pre-extracted Ant Design styles (see build-scripts/extract-antd-styles.js).
+import '../styles/antd.css';
+// The override sheet loads after antd.css so its equal-specificity rules win
+// the cascade.
 import '../styles/ant-overrides.scss';
 
 // TODO: Move this videojs sass to the player component.
@@ -17,6 +20,7 @@ import { RecoilRoot } from 'recoil';
 import { useRouter } from 'next/router';
 import { useSelectedLanguage } from 'next-export-i18n';
 import { loadViewerLocale, shouldCleanUrlAfterFlip } from '../utils/localeLoader';
+import { AntdProvider } from '../components/theme/AntdProvider';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -59,11 +63,14 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <>
       <LocaleSync />
-      {layout(
-        <RecoilRoot>
-          <Component {...pageProps} />
-        </RecoilRoot>,
-      )}
+      {/* RecoilRoot and the Ant Design theme bridge wrap the page layout
+          too, not just the page component: layouts attached via getLayout
+          (e.g. the admin's AdminLayout/MainLayout) also render antd
+          components and must be inside the provider to receive the Owncast
+          theme tokens. */}
+      <RecoilRoot>
+        <AntdProvider>{layout(<Component {...pageProps} />)}</AntdProvider>
+      </RecoilRoot>
     </>
   );
 }

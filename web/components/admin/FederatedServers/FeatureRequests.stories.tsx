@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/nextjs';
 import { FeatureRequests, FeatureRequestsProps } from './FeatureRequests';
 
 export default {

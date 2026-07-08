@@ -46,6 +46,18 @@ const OnlineFixture = () => (
 const meta = {
   title: 'owncast/Admin/Main layout',
   component: MainLayout,
+  decorators: [
+    Story => (
+      <>
+        {/* In the app AdminLayout owns the admin stylesheets and renders
+            them as head links. This story renders MainLayout directly, so
+            pull in the chrome stylesheet itself (served from web/public
+            via the storybook staticDirs). */}
+        <link rel="stylesheet" href="/styles/admin/main-layout.css" />
+        <Story />
+      </>
+    ),
+  ],
 } satisfies Meta<typeof MainLayout>;
 
 export default meta;

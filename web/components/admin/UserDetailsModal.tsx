@@ -25,7 +25,7 @@ export const UserDetailsModal: FC<UserDetailsModalProps> = ({
   user,
   open,
   onClose,
-  connectionInfo,
+  connectionInfo = null,
 }) => {
   const { displayName, createdAt, previousNames, nameChangedAt, disabledAt } = user;
   const { connectedAt, messageCount, userAgent } = connectionInfo || {};
@@ -116,8 +116,4 @@ export const UserDetailsModal: FC<UserDetailsModalProps> = ({
       </div>
     </Modal>
   );
-};
-
-UserDetailsModal.defaultProps = {
-  connectionInfo: null,
 };

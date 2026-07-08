@@ -9,8 +9,6 @@ import {
   clearPendingFediverseAuth,
 } from '../../../utils/fediverseAuthSession';
 
-const { Panel } = Collapse;
-
 // Lazy loaded components
 
 const CheckCircleOutlined = dynamic(() => import('@ant-design/icons/CheckCircleOutlined'), {
@@ -187,23 +185,27 @@ export const FediAuthModal: FC<FediAuthModalProps> = ({
 
   return (
     <Spin spinning={loading}>
-      <Space direction="vertical">
+      <Space orientation="vertical">
         {message}
         {errorMessageText && (
           <Alert message="Error" description={errorMessageText} type="error" showIcon />
         )}
         {verifyingCode ? inputCodeStep : inputAccountStep}
-        <Collapse ghost>
-          <Panel
-            key="header"
-            header="Learn more about using the Fediverse to authenticate with chat."
-          >
-            <p>
-              You can link your chat identity with your Fediverse identity. Next time you want to
-              use this chat identity you can again go through the Fediverse authentication.
-            </p>
-          </Panel>
-        </Collapse>
+        <Collapse
+          ghost
+          items={[
+            {
+              key: 'header',
+              label: 'Learn more about using the Fediverse to authenticate with chat.',
+              children: (
+                <p>
+                  You can link your chat identity with your Fediverse identity. Next time you want
+                  to use this chat identity you can again go through the Fediverse authentication.
+                </p>
+              ),
+            },
+          ]}
+        />
         <div>
           <strong>Note</strong>: This is for authentication purposes only, and no personal
           information will be accessed or stored.

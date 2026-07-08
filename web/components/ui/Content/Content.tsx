@@ -48,14 +48,17 @@ const ChatContainer = dynamic(
   },
 );
 
+// The follow modal renders its own antd v6 modal shell (the first surface
+// migrated to v6), so it mounts nothing until opened; no loading skeleton.
 const FollowModal = dynamic(
   () => import('../../modals/FollowModal/FollowModal').then(mod => mod.FollowModal),
   {
     ssr: false,
-    loading: () => <Skeleton loading active paragraph={{ rows: 8 }} />,
   },
 );
 
+// The notify modal renders its own antd v6 modal shell; it mounts nothing
+// until opened, so no loading skeleton.
 const BrowserNotifyModal = dynamic(
   () =>
     import('../../modals/BrowserNotifyModal/BrowserNotifyModal').then(
@@ -63,7 +66,6 @@ const BrowserNotifyModal = dynamic(
     ),
   {
     ssr: false,
-    loading: () => <Skeleton loading active paragraph={{ rows: 6 }} />,
   },
 );
 
@@ -319,14 +321,12 @@ export const Content: FC = () => {
           />
         </Row>
 
-        <Modal
-          title="Browser Notifications"
-          open={showNotifyModal}
-          afterClose={() => disableNotifyReminderPopup()}
-          handleCancel={() => disableNotifyReminderPopup()}
-        >
-          <BrowserNotifyModal />
-        </Modal>
+        {showNotifyModal && (
+          <BrowserNotifyModal
+            open={showNotifyModal}
+            handleClose={() => disableNotifyReminderPopup()}
+          />
+        )}
         <Row>
           {!name && <Skeleton active loading style={{ marginLeft: '10vw', marginRight: '10vw' }} />}
           {isMobile ? (
@@ -380,18 +380,14 @@ export const Content: FC = () => {
           setExternalActionToDisplay={setExternalActionToDisplay}
         />
       )}
-      <Modal
-        title={`Follow ${name}`}
-        open={showFollowModal}
-        handleCancel={() => setShowFollowModal(false)}
-        width="550px"
-      >
+      {showFollowModal && (
         <FollowModal
+          open={showFollowModal}
           account={fediverseAccount}
           name={name}
           handleClose={() => setShowFollowModal(false)}
         />
-      </Modal>
+      )}
       {isMobile && showChatModal && chatState === ChatState.VISIBLE && (
         <ChatModal
           messages={messages}

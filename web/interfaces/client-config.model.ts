@@ -25,7 +25,9 @@ export interface ClientConfig {
   // loaded plugins via manifest.tabs. DesktopContent / MobileContent
   // render one tab per entry alongside the built-in tabs.
   pluginTabs: PluginTab[];
-  appearanceVariables: Map<string, string>;
+  // Plain object from the config JSON (Theme.tsx iterates it with
+  // Object.keys); it was previously mis-typed as a Map.
+  appearanceVariables: Record<string, string>;
   maxSocketPayloadSize: number;
   federation: Federation;
   notifications: Notifications;
@@ -87,7 +89,7 @@ export function makeEmptyClientConfig(): ClientConfig {
     customStyles: '',
     pluginStyles: '',
     pluginTabs: [],
-    appearanceVariables: new Map(),
+    appearanceVariables: {},
     maxSocketPayloadSize: 0,
     federation: {
       enabled: false,

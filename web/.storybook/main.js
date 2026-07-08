@@ -1,8 +1,4 @@
 module.exports = {
-  features: {
-    previewMdx2: true,
-  },
-
   // Admin components build their API URLs from NEXT_PUBLIC_API_HOST
   // (utils/apis.ts). Next.js loads it from .env.development/.env.production,
   // but Storybook does not, leaving it undefined and producing fetches to
@@ -31,23 +27,6 @@ module.exports = {
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
-    });
-
-    // Configure LESS loader for Ant Design
-    config.module.rules.push({
-      test: /\.less$/,
-      use: [
-        'style-loader',
-        'css-loader',
-        {
-          loader: 'less-loader',
-          options: {
-            lessOptions: {
-              javascriptEnabled: true,
-            },
-          },
-        },
-      ],
     });
 
     return config;

@@ -1,4 +1,4 @@
-import { Tabs } from 'antd';
+import { Modal, Tabs } from 'antd';
 import { useRecoilValue } from 'recoil';
 import { FC } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -17,10 +17,12 @@ import { ClientConfig } from '../../../interfaces/client-config.model';
 import { ComponentError } from '../../ui/ComponentError/ComponentError';
 
 export type AuthModalProps = {
+  open: boolean;
+  handleClose: () => void;
   forceTabs?: boolean;
 };
 
-export const AuthModal: FC<AuthModalProps> = ({ forceTabs }) => {
+export const AuthModal: FC<AuthModalProps> = ({ open, handleClose, forceTabs }) => {
   const authenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
   const accessToken = useRecoilValue<string>(accessTokenAtom);
   const currentUser = useRecoilValue(currentUserAtom);
@@ -74,25 +76,35 @@ export const AuthModal: FC<AuthModalProps> = ({ forceTabs }) => {
   const defaultActiveKey = fediverseEnabled && getPendingFediverseAuth() ? '2' : '1';
 
   return (
-    <ErrorBoundary
-      // eslint-disable-next-line react/no-unstable-nested-components
-      fallbackRender={({ error, resetErrorBoundary }) => (
-        <ComponentError
-          componentName="AuthModal"
-          message={error.message}
-          retryFunction={resetErrorBoundary}
-        />
-      )}
+    <Modal
+      title="Authenticate"
+      open={open}
+      onCancel={handleClose}
+      maskClosable={false}
+      zIndex={999}
+      footer={null}
+      centered
     >
-      <div>
-        <Tabs
-          defaultActiveKey={defaultActiveKey}
-          items={items}
-          type="card"
-          size="small"
-          renderTabBar={fediverseEnabled || forceTabs ? null : () => null}
-        />
-      </div>
-    </ErrorBoundary>
+      <ErrorBoundary
+        // eslint-disable-next-line react/no-unstable-nested-components
+        fallbackRender={({ error, resetErrorBoundary }) => (
+          <ComponentError
+            componentName="AuthModal"
+            message={error.message}
+            retryFunction={resetErrorBoundary}
+          />
+        )}
+      >
+        <div>
+          <Tabs
+            defaultActiveKey={defaultActiveKey}
+            items={items}
+            type="card"
+            size="small"
+            renderTabBar={fediverseEnabled || forceTabs ? undefined : () => null}
+          />
+        </div>
+      </ErrorBoundary>
+    </Modal>
   );
 };

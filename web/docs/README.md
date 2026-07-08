@@ -29,7 +29,7 @@
 
 ### Styling
 
-- This admin site chooses to have a generally Dark color palette, but with colors that are different from Ant design's _dark_ stylesheet, so that style sheet is not included. This results in a very large `ant-overrides.scss` file to reset colors on frequently used Ant components in the system. If you find yourself a new Ant Component that has not yet been used in this app, feel free to add a reset style for that component to the overrides stylesheet.
+- This admin site chooses to have a generally Dark color palette. Component colors flow through the Ant Design design tokens set in `components/theme/AntdProvider.tsx`; the small `ant-overrides.scss` sheet carries only the structural rules tokens cannot express. If a new Ant component needs theming, prefer extending the token mapping in the provider, and remember to add the component to the extraction manifest in `build-scripts/extract-antd-styles.js` (`npm run antd:extract`).
 
   - Take a look at `variables.css` CSS file if you want to give some elements custom css colors.
 

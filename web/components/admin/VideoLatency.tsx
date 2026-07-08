@@ -126,7 +126,7 @@ export const VideoLatency: FC = () => {
 
       <div className="segment-slider-container">
         <Slider
-          tipFormatter={value => SLIDER_COMMENTS[value]}
+          tooltip={{ formatter: value => SLIDER_COMMENTS[value] }}
           onChange={handleChange}
           min={0}
           max={4}
