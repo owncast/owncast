@@ -129,6 +129,13 @@ export const OfflineMobile: StoryObj<typeof Template> = {
     },
   },
 
+  // Content re-derives isMobile from window.innerWidth on mount, so the
+  // Chromatic capture window must actually be mobile sized or the pinned
+  // atom above gets flipped back to desktop.
+  parameters: {
+    chromatic: { viewports: [375] },
+  },
+
   globals: {
     viewport: {
       value: 'mobile1',
@@ -168,6 +175,10 @@ export const OnlineMobile: StoryObj<typeof Template> = {
     initializeState: (mutableState: MutableSnapshot) => {
       mutableState.set(isMobileAtom, true);
     },
+  },
+
+  parameters: {
+    chromatic: { viewports: [375] },
   },
 
   globals: {
