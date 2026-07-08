@@ -5,8 +5,6 @@ import { useTranslation } from 'next-export-i18n';
 
 import styles from './VideoJS.module.scss';
 
-require('video.js/dist/video-js.css');
-
 const SHORTCUT_SUFFIXES: Record<string, string> = {
   Play: ' (Space)',
   Pause: ' (Space)',

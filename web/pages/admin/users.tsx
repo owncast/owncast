@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import { ReactElement, useContext, useEffect, useState } from 'react';
 import { Table, Input, Select, Tag, Space, Typography, Tabs } from 'antd';
 import { ColumnsType, SortOrder } from 'antd/lib/table/interface';
 import { useTranslation } from 'next-export-i18n';

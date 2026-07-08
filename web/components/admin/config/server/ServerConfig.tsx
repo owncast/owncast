@@ -1,4 +1,3 @@
-import React from 'react';
 import EditInstanceDetails from '../../EditInstanceDetails2';
 
 // eslint-disable-next-line react/function-component-definition

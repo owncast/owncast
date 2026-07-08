@@ -1,5 +1,5 @@
 import { Col, Collapse, Row, Typography } from 'antd';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { CodecSelector as VideoCodecSelector } from '../../components/admin/CodecSelector';
 import { VideoLatency } from '../../components/admin/VideoLatency';
 import { CurrentVariantsTable } from '../../components/admin/CurrentVariantsTable';

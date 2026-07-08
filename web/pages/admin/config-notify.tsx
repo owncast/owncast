@@ -1,5 +1,5 @@
 import { Alert, Button, Col, Row, Typography } from 'antd';
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import { ReactElement, useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { DiscordNotify as Discord } from '../../components/admin/notification/discord';

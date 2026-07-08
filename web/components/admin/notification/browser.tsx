@@ -1,5 +1,5 @@
 import { Button, Typography } from 'antd';
-import React, { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../../utils/server-status-context';
 import { TextField, TEXTFIELD_TYPE_TEXTAREA } from '../TextField';

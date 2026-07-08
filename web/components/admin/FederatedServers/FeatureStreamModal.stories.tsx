@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/nextjs';
 import { Button } from 'antd';
 import { FeatureStreamModal, FeatureStreamModalProps } from './FeatureStreamModal';

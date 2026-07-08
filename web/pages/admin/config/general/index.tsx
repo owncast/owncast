@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Tabs } from 'antd';
 
 import GeneralConfig from '../../../../components/admin/config/general/GeneralConfig';

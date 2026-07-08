@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useContext, useEffect, useState } from 'react';
+import { FC, ReactNode, useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import { differenceInSeconds } from 'date-fns';

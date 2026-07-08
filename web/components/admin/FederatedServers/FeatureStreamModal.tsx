@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { Modal, Form, Input, Alert, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { isValidUrl } from '../../../utils/validators';

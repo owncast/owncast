@@ -1,5 +1,5 @@
 /* eslint-disable react/no-danger */
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'next-export-i18n';
 import { LocalizationKey } from '../../../types/localization';
 

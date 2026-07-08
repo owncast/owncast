@@ -1,6 +1,6 @@
 import { Button, Card, Col, Divider, Result, Row, Typography } from 'antd';
 
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 
 import { useTranslation } from 'next-export-i18n';

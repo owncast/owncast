@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Typography } from 'antd';
 import EditSocialLinks from '../../components/admin/config/general/EditSocialLinks';
 

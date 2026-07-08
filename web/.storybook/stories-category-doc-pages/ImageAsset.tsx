@@ -1,4 +1,3 @@
-import React from 'react';
 import { FC } from 'react';
 import { background } from 'storybook/internal/theming';
 
