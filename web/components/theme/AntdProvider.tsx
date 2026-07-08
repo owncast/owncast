@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useMemo } from 'react';
+import React, { FC, ReactNode, useEffect, useMemo } from 'react';
 import { ConfigProvider } from 'antd';
 import type { ThemeConfig } from 'antd';
 import { useRecoilValue } from 'recoil';
@@ -113,10 +113,11 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
 
 // Static APIs (message, notification, Modal.confirm) render into their own
 // detached React root, outside the provider tree above. Their holder is
-// configured once at module scope, so it reads the current theme through
-// this variable, which the provider keeps up to date. holderRender runs
-// when a static's holder mounts, so statics opened after an appearance
-// change pick up the latest tokens.
+// configured once at module scope and reads the current theme through this
+// variable, which the provider keeps up to date. antd re-invokes
+// holderRender on every static call (message and notification resync their
+// holder per call, Modal.confirm renders fresh per call), so statics opened
+// after an appearance change pick up the latest tokens.
 let staticsTheme: ThemeConfig = buildTheme({});
 ConfigProvider.config({
   holderRender: node => <ConfigProvider theme={staticsTheme}>{node}</ConfigProvider>,
