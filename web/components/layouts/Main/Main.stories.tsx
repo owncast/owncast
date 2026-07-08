@@ -147,6 +147,12 @@ export const OfflineMobile: StoryObj<typeof Template> = {
 export const OfflineTablet: StoryObj<typeof Template> = {
   render: Template,
 
+  // Chromatic ignores the storybook viewport global, so the capture width
+  // must be pinned separately or these render at desktop width.
+  parameters: {
+    chromatic: { viewports: [834] },
+  },
+
   globals: {
     viewport: {
       value: 'tablet',
@@ -194,6 +200,10 @@ export const OnlineTablet: StoryObj<typeof Template> = {
 
   args: {
     ServerStatusServiceMock: OnlineServerStatusServiceMock,
+  },
+
+  parameters: {
+    chromatic: { viewports: [834] },
   },
 
   globals: {
