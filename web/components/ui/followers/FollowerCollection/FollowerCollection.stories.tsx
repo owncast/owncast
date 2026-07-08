@@ -1,5 +1,5 @@
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { http, HttpResponse } from 'msw';
 import { FollowerCollection } from './FollowerCollection';
 
@@ -228,9 +228,9 @@ const meta = {
 export default meta;
 
 const Template: StoryFn<typeof FollowerCollection> = (args: object) => (
-  <RecoilRoot>
+  <Provider>
     <FollowerCollection onFollowButtonClick={() => {}} name="Example stream name" {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const NoFollowers = {

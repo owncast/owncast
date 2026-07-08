@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { RecoilRoot } from 'recoil';
+import { Provider, createStore } from 'jotai';
 import { NameChangeModal } from '../components/modals/NameChangeModal/NameChangeModal';
 import { currentUserAtom } from '../components/stores/ClientConfigStore';
 
@@ -8,24 +8,23 @@ jest.mock('next/router', () => ({
   useRouter: () => ({ query: {}, pathname: '/', asPath: '/', push: jest.fn(), replace: jest.fn() }),
 }));
 
-const renderWithUser = (displayColor?: number) =>
-  render(
-    <RecoilRoot
-      initializeState={({ set }) => {
-        set(currentUserAtom, {
-          id: 'user-1',
-          displayName: 'tester',
-          // The interface requires a number, but a user who has not yet
-          // received their info over the socket has no color; the modal
-          // must tolerate that (it used to crash on .toString()).
-          displayColor: displayColor as number,
-          isModerator: false,
-        });
-      }}
-    >
+const renderWithUser = (displayColor?: number) => {
+  const store = createStore();
+  store.set(currentUserAtom, {
+    id: 'user-1',
+    displayName: 'tester',
+    // The interface requires a number, but a user who has not yet
+    // received their info over the socket has no color; the modal
+    // must tolerate that (it used to crash on .toString()).
+    displayColor: displayColor as number,
+    isModerator: false,
+  });
+  return render(
+    <Provider store={store}>
       <NameChangeModal closeModal={() => {}} />
-    </RecoilRoot>,
+    </Provider>,
   );
+};
 
 describe('NameChangeModal', () => {
   it('shows the current user color in the closed color dropdown', () => {

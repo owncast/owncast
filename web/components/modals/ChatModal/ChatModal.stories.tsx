@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot, useSetRecoilState } from 'recoil';
+import { Provider, useSetAtom } from 'jotai';
 import { ChatModal, ChatModalProps } from './ChatModal';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
-import { CurrentUser } from '../../../interfaces/current-user';
 import { currentUserAtom } from '../../stores/ClientConfigStore';
 
 const meta = {
@@ -569,9 +568,9 @@ const currentUser = {
   isModerator: true,
 };
 
-// This component uses Recoil internally so wrap it in a RecoilRoot.
+// This component reads jotai atoms internally so wrap it in a Provider.
 const Component = args => {
-  const setCurrentUser = useSetRecoilState<CurrentUser>(currentUserAtom);
+  const setCurrentUser = useSetAtom(currentUserAtom);
 
   useEffect(() => setCurrentUser(currentUser), []);
 
@@ -579,9 +578,9 @@ const Component = args => {
 };
 
 const Template: StoryFn<typeof ChatModal> = args => (
-  <RecoilRoot>
+  <Provider>
     <Component {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const Example = {

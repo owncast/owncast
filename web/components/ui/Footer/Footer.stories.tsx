@@ -1,5 +1,5 @@
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { Footer } from './Footer';
 
 const meta = {
@@ -10,9 +10,9 @@ const meta = {
 export default meta;
 
 const Template: StoryFn<typeof Footer> = args => (
-  <RecoilRoot>
+  <Provider>
     <Footer {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const Example = {

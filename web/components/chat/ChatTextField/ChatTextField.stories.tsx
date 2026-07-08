@@ -1,5 +1,5 @@
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { http, HttpResponse } from 'msw';
 import { ChatTextField } from './ChatTextField';
 import Mockup from '../../../stories/assets/mocks/chatinput-mock.png';
@@ -39,9 +39,9 @@ const meta = {
 export default meta;
 
 const Template: StoryFn<typeof ChatTextField> = args => (
-  <RecoilRoot>
+  <Provider>
     <ChatTextField {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const Example = {

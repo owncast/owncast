@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react';
 import cn from 'classnames';
 import { Tooltip } from 'antd';
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import dynamic from 'next/dynamic';
 import { Interweave } from 'interweave';
 import { UrlMatcher } from 'interweave-autolink';
@@ -67,7 +67,7 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
 }) => {
   const { id: messageId, body, user, timestamp } = message;
   const { id: userId, displayName, displayColor } = user;
-  const accessToken = useRecoilValue<string>(accessTokenAtom);
+  const accessToken = useAtomValue(accessTokenAtom);
 
   const color = `var(--theme-color-users-${displayColor})`;
   const formattedTimestamp = `Sent ${formatTimestamp(timestamp)}`;

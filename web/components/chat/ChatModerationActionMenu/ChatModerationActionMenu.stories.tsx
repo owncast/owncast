@@ -1,5 +1,5 @@
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { http, HttpResponse } from 'msw';
 import { ChatModerationActionMenu } from './ChatModerationActionMenu';
 
@@ -71,14 +71,14 @@ const meta = {
 export default meta;
 
 const Template: StoryFn<typeof ChatModerationActionMenu> = () => (
-  <RecoilRoot>
+  <Provider>
     <ChatModerationActionMenu
       accessToken="abc123"
       messageID="xxx"
       userDisplayName="Fake-User"
       userID="abc123"
     />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const Basic = {

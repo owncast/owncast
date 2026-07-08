@@ -1,12 +1,11 @@
 /* eslint-disable react/no-danger */
 import Head from 'next/head';
 import { FC, useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
-import { ClientConfig } from '../../interfaces/client-config.model';
+import { useAtomValue } from 'jotai';
 import { clientConfigStateAtom } from '../stores/ClientConfigStore';
 
 export const Theme: FC = () => {
-  const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
+  const clientConfig = useAtomValue(clientConfigStateAtom);
   const { appearanceVariables, customStyles, pluginStyles } = clientConfig;
 
   const appearanceVars = Object.keys(appearanceVariables || {})
