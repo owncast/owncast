@@ -103,7 +103,14 @@ export const parameters = {
     light: { ...themes.normal },
   },
   viewport: {
-    options: flatMapObject(INITIAL_VIEWPORTS, convertToLandscapeAndPortraitEntries),
+    // Keep the base viewport keys (stories reference 'tablet', 'mobile1', ...)
+    // and add the rotated variants; replacing `options` wholesale would drop
+    // the base names and every viewport-pinned story would silently render
+    // at the default desktop width (Chromatic captures included).
+    options: {
+      ...INITIAL_VIEWPORTS,
+      ...flatMapObject(INITIAL_VIEWPORTS, convertToLandscapeAndPortraitEntries),
+    },
   },
 };
 

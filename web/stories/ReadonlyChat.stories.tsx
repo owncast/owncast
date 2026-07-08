@@ -3,7 +3,7 @@ import { StoryFn, Meta } from '@storybook/nextjs';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import ReadOnlyPage from '../pages/embed/chat/readonly/index';
 import { ChatMessage } from '../interfaces/chat-message.model';
-import { chatMessagesAtom } from '../components/stores/ClientConfigStore';
+import { chatMessagesAtom, currentUserAtom } from '../components/stores/ClientConfigStore';
 
 const meta = {
   title: 'owncast/Chat/Embeds/Read-only chat',
@@ -19,8 +19,18 @@ const messages: ChatMessage[] = JSON.parse(testMessages);
 
 const Page = () => {
   const setMessages = useSetRecoilState(chatMessagesAtom);
+  const setCurrentUser = useSetRecoilState(currentUserAtom);
   useEffect(() => {
     setMessages(messages);
+    // The page renders nothing until ClientConfigStore learns who the viewer
+    // is (websocket registration). No backend exists here, so pin the user
+    // the same way the messages are pinned.
+    setCurrentUser({
+      id: 'h_5GQ6E7R',
+      displayName: 'UserDisplayName42',
+      displayColor: 329,
+      isModerator: false,
+    });
   }, []);
 
   return <ReadOnlyPage />;
