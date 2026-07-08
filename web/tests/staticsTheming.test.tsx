@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { act, render } from '@testing-library/react';
 import { message } from 'antd';
-import { RecoilRoot, useSetRecoilState } from 'recoil';
+import { Provider, useSetAtom } from 'jotai';
 import { AntdProvider } from '../components/theme/AntdProvider';
 import { clientConfigStateAtom } from '../components/stores/ClientConfigStore';
 import { makeEmptyClientConfig } from '../interfaces/client-config.model';
@@ -19,7 +19,7 @@ jest.mock('next/router', () => ({
 const ACTION_COLOR = '#123456';
 
 const ApplyTheme: React.FC<{ apply: boolean }> = ({ apply }) => {
-  const setClientConfig = useSetRecoilState(clientConfigStateAtom);
+  const setClientConfig = useSetAtom(clientConfigStateAtom);
   useEffect(() => {
     if (apply) {
       setClientConfig({
@@ -48,11 +48,11 @@ const messageHolderCss = () => {
 describe('static API theming', () => {
   it('applies appearance changes to statics opened afterwards', async () => {
     const { rerender } = render(
-      <RecoilRoot>
+      <Provider>
         <AntdProvider>
           <ApplyTheme apply={false} />
         </AntdProvider>
-      </RecoilRoot>,
+      </Provider>,
     );
 
     // Open a message with the default theme so the holder exists before the
@@ -66,11 +66,11 @@ describe('static API theming', () => {
     // Admin changes the appearance.
     await act(async () => {
       rerender(
-        <RecoilRoot>
+        <Provider>
           <AntdProvider>
             <ApplyTheme apply />
           </AntdProvider>
-        </RecoilRoot>,
+        </Provider>,
       );
     });
 
