@@ -31,7 +31,7 @@ jobs:
           concurrent_skipping: 'same_content_newer'
 
       - name: Check out pull request code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         if: github.event_name == 'pull_request'
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -45,7 +45,7 @@ jobs:
           git fetch upstream ${{ github.event.pull_request.base.ref }}
 
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         if: github.event_name == 'push'
 
       - name: Get changed files
