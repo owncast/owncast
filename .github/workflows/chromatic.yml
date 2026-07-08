@@ -20,7 +20,8 @@ on:
       - 'web/components/**'
       - 'web/stories/**'
       - 'web/.storybook/**'
-      - 'web/**/*.{css,scss}'
+      - 'web/**/*.css'
+      - 'web/**/*.scss'
       - 'web/i18n/**'
       - 'web/package.json'
       - 'web/package-lock.json'
@@ -30,7 +31,8 @@ on:
       - 'web/components/**'
       - 'web/stories/**'
       - 'web/.storybook/**'
-      - 'web/**/*.{css,scss}'
+      - 'web/**/*.css'
+      - 'web/**/*.scss'
       - 'web/i18n/**'
       - 'web/package.json'
       - 'web/package-lock.json'
@@ -80,7 +82,7 @@ jobs:
             web/next.config.js
           files_yaml: |
             src:
-              - '**/*.{js,ts,tsx,jsx,md}'
+              - '**/*.{js,ts,tsx,jsx,md,css,scss,json}'
 
       - name: Install dependencies
         if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true'}}
