@@ -5,7 +5,7 @@ import BrowserNotifyModalMock from '../../../stories/assets/mocks/notify-modal.p
 
 const Example = () => (
   <div>
-    <BrowserNotifyModal open handleClose={null} />
+    <BrowserNotifyModal open handleClose={() => {}} />
   </div>
 );
 

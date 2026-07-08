@@ -21,7 +21,7 @@ const Example = () => {
 
   return (
     <div>
-      <AuthModal open handleClose={null} forceTabs />
+      <AuthModal open handleClose={() => {}} forceTabs />
     </div>
   );
 };

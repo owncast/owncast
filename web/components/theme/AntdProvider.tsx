@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo } from 'react';
+import { FC, ReactNode, useEffect, useMemo } from 'react';
 import { ConfigProvider } from 'antd';
 import type { ThemeConfig } from 'antd';
 import { useRecoilValue } from 'recoil';
@@ -112,11 +112,14 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
 }
 
 // Static APIs (message, notification, Modal.confirm) render into their own
-// detached React root, outside the provider tree above. Configure that
-// holder once so statics get the default theme; without this they render
-// unthemed.
+// detached React root, outside the provider tree above. Their holder is
+// configured once at module scope, so it reads the current theme through
+// this variable, which the provider keeps up to date. holderRender runs
+// when a static's holder mounts, so statics opened after an appearance
+// change pick up the latest tokens.
+let staticsTheme: ThemeConfig = buildTheme({});
 ConfigProvider.config({
-  holderRender: node => <ConfigProvider theme={buildTheme({})}>{node}</ConfigProvider>,
+  holderRender: node => <ConfigProvider theme={staticsTheme}>{node}</ConfigProvider>,
 });
 
 export type AntdProviderProps = {
@@ -130,6 +133,10 @@ export const AntdProvider: FC<AntdProviderProps> = ({ children }) => {
   // Stringify so the memo reacts to content changes, not object identity.
   const appearanceKey = JSON.stringify(appearanceVariables);
   const theme = useMemo(() => buildTheme(appearanceVariables), [appearanceKey]);
+
+  useEffect(() => {
+    staticsTheme = theme;
+  }, [theme]);
 
   return <ConfigProvider theme={theme}>{children}</ConfigProvider>;
 };

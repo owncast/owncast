@@ -25,11 +25,13 @@
   }
 }
 
-.colorDropdown {
-  :global(.ant-select):not(.ant-select-customize-input) {
-    :global(.ant-select-content) {
-      padding-left: 0;
-      border-width: 2px;
-    }
-  }
+/* v6 sizes the select border and horizontal padding with CSS variables on
+   the .ant-select root (the element this class lands on), so override the
+   border variable rather than the property to keep the hover and focus
+   border-color rules working. The doubled class out-specifies antd's
+   variable defaults, which sit at single-class specificity. */
+.colorDropdown.colorDropdown {
+  --ant-select-border-size: 2px;
+
+  padding-inline-start: 0;
 }
