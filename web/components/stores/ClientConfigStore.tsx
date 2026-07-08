@@ -1,5 +1,5 @@
 import { FC, useContext, useEffect } from 'react';
-import { atom, selector, useRecoilState, useSetRecoilState, RecoilEnv } from 'recoil';
+import { atom, useAtom, useSetAtom } from 'jotai';
 import { useMachine } from '@xstate/react';
 import { makeEmptyClientConfig, ClientConfig } from '../../interfaces/client-config.model';
 import { ClientConfigServiceContext } from '../../services/client-config-service';
@@ -21,15 +21,12 @@ import {
   NameChangeEvent,
   MessageVisibilityEvent,
   SocketEvent,
-  FediverseEvent,
 } from '../../interfaces/socket-events';
 import { mergeMeta } from '../../utils/helpers';
 import { handleConnectedClientInfoMessage } from './eventhandlers/connected-client-info-handler';
 import { ServerStatusServiceContext } from '../../services/status-service';
 import { handleNameChangeEvent } from './eventhandlers/handleNameChangeEvent';
 import { DisplayableError } from '../../types/displayable-error';
-
-RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 const SERVER_STATUS_POLL_DURATION = 5000;
 
@@ -79,99 +76,53 @@ const serverConnectivityError = `Cannot connect to the Owncast service. Please c
 // stream title, online/offline state, etc.
 // Starts empty to match the statically-exported HTML; hydration data and API
 // polls fill it in after mount.
-export const serverStatusState = atom<ServerStatus>({
-  key: 'serverStatusState',
-  default: makeEmptyServerStatus(),
-});
+export const serverStatusState = atom<ServerStatus>(makeEmptyServerStatus());
 
 // The config that comes from the API.
 // Starts empty to match the statically-exported HTML; hydration data or the
 // API fills it in after mount.
-export const clientConfigStateAtom = atom({
-  key: 'clientConfigState',
-  default: makeEmptyClientConfig(),
-});
+export const clientConfigStateAtom = atom(makeEmptyClientConfig());
 
 // Whether the client config has been populated, via hydration or the API.
 // Consumers that must not act on default config values (like the player,
 // whose video.js options are init-only) gate on this.
-export const isClientConfigLoadedAtom = atom<boolean>({
-  key: 'clientConfigLoaded',
-  default: false,
-});
+export const isClientConfigLoadedAtom = atom<boolean>(false);
 
-export const accessTokenAtom = atom<string>({
-  key: 'accessTokenAtom',
-  default: null,
-});
+// The `null as T` casts below matter: this project compiles without
+// strictNullChecks, so a bare null would match jotai's read-function
+// overload and produce a read-only atom instead of a writable one.
+export const accessTokenAtom = atom<string>(null as string);
 
-export const currentUserAtom = atom<CurrentUser>({
-  key: 'currentUserAtom',
-  default: null,
-});
+export const currentUserAtom = atom<CurrentUser>(null as CurrentUser);
 
-export const chatMessagesAtom = atom<ChatMessage[]>({
-  key: 'chatMessages',
-  default: [] as ChatMessage[],
-});
+export const chatMessagesAtom = atom<ChatMessage[]>([]);
 
-export const chatAuthenticatedAtom = atom<boolean>({
-  key: 'chatAuthenticatedAtom',
-  default: false,
-});
+export const chatAuthenticatedAtom = atom<boolean>(false);
 
 // Stores chat input draft to preserve text across mobile/desktop mode switches
-export const chatInputDraftAtom = atom<string>({
-  key: 'chatInputDraftAtom',
-  default: '',
-});
+export const chatInputDraftAtom = atom<string>('');
 
-export const websocketServiceAtom = atom<WebsocketService>({
-  key: 'websocketServiceAtom',
-  default: null,
-  dangerouslyAllowMutability: true,
-});
+export const websocketServiceAtom = atom<WebsocketService>(null as WebsocketService);
 
 // Starts in the "loading" app state to match the statically-exported HTML;
 // the hydration mount effect in ClientConfigStore transitions it to
 // online/offline immediately after mount.
-export const appStateAtom = atom<AppStateOptions>({
-  key: 'appState',
-  default: makeEmptyAppState(),
-});
+export const appStateAtom = atom<AppStateOptions>(makeEmptyAppState());
 
-export const isMobileAtom = atom<boolean | undefined>({
-  key: 'isMobileAtom',
-  default: undefined,
-});
+export const isMobileAtom = atom<boolean | undefined>(undefined as boolean | undefined);
 
-export const isVideoPlayingAtom = atom<boolean>({
-  key: 'isVideoPlayingAtom',
-  default: false,
-});
+export const isVideoPlayingAtom = atom<boolean>(false);
 
-export const fatalErrorStateAtom = atom<DisplayableError>({
-  key: 'fatalErrorStateAtom',
-  default: null,
-});
+export const fatalErrorStateAtom = atom<DisplayableError>(null as DisplayableError);
 
-export const clockSkewAtom = atom<Number>({
-  key: 'clockSkewAtom',
-  default: 0.0,
-});
+export const clockSkewAtom = atom<Number>(0.0);
 
-const removedMessageIdsAtom = atom<string[]>({
-  key: 'removedMessageIds',
-  default: [],
-});
+const removedMessageIdsAtom = atom<string[]>([]);
 
-export const isChatAvailableSelector = selector({
-  key: 'isChatAvailableSelector',
-  get: ({ get }) => {
-    const state: AppStateOptions = get(appStateAtom);
-    const accessToken: string = get(accessTokenAtom);
-    return accessToken && state.chatAvailable && !hasWebsocketDisconnected;
-  },
+export const isChatAvailableSelector = atom(get => {
+  const state: AppStateOptions = get(appStateAtom);
+  const accessToken: string = get(accessTokenAtom);
+  return Boolean(accessToken && state.chatAvailable && !hasWebsocketDisconnected);
 });
 
 // The requested state of chat in the UI
@@ -182,36 +133,29 @@ export enum ChatState {
   EMBEDDED, // This window is opened at /embed/chat/readwrite/
 }
 
-export const chatStateAtom = atom<ChatState>({
-  key: 'chatState',
-  default: (() => {
+export const chatStateAtom = atom<ChatState>(
+  (() => {
     // XXX Somehow, `window` is undefined here, even though this runs in client
     const window = globalThis;
     return window?.location?.pathname === '/embed/chat/readwrite/'
       ? ChatState.EMBEDDED
       : ChatState.VISIBLE;
   })(),
-});
+);
 
 // We display in an "online/live" state as long as video is actively playing.
 // Even during the time where technically the server has said it's no longer
 // live, however the last few seconds of video playback is still taking place.
-export const isOnlineSelector = selector({
-  key: 'isOnlineSelector',
-  get: ({ get }) => {
-    const state: AppStateOptions = get(appStateAtom);
-    const isVideoPlaying: boolean = get(isVideoPlayingAtom);
-    return state.videoAvailable || isVideoPlaying;
-  },
+export const isOnlineSelector = atom(get => {
+  const state: AppStateOptions = get(appStateAtom);
+  const isVideoPlaying: boolean = get(isVideoPlayingAtom);
+  return state.videoAvailable || isVideoPlaying;
 });
 
-export const visibleChatMessagesSelector = selector<ChatMessage[]>({
-  key: 'visibleChatMessagesSelector',
-  get: ({ get }) => {
-    const messages: ChatMessage[] = get(chatMessagesAtom);
-    const removedIds: string[] = get(removedMessageIdsAtom);
-    return messages.filter(message => !removedIds.includes(message.id));
-  },
+export const visibleChatMessagesSelector = atom<ChatMessage[]>(get => {
+  const messages: ChatMessage[] = get(chatMessagesAtom);
+  const removedIds: string[] = get(removedMessageIdsAtom);
+  return messages.filter(message => !removedIds.includes(message.id));
 });
 
 export const ClientConfigStore: FC = () => {
@@ -220,18 +164,18 @@ export const ClientConfigStore: FC = () => {
   const ServerStatusService = useContext(ServerStatusServiceContext);
 
   const [appState, appStateSend, appStateService] = useMachine(appStateModel);
-  const [currentUser, setCurrentUser] = useRecoilState(currentUserAtom);
-  const setChatAuthenticated = useSetRecoilState<boolean>(chatAuthenticatedAtom);
-  const [clientConfig, setClientConfig] = useRecoilState<ClientConfig>(clientConfigStateAtom);
-  const setServerStatus = useSetRecoilState<ServerStatus>(serverStatusState);
-  const setClockSkew = useSetRecoilState<Number>(clockSkewAtom);
-  const setChatMessages = useSetRecoilState<SocketEvent[]>(chatMessagesAtom);
-  const [accessToken, setAccessToken] = useRecoilState<string>(accessTokenAtom);
-  const setAppState = useSetRecoilState<AppStateOptions>(appStateAtom);
-  const setGlobalFatalErrorMessage = useSetRecoilState<DisplayableError>(fatalErrorStateAtom);
-  const setWebsocketService = useSetRecoilState<WebsocketService>(websocketServiceAtom);
-  const setHiddenMessageIds = useSetRecoilState<string[]>(removedMessageIdsAtom);
-  const [hasLoadedConfig, setHasLoadedConfig] = useRecoilState<boolean>(isClientConfigLoadedAtom);
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+  const setChatAuthenticated = useSetAtom(chatAuthenticatedAtom);
+  const [clientConfig, setClientConfig] = useAtom(clientConfigStateAtom);
+  const setServerStatus = useSetAtom(serverStatusState);
+  const setClockSkew = useSetAtom(clockSkewAtom);
+  const setChatMessages = useSetAtom(chatMessagesAtom);
+  const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
+  const setAppState = useSetAtom(appStateAtom);
+  const setGlobalFatalErrorMessage = useSetAtom(fatalErrorStateAtom);
+  const setWebsocketService = useSetAtom(websocketServiceAtom);
+  const setHiddenMessageIds = useSetAtom(removedMessageIdsAtom);
+  const [hasLoadedConfig, setHasLoadedConfig] = useAtom(isClientConfigLoadedAtom);
 
   let ws: WebsocketService;
 
@@ -388,13 +332,13 @@ export const ClientConfigStore: FC = () => {
         setChatMessages(currentState => [...currentState, message as ChatEvent]);
         break;
       case MessageType.FEDIVERSE_ENGAGEMENT_FOLLOW:
-        setChatMessages(currentState => [...currentState, message as FediverseEvent]);
+        setChatMessages(currentState => [...currentState, message as unknown as ChatMessage]);
         break;
       case MessageType.FEDIVERSE_ENGAGEMENT_LIKE:
-        setChatMessages(currentState => [...currentState, message as FediverseEvent]);
+        setChatMessages(currentState => [...currentState, message as unknown as ChatMessage]);
         break;
       case MessageType.FEDIVERSE_ENGAGEMENT_REPOST:
-        setChatMessages(currentState => [...currentState, message as FediverseEvent]);
+        setChatMessages(currentState => [...currentState, message as unknown as ChatMessage]);
         break;
       case MessageType.VISIBILITY_UPDATE:
         handleMessageVisibilityChange(message as MessageVisibilityEvent);

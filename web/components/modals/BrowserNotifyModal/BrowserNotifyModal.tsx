@@ -1,7 +1,7 @@
 import { Row, Spin, Typography, Button, Alert, Modal } from 'antd';
 import { FC, useState } from 'react';
 import { PlusSquareOutlined, UploadOutlined } from '@ant-design/icons';
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { useTranslation } from 'next-export-i18n';
 import { accessTokenAtom, clientConfigStateAtom } from '../../stores/ClientConfigStore';
@@ -206,8 +206,8 @@ const NotificationsDenied = () => (
 const NotifyModalContent = () => {
   const { t } = useTranslation();
   const [error, setError] = useState<string>(null);
-  const accessToken = useRecoilValue(accessTokenAtom);
-  const config = useRecoilValue(clientConfigStateAtom);
+  const accessToken = useAtomValue(accessTokenAtom);
+  const config = useAtomValue(clientConfigStateAtom);
   const [browserPushPermissionsPending, setBrowserPushPermissionsPending] =
     useState<boolean>(false);
   const notificationsPermitted =

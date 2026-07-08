@@ -1,4 +1,4 @@
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useAtom, useAtomValue } from 'jotai';
 import { Skeleton, Row, Button, Spin } from 'antd';
 import MessageFilled from '@ant-design/icons/MessageFilled';
 import { FC, useEffect, useState } from 'react';
@@ -24,15 +24,11 @@ import {
   chatAuthenticatedAtom,
   isClientConfigLoadedAtom,
 } from '../../stores/ClientConfigStore';
-import { ClientConfig } from '../../../interfaces/client-config.model';
 
 import styles from './Content.module.scss';
 import desktopStyles from './DesktopContent.module.scss';
 import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
-import { AppStateOptions } from '../../stores/application-state';
-import { ServerStatus } from '../../../interfaces/server-status.model';
 import { Statusbar } from '../Statusbar/Statusbar';
-import { ChatMessage } from '../../../interfaces/chat-message.model';
 import { ExternalAction } from '../../../interfaces/external-action';
 import { Modal } from '../Modal/Modal';
 import { DesktopContent } from './DesktopContent';
@@ -111,20 +107,19 @@ const ExternalModal = ({ externalActionToDisplay, setExternalActionToDisplay }) 
 
 export const Content: FC = () => {
   const { t } = useTranslation();
-  const appState = useRecoilValue<AppStateOptions>(appStateAtom);
-  const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const chatState = useRecoilValue<ChatState>(chatStateAtom);
-  const currentUser = useRecoilValue(currentUserAtom);
-  const serverStatus = useRecoilValue<ServerStatus>(serverStatusState);
-  const [isMobile, setIsMobile] = useRecoilState<boolean | undefined>(isMobileAtom);
-  const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
-  const online = useRecoilValue<boolean>(isOnlineSelector);
-  const configLoaded = useRecoilValue<boolean>(isClientConfigLoadedAtom);
-  const isChatAvailable = useRecoilValue<boolean>(isChatAvailableSelector);
-  const isUserAuthenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
+  const appState = useAtomValue(appStateAtom);
+  const clientConfig = useAtomValue(clientConfigStateAtom);
+  const chatState = useAtomValue(chatStateAtom);
+  const currentUser = useAtomValue(currentUserAtom);
+  const serverStatus = useAtomValue(serverStatusState);
+  const [isMobile, setIsMobile] = useAtom(isMobileAtom);
+  const messages = useAtomValue(visibleChatMessagesSelector);
+  const online = useAtomValue(isOnlineSelector);
+  const configLoaded = useAtomValue(isClientConfigLoadedAtom);
+  const isChatAvailable = useAtomValue(isChatAvailableSelector);
+  const isUserAuthenticated = useAtomValue(chatAuthenticatedAtom);
 
-  const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } =
-    useRecoilValue<ServerStatus>(serverStatusState);
+  const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } = serverStatus;
   const {
     extraPageContent,
     name,

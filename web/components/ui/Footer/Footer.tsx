@@ -1,14 +1,13 @@
 import { FC } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import { useTranslation } from 'next-export-i18n';
 import styles from './Footer.module.scss';
-import { ServerStatus } from '../../../interfaces/server-status.model';
 import { serverStatusState } from '../../stores/ClientConfigStore';
 import { Localization } from '../../../types';
 import Translation from '../Translation/Translation';
 
 export const Footer: FC = () => {
-  const clientStatus = useRecoilValue<ServerStatus>(serverStatusState);
+  const clientStatus = useAtomValue(serverStatusState);
   const { versionNumber } = clientStatus;
   const { t } = useTranslation();
   return (

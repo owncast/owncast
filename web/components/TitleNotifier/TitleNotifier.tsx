@@ -6,7 +6,7 @@
  * @component
  */
 import { FC, useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import Head from 'next/head';
 import { serverStatusState, chatMessagesAtom } from '../stores/ClientConfigStore';
 
@@ -15,8 +15,8 @@ export type TitleNotifierProps = {
 };
 
 export const TitleNotifier: FC<TitleNotifierProps> = ({ name }) => {
-  const chatMessages = useRecoilValue(chatMessagesAtom);
-  const serverStatus = useRecoilValue(serverStatusState);
+  const chatMessages = useAtomValue(chatMessagesAtom);
+  const serverStatus = useAtomValue(serverStatusState);
 
   const [backgrounded, setBackgrounded] = useState(false);
   const [title, setTitle] = useState(name);

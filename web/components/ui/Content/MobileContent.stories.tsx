@@ -1,5 +1,5 @@
 import { Meta, StoryFn } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { MobileContent, MobileContentProps } from './MobileContent';
 import { PluginTab } from '../../../interfaces/client-config.model';
 
@@ -36,12 +36,12 @@ const meta = {
 
 export default meta;
 
-// PluginTabFrame reads plugin styles from Recoil, so the component needs a
-// RecoilRoot around it.
+// PluginTabFrame reads plugin styles from jotai atoms, so the component
+// needs a Provider around it.
 const Template: StoryFn<MobileContentProps> = args => (
-  <RecoilRoot>
+  <Provider>
     <MobileContent {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 const defaultArgs: MobileContentProps = {
