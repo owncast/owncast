@@ -76,10 +76,7 @@ module.exports = async phase => {
    */
   let nextConfig = {
     productionBrowserSourceMaps: process.env.SOURCE_MAPS === 'true',
-    // Isolate the build cache so a second dev server (pointed at another
-    // backend via OWNCAST_DEV_BACKEND) doesn't fight the first over .next.
-    // Defaults to .next, so normal dev and production builds are unchanged.
-    distDir: process.env.OWNCAST_DEV_DISTDIR || '.next',
+    distDir: '.next',
     trailingSlash: true,
     reactStrictMode: true,
     images: {
@@ -113,6 +110,11 @@ module.exports = async phase => {
     nextConfig = {
       ...nextConfig,
       rewrites,
+      // Isolate the dev build cache so a second dev server (pointed at
+      // another backend via OWNCAST_DEV_BACKEND) doesn't fight the first
+      // over .next. Dev-phase only: production builds always emit to
+      // .next, which the css inliner in pages/_document.tsx relies on.
+      distDir: process.env.OWNCAST_DEV_DISTDIR || '.next',
     };
   } else {
     // The production build is a fully static export served by the Go
