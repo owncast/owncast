@@ -16,8 +16,10 @@ export interface DisplayNameValidationResult {
  * This includes ASCII whitespace plus Unicode space characters and invisible characters
  */
 // Unicode whitespace character class used for trimming (matches Go's strings.TrimSpace)
+// U+0085 (NEXT LINE) is listed explicitly because JS \s does not match it, while Go's
+// unicode.IsSpace (used by strings.TrimSpace) and the Unicode White_Space property do.
 const UNICODE_WHITESPACE_CLASS =
-  '[\\s\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u200B-\\u200D\\u2028\\u2029\\u202F\\u205F\\u3000\\uFEFF]';
+  '[\\s\\u0085\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u200B-\\u200D\\u2028\\u2029\\u202F\\u205F\\u3000\\uFEFF]';
 
 export function trimUnicodeWhitespace(str: string): string {
   // Unicode whitespace regex that matches what Go's strings.TrimSpace() removes
