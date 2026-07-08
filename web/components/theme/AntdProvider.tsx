@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useMemo } from 'react';
+import { FC, ReactNode, useEffect, useMemo } from 'react';
 import { ConfigProvider } from 'antd';
 import type { ThemeConfig } from 'antd';
 import { useAtomValue } from 'jotai';
