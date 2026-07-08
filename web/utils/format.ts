@@ -79,3 +79,15 @@ export function formatUAstring(uaString: string) {
   return `${name} ${browserVersion} on ${osName} ${osVersion}
   ${deviceString}`;
 }
+
+// formatLinkHostname reduces an absolute URL to its hostname for use as
+// compact link text (e.g. "https://github.com/x/y" -> "github.com").
+// Falls back to the raw string when it doesn't parse, so a malformed
+// value still renders something clickable rather than throwing.
+export function formatLinkHostname(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}

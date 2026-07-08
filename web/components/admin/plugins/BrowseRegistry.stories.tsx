@@ -22,7 +22,11 @@ const plugins: RegistryPlugin[] = [
     slug: 'welcome-bot',
     name: 'Welcome Bot',
     authorName: 'Gabe Kangas',
+    // Author link: the "by ..." line renders as a link to this URL.
+    authorURL: 'https://gabekangas.com',
     summary: 'Greets new chat participants with a configurable message when they join.',
+    // Plugin homepage: rendered as a hostname link under the summary.
+    homepage: 'https://github.com/owncast/welcome-bot',
     tags: ['chat', 'moderation'],
     latest: {
       version: '1.2.0',
@@ -33,6 +37,7 @@ const plugins: RegistryPlugin[] = [
   {
     slug: 'now-playing',
     name: 'Now Playing',
+    // authorName without authorURL: plain, unlinked "by ..." line.
     authorName: 'Owncast Community',
     summary: 'Shows the currently playing track pulled from an external music service.',
     tags: ['overlay'],

@@ -66,6 +66,14 @@
   margin-bottom: 8px !important;
 }
 
+// Plugin homepage link (docs, source repo, tip jar), shown as the
+// URL's hostname between the summary and the preview image.
+.homepage {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
 // Author-supplied screenshot/preview for the listing. Constrained so a
 // large upload can't blow out the card; object-fit:contain keeps the
 // whole image visible without cropping. Sits between the summary and

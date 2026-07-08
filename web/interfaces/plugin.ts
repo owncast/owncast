@@ -50,6 +50,11 @@ export interface Plugin {
   botDisplayName?: string;
   version?: string;
   description?: string;
+  // homepage is an optional external link for the plugin (docs, help
+  // page, source repo, tip jar), recorded from the registry's metadata
+  // when the plugin was installed from the registry. Rendered as a
+  // link in the installed plugins list. Absent for manual uploads.
+  homepage?: string;
   permissions?: string[];
   path: string;
   enabled: boolean;

@@ -3,6 +3,7 @@ import { Alert, Button, Card, Empty, Space, Spin, Tag, Tooltip, Typography } fro
 import { useTranslation } from 'next-export-i18n';
 import { Localization } from '../../../types/localization';
 import { isPluginUpdateAvailable } from '../../../utils/apis';
+import { formatLinkHostname } from '../../../utils/format';
 import { readableBytes } from '../../../utils/images';
 import { PuzzlePiece } from './PluginIcon';
 import { permissionDescriptionKey, permissionNameKey } from './permissionDescriptions';
@@ -34,6 +35,9 @@ export type RegistryPlugin = {
   // than the square icon; rendered below the summary when present.
   previewURL?: string;
   authorName?: string;
+  // Optional public link for the author (personal site, GitHub
+  // profile). When present the "by ..." line links to it.
+  authorURL?: string;
   latest?: {
     version: string;
     sizeBytes?: number;
@@ -195,12 +199,32 @@ export const BrowseRegistry = ({
                     <Text type="secondary"> &middot; {readableBytes(plugin.latest.sizeBytes)}</Text>
                   ) : null}
                 </div>
-                {plugin.authorName && (
-                  <Text type="secondary" className={s.author}>
-                    {t(Localization.Admin.Plugins.browseAuthor, { name: plugin.authorName })}
-                  </Text>
-                )}
+                {plugin.authorName &&
+                  (plugin.authorURL ? (
+                    <Typography.Link
+                      href={plugin.authorURL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={s.author}
+                    >
+                      {t(Localization.Admin.Plugins.browseAuthor, { name: plugin.authorName })}
+                    </Typography.Link>
+                  ) : (
+                    <Text type="secondary" className={s.author}>
+                      {t(Localization.Admin.Plugins.browseAuthor, { name: plugin.authorName })}
+                    </Text>
+                  ))}
                 {plugin.summary && <Paragraph className={s.summary}>{plugin.summary}</Paragraph>}
+                {plugin.homepage && (
+                  <Typography.Link
+                    href={plugin.homepage}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={s.homepage}
+                  >
+                    {formatLinkHostname(plugin.homepage)}
+                  </Typography.Link>
+                )}
                 {plugin.previewURL && (
                   <img
                     className={s.preview}

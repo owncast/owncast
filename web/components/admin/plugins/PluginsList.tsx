@@ -3,6 +3,7 @@ import { Alert, Button, Popconfirm, Space, Switch, Table, Tag, Tooltip, Typograp
 import { useTranslation } from 'next-export-i18n';
 import dynamic from 'next/dynamic';
 import { Plugin } from '../../../interfaces/plugin';
+import { formatLinkHostname } from '../../../utils/format';
 import { Localization } from '../../../types/localization';
 import { permissionDescriptionKey, permissionNameKey } from './permissionDescriptions';
 import { PluginIcon } from './PluginIcon';
@@ -17,6 +18,7 @@ const AppstoreOutlined = dynamic(() => import('@ant-design/icons/AppstoreOutline
   ssr: false,
 });
 const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'), { ssr: false });
+const LinkOutlined = dynamic(() => import('@ant-design/icons/LinkOutlined'), { ssr: false });
 
 export type PluginsListProps = {
   plugins: Plugin[];
@@ -101,6 +103,16 @@ export const PluginsList = ({
               <Text type="secondary" className={s.secondaryText}>
                 {plugin.description}
               </Text>
+            )}
+            {plugin.homepage && (
+              <Typography.Link
+                href={plugin.homepage}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={s.secondaryText}
+              >
+                <LinkOutlined /> {formatLinkHostname(plugin.homepage)}
+              </Typography.Link>
             )}
             {plugin.lastError && (
               <Alert
