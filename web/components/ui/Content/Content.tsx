@@ -119,8 +119,7 @@ export const Content: FC = () => {
   const isChatAvailable = useAtomValue(isChatAvailableSelector);
   const isUserAuthenticated = useAtomValue(chatAuthenticatedAtom);
 
-  const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } =
-    useAtomValue(serverStatusState);
+  const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } = serverStatus;
   const {
     extraPageContent,
     name,

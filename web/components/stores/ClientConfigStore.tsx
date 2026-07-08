@@ -122,7 +122,7 @@ const removedMessageIdsAtom = atom<string[]>([]);
 export const isChatAvailableSelector = atom(get => {
   const state: AppStateOptions = get(appStateAtom);
   const accessToken: string = get(accessTokenAtom);
-  return accessToken && state.chatAvailable && !hasWebsocketDisconnected;
+  return Boolean(accessToken && state.chatAvailable && !hasWebsocketDisconnected);
 });
 
 // The requested state of chat in the UI
