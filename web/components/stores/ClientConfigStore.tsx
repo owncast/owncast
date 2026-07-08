@@ -12,6 +12,7 @@ import appStateModel, {
   AppStateEvent,
   AppStateOptions,
   makeEmptyAppState,
+  metaForSnapshot,
 } from './application-state';
 import { setLocalStorage, getLocalStorage } from '../../utils/localStorage';
 import {
@@ -22,7 +23,6 @@ import {
   MessageVisibilityEvent,
   SocketEvent,
 } from '../../interfaces/socket-events';
-import { mergeMeta } from '../../utils/helpers';
 import { handleConnectedClientInfoMessage } from './eventhandlers/connected-client-info-handler';
 import { ServerStatusServiceContext } from '../../services/status-service';
 import { handleNameChangeEvent } from './eventhandlers/handleNameChangeEvent';
@@ -186,8 +186,8 @@ export const ClientConfigStore: FC = () => {
     });
   };
   const sendEvent = (events: string[]) => {
-    // console.debug('---- sending event:', event);
-    appStateSend(events);
+    // xstate v5 sends single event objects, so fan out the batch.
+    events.forEach(event => appStateSend({ type: event }));
   };
 
   const handleStatusChange = (status: ServerStatus) => {
@@ -204,7 +204,7 @@ export const ClientConfigStore: FC = () => {
 
     if (status.online && appState.matches('ready')) {
       sendEvent([AppStateEvent.Online]);
-    } else if (!status.online && !appState.matches('ready.offline')) {
+    } else if (!status.online && !appState.matches({ ready: 'offline' })) {
       sendEvent([AppStateEvent.Offline]);
     }
   };
@@ -453,14 +453,17 @@ export const ClientConfigStore: FC = () => {
   }, [accessToken]);
 
   useEffect(() => {
-    appStateService.onTransition(state => {
-      const metadata = mergeMeta(state.meta) as AppStateOptions;
-
-      // console.debug('--- APP STATE: ', state.value);
-      // console.debug('--- APP META: ', metadata);
-
-      setAppState(metadata);
-    });
+    const applySnapshot = state => {
+      setAppState(metaForSnapshot(state));
+    };
+    const subscription = appStateService.subscribe(applySnapshot);
+    // Sync the current snapshot too: the hydration effect above runs first
+    // and can transition the machine (e.g. straight to online) before this
+    // subscription attaches. xstate v4's onTransition also fired on every
+    // event, transition or not, which papered over that ordering; v5's
+    // subscribe only fires on real transitions.
+    applySnapshot(appStateService.getSnapshot());
+    return () => subscription.unsubscribe();
   }, []);
 
   return null;

@@ -44,7 +44,7 @@
     "@testing-library/react": "^16.3.0",
     "@uiw/codemirror-theme-bbedit": "4.25.10",
     "@uiw/react-codemirror": "4.25.10",
-    "@xstate/react": "3.2.2",
+    "@xstate/react": "^6.1.0",
     "antd": "6.5.0",
     "autoprefixer": "^10.4.14",
     "babel-plugin-dynamic-import-node": "^2.3.3",
@@ -75,7 +75,7 @@
     "sharp": "0.34.5",
     "ua-parser-js": "1.0.41",
     "video.js": "^8.3.0",
-    "xstate": "4.38.3",
+    "xstate": "^5.32.4",
     "yaml": "2.9.0"
   },
   "devDependencies": {
