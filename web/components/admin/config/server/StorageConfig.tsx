@@ -1,4 +1,3 @@
-import React from 'react';
 import EditStorage from './EditStorage';
 
 // eslint-disable-next-line react/function-component-definition

@@ -12,7 +12,9 @@ module.exports = {
               },
             },
           ],
-          '@babel/preset-react',
+          // Automatic runtime to match tsconfig's react-jsx: components no
+          // longer import React just for JSX.
+          ['@babel/preset-react', { runtime: 'automatic' }],
           '@babel/preset-typescript',
         ],
         plugins: ['dynamic-import-node'],

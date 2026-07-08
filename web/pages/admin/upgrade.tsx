@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactElement } from 'react';
+import { useState, useEffect, ReactElement } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Table, Typography } from 'antd';
 import { getGithubRelease } from '../../utils/apis';

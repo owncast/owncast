@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, FC } from 'react';
+import { useContext, useState, useEffect, FC } from 'react';
 import { Typography, Slider } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../utils/server-status-context';

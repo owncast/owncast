@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/lib/table/interface';
 import { format } from 'date-fns';

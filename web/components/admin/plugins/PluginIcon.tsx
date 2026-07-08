@@ -1,4 +1,3 @@
-import React from 'react';
 import { Plugin } from '../../../interfaces/plugin';
 import s from './PluginIcon.module.scss';
 

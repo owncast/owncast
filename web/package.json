@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node build-scripts/generate-sw.js",
     "antd:extract": "node build-scripts/extract-antd-styles.js",
     "start": "next start",
     "check": "npm run check:lint && npm run check:format && npm run check:unused && npm test && npm run build",
@@ -39,7 +39,7 @@
     "@emoji-mart/react": "^1.1.1",
     "@fontsource/inter": "^5.0.0",
     "@fontsource/poppins": "5.2.7",
-    "@next/bundle-analyzer": "^14.0.0",
+    "@next/bundle-analyzer": "^16.2.10",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@uiw/codemirror-theme-bbedit": "4.25.10",
@@ -58,9 +58,8 @@
     "interweave": "^13.0.0",
     "interweave-autolink": "^5.1.0",
     "lodash": "4.18.1",
-    "next": "14.2.35",
+    "next": "^16.2.10",
     "next-export-i18n": "2.3.5",
-    "next-pwa": "^5.6.0",
     "postcss-flexbugs-fixes": "5.0.2",
     "react": "18.3.1",
     "react-chartjs-2": "^5.2.0",
@@ -76,8 +75,6 @@
     "sharp": "0.34.5",
     "ua-parser-js": "1.0.41",
     "video.js": "^8.3.0",
-    "workbox-precaching": "^7.0.0",
-    "workbox-window": "^7.0.0",
     "xstate": "4.38.3",
     "yaml": "2.9.0"
   },
@@ -110,7 +107,7 @@
     "cypress": "^15.0.0",
     "eslint": "8.57.1",
     "eslint-config-airbnb": "19.0.4",
-    "eslint-config-next": "14.2.35",
+    "eslint-config-next": "^15.5.20",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "6.10.2",
@@ -138,7 +135,8 @@
     "stylelint-config-standard": "^39.0.0",
     "stylelint-config-standard-scss": "^16.0.0",
     "ts-jest": "^29.1.0",
-    "typescript": "^6.0.0"
+    "typescript": "^6.0.0",
+    "workbox-build": "^7.4.1"
   },
   "overrides": {
     "@emoji-mart/react": {

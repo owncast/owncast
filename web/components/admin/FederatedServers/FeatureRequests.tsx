@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { Spin, Button, Avatar, Typography, Popconfirm, message } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';

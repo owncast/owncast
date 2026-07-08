@@ -1,5 +1,5 @@
 // This content populates the video variant modal, which is spawned from the variants table. This relies on the `dataState` prop fed in by the table.
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Popconfirm, Row, Col, Slider, Collapse, Typography, Alert, Button } from 'antd';
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';

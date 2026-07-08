@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Translation } from '../components/ui/Translation/Translation';
 import { Localization } from '../types/localization';

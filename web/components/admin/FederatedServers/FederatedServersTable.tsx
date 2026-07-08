@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { Table, Button, Space, Tag, Popconfirm, message } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import {

@@ -1,5 +1,5 @@
 import { Select, Typography } from 'antd';
-import React, { FC, useContext, useEffect, useRef, useState } from 'react';
+import { FC, useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'next-export-i18n';
 import { API_AUTOPLAY, postConfigUpdateToAPI, RESET_TIMEOUT } from '../../utils/config-constants';
 import {
