@@ -1,7 +1,6 @@
-import { Row, Spin, Typography, Button, Alert } from 'antd';
+import { Row, Spin, Typography, Button, Alert, Modal } from 'antd';
 import React, { FC, useState } from 'react';
-import UploadOutlined from '@ant-design/icons/lib/icons/UploadOutlined';
-import PlusSquareOutlined from '@ant-design/icons/lib/icons/PlusSquareOutlined';
+import { PlusSquareOutlined, UploadOutlined } from '@ant-design/icons';
 import { useRecoilValue } from 'recoil';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'next-export-i18n';
@@ -204,7 +203,7 @@ const NotificationsDenied = () => (
   </div>
 );
 
-export const BrowserNotifyModal = () => {
+const NotifyModalContent = () => {
   const { t } = useTranslation();
   const [error, setError] = useState<string>(null);
   const accessToken = useRecoilValue(accessTokenAtom);
@@ -309,3 +308,29 @@ export const BrowserNotifyModal = () => {
     </ErrorBoundary>
   );
 };
+
+/*
+Browser notifications modal (theming comes from the app-wide AntdProvider in
+pages/_app.tsx). Renders its own Modal shell instead of the shared ui/Modal.
+The #modal-container identifier is part of the documented CSS customization
+contract, so it is preserved inside the shell.
+*/
+export type BrowserNotifyModalProps = {
+  open: boolean;
+  handleClose: () => void;
+};
+
+export const BrowserNotifyModal: FC<BrowserNotifyModalProps> = ({ open, handleClose }) => (
+  <Modal
+    title="Browser Notifications"
+    open={open}
+    onCancel={handleClose}
+    zIndex={999}
+    footer={null}
+    centered
+  >
+    <div id="modal-container">
+      <NotifyModalContent />
+    </div>
+  </Modal>
+);

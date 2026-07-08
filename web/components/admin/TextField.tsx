@@ -95,10 +95,7 @@ export const TextField: FC<TextFieldProps> = ({
   const passwordComplexityRules = [];
   // display the appropriate Ant text field
   let Field = Input as
-    | typeof Input
-    | typeof InputNumber
-    | typeof Input.TextArea
-    | typeof Input.Password;
+    typeof Input | typeof InputNumber | typeof Input.TextArea | typeof Input.Password;
   let fieldProps = {};
   if (type === TEXTFIELD_TYPE_TEXTAREA) {
     Field = Input.TextArea;

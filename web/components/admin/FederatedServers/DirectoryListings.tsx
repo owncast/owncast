@@ -1,11 +1,12 @@
 import React, { FC, useState } from 'react';
-import { List, Button, Avatar, Typography, Popconfirm, message } from 'antd';
+import { Spin, Button, Avatar, Typography, Popconfirm, message } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Translation } from '../../ui/Translation/Translation';
 import { Localization } from '../../../types/localization';
 import { DirectoryFollower } from '../../../hooks/useDirectoryFollowers';
 import { isValidUrl } from '../../../utils/validators';
+import styles from './FederatedServerList.module.scss';
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -59,74 +60,73 @@ export const DirectoryListings: FC<DirectoryListingsProps> = ({
           />
         </Paragraph>
       ) : (
-        <List
-          loading={loading}
-          dataSource={directories}
-          rowKey="link"
-          renderItem={directory => (
-            <List.Item
-              actions={[
-                <Popconfirm
-                  key="remove"
-                  title={
-                    <Translation
-                      translationKey={Localization.Admin.FeaturedStreams.removeFromDirectoryConfirm}
-                      defaultText="Remove your server from this directory?"
-                    />
-                  }
-                  onConfirm={() => handleRemove(directory.link)}
-                  okText={
-                    <Translation
-                      translationKey={Localization.Admin.FeaturedStreams.confirmYes}
-                      defaultText="Yes"
-                    />
-                  }
-                  cancelText={
-                    <Translation
-                      translationKey={Localization.Admin.FeaturedStreams.confirmNo}
-                      defaultText="No"
-                    />
-                  }
-                >
-                  <Button
-                    danger
-                    size="small"
-                    icon={<DeleteOutlined />}
-                    loading={pendingIRI === directory.link}
-                  >
-                    <Translation
-                      translationKey={Localization.Admin.FeaturedStreams.removeFromDirectoryButton}
-                      defaultText="Remove"
-                    />
-                  </Button>
-                </Popconfirm>,
-              ]}
-            >
-              <List.Item.Meta
-                avatar={
-                  directory.image ? (
+        <Spin spinning={loading}>
+          <ul className={styles.list}>
+            {directories.map(directory => (
+              <li key={directory.link} className={styles.item}>
+                <div className={styles.meta}>
+                  {directory.image ? (
                     <Avatar src={directory.image} />
                   ) : (
                     <Avatar>{(directory.name || directory.username || '?').charAt(0)}</Avatar>
-                  )
-                }
-                title={
-                  // Only render the remote-supplied link as a clickable anchor
-                  // when it is a valid http(s) URL; otherwise show plain text so a
-                  // hostile value (e.g. a javascript: URL) can't reach href.
-                  isValidUrl(directory.link) ? (
-                    <a href={directory.link} target="_blank" rel="noopener noreferrer">
-                      {directory.name || directory.username || directory.link}
-                    </a>
-                  ) : (
-                    <span>{directory.name || directory.username || directory.link}</span>
-                  )
-                }
-                description={<Text type="secondary">{directory.username || directory.link}</Text>}
-              />
-            </List.Item>
-          )}
-        />
+                  )}
+                  <div className={styles.text}>
+                    {/* Only render the remote-supplied link as a clickable anchor
+                        when it is a valid http(s) URL; otherwise show plain text so a
+                        hostile value (e.g. a javascript: URL) can't reach href. */}
+                    {isValidUrl(directory.link) ? (
+                      <a href={directory.link} target="_blank" rel="noopener noreferrer">
+                        {directory.name || directory.username || directory.link}
+                      </a>
+                    ) : (
+                      <span>{directory.name || directory.username || directory.link}</span>
+                    )}
+                    <Text type="secondary">{directory.username || directory.link}</Text>
+                  </div>
+                </div>
+                <div className={styles.actions}>
+                  <Popconfirm
+                    title={
+                      <Translation
+                        translationKey={
+                          Localization.Admin.FeaturedStreams.removeFromDirectoryConfirm
+                        }
+                        defaultText="Remove your server from this directory?"
+                      />
+                    }
+                    onConfirm={() => handleRemove(directory.link)}
+                    okText={
+                      <Translation
+                        translationKey={Localization.Admin.FeaturedStreams.confirmYes}
+                        defaultText="Yes"
+                      />
+                    }
+                    cancelText={
+                      <Translation
+                        translationKey={Localization.Admin.FeaturedStreams.confirmNo}
+                        defaultText="No"
+                      />
+                    }
+                  >
+                    <Button
+                      danger
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      loading={pendingIRI === directory.link}
+                    >
+                      <Translation
+                        translationKey={
+                          Localization.Admin.FeaturedStreams.removeFromDirectoryButton
+                        }
+                        defaultText="Remove"
+                      />
+                    </Button>
+                  </Popconfirm>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Spin>
       )}
     </div>
   );

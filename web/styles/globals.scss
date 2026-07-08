@@ -6,6 +6,14 @@
 @import '@fontsource/poppins/400.css';
 @import '@fontsource/poppins/600.css';
 
+// antd v4's stylesheet carried a universal border-box reset the whole layout
+// was built against. v6 ships no global styles, so the reset lives here now.
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   --content-padding: 0.95rem;
   --module-spacing: 12px; // margin size between lines of stuff, if needed

@@ -15,10 +15,13 @@ const makePluginTabs = (count: number): PluginTab[] =>
 const meta = {
   title: 'owncast/Components/Mobile content',
   component: MobileContent,
+  globals: {
+    viewport: { value: 'iphone12Portrait', isRotated: false },
+  },
   parameters: {
-    viewport: {
-      defaultViewport: 'iphone12Portrait',
-    },
+    // Chromatic ignores the storybook viewport global, so the capture width
+    // must be pinned separately or these render at desktop width.
+    chromatic: { viewports: [390] },
     docs: {
       description: {
         component:

@@ -87,13 +87,13 @@ function createGraphDataset(dataArray, labelFormat) {
 }
 
 export const Chart: FC<ChartProps> = ({
-  data,
-  title,
+  data = [],
+  title = '',
   color,
   unit,
-  dataCollections,
-  yFlipped,
-  yLogarithmic,
+  dataCollections = [],
+  yFlipped = false,
+  yLogarithmic = false,
   minYValue,
   yStepSize = 0,
   timeWindowKey,
@@ -173,18 +173,10 @@ export const Chart: FC<ChartProps> = ({
       <Button
         size="small"
         onClick={downloadChart}
-        type="ghost"
+        ghost
         icon={<DownloadOutlined />}
         className="download-btn"
       />
     </div>
   );
-};
-
-Chart.defaultProps = {
-  dataCollections: [],
-  data: [],
-  title: '',
-  yFlipped: false,
-  yLogarithmic: false,
 };

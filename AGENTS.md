@@ -95,9 +95,9 @@ The cache (`services/cache/`) is the first migrated service and is the reference
 - **Go version**: 1.24+ (see `go.mod`)
 - **Database**: SQLite (single file, no external DB server needed)
 - **Frontend framework**: Next.js 14, React 18, TypeScript, static export
-- **UI library**: Ant Design v4 with Less theming
+- **UI library**: Ant Design v6 (design tokens themed via `web/components/theme/AntdProvider.tsx`, component CSS pre-extracted to `web/styles/antd.css` via `npm run antd:extract`)
 - **State management**: Recoil
-- **Styling**: SCSS with component-scoped files, Less for Ant Design
+- **Styling**: SCSS with component-scoped files
 - **API spec**: OpenAPI 3.1 at `openapi.yaml`
 - **Commit style**: Conventional Commits (`type(scope): description`)
 - **Branches**: `develop` is the development branch; `master` is the production/release branch
@@ -128,7 +128,7 @@ Do not access the web application via `http://localhost:8080` or build the web p
 12. If a live stream video is needed to run, you can run `./test/ocTestStream.sh` to start an actual stream that will begin streaming from the local development server.
 13. You should never commit the `static/web` directory to the repository. It is generated from the `web` directory and should be ignored in your commits.
 14. Don't use emoji in code comments or commit messages. That's lame.
-15. User interface components should use Ant Design v4 components, not Ant Design v5.
+15. User interface components should use Ant Design v6 components. When using a new antd component, add it to the extraction manifest in `web/build-scripts/extract-antd-styles.js` and run `npm run antd:extract`.
 16. Database access should be through the repository patterns.
 17. Any substantial new features or changes around Federation or ActivityPub should be documented in FEDERATION.md.
 

@@ -267,15 +267,13 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
   // present once the plugin is loaded). Shown as its own tab when non-empty.
   const commandRows = useMemo(
     () =>
-      (plugin.commands ?? []).map(
-        (cmd: PluginCommand): CommandRow => ({
-          key: `${cmd.prefix ?? '!'}${cmd.name}`,
-          command: `${cmd.prefix ?? '!'}${cmd.name}`,
-          description: cmd.description ?? '',
-          usage: cmd.usage,
-          modOnly: !!cmd.modOnly,
-        }),
-      ),
+      (plugin.commands ?? []).map((cmd: PluginCommand): CommandRow => ({
+        key: `${cmd.prefix ?? '!'}${cmd.name}`,
+        command: `${cmd.prefix ?? '!'}${cmd.name}`,
+        description: cmd.description ?? '',
+        usage: cmd.usage,
+        modOnly: !!cmd.modOnly,
+      })),
     [plugin.commands],
   );
 

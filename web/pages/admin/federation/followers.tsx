@@ -399,7 +399,9 @@ export default function FediverseFollowers() {
 
   const items = [
     { label: followersTabTitle, key: '1', children: followersTab },
-    isPrivate && { label: pendingRequestsTabTitle, key: '2', children: pendingRequestsTab },
+    ...(isPrivate
+      ? [{ label: pendingRequestsTabTitle, key: '2', children: pendingRequestsTab }]
+      : []),
     { label: blockedTabTitle, key: '3', children: blockedTab },
   ];
 

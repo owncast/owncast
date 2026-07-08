@@ -129,6 +129,13 @@ export const OfflineMobile: StoryObj<typeof Template> = {
     },
   },
 
+  // Content re-derives isMobile from window.innerWidth on mount, so the
+  // Chromatic capture window must actually be mobile sized or the pinned
+  // atom above gets flipped back to desktop.
+  parameters: {
+    chromatic: { viewports: [375] },
+  },
+
   globals: {
     viewport: {
       value: 'mobile1',
@@ -139,6 +146,12 @@ export const OfflineMobile: StoryObj<typeof Template> = {
 
 export const OfflineTablet: StoryObj<typeof Template> = {
   render: Template,
+
+  // Chromatic ignores the storybook viewport global, so the capture width
+  // must be pinned separately or these render at desktop width.
+  parameters: {
+    chromatic: { viewports: [834] },
+  },
 
   globals: {
     viewport: {
@@ -170,6 +183,10 @@ export const OnlineMobile: StoryObj<typeof Template> = {
     },
   },
 
+  parameters: {
+    chromatic: { viewports: [375] },
+  },
+
   globals: {
     viewport: {
       value: 'mobile1',
@@ -183,6 +200,10 @@ export const OnlineTablet: StoryObj<typeof Template> = {
 
   args: {
     ServerStatusServiceMock: OnlineServerStatusServiceMock,
+  },
+
+  parameters: {
+    chromatic: { viewports: [834] },
   },
 
   globals: {

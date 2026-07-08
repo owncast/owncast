@@ -1,4 +1,3 @@
-const withLess = require('next-with-less');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -90,45 +89,33 @@ module.exports = async phase => {
    * @type {import('next').NextConfig}
    */
   let nextConfig = withPWA(
-    withBundleAnalyzer(
-      withLess({
-        productionBrowserSourceMaps: process.env.SOURCE_MAPS === 'true',
-        // Isolate the build cache so a second dev server (pointed at another
-        // backend via OWNCAST_DEV_BACKEND) doesn't fight the first over .next.
-        // Defaults to .next, so normal dev and production builds are unchanged.
-        distDir: process.env.OWNCAST_DEV_DISTDIR || '.next',
-        trailingSlash: true,
-        reactStrictMode: true,
-        eslint: {
-          ignoreDuringBuilds: true,
-        },
-        images: {
-          unoptimized: true,
-        },
-        swcMinify: true,
-        transpilePackages: [
-          'antd',
-          '@ant-design',
-          'rc-util',
-          'rc-pagination',
-          'rc-picker',
-          'rc-notification',
-          'rc-tooltip',
-          'rc-tree',
-          'rc-table',
-        ],
-        webpack(config) {
-          config.module.rules.push({
-            test: /\.svg$/i,
-            issuer: /\.[jt]sx?$/,
-            use: ['@svgr/webpack'],
-          });
+    withBundleAnalyzer({
+      productionBrowserSourceMaps: process.env.SOURCE_MAPS === 'true',
+      // Isolate the build cache so a second dev server (pointed at another
+      // backend via OWNCAST_DEV_BACKEND) doesn't fight the first over .next.
+      // Defaults to .next, so normal dev and production builds are unchanged.
+      distDir: process.env.OWNCAST_DEV_DISTDIR || '.next',
+      trailingSlash: true,
+      reactStrictMode: true,
+      eslint: {
+        ignoreDuringBuilds: true,
+      },
+      images: {
+        unoptimized: true,
+      },
+      swcMinify: true,
+      transpilePackages: ['antd', '@rc-component', '@ant-design'],
+      webpack(config) {
+        config.module.rules.push({
+          test: /\.svg$/i,
+          issuer: /\.[jt]sx?$/,
+          use: ['@svgr/webpack'],
+        });
 
-          return config;
-        },
-        pageExtensions: ['tsx'],
-      }),
-    ),
+        return config;
+      },
+      pageExtensions: ['tsx'],
+    }),
   );
 
   if (phase === PHASE_DEVELOPMENT_SERVER) {

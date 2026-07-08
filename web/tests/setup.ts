@@ -14,3 +14,18 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 });
+
+// Mock ResizeObserver for antd v6 components (Popconfirm/Tooltip triggers
+// observe their targets on mount); jsdom does not implement it.
+class ResizeObserverMock {
+  observe = jest.fn();
+
+  unobserve = jest.fn();
+
+  disconnect = jest.fn();
+}
+
+Object.defineProperty(window, 'ResizeObserver', {
+  writable: true,
+  value: ResizeObserverMock,
+});
