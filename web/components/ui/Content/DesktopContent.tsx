@@ -1,4 +1,4 @@
-import React, { ComponentType, FC } from 'react';
+import { ComponentType, FC } from 'react';
 import dynamic from 'next/dynamic';
 import { TabsProps } from 'antd';
 import { ErrorBoundary } from 'react-error-boundary';

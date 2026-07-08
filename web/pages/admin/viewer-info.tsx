@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, ReactElement } from 'react';
+import { useState, useEffect, useContext, ReactElement } from 'react';
 import { Row, Col, Typography, MenuProps, Dropdown, Spin, Alert } from 'antd';
 import { getUnixTime, sub } from 'date-fns';
 import dynamic from 'next/dynamic';

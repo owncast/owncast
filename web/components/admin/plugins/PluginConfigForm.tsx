@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Alert, Button, Form, Input, InputNumber, Spin, Switch, Typography, message } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { Plugin } from '../../../interfaces/plugin';

@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useState } from 'react';
+import { CSSProperties, FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Input, Button, Select, Form } from 'antd';
 import { useTranslation } from 'next-export-i18n';

@@ -1,4 +1,4 @@
-import React, { ComponentType, FC, useState } from 'react';
+import { ComponentType, FC, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button, Dropdown } from 'antd';
 import type { TabsProps } from 'antd';

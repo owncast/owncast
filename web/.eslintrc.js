@@ -73,7 +73,12 @@ module.exports = {
     'import/no-extraneous-dependencies': [
       'error',
       {
-        devDependencies: ['**/*.stories.*', '**/.storybook/**/*.*', '**/style-definitions/**/*.*'],
+        devDependencies: [
+          '**/*.stories.*',
+          '**/.storybook/**/*.*',
+          '**/style-definitions/**/*.*',
+          '**/build-scripts/**/*.*',
+        ],
         peerDependencies: true,
       },
     ],

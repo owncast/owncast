@@ -1,5 +1,5 @@
 import { Col, Row, Typography } from 'antd';
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import { ReactElement, useContext, useEffect, useState } from 'react';
 import { TEXTFIELD_TYPE_TEXTAREA } from '../../components/admin/TextField';
 import { TextFieldWithSubmit } from '../../components/admin/TextFieldWithSubmit';
 import { ToggleSwitch } from '../../components/admin/ToggleSwitch';

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, FC } from 'react';
+import { useState, useContext, useEffect, FC } from 'react';
 import { Button, Modal, Typography } from 'antd';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';

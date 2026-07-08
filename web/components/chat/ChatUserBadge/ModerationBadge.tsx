@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ChatUserBadge } from './ChatUserBadge';
 
 // Lazy loaded components

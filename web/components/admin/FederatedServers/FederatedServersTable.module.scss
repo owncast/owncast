@@ -1,20 +1,18 @@
 .table {
-  :global {
-    .ant-table {
-      background: var(--theme-color-background-main);
-    }
+  :global(.ant-table) {
+    background: var(--theme-color-background-main);
+  }
 
-    .ant-table-thead > tr > th {
-      background: var(--theme-color-background-header);
-      color: var(--theme-color-components-text-on-dark);
-    }
+  :global(.ant-table-thead > tr > th) {
+    background: var(--theme-color-background-header);
+    color: var(--theme-color-components-text-on-dark);
+  }
 
-    .ant-table-tbody > tr > td {
-      border-color: var(--theme-color-components-scrollbar-background);
-    }
+  :global(.ant-table-tbody > tr > td) {
+    border-color: var(--theme-color-components-scrollbar-background);
+  }
 
-    .ant-table-tbody > tr:hover > td {
-      background: var(--theme-color-background-header);
-    }
+  :global(.ant-table-tbody > tr:hover > td) {
+    background: var(--theme-color-background-header);
   }
 }

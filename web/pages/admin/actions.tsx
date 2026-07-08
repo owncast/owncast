@@ -3,7 +3,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import { html as codeMirrorHTML } from '@codemirror/lang-html';
 import dynamic from 'next/dynamic';
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import { ReactElement, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'next-export-i18n';
 import { FormStatusIndicator } from '../../components/admin/FormStatusIndicator';
 import { ExternalAction } from '../../interfaces/external-action';
