@@ -1,19 +1,5 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
+const withBundleAnalyzer = require('@next/bundle-analyzer');
 const { PHASE_DEVELOPMENT_SERVER } = require('next/constants');
-
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  runtimeCaching: [],
-  register: true,
-  skipWaiting: true,
-  disableDevLogs: true,
-  publicExcludes: ['!img/platformlogos/**/*', '!styles/admin/**/*'],
-  buildExcludes: [/chunks\/pages\/admin.*/, '!**/admin/**/*'],
-  sourcemap: process.env.NODE_ENV === 'development',
-  disable: process.env.NODE_ENV === 'development',
-});
 
 // The dev server proxies API/asset requests to a running Owncast backend to
 // work around CORS. The target defaults to localhost:8080 but can be pointed
@@ -88,35 +74,40 @@ module.exports = async phase => {
   /**
    * @type {import('next').NextConfig}
    */
-  let nextConfig = withPWA(
-    withBundleAnalyzer({
-      productionBrowserSourceMaps: process.env.SOURCE_MAPS === 'true',
-      // Isolate the build cache so a second dev server (pointed at another
-      // backend via OWNCAST_DEV_BACKEND) doesn't fight the first over .next.
-      // Defaults to .next, so normal dev and production builds are unchanged.
-      distDir: process.env.OWNCAST_DEV_DISTDIR || '.next',
-      trailingSlash: true,
-      reactStrictMode: true,
-      eslint: {
-        ignoreDuringBuilds: true,
+  let nextConfig = {
+    productionBrowserSourceMaps: process.env.SOURCE_MAPS === 'true',
+    // Isolate the build cache so a second dev server (pointed at another
+    // backend via OWNCAST_DEV_BACKEND) doesn't fight the first over .next.
+    // Defaults to .next, so normal dev and production builds are unchanged.
+    distDir: process.env.OWNCAST_DEV_DISTDIR || '.next',
+    trailingSlash: true,
+    reactStrictMode: true,
+    images: {
+      unoptimized: true,
+    },
+    transpilePackages: ['antd', '@rc-component', '@ant-design'],
+    // Component .svg imports compile to React components via svgr, as the
+    // old custom webpack rule did before Turbopack became the bundler.
+    turbopack: {
+      // The repo root has its own package-lock (commitlint), pin the app
+      // root so Turbopack doesn't infer the wrong workspace directory.
+      root: __dirname,
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
       },
-      images: {
-        unoptimized: true,
-      },
-      swcMinify: true,
-      transpilePackages: ['antd', '@rc-component', '@ant-design'],
-      webpack(config) {
-        config.module.rules.push({
-          test: /\.svg$/i,
-          issuer: /\.[jt]sx?$/,
-          use: ['@svgr/webpack'],
-        });
+    },
+    pageExtensions: ['tsx'],
+  };
 
-        return config;
-      },
-      pageExtensions: ['tsx'],
-    }),
-  );
+  // The bundle analyzer works by injecting a webpack() config key, which
+  // fails Turbopack builds. Attach it only when analyzing, and run those
+  // builds through webpack: ANALYZE=true npx next build --webpack
+  if (process.env.ANALYZE === 'true') {
+    nextConfig = withBundleAnalyzer({ enabled: true })(nextConfig);
+  }
 
   if (phase === PHASE_DEVELOPMENT_SERVER) {
     nextConfig = {
@@ -124,6 +115,10 @@ module.exports = async phase => {
       rewrites,
     };
   } else {
+    // The production build is a fully static export served by the Go
+    // backend. The service worker is generated over it afterwards by
+    // build-scripts/generate-sw.js (chained in the package.json build
+    // script), replacing the webpack-only next-pwa plugin.
     nextConfig = {
       ...nextConfig,
       output: 'export',

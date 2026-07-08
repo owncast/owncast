@@ -31,7 +31,9 @@ echo "Building owncast web..."
 rm -rf .next out
 # No output filtering: piping through grep hid real build errors, and under
 # pipefail a successful build with no matching lines would fail the script.
-node_modules/.bin/next build
+# Runs the package.json build script so the service worker generation step
+# (build-scripts/generate-sw.js) stays chained after next build.
+npm run --silent build
 
 # Guard against a build that "succeeds" without producing the static export.
 # Known failure mode: unsupported node versions (e.g. v23) make next build

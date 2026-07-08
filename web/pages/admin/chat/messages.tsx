@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactElement } from 'react';
+import { useState, useEffect, ReactElement } from 'react';
 import { Table, Typography, Button } from 'antd';
 import classNames from 'classnames';
 import { ColumnsType } from 'antd/es/table';

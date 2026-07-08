@@ -1,5 +1,5 @@
 import { Spin, Modal as AntModal } from 'antd';
-import React, { FC, ReactNode, useState } from 'react';
+import { FC, ReactNode, useState } from 'react';
 import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { ComponentError } from '../ComponentError/ComponentError';
 import styles from './Modal.module.scss';

@@ -23,6 +23,17 @@ module.exports = {
     const fileLoaderRule = config.module.rules.find(rule => rule.test && rule.test.test('.svg'));
     fileLoaderRule.exclude = /\.svg$/;
 
+    // @storybook/nextjs aliases react/react-dom to Next's vendored copies
+    // (a React 19 canary in Next 16) to mirror the App Router runtime. This
+    // is a Pages Router app that ships the project's React 18 in the real
+    // bundle, and recoil crashes on React 19 internals, so drop those
+    // aliases and let stories resolve the real react from node_modules.
+    for (const [key, value] of Object.entries(config.resolve?.alias || {})) {
+      if (typeof value === 'string' && value.includes('next/dist/compiled/react')) {
+        delete config.resolve.alias[key];
+      }
+    }
+
     // https://www.npmjs.com/package/@svgr/webpack
     config.module.rules.push({
       test: /\.svg$/,

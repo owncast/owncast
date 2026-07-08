@@ -21,8 +21,6 @@
 		"@fontsource/poppins",
 		"yaml",
 		"sharp",
-		"workbox-precaching",
-		"workbox-window",
 		"@mdx-js/react",
 		"@svgr/webpack",
 		"@types/markdown-it",

@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { Alert, Spin } from 'antd';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-export-i18n';

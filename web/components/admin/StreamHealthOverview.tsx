@@ -1,7 +1,7 @@
 import { Alert, Button, Card, Col, Row, Statistic, Typography } from 'antd';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import React, { FC, useContext } from 'react';
+import { FC, useContext } from 'react';
 import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../utils/server-status-context';
 

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Collapse, Typography } from 'antd';
 import {
   TEXTFIELD_TYPE_NUMBER,

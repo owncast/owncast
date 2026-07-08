@@ -1,12 +1,4 @@
-import React, {
-  createContext,
-  FC,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchData, PLUGINS_LIST } from './apis';
 import { Plugin } from '../interfaces/plugin';
 

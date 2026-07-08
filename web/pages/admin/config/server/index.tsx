@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext } from 'react';
+import { ReactElement, useContext } from 'react';
 import { Tabs } from 'antd';
 
 import StreamKeys from '../../../../components/admin/config/server/StreamKeys';
