@@ -1,5 +1,5 @@
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { ChatUserMessage } from './ChatUserMessage';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 import Mock from '../../../stories/assets/mocks/chatmessage-user.png';
@@ -24,9 +24,9 @@ const meta = {
 export default meta;
 
 const Template: StoryFn<typeof ChatUserMessage> = args => (
-  <RecoilRoot>
+  <Provider>
     <ChatUserMessage {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 const standardMessage: ChatMessage = JSON.parse(`{

@@ -1,5 +1,5 @@
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { OfflineEmbed } from './OfflineEmbed';
 import OfflineState from '../../../stories/assets/mocks/offline-state.png';
 
@@ -23,9 +23,9 @@ const meta = {
 export default meta;
 
 const Template: StoryFn<typeof OfflineEmbed> = args => (
-  <RecoilRoot>
+  <Provider>
     <OfflineEmbed {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const ExampleDefaultWithNotifications = {

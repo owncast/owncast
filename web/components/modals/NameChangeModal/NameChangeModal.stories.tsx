@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot, useSetRecoilState } from 'recoil';
+import { Provider, useSetAtom } from 'jotai';
 import { NameChangeModal } from './NameChangeModal';
-import { CurrentUser } from '../../../interfaces/current-user';
 import { currentUserAtom } from '../../stores/ClientConfigStore';
 
 const meta = {
@@ -14,7 +13,7 @@ const meta = {
 export default meta;
 
 const Example = () => {
-  const setCurrentUser = useSetRecoilState<CurrentUser>(currentUserAtom);
+  const setCurrentUser = useSetAtom(currentUserAtom);
 
   useEffect(
     () =>
@@ -35,9 +34,9 @@ const Example = () => {
 };
 
 const Template: StoryFn<typeof NameChangeModal> = () => (
-  <RecoilRoot>
+  <Provider>
     <Example />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const Basic = {

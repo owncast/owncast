@@ -1,5 +1,5 @@
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { OfflineBanner } from './OfflineBanner';
 import OfflineState from '../../../stories/assets/mocks/offline-state.png';
 
@@ -23,9 +23,9 @@ const meta = {
 export default meta;
 
 const Template: StoryFn<typeof OfflineBanner> = args => (
-  <RecoilRoot>
+  <Provider>
     <OfflineBanner {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const ExampleDefaultWithNotifications = {

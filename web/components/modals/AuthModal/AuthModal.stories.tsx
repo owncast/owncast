@@ -1,12 +1,11 @@
 import { useEffect } from 'react';
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot, useSetRecoilState } from 'recoil';
+import { Provider, useSetAtom } from 'jotai';
 import { AuthModal } from './AuthModal';
 import { currentUserAtom } from '../../stores/ClientConfigStore';
-import { CurrentUser } from '../../../interfaces/current-user';
 
 const Example = () => {
-  const setCurrentUser = useSetRecoilState<CurrentUser>(currentUserAtom);
+  const setCurrentUser = useSetAtom(currentUserAtom);
 
   useEffect(
     () =>
@@ -35,9 +34,9 @@ const meta = {
 export default meta;
 
 const Template: StoryFn<typeof AuthModal> = () => (
-  <RecoilRoot>
+  <Provider>
     <Example />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const Basic = {

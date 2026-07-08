@@ -1,6 +1,5 @@
 import { FC, useEffect, useRef } from 'react';
-import { useRecoilValue } from 'recoil';
-import { ClientConfig } from '../../../interfaces/client-config.model';
+import { useAtomValue } from 'jotai';
 import { clientConfigStateAtom } from '../../stores/ClientConfigStore';
 
 export type PluginTabFrameProps = {
@@ -84,7 +83,7 @@ export const PluginTabFrame: FC<PluginTabFrameProps> = ({ content }) => {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const observerRef = useRef<ResizeObserver | null>(null);
 
-  const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
+  const clientConfig = useAtomValue(clientConfigStateAtom);
   const { appearanceVariables, customStyles, pluginStyles } = clientConfig;
   const appearanceVars = Object.keys(appearanceVariables || {})
     .filter(variable => !!appearanceVariables[variable])

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { ChatContainer } from './ChatContainer';
 import { ChatMessage } from '../../../interfaces/chat-message.model';
 
@@ -577,14 +577,14 @@ const AddMessagesChatExample = args => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(m);
 
   return (
-    <RecoilRoot>
+    <Provider>
       <div style={{ height: '70vh', position: 'relative' }}>
         <button type="button" onClick={() => setChatMessages([...chatMessages, chatMessages[0]])}>
           Add message
         </button>
         <ChatContainer {...args} />
       </div>
-    </RecoilRoot>
+    </Provider>
   );
 };
 

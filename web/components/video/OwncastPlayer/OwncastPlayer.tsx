@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import React, { FC, useContext, useEffect } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useAtom, useAtomValue } from 'jotai';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useTranslation } from 'next-export-i18n';
 import classNames from 'classnames';
@@ -45,8 +45,8 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
 }) => {
   const VideoSettingsService = useContext(VideoSettingsServiceContext);
   const playerRef = React.useRef(null);
-  const [videoPlaying, setVideoPlaying] = useRecoilState<boolean>(isVideoPlayingAtom);
-  const clockSkew = useRecoilValue<Number>(clockSkewAtom);
+  const [videoPlaying, setVideoPlaying] = useAtom(isVideoPlayingAtom);
+  const clockSkew = useAtomValue(clockSkewAtom);
   const { t } = useTranslation();
 
   const setSavedVolume = () => {

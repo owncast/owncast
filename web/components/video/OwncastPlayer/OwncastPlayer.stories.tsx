@@ -1,5 +1,5 @@
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { OwncastPlayer } from './OwncastPlayer';
 
 const streams = {
@@ -26,9 +26,9 @@ const meta = {
 export default meta;
 
 const Template: StoryFn<typeof OwncastPlayer> = args => (
-  <RecoilRoot>
+  <Provider>
     <OwncastPlayer {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const LiveDemo = {
