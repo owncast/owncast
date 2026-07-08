@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/nextjs';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import {
   Alert,
   Avatar,
@@ -111,7 +111,7 @@ export type ThemePlaygroundProps = {
 
 const ThemePlayground: FC<ThemePlaygroundProps> = ({ theme }) => {
   const [selected, setSelected] = useState(theme in THEMES ? theme : 'default');
-  const setClientConfig = useSetRecoilState(clientConfigStateAtom);
+  const setClientConfig = useSetAtom(clientConfigStateAtom);
 
   // Keep the in-canvas dropdown in sync with the Storybook control.
   useEffect(() => {

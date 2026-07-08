@@ -1,10 +1,9 @@
 /* eslint-disable react/no-unknown-property */
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import { useEffect } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'next-export-i18n';
 import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
-import { ChatMessage } from '../../../../interfaces/chat-message.model';
 import { ChatContainer } from '../../../../components/chat/ChatContainer/ChatContainer';
 import {
   ClientConfigStore,
@@ -17,23 +16,20 @@ import {
   chatAuthenticatedAtom,
 } from '../../../../components/stores/ClientConfigStore';
 import Header from '../../../../components/ui/Header/Header';
-import { ClientConfig } from '../../../../interfaces/client-config.model';
-import { AppStateOptions } from '../../../../components/stores/application-state';
-import { ServerStatus } from '../../../../interfaces/server-status.model';
 import { Theme } from '../../../../components/theme/Theme';
 import { ComponentError } from '../../../../components/ui/ComponentError/ComponentError';
 import { Localization } from '../../../../types/localization';
 
 export default function ReadWriteChatEmbed() {
   const { t } = useTranslation();
-  const currentUser = useRecoilValue(currentUserAtom);
-  const messages = useRecoilValue<ChatMessage[]>(visibleChatMessagesSelector);
-  const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
-  const clientStatus = useRecoilValue<ServerStatus>(serverStatusState);
+  const currentUser = useAtomValue(currentUserAtom);
+  const messages = useAtomValue(visibleChatMessagesSelector);
+  const clientConfig = useAtomValue(clientConfigStateAtom);
+  const clientStatus = useAtomValue(serverStatusState);
 
-  const appState = useRecoilValue<AppStateOptions>(appStateAtom);
-  const isChatAvailable = useRecoilValue(isChatAvailableSelector);
-  const isUserAuthenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
+  const appState = useAtomValue(appStateAtom);
+  const isChatAvailable = useAtomValue(isChatAvailableSelector);
+  const isUserAuthenticated = useAtomValue(chatAuthenticatedAtom);
 
   const { name, chatDisabled, chatRequireAuthentication } = clientConfig;
 

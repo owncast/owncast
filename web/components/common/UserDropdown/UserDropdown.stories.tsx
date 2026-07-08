@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot, useSetRecoilState } from 'recoil';
+import { Provider, useSetAtom } from 'jotai';
 import { UserDropdown } from './UserDropdown';
-import { CurrentUser } from '../../../interfaces/current-user';
 import {
   currentUserAtom,
   appStateAtom,
@@ -18,11 +17,11 @@ const meta = {
 
 export default meta;
 
-// This component uses Recoil internally so wrap it in a RecoilRoot.
+// This component reads jotai atoms internally so wrap it in a Provider.
 const Example = args => {
-  const setCurrentUser = useSetRecoilState<CurrentUser>(currentUserAtom);
-  const setAppState = useSetRecoilState(appStateAtom);
-  const setChatState = useSetRecoilState(chatStateAtom);
+  const setCurrentUser = useSetAtom(currentUserAtom);
+  const setAppState = useSetAtom(appStateAtom);
+  const setChatState = useSetAtom(chatStateAtom);
 
   useEffect(() => {
     setCurrentUser({
@@ -46,9 +45,9 @@ const Example = args => {
 };
 
 const Template: StoryFn<typeof UserDropdown> = args => (
-  <RecoilRoot>
+  <Provider>
     <Example {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const ChatEnabled = {

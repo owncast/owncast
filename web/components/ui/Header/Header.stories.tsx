@@ -1,5 +1,5 @@
 import { StoryFn, Meta } from '@storybook/nextjs';
-import { RecoilRoot } from 'recoil';
+import { Provider } from 'jotai';
 import { Header } from './Header';
 
 const meta = {
@@ -13,9 +13,9 @@ const meta = {
 export default meta;
 
 const Template: StoryFn<typeof Header> = args => (
-  <RecoilRoot>
+  <Provider>
     <Header {...args} />
-  </RecoilRoot>
+  </Provider>
 );
 
 export const ChatAvailable = {

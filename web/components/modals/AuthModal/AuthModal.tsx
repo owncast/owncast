@@ -1,5 +1,5 @@
 import { Modal, Tabs } from 'antd';
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import { FC } from 'react';
 import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { IndieAuthModal } from '../IndieAuthModal/IndieAuthModal';
@@ -13,7 +13,6 @@ import {
   accessTokenAtom,
   clientConfigStateAtom,
 } from '../../stores/ClientConfigStore';
-import { ClientConfig } from '../../../interfaces/client-config.model';
 import { ComponentError } from '../../ui/ComponentError/ComponentError';
 
 export type AuthModalProps = {
@@ -23,10 +22,10 @@ export type AuthModalProps = {
 };
 
 export const AuthModal: FC<AuthModalProps> = ({ open, handleClose, forceTabs }) => {
-  const authenticated = useRecoilValue<boolean>(chatAuthenticatedAtom);
-  const accessToken = useRecoilValue<string>(accessTokenAtom);
-  const currentUser = useRecoilValue(currentUserAtom);
-  const clientConfig = useRecoilValue<ClientConfig>(clientConfigStateAtom);
+  const authenticated = useAtomValue(chatAuthenticatedAtom);
+  const accessToken = useAtomValue(accessTokenAtom);
+  const currentUser = useAtomValue(currentUserAtom);
+  const clientConfig = useAtomValue(clientConfigStateAtom);
 
   if (!currentUser) {
     return null;
