@@ -1,4 +1,3 @@
-import React from 'react';
 import { Meta, StoryFn } from '@storybook/nextjs';
 import { RecoilRoot } from 'recoil';
 import { MobileContent, MobileContentProps } from './MobileContent';

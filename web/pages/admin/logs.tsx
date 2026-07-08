@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactElement } from 'react';
+import { useState, useEffect, ReactElement } from 'react';
 import { LogTable } from '../../components/admin/LogTable';
 
 import { LOGS_ALL, fetchData } from '../../utils/apis';

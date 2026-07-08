@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Typography, Tag } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../../../utils/server-status-context';

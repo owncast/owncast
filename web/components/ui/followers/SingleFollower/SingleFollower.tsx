@@ -1,5 +1,5 @@
 import { Avatar, Col, Row } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import cn from 'classnames';
 import { Follower } from '../../../../interfaces/follower';
 import styles from './SingleFollower.module.scss';

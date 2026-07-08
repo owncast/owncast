@@ -3,23 +3,35 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { Html, Head, Main, NextScript } from 'next/document';
 
+// Inlines the built css chunks into the exported HTML instead of emitting
+// render-blocking stylesheet links. Production-export only: the dev server
+// keeps normal <link> tags (Turbopack dev serves css virtually, there is no
+// file on disk to read).
 class InlineStylesHead extends Head {
-  getCssLinks: Head['getCssLinks'] = ({ allFiles }) => {
+  getCssLinks(files: Parameters<Head['getCssLinks']>[0]) {
+    if (process.env.NODE_ENV !== 'production') return super.getCssLinks(files);
+    const { allFiles } = files;
     const { assetPrefix } = this.context;
     if (!allFiles || allFiles.length === 0) return null;
     return allFiles
-      .filter((file: any) => /\.css$/.test(file))
-      .map((file: any) => (
+      .filter(file => /\.css$/.test(file))
+      .map(file => (
         <style
           key={file}
           nonce={this.props.nonce}
           data-href={`${assetPrefix}/_next/${file}`}
           dangerouslySetInnerHTML={{
-            __html: readFileSync(join(process.cwd(), '.next', file), 'utf-8'),
+            // Rebase relative url() refs (fonts) against the css chunk's
+            // real directory: inlined into the document they would resolve
+            // from / and 404, silently dropping the web fonts.
+            __html: readFileSync(join(process.cwd(), '.next', file), 'utf-8').replace(
+              /url\((["']?)\.\.\//g,
+              'url($1/_next/static/',
+            ),
           }}
         />
       ));
-  };
+  }
 }
 
 export default function Document() {

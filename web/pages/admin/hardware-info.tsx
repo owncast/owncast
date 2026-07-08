@@ -1,5 +1,5 @@
 import { Row, Col, Typography, Alert, Spin } from 'antd';
-import React, { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';
 import { fetchData, FETCH_INTERVAL, HARDWARE_STATS } from '../../utils/apis';

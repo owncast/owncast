@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { Row, Col, Empty, Spin, Alert } from 'antd';
 import { StreamCard } from '../StreamCard/StreamCard';
 import { Translation } from '../Translation/Translation';

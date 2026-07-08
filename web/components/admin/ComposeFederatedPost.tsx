@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 
 import { Button, Input, Modal } from 'antd';
 import { STATUS_ERROR, STATUS_SUCCESS } from '../../utils/input-statuses';

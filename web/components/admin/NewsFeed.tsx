@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable react/no-danger */
-import React, { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC } from 'react';
 import { Collapse, Typography, Skeleton } from 'antd';
 import { format } from 'date-fns';
 

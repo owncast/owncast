@@ -1,6 +1,6 @@
 import { Avatar, Button, Card, Col, Row, Tooltip, Typography, Upload } from 'antd';
 import { RcFile } from 'antd/lib/upload/interface';
-import React, { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';
 import FormStatusIndicator from '../../../components/admin/FormStatusIndicator';

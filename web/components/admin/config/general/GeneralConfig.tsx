@@ -1,5 +1,3 @@
-import React from 'react';
-
 import EditInstanceDetails from './EditInstanceDetails';
 import EditInstanceTags from './EditInstanceTags';
 import EditSocialLinks from './EditSocialLinks';

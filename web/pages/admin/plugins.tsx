@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Alert, Button, message, Space, Tabs, Typography, Upload } from 'antd';
 import type { UploadProps } from 'antd';
 import dynamic from 'next/dynamic';

@@ -2,7 +2,7 @@
 import { Typography, Alert, Button, Space, Tabs, Badge } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import React, { ReactElement, useContext, useState } from 'react';
+import { ReactElement, useContext, useState } from 'react';
 import { Translation } from '../../components/ui/Translation/Translation';
 import { Localization } from '../../types/localization';
 import { AdminLayout } from '../../components/layouts/AdminLayout';

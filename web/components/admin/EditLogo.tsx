@@ -1,6 +1,6 @@
 import { Button, Upload } from 'antd';
 import { RcFile } from 'antd/lib/upload/interface';
-import React, { useState, useContext, FC } from 'react';
+import { useState, useContext, FC } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';
 import { FormStatusIndicator } from './FormStatusIndicator';
