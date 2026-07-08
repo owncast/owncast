@@ -122,7 +122,7 @@
     "html-webpack-plugin": "5.6.7",
     "install": "^0.13.0",
     "jest-environment-jsdom": "^30.0.4",
-    "knip": "^5.0.0",
+    "knip": "^6.0.0",
     "mdx-mermaid": "^2.0.0",
     "mermaid": "^11.10.0",
     "msw": "^2.11.6",
