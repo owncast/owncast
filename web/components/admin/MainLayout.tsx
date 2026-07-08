@@ -342,15 +342,16 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
           key: '/admin/plugins',
           label: <Link href="/admin/plugins">{t(Localization.Admin.Plugins.overview)}</Link>,
         },
-        // One entry per loaded plugin that declares at least one admin
+        // One entry per enabled plugin that declares at least one admin
         // page, so the admin can jump straight to a plugin's config
-        // without going through the overview + Configure button. URL is
+        // without going through the overview + Configure button. Disabled
+        // plugins are omitted — their admin pages don't serve. URL is
         // a static route plus an id query param (the plugin's slug)
         // because the admin UI is statically exported and can't
         // enumerate plugin identifiers at build time. Sidebar labels use
         // the human-readable display name.
         ...plugins
-          .filter(p => (p.adminPages?.length ?? 0) > 0)
+          .filter(p => p.enabled && (p.adminPages?.length ?? 0) > 0)
           .map(p => ({
             key: `/admin/plugins/configure?id=${p.slug}`,
             label: (

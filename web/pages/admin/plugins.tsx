@@ -242,6 +242,24 @@ const Plugins = () => {
     }
   };
 
+  // Called when the admin declines the post-install confirmation. For a
+  // fresh install the plugin was never enabled, so there's nothing to do.
+  // For an update that expanded permissions the plugin is still enabled
+  // (running the old, previously-approved code), so declining the new
+  // permissions must actually disable it — otherwise "no" would silently
+  // leave it running.
+  const handleDeclineAfterInstall = async () => {
+    const plugin = pendingEnable;
+    setPendingEnable(null);
+    if (!plugin?.enabled) return;
+    try {
+      await fetchData(pluginActionUrl(plugin.slug, 'disable'), { method: 'POST' });
+      await loadPlugins();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
   // Common path for "fetch the registry's bytes for (name, version)
   // and run Manager.Install". Shared between the Browse tab's Update
   // button and the Installed tab's "update available" tag so both
@@ -257,12 +275,11 @@ const Plugins = () => {
         message.success(t(Localization.Admin.Plugins.uploadSuccess, { name: entry.name }));
         await loadPlugins();
         await loadRegistry();
-        // Only prompt to enable for plugins that aren't already
-        // running. Updates of enabled plugins keep their enabled state
-        // unless the new manifest expanded permissions (in which case
-        // the host marks them auto-disabled and the modal shows the
-        // new perms).
-        if (!entry.enabled) {
+        // Prompt only when there's a decision to make: a fresh install
+        // that isn't running yet, or an update that expanded permissions
+        // and needs re-approval. An update with unchanged permissions
+        // reloads in place on the host and needs no prompt.
+        if (!entry.enabled || (entry.pendingPermissions?.length ?? 0) > 0) {
           setPendingEnable(entry);
         }
       } catch (e) {
@@ -349,7 +366,7 @@ const Plugins = () => {
 
       <InstallConfirmModal
         plugin={pendingEnable}
-        onCancel={() => setPendingEnable(null)}
+        onCancel={handleDeclineAfterInstall}
         onEnable={handleEnableAfterInstall}
       />
     </div>
