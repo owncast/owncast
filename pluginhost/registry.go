@@ -161,6 +161,19 @@ func (p *Host) handleRegistryInstall(w http.ResponseWriter, r *http.Request) {
 		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: "plugin cannot be installed: " + err.Error()})
 		return
 	}
+
+	// Record the registry's homepage link for the plugin so the
+	// installed-plugins list can show it. Best-effort: the install
+	// itself already succeeded, so a bad or missing link just means no
+	// homepage renders.
+	if detail.Homepage != "" {
+		if err := p.manager.SetPluginHomepage(entry.Slug, detail.Homepage); err != nil {
+			log.Warnf("plugin %q: could not record registry homepage: %v", entry.Slug, err)
+		} else {
+			entry.Homepage = detail.Homepage
+		}
+	}
+
 	log.Infof("plugin %q [%s] v%s installed from registry by admin", entry.DisplayName, entry.Slug, entry.Version)
 	writeJSONResponse(w, http.StatusOK, entry)
 }
@@ -174,7 +187,11 @@ type registryVersion struct {
 }
 
 type registryDetail struct {
-	Slug     string            `json:"slug"`
+	Slug string `json:"slug"`
+	// Homepage is the plugin's external link from the registry listing
+	// (docs, source repo, tip jar). Persisted host-side at install time
+	// so the installed-plugins list can render it.
+	Homepage string            `json:"homepage"`
 	Versions []registryVersion `json:"versions"`
 }
 

@@ -367,6 +367,10 @@ func TestHandleRegistryRoute_DispatchesActions(t *testing.T) {
 
 // --- test helpers ---
 
+// stubRegistryHomepage is the homepage link the stub registry's detail
+// payload advertises. Successful installs persist it host-side.
+const stubRegistryHomepage = "https://example.com/docs"
+
 // newRegistryStub returns an httptest server that emulates the
 // directory's /plugins/<slug> detail endpoint plus a download URL
 // the install handler will GET to retrieve the .ocpkg bytes. The
@@ -386,7 +390,8 @@ func newRegistryStub(t *testing.T, slug, version string, pkg []byte, sha string)
 		downloadURL := fmt.Sprintf("http://%s/ocpkg/%s", r.Host, slug)
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]any{
-			"slug": slug,
+			"slug":     slug,
+			"homepage": stubRegistryHomepage,
 			"versions": []map[string]any{
 				{
 					"version":     version,
@@ -403,4 +408,90 @@ func newRegistryStub(t *testing.T, slug, version string, pkg []byte, sha string)
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	return srv
+}
+
+// buildJSPackageBytes assembles an in-memory .ocpkg whose code entry is
+// author JavaScript run on the embedded shared engine, so install-path
+// tests don't depend on the SDK example wasm being built.
+func buildJSPackageBytes(t *testing.T, manifest []byte) []byte {
+	t.Helper()
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	mw, err := zw.Create("plugin.manifest.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := mw.Write(manifest); err != nil {
+		t.Fatal(err)
+	}
+	jw, err := zw.Create("plugin.js")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := jw.Write([]byte(`const { definePlugin } = require("@owncast/plugin-sdk"); module.exports = definePlugin({});`)); err != nil {
+		t.Fatal(err)
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return buf.Bytes()
+}
+
+// TestHandleRegistryInstall_PersistsHomepageSidecar covers the registry
+// metadata flow: the registry's detail payload carries a homepage link,
+// the install handler persists it via SetPluginHomepage (as a
+// <base>.registry.json sidecar next to the installed .ocpkg), and the
+// install response's entry JSON reflects it.
+func TestHandleRegistryInstall_PersistsHomepageSidecar(t *testing.T) {
+	pkg := buildJSPackageBytes(t, []byte(`{
+		"api": "1",
+		"name": "Hello World",
+		"slug": "hello-world",
+		"version": "0.1.0",
+		"description": "registry homepage test",
+		"permissions": []
+	}`))
+	sum := sha256.Sum256(pkg)
+	sha := hex.EncodeToString(sum[:])
+
+	upstream := newRegistryStub(t, "hello-world", "0.1.0", pkg, sha)
+	withRegistryEnv(t, upstream.URL)
+	host := newTestHost(t)
+
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/admin/plugin-registry/install",
+		strings.NewReader(`{"slug":"hello-world","version":"0.1.0"}`))
+	host.handleRegistryInstall(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want 200 (body=%s)", rec.Code, rec.Body.String())
+	}
+	var entry plugins.DiscoveredEntry
+	if err := json.Unmarshal(rec.Body.Bytes(), &entry); err != nil {
+		t.Fatalf("decode install response: %v", err)
+	}
+	if entry.Homepage != stubRegistryHomepage {
+		t.Errorf("install response homepage = %q, want %q", entry.Homepage, stubRegistryHomepage)
+	}
+
+	// The homepage is persisted as a sidecar next to the installed
+	// package so it survives host restarts.
+	entries := host.manager.List()
+	if len(entries) != 1 {
+		t.Fatalf("manager has %d entries, want 1", len(entries))
+	}
+	sidecar := strings.TrimSuffix(entries[0].Path, filepath.Ext(entries[0].Path)) + ".registry.json"
+	raw, err := os.ReadFile(sidecar)
+	if err != nil {
+		t.Fatalf("read homepage sidecar: %v", err)
+	}
+	var meta struct {
+		Homepage string `json:"homepage"`
+	}
+	if err := json.Unmarshal(raw, &meta); err != nil {
+		t.Fatalf("decode sidecar %s: %v", raw, err)
+	}
+	if meta.Homepage != stubRegistryHomepage {
+		t.Errorf("sidecar homepage = %q, want %q", meta.Homepage, stubRegistryHomepage)
+	}
 }

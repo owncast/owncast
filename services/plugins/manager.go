@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -369,15 +370,21 @@ func (m *Manager) notifyUnload(l *Loaded) {
 // identity for plugins that post to chat. Empty means "use
 // DisplayName" (resolved at chat-send time, not here).
 type DiscoveredEntry struct {
-	Slug           string   `json:"slug"`
-	DisplayName    string   `json:"name"`
-	BotDisplayName string   `json:"botDisplayName,omitempty"`
-	Version        string   `json:"version,omitempty"`
-	Description    string   `json:"description,omitempty"`
-	Permissions    []string `json:"permissions,omitempty"`
-	Path           string   `json:"path"`
-	Enabled        bool     `json:"enabled"`
-	Loaded         bool     `json:"loaded"`
+	Slug           string `json:"slug"`
+	DisplayName    string `json:"name"`
+	BotDisplayName string `json:"botDisplayName,omitempty"`
+	Version        string `json:"version,omitempty"`
+	Description    string `json:"description,omitempty"`
+	// Homepage is an optional external link for the plugin (docs, help
+	// page, source repo, tip jar). Recorded from the registry's
+	// metadata when the plugin is installed from the registry (kept in
+	// a "<base>.registry.json" sidecar next to the plugin file);
+	// manually-uploaded plugins have none.
+	Homepage    string   `json:"homepage,omitempty"`
+	Permissions []string `json:"permissions,omitempty"`
+	Path        string   `json:"path"`
+	Enabled     bool     `json:"enabled"`
+	Loaded      bool     `json:"loaded"`
 	// AutoDisabled is set when the dispatcher's strike system stopped
 	// invoking the plugin (too many consecutive filter failures).
 	// Enabled stays true so the admin can see what they originally chose,
@@ -838,6 +845,52 @@ func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*Discovered
 	return &snapshot, nil
 }
 
+// SetPluginHomepage records an external link for an installed plugin,
+// persisted as a "<base>.registry.json" sidecar next to the plugin file
+// so it survives restarts, and mirrored into the discovered entry so
+// the next List() shows it without waiting for a scan. Called by the
+// registry install flow with the registry's listing metadata. Only
+// absolute http(s) URLs are accepted since the admin UI renders the
+// value as a clickable link; an empty URL removes the sidecar.
+func (m *Manager) SetPluginHomepage(slug, homepage string) error {
+	m.mu.RLock()
+	entry, ok := m.discovered[slug]
+	var path string
+	if ok {
+		path = entry.Path
+	}
+	m.mu.RUnlock()
+	if !ok {
+		return fmt.Errorf("plugin %q not discovered", slug)
+	}
+
+	metaPath := registryMetaPathFor(path)
+	if homepage == "" {
+		if err := os.Remove(metaPath); err != nil && !os.IsNotExist(err) {
+			return err
+		}
+	} else {
+		u, err := url.Parse(homepage)
+		if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+			return fmt.Errorf("homepage %q must be an absolute http(s) URL", homepage)
+		}
+		b, err := json.Marshal(registryMeta{Homepage: homepage})
+		if err != nil {
+			return err
+		}
+		if err := os.WriteFile(metaPath, b, 0o600); err != nil {
+			return fmt.Errorf("write registry metadata: %w", err)
+		}
+	}
+
+	m.mu.Lock()
+	if entry, ok := m.discovered[slug]; ok {
+		entry.Homepage = homepage
+	}
+	m.mu.Unlock()
+	return nil
+}
+
 // Disable unloads a plugin and persists the choice. No-op if already disabled.
 func (m *Manager) Disable(ctx context.Context, name string) error {
 	m.mu.Lock()
@@ -912,6 +965,7 @@ func removePluginFiles(path string) error {
 	if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
 		return err
 	}
+	_ = os.Remove(registryMetaPathFor(path))
 	if strings.HasSuffix(path, ".wasm") {
 		base := strings.TrimSuffix(path, ".wasm")
 		_ = os.Remove(base + ".manifest.json")
@@ -1065,6 +1119,7 @@ func (m *Manager) scan(ctx context.Context) error {
 
 		hasIcon := hasPluginIcon(path)
 		hasInstructions := hasPluginInstructions(path)
+		homepage := readPluginHomepage(path)
 
 		m.mu.Lock()
 		if existing, ok := m.discovered[manifest.Slug]; ok {
@@ -1081,6 +1136,7 @@ func (m *Manager) scan(ctx context.Context) error {
 			existing.PendingPermissions = pendingPermissions(manifest.Permissions, m.approvedSet[manifest.Slug])
 			existing.AllowedHosts = manifest.Network.AllowedHosts
 			existing.Config = manifest.Config
+			existing.Homepage = homepage
 		} else {
 			m.discovered[manifest.Slug] = &DiscoveredEntry{
 				Slug:               manifest.Slug,
@@ -1097,6 +1153,7 @@ func (m *Manager) scan(ctx context.Context) error {
 				HasInstructions:    hasInstructions,
 				PendingPermissions: pendingPermissions(manifest.Permissions, m.approvedSet[manifest.Slug]),
 				Config:             manifest.Config,
+				Homepage:           homepage,
 			}
 		}
 		m.mu.Unlock()
@@ -1573,6 +1630,40 @@ func requireChatFilterPermission(manifest *Manifest, subs Subscriptions) error {
 		}
 	}
 	return nil
+}
+
+// registryMetaSuffix names the sidecar file the host writes next to a
+// plugin installed from the registry ("<base>.registry.json"), carrying
+// registry-sourced metadata that has no home in the plugin's own
+// manifest. The scan loop ignores it (only .wasm/.ocpkg are discovered)
+// and Uninstall removes it with the plugin.
+const registryMetaSuffix = ".registry.json"
+
+// registryMeta is the sidecar's JSON shape.
+type registryMeta struct {
+	Homepage string `json:"homepage,omitempty"`
+}
+
+// registryMetaPathFor returns the registry-metadata sidecar path for a
+// plugin file: "<dir>/<base>.registry.json" for both the x.ocpkg and
+// x.wasm layouts.
+func registryMetaPathFor(pluginPath string) string {
+	return strings.TrimSuffix(pluginPath, filepath.Ext(pluginPath)) + registryMetaSuffix
+}
+
+// readPluginHomepage reads the homepage from a plugin's registry
+// sidecar, or "" when there is no sidecar (manual upload) or it doesn't
+// parse. Called per scan, so it's a single small read.
+func readPluginHomepage(pluginPath string) string {
+	b, err := os.ReadFile(registryMetaPathFor(pluginPath))
+	if err != nil {
+		return ""
+	}
+	var meta registryMeta
+	if err := json.Unmarshal(b, &meta); err != nil {
+		return ""
+	}
+	return meta.Homepage
 }
 
 // PluginIconFilename is the conventional filename a plugin uses to ship

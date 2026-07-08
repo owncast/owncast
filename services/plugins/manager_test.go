@@ -676,3 +676,165 @@ func TestManager_Install_UpdatesExistingPlugin(t *testing.T) {
 		t.Errorf("update should not duplicate the entry, got %d", len(mgr.List()))
 	}
 }
+
+// --- registry homepage sidecar ---
+
+const testHomepage = "https://example.com/docs"
+
+// sidecarPath returns the registry-metadata sidecar path the manager
+// writes next to a loose-files plugin in dir.
+func sidecarPath(dir, name string) string {
+	return filepath.Join(dir, name+".registry.json")
+}
+
+// readSidecarHomepage decodes the homepage recorded in a registry
+// sidecar file. The literal filename and JSON key are the on-disk
+// persistence contract the registry install flow depends on.
+func readSidecarHomepage(t *testing.T, path string) string {
+	t.Helper()
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read sidecar: %v", err)
+	}
+	var meta struct {
+		Homepage string `json:"homepage"`
+	}
+	if err := json.Unmarshal(raw, &meta); err != nil {
+		t.Fatalf("decode sidecar %s: %v", raw, err)
+	}
+	return meta.Homepage
+}
+
+// Discovery only parses the manifest sidecar (never instantiates the
+// wasm), so the homepage tests use junk wasm bytes and run without the
+// SDK example being built.
+func TestManager_SetPluginHomepage_WritesSidecarAndSurvivesRestart(t *testing.T) {
+	dir := t.TempDir()
+	makePluginFiles(t, dir, "hello-world", []byte{0x00})
+
+	ctx := context.Background()
+	mgr := NewManager(dir, &HostEnv{})
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+
+	if err := mgr.SetPluginHomepage("hello-world", testHomepage); err != nil {
+		t.Fatalf("set homepage: %v", err)
+	}
+	if got := readSidecarHomepage(t, sidecarPath(dir, "hello-world")); got != testHomepage {
+		t.Errorf("sidecar homepage = %q, want %q", got, testHomepage)
+	}
+	entries := mgr.List()
+	if len(entries) != 1 {
+		t.Fatalf("expected 1 discovered, got %d", len(entries))
+	}
+	if entries[0].Homepage != testHomepage {
+		t.Errorf("List should show the homepage immediately, got %q", entries[0].Homepage)
+	}
+
+	// Restart survival: a fresh manager over the same dir rediscovers
+	// the plugin with the homepage populated from the sidecar.
+	mgr.Stop(ctx)
+	mgr2 := NewManager(dir, &HostEnv{})
+	if err := mgr2.Start(ctx); err != nil {
+		t.Fatalf("restart: %v", err)
+	}
+	defer mgr2.Stop(ctx)
+	entries = mgr2.List()
+	if len(entries) != 1 {
+		t.Fatalf("expected 1 discovered after restart, got %d", len(entries))
+	}
+	if entries[0].Homepage != testHomepage {
+		t.Errorf("homepage should survive a restart via the sidecar, got %q", entries[0].Homepage)
+	}
+}
+
+func TestManager_SetPluginHomepage_RejectsNonHTTPURLs(t *testing.T) {
+	dir := t.TempDir()
+	makePluginFiles(t, dir, "hello-world", []byte{0x00})
+
+	mgr := NewManager(dir, &HostEnv{})
+	if err := mgr.Start(context.Background()); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(context.Background())
+
+	// The admin UI renders the homepage as a clickable link, so only
+	// absolute http(s) URLs may be recorded.
+	for _, bad := range []string{"javascript:alert(1)", "/relative", "example.com/no-scheme"} {
+		if err := mgr.SetPluginHomepage("hello-world", bad); err == nil {
+			t.Errorf("SetPluginHomepage(%q) should be rejected", bad)
+		}
+	}
+	if _, err := os.Stat(sidecarPath(dir, "hello-world")); !os.IsNotExist(err) {
+		t.Errorf("rejected homepage must not leave a sidecar, stat err = %v", err)
+	}
+	entries := mgr.List()
+	if len(entries) != 1 {
+		t.Fatalf("expected 1 discovered, got %d", len(entries))
+	}
+	if entries[0].Homepage != "" {
+		t.Errorf("rejected homepage must not show in List, got %q", entries[0].Homepage)
+	}
+}
+
+func TestManager_SetPluginHomepage_UnknownSlugErrors(t *testing.T) {
+	mgr := NewManager(t.TempDir(), &HostEnv{})
+	if err := mgr.Start(context.Background()); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(context.Background())
+	if err := mgr.SetPluginHomepage("nothing-here", testHomepage); err == nil {
+		t.Fatal("expected error setting homepage for unknown plugin")
+	}
+}
+
+func TestManager_SetPluginHomepage_EmptyRemovesSidecar(t *testing.T) {
+	dir := t.TempDir()
+	makePluginFiles(t, dir, "hello-world", []byte{0x00})
+
+	mgr := NewManager(dir, &HostEnv{})
+	if err := mgr.Start(context.Background()); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(context.Background())
+
+	if err := mgr.SetPluginHomepage("hello-world", testHomepage); err != nil {
+		t.Fatalf("set homepage: %v", err)
+	}
+	if err := mgr.SetPluginHomepage("hello-world", ""); err != nil {
+		t.Fatalf("clear homepage: %v", err)
+	}
+	if _, err := os.Stat(sidecarPath(dir, "hello-world")); !os.IsNotExist(err) {
+		t.Errorf("clearing the homepage should remove the sidecar, stat err = %v", err)
+	}
+	entries := mgr.List()
+	if len(entries) != 1 {
+		t.Fatalf("expected 1 discovered, got %d", len(entries))
+	}
+	if entries[0].Homepage != "" {
+		t.Errorf("cleared homepage should vanish from List, got %q", entries[0].Homepage)
+	}
+}
+
+func TestManager_Uninstall_RemovesRegistrySidecar(t *testing.T) {
+	dir := t.TempDir()
+	makePluginFiles(t, dir, "hello-world", []byte{0x00})
+
+	ctx := context.Background()
+	mgr := NewManager(dir, &HostEnv{})
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(ctx)
+
+	if err := mgr.SetPluginHomepage("hello-world", testHomepage); err != nil {
+		t.Fatalf("set homepage: %v", err)
+	}
+	if err := mgr.Uninstall(ctx, "hello-world"); err != nil {
+		t.Fatalf("uninstall: %v", err)
+	}
+	if _, err := os.Stat(sidecarPath(dir, "hello-world")); !os.IsNotExist(err) {
+		t.Errorf("uninstall should remove the registry sidecar, stat err = %v", err)
+	}
+}
