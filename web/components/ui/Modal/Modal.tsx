@@ -1,6 +1,6 @@
 import { Spin, Modal as AntModal } from 'antd';
 import React, { FC, ReactNode, useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { ComponentError } from '../ComponentError/ComponentError';
 import styles from './Modal.module.scss';
 
@@ -84,7 +84,7 @@ export const Modal: FC<ModalProps> = ({
         fallbackRender={({ error, resetErrorBoundary }) => (
           <ComponentError
             componentName="Modal"
-            message={error.message}
+            message={getErrorMessage(error)}
             retryFunction={resetErrorBoundary}
           />
         )}
