@@ -14,7 +14,8 @@
 		"i18next-parser.config.mjs",
 		"types/index.ts",
 		"scripts/i18n-extract.js",
-		"build-scripts/extract-antd-styles.js"
+		"build-scripts/extract-antd-styles.js",
+		"build-scripts/generate-sw.js"
 	],
 	"ignoreDependencies": [
 		"@fontsource/inter",
@@ -51,6 +52,7 @@
 		"@babel/traverse",
 		"glob",
 		"style-loader",
-		"css-loader"
+		"css-loader",
+		"workbox-build"
 	]
 }
