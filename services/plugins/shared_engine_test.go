@@ -394,8 +394,8 @@ def greet(msg):
 // file so it isn't flagged as unused production code.
 func (c *engineCache) resetForTest(ctx context.Context) {
 	c.mu.Lock()
-	for k, cp := range c.byKey {
-		_ = cp.Close(ctx)
+	for k, entry := range c.byKey {
+		_ = entry.cp.Close(ctx)
 		delete(c.byKey, k)
 	}
 	c.mu.Unlock()
