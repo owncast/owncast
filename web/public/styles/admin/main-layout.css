@@ -8,47 +8,13 @@
   background-color: var(--theme-color-palette-1);
 }
 
+/* The sider menu runs antd's dark theme; its colors come from the Menu
+   design tokens in components/theme/AntdProvider.tsx (dark item colors,
+   transparent backgrounds, the selected-item edge bar). Only the menu
+   root background is cleared here so the sider color shows through. */
 .app-container .menu-container {
   border-color: transparent;
   background-color: unset;
-  color: var(--theme-color-components-text-on-dark);
-}
-
-.app-container .menu-container .ant-menu-item-selected:not(.ant-menu-item-only-child),
-.ant-menu-item a:hover,
-.ant-menu-item a::before {
-  color: var(--theme-color-palette-12);
-}
-
-/* v4 menu items inherited the sidebar's on-dark text color; v6 sets an
-   explicit per-item color, so restate the inherited intent. The v6 rules
-   are :where()-wrapped (zero specificity), so this scoped rule wins. */
-.app-container .menu-container .ant-menu-item,
-.app-container .menu-container .ant-menu-submenu-title {
-  color: var(--theme-color-components-text-on-dark);
-}
-
-/* v4's global overrides removed the light-theme selected/hover pill
-   backgrounds and used the palette hover color on the dark sidebar
-   (ant-overrides.scss, removed with v4). Restate them scoped to the
-   admin menu: the v6 pill colors are designed for light surfaces and
-   read wrong on the dark sider. */
-.app-container .menu-container .ant-menu-item-selected {
-  background-color: unset;
-}
-
-/* The hover/active rules use !important on purpose: v6's own hover
-   selectors carry :not() filters with higher specificity, and chasing
-   their selector shape would break silently on antd updates. Same
-   approach as the menu divider rules below. */
-.app-container .menu-container .ant-menu-item:hover,
-.app-container .menu-container .ant-menu-submenu-title:hover {
-  color: var(--theme-color-palette-12) !important;
-  background-color: unset !important;
-}
-
-.app-container .menu-container .ant-menu-submenu-title:active {
-  background: var(--theme-color-palette-12) !important;
 }
 
 .app-container h1.owncast-title {
@@ -210,12 +176,6 @@
   margin: 0;
   margin-left: 0.5em;
   line-height: 1;
-}
-
-.ant-menu-item a,
-.ant-menu-submenu-expand-icon,
-.ant-menu-submenu-arrow {
-  color: unset;
 }
 
 /* Custom upgrade menu divider - partial width */

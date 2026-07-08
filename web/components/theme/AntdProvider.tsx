@@ -35,6 +35,7 @@ type ComponentOverrides = NonNullable<ThemeConfig['components']>;
 type ModalOverrides = NonNullable<ComponentOverrides['Modal']>;
 type TabsOverrides = NonNullable<ComponentOverrides['Tabs']>;
 type DropdownOverrides = NonNullable<ComponentOverrides['Dropdown']>;
+type MenuOverrides = NonNullable<ComponentOverrides['Menu']>;
 
 function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
   const vars = appearanceVariables || {};
@@ -42,6 +43,10 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
   const modal: ModalOverrides = { ...defaultTheme.components?.Modal };
   const tabs: TabsOverrides = { ...defaultTheme.components?.Tabs };
   const dropdown: DropdownOverrides = { ...defaultTheme.components?.Dropdown };
+  // The admin sider menu runs antd's dark theme; these tokens come straight
+  // from the default theme file and are not admin-customizable (the admin
+  // never receives appearanceVariables).
+  const menu: MenuOverrides = { ...defaultTheme.components?.Menu };
 
   if (vars['theme-color-action']) {
     token.colorPrimary = vars['theme-color-action'];
@@ -98,7 +103,7 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
 
   return {
     token,
-    components: { Modal: modal, Tabs: tabs, Dropdown: dropdown },
+    components: { Modal: modal, Tabs: tabs, Dropdown: dropdown, Menu: menu },
     // Component style RULES come from the pre-extracted styles/antd.css
     // (see build-scripts/extract-antd-styles.js); the runtime only injects
     // the CSS-variable VALUES derived from the tokens above, which is what

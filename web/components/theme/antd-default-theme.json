@@ -28,6 +28,17 @@
       "inkBarColor": "#6544e9",
       "colorBorderSecondary": "rgba(0, 0, 0, 0.1)"
     },
+    "Menu": {
+      "darkItemBg": "transparent",
+      "darkSubMenuItemBg": "transparent",
+      "darkPopupBg": "#2d3748",
+      "darkItemColor": "#e2e8f0",
+      "darkItemHoverColor": "#da9eff",
+      "darkItemHoverBg": "transparent",
+      "darkItemSelectedColor": "#da9eff",
+      "darkItemSelectedBg": "transparent",
+      "activeBarWidth": 3
+    },
     "Dropdown": {
       "fontSize": 13,
       "paddingBlock": 5

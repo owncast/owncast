@@ -12086,7 +12086,7 @@ textarea.ant-input-filled.ant-input-status-warning:not(.ant-input-disabled),
   --ant-menu-color-item-bg-selected-horizontal: transparent;
   --ant-menu-horizontal-item-selected-bg: transparent;
   --ant-menu-color-active-bar-width: 0px;
-  --ant-menu-active-bar-width: 0px;
+  --ant-menu-active-bar-width: 3px;
   --ant-menu-color-active-bar-height: 2px;
   --ant-menu-active-bar-height: 2px;
   --ant-menu-color-active-bar-border-size: 1px;
@@ -12118,21 +12118,21 @@ textarea.ant-input-filled.ant-input-status-warning:not(.ant-input-disabled),
   --ant-menu-collapsed-icon-size: 16px;
   --ant-menu-group-title-font-size: 14px;
   --ant-menu-dark-item-disabled-color: rgba(255, 255, 255, 0.25);
-  --ant-menu-dark-item-color: rgba(255, 255, 255, 0.65);
+  --ant-menu-dark-item-color: #e2e8f0;
   --ant-menu-dark-danger-item-color: #ff4b39;
-  --ant-menu-dark-item-bg: #001529;
-  --ant-menu-dark-popup-bg: #001529;
-  --ant-menu-dark-sub-menu-item-bg: #000c17;
-  --ant-menu-dark-item-selected-color: #fff;
-  --ant-menu-dark-item-selected-bg: #6544e9;
+  --ant-menu-dark-item-bg: transparent;
+  --ant-menu-dark-popup-bg: #2d3748;
+  --ant-menu-dark-sub-menu-item-bg: transparent;
+  --ant-menu-dark-item-selected-color: #da9eff;
+  --ant-menu-dark-item-selected-bg: transparent;
   --ant-menu-dark-danger-item-selected-bg: #ff4b39;
   --ant-menu-dark-item-hover-bg: transparent;
   --ant-menu-dark-group-title-color: rgba(255, 255, 255, 0.65);
-  --ant-menu-dark-item-hover-color: #fff;
+  --ant-menu-dark-item-hover-color: #da9eff;
   --ant-menu-dark-danger-item-hover-color: #ff7361;
   --ant-menu-dark-danger-item-selected-color: #fff;
   --ant-menu-dark-danger-item-active-bg: #ff4b39;
-  --ant-menu-item-width: calc(100% - 8px);
+  --ant-menu-item-width: calc(100% + 1px);
 }
 .css-var-R0.ant-form-css-var {
   --ant-form-label-required-mark-color: #ff4b39;

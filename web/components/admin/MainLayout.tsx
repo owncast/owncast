@@ -434,6 +434,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
         </h1>
         <Menu
           mode="inline"
+          theme="dark"
           className="menu-container"
           items={menuItems}
           selectedKeys={[route || '/admin']}
