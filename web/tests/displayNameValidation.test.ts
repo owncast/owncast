@@ -28,6 +28,16 @@ describe('Display Name Validation', () => {
       expect(result.trimmedName).toBe('NewUser');
     });
 
+    test('should trim U+0085 (NEL) padding and accept valid name', () => {
+      const result = validateDisplayName(
+        '\u0085\u0085 NewUser \u0085',
+        currentName,
+        characterLimit,
+      );
+      expect(result.isValid).toBe(true);
+      expect(result.trimmedName).toBe('NewUser');
+    });
+
     test('should accept name with Unicode characters', () => {
       const result = validateDisplayName('用户名', currentName, characterLimit);
       expect(result.isValid).toBe(true);
