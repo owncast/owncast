@@ -76,7 +76,7 @@ jobs:
       # The plugin SDK build (owncast-plugin) and the OAuth provider
       # (node-oidc-provider) both require a recent Node; the runner default may
       # be older, so pin it.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
           node-version: '24'
