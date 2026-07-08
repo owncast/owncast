@@ -1,29 +1,3 @@
-.chat-messages .ant-table-cell .name-col {
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.chat-messages .ant-table-cell .toggle-col label {
-  font-size: 0.7rem;
-}
-
-.chat-messages .ant-table-cell .message-contents {
-  overflow: auto;
-  max-height: 200px;
-}
-
-.chat-messages .ant-table-cell .message-contents img {
-  position: relative;
-  margin-top: -5px;
-  max-height: 50px;
-  max-width: 50px;
-  padding: 0.25rem;
-}
-
-.chat-messages .ant-table-cell .message-contents p {
-  margin-bottom: 0;
-}
-
 .chat-messages .bulk-editor {
   margin: 0.5rem 0;
   padding: 0.5rem;
@@ -46,10 +20,6 @@
   font-size: 0.75rem;
 }
 
-.ant-table-filter-dropdown {
-  max-width: 250px;
-}
-
 .toggle-switch {
   display: flex;
   flex-flow: row nowrap;
@@ -68,18 +38,6 @@
 
 .toggle-switch.hidden:hover {
   opacity: 1;
-}
-
-.toggle-switch .ant-btn .anticon {
-  opacity: 0.5;
-}
-
-.toggle-switch .ant-btn:hover .anticon {
-  opacity: 1;
-}
-
-.toggle-switch .ant-btn-text:hover {
-  background-color: var(--theme-color-palette-10);
 }
 
 .blockuser-popover {
@@ -138,6 +96,49 @@
 
 .block-user-button {
   text-transform: capitalize;
+}
+
+/* Ant Design table/button/dropdown rules for the chat admin surfaces. */
+.chat-messages .ant-table-cell .name-col {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.chat-messages .ant-table-cell .toggle-col label {
+  font-size: 0.7rem;
+}
+
+.chat-messages .ant-table-cell .message-contents {
+  overflow: auto;
+  max-height: 200px;
+}
+
+.chat-messages .ant-table-cell .message-contents img {
+  position: relative;
+  margin-top: -5px;
+  max-height: 50px;
+  max-width: 50px;
+  padding: 0.25rem;
+}
+
+.chat-messages .ant-table-cell .message-contents p {
+  margin-bottom: 0;
+}
+
+.ant-table-filter-dropdown {
+  max-width: 250px;
+}
+
+.toggle-switch .ant-btn .anticon {
+  opacity: 0.5;
+}
+
+.toggle-switch .ant-btn:hover .anticon {
+  opacity: 1;
+}
+
+.toggle-switch .ant-btn-text:hover {
+  background-color: var(--theme-color-palette-10);
 }
 
 .ant-dropdown-menu-item-selected,
