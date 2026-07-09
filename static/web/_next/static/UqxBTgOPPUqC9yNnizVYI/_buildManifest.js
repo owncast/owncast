@@ -1,6 +1,6 @@
 self.__BUILD_MANIFEST = {
   "/": [
-    "static/chunks/3uv06oy313qog.js"
+    "static/chunks/3mo-jgl8ivx01.js"
   ],
   "/_error": [
     "static/chunks/29a_jpa_bvh0a.js"
@@ -66,7 +66,7 @@ self.__BUILD_MANIFEST = {
     "static/chunks/2iwfzwzx0_jvh.js"
   ],
   "/admin/stream-health": [
-    "static/chunks/1p1rrnmt_z_1x.js"
+    "static/chunks/2yo-lzc0qn074.js"
   ],
   "/admin/upgrade": [
     "static/chunks/18622htiqyho1.js"
@@ -81,10 +81,10 @@ self.__BUILD_MANIFEST = {
     "static/chunks/0m5bejw4cfid2.js"
   ],
   "/embed/chat/readonly": [
-    "static/chunks/0ogeq7q6cbyyf.js"
+    "static/chunks/3fbxy18ceuf8m.js"
   ],
   "/embed/chat/readwrite": [
-    "static/chunks/325ziw_iu8wdb.js"
+    "static/chunks/0q3rkb_yr2u35.js"
   ],
   "/embed/video": [
     "static/chunks/1dkiwr5nke2kn.js"

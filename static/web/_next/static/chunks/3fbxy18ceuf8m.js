@@ -15,6 +15,6 @@ __turbopack_load_page_chunks__("/embed/chat/readonly", [
   "static/chunks/07zpchkbu86wl.js",
   "static/chunks/1yz17ur1ezhqh.js",
   "static/chunks/2xlx6h5xthqc-.js",
-  "static/chunks/12rsdylyeayyf.css",
-  "static/chunks/turbopack-2unc-r4c3t77v.js"
+  "static/chunks/370r3ttpahoe8.css",
+  "static/chunks/turbopack-3-5y4q9v_63s1.js"
 ])
