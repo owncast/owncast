@@ -73,7 +73,7 @@
     "sanitize-html": "^2.11.0",
     "semver": "^7.6.3",
     "sharp": "0.34.5",
-    "ua-parser-js": "1.0.41",
+    "ua-parser-js": "2.0.10",
     "video.js": "^8.3.0",
     "xstate": "^5.32.4",
     "yaml": "2.9.0"
