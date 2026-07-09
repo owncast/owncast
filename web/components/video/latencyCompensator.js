@@ -366,7 +366,12 @@ function getCurrentlyPlayingSegment(tech) {
     }
   }
 
-  return playlist.segments[0];
+  // No match: the playhead is outside the tracked window (mid-seek, or the
+  // bookkeeping is stale right after a jump/live-edge resync). Report no
+  // segment so this check is skipped — falling back to the oldest segment
+  // would inflate the latency sample by up to the whole playlist window,
+  // and a run of those flips the median into phantom catch-ups.
+  return null;
 }
 
 // ---- Rebuffer memory persistence ----
