@@ -17,10 +17,10 @@ function getCurrentlyPlayingSegment(tech) {
       break;
     }
   }
-
-  if (!segment) {
-    [segment] = targetMedia.segments;
-  }
+  // No match means currentTime is outside the tracked window (mid-seek, or
+  // segment bookkeeping is stale after a live-edge resync). Report no segment
+  // and skip the sample: falling back to the oldest segment inflates the
+  // reported latency by up to the whole playlist window.
 
   return segment;
 }
@@ -30,6 +30,7 @@ class PlaybackMetrics {
     this.player = player;
     this.supportsDetailedMetrics = false;
     this.hasPerformedInitialVariantChange = false;
+    this.hasStartedPlaying = false;
     this.clockSkewMs = 0;
 
     this.segmentDownloadTime = [];
@@ -103,24 +104,23 @@ class PlaybackMetrics {
     this.supportsDetailedMetrics = !!tech;
 
     tech?.on('usage', e => {
-      if (e.name === 'vhs-unknown-waiting') {
+      // Buffering before the first frame is startup, not an interruption.
+      if (e.name === 'vhs-unknown-waiting' && this.hasStartedPlaying) {
         this.setIsBuffering(true);
       }
 
-      if (e.name === 'vhs-rendition-change-abr') {
-        // Quality variant has changed
+      // The cause suffix is the event that triggered the switch
+      // ('bandwidthupdate', 'abr', 'exclude', ...), so match the prefix.
+      // 'fast-quality' is a viewer picking a rendition by hand — not a
+      // stream health signal.
+      if (e.name.startsWith('vhs-rendition-change') && !e.name.endsWith('fast-quality')) {
         this.incrementQualityVariantChanges();
       }
-    });
-
-    // Variant changed
-    const trackElements = this.player.textTracks();
-    trackElements.addEventListener('cuechange', () => {
-      this.incrementQualityVariantChanges();
     });
   }
 
   handlePlaying() {
+    this.hasStartedPlaying = true;
     clearInterval(this.collectPlaybackMetricsTimer);
     this.collectPlaybackMetricsTimer = setInterval(() => {
       this.collectPlaybackMetrics();
@@ -132,11 +132,12 @@ class PlaybackMetrics {
   }
 
   handleBuffering() {
-    // A waiting event that fires while the player is seeking is the fetch at
+    // Buffering before the first frame is startup, not an interruption. A
+    // waiting event that fires while the player is seeking is the fetch at
     // a seek discontinuity (the viewer scrubbed, or the latency compensator
     // jumped forward), not a playback interruption. Genuine starvation fires
     // with seeking() false, so only count those as errors.
-    if (this.player.seeking()) {
+    if (!this.hasStartedPlaying || this.player.seeking()) {
       return;
     }
     this.incrementErrorCount(1);

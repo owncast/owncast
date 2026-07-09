@@ -24,10 +24,13 @@ func (s *Service) handlePlaybackPolling() {
 }
 
 // RegisterPlaybackErrorCount will add to the windowed playback error count.
+// Players report deltas every ~10s but the window is only harvested every
+// 2 minutes, so counts must accumulate — assignment would drop every report
+// that is followed by a zero before the collector runs.
 func (s *Service) RegisterPlaybackErrorCount(clientID string, count float64) {
 	s.metrics.m.Lock()
 	defer s.metrics.m.Unlock()
-	s.windowedErrorCounts[clientID] = count
+	s.windowedErrorCounts[clientID] += count
 }
 
 // RegisterQualityVariantChangesCount will add to the windowed quality variant
@@ -35,7 +38,7 @@ func (s *Service) RegisterPlaybackErrorCount(clientID string, count float64) {
 func (s *Service) RegisterQualityVariantChangesCount(clientID string, count float64) {
 	s.metrics.m.Lock()
 	defer s.metrics.m.Unlock()
-	s.windowedQualityVariantChanges[clientID] = count
+	s.windowedQualityVariantChanges[clientID] += count
 }
 
 // RegisterPlayerBandwidth will add to the windowed playback bandwidth.
