@@ -411,7 +411,7 @@ const StreamHealth = () => {
               </>
             }
           />
-          <Chart title="#" dataCollections={errorChart} color="#FF7700" unit="" />
+          <Chart title="#" dataCollections={errorChart} color="#FF7700" unit="" minYValue={0} />
         </Card>
         <Card>
           <DescriptionBox
