@@ -56,3 +56,23 @@ export const Moderator = {
     userColor: 2,
   },
 };
+
+export const WrappedText = {
+  args: {
+    type: ChatEventType.Join,
+    displayName: 'awesome-visvesvaraya',
+    isAuthorModerator: false,
+    userColor: 3,
+  },
+  decorators: [
+    Story => (
+      <>
+        {/* Constrain the width like a narrow chat column so the message
+            wraps, exercising the wrapped-line indentation. */}
+        <div style={{ width: 240 }}>
+          <Story />
+        </div>
+      </>
+    ),
+  ],
+};

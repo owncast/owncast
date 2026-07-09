@@ -1,6 +1,6 @@
 .root {
   display: inline-flex;
-  padding: 10px 0;
+  padding: 10px 8px 10px 16px;
 
   .moderatorBadge,
   .user {
@@ -16,11 +16,11 @@
 }
 
 .icon {
-  padding: 0 var(--chat-notification-icon-padding) 0 16px;
+  padding-right: var(--chat-notification-icon-padding);
 }
 
 @media screen and (width <= 350px) {
-  .icon {
+  .root {
     padding-left: 0;
   }
 }
