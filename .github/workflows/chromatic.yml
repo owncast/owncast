@@ -85,11 +85,11 @@ jobs:
               - '**/*.{js,ts,tsx,jsx,md,css,scss,json}'
 
       - name: Install dependencies
-        if: ${{ github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true'}}
+        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' && github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true' }}
         run: npm install
 
       - name: Publish to Chromatic
-        if: ${{ github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true' }}
+        if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' && github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true' }}
         uses: chromaui/action@v17
         with:
           workingDir: web
