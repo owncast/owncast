@@ -685,6 +685,16 @@ Web package: @img/colour@1.1.0
   Declared license: MIT
   LICENSE.md: SHA256 e2eaa4603c14cb26f301e88648c12a853fa3f0f5da6d4b0972958c666e7f2ab8
 
+Web package: @img/sharp-libvips-linux-x64@1.2.4
+  Source: https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.2.4.tgz
+  Declared license: LGPL-3.0-or-later
+  LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: LGPL-3.0-or-later.
+
+Web package: @img/sharp-linux-x64@0.34.5
+  Source: https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.34.5.tgz
+  Declared license: Apache-2.0
+  LICENSE: SHA256 73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68
+
 Web package: @jridgewell/gen-mapping@0.3.13
   Source: https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz
   Declared license: MIT
@@ -815,10 +825,10 @@ Web package: @next/env@16.2.10
   Declared license: MIT
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
-Web package: @parcel/watcher@2.5.6
-  Source: https://registry.npmjs.org/@parcel/watcher/-/watcher-2.5.6.tgz
+Web package: @next/swc-linux-x64-gnu@16.2.10
+  Source: https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-16.2.10.tgz
   Declared license: MIT
-  LICENSE: SHA256 5cfba9d5711264d45a2431a53c79f597cef12720cc7c764db2602daa92d0bd2a
+  LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
 Web package: @polka/url@1.0.0-next.29
   Source: https://registry.npmjs.org/@polka/url/-/url-1.0.0-next.29.tgz
@@ -2130,11 +2140,6 @@ Web package: next@16.2.10
   Declared license: MIT
   license.md: SHA256 ee765244e2d59f5234d474f62e0766fa0c8b99af967fdd4c0cb8dcb0c76ea224
 
-Web package: node-addon-api@7.1.1
-  Source: https://registry.npmjs.org/node-addon-api/-/node-addon-api-7.1.1.tgz
-  Declared license: MIT
-  LICENSE.md: SHA256 89024017b88a9f2b763f79b941a4f2db3b4428edfcacdc0b23866b2da633ad0c
-
 Web package: node-releases@2.0.50
   Source: https://registry.npmjs.org/node-releases/-/node-releases-2.0.50.tgz
   Declared license: MIT
@@ -2197,11 +2202,6 @@ Web package: picocolors@1.1.1
 
 Web package: picomatch@2.3.2
   Source: https://registry.npmjs.org/picomatch/-/picomatch-2.3.2.tgz
-  Declared license: MIT
-  LICENSE: SHA256 d0cd141b0c322fded5dfad1d4645bb2fedfc05b7321fe1009469638190d59ef9
-
-Web package: picomatch@4.0.5
-  Source: https://registry.npmjs.org/picomatch/-/picomatch-4.0.5.tgz
   Declared license: MIT
   LICENSE: SHA256 d0cd141b0c322fded5dfad1d4645bb2fedfc05b7321fe1009469638190d59ef9
 
@@ -9234,32 +9234,6 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-SHA256: 5cfba9d5711264d45a2431a53c79f597cef12720cc7c764db2602daa92d0bd2a
-Used by: Web package: @parcel/watcher@2.5.6 (LICENSE)
---------------------------------------------------------------------------------
-MIT License
-
-Copyright (c) 2017-present Devon Govett
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-================================================================================
 SHA256: 5d0427088e37071c4b942de990f6365d5c2d195f3e957ce925322d184784e2eb
 Used by: Web package: @rc-component/async-validator@6.0.0 (LICENSE.md)
 Used by: Web package: @rc-component/collapse@1.2.0 (LICENSE.md)
@@ -9977,6 +9951,7 @@ THE SOFTWARE.
 
 ================================================================================
 SHA256: 73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68
+Used by: Web package: @img/sharp-linux-x64@0.34.5 (LICENSE)
 Used by: Web package: sharp@0.34.5 (LICENSE)
 --------------------------------------------------------------------------------
 Apache License
@@ -10791,20 +10766,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-================================================================================
-SHA256: 89024017b88a9f2b763f79b941a4f2db3b4428edfcacdc0b23866b2da633ad0c
-Used by: Web package: node-addon-api@7.1.1 (LICENSE.md)
---------------------------------------------------------------------------------
-The MIT License (MIT)
-
-Copyright (c) 2017 [Node.js API collaborators](https://github.com/nodejs/node-addon-api#collaborators)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
 SHA256: 896c9fd6b5fc48ac31800b9d29a6e3ffcb0c2d534ed077ebfa5c2fa388cc38b7
@@ -14075,7 +14036,6 @@ THE SOFTWARE.
 ================================================================================
 SHA256: d0cd141b0c322fded5dfad1d4645bb2fedfc05b7321fe1009469638190d59ef9
 Used by: Web package: picomatch@2.3.2 (LICENSE)
-Used by: Web package: picomatch@4.0.5 (LICENSE)
 --------------------------------------------------------------------------------
 The MIT License (MIT)
 
