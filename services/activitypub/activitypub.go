@@ -23,6 +23,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/datastore"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/webhooks"
 )
 
@@ -51,6 +52,7 @@ type Deps struct {
 	Builder             *apmodels.Builder
 	Signer              *crypto.Signer
 	Resolver            *apresolvers.Resolver
+	Events              *dispatcher.Dispatcher
 	Config              *config.Config
 }
 
@@ -83,6 +85,7 @@ func New(deps Deps) *Service {
 		Builder:          deps.Builder,
 		Signer:           deps.Signer,
 		Resolver:         deps.Resolver,
+		Events:           deps.Events,
 	})
 
 	jobsSvc := jobs.New(jobs.Deps{

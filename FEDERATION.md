@@ -34,7 +34,7 @@ Owncast actors do not follow other actors. The `following` collection endpoint r
 
 | Activity | Object | Send | Receive | Notes |
 |----------|--------|:----:|:-------:|-------|
-| `Create` | `Note` | Yes | No | Sent on go-live and manual fediverse posts. Incoming posts are ignored. |
+| `Create` | `Note` | Yes | Yes | Sent on go-live and manual fediverse posts. Qualifying inbound notes produce plugin mention or reply events only. |
 | `Update` | `Service` | Yes | No | Sent when server profile changes. |
 | `Update` | `Person` | No | Yes | Updates cached follower profile information. |
 | `Follow` | - | No | Yes | Queued for approval if private mode is enabled. |
@@ -46,7 +46,7 @@ Owncast actors do not follow other actors. The `following` collection endpoint r
 | `Accept` | `QuoteRequest` | Yes | No | Sent when the quoted post exists and quoting is allowed. Carries the `QuoteAuthorization` stamp IRI in `result`. |
 | `Reject` | `QuoteRequest` | Yes | No | Sent for unknown posts, while in private mode, or when quoting is disabled. |
 
-Owncast is a broadcast-only service. It does not follow other actors or accept incoming posts.
+Owncast is a broadcast-only service. It does not follow other actors. Inbound posts are not displayed as a social timeline or federated onward.
 
 ## Notes
 
@@ -79,6 +79,21 @@ Owncast implements the quoted-server side of [FEP-044f](https://codeberg.org/fed
 - A `QuoteRequest` for an unknown object, any request while private mode is enabled, or any request while the operator has disabled quoting receives a `Reject`.
 - Quoting can be turned off by the operator in the admin under the Social configuration ("Allow quotes"). It is enabled by default.
 - Owncast does not author quote posts and does not revoke previously issued stamps.
+
+## Plugin Integration
+
+Inbound Fediverse activities can produce internal plugin events. These subscriptions are not external HTTP webhooks. A plugin must declare the `fediverse.inbound` permission to subscribe to `fediverse.follow`, `fediverse.like`, `fediverse.repost`, `fediverse.mention`, `fediverse.reply`, `fediverse.quote`, or `fediverse.activity`.
+
+All inbox requests must pass HTTP signature verification and the activity actor must share an origin with the verified signing key owner. After those checks, `fediverse.activity` receives the raw JSON object in addition to any specialized event the activity produces.
+
+Inbound `Create(Note)` activities have narrower requirements for mention and reply events. The `Create` must contain exactly one actor and exactly one `Note`. The note must have an IRI and exactly one `attributedTo` value that matches the activity actor. The resolved actor must also match the activity actor.
+
+- A note whose first `inReplyTo` IRI identifies a locally authored post produces `fediverse.reply`.
+- Any other qualifying note produces `fediverse.mention` only when the `Create` or `Note` addresses the local actor in `to` or `cc`.
+
+These inbound notes are delivered to plugins. Owncast does not add them to a social timeline or federate them onward.
+
+An accepted `QuoteRequest` produces `fediverse.quote` after Owncast signs and queues the acceptance. Its payload contains the remote actor and the target, which is the locally authored quoted post. Rejected quote requests do not produce this event.
 
 ## Addressing
 
@@ -138,7 +153,7 @@ Owncast supports blocking at the domain and individual actor level. Blocked enti
 
 - Owncast uses `Service` actor type, not `Person`
 - There is no `following` collection (Owncast does not follow accounts)
-- Owncast does not accept incoming posts (`Create` from remote actors is ignored)
+- Owncast does not display inbound `Create(Note)` activities as social timeline posts or federate them onward. Qualifying mentions and replies are delivered only to plugins
 - Engagement (`Like`, `Announce`) can be displayed in the live chat if enabled
 - The `sensitive` flag indicates NSFW content for the entire stream
 

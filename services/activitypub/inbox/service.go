@@ -18,6 +18,7 @@ import (
 	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/webhooks"
 )
 
@@ -43,6 +44,7 @@ type Service struct {
 	builder          *apmodels.Builder
 	signer           *apcrypto.Signer
 	resolver         *apresolvers.Resolver
+	events           *dispatcher.Dispatcher
 }
 
 // Deps is the explicit dependency contract for inbox.
@@ -56,6 +58,7 @@ type Deps struct {
 	Builder          *apmodels.Builder
 	Signer           *apcrypto.Signer
 	Resolver         *apresolvers.Resolver
+	Events           *dispatcher.Dispatcher
 }
 
 // New constructs an idle inbox Service. Call Start to launch the worker
@@ -72,6 +75,7 @@ func New(deps Deps) *Service {
 		builder:          deps.Builder,
 		signer:           deps.Signer,
 		resolver:         deps.Resolver,
+		events:           deps.Events,
 	}
 }
 

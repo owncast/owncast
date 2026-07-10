@@ -2,9 +2,12 @@ package pluginhost
 
 import (
 	"context"
+	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/owncast/owncast/models"
+	activityevents "github.com/owncast/owncast/services/activitypub/events"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/plugins"
@@ -169,21 +172,20 @@ func newHelpResponder(snapshot func() []*plugins.Loaded, post func(text string))
 }
 
 // newPluginEventListener returns a dispatcher.Listener that translates each
-// Owncast event (carried as a webhooks.WebhookEvent) into the plugin SDK's
-// payload shape and dispatches it to subscribed plugins. Dispatch runs on its
-// own goroutine so a slow plugin never blocks the event source (the chat hot
-// path).
+// Owncast event into the plugin SDK's payload shape and dispatches it to
+// subscribed plugins. Dispatch runs on its own goroutine so a slow plugin
+// never blocks the event source (the chat hot path).
 func newPluginEventListener(pluginDispatcher *plugins.Dispatcher) dispatcher.Listener {
 	return func(ctx context.Context, e dispatcher.Event) {
-		webhookEvent, ok := e.Payload.(webhooks.WebhookEvent)
-		if !ok {
+		events := translatePluginEvent(e)
+		if len(events) == 0 {
 			return
 		}
 		// Notifications are fire-and-forget: detach from the publisher's
 		// context so the dispatch isn't cancelled when the publishing call
 		// returns. Per-plugin timeouts still apply inside Dispatch.
 		ctx = context.WithoutCancel(ctx)
-		for _, pe := range translateWebhookEvent(webhookEvent) {
+		for _, pe := range events {
 			// Notify-only on purpose: the inbound-chat path already ran
 			// the filter chain through newPluginChatFilter before the
 			// event was broadcast. Calling Dispatch (filter + notify)
@@ -193,6 +195,61 @@ func newPluginEventListener(pluginDispatcher *plugins.Dispatcher) dispatcher.Lis
 			go pluginDispatcher.Notify(ctx, pe.eventType, pe.payload)
 		}
 	}
+}
+
+// translatePluginEvent maps shared webhook events and internal ActivityPub
+// events onto plugin events. It is pure so each contract can be tested without
+// a live dispatcher.
+func translatePluginEvent(evt dispatcher.Event) []pluginEvent {
+	if webhookEvent, ok := evt.Payload.(webhooks.WebhookEvent); ok {
+		return translateWebhookEvent(webhookEvent)
+	}
+	return translateFediverseEvent(evt)
+}
+
+func translateFediverseEvent(evt dispatcher.Event) []pluginEvent {
+	switch evt.Type {
+	case models.FediverseActivity:
+		payload, ok := evt.Payload.(json.RawMessage)
+		if !ok {
+			return nil
+		}
+		return []pluginEvent{{plugins.EventFediverseActivity, payload}}
+	case models.FediverseEngagementLike, models.FediverseEngagementRepost, models.FediverseEngagementQuote:
+		payload, ok := evt.Payload.(*activityevents.FediverseEngagementEvent)
+		if !ok || payload == nil {
+			return nil
+		}
+		translated := *payload
+		translated.Actor.Handle = normalizeFediverseHandle(translated.Actor.Handle)
+		var eventType string
+		switch evt.Type {
+		case models.FediverseEngagementLike:
+			eventType = plugins.EventFediverseLike
+		case models.FediverseEngagementRepost:
+			eventType = plugins.EventFediverseRepost
+		case models.FediverseEngagementQuote:
+			eventType = plugins.EventFediverseQuote
+		}
+		return []pluginEvent{{eventType, translated}}
+	case models.FediverseMention, models.FediverseReply:
+		payload, ok := evt.Payload.(*activityevents.FediverseInboundPostEvent)
+		if !ok || payload == nil {
+			return nil
+		}
+		translated := *payload
+		translated.Actor.Handle = normalizeFediverseHandle(translated.Actor.Handle)
+		eventType := plugins.EventFediverseMention
+		if evt.Type == models.FediverseReply {
+			eventType = plugins.EventFediverseReply
+		}
+		return []pluginEvent{{eventType, translated}}
+	}
+	return nil
+}
+
+func normalizeFediverseHandle(handle string) string {
+	return "@" + strings.TrimLeft(handle, "@")
 }
 
 // translateWebhookEvent maps an Owncast webhook event onto the plugin events
@@ -209,6 +266,21 @@ func translateWebhookEvent(evt webhooks.WebhookEvent) []pluginEvent {
 		return translateChatEvent(evt)
 	case models.StreamStarted, models.StreamStopped, models.StreamTitleUpdated:
 		return translateStreamEvent(evt)
+	case models.FediverseEngagementFollow:
+		data, ok := evt.EventData.(*webhooks.WebhookFediverseEngagementFollowEventData)
+		if !ok || data == nil {
+			return nil
+		}
+		return []pluginEvent{{
+			plugins.EventFediverseFollow,
+			activityevents.FediverseEngagementEvent{
+				Actor: activityevents.FediverseActor{
+					Name:   data.Name,
+					Handle: normalizeFediverseHandle(data.Username),
+					Image:  data.Image,
+				},
+			},
+		}}
 	}
 	return nil
 }

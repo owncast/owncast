@@ -906,42 +906,81 @@ func TestParseManifest_Network_NoFetchPermissionAllowsAnyShape(t *testing.T) {
 	}
 }
 
-func TestRequireChatFilterPermission_RejectsWhenMissing(t *testing.T) {
-	// A plugin that subscribes to filterChatMessage at register-time must
-	// declare the chat.filter permission in its manifest. The host refuses
-	// to load otherwise so the admin can't be surprised by a plugin that
-	// silently starts rewriting chat.
-	m := &Manifest{DisplayName: "stealth", Permissions: nil}
-	subs := Subscriptions{
-		Filter: []Subscription{{Event: EventChatMessageReceived, Priority: 100}},
+func TestRequireSubscriptionPermissions(t *testing.T) {
+	fediverseEvents := []string{
+		EventFediverseFollow,
+		EventFediverseLike,
+		EventFediverseRepost,
+		EventFediverseMention,
+		EventFediverseReply,
+		EventFediverseQuote,
+		EventFediverseActivity,
 	}
-	err := requireChatFilterPermission(m, subs)
-	if err == nil {
-		t.Fatal("expected error when filterChatMessage is subscribed without chat.filter")
-	}
-	if !strings.Contains(err.Error(), PermChatFilter) {
-		t.Errorf("error should mention %q, got: %v", PermChatFilter, err)
-	}
-}
 
-func TestRequireChatFilterPermission_AcceptsWhenDeclared(t *testing.T) {
-	m := &Manifest{DisplayName: "honest", Permissions: []string{PermChatFilter}}
-	subs := Subscriptions{
-		Filter: []Subscription{{Event: EventChatMessageReceived, Priority: 100}},
+	type testCase struct {
+		name          string
+		permissions   []string
+		subscriptions Subscriptions
+		missingPerm   string
 	}
-	if err := requireChatFilterPermission(m, subs); err != nil {
-		t.Errorf("declared chat.filter should accept: %v", err)
+	tests := []testCase{
+		{
+			name: "chat filter missing permission",
+			subscriptions: Subscriptions{
+				Filter: []Subscription{{Event: EventChatMessageReceived, Priority: 100}},
+			},
+			missingPerm: PermChatFilter,
+		},
+		{
+			name:        "chat filter declared permission",
+			permissions: []string{PermChatFilter},
+			subscriptions: Subscriptions{
+				Filter: []Subscription{{Event: EventChatMessageReceived, Priority: 100}},
+			},
+		},
+		{
+			name: "unrelated subscriptions",
+			subscriptions: Subscriptions{
+				Notify: []Subscription{{Event: "some-other-notify-event"}},
+				Filter: []Subscription{{Event: "some-other-filter-event", Priority: 100}},
+			},
+		},
 	}
-}
+	for _, event := range fediverseEvents {
+		tests = append(tests,
+			testCase{
+				name: "missing permission for " + event,
+				subscriptions: Subscriptions{
+					Notify: []Subscription{{Event: event}},
+				},
+				missingPerm: PermFediverseInbound,
+			},
+			testCase{
+				name:        "declared permission for " + event,
+				permissions: []string{PermFediverseInbound},
+				subscriptions: Subscriptions{
+					Notify: []Subscription{{Event: event}},
+				},
+			},
+		)
+	}
 
-func TestRequireChatFilterPermission_NoOpWhenNoFilterSubscription(t *testing.T) {
-	// A plugin that doesn't subscribe to filterChatMessage at all should
-	// pass through, regardless of whether it declares chat.filter.
-	m := &Manifest{DisplayName: "passive", Permissions: nil}
-	subs := Subscriptions{
-		Filter: []Subscription{{Event: "some-other-event", Priority: 100}},
-	}
-	if err := requireChatFilterPermission(m, subs); err != nil {
-		t.Errorf("non-chat filter subscription should not require chat.filter: %v", err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			manifest := &Manifest{DisplayName: "test", Permissions: tt.permissions}
+			err := requireSubscriptionPermissions(manifest, tt.subscriptions)
+			if tt.missingPerm == "" {
+				if err != nil {
+					t.Fatalf("unexpected error: %v", err)
+				}
+				return
+			}
+			if err == nil {
+				t.Fatalf("expected error mentioning %q", tt.missingPerm)
+			}
+			if !strings.Contains(err.Error(), tt.missingPerm) {
+				t.Errorf("error should mention %q, got: %v", tt.missingPerm, err)
+			}
+		})
 	}
 }
