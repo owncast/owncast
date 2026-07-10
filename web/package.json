@@ -22,6 +22,7 @@
     "build-storybook": "storybook build",
     "build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -",
     "test": "jest",
+    "licenses": "node ../build/generate-licenses.mjs",
     "format": "prettier --write **/*.{js,ts,jsx,tsx,css,md,scss}",
     "format:changed": "files=$(git diff --name-only origin/develop... | grep '^web/' | sed 's|^web/||'); [ -z \"$files\" ] || echo \"$files\" | xargs prettier --write",
     "translate": "node scripts/i18n-extract.js"
