@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
@@ -48,6 +49,17 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Players that support CMCD attach their own playback measurements to
+	// media requests; harvest them from every request that carries them.
+	// The CMCD identity, when present, is the client's metrics identity.
+	requestClientID := utils.GenerateClientIDFromRequest(r)
+	metricsID := requestClientID
+	cmcdKeys := parseCMCDRequest(r)
+	if cmcdKeys != nil {
+		metricsID = cmcdClientID(r, cmcdKeys)
+		h.registerCMCDKeys(metricsID, cmcdKeys)
+	}
+
 	// Handle playlists
 	if path.Ext(r.URL.Path) == ".m3u8" {
 		// Playlists should never be cached.
@@ -59,11 +71,30 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		// Use this as an opportunity to mark this viewer as active.
 		viewer := models.GenerateViewerFromRequest(r)
 		h.stream.SetViewerActive(&viewer)
-	} else {
-		cacheTime := utils.GetCacheDurationSecondsForPath(relativePath)
-		w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheTime))
+
+		middleware.EnableCors(w)
+		http.ServeFile(w, r, fullPath) //nolint:gosec // G703: fullPath was verified to be inside HLSStoragePath above
+		return
 	}
 
+	cacheTime := utils.GetCacheDurationSecondsForPath(relativePath)
+	w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheTime))
 	middleware.EnableCors(w)
-	http.ServeFile(w, r, fullPath) //nolint:gosec // G703: fullPath was verified to be inside HLSStoragePath above
+
+	// Time the segment transfer as a server-side observation: for players
+	// that report nothing themselves (Safari/iOS native HLS, VLC, mpv, ...)
+	// it provides both speed and download duration; for request-mode-only
+	// CMCD players it provides the download duration while their reported
+	// throughput owns the speed metric. Clients that self-report through
+	// the metrics API or the CMCD collector measure their own downloads,
+	// so no server observation is needed for them.
+	if !h.stream.GetStatus().Online || h.metrics.IsClientSelfReporting(requestClientID) {
+		http.ServeFile(w, r, fullPath) //nolint:gosec // G703: fullPath was verified to be inside HLSStoragePath above
+		return
+	}
+
+	cw := &countingResponseWriter{ResponseWriter: w}
+	start := time.Now()
+	http.ServeFile(cw, r, fullPath) //nolint:gosec // G703: fullPath was verified to be inside HLSStoragePath above
+	h.registerServedSegmentMetrics(r, metricsID, cw.bytes, time.Since(start), cmcdKeys != nil)
 }

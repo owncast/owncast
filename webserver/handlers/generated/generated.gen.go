@@ -708,6 +708,15 @@ type ServerInterface interface {
 	// Stream title
 	// (POST /integrations/streamtitle)
 	ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request)
+	// CMCD collector accepting a CMCD v2 report as a query parameter
+	// (GET /metrics/cmcd)
+	ReportCmcdQuery(w http.ResponseWriter, r *http.Request, params ReportCmcdQueryParams)
+
+	// (OPTIONS /metrics/cmcd)
+	ReportCmcdOptions(w http.ResponseWriter, r *http.Request)
+	// CMCD collector accepting CMCD v2 (CTA-5004-A) event and response mode reports
+	// (POST /metrics/cmcd)
+	ReportCmcd(w http.ResponseWriter, r *http.Request)
 	// Save video playback metrics for future video health recording
 	// (POST /metrics/playback)
 	ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request)
@@ -2020,6 +2029,23 @@ func (_ Unimplemented) ExternalSetStreamTitleOptions(w http.ResponseWriter, r *h
 // Stream title
 // (POST /integrations/streamtitle)
 func (_ Unimplemented) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CMCD collector accepting a CMCD v2 report as a query parameter
+// (GET /metrics/cmcd)
+func (_ Unimplemented) ReportCmcdQuery(w http.ResponseWriter, r *http.Request, params ReportCmcdQueryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /metrics/cmcd)
+func (_ Unimplemented) ReportCmcdOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CMCD collector accepting CMCD v2 (CTA-5004-A) event and response mode reports
+// (POST /metrics/cmcd)
+func (_ Unimplemented) ReportCmcd(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -6188,6 +6214,64 @@ func (siw *ServerInterfaceWrapper) ExternalSetStreamTitle(w http.ResponseWriter,
 	handler.ServeHTTP(w, r)
 }
 
+// ReportCmcdQuery operation middleware
+func (siw *ServerInterfaceWrapper) ReportCmcdQuery(w http.ResponseWriter, r *http.Request) {
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ReportCmcdQueryParams
+
+	// ------------- Optional query parameter "CMCD" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "CMCD", r.URL.Query(), &params.CMCD, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "CMCD"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "CMCD", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ReportCmcdQuery(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ReportCmcdOptions operation middleware
+func (siw *ServerInterfaceWrapper) ReportCmcdOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ReportCmcdOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ReportCmcd operation middleware
+func (siw *ServerInterfaceWrapper) ReportCmcd(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ReportCmcd(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ReportPlaybackMetrics operation middleware
 func (siw *ServerInterfaceWrapper) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -7157,6 +7241,15 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/integrations/streamtitle", wrapper.ExternalSetStreamTitle)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/metrics/cmcd", wrapper.ReportCmcdQuery)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/metrics/cmcd", wrapper.ReportCmcdOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/metrics/cmcd", wrapper.ReportCmcd)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/metrics/playback", wrapper.ReportPlaybackMetrics)

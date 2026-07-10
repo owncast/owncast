@@ -28,6 +28,7 @@ func (h *Handlers) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request)
 	}
 
 	clientID := utils.GenerateClientIDFromRequest(r)
+	h.metrics.RegisterSelfReportingClient(clientID)
 
 	if request.Errors == nil {
 		webutils.WriteSimpleResponse(w, false, "errors field is required")

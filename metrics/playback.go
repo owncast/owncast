@@ -7,6 +7,12 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
+// How long after a direct client playback report we keep suppressing
+// lower-fidelity server-derived measurements for that client. Players
+// report every ~10s, so a client silent for this long has stopped
+// self-reporting.
+const selfReportSuppressionWindow = 30 * time.Second
+
 func (s *Service) handlePlaybackPolling() {
 	s.metrics.m.Lock()
 	defer s.metrics.m.Unlock()
@@ -21,6 +27,80 @@ func (s *Service) handlePlaybackPolling() {
 	s.collectSegmentDownloadDuration()
 	s.collectLowestBandwidth()
 	s.collectQualityVariantChanges()
+
+	s.pruneSelfReportingClients()
+}
+
+// RegisterSelfReportingClient marks a client as directly reporting its own
+// playback metrics, which suppresses server-derived observation for it —
+// the client's own measurements are richer.
+func (s *Service) RegisterSelfReportingClient(clientID string) {
+	s.metrics.m.Lock()
+	defer s.metrics.m.Unlock()
+	s.selfReportingClients[clientID] = time.Now()
+}
+
+// IsClientSelfReporting returns true if the client recently reported its
+// own playback metrics.
+func (s *Service) IsClientSelfReporting(clientID string) bool {
+	s.metrics.m.Lock()
+	defer s.metrics.m.Unlock()
+	t, ok := s.selfReportingClients[clientID]
+	return ok && time.Since(t) < selfReportSuppressionWindow
+}
+
+// pruneSelfReportingClients drops clients that have stopped reporting.
+// Callers must hold s.metrics.m.
+func (s *Service) pruneSelfReportingClients() {
+	for id, t := range s.selfReportingClients {
+		if time.Since(t) >= selfReportSuppressionWindow {
+			delete(s.selfReportingClients, id)
+		}
+	}
+}
+
+// PlaybackReport is a batch of one client's playback measurements applied
+// in a single locked update. Zero values are skipped; ErrorCount is applied
+// whenever HasErrorCount is set so a zero count still marks the client as a
+// healthy participant in the stream health overview.
+type PlaybackReport struct {
+	ClientID        string
+	BandwidthKbps   float64
+	LatencySeconds  float64
+	DownloadSeconds float64
+	BitrateKbps     float64
+	ErrorCount      float64
+	HasErrorCount   bool
+}
+
+// RegisterPlaybackReport applies a client's playback measurements under one
+// lock acquisition. This is the hot-path entry point used per media request
+// (CMCD request mode and server-side observation); avoid adding per-field
+// lock round-trips here.
+func (s *Service) RegisterPlaybackReport(report PlaybackReport) {
+	s.metrics.m.Lock()
+	defer s.metrics.m.Unlock()
+
+	if report.BandwidthKbps > 0 {
+		s.windowedBandwidths[report.ClientID] = report.BandwidthKbps
+	}
+	if report.LatencySeconds > 0 {
+		s.windowedLatencies[report.ClientID] = report.LatencySeconds
+	}
+	if report.DownloadSeconds > 0 {
+		s.windowedDownloadDurations[report.ClientID] = report.DownloadSeconds
+	}
+	// A change in the encoded bitrate being played is a quality variant
+	// change, giving variant switch tracking for every CMCD player.
+	if report.BitrateKbps > 0 {
+		if prev, ok := s.lastClientBitrates[report.ClientID]; ok && prev != report.BitrateKbps {
+			s.windowedQualityVariantChanges[report.ClientID]++
+		}
+		s.lastClientBitrates[report.ClientID] = report.BitrateKbps
+	}
+	if report.HasErrorCount {
+		s.windowedErrorCounts[report.ClientID] += report.ErrorCount
+	}
 }
 
 // RegisterPlaybackErrorCount will add to the windowed playback error count.
@@ -307,6 +387,9 @@ func (s *Service) collectQualityVariantChanges() {
 	valueSlice := utils.Float64MapToSlice(s.windowedQualityVariantChanges)
 	count := utils.Sum(valueSlice)
 	s.windowedQualityVariantChanges = map[string]float64{}
+	// Resetting the baselines each window bounds the map at the
+	// cost of missing a variant switch that spans a harvest boundary.
+	s.lastClientBitrates = map[string]float64{}
 
 	s.metrics.qualityVariantChanges = append(s.metrics.qualityVariantChanges, TimestampedValue{
 		Time:  time.Now(),
