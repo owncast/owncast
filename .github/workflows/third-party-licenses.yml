@@ -1,0 +1,58 @@
+name: Generate Third-Party Licenses
+
+on:
+  push:
+    paths:
+      - 'go.mod'
+      - 'go.sum'
+      - 'web/package.json'
+      - 'web/package-lock.json'
+      - 'build/generate-licenses.mjs'
+      - 'static/img/emoji/**/LICENSE.md'
+
+permissions:
+  contents: write
+
+jobs:
+  generate-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.5'
+          cache: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.12.0'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install production web dependencies
+        working-directory: web
+        run: npm ci --omit=dev --ignore-scripts --os=linux --cpu=x64
+
+      - name: Generate licenses
+        working-directory: web
+        run: npm run licenses
+
+      - name: Commit generated licenses
+        run: |
+          if [ -n "$(git status --porcelain THIRD-PARTY-LICENSES.txt)" ]; then
+            git config user.name "Owncast license generator"
+            git config user.email "owncast@owncast.online"
+            git add THIRD-PARTY-LICENSES.txt
+            git commit -m "chore: update third-party licenses"
+            git push origin HEAD
+          else
+            echo "Third-party licenses are current."
+          fi
