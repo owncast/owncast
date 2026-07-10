@@ -60,8 +60,8 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		h.registerCMCDKeys(metricsID, cmcdKeys)
 	}
 
-	// Handle playlists
-	if path.Ext(r.URL.Path) == ".m3u8" {
+	isPlaylist := path.Ext(r.URL.Path) == ".m3u8"
+	if isPlaylist {
 		// Playlists should never be cached.
 		middleware.DisableCache(w)
 
@@ -71,30 +71,27 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		// Use this as an opportunity to mark this viewer as active.
 		viewer := models.GenerateViewerFromRequest(r)
 		h.stream.SetViewerActive(&viewer)
-
-		middleware.EnableCors(w)
-		http.ServeFile(w, r, fullPath) //nolint:gosec // G703: fullPath was verified to be inside HLSStoragePath above
-		return
+	} else {
+		cacheTime := utils.GetCacheDurationSecondsForPath(relativePath)
+		w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheTime))
 	}
-
-	cacheTime := utils.GetCacheDurationSecondsForPath(relativePath)
-	w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(cacheTime))
 	middleware.EnableCors(w)
 
-	// Time the segment transfer as a server-side observation: for players
+	// Time segment transfers as a server-side observation: for players
 	// that report nothing themselves (Safari/iOS native HLS, VLC, mpv, ...)
 	// it provides both speed and download duration; for request-mode-only
 	// CMCD players it provides the download duration while their reported
 	// throughput owns the speed metric. Clients that self-report through
 	// the metrics API or the CMCD collector measure their own downloads,
 	// so no server observation is needed for them.
-	if !h.stream.GetStatus().Online || h.metrics.IsClientSelfReporting(requestClientID) {
-		http.ServeFile(w, r, fullPath) //nolint:gosec // G703: fullPath was verified to be inside HLSStoragePath above
-		return
-	}
+	observe := !isPlaylist &&
+		h.stream.GetStatus().Online &&
+		!h.metrics.IsClientSelfReporting(requestClientID)
 
 	cw := &countingResponseWriter{ResponseWriter: w}
 	start := time.Now()
-	http.ServeFile(cw, r, fullPath) //nolint:gosec // G703: fullPath was verified to be inside HLSStoragePath above
-	h.registerServedSegmentMetrics(r, metricsID, cw.bytes, time.Since(start), cmcdKeys != nil)
+	http.ServeFile(cw, r, absFull) //nolint:gosec // G703: absFull was resolved and verified to be inside HLSStoragePath above
+	if observe {
+		h.registerServedSegmentMetrics(r, metricsID, cw.bytes, time.Since(start), cmcdKeys != nil)
+	}
 }

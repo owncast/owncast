@@ -34,7 +34,7 @@ func TestParseCMCDQueryParameter(t *testing.T) {
 
 func TestParseCMCDHeaders(t *testing.T) {
 	r := httptest.NewRequest("GET", "/hls/0/stream-abc-42.ts", nil)
-	r.Header.Set("CMCD-Request", "mtp=48100")
+	r.Header.Set("CMCD-Request", "mtp = 48100")
 	r.Header.Set("CMCD-Session", `sid="4f5a6b7c",cid="with,comma and \"quote\""`)
 	r.Header.Set("CMCD-Status", "bs")
 

@@ -57,15 +57,17 @@ func parseCMCDPayload(payload string, keys map[string]any) {
 
 		key := item
 		value := ""
+		hasValue := false
 		if idx := indexOutsideQuotes(item, '='); idx != -1 {
-			key = item[:idx]
-			value = item[idx+1:]
+			key = strings.TrimSpace(item[:idx])
+			value = strings.TrimSpace(item[idx+1:])
+			hasValue = true
 		}
 
 		switch {
 		case key == "":
 			continue
-		case key == item:
+		case !hasValue:
 			keys[key] = true
 		case strings.HasPrefix(value, `"`):
 			keys[key] = unquoteCMCDString(value)

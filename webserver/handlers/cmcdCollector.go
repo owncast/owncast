@@ -25,11 +25,6 @@ func (h *Handlers) ReportCmcd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// A beaconing player's media requests come from the same client, so
-	// suppress the lower-fidelity server-derived observation for it even
-	// if it doesn't decorate its media requests.
-	h.metrics.RegisterSelfReportingClient(utils.GenerateClientIDFromRequest(r))
-
 	// Reports are tiny; bound the unauthenticated body so a large batched
 	// POST can't force unbounded allocation.
 	r.Body = http.MaxBytesReader(w, r.Body, 64*1024)
@@ -40,12 +35,25 @@ func (h *Handlers) ReportCmcd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	registered := false
 	for _, keys := range reports {
 		if len(keys) == 0 {
 			continue
 		}
 		h.registerCMCDKeys(cmcdClientID(r, keys), keys)
+		registered = true
 	}
+
+	if !registered {
+		webutils.WriteSimpleResponse(w, false, "no CMCD report found in request")
+		return
+	}
+
+	// A beaconing player's media requests come from the same client, so
+	// suppress the lower-fidelity server-derived observation for it even
+	// if it doesn't decorate its media requests. Only a request that
+	// actually carried a report earns the suppression.
+	h.metrics.RegisterSelfReportingClient(utils.GenerateClientIDFromRequest(r))
 
 	w.WriteHeader(http.StatusOK)
 }

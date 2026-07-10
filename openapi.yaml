@@ -270,7 +270,8 @@ paths:
           $ref: '#/components/responses/400'
   /metrics/cmcd:
     post:
-      summary: CMCD collector accepting CMCD v2 (CTA-5004-A) event and response mode reports
+      summary: CMCD collector accepting event and response mode playback reports
+      description: Reporting modes are defined by CMCD v2 (CTA-5004-A). CMCD v1 has no reporting modes, v1 request mode data is collected directly from the media requests it decorates. The collector maps any known CMCD keys it receives and does not reject reports based on their version.
       operationId: ReportCmcd
       tags: ['Internal']
       requestBody:
@@ -285,7 +286,7 @@ paths:
         '400':
           $ref: '#/components/responses/400'
     get:
-      summary: CMCD collector accepting a CMCD v2 report as a query parameter
+      summary: CMCD collector accepting a report as a query parameter
       operationId: ReportCmcdQuery
       tags: ['Internal']
       parameters:

@@ -60,6 +60,15 @@ test('cmcd collector rejects malformed json', async () => {
 		.expect(400);
 });
 
+test('cmcd collector rejects requests carrying no report', async () => {
+	await request.get('/api/metrics/cmcd').expect(400);
+	await request
+		.post('/api/metrics/cmcd')
+		.set('Content-Type', 'application/json')
+		.send({})
+		.expect(400);
+});
+
 test('legacy playback metrics endpoint still accepts reports', async () => {
 	await request
 		.post('/api/metrics/playback')

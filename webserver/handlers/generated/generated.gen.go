@@ -708,13 +708,13 @@ type ServerInterface interface {
 	// Stream title
 	// (POST /integrations/streamtitle)
 	ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request)
-	// CMCD collector accepting a CMCD v2 report as a query parameter
+	// CMCD collector accepting a report as a query parameter
 	// (GET /metrics/cmcd)
 	ReportCmcdQuery(w http.ResponseWriter, r *http.Request, params ReportCmcdQueryParams)
 
 	// (OPTIONS /metrics/cmcd)
 	ReportCmcdOptions(w http.ResponseWriter, r *http.Request)
-	// CMCD collector accepting CMCD v2 (CTA-5004-A) event and response mode reports
+	// CMCD collector accepting event and response mode playback reports
 	// (POST /metrics/cmcd)
 	ReportCmcd(w http.ResponseWriter, r *http.Request)
 	// Save video playback metrics for future video health recording
@@ -2032,7 +2032,7 @@ func (_ Unimplemented) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Req
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// CMCD collector accepting a CMCD v2 report as a query parameter
+// CMCD collector accepting a report as a query parameter
 // (GET /metrics/cmcd)
 func (_ Unimplemented) ReportCmcdQuery(w http.ResponseWriter, r *http.Request, params ReportCmcdQueryParams) {
 	w.WriteHeader(http.StatusNotImplemented)
@@ -2043,7 +2043,7 @@ func (_ Unimplemented) ReportCmcdOptions(w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// CMCD collector accepting CMCD v2 (CTA-5004-A) event and response mode reports
+// CMCD collector accepting event and response mode playback reports
 // (POST /metrics/cmcd)
 func (_ Unimplemented) ReportCmcd(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
