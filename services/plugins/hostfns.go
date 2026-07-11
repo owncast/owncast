@@ -55,6 +55,7 @@ const (
 	// nothing on its own; the gate only goes live when an admin enables the
 	// plugin, and only one auth.gate plugin may be enabled at a time.
 	PermAuthGate         = "auth.gate"
+	PermFediverseInbound = "fediverse.inbound"
 	PermFediversePost    = "fediverse.post"
 	PermVideoConfigRead  = "videoconfig.read"
 	PermVideoConfigWrite = "videoconfig.write"

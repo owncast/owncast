@@ -1533,7 +1533,7 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 	if err := manifest.AgreesWith(&runtime); err != nil {
 		return nil, fail(fmt.Errorf("manifest/runtime mismatch: %w", err))
 	}
-	if err := requireChatFilterPermission(manifest, runtime.Subscriptions); err != nil {
+	if err := requireSubscriptionPermissions(manifest, runtime.Subscriptions); err != nil {
 		return nil, fail(err)
 	}
 	manifest.Subscriptions = runtime.Subscriptions
@@ -1665,11 +1665,9 @@ func buildIdentity(env *HostEnv, manifest *Manifest, assetsFS fs.FS) *pluginIden
 	return id
 }
 
-// requireChatFilterPermission rejects a runtime registration that
-// subscribes to filterChatMessage without declaring the chat.filter
-// permission. Modifying or dropping every chat message is a meaningful
-// side-effect, so an admin must opt in at install time by granting it.
-func requireChatFilterPermission(manifest *Manifest, subs Subscriptions) error {
+// requireSubscriptionPermissions rejects runtime subscriptions that require
+// permissions the plugin did not declare in its manifest.
+func requireSubscriptionPermissions(manifest *Manifest, subs Subscriptions) error {
 	if !manifest.hasPermission(PermChatFilter) {
 		for _, s := range subs.Filter {
 			if s.Event == EventChatMessageReceived {
@@ -1683,6 +1681,20 @@ func requireChatFilterPermission(manifest *Manifest, subs Subscriptions) error {
 			}
 		}
 	}
+
+	if !manifest.hasPermission(PermFediverseInbound) {
+		for _, s := range subs.Notify {
+			switch s.Event {
+			case EventFediverseFollow, EventFediverseLike, EventFediverseRepost,
+				EventFediverseMention, EventFediverseReply, EventFediverseQuote, EventFediverseActivity:
+				return fmt.Errorf(
+					"plugin subscribes to %s but does not declare the %q permission",
+					s.Event, PermFediverseInbound,
+				)
+			}
+		}
+	}
+
 	return nil
 }
 

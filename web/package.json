@@ -22,6 +22,7 @@
     "build-storybook": "storybook build",
     "build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -",
     "test": "jest",
+    "licenses": "node ../build/generate-licenses.mjs",
     "format": "prettier --write **/*.{js,ts,jsx,tsx,css,md,scss}",
     "format:changed": "files=$(git diff --name-only origin/develop... | grep '^web/' | sed 's|^web/||'); [ -z \"$files\" ] || echo \"$files\" | xargs prettier --write",
     "translate": "node scripts/i18n-extract.js"
@@ -48,6 +49,7 @@
     "antd": "6.5.0",
     "autoprefixer": "^10.4.14",
     "babel-plugin-dynamic-import-node": "^2.3.3",
+    "bowser": "2.14.1",
     "chart.js": "^4.2.0",
     "classnames": "2.5.1",
     "date-fns": "^4.0.0",
@@ -73,7 +75,6 @@
     "sanitize-html": "^2.11.0",
     "semver": "^7.6.3",
     "sharp": "0.34.5",
-    "ua-parser-js": "1.0.41",
     "video.js": "^8.3.0",
     "xstate": "^5.32.4",
     "yaml": "2.9.0"
@@ -97,7 +98,6 @@
     "@types/react": "18.3.31",
     "@types/react-linkify": "1.0.4",
     "@types/sanitize-html": "^2.9.0",
-    "@types/ua-parser-js": "0.7.39",
     "@types/video.js": "^7.3.50",
     "@typescript-eslint/eslint-plugin": "8.62.1",
     "@typescript-eslint/parser": "8.62.1",

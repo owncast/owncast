@@ -15,6 +15,7 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 )
 
@@ -29,26 +30,33 @@ func (s *Service) handle(request apmodels.InboxRequest) {
 		return
 	}
 
-	// Bind the activity to its signer. A validly signed request may only carry
-	// activities authored by the verified key's owner; otherwise a server could
-	// sign with its own key while claiming, in the body, to be a different actor
-	// (e.g. forging a featured-stream Offer/Leave/Accept as another server). We
-	// compare origins (hostname), the standard fediverse binding, which is
-	// robust to id/fragment formatting differences. Fail closed: if no actor
-	// IRI can be determined the activity is rejected.
-	actorIRI, err := actorIRIFromActivity(request.Body)
-	if err != nil {
-		log.Warnln("rejecting inbound activity: unable to bind actor to signing key:", err)
-		return
-	}
-	if !sameActorOrigin(actorIRI, keyOwner) {
-		log.Warnf("rejecting inbound activity: actor %q does not match signing key owner %q", actorIRI, keyOwner.String())
+	if !s.handleVerifiedIngress(request.Request.Context(), request.Body, keyOwner) {
 		return
 	}
 
 	if err := s.resolver.Resolve(context.Background(), request.Body, s.handleUpdateRequest, s.handleFollowInboxRequest, s.handleLikeRequest, s.handleAnnounceRequest, s.handleUndoInboxRequest, s.handleCreateRequest, s.handleOfferInboxRequest, s.handleAcceptInboxRequest, s.handleRejectInboxRequest, s.handleLeaveInboxRequest, s.handleQuoteRequestInboxRequest); err != nil {
 		log.Debugln("resolver error:", err)
 	}
+}
+
+func (s *Service) handleVerifiedIngress(ctx context.Context, body []byte, keyOwner *url.URL) bool {
+	actorIRI, err := actorIRIFromActivity(body)
+	if err != nil {
+		log.Warnln("rejecting inbound activity: unable to bind actor to signing key:", err)
+		return false
+	}
+	if keyOwner == nil {
+		log.Warnf("rejecting inbound activity: actor %q has no signing key owner", actorIRI)
+		return false
+	}
+	if !sameActorOrigin(actorIRI, keyOwner) {
+		log.Warnf("rejecting inbound activity: actor %q does not match signing key owner %q", actorIRI, keyOwner.String())
+		return false
+	}
+
+	payload := append(json.RawMessage(nil), body...)
+	s.publishFediverseEvent(ctx, models.FediverseActivity, payload)
+	return true
 }
 
 // actorIRIFromActivity extracts the top-level "actor" IRI from a raw inbound
