@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import UAParser from 'ua-parser-js';
+import Bowser from 'bowser';
 
 // formatDisplayDate renders a user timestamp, including the year only when it
 // is not the current year. Shared by the admin user views.
@@ -61,11 +61,15 @@ export function parseSecondsToDurationString(seconds = 0) {
 }
 
 export function formatUAstring(uaString: string) {
-  const parser = UAParser(uaString);
-  const { device, os, browser } = parser;
-  const { major: browserVersion, name } = browser;
-  const { version: osVersion, name: osName } = os;
-  const { model, type } = device;
+  const { browser, os, platform } = Bowser.parse(uaString);
+  const name =
+    browser.name === 'Safari' && (platform.type === 'mobile' || platform.type === 'tablet')
+      ? 'Mobile Safari'
+      : browser.name;
+  const browserVersion = browser.version?.split('.')[0];
+  const osName = os.name === 'macOS' ? 'Mac OS' : os.name;
+  const osVersion = os.versionName || os.version;
+  const { model, type } = platform;
 
   if (uaString === 'libmpv') {
     return 'mpv media player';
@@ -75,7 +79,8 @@ export function formatUAstring(uaString: string) {
     return uaString;
   }
 
-  const deviceString = model || type ? ` (${model || type})` : '';
+  const device = model || (type === 'desktop' ? undefined : type);
+  const deviceString = device ? ` (${device})` : '';
   return `${name} ${browserVersion} on ${osName} ${osVersion}
   ${deviceString}`;
 }
