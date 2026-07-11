@@ -5,6 +5,7 @@ package generated
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/oapi-codegen/runtime"
@@ -335,6 +336,51 @@ type ChatMessages = []ChatMessages_Item
 type ChatMessages_Item struct {
 	union json.RawMessage
 }
+
+// CmcdReport A CMCD v2 (CTA-5004-A) report keyed by CMCD key names. Any valid CMCD key is accepted; the keys below are the ones consumed.
+type CmcdReport struct {
+	// Bs Buffer starvation occurred
+	Bs *bool `json:"bs,omitempty"`
+
+	// E Event type that triggered the report (event mode)
+	E *string `json:"e,omitempty"`
+
+	// Ec Error code accompanying an error event
+	Ec *string `json:"ec,omitempty"`
+
+	// Ltc Live latency in milliseconds
+	Ltc *float32 `json:"ltc,omitempty"`
+
+	// Mtp Measured throughput in kbps
+	Mtp *float32 `json:"mtp,omitempty"`
+
+	// Sid Session ID identifying the player session
+	Sid *string `json:"sid,omitempty"`
+
+	// Sn Report sequence number
+	Sn *float32 `json:"sn,omitempty"`
+
+	// Sta Player state token
+	Sta *string `json:"sta,omitempty"`
+
+	// Ts Timestamp of the report in epoch milliseconds
+	Ts *float32 `json:"ts,omitempty"`
+
+	// Ttlb Time to last byte in milliseconds (response mode)
+	Ttlb *float32 `json:"ttlb,omitempty"`
+
+	// V CMCD version of the report
+	V                    *int                   `json:"v,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// CmcdReportBody defines model for CmcdReportBody.
+type CmcdReportBody struct {
+	union json.RawMessage
+}
+
+// CmcdReportBody1 defines model for .
+type CmcdReportBody1 = []CmcdReport
 
 // CollectedMetrics defines model for CollectedMetrics.
 type CollectedMetrics struct {
@@ -1086,6 +1132,12 @@ type GetFollowersParams struct {
 	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// ReportCmcdQueryParams defines parameters for ReportCmcdQuery.
+type ReportCmcdQueryParams struct {
+	// CMCD CMCD report serialized as a CMCD dictionary payload
+	CMCD *string `form:"CMCD,omitempty" json:"CMCD,omitempty"`
+}
+
 // GetUserDetailsParams defines parameters for GetUserDetails.
 type GetUserDetailsParams struct {
 	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
@@ -1350,6 +1402,9 @@ type SendSystemMessageToConnectedClientJSONRequestBody = SystemMessage
 // ExternalSetStreamTitleJSONRequestBody defines body for ExternalSetStreamTitle for application/json ContentType.
 type ExternalSetStreamTitleJSONRequestBody = AdminConfigValue
 
+// ReportCmcdJSONRequestBody defines body for ReportCmcd for application/json ContentType.
+type ReportCmcdJSONRequestBody = CmcdReportBody
+
 // ReportPlaybackMetricsJSONRequestBody defines body for ReportPlaybackMetrics for application/json ContentType.
 type ReportPlaybackMetricsJSONRequestBody = PlaybackMetrics
 
@@ -1358,6 +1413,224 @@ type RegisterForLiveNotificationsJSONRequestBody RegisterForLiveNotificationsJSO
 
 // RemoteFollowJSONRequestBody defines body for RemoteFollow for application/json ContentType.
 type RemoteFollowJSONRequestBody RemoteFollowJSONBody
+
+// Getter for additional properties for CmcdReport. Returns the specified
+// element and whether it was found
+func (a CmcdReport) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for CmcdReport
+func (a *CmcdReport) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for CmcdReport to handle AdditionalProperties
+func (a *CmcdReport) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["bs"]; found {
+		err = json.Unmarshal(raw, &a.Bs)
+		if err != nil {
+			return fmt.Errorf("error reading 'bs': %w", err)
+		}
+		delete(object, "bs")
+	}
+
+	if raw, found := object["e"]; found {
+		err = json.Unmarshal(raw, &a.E)
+		if err != nil {
+			return fmt.Errorf("error reading 'e': %w", err)
+		}
+		delete(object, "e")
+	}
+
+	if raw, found := object["ec"]; found {
+		err = json.Unmarshal(raw, &a.Ec)
+		if err != nil {
+			return fmt.Errorf("error reading 'ec': %w", err)
+		}
+		delete(object, "ec")
+	}
+
+	if raw, found := object["ltc"]; found {
+		err = json.Unmarshal(raw, &a.Ltc)
+		if err != nil {
+			return fmt.Errorf("error reading 'ltc': %w", err)
+		}
+		delete(object, "ltc")
+	}
+
+	if raw, found := object["mtp"]; found {
+		err = json.Unmarshal(raw, &a.Mtp)
+		if err != nil {
+			return fmt.Errorf("error reading 'mtp': %w", err)
+		}
+		delete(object, "mtp")
+	}
+
+	if raw, found := object["sid"]; found {
+		err = json.Unmarshal(raw, &a.Sid)
+		if err != nil {
+			return fmt.Errorf("error reading 'sid': %w", err)
+		}
+		delete(object, "sid")
+	}
+
+	if raw, found := object["sn"]; found {
+		err = json.Unmarshal(raw, &a.Sn)
+		if err != nil {
+			return fmt.Errorf("error reading 'sn': %w", err)
+		}
+		delete(object, "sn")
+	}
+
+	if raw, found := object["sta"]; found {
+		err = json.Unmarshal(raw, &a.Sta)
+		if err != nil {
+			return fmt.Errorf("error reading 'sta': %w", err)
+		}
+		delete(object, "sta")
+	}
+
+	if raw, found := object["ts"]; found {
+		err = json.Unmarshal(raw, &a.Ts)
+		if err != nil {
+			return fmt.Errorf("error reading 'ts': %w", err)
+		}
+		delete(object, "ts")
+	}
+
+	if raw, found := object["ttlb"]; found {
+		err = json.Unmarshal(raw, &a.Ttlb)
+		if err != nil {
+			return fmt.Errorf("error reading 'ttlb': %w", err)
+		}
+		delete(object, "ttlb")
+	}
+
+	if raw, found := object["v"]; found {
+		err = json.Unmarshal(raw, &a.V)
+		if err != nil {
+			return fmt.Errorf("error reading 'v': %w", err)
+		}
+		delete(object, "v")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for CmcdReport to handle AdditionalProperties
+func (a CmcdReport) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Bs != nil {
+		object["bs"], err = json.Marshal(a.Bs)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'bs': %w", err)
+		}
+	}
+
+	if a.E != nil {
+		object["e"], err = json.Marshal(a.E)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'e': %w", err)
+		}
+	}
+
+	if a.Ec != nil {
+		object["ec"], err = json.Marshal(a.Ec)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'ec': %w", err)
+		}
+	}
+
+	if a.Ltc != nil {
+		object["ltc"], err = json.Marshal(a.Ltc)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'ltc': %w", err)
+		}
+	}
+
+	if a.Mtp != nil {
+		object["mtp"], err = json.Marshal(a.Mtp)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'mtp': %w", err)
+		}
+	}
+
+	if a.Sid != nil {
+		object["sid"], err = json.Marshal(a.Sid)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'sid': %w", err)
+		}
+	}
+
+	if a.Sn != nil {
+		object["sn"], err = json.Marshal(a.Sn)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'sn': %w", err)
+		}
+	}
+
+	if a.Sta != nil {
+		object["sta"], err = json.Marshal(a.Sta)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'sta': %w", err)
+		}
+	}
+
+	if a.Ts != nil {
+		object["ts"], err = json.Marshal(a.Ts)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'ts': %w", err)
+		}
+	}
+
+	if a.Ttlb != nil {
+		object["ttlb"], err = json.Marshal(a.Ttlb)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'ttlb': %w", err)
+		}
+	}
+
+	if a.V != nil {
+		object["v"], err = json.Marshal(a.V)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'v': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
 
 // AsAdminConfigValueValue0 returns the union data inside the AdminConfigValue_Value as a AdminConfigValueValue0
 func (t AdminConfigValue_Value) AsAdminConfigValueValue0() (AdminConfigValueValue0, error) {
@@ -1583,6 +1856,68 @@ func (t ChatMessages_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *ChatMessages_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsCmcdReport returns the union data inside the CmcdReportBody as a CmcdReport
+func (t CmcdReportBody) AsCmcdReport() (CmcdReport, error) {
+	var body CmcdReport
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCmcdReport overwrites any union data inside the CmcdReportBody as the provided CmcdReport
+func (t *CmcdReportBody) FromCmcdReport(v CmcdReport) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCmcdReport performs a merge with any union data inside the CmcdReportBody, using the provided CmcdReport
+func (t *CmcdReportBody) MergeCmcdReport(v CmcdReport) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsCmcdReportBody1 returns the union data inside the CmcdReportBody as a CmcdReportBody1
+func (t CmcdReportBody) AsCmcdReportBody1() (CmcdReportBody1, error) {
+	var body CmcdReportBody1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromCmcdReportBody1 overwrites any union data inside the CmcdReportBody as the provided CmcdReportBody1
+func (t *CmcdReportBody) FromCmcdReportBody1(v CmcdReportBody1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeCmcdReportBody1 performs a merge with any union data inside the CmcdReportBody, using the provided CmcdReportBody1
+func (t *CmcdReportBody) MergeCmcdReportBody1(v CmcdReportBody1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CmcdReportBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CmcdReportBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }

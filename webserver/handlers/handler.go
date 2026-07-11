@@ -90,6 +90,18 @@ func (s *ServerInterfaceImpl) ReportPlaybackMetrics(w http.ResponseWriter, r *ht
 	s.h.ReportPlaybackMetrics(w, r)
 }
 
+func (s *ServerInterfaceImpl) ReportCmcd(w http.ResponseWriter, r *http.Request) {
+	s.h.ReportCmcd(w, r)
+}
+
+func (s *ServerInterfaceImpl) ReportCmcdQuery(w http.ResponseWriter, r *http.Request, params generated.ReportCmcdQueryParams) {
+	s.h.ReportCmcd(w, r)
+}
+
+func (s *ServerInterfaceImpl) ReportCmcdOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.ReportCmcd(w, r)
+}
+
 func (s *ServerInterfaceImpl) RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request, params generated.RegisterForLiveNotificationsParams) {
 	s.h.middleware.RequireUserAccessToken(s.h.RegisterForLiveNotifications)(w, r)
 }

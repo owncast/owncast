@@ -27,13 +27,23 @@ func (h *Handlers) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	clientID := utils.GenerateClientIDFromRequest(r)
-
 	if request.Errors == nil {
 		webutils.WriteSimpleResponse(w, false, "errors field is required")
 		return
 	}
+
+	if request.QualityVariantChanges == nil {
+		webutils.WriteSimpleResponse(w, false, "qualityVariantChanges field is required")
+		return
+	}
+
+	// Only a valid report earns registration and server-side observation
+	// suppression.
+	clientID := utils.GenerateClientIDFromRequest(r)
+	h.metrics.RegisterSelfReportingClient(clientID)
+
 	h.metrics.RegisterPlaybackErrorCount(clientID, *request.Errors)
+	h.metrics.RegisterQualityVariantChangesCount(clientID, *request.QualityVariantChanges)
 
 	if request.Bandwidth != nil && *request.Bandwidth != 0.0 {
 		h.metrics.RegisterPlayerBandwidth(clientID, *request.Bandwidth)
@@ -46,10 +56,4 @@ func (h *Handlers) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request)
 	if request.DownloadDuration != nil && *request.DownloadDuration != 0.0 {
 		h.metrics.RegisterPlayerSegmentDownloadDuration(clientID, *request.DownloadDuration)
 	}
-
-	if request.QualityVariantChanges == nil {
-		webutils.WriteSimpleResponse(w, false, "qualityVariantChanges field is required")
-		return
-	}
-	h.metrics.RegisterQualityVariantChangesCount(clientID, *request.QualityVariantChanges)
 }

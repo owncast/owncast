@@ -268,9 +268,50 @@ paths:
                 $ref: '#/components/schemas/PaginatedFollowers'
         '400':
           $ref: '#/components/responses/400'
+  /metrics/cmcd:
+    post:
+      summary: CMCD collector accepting event and response mode playback reports
+      description: Reporting modes are defined by CMCD v2 (CTA-5004-A). CMCD v1 has no reporting modes, v1 request mode data is collected directly from the media requests it decorates. The collector maps any known CMCD keys it receives and does not reject reports based on their version.
+      operationId: ReportCmcd
+      tags: ['Internal']
+      requestBody:
+        description: A single CMCD report, or an array of batched reports, keyed by CMCD key names
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CmcdReportBody'
+      responses:
+        '200':
+          description: Report accepted
+        '400':
+          $ref: '#/components/responses/400'
+    get:
+      summary: CMCD collector accepting a report as a query parameter
+      operationId: ReportCmcdQuery
+      tags: ['Internal']
+      parameters:
+        - name: CMCD
+          in: query
+          description: CMCD report serialized as a CMCD dictionary payload
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Report accepted
+        '400':
+          $ref: '#/components/responses/400'
+    options:
+      operationId: ReportCmcdOptions
+      x-internal: true
+      tags: ['Objects', 'Internal']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /metrics/playback:
     post:
       summary: Save video playback metrics for future video health recording
+      description: Deprecated in favor of the CMCD collector at /metrics/cmcd, which accepts standard CMCD v2 (CTA-5004-A) reports. This endpoint remains functional for existing clients.
+      deprecated: true
       operationId: ReportPlaybackMetrics
       tags: ['Internal']
       requestBody:
@@ -4313,6 +4354,50 @@ components:
           type: integer
         name:
           type: string
+    CmcdReport:
+      type: object
+      description: A CMCD v2 (CTA-5004-A) report keyed by CMCD key names. Any valid CMCD key is accepted; the keys below are the ones consumed.
+      additionalProperties: true
+      properties:
+        v:
+          type: integer
+          description: CMCD version of the report
+        sid:
+          type: string
+          description: Session ID identifying the player session
+        e:
+          type: string
+          description: Event type that triggered the report (event mode)
+        ts:
+          type: number
+          description: Timestamp of the report in epoch milliseconds
+        sta:
+          type: string
+          description: Player state token
+        mtp:
+          type: number
+          description: Measured throughput in kbps
+        ltc:
+          type: number
+          description: Live latency in milliseconds
+        bs:
+          type: boolean
+          description: Buffer starvation occurred
+        ec:
+          type: string
+          description: Error code accompanying an error event
+        ttlb:
+          type: number
+          description: Time to last byte in milliseconds (response mode)
+        sn:
+          type: number
+          description: Report sequence number
+    CmcdReportBody:
+      oneOf:
+        - $ref: '#/components/schemas/CmcdReport'
+        - type: array
+          items:
+            $ref: '#/components/schemas/CmcdReport'
     PlaybackMetrics:
       type: object
       properties:

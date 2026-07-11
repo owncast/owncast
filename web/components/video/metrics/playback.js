@@ -1,16 +1,15 @@
-/* eslint-disable no-plusplus */
-const URL_PLAYBACK_METRICS = `/api/metrics/playback`;
-const METRICS_SEND_INTERVAL = 10000;
+const URL_CMCD_COLLECTOR = `/api/metrics/cmcd`;
+const EVENT_REPORT_INTERVAL = 10000;
 const MAX_VALID_LATENCY_SECONDS = 100; // Anything > this gets thrown out.
+const CMCD_VERSION = 2;
 
 function getCurrentlyPlayingSegment(tech) {
   const targetMedia = tech.vhs.playlists.media();
   const snapshotTime = tech.currentTime();
   let segment;
 
-  // Iterate trough available segments and get first within which snapshot_time is
-  // eslint-disable-next-line no-plusplus
-  for (let i = 0, l = targetMedia.segments.length; i < l; i++) {
+  // Iterate through available segments and get first within which snapshot_time is
+  for (let i = 0, l = targetMedia.segments.length; i < l; i += 1) {
     // Note: segment.end may be undefined or is not properly set
     if (snapshotTime < targetMedia.segments[i].end) {
       segment = targetMedia.segments[i];
@@ -25,71 +24,148 @@ function getCurrentlyPlayingSegment(tech) {
   return segment;
 }
 
+function generateSessionID() {
+  if (crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // randomUUID is only exposed in secure contexts; build a v4 UUID from
+  // getRandomValues, which is available everywhere.
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  // eslint-disable-next-line no-bitwise
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  // eslint-disable-next-line no-bitwise
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+// CMCD keys whose values are tokens, which the spec serializes unquoted
+// (ot=v), unlike string values which are quoted (sid="...").
+const CMCD_TOKEN_KEYS = new Set(['ot', 'sf', 'st', 'sta', 'e']);
+
+// Serializes CMCD keys as a CMCD dictionary payload: alphabetized,
+// booleans as bare keys when true, tokens bare, strings quoted with
+// escaping.
+function encodeCmcdDictionary(keys) {
+  return Object.keys(keys)
+    .filter(key => keys[key] !== undefined && keys[key] !== null && keys[key] !== false)
+    .sort()
+    .map(key => {
+      const value = keys[key];
+      if (value === true) {
+        return key;
+      }
+      if (typeof value === 'string' && !CMCD_TOKEN_KEYS.has(key)) {
+        return `${key}="${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+      }
+      return `${key}=${value}`;
+    })
+    .join(',');
+}
+
+function appendCmcdQuery(uri, keys) {
+  const payload = encodeCmcdDictionary(keys);
+  if (!payload) {
+    return uri;
+  }
+  const separator = uri.includes('?') ? '&' : '?';
+  return `${uri}${separator}CMCD=${encodeURIComponent(payload)}`;
+}
+
+/*
+CMCD v2 (CTA-5004-A) metrics emitter.
+
+Request mode: every playlist and segment request the player makes is
+decorated with a CMCD query parameter carrying throughput, buffer, bitrate
+and live latency data, which the server harvests off the requests it is
+already serving.
+
+Event mode: player state transitions, errors and a periodic time-interval
+report are POSTed to the CMCD collector endpoint.
+*/
 class PlaybackMetrics {
   constructor(player, videojs) {
     this.player = player;
-    this.supportsDetailedMetrics = false;
-    this.hasPerformedInitialVariantChange = false;
-    this.hasStartedPlaying = false;
     this.clockSkewMs = 0;
+    this.sessionID = generateSessionID();
+    this.sequenceNumber = 0;
 
-    this.segmentDownloadTime = [];
-    this.bandwidthTracking = [];
-    this.latencyTracking = [];
-    this.errors = 0;
-    this.qualityVariantChanges = 0;
-    this.isBuffering = false;
-    this.bufferingDurationTimer = 0;
-    this.collectPlaybackMetricsTimer = 0;
+    this.hasStartedPlaying = false;
+    this.isStalled = false;
+    this.playRequestedAt = null;
+    this.mediaStartDelayMs = null;
+    this.mediaStartDelaySent = false;
+    this.segmentDownloadTimesMs = [];
 
-    this.videoJSReady = this.videoJSReady.bind(this);
+    this.handlePlay = this.handlePlay.bind(this);
     this.handlePlaying = this.handlePlaying.bind(this);
-    this.handleBuffering = this.handleBuffering.bind(this);
+    this.handlePause = this.handlePause.bind(this);
     this.handleEnded = this.handleEnded.bind(this);
     this.handleError = this.handleError.bind(this);
-    this.send = this.send.bind(this);
-    this.collectPlaybackMetrics = this.collectPlaybackMetrics.bind(this);
+    this.handleBuffering = this.handleBuffering.bind(this);
     this.handleNoLongerBuffering = this.handleNoLongerBuffering.bind(this);
-    this.sendMetricsTimer = 0;
 
-    this.player.on('canplaythrough', this.handleNoLongerBuffering);
+    this.player.on('play', this.handlePlay);
+    this.player.on('playing', this.handlePlaying);
+    this.player.on('pause', this.handlePause);
+    this.player.on('ended', this.handleEnded);
     this.player.on('error', this.handleError);
     this.player.on('stalled', this.handleBuffering);
     this.player.on('waiting', this.handleBuffering);
-    this.player.on('playing', this.handlePlaying);
-    this.player.on('ended', this.handleEnded);
+    this.player.on('canplaythrough', this.handleNoLongerBuffering);
 
-    // Keep a reference of the standard vjs xhr function.
+    // Decorate every media request with CMCD request-mode data and time
+    // segment downloads for ttlb reporting. Keep a reference of the
+    // standard vjs xhr function and wrap it.
     const oldVjsXhrCallback = videojs.xhr;
-
-    // Override the xhr function to track segment download time.
     // eslint-disable-next-line no-param-reassign
     videojs.Vhs.xhr = (...args) => {
-      if (args[0].uri.match('.ts')) {
-        const start = new Date();
+      try {
+        const request = args[0];
+        const isSegment = /\.ts(\?|$)/.test(request.uri);
+        const isPlaylist = /\.m3u8(\?|$)/.test(request.uri);
+        if (isSegment || isPlaylist) {
+          // eslint-disable-next-line no-param-reassign
+          request.uri = appendCmcdQuery(request.uri, {
+            ...this.commonCmcdKeys(),
+            ot: isSegment ? 'av' : 'm',
+            sf: 'h',
+            st: 'l',
+            su: !this.hasStartedPlaying || undefined,
+          });
+        }
 
-        const cb = args[1];
-        // eslint-disable-next-line no-param-reassign
-        args[1] = (request, error, response) => {
-          const end = new Date();
-          const delta = end.getTime() - start.getTime();
-          this.trackSegmentDownloadTime(delta);
-          cb(request, error, response);
-        };
+        // Time segment downloads client-side: reported as ttlb, the only
+        // download duration measurement that stays honest when a proxy or
+        // tunnel sits between the viewer and the server.
+        if (isSegment && typeof args[1] === 'function') {
+          const start = Date.now();
+          const cb = args[1];
+          // eslint-disable-next-line no-param-reassign
+          args[1] = (request_, error, response) => {
+            this.segmentDownloadTimesMs.push(Date.now() - start);
+            cb(request_, error, response);
+          };
+        }
+      } catch {
+        // Never let metrics decoration break media loading.
       }
 
       return oldVjsXhrCallback(...args);
     };
 
-    this.videoJSReady();
-
-    this.sendMetricsTimer = setInterval(() => {
-      this.send();
-    }, METRICS_SEND_INTERVAL);
+    this.eventReportTimer = setInterval(() => {
+      // Pauses are reported as their own state transition; a paused player
+      // has nothing new to say in between.
+      if (!this.player || this.player.paused() || !this.hasStartedPlaying) {
+        return;
+      }
+      this.sendEventReport('t');
+    }, EVENT_REPORT_INTERVAL);
   }
 
   stop() {
-    clearInterval(this.sendMetricsTimer);
+    clearInterval(this.eventReportTimer);
     this.player.off();
   }
 
@@ -99,36 +175,38 @@ class PlaybackMetrics {
     this.clockSkewMs = skewMs;
   }
 
-  videoJSReady() {
-    const tech = this.player.tech({ IWillNotUseThisInPlugins: true });
-    this.supportsDetailedMetrics = !!tech;
-
-    tech?.on('usage', e => {
-      // Buffering before the first frame is startup, not an interruption.
-      if (e.name === 'vhs-unknown-waiting' && this.hasStartedPlaying) {
-        this.setIsBuffering(true);
-      }
-
-      // The cause suffix is the event that triggered the switch
-      // ('bandwidthupdate', 'abr', 'exclude', ...), so match the prefix.
-      // 'fast-quality' is a viewer picking a rendition by hand — not a
-      // stream health signal.
-      if (e.name.startsWith('vhs-rendition-change') && !e.name.endsWith('fast-quality')) {
-        this.incrementQualityVariantChanges();
-      }
-    });
+  handlePlay() {
+    if (this.playRequestedAt === null) {
+      this.playRequestedAt = Date.now();
+    }
   }
 
   handlePlaying() {
+    if (this.mediaStartDelayMs === null && this.playRequestedAt !== null) {
+      this.mediaStartDelayMs = Date.now() - this.playRequestedAt;
+    }
+    const firstPlay = !this.hasStartedPlaying;
     this.hasStartedPlaying = true;
-    clearInterval(this.collectPlaybackMetricsTimer);
-    this.collectPlaybackMetricsTimer = setInterval(() => {
-      this.collectPlaybackMetrics();
-    }, 5000);
+    this.isStalled = false;
+    if (firstPlay) {
+      this.sendEventReport('ps', { sta: 'p' });
+    }
+  }
+
+  handlePause() {
+    // Tearing down the player fires a pause; don't report it.
+    if (!this.player.ended()) {
+      this.sendEventReport('ps', { sta: 'a' });
+    }
   }
 
   handleEnded() {
-    clearInterval(this.collectPlaybackMetricsTimer);
+    this.sendEventReport('ps', { sta: 'e' });
+  }
+
+  handleError() {
+    const error = this.player.error();
+    this.sendEventReport('e', { ec: error ? String(error.code) : undefined });
   }
 
   handleBuffering() {
@@ -136,161 +214,191 @@ class PlaybackMetrics {
     // waiting event that fires while the player is seeking is the fetch at
     // a seek discontinuity (the viewer scrubbed, or the latency compensator
     // jumped forward), not a playback interruption. Genuine starvation fires
-    // with seeking() false, so only count those as errors.
-    if (!this.hasStartedPlaying || this.player.seeking()) {
+    // with seeking() false, so only report those.
+    if (!this.hasStartedPlaying || this.player.seeking() || this.isStalled) {
       return;
     }
-    this.incrementErrorCount(1);
-    this.setIsBuffering(true);
+    this.isStalled = true;
+    this.sendEventReport('ps', { sta: 'w', bs: true });
   }
 
   handleNoLongerBuffering() {
-    this.setIsBuffering(false);
+    this.isStalled = false;
   }
 
-  handleError() {
-    this.incrementErrorCount(1);
-  }
+  // CMCD keys shared by request-mode decoration and event reports.
+  commonCmcdKeys() {
+    const keys = {
+      v: CMCD_VERSION,
+      sid: this.sessionID,
+    };
 
-  incrementErrorCount(count) {
-    this.errors += count;
-  }
-
-  incrementQualityVariantChanges() {
-    // We always start the player at the lowest quality, so let's just not
-    // count the first change.
-    if (!this.hasPerformedInitialVariantChange) {
-      this.hasPerformedInitialVariantChange = true;
-      return;
-    }
-    this.qualityVariantChanges++;
-  }
-
-  setIsBuffering(isBuffering) {
-    this.isBuffering = isBuffering;
-
-    if (!isBuffering) {
-      clearTimeout(this.bufferingDurationTimer);
-      return;
+    const throughput = this.measuredThroughputKbps();
+    if (throughput) {
+      keys.mtp = throughput;
     }
 
-    this.bufferingDurationTimer = setTimeout(() => {
-      this.incrementErrorCount(1);
-    }, 500);
-  }
-
-  trackSegmentDownloadTime(seconds) {
-    this.segmentDownloadTime.push(seconds);
-  }
-
-  trackBandwidth(bps) {
-    this.bandwidthTracking.push(bps);
-  }
-
-  trackLatency(latency) {
-    this.latencyTracking.push(latency);
-  }
-
-  collectPlaybackMetrics() {
-    const tech = this.player.tech({ IWillNotUseThisInPlugins: true });
-    if (!tech || !tech.vhs) {
-      return;
+    const bitrate = this.currentBitrateKbps();
+    if (bitrate) {
+      keys.br = bitrate;
     }
 
-    // If we're paused then do nothing.
+    const buffer = this.bufferLengthMs();
+    if (buffer !== null) {
+      keys.bl = buffer;
+    }
+
+    const latency = this.liveLatencyMs();
+    if (latency !== null) {
+      keys.ltc = latency;
+    }
+
+    const playbackRate = this.player.playbackRate();
+    if (playbackRate !== 1) {
+      keys.pr = playbackRate;
+    }
+
+    return keys;
+  }
+
+  async sendEventReport(event, extraKeys = {}) {
+    this.sequenceNumber += 1;
+
+    const report = {
+      ...this.commonCmcdKeys(),
+      ...extraKeys,
+      e: event,
+      ts: Date.now(),
+      sn: this.sequenceNumber,
+    };
+
+    if (report.sta === undefined) {
+      report.sta = this.playerStateToken();
+    }
+
+    if (!this.mediaStartDelaySent && this.mediaStartDelayMs !== null) {
+      this.mediaStartDelaySent = true;
+      report.msd = this.mediaStartDelayMs;
+    }
+
+    const droppedFrames = this.droppedFrameCount();
+    if (droppedFrames) {
+      report.df = droppedFrames;
+    }
+
+    // Average client-measured segment download time since the last report,
+    // reported as ttlb in milliseconds.
+    if (this.segmentDownloadTimesMs.length > 0) {
+      const sum = this.segmentDownloadTimesMs.reduce((p, c) => p + c, 0);
+      report.ttlb = Math.round(sum / this.segmentDownloadTimesMs.length);
+      this.segmentDownloadTimesMs = [];
+    }
+
+    Object.keys(report).forEach(key => {
+      if (report[key] === undefined || report[key] === null) {
+        delete report[key];
+      }
+    });
+
+    try {
+      await fetch(URL_CMCD_COLLECTOR, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(report),
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  playerStateToken() {
+    if (this.player.seeking()) {
+      return 'k';
+    }
+    if (this.player.ended()) {
+      return 'e';
+    }
     if (this.player.paused()) {
-      return;
+      return 'a';
     }
-
-    // Network state 2 means we're actively using the network.
-    // We only care about reporting metrics with network activity stats
-    // if it's actively being used, so don't report otherwise.
-    const networkState = this.player.networkState();
-    if (networkState !== 2) {
-      return;
+    if (this.isStalled) {
+      return 'w';
     }
+    return 'p';
+  }
 
-    const bandwidth = tech.vhs.systemBandwidth;
-    this.trackBandwidth(bandwidth);
+  measuredThroughputKbps() {
+    const tech = this.player.tech({ IWillNotUseThisInPlugins: true });
+    const bandwidth = tech?.vhs?.systemBandwidth;
+    if (!bandwidth) {
+      return null;
+    }
+    // The spec asks for throughput rounded to the nearest 100kbps.
+    return Math.round(bandwidth / 1000 / 100) * 100;
+  }
+
+  currentBitrateKbps() {
+    const tech = this.player.tech({ IWillNotUseThisInPlugins: true });
+    const bandwidth = tech?.vhs?.playlists?.media()?.attributes?.BANDWIDTH;
+    if (!bandwidth) {
+      return null;
+    }
+    return Math.round(bandwidth / 1000);
+  }
+
+  bufferLengthMs() {
+    try {
+      const buffered = this.player.buffered();
+      if (!buffered || buffered.length === 0) {
+        return null;
+      }
+      const bufferMs = (buffered.end(buffered.length - 1) - this.player.currentTime()) * 1000;
+      if (bufferMs < 0) {
+        return null;
+      }
+      // The spec asks for buffer length rounded to the nearest 100ms.
+      return Math.round(bufferMs / 100) * 100;
+    } catch {
+      return null;
+    }
+  }
+
+  liveLatencyMs() {
+    const tech = this.player.tech({ IWillNotUseThisInPlugins: true });
+    if (!tech?.vhs) {
+      return null;
+    }
 
     try {
       const segment = getCurrentlyPlayingSegment(tech);
       if (!segment || !segment.dateTimeObject) {
-        return;
+        return null;
       }
 
       const segmentTime = segment.dateTimeObject.getTime();
-      const now = new Date().getTime() + this.clockSkewMs;
+      const now = Date.now() + this.clockSkewMs;
       const latency = now - segmentTime;
 
       // Throw away values that seem invalid.
       if (latency < 0 || latency / 1000 >= MAX_VALID_LATENCY_SECONDS) {
-        return;
+        return null;
       }
 
-      this.trackLatency(latency);
-    } catch (err) {
-      console.warn(err);
+      return Math.round(latency);
+    } catch {
+      return null;
     }
   }
 
-  async send() {
-    if (this.segmentDownloadTime.length === 0) {
-      return;
+  droppedFrameCount() {
+    const tech = this.player.tech({ IWillNotUseThisInPlugins: true });
+    const el = tech?.el?.();
+    if (!el?.getVideoPlaybackQuality) {
+      return null;
     }
-
-    // If we're paused then do nothing.
-    if (!this.player || this.player.paused()) {
-      return;
-    }
-
-    const errorCount = this.errors;
-
-    let data;
-    if (this.supportsDetailedMetrics) {
-      const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length;
-
-      const averageDownloadDuration = average(this.segmentDownloadTime) / 1000;
-      const roundedAverageDownloadDuration = Math.round(averageDownloadDuration * 1000) / 1000;
-
-      const averageBandwidth = average(this.bandwidthTracking) / 1000;
-      const roundedAverageBandwidth = Math.round(averageBandwidth * 1000) / 1000;
-
-      const averageLatency = average(this.latencyTracking) / 1000;
-      const roundedAverageLatency = Math.round(averageLatency * 1000) / 1000;
-
-      data = {
-        bandwidth: roundedAverageBandwidth,
-        latency: roundedAverageLatency,
-        downloadDuration: roundedAverageDownloadDuration,
-        errors: errorCount + (this.isBuffering ? 1 : 0),
-        qualityVariantChanges: this.qualityVariantChanges,
-      };
-    } else {
-      data = {
-        errors: errorCount + (this.isBuffering ? 1 : 0),
-      };
-    }
-
-    this.errors = 0;
-    this.qualityVariantChanges = 0;
-    this.segmentDownloadTime = [];
-    this.bandwidthTracking = [];
-    this.latencyTracking = [];
-
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    };
-
-    try {
-      await fetch(URL_PLAYBACK_METRICS, options);
-    } catch (e) {
-      console.error(e);
-    }
+    return el.getVideoPlaybackQuality().droppedVideoFrames || null;
   }
 }
 
