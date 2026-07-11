@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -78,37 +80,42 @@ func zipHasFile(zr *zip.Reader, name string) bool {
 	return false
 }
 
-// LoadPackage loads a plugin from a .ocpkg file. The archive is opened with
-// a file-backed reader so only the central directory and the manifest/wasm
-// entries actually enter memory; per-asset reads happen on demand when the
-// HTTP server fetches them. The *zip.ReadCloser is retained on the returned
-// Loaded so the underlying file stays open for AssetsFS lookups, and is
-// closed when Loaded.Close runs.
+// LoadPackage loads a plugin from a .ocpkg file. On most platforms the
+// archive is opened with a file-backed reader so only the central directory
+// and the manifest/code entries actually enter memory; per-asset reads happen
+// on demand when the HTTP server fetches them. The file's closer is retained
+// on the returned Loaded so the underlying file stays open for AssetsFS
+// lookups, and is closed when Loaded.Close runs.
+//
+// On Windows the whole package is read into memory instead: Go opens files
+// without FILE_SHARE_DELETE there, so a retained open handle would make
+// Install's rename-over of an updated .ocpkg fail with "Access is denied" —
+// updating a running plugin would be impossible.
 func LoadPackage(ctx context.Context, env *HostEnv, path string) (*Loaded, error) {
-	zr, err := zip.OpenReader(path)
+	zr, pkgCloser, err := openPackageReader(path)
 	if err != nil {
-		return nil, fmt.Errorf("open %s as zip: %w", path, err)
+		return nil, err
 	}
 	// Until we hand ownership to the returned Loaded, any error path must
-	// close zr or we leak the file handle.
-	closeOnFail := zr
+	// close the file-backed reader or we leak the file handle.
+	closeOnFail := pkgCloser
 	defer func() {
 		if closeOnFail != nil {
 			_ = closeOnFail.Close()
 		}
 	}()
 
-	manifestBytes, err := readZipFile(&zr.Reader, pkgManifestFilename, maxManifestEntryBytes)
+	manifestBytes, err := readZipFile(zr, pkgManifestFilename, maxManifestEntryBytes)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", filepath.Base(path), err)
 	}
 	// The code entry's name implies the runtime (plugin.js / plugin.py / plugin.wasm),
 	// so the author never declares it in the manifest.
-	codeName, runtimeType, ok := detectPackageCode(&zr.Reader)
+	codeName, runtimeType, ok := detectPackageCode(zr)
 	if !ok {
 		return nil, fmt.Errorf("%s: missing plugin code (expected one of plugin.js, plugin.py, plugin.wasm)", filepath.Base(path))
 	}
-	codeBytes, err := readZipFile(&zr.Reader, codeName, maxCodeEntryBytes)
+	codeBytes, err := readZipFile(zr, codeName, maxCodeEntryBytes)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", filepath.Base(path), err)
 	}
@@ -118,8 +125,8 @@ func LoadPackage(ctx context.Context, env *HostEnv, path string) (*Loaded, error
 	// Extract assetsFS from the zip before calling loadFromBytes so the
 	// owncast_asset_read host function has access to it at instantiation time.
 	var assetsFS fs.FS
-	if hasZipDir(&zr.Reader, pkgAssetsPrefix) {
-		if sub, err := fs.Sub(&zr.Reader, strings.TrimSuffix(pkgAssetsPrefix, "/")); err == nil {
+	if hasZipDir(zr, pkgAssetsPrefix) {
+		if sub, err := fs.Sub(zr, strings.TrimSuffix(pkgAssetsPrefix, "/")); err == nil {
 			assetsFS = sub
 		}
 	}
@@ -129,20 +136,42 @@ func LoadPackage(ctx context.Context, env *HostEnv, path string) (*Loaded, error
 		return nil, err
 	}
 	loaded.WasmPath = path
-	loaded.pkgCloser = zr
+	loaded.pkgCloser = pkgCloser
 
 	// Mount public/ as the plugin's web-served root. AssetsFS is already set
 	// by loadFromBytes. fs.Sub returns an FS that's empty (rather than failing)
 	// when the prefix doesn't exist, so we check first to keep the
 	// nil-means-empty invariant the Server (PublicFS) relies on.
-	if hasZipDir(&zr.Reader, pkgPublicPrefix) {
-		if sub, err := fs.Sub(&zr.Reader, strings.TrimSuffix(pkgPublicPrefix, "/")); err == nil {
+	if hasZipDir(zr, pkgPublicPrefix) {
+		if sub, err := fs.Sub(zr, strings.TrimSuffix(pkgPublicPrefix, "/")); err == nil {
 			loaded.PublicFS = sub
 		}
 	}
 
 	closeOnFail = nil // ownership transferred to Loaded.pkgCloser
 	return loaded, nil
+}
+
+// openPackageReader opens an .ocpkg for reading. On Windows the archive is
+// read fully into memory and the returned closer is nil — see LoadPackage.
+// Everywhere else the reader is file-backed and the caller owns the closer.
+func openPackageReader(path string) (*zip.Reader, io.Closer, error) {
+	if runtime.GOOS == "windows" {
+		b, err := os.ReadFile(path) //nolint:gosec // G304: plugin paths are admin-controlled, not user input
+		if err != nil {
+			return nil, nil, fmt.Errorf("open %s: %w", path, err)
+		}
+		zr, err := zip.NewReader(bytes.NewReader(b), int64(len(b)))
+		if err != nil {
+			return nil, nil, fmt.Errorf("open %s as zip: %w", path, err)
+		}
+		return zr, nil, nil
+	}
+	zrc, err := zip.OpenReader(path)
+	if err != nil {
+		return nil, nil, fmt.Errorf("open %s as zip: %w", path, err)
+	}
+	return &zrc.Reader, zrc, nil
 }
 
 // readManifestFromPackage reads just the plugin.manifest.json entry from a
