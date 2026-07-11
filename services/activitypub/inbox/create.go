@@ -3,6 +3,7 @@ package inbox
 import (
 	"context"
 	"database/sql"
+	"net/url"
 	"sort"
 	"time"
 
@@ -114,7 +115,7 @@ func createPostPayload(note vocab.ActivityStreamsNote, noteIRI, inReplyTo string
 
 	postURL := noteIRI
 	if urlProperty := note.GetActivityStreamsUrl(); urlProperty != nil && urlProperty.Len() > 0 {
-		if first := urlProperty.At(0); first != nil && first.IsIRI() && first.GetIRI() != nil {
+		if first := urlProperty.At(0); first != nil && first.IsIRI() && isSafeHTTPURL(first.GetIRI()) {
 			postURL = first.GetIRI().String()
 		}
 	}
@@ -267,13 +268,17 @@ func noteAttachments(property vocab.ActivityStreamsAttachmentProperty) []events.
 	return attachments
 }
 
+func isSafeHTTPURL(iri *url.URL) bool {
+	return iri != nil && (iri.Scheme == "http" || iri.Scheme == "https") && iri.Host != ""
+}
+
 func makeAttachment(object attachmentObject) (events.FediverseAttachment, bool) {
 	urlProperty := object.GetActivityStreamsUrl()
 	if urlProperty == nil || urlProperty.Len() == 0 || urlProperty.At(0) == nil || !urlProperty.At(0).IsIRI() {
 		return events.FediverseAttachment{}, false
 	}
 	attachmentIRI := urlProperty.At(0).GetIRI()
-	if attachmentIRI == nil || (attachmentIRI.Scheme != "http" && attachmentIRI.Scheme != "https") || attachmentIRI.Host == "" {
+	if !isSafeHTTPURL(attachmentIRI) {
 		return events.FediverseAttachment{}, false
 	}
 

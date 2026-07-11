@@ -166,6 +166,36 @@ func TestHandleCreateMentionExtractsPost(t *testing.T) {
 	}
 }
 
+func TestCreatePostPayloadUsesOnlySafeAbsoluteHTTPURL(t *testing.T) {
+	const noteIRI = "https://remote.example/posts/url-fallback"
+	tests := []struct {
+		name      string
+		candidate string
+		want      string
+	}{
+		{name: "https", candidate: "https://remote.example/@alice/post", want: "https://remote.example/@alice/post"},
+		{name: "http", candidate: "http://remote.example/@alice/post", want: "http://remote.example/@alice/post"},
+		{name: "file", candidate: "file:///etc/passwd", want: noteIRI},
+		{name: "unsupported scheme", candidate: "ftp://remote.example/post", want: noteIRI},
+		{name: "relative", candidate: "/@alice/post", want: noteIRI},
+		{name: "missing host", candidate: "https:///post", want: noteIRI},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			note := streams.NewActivityStreamsNote()
+			urlProperty := streams.NewActivityStreamsUrlProperty()
+			urlProperty.AppendIRI(mustCreateTestURL(t, tt.candidate))
+			note.SetActivityStreamsUrl(urlProperty)
+
+			payload := createPostPayload(note, noteIRI, "", apmodels.ActivityPubActor{})
+			if payload.URL != tt.want {
+				t.Fatalf("post URL = %q, want %q", payload.URL, tt.want)
+			}
+		})
+	}
+}
+
 func TestHandleCreateLocalReplyTakesPrecedence(t *testing.T) {
 	fixture := newCreateTestFixture(t, "reply")
 	parentIRI := "https://my.cool.site.biz/federation/posts/local-parent"

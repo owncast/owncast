@@ -15,7 +15,6 @@ func (s *Service) handleAnnounceRequest(c context.Context, activity vocab.Activi
 		actorError:        "announce activity is missing actor IRI",
 		maxAgeError:       "Activity is too old to be shared",
 		resolveActorError: "unable to resolve actor of share/re-post activity",
-		duplicateError:    "inbound activity of share/re-post has already been handled",
 		saveError:         "unable to save inbound share/re-post activity",
 		internalEventType: models.FediverseEngagementRepost,
 		persistedEvent:    events.FediverseEngagementRepost,

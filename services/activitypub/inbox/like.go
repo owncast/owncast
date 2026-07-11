@@ -15,7 +15,6 @@ func (s *Service) handleLikeRequest(c context.Context, activity vocab.ActivitySt
 		actorError:        "like activity is missing actor IRI",
 		maxAgeError:       "Activity is too old to be liked",
 		resolveActorError: "unable to resolve actor of like activity",
-		duplicateError:    "inbound activity of like has already been handled",
 		saveError:         "unable to save inbound like activity",
 		internalEventType: models.FediverseEngagementLike,
 		persistedEvent:    events.FediverseEngagementLike,

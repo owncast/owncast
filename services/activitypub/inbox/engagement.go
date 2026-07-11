@@ -18,7 +18,6 @@ type engagementRequest struct {
 	actorError        string
 	maxAgeError       string
 	resolveActorError string
-	duplicateError    string
 	saveError         string
 	internalEventType models.EventType
 	persistedEvent    events.EventType
@@ -50,12 +49,12 @@ func (s *Service) acceptEngagementRequest(c context.Context, objectProperty voca
 		return errors.Wrap(err, request.resolveActorError)
 	}
 	actorIRI := actor.ActorIriString()
-	if hasPreviouslyHandled, err := s.persistence.HasPreviouslyHandledInboundActivity(objectIRI, actorIRI, request.persistedEvent); hasPreviouslyHandled || err != nil {
-		return errors.Wrap(err, request.duplicateError)
-	}
-
-	if err := s.persistence.SaveInboundFediverseActivity(objectIRI, actorIRI, request.persistedEvent, time.Now()); err != nil {
+	claimed, err := s.persistence.ClaimInboundFediverseActivity(objectIRI, actorIRI, request.persistedEvent, time.Now())
+	if err != nil {
 		return errors.Wrap(err, request.saveError)
+	}
+	if !claimed {
+		return nil
 	}
 
 	s.publishFediverseEvent(c, request.internalEventType, &activityevents.FediverseEngagementEvent{

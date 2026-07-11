@@ -166,6 +166,42 @@ func TestEngagementPublishesWithChatDisplayDisabledAndSkipsDuplicates(t *testing
 	}
 }
 
+func TestConcurrentEngagementDeliveriesPublishOnce(t *testing.T) {
+	service, persistenceService, published := newEngagementTestService(t)
+	persistenceService.Datastore().DB.SetMaxOpenConns(1)
+	const target = "https://owncast.example/federation/concurrent-like"
+	if err := persistenceService.AddToOutbox(target, []byte(`{"type":"Note"}`), "Note", false); err != nil {
+		t.Fatal(err)
+	}
+
+	activity := streams.NewActivityStreamsLike()
+	activity.SetActivityStreamsActor(actorProperty(makeFakePerson()))
+	activity.SetActivityStreamsObject(objectProperty(target))
+
+	const deliveries = 16
+	start := make(chan struct{})
+	errs := make(chan error, deliveries)
+	var wg sync.WaitGroup
+	wg.Add(deliveries)
+	for range deliveries {
+		go func() {
+			defer wg.Done()
+			<-start
+			if err := service.handleLikeRequest(context.Background(), activity); err != nil {
+				errs <- err
+			}
+		}()
+	}
+	close(start)
+	wg.Wait()
+	close(errs)
+
+	for err := range errs {
+		t.Fatalf("concurrent delivery: %v", err)
+	}
+	assertEngagementEvent(t, *published, models.FediverseEngagementLike, target)
+}
+
 func quoteRequest(inbox string) vocab.GoToSocialQuoteRequest {
 	person := makeFakePerson()
 	inboxProperty := streams.NewActivityStreamsInboxProperty()
