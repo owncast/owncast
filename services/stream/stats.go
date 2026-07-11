@@ -118,6 +118,16 @@ func (s *Service) saveStats() {
 	if err := s.configRepository.SetPeakSessionViewerCount(s.stats.SessionMaxViewerCount); err != nil {
 		log.Errorln("error saving viewer count", err)
 	}
+	// Persist a recent live heartbeat while the stream is online so an unclean
+	// shutdown (SIGKILL, node reboot, container eviction) still leaves a useful
+	// "last live" timestamp on the next startup. A graceful disconnect below will
+	// overwrite this with the real end time.
+	if s.stats.StreamConnected && s.stats.LastConnectTime != nil && s.stats.LastConnectTime.Valid {
+		if err := s.configRepository.SetLastDisconnectTime(time.Now()); err != nil {
+			log.Errorln("error saving live heartbeat time", err)
+		}
+		return
+	}
 	if s.stats.LastDisconnectTime != nil && s.stats.LastDisconnectTime.Valid {
 		if err := s.configRepository.SetLastDisconnectTime(s.stats.LastDisconnectTime.Time); err != nil {
 			log.Errorln("error saving disconnect time", err)
