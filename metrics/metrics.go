@@ -105,6 +105,14 @@ type Service struct {
 	windowedLatencies             map[string]float64
 	windowedDownloadDurations     map[string]float64
 
+	// Clients that recently self-reported playback metrics; server-derived
+	// observation is suppressed for them.
+	selfReportingClients map[string]time.Time
+
+	// Last observed encoded bitrate per client (CMCD br), used to detect
+	// quality variant changes.
+	lastClientBitrates map[string]float64
+
 	// Alerting state: whether we've already logged a threshold-exceeded
 	// warning for the given resource (debounced by errorResetDuration).
 	inCPUAlertingState  bool
@@ -126,6 +134,8 @@ func New(deps Deps) *Service {
 		windowedBandwidths:            map[string]float64{},
 		windowedLatencies:             map[string]float64{},
 		windowedDownloadDurations:     map[string]float64{},
+		selfReportingClients:          map[string]time.Time{},
+		lastClientBitrates:            map[string]float64{},
 	}
 }
 
