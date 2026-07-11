@@ -56,8 +56,6 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 		return errors.Wrap(err, "follow activity is missing actor IRI")
 	}
 
-	actorReference := activity.GetActivityStreamsActor()
-
 	if approved {
 		// Only non-featured (fan) follows reach the auto-accept path here;
 		// featured follows always require manual approval, so live status in
@@ -97,7 +95,7 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 
 	// Send action to chat if it has not been previously handled.
 	if !hasPreviouslyhandled {
-		return s.handleEngagementActivity(events.FediverseEngagementFollow, false, actorReference, events.FediverseEngagementFollow)
+		return s.handleEngagementActivity(events.FediverseEngagementFollow, false, followRequest, events.FediverseEngagementFollow)
 	}
 
 	return nil

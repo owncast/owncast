@@ -261,6 +261,7 @@ func main() {
 		Builder:             apBuilder,
 		Signer:              apSigner,
 		Resolver:            apResolver,
+		Events:              eventDispatcher,
 		Config:              cfg,
 	})
 	apSvc.Start()

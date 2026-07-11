@@ -2,12 +2,15 @@ package inbox
 
 import (
 	"context"
+	"time"
 
 	"code.superseriousbusiness.org/activity/streams/vocab"
 	"github.com/pkg/errors"
 	"github.com/teris-io/shortid"
 
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
+	activityevents "github.com/owncast/owncast/services/activitypub/events"
 	"github.com/owncast/owncast/services/activitypub/requests"
 )
 
@@ -18,10 +21,16 @@ import (
 // stamp. Requests for unknown posts, or any request while federation is
 // private, are rejected so the pending quote clears on the remote end.
 func (s *Service) handleQuoteRequestInboxRequest(c context.Context, activity vocab.GoToSocialQuoteRequest) error {
+	activityIRI, err := apmodels.GetIRIStringFromJSONLDIdProperty(activity.GetJSONLDId())
+	if err != nil {
+		return errors.Wrap(err, "quote request is missing activity IRI")
+	}
+
 	actor, err := s.resolver.GetResolvedActorFromActorProperty(activity.GetActivityStreamsActor())
 	if err != nil {
 		return errors.Wrap(err, "unable to resolve actor of quote request")
 	}
+	actorIRI := actor.ActorIriString()
 
 	// object = the post being quoted, instrument = the quote post itself.
 	quotedPostIRI, err := apmodels.GetIRIFromObjectProperty(activity.GetActivityStreamsObject())
@@ -60,5 +69,19 @@ func (s *Service) handleQuoteRequestInboxRequest(c context.Context, activity voc
 		return errors.Wrap(err, "unable to store quote authorization")
 	}
 
-	return requests.SendQuoteRequestAccept(s.workerpool, actor.Inbox, activity, stampIRI, localAccountName, s.builder, s.signer)
+	if err := requests.SendQuoteRequestAccept(s.workerpool, actor.Inbox, activity, stampIRI, localAccountName, s.builder, s.signer); err != nil {
+		return err
+	}
+	claimed, err := s.persistence.ClaimInboundFediverseActivity(activityIRI, actorIRI, activity.GetTypeName(), time.Now())
+	if err != nil {
+		return errors.Wrap(err, "unable to claim inbound quote request")
+	}
+	if !claimed {
+		return nil
+	}
+	s.publishFediverseEvent(c, models.FediverseEngagementQuote, &activityevents.FediverseEngagementEvent{
+		Actor:  fediverseActorFromResolvedActor(actor),
+		Target: &activityevents.FediverseTarget{URL: quotedPostIRI.String()},
+	})
+	return nil
 }

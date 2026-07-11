@@ -3,9 +3,10 @@ package inbox
 import (
 	"fmt"
 
-	"code.superseriousbusiness.org/activity/streams/vocab"
 	"github.com/microcosm-cc/bluemonday"
 
+	"github.com/owncast/owncast/services/activitypub/apmodels"
+	activityevents "github.com/owncast/owncast/services/activitypub/events"
 	"github.com/owncast/owncast/services/chat/events"
 )
 
@@ -20,7 +21,16 @@ func sanitizeActorName(displayName, username string) string {
 	return name
 }
 
-func (s *Service) handleEngagementActivity(eventType events.EventType, isLiveNotification bool, actorReference vocab.ActivityStreamsActorProperty, action string) error {
+func fediverseActorFromResolvedActor(actor apmodels.ActivityPubActor) activityevents.FediverseActor {
+	return activityevents.FediverseActor{
+		Name:   sanitizeActorName(actor.Name, actor.Username),
+		Handle: actor.FullUsername,
+		URL:    actor.ActorIriString(),
+		Image:  actor.ImageString(),
+	}
+}
+
+func (s *Service) handleEngagementActivity(eventType events.EventType, isLiveNotification bool, actor apmodels.ActivityPubActor, action string) error {
 	// Do nothing if displaying engagement actions has been turned off.
 	if !s.configRepository.GetFederationShowEngagement() {
 		return nil
@@ -29,12 +39,6 @@ func (s *Service) handleEngagementActivity(eventType events.EventType, isLiveNot
 	// Do nothing if chat is disabled
 	if s.configRepository.GetChatDisabled() {
 		return nil
-	}
-
-	// Get actor of the action
-	actor, err := s.resolver.GetResolvedActorFromActorProperty(actorReference)
-	if err != nil {
-		return fmt.Errorf("unable to resolve actor for engagement activity: %w", err)
 	}
 
 	// Send chat message

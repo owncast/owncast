@@ -19,7 +19,7 @@ func TestReservedEventTypes_CoversCoreEvents(t *testing.T) {
 		EventStreamStopped, EventStreamTitleChanged, EventSSEConnect,
 		EventSSEDisconnect, EventTick, EventTimerFire, EventFediverseFollow,
 		EventFediverseLike, EventFediverseRepost, EventFediverseMention,
-		EventFediverseReply,
+		EventFediverseReply, EventFediverseQuote, EventFediverseActivity,
 	} {
 		if !reservedEventTypes[e] {
 			t.Errorf("core event %q must be reserved (plugins must not be able to emit it)", e)

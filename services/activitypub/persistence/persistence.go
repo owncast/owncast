@@ -9,6 +9,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sync"
 	"time"
 
 	"code.superseriousbusiness.org/activity/streams"
@@ -24,8 +25,9 @@ import (
 
 // Service owns the ActivityPub persistence operations.
 type Service struct {
-	datastore *datastore.Datastore
-	resolver  *apresolvers.Resolver
+	datastore              *datastore.Datastore
+	resolver               *apresolvers.Resolver
+	inboundActivityClaimMu sync.Mutex
 }
 
 // New constructs a persistence Service bound to the given datastore.
@@ -177,4 +179,25 @@ func (s *Service) HasPreviouslyHandledInboundActivity(iri string, actorIRI strin
 	}
 
 	return exists > 0, nil
+}
+
+// ClaimInboundFediverseActivity records an inbound activity unless it was
+// already handled. The mutex makes the count-and-insert pair atomic within
+// this Service.
+func (s *Service) ClaimInboundFediverseActivity(iri string, actorIRI string, eventType string, timestamp time.Time) (bool, error) {
+	s.inboundActivityClaimMu.Lock()
+	defer s.inboundActivityClaimMu.Unlock()
+
+	handled, err := s.HasPreviouslyHandledInboundActivity(iri, actorIRI, eventType)
+	if err != nil {
+		return false, err
+	}
+	if handled {
+		return false, nil
+	}
+	if err := s.SaveInboundFediverseActivity(iri, actorIRI, eventType, timestamp); err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

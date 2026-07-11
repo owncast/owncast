@@ -34,14 +34,14 @@ const (
 	// don't subscribe to or handle this directly.
 	EventTimerFire = "timer.fire"
 
-	// Fediverse events. Engagement (follow/like/repost) carries only
-	// actor + target metadata; mention/reply also carry the post content
-	// so plugins can act on what was actually said.
-	EventFediverseFollow  = "fediverse.follow"
-	EventFediverseLike    = "fediverse.like"
-	EventFediverseRepost  = "fediverse.repost"
-	EventFediverseMention = "fediverse.mention"
-	EventFediverseReply   = "fediverse.reply"
+	// Fediverse event names exposed to plugins.
+	EventFediverseFollow   = "fediverse.follow"
+	EventFediverseLike     = "fediverse.like"
+	EventFediverseRepost   = "fediverse.repost"
+	EventFediverseMention  = "fediverse.mention"
+	EventFediverseReply    = "fediverse.reply"
+	EventFediverseQuote    = "fediverse.quote"
+	EventFediverseActivity = "fediverse.activity"
 )
 
 // reservedEventTypes are the built-in event types the host originates. A
@@ -66,4 +66,6 @@ var reservedEventTypes = map[string]bool{
 	EventFediverseRepost:      true,
 	EventFediverseMention:     true,
 	EventFediverseReply:       true,
+	EventFediverseQuote:       true,
+	EventFediverseActivity:    true,
 }
