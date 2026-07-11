@@ -1120,8 +1120,8 @@ Web package: @types/unist@3.0.3
   Declared license: MIT
   LICENSE: SHA256 3d4ada4e04d153d74f5bc4e5e6aebd12ef20077716529c36089dc07f14fd0dcf
 
-Web package: @uiw/codemirror-extensions-basic-setup@4.25.10
-  Source: https://registry.npmjs.org/@uiw/codemirror-extensions-basic-setup/-/codemirror-extensions-basic-setup-4.25.10.tgz
+Web package: @uiw/codemirror-extensions-basic-setup@4.25.11
+  Source: https://registry.npmjs.org/@uiw/codemirror-extensions-basic-setup/-/codemirror-extensions-basic-setup-4.25.11.tgz
   Declared license: MIT
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
@@ -1135,8 +1135,8 @@ Web package: @uiw/codemirror-themes@4.25.10
   Declared license: MIT
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
-Web package: @uiw/react-codemirror@4.25.10
-  Source: https://registry.npmjs.org/@uiw/react-codemirror/-/react-codemirror-4.25.10.tgz
+Web package: @uiw/react-codemirror@4.25.11
+  Source: https://registry.npmjs.org/@uiw/react-codemirror/-/react-codemirror-4.25.11.tgz
   Declared license: MIT
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
