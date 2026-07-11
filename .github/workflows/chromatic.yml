@@ -90,7 +90,7 @@ jobs:
 
       - name: Publish to Chromatic
         if: ${{ github.actor != 'renovate[bot]' && github.actor != 'renovate' && github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'renovate' && steps.changed-files-yaml.outputs.src_any_changed == 'true' }}
-        uses: chromaui/action@v17
+        uses: chromaui/action@v18
         with:
           workingDir: web
           projectToken: f47410569b62
