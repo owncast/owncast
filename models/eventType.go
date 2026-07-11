@@ -14,6 +14,18 @@ const (
 	UserNameChanged EventType = "NAME_CHANGE"
 	// FediverseEngagementFollow is the event sent when a user follows the stream.
 	FediverseEngagementFollow EventType = "FEDIVERSE_ENGAGEMENT_FOLLOW"
+	// FediverseEngagementLike is the internal event sent when a remote user likes a local post.
+	FediverseEngagementLike EventType = "FEDIVERSE_ENGAGEMENT_LIKE"
+	// FediverseEngagementRepost is the internal event sent when a remote user reposts a local post.
+	FediverseEngagementRepost EventType = "FEDIVERSE_ENGAGEMENT_REPOST"
+	// FediverseEngagementQuote is the internal event sent when a remote user quotes a local post.
+	FediverseEngagementQuote EventType = "FEDIVERSE_ENGAGEMENT_QUOTE"
+	// FediverseMention is the internal event sent when a remote post mentions the stream.
+	FediverseMention EventType = "FEDIVERSE_MENTION"
+	// FediverseReply is the internal event sent when a remote user replies to a local post.
+	FediverseReply EventType = "FEDIVERSE_REPLY"
+	// FediverseActivity is the internal event carrying a verified inbound ActivityPub activity.
+	FediverseActivity EventType = "FEDIVERSE_ACTIVITY"
 	// VisibiltyToggled is the event sent when a chat message's visibility changes.
 	VisibiltyToggled EventType = "VISIBILITY-UPDATE"
 	// PING is a ping message.
