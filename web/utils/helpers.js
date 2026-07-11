@@ -1,4 +1,4 @@
-import UAParser from 'ua-parser-js';
+import Bowser from 'bowser';
 
 export function getDiffInDaysFromNow(timestamp) {
   const time = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
@@ -7,16 +7,14 @@ export function getDiffInDaysFromNow(timestamp) {
 
 export const isMobileSafariIos = () => {
   try {
-    const ua = navigator.userAgent;
-    const uaParser = new UAParser(ua);
-    const browser = uaParser.getBrowser();
-    const device = uaParser.getDevice();
+    const { browser, platform } = Bowser.parse(navigator.userAgent);
+    const isIPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
 
-    if (device.vendor !== 'Apple') {
+    if (!isIPadOS && platform.vendor !== 'Apple') {
       return false;
     }
 
-    if (device.type !== 'mobile' && device.type !== 'tablet') {
+    if (!isIPadOS && platform.type !== 'mobile' && platform.type !== 'tablet') {
       return false;
     }
 
