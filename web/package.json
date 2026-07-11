@@ -43,7 +43,7 @@
     "@next/bundle-analyzer": "^16.2.10",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
-    "@uiw/codemirror-theme-bbedit": "4.25.10",
+    "@uiw/codemirror-theme-bbedit": "4.25.11",
     "@uiw/react-codemirror": "4.25.10",
     "@xstate/react": "^6.1.0",
     "antd": "6.5.0",
