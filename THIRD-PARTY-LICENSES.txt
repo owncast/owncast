@@ -1125,13 +1125,13 @@ Web package: @uiw/codemirror-extensions-basic-setup@4.25.10
   Declared license: MIT
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
-Web package: @uiw/codemirror-theme-bbedit@4.25.10
-  Source: https://registry.npmjs.org/@uiw/codemirror-theme-bbedit/-/codemirror-theme-bbedit-4.25.10.tgz
+Web package: @uiw/codemirror-theme-bbedit@4.25.11
+  Source: https://registry.npmjs.org/@uiw/codemirror-theme-bbedit/-/codemirror-theme-bbedit-4.25.11.tgz
   Declared license: MIT
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
-Web package: @uiw/codemirror-themes@4.25.10
-  Source: https://registry.npmjs.org/@uiw/codemirror-themes/-/codemirror-themes-4.25.10.tgz
+Web package: @uiw/codemirror-themes@4.25.11
+  Source: https://registry.npmjs.org/@uiw/codemirror-themes/-/codemirror-themes-4.25.11.tgz
   Declared license: MIT
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
