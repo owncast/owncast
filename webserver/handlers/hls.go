@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"os"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -23,21 +24,8 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	requestedPath := r.URL.Path
-	relativePath := strings.Replace(requestedPath, "/hls/", "", 1)
-	fullPath := filepath.Join(config.HLSStoragePath, relativePath)
-
-	// Defense-in-depth path-traversal guard. http.ServeFile already rejects
-	// URL.Path entries containing "..", but we resolve both paths to
-	// absolute form and confirm the request stays inside HLSStoragePath
-	// rather than relying on that stdlib detail. HLS asset names never
-	// contain ".." in practice.
-	absBase, err := filepath.Abs(config.HLSStoragePath)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	absFull, err := filepath.Abs(fullPath)
-	if err != nil || (absFull != absBase && !strings.HasPrefix(absFull, absBase+string(filepath.Separator))) {
+	relativePath := strings.TrimPrefix(requestedPath, "/hls/")
+	if !filepath.IsLocal(relativePath) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -88,9 +76,22 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 		h.stream.GetStatus().Online &&
 		!h.metrics.IsClientSelfReporting(requestClientID)
 
+	file, err := os.OpenInRoot(config.HLSStoragePath, relativePath)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	defer file.Close()
+
+	info, err := file.Stat()
+	if err != nil || info.IsDir() {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	cw := &countingResponseWriter{ResponseWriter: w}
 	start := time.Now()
-	http.ServeFile(cw, r, absFull) //nolint:gosec // G703: absFull was resolved and verified to be inside HLSStoragePath above
+	http.ServeContent(cw, r, relativePath, info.ModTime(), file)
 	if observe {
 		h.registerServedSegmentMetrics(r, metricsID, cw.bytes, time.Since(start), cmcdKeys != nil)
 	}
