@@ -31,6 +31,23 @@ export function trimUnicodeWhitespace(str: string): string {
   return str.replace(unicodeWhitespacePattern, '');
 }
 
+/**
+ * Extracts the `displayname` query parameter for use during initial chat
+ * registration. The returned value has surrounding whitespace trimmed.
+ * Returns undefined when the parameter is absent, empty, or whitespace-only
+ * so callers fall back to a server-generated name.
+ * @param search The query string, e.g. window.location.search
+ */
+export function getDisplayNameFromQuery(search: string): string | undefined {
+  const name = new URLSearchParams(search).get('displayname');
+  if (!name) {
+    return undefined;
+  }
+
+  const trimmedName = trimUnicodeWhitespace(name);
+  return trimmedName.length > 0 ? trimmedName : undefined;
+}
+
 export function validateDisplayName(
   name: string | undefined,
   currentName: string,

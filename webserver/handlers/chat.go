@@ -77,11 +77,19 @@ func (h *Handlers) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Requ
 	if proposedNewDisplayName == "" && request.DisplayName != nil {
 		proposedNewDisplayName = *request.DisplayName
 	}
-	if proposedNewDisplayName == "" {
-		proposedNewDisplayName = h.generateDisplayName()
-	}
 
+	// Sanitize before the empty check so a proposed name that sanitizes to
+	// nothing (e.g. only HTML tags or whitespace) still falls back to a
+	// generated name instead of failing registration.
 	proposedNewDisplayName = utils.MakeSafeStringOfLength(proposedNewDisplayName, config.MaxChatDisplayNameLength)
+	if proposedNewDisplayName == "" {
+		proposedNewDisplayName = utils.MakeSafeStringOfLength(h.generateDisplayName(), config.MaxChatDisplayNameLength)
+	}
+	if proposedNewDisplayName == "" {
+		// An admin-configured suggested username can itself sanitize to
+		// empty; GeneratePhrase always yields a usable word-word name.
+		proposedNewDisplayName = utils.GeneratePhrase()
+	}
 	newUser, accessToken, err := h.userRepository.CreateAnonymousUser(proposedNewDisplayName)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())

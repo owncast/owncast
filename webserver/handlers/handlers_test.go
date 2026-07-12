@@ -10,12 +10,13 @@ import (
 	"testing"
 
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/datastore"
 )
 
 // testHandlers is the *Handlers used by tests in this package, holding
-// only the configRepository handle. Expand if other handler tests land
-// that need additional deps.
+// only the configRepository and userRepository handles. Expand if other
+// handler tests land that need additional deps.
 var (
 	testHandlers  *Handlers
 	testDatastore *datastore.Datastore
@@ -34,7 +35,10 @@ func TestMain(m *testing.M) {
 	}
 	testDatastore = ds
 
-	testHandlers = &Handlers{configRepository: configrepository.New(testDatastore)}
+	testHandlers = &Handlers{
+		configRepository: configrepository.New(testDatastore),
+		userRepository:   userrepository.New(testDatastore),
+	}
 
 	code := m.Run()
 	os.Remove(dbFile.Name())
