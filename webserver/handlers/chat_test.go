@@ -6,6 +6,9 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"unicode/utf8"
+
+	"github.com/owncast/owncast/config"
 )
 
 // A proposed display name that sanitizes to an empty string (e.g. only HTML
@@ -48,6 +51,9 @@ func TestRegisterAnonymousChatUserEmptyAfterSanitizationFallsBack(t *testing.T) 
 			}
 			if response.DisplayName == "" {
 				t.Error("expected a non-empty generated display name")
+			}
+			if utf8.RuneCountInString(response.DisplayName) > config.MaxChatDisplayNameLength {
+				t.Errorf("display name %q exceeds max length %d", response.DisplayName, config.MaxChatDisplayNameLength)
 			}
 			if tc.wantExactly != "" && response.DisplayName != tc.wantExactly {
 				t.Errorf("expected display name %q, got %q", tc.wantExactly, response.DisplayName)
