@@ -58,11 +58,14 @@ type Loaded struct {
 	// releaseEngine drops this instance's reference on its shared compiled
 	// engine (nil for legacy self-contained wasm). Called exactly once by
 	// Close, after the instance itself is closed.
-	releaseEngine func()
-	mu            sync.Mutex
-	failureMu     sync.Mutex
-	filterFails   int
-	disabled      atomic.Bool
+	releaseEngine        func()
+	mu                   sync.Mutex
+	failureMu            sync.Mutex
+	filterFails          int
+	disabled             atomic.Bool
+	commandCooldownMu    sync.Mutex
+	commandCooldowns     map[commandCooldownKey]int64
+	commandCooldownSweep int64
 	// pkgCloser holds the file-backed zip reader for .ocpkg plugins so the
 	// underlying file stays open for PublicFS / AssetsFS reads. nil for
 	// loose-files plugins. Closed by Loaded.Close.
@@ -1537,9 +1540,9 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 		return nil, fail(err)
 	}
 	manifest.Subscriptions = runtime.Subscriptions
-	// Command metadata is derived by the SDK and reported via register() (like
-	// subscriptions); the host aggregates it for !help. Informational only, so
-	// it isn't part of AgreesWith's security checks.
+	// Command registrations are derived by the SDK. They have no sidecar
+	// counterpart for AgreesWith to compare. Core uses them for matching,
+	// dispatch, gating, cooldowns, and help.
 	manifest.Commands = runtime.Commands
 
 	var adminGlobs []glob.Glob

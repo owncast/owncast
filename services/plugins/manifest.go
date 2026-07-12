@@ -27,18 +27,6 @@ type Subscriptions struct {
 	Filter []Subscription `json:"filter,omitempty"`
 }
 
-// CommandInfo is one chat command a plugin advertises for the unified !help.
-// Reported by the SDK in register() output; purely informational (the plugin's
-// own router does the actual matching).
-type CommandInfo struct {
-	Name        string   `json:"name"`
-	Prefix      string   `json:"prefix,omitempty"`
-	Description string   `json:"description,omitempty"`
-	Usage       string   `json:"usage,omitempty"`
-	Aliases     []string `json:"aliases,omitempty"`
-	ModOnly     bool     `json:"modOnly,omitempty"`
-}
-
 type ConfigField struct {
 	Type        string `json:"type"`
 	Default     any    `json:"default,omitempty"`
@@ -78,10 +66,9 @@ type Manifest struct {
 	Description   string        `json:"description,omitempty"`
 	Bot           BotConfig     `json:"bot,omitempty"`
 	Subscriptions Subscriptions `json:"subscriptions"`
-	// Commands is the plugin's chat-command metadata, derived by the SDK from
-	// its defineCommands/plugin.commands table and reported via register() (not
-	// authored in the sidecar manifest). The host aggregates these across
-	// plugins to answer a unified !help.
+	// Commands is the plugin's command registration table, derived by the SDK
+	// and reported via register(). The host routes matching chat commands and
+	// aggregates the same declarations for !help.
 	Commands    []CommandInfo          `json:"commands,omitempty"`
 	Permissions []string               `json:"permissions,omitempty"`
 	Config      map[string]ConfigField `json:"config,omitempty"`

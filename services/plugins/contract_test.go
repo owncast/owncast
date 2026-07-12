@@ -15,21 +15,13 @@ import (
 	"testing"
 )
 
-// This guards against this vendored copy of the plugin runtime silently
-// drifting from the upstream SDK's wire contract. services/plugins is a copy
-// of github.com/owncast/plugin-sdk's host-runtime/plugin package; the
-// implementation is allowed to fork for Owncast integration, but the *wire
-// contract* (host-function names, permission identifiers, serialized type
-// shapes) must stay identical, or plugins and the TypeScript SDK break.
+// This guards the plugin wire contract against accidental drift. hostfns.go is
+// the Go source of truth for host-function names, permission identifiers, and
+// serialized type shapes. The TypeScript SDK and wire-protocol documentation
+// mirror it.
 //
-// plugin-contract.json is the SDK's published contract, copied in verbatim.
-// This test re-derives the contract from THIS repo's hostfns.go and compares.
-// If it fails, this copy has fallen behind (or ahead of) the SDK — re-sync the
-// runtime and copy the SDK's host-runtime/plugin/plugin-contract.json here.
-//
-// The extractor below is a verbatim copy of the SDK's
-// host-runtime/plugin/contract_test.go extractor; keep it identical so the
-// produced contract is comparable byte-for-byte.
+// plugin-contract.json is the generated fingerprint. Regenerate it only for an
+// intentional contract change by running this test with UPDATE_CONTRACT=1.
 
 // hostFnNameRe matches an actual host-function name exactly — not the error
 // strings ("owncast_x from %s: ...") that also begin with the prefix.
@@ -178,27 +170,29 @@ func TestPluginContractMatchesSDK(t *testing.T) {
 		t.Fatalf("read hostfns.go: %v", err)
 	}
 	gotJSON := marshalContract(t, buildContractFromSource(t, string(src)))
+	contractPath := filepath.Join(repoRoot, "services/plugins/plugin-contract.json")
+	if os.Getenv("UPDATE_CONTRACT") == "1" {
+		if err := os.WriteFile(contractPath, gotJSON, 0o644); err != nil {
+			t.Fatalf("update plugin-contract.json: %v", err)
+		}
+		return
+	}
 
-	want, err := os.ReadFile(filepath.Join(repoRoot, "services/plugins/plugin-contract.json"))
+	want, err := os.ReadFile(contractPath)
 	if err != nil {
 		t.Fatalf("read plugin-contract.json: %v", err)
 	}
 
 	if string(normalizeNewlines(gotJSON)) != string(normalizeNewlines(want)) {
-		t.Errorf(`Owncast's bundled plugin runtime is out of sync with the plugin SDK.
+		t.Errorf(`The plugin wire contract snapshot is stale.
 
-The plugin host functions, permissions, or data shapes in services/plugins no
-longer match what the SDK (github.com/owncast/plugin-sdk) publishes, so plugins
-built against the SDK may not work correctly against this build of Owncast.
+The host functions, permissions, or data shapes derived from
+services/plugins/hostfns.go no longer match plugin-contract.json.
 
-This usually means a change landed in the SDK but wasn't copied here yet (or a
-change was made here without updating the SDK). To fix:
+If the change is intentional, regenerate the snapshot:
 
-  1. Make the change in the SDK first and regenerate its snapshot there:
-       UPDATE_CONTRACT=1 go test ./plugin/ -run TestPluginContract
-  2. Copy the SDK's host-runtime/plugin/plugin-contract.json over
-     services/plugins/plugin-contract.json here, and bring
-     services/plugins/hostfns.go in line with the SDK.
-  3. Re-run this test — it passes once the two sides match.`)
+  UPDATE_CONTRACT=1 go test ./services/plugins/ -run TestPluginContractMatchesSDK
+
+Then rerun this test without UPDATE_CONTRACT.`)
 	}
 }
