@@ -191,6 +191,19 @@ type FediversePayload struct {
 	Link  string `json:"link,omitempty"`
 }
 
+// CommandInfo is one command declared by a plugin. The host uses this
+// registration data to match chat messages and dispatch command events.
+type CommandInfo struct {
+	Name          string   `json:"name"`
+	Prefix        string   `json:"prefix,omitempty"`
+	Description   string   `json:"description,omitempty"`
+	Usage         string   `json:"usage,omitempty"`
+	Aliases       []string `json:"aliases,omitempty"`
+	ModOnly       bool     `json:"modOnly,omitempty"`
+	CaseSensitive bool     `json:"caseSensitive,omitempty"`
+	CooldownMs    int64    `json:"cooldownMs,omitempty"`
+}
+
 // HostChatMessage is the shape returned by ChatHistory. It matches the
 // onChatMessage / chat.message.received event payload: User is the full User
 // object (nil for the rare message with no associated account), not a bare
@@ -199,8 +212,19 @@ type FediversePayload struct {
 type HostChatMessage struct {
 	ID        string    `json:"id"`
 	User      *HostUser `json:"user,omitempty"`
+	ClientID  uint64    `json:"clientId,omitempty"`
 	Body      string    `json:"body"`
 	Timestamp string    `json:"timestamp"`
+}
+
+// CommandEvent is the internal chat.command payload delivered by the host to
+// every plugin whose declared command matches an accepted chat message.
+type CommandEvent struct {
+	Message   HostChatMessage `json:"message"`
+	Command   string          `json:"command"`
+	InvokedAs string          `json:"invokedAs"`
+	Args      []string        `json:"args"`
+	ArgString string          `json:"argString"`
 }
 
 // BrowserPushPayload is what a plugin asks Owncast to send via the

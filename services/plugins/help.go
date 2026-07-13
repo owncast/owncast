@@ -5,15 +5,17 @@ import (
 	"strings"
 )
 
-// HelpCommand is the chat command that triggers the unified command listing.
-// The host owns it (no plugin needs to implement it); a plugin can't shadow it.
-const HelpCommand = "!help"
+const (
+	DefaultCommandPrefix = "!"
+	HelpCommand          = DefaultCommandPrefix + "help"
+	HelpCommandAlias     = DefaultCommandPrefix + "commands"
+)
 
 // IsHelpCommand reports whether a chat message body is the help command. Matched
 // case-insensitively and trim-tolerant; "!commands" is accepted as an alias.
 func IsHelpCommand(body string) bool {
 	b := strings.ToLower(strings.TrimSpace(body))
-	return b == HelpCommand || b == "!commands"
+	return b == HelpCommand || b == HelpCommandAlias
 }
 
 // BuildHelpMessage renders the unified command list aggregated across the given
@@ -48,7 +50,7 @@ func BuildHelpMessage(loaded []*Loaded, isModerator bool) string {
 			}
 			prefix := c.Prefix
 			if prefix == "" {
-				prefix = "!"
+				prefix = DefaultCommandPrefix
 			}
 			// Markdown: backticked command, em-dash description. System
 			// messages are rendered (RenderBody), so this becomes a code span

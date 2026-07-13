@@ -11,6 +11,11 @@ const (
 	EventChatUserRenamed      = "chat.user.renamed"
 	EventChatMessageModerated = "chat.message.moderated"
 
+	// EventChatCommand is delivered directly to each plugin whose registered
+	// command matches an accepted chat message. Internal: the guest SDK maps
+	// the canonical command name back to the author's handler.
+	EventChatCommand = "chat.command"
+
 	// Stream lifecycle events.
 	EventStreamStarted      = "stream.started"
 	EventStreamStopped      = "stream.stopped"
@@ -54,6 +59,7 @@ var reservedEventTypes = map[string]bool{
 	EventChatUserParted:       true,
 	EventChatUserRenamed:      true,
 	EventChatMessageModerated: true,
+	EventChatCommand:          true,
 	EventStreamStarted:        true,
 	EventStreamStopped:        true,
 	EventStreamTitleChanged:   true,
