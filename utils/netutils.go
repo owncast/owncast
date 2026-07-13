@@ -1,17 +1,45 @@
 package utils
 
 import (
+	"context"
 	"net"
+	"net/netip"
 	"os"
 	"sync"
-
-	log "github.com/sirupsen/logrus"
 )
 
 var (
 	allowInternalFederation     bool
 	allowInternalFederationOnce sync.Once
 )
+
+var nonPublicIPPrefixes = []netip.Prefix{
+	netip.MustParsePrefix("0.0.0.0/8"),
+	netip.MustParsePrefix("10.0.0.0/8"),
+	netip.MustParsePrefix("100.64.0.0/10"),
+	netip.MustParsePrefix("127.0.0.0/8"),
+	netip.MustParsePrefix("169.254.0.0/16"),
+	netip.MustParsePrefix("172.16.0.0/12"),
+	netip.MustParsePrefix("192.0.0.0/24"),
+	netip.MustParsePrefix("192.0.2.0/24"),
+	netip.MustParsePrefix("192.168.0.0/16"),
+	netip.MustParsePrefix("192.88.99.0/24"),
+	netip.MustParsePrefix("192.175.48.0/24"),
+	netip.MustParsePrefix("198.18.0.0/15"),
+	netip.MustParsePrefix("198.51.100.0/24"),
+	netip.MustParsePrefix("203.0.113.0/24"),
+	netip.MustParsePrefix("224.0.0.0/4"),
+	netip.MustParsePrefix("240.0.0.0/4"),
+	netip.MustParsePrefix("64:ff9b::/96"),
+	netip.MustParsePrefix("64:ff9b:1::/48"),
+	netip.MustParsePrefix("100::/64"),
+	netip.MustParsePrefix("2001::/23"),
+	netip.MustParsePrefix("2001:db8::/32"),
+	netip.MustParsePrefix("2002::/16"),
+	netip.MustParsePrefix("fc00::/7"),
+	netip.MustParsePrefix("fe80::/10"),
+	netip.MustParsePrefix("ff00::/8"),
+}
 
 // AllowInternalFederation returns true if the OWNCAST_ALLOW_INTERNAL_FEDERATION
 // environment variable is set to "true". This is used for testing purposes only.
@@ -26,24 +54,24 @@ func AllowInternalFederation() bool {
 // this server's network or is the loopback address.
 // Returns false if OWNCAST_ALLOW_INTERNAL_FEDERATION is set to "true".
 func IsHostnameInternal(hostname string) bool {
-	// Allow internal federation for testing purposes.
-	if AllowInternalFederation() {
+	return isHostnameInternal(hostname, AllowInternalFederation())
+}
+
+func isHostnameInternal(hostname string, allowInternal bool) bool {
+	if allowInternal {
 		return false
 	}
-	// If this is already an IP address don't try to resolve it
 	if ip := net.ParseIP(hostname); ip != nil {
 		return isIPAddressInternal(ip)
 	}
 
-	ips, err := net.LookupIP(hostname)
-	if err != nil {
-		// Default to false if we can't resolve the hostname.
-		log.Debugln("Unable to resolve hostname:", hostname)
-		return false
+	ips, err := net.DefaultResolver.LookupIPAddr(context.Background(), hostname)
+	if err != nil || len(ips) == 0 {
+		return true
 	}
 
 	for _, ip := range ips {
-		if isIPAddressInternal(ip) {
+		if isIPAddressInternal(ip.IP) {
 			return true
 		}
 	}
@@ -52,5 +80,18 @@ func IsHostnameInternal(hostname string) bool {
 }
 
 func isIPAddressInternal(ip net.IP) bool {
-	return ip.IsLoopback() || ip.IsPrivate()
+	addr, ok := netip.AddrFromSlice(ip)
+	if !ok {
+		return true
+	}
+	addr = addr.Unmap()
+	if !addr.IsGlobalUnicast() {
+		return true
+	}
+	for _, prefix := range nonPublicIPPrefixes {
+		if prefix.Contains(addr) {
+			return true
+		}
+	}
+	return false
 }

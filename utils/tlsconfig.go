@@ -1,9 +1,13 @@
 package utils
 
 import (
+	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
+	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"sync"
 	"time"
@@ -50,38 +54,130 @@ func GetHTTPTransportWithTLS(baseTransport *http.Transport) *http.Transport {
 	return baseTransport
 }
 
-// GetRetryableHTTPClient returns an http.Client with retry logic for transient failures.
-// It uses hashicorp/go-retryablehttp with exponential backoff for 502, 503, 504 errors.
+type restrictedDialer struct {
+	allowInternal bool
+	lookupIP      func(context.Context, string) ([]net.IPAddr, error)
+	dial          func(context.Context, string, string) (net.Conn, error)
+}
+
+func newRestrictedDialer(allowInternal bool) *restrictedDialer {
+	dialer := &net.Dialer{
+		Timeout:   8 * time.Second,
+		KeepAlive: 30 * time.Second,
+	}
+	return &restrictedDialer{
+		allowInternal: allowInternal,
+		lookupIP:      net.DefaultResolver.LookupIPAddr,
+		dial:          dialer.DialContext,
+	}
+}
+
+func (d *restrictedDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+	host, port, err := net.SplitHostPort(address)
+	if err != nil {
+		return nil, fmt.Errorf("invalid outbound address %q: %w", address, err)
+	}
+
+	var addresses []net.IPAddr
+	if ip := net.ParseIP(host); ip != nil {
+		addresses = []net.IPAddr{{IP: ip}}
+	} else {
+		addresses, err = d.lookupIP(ctx, host)
+		if err != nil {
+			return nil, fmt.Errorf("unable to resolve outbound host %q: %w", host, err)
+		}
+	}
+	if len(addresses) == 0 {
+		return nil, fmt.Errorf("outbound host %q resolved to no addresses", host)
+	}
+
+	for _, address := range addresses {
+		if !d.allowInternal && isIPAddressInternal(address.IP) {
+			return nil, fmt.Errorf("refusing to connect to non-public address %s for host %q", address.IP, host)
+		}
+	}
+
+	var dialErrors []error
+	for _, address := range addresses {
+		dialAddress := net.JoinHostPort(address.IP.String(), port)
+		conn, err := d.dial(ctx, network, dialAddress)
+		if err == nil {
+			return conn, nil
+		}
+		dialErrors = append(dialErrors, err)
+	}
+
+	return nil, fmt.Errorf("unable to connect to outbound host %q: %w", host, errors.Join(dialErrors...))
+}
+
+func newOutboundHTTPClient(allowInternal bool) *http.Client {
+	transport := GetHTTPTransportWithTLS(&http.Transport{
+		DialContext:         newRestrictedDialer(allowInternal).DialContext,
+		MaxIdleConns:        20,
+		MaxIdleConnsPerHost: 2,
+		IdleConnTimeout:     10 * time.Second,
+	})
+
+	return &http.Client{
+		Transport:     transport,
+		Timeout:       8 * time.Second,
+		CheckRedirect: outboundRedirectPolicy(allowInternal),
+	}
+}
+
+func outboundRedirectPolicy(allowInternal bool) func(*http.Request, []*http.Request) error {
+	return func(req *http.Request, via []*http.Request) error {
+		if len(via) >= 10 {
+			return errors.New("stopped after 10 redirects")
+		}
+		if req.URL.Scheme != "http" && req.URL.Scheme != "https" {
+			return fmt.Errorf("refusing to follow redirect using %q scheme", req.URL.Scheme)
+		}
+		if isHostnameInternal(req.URL.Hostname(), allowInternal) {
+			return fmt.Errorf("refusing to follow redirect to non-public host: %s", req.URL.Hostname())
+		}
+		return nil
+	}
+}
+
+// ValidatePublicHTTPSURL requires an HTTPS URL whose host resolves exclusively
+// to publicly routable addresses.
+func ValidatePublicHTTPSURL(rawURL string) error {
+	parsed, err := url.ParseRequestURI(rawURL)
+	if err != nil {
+		return fmt.Errorf("invalid HTTPS URL: %w", err)
+	}
+	if parsed.Scheme != "https" || parsed.Hostname() == "" {
+		return errors.New("URL must use HTTPS and include a host")
+	}
+	if isHostnameInternal(parsed.Hostname(), false) {
+		return fmt.Errorf("URL host %q is not publicly routable", parsed.Hostname())
+	}
+	return nil
+}
+
+// GetPublicHTTPClient returns an HTTP client that can connect only to publicly
+// routable addresses and validates each redirect and resolved dial address.
+func GetPublicHTTPClient() *http.Client {
+	return newOutboundHTTPClient(false)
+}
+
+// GetFederationHTTPClient returns the restricted outbound client used for
+// federation. The test-only internal-federation override is preserved.
+func GetFederationHTTPClient() *http.Client {
+	return newOutboundHTTPClient(AllowInternalFederation())
+}
+
+// GetRetryableHTTPClient returns the federation HTTP client with retry logic
+// for transient 502, 503, and 504 responses.
 func GetRetryableHTTPClient() *http.Client {
 	retryClient := retryablehttp.NewClient()
 	retryClient.RetryMax = 3
 	retryClient.RetryWaitMin = 100 * time.Millisecond
 	retryClient.RetryWaitMax = 1 * time.Second
-	retryClient.Logger = nil // Disable default logging
-
-	// Configure transport with connection pooling limits
-	transport := GetHTTPTransportWithTLS(&http.Transport{
-		MaxIdleConns:        20,               // Limit resource usage
-		MaxIdleConnsPerHost: 2,                // Conservative per-host limit
-		IdleConnTimeout:     10 * time.Second, // Fast cleanup of idle connections
-		DisableKeepAlives:   false,
-	})
-	retryClient.HTTPClient.Transport = transport
-
-	// Re-validate every redirect hop so a public URL can't 302 to an internal
-	// address (SSRF). Honors OWNCAST_ALLOW_INTERNAL_FEDERATION via
-	// IsHostnameInternal, so local-instance test federation still works.
-	retryClient.HTTPClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
-		if len(via) >= 10 {
-			return fmt.Errorf("stopped after 10 redirects")
-		}
-		if IsHostnameInternal(req.URL.Hostname()) {
-			return fmt.Errorf("refusing to follow redirect to internal host: %s", req.URL.Hostname())
-		}
-		return nil
-	}
-
+	retryClient.Logger = nil
+	retryClient.HTTPClient = GetFederationHTTPClient()
 	client := retryClient.StandardClient()
-	client.Timeout = 8 * time.Second // Short timeout - legitimate servers respond quickly
+	client.Timeout = 8 * time.Second
 	return client
 }

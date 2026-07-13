@@ -65,6 +65,9 @@ var (
 )
 
 func TestMain(m *testing.M) {
+	if err := os.Setenv("OWNCAST_ALLOW_INTERNAL_FEDERATION", "true"); err != nil {
+		panic(err)
+	}
 	ds, err := datastore.SetupPersistence(":memory:", os.TempDir())
 	if err != nil {
 		panic(err)
