@@ -180,8 +180,8 @@ Go module: github.com/lestrrat-go/strftime@v1.1.1
   Source: https://pkg.go.dev/github.com/lestrrat-go/strftime@v1.1.1
   LICENSE: SHA256 59f2b9cb3029898f4767774d1bd174c6dfebb6874b0895ec195aaf31b208543c
 
-Go module: github.com/mattn/go-sqlite3@v1.14.47
-  Source: https://pkg.go.dev/github.com/mattn/go-sqlite3@v1.14.47
+Go module: github.com/mattn/go-sqlite3@v1.14.48
+  Source: https://pkg.go.dev/github.com/mattn/go-sqlite3@v1.14.48
   LICENSE: SHA256 afa48e5e64dc610298d80b010ae7a3450f61a79500a9f1d1697ff6dcbbfa1f72
 
 Go module: github.com/mfridman/interpolate@v0.0.2
@@ -12399,7 +12399,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 ================================================================================
 SHA256: afa48e5e64dc610298d80b010ae7a3450f61a79500a9f1d1697ff6dcbbfa1f72
-Used by: Go module: github.com/mattn/go-sqlite3@v1.14.47 (LICENSE)
+Used by: Go module: github.com/mattn/go-sqlite3@v1.14.48 (LICENSE)
 --------------------------------------------------------------------------------
 The MIT License (MIT)
 
