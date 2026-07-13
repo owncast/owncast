@@ -263,6 +263,7 @@ export const ClientConfigStore: FC = () => {
       });
       setAccessToken(newAccessToken);
       setLocalStorage(ACCESS_TOKEN_KEY, newAccessToken);
+      await updateClientConfig();
     } catch (e) {
       sendEvent([AppStateEvent.Fail]);
       console.error(`ChatService -> registerUser() ERROR: \n${e}`);
