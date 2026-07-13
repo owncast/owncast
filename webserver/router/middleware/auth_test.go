@@ -55,6 +55,25 @@ func TestRequireAdminAuthRejectsCrossOriginRequests(t *testing.T) {
 	}
 }
 
+func TestRequireAdminAuthRejectsDevelopmentOriginForRemoteHost(t *testing.T) {
+	m := &Middleware{adminSessions: newAdminSessionStore()}
+	handler := m.RequireAdminAuth(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	req := httptest.NewRequest(http.MethodOptions, "https://owncast.example/api/admin/config", nil)
+	req.Header.Set("Origin", developmentAdminOrigin)
+	rec := httptest.NewRecorder()
+	handler(rec, req)
+
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("expected remote development-origin request to return %d, got %d", http.StatusForbidden, rec.Code)
+	}
+	if got := rec.Header().Get("Access-Control-Allow-Origin"); got != "" {
+		t.Fatalf("remote host advertised development CORS origin %q", got)
+	}
+}
+
 func TestRequireAdminAuthRequiresCSRFHeaderWithoutOrigin(t *testing.T) {
 	m := &Middleware{adminSessions: newAdminSessionStore()}
 	handler := m.RequireAdminAuth(func(w http.ResponseWriter, _ *http.Request) {

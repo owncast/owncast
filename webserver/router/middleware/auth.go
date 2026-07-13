@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"crypto/subtle"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -25,7 +26,10 @@ type UserAccessTokenHandlerFunc func(models.User, http.ResponseWriter, *http.Req
 // cache across all of them.
 const adminAuthRealm = "Owncast Authenticated Request"
 
-const adminCSRFHeader = "X-Owncast-CSRF-Protection"
+const (
+	adminCSRFHeader        = "X-Owncast-CSRF-Protection"
+	developmentAdminOrigin = "http://localhost:3000"
+)
 
 // IsAdminRequest reports whether r carries valid admin credentials. The
 // Owncast admin UI sends Basic Auth on every API call; embedded contexts
@@ -64,8 +68,8 @@ func isAdminOriginAllowed(r *http.Request) bool {
 		return false
 	}
 
-	if originValue == "http://localhost:3000" {
-		return true
+	if originValue == developmentAdminOrigin {
+		return isDevelopmentAdminOrigin(r)
 	}
 
 	scheme := "http"
@@ -76,6 +80,23 @@ func isAdminOriginAllowed(r *http.Request) bool {
 	return strings.EqualFold(origin.Scheme, scheme) && strings.EqualFold(origin.Host, r.Host)
 }
 
+func isDevelopmentAdminOrigin(r *http.Request) bool {
+	if r.Header.Get("Origin") != developmentAdminOrigin {
+		return false
+	}
+
+	hostname := r.Host
+	if host, _, err := net.SplitHostPort(r.Host); err == nil {
+		hostname = host
+	}
+	hostname = strings.Trim(hostname, "[]")
+	if strings.EqualFold(hostname, "localhost") {
+		return true
+	}
+	ip := net.ParseIP(hostname)
+	return ip != nil && ip.IsLoopback()
+}
+
 func requiresCSRFHeader(r *http.Request) bool {
 	return r.Method != http.MethodGet && r.Method != http.MethodHead && r.Method != http.MethodOptions &&
 		r.Header.Get("Origin") == "" && r.Header.Get("Authorization") == ""
@@ -83,9 +104,8 @@ func requiresCSRFHeader(r *http.Request) bool {
 
 func (m *Middleware) RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		origin := r.Header.Get("Origin")
-		if origin == "http://localhost:3000" {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
+		if isDevelopmentAdminOrigin(r) {
+			w.Header().Set("Access-Control-Allow-Origin", developmentAdminOrigin)
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
 		}
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, "+adminCSRFHeader)
