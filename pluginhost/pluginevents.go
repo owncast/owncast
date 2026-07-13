@@ -18,19 +18,9 @@ import (
 // TypeScript interfaces (ChatMessage, User, …) so a plugin's typed
 // handlers receive exactly the documented JSON.
 
-// pluginChatMessage is the chat.message.received (and chat.filter) payload.
-// It carries the full sender identity as a nested object plus the originating
-// connection's clientId so plugins can do reliable per-user state and
-// moderation (e.g. gate on scopes) and reply privately to the sender via
-// owncast.chat.sendTo / replyTo. User is nil for the rare message with no
-// associated account.
-type pluginChatMessage struct {
-	ID        string            `json:"id"`
-	User      *plugins.HostUser `json:"user,omitempty"`
-	ClientID  uint              `json:"clientId,omitempty"`
-	Body      string            `json:"body"`
-	Timestamp string            `json:"timestamp"`
-}
+// pluginChatMessage aliases the shared wire type used by chat notifications,
+// filters, command events, and chat history.
+type pluginChatMessage = plugins.HostChatMessage
 
 // The user wire shape lives once, as plugins.HostUser (the type chat.history()
 // and the users.list()/get() directory also return). These event payloads
@@ -88,7 +78,7 @@ func newPluginChatFilter(pluginDispatcher *plugins.Dispatcher) dispatcher.Filter
 		if !msg.Timestamp.IsZero() {
 			timestamp = msg.Timestamp.UTC().Format(time.RFC3339Nano)
 		}
-		final, allowed, _ := pluginDispatcher.Filter(ctx, plugins.EventChatMessageReceived, pluginChatMessage{ID: msg.ID, User: toHostUserPtr(msg.User), ClientID: msg.ClientID, Body: msg.Body, Timestamp: timestamp})
+		final, allowed, _ := pluginDispatcher.Filter(ctx, plugins.EventChatMessageReceived, pluginChatMessage{ID: msg.ID, User: toHostUserPtr(msg.User), ClientID: uint64(msg.ClientID), Body: msg.Body, Timestamp: timestamp})
 		if !allowed {
 			return false
 		}
@@ -128,16 +118,9 @@ func filteredBody(final any, fallback string) string {
 	return fallback
 }
 
-// moderatorScope is the user scope that grants moderator privileges; mod-only
-// commands are hidden from non-moderators in the help listing.
-const moderatorScope = "MODERATOR"
-
-// newHelpResponder returns a dispatcher.Listener that answers the unified
-// `!help` chat command. The host owns !help (no plugin implements it): it
-// aggregates command metadata across all loaded plugins — which no single
-// sandboxed plugin could see — and posts the list as a system message via
-// `post`. snapshot yields the current loaded plugins; post sends a system
-// chat message.
+// newHelpResponder returns a listener for Owncast's built-in `!help` response.
+// The same message continues through ordinary chat and command dispatch, so
+// plugins may add their own responses.
 func newHelpResponder(snapshot func() []*plugins.Loaded, post func(text string)) dispatcher.Listener {
 	return func(ctx context.Context, e dispatcher.Event) {
 		webhookEvent, ok := e.Payload.(webhooks.WebhookEvent)
@@ -159,7 +142,7 @@ func newHelpResponder(snapshot func() []*plugins.Loaded, post func(text string))
 		isMod := false
 		if data.User != nil {
 			for _, s := range data.User.Scopes {
-				if s == moderatorScope {
+				if s == models.ModeratorScopeKey {
 					isMod = true
 					break
 				}
@@ -192,7 +175,14 @@ func newPluginEventListener(pluginDispatcher *plugins.Dispatcher) dispatcher.Lis
 			// here would re-run every plugin's on_filter on a message
 			// that already survived once, doubling work and double-
 			// triggering rate-limit logic (slow-mode, etc.).
-			go pluginDispatcher.Notify(ctx, pe.eventType, pe.payload)
+			go func(pe pluginEvent) {
+				pluginDispatcher.Notify(ctx, pe.eventType, pe.payload)
+				if pe.eventType == plugins.EventChatMessageReceived {
+					if msg, ok := pe.payload.(pluginChatMessage); ok {
+						pluginDispatcher.DispatchCommands(ctx, msg)
+					}
+				}
+			}(pe)
 		}
 	}
 }
@@ -355,7 +345,7 @@ func chatMessageEvent(evt webhooks.WebhookEvent) []pluginEvent {
 	msg := pluginChatMessage{
 		ID:        data.ID,
 		User:      toHostUserPtr(data.User),
-		ClientID:  data.ClientID,
+		ClientID:  uint64(data.ClientID),
 		Body:      data.RawBody,
 		Timestamp: formatTimePtr(data.Timestamp),
 	}

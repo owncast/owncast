@@ -648,9 +648,9 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 	deps.Events.AddListener(newPluginEventListener(pluginDispatcher))
 	deps.Events.AddFilter(newPluginChatFilter(pluginDispatcher))
 
-	// Host-owned `!help`: list every plugin's chat commands (no single plugin
-	// can see across the sandbox, so the host aggregates and answers). Posts a
-	// system message — works even when no plugin holds chat.send.
+	// Built-in `!help`: aggregate every plugin's declarations into a system
+	// message. The original message also reaches ordinary chat and matching
+	// plugin command handlers.
 	deps.Events.AddListener(newHelpResponder(manager.Snapshot, func(text string) {
 		if err := deps.Chat.SendSystemMessage(text, false); err != nil {
 			log.Errorln("plugin !help:", err)

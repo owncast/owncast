@@ -305,33 +305,60 @@ module.exports = definePlugin({
 	}
 }
 
-// TestSharedEngineReportsCommands verifies command metadata declared in a
-// plugin's command table flows SDK → engine register() → host manifest, so the
-// host can build !help.
-func TestSharedEngineReportsCommands(t *testing.T) {
+// TestSharedEngineReportsAndDispatchesCommands verifies that JS and Python
+// declarations reach core registration, avoid broad chat subscriptions, and
+// receive the targeted command event.
+func TestSharedEngineReportsAndDispatchesCommands(t *testing.T) {
 	ctx := context.Background()
 	compiledEngines.resetForTest(ctx)
 	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
 
-	env, _, _ := captureEnv()
+	env, sends, mu := captureEnv()
 
 	jsScript := `
 const { definePlugin } = require("@owncast/plugin-sdk");
 module.exports = definePlugin({
-  commands: { uptime: { description: "Stream uptime", run: () => {} } },
+  commands: { uptime: { description: "Stream uptime", aliases: ["up"], run: (ctx) => ctx.reply("js:" + ctx.invokedAs + ":" + ctx.args.join(",")) } },
 });`
-	js := loadShared(t, ctx, env, RuntimeJavaScript, "js-cmds", jsScript, []string{})
+	js := loadShared(t, ctx, env, RuntimeJavaScript, "js-cmds", jsScript, []string{PermChatSend})
 	defer js.Close(ctx)
 	assertHasCommand(t, js, "uptime", "Stream uptime")
 
 	pyScript := `
-plugin.commands({"uptime": {"description": "Stream uptime", "run": lambda ctx: None}})
+plugin.commands({"uptime": {"description": "Stream uptime", "aliases": ["up"], "run": lambda ctx: ctx.reply("py:" + ctx.invoked_as + ":" + ",".join(ctx.args))}})
 `
-	py := loadShared(t, ctx, env, RuntimePython, "py-cmds", pyScript, []string{})
+	py := loadShared(t, ctx, env, RuntimePython, "py-cmds", pyScript, []string{PermChatSend})
 	defer py.Close(ctx)
 	assertHasCommand(t, py, "uptime", "Stream uptime")
 
-	// And the host can render a unified help listing from it.
+	for _, loaded := range []*Loaded{js, py} {
+		if subscribed(loaded.Manifest.Subscriptions.Notify, EventChatMessageReceived) {
+			t.Errorf("%s: command declaration must not subscribe to ordinary chat", loaded.Manifest.Slug)
+		}
+	}
+
+	d := NewDispatcher([]*Loaded{js, py})
+	d.DispatchCommands(ctx, HostChatMessage{
+		ID:        "m1",
+		User:      &HostUser{ID: "u1", DisplayName: "alice"},
+		ClientID:  7,
+		Body:      "!up one two",
+		Timestamp: "2026-01-01T00:00:00Z",
+	})
+
+	mu.Lock()
+	got := make(map[string]bool, len(*sends))
+	for _, send := range *sends {
+		got[send.Text] = true
+	}
+	mu.Unlock()
+	for _, want := range []string{"js:up:one,two", "py:up:one,two"} {
+		if !got[want] {
+			t.Errorf("duplicate command dispatch missing %q; got %+v", want, got)
+		}
+	}
+
+	// The host still aggregates the same registrations for its built-in help.
 	help := BuildHelpMessage([]*Loaded{js, py}, false)
 	if !strings.Contains(help, "`!uptime`") || !strings.Contains(help, "Stream uptime") {
 		t.Errorf("help should list the reported command:\n%s", help)
