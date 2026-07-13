@@ -12,9 +12,9 @@ __turbopack_load_page_chunks__("/embed/chat/readonly", [
   "static/chunks/0tz6_10jr3hn4.js",
   "static/chunks/2ii8si9sk1wly.js",
   "static/chunks/3-37nv3rf10se.js",
-  "static/chunks/07zpchkbu86wl.js",
+  "static/chunks/20n6xtciqpoz0.js",
   "static/chunks/0fw_mn16ugp1k.js",
   "static/chunks/2xlx6h5xthqc-.js",
   "static/chunks/370r3ttpahoe8.css",
-  "static/chunks/turbopack-2btmynn9yo5-d.js"
+  "static/chunks/turbopack-3aa_g5hj1puoz.js"
 ])

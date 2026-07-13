@@ -16,10 +16,10 @@ __turbopack_load_page_chunks__("/", [
   "static/chunks/2bhydvps55q7j.js",
   "static/chunks/2xlx6h5xthqc-.js",
   "static/chunks/0136oz-6f9xfp.js",
-  "static/chunks/1imt415vnd29u.js",
+  "static/chunks/0mm1wk9fk2s5l.js",
   "static/chunks/39fd5ql5i-ygz.js",
   "static/chunks/1vumyt731ce3p.js",
   "static/chunks/15rlq0e2d76a_.js",
   "static/chunks/0v1ii7tgg7f3i.css",
-  "static/chunks/turbopack-2239-w1c0e1sc.js"
+  "static/chunks/turbopack-3rzp8f-s0c1p8.js"
 ])
