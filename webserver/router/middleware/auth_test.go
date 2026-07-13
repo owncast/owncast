@@ -83,16 +83,29 @@ func TestRequireAdminAuthRequiresCSRFHeaderWithoutOrigin(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "http://owncast.example/api/admin/config", nil)
 	rec := httptest.NewRecorder()
 	handler(rec, req)
+	if rec.Code != http.StatusUnauthorized {
+		t.Fatalf("expected unauthenticated request to return %d, got %d", http.StatusUnauthorized, rec.Code)
+	}
+
+	token, err := m.adminSessions.mint()
+	if err != nil {
+		t.Fatal(err)
+	}
+	req = httptest.NewRequest(http.MethodPost, "http://owncast.example/api/admin/config", nil)
+	req.AddCookie(&http.Cookie{Name: adminSessionCookieName, Value: token})
+	rec = httptest.NewRecorder()
+	handler(rec, req)
 	if rec.Code != http.StatusForbidden {
-		t.Fatalf("expected missing CSRF header to return %d, got %d", http.StatusForbidden, rec.Code)
+		t.Fatalf("expected authenticated request without CSRF header to return %d, got %d", http.StatusForbidden, rec.Code)
 	}
 
 	req = httptest.NewRequest(http.MethodPost, "http://owncast.example/api/admin/config", nil)
+	req.AddCookie(&http.Cookie{Name: adminSessionCookieName, Value: token})
 	req.Header.Set(adminCSRFHeader, "1")
 	rec = httptest.NewRecorder()
 	handler(rec, req)
-	if rec.Code != http.StatusUnauthorized {
-		t.Fatalf("expected CSRF-protected request to reach authentication, got %d", rec.Code)
+	if rec.Code != http.StatusNoContent {
+		t.Fatalf("expected CSRF-protected authenticated request to reach handler, got %d", rec.Code)
 	}
 
 	req = httptest.NewRequest(http.MethodPost, "http://owncast.example/api/admin/config", nil)

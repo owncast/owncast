@@ -121,15 +121,15 @@ func (m *Middleware) RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc
 			return
 		}
 
-		if requiresCSRFHeader(r) && r.Header.Get(adminCSRFHeader) != "1" {
-			http.Error(w, "Forbidden", http.StatusForbidden)
-			return
-		}
-
 		if !m.IsAdminRequest(r) {
 			w.Header().Set("WWW-Authenticate", `Basic realm="`+adminAuthRealm+`"`)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			log.Debugln("Failed admin authentication")
+			return
+		}
+
+		if requiresCSRFHeader(r) && r.Header.Get(adminCSRFHeader) != "1" {
+			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
 
