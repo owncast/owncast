@@ -79,6 +79,7 @@ module.exports = async phase => {
     distDir: '.next',
     trailingSlash: true,
     reactStrictMode: true,
+    devIndicators: false,
     images: {
       unoptimized: true,
     },
