@@ -80,7 +80,7 @@ func TestMain(m *testing.M) {
 		Persistence: persistenceSvc,
 		Followers:   followersrepository.New(testDatastore),
 	})
-	m.Run()
+	os.Exit(m.Run())
 }
 
 func TestBlockedDomains(t *testing.T) {

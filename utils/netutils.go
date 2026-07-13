@@ -6,6 +6,7 @@ import (
 	"net/netip"
 	"os"
 	"sync"
+	"time"
 )
 
 var (
@@ -65,7 +66,9 @@ func isHostnameInternal(hostname string, allowInternal bool) bool {
 		return isIPAddressInternal(ip)
 	}
 
-	ips, err := net.DefaultResolver.LookupIPAddr(context.Background(), hostname)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	ips, err := net.DefaultResolver.LookupIPAddr(ctx, hostname)
 	if err != nil || len(ips) == 0 {
 		return true
 	}

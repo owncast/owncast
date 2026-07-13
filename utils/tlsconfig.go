@@ -16,6 +16,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	httpScheme  = "http"
+	httpsScheme = "https"
+)
+
 var (
 	insecureSkipVerify     bool
 	insecureSkipVerifyOnce sync.Once
@@ -130,8 +135,11 @@ func outboundRedirectPolicy(allowInternal bool) func(*http.Request, []*http.Requ
 		if len(via) >= 10 {
 			return errors.New("stopped after 10 redirects")
 		}
-		if req.URL.Scheme != "http" && req.URL.Scheme != "https" {
+		if req.URL.Scheme != httpScheme && req.URL.Scheme != httpsScheme {
 			return fmt.Errorf("refusing to follow redirect using %q scheme", req.URL.Scheme)
+		}
+		if len(via) > 0 && via[len(via)-1].URL.Scheme == httpsScheme && req.URL.Scheme != httpsScheme {
+			return errors.New("refusing to follow redirect from HTTPS to HTTP")
 		}
 		if isHostnameInternal(req.URL.Hostname(), allowInternal) {
 			return fmt.Errorf("refusing to follow redirect to non-public host: %s", req.URL.Hostname())
@@ -147,7 +155,7 @@ func ValidatePublicHTTPSURL(rawURL string) error {
 	if err != nil {
 		return fmt.Errorf("invalid HTTPS URL: %w", err)
 	}
-	if parsed.Scheme != "https" || parsed.Hostname() == "" {
+	if parsed.Scheme != httpsScheme || parsed.Hostname() == "" {
 		return errors.New("URL must use HTTPS and include a host")
 	}
 	if isHostnameInternal(parsed.Hostname(), false) {

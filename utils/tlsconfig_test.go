@@ -66,6 +66,20 @@ func TestOutboundRedirectPolicyRejectsNonPublicHost(t *testing.T) {
 	}
 }
 
+func TestOutboundRedirectPolicyRejectsHTTPSDowngrade(t *testing.T) {
+	req, err := http.NewRequest(http.MethodGet, "http://93.184.216.34/push", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	previous, err := http.NewRequest(http.MethodGet, "https://93.184.216.34/push", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := outboundRedirectPolicy(false)(req, []*http.Request{previous}); err == nil {
+		t.Fatal("expected HTTPS to HTTP redirect to be rejected")
+	}
+}
+
 func TestValidatePublicHTTPSURL(t *testing.T) {
 	if err := ValidatePublicHTTPSURL("https://93.184.216.34/push"); err != nil {
 		t.Fatalf("expected public HTTPS URL to be accepted: %v", err)

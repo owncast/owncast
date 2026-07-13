@@ -78,6 +78,9 @@ func getAuthEndpointFromURL(urlstring string) (*url.URL, error) {
 	if htmlDocScrapeURL.Scheme != schemeHTTPS {
 		return nil, fmt.Errorf("url must be https")
 	}
+	if utils.IsHostnameInternal(htmlDocScrapeURL.Hostname()) {
+		return nil, errors.New("unable to use provided host")
+	}
 
 	client := utils.GetFederationHTTPClient()
 	r, err := client.Get(htmlDocScrapeURL.String())
