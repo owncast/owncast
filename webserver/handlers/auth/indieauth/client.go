@@ -9,9 +9,11 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	ia "github.com/owncast/owncast/auth/indieauth"
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
@@ -104,8 +106,10 @@ func (h *Handler) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if request.DisplayName != u.DisplayName {
-			loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", request.DisplayName, u.DisplayName)
+		displayName := utils.MakeSafeStringOfLength(request.DisplayName, config.MaxChatDisplayNameLength)
+		authenticatedDisplayName := utils.MakeSafeStringOfLength(u.DisplayName, config.MaxChatDisplayNameLength)
+		if displayName != authenticatedDisplayName {
+			loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", displayName, authenticatedDisplayName)
 			if err := h.chat.SendSystemAction(loginMessage, true); err != nil {
 				log.Errorln(err)
 			}

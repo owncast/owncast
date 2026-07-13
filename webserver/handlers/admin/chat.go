@@ -11,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/utils"
@@ -173,7 +174,8 @@ func (a *Admin) handleUserDisabling(userID string) error {
 
 	a.chat.DisconnectClients(clients)
 	disconnectedUser := a.userRepository.GetUserByID(userID)
-	_ = a.chat.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", disconnectedUser.DisplayName), true)
+	displayName := utils.MakeSafeStringOfLength(disconnectedUser.DisplayName, config.MaxChatDisplayNameLength)
+	_ = a.chat.SendSystemAction(fmt.Sprintf("**%s** has been removed from chat.", displayName), true)
 
 	localIP4Address := "127.0.0.1"
 	localIP6Address := "::1"
