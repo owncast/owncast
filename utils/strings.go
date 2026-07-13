@@ -18,6 +18,8 @@ func StripHTML(s string) string {
 func MakeSafeStringOfLength(s string, length int) string {
 	newString, fullyUnescaped := unescapeHTML(s)
 	newString = StripHTML(newString)
+	// Only decode display entities after the input is stable. If the pass limit
+	// was reached, preserving the encoding prevents latent markup from activating.
 	if fullyUnescaped {
 		newString = html.UnescapeString(newString)
 	}
