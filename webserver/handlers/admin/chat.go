@@ -350,9 +350,6 @@ func (a *Admin) SendChatAction(integration models.ExternalAPIUser, w http.Respon
 		return
 	}
 
-	message.SetDefaults()
-	message.RenderBody()
-
 	if err := a.chat.SendSystemAction(message.Body, false); err != nil {
 		webutils.BadRequestHandler(w, err)
 		return

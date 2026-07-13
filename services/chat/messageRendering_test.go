@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/owncast/owncast/services/chat/events"
@@ -58,5 +59,26 @@ func TestAllowHTML(t *testing.T) {
 
 	if result != expected {
 		t.Errorf("message rendering does not match expected.  Got\n%s, \n\n want:\n%s", result, expected)
+	}
+}
+
+func TestSendSystemActionSanitizesHTML(t *testing.T) {
+	client := &Client{send: make(chan []byte, 1)}
+	service := &Service{clients: map[uint]*Client{1: client}}
+
+	if err := service.SendSystemAction(`**<img src=x onerror=alert(1)>Alice** has been removed from chat.`, true); err != nil {
+		t.Fatal(err)
+	}
+
+	var payload struct {
+		Body string `json:"body"`
+	}
+	if err := json.Unmarshal(<-client.send, &payload); err != nil {
+		t.Fatal(err)
+	}
+
+	const want = `<p><strong>Alice</strong> has been removed from chat.</p>`
+	if payload.Body != want {
+		t.Fatalf("action body = %q, want %q", payload.Body, want)
 	}
 }

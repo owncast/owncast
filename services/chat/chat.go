@@ -226,7 +226,7 @@ func (s *Service) SendSystemAction(text string, ephemeral bool) error {
 	}
 
 	message.SetDefaults()
-	message.RenderBody()
+	message.RenderAndSanitizeMessageBody()
 
 	if err := s.BroadcastEvent(&message); err != nil {
 		log.Errorln("error sending system chat action")
