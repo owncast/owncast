@@ -115,7 +115,7 @@ export const StreamCard: FC<StreamCardProps> = ({
           [styles.offline]: !isOnline,
         })}
         cover={cardCover}
-        bodyStyle={{ padding: 0 }}
+        styles={{ body: { padding: 0 } }}
       >
         {cardDescription}
       </Card>
