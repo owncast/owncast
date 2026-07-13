@@ -3,6 +3,7 @@ package middleware
 import (
 	"crypto/subtle"
 	"net/http"
+	"net/url"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -23,6 +24,8 @@ type UserAccessTokenHandlerFunc func(models.User, http.ResponseWriter, *http.Req
 // challenge with this exact realm so the browser shares one credential
 // cache across all of them.
 const adminAuthRealm = "Owncast Authenticated Request"
+
+const adminCSRFHeader = "X-Owncast-CSRF-Protection"
 
 // IsAdminRequest reports whether r carries valid admin credentials. The
 // Owncast admin UI sends Basic Auth on every API call; embedded contexts
@@ -49,18 +52,57 @@ func (m *Middleware) IsAdminRequest(r *http.Request) bool {
 // header (notably plugin admin iframes) authenticate via that cookie on
 // their next same-origin request, so the user isn't prompted by the
 // browser's native Basic Auth dialog.
+func isAdminOriginAllowed(r *http.Request) bool {
+	originValue := r.Header.Get("Origin")
+	if originValue == "" {
+		return true
+	}
+
+	origin, err := url.Parse(originValue)
+	if err != nil || origin.Scheme == "" || origin.Host == "" || origin.User != nil ||
+		origin.Path != "" || origin.RawQuery != "" || origin.Fragment != "" {
+		return false
+	}
+
+	if originValue == "http://localhost:3000" {
+		return true
+	}
+
+	scheme := "http"
+	if r.TLS != nil || strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https") {
+		scheme = "https"
+	}
+
+	return strings.EqualFold(origin.Scheme, scheme) && strings.EqualFold(origin.Host, r.Host)
+}
+
+func requiresCSRFHeader(r *http.Request) bool {
+	return r.Method != http.MethodGet && r.Method != http.MethodHead && r.Method != http.MethodOptions &&
+		r.Header.Get("Origin") == "" && r.Header.Get("Authorization") == ""
+}
+
 func (m *Middleware) RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Allow CORS only for localhost:3000 to support Owncast development.
-		validAdminHost := "http://localhost:3000"
-		w.Header().Set("Access-Control-Allow-Origin", validAdminHost)
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
+		origin := r.Header.Get("Origin")
+		if origin == "http://localhost:3000" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+		}
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, "+adminCSRFHeader)
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 
-		// For request needing CORS, send a 204.
-		if r.Method == "OPTIONS" {
+		if !isAdminOriginAllowed(r) {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
+		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		if requiresCSRFHeader(r) && r.Header.Get(adminCSRFHeader) != "1" {
+			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
 

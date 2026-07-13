@@ -288,30 +288,6 @@ func (s *ServerInterfaceImpl) CreateExternalAPIUserOptions(w http.ResponseWriter
 	s.h.middleware.RequireAdminAuth(s.h.admin.CreateExternalAPIUser)(w, r)
 }
 
-func (s *ServerInterfaceImpl) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateOptions)(w, r)
-}
-
-func (s *ServerInterfaceImpl) AutoUpdateOptionsOptions(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateOptions)(w, r)
-}
-
-func (s *ServerInterfaceImpl) AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateStart)(w, r)
-}
-
-func (s *ServerInterfaceImpl) AutoUpdateStartOptions(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateStart)(w, r)
-}
-
-func (s *ServerInterfaceImpl) AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateForceQuit)(w, r)
-}
-
-func (s *ServerInterfaceImpl) AutoUpdateForceQuitOptions(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateForceQuit)(w, r)
-}
-
 func (s *ServerInterfaceImpl) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.ResetYPRegistration)(w, r)
 }

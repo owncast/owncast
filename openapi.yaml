@@ -380,7 +380,7 @@ paths:
         '204':
           $ref: '#/components/responses/204'
   /admin/disconnect:
-    get:
+    post:
       summary: Disconnect inbound stream
       operationId: DisconnectInboundConnection
       tags: ['Internal', 'Admin', 'Video']
@@ -3204,97 +3204,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
-  /admin/update/options:
-    get:
-      summary: Return the auto-update features that are supported for this instance
-      operationId: AutoUpdateOptions
-      tags: ['Internal', 'Admin']
-      x-internal: true
-      security:
-        - BasicAuth: []
-      responses:
-        '200':
-          description: Current auto-update options
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  supportsUpdate:
-                    type: boolean
-                  canRestart:
-                    type: boolean
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401BasicAuth'
-        default:
-          $ref: '#/components/responses/Default'
-    options:
-      operationId: AutoUpdateOptionsOptions
-      x-internal: true
-      tags: ['Objects', 'Internal', 'Admin']
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-  /admin/update/start:
-    get:
-      summary: Begin the auto-update
-      operationId: AutoUpdateStart
-      tags: ['Internal', 'Admin']
-      x-internal: true
-      security:
-        - BasicAuth: []
-      responses:
-        '200':
-          description: Console output from update
-          content:
-            text/plain:
-              schema:
-                type: string
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401BasicAuth'
-        default:
-          $ref: '#/components/responses/Default'
-    options:
-      operationId: AutoUpdateStartOptions
-      x-internal: true
-      tags: ['Objects', 'Internal', 'Admin']
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-  /admin/update/forcequit:
-    get:
-      summary: Force quit the server and restart it
-      operationId: AutoUpdateForceQuit
-      x-internal: true
-      tags: ['Internal', 'Admin']
-      security:
-        - BasicAuth: []
-      responses:
-        '200':
-          description: Server force restart has been ordered
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BaseAPIResponse'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401BasicAuth'
-        default:
-          $ref: '#/components/responses/Default'
-    options:
-      operationId: AutoUpdateForceQuitOptions
-      tags: ['Objects', 'Internal', 'Admin']
-      x-internal: true
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
   /admin/yp/reset:
-    get:
+    post:
       summary: Reset YP configuration
       operationId: ResetYPRegistration
       tags: ['Internal', 'Admin']

@@ -13,9 +13,8 @@ import (
 //
 // All fields are runtime state — values that change between executions or
 // are overridden at startup. Compile-time constants (see constants.go),
-// build-time-set vars (VersionNumber, GitCommit, BuildPlatform), and the
-// build-tag-driven EnableAutoUpdate remain package-level on purpose: they
-// are not runtime state.
+// build-time-set vars (VersionNumber, GitCommit, BuildPlatform) remain
+// package-level on purpose because they are not runtime state.
 type Config struct {
 	// DatabaseFilePath is the path to the file used as the global database
 	// for this run of the application.
@@ -92,12 +91,6 @@ var GitCommit = ""
 // BuildPlatform is the optional platform this release was built for.
 // Set at build time via linker flags; "dev" for local builds.
 var BuildPlatform = "dev"
-
-// EnableAutoUpdate will explicitly enable in-place auto-updates via the
-// admin. Toggled by the enable_updates build tag (see
-// updaterConfig_enabled.go); package-level because the build tag, not
-// the runtime, owns its value.
-var EnableAutoUpdate = false
 
 // GetCommit will return an identifier used for identifying the point in time this build took place.
 func GetCommit() string {
