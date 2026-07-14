@@ -6,13 +6,17 @@ Owncast appreciates good-faith efforts to improve the security of the project.
 
 The latest stable Owncast release is the supported version. Reports that affect the current `develop` branch are also welcome. Previous releases are not supported, so Owncast operators should stay up to date.
 
+## Scope
+
+Reports are in scope when they affect the latest stable Owncast release, the current `develop` branch, an Owncast-operated service under `owncast.online`, or a third-party dependency that can be exploited through Owncast.
+
+Expected actions by an authorized server administrator, issues already fixed in the latest release, self-XSS, automated scanner output without reproducible security impact, social engineering, and third-party vulnerabilities that cannot be exploited through Owncast are out of scope.
+
 ## Reporting a vulnerability
 
 Report suspected security vulnerabilities privately to [security@owncast.online](mailto:security@owncast.online). Do not open a public GitHub issue or discussion.
 
 Include the affected Owncast version or commit, steps to reproduce the issue, its potential impact, and any proof of concept that helps explain the report.
-
-The [Owncast security page](https://owncast.online/security) documents what is in scope, what is out of scope, and how reports receive public credit.
 
 ## Disclosure and credit
 

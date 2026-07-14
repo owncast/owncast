@@ -27,7 +27,7 @@
 	·
 	<a href="https://github.com/owncast/owncast/issues">Report Bug</a>
 	·
-	<a href="https://owncast.online/security">Report Security Issue</a>
+	<a href="docs/SECURITY.md">Report Security Issue</a>
 </p>
 
 <!-- TABLE OF CONTENTS -->
@@ -151,7 +151,7 @@ Thank you to all our donors who help keep Owncast running by donating on OpenCol
 
 Report suspected security vulnerabilities privately to [security@owncast.online](mailto:security@owncast.online). Do not open a public GitHub issue.
 
-See the repository [security policy](docs/SECURITY.md) and the [Owncast security page](https://owncast.online/security) for scope, disclosure, and credit details.
+See the repository [security policy](docs/SECURITY.md) for scope, disclosure, and credit details.
 
 <!-- LICENSE -->
 
