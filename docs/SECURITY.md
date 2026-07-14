@@ -8,9 +8,21 @@ The latest stable Owncast release is the supported version. Reports that affect 
 
 ## Scope
 
-Reports are in scope when they affect the latest stable Owncast release, the current `develop` branch, an Owncast-operated service under `owncast.online`, or a third-party dependency that can be exploited through Owncast.
+### In scope
 
-Expected actions by an authorized server administrator, issues already fixed in the latest release, self-XSS, automated scanner output without reproducible security impact, social engineering, and third-party vulnerabilities that cannot be exploited through Owncast are out of scope.
+- Security vulnerabilities in the latest stable Owncast release or the current `develop` branch.
+- The Owncast server, viewer and admin interfaces, bundled APIs, chat, federation, authentication, and streaming features.
+- Vulnerabilities in third-party dependencies that can be exploited through Owncast.
+- Owncast-operated services under `owncast.online` when tested without disrupting the service or accessing other people's data.
+
+### Out of scope
+
+- Independently operated Owncast instances and the content they stream. Contact that server's operator instead.
+- Issues that only affect an outdated Owncast version and are already fixed in the latest release.
+- Expected actions available to an authorized server administrator that do not cross a security boundary.
+- Self-XSS, best-practice suggestions, or automated scanner output without a reproducible security impact.
+- Vulnerabilities in third-party software that cannot be exploited through Owncast.
+- Social engineering, phishing, physical attacks, denial-of-service testing, and high-volume automated scanning.
 
 ## Reporting a vulnerability
 
