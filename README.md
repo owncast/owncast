@@ -26,6 +26,8 @@
 	<a href="https://owncast.online/faq/">FAQ</a>
 	·
 	<a href="https://github.com/owncast/owncast/issues">Report Bug</a>
+	·
+	<a href="docs/SECURITY.md">Report Security Issue</a>
 </p>
 
 <!-- TABLE OF CONTENTS -->
@@ -41,6 +43,7 @@
   - ⚛️ [Frontend](#frontend)
 - 👏 [Contributing](#contributing)
   - 💵 [Donors](#donors)
+- [Security](#security)
 - 📝 [License](#license)
 - [Contact](#contact)
 
@@ -141,7 +144,15 @@ Thank you to all our donors who help keep Owncast running by donating on OpenCol
 		<img alt="GitHub issues by-label" src="https://opencollective.com/owncast/tiers/backers.svg?avatarHeight=36&width=600" alt="Backer button">
 	</a>
 </div>
-	
+
+<!-- SECURITY -->
+
+## Security
+
+Report suspected security vulnerabilities privately to [security@owncast.online](mailto:security@owncast.online). This is the security-reporting address. The personal contact information in the Support section is for general contact, not vulnerability reports.
+
+See the repository [security policy](docs/SECURITY.md) for scope, disclosure, and credit details.
+
 <!-- LICENSE -->
 
 ## License
