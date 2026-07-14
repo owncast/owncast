@@ -149,7 +149,7 @@ Thank you to all our donors who help keep Owncast running by donating on OpenCol
 
 ## Security
 
-Report suspected security vulnerabilities privately to [security@owncast.online](mailto:security@owncast.online). Do not open a public GitHub issue.
+Report suspected security vulnerabilities privately to [security@owncast.online](mailto:security@owncast.online). This is the security-reporting address. The personal contact information in the Support section is for general contact, not vulnerability reports.
 
 See the repository [security policy](docs/SECURITY.md) for scope, disclosure, and credit details.
 
