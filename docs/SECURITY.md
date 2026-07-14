@@ -1,19 +1,23 @@
-# Security Policy
+# Security policy
 
-Owncast appreciates efforts to improve the security of the software
-and follow the [GitHub coordinated disclosure of security vulnerabilities](https://docs.github.com/en/code-security/security-advisories/about-coordinated-disclosure-of-security-vulnerabilities#about-reporting-and-disclosing-vulnerabilities-in-projects-on-github)
-for responsible disclosure and prompt mitigation.
+Owncast appreciates good-faith efforts to improve the security of the project.
 
-## Supported Versions
+## Supported versions
 
-The latest version of Owncast is seen as the supported version. As a small project we are unable to support previous versions and urge users of the software to stay up to date.
+The latest stable Owncast release is the supported version. Reports that affect the current `develop` branch are also welcome. Previous releases are not supported, so Owncast operators should stay up to date.
 
-## Reporting a Vulnerability
+## Reporting a vulnerability
 
-To report a security issue with Owncast, [open an issue](https://github.com/owncast/owncast/issues/new
-) on the Owncast GitHub repository and *do not* mention vulnerability details in the issue. If you have a preferred next step on where to discuss the details of the disclosure, please mention that in the issue if it's appropriate for those details to be public.
+Report suspected security vulnerabilities privately to [security@owncast.online](mailto:security@owncast.online). Do not open a public GitHub issue or discussion.
 
-You may optionally [email Gabe](mailto:gabek@real-ity.com) to alert him directly and provide specifics on how you wish to disclose the details of the issue.
+Include the affected Owncast version or commit, steps to reproduce the issue, its potential impact, and any proof of concept that helps explain the report.
 
-Owncast may open a draft [GitHub Security Advisory](https://docs.github.com/en/code-security/security-advisories/creating-a-security-advisory)
-  to discuss the vulnerability details in private if it is warranted.
+The [Owncast security page](https://owncast.online/security) documents what is in scope, what is out of scope, and how reports receive public credit.
+
+## Disclosure and credit
+
+Please allow time for the issue to be investigated and fixed before sharing it publicly. Reports made in good faith and within the published scope are welcome.
+
+With the reporter's permission, Owncast credits valid reports after a fix is available. Credit can include the reporter's chosen name and one link. Reporters may remain anonymous.
+
+Owncast handles new reports by email and does not publish new GitHub Security Advisories as part of this process. CVEs may be requested when the severity and impact warrant one, at the project's discretion.
