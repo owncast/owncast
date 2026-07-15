@@ -29,3 +29,22 @@ Object.defineProperty(window, 'ResizeObserver', {
   writable: true,
   value: ResizeObserverMock,
 });
+
+// Ant Design v6 Select delays closing its popup with MessageChannel. jsdom
+// does not implement it, so provide the minimum asynchronous behavior needed
+// to exercise keyboard selection.
+const MessageChannelMock = jest.fn().mockImplementation(() => {
+  const port1 = { onmessage: null as null | (() => void) };
+
+  return {
+    port1,
+    port2: {
+      postMessage: () => window.setTimeout(() => port1.onmessage?.(), 0),
+    },
+  };
+});
+
+Object.defineProperty(globalThis, 'MessageChannel', {
+  writable: true,
+  value: MessageChannelMock,
+});
