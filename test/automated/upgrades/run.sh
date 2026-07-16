@@ -1,117 +1,227 @@
 #!/bin/bash
 
-# This script will download all the releases of Owncast and test them
-# to ensure that upgrades work as expected.  It will also test the
-# development branch as the final test.
-# The release list is fetched dynamically from the GitHub API so it stays
-# current as new versions are published.
-# It is hard coded to run under 64bit intel linux, and requires curl and jq.
+# Upgrade safety test.
+#
+# Proves that a data directory created by the latest published Owncast
+# release survives an upgrade to the code in this checkout:
+#
+#   1. Download the latest GitHub release asset for the current platform.
+#   2. Run it in a scratch directory on non-default ports and write
+#      recognizable config values through the admin API.
+#   3. Stop it, then start a build of this checkout on the same data dir.
+#   4. Assert readiness, that the reported version changed to the dev
+#      build's, that the previously written config survived, and that the
+#      database migrated to the newest goose schema version.
+#
+# Requires curl, jq, unzip, sqlite3, go, and ffmpeg in PATH.
+# Exits nonzero on the first failed assertion. Server logs are kept in
+# ./scratch for post-mortem (CI uploads them on failure).
 
-# set -o errexit
-set -o pipefail
+set -euo pipefail
 
-if ! command -v jq >/dev/null 2>&1; then
-	echo "Error: 'jq' is required to fetch the list of releases but was not found." >&2
+cd "$(dirname "$0")" || exit 1
+REPO_ROOT=$(cd ../../.. && pwd)
+SCRATCH="$PWD/scratch"
+INSTANCE="$SCRATCH/instance"
+
+# Non-default ports: 8080/1935 are used by dev instances and sibling tests.
+WEB_PORT="${UPGRADE_TEST_WEB_PORT:-8098}"
+RTMP_PORT="${UPGRADE_TEST_RTMP_PORT:-1998}"
+BASE_URL="http://127.0.0.1:${WEB_PORT}"
+ADMIN_AUTH="admin:abc123" # Owncast's default admin credentials.
+
+TEST_NAME="upgrade-test-$$"
+TEST_SUMMARY="Written by the pre-upgrade release binary ($$)."
+
+SERVER_PID=""
+PASS_COUNT=0
+
+pass() {
+	PASS_COUNT=$((PASS_COUNT + 1))
+	echo "PASS: $1"
+}
+
+fail() {
+	echo "FAIL: $1" >&2
 	exit 1
-fi
-
-# Fetch the list of linux 64-bit release download URLs from the GitHub API,
-# sorted oldest to newest. This keeps the test against the full set of
-# published releases without hard-coding versions that go out of date.
-fetch_release_urls() {
-	curl -sL -H "Accept: application/vnd.github+json" \
-		"https://api.github.com/repos/owncast/owncast/releases?per_page=100" |
-		jq -r '.[]
-			| select(.prerelease == false and .draft == false)
-			| .assets[]
-			| select(.name | test("linux-64bit\\.zip$"))
-			| .browser_download_url' |
-		sort -V
 }
 
-echo "Fetching the list of Owncast releases from GitHub..."
-mapfile -t releases < <(fetch_release_urls)
-
-if [ ${#releases[@]} -eq 0 ]; then
-	echo "Error: failed to fetch any releases from the GitHub API." >&2
-	exit 1
-fi
-
-echo "--------------------------------------------"
-echo "Owncast releases upgrade test."
-echo "Will download ${#releases[@]} releases plus the development branch."
-echo "Please wait, as this will take a while."
-printf "\n"
-
-rm -rf releases
-rm -rf owncast
-rm -rf src
-
-mkdir -p releases
-mkdir -p src
-
-download_release() {
-	url=$1
-
-	echo "--------------------------------------------"
-	echo "Downloading $url"
-
-	zipfile="releases/$(basename "$url")"
-	curl -sL "${url}" --output "${zipfile}"
-}
-
-test_release() {
-	pushd ./owncast >>/dev/null || exit
-	timeout --preserve-status 10 ./owncast
-	popd >>/dev/null || exit
-}
-
-build_development() {
-	echo "Building test release from current development branch..."
-	cd src || exit
-	git clone --depth 1 https://github.com/owncast/owncast
-	cd owncast || exit
-	earthly +package --platform="linux/amd64"
-	mv dist/owncast-develop-linux-64bit.zip ../../releases/owncast-develop-linux-64bit.zip
-	cd ../..
-}
-
-unzip_release() {
-	zipfile="releases/$(basename "$1")"
-	unzip -o "${zipfile}" -d "owncast" >>/dev/null
-}
-
-# Test all the releases in a row
-for release in "${releases[@]}"; do
-	if [ ! -f "releases/$(basename "$1")" ]; then
-		download_release "$release"
+# assert_eq <description> <expected> <actual>
+assert_eq() {
+	if [ "$2" = "$3" ]; then
+		pass "$1: '$3'"
+	else
+		fail "$1: expected '$2', got '$3'"
 	fi
+}
 
-	unzip_release "$(basename "$release")"
-	test_release
-done
+cleanup() {
+	status=$?
+	if [ -n "$SERVER_PID" ] && kill -0 "$SERVER_PID" 2>/dev/null; then
+		kill "$SERVER_PID" 2>/dev/null || true
+		wait "$SERVER_PID" 2>/dev/null || true
+	fi
+	echo "--------------------------------------------"
+	if [ "$status" -eq 0 ]; then
+		echo "RESULT: PASS (${PASS_COUNT} assertions)"
+	else
+		echo "RESULT: FAIL after ${PASS_COUNT} passing assertions. Server logs: $SCRATCH" >&2
+	fi
+	exit "$status"
+}
+trap cleanup EXIT
 
-# # Build and run the latest release
-build_development
-unzip_release owncast-develop-linux-64bit.zip
-test_release
+require_command() {
+	command -v "$1" >/dev/null 2>&1 || fail "'$1' is required but was not found in PATH"
+}
 
-# Test jumping from the first release to the development release
-rm -rf owncast
+require_port_free() {
+	if (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null; then
+		fail "port $1 is already in use; refusing to run"
+	fi
+}
 
-if [ ! -f "releases/$(basename "${releases[0]}")" ]; then
-	download_release "${releases[0]}"
-fi
-unzip_release "$(basename "${releases[0]}")"
-test_release
+# Authenticated GitHub API GET when GITHUB_TOKEN is set (CI runners share
+# the anonymous rate limit). The token is only sent to api.github.com,
+# never to the redirected asset download host.
+gh_api() {
+	if [ -n "${GITHUB_TOKEN:-}" ]; then
+		curl -sL --fail -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" "$1"
+	else
+		curl -sL --fail -H "Accept: application/vnd.github+json" "$1"
+	fi
+}
+
+# start_server <binary> <logfile>
+# Runs the binary with $INSTANCE as its working directory so both the
+# release and the dev build operate on the same ./data directory.
+start_server() {
+	(cd "$INSTANCE" && exec "$1" -webserverport "$WEB_PORT" -rtmpport "$RTMP_PORT") >"$2" 2>&1 &
+	SERVER_PID=$!
+	# Keep bash's job-control "Terminated" notice out of the test output.
+	disown "$SERVER_PID"
+}
+
+# wait_ready <description>
+wait_ready() {
+	i=0
+	while [ "$i" -lt 90 ]; do
+		kill -0 "$SERVER_PID" 2>/dev/null || fail "$1 exited before becoming ready"
+		if curl -sf "$BASE_URL/api/status" >/dev/null 2>&1; then
+			pass "$1 is serving /api/status"
+			return 0
+		fi
+		sleep 1
+		i=$((i + 1))
+	done
+	fail "$1 did not become ready within 90s"
+}
+
+# stop_server <description>
+stop_server() {
+	kill "$SERVER_PID"
+	i=0
+	while [ "$i" -lt 30 ]; do
+		if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+			SERVER_PID=""
+			return 0
+		fi
+		sleep 1
+		i=$((i + 1))
+	done
+	kill -9 "$SERVER_PID" 2>/dev/null || true
+	fail "$1 did not exit within 30s of SIGTERM"
+}
+
+# admin_post <path> <json payload>
+admin_post() {
+	response=$(curl -sf -u "$ADMIN_AUTH" -X POST -H 'Content-Type: application/json' --data "$2" "$BASE_URL$1") ||
+		fail "POST $1 failed"
+	jq -e '.success == true' >/dev/null <<<"$response" || fail "POST $1 rejected: $response"
+}
+
+# api_get <path> <jq filter>
+api_get() {
+	curl -sf "$BASE_URL$1" | jq -r "$2"
+}
+
 echo "--------------------------------------------"
-echo "Testing upgrade from the first release to the development branch."
-printf "\n"
+echo "Owncast upgrade test: latest release -> local checkout"
+echo "--------------------------------------------"
 
-if [ ! -f "releases/owncast-develop-linux-64bit.zip" ]; then
-	build_development
+for cmd in curl jq unzip sqlite3 go ffmpeg; do
+	require_command "$cmd"
+done
+require_port_free "$WEB_PORT"
+require_port_free "$RTMP_PORT"
+
+rm -rf "$SCRATCH"
+mkdir -p "$INSTANCE"
+
+case "$(uname -s)/$(uname -m)" in
+	Linux/x86_64) ASSET_SUFFIX="linux-64bit" ;;
+	Linux/aarch64 | Linux/arm64) ASSET_SUFFIX="linux-arm64" ;;
+	Darwin/arm64) ASSET_SUFFIX="macOS-arm64" ;;
+	Darwin/x86_64) ASSET_SUFFIX="macOS-64bit" ;;
+	*) fail "unsupported platform: $(uname -s)/$(uname -m)" ;;
+esac
+
+echo "Building the local checkout..."
+(cd "$REPO_ROOT" && CGO_ENABLED=1 go build -o "$SCRATCH/owncast-dev" .)
+
+echo "Looking up the latest published release..."
+RELEASE_JSON=$(gh_api "https://api.github.com/repos/owncast/owncast/releases/latest")
+RELEASE_TAG=$(jq -r '.tag_name' <<<"$RELEASE_JSON")
+RELEASE_VERSION="${RELEASE_TAG#v}"
+ASSET_URL=$(jq -r --arg suffix "-${ASSET_SUFFIX}.zip" \
+	'[.assets[] | select(.name | endswith($suffix)) | .browser_download_url][0] // empty' <<<"$RELEASE_JSON")
+[ -n "$ASSET_URL" ] || fail "release ${RELEASE_TAG} has no asset ending in -${ASSET_SUFFIX}.zip"
+pass "release ${RELEASE_TAG} has asset $(basename "$ASSET_URL")"
+
+echo "Downloading $(basename "$ASSET_URL")..."
+curl -sL --fail "$ASSET_URL" --output "$SCRATCH/release.zip"
+unzip -oq "$SCRATCH/release.zip" -d "$INSTANCE"
+[ -x "$INSTANCE/owncast" ] || fail "release zip did not contain an executable owncast binary"
+
+echo "Starting release ${RELEASE_TAG} on ports ${WEB_PORT}/${RTMP_PORT}..."
+start_server "$INSTANCE/owncast" "$SCRATCH/release.log"
+wait_ready "release ${RELEASE_TAG}"
+assert_eq "release reports its own version" "$RELEASE_VERSION" "$(api_get /api/status .versionNumber)"
+
+echo "Writing config through the admin API..."
+admin_post /api/admin/config/name "{\"value\": \"$TEST_NAME\"}"
+admin_post /api/admin/config/serversummary "{\"value\": \"$TEST_SUMMARY\"}"
+assert_eq "release persisted the server name" "$TEST_NAME" "$(api_get /api/config .name)"
+assert_eq "release persisted the server summary" "$TEST_SUMMARY" "$(api_get /api/config .summary)"
+
+echo "Stopping the release binary..."
+stop_server "release ${RELEASE_TAG}"
+[ -f "$INSTANCE/data/owncast.db" ] || fail "release did not create data/owncast.db"
+
+echo "Starting the dev build on the release's data directory..."
+start_server "$SCRATCH/owncast-dev" "$SCRATCH/dev.log"
+wait_ready "dev build (upgraded server)"
+
+DEV_EXPECTED_VERSION=$(sed -n 's/.*StaticVersionNumber = "\([^"]*\)".*/\1/p' "$REPO_ROOT/config/constants.go")
+[ -n "$DEV_EXPECTED_VERSION" ] || fail "could not read StaticVersionNumber from config/constants.go"
+DEV_VERSION=$(api_get /api/status .versionNumber)
+assert_eq "upgraded server reports the dev version" "$DEV_EXPECTED_VERSION" "$DEV_VERSION"
+if [ "$DEV_VERSION" = "$RELEASE_VERSION" ]; then
+	fail "version did not change across the upgrade (still ${RELEASE_VERSION})"
 fi
-unzip_release owncast-develop-linux-64bit.zip
-test_release
+pass "version changed across the upgrade: ${RELEASE_VERSION} -> ${DEV_VERSION}"
 
-echo "Done."
+assert_eq "server name survived the upgrade" "$TEST_NAME" "$(api_get /api/config .name)"
+assert_eq "server summary survived the upgrade" "$TEST_SUMMARY" "$(api_get /api/config .summary)"
+assert_eq "admin API works after the upgrade" "$TEST_NAME" \
+	"$(curl -sf -u "$ADMIN_AUTH" "$BASE_URL/api/admin/serverconfig" | jq -r '.instanceDetails.name')"
+
+echo "Stopping the dev build..."
+stop_server "dev build"
+
+# The goose migration table is the queryable record of schema state: its max
+# version_id must equal the newest migration shipped in this checkout.
+EXPECTED_SCHEMA=$(find "$REPO_ROOT/persistence/migrations" -name '[0-9]*.sql' |
+	sed 's|.*/0*\([0-9][0-9]*\)_.*|\1|' | sort -n | tail -n 1)
+ACTUAL_SCHEMA=$(sqlite3 "$INSTANCE/data/owncast.db" 'SELECT COALESCE(MAX(version_id), 0) FROM goose_db_version;')
+assert_eq "database migrated to the newest goose schema version" "$EXPECTED_SCHEMA" "$ACTUAL_SCHEMA"
