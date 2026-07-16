@@ -112,6 +112,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Local stroage
+        id: local-storage
         uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
@@ -119,8 +120,27 @@ jobs:
           command: cd test/automated/hls && ./run.sh
 
       - name: S3 storage
+        id: s3-storage
         uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
           max_attempts: 3
           command: cd test/automated/hls && ./run-s3.sh
+
+      # Passing only after a retry is a flake, not a pass: make it visible.
+      - name: Report flaky retries
+        if: steps.local-storage.outputs.total_attempts > 1 || steps.s3-storage.outputs.total_attempts > 1
+        env:
+          LOCAL_ATTEMPTS: ${{ steps.local-storage.outputs.total_attempts }}
+          S3_ATTEMPTS: ${{ steps.s3-storage.outputs.total_attempts }}
+        run: |
+          report() {
+            echo "::warning title=Flaky test suite::$1"
+            echo ":warning: $1" >> "$GITHUB_STEP_SUMMARY"
+          }
+          if [ "${LOCAL_ATTEMPTS:-1}" -gt 1 ]; then
+            report "HLS local storage tests passed only on attempt $LOCAL_ATTEMPTS"
+          fi
+          if [ "${S3_ATTEMPTS:-1}" -gt 1 ]; then
+            report "HLS S3 storage tests passed only on attempt $S3_ATTEMPTS"
+          fi

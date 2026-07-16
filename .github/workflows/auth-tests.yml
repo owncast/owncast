@@ -114,8 +114,17 @@ jobs:
             ${{ runner.os }}-
 
       - name: Auth gate tests (shared-password + OAuth)
+        id: tests
         uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
           max_attempts: 3
           command: cd test/automated/auth && ./run.sh
+
+      # Passing only after a retry is a flake, not a pass: make it visible.
+      - name: Report flaky retries
+        if: steps.tests.outputs.total_attempts > 1
+        run: |
+          MSG="Auth gate tests passed only on attempt ${{ steps.tests.outputs.total_attempts }}"
+          echo "::warning title=Flaky test suite::$MSG"
+          echo ":warning: $MSG" >> "$GITHUB_STEP_SUMMARY"

@@ -113,6 +113,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install google-chrome-stable
 
       - name: Run Browser tests
+        id: tests
         uses: nick-fields/retry@v4
         env:
           # Authenticates github.com downloads in tools.sh (ffmpeg) to avoid
@@ -122,3 +123,28 @@ jobs:
           timeout_minutes: 20
           max_attempts: 3
           command: cd test/automated/browser && ./run.sh
+
+      # Passing only after a retry is a flake, not a pass: make it visible.
+      # Two layers: whole-suite retries (total_attempts above) and per-test
+      # Cypress retries, which exit 0 and are recorded by cypress.config.js
+      # into cypress/results/flaky.json.
+      - name: Report flaky retries
+        env:
+          ATTEMPTS: ${{ steps.tests.outputs.total_attempts }}
+          FLAKY: test/automated/browser/cypress/results/flaky.json
+        run: |
+          report() {
+            echo "::warning title=Flaky test suite::$1"
+            echo ":warning: $1" >> "$GITHUB_STEP_SUMMARY"
+          }
+          if [ "${ATTEMPTS:-1}" -gt 1 ]; then
+            report "Browser tests passed only on attempt $ATTEMPTS"
+          fi
+          if [ -s "$FLAKY" ]; then
+            report "$(jq length "$FLAKY") browser test(s) passed only on a Cypress retry"
+            {
+              echo '```json'
+              cat "$FLAKY"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi

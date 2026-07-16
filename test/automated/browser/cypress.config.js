@@ -3,32 +3,53 @@ const path = require('node:path');
 const { defineConfig } = require('cypress');
 const remoteFediverse = require('./cypress/support/remote-fediverse-server');
 
-// Append this spec's final failures to cypress/results/failures.json. run.sh
-// clears the file at the start of a run and prints it at the end, so one run
-// yields one machine-readable list of every failure across every group —
-// spec, test, error text and screenshots — that an agent (or human) can act
-// on without scrolling back through five groups of output.
-function recordFailures(spec, results) {
-	if (!results || !results.tests) return;
-	const failures = results.tests
-		.filter((test) => test.state === 'failed')
-		.map((test) => ({
-			spec: spec.relative,
-			test: test.title.join(' > '),
-			error: test.displayError,
-			screenshots: (results.screenshots || []).map((s) => s.path),
-		}));
-	if (!failures.length) return;
-
-	const out = path.join(__dirname, 'cypress', 'results', 'failures.json');
+// Append this spec's final failures to cypress/results/failures.json, and
+// tests that only passed on a Cypress retry to cypress/results/flaky.json.
+// run.sh clears both files at the start of a run and prints them at the end,
+// so one run yields one machine-readable list of every failure and every
+// swallowed flake across every group — spec, test, error text and
+// screenshots — that an agent (or human) can act on without scrolling back
+// through five groups of output.
+function appendResults(file, records) {
+	if (!records.length) return;
+	const out = path.join(__dirname, 'cypress', 'results', file);
 	fs.mkdirSync(path.dirname(out), { recursive: true });
 	let existing = [];
 	try {
 		existing = JSON.parse(fs.readFileSync(out, 'utf8'));
 	} catch {
-		// first failing spec of the run
+		// first spec of the run to record
 	}
-	fs.writeFileSync(out, JSON.stringify(existing.concat(failures), null, 2));
+	fs.writeFileSync(out, JSON.stringify(existing.concat(records), null, 2));
+}
+
+function recordResults(spec, results) {
+	if (!results || !results.tests) return;
+	appendResults(
+		'failures.json',
+		results.tests
+			.filter((test) => test.state === 'failed')
+			.map((test) => ({
+				spec: spec.relative,
+				test: test.title.join(' > '),
+				error: test.displayError,
+				screenshots: (results.screenshots || []).map((s) => s.path),
+			})),
+	);
+	// A test that passed only on a Cypress retry (retries: 3 below) is a
+	// swallowed flake: the suite exits 0 and nothing else surfaces it.
+	appendResults(
+		'flaky.json',
+		results.tests
+			.filter(
+				(test) => test.state === 'passed' && (test.attempts || []).length > 1,
+			)
+			.map((test) => ({
+				spec: spec.relative,
+				test: test.title.join(' > '),
+				attempts: test.attempts.length,
+			})),
+	);
 }
 
 module.exports = defineConfig({
@@ -42,7 +63,7 @@ module.exports = defineConfig({
 		testIsolation: false,
 		setupNodeEvents(on, config) {
 			on('task', remoteFediverse.tasks);
-			on('after:spec', recordFailures);
+			on('after:spec', recordResults);
 			return config;
 		},
 	},

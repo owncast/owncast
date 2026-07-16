@@ -111,9 +111,9 @@ install_ffmpeg
 
 start_owncast
 
-# Start each run with a clean failure ledger (appended to by after:spec in
-# cypress.config.js across all groups).
-rm -f cypress/results/failures.json
+# Start each run with a clean failure/flake ledger (appended to by after:spec
+# in cypress.config.js across all groups).
+rm -f cypress/results/failures.json cypress/results/flaky.json
 
 run_cypress "desktop-offline" desktop "cypress/e2e/offline/*.cy.js"
 run_cypress "mobile-offline" mobile "cypress/e2e/offline/*.cy.js" --config viewportWidth=375,viewportHeight=667
@@ -134,6 +134,11 @@ run_cypress "desktop-federation" desktop "cypress/e2e/federation/*.cy.js"
 
 echo ""
 echo "=================================================="
+if [ -f cypress/results/flaky.json ]; then
+	echo "FLAKY tests, passed only on a Cypress retry (cypress/results/flaky.json):"
+	cat cypress/results/flaky.json
+	echo ""
+fi
 if [ ${#FAILED_GROUPS[@]} -gt 0 ]; then
 	echo "FAILED groups: ${FAILED_GROUPS[*]}"
 	if [ -f cypress/results/failures.json ]; then
