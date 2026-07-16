@@ -148,3 +148,19 @@ jobs:
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
           fi
+
+      # Preserve test evidence (server logs/DBs, coverage, machine-readable
+      # results, Cypress failure details and screenshots) even when a failed
+      # test step halts the job.
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-evidence
+          if-no-files-found: ignore
+          path: |
+            test/automated/*/test-artifacts/**
+            test/automated/*/e2e-coverage/**
+            test/automated/*/results/*.json
+            test/automated/browser/cypress/results/**
+            test/automated/browser/cypress/screenshots/**

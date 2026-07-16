@@ -107,3 +107,16 @@ jobs:
           MSG="Plugin tests passed only on attempt ${{ steps.tests.outputs.total_attempts }}"
           echo "::warning title=Flaky test suite::$MSG"
           echo ":warning: $MSG" >> "$GITHUB_STEP_SUMMARY"
+
+      # Preserve test evidence (server logs/DBs, coverage, machine-readable
+      # results) even when a failed test step halts the job.
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-test-evidence
+          if-no-files-found: ignore
+          path: |
+            test/automated/*/test-artifacts/**
+            test/automated/*/e2e-coverage/**
+            test/automated/*/results/*.json

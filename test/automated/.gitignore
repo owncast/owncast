@@ -1,2 +1,6 @@
 node_modules
 ffmpeg-*/
+results/
+test-artifacts/
+e2e-coverage/
+ffmpeg.bk

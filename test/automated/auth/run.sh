@@ -96,5 +96,7 @@ done
 
 # The plugins are installed (discovered) but disabled; each suite enables its
 # gate in beforeAll and disables it in afterAll so a gate is only live for the
-# duration of that suite.
-npm test
+# duration of that suite. Also write machine-readable results for CI artifact
+# upload; jest keeps human-readable progress on stderr.
+mkdir -p results
+npm test -- --json --outputFile=results/jest-results.json
