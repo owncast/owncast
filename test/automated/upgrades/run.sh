@@ -83,12 +83,16 @@ require_port_free() {
 
 # Authenticated GitHub API GET when GITHUB_TOKEN is set (CI runners share
 # the anonymous rate limit). The token is only sent to api.github.com,
-# never to the redirected asset download host.
+# never to the redirected asset download host. Retries cover transient
+# GitHub API outages (5xx), which otherwise fail the run before the first
+# assertion.
 gh_api() {
 	if [ -n "${GITHUB_TOKEN:-}" ]; then
-		curl -sL --fail -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" "$1"
+		curl -sSL --fail --retry 5 --retry-all-errors -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" "$1" ||
+			fail "GitHub API request failed: $1"
 	else
-		curl -sL --fail -H "Accept: application/vnd.github+json" "$1"
+		curl -sSL --fail --retry 5 --retry-all-errors -H "Accept: application/vnd.github+json" "$1" ||
+			fail "GitHub API request failed: $1"
 	fi
 }
 
@@ -179,7 +183,8 @@ ASSET_URL=$(jq -r --arg suffix "-${ASSET_SUFFIX}.zip" \
 pass "release ${RELEASE_TAG} has asset $(basename "$ASSET_URL")"
 
 echo "Downloading $(basename "$ASSET_URL")..."
-curl -sL --fail "$ASSET_URL" --output "$SCRATCH/release.zip"
+curl -sSL --fail --retry 5 --retry-all-errors "$ASSET_URL" --output "$SCRATCH/release.zip" ||
+	fail "release asset download failed: $ASSET_URL"
 unzip -oq "$SCRATCH/release.zip" -d "$INSTANCE"
 [ -x "$INSTANCE/owncast" ] || fail "release zip did not contain an executable owncast binary"
 
