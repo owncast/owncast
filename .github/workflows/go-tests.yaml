@@ -19,11 +19,13 @@ on:
       - 'web/**'
 
 jobs:
-  test:
-    strategy:
-      matrix:
-        os: ${{ github.event_name == 'pull_request' && fromJSON('["ubuntu-latest", "windows-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest", "ubuntu-24.04-arm"]') }}
-    runs-on: ${{ matrix.os }}
+  # Detect relevant changes in a standalone job so the test jobs can be gated
+  # at the job level: a run with no relevant changes reports as "skipped"
+  # instead of a misleading "success".
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      src_any_changed: ${{ steps.changed-files-yaml.outputs.src_any_changed }}
     steps:
       - uses: actions/checkout@v7
 
@@ -35,8 +37,17 @@ jobs:
             src:
               - '**/*.{go,mod,sum}'
 
+  test:
+    needs: changes
+    if: needs.changes.outputs.src_any_changed == 'true'
+    strategy:
+      matrix:
+        os: ${{ github.event_name == 'pull_request' && fromJSON('["ubuntu-latest", "windows-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest", "ubuntu-24.04-arm"]') }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+
       - uses: actions/cache@v6
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
           path: |
             ~/.cache/go-build
@@ -46,19 +57,18 @@ jobs:
             go-test-
 
       - name: Install go
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         uses: actions/setup-go@v6
         with:
           go-version: '1.26.5'
           cache: true
 
       - name: Run tests
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         run: go test ./...
 
   test-bsds:
     # Only run BSD tests on push events (not PRs) for efficiency
-    if: github.event_name == 'push'
+    needs: changes
+    if: github.event_name == 'push' && needs.changes.outputs.src_any_changed == 'true'
     runs-on: macos-latest
     strategy:
       matrix:
@@ -71,14 +81,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Get changed files
-        id: changed-files-yaml
-        uses: tj-actions/changed-files@v47
-        with:
-          files_yaml: |
-            src:
-              - '**/*.{go,mod,sum}'
-
       - uses: actions/cache@v6
         with:
           path: |
@@ -89,12 +91,10 @@ jobs:
             go-test-
 
       - name: Install go
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         uses: actions/setup-go@v6
         with:
           go-version: '1.26.5'
           cache: true
 
       - name: Run tests
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         run: go test ./...

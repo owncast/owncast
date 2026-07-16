@@ -21,15 +21,14 @@ on:
       - 'web/**'
 
 jobs:
-  test:
+  # Detect relevant changes in a standalone job so the test job can be gated
+  # at the job level: a run with no relevant changes reports as "skipped"
+  # instead of a misleading "success".
+  changes:
     runs-on: ubuntu-latest
-
+    outputs:
+      src_any_changed: ${{ steps.changed-files-yaml.outputs.src_any_changed }}
     steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@v5
-        with:
-          concurrent_skipping: 'same_content_newer'
-
       - name: Check out pull request code
         uses: actions/checkout@v7
         if: github.event_name == 'pull_request'
@@ -56,8 +55,30 @@ jobs:
             src:
               - '**/*.{go,mod,sum}'
 
+  test:
+    needs: changes
+    if: needs.changes.outputs.src_any_changed == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
+      - name: Check out pull request code
+        uses: actions/checkout@v7
+        if: github.event_name == 'pull_request'
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Check out repository code
+        uses: actions/checkout@v7
+        if: github.event_name == 'push'
+
       - uses: earthly/actions-setup@v1
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
           version: 'latest' # or pin to an specific version, e.g. "v0.6.10"
           # Authenticate the action's GitHub API calls (release lookup +
@@ -67,11 +88,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Earthly version
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         run: earthly --version
 
       - name: Set up QEMU
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         id: qemu
         uses: docker/setup-qemu-action@v4
         with:
@@ -79,7 +98,6 @@ jobs:
           platforms: all
 
       - name: Run API tests
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
