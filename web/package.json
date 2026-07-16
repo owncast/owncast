@@ -46,7 +46,7 @@
     "@uiw/codemirror-theme-bbedit": "4.25.10",
     "@uiw/react-codemirror": "4.25.10",
     "@xstate/react": "^6.1.0",
-    "antd": "6.5.0",
+    "antd": "6.5.1",
     "autoprefixer": "^10.4.14",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "bowser": "2.14.1",
