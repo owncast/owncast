@@ -890,8 +890,8 @@ Web package: @rc-component/drawer@1.4.2
   Declared license: MIT
   LICENSE: SHA256 6db0a962e5898831124a7e7465d4cf3ad849d121f97a618046b7a7f41fd2b031
 
-Web package: @rc-component/dropdown@1.0.2
-  Source: https://registry.npmjs.org/@rc-component/dropdown/-/dropdown-1.0.2.tgz
+Web package: @rc-component/dropdown@1.0.3
+  Source: https://registry.npmjs.org/@rc-component/dropdown/-/dropdown-1.0.3.tgz
   Declared license: MIT
   LICENSE: SHA256 4973f756e858531bdae451f98054278dabd2ef50fc4d3dbccc084ee35964ad3d
 
@@ -1010,9 +1010,10 @@ Web package: @rc-component/switch@1.0.3
   Declared license: MIT
   LICENSE.md: SHA256 5d0427088e37071c4b942de990f6365d5c2d195f3e957ce925322d184784e2eb
 
-Web package: @rc-component/table@1.10.2
-  Source: https://registry.npmjs.org/@rc-component/table/-/table-1.10.2.tgz
+Web package: @rc-component/table@1.10.4
+  Source: https://registry.npmjs.org/@rc-component/table/-/table-1.10.4.tgz
   Declared license: MIT
+  LICENSE: SHA256 53eb8e75d95517110e08f54e1c4007e2204f2de512cca6ca0ac2f9aeb4e6e0f8
   LICENSE.md: SHA256 416bff691c8396d61bc16127f6271f133ca9094a34f7c3d5496ff1a3abc45766
 
 Web package: @rc-component/tabs@1.11.0
@@ -1040,8 +1041,8 @@ Web package: @rc-component/tree@1.3.2
   Declared license: MIT
   LICENSE.md: SHA256 6db0a962e5898831124a7e7465d4cf3ad849d121f97a618046b7a7f41fd2b031
 
-Web package: @rc-component/trigger@3.9.1
-  Source: https://registry.npmjs.org/@rc-component/trigger/-/trigger-3.9.1.tgz
+Web package: @rc-component/trigger@3.10.0
+  Source: https://registry.npmjs.org/@rc-component/trigger/-/trigger-3.10.0.tgz
   Declared license: MIT
   LICENSE: SHA256 4973f756e858531bdae451f98054278dabd2ef50fc4d3dbccc084ee35964ad3d
 
@@ -1220,8 +1221,8 @@ Web package: ansi-styles@4.3.0
   Declared license: MIT
   license: SHA256 48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0
 
-Web package: antd@6.5.0
-  Source: https://registry.npmjs.org/antd/-/antd-6.5.0.tgz
+Web package: antd@6.5.1
+  Source: https://registry.npmjs.org/antd/-/antd-6.5.1.tgz
   Declared license: MIT
   LICENSE: SHA256 3c82654bb472ebbcacc4c1ff00f94aa8c60c4b7ee011b16bafcbacecc3703458
 
@@ -7733,7 +7734,7 @@ Apache License
 
 ================================================================================
 SHA256: 3c82654bb472ebbcacc4c1ff00f94aa8c60c4b7ee011b16bafcbacecc3703458
-Used by: Web package: antd@6.5.0 (LICENSE)
+Used by: Web package: antd@6.5.1 (LICENSE)
 --------------------------------------------------------------------------------
 MIT LICENSE
 
@@ -7997,7 +7998,7 @@ THE SOFTWARE.
 ================================================================================
 SHA256: 416bff691c8396d61bc16127f6271f133ca9094a34f7c3d5496ff1a3abc45766
 Used by: Web package: @rc-component/image@1.9.0 (LICENSE.md)
-Used by: Web package: @rc-component/table@1.10.2 (LICENSE.md)
+Used by: Web package: @rc-component/table@1.10.4 (LICENSE.md)
 --------------------------------------------------------------------------------
 MIT LICENSE
 
@@ -8204,10 +8205,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 SHA256: 4973f756e858531bdae451f98054278dabd2ef50fc4d3dbccc084ee35964ad3d
 Used by: Web package: @ant-design/cssinjs-utils@2.1.2 (LICENSE)
 Used by: Web package: @ant-design/fast-color@3.0.1 (LICENSE)
-Used by: Web package: @rc-component/dropdown@1.0.2 (LICENSE)
+Used by: Web package: @rc-component/dropdown@1.0.3 (LICENSE)
 Used by: Web package: @rc-component/qrcode@2.0.0 (LICENSE)
 Used by: Web package: @rc-component/slider@1.1.1 (LICENSE)
-Used by: Web package: @rc-component/trigger@3.9.1 (LICENSE)
+Used by: Web package: @rc-component/trigger@3.10.0 (LICENSE)
 --------------------------------------------------------------------------------
 The MIT License (MIT)
 Copyright (c) 2015-present Alipay.com, https://www.alipay.com/
@@ -8858,6 +8859,7 @@ Used by: Web package: @rc-component/form@1.8.5 (LICENSE)
 Used by: Web package: @rc-component/mini-decimal@1.1.4 (LICENSE)
 Used by: Web package: @rc-component/mutate-observer@2.0.1 (LICENSE)
 Used by: Web package: @rc-component/portal@2.2.1 (LICENSE)
+Used by: Web package: @rc-component/table@1.10.4 (LICENSE)
 Used by: Web package: @rc-component/tour@2.4.0 (LICENSE)
 --------------------------------------------------------------------------------
 MIT License
