@@ -7,6 +7,23 @@ const mockFollowersData = {
   total: 100,
   results: [
     {
+      link: 'https://fedi-test.example.social/users/feditestc21c4124',
+      name: '',
+      username: 'feditestc21c4124@fedi-test.example.social',
+      image: '',
+      timestamp: '2022-04-28T09:00:00Z',
+      disabledAt: null,
+    },
+    {
+      link: 'https://an-extremely-long-fediverse-server-hostname.example.technology/users/somebodywithareallylongusername',
+      name: 'Somebody With A Really Long Display Name',
+      username:
+        'somebodywithareallylongusername@an-extremely-long-fediverse-server-hostname.example.technology',
+      image: '',
+      timestamp: '2022-04-28T08:00:00Z',
+      disabledAt: null,
+    },
+    {
       link: 'https://sun.minuscule.space/users/mardijker',
       name: 'mardijker',
       username: 'mardijker@sun.minuscule.space',
