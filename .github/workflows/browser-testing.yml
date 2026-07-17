@@ -185,9 +185,57 @@ jobs:
           retention-days: 14
           path: test/automated/browser/cypress/videos/**
 
-      # Keep one sticky comment on the PR pointing at the latest desktop and
-      # mobile UI test recordings. Same-repo PRs only: fork PRs run with a
-      # read-only token that cannot comment.
+      # Publish each recording as a standalone, browser-playable URL. The
+      # repo's S3 storage (already used by the HLS S3 tests) serves the mp4s
+      # directly, so reviewers click a link instead of downloading a zip.
+      # Per-PR prefix is wiped first, so a PR only ever holds its latest
+      # run's videos. Fork PRs have no secrets and skip this.
+      - name: Publish videos for in-browser viewing
+        id: video-publish
+        continue-on-error: true
+        if: >-
+          always() &&
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET: ${{ secrets.S3_SECRET }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -z "$S3_BUCKET" ] || [ -z "$S3_ENDPOINT" ]; then
+            echo "No S3 storage configured; skipping browser-viewable video links."
+            exit 0
+          fi
+          cd test/automated/browser/cypress
+          if [ ! -d videos ]; then
+            echo "No videos recorded; nothing to publish."
+            exit 0
+          fi
+          export AWS_ACCESS_KEY_ID="$S3_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$S3_SECRET"
+          export AWS_DEFAULT_REGION="${S3_REGION:-us-east-1}"
+          PREFIX="ci/browser-test-videos/pr-$PR_NUMBER"
+          aws s3 rm "s3://$S3_BUCKET/$PREFIX" --recursive --endpoint-url "$S3_ENDPOINT" --quiet || true
+          mkdir -p results
+          group=""
+          find videos -name '*.mp4' | sort | while read -r f; do
+            key="$PREFIX/${f#videos/}"
+            aws s3 cp "$f" "s3://$S3_BUCKET/$key" --endpoint-url "$S3_ENDPOINT" \
+              --acl public-read --content-type video/mp4 --no-progress >&2
+            dir="${f#videos/}"; dir="${dir%%/*}"
+            if [ "$dir" != "$group" ]; then
+              group="$dir"
+              printf '\n**%s**\n\n' "$group"
+            fi
+            printf -- '- [%s](%s/%s/%s)\n' "$(basename "$f" .mp4)" "$S3_ENDPOINT" "$S3_BUCKET" "$key"
+          done > results/video-links.md
+          echo "Published $(grep -c '^- ' results/video-links.md) videos."
+
+      # Keep one sticky comment on the PR with a click-to-watch link per
+      # recording (created once, updated in place). Same-repo PRs only: fork
+      # PRs run with a read-only token that cannot comment.
       - name: Link UI test videos on the PR
         if: >-
           always() &&
@@ -199,13 +247,24 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           ARTIFACT_URL: ${{ steps.video-upload.outputs.artifact-url }}
+          LINKS_FILE: test/automated/browser/cypress/results/video-links.md
         run: |
           MARKER='<!-- e2e-ui-test-videos -->'
-          BODY="$(printf '%s\n## E2E UI test videos\n\nDesktop and mobile Cypress recordings for %s: [download the videos artifact](%s) (14-day retention).\n\nRecorded runs with per-test playback: [Cypress Cloud](https://cloud.cypress.io/projects/wwi3xe/runs)\n' "$MARKER" "$HEAD_SHA" "$ARTIFACT_URL")"
+          {
+            echo "$MARKER"
+            echo "## E2E UI test videos"
+            echo
+            if [ -s "$LINKS_FILE" ]; then
+              echo "Click a recording to watch it in your browser (commit $HEAD_SHA):"
+              cat "$LINKS_FILE"
+              echo
+            fi
+            echo "All recordings as a downloadable artifact (14-day retention): [browser-test-videos]($ARTIFACT_URL)"
+          } > /tmp/video-comment.md
           existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
             --jq "[.[] | select(.body | startswith(\"$MARKER\")) | .id][0] // empty")
           if [ -n "$existing" ]; then
-            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -f body="$BODY" >/dev/null
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -F body=@/tmp/video-comment.md >/dev/null
           else
-            gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" -f body="$BODY" >/dev/null
+            gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" -F body=@/tmp/video-comment.md >/dev/null
           fi
