@@ -41,8 +41,7 @@ type AddAuthForUserParams struct {
 }
 
 func (q *Queries) AddAuthForUser(ctx context.Context, arg AddAuthForUserParams) error {
-	_, err := q.db.ExecContext(
-		ctx, addAuthForUser,
+	_, err := q.db.ExecContext(ctx, addAuthForUser,
 		arg.UserID,
 		arg.AuthKey,
 		arg.Type,
@@ -69,8 +68,7 @@ type AddFederatedServerParams struct {
 }
 
 func (q *Queries) AddFederatedServer(ctx context.Context, arg AddFederatedServerParams) error {
-	_, err := q.db.ExecContext(
-		ctx, addFederatedServer,
+	_, err := q.db.ExecContext(ctx, addFederatedServer,
 		arg.Iri,
 		arg.Name,
 		arg.LogoUrl,
@@ -100,8 +98,7 @@ type AddFollowerParams struct {
 }
 
 func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error {
-	_, err := q.db.ExecContext(
-		ctx, addFollower,
+	_, err := q.db.ExecContext(ctx, addFollower,
 		arg.Iri,
 		arg.Inbox,
 		arg.SharedInbox,
@@ -142,8 +139,7 @@ type AddToAcceptedActivitiesParams struct {
 }
 
 func (q *Queries) AddToAcceptedActivities(ctx context.Context, arg AddToAcceptedActivitiesParams) error {
-	_, err := q.db.ExecContext(
-		ctx, addToAcceptedActivities,
+	_, err := q.db.ExecContext(ctx, addToAcceptedActivities,
 		arg.Iri,
 		arg.Actor,
 		arg.Type,
@@ -164,8 +160,7 @@ type AddToOutboxParams struct {
 }
 
 func (q *Queries) AddToOutbox(ctx context.Context, arg AddToOutboxParams) error {
-	_, err := q.db.ExecContext(
-		ctx, addToOutbox,
+	_, err := q.db.ExecContext(ctx, addToOutbox,
 		arg.Iri,
 		arg.Value,
 		arg.Type,
@@ -228,8 +223,7 @@ type ChangeDisplayNameParams struct {
 }
 
 func (q *Queries) ChangeDisplayName(ctx context.Context, arg ChangeDisplayNameParams) error {
-	_, err := q.db.ExecContext(
-		ctx, changeDisplayName,
+	_, err := q.db.ExecContext(ctx, changeDisplayName,
 		arg.DisplayName,
 		arg.PreviousNames,
 		arg.NamechangedAt,
@@ -558,7 +552,7 @@ func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]
 }
 
 const getFederationFollowersWithOffset = `-- name: GetFederationFollowersWithOffset :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1 ORDER BY created_at DESC LIMIT ? OFFSET ?
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1 ORDER BY created_at DESC, rowid DESC LIMIT ? OFFSET ?
 `
 
 type GetFederationFollowersWithOffsetParams struct {
@@ -579,6 +573,8 @@ type GetFederationFollowersWithOffsetRow struct {
 // Excludes featured-streams (Owncast-server) follows so they don't show up in
 // the public or admin followers list; they are tracked as a directory
 // relationship, not surfaced as followers.
+// rowid breaks created_at ties (second resolution) so pagination order is
+// deterministic; without it, same-second follows shift between pages.
 func (q *Queries) GetFederationFollowersWithOffset(ctx context.Context, arg GetFederationFollowersWithOffsetParams) ([]GetFederationFollowersWithOffsetRow, error) {
 	rows, err := q.db.QueryContext(ctx, getFederationFollowersWithOffset, arg.Limit, arg.Offset)
 	if err != nil {
@@ -1398,8 +1394,7 @@ type GetUsersPaginatedRow struct {
 // the two exist as separate queries because sqlc can't bind a sort direction
 // into ORDER BY.
 func (q *Queries) GetUsersPaginated(ctx context.Context, arg GetUsersPaginatedParams) ([]GetUsersPaginatedRow, error) {
-	rows, err := q.db.QueryContext(
-		ctx, getUsersPaginated,
+	rows, err := q.db.QueryContext(ctx, getUsersPaginated,
 		arg.Search,
 		arg.Status,
 		arg.PageOffset,
@@ -1473,8 +1468,7 @@ type GetUsersPaginatedAscRow struct {
 // Oldest-first counterpart to GetUsersPaginated. Same @search/@status filter,
 // only the created_at ordering differs.
 func (q *Queries) GetUsersPaginatedAsc(ctx context.Context, arg GetUsersPaginatedAscParams) ([]GetUsersPaginatedAscRow, error) {
-	rows, err := q.db.QueryContext(
-		ctx, getUsersPaginatedAsc,
+	rows, err := q.db.QueryContext(ctx, getUsersPaginatedAsc,
 		arg.Search,
 		arg.Status,
 		arg.PageOffset,
@@ -1625,8 +1619,7 @@ type UpdateFederatedServerFollowStatusParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerFollowStatus(ctx context.Context, arg UpdateFederatedServerFollowStatusParams) error {
-	_, err := q.db.ExecContext(
-		ctx, updateFederatedServerFollowStatus,
+	_, err := q.db.ExecContext(ctx, updateFederatedServerFollowStatus,
 		arg.FollowStatus,
 		arg.Pending,
 		arg.AcceptedAt,
@@ -1649,8 +1642,7 @@ type UpdateFederatedServerMetadataParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerMetadata(ctx context.Context, arg UpdateFederatedServerMetadataParams) error {
-	_, err := q.db.ExecContext(
-		ctx, updateFederatedServerMetadata,
+	_, err := q.db.ExecContext(ctx, updateFederatedServerMetadata,
 		arg.Name,
 		arg.DisplayName,
 		arg.Summary,
@@ -1672,8 +1664,7 @@ type UpdateFederatedServerOnlineStatusParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerOnlineStatus(ctx context.Context, arg UpdateFederatedServerOnlineStatusParams) error {
-	_, err := q.db.ExecContext(
-		ctx, updateFederatedServerOnlineStatus,
+	_, err := q.db.ExecContext(ctx, updateFederatedServerOnlineStatus,
 		arg.IsOnline,
 		arg.LastSeenOnline,
 		arg.LastStatusUpdate,
@@ -1697,8 +1688,7 @@ type UpdateFederatedServerStatusParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerStatus(ctx context.Context, arg UpdateFederatedServerStatusParams) error {
-	_, err := q.db.ExecContext(
-		ctx, updateFederatedServerStatus,
+	_, err := q.db.ExecContext(ctx, updateFederatedServerStatus,
 		arg.IsOnline,
 		arg.StreamTitle,
 		arg.StreamDescription,
@@ -1724,8 +1714,7 @@ type UpdateFollowerByIRIParams struct {
 }
 
 func (q *Queries) UpdateFollowerByIRI(ctx context.Context, arg UpdateFollowerByIRIParams) error {
-	_, err := q.db.ExecContext(
-		ctx, updateFollowerByIRI,
+	_, err := q.db.ExecContext(ctx, updateFollowerByIRI,
 		arg.Inbox,
 		arg.SharedInbox,
 		arg.Name,

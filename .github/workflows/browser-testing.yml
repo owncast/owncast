@@ -26,14 +26,14 @@ on:
       - '.github/workflows/browser-testing.yml'
 
 jobs:
-  cypress-run:
+  # Detect relevant changes in a standalone job so the test job can be gated
+  # at the job level: a run with no relevant changes reports as "skipped"
+  # instead of a misleading "success".
+  changes:
     runs-on: ubuntu-latest
+    outputs:
+      testable_any_changed: ${{ steps.changed-files-yaml.outputs.testable_any_changed }}
     steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@v5
-        with:
-          concurrent_skipping: 'same_content_newer'
-
       - name: Check out pull request code
         uses: actions/checkout@v7
         if: github.event_name == 'pull_request'
@@ -66,13 +66,37 @@ jobs:
             docs:
               - '**/*.md'
 
+  cypress-run:
+    needs: changes
+    if: needs.changes.outputs.testable_any_changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # The video comment step below creates/updates a PR comment.
+      pull-requests: write
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
+      - name: Check out pull request code
+        uses: actions/checkout@v7
+        if: github.event_name == 'pull_request'
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Check out repository code
+        uses: actions/checkout@v7
+        if: github.event_name == 'push'
+
       - uses: actions/setup-node@v6
-        if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         with:
           node-version: '24.12.0'
 
       - name: Cache node modules
-        if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         uses: actions/cache@v6
         env:
           cache-name: cache-node-modules-browser-tests
@@ -85,23 +109,183 @@ jobs:
             ${{ runner.os }}-
 
       - uses: actions/setup-go@v6
-        if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         with:
           go-version: '1.26.5'
           cache: true
 
       - name: Install Google Chrome
-        if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
         run: sudo apt-get update && sudo apt-get install google-chrome-stable
 
       - name: Run Browser tests
-        if: steps.changed-files-yaml.outputs.testable_any_changed == 'true'
+        id: tests
         uses: nick-fields/retry@v4
         env:
           # Authenticates github.com downloads in tools.sh (ffmpeg) to avoid
           # the anonymous, shared-per-IP rate limit on CI runners.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Record videos of every spec via cypress's native env override
+          # (CI-only; local runs stay fast).
+          CYPRESS_VIDEO: 'true'
         with:
           timeout_minutes: 20
           max_attempts: 3
           command: cd test/automated/browser && ./run.sh
+
+      # Passing only after a retry is a flake, not a pass: make it visible.
+      # Two layers: whole-suite retries (total_attempts above) and per-test
+      # Cypress retries, which exit 0 and are recorded by cypress.config.js
+      # into cypress/results/flaky.json.
+      - name: Report flaky retries
+        env:
+          ATTEMPTS: ${{ steps.tests.outputs.total_attempts }}
+          FLAKY: test/automated/browser/cypress/results/flaky.json
+        run: |
+          report() {
+            echo "::warning title=Flaky test suite::$1"
+            echo ":warning: $1" >> "$GITHUB_STEP_SUMMARY"
+          }
+          if [ "${ATTEMPTS:-1}" -gt 1 ]; then
+            report "Browser tests passed only on attempt $ATTEMPTS"
+          fi
+          if [ -s "$FLAKY" ]; then
+            report "$(jq length "$FLAKY") browser test(s) passed only on a Cypress retry"
+            {
+              echo '```json'
+              cat "$FLAKY"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # Preserve test evidence (server logs/DBs, coverage, machine-readable
+      # results, Cypress failure details and screenshots) even when a failed
+      # test step halts the job.
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-evidence
+          if-no-files-found: ignore
+          path: |
+            test/automated/*/test-artifacts/**
+            test/automated/*/e2e-coverage/**
+            test/automated/*/results/*.json
+            test/automated/browser/cypress/results/**
+            test/automated/browser/cypress/screenshots/**
+
+      # Videos are a separate artifact from the evidence bundle: they are
+      # much larger, so they get a shorter retention, and the PR comment
+      # below links this artifact directly.
+      - name: Upload UI test videos
+        id: video-upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-videos
+          if-no-files-found: ignore
+          retention-days: 14
+          path: test/automated/browser/cypress/videos/**
+
+      # Publish each recording as a standalone, browser-playable URL. The
+      # repo's S3 storage (already used by the HLS S3 tests) serves the mp4s
+      # directly, so reviewers click a link instead of downloading a zip.
+      # Per-PR prefix is wiped first, so a PR only ever holds its latest
+      # run's videos. Fork PRs have no secrets and skip this.
+      - name: Publish videos for in-browser viewing
+        id: video-publish
+        continue-on-error: true
+        if: >-
+          always() &&
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET: ${{ secrets.S3_SECRET }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -z "$S3_BUCKET" ] || [ -z "$S3_ENDPOINT" ]; then
+            echo "No S3 storage configured; skipping browser-viewable video links."
+            exit 0
+          fi
+          cd test/automated/browser/cypress
+          if [ ! -d videos ]; then
+            echo "No videos recorded; nothing to publish."
+            exit 0
+          fi
+          export AWS_ACCESS_KEY_ID="$S3_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$S3_SECRET"
+          export AWS_DEFAULT_REGION="${S3_REGION:-us-east-1}"
+          PREFIX="ci/browser-test-videos/pr-$PR_NUMBER"
+          aws s3 rm "s3://$S3_BUCKET/$PREFIX" --recursive --endpoint-url "$S3_ENDPOINT" --quiet || true
+          mkdir -p results
+          # tools.sh downloads its static ffmpeg into the calling suite's
+          # directory ($(pwd) at install time), so the browser suite's copy
+          # lives one level up from this cypress directory. Check the other
+          # plausible locations too, and say so loudly when none exists --
+          # a silent skip ships stream-broken videos.
+          FFMPEG=""
+          for candidate in ../ffmpeg ../../ffmpeg ffmpeg; do
+            if command -v "$candidate" >/dev/null; then FFMPEG="$candidate"; break; fi
+          done
+          if [ -z "$FFMPEG" ]; then
+            echo "::warning title=Video publish::ffmpeg not found; publishing videos without the faststart remux (streaming playback may misbehave)"
+          fi
+          group=""
+          find videos -name '*.mp4' | sort | while read -r f; do
+            # Cypress writes the mp4 index (moov atom) at the end of the
+            # file, so browsers streaming from a URL stop early or report a
+            # wrong duration. Remux (stream copy) to move it to the front.
+            # The temp name must keep the .mp4 suffix: ffmpeg infers the
+            # muxer from the extension and rejects anything else.
+            if [ -n "$FFMPEG" ]; then
+              "$FFMPEG" -v error -y -i "$f" -c copy -movflags +faststart "${f%.mp4}.fast.mp4" &&
+                mv "${f%.mp4}.fast.mp4" "$f"
+            fi
+            key="$PREFIX/${f#videos/}"
+            aws s3 cp "$f" "s3://$S3_BUCKET/$key" --endpoint-url "$S3_ENDPOINT" \
+              --acl public-read --content-type video/mp4 --no-progress >&2
+            dir="${f#videos/}"; dir="${dir%%/*}"
+            if [ "$dir" != "$group" ]; then
+              group="$dir"
+              printf '\n**%s**\n\n' "$group"
+            fi
+            printf -- '- [%s](%s/%s/%s)\n' "$(basename "$f" .mp4)" "$S3_ENDPOINT" "$S3_BUCKET" "$key"
+          done > results/video-links.md
+          echo "Published $(grep -c '^- ' results/video-links.md) videos."
+
+      # Keep one sticky comment on the PR with a click-to-watch link per
+      # recording (created once, updated in place). Same-repo PRs only: fork
+      # PRs run with a read-only token that cannot comment.
+      - name: Link UI test videos on the PR
+        if: >-
+          always() &&
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          steps.video-upload.outputs.artifact-url != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          ARTIFACT_URL: ${{ steps.video-upload.outputs.artifact-url }}
+          LINKS_FILE: test/automated/browser/cypress/results/video-links.md
+        run: |
+          MARKER='<!-- e2e-ui-test-videos -->'
+          {
+            echo "$MARKER"
+            echo "## E2E UI test videos"
+            echo
+            if [ -s "$LINKS_FILE" ]; then
+              echo "Click a recording to watch it in your browser (commit $HEAD_SHA):"
+              cat "$LINKS_FILE"
+              echo
+            fi
+            echo "All recordings as a downloadable artifact (14-day retention): [browser-test-videos]($ARTIFACT_URL)"
+          } > /tmp/video-comment.md
+          existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
+            --jq "[.[] | select(.body | startswith(\"$MARKER\")) | .id][0] // empty")
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -F body=@/tmp/video-comment.md >/dev/null
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" -F body=@/tmp/video-comment.md >/dev/null
+          fi

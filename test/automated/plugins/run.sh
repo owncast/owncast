@@ -100,5 +100,7 @@ npm install --quiet --no-progress
 install_ffmpeg
 start_owncast
 
-# Run the tests against the running instance.
-npm test
+# Run the tests against the running instance. Also write machine-readable
+# results for CI artifact upload; jest keeps human-readable progress on stderr.
+mkdir -p results
+npm test -- --json --outputFile=results/jest-results.json
