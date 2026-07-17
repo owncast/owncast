@@ -50,9 +50,14 @@
     color: var(--theme-color-components-text-on-light);
     font-size: 1rem;
     line-height: 1.1;
+    max-lines: 2;
     padding-bottom: 5px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+  }
+
+  .textColumn {
+    flex: 1;
+    min-width: 0;
   }
 }

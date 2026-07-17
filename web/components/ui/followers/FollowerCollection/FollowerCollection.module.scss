@@ -23,24 +23,6 @@
       justify-content: center;
     }
   }
-
-  @media (640px <= width < 960px) {
-    .followerRow {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (960px <= width < 1280px) {
-    .followerRow {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  @media (width >= 1280px) {
-    .followerRow {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
 }
 
 .noFollowers {

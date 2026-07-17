@@ -22,7 +22,7 @@ export const SingleFollower: FC<SingleFollowerProps> = ({ follower }) => (
             {(follower.name || follower.username).charAt(0).toUpperCase()}
           </Avatar>
         </Col>
-        <Col>
+        <Col className={styles.textColumn}>
           <Row className={styles.username}>
             {follower.name || follower.username.split('@', 2)[0]}
           </Row>
