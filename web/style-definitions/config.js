@@ -1,34 +1,32 @@
 const yaml = require('yaml');
-const StyleDictionary = require('style-dictionary');
-
-StyleDictionary.registerFileHeader({
-  name: 'myCustomHeader',
-  // Intentionally omit Style Dictionary's default "Generated on <timestamp>"
-  // line. The timestamp made every regeneration produce a diff, so the
-  // committed outputs could never be reproduced byte-for-byte from the source.
-  fileHeader: () => [
-    `Do not edit directly`,
-    `This file is generated from the token sources under style-definitions/.`,
-    ``,
-    `How to edit these values:`,
-    `Edit the corresponding token file under the style-definitions directory`,
-    `in the Owncast web project.`,
-  ],
-});
 
 module.exports = {
-  parsers: [
-    {
-      // A custom parser will only run against filenames that match the pattern
-      // This pattern will match any file with the .yaml extension.
-      // This allows you to mix different types of files in your token source
-      pattern: /\.yaml$/,
-      // the parse function takes a single argument, which is an object with
-      // a `contents` string (the file contents) and a `filePath`. We only
-      // need contents. The function is expected to return a plain object.
-      parse: ({ contents }) => yaml.parse(contents),
+  hooks: {
+    parsers: {
+      // A custom parser will only run against filenames that match the pattern.
+      // This pattern will match any file with the .yaml extension, which
+      // allows you to mix different types of files in your token source.
+      'yaml-parser': {
+        pattern: /\.yaml$/,
+        parser: ({ contents }) => yaml.parse(contents),
+      },
     },
-  ],
+    fileHeaders: {
+      // Intentionally omit Style Dictionary's default "Generated on <timestamp>"
+      // line. The timestamp made every regeneration produce a diff, so the
+      // committed outputs could never be reproduced byte-for-byte from the
+      // source.
+      myCustomHeader: () => [
+        `Do not edit directly`,
+        `This file is generated from the token sources under style-definitions/.`,
+        ``,
+        `How to edit these values:`,
+        `Edit the corresponding token file under the style-definitions directory`,
+        `in the Owncast web project.`,
+      ],
+    },
+  },
+  parsers: ['yaml-parser'],
   source: [`tokens/**/*.yaml`],
   platforms: {
     css: {
@@ -51,43 +49,6 @@ module.exports = {
           format: 'css/variables',
           options: {
             fileHeader: 'myCustomHeader',
-          },
-        },
-      ],
-    },
-    less: {
-      transformGroup: 'less',
-      buildPath: 'build/',
-      files: [
-        {
-          destination: 'variables.less',
-          format: 'less/variables',
-          options: {
-            fileHeader: 'myCustomHeader',
-          },
-        },
-      ],
-    },
-    'ios-swift': {
-      transforms: [
-        'attribute/cti',
-        'name/ti/camel',
-        'color/ColorSwiftUI',
-        'content/swift/literal',
-        'asset/swift/literal',
-        'size/swift/remToCGFloat',
-        'font/swift/literal',
-      ],
-      buildPath: 'build/',
-      files: [
-        {
-          format: 'ios-swift/class.swift',
-          className: 'PlatformColor',
-          destination: 'Colors.swift',
-          filter: {
-            attributes: {
-              category: 'color',
-            },
           },
         },
       ],

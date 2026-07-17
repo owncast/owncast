@@ -1,4 +1,5 @@
 {
+  "cssVar": { "key": "owncast" },
   "token": {
     "colorPrimary": "#6544e9",
     "colorLink": "#6544e9",
