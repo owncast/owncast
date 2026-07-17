@@ -8,11 +8,13 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	fediverseauth "github.com/owncast/owncast/auth/fediverse"
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/services/activitypub"
 	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
@@ -120,8 +122,10 @@ func (h *Handler) VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Reque
 			return
 		}
 
-		if authRegistration.UserDisplayName != u.DisplayName {
-			loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", authRegistration.UserDisplayName, u.DisplayName)
+		displayName := utils.MakeSafeStringOfLength(authRegistration.UserDisplayName, config.MaxChatDisplayNameLength)
+		authenticatedDisplayName := utils.MakeSafeStringOfLength(u.DisplayName, config.MaxChatDisplayNameLength)
+		if displayName != authenticatedDisplayName {
+			loginMessage := fmt.Sprintf("**%s** is now authenticated as **%s**", displayName, authenticatedDisplayName)
 			if err := h.chat.SendSystemAction(loginMessage, true); err != nil {
 				log.Errorln(err)
 			}
