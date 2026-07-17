@@ -7,4 +7,5 @@ out
 
 lefthook.yml
 storybook-static
+screenshot-diff
 tsconfig.tsbuildinfo

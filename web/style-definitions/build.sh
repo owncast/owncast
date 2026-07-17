@@ -1,7 +1,6 @@
 #!/bin/sh
 
 mv build/variables.css ../styles/variables.css
-mv build/variables.less ../styles/theme.less
 
 # Served plugin stylesheet: the generated :root token block (build/plugin.css)
 # followed by the hand-authored element baseline. One file authors <link>,
@@ -16,5 +15,4 @@ mv build/plugin.css ../public/styles/plugin.css
 # listed in .prettierignore).
 (cd .. && npx --yes prettier --write \
   styles/variables.css \
-  styles/theme.less \
   public/styles/plugin.css)

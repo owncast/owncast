@@ -28,6 +28,7 @@
 		"@types/prop-types",
 		"babel-loader",
 		"chromatic",
+		"puppeteer-core",
 		"cypress",
 		"handlebars",
 		"html-webpack-plugin",

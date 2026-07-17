@@ -28,44 +28,44 @@ modal-close-color:
 # This values need to be statically assigned at build time and cannot be
 # overridden by the user at runtime.
 primary-color:
-  value: '{color.owncast.palette.6.value}'
-  comment: '{color.owncast.palette.6.comment}'
+  value: '{color.owncast.palette.6}'
+  comment: 'Text link/secondary light text'
 primary-color-hover:
-  value: '{color.owncast.palette.11.value}'
-  comment: '{color.owncast.palette.11.comment}'
+  value: '{color.owncast.palette.11}'
+  comment: 'Fun color 1'
 primary-color-active:
-  value: '{color.owncast.palette.7.value}'
-  comment: '{color.owncast.palette.7.comment}'
+  value: '{color.owncast.palette.7}'
+  comment: 'Text link hover'
 
 primary-1:
-  value: '{color.owncast.palette.6.value}'
-  comment: '{color.owncast.palette.6.comment}'
+  value: '{color.owncast.palette.6}'
+  comment: 'Text link/secondary light text'
 primary-2:
-  value: '{color.owncast.palette.11.value}'
-  comment: '{color.owncast.palette.11.comment}'
+  value: '{color.owncast.palette.11}'
+  comment: 'Fun color 1'
 primary-3:
-  value: '{color.owncast.palette.7.value}'
-  comment: '{color.owncast.palette.7.comment}'
+  value: '{color.owncast.palette.7}'
+  comment: 'Text link hover'
 primary-4:
-  value: '{color.owncast.palette.12.value}'
-  comment: '{color.owncast.palette.12.comment}'
+  value: '{color.owncast.palette.12}'
+  comment: 'Fun color 2'
 primary-5:
-  value: '{color.owncast.palette.6.value}'
-  comment: '{color.owncast.palette.6.comment}'
+  value: '{color.owncast.palette.6}'
+  comment: 'Text link/secondary light text'
 primary-6:
-  value: '{color.owncast.palette.11.value}'
-  comment: '{color.owncast.palette.11.comment}'
+  value: '{color.owncast.palette.11}'
+  comment: 'Fun color 1'
 primary-7:
-  value: '{color.owncast.palette.7.value}'
-  comment: '{color.owncast.palette.7.comment}'
+  value: '{color.owncast.palette.7}'
+  comment: 'Text link hover'
 primary-8:
-  value: '{color.owncast.palette.12.value}'
-  comment: '{color.owncast.palette.12.comment}'
+  value: '{color.owncast.palette.12}'
+  comment: 'Fun color 2'
 
 component-background:
-  value: '{color.owncast.palette.3.value}'
-  comment: '{color.owncast.palette.3.comment}'
+  value: '{color.owncast.palette.3}'
+  comment: 'Light primary'
 
 body-background:
-  value: '{color.owncast.palette.3.value}'
-  comment: '{color.owncast.palette.3.comment}'
+  value: '{color.owncast.palette.3}'
+  comment: 'Light primary'

@@ -5,6 +5,7 @@ import { Provider, useSetAtom } from 'jotai';
 import { AntdProvider } from '../components/theme/AntdProvider';
 import { clientConfigStateAtom } from '../components/stores/ClientConfigStore';
 import { makeEmptyClientConfig } from '../interfaces/client-config.model';
+import antdDefaultTheme from '../components/theme/antd-default-theme.json';
 
 jest.mock('next/router', () => ({
   useRouter: () => ({ query: {}, pathname: '/', asPath: '/', push: jest.fn(), replace: jest.fn() }),
@@ -32,16 +33,17 @@ const ApplyTheme: React.FC<{ apply: boolean }> = ({ apply }) => {
 };
 
 // The css variable VALUES for a component land in a style rule keyed by the
-// css-var-* scope class its provider assigns, so the message holder's rule
-// is distinguishable from the main provider tree's.
-const messageHolderCss = () => {
+// scope class its provider assigns: the stable cssVar key from
+// antd-default-theme.json for the default theme, and a distinct "-custom"
+// key once appearance customizations exist (so the pre-extracted default
+// values in antd.css cannot win the cascade over the customized ones).
+const messageHolderCss = (expectedKey: string) => {
   const holder = document.querySelector('.ant-message');
   expect(holder).not.toBeNull();
-  const varClass = Array.from(holder.classList).find(c => /^css-var-/.test(c));
-  expect(varClass).toBeDefined();
+  expect(holder.classList).toContain(expectedKey);
   return Array.from(document.querySelectorAll('style'))
     .map(s => s.textContent || '')
-    .filter(cssText => cssText.includes(`.${varClass}`))
+    .filter(cssText => cssText.includes(`.${expectedKey}`))
     .join('\n');
 };
 
@@ -61,7 +63,7 @@ describe('static API theming', () => {
     await act(async () => {
       message.open({ content: 'before theme change' });
     });
-    expect(messageHolderCss()).not.toContain(ACTION_COLOR);
+    expect(messageHolderCss(antdDefaultTheme.cssVar.key)).not.toContain(ACTION_COLOR);
 
     // Admin changes the appearance.
     await act(async () => {
@@ -74,10 +76,11 @@ describe('static API theming', () => {
       );
     });
 
-    // A static opened after the change renders with the new primary color.
+    // A static opened after the change renders with the new primary color,
+    // under the customized scope key.
     await act(async () => {
       message.open({ content: 'after theme change' });
     });
-    expect(messageHolderCss()).toContain(ACTION_COLOR);
+    expect(messageHolderCss(`${antdDefaultTheme.cssVar.key}-custom`)).toContain(ACTION_COLOR);
   });
 });
