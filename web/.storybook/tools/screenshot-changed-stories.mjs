@@ -22,6 +22,7 @@
  * Writes OUT_DIR/img/<story-id>-{before,after}.png and
  * OUT_DIR/comment-body.md, and appends stories=<n> to $GITHUB_OUTPUT.
  */
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import puppeteer from 'puppeteer-core';
@@ -39,7 +40,12 @@ const STATIC_URL = required('STATIC_URL');
 const BASELINE_URL = process.env.BASELINE_URL || 'https://ui.owncast.online';
 const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || '';
 const OUT_DIR = process.env.OUT_DIR || 'screenshot-diff';
-const CHROME = process.env.CHROME || 'google-chrome';
+// puppeteer-core stats executablePath literally, so resolve bare command
+// names (e.g. the runner's google-chrome) through PATH first.
+const chromeEnv = process.env.CHROME || 'google-chrome';
+const CHROME = chromeEnv.includes('/')
+  ? chromeEnv
+  : execFileSync('/bin/sh', ['-c', `command -v ${chromeEnv}`], { encoding: 'utf8' }).trim();
 
 // Keep the comment reviewable on sweeping changes; Chromatic covers the rest.
 const MAX_STORIES = 12;
