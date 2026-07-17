@@ -9,8 +9,12 @@ import { INITIAL_VIEWPORTS } from 'storybook/viewport';
 import _ from 'lodash';
 import { initialize, mswLoader } from 'msw-storybook-addon';
 import React from 'react';
-import { Provider } from 'jotai';
+import { Provider, useSetAtom } from 'jotai';
 import { AntdProvider } from '../components/theme/AntdProvider';
+import { Theme } from '../components/theme/Theme';
+import { clientConfigStateAtom } from '../components/stores/ClientConfigStore';
+import { makeEmptyClientConfig } from '../interfaces/client-config.model';
+import THEMES from '../stories/themePresets';
 
 /**
  * Takes an entry of a viewport (from Object.entries()) and converts it
@@ -116,16 +120,60 @@ export const parameters = {
 
 export const loaders = [mswLoader];
 
+// Toolbar switcher for the appearance-theme presets (stories/themePresets).
+// Applies the selected preset through the two real theming paths — the
+// clientConfig atom (AntdProvider maps it onto antd design tokens) and the
+// Theme component (emits the --theme-* CSS variables) — so any story can be
+// checked against custom themes, not just the Theme playground.
+export const globalTypes = {
+  owncastTheme: {
+    description: 'Owncast appearance theme preset',
+    toolbar: {
+      title: 'Theme',
+      icon: 'paintbrush',
+      items: Object.entries(THEMES).map(([value, t]) => ({ value, title: t.label })),
+      dynamicTitle: true,
+    },
+  },
+};
+
+export const initialGlobals = { owncastTheme: 'default' };
+
+const ApplyStorybookTheme = ({ theme, children }) => {
+  const setClientConfig = useSetAtom(clientConfigStateAtom);
+  const preset = theme !== 'default' && THEMES[theme];
+  React.useEffect(() => {
+    if (preset) {
+      setClientConfig({
+        ...makeEmptyClientConfig(),
+        appearanceVariables: preset.variables,
+      });
+    }
+  }, [preset, setClientConfig]);
+  if (!preset) {
+    return children;
+  }
+  return (
+    <>
+      <Theme />
+      {children}
+    </>
+  );
+};
+
 // Mirror the app-wide providers from pages/_app.tsx: antd components rely on
 // AntdProvider for the Owncast theme tokens. Without this decorator those
 // stories would render unthemed. AntdProvider reads jotai atoms, so a
 // Provider wraps it (stories with their own Provider simply nest; that
-// is supported).
+// is supported). The Provider is keyed by the selected toolbar theme so
+// switching themes starts from a fresh store instead of layering presets.
 export const decorators = [
-  Story => (
-    <Provider>
+  (Story, context) => (
+    <Provider key={context.globals.owncastTheme || 'default'}>
       <AntdProvider>
-        <Story />
+        <ApplyStorybookTheme theme={context.globals.owncastTheme}>
+          <Story />
+        </ApplyStorybookTheme>
       </AntdProvider>
     </Provider>
   ),
