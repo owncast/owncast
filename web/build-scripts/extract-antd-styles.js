@@ -181,6 +181,15 @@ const allComponents = h(
 // so the extracted selectors match the classes components render with.
 // zeroRuntime must NOT be set during extraction: it is the flag that
 // suppresses exactly the rule generation being captured here.
+//
+// cssVar.key must be a stable explicit value: without it antd derives the
+// css-variable scope class from React useId, which differs between this
+// script, the Next build render, and the browser — the pre-extracted
+// variable values then never match the exported HTML and var()-sized
+// components (e.g. the header Avatar) flash unstyled at first paint.
+if (!defaultTheme.cssVar || !defaultTheme.cssVar.key) {
+  throw new Error('antd-default-theme.json must set cssVar.key (stable css-var scope class)');
+}
 const cache = createCache();
 renderToString(
   h(
