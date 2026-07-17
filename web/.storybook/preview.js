@@ -123,8 +123,9 @@ export const loaders = [mswLoader];
 // Toolbar switcher for the appearance-theme presets (stories/themePresets).
 // Applies the selected preset through the two real theming paths — the
 // clientConfig atom (AntdProvider maps it onto antd design tokens) and the
-// Theme component (emits the --theme-* CSS variables) — so any story can be
-// checked against custom themes, not just the Theme playground.
+// Theme component (emits the --theme-* CSS variables) — so any end-user
+// story can be checked against custom themes, not just the Theme
+// playground. Admin stories are exempt: the admin UI is not themed.
 export const globalTypes = {
   owncastTheme: {
     description: 'Owncast appearance theme preset',
@@ -168,13 +169,19 @@ const ApplyStorybookTheme = ({ theme, children }) => {
 // is supported). The Provider is keyed by the selected toolbar theme so
 // switching themes starts from a fresh store instead of layering presets.
 export const decorators = [
-  (Story, context) => (
-    <Provider key={context.globals.owncastTheme || 'default'}>
-      <AntdProvider>
-        <ApplyStorybookTheme theme={context.globals.owncastTheme}>
-          <Story />
-        </ApplyStorybookTheme>
-      </AntdProvider>
-    </Provider>
-  ),
+  (Story, context) => {
+    // Appearance themes only apply to the end-user experience; the admin
+    // interface never receives appearanceVariables.
+    const isAdminStory = context.id.startsWith('owncast-admin');
+    const theme = isAdminStory ? 'default' : context.globals.owncastTheme;
+    return (
+      <Provider key={theme || 'default'}>
+        <AntdProvider>
+          <ApplyStorybookTheme theme={theme}>
+            <Story />
+          </ApplyStorybookTheme>
+        </AntdProvider>
+      </Provider>
+    );
+  },
 ];
