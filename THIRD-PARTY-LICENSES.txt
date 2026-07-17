@@ -1875,8 +1875,8 @@ Web package: isobject@3.0.1
   Declared license: MIT
   LICENSE: SHA256 4cd903859549d4b20b571041f96dfae1136ed079c476126268f9d7cc1b611150
 
-Web package: jotai@2.20.1
-  Source: https://registry.npmjs.org/jotai/-/jotai-2.20.1.tgz
+Web package: jotai@2.20.2
+  Source: https://registry.npmjs.org/jotai/-/jotai-2.20.2.tgz
   Declared license: MIT
   LICENSE: SHA256 0530d5d58026f4bb73367d195946f6a516a648ea62dd8b84763318f64d3cb3e2
 
@@ -2835,7 +2835,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
 SHA256: 0530d5d58026f4bb73367d195946f6a516a648ea62dd8b84763318f64d3cb3e2
-Used by: Web package: jotai@2.20.1 (LICENSE)
+Used by: Web package: jotai@2.20.2 (LICENSE)
 --------------------------------------------------------------------------------
 MIT License
 
