@@ -103,6 +103,12 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
   return {
     token,
     components: { Modal: modal, Tabs: tabs, Dropdown: dropdown, Menu: menu },
+    // Stable css-var scope key. Without it antd derives the key from React
+    // useId, so the class baked into the static export (e.g. css-var-R16)
+    // never matches the selectors in the pre-extracted antd.css and
+    // var()-sized components (like the header Avatar) render unconstrained
+    // until hydration injects the runtime values.
+    cssVar: defaultTheme.cssVar,
     // Component style RULES come from the pre-extracted styles/antd.css
     // (see build-scripts/extract-antd-styles.js); the runtime only injects
     // the CSS-variable VALUES derived from the tokens above, which is what

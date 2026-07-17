@@ -5,6 +5,7 @@ import { Provider, useSetAtom } from 'jotai';
 import { AntdProvider } from '../components/theme/AntdProvider';
 import { clientConfigStateAtom } from '../components/stores/ClientConfigStore';
 import { makeEmptyClientConfig } from '../interfaces/client-config.model';
+import antdDefaultTheme from '../components/theme/antd-default-theme.json';
 
 jest.mock('next/router', () => ({
   useRouter: () => ({ query: {}, pathname: '/', asPath: '/', push: jest.fn(), replace: jest.fn() }),
@@ -32,13 +33,13 @@ const ApplyTheme: React.FC<{ apply: boolean }> = ({ apply }) => {
 };
 
 // The css variable VALUES for a component land in a style rule keyed by the
-// css-var-* scope class its provider assigns, so the message holder's rule
-// is distinguishable from the main provider tree's.
+// scope class its provider assigns (the stable cssVar key from
+// antd-default-theme.json), so the message holder's rule is identifiable.
 const messageHolderCss = () => {
   const holder = document.querySelector('.ant-message');
   expect(holder).not.toBeNull();
-  const varClass = Array.from(holder.classList).find(c => /^css-var-/.test(c));
-  expect(varClass).toBeDefined();
+  const varClass = antdDefaultTheme.cssVar.key;
+  expect(holder.classList).toContain(varClass);
   return Array.from(document.querySelectorAll('style'))
     .map(s => s.textContent || '')
     .filter(cssText => cssText.includes(`.${varClass}`))
