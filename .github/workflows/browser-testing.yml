@@ -219,16 +219,24 @@ jobs:
           PREFIX="ci/browser-test-videos/pr-$PR_NUMBER"
           aws s3 rm "s3://$S3_BUCKET/$PREFIX" --recursive --endpoint-url "$S3_ENDPOINT" --quiet || true
           mkdir -p results
-          # tools.sh downloads a static ffmpeg next to the suites; fall back
-          # to a PATH ffmpeg if it is missing.
-          FFMPEG="../../ffmpeg"
-          command -v "$FFMPEG" >/dev/null || FFMPEG=ffmpeg
+          # tools.sh downloads its static ffmpeg into the calling suite's
+          # directory ($(pwd) at install time), so the browser suite's copy
+          # lives one level up from this cypress directory. Check the other
+          # plausible locations too, and say so loudly when none exists --
+          # a silent skip ships stream-broken videos.
+          FFMPEG=""
+          for candidate in ../ffmpeg ../../ffmpeg ffmpeg; do
+            if command -v "$candidate" >/dev/null; then FFMPEG="$candidate"; break; fi
+          done
+          if [ -z "$FFMPEG" ]; then
+            echo "::warning title=Video publish::ffmpeg not found; publishing videos without the faststart remux (streaming playback may misbehave)"
+          fi
           group=""
           find videos -name '*.mp4' | sort | while read -r f; do
             # Cypress writes the mp4 index (moov atom) at the end of the
             # file, so browsers streaming from a URL stop early or report a
             # wrong duration. Remux (stream copy) to move it to the front.
-            if command -v "$FFMPEG" >/dev/null; then
+            if [ -n "$FFMPEG" ]; then
               "$FFMPEG" -v error -y -i "$f" -c copy -movflags +faststart "$f.fast" && mv "$f.fast" "$f"
             fi
             key="$PREFIX/${f#videos/}"
