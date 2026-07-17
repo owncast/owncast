@@ -4,7 +4,7 @@
 #   - Skips when only web/ directory changes
 # Test Matrix:
 #   - PRs: Ubuntu + Windows (catch cross-platform regressions before merge)
-#   - Develop/Main: Full matrix (ensure cross-platform compatibility)
+#   - Develop/Main: Full matrix plus FreeBSD/OpenBSD VMs
 
 name: Go Tests
 
@@ -19,7 +19,30 @@ on:
       - 'web/**'
 
 jobs:
+  # Detect relevant changes in a standalone job so the test jobs can be gated
+  # at the job level: a run with no relevant changes reports as "skipped"
+  # instead of a misleading "success".
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      src_any_changed: ${{ steps.changed-files-yaml.outputs.src_any_changed }}
+      workflow_any_changed: ${{ steps.changed-files-yaml.outputs.workflow_any_changed }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Get changed files
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v47
+        with:
+          files_yaml: |
+            src:
+              - '**/*.{go,mod,sum}'
+            workflow:
+              - '.github/workflows/go-tests.yaml'
+
   test:
+    needs: changes
+    if: needs.changes.outputs.src_any_changed == 'true'
     strategy:
       matrix:
         os: ${{ github.event_name == 'pull_request' && fromJSON('["ubuntu-latest", "windows-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest", "ubuntu-24.04-arm"]') }}
@@ -27,16 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Get changed files
-        id: changed-files-yaml
-        uses: tj-actions/changed-files@v47
-        with:
-          files_yaml: |
-            src:
-              - '**/*.{go,mod,sum}'
-
       - uses: actions/cache@v6
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
           path: |
             ~/.cache/go-build
@@ -46,55 +60,78 @@ jobs:
             go-test-
 
       - name: Install go
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         uses: actions/setup-go@v6
         with:
           go-version: '1.26.5'
           cache: true
 
+      # Linux legs run with the race detector and emit machine-readable
+      # results. Windows stays plain: the CGO race runtime there is slow and
+      # fragile. macOS (push-only) stays plain to keep one canonical race leg.
       - name: Run tests
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        if: runner.os != 'Linux'
         run: go test ./...
 
-  test-bsds:
-    # Only run BSD tests on push events (not PRs) for efficiency
-    if: github.event_name == 'push'
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        os:
-          - name: freebsd
-            version: 12.2
-          - name: openbsd
-            version: 6.8
+      - name: Run tests (race detector, JSON report)
+        if: runner.os == 'Linux'
+        run: go test -race -json ./... > go-test-report.json
 
+      # `go test -json` swallows the human-readable log, so on failure pull
+      # the failing tests' output back out of the report for diagnosis.
+      - name: Show failing tests
+        if: failure() && runner.os == 'Linux'
+        run: |
+          jq -r -s '
+            [.[] | select(.Action == "fail" and .Test) | .Package + "/" + .Test] as $failed
+            | .[]
+            | select(.Action == "output" and .Test and ([.Package + "/" + .Test] | inside($failed)))
+            | .Output' go-test-report.json
+
+      - name: Upload test report
+        if: always() && runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-test-report-${{ matrix.os }}
+          path: go-test-report.json
+          if-no-files-found: ignore
+
+  # Real BSD coverage: vmactions boots FreeBSD/OpenBSD VMs (QEMU + KVM) on the
+  # Ubuntu host runner, rsyncs the checkout in, and runs the tests inside the
+  # VM. Expensive, so it runs on pushes to develop — plus PRs that change this
+  # workflow, so the jobs themselves stay verifiable before merge.
+  test-freebsd:
+    needs: changes
+    if: needs.changes.outputs.src_any_changed == 'true' && (github.event_name == 'push' || needs.changes.outputs.workflow_any_changed == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
 
-      - name: Get changed files
-        id: changed-files-yaml
-        uses: tj-actions/changed-files@v47
+      - name: Run tests in FreeBSD VM
+        uses: vmactions/freebsd-vm@v1
         with:
-          files_yaml: |
-            src:
-              - '**/*.{go,mod,sum}'
+          release: '15.1'
+          usesh: true
+          # pkg go may lag go.mod; GOTOOLCHAIN=auto (default) fetches the
+          # required freebsd-amd64 toolchain when needed.
+          prepare: pkg install -y go
+          run: go test ./...
 
-      - uses: actions/cache@v6
+  test-openbsd:
+    needs: changes
+    if: needs.changes.outputs.src_any_changed == 'true' && (github.event_name == 'push' || needs.changes.outputs.workflow_any_changed == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run tests in OpenBSD VM
+        uses: vmactions/openbsd-vm@v1
         with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: go-test-${{ github.sha }}
-          restore-keys: |
-            go-test-
-
-      - name: Install go
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
-        uses: actions/setup-go@v6
-        with:
-          go-version: '1.26.5'
-          cache: true
-
-      - name: Run tests
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
-        run: go test ./...
+          release: '7.9'
+          prepare: pkg_add go
+          # OpenBSD's default datasize limit starves the Go toolchain; raise
+          # it for this shell before building.
+          run: |
+            ulimit -d $(ulimit -H -d) || true
+            go test ./...

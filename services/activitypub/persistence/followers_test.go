@@ -111,14 +111,16 @@ func TestQueryFollowersWithPagination(t *testing.T) {
 		t.Errorf("Error querying followers: %s", err)
 	}
 
-	comparisonFollowers := followers[10:25]
-	if len(f) != len(comparisonFollowers) {
-		t.Errorf("Expected %d followers, got %d", len(comparisonFollowers), len(f))
+	// GetFollowers returns newest-first (created_at DESC with rowid breaking
+	// same-second ties), so offset 10 starts at the 11th most recent follow.
+	if len(f) != 15 {
+		t.Errorf("Expected 15 followers, got %d", len(f))
 	}
 
 	for i, follower := range f {
-		if follower.ActorIRI != comparisonFollowers[i].ActorIRI {
-			t.Errorf("Expected %s, got %s", comparisonFollowers[i].ActorIRI, follower.ActorIRI)
+		expected := followers[len(followers)-1-(10+i)]
+		if follower.ActorIRI != expected.ActorIRI {
+			t.Errorf("Expected %s, got %s", expected.ActorIRI, follower.ActorIRI)
 		}
 	}
 }

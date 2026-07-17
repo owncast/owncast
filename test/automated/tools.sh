@@ -79,12 +79,16 @@ function start_owncast() {
 		exit 1
 	fi
 
-	# Build and run owncast from source
+	# Build and run owncast from source. -cover instruments the binary so e2e
+	# runs produce Go coverage data in GOCOVERDIR (reported at teardown).
 	echo "Building owncast..."
-	pushd "$(git rev-parse --show-toplevel)" >/dev/null
-	CGO_ENABLED=1 go build -o owncast main.go
+	pushd "$REPO_ROOT" >/dev/null
+	CGO_ENABLED=1 go build -cover -o owncast main.go
+	# Remove any log left by a previous run so the artifact collected at
+	# teardown belongs to this run.
+	rm -f data/logs/owncast.log
 	echo "Running owncast..."
-	./owncast -database "$TEMP_DB" &
+	GOCOVERDIR="$GOCOVERDIR" ./owncast -database "$TEMP_DB" &
 	SERVER_PID=$!
 	popd >/dev/null
 
@@ -150,14 +154,69 @@ function kill_with_kids() {
 	fi
 }
 
+function stop_owncast() {
+	# Coverage counter data is only written on a clean exit (return from main
+	# or os.Exit); a plain signal death loses it because owncast installs no
+	# signal handler. Ask the server to exit through the authenticated
+	# forcequit admin endpoint (which calls os.Exit(0)), then fall back to
+	# SIGTERM if the request or the wait fails.
+	if [[ -n "${SERVER_PID:-}" ]] && kill -0 "$SERVER_PID" 2>/dev/null; then
+		curl -m 5 -s -o /dev/null -u admin:abc123 \
+			"http://localhost:8080/api/admin/update/forcequit" || true
+		for _ in $(seq 1 20); do
+			kill -0 "$SERVER_PID" 2>/dev/null || break
+			sleep 0.5
+		done
+	fi
+	kill "${SERVER_PID:-}" &>/dev/null || true
+	wait "${SERVER_PID:-}" &>/dev/null || true
+}
+
+function collect_artifacts() {
+	# Preserve the server log and the throwaway database so CI can upload
+	# them on failure. Cheap and unconditional.
+	mkdir -p "$SUITE_DIR/test-artifacts"
+	cp "$REPO_ROOT/data/logs/owncast.log" "$SUITE_DIR/test-artifacts/" 2>/dev/null || true
+	cp "$REPO_ROOT/data/logs/transcoder.log" "$SUITE_DIR/test-artifacts/" 2>/dev/null || true
+	# Owncast runs sqlite in WAL mode and forcequit exits without a clean
+	# close, so most data lives in the -wal sidecar. Copy it (and -shm) with
+	# matching names so the artifact opens as a normal sqlite database.
+	cp "$TEMP_DB" "$SUITE_DIR/test-artifacts/owncast.db" 2>/dev/null || true
+	cp "$TEMP_DB-wal" "$SUITE_DIR/test-artifacts/owncast.db-wal" 2>/dev/null || true
+	cp "$TEMP_DB-shm" "$SUITE_DIR/test-artifacts/owncast.db-shm" 2>/dev/null || true
+}
+
+function report_coverage() {
+	if ! compgen -G "$GOCOVERDIR/covcounters.*" >/dev/null; then
+		echo "WARNING: no coverage counter data in GOCOVERDIR; owncast likely did not exit cleanly. Skipping coverage report." >&2
+		return 0
+	fi
+	mkdir -p "$SUITE_DIR/e2e-coverage"
+	go tool covdata percent -i "$GOCOVERDIR" >"$SUITE_DIR/e2e-coverage/percent.txt" || true
+	go tool covdata textfmt -i "$GOCOVERDIR" -o "$SUITE_DIR/e2e-coverage/profile.txt" || true
+	local total
+	total=$(go tool cover -func="$SUITE_DIR/e2e-coverage/profile.txt" 2>/dev/null | tail -n 1) || true
+	if [[ -n "$total" ]]; then
+		echo "$total" >>"$SUITE_DIR/e2e-coverage/percent.txt"
+		echo "E2E Go coverage $total"
+	fi
+}
+
 function finish() {
 	echo "Cleaning up..."
 	kill_with_kids "${STREAM_PID:-}"
-	kill "${SERVER_PID:-}" &>/dev/null || true
-	wait "${SERVER_PID:-}" &>/dev/null || true
-	rm -fr "$TEMP_DB"
+	stop_owncast
+	collect_artifacts
+	report_coverage
+	rm -f "$TEMP_DB" "$TEMP_DB-wal" "$TEMP_DB-shm"
+	rm -fr "$GOCOVERDIR"
 }
 
 trap finish EXIT
 
+# tools.sh is sourced from the suite's own directory; remember it so teardown
+# can drop artifacts next to the suite regardless of the cwd at exit time.
+SUITE_DIR="$(pwd)"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
 TEMP_DB=$(mktemp)
+GOCOVERDIR=$(mktemp -d)
