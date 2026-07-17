@@ -136,7 +136,11 @@ jobs:
               printf '<li><a href="%s/%s/%s/%s">%s</a> (%s)</li>\n' \
                 "$S3_ENDPOINT" "$S3_BUCKET" "$PREFIX" "$name" "$name" "$size"
             done
-            printf '%s\n' '</ul>' '</body></html>'
+            printf '%s\n' \
+              '</ul>' \
+              '<p>Also available as a Docker image:' \
+              '<a href="https://github.com/owncast/owncast/pkgs/container/owncast"><code>ghcr.io/owncast/owncast:nightly</code></a></p>' \
+              '</body></html>'
           } > dist/index.html
 
           for f in dist/*.zip; do
