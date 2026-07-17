@@ -18,7 +18,9 @@ SELECT count(*) FROM ap_outbox WHERE type = 'Note';
 -- Excludes featured-streams (Owncast-server) follows so they don't show up in
 -- the public or admin followers list; they are tracked as a directory
 -- relationship, not surfaced as followers.
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1 ORDER BY created_at DESC LIMIT ? OFFSET ?;
+-- rowid breaks created_at ties (second resolution) so pagination order is
+-- deterministic; without it, same-second follows shift between pages.
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1 ORDER BY created_at DESC, rowid DESC LIMIT ? OFFSET ?;
 
 -- name: GetRejectedAndBlockedFollowers :many
 SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null;
