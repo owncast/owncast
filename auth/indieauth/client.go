@@ -22,15 +22,15 @@ func (s *Service) StartAuthFlow(authHost, userID, accessToken, displayName strin
 		return nil, errors.New("Please try again later. Too many pending requests.")
 	}
 
-	// Reject any requests to our internal network or loopback
-	if utils.IsHostnameInternal(authHost) {
-		return nil, errors.New("unable to use provided host")
-	}
-
-	// Santity check the server URL
+	// Sanity check the server URL.
 	u, err := url.ParseRequestURI(authHost)
 	if err != nil {
 		return nil, errors.New("unable to parse server URL")
+	}
+
+	// Reject any requests to our internal network or loopback.
+	if utils.IsHostnameInternal(u.Hostname()) {
+		return nil, errors.New("unable to use provided host")
 	}
 
 	// Limit to only secured connections
@@ -68,11 +68,9 @@ func (s *Service) HandleCallbackCode(code, state string) (*Request, *Response, e
 	data.Set("redirect_uri", request.Callback.String())
 	data.Set("code_verifier", request.CodeVerifier)
 
-	// Do not support redirects.
-	client := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
+	client := utils.GetFederationHTTPClient()
+	client.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+		return http.ErrUseLastResponse
 	}
 
 	r, err := http.NewRequest("POST", request.Endpoint.String(), strings.NewReader(data.Encode())) // URL-encoded payload
