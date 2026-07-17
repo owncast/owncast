@@ -67,6 +67,10 @@ module.exports = defineConfig({
 			return config;
 		},
 	},
+	// Off by default so local runs stay fast; CI enables recording through
+	// cypress's native env override (CYPRESS_VIDEO=true in the workflow).
+	// run.sh gives each group its own videosFolder so desktop and mobile
+	// runs of the same specs don't overwrite each other.
 	video: false,
 	retries: 3,
 });

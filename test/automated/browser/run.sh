@@ -80,21 +80,28 @@ FAILED_GROUPS=()
 # Run one cypress group. Cloud recording (and the flags that require it) is
 # CI-only: local runs stay fast and work offline. A failing group is recorded
 # and the run continues, so a single run surfaces every broken group.
-#   run_cypress <group> <tags-env> <spec-glob> [extra cypress args...]
+# Extra config is merged into one --config flag because cypress honors only
+# the last --config it sees; videosFolder is per group so desktop and mobile
+# runs of the same specs don't overwrite each other's recordings.
+#   run_cypress <group> <tags-env> <spec-glob> [extra config key=value,...]
 run_cypress() {
-	local group=$1 tags=$2 spec=$3
-	shift 3
+	local group=$1 tags=$2 spec=$3 extra_config="${4:-}"
 
 	if [ -n "$GROUP_FILTER" ] && [ "$group" != "$GROUP_FILTER" ]; then
 		return 0
 	fi
 
-	local args=(--browser "$BROWSER" --env "tags=$tags" --spec "$spec")
+	local config="videosFolder=cypress/videos/$group"
+	if [ -n "$extra_config" ]; then
+		config="$config,$extra_config"
+	fi
+
+	local args=(--browser "$BROWSER" --env "tags=$tags" --spec "$spec" --config "$config")
 	if [ -n "${CI:-}" ]; then
 		args+=(--record --key "$CYPRESS_RECORD_KEY" --parallel --ci-build-id "$BUILD_ID" --group "$group" --tag "${group/-/,}")
 	fi
 
-	if ! npx cypress run "${args[@]}" "$@"; then
+	if ! npx cypress run "${args[@]}"; then
 		FAILED_GROUPS+=("$group")
 	fi
 }
@@ -116,7 +123,7 @@ start_owncast
 rm -f cypress/results/failures.json cypress/results/flaky.json
 
 run_cypress "desktop-offline" desktop "cypress/e2e/offline/*.cy.js"
-run_cypress "mobile-offline" mobile "cypress/e2e/offline/*.cy.js" --config viewportWidth=375,viewportHeight=667
+run_cypress "mobile-offline" mobile "cypress/e2e/offline/*.cy.js" viewportWidth=375,viewportHeight=667
 
 # Admin UI tests: desktop-only smoke coverage of the Ant Design-heavy admin
 # interface. Real federation protocol tests live in test/automated/activitypub/.
@@ -125,7 +132,7 @@ run_cypress "desktop-admin" desktop "cypress/e2e/admin/*.cy.js"
 start_stream
 
 run_cypress "desktop-online" desktop "cypress/e2e/online/*.cy.js"
-run_cypress "mobile-online" mobile "cypress/e2e/online/*.cy.js" --config viewportWidth=375,viewportHeight=667
+run_cypress "mobile-online" mobile "cypress/e2e/online/*.cy.js" viewportWidth=375,viewportHeight=667
 
 # Full end-to-end federation flows (fediverse chat auth, inbound follows)
 # against the fake remote fediverse server. Runs while the stream is live so

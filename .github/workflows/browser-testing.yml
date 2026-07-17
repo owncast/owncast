@@ -70,6 +70,10 @@ jobs:
     needs: changes
     if: needs.changes.outputs.testable_any_changed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # The video comment step below creates/updates a PR comment.
+      pull-requests: write
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
@@ -119,6 +123,9 @@ jobs:
           # Authenticates github.com downloads in tools.sh (ffmpeg) to avoid
           # the anonymous, shared-per-IP rate limit on CI runners.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Record videos of every spec via cypress's native env override
+          # (CI-only; local runs stay fast).
+          CYPRESS_VIDEO: 'true'
         with:
           timeout_minutes: 20
           max_attempts: 3
@@ -164,3 +171,41 @@ jobs:
             test/automated/*/results/*.json
             test/automated/browser/cypress/results/**
             test/automated/browser/cypress/screenshots/**
+
+      # Videos are a separate artifact from the evidence bundle: they are
+      # much larger, so they get a shorter retention, and the PR comment
+      # below links this artifact directly.
+      - name: Upload UI test videos
+        id: video-upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-videos
+          if-no-files-found: ignore
+          retention-days: 14
+          path: test/automated/browser/cypress/videos/**
+
+      # Keep one sticky comment on the PR pointing at the latest desktop and
+      # mobile UI test recordings. Same-repo PRs only: fork PRs run with a
+      # read-only token that cannot comment.
+      - name: Link UI test videos on the PR
+        if: >-
+          always() &&
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          steps.video-upload.outputs.artifact-url != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          ARTIFACT_URL: ${{ steps.video-upload.outputs.artifact-url }}
+        run: |
+          MARKER='<!-- e2e-ui-test-videos -->'
+          BODY="$(printf '%s\n## E2E UI test videos\n\nDesktop and mobile Cypress recordings for %s: [download the videos artifact](%s) (14-day retention).\n\nRecorded runs with per-test playback: [Cypress Cloud](https://cloud.cypress.io/projects/wwi3xe/runs)\n' "$MARKER" "$HEAD_SHA" "$ARTIFACT_URL")"
+          existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
+            --jq "[.[] | select(.body | startswith(\"$MARKER\")) | .id][0] // empty")
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -f body="$BODY" >/dev/null
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" -f body="$BODY" >/dev/null
+          fi
