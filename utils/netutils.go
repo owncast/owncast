@@ -31,7 +31,6 @@ var nonPublicIPPrefixes = []netip.Prefix{
 	netip.MustParsePrefix("203.0.113.0/24"),
 	netip.MustParsePrefix("224.0.0.0/4"),
 	netip.MustParsePrefix("240.0.0.0/4"),
-	netip.MustParsePrefix("64:ff9b::/96"),
 	netip.MustParsePrefix("64:ff9b:1::/48"),
 	netip.MustParsePrefix("100::/64"),
 	netip.MustParsePrefix("2001::/23"),
@@ -52,7 +51,9 @@ func AllowInternalFederation() bool {
 }
 
 // IsHostnameInternal will attempt to determine if the hostname is internal to
-// this server's network or is the loopback address.
+// this server's network or is the loopback address. A hostname is internal
+// when it has no publicly routable addresses at all; the restricted dialer
+// connects only to the public subset.
 // Returns false if OWNCAST_ALLOW_INTERNAL_FEDERATION is set to "true".
 func IsHostnameInternal(hostname string) bool {
 	return isHostnameInternal(hostname, AllowInternalFederation())
@@ -73,14 +74,28 @@ func isHostnameInternal(hostname string, allowInternal bool) bool {
 		return true
 	}
 
+	return len(publicIPAddresses(ips)) == 0
+}
+
+// publicIPAddresses returns the subset of resolved addresses that are
+// publicly routable.
+func publicIPAddresses(ips []net.IPAddr) []net.IPAddr {
+	public := make([]net.IPAddr, 0, len(ips))
 	for _, ip := range ips {
-		if isIPAddressInternal(ip.IP) {
-			return true
+		if !isIPAddressInternal(ip.IP) {
+			public = append(public, ip)
 		}
 	}
-
-	return false
+	return public
 }
+
+// nat64WellKnownPrefix (64:ff9b::/96, RFC 6052) is how DNS64 represents
+// IPv4-only hosts to IPv6-only networks. The embedded IPv4 address is
+// validated instead of blocking the prefix, so NAT64 deployments can still
+// federate. The local-use prefix 64:ff9b:1::/48 stays blocked above because
+// its translator prefix length is unknowable, so the embedded address
+// cannot be extracted reliably.
+var nat64WellKnownPrefix = netip.MustParsePrefix("64:ff9b::/96")
 
 func isIPAddressInternal(ip net.IP) bool {
 	addr, ok := netip.AddrFromSlice(ip)
@@ -88,6 +103,10 @@ func isIPAddressInternal(ip net.IP) bool {
 		return true
 	}
 	addr = addr.Unmap()
+	if nat64WellKnownPrefix.Contains(addr) {
+		b := addr.As16()
+		addr = netip.AddrFrom4([4]byte(b[12:16]))
+	}
 	if !addr.IsGlobalUnicast() {
 		return true
 	}

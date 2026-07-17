@@ -96,16 +96,20 @@ func (d *restrictedDialer) DialContext(ctx context.Context, network, address str
 		return nil, fmt.Errorf("outbound host %q resolved to no addresses", host)
 	}
 
-	for _, address := range addresses {
-		if !d.allowInternal && isIPAddressInternal(address.IP) {
-			return nil, fmt.Errorf("refusing to connect to non-public address %s for host %q", address.IP, host)
+	if !d.allowInternal {
+		public := publicIPAddresses(addresses)
+		if len(public) == 0 {
+			return nil, fmt.Errorf("refusing to connect to host %q: it resolves only to non-public addresses", host)
 		}
+		addresses = public
 	}
+	addresses = interleaveAddressFamilies(addresses)
 
 	var dialErrors []error
-	for _, address := range addresses {
-		dialAddress := net.JoinHostPort(address.IP.String(), port)
-		conn, err := d.dial(ctx, network, dialAddress)
+	for i, address := range addresses {
+		attemptCtx, cancel := attemptContext(ctx, len(addresses)-i)
+		conn, err := d.dial(attemptCtx, network, net.JoinHostPort(address.IP.String(), port))
+		cancel()
 		if err == nil {
 			return conn, nil
 		}
@@ -115,9 +119,53 @@ func (d *restrictedDialer) DialContext(ctx context.Context, network, address str
 	return nil, fmt.Errorf("unable to connect to outbound host %q: %w", host, errors.Join(dialErrors...))
 }
 
+// attemptContext splits the remaining deadline evenly across the remaining
+// dial attempts so one unreachable address cannot consume the entire
+// request budget.
+func attemptContext(ctx context.Context, attemptsLeft int) (context.Context, context.CancelFunc) {
+	deadline, ok := ctx.Deadline()
+	if !ok || attemptsLeft <= 1 {
+		return ctx, func() {}
+	}
+	return context.WithTimeout(ctx, time.Until(deadline)/time.Duration(attemptsLeft))
+}
+
+// interleaveAddressFamilies alternates address families, keeping the
+// resolver's preferred family first, so a broken path for one family falls
+// back to the other on the next attempt instead of after every address of
+// the first family has timed out.
+func interleaveAddressFamilies(addresses []net.IPAddr) []net.IPAddr {
+	var v4, v6 []net.IPAddr
+	for _, address := range addresses {
+		if address.IP.To4() != nil {
+			v4 = append(v4, address)
+		} else {
+			v6 = append(v6, address)
+		}
+	}
+	if len(v4) == 0 || len(v6) == 0 {
+		return addresses
+	}
+	first, second := v6, v4
+	if addresses[0].IP.To4() != nil {
+		first, second = v4, v6
+	}
+	interleaved := make([]net.IPAddr, 0, len(addresses))
+	for i := 0; i < len(first) || i < len(second); i++ {
+		if i < len(first) {
+			interleaved = append(interleaved, first[i])
+		}
+		if i < len(second) {
+			interleaved = append(interleaved, second[i])
+		}
+	}
+	return interleaved
+}
+
 func newOutboundHTTPClient(allowInternal bool) *http.Client {
 	transport := GetHTTPTransportWithTLS(&http.Transport{
 		DialContext:         newRestrictedDialer(allowInternal).DialContext,
+		ForceAttemptHTTP2:   true,
 		MaxIdleConns:        20,
 		MaxIdleConnsPerHost: 2,
 		IdleConnTimeout:     10 * time.Second,
