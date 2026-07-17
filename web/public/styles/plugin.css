@@ -88,7 +88,9 @@
   --theme-color-components-primary-button-text-disabled: var(
     --theme-color-palette-10
   ); /** Neutral gray light */
-  --theme-color-components-primary-button-border: var(--theme-color-action); /** Light secondary */
+  --theme-color-components-primary-button-border: var(
+    --theme-color-action
+  ); /** Text link/secondary light text */
   --theme-color-components-primary-button-border-disabled: var(
     --theme-color-action-disabled
   ); /** Disabled background */
@@ -108,7 +110,7 @@
   --theme-color-components-secondary-button-border-disabled: var(
     --theme-color-action-disabled
   ); /** Disabled background */
-  --theme-color-components-chat-background: var(--theme-color-palette-1); /** Dark primary */
+  --theme-color-components-chat-background: var(--theme-color-palette-1); /** Dark secondary */
   --theme-color-components-chat-text: var(--theme-color-palette-15); /** Lighter background */
   --theme-color-components-content-background: var(
     --theme-color-palette-15

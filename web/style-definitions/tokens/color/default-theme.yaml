@@ -154,7 +154,7 @@ theme:
           comment: 'Neutral gray light'
         border:
           value: 'var(--theme-color-action)'
-          comment: 'Light secondary'
+          comment: 'Text link/secondary light text'
         border-disabled:
           value: 'var(--theme-color-action-disabled)'
           comment: 'Disabled background'
@@ -181,7 +181,7 @@ theme:
       chat:
         background:
           value: 'var(--theme-color-palette-1)'
-          comment: 'Dark primary'
+          comment: 'Dark secondary'
         text:
           value: 'var(--theme-color-palette-15)'
           comment: 'Lighter background'
