@@ -21,7 +21,7 @@
     "stylelint:changed": "files=$(git diff --name-only origin/develop... | grep '^web/.*\\.s\\?css$' | grep -vE '^web/(public/styles/plugin.css|styles/variables.css)$' | sed 's|^web/||'); [ -z \"$files\" ] || echo \"$files\" | xargs stylelint --fix",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd -",
+    "build-styles": "cd ./style-definitions && style-dictionary build && ./build.sh && cd - && npm run antd:extract",
     "test": "jest",
     "licenses": "node ../build/generate-licenses.mjs",
     "format": "prettier --write **/*.{js,ts,jsx,tsx,css,md,scss}",
