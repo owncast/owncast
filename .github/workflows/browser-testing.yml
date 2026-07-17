@@ -219,8 +219,18 @@ jobs:
           PREFIX="ci/browser-test-videos/pr-$PR_NUMBER"
           aws s3 rm "s3://$S3_BUCKET/$PREFIX" --recursive --endpoint-url "$S3_ENDPOINT" --quiet || true
           mkdir -p results
+          # tools.sh downloads a static ffmpeg next to the suites; fall back
+          # to a PATH ffmpeg if it is missing.
+          FFMPEG="../../ffmpeg"
+          command -v "$FFMPEG" >/dev/null || FFMPEG=ffmpeg
           group=""
           find videos -name '*.mp4' | sort | while read -r f; do
+            # Cypress writes the mp4 index (moov atom) at the end of the
+            # file, so browsers streaming from a URL stop early or report a
+            # wrong duration. Remux (stream copy) to move it to the front.
+            if command -v "$FFMPEG" >/dev/null; then
+              "$FFMPEG" -v error -y -i "$f" -c copy -movflags +faststart "$f.fast" && mv "$f.fast" "$f"
+            fi
             key="$PREFIX/${f#videos/}"
             aws s3 cp "$f" "s3://$S3_BUCKET/$key" --endpoint-url "$S3_ENDPOINT" \
               --acl public-read --content-type video/mp4 --no-progress >&2
