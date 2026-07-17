@@ -83,7 +83,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install Google Chrome
-        run: sudo apt-get update && sudo apt-get install google-chrome-stable
+        run: sudo apt-get update && sudo apt-get install -y google-chrome-stable
 
       - name: Install dependencies
         run: npm install
