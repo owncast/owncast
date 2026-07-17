@@ -1,0 +1,181 @@
+# This workflow posts before/after screenshots of Storybook stories
+# affected by a pull request.
+# Triggers:
+#   - Same-repo PRs touching web components, stories, or styles
+# How it works:
+#   - Builds Storybook from the PR branch
+#   - Maps changed files to their co-located stories via the build's
+#     index.json (see web/.storybook/tools/screenshot-changed-stories.mjs)
+#   - Screenshots each affected story from the published develop Storybook
+#     (https://ui.owncast.online, "before") and the local build ("after")
+#   - Uploads the PNGs to the repo's S3 storage and keeps one sticky PR
+#     comment with the side-by-side images (same pattern as the browser
+#     test videos in browser-testing.yml)
+
+name: Storybook Screenshots
+
+on:
+  pull_request:
+    paths:
+      - 'web/components/**'
+      - 'web/stories/**'
+      - 'web/.storybook/**'
+      - 'web/**/*.css'
+      - 'web/**/*.scss'
+      - 'web/i18n/**'
+      - '.github/workflows/storybook-screenshots.yml'
+
+jobs:
+  storybook-screenshots:
+    runs-on: ubuntu-latest
+    # Needs repo secrets (S3) and a token that can comment; fork PRs have
+    # neither. Renovate PRs are excluded like in chromatic.yml.
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login != 'renovate[bot]' &&
+      github.event.pull_request.user.login != 'renovate'
+    permissions:
+      contents: read
+      # The screenshot comment step below creates/updates a PR comment.
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: ./web
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
+      - name: Check out pull request code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+
+      - name: Fetch base branch for comparison
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v47
+        with:
+          path: 'web'
+          files_yaml: |
+            src:
+              - '**/*'
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24.12.0'
+
+      - name: Cache node modules
+        uses: actions/cache@v6
+        env:
+          cache-name: cache-node-modules-storybook-screenshots
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('web/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Capture before/after screenshots
+        id: capture
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.src_all_changed_files }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          python3 -m http.server 6006 --directory storybook-static >/dev/null 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          for _ in $(seq 1 50); do
+            curl -sf http://127.0.0.1:6006/index.json >/dev/null && break
+            sleep 0.2
+          done
+          export STATIC_URL=http://127.0.0.1:6006
+          export PUBLIC_BASE_URL="$S3_ENDPOINT/$S3_BUCKET/ci/storybook-screenshots/pr-$PR_NUMBER"
+          node .storybook/tools/screenshot-changed-stories.mjs
+
+      # Publish the PNGs as public URLs from the repo's S3 storage (same
+      # bucket the browser-test videos use). Per-PR prefix is wiped first,
+      # so a PR only ever holds its latest run's screenshots.
+      - name: Publish screenshots
+        id: publish
+        if: steps.capture.outputs.stories != '0'
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET: ${{ secrets.S3_SECRET }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -z "$S3_BUCKET" ] || [ -z "$S3_ENDPOINT" ]; then
+            echo "No S3 storage configured; skipping screenshot publishing."
+            exit 0
+          fi
+          export AWS_ACCESS_KEY_ID="$S3_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$S3_SECRET"
+          export AWS_DEFAULT_REGION="${S3_REGION:-us-east-1}"
+          PREFIX="ci/storybook-screenshots/pr-$PR_NUMBER"
+          aws s3 rm "s3://$S3_BUCKET/$PREFIX" --recursive --endpoint-url "$S3_ENDPOINT" --quiet || true
+          aws s3 cp screenshot-diff/img "s3://$S3_BUCKET/$PREFIX" --recursive \
+            --acl public-read --content-type image/png --no-progress \
+            --endpoint-url "$S3_ENDPOINT"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
+      # Keep one sticky comment on the PR with the before/after images
+      # (created once, updated in place). When a later push no longer maps
+      # to any story, an existing comment is updated to say so instead of
+      # lingering stale.
+      - name: Comment before/after on the PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          STORIES: ${{ steps.capture.outputs.stories }}
+          PUBLISHED: ${{ steps.publish.outputs.published }}
+        run: |
+          MARKER='<!-- storybook-before-after-screenshots -->'
+          existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
+            --jq "[.[] | select(.body | startswith(\"$MARKER\")) | .id][0] // empty")
+          if [ "${STORIES:-0}" = "0" ]; then
+            if [ -z "$existing" ]; then
+              echo "No affected stories and no existing comment; nothing to do."
+              exit 0
+            fi
+            {
+              echo "$MARKER"
+              echo "## Storybook before/after"
+              echo
+              echo "No Storybook stories map to the changes at $HEAD_SHA."
+            } > /tmp/screenshot-comment.md
+          else
+            if [ "$PUBLISHED" != "true" ]; then
+              echo "Screenshots were not published; skipping comment."
+              exit 0
+            fi
+            {
+              echo "$MARKER"
+              echo "## Storybook before/after"
+              echo
+              echo "Stories affected by this PR at $HEAD_SHA. Left: [develop](https://ui.owncast.online). Right: this PR."
+              echo
+              cat screenshot-diff/comment-body.md
+            } > /tmp/screenshot-comment.md
+          fi
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -F body=@/tmp/screenshot-comment.md >/dev/null
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" -F body=@/tmp/screenshot-comment.md >/dev/null
+          fi
