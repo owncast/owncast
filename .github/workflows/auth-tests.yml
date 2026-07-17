@@ -31,15 +31,14 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  tests:
+  # Detect relevant changes in a standalone job so the test job can be gated
+  # at the job level: a run with no relevant changes reports as "skipped"
+  # instead of a misleading "success".
+  changes:
     runs-on: ubuntu-latest
-
+    outputs:
+      src_any_changed: ${{ steps.changed-files-yaml.outputs.src_any_changed }}
     steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@v5
-        with:
-          concurrent_skipping: 'same_content_newer'
-
       - name: Check out pull request code
         uses: actions/checkout@v7
         if: github.event_name == 'pull_request'
@@ -67,8 +66,30 @@ jobs:
               - '**/*.{go,mod,sum}'
               - 'test/automated/auth/**'
 
+  tests:
+    needs: changes
+    if: needs.changes.outputs.src_any_changed == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
+      - name: Check out pull request code
+        uses: actions/checkout@v7
+        if: github.event_name == 'pull_request'
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Check out repository code
+        uses: actions/checkout@v7
+        if: github.event_name == 'push'
+
       - uses: actions/setup-go@v6
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
           go-version: '1.26.5'
           cache: true
@@ -77,7 +98,6 @@ jobs:
       # (node-oidc-provider) both require a recent Node; the runner default may
       # be older, so pin it.
       - uses: actions/setup-node@v6
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
           node-version: '24'
 
@@ -94,9 +114,30 @@ jobs:
             ${{ runner.os }}-
 
       - name: Auth gate tests (shared-password + OAuth)
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        id: tests
         uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
           max_attempts: 3
           command: cd test/automated/auth && ./run.sh
+
+      # Passing only after a retry is a flake, not a pass: make it visible.
+      - name: Report flaky retries
+        if: steps.tests.outputs.total_attempts > 1
+        run: |
+          MSG="Auth gate tests passed only on attempt ${{ steps.tests.outputs.total_attempts }}"
+          echo "::warning title=Flaky test suite::$MSG"
+          echo ":warning: $MSG" >> "$GITHUB_STEP_SUMMARY"
+
+      # Preserve test evidence (server logs/DBs, coverage, machine-readable
+      # results) even when a failed test step halts the job.
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auth-test-evidence
+          if-no-files-found: ignore
+          path: |
+            test/automated/*/test-artifacts/**
+            test/automated/*/e2e-coverage/**
+            test/automated/*/results/*.json

@@ -3979,9 +3979,9 @@ components:
         serverTime:
           type: string
         lastConnectTime:
-          type: string
+          type: ['string', 'null']
         lastDisconnectTime:
-          type: string
+          type: ['string', 'null']
         versionNumber:
           type: string
         viewerCount:
@@ -4552,7 +4552,9 @@ components:
           type: string
           format: date-time
         geo:
-          $ref: '#/components/schemas/GeoDetails'
+          anyOf:
+            - $ref: '#/components/schemas/GeoDetails'
+            - type: 'null'
         userAgent:
           type: string
         ipAddress:
@@ -4592,7 +4594,9 @@ components:
         user:
           $ref: '#/components/schemas/User'
         geo:
-          $ref: '#/components/schemas/GeoDetails'
+          anyOf:
+            - $ref: '#/components/schemas/GeoDetails'
+            - type: 'null'
         userAgent:
           type: string
         messageCount:
@@ -4618,7 +4622,7 @@ components:
           type: string
           format: date-time
         lastUsed:
-          type: string
+          type: ['string', 'null']
           format: date-time
         url:
           type: string
@@ -4733,7 +4737,9 @@ components:
         currentBroadcast:
           $ref: '#/components/schemas/CurrentBroadcast'
         health:
-          $ref: '#/components/schemas/StreamHealthOverview'
+          anyOf:
+            - $ref: '#/components/schemas/StreamHealthOverview'
+            - type: 'null'
         streamTitle:
           type: string
         versionNumber:

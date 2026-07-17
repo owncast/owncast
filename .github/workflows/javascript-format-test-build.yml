@@ -6,8 +6,9 @@
 #   - Static/generated files
 # Jobs:
 #   1. formatting: ESLint and Prettier formatting
-#   2. unused-code: Knip checks for unused code and dependencies
-#   3. web-bundle: Builds and bundles the web app (only on develop branch)
+#   2. unused-code: Knip checks for unused code and dependencies, plus jest tests
+#   3. typecheck: TypeScript type check (tsc --noEmit)
+#   4. web-bundle: Builds and bundles the web app (only on develop branch)
 # Note: Auto-fixes and commits formatting issues on push events
 
 name: Javascript
@@ -194,6 +195,58 @@ jobs:
       - name: Run tests
         working-directory: ./web
         run: npm test
+
+  typecheck:
+    name: TypeScript type check
+    if: github.actor != 'renovate[bot]' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+          cancel_others: 'true'
+          skip_after_successful_duplicate: 'true'
+
+      - name: Check out pull request code
+        uses: actions/checkout@v7
+        if: github.event_name == 'pull_request'
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Check out repository code
+        uses: actions/checkout@v7
+        if: github.event_name == 'push'
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.12.0'
+
+      - name: Cache node modules
+        uses: actions/cache@v6
+        env:
+          cache-name: cache-node-modules-bundle-web-app
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('web/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install Dependencies
+        run: npm install
+
+      # tsc checks the whole project, so no changed-files gating: the
+      # workflow's trigger paths already restrict runs to web/ changes.
+      - name: Type check
+        run: npm run typecheck
 
   # After any formatting and linting is complete we can run the build
   # and bundle step. This both will verify that the build is successful as
