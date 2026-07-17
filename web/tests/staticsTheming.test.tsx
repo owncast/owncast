@@ -33,16 +33,17 @@ const ApplyTheme: React.FC<{ apply: boolean }> = ({ apply }) => {
 };
 
 // The css variable VALUES for a component land in a style rule keyed by the
-// scope class its provider assigns (the stable cssVar key from
-// antd-default-theme.json), so the message holder's rule is identifiable.
-const messageHolderCss = () => {
+// scope class its provider assigns: the stable cssVar key from
+// antd-default-theme.json for the default theme, and a distinct "-custom"
+// key once appearance customizations exist (so the pre-extracted default
+// values in antd.css cannot win the cascade over the customized ones).
+const messageHolderCss = (expectedKey: string) => {
   const holder = document.querySelector('.ant-message');
   expect(holder).not.toBeNull();
-  const varClass = antdDefaultTheme.cssVar.key;
-  expect(holder.classList).toContain(varClass);
+  expect(holder.classList).toContain(expectedKey);
   return Array.from(document.querySelectorAll('style'))
     .map(s => s.textContent || '')
-    .filter(cssText => cssText.includes(`.${varClass}`))
+    .filter(cssText => cssText.includes(`.${expectedKey}`))
     .join('\n');
 };
 
@@ -62,7 +63,7 @@ describe('static API theming', () => {
     await act(async () => {
       message.open({ content: 'before theme change' });
     });
-    expect(messageHolderCss()).not.toContain(ACTION_COLOR);
+    expect(messageHolderCss(antdDefaultTheme.cssVar.key)).not.toContain(ACTION_COLOR);
 
     // Admin changes the appearance.
     await act(async () => {
@@ -75,10 +76,11 @@ describe('static API theming', () => {
       );
     });
 
-    // A static opened after the change renders with the new primary color.
+    // A static opened after the change renders with the new primary color,
+    // under the customized scope key.
     await act(async () => {
       message.open({ content: 'after theme change' });
     });
-    expect(messageHolderCss()).toContain(ACTION_COLOR);
+    expect(messageHolderCss(`${antdDefaultTheme.cssVar.key}-custom`)).toContain(ACTION_COLOR);
   });
 });

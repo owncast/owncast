@@ -100,15 +100,27 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
     tabs.colorBorderSecondary = vars['theme-color-components-menu-item-focus-bg'];
   }
 
+  // Whether any admin appearance customization is in play. The pre-extracted
+  // antd.css bakes the DEFAULT token values under the stable cssVar key so
+  // the static export is fully styled at first paint. Those static value
+  // blocks have the same specificity as the runtime-injected ones, so a
+  // customized theme must live under a DIFFERENT scope key: otherwise the
+  // static defaults can win the cascade and admin theming silently reverts
+  // to default (a stuck-purple primary button).
+  const hasCustomizations = Object.keys(vars).length > 0;
+
   return {
     token,
     components: { Modal: modal, Tabs: tabs, Dropdown: dropdown, Menu: menu },
-    // Stable css-var scope key. Without it antd derives the key from React
-    // useId, so the class baked into the static export (e.g. css-var-R16)
-    // never matches the selectors in the pre-extracted antd.css and
+    // Stable css-var scope key. Without an explicit key antd derives it from
+    // React useId, which differs between the extraction script, the Next
+    // build render, and the browser, so the class baked into the static
+    // export never matches the selectors in the pre-extracted antd.css and
     // var()-sized components (like the header Avatar) render unconstrained
     // until hydration injects the runtime values.
-    cssVar: defaultTheme.cssVar,
+    cssVar: hasCustomizations
+      ? { ...defaultTheme.cssVar, key: `${defaultTheme.cssVar.key}-custom` }
+      : defaultTheme.cssVar,
     // Component style RULES come from the pre-extracted styles/antd.css
     // (see build-scripts/extract-antd-styles.js); the runtime only injects
     // the CSS-variable VALUES derived from the tokens above, which is what
