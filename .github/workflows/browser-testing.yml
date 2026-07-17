@@ -236,8 +236,11 @@ jobs:
             # Cypress writes the mp4 index (moov atom) at the end of the
             # file, so browsers streaming from a URL stop early or report a
             # wrong duration. Remux (stream copy) to move it to the front.
+            # The temp name must keep the .mp4 suffix: ffmpeg infers the
+            # muxer from the extension and rejects anything else.
             if [ -n "$FFMPEG" ]; then
-              "$FFMPEG" -v error -y -i "$f" -c copy -movflags +faststart "$f.fast" && mv "$f.fast" "$f"
+              "$FFMPEG" -v error -y -i "$f" -c copy -movflags +faststart "${f%.mp4}.fast.mp4" &&
+                mv "${f%.mp4}.fast.mp4" "$f"
             fi
             key="$PREFIX/${f#videos/}"
             aws s3 cp "$f" "s3://$S3_BUCKET/$key" --endpoint-url "$S3_ENDPOINT" \
