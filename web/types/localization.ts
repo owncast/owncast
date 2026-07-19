@@ -505,6 +505,11 @@ export const Localization = {
       browseUnavailableRetry: 'Admin.Plugins.browseUnavailableRetry',
       browsePreviewAlt: 'Admin.Plugins.browsePreviewAlt',
       browseAuthor: 'Admin.Plugins.browseAuthor',
+      browseFilterPermissions: 'Admin.Plugins.browseFilterPermissions',
+      browseFilterAuthor: 'Admin.Plugins.browseFilterAuthor',
+      browseFilterCategory: 'Admin.Plugins.browseFilterCategory',
+      browseFilteredEmpty: 'Admin.Plugins.browseFilteredEmpty',
+      browseClearFilters: 'Admin.Plugins.browseClearFilters',
       updateAvailable: 'Admin.Plugins.updateAvailable',
       updateConfirmTitle: 'Admin.Plugins.updateConfirmTitle',
       updateConfirmOk: 'Admin.Plugins.updateConfirmOk',
@@ -547,6 +552,25 @@ export const Localization = {
       notFoundTitle: 'Admin.Plugins.notFoundTitle',
       notFoundDescription: 'Admin.Plugins.notFoundDescription',
       errorTitle: 'Admin.Plugins.errorTitle',
+      // Display names for the canonical plugin category taxonomy. Slugs
+      // mirror the registry's category list; keep in lock-step with the
+      // categoryNameKey map in BrowseRegistry.tsx.
+      Categories: {
+        chatBots: 'Admin.Plugins.Categories.chatBots',
+        chatFilters: 'Admin.Plugins.Categories.chatFilters',
+        moderation: 'Admin.Plugins.Categories.moderation',
+        authentication: 'Admin.Plugins.Categories.authentication',
+        themes: 'Admin.Plugins.Categories.themes',
+        overlays: 'Admin.Plugins.Categories.overlays',
+        notifications: 'Admin.Plugins.Categories.notifications',
+        integrations: 'Admin.Plugins.Categories.integrations',
+        video: 'Admin.Plugins.Categories.video',
+        analytics: 'Admin.Plugins.Categories.analytics',
+        games: 'Admin.Plugins.Categories.games',
+        adminUtilities: 'Admin.Plugins.Categories.adminUtilities',
+        examples: 'Admin.Plugins.Categories.examples',
+        other: 'Admin.Plugins.Categories.other',
+      },
       // Permission identifiers mirror services/plugins/hostfns.go; keep
       // the keys here in lock-step with those constants.
       Permissions: {

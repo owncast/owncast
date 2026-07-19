@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Alert, Button, Card, Empty, Space, Spin, Tag, Tooltip, Typography } from 'antd';
+import React, { useMemo, useState } from 'react';
+import { Alert, Button, Card, Empty, Select, Space, Spin, Tag, Tooltip, Typography } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { Localization } from '../../../types/localization';
 import { isPluginUpdateAvailable } from '../../../utils/apis';
@@ -18,6 +18,8 @@ const { Text, Paragraph } = Typography;
 // fields without breaking the page.
 export type RegistryManifest = {
   permissions?: string[];
+  // Canonical category slug (e.g. "chat-bots"); see categoryNameKey.
+  category?: string;
 };
 
 // One published plugin in the registry's browse payload. Mirrors the
@@ -38,6 +40,10 @@ export type RegistryPlugin = {
   // Optional public link for the author (personal site, GitHub
   // profile). When present the "by ..." line links to it.
   authorURL?: string;
+  // Canonical category slug from the taxonomy below. The registry
+  // surfaces it top-level (mirrored from the manifest) so the Browse
+  // tab can filter without digging into `latest`.
+  category?: string;
   latest?: {
     version: string;
     sizeBytes?: number;
@@ -48,6 +54,26 @@ export type RegistryPlugin = {
     manifest?: RegistryManifest;
   };
   versions?: { version: string }[];
+};
+
+// Canonical plugin category taxonomy (slug -> label i18n key). Keep in
+// lock-step with the registry's category list and
+// Localization.Admin.Plugins.Categories.
+const categoryNameKey: Record<string, string> = {
+  'chat-bots': Localization.Admin.Plugins.Categories.chatBots,
+  'chat-filters': Localization.Admin.Plugins.Categories.chatFilters,
+  moderation: Localization.Admin.Plugins.Categories.moderation,
+  authentication: Localization.Admin.Plugins.Categories.authentication,
+  themes: Localization.Admin.Plugins.Categories.themes,
+  overlays: Localization.Admin.Plugins.Categories.overlays,
+  notifications: Localization.Admin.Plugins.Categories.notifications,
+  integrations: Localization.Admin.Plugins.Categories.integrations,
+  video: Localization.Admin.Plugins.Categories.video,
+  analytics: Localization.Admin.Plugins.Categories.analytics,
+  games: Localization.Admin.Plugins.Categories.games,
+  'admin-utilities': Localization.Admin.Plugins.Categories.adminUtilities,
+  examples: Localization.Admin.Plugins.Categories.examples,
+  other: Localization.Admin.Plugins.Categories.other,
 };
 
 export type BrowseRegistryProps = {
@@ -91,6 +117,64 @@ export const BrowseRegistry = ({
   // Names whose install POST is in flight; per-card spinner state so
   // multiple installs don't lock the whole list.
   const [installing, setInstalling] = useState<Set<string>>(new Set());
+  // Client-side filters over the loaded registry payload. Options are
+  // derived from what's actually present so the controls never offer a
+  // choice that matches nothing.
+  const [permissionFilter, setPermissionFilter] = useState<string[]>([]);
+  const [authorFilter, setAuthorFilter] = useState<string>();
+  const [categoryFilter, setCategoryFilter] = useState<string>();
+
+  // Unknown slug falls back to the raw value so a newer registry
+  // doesn't render blank labels.
+  const categoryLabel = (slug: string) => (categoryNameKey[slug] ? t(categoryNameKey[slug]) : slug);
+
+  const permissionOptions = useMemo(() => {
+    const perms = new Set<string>();
+    registry.forEach(p => p.latest?.manifest?.permissions?.forEach(perm => perms.add(perm)));
+    return [...perms]
+      .map(perm => ({
+        value: perm,
+        label: permissionNameKey[perm] ? t(permissionNameKey[perm]) : perm,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [registry, t]);
+
+  const authorOptions = useMemo(() => {
+    const authors = new Set<string>();
+    registry.forEach(p => p.authorName && authors.add(p.authorName));
+    return [...authors].sort().map(name => ({ value: name, label: name }));
+  }, [registry]);
+
+  // Empty until the registry starts publishing categories; the whole
+  // category Select is hidden in that case.
+  const categoryOptions = useMemo(() => {
+    const categories = new Set<string>();
+    registry.forEach(p => p.category && categories.add(p.category));
+    return [...categories]
+      .map(slug => ({
+        value: slug,
+        label: categoryNameKey[slug] ? t(categoryNameKey[slug]) : slug,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [registry, t]);
+
+  const filteredRegistry = useMemo(
+    () =>
+      registry.filter(p => {
+        if (authorFilter && p.authorName !== authorFilter) return false;
+        if (categoryFilter && p.category !== categoryFilter) return false;
+        const perms = p.latest?.manifest?.permissions ?? [];
+        // A plugin matches when it declares ALL selected permissions.
+        return permissionFilter.every(perm => perms.includes(perm));
+      }),
+    [registry, permissionFilter, authorFilter, categoryFilter],
+  );
+
+  const clearFilters = () => {
+    setPermissionFilter([]);
+    setAuthorFilter(undefined);
+    setCategoryFilter(undefined);
+  };
 
   const triggerInstall = async (plugin: RegistryPlugin) => {
     if (!plugin.latest) return;
@@ -146,128 +230,184 @@ export const BrowseRegistry = ({
     return <Empty description={t(Localization.Admin.Plugins.browseEmpty)} />;
   }
 
+  const filterBar = (
+    <Space wrap className={s.filters}>
+      <Select
+        mode="multiple"
+        allowClear
+        className={s.filterSelect}
+        placeholder={t(Localization.Admin.Plugins.browseFilterPermissions)}
+        value={permissionFilter}
+        onChange={setPermissionFilter}
+        options={permissionOptions}
+      />
+      <Select
+        allowClear
+        className={s.filterSelect}
+        placeholder={t(Localization.Admin.Plugins.browseFilterAuthor)}
+        value={authorFilter}
+        onChange={setAuthorFilter}
+        options={authorOptions}
+      />
+      {categoryOptions.length > 0 && (
+        <Select
+          allowClear
+          className={s.filterSelect}
+          placeholder={t(Localization.Admin.Plugins.browseFilterCategory)}
+          value={categoryFilter}
+          onChange={setCategoryFilter}
+          options={categoryOptions}
+        />
+      )}
+    </Space>
+  );
+
+  // Filters excluded everything: keep the bar visible so the admin can
+  // adjust, and offer a one-click reset.
+  if (filteredRegistry.length === 0) {
+    return (
+      <>
+        {filterBar}
+        <Empty description={t(Localization.Admin.Plugins.browseFilteredEmpty)}>
+          <Button onClick={clearFilters}>{t(Localization.Admin.Plugins.browseClearFilters)}</Button>
+        </Empty>
+      </>
+    );
+  }
+
   return (
-    <Space direction="vertical" size="middle" className={s.list}>
-      {registry.map(plugin => {
-        const installedVersion = installedVersions.get(plugin.slug);
-        const latestVersion = plugin.latest?.version;
-        const isInstalled = installedVersion !== undefined;
-        const hasUpdate = isInstalled && isPluginUpdateAvailable(installedVersion, latestVersion);
+    <>
+      {filterBar}
+      <Space direction="vertical" size="middle" className={s.list}>
+        {filteredRegistry.map(plugin => {
+          const installedVersion = installedVersions.get(plugin.slug);
+          const latestVersion = plugin.latest?.version;
+          const isInstalled = installedVersion !== undefined;
+          const hasUpdate = isInstalled && isPluginUpdateAvailable(installedVersion, latestVersion);
 
-        let actionButton: React.ReactNode;
-        if (!plugin.latest) {
-          actionButton = <Button disabled>{t(Localization.Admin.Plugins.browseInstall)}</Button>;
-        } else if (hasUpdate) {
-          actionButton = (
-            <Button
-              type="primary"
-              loading={installing.has(plugin.slug)}
-              onClick={() => triggerInstall(plugin)}
-            >
-              {t(Localization.Admin.Plugins.browseUpdate, { version: latestVersion })}
-            </Button>
-          );
-        } else if (isInstalled) {
-          actionButton = <Button disabled>{t(Localization.Admin.Plugins.browseInstalled)}</Button>;
-        } else {
-          actionButton = (
-            <Button
-              type="primary"
-              loading={installing.has(plugin.slug)}
-              onClick={() => triggerInstall(plugin)}
-            >
-              {t(Localization.Admin.Plugins.browseInstall)}
-            </Button>
-          );
-        }
+          let actionButton: React.ReactNode;
+          if (!plugin.latest) {
+            actionButton = <Button disabled>{t(Localization.Admin.Plugins.browseInstall)}</Button>;
+          } else if (hasUpdate) {
+            actionButton = (
+              <Button
+                type="primary"
+                loading={installing.has(plugin.slug)}
+                onClick={() => triggerInstall(plugin)}
+              >
+                {t(Localization.Admin.Plugins.browseUpdate, { version: latestVersion })}
+              </Button>
+            );
+          } else if (isInstalled) {
+            actionButton = (
+              <Button disabled>{t(Localization.Admin.Plugins.browseInstalled)}</Button>
+            );
+          } else {
+            actionButton = (
+              <Button
+                type="primary"
+                loading={installing.has(plugin.slug)}
+                onClick={() => triggerInstall(plugin)}
+              >
+                {t(Localization.Admin.Plugins.browseInstall)}
+              </Button>
+            );
+          }
 
-        return (
-          <Card key={plugin.slug} size="small">
-            <div className={s.row}>
-              <div className={s.icon}>
-                {plugin.iconURL ? (
-                  <img src={plugin.iconURL} alt="" />
-                ) : (
-                  <PuzzlePiece className={s.iconFallback} />
-                )}
-              </div>
-              <div className={s.body}>
-                <div className={s.title}>
-                  <strong>{plugin.name}</strong>
-                  {plugin.latest && <Text type="secondary"> v{plugin.latest.version}</Text>}
-                  {plugin.latest?.sizeBytes ? (
-                    <Text type="secondary"> &middot; {readableBytes(plugin.latest.sizeBytes)}</Text>
-                  ) : null}
+          return (
+            <Card key={plugin.slug} size="small">
+              <div className={s.row}>
+                <div className={s.icon}>
+                  {plugin.iconURL ? (
+                    <img src={plugin.iconURL} alt="" />
+                  ) : (
+                    <PuzzlePiece className={s.iconFallback} />
+                  )}
                 </div>
-                {plugin.authorName &&
-                  (plugin.authorURL ? (
+                <div className={s.body}>
+                  <div className={s.title}>
+                    <strong>{plugin.name}</strong>
+                    {plugin.latest && <Text type="secondary"> v{plugin.latest.version}</Text>}
+                    {plugin.latest?.sizeBytes ? (
+                      <Text type="secondary">
+                        {' '}
+                        &middot; {readableBytes(plugin.latest.sizeBytes)}
+                      </Text>
+                    ) : null}
+                    {plugin.category && (
+                      <Tag className={s.categoryTag}>{categoryLabel(plugin.category)}</Tag>
+                    )}
+                  </div>
+                  {plugin.authorName &&
+                    (plugin.authorURL ? (
+                      <Typography.Link
+                        href={plugin.authorURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={s.author}
+                      >
+                        {t(Localization.Admin.Plugins.browseAuthor, { name: plugin.authorName })}
+                      </Typography.Link>
+                    ) : (
+                      <Text type="secondary" className={s.author}>
+                        {t(Localization.Admin.Plugins.browseAuthor, { name: plugin.authorName })}
+                      </Text>
+                    ))}
+                  {plugin.summary && <Paragraph className={s.summary}>{plugin.summary}</Paragraph>}
+                  {plugin.homepage && (
                     <Typography.Link
-                      href={plugin.authorURL}
+                      href={plugin.homepage}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={s.author}
+                      className={s.homepage}
                     >
-                      {t(Localization.Admin.Plugins.browseAuthor, { name: plugin.authorName })}
+                      {formatLinkHostname(plugin.homepage)}
                     </Typography.Link>
-                  ) : (
-                    <Text type="secondary" className={s.author}>
-                      {t(Localization.Admin.Plugins.browseAuthor, { name: plugin.authorName })}
-                    </Text>
-                  ))}
-                {plugin.summary && <Paragraph className={s.summary}>{plugin.summary}</Paragraph>}
-                {plugin.homepage && (
-                  <Typography.Link
-                    href={plugin.homepage}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={s.homepage}
-                  >
-                    {formatLinkHostname(plugin.homepage)}
-                  </Typography.Link>
-                )}
-                {plugin.previewURL && (
-                  <img
-                    className={s.preview}
-                    src={plugin.previewURL}
-                    alt={t(Localization.Admin.Plugins.browsePreviewAlt, { name: plugin.name })}
-                    loading="lazy"
-                  />
-                )}
-                {plugin.latest?.manifest?.permissions &&
-                  plugin.latest.manifest.permissions.length > 0 && (
-                    // Permissions the plugin's manifest declares, so the
-                    // admin sees the scope they'd be granting before
-                    // clicking Install. Each tag shows the short label;
-                    // the tooltip carries the full plain-language
-                    // description. Same maps as the Installed tab so the
-                    // copy stays in lock-step between views.
-                    <Space size={[4, 4]} wrap className={s.permissions}>
-                      {plugin.latest.manifest.permissions.map(perm => {
-                        const nameKey = permissionNameKey[perm];
-                        const descKey = permissionDescriptionKey[perm];
-                        const label = nameKey ? t(nameKey) : perm;
-                        const description = descKey ? t(descKey) : perm;
-                        return (
-                          <Tooltip key={perm} title={description}>
-                            <Tag>{label}</Tag>
-                          </Tooltip>
-                        );
-                      })}
+                  )}
+                  {plugin.previewURL && (
+                    <img
+                      className={s.preview}
+                      src={plugin.previewURL}
+                      alt={t(Localization.Admin.Plugins.browsePreviewAlt, { name: plugin.name })}
+                      loading="lazy"
+                    />
+                  )}
+                  {plugin.latest?.manifest?.permissions &&
+                    plugin.latest.manifest.permissions.length > 0 && (
+                      // Permissions the plugin's manifest declares, so the
+                      // admin sees the scope they'd be granting before
+                      // clicking Install. Each tag shows the short label;
+                      // the tooltip carries the full plain-language
+                      // description. Same maps as the Installed tab so the
+                      // copy stays in lock-step between views.
+                      <Space size={[4, 4]} wrap className={s.permissions}>
+                        {plugin.latest.manifest.permissions.map(perm => {
+                          const nameKey = permissionNameKey[perm];
+                          const descKey = permissionDescriptionKey[perm];
+                          const label = nameKey ? t(nameKey) : perm;
+                          const description = descKey ? t(descKey) : perm;
+                          return (
+                            <Tooltip key={perm} title={description}>
+                              <Tag>{label}</Tag>
+                            </Tooltip>
+                          );
+                        })}
+                      </Space>
+                    )}
+                  {plugin.tags && plugin.tags.length > 0 && (
+                    <Space size={[4, 4]} wrap>
+                      {plugin.tags.map(tag => (
+                        <Tag key={tag}>{tag}</Tag>
+                      ))}
                     </Space>
                   )}
-                {plugin.tags && plugin.tags.length > 0 && (
-                  <Space size={[4, 4]} wrap>
-                    {plugin.tags.map(tag => (
-                      <Tag key={tag}>{tag}</Tag>
-                    ))}
-                  </Space>
-                )}
+                </div>
+                <div className={s.actions}>{actionButton}</div>
               </div>
-              <div className={s.actions}>{actionButton}</div>
-            </div>
-          </Card>
-        );
-      })}
-    </Space>
+            </Card>
+          );
+        })}
+      </Space>
+    </>
   );
 };

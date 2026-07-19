@@ -12,6 +12,22 @@
   padding: 32px 0;
 }
 
+// Filter bar (permissions / author / category Selects) above the
+// plugin cards.
+.filters {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.filterSelect {
+  min-width: 200px;
+}
+
+// Category tag rendered in the card title line, after the version.
+.categoryTag {
+  margin-left: 8px;
+}
+
 .list {
   width: 100%;
 }

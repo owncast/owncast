@@ -186,6 +186,22 @@
 			"title": "News & Updates from Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Admin utilities",
+				"analytics": "Analytics & stats",
+				"authentication": "Authentication",
+				"chatBots": "Chat bots",
+				"chatFilters": "Chat filters",
+				"examples": "Examples",
+				"games": "Games & fun",
+				"integrations": "Integrations",
+				"moderation": "Moderation",
+				"notifications": "Notifications",
+				"other": "Other",
+				"overlays": "Overlays & widgets",
+				"themes": "Themes",
+				"video": "Video & streaming"
+			},
 			"PermissionNames": {
 				"authGate": "Gate viewer access",
 				"chatFilter": "Filter chat messages",
@@ -238,7 +254,12 @@
 			"approveButton": "Approve",
 			"approveTooltip": "Approve the expanded permission set and load the plugin.",
 			"browseAuthor": "by {{name}}",
+			"browseClearFilters": "Clear filters",
 			"browseEmpty": "No plugins are available in the registry yet.",
+			"browseFilterAuthor": "Filter by author",
+			"browseFilterCategory": "Filter by category",
+			"browseFilterPermissions": "Filter by permissions",
+			"browseFilteredEmpty": "No plugins match the current filters.",
 			"browseInstall": "Install",
 			"browseInstalled": "Installed",
 			"browsePreviewAlt": "{{name}} preview screenshot",
