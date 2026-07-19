@@ -156,6 +156,33 @@ describe('ClientConfigStore', () => {
     expect(store.get(currentUserAtom).displayName).toBe('rando');
   });
 
+  it('refreshes personalized page content after first-time registration when chat is disabled', async () => {
+    // Server-rendered hydration delivers the anonymous visitor's config, so
+    // the only API config fetch is the post-registration refresh that picks
+    // up viewer-personalized plugin content (e.g. a viewer gate's page
+    // content keyed to the new access token).
+    hydrationWindow.configHydration = JSON.stringify({
+      ...testConfig,
+      chatDisabled: true,
+      extraPageContent: '<p>visitor</p>',
+    });
+    hydrationWindow.statusHydration = JSON.stringify(makeEmptyServerStatus());
+    const services = makeServices();
+    services.configService.getConfig.mockResolvedValue({
+      ...testConfig,
+      chatDisabled: true,
+      extraPageContent: '<p>registered viewer</p>',
+    });
+    const store = renderStore(services);
+
+    await waitFor(() => {
+      expect(store.get(clientConfigStateAtom).extraPageContent).toBe('<p>registered viewer</p>');
+    });
+    expect(services.chatService.registerUser).toHaveBeenCalledTimes(1);
+    expect(services.configService.getConfig).toHaveBeenCalledTimes(1);
+    expect(localStorage.getItem('accessToken')).toBe('new-token');
+  });
+
   it('reuses a saved access token instead of re-registering', async () => {
     localStorage.setItem('accessToken', 'saved-token');
     const services = makeServices();
