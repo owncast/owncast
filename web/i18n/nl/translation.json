@@ -186,6 +186,22 @@
 			"title": "Nieuws en updates van Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Admin hulpprogramma's",
+				"analytics": "Analytics & statistieken",
+				"authentication": "Authenticatie",
+				"chatBots": "Chat bots",
+				"chatFilters": "Chat filters",
+				"examples": "Voorbeelden",
+				"games": "Spellen & leuk",
+				"integrations": "Integraties",
+				"moderation": "Moderatie",
+				"notifications": "Notificaties",
+				"other": "anders",
+				"overlays": "Overlays & widgets",
+				"themes": "Thema’s",
+				"video": "Video & streaming"
+			},
 			"PermissionNames": {
 				"authGate": "Toegang tot Gate viewer",
 				"chatFilter": "Filter chat berichten",
@@ -238,7 +254,12 @@
 			"approveButton": "Goedkeuren",
 			"approveTooltip": "Keur de uitgebreide permissie set goed en laad de plugin.",
 			"browseAuthor": "door {{name}}",
+			"browseClearFilters": "Filters wissen",
 			"browseEmpty": "Er zijn nog geen plug-ins in het register beschikbaar.",
+			"browseFilterAuthor": "Filteren op auteur",
+			"browseFilterCategory": "Filteren op categorie",
+			"browseFilterPermissions": "Filteren op machtigingen",
+			"browseFilteredEmpty": "Geen plugins gevonden met de huidige filters.",
 			"browseInstall": "Installeren",
 			"browseInstalled": "Geinstalleerd",
 			"browsePreviewAlt": "{{name}} voorbeeld schermafbeelding",

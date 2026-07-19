@@ -186,6 +186,22 @@
 			"title": "Owncastからのニュースと更新"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "管理者ユーティリティ",
+				"analytics": "分析と統計",
+				"authentication": "認証",
+				"chatBots": "チャットボット",
+				"chatFilters": "チャットフィルター",
+				"examples": "例",
+				"games": "ゲーム＆楽しい",
+				"integrations": "統合",
+				"moderation": "モデレーション",
+				"notifications": "通知",
+				"other": "その他",
+				"overlays": "オーバーレイとウィジェット",
+				"themes": "テーマ",
+				"video": "ビデオ＆ストリーミング"
+			},
 			"PermissionNames": {
 				"authGate": "ゲートビューアーアクセス",
 				"chatFilter": "チャットメッセージのフィルター",
@@ -238,7 +254,12 @@
 			"approveButton": "承認",
 			"approveTooltip": "拡張パーミッションセットを承認し、プラグインをロードします。",
 			"browseAuthor": "作成者： {{name}}",
+			"browseClearFilters": "フィルターをクリア",
 			"browseEmpty": "プラグインはまだレジストリにありません。",
+			"browseFilterAuthor": "投稿者でフィルター",
+			"browseFilterCategory": "カテゴリでフィルター",
+			"browseFilterPermissions": "権限でフィルター",
+			"browseFilteredEmpty": "現在のフィルタに一致するプラグインがありません。",
 			"browseInstall": "インストール",
 			"browseInstalled": "インストール済み",
 			"browsePreviewAlt": "{{name}} スクリーンショットのプレビュー",

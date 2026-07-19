@@ -186,6 +186,22 @@
 			"title": "Owncast-en albiste eta eguneraketak"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Administrazio utilitateak",
+				"analytics": "Analytics & estatistikak",
+				"authentication": "Autentifikazioa",
+				"chatBots": "Chat botak",
+				"chatFilters": "Chat iragazkiak",
+				"examples": "Adibideak",
+				"games": "Jokoak & dibertsioa",
+				"integrations": "Integraketak",
+				"moderation": "Moderazioa",
+				"notifications": "Jakinarazpenak",
+				"other": "Beste",
+				"overlays": "Gainekoak eta widgetak",
+				"themes": "Hegoak",
+				"video": "Bideoa eta streaming-a"
+			},
 			"PermissionNames": {
 				"authGate": "Sarrera atea ikusleen",
 				"chatFilter": "Iruzkin mezuak iragazteko",
@@ -238,7 +254,12 @@
 			"approveButton": "Onartu",
 			"approveTooltip": "Onartu baimen multzo zabalduta eta kargatu plugin.",
 			"browseAuthor": "{{name}} bidez",
+			"browseClearFilters": "Filterrak garbitu",
 			"browseEmpty": "Oraingoz, ez dago pluginik erregistroan.",
+			"browseFilterAuthor": "Idazlearen arabera iragazi",
+			"browseFilterCategory": "Kategorien arabera iragazi",
+			"browseFilterPermissions": "Baimenen arabera iragazi",
+			"browseFilteredEmpty": "Ez dago iragazkien irizpideekin bat datoz amen pluginik.",
 			"browseInstall": "Instalatu",
 			"browseInstalled": "Instalatuta",
 			"browsePreviewAlt": "{{name}} aurrebista irudi",

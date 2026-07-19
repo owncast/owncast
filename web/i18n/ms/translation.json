@@ -186,6 +186,22 @@
 			"title": "Berita & Kemas Kini dari Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Utiliti pentadbir",
+				"analytics": "Analitis & statistik",
+				"authentication": "Pengesahan",
+				"chatBots": "Bot sembang",
+				"chatFilters": "Penapis sembang",
+				"examples": "Contoh",
+				"games": "Permainan & keseronokan",
+				"integrations": "Integrasi",
+				"moderation": "Moderasi",
+				"notifications": "Pemberitahuan",
+				"other": "Lain-lain",
+				"overlays": "Overlay & widget",
+				"themes": "Tema",
+				"video": "Video & penstriman"
+			},
 			"PermissionNames": {
 				"authGate": "Akses penonton Gate",
 				"chatFilter": "Saring mesej sembang",
@@ -238,7 +254,12 @@
 			"approveButton": "Lulus",
 			"approveTooltip": "Lulus set kebenaran yang diperluaskan dan muat plugin.",
 			"browseAuthor": "oleh {{name}}",
+			"browseClearFilters": "Bersihkan penapis",
 			"browseEmpty": "Tiada plugin yang tersedia dalam pendaftaran lagi.",
+			"browseFilterAuthor": "Penapis mengikut pengarang",
+			"browseFilterCategory": "Penapis mengikut kategori",
+			"browseFilterPermissions": "Penapis mengikut kebenaran",
+			"browseFilteredEmpty": "Tiada plugin yang sepadan dengan penapis semasa.",
 			"browseInstall": "Pasang",
 			"browseInstalled": "Dipasang",
 			"browsePreviewAlt": "tangkap layar pratonton {{name}}",

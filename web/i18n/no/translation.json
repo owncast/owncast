@@ -186,6 +186,22 @@
 			"title": "Nyheter og oppdateringer fra Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Admin verktøy",
+				"analytics": "Analyser og statistikk",
+				"authentication": "Autentisering",
+				"chatBots": "Chat roboter",
+				"chatFilters": "Chat filtre",
+				"examples": "Eksempler",
+				"games": "Spill & moro",
+				"integrations": "Integrasjoner",
+				"moderation": "Moderering",
+				"notifications": "Varsler",
+				"other": "Annet",
+				"overlays": "Overlegg & widgets",
+				"themes": "Temaer",
+				"video": "Video & streaming"
+			},
 			"PermissionNames": {
 				"authGate": "Gi seertilgang",
 				"chatFilter": "Filtrer meldinger",
@@ -238,7 +254,12 @@
 			"approveButton": "Godkjenn",
 			"approveTooltip": "Godkjenn det utvidede tillatelsessettet og last inn utvidelsen.",
 			"browseAuthor": "av {{name}}",
+			"browseClearFilters": "Nullstill filtre",
 			"browseEmpty": "Ingen utvidelser er tilgjengelig i registeret ennå.",
+			"browseFilterAuthor": "Filtrer etter forfatter",
+			"browseFilterCategory": "Filtrer etter kategori",
+			"browseFilterPermissions": "Filtrer etter tillatelser",
+			"browseFilteredEmpty": "Ingen utvidelser samsvarer med gjeldende filtre.",
 			"browseInstall": "Installer",
 			"browseInstalled": "Installert",
 			"browsePreviewAlt": "{{name}} forhåndsvisningsbilde",
