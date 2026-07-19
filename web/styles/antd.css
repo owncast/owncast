@@ -5167,6 +5167,8 @@ span.ant-typography-ellipsis-single-line {
   }
 }
 .owncast.ant-modal-css-var {
+  --ant-color-icon: #e2e8f0;
+  --ant-color-icon-hover: #ffffff;
   --ant-modal-footer-bg: transparent;
   --ant-modal-header-bg: #2d3748;
   --ant-modal-title-line-height: 1.5;
@@ -5187,6 +5189,8 @@ span.ant-typography-ellipsis-single-line {
   --ant-modal-confirm-btns-margin-top: 24px;
 }
 .css-var-R11n.ant-css-var {
+  --ant-color-icon: #e2e8f0;
+  --ant-color-icon-hover: #ffffff;
   --ant-modal-footer-bg: transparent;
   --ant-modal-header-bg: #2d3748;
   --ant-modal-title-line-height: 1.5;
@@ -6051,6 +6055,8 @@ span.ant-typography-ellipsis-single-line {
   }
 }
 .css-var-R1hn.ant-css-var {
+  --ant-color-icon: #e2e8f0;
+  --ant-color-icon-hover: #ffffff;
   --ant-modal-footer-bg: transparent;
   --ant-modal-header-bg: #2d3748;
   --ant-modal-title-line-height: 1.5;

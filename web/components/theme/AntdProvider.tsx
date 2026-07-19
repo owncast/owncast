@@ -80,6 +80,10 @@ function buildTheme(appearanceVariables: Record<string, string>): ThemeConfig {
   }
   if (vars['theme-color-components-modal-header-text']) {
     modal.titleColor = vars['theme-color-components-modal-header-text'];
+    // The close (X) button inherits the global icon color, which is dark and
+    // invisible on the dark header; tie it to the header text color instead.
+    modal.colorIcon = vars['theme-color-components-modal-header-text'];
+    modal.colorIconHover = vars['theme-color-components-modal-header-text'];
   }
   if (vars['theme-color-components-modal-content-background']) {
     modal.contentBg = vars['theme-color-components-modal-content-background'];
