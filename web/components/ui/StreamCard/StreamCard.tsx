@@ -80,7 +80,7 @@ export const StreamCard: FC<StreamCardProps> = ({
         </div>
       </div>
       {streamDescription && (
-        <Paragraph ellipsis={{ rows: 3 }} className={styles.description}>
+        <Paragraph ellipsis={{ rows: 2 }} className={styles.description}>
           {streamDescription}
         </Paragraph>
       )}
@@ -108,7 +108,6 @@ export const StreamCard: FC<StreamCardProps> = ({
       onClick={onClick}
     >
       <Card
-        hoverable
         role="article"
         className={classNames(styles.streamCard, {
           [styles.online]: isOnline,

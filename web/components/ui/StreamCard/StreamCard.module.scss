@@ -1,21 +1,31 @@
 .cardLink {
   display: block;
+  height: 100%;
   color: inherit;
   text-decoration: none;
 }
 
 .streamCard {
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-color: rgb(0 0 0 / 30%);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 15px;
   overflow: hidden;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-  background: var(--theme-color-background-main);
-  border: 1px solid var(--theme-color-components-scrollbar-background);
+  transition: border-color 0.2s ease-in-out;
+  background-color: var(--theme-color-background-main);
+
+  // Let the body stretch so every card in a row is the same height
+  // regardless of how much text it holds.
+  :global(.ant-card-body) {
+    display: flex;
+    flex: 1;
+  }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+    border-color: var(--theme-text-link);
   }
 
   &.online {
@@ -80,7 +90,7 @@
     right: 12px;
     background: rgb(0 0 0 / 70%);
     padding: 4px 12px;
-    border-radius: 4px;
+    border-radius: 10px;
 
     :global(.ant-badge-status-dot) {
       width: 8px;
@@ -97,7 +107,10 @@
 }
 
 .cardContent {
-  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 10px;
 
   .serverInfo {
     display: flex;
@@ -106,10 +119,12 @@
     gap: 8px;
 
     .serverLogo {
-      width: 32px;
-      height: 32px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
+      border: 1px solid rgb(0 0 0 / 30%);
       object-fit: cover;
+      flex-shrink: 0;
     }
 
     .textInfo {
@@ -118,32 +133,35 @@
 
       .serverName {
         display: block;
-        font-size: 14px;
-        line-height: 1.4;
+        font-family: var(--theme-text-display-font-family);
+        font-weight: 600;
+        font-size: 1rem;
+        line-height: 1.2;
         color: var(--theme-color-components-text-on-light);
       }
 
       .serverHost {
         display: block;
-        font-size: 11px;
-        line-height: 1.4;
-        color: var(--theme-color-components-text-on-light-disabled);
+        font-size: 0.7rem;
+        line-height: 1.2;
+        color: var(--theme-color-components-text-on-light);
       }
 
       .streamTitle {
         display: block;
-        font-size: 12px;
+        font-size: 0.8rem;
         line-height: 1.4;
-        color: var(--theme-color-components-text-on-light-disabled);
+        color: var(--theme-color-components-text-on-light);
         margin-top: 2px;
       }
     }
   }
 
   .description {
-    font-size: 13px;
+    font-size: 0.8rem;
     line-height: 1.5;
-    color: var(--theme-color-components-text-on-light-disabled);
+    min-height: 2.4rem; // always reserve 2 lines so card heights match across rows
+    color: var(--theme-color-components-text-on-light);
     margin-bottom: 8px;
   }
 
@@ -151,6 +169,7 @@
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
+    margin-top: auto; // pin tags to the card bottom so short cards match tall ones
 
     .tag {
       margin: 0;
@@ -162,21 +181,6 @@
       border-radius: 10px;
       background: var(--theme-color-palette-10); // neutral slate gray
       color: var(--theme-color-components-text-on-dark); // light, readable on the gray
-    }
-  }
-}
-
-@media (width <= 768px) {
-  .streamCard {
-    .cardContent {
-      padding: 10px;
-
-      .serverInfo {
-        .serverLogo {
-          width: 28px;
-          height: 28px;
-        }
-      }
     }
   }
 }
