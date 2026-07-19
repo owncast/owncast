@@ -1235,8 +1235,8 @@ Web package: aria-query@5.3.0
   Declared license: Apache-2.0
   LICENSE: SHA256 c8df456c7ccba74b959087dff494d4ac2a12dfb0400c08b46b2494a08a000567
 
-Web package: autoprefixer@10.5.2
-  Source: https://registry.npmjs.org/autoprefixer/-/autoprefixer-10.5.2.tgz
+Web package: autoprefixer@10.5.4
+  Source: https://registry.npmjs.org/autoprefixer/-/autoprefixer-10.5.4.tgz
   Declared license: MIT
   LICENSE: SHA256 5be1f3465bba68a626777f984878814aaf35e7ef8e9fd314d469bcf887050fb8
 
@@ -1290,8 +1290,8 @@ Web package: brace-expansion@5.0.7
   Declared license: MIT
   LICENSE: SHA256 9c63a23124d68cd30cd316a94a1a0bca34f032786df6df69fc4b5f136bac8d2e
 
-Web package: browserslist@4.28.5
-  Source: https://registry.npmjs.org/browserslist/-/browserslist-4.28.5.tgz
+Web package: browserslist@4.28.6
+  Source: https://registry.npmjs.org/browserslist/-/browserslist-4.28.6.tgz
   Declared license: MIT
   LICENSE: SHA256 21c2679a63d7699c0e644409e2f17d0adbc7a965003feb06b3ff4b833d21f722
 
@@ -1315,8 +1315,8 @@ Web package: call-bound@1.0.4
   Declared license: MIT
   LICENSE: SHA256 5e325595b4ea8cfec3802f545b1def5d7b73e4a5b8e9ba63e32a320f67732292
 
-Web package: caniuse-lite@1.0.30001802
-  Source: https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001802.tgz
+Web package: caniuse-lite@1.0.30001806
+  Source: https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001806.tgz
   Declared license: CC-BY-4.0
   LICENSE: SHA256 fd3a263fe19ed8faa9068b43abaebafc02c77897b0c6fc09abc04bb592e5f16e
 
@@ -1540,8 +1540,8 @@ Web package: duplexer@0.1.2
   Declared license: MIT
   LICENCE: SHA256 d2e0216fde0e6b848ed5c692469e35bd12e28bd3b65ef1678962c61afdd4b2f2
 
-Web package: electron-to-chromium@1.5.387
-  Source: https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.387.tgz
+Web package: electron-to-chromium@1.5.392
+  Source: https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.392.tgz
   Declared license: ISC
   LICENSE: SHA256 25ba5c59dad3e0dd8f9540beaa0f0a86a10e3aec35af5fdc8e88c5f6a5c0d8c6
 
@@ -2160,8 +2160,8 @@ Web package: next@16.2.10
   Declared license: MIT
   license.md: SHA256 ee765244e2d59f5234d474f62e0766fa0c8b99af967fdd4c0cb8dcb0c76ea224
 
-Web package: node-releases@2.0.50
-  Source: https://registry.npmjs.org/node-releases/-/node-releases-2.0.50.tgz
+Web package: node-releases@2.0.51
+  Source: https://registry.npmjs.org/node-releases/-/node-releases-2.0.51.tgz
   Declared license: MIT
   LICENSE: SHA256 3706296ed611888111ceccc1dff4712844dea4bde0b185c82d718c3b69895abe
 
@@ -6358,7 +6358,7 @@ SOFTWARE.
 
 ================================================================================
 SHA256: 21c2679a63d7699c0e644409e2f17d0adbc7a965003feb06b3ff4b833d21f722
-Used by: Web package: browserslist@4.28.5 (LICENSE)
+Used by: Web package: browserslist@4.28.6 (LICENSE)
 --------------------------------------------------------------------------------
 The MIT License (MIT)
 
@@ -6638,7 +6638,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
 SHA256: 25ba5c59dad3e0dd8f9540beaa0f0a86a10e3aec35af5fdc8e88c5f6a5c0d8c6
-Used by: Web package: electron-to-chromium@1.5.387 (LICENSE)
+Used by: Web package: electron-to-chromium@1.5.392 (LICENSE)
 --------------------------------------------------------------------------------
 Copyright 2018 Kilian Valkhof
 
@@ -7251,7 +7251,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
 SHA256: 3706296ed611888111ceccc1dff4712844dea4bde0b185c82d718c3b69895abe
-Used by: Web package: node-releases@2.0.50 (LICENSE)
+Used by: Web package: node-releases@2.0.51 (LICENSE)
 --------------------------------------------------------------------------------
 The MIT License
 
@@ -9110,7 +9110,7 @@ THIS SOFTWARE.
 
 ================================================================================
 SHA256: 5be1f3465bba68a626777f984878814aaf35e7ef8e9fd314d469bcf887050fb8
-Used by: Web package: autoprefixer@10.5.2 (LICENSE)
+Used by: Web package: autoprefixer@10.5.4 (LICENSE)
 Used by: Web package: postcss@8.5.16 (LICENSE)
 --------------------------------------------------------------------------------
 The MIT License (MIT)
@@ -15919,7 +15919,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ================================================================================
 SHA256: fd3a263fe19ed8faa9068b43abaebafc02c77897b0c6fc09abc04bb592e5f16e
-Used by: Web package: caniuse-lite@1.0.30001802 (LICENSE)
+Used by: Web package: caniuse-lite@1.0.30001806 (LICENSE)
 --------------------------------------------------------------------------------
 Attribution 4.0 International
 
