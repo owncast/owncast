@@ -495,3 +495,147 @@ func TestHandleRegistryInstall_PersistsHomepageSidecar(t *testing.T) {
 		t.Errorf("sidecar homepage = %q, want %q", meta.Homepage, stubRegistryHomepage)
 	}
 }
+
+// TestHandleRegistryInstall_SamePermissionUpdateNeedsNoReEnable is the
+// regression test for the admin-facing re-enable prompt: updating an
+// installed, enabled, loaded plugin to a version that declares the SAME
+// permission set must come back from the install endpoint with
+// enabled=true and no pendingPermissions — the exact JSON fields the
+// admin frontend checks to decide whether to pop the enable/approve
+// modal (web/pages/admin/plugins.tsx installFromRegistry).
+func TestHandleRegistryInstall_SamePermissionUpdateNeedsNoReEnable(t *testing.T) {
+	manifest := func(version string) []byte {
+		// Permissions deliberately not in sorted order: Enable stores the
+		// approved baseline sorted, so an order-sensitive comparison would
+		// misreport these as pending.
+		return fmt.Appendf(nil, `{
+			"api": "1",
+			"name": "Perm Bot",
+			"slug": "perm-bot",
+			"version": %q,
+			"description": "same-permission update test",
+			"permissions": ["storage.kv", "chat.send"]
+		}`, version)
+	}
+	install := func(host *Host, version string) map[string]any {
+		t.Helper()
+		pkg := buildJSPackageBytes(t, manifest(version))
+		sum := sha256.Sum256(pkg)
+		upstream := newRegistryStub(t, "perm-bot", version, pkg, hex.EncodeToString(sum[:]))
+		withRegistryEnv(t, upstream.URL)
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPost, "/api/admin/plugin-registry/install",
+			strings.NewReader(fmt.Sprintf(`{"slug":"perm-bot","version":%q}`, version)))
+		host.handleRegistryInstall(rec, req)
+		if rec.Code != http.StatusOK {
+			t.Fatalf("install %s: status = %d, want 200 (body=%s)", version, rec.Code, rec.Body.String())
+		}
+		var body map[string]any
+		if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+			t.Fatalf("decode install %s response: %v", version, err)
+		}
+		return body
+	}
+
+	host := newTestHost(t)
+
+	// Fresh install is not enabled: the modal SHOULD show here.
+	body := install(host, "0.1.0")
+	if enabled, _ := body["enabled"].(bool); enabled {
+		t.Fatalf("fresh install must not be enabled, body=%v", body)
+	}
+	// Admin clicks Enable in the modal (same Manager op the enable
+	// action endpoint dispatches).
+	if err := host.manager.Enable(context.Background(), "perm-bot"); err != nil {
+		t.Fatalf("enable: %v", err)
+	}
+
+	// Update to v2 with an identical permission set: no prompt.
+	body = install(host, "0.2.0")
+	if enabled, _ := body["enabled"].(bool); !enabled {
+		t.Errorf("same-permission update must report enabled=true, body=%v", body)
+	}
+	if pending, ok := body["pendingPermissions"]; ok && pending != nil {
+		if list, isList := pending.([]any); !isList || len(list) > 0 {
+			t.Errorf("same-permission update must report no pendingPermissions, got %v", pending)
+		}
+	}
+	if loaded, _ := body["loaded"].(bool); !loaded {
+		t.Errorf("same-permission update must stay loaded, body=%v", body)
+	}
+	if v, _ := body["version"].(string); v != "0.2.0" {
+		t.Errorf("version after update = %q, want 0.2.0", v)
+	}
+}
+
+// TestHandleRegistryInstall_SamePermUpdateSurvivesRestart is the same
+// scenario across an Owncast restart, with the production
+// configEnabledStore persisting the enabled set and approved-permission
+// baseline in the datastore. If the baseline is lost in the
+// Save/Load round trip, the update reports every permission as pending
+// and the admin gets re-prompted to approve an unchanged set.
+func TestHandleRegistryInstall_SamePermUpdateSurvivesRestart(t *testing.T) {
+	ctx := context.Background()
+	dir := t.TempDir()
+	store := &configEnabledStore{datastore: newTestDatastore(t)}
+
+	manifest := func(version string) []byte {
+		return fmt.Appendf(nil, `{
+			"api": "1",
+			"name": "Perm Bot",
+			"slug": "perm-bot",
+			"version": %q,
+			"description": "restart persistence test",
+			"permissions": ["storage.kv", "chat.send"]
+		}`, version)
+	}
+	install := func(host *Host, version string) map[string]any {
+		t.Helper()
+		pkg := buildJSPackageBytes(t, manifest(version))
+		sum := sha256.Sum256(pkg)
+		upstream := newRegistryStub(t, "perm-bot", version, pkg, hex.EncodeToString(sum[:]))
+		withRegistryEnv(t, upstream.URL)
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPost, "/api/admin/plugin-registry/install",
+			strings.NewReader(fmt.Sprintf(`{"slug":"perm-bot","version":%q}`, version)))
+		host.handleRegistryInstall(rec, req)
+		if rec.Code != http.StatusOK {
+			t.Fatalf("install %s: status = %d, want 200 (body=%s)", version, rec.Code, rec.Body.String())
+		}
+		var body map[string]any
+		if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+			t.Fatalf("decode install %s response: %v", version, err)
+		}
+		return body
+	}
+
+	mgr1 := plugins.NewManagerWithStore(dir, &plugins.HostEnv{}, store)
+	if err := mgr1.Start(ctx); err != nil {
+		t.Fatalf("manager 1 start: %v", err)
+	}
+	install(&Host{manager: mgr1}, "0.1.0")
+	if err := mgr1.Enable(ctx, "perm-bot"); err != nil {
+		t.Fatalf("enable: %v", err)
+	}
+	mgr1.Stop(ctx)
+
+	// "Restart": a fresh manager over the same plugins dir + datastore.
+	mgr2 := plugins.NewManagerWithStore(dir, &plugins.HostEnv{}, store)
+	if err := mgr2.Start(ctx); err != nil {
+		t.Fatalf("manager 2 start: %v", err)
+	}
+	t.Cleanup(func() { mgr2.Stop(ctx) })
+
+	body := install(&Host{manager: mgr2}, "0.2.0")
+	if enabled, _ := body["enabled"].(bool); !enabled {
+		t.Errorf("post-restart same-permission update must report enabled=true, body=%v", body)
+	}
+	if pending, ok := body["pendingPermissions"]; ok && pending != nil {
+		if list, isList := pending.([]any); !isList || len(list) > 0 {
+			t.Errorf("post-restart same-permission update must report no pendingPermissions, got %v", pending)
+		}
+	}
+	if loaded, _ := body["loaded"].(bool); !loaded {
+		t.Errorf("post-restart same-permission update must stay loaded, body=%v", body)
+	}
+}
