@@ -41,8 +41,8 @@ export type RegistryPlugin = {
   // profile). When present the "by ..." line links to it.
   authorURL?: string;
   // Canonical category slug from the taxonomy below. The registry
-  // surfaces it top-level (mirrored from the manifest) so the Browse
-  // tab can filter without digging into `latest`.
+  // mirrors it top-level from the manifest; older registries only
+  // embed it inside latest.manifest, so read via pluginCategory().
   category?: string;
   latest?: {
     version: string;
@@ -75,6 +75,11 @@ const categoryNameKey: Record<string, string> = {
   examples: Localization.Admin.Plugins.Categories.examples,
   other: Localization.Admin.Plugins.Categories.other,
 };
+
+// A plugin's category, preferring the registry's top-level mirror and
+// falling back to the embedded manifest so catalogs from a registry
+// that predates the top-level field still filter.
+const pluginCategory = (p: RegistryPlugin) => p.category ?? p.latest?.manifest?.category;
 
 export type BrowseRegistryProps = {
   // Map of installed plugin slug -> currently-installed version, so
@@ -149,7 +154,10 @@ export const BrowseRegistry = ({
   // category Select is hidden in that case.
   const categoryOptions = useMemo(() => {
     const categories = new Set<string>();
-    registry.forEach(p => p.category && categories.add(p.category));
+    registry.forEach(p => {
+      const category = pluginCategory(p);
+      if (category) categories.add(category);
+    });
     return [...categories]
       .map(slug => ({
         value: slug,
@@ -162,7 +170,7 @@ export const BrowseRegistry = ({
     () =>
       registry.filter(p => {
         if (authorFilter && p.authorName !== authorFilter) return false;
-        if (categoryFilter && p.category !== categoryFilter) return false;
+        if (categoryFilter && pluginCategory(p) !== categoryFilter) return false;
         const perms = p.latest?.manifest?.permissions ?? [];
         // A plugin matches when it declares ALL selected permissions.
         return permissionFilter.every(perm => perms.includes(perm));
@@ -334,8 +342,8 @@ export const BrowseRegistry = ({
                         &middot; {readableBytes(plugin.latest.sizeBytes)}
                       </Text>
                     ) : null}
-                    {plugin.category && (
-                      <Tag className={s.categoryTag}>{categoryLabel(plugin.category)}</Tag>
+                    {pluginCategory(plugin) && (
+                      <Tag className={s.categoryTag}>{categoryLabel(pluginCategory(plugin))}</Tag>
                     )}
                   </div>
                   {plugin.authorName &&
