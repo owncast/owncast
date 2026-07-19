@@ -851,7 +851,6 @@ func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*Discovered
 	m.mu.RLock()
 	entry, ok := m.discovered[manifest.Slug]
 	enabled := m.enabledSet[manifest.Slug]
-	_, isLoaded := m.loaded[manifest.Slug]
 	pending := 0
 	if ok {
 		pending = len(entry.PendingPermissions)
@@ -863,10 +862,14 @@ func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*Discovered
 
 	// An update of an enabled plugin whose permissions are still covered by
 	// the admin's approval takes effect now: swap the running instance for
-	// one built from the new package. A failure surfaces via LastError (set
-	// by loadInternal) rather than failing the install — the file on disk is
-	// already the new version either way.
-	if enabled && isLoaded && pending == 0 {
+	// one built from the new package. The plugin need not be running — a
+	// previous version may have been held unloaded because it declared
+	// unapproved permissions; a conforming update clears that hold (and the
+	// stale "needs approval" LastError) instead of stranding the plugin at
+	// "enabled, not loaded" until the next restart. A failure surfaces via
+	// LastError (set by loadInternal) rather than failing the install — the
+	// file on disk is already the new version either way.
+	if enabled && pending == 0 {
 		if err := m.Reload(ctx, manifest.Slug); err != nil {
 			fmt.Fprintf(os.Stderr, "plugin %s: reload after update failed: %v\n", manifest.Slug, err)
 		}
