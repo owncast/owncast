@@ -27,6 +27,9 @@ const plugins: RegistryPlugin[] = [
     // Plugin homepage: rendered as a hostname link under the summary.
     homepage: 'https://github.com/owncast/welcome-bot',
     tags: ['chat', 'moderation'],
+    // Category slug from the canonical taxonomy; rendered as a Tag on
+    // the card and drives the category filter in the filter bar.
+    category: 'chat-bots',
     latest: {
       version: '1.2.0',
       sizeBytes: 48 * 1024,
@@ -40,6 +43,7 @@ const plugins: RegistryPlugin[] = [
     authorName: 'Owncast Community',
     summary: 'Shows the currently playing track pulled from an external music service.',
     tags: ['overlay'],
+    category: 'overlays',
     latest: {
       version: '0.4.1',
       sizeBytes: 120 * 1024,
@@ -55,6 +59,21 @@ const plugins: RegistryPlugin[] = [
     latest: {
       version: '2.0.0',
       sizeBytes: 256 * 1024,
+    },
+  },
+  {
+    // Same author as Welcome Bot so the author filter matches more
+    // than one card; distinct category/permissions for those filters.
+    slug: 'stream-stats',
+    name: 'Stream Stats',
+    authorName: 'Gabe Kangas',
+    authorURL: 'https://gabekangas.com',
+    summary: 'Tracks viewer counts over time and charts them in the admin.',
+    category: 'analytics',
+    latest: {
+      version: '0.9.0',
+      sizeBytes: 64 * 1024,
+      manifest: { permissions: ['server.read', 'storage.kv'] },
     },
   },
 ];
