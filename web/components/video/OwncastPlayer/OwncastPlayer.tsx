@@ -49,6 +49,13 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   const clockSkew = useAtomValue(clockSkewAtom);
   const { t } = useTranslation();
 
+  // A persisted volume of 0 is a mute the viewer chose on a previous visit
+  // (handleVolume stores muted as 0). Restoring it is a manual mute, not an
+  // autoplay one, so the big unmute overlay stays away. Read once at render;
+  // guarded because this runs during render (no window during SSR).
+  const savedVolume = typeof window !== 'undefined' ? getLocalStorage(PLAYER_VOLUME) : null;
+  const startedMutedByViewer = savedVolume !== null && Number(savedVolume) === 0;
+
   const setSavedVolume = () => {
     try {
       playerRef.current.volume(getLocalStorage(PLAYER_VOLUME) || 1);
@@ -216,16 +223,35 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     }
     player.addChild(unmuteButton);
 
-    // Mirror the big play button: show a large, obvious unmute affordance only
-    // while the stream is autoplaying muted. When paused, the native big play
-    // button already covers that case, so this stays hidden.
+    // Show the big unmute affordance only while playback is inaudible *because
+    // the player muted it* (video.js's 'any' autoplay fallback, or an embed
+    // that asked to start muted). A viewer who muted deliberately, whether via
+    // the control bar, the "m" key, or a persisted mute restored from a
+    // previous visit (startedMutedByViewer), keeps a clean player: no giant
+    // overlay. The flag is cleared the moment the player becomes audible, so
+    // any later mute is by definition manual and never re-shows the button.
+    const inaudible = () => player.muted() || player.volume() === 0;
+    // Autoplay can win the race against this ready handler (the source is set
+    // at player construction), so seed the flag from current state: already
+    // playing inaudibly at ready means the player did it, since no user
+    // gesture can have happened yet.
+    let mutedByAutoplay = !startedMutedByViewer && !player.paused() && inaudible();
+
     const updateUnmuteButton = () => {
-      if (!player.paused() && (player.muted() || player.volume() === 0)) {
+      if (!inaudible()) {
+        mutedByAutoplay = false;
+      }
+      if (mutedByAutoplay && !player.paused() && inaudible()) {
         unmuteButton.show();
       } else {
         unmuteButton.hide();
       }
     };
+
+    player.on('autoplay-success', () => {
+      mutedByAutoplay = !startedMutedByViewer && inaudible();
+      updateUnmuteButton();
+    });
 
     player.on(['playing', 'pause', 'ended', 'volumechange'], updateUnmuteButton);
     updateUnmuteButton();
@@ -269,11 +295,11 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   // as volume 0. Starting muted (embed request) or at volume 0 makes a
   // sound-only autoplay attempt succeed silently in Firefox, which allows
   // inaudible autoplay, so the mapping needs to know about it.
-  const savedVolume = typeof window !== 'undefined' ? getLocalStorage(PLAYER_VOLUME) : null;
+  const startsInaudible = initiallyMuted || startedMutedByViewer;
   const autoplayMode = autoplayModeForSetting(autoplay, {
     prefersReducedMotion,
     saveData: navConnection?.saveData === true,
-    startsInaudible: initiallyMuted || (savedVolume !== null && Number(savedVolume) === 0),
+    startsInaudible,
   });
 
   const videoJsOptions = {
