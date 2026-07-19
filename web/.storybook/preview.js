@@ -2,6 +2,10 @@ import '../styles/variables.css';
 // Pre-extracted Ant Design styles: required in zeroRuntime mode (see
 // build-scripts/extract-antd-styles.js).
 import '../styles/antd.css';
+// video.js core styles + local overrides, mirroring pages/_app.tsx. Without
+// these the player stories render as an unstyled black rectangle.
+import 'video.js/dist/video-js.css';
+import '../components/video/VideoJS/VideoJS.scss';
 import './preview.scss';
 import { themes } from 'storybook/theming';
 import { DocsContainer } from './storybook-theme';
