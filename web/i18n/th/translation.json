@@ -186,6 +186,22 @@
 			"title": "ข่าวสาร & การอัปเดตจาก Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "เครื่องมือผู้ดูแลระบบ",
+				"analytics": "การวิเคราะห์และสถิติ",
+				"authentication": "การตรวจสอบสิทธิ์",
+				"chatBots": "บอทแชท",
+				"chatFilters": "ตัวกรองแชท",
+				"examples": "ตัวอย่าง",
+				"games": "เกมและความสนุก",
+				"integrations": "การรวมระบบ",
+				"moderation": "การModeration",
+				"notifications": "การแจ้งเตือน",
+				"other": "อื่นๆ",
+				"overlays": "ออเวอร์เลย์ & วิจเจ็ต",
+				"themes": "ธีม",
+				"video": "วิดีโอ & สตรีมมิ่ง"
+			},
 			"PermissionNames": {
 				"authGate": "เข้าถึงผู้ชมผ่านเกต",
 				"chatFilter": "กรองข้อความแชท",
@@ -238,7 +254,12 @@
 			"approveButton": "อนุมัติ",
 			"approveTooltip": "อนุมัติชุดสิทธิ์ที่ขยายและโหลดปลั๊กอิน",
 			"browseAuthor": "โดย {{name}}",
+			"browseClearFilters": "ล้างตัวกรอง",
 			"browseEmpty": "ยังไม่มีปลั๊กอินในทะเบียน",
+			"browseFilterAuthor": "กรองตามผู้เขียน",
+			"browseFilterCategory": "กรองตามหมวดหมู่",
+			"browseFilterPermissions": "กรองตามสิทธิ์",
+			"browseFilteredEmpty": "ไม่มีปลั๊กอินที่ตรงกับตัวกรองปัจจุบัน.",
 			"browseInstall": "ติดตั้ง",
 			"browseInstalled": "ติดตั้งแล้ว",
 			"browsePreviewAlt": "ภาพหน้าจอแสดงตัวอย่างของ {{name}}",

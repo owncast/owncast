@@ -186,6 +186,22 @@
 			"title": "الأخبار والتحديثات من Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "خدمات المدير",
+				"analytics": "التحليلات والإحصاءات",
+				"authentication": "المصادقة",
+				"chatBots": "بوت الدردشة",
+				"chatFilters": "فلاتر الدردشة",
+				"examples": "أمثلة",
+				"games": "ألعاب وممتعة",
+				"integrations": "التكاملات",
+				"moderation": "الاعتدال",
+				"notifications": "الإشعارات",
+				"other": "اخرى",
+				"overlays": "التراكبات و الأدوات",
+				"themes": "السمات",
+				"video": "الفيديو والبث"
+			},
 			"PermissionNames": {
 				"authGate": "وصول عارض البوابة",
 				"chatFilter": "تصفية رسائل الدردشة",
@@ -238,7 +254,12 @@
 			"approveButton": "الموافقة",
 			"approveTooltip": "الموافقة على تعيين الصلاحية الموسعة وتحميل الإضافة.",
 			"browseAuthor": "بواسطة {{name}}",
+			"browseClearFilters": "مسح الفلاتر",
 			"browseEmpty": "لا توجد إضافات متوفرة في السجل حتى الآن.",
+			"browseFilterAuthor": "تصفية حسب المؤلف",
+			"browseFilterCategory": "تصفية حسب الفئة",
+			"browseFilterPermissions": "تصفية حسب الأذونات",
+			"browseFilteredEmpty": "لا توجد إضافات تطابق الفلاتر الحالية.",
 			"browseInstall": "تثبيت",
 			"browseInstalled": "مثبت",
 			"browsePreviewAlt": "{{name}} معاينة لقطة الشاشة",

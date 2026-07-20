@@ -186,6 +186,22 @@
 			"title": "Aktualności i aktualizacje z Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Narzędzia administratora",
+				"analytics": "Analityka i statystyki",
+				"authentication": "Uwierzytelnianie",
+				"chatBots": "Roboty czatu",
+				"chatFilters": "Filtry czatu",
+				"examples": "Przykłady",
+				"games": "Gry i zabawa",
+				"integrations": "Integracje",
+				"moderation": "Moderacja",
+				"notifications": "Powiadomienia",
+				"other": "Inne",
+				"overlays": "Nakładki i widżety",
+				"themes": "Motywy",
+				"video": "Wideo i streamowanie"
+			},
 			"PermissionNames": {
 				"authGate": "Dostęp do przeglądarki bramy",
 				"chatFilter": "Filtruj wiadomości czatu",
@@ -238,7 +254,12 @@
 			"approveButton": "Zatwierdź",
 			"approveTooltip": "Zatwierdź rozszerzony zestaw uprawnień i załaduj wtyczkę.",
 			"browseAuthor": "przez {{name}}",
+			"browseClearFilters": "Wyczyść filtry",
 			"browseEmpty": "Brak wtyczek w rejestrze.",
+			"browseFilterAuthor": "Filtruj według autora",
+			"browseFilterCategory": "Filtruj według kategorii",
+			"browseFilterPermissions": "Filtruj według uprawnień",
+			"browseFilteredEmpty": "Żadne wtyczki nie pasują do obecnych filtrów.",
 			"browseInstall": "Zainstaluj",
 			"browseInstalled": "Zainstalowane",
 			"browsePreviewAlt": "{{name}} podgląd zrzutu ekranu",

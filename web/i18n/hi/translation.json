@@ -186,6 +186,22 @@
 			"title": "Owncast से समाचार और अपडेट"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "व्यवस्थापक उपयोगिताएँ",
+				"analytics": "विश्लेषण और आंकड़े",
+				"authentication": "प्रामाणिकता",
+				"chatBots": "चैट बॉट्स",
+				"chatFilters": "चैट फ़िल्टर",
+				"examples": "उदाहरण",
+				"games": "खेल और मज़ा",
+				"integrations": "एकीकरण",
+				"moderation": "निगरानी",
+				"notifications": "सूचनाएँ",
+				"other": "अन्य",
+				"overlays": "ओवरले और विजेट्स",
+				"themes": "थीम",
+				"video": "वीडियो और स्ट्रीमिंग"
+			},
 			"PermissionNames": {
 				"authGate": "गेट दर्शक पहुंच",
 				"chatFilter": "चैट संदेशों को फ़िल्टर करें",
@@ -238,7 +254,12 @@
 			"approveButton": "स्वीकृत करें",
 			"approveTooltip": "विस्तारित अनुमति सेट को स्वीकृत करें और प्लगइन को लोड करें।",
 			"browseAuthor": "द्वारा {{name}}",
+			"browseClearFilters": "फिल्टर साफ़ करें",
 			"browseEmpty": "पंजीकरण में अभी कोई प्लगइन उपलब्ध नहीं है।",
+			"browseFilterAuthor": "लेखक द्वारा फ़िल्टर करें",
+			"browseFilterCategory": "श्रेणी द्वारा फ़िल्टर करें",
+			"browseFilterPermissions": "अनुमतियों द्वारा फ़िल्टर करें",
+			"browseFilteredEmpty": "कोई प्लगइन वर्तमान फ़िल्टर से मेल नहीं खाता।",
 			"browseInstall": "स्थापित करें",
 			"browseInstalled": "स्थापित",
 			"browsePreviewAlt": "{{name}} पूर्वावलोकन स्क्रीनशॉट",

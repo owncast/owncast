@@ -186,6 +186,22 @@
 			"title": "Owncast থেকে খবর এবং আপডেট"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "এডমিন ইউটিলিটিজ",
+				"analytics": "আইনালিটিক্স ও পরিসংখ্যা",
+				"authentication": "প্রমাণীকরণ",
+				"chatBots": "চ্যাট বট",
+				"chatFilters": "চ্যাট ফিল্টার",
+				"examples": "উদাহরণ",
+				"games": "গেম ও মজা",
+				"integrations": "ইন্টিগ্রেশনস",
+				"moderation": "মডারেশন",
+				"notifications": "সুচনাসমূহ",
+				"other": "অন্যান্য",
+				"overlays": "ওভারলে এবং উইজেট",
+				"themes": "থিম",
+				"video": "ভিডিও ও স্ট্রিমিং"
+			},
 			"PermissionNames": {
 				"authGate": "গেট দর্শক প্রবেশাধিকার",
 				"chatFilter": "চ্যাট বার্তা ফিল্টার করুন",
@@ -238,7 +254,12 @@
 			"approveButton": "অনুমোদন করুন",
 			"approveTooltip": "বিস্তৃত অনুমতি সেট অনুমোদন করুন এবং প্লাগইন লোড করুন।",
 			"browseAuthor": "{{name}} দ্বারা",
+			"browseClearFilters": "ফিল্টার পরিষ্কার করুন",
 			"browseEmpty": "রেজিস্ট্রিতে কোন প্লাগইন এখনো উপলব্ধ নেই।",
+			"browseFilterAuthor": "লেখক দ্বারা ফিল্টার করুন",
+			"browseFilterCategory": "শ্রেণী দ্বারা ফিল্টার করুন",
+			"browseFilterPermissions": "অনুমতি দ্বারা ফিল্টার করুন",
+			"browseFilteredEmpty": "বর্তমান ফিল্টারের সাথে মেলে এমন কোন প্লাগইন নেই।",
 			"browseInstall": "ইনস্টল করুন",
 			"browseInstalled": "ইনস্টল করা",
 			"browsePreviewAlt": "{{name}} প্রিভিউ স্ক্রীনশট",

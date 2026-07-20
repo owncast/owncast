@@ -186,6 +186,22 @@
 			"title": "Tin tức & Cập nhật từ Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Tiện ích quản trị",
+				"analytics": "Phân tích & thống kê",
+				"authentication": "Xác thực",
+				"chatBots": "Bot trò chuyện",
+				"chatFilters": "Lọc trò chuyện",
+				"examples": "Ví dụ",
+				"games": "Trò chơi & vui vẻ",
+				"integrations": "Tích hợp",
+				"moderation": "Quản lý",
+				"notifications": "Thông báo",
+				"other": "Khác",
+				"overlays": "Các lớp phủ & tiện ích",
+				"themes": "Chủ đề",
+				"video": "Video & phát trực tuyến"
+			},
 			"PermissionNames": {
 				"authGate": "Cấp quyền truy cập người xem",
 				"chatFilter": "Lọc tin nhắn trò chuyện",
@@ -238,7 +254,12 @@
 			"approveButton": "Phê duyệt",
 			"approveTooltip": "Phê duyệt tập quyền mở rộng và tải plugin.",
 			"browseAuthor": "bởi {{name}}",
+			"browseClearFilters": "Xóa bộ lọc",
 			"browseEmpty": "Chưa có plugin nào có sẵn trong danh mục.",
+			"browseFilterAuthor": "Bộ lọc theo tác giả",
+			"browseFilterCategory": "Bộ lọc theo danh mục",
+			"browseFilterPermissions": "Bộ lọc theo quyền",
+			"browseFilteredEmpty": "Không có tiện ích nào khớp với bộ lọc hiện tại.",
 			"browseInstall": "Cài đặt",
 			"browseInstalled": "Đã cài đặt",
 			"browsePreviewAlt": "Ảnh chụp màn hình xem trước của {{name}}",

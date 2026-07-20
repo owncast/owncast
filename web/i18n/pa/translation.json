@@ -186,6 +186,22 @@
 			"title": "Owncast ਤੋਂ ਖਬਰਾਂ ਅਤੇ ਅੱਪਡੇਟਸ"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "ਐਡੀਮਿਨ ਉਪਕਰਨ",
+				"analytics": "ਵਿਸ਼ਲੇਸ਼ਣ ਅਤੇ ਅੰਕੜੇ",
+				"authentication": "ਪਛਾਣ",
+				"chatBots": "ਚੈਟ ਬੌਟ",
+				"chatFilters": "ਚੈਟ ਫਿਲਟਰ",
+				"examples": "ਉਦਾਹਰਣ",
+				"games": "ਖੇਡਾਂ ਅਤੇ ਮਜ਼ੇ",
+				"integrations": "ਇੰਟਿਗਰੇਸ਼ਨ",
+				"moderation": "ਮੋਡਰੇਸ਼ਨ",
+				"notifications": "ਸੂਚਨਾਵਾਂ",
+				"other": "ਹੋਰ",
+				"overlays": "ਓਵਰਲੇਅ ਅਤੇ ਵਿਜ਼ੇਟ",
+				"themes": "ธีਮਜ਼",
+				"video": "ਵੀਡੀਓ ਅਤੇ ਸਟ੍ਰੀਮਿੰਗ"
+			},
 			"PermissionNames": {
 				"authGate": "ਗੇਟ ਦਰਸ਼ਕਾਂ ਦੀ ਪਹੁੰਚ",
 				"chatFilter": "ਚੈਟ ਸੰਦੇਸ਼ਾਂ ਨੂੰ ਛਾਂਟੋ",
@@ -238,7 +254,12 @@
 			"approveButton": "ਮਨਜ਼ੂਰ ਕਰੋ",
 			"approveTooltip": "ਵੱਧੇ ਹੋਏ ਅਧਿਕਾਰਾਂ ਸੈੱਟ ਦੀ ਪੁਰਜ਼ੋਰਮਾ ਦਿਓ ਅਤੇ ਪਲੱਗਇਨ ਨੂੰ ਲੋਡ ਕਰੋ।",
 			"browseAuthor": "{{name}} ਵੱਲੋਂ",
+			"browseClearFilters": "ਫਿਲਟਰ ਸਾਫ਼ ਕਰੋ",
 			"browseEmpty": "ਅਜੇ ਰਜਿਸਟ੍ਰੀ ਵਿੱਚ ਕੋਈ ਪਲੱਗਇਨ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।",
+			"browseFilterAuthor": "ਲੇਖਕ ਦੁਆਰਾ ਫਿਲਟਰ ਕਰੋ",
+			"browseFilterCategory": "ਸ਼੍ਰੇਣੀ ਦੁਆਰਾ ਫਿਲਟਰ ਕਰੋ",
+			"browseFilterPermissions": "ਅਧਿਕਾਰਾਂ ਦੁਆਰਾ ਫਿਲਟਰ ਕਰੋ",
+			"browseFilteredEmpty": "ਕੋਈ ਪਲੱਗਇਨ ਵਰਤਮਾਨ ਫਿਲਟਰਾਂ ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ।",
 			"browseInstall": "ਸਥਾਪਿਤ ਕਰੋ",
 			"browseInstalled": "ਸਥਾਪਿਤ",
 			"browsePreviewAlt": "{{name}} ਦਾ ਪ੍ਰੀਵਿਊ ਸਕ੍ਰੀਨਸ਼ੌਟ",

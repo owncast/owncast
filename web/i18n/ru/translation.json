@@ -186,6 +186,22 @@
 			"title": "Новости и обновления от Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Утилиты админа",
+				"analytics": "Аналитика и статистика",
+				"authentication": "Проверка подлинности",
+				"chatBots": "Чат-боты",
+				"chatFilters": "Фильтры чата",
+				"examples": "Примеры",
+				"games": "Игры и веселые",
+				"integrations": "Интеграции",
+				"moderation": "Модерирование",
+				"notifications": "Уведомления",
+				"other": "Прочие вопросы",
+				"overlays": "Наслоения и виджеты",
+				"themes": "Темы",
+				"video": "Видео и стриминг"
+			},
 			"PermissionNames": {
 				"authGate": "Доступ к просмотрщику ворот",
 				"chatFilter": "Фильтр сообщений в чате",
@@ -238,7 +254,12 @@
 			"approveButton": "Одобрить",
 			"approveTooltip": "Расширенный набор разрешений и загрузка плагина.",
 			"browseAuthor": "от {{name}}",
+			"browseClearFilters": "Очистить фильтры",
 			"browseEmpty": "В реестре пока нет доступных плагинов.",
+			"browseFilterAuthor": "Фильтр по автору",
+			"browseFilterCategory": "Фильтр по категориям",
+			"browseFilterPermissions": "Фильтр по разрешениям",
+			"browseFilteredEmpty": "Нет плагинов, соответствующих текущим фильтрам.",
 			"browseInstall": "Установить",
 			"browseInstalled": "Установлено",
 			"browsePreviewAlt": "Скриншот {{name}}",
