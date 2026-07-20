@@ -1,5 +1,5 @@
 __turbopack_load_page_chunks__("/embed/chat/readwrite", [
-  "static/chunks/0dwbxos24x_we.js",
+  "static/chunks/0epsuorcssutt.js",
   "static/chunks/0ilfy8sdez5o7.js",
   "static/chunks/1--8uh4rqje2c.js",
   "static/chunks/32duix5a7gy-n.js",
@@ -14,8 +14,8 @@ __turbopack_load_page_chunks__("/embed/chat/readwrite", [
   "static/chunks/0tz6_10jr3hn4.js",
   "static/chunks/0yskmokwi_7db.js",
   "static/chunks/0fw_mn16ugp1k.js",
-  "static/chunks/20n6xtciqpoz0.js",
+  "static/chunks/3veqj_169c58s.js",
   "static/chunks/370r3ttpahoe8.css",
   "static/chunks/3vc46-_rdy1hv.css",
-  "static/chunks/turbopack-2cg2o_-jkls39.js"
+  "static/chunks/turbopack-1rpvovml7_n27.js"
 ])
