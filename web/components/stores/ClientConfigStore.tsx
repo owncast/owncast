@@ -15,6 +15,7 @@ import appStateModel, {
   metaForSnapshot,
 } from './application-state';
 import { setLocalStorage, getLocalStorage } from '../../utils/localStorage';
+import { getDisplayNameFromQuery } from '../../utils/displayNameValidation';
 import {
   ConnectedClientInfoEvent,
   MessageType,
@@ -404,7 +405,11 @@ export const ClientConfigStore: FC = () => {
       updateClientConfig();
     }
 
-    handleUserRegistration();
+    // If the URL includes a ?displayname=xyz query param, use it as the
+    // proposed display name when registering a new chat user (the server may
+    // sanitize or override it). It has no effect if the visitor has
+    // previously registered (an access token is already saved).
+    handleUserRegistration(getDisplayNameFromQuery(window.location.search));
 
     if (hasHydratedStatus) {
       handleStatusChange(status);

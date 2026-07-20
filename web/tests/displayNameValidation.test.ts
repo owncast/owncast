@@ -1,4 +1,8 @@
-import { validateDisplayName, trimUnicodeWhitespace } from '../utils/displayNameValidation';
+import {
+  validateDisplayName,
+  trimUnicodeWhitespace,
+  getDisplayNameFromQuery,
+} from '../utils/displayNameValidation';
 
 describe('Display Name Validation', () => {
   const currentName = 'CurrentUser';
@@ -196,5 +200,56 @@ describe('Display Name Validation - Real-world test cases', () => {
     if (expected && result.isValid) {
       expect(result.trimmedName).toBe(trimUnicodeWhitespace(input));
     }
+  });
+});
+
+describe('getDisplayNameFromQuery', () => {
+  test('should return the display name from the query string', () => {
+    expect(getDisplayNameFromQuery('?displayname=gabe')).toBe('gabe');
+  });
+
+  test('should return undefined when the param is absent', () => {
+    expect(getDisplayNameFromQuery('')).toBeUndefined();
+    expect(getDisplayNameFromQuery('?')).toBeUndefined();
+    expect(getDisplayNameFromQuery('?foo=bar')).toBeUndefined();
+  });
+
+  test('should return undefined when the param is empty', () => {
+    expect(getDisplayNameFromQuery('?displayname=')).toBeUndefined();
+    expect(getDisplayNameFromQuery('?displayname')).toBeUndefined();
+  });
+
+  test('should return undefined when the param is only whitespace', () => {
+    expect(getDisplayNameFromQuery('?displayname=%20%20')).toBeUndefined();
+    expect(getDisplayNameFromQuery('?displayname=%C2%A0')).toBeUndefined();
+  });
+
+  test('should decode URL-encoded values', () => {
+    expect(getDisplayNameFromQuery('?displayname=g%20abe')).toBe('g abe');
+  });
+
+  test('should decode plus-encoded spaces', () => {
+    expect(getDisplayNameFromQuery('?displayname=g+abe')).toBe('g abe');
+  });
+
+  test('should not throw on a malformed percent-encoding', () => {
+    // URLSearchParams leaves an undecodable sequence as the literal.
+    expect(getDisplayNameFromQuery('?displayname=%')).toBe('%');
+  });
+
+  test('should be case-sensitive about the param name', () => {
+    expect(getDisplayNameFromQuery('?DISPLAYNAME=gabe')).toBeUndefined();
+  });
+
+  test('should work alongside other query params', () => {
+    expect(getDisplayNameFromQuery('?foo=bar&displayname=gabe&baz=1')).toBe('gabe');
+  });
+
+  test('should use the first value when the param appears multiple times', () => {
+    expect(getDisplayNameFromQuery('?displayname=gabe&displayname=other')).toBe('gabe');
+  });
+
+  test('should trim surrounding whitespace', () => {
+    expect(getDisplayNameFromQuery('?displayname=%20gabe%20')).toBe('gabe');
   });
 });
