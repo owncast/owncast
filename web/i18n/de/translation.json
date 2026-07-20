@@ -186,6 +186,22 @@
 			"title": "News & Updates von Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Admin Utilities",
+				"analytics": "Analytik & Statistik",
+				"authentication": "Authentifizierung",
+				"chatBots": "Chat-Bots",
+				"chatFilters": "Chatfilter",
+				"examples": "Beispiele",
+				"games": "Spiele & Spaß",
+				"integrations": "Integrationen",
+				"moderation": "Moderation",
+				"notifications": "Benachrichtigungen",
+				"other": "Andere",
+				"overlays": "Overlays & Widgets",
+				"themes": "Themes",
+				"video": "Video & Streaming"
+			},
 			"PermissionNames": {
 				"authGate": "Tor-Viewer-Zugriff",
 				"chatFilter": "Chat-Nachrichten filtern",
@@ -238,7 +254,12 @@
 			"approveButton": "Bestätigen",
 			"approveTooltip": "Bestätigen Sie die erweiterte Berechtigung und laden Sie das Plugin.",
 			"browseAuthor": "von {{name}}",
+			"browseClearFilters": "Filter löschen",
 			"browseEmpty": "In der Registry sind noch keine Plugins verfügbar.",
+			"browseFilterAuthor": "Filtern nach Autor",
+			"browseFilterCategory": "Nach Kategorie filtern",
+			"browseFilterPermissions": "Nach Berechtigungen filtern",
+			"browseFilteredEmpty": "Keine Plugins entsprechen den aktuellen Filtern.",
 			"browseInstall": "Installieren",
 			"browseInstalled": "Installiert",
 			"browsePreviewAlt": "{{name}} Screenshot",

@@ -186,6 +186,22 @@
 			"title": "Owncast 的新聞與更新"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "管理工具",
+				"analytics": "分析和統計",
+				"authentication": "身份驗證",
+				"chatBots": "聊天機器人",
+				"chatFilters": "聊天過濾器",
+				"examples": "範例",
+				"games": "遊戲和娛樂",
+				"integrations": "整合",
+				"moderation": "管理",
+				"notifications": "通知",
+				"other": "其他",
+				"overlays": "覆蓋層及小工具",
+				"themes": "主題",
+				"video": "視頻及串流"
+			},
 			"PermissionNames": {
 				"authGate": "門戶觀眾訪問",
 				"chatFilter": "過濾聊天消息",
@@ -238,7 +254,12 @@
 			"approveButton": "批准",
 			"approveTooltip": "批准擴展的權限集並加載插件。",
 			"browseAuthor": "由 {{name}}",
+			"browseClearFilters": "清除過濾器",
 			"browseEmpty": "註冊中心尚未有可用的插件。",
+			"browseFilterAuthor": "按作者過濾",
+			"browseFilterCategory": "按類別過濾",
+			"browseFilterPermissions": "按權限過濾",
+			"browseFilteredEmpty": "沒有插件符合當前過濾條件。",
 			"browseInstall": "安裝",
 			"browseInstalled": "已安裝",
 			"browsePreviewAlt": "{{name}} 預覽截圖",

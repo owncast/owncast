@@ -186,6 +186,22 @@
 			"title": "Nyheter & uppdateringar från Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Administratörsverktyg",
+				"analytics": "Analys & statistik",
+				"authentication": "Autentisering",
+				"chatBots": "Chatt robotar",
+				"chatFilters": "Chattfilter",
+				"examples": "Exempel",
+				"games": "Spel & kul",
+				"integrations": "Integrationer",
+				"moderation": "Moderering",
+				"notifications": "Aviseringar",
+				"other": "Annat",
+				"overlays": "Overlays & widgets",
+				"themes": "Teman",
+				"video": "Video & streaming"
+			},
 			"PermissionNames": {
 				"authGate": "Åtkomst till portvisare",
 				"chatFilter": "Filtrera chattmeddelanden",
@@ -238,7 +254,12 @@
 			"approveButton": "Godkänn",
 			"approveTooltip": "Godkänn den utökade behörighetsuppsättningen och ladda pluginet.",
 			"browseAuthor": "av {{name}}",
+			"browseClearFilters": "Rensa filter",
 			"browseEmpty": "Inga plugins är tillgängliga i registret ännu.",
+			"browseFilterAuthor": "Filtrera efter författare",
+			"browseFilterCategory": "Filtrera efter kategori",
+			"browseFilterPermissions": "Filtrera efter behörigheter",
+			"browseFilteredEmpty": "Inga plugins matchar de aktuella filterna.",
 			"browseInstall": "Installera",
 			"browseInstalled": "Installerad",
 			"browsePreviewAlt": "{{name}} förhandsgranska skärmdump",

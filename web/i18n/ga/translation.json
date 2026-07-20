@@ -186,6 +186,22 @@
 			"title": "Nuacht agus Nuashonruithe ó Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Uirlisí riaracháin",
+				"analytics": "Anailísíochta & staitisticí",
+				"authentication": "Dáilitheoireacht",
+				"chatBots": "Bóthar comhrá",
+				"chatFilters": "Filteanna comhrá",
+				"examples": "Samplaí",
+				"games": "Cluichí & spraoi",
+				"integrations": "Comhoiriúnachtaí",
+				"moderation": "Mionchigireacht",
+				"notifications": "Fógraí",
+				"other": "Eile",
+				"overlays": "Oibrithe & fothaí",
+				"themes": "Téamaí",
+				"video": "Físeáin & sruthú"
+			},
 			"PermissionNames": {
 				"authGate": "Rochtain lucht féachana a chosc",
 				"chatFilter": "Scagteachtaireachtaí comhrá",
@@ -238,7 +254,12 @@
 			"approveButton": "Ceadaigh",
 			"approveTooltip": "Ceadaigh an tús comhlánaigh leathan agus luchtú an breiseán.",
 			"browseAuthor": "le {{name}}",
+			"browseClearFilters": "Glan na scagairí",
 			"browseEmpty": "Níl breiseáin ar fáil sa chlár fós.",
+			"browseFilterAuthor": "Scagadh de réir údar",
+			"browseFilterCategory": "Scagadh de réir catagóire",
+			"browseFilterPermissions": "Scagadh de réir ceadanna",
+			"browseFilteredEmpty": "Níl aon phlugin ag comhoiriúnú leis na scagairí reatha.",
 			"browseInstall": "Suiteáil",
 			"browseInstalled": "Shuiteáil",
 			"browsePreviewAlt": "screenshot réamhamhair {{name}}",

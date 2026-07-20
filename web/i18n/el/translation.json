@@ -186,6 +186,22 @@
 			"title": "Ειδήσεις & ενημερώσεις από Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Βοηθητικά προγράμματα διαχειριστή",
+				"analytics": "Στατιστικά ανάλυσης",
+				"authentication": "Ταυτοποίηση",
+				"chatBots": "Chat bots",
+				"chatFilters": "Φίλτρα συνομιλίας",
+				"examples": "Παραδείγματα",
+				"games": "Παιχνίδια & διασκέδαση",
+				"integrations": "Ενσωματώσεις",
+				"moderation": "Εποπτεία",
+				"notifications": "Ειδοποιήσεις",
+				"other": "Άλλο",
+				"overlays": "Επικάλυψη & widgets",
+				"themes": "Θέματα",
+				"video": "Βίντεο & ροή"
+			},
 			"PermissionNames": {
 				"authGate": "Πρόσβαση προβολέα πύλης",
 				"chatFilter": "Φίλτρο μηνυμάτων συνομιλίας",
@@ -238,7 +254,12 @@
 			"approveButton": "Έγκριση",
 			"approveTooltip": "Εγκρίνετε το διευρυμένο σύνολο δικαιωμάτων και φορτώστε το πρόσθετο.",
 			"browseAuthor": "από {{name}}",
+			"browseClearFilters": "Εκκαθάριση φίλτρων",
 			"browseEmpty": "Δεν υπάρχουν ακόμα πρόσθετα στο μητρώο.",
+			"browseFilterAuthor": "Φιλτράρισμα ανά συγγραφέα",
+			"browseFilterCategory": "Φιλτράρισμα ανά κατηγορία",
+			"browseFilterPermissions": "Φιλτράρισμα ανά δικαιώματα",
+			"browseFilteredEmpty": "Δεν υπάρχουν πρόσθετα που να ταιριάζουν με τα τρέχοντα φίλτρα.",
 			"browseInstall": "Εγκατάσταση",
 			"browseInstalled": "Εγκατεστημένο",
 			"browsePreviewAlt": "Στιγμιότυπο προεπισκόπησης {{name}}",

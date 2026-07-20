@@ -186,6 +186,22 @@
 			"title": "Owncast의 뉴스 및 업데이트"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "관리자 유틸리티",
+				"analytics": "분석 및 통계",
+				"authentication": "인증",
+				"chatBots": "챗봇",
+				"chatFilters": "챗 필터",
+				"examples": "예시",
+				"games": "게임 및 재미",
+				"integrations": "통합",
+				"moderation": "검열",
+				"notifications": "알림",
+				"other": "기타",
+				"overlays": "오버레이 및 위젯",
+				"themes": "테마",
+				"video": "비디오 및 스트리밍"
+			},
 			"PermissionNames": {
 				"authGate": "게이트 시청자 접근",
 				"chatFilter": "채팅 메시지 필터",
@@ -238,7 +254,12 @@
 			"approveButton": "승인",
 			"approveTooltip": "확장된 권한 세트를 승인하고 플러그인을 로드합니다.",
 			"browseAuthor": "{{name}}에 의해",
+			"browseClearFilters": "필터 지우기",
 			"browseEmpty": "현재 레지스트리에 사용 가능한 플러그인이 없습니다.",
+			"browseFilterAuthor": "저자별 필터",
+			"browseFilterCategory": "카테고리별 필터",
+			"browseFilterPermissions": "권한별 필터",
+			"browseFilteredEmpty": "현재 필터와 일치하는 플러그인이 없습니다.",
 			"browseInstall": "설치",
 			"browseInstalled": "설치됨",
 			"browsePreviewAlt": "{{name}} 미리보기 스크린샷",

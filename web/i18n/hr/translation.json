@@ -186,6 +186,22 @@
 			"title": "Vijesti i ažuriranja iz Owncast-a"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Admin alati",
+				"analytics": "Analitika i statistika",
+				"authentication": "Autentifikacija",
+				"chatBots": "Chat botovi",
+				"chatFilters": "Chat filteri",
+				"examples": "Primjeri",
+				"games": "Igre i zabava",
+				"integrations": "Integracije",
+				"moderation": "Moderacija",
+				"notifications": "Obavijesti",
+				"other": "Drugo",
+				"overlays": "Preklapanja i dodaci",
+				"themes": "Teme",
+				"video": "Video i streaming"
+			},
 			"PermissionNames": {
 				"authGate": "Pristup gledateljima preko vrata",
 				"chatFilter": "Filtrirajte poruke u chatu",
@@ -238,7 +254,12 @@
 			"approveButton": "Odobri",
 			"approveTooltip": "Odobrite prošireni skup dozvola i učitajte dodatak.",
 			"browseAuthor": "od {{name}}",
+			"browseClearFilters": "Očisti filtre",
 			"browseEmpty": "Trenutno nema dostupnih dodataka u registra.",
+			"browseFilterAuthor": "Filtriraj prema autoru",
+			"browseFilterCategory": "Filtriraj prema kategoriji",
+			"browseFilterPermissions": "Filtriraj prema dozvolama",
+			"browseFilteredEmpty": "Nema dodataka koji odgovaraju trenutnim filtrima.",
 			"browseInstall": "Instaliraj",
 			"browseInstalled": "Instalirano",
 			"browsePreviewAlt": "{{name}} pregled snimke zaslona",

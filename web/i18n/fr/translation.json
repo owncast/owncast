@@ -186,6 +186,22 @@
 			"title": "Nouvelles et mises à jour de Owncast"
 		},
 		"Plugins": {
+			"Categories": {
+				"adminUtilities": "Utilitaires d'administration",
+				"analytics": "Statistiques & Analyses",
+				"authentication": "Authentification",
+				"chatBots": "Bots de chat",
+				"chatFilters": "Filtres de chat",
+				"examples": "Exemples",
+				"games": "Jeux & amusement",
+				"integrations": "Intégrations",
+				"moderation": "Modération",
+				"notifications": "Notifications",
+				"other": "Autres",
+				"overlays": "Superpositions et widgets",
+				"themes": "Thèmes",
+				"video": "Vidéo & streaming"
+			},
 			"PermissionNames": {
 				"authGate": "Accès à la visionneuse de portail",
 				"chatFilter": "Filtrer les messages du chat",
@@ -238,7 +254,12 @@
 			"approveButton": "Approuver",
 			"approveTooltip": "Approuver les permissions et activer le plugin.",
 			"browseAuthor": "par {{name}}",
+			"browseClearFilters": "Effacer les filtres",
 			"browseEmpty": "Aucun plugin n'est encore disponible dans le catalogue.",
+			"browseFilterAuthor": "Filtrer par auteur",
+			"browseFilterCategory": "Filtrer par catégorie",
+			"browseFilterPermissions": "Filtrer par permissions",
+			"browseFilteredEmpty": "Aucun plugin ne correspond aux filtres actuels.",
 			"browseInstall": "Installer",
 			"browseInstalled": "Installé",
 			"browsePreviewAlt": "Capture d'écran de {{name}}",
