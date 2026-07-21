@@ -1,5 +1,17 @@
 import React, { useMemo, useState } from 'react';
-import { Alert, Button, Card, Empty, Select, Space, Spin, Tag, Tooltip, Typography } from 'antd';
+import {
+  Alert,
+  Button,
+  Card,
+  Empty,
+  Input,
+  Select,
+  Space,
+  Spin,
+  Tag,
+  Tooltip,
+  Typography,
+} from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { Localization } from '../../../types/localization';
 import { isPluginUpdateAvailable } from '../../../utils/apis';
@@ -128,6 +140,8 @@ export const BrowseRegistry = ({
   const [permissionFilter, setPermissionFilter] = useState<string[]>([]);
   const [authorFilter, setAuthorFilter] = useState<string>();
   const [categoryFilter, setCategoryFilter] = useState<string>();
+  // Free-text search over plugin names and summaries.
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Unknown slug falls back to the raw value so a newer registry
   // doesn't render blank labels.
@@ -169,19 +183,28 @@ export const BrowseRegistry = ({
   const filteredRegistry = useMemo(
     () =>
       registry.filter(p => {
+        const search = searchTerm.trim().toLowerCase();
+        if (
+          search &&
+          !p.name.toLowerCase().includes(search) &&
+          !(p.summary ?? '').toLowerCase().includes(search)
+        ) {
+          return false;
+        }
         if (authorFilter && p.authorName !== authorFilter) return false;
         if (categoryFilter && pluginCategory(p) !== categoryFilter) return false;
         const perms = p.latest?.manifest?.permissions ?? [];
         // A plugin matches when it declares ALL selected permissions.
         return permissionFilter.every(perm => perms.includes(perm));
       }),
-    [registry, permissionFilter, authorFilter, categoryFilter],
+    [registry, permissionFilter, authorFilter, categoryFilter, searchTerm],
   );
 
   const clearFilters = () => {
     setPermissionFilter([]);
     setAuthorFilter(undefined);
     setCategoryFilter(undefined);
+    setSearchTerm('');
   };
 
   const triggerInstall = async (plugin: RegistryPlugin) => {
@@ -240,6 +263,23 @@ export const BrowseRegistry = ({
 
   const filterBar = (
     <Space wrap className={s.filters}>
+      <Input
+        allowClear
+        className={s.filterSelect}
+        placeholder={t(Localization.Admin.Plugins.browseSearch)}
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+      />
+      {categoryOptions.length > 0 && (
+        <Select
+          allowClear
+          className={s.filterSelect}
+          placeholder={t(Localization.Admin.Plugins.browseFilterCategory)}
+          value={categoryFilter}
+          onChange={setCategoryFilter}
+          options={categoryOptions}
+        />
+      )}
       <Select
         mode="multiple"
         allowClear
@@ -257,16 +297,6 @@ export const BrowseRegistry = ({
         onChange={setAuthorFilter}
         options={authorOptions}
       />
-      {categoryOptions.length > 0 && (
-        <Select
-          allowClear
-          className={s.filterSelect}
-          placeholder={t(Localization.Admin.Plugins.browseFilterCategory)}
-          value={categoryFilter}
-          onChange={setCategoryFilter}
-          options={categoryOptions}
-        />
-      )}
     </Space>
   );
 

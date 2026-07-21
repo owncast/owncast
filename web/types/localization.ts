@@ -510,6 +510,7 @@ export const Localization = {
       browseFilterCategory: 'Admin.Plugins.browseFilterCategory',
       browseFilteredEmpty: 'Admin.Plugins.browseFilteredEmpty',
       browseClearFilters: 'Admin.Plugins.browseClearFilters',
+      browseSearch: 'Admin.Plugins.browseSearch',
       updateAvailable: 'Admin.Plugins.updateAvailable',
       updateConfirmTitle: 'Admin.Plugins.updateConfirmTitle',
       updateConfirmOk: 'Admin.Plugins.updateConfirmOk',
