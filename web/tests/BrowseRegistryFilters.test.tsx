@@ -42,6 +42,7 @@ const plugins: RegistryPlugin[] = [
   {
     slug: 'gamma',
     name: 'Gamma Plugin',
+    summary: 'Charts viewer counts over time.',
     latest: { version: '3.0.0' },
   },
 ];
@@ -62,6 +63,7 @@ const renderRegistry = (registry: RegistryPlugin[] = plugins) =>
 const PERMISSIONS_PLACEHOLDER = 'Admin.Plugins.browseFilterPermissions';
 const AUTHOR_PLACEHOLDER = 'Admin.Plugins.browseFilterAuthor';
 const CATEGORY_PLACEHOLDER = 'Admin.Plugins.browseFilterCategory';
+const SEARCH_PLACEHOLDER = 'Admin.Plugins.browseSearch';
 
 const openSelect = (placeholder: string) => {
   // antd v6 renders the placeholder inside .ant-select-content; the
@@ -108,6 +110,26 @@ describe('BrowseRegistry filters', () => {
     openSelect(CATEGORY_PLACEHOLDER);
     clickOption('Admin.Plugins.Categories.chatBots');
     expect(visiblePlugins()).toEqual(['Alpha Plugin']);
+  });
+
+  it('searches by plugin name, case-insensitively', () => {
+    renderRegistry();
+    fireEvent.change(screen.getByPlaceholderText(SEARCH_PLACEHOLDER), {
+      target: { value: 'BETA' },
+    });
+    expect(visiblePlugins()).toEqual(['Beta Plugin']);
+  });
+
+  it('searches by summary text and clears with the other filters', () => {
+    renderRegistry();
+    const search = screen.getByPlaceholderText(SEARCH_PLACEHOLDER);
+    fireEvent.change(search, { target: { value: 'viewer counts' } });
+    expect(visiblePlugins()).toEqual(['Gamma Plugin']);
+    fireEvent.change(search, { target: { value: 'no such plugin' } });
+    expect(visiblePlugins()).toEqual([]);
+    fireEvent.click(screen.getByText('Admin.Plugins.browseClearFilters'));
+    expect(visiblePlugins()).toEqual(['Alpha Plugin', 'Beta Plugin', 'Gamma Plugin']);
+    expect((search as HTMLInputElement).value).toBe('');
   });
 
   it('shows the filtered-empty state and clears filters', () => {
