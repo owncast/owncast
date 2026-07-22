@@ -1,6 +1,29 @@
 import type { NextRouter } from 'next/router';
 import i18n from '../i18n';
 
+interface TranslationCatalog {
+  [key: string]: string | TranslationCatalog;
+}
+
+const withFallbackTranslations = (
+  catalog: TranslationCatalog,
+  fallback: TranslationCatalog,
+): TranslationCatalog => {
+  const merged = { ...catalog };
+  Object.entries(fallback).forEach(([key, fallbackValue]) => {
+    const value = merged[key];
+    if (typeof fallbackValue === 'string') {
+      if (typeof value !== 'string' || value.trim() === '') {
+        merged[key] = fallbackValue;
+      }
+      return;
+    }
+
+    merged[key] = withFallbackTranslations(typeof value === 'object' ? value : {}, fallbackValue);
+  });
+  return merged;
+};
+
 /**
  * Locales with a catalog under web/i18n/ that we offer to browsers. This
  * mirrors the set that used to be bundled statically in i18n/index.js.
@@ -103,8 +126,12 @@ export const loadViewerLocale = async (router: NextRouter): Promise<void> => {
     // The locale is only known at runtime (browser language or ?lang=), so a
     // static import cannot work here. webpack turns this into one chunk per
     // catalog and loads just the one the viewer needs.
-    const catalog = await import(`../i18n/${locale}/translation.json`);
-    i18n.translations[locale] = catalog.default ?? catalog;
+    const importedCatalog = await import(`../i18n/${locale}/translation.json`);
+    const catalog = (importedCatalog.default ?? importedCatalog) as TranslationCatalog;
+    i18n.translations[locale] = withFallbackTranslations(
+      catalog,
+      i18n.translations.en as TranslationCatalog,
+    );
 
     const { lang, ...rest } = router.query;
     if (lang) {

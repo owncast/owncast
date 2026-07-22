@@ -110,6 +110,23 @@ describe('loadViewerLocale', () => {
     });
   });
 
+  test('missing and empty translations fall back to English', async () => {
+    setBrowserLanguage('el-GR');
+    const { load, i18n } = freshModules();
+    const { router } = makeRouter({});
+
+    await load(router);
+
+    const english = i18n.translations.en as {
+      Admin: { Plugins: Record<string, string> };
+      Testing: Record<string, string>;
+    };
+    const greek = i18n.translations.el as typeof english;
+    expect(greek.Admin.Plugins.browseSearch).toBe(english.Admin.Plugins.browseSearch);
+    expect(greek.Testing.noPluralKey).toBe(english.Testing.noPluralKey);
+    expect(greek.Testing.simpleKey).not.toBe(english.Testing.simpleKey);
+  });
+
   test('explicit ?lang=de bounces the query param off and back on', async () => {
     setBrowserLanguage('en-US');
     const { load, i18n } = freshModules();
