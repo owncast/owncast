@@ -263,6 +263,7 @@
 			"browseInstall": "安裝",
 			"browseInstalled": "已安裝",
 			"browsePreviewAlt": "{{name}} 預覽截圖",
+			"browseSearch": "",
 			"browseUnavailableDescription": "Owncast 目前無法訪問插件目錄。您仍然可以直接從已安裝選項卡上傳 .ocpkg 文件。",
 			"browseUnavailableRetry": "重試",
 			"browseUnavailableTitle": "插件目錄當前不可用",

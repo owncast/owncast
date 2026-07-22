@@ -263,6 +263,7 @@
 			"browseInstall": "Pasang",
 			"browseInstalled": "Dipasang",
 			"browsePreviewAlt": "tangkap layar pratonton {{name}}",
+			"browseSearch": "",
 			"browseUnavailableDescription": "Owncast tidak dapat menghubungi katalog plugin pada masa ini. Anda masih boleh memuat naik fail .ocpkg secara langsung dari tab Dipasang.",
 			"browseUnavailableRetry": "Cuba semula",
 			"browseUnavailableTitle": "Katalog plugin kini tidak tersedia",

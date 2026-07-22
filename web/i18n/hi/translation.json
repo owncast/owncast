@@ -263,6 +263,7 @@
 			"browseInstall": "स्थापित करें",
 			"browseInstalled": "स्थापित",
 			"browsePreviewAlt": "{{name}} पूर्वावलोकन स्क्रीनशॉट",
+			"browseSearch": "",
 			"browseUnavailableDescription": "Owncast वर्तमान में प्लगइन कैटलॉग तक पहुँच नहीं पा रहा है। आप अभी भी स्थापित टैब से .ocpkg फ़ाइलें सीधे अपलोड कर सकते हैं।",
 			"browseUnavailableRetry": "फिर से प्रयास करें",
 			"browseUnavailableTitle": "प्लगइन कैटलॉग वर्तमान में अनुपलब्ध है",

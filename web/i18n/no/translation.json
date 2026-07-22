@@ -263,6 +263,7 @@
 			"browseInstall": "Installer",
 			"browseInstalled": "Installert",
 			"browsePreviewAlt": "{{name}} forhåndsvisningsbilde",
+			"browseSearch": "Søk i programtillegg",
 			"browseUnavailableDescription": "Owncast kan ikke nå plugin katalogen akkurat nå. Du kan fortsatt laste opp .ocpkg-filer direkte fra den installerte fanen.",
 			"browseUnavailableRetry": "Prøv igjen",
 			"browseUnavailableTitle": "Utvidelsens katalog er utilgjengelig",

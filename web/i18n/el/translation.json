@@ -263,6 +263,7 @@
 			"browseInstall": "Εγκατάσταση",
 			"browseInstalled": "Εγκατεστημένο",
 			"browsePreviewAlt": "Στιγμιότυπο προεπισκόπησης {{name}}",
+			"browseSearch": "Πρόσθετα αναζήτησης",
 			"browseUnavailableDescription": "Το Owncast δεν μπορεί να φτάσει στον κατάλογο προσθέτων αυτή τη στιγμή. Μπορείτε ακόμα να ανεβάσετε αρχεία .ocpkg απευθείας από την καρτέλα Εγκατεστημένη.",
 			"browseUnavailableRetry": "Επανάληψη",
 			"browseUnavailableTitle": "Ο κατάλογος πρόσθετων δεν είναι διαθέσιμος αυτήν τη στιγμή",

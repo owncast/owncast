@@ -263,6 +263,7 @@
 			"browseInstall": "تثبيت",
 			"browseInstalled": "مثبت",
 			"browsePreviewAlt": "{{name}} معاينة لقطة الشاشة",
+			"browseSearch": "البحث عن الإضافات",
 			"browseUnavailableDescription": "لا يمكن الوصول إلى الكتالوج المساعد الآن. لا يزال يمكنك تحميل ملفات .ocpkg مباشرة من علامة التبويب المثبتة.",
 			"browseUnavailableRetry": "إعادة المحاولة",
 			"browseUnavailableTitle": "الكتالوج المساعد غير متوفر حاليا",

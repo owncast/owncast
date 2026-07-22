@@ -263,6 +263,7 @@
 			"browseInstall": "ਸਥਾਪਿਤ ਕਰੋ",
 			"browseInstalled": "ਸਥਾਪਿਤ",
 			"browsePreviewAlt": "{{name}} ਦਾ ਪ੍ਰੀਵਿਊ ਸਕ੍ਰੀਨਸ਼ੌਟ",
+			"browseSearch": "",
 			"browseUnavailableDescription": "Owncast ਇਸ ਸਮੇਂ ਪਲੱਗਇਨ ਕੈਟਾਲੌਗ ਤੱਕ ਨਹੀਂ ਪੁੱਜ ਸਕਦਾ। ਤੁਸੀਂ ਫਿਰ ਵੀ ਸਥਾਪਿਤ ਟੈਬ ਤੋਂ ਸਿੱਧੇ .ocpkg ਫਾਇਲਾਂ ਅਪਲੋਡ ਕਰ ਸਕਦੇ ਹੋ।",
 			"browseUnavailableRetry": "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
 			"browseUnavailableTitle": "ਪਲੱਗਇਨ ਕੈਟਾਲੌਗ ਇਸ ਵੇਲੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",

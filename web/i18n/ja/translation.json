@@ -263,6 +263,7 @@
 			"browseInstall": "インストール",
 			"browseInstalled": "インストール済み",
 			"browsePreviewAlt": "{{name}} スクリーンショットのプレビュー",
+			"browseSearch": "プラグインを検索",
 			"browseUnavailableDescription": "現在、Owncastはプラグインカタログにアクセスできません。インストール済みタブから.ocpkgファイルを直接アップロードすることができます。",
 			"browseUnavailableRetry": "再試行する",
 			"browseUnavailableTitle": "プラグインカタログは現在利用できません",
