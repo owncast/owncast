@@ -6,6 +6,9 @@
 package activitypub
 
 import (
+	"context"
+	"fmt"
+
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/config"
@@ -19,6 +22,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/outbox"
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
+	"github.com/owncast/owncast/services/activitypub/requests"
 	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 	"github.com/owncast/owncast/services/chat"
@@ -38,6 +42,7 @@ type Service struct {
 	jobs             *jobs.Service
 	controllers      *controllers.Controllers
 	followers        followersrepository.FollowersRepository
+	builder          *apmodels.Builder
 	configRepository configrepository.ConfigRepository
 }
 
@@ -62,7 +67,11 @@ func New(deps Deps) *Service {
 	persistenceSvc := persistence.New(deps.Datastore, deps.Resolver)
 	followers := deps.FollowersRepository
 
-	wpSvc := workerpool.New(outboundWorkerPoolSize(followers))
+	wpSvc := workerpool.New(workerpool.Deps{
+		WorkerPoolSize: outboundWorkerPoolSize(followers),
+		Datastore:      deps.Datastore,
+		Signer:         deps.Signer,
+	})
 
 	outboxSvc := outbox.New(outbox.Deps{
 		Persistence:      persistenceSvc,
@@ -70,7 +79,6 @@ func New(deps Deps) *Service {
 		Followers:        followers,
 		ConfigRepository: deps.ConfigRepository,
 		Builder:          deps.Builder,
-		Signer:           deps.Signer,
 		Resolver:         deps.Resolver,
 		Config:           deps.Config,
 	})
@@ -83,7 +91,6 @@ func New(deps Deps) *Service {
 		Chat:             deps.Chat,
 		ConfigRepository: deps.ConfigRepository,
 		Builder:          deps.Builder,
-		Signer:           deps.Signer,
 		Resolver:         deps.Resolver,
 		Events:           deps.Events,
 	})
@@ -113,6 +120,7 @@ func New(deps Deps) *Service {
 		jobs:             jobsSvc,
 		controllers:      ctrls,
 		followers:        followers,
+		builder:          deps.Builder,
 		configRepository: deps.ConfigRepository,
 	}
 }
@@ -120,9 +128,6 @@ func New(deps Deps) *Service {
 // Start brings up the worker pools and recurring jobs. Also generates
 // the signing keypair on first run.
 func (s *Service) Start() {
-	s.workerpool.Start()
-	s.inbox.Start()
-
 	// Generate the keys for signing federated activity if needed.
 	if s.configRepository.GetPrivateKey() == "" {
 		privateKey, publicKey, err := crypto.GenerateKeys()
@@ -132,6 +137,8 @@ func (s *Service) Start() {
 			log.Errorln("Unable to get private key", err)
 		}
 	}
+	s.workerpool.Start()
+	s.inbox.Start()
 
 	s.jobs.Start()
 }
@@ -173,6 +180,91 @@ func (s *Service) GetPendingFollowRequests() ([]models.Follower, error) {
 	return s.followers.GetPendingFollowRequests()
 }
 
+// RespondToFollow atomically records an approval or rejection and queues the
+// corresponding ActivityPub response. Repeating an approval resends its Accept.
+func (s *Service) RespondToFollow(actorIRI string, approved, streamActive bool) (*apmodels.ActivityPubActor, error) {
+	follow, err := s.followers.GetByIRI(actorIRI)
+	if err != nil {
+		return nil, err
+	}
+
+	localAccountName := s.configRepository.GetDefaultFederationUsername()
+	var delivery workerpool.Delivery
+	if approved {
+		delivery, err = requests.MakeFollowAcceptDelivery(follow.Inbox, follow.RequestObject, localAccountName, s.builder, s.configRepository, streamActive)
+	} else {
+		delivery, err = requests.MakeFollowRejectDelivery(follow.Inbox, follow.RequestObject, localAccountName, s.builder)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	ds := s.persistence.Datastore()
+	ds.DbLock.Lock()
+	defer ds.DbLock.Unlock()
+	tx, err := ds.DB.BeginTx(context.Background(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("beginning follower response transaction: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	if approved {
+		err = s.followers.ApprovePreviousRequestTx(context.Background(), tx, actorIRI)
+	} else {
+		err = s.followers.BlockOrRejectTx(context.Background(), tx, actorIRI)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if err := s.workerpool.EnqueueTx(context.Background(), tx, delivery); err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, fmt.Errorf("committing follower response: %w", err)
+	}
+	return follow, nil
+}
+
+// RemoveFollower atomically removes a follower and, for directory
+// relationships, queues the Reject that tells the directory to drop us.
+func (s *Service) RemoveFollower(actorIRI string) error {
+	follow, err := s.followers.GetByIRI(actorIRI)
+	if err != nil {
+		return err
+	}
+
+	var delivery workerpool.Delivery
+	if follow.IsDirectory {
+		localAccountName := s.configRepository.GetDefaultFederationUsername()
+		delivery, err = requests.MakeFollowRejectDelivery(follow.Inbox, follow.RequestObject, localAccountName, s.builder)
+		if err != nil {
+			return err
+		}
+	}
+
+	ds := s.persistence.Datastore()
+	ds.DbLock.Lock()
+	defer ds.DbLock.Unlock()
+	tx, err := ds.DB.BeginTx(context.Background(), nil)
+	if err != nil {
+		return fmt.Errorf("beginning follower removal transaction: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	if follow.IsDirectory {
+		if err := s.workerpool.EnqueueTx(context.Background(), tx, delivery); err != nil {
+			return err
+		}
+	}
+	if err := s.followers.RemoveByIRITx(context.Background(), tx, actorIRI); err != nil {
+		return err
+	}
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("committing follower removal: %w", err)
+	}
+	return nil
+}
+
 // UpdateFollowersWithAccountUpdates broadcasts a profile-update activity to followers.
 func (s *Service) UpdateFollowersWithAccountUpdates() error {
 	return s.outbox.UpdateFollowersWithAccountUpdates()
@@ -190,9 +282,8 @@ func (s *Service) Followers() followersrepository.FollowersRepository {
 	return s.followers
 }
 
-// Workerpool returns the outbound delivery worker pool. Exposed for the
-// activitypub/requests helper functions that build and queue signed
-// outbound requests directly.
+// Workerpool returns the durable outbound delivery queue. Exposed for
+// request helpers that build ActivityPub response payloads.
 func (s *Service) Workerpool() *workerpool.Service {
 	return s.workerpool
 }

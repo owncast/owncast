@@ -382,13 +382,16 @@ export const Localization = {
       featuringYouTab: 'Admin.FeaturedStreams.featuringYouTab',
 
       // Directories that are featuring/listing this server
-      directoryListingsTitle: 'Admin.FeaturedStreams.directoryListingsTitle',
+      approvalResent: 'Admin.FeaturedStreams.approvalResent',
       directoryListingsDescription: 'Admin.FeaturedStreams.directoryListingsDescription',
       directoryListingsEmpty: 'Admin.FeaturedStreams.directoryListingsEmpty',
-      removeFromDirectoryButton: 'Admin.FeaturedStreams.removeFromDirectoryButton',
-      removeFromDirectoryConfirm: 'Admin.FeaturedStreams.removeFromDirectoryConfirm',
+      directoryListingsTitle: 'Admin.FeaturedStreams.directoryListingsTitle',
       directoryRemoved: 'Admin.FeaturedStreams.directoryRemoved',
       failedToRemoveDirectory: 'Admin.FeaturedStreams.failedToRemoveDirectory',
+      failedToResendApproval: 'Admin.FeaturedStreams.failedToResendApproval',
+      removeFromDirectoryButton: 'Admin.FeaturedStreams.removeFromDirectoryButton',
+      removeFromDirectoryConfirm: 'Admin.FeaturedStreams.removeFromDirectoryConfirm',
+      resendApprovalButton: 'Admin.FeaturedStreams.resendApprovalButton',
     },
 
     // Logging and monitoring

@@ -1,18 +1,22 @@
 package outbox
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"strings"
+	"time"
 
 	"code.superseriousbusiness.org/activity/streams"
 	log "github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 
-	"github.com/owncast/owncast/persistence/federatedserversrepository"
+	"github.com/owncast/owncast/db"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/utils"
 	"github.com/owncast/owncast/services/activitypub/webfinger"
+	"github.com/owncast/owncast/services/activitypub/workerpool"
 )
 
 const (
@@ -155,13 +159,16 @@ func (s *Service) sendUndoFollow(targetActorIRI, inbox *url.URL) error {
 		return fmt.Errorf("failed to serialize undo activity: %w", err)
 	}
 
-	req, err := s.signer.CreateSignedRequest(jsonData, inbox, localActorIRI)
-	if err != nil {
-		return fmt.Errorf("failed to create signed request: %w", err)
+	if err := s.workerpool.Enqueue(workerpool.Delivery{
+		Inbox:        inbox,
+		Payload:      jsonData,
+		ActorIRI:     localActorIRI,
+		ActivityType: undo.GetTypeName(),
+		CoalesceKey:  "follow:" + targetActorIRI.String(),
+	}); err != nil {
+		return fmt.Errorf("queueing unfollow: %w", err)
 	}
-
-	s.workerpool.AddToOutboundQueue(req)
-	log.Infof("Sent unfollow (Undo) to %s", targetActorIRI.String())
+	log.Infof("Queued unfollow (Undo) to %s", targetActorIRI.String())
 	return nil
 }
 
@@ -243,24 +250,15 @@ func (s *Service) SendFollowToAccountURI(targetActorID, targetUsername, targetSe
 	unknownProps := followActivity.GetUnknownProperties()
 	apmodels.SetBasicOwncastMetadata(unknownProps, s.configRepository, isStreamConnected)
 
-	repo := federatedserversrepository.Get()
-	if repo == nil {
-		return fmt.Errorf("federated servers repository not initialised")
-	}
-
 	actorResponse, err := s.resolver.GetResolvedActorFromIRI(targetActorID)
 	if err != nil {
-		_ = repo.RemoveFederatedServerByIRI(serverKey)
 		return fmt.Errorf("failed to resolve target actor: %w", err)
 	}
 
-	var inboxURL string
-	if actorResponse.Inbox != nil {
-		inboxURL = actorResponse.Inbox.String()
-	} else {
-		_ = repo.RemoveFederatedServerByIRI(serverKey)
+	if actorResponse.Inbox == nil {
 		return fmt.Errorf("no inbox URL found for target actor")
 	}
+	inboxURL := actorResponse.Inbox.String()
 
 	// Populate the pending record with the remote server's name and logo from
 	// its resolved actor, so the directory shows the server immediately instead
@@ -273,10 +271,6 @@ func (s *Service) SendFollowToAccountURI(targetActorID, targetUsername, targetSe
 	if actorResponse.Image != nil {
 		logoURL = clampFederatedMetadata(actorResponse.Image.String(), maxFederatedServerURLLen)
 	}
-	if err := repo.UpdateServerMetadata(serverKey, name, displayName, displayName, logoURL); err != nil {
-		log.Warnf("Failed to set initial metadata for featured server %s: %v", serverKey, err)
-	}
-
 	jsonData, err := apmodels.Serialize(followActivity)
 	if err != nil {
 		log.Errorf("Failed to serialize follow activity: %v", err)
@@ -289,15 +283,54 @@ func (s *Service) SendFollowToAccountURI(targetActorID, targetUsername, targetSe
 		return fmt.Errorf("failed to parse inbox URL: %w", err)
 	}
 
-	req, err := s.signer.CreateSignedRequest(jsonData, inboxURLParsed, localActorIRI)
-	if err != nil {
-		log.Errorf("Failed to create signed request: %v", err)
-		return fmt.Errorf("failed to create signed request: %w", err)
+	delivery := workerpool.Delivery{
+		Inbox:        inboxURLParsed,
+		Payload:      jsonData,
+		ActorIRI:     localActorIRI,
+		ActivityType: followActivity.GetTypeName(),
+		CoalesceKey:  "follow:" + targetIRI.String(),
 	}
 
-	s.workerpool.AddToOutboundQueue(req)
+	ctx := context.Background()
+	followStatus := "pending"
 
-	log.Infof("Sent follow request to %s (actor: %s)", targetServerURL, targetActorID)
+	ds := s.persistence.Datastore()
+	ds.DbLock.Lock()
+	defer ds.DbLock.Unlock()
+	tx, err := ds.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("beginning featured server transaction: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+	queries := db.New(tx)
+	if err := queries.AddFederatedServer(ctx, db.AddFederatedServerParams{
+		Iri:          serverKey,
+		Name:         models.PointerToNullString(&name),
+		LogoUrl:      models.PointerToNullString(&logoURL),
+		FollowedAt:   models.TimeToNullTime(time.Now()),
+		Pending:      models.BoolToNullBool(true),
+		Username:     models.PointerToNullString(&targetUsername),
+		FollowStatus: models.PointerToNullString(&followStatus),
+	}); err != nil {
+		return fmt.Errorf("storing pending featured server: %w", err)
+	}
+	if err := queries.UpdateFederatedServerMetadata(ctx, db.UpdateFederatedServerMetadataParams{
+		Name:        models.PointerToNullString(&name),
+		DisplayName: models.PointerToNullString(&displayName),
+		Summary:     models.PointerToNullString(&displayName),
+		LogoUrl:     models.PointerToNullString(&logoURL),
+		Iri:         serverKey,
+	}); err != nil {
+		return fmt.Errorf("storing featured server metadata: %w", err)
+	}
+	if err := s.workerpool.EnqueueTx(ctx, tx, delivery); err != nil {
+		return fmt.Errorf("queueing Follow request: %w", err)
+	}
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("committing featured server transaction: %w", err)
+	}
+
+	log.Infof("Queued follow request to %s (actor: %s)", targetServerURL, targetActorID)
 
 	return nil
 }

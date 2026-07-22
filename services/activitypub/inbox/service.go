@@ -12,7 +12,6 @@ import (
 
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
-	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
@@ -42,7 +41,6 @@ type Service struct {
 	followers        followersrepository.FollowersRepository
 	configRepository configrepository.ConfigRepository
 	builder          *apmodels.Builder
-	signer           *apcrypto.Signer
 	resolver         *apresolvers.Resolver
 	events           *dispatcher.Dispatcher
 }
@@ -56,7 +54,6 @@ type Deps struct {
 	Followers        followersrepository.FollowersRepository
 	ConfigRepository configrepository.ConfigRepository
 	Builder          *apmodels.Builder
-	Signer           *apcrypto.Signer
 	Resolver         *apresolvers.Resolver
 	Events           *dispatcher.Dispatcher
 }
@@ -73,7 +70,6 @@ func New(deps Deps) *Service {
 		followers:        deps.Followers,
 		configRepository: deps.ConfigRepository,
 		builder:          deps.Builder,
-		signer:           deps.Signer,
 		resolver:         deps.Resolver,
 		events:           deps.Events,
 	}

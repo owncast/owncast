@@ -17,9 +17,9 @@
 # 3. Verify Instance 2 immediately appears in Instance 1's directory listing
 #    as a pending follow (regression guard: the record must be persisted).
 # 4. Verify a featured-streams follow is NOT auto-accepted even on a public
-#    server: it stays pending until Instance 2 explicitly approves being
-#    featured, after which it transitions to "accepted" (the Accept must be
-#    matched to the stored record).
+#    server. Stop the requesting instance before approval so the Accept fails,
+#    verify the durable delivery is scheduled for retry, restart the instance,
+#    and verify the retry completes the handshake.
 # 5. Verify the accepted record is actually populated with the remote server's
 #    name, display name and logo (regression guard: a green "accepted" with a
 #    blank, image-less row is the broken state users hit).
@@ -267,6 +267,21 @@ start_owncast_instance() {
     return 1
 }
 
+# stop_owncast_instance LABEL PID
+stop_owncast_instance() {
+    local label=$1
+    local pid=$2
+
+    if [[ -z "${pid}" ]] || ! kill -0 "${pid}" 2>/dev/null; then
+        return 0
+    fi
+
+    log_info "Stopping Owncast '${label}' (PID ${pid})..."
+    kill "${pid}"
+    wait "${pid}" 2>/dev/null || true
+    log_info "Owncast '${label}' stopped"
+}
+
 get_admin_auth() {
     echo -n "${ADMIN_USER}:${ADMIN_PASS}" | base64
 }
@@ -412,6 +427,56 @@ wait_for_follow_status() {
     return 1
 }
 
+# wait_for_failed_delivery DB COALESCE_KEY TIMEOUT_SECONDS
+wait_for_failed_delivery() {
+    local db=$1
+    local coalesce_key=$2
+    local timeout=${3:-20}
+    local waited=0
+
+    while [[ ${waited} -lt ${timeout} ]]; do
+        local attempts
+        attempts=$(sqlite3 -cmd ".timeout 5000" "${db}" \
+            "SELECT COALESCE(MAX(attempts), 0) FROM ap_delivery_queue WHERE coalesce_key = '${coalesce_key}' AND last_error IS NOT NULL AND failed_at IS NULL;")
+        if [[ "${attempts}" -ge 1 ]]; then
+            echo "${attempts}"
+            return 0
+        fi
+        sleep 1
+        waited=$((waited + 1))
+    done
+    return 1
+}
+
+# expedite_delivery_retry DB COALESCE_KEY
+expedite_delivery_retry() {
+    local db=$1
+    local coalesce_key=$2
+
+    sqlite3 -cmd ".timeout 5000" "${db}" \
+        "UPDATE ap_delivery_queue SET next_attempt_at = '2000-01-01T00:00:00Z', claimed_until = NULL WHERE coalesce_key = '${coalesce_key}' AND failed_at IS NULL;"
+}
+
+# wait_for_delivery_completion DB COALESCE_KEY TIMEOUT_SECONDS
+wait_for_delivery_completion() {
+    local db=$1
+    local coalesce_key=$2
+    local timeout=${3:-20}
+    local waited=0
+
+    while [[ ${waited} -lt ${timeout} ]]; do
+        local remaining
+        remaining=$(sqlite3 -cmd ".timeout 5000" "${db}" \
+            "SELECT count(*) FROM ap_delivery_queue WHERE coalesce_key = '${coalesce_key}';")
+        if [[ "${remaining}" -eq 0 ]]; then
+            return 0
+        fi
+        sleep 1
+        waited=$((waited + 1))
+    done
+    return 1
+}
+
 # ==========================
 # Test scenarios
 # ==========================
@@ -447,14 +512,14 @@ test_add_persists_pending_record() {
 }
 
 test_follow_is_accepted() {
-    log_test "TEST 2: Featured follow requires approval, then is accepted"
+    log_test "TEST 2: Failed Accept delivery retries and completes approval"
 
     local instance1_actor="${OWNCAST_URL}/federation/user/${OWNCAST_FED_USERNAME}"
+    local delivery_db="${TEMP_DIR}/owncast2.db"
+    local delivery_key="follow-response:${instance1_actor}"
 
     # Both instances are public, so a regular fan follow would auto-accept. A
-    # featured-streams follow must NOT: instance 2 has to approve being
-    # featured first. Give the (non-)Accept time to round-trip, then confirm we
-    # are still pending.
+    # featured-streams follow must stay pending until instance 2 approves it.
     sleep 8
     local status
     status=$(server_follow_status "$(get_featured_servers "${OWNCAST_PORT}" admin)" "${OWNCAST2_URL}")
@@ -464,7 +529,6 @@ test_follow_is_accepted() {
     fi
     log_info "Featured follow is correctly awaiting approval (status=${status})"
 
-    # The pending request must be listed for instance 2's admin to act on.
     local feature_requests
     feature_requests=$(curl -s -H "Authorization: Basic $(get_admin_auth)" \
         "http://localhost:${OWNCAST2_PORT}/api/admin/federation/feature-requests")
@@ -475,21 +539,62 @@ test_follow_is_accepted() {
     fi
     log_info "Feature request from instance 1 is listed for approval"
 
-    # Instance 2 approves instance 1's request to feature it.
-    log_info "Approving the feature request on instance 2..."
-    approve_featured_request "${OWNCAST2_PORT}" "${instance1_actor}" > /dev/null
+    # Make the Accept fail exactly like a temporarily unavailable remote
+    # instance. Caddy remains reachable but returns a retryable 502 because its
+    # Owncast upstream is stopped.
+    stop_owncast_instance "owncast1" "${OC1_PID}"
+    OC1_PID=""
 
-    if wait_for_follow_status "${OWNCAST_PORT}" "${OWNCAST2_URL}" "accepted" 40; then
-        log_test "TEST 2 PASSED: featured follow stayed pending until approved, then was accepted"
-        return 0
+    local approval_response approval_success retry_attempts
+    approval_response=$(approve_featured_request "${OWNCAST2_PORT}" "${instance1_actor}")
+    approval_success=$(echo "${approval_response}" | jq -r '.success // false' 2>/dev/null)
+
+    local retry_observed=true
+    if [[ "${approval_success}" != "true" ]]; then
+        log_error "TEST 2 FAILED: approval request failed: ${approval_response}"
+        retry_observed=false
+    elif retry_attempts=$(wait_for_failed_delivery "${delivery_db}" "${delivery_key}" 20); then
+        local delivery_error
+        delivery_error=$(sqlite3 "${delivery_db}" \
+            "SELECT last_error FROM ap_delivery_queue WHERE coalesce_key = '${delivery_key}' LIMIT 1;")
+        log_info "Observed failed Accept attempt ${retry_attempts}: ${delivery_error}"
+    else
+        log_error "TEST 2 FAILED: Accept delivery was not retained for retry"
+        retry_observed=false
     fi
 
-    local json
-    json=$(get_featured_servers "${OWNCAST_PORT}" admin)
-    status=$(server_follow_status "${json}" "${OWNCAST2_URL}")
-    log_error "TEST 2 FAILED: follow status is '${status}' after approval, expected 'accepted'"
-    log_error "Listing: ${json}"
-    return 1
+    # Always bring instance 1 back so later scenarios do not fail as collateral
+    # damage if the retry assertion above fails.
+    if ! start_owncast_instance "owncast1" "${OWNCAST_PORT}" "${OWNCAST_RTMP_PORT}"; then
+        log_error "TEST 2 FAILED: instance 1 did not restart"
+        return 1
+    fi
+    OC1_PID="${OC_LAST_PID}"
+
+    if [[ "${retry_observed}" != "true" ]]; then
+        return 1
+    fi
+
+    # The production delay starts at one minute. Make the retained row due now
+    # so the live test exercises the retry without sleeping for the backoff.
+    expedite_delivery_retry "${delivery_db}" "${delivery_key}"
+
+    if ! wait_for_follow_status "${OWNCAST_PORT}" "${OWNCAST2_URL}" "accepted" 40; then
+        local json
+        json=$(get_featured_servers "${OWNCAST_PORT}" admin)
+        status=$(server_follow_status "${json}" "${OWNCAST2_URL}")
+        log_error "TEST 2 FAILED: follow status is '${status}' after retry, expected 'accepted'"
+        log_error "Listing: ${json}"
+        return 1
+    fi
+
+    if ! wait_for_delivery_completion "${delivery_db}" "${delivery_key}" 20; then
+        log_error "TEST 2 FAILED: successful Accept remained in the delivery queue"
+        return 1
+    fi
+
+    log_test "TEST 2 PASSED: failed Accept was retained, retried, and delivered after restart"
+    return 0
 }
 
 test_metadata_is_populated() {

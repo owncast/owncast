@@ -115,6 +115,14 @@ Owncast supports sending direct messages to specific actors (used for replying t
 
 **GET requests** to actor, outbox, and followers endpoints do not require signatures.
 
+## Outbound Delivery
+
+Outbound activities are stored in SQLite before the enqueue operation returns. The queue stores the unsigned payload and creates a fresh HTTP signature for every attempt.
+
+Network errors, timeouts, `401`, `408`, `425`, `429`, and server errors except `501` are retried up to 16 times with exponential backoff and jitter. `Retry-After` is honored when it requests a longer delay. Other client errors and `501` are recorded as permanent failures.
+
+Featured-stream status updates are coalesced per destination. Only the newest pending live or offline state is retained. Follow approvals and pending outbound follows are committed in the same transaction as their delivery record.
+
 ## WebFinger
 
 Actor discovery via `/.well-known/webfinger?resource=acct:{username}@{domain}`

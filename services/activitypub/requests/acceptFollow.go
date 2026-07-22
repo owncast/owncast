@@ -2,6 +2,7 @@ package requests
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 
 	"code.superseriousbusiness.org/activity/streams"
@@ -9,37 +10,51 @@ import (
 
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 
 	"github.com/teris-io/shortid"
 )
 
-// SendFollowAccept will send an accept activity to a follow request
-// from a specified local user, queuing the outbound delivery on the
-// provided workerpool. The Accept carries this server's current Owncast
-// stream status so a newly accepted featured-streams follower reflects our
-// live state immediately rather than waiting for the next periodic ping.
-func SendFollowAccept(wp *workerpool.Service, inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder, signer *crypto.Signer, configRepository configrepository.ConfigRepository, streamActive bool) error {
-	// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
-	if err := validateRemoteInbox(inbox); err != nil {
+// SendFollowAccept queues an Accept for a received Follow. The Accept carries
+// this server's current stream status so a newly accepted featured-streams
+// follower reflects our live state immediately.
+func SendFollowAccept(wp *workerpool.Service, inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder, configRepository configrepository.ConfigRepository, streamActive bool) error {
+	delivery, err := MakeFollowAcceptDelivery(inbox, originalFollowActivity, fromLocalAccountName, builder, configRepository, streamActive)
+	if err != nil {
 		return err
+	}
+	return wp.Enqueue(delivery)
+}
+
+// MakeFollowAcceptDelivery builds the durable delivery for a Follow Accept.
+func MakeFollowAcceptDelivery(inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder, configRepository configrepository.ConfigRepository, streamActive bool) (workerpool.Delivery, error) {
+	if err := validateRemoteInbox(inbox); err != nil {
+		return workerpool.Delivery{}, err
 	}
 
 	followAccept := makeAcceptFollow(originalFollowActivity, fromLocalAccountName, builder, configRepository, streamActive)
 	localAccountIRI := builder.MakeLocalIRIForAccount(fromLocalAccountName)
 
-	var jsonmap map[string]interface{}
-	jsonmap, _ = streams.Serialize(followAccept)
-	b, _ := json.Marshal(jsonmap)
-	req, err := signer.CreateSignedRequest(b, inbox, localAccountIRI)
+	jsonMap, err := streams.Serialize(followAccept)
 	if err != nil {
-		return err
+		return workerpool.Delivery{}, fmt.Errorf("serializing Follow Accept: %w", err)
+	}
+	payload, err := json.Marshal(jsonMap)
+	if err != nil {
+		return workerpool.Delivery{}, fmt.Errorf("marshalling Follow Accept: %w", err)
+	}
+	remoteActorIRI, err := apmodels.GetIRIStringFromActorProperty(originalFollowActivity.GetActivityStreamsActor())
+	if err != nil {
+		return workerpool.Delivery{}, fmt.Errorf("reading Follow actor: %w", err)
 	}
 
-	wp.AddToOutboundQueue(req)
-
-	return nil
+	return workerpool.Delivery{
+		Inbox:        inbox,
+		Payload:      payload,
+		ActorIRI:     localAccountIRI,
+		ActivityType: "Accept",
+		CoalesceKey:  "follow-response:" + remoteActorIRI,
+	}, nil
 }
 
 func makeAcceptFollow(originalFollowActivity vocab.ActivityStreamsFollow, fromAccountName string, builder *apmodels.Builder, configRepository configrepository.ConfigRepository, streamActive bool) vocab.ActivityStreamsAccept {
@@ -59,8 +74,6 @@ func makeAcceptFollow(originalFollowActivity vocab.ActivityStreamsFollow, fromAc
 	object.AppendActivityStreamsFollow(originalFollowActivity)
 	accept.SetActivityStreamsObject(object)
 
-	// Attach our current stream status/metadata so a featured-streams follower
-	// can show our live state the moment the follow is accepted.
 	apmodels.SetOwncastMetadata(accept.GetUnknownProperties(), configRepository, streamActive)
 
 	return accept

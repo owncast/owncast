@@ -2,45 +2,58 @@ package requests
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 
 	"code.superseriousbusiness.org/activity/streams"
 	"code.superseriousbusiness.org/activity/streams/vocab"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 
 	"github.com/teris-io/shortid"
 )
 
-// SendFollowReject sends a Reject of a previously received Follow to that
-// follower's inbox, queuing delivery on the provided workerpool. Owncast uses
-// this to revoke a follower it had accepted: when the operator removes a
-// directory that is listing this server, the Reject tells the directory its
-// follow is no longer accepted so it drops the listing, rather than leaving the
-// server showing offline there forever. It is the same signal the wider
-// Fediverse sends when an account removes one of its followers.
-func SendFollowReject(wp *workerpool.Service, inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder, signer *crypto.Signer) error {
-	// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
-	if err := validateRemoteInbox(inbox); err != nil {
+// SendFollowReject queues a Reject for a previously received Follow. Owncast
+// uses this to revoke a directory follower so the remote server drops its
+// listing instead of leaving it offline forever.
+func SendFollowReject(wp *workerpool.Service, inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder) error {
+	delivery, err := MakeFollowRejectDelivery(inbox, originalFollowActivity, fromLocalAccountName, builder)
+	if err != nil {
 		return err
+	}
+	return wp.Enqueue(delivery)
+}
+
+// MakeFollowRejectDelivery builds the durable delivery for a Follow Reject.
+func MakeFollowRejectDelivery(inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder) (workerpool.Delivery, error) {
+	if err := validateRemoteInbox(inbox); err != nil {
+		return workerpool.Delivery{}, err
 	}
 
 	followReject := makeRejectFollow(originalFollowActivity, fromLocalAccountName, builder)
 	localAccountIRI := builder.MakeLocalIRIForAccount(fromLocalAccountName)
 
-	var jsonmap map[string]interface{}
-	jsonmap, _ = streams.Serialize(followReject)
-	b, _ := json.Marshal(jsonmap)
-	req, err := signer.CreateSignedRequest(b, inbox, localAccountIRI)
+	jsonMap, err := streams.Serialize(followReject)
 	if err != nil {
-		return err
+		return workerpool.Delivery{}, fmt.Errorf("serializing Follow Reject: %w", err)
+	}
+	payload, err := json.Marshal(jsonMap)
+	if err != nil {
+		return workerpool.Delivery{}, fmt.Errorf("marshalling Follow Reject: %w", err)
+	}
+	remoteActorIRI, err := apmodels.GetIRIStringFromActorProperty(originalFollowActivity.GetActivityStreamsActor())
+	if err != nil {
+		return workerpool.Delivery{}, fmt.Errorf("reading Follow actor: %w", err)
 	}
 
-	wp.AddToOutboundQueue(req)
-
-	return nil
+	return workerpool.Delivery{
+		Inbox:        inbox,
+		Payload:      payload,
+		ActorIRI:     localAccountIRI,
+		ActivityType: "Reject",
+		CoalesceKey:  "follow-response:" + remoteActorIRI,
+	}, nil
 }
 
 func makeRejectFollow(originalFollowActivity vocab.ActivityStreamsFollow, fromAccountName string, builder *apmodels.Builder) vocab.ActivityStreamsReject {

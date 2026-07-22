@@ -1,26 +1,84 @@
-// Package workerpool is the outbound HTTP delivery pool for the
-// ActivityPub subsystem. It maintains a bounded worker pool that posts
-// signed activities to follower inboxes, with per-domain circuit
-// breaking on repeated failure.
+// Package workerpool is the durable outbound delivery queue for ActivityPub.
+// It persists unsigned activities in SQLite, signs each delivery attempt with a
+// fresh Date header, and retries transient failures across process restarts.
 package workerpool
 
 import (
+	"context"
+	"database/sql"
+	"errors"
+	"fmt"
+	"io"
+	"math/rand/v2"
+	"net"
 	"net/http"
+	"net/url"
+	"strconv"
 	"sync"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/db"
+	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/utils"
 )
 
-// Job bundles a single outbound HTTP request for a worker.
-type Job struct {
-	request *http.Request
+const (
+	deliveryClaimDuration = 30 * time.Second
+	deliveryPollInterval  = time.Second
+	maxDeliveryAttempts   = int64(16)
+	maxStoredErrorLength  = 2000
+)
+
+// Delivery is an unsigned ActivityPub activity waiting to be delivered.
+// CoalesceKey replaces an older pending delivery to the same inbox when only
+// the latest state matters, such as featured-stream live status.
+type Delivery struct {
+	Inbox        *url.URL
+	Payload      []byte
+	ActorIRI     *url.URL
+	ActivityType string
+	CoalesceKey  string
 }
 
-// circuitBreakerBackoffDurations is the exponential backoff schedule
-// applied to a domain after consecutive delivery failures.
+// Deps lists the dependencies for the outbound delivery queue.
+type Deps struct {
+	WorkerPoolSize int
+	Datastore      *datastore.Datastore
+	Signer         *apcrypto.Signer
+}
+
+// Service owns the durable queue dispatcher, delivery workers, HTTP client,
+// and per-domain circuit breaker state.
+type Service struct {
+	workerPoolSize int
+	datastore      *datastore.Datastore
+	signer         *apcrypto.Signer
+	httpClient     *http.Client
+
+	work chan db.ClaimActivityPubDeliveryRow
+	wake chan struct{}
+	stop chan struct{}
+	wg   sync.WaitGroup
+
+	startOnce sync.Once
+	stopOnce  sync.Once
+
+	failedDomainsMu sync.RWMutex
+	failedDomains   map[string]*domainFailure
+
+	retryDelay func(int64) time.Duration
+}
+
+const circuitBreakerFailureThreshold = 3
+
+type domainFailure struct {
+	count        int
+	backoffUntil time.Time
+}
+
 var circuitBreakerBackoffDurations = []time.Duration{
 	1 * time.Minute,
 	5 * time.Minute,
@@ -29,121 +87,405 @@ var circuitBreakerBackoffDurations = []time.Duration{
 	60 * time.Minute,
 }
 
-// Service owns the worker pool, HTTP client, and per-domain circuit
-// breaker state. Construct with New(workerPoolSize) then call Start to
-// spin up workers.
-type Service struct {
-	workerPoolSize int
-
-	queue      chan Job
-	httpClient *http.Client
-
-	failedDomainsMu sync.RWMutex
-	failedDomains   map[string]*domainFailure
-}
-
-type domainFailure struct {
-	count        int
-	lastFailed   time.Time
-	backoffUntil time.Time
-}
-
-// New constructs an idle Service sized for the given worker count. Call
-// Start to bind the HTTP client and launch the worker goroutines.
-func New(workerPoolSize int) *Service {
+// New constructs an idle durable delivery service. Call Start after the
+// signing key has been generated.
+func New(deps Deps) *Service {
 	return &Service{
-		workerPoolSize: workerPoolSize,
+		workerPoolSize: deps.WorkerPoolSize,
+		datastore:      deps.Datastore,
+		signer:         deps.Signer,
+		stop:           make(chan struct{}),
 		failedDomains:  make(map[string]*domainFailure),
+		retryDelay:     defaultRetryDelay,
 	}
 }
 
-// Start initializes the HTTP client and worker goroutines. Safe to call
-// once; subsequent calls reset the pool.
+// Start launches the queue dispatcher and delivery workers. It is safe to call
+// more than once.
 func (s *Service) Start() {
-	// Use a larger buffer to decouple request creation from processing.
-	// This prevents SendToFollowers from blocking when many followers
-	// need updates.
-	const minQueueBuffer = 500
-	queueBuffer := s.workerPoolSize * 10
-	if queueBuffer < minQueueBuffer {
-		queueBuffer = minQueueBuffer
-	}
-	s.queue = make(chan Job, queueBuffer)
+	s.startOnce.Do(func() {
+		s.httpClient = utils.GetFederationHTTPClient()
+		s.work = make(chan db.ClaimActivityPubDeliveryRow, s.workerPoolSize)
+		s.wake = make(chan struct{}, 1)
 
-	// HTTP client with retry logic for transient failures (502/503/504).
-	s.httpClient = utils.GetRetryableHTTPClient()
-
-	for i := 1; i <= s.workerPoolSize; i++ {
-		go s.worker(i)
-	}
-}
-
-// AddToOutboundQueue queues an outbound HTTP request for delivery.
-func (s *Service) AddToOutboundQueue(req *http.Request) {
-	if s.ShouldSkipDomain(req.URL.Host) {
-		log.Debugf("Skipping request to %s due to circuit breaker", req.URL.Host)
-		return
-	}
-
-	select {
-	case s.queue <- Job{req}:
-	default:
-		log.Debugln("Outbound ActivityPub job queue is full")
-		s.queue <- Job{req} // blocks until a worker drains
-	}
-	log.Tracef("Queued request for ActivityPub destination %s", req.RequestURI)
-}
-
-func (s *Service) worker(workerID int) {
-	log.Debugf("Started ActivityPub worker %d", workerID)
-
-	for job := range s.queue {
-		if err := s.sendActivityPubMessageToInbox(job); err != nil {
-			log.Errorf("ActivityPub destination %s failed to send Error: %s", job.request.RequestURI, err)
-			s.recordDomainFailure(job.request.URL.Host)
-		} else {
-			s.resetDomainFailure(job.request.URL.Host)
+		s.wg.Add(s.workerPoolSize + 1)
+		for i := 1; i <= s.workerPoolSize; i++ {
+			go s.worker(i)
 		}
-		log.Tracef("Done with ActivityPub destination %s using worker %d", job.request.RequestURI, workerID)
-	}
+		go s.dispatch()
+		s.signalWake()
+	})
 }
 
-func (s *Service) sendActivityPubMessageToInbox(job Job) error {
-	resp, err := s.httpClient.Do(job.request)
-	if err != nil {
+// Stop waits for the dispatcher and workers to release their resources.
+func (s *Service) Stop() {
+	s.stopOnce.Do(func() { close(s.stop) })
+	s.wg.Wait()
+}
+
+// Enqueue persists a delivery before returning.
+func (s *Service) Enqueue(delivery Delivery) error {
+	if err := validateDelivery(delivery); err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	if err := s.queue(context.Background(), s.datastore.GetQueries(), delivery); err != nil {
+		return err
+	}
+	s.signalWake()
+	return nil
+}
 
-	// HTTP 4xx and 5xx count as failures for circuit-breaker purposes.
-	if resp.StatusCode >= 400 {
-		return &httpError{statusCode: resp.StatusCode, message: resp.Status}
+// EnqueueBatch persists a set of deliveries in one short transaction.
+func (s *Service) EnqueueBatch(deliveries []Delivery) error {
+	if len(deliveries) == 0 {
+		return nil
+	}
+	tx, err := s.datastore.DB.BeginTx(context.Background(), nil)
+	if err != nil {
+		return fmt.Errorf("beginning ActivityPub delivery batch: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	queries := db.New(tx)
+	for _, delivery := range deliveries {
+		if err := validateDelivery(delivery); err != nil {
+			return err
+		}
+		if err := s.queue(context.Background(), queries, delivery); err != nil {
+			return err
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("committing ActivityPub delivery batch: %w", err)
+	}
+	s.signalWake()
+	return nil
+}
+
+// EnqueueTx persists a delivery inside an existing state-change transaction.
+func (s *Service) EnqueueTx(ctx context.Context, tx *sql.Tx, delivery Delivery) error {
+	if err := validateDelivery(delivery); err != nil {
+		return err
+	}
+	if err := s.queue(ctx, db.New(tx), delivery); err != nil {
+		return err
+	}
+	s.signalWake()
+	return nil
+}
+
+func validateDelivery(delivery Delivery) error {
+	if delivery.Inbox == nil || delivery.ActorIRI == nil {
+		return errors.New("ActivityPub delivery requires inbox and actor IRI")
+	}
+	if delivery.Inbox.Scheme != "https" || delivery.Inbox.Hostname() == "" {
+		return fmt.Errorf("rejecting invalid inbox URL: %s", delivery.Inbox)
+	}
+	if net.ParseIP(delivery.Inbox.Hostname()) != nil && utils.IsHostnameInternal(delivery.Inbox.Hostname()) {
+		return fmt.Errorf("rejecting internal or loopback inbox URL: %s", delivery.Inbox)
+	}
+	if len(delivery.Payload) == 0 {
+		return errors.New("ActivityPub delivery requires a payload")
+	}
+	if delivery.ActivityType == "" {
+		return errors.New("ActivityPub delivery requires an activity type")
 	}
 	return nil
 }
 
-// httpError represents an HTTP error response.
-type httpError struct {
-	statusCode int
-	message    string
+func (s *Service) queue(ctx context.Context, queries *db.Queries, delivery Delivery) error {
+	_, err := queries.QueueActivityPubDelivery(ctx, db.QueueActivityPubDeliveryParams{
+		Inbox:         delivery.Inbox.String(),
+		Payload:       delivery.Payload,
+		ActorIri:      delivery.ActorIRI.String(),
+		ActivityType:  delivery.ActivityType,
+		CoalesceKey:   sql.NullString{String: delivery.CoalesceKey, Valid: delivery.CoalesceKey != ""},
+		NextAttemptAt: time.Now(),
+	})
+	if err != nil {
+		return fmt.Errorf("queueing ActivityPub %s delivery: %w", delivery.ActivityType, err)
+	}
+	return nil
 }
 
-func (e *httpError) Error() string { return e.message }
+func (s *Service) signalWake() {
+	if s.wake == nil {
+		return
+	}
+	select {
+	case s.wake <- struct{}{}:
+	default:
+	}
+}
 
-// ShouldSkipDomain reports whether the given domain is currently inside
-// its circuit-breaker backoff window.
-func (s *Service) ShouldSkipDomain(domain string) bool {
+func (s *Service) dispatch() {
+	defer s.wg.Done()
+	ticker := time.NewTicker(deliveryPollInterval)
+	defer ticker.Stop()
+
+	for {
+		s.fillWorkers()
+		select {
+		case <-s.stop:
+			return
+		case <-s.wake:
+		case <-ticker.C:
+		}
+	}
+}
+
+func (s *Service) fillWorkers() {
+	for len(s.work) < cap(s.work) {
+		job, err := s.datastore.GetQueries().ClaimActivityPubDelivery(context.Background(), db.ClaimActivityPubDeliveryParams{
+			ClaimedUntil: sql.NullTime{Time: time.Now().Add(deliveryClaimDuration), Valid: true},
+			Now:          time.Now(),
+		})
+		if errors.Is(err, sql.ErrNoRows) {
+			return
+		}
+		if err != nil {
+			log.Errorf("Unable to claim ActivityPub delivery: %v", err)
+			return
+		}
+		select {
+		case <-s.stop:
+			return
+		case s.work <- job:
+		}
+	}
+}
+
+func (s *Service) worker(workerID int) {
+	defer s.wg.Done()
+	log.Debugf("Started ActivityPub delivery worker %d", workerID)
+
+	for {
+		select {
+		case <-s.stop:
+			return
+		case job := <-s.work:
+			s.deliver(job)
+			s.signalWake()
+		}
+	}
+}
+
+func (s *Service) deliver(job db.ClaimActivityPubDeliveryRow) {
+	inbox, err := url.Parse(job.Inbox)
+	if err != nil {
+		s.fail(job, fmt.Errorf("invalid inbox URL: %w", err))
+		return
+	}
+
+	if until, blocked := s.domainBackoff(inbox.Host); blocked {
+		s.deferDelivery(job, until)
+		return
+	}
+
+	actorIRI, err := url.Parse(job.ActorIri)
+	if err != nil {
+		s.fail(job, fmt.Errorf("invalid actor IRI: %w", err))
+		return
+	}
+
+	req, err := s.signer.CreateSignedRequest(job.Payload, inbox, actorIRI)
+	if err != nil {
+		s.fail(job, fmt.Errorf("signing delivery: %w", err))
+		return
+	}
+
+	attemptErr := s.send(req)
+	if attemptErr == nil {
+		s.resetDomainFailure(inbox.Host)
+		s.complete(job)
+		return
+	}
+
+	if attemptErr.permanent {
+		s.fail(job, attemptErr)
+		return
+	}
+
+	domainUntil := s.recordDomainFailure(inbox.Host)
+	if job.Attempts >= maxDeliveryAttempts {
+		s.fail(job, fmt.Errorf("retry limit reached: %w", attemptErr))
+		return
+	}
+
+	delay := s.retryDelay(job.Attempts)
+	if attemptErr.retryAfter > delay {
+		delay = attemptErr.retryAfter
+	}
+	nextAttempt := time.Now().Add(delay)
+	if domainUntil.After(nextAttempt) {
+		nextAttempt = domainUntil
+	}
+
+	rows, err := s.datastore.GetQueries().RetryActivityPubDelivery(context.Background(), db.RetryActivityPubDeliveryParams{
+		NextAttemptAt: nextAttempt,
+		LastError:     nullableError(attemptErr),
+		ID:            job.ID,
+		Revision:      job.Revision,
+	})
+	if err != nil {
+		log.Errorf("Unable to reschedule ActivityPub %s delivery to %s: %v", job.ActivityType, job.Inbox, err)
+		return
+	}
+	if rows == 0 {
+		s.releaseSuperseded(job)
+		return
+	}
+	log.Warnf("ActivityPub %s delivery to %s failed on attempt %d; retrying at %s: %v", job.ActivityType, job.Inbox, job.Attempts, nextAttempt.Format(time.RFC3339), attemptErr)
+}
+
+type attemptError struct {
+	statusCode int
+	permanent  bool
+	retryAfter time.Duration
+	err        error
+}
+
+func (e *attemptError) Error() string { return e.err.Error() }
+func (e *attemptError) Unwrap() error { return e.err }
+
+func (s *Service) send(req *http.Request) *attemptError {
+	resp, err := s.httpClient.Do(req)
+	if err != nil {
+		return &attemptError{err: err}
+	}
+	defer resp.Body.Close()
+	_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 4096))
+
+	if resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusMultipleChoices {
+		return nil
+	}
+
+	retryable := resp.StatusCode == http.StatusUnauthorized ||
+		resp.StatusCode == http.StatusRequestTimeout ||
+		resp.StatusCode == http.StatusTooEarly ||
+		resp.StatusCode == http.StatusTooManyRequests ||
+		(resp.StatusCode >= http.StatusInternalServerError && resp.StatusCode != http.StatusNotImplemented)
+
+	return &attemptError{
+		statusCode: resp.StatusCode,
+		permanent:  !retryable,
+		retryAfter: parseRetryAfter(resp.Header.Get("Retry-After")),
+		err:        fmt.Errorf("HTTP %s", resp.Status),
+	}
+}
+
+func parseRetryAfter(value string) time.Duration {
+	if value == "" {
+		return 0
+	}
+	if seconds, err := strconv.Atoi(value); err == nil {
+		if seconds > 0 {
+			return time.Duration(seconds) * time.Second
+		}
+		return 0
+	}
+	when, err := http.ParseTime(value)
+	if err != nil {
+		return 0
+	}
+	if delay := time.Until(when); delay > 0 {
+		return delay
+	}
+	return 0
+}
+
+func defaultRetryDelay(attempt int64) time.Duration {
+	exponent := attempt - 1
+	if exponent < 0 {
+		exponent = 0
+	}
+	if exponent > 8 {
+		exponent = 8
+	}
+	delay := time.Minute * time.Duration(1<<exponent)
+	if delay > 6*time.Hour {
+		delay = 6 * time.Hour
+	}
+	// #nosec G404: retry jitter does not protect a secret or security decision.
+	return delay + time.Duration(rand.Int64N(int64(delay/2)+1))
+}
+
+func (s *Service) complete(job db.ClaimActivityPubDeliveryRow) {
+	rows, err := s.datastore.GetQueries().CompleteActivityPubDelivery(context.Background(), db.CompleteActivityPubDeliveryParams{
+		ID:       job.ID,
+		Revision: job.Revision,
+	})
+	if err != nil {
+		log.Errorf("Unable to complete ActivityPub %s delivery to %s: %v", job.ActivityType, job.Inbox, err)
+		return
+	}
+	if rows == 0 {
+		s.releaseSuperseded(job)
+	}
+}
+
+func (s *Service) deferDelivery(job db.ClaimActivityPubDeliveryRow, until time.Time) {
+	rows, err := s.datastore.GetQueries().DeferActivityPubDelivery(context.Background(), db.DeferActivityPubDeliveryParams{
+		NextAttemptAt: until,
+		ID:            job.ID,
+		Revision:      job.Revision,
+	})
+	if err != nil {
+		log.Errorf("Unable to defer ActivityPub %s delivery to %s: %v", job.ActivityType, job.Inbox, err)
+		return
+	}
+	if rows == 0 {
+		s.releaseSuperseded(job)
+	}
+}
+
+func (s *Service) fail(job db.ClaimActivityPubDeliveryRow, deliveryErr error) {
+	rows, err := s.datastore.GetQueries().FailActivityPubDelivery(context.Background(), db.FailActivityPubDeliveryParams{
+		LastError: nullableError(deliveryErr),
+		FailedAt:  sql.NullTime{Time: time.Now(), Valid: true},
+		ID:        job.ID,
+		Revision:  job.Revision,
+	})
+	if err != nil {
+		log.Errorf("Unable to record failed ActivityPub %s delivery to %s: %v", job.ActivityType, job.Inbox, err)
+		return
+	}
+	if rows == 0 {
+		s.releaseSuperseded(job)
+		return
+	}
+	log.Errorf("ActivityPub %s delivery to %s permanently failed after %d attempt(s): %v", job.ActivityType, job.Inbox, job.Attempts, deliveryErr)
+}
+
+func (s *Service) releaseSuperseded(job db.ClaimActivityPubDeliveryRow) {
+	if err := s.datastore.GetQueries().ReleaseSupersededActivityPubDelivery(context.Background(), db.ReleaseSupersededActivityPubDeliveryParams{
+		ID:       job.ID,
+		Revision: job.Revision,
+	}); err != nil {
+		log.Errorf("Unable to release superseded ActivityPub delivery %d: %v", job.ID, err)
+	}
+}
+
+func nullableError(err error) sql.NullString {
+	message := err.Error()
+	if len(message) > maxStoredErrorLength {
+		message = message[:maxStoredErrorLength]
+	}
+	return sql.NullString{String: message, Valid: true}
+}
+
+func (s *Service) domainBackoff(domain string) (time.Time, bool) {
 	s.failedDomainsMu.RLock()
 	defer s.failedDomainsMu.RUnlock()
 
 	failure, exists := s.failedDomains[domain]
-	if !exists {
-		return false
+	if !exists || !time.Now().Before(failure.backoffUntil) {
+		return time.Time{}, false
 	}
-	return time.Now().Before(failure.backoffUntil)
+	return failure.backoffUntil, true
 }
 
-func (s *Service) recordDomainFailure(domain string) {
+func (s *Service) recordDomainFailure(domain string) time.Time {
 	s.failedDomainsMu.Lock()
 	defer s.failedDomainsMu.Unlock()
 
@@ -152,26 +494,23 @@ func (s *Service) recordDomainFailure(domain string) {
 		failure = &domainFailure{}
 		s.failedDomains[domain] = failure
 	}
-
 	failure.count++
-	failure.lastFailed = time.Now()
 
-	backoffIndex := failure.count - 1
-	if backoffIndex >= len(circuitBreakerBackoffDurations) {
-		backoffIndex = len(circuitBreakerBackoffDurations) - 1
+	if failure.count < circuitBreakerFailureThreshold {
+		return time.Time{}
 	}
-	backoffDuration := circuitBreakerBackoffDurations[backoffIndex]
+	index := failure.count - circuitBreakerFailureThreshold
+	if index >= len(circuitBreakerBackoffDurations) {
+		index = len(circuitBreakerBackoffDurations) - 1
+	}
+	backoffDuration := circuitBreakerBackoffDurations[index]
 	failure.backoffUntil = time.Now().Add(backoffDuration)
-
 	log.Debugf("Domain %s failed %d times, backing off for %v", domain, failure.count, backoffDuration)
+	return failure.backoffUntil
 }
 
 func (s *Service) resetDomainFailure(domain string) {
 	s.failedDomainsMu.Lock()
 	defer s.failedDomainsMu.Unlock()
-
-	if failure, exists := s.failedDomains[domain]; exists && failure.count > 0 {
-		log.Debugf("Resetting failure count for domain %s after successful delivery", domain)
-		delete(s.failedDomains, domain)
-	}
+	delete(s.failedDomains, domain)
 }

@@ -1,11 +1,12 @@
 // Package outbox is the federated-message producer for the ActivityPub
 // subsystem: builds Create activities, addresses them to followers, and
-// hands the signed bytes to the outbound worker pool. Construct via
-// New(Deps) with persistence + workerpool services; all entry points
+// hands unsigned payloads to the durable outbound delivery queue. Construct
+// via New(Deps) with persistence + workerpool services; all entry points
 // are methods on *Service.
 package outbox
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"path/filepath"
@@ -23,10 +24,8 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
-	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
-	"github.com/owncast/owncast/services/activitypub/requests"
 	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/activitypub/webfinger"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
@@ -42,7 +41,6 @@ type Service struct {
 	followers        followersrepository.FollowersRepository
 	configRepository configrepository.ConfigRepository
 	builder          *apmodels.Builder
-	signer           *apcrypto.Signer
 	resolver         *apresolvers.Resolver
 	cfg              *config.Config
 
@@ -60,7 +58,6 @@ type Deps struct {
 	Followers        followersrepository.FollowersRepository
 	ConfigRepository configrepository.ConfigRepository
 	Builder          *apmodels.Builder
-	Signer           *apcrypto.Signer
 	Resolver         *apresolvers.Resolver
 	Config           *config.Config
 }
@@ -73,7 +70,6 @@ func New(deps Deps) *Service {
 		followers:        deps.Followers,
 		configRepository: deps.ConfigRepository,
 		builder:          deps.Builder,
-		signer:           deps.Signer,
 		resolver:         deps.Resolver,
 		cfg:              deps.Config,
 	}
@@ -299,109 +295,73 @@ func (s *Service) SendToFollowers(payload []byte) error {
 		return errors.New("unable to fetch delivery inboxes to send payload to")
 	}
 
-	return s.sendToInboxes(payload, inboxes)
+	return s.sendToInboxes(payload, inboxes, "")
 }
 
 // SendToDirectoryFollowers sends a payload only to approved directory followers,
 // the servers that identified themselves with the ns#directory marker. The
 // Offer/Leave stream pings use this so fan followers are not sent directory
 // traffic they have no use for.
-func (s *Service) SendToDirectoryFollowers(payload []byte) error {
+func (s *Service) SendToDirectoryFollowers(payload []byte, coalesceKey string) error {
 	inboxes, err := s.followers.GetUniqueDirectoryDeliveryInboxes()
 	if err != nil {
 		log.Errorln("unable to fetch directory delivery inboxes", err)
 		return errors.New("unable to fetch directory delivery inboxes to send payload to")
 	}
 
-	return s.sendToInboxes(payload, inboxes)
+	return s.sendToInboxes(payload, inboxes, coalesceKey)
 }
 
-// sendToInboxes signs and queues the payload for delivery to each of the given
-// inbox URLs, preferring shared inboxes and spreading the work into batches.
-func (s *Service) sendToInboxes(payload []byte, inboxes []string) error {
+// sendToInboxes queues the payload for each inbox. Signing happens immediately
+// before each durable delivery attempt.
+func (s *Service) sendToInboxes(payload []byte, inboxes []string, coalesceKey string) error {
 	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
+	deliveries := make([]workerpool.Delivery, 0, len(inboxes))
 
-	// Batch size and delay to prevent resource exhaustion during
-	// delivery; spreads CPU load from cryptographic signing over time.
-	const batchSize = 50
-	const batchDelay = 100 * time.Millisecond
-
-	queued := 0
-	skipped := 0
-
-	for i, inboxURL := range inboxes {
+	for _, inboxURL := range inboxes {
 		inbox, err := url.Parse(inboxURL)
 		if err != nil {
 			log.Warnln("unable to parse inbox URL", inboxURL, err)
 			continue
 		}
-
-		// SSRF protection: reject non-HTTPS schemes and
-		// internal/loopback hosts. A malicious remote actor could set
-		// their inbox to an internal address to trick this server into
-		// making requests to internal services.
-		if inbox.Scheme != "https" {
-			log.Warnln("rejecting non-HTTPS inbox URL for SSRF protection:", inboxURL)
-			continue
-		}
-		if utils.IsHostnameInternal(inbox.Hostname()) {
-			log.Warnln("rejecting internal/loopback inbox URL for SSRF protection:", inboxURL)
-			continue
-		}
-
-		// Pre-check circuit breaker BEFORE expensive cryptographic
-		// signing. This saves CPU cycles for domains we know are
-		// failing.
-		if s.workerpool.ShouldSkipDomain(inbox.Host) {
-			skipped++
-			continue
-		}
-
-		req, err := s.signer.CreateSignedRequest(payload, inbox, localActor)
-		if err != nil {
-			log.Errorln("unable to create outbox request", inboxURL, err)
-			continue
-		}
-
-		s.workerpool.AddToOutboundQueue(req)
-		queued++
-
-		// Spread CPU and network load across batches so ActivityPub
-		// delivery doesn't compete with video encoding. Use queued count
-		// (not loop index) so rate limiting is consistent even when
-		// followers are skipped due to circuit breaker or parse errors.
-		if queued%batchSize == 0 && i+1 < len(inboxes) {
-			time.Sleep(batchDelay)
-		}
+		deliveries = append(deliveries, workerpool.Delivery{
+			Inbox:        inbox,
+			Payload:      payload,
+			ActorIRI:     localActor,
+			ActivityType: activityType(payload),
+			CoalesceKey:  coalesceKey,
+		})
 	}
 
-	if skipped > 0 {
-		log.Debugf("Skipped %d followers due to circuit breaker, queued %d", skipped, queued)
-	}
+	return s.workerpool.EnqueueBatch(deliveries)
+}
 
-	return nil
+func activityType(payload []byte) string {
+	var envelope struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(payload, &envelope); err != nil || envelope.Type == "" {
+		return "Activity"
+	}
+	return envelope.Type
 }
 
 // SendToUser sends a payload to a single specific inbox.
 func (s *Service) SendToUser(inbox *url.URL, payload []byte) error {
-	// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
-	if inbox.Scheme != "https" {
-		return errors.Errorf("rejecting non-HTTPS inbox URL for SSRF protection: %s", inbox.String())
-	}
-	if utils.IsHostnameInternal(inbox.Hostname()) {
-		return errors.Errorf("rejecting internal/loopback inbox URL for SSRF protection: %s", inbox.String())
+	// Reject malformed destinations before queueing. The delivery transport
+	// enforces public-address SSRF checks on every attempt.
+	if inbox.Scheme != "https" || inbox.Hostname() == "" {
+		return errors.Errorf("rejecting invalid inbox URL: %s", inbox.String())
 	}
 
 	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 
-	req, err := requests.CreateSignedRequest(payload, inbox, localActor, s.signer)
-	if err != nil {
-		return errors.Wrap(err, "unable to create outbox request")
-	}
-
-	s.workerpool.AddToOutboundQueue(req)
-
-	return nil
+	return s.workerpool.Enqueue(workerpool.Delivery{
+		Inbox:        inbox,
+		Payload:      payload,
+		ActorIRI:     localActor,
+		ActivityType: activityType(payload),
+	})
 }
 
 // UpdateFollowersWithAccountUpdates broadcasts a profile-update Activity

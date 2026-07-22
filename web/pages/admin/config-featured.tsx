@@ -41,6 +41,7 @@ const ConfigFeatured = () => {
     directories: directoryFollowers,
     loading: directoriesLoading,
     remove: removeDirectoryFollower,
+    resendApproval: resendDirectoryApproval,
   } = useDirectoryFollowers();
 
   const handleFeatureStream = async (url: string) => {
@@ -155,6 +156,7 @@ const ConfigFeatured = () => {
                       directories={directoryFollowers}
                       loading={directoriesLoading}
                       onRemove={removeDirectoryFollower}
+                      onResendApproval={resendDirectoryApproval}
                     />
                   </Space>
                 ),
