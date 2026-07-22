@@ -1,8 +1,12 @@
 package workerpool
 
 import (
+	"strings"
 	"testing"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+	logtest "github.com/sirupsen/logrus/hooks/test"
 )
 
 func newTestService() *Service {
@@ -10,6 +14,13 @@ func newTestService() *Service {
 }
 
 func TestCircuitBreaker(t *testing.T) {
+	originalLevel := log.GetLevel()
+	log.SetLevel(log.DebugLevel)
+	defer log.SetLevel(originalLevel)
+
+	hook := logtest.NewGlobal()
+	defer hook.Reset()
+
 	s := newTestService()
 
 	testDomain := "failing.example.com"
@@ -33,6 +44,18 @@ func TestCircuitBreaker(t *testing.T) {
 	s.resetDomainFailure(testDomain)
 	if s.ShouldSkipDomain(testDomain) {
 		t.Error("Domain should not be skipped after reset")
+	}
+	var backoffLogs int
+	for _, entry := range hook.AllEntries() {
+		if strings.Contains(entry.Message, "backing off") {
+			backoffLogs++
+			if entry.Level != log.DebugLevel {
+				t.Errorf("backoff log %q level = %s, want debug", entry.Message, entry.Level)
+			}
+		}
+	}
+	if backoffLogs != 3 {
+		t.Errorf("backoff log count = %d, want 3", backoffLogs)
 	}
 }
 
