@@ -276,8 +276,9 @@ func (s *Service) deliver(job db.ClaimActivityPubDeliveryRow) {
 		s.fail(job, fmt.Errorf("invalid inbox URL: %w", err))
 		return
 	}
+	domain := inbox.Hostname()
 
-	if until, blocked := s.domainBackoff(inbox.Host); blocked {
+	if until, blocked := s.domainBackoff(domain); blocked {
 		s.deferDelivery(job, until)
 		return
 	}
@@ -296,7 +297,7 @@ func (s *Service) deliver(job db.ClaimActivityPubDeliveryRow) {
 
 	attemptErr := s.send(req)
 	if attemptErr == nil {
-		s.resetDomainFailure(inbox.Host)
+		s.resetDomainFailure(domain)
 		s.complete(job)
 		return
 	}
@@ -306,7 +307,7 @@ func (s *Service) deliver(job db.ClaimActivityPubDeliveryRow) {
 		return
 	}
 
-	domainUntil := s.recordDomainFailure(inbox.Host)
+	domainUntil := s.recordDomainFailure(domain)
 	if job.Attempts >= maxDeliveryAttempts {
 		s.fail(job, fmt.Errorf("retry limit reached: %w", attemptErr))
 		return

@@ -317,6 +317,7 @@ func (s *Service) SendToDirectoryFollowers(payload []byte, coalesceKey string) e
 func (s *Service) sendToInboxes(payload []byte, inboxes []string, coalesceKey string) error {
 	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 	deliveries := make([]workerpool.Delivery, 0, len(inboxes))
+	payloadType := activityType(payload)
 
 	for _, inboxURL := range inboxes {
 		inbox, err := url.Parse(inboxURL)
@@ -324,11 +325,15 @@ func (s *Service) sendToInboxes(payload []byte, inboxes []string, coalesceKey st
 			log.Warnln("unable to parse inbox URL", inboxURL, err)
 			continue
 		}
+		if inbox.Scheme != "https" || inbox.Hostname() == "" {
+			log.Warnln("rejecting invalid inbox URL", inboxURL)
+			continue
+		}
 		deliveries = append(deliveries, workerpool.Delivery{
 			Inbox:        inbox,
 			Payload:      payload,
 			ActorIRI:     localActor,
-			ActivityType: activityType(payload),
+			ActivityType: payloadType,
 			CoalesceKey:  coalesceKey,
 		})
 	}
