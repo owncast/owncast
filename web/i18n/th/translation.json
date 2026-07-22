@@ -263,6 +263,7 @@
 			"browseInstall": "ติดตั้ง",
 			"browseInstalled": "ติดตั้งแล้ว",
 			"browsePreviewAlt": "ภาพหน้าจอแสดงตัวอย่างของ {{name}}",
+			"browseSearch": "",
 			"browseUnavailableDescription": "Owncast ไม่สามารถเข้าถึงแค็ตตาล็อกปลั๊กอินได้ในขณะนี้ คุณยังสามารถอัปโหลดไฟล์ .ocpkg โดยตรงจากแท็บที่ติดตั้งได้",
 			"browseUnavailableRetry": "ลองใหม่",
 			"browseUnavailableTitle": "แค็ตตาล็อกปลั๊กอินไม่สามารถใช้ได้ในขณะนี้",

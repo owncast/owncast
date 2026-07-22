@@ -263,6 +263,7 @@
 			"browseInstall": "Installer",
 			"browseInstalled": "Installé",
 			"browsePreviewAlt": "Capture d'écran de {{name}}",
+			"browseSearch": "Rechercher des plugins",
 			"browseUnavailableDescription": "Owncast ne peut pas accéder au catalogue des plugins pour le moment. Vous pouvez toujours téléverser des fichiers .ocpkg directement depuis l'onglet \"Installé\".",
 			"browseUnavailableRetry": "Réessayer",
 			"browseUnavailableTitle": "Le catalogue de plugins est actuellement indisponible",

@@ -263,6 +263,7 @@
 			"browseInstall": "ইনস্টল করুন",
 			"browseInstalled": "ইনস্টল করা",
 			"browsePreviewAlt": "{{name}} প্রিভিউ স্ক্রীনশট",
+			"browseSearch": "",
 			"browseUnavailableDescription": "Owncast এই মুহুর্তে প্লাগইন ক্যাটালগে পৌঁছাতে পারছে না। আপনি ইনস্টল করা ট্যাব থেকে সরাসরি .ocpkg ফাইল আপলোড করতে পারেন।",
 			"browseUnavailableRetry": "পুনরায় চেষ্টা করুন",
 			"browseUnavailableTitle": "প্লাগইন ক্যাটালগ বর্তমানে উপলব্ধ নয়",

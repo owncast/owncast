@@ -263,6 +263,7 @@
 			"browseInstall": "Cài đặt",
 			"browseInstalled": "Đã cài đặt",
 			"browsePreviewAlt": "Ảnh chụp màn hình xem trước của {{name}}",
+			"browseSearch": "",
 			"browseUnavailableDescription": "Owncast không thể kết nối với danh mục plugin ngay bây giờ. Bạn vẫn có thể tải tệp .ocpkg trực tiếp từ tab Đã cài đặt.",
 			"browseUnavailableRetry": "Thử lại",
 			"browseUnavailableTitle": "Danh mục plugin hiện không khả dụng",

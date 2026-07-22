@@ -263,6 +263,7 @@
 			"browseInstall": "Instaliraj",
 			"browseInstalled": "Instalirano",
 			"browsePreviewAlt": "{{name}} pregled snimke zaslona",
+			"browseSearch": "",
 			"browseUnavailableDescription": "Owncast trenutno ne može doći do kataloga dodataka. I dalje možete učitati .ocpkg datoteke iz Osvježenog taba.",
 			"browseUnavailableRetry": "Ponovno pokušajte",
 			"browseUnavailableTitle": "Katalog dodataka trenutno nije dostupan",
