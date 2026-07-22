@@ -263,6 +263,7 @@
 			"browseInstall": "Installeren",
 			"browseInstalled": "Geinstalleerd",
 			"browsePreviewAlt": "{{name}} voorbeeld schermafbeelding",
+			"browseSearch": "Plugins doorzoeken",
 			"browseUnavailableDescription": "Owncast kan de plugin catalogus momenteel niet bereiken. U kunt nog steeds .ocpkg bestanden direct vanuit het tabblad Geïnstalleerde bestanden uploaden.",
 			"browseUnavailableRetry": "Opnieuw",
 			"browseUnavailableTitle": "De plugin catalogus is momenteel niet beschikbaar",

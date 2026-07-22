@@ -263,6 +263,7 @@
 			"browseInstall": "Suiteáil",
 			"browseInstalled": "Shuiteáil",
 			"browsePreviewAlt": "screenshot réamhamhair {{name}}",
+			"browseSearch": "",
 			"browseUnavailableDescription": "Ní féidir le Owncast an chatalóg breiseán a bhaint amach faoi láthair. Is féidir leat fós .ocpkg comhoibrithe a uaslódáil go díreach ó charr ar shuíomh.",
 			"browseUnavailableRetry": "Iarracht arís",
 			"browseUnavailableTitle": "Níl an chatalóg breiseán ar fáil faoi láthair",

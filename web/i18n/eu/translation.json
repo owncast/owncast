@@ -263,6 +263,7 @@
 			"browseInstall": "Instalatu",
 			"browseInstalled": "Instalatuta",
 			"browsePreviewAlt": "{{name}} aurrebista irudi",
+			"browseSearch": "",
 			"browseUnavailableDescription": "Owncast-ek ezin du plugin katalogora iritsi oraintsu. Hala ere, .ocpkg fitxategiak zuzenean igotzea eskubidea uzten duzun bitartean.",
 			"browseUnavailableRetry": "Saiatu berriro",
 			"browseUnavailableTitle": "Plugin katalogoa oraingoz ez dago eskuragarri",

@@ -263,6 +263,7 @@
 			"browseInstall": "Zainstaluj",
 			"browseInstalled": "Zainstalowane",
 			"browsePreviewAlt": "{{name}} podgląd zrzutu ekranu",
+			"browseSearch": "Szukaj wtyczek",
 			"browseUnavailableDescription": "Owncast nie może teraz dotrzeć do katalogu wtyczek. Nadal możesz przesłać pliki .ocpkg bezpośrednio z zainstalowanej karty.",
 			"browseUnavailableRetry": "Ponów próbę",
 			"browseUnavailableTitle": "Katalog wtyczek jest obecnie niedostępny",

@@ -263,6 +263,7 @@
 			"browseInstall": "Установить",
 			"browseInstalled": "Установлено",
 			"browsePreviewAlt": "Скриншот {{name}}",
+			"browseSearch": "Поиск плагинов",
 			"browseUnavailableDescription": "Owncast не может подключиться к каталогу плагинов прямо сейчас. Вы все еще можете загрузить файлы .ocpkg непосредственно из установленной вкладки.",
 			"browseUnavailableRetry": "Повторить",
 			"browseUnavailableTitle": "Каталог плагинов в настоящее время недоступен",

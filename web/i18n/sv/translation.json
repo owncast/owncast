@@ -263,6 +263,7 @@
 			"browseInstall": "Installera",
 			"browseInstalled": "Installerad",
 			"browsePreviewAlt": "{{name}} förhandsgranska skärmdump",
+			"browseSearch": "Sök efter plugins",
 			"browseUnavailableDescription": "Owncast kan inte nå plugin-katalogen just nu. Du kan fortfarande ladda upp .ocpkg-filer direkt från fliken Installerad.",
 			"browseUnavailableRetry": "Försök igen",
 			"browseUnavailableTitle": "Instickskatalogen är för närvarande inte tillgänglig",
