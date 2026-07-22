@@ -47,10 +47,9 @@ func MakeAddressingToFollowers(followers_iri *url.URL, public bool) (vocab.Activ
 // MakeNoteDirect sets the required properties to make this note seen as a
 // direct message.
 func MakeNoteDirect(note vocab.ActivityStreamsNote, toIRI *url.URL) vocab.ActivityStreamsNote {
-	to := streams.NewActivityStreamsCcProperty()
+	to := streams.NewActivityStreamsToProperty()
 	to.AppendIRI(toIRI)
-	to.AppendIRI(toIRI)
-	note.SetActivityStreamsCc(to)
+	note.SetActivityStreamsTo(to)
 
 	// Mastodon requires a tag with a type of "mention" and href of the account
 	// for a message to be a "Direct Message".
@@ -73,10 +72,9 @@ func MakeNoteDirect(note vocab.ActivityStreamsNote, toIRI *url.URL) vocab.Activi
 // MakeActivityDirect sets the required properties to make this activity seen
 // as a direct message.
 func MakeActivityDirect(activity vocab.ActivityStreamsCreate, toIRI *url.URL) vocab.ActivityStreamsCreate {
-	to := streams.NewActivityStreamsCcProperty()
+	to := streams.NewActivityStreamsToProperty()
 	to.AppendIRI(toIRI)
-	to.AppendIRI(toIRI)
-	activity.SetActivityStreamsCc(to)
+	activity.SetActivityStreamsTo(to)
 
 	// Mastodon requires a tag with a type of "mention" and href of the account
 	// for a message to be a "Direct Message".
