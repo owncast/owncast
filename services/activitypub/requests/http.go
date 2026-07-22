@@ -55,9 +55,8 @@ func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.Publi
 	return nil
 }
 
-// validateRemoteInbox rejects malformed or non-HTTPS inbox URLs. Public-address
-// validation happens on every delivery attempt so temporary DNS failures do not
-// prevent the message from entering the durable queue.
+// validateRemoteInbox rejects malformed or non-HTTPS inbox URLs. The durable
+// queue performs public-address validation before storing the delivery.
 func validateRemoteInbox(inbox *url.URL) error {
 	if inbox == nil || inbox.Scheme != "https" || inbox.Hostname() == "" {
 		return errors.Errorf("rejecting invalid inbox URL: %s", inbox)

@@ -225,20 +225,22 @@ func (s *Service) RespondToFollow(actorIRI string, approved, streamActive bool) 
 	return follow, nil
 }
 
-// RemoveFollower atomically removes a follower and, for directory
-// relationships, queues the Reject that tells the directory to drop us.
+// RemoveFollower removes a follower and makes a best-effort attempt to queue
+// the Reject that tells a directory to drop us.
 func (s *Service) RemoveFollower(actorIRI string) error {
 	follow, err := s.followers.GetByIRI(actorIRI)
 	if err != nil {
 		return err
 	}
 
-	var delivery workerpool.Delivery
+	var delivery *workerpool.Delivery
 	if follow.IsDirectory {
 		localAccountName := s.configRepository.GetDefaultFederationUsername()
-		delivery, err = requests.MakeFollowRejectDelivery(follow.Inbox, follow.RequestObject, localAccountName, s.builder)
-		if err != nil {
-			return err
+		reject, rejectErr := requests.MakeFollowRejectDelivery(follow.Inbox, follow.RequestObject, localAccountName, s.builder)
+		if rejectErr != nil {
+			log.Errorln("unable to build follow reject for directory", actorIRI, rejectErr)
+		} else {
+			delivery = &reject
 		}
 	}
 
@@ -251,9 +253,9 @@ func (s *Service) RemoveFollower(actorIRI string) error {
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	if follow.IsDirectory {
-		if err := s.workerpool.EnqueueTx(context.Background(), tx, delivery); err != nil {
-			return err
+	if delivery != nil {
+		if err := s.workerpool.EnqueueTx(context.Background(), tx, *delivery); err != nil {
+			log.Errorln("unable to queue follow reject for directory", actorIRI, err)
 		}
 	}
 	if err := s.followers.RemoveByIRITx(context.Background(), tx, actorIRI); err != nil {

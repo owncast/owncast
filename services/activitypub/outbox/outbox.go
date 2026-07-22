@@ -325,7 +325,7 @@ func (s *Service) sendToInboxes(payload []byte, inboxes []string, coalesceKey st
 			log.Warnln("unable to parse inbox URL", inboxURL, err)
 			continue
 		}
-		if inbox.Scheme != "https" || inbox.Hostname() == "" {
+		if inbox.Scheme != "https" || inbox.Hostname() == "" || utils.IsHostnameInternal(inbox.Hostname()) {
 			log.Warnln("rejecting invalid inbox URL", inboxURL)
 			continue
 		}

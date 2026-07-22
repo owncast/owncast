@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"math/rand/v2"
-	"net"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -181,7 +180,7 @@ func validateDelivery(delivery Delivery) error {
 	if delivery.Inbox.Scheme != "https" || delivery.Inbox.Hostname() == "" {
 		return fmt.Errorf("rejecting invalid inbox URL: %s", delivery.Inbox)
 	}
-	if net.ParseIP(delivery.Inbox.Hostname()) != nil && utils.IsHostnameInternal(delivery.Inbox.Hostname()) {
+	if utils.IsHostnameInternal(delivery.Inbox.Hostname()) {
 		return fmt.Errorf("rejecting internal or loopback inbox URL: %s", delivery.Inbox)
 	}
 	if len(delivery.Payload) == 0 {
