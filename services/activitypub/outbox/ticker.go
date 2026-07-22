@@ -41,7 +41,7 @@ func (s *Service) StartStreamPingTicker() {
 		}
 	}()
 
-	log.Infoln("Started stream ping ticker (5 minute interval)")
+	log.Debugln("Started stream ping ticker (5 minute interval)")
 }
 
 // StopStreamPingTicker stops the stream ping ticker if it is running.
@@ -54,6 +54,6 @@ func (s *Service) StopStreamPingTicker() {
 		close(s.pingTickerDone)
 		s.pingTicker = nil
 		s.pingTickerDone = nil
-		log.Infoln("Stopped stream ping ticker")
+		log.Debugln("Stopped stream ping ticker")
 	}
 }

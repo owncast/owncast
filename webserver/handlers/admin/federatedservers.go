@@ -182,7 +182,7 @@ func (a *Admin) AddFederatedServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Infof("Sent follow request to federated server: %s", serverURL.String())
+	log.Debugf("Sent follow request to federated server: %s", serverURL.String())
 	webutils.WriteSimpleResponse(w, true, "Follow request sent successfully. The server will appear in your list once they accept the follow.")
 }
 

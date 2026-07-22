@@ -86,6 +86,16 @@ func accessDenied(w http.ResponseWriter) {
 	w.Write([]byte("unauthorized"))        //nolint
 }
 
+func logInvalidAccessToken(r *http.Request, scope string) {
+	log.Warnf(
+		"Invalid access token from %s for %s %s (required scope: %s)",
+		utils.GetIPAddressFromRequest(r),
+		r.Method,
+		r.URL.Path,
+		scope,
+	)
+}
+
 // RequireExternalAPIAccessToken will validate a 3rd party access token.
 func (m *Middleware) RequireExternalAPIAccessToken(scope string, handler ExternalAccessTokenHandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -104,13 +114,14 @@ func (m *Middleware) RequireExternalAPIAccessToken(scope string, handler Externa
 		}
 
 		if token == "" {
-			log.Warnln("invalid access token")
+			logInvalidAccessToken(r, scope)
 			accessDenied(w)
 			return
 		}
 
 		integration, err := m.userRepository.GetExternalAPIUserForAccessTokenAndScope(token, scope)
 		if integration == nil || err != nil {
+			logInvalidAccessToken(r, scope)
 			accessDenied(w)
 			return
 		}

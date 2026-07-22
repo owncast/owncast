@@ -163,7 +163,7 @@ func (s *Service) recordDomainFailure(domain string) {
 	backoffDuration := circuitBreakerBackoffDurations[backoffIndex]
 	failure.backoffUntil = time.Now().Add(backoffDuration)
 
-	log.Warnf("Domain %s failed %d times, backing off for %v", domain, failure.count, backoffDuration)
+	log.Debugf("Domain %s failed %d times, backing off for %v", domain, failure.count, backoffDuration)
 }
 
 func (s *Service) resetDomainFailure(domain string) {
