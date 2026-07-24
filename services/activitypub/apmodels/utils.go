@@ -128,11 +128,23 @@ func GetIRIFromActorProperty(actor vocab.ActivityStreamsActorProperty) (*url.URL
 	if first == nil {
 		return nil, fmt.Errorf("%w: actor property first element is nil", ErrMissingIRI)
 	}
-	iri := first.GetIRI()
-	if iri == nil {
-		return nil, fmt.Errorf("%w: actor IRI is nil", ErrMissingIRI)
+	if iri := first.GetIRI(); iri != nil {
+		return iri, nil
 	}
-	return iri, nil
+
+	var entity ExternalEntity
+	switch {
+	case first.IsActivityStreamsPerson():
+		entity = first.GetActivityStreamsPerson()
+	case first.IsActivityStreamsService():
+		entity = first.GetActivityStreamsService()
+	case first.IsActivityStreamsApplication():
+		entity = first.GetActivityStreamsApplication()
+	}
+	if entity != nil {
+		return GetIRIFromJSONLDIdProperty(entity.GetJSONLDId())
+	}
+	return nil, fmt.Errorf("%w: actor IRI is nil", ErrMissingIRI)
 }
 
 // GetIRIStringFromActorProperty safely extracts the IRI string from an ActivityStreamsActorProperty.

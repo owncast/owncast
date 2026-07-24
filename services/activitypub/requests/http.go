@@ -1,18 +1,14 @@
 package requests
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 
 	"code.superseriousbusiness.org/activity/streams"
 	"code.superseriousbusiness.org/activity/streams/vocab"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/services/activitypub/crypto"
-	"github.com/owncast/owncast/utils"
 
 	"github.com/pkg/errors"
 
@@ -59,32 +55,11 @@ func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.Publi
 	return nil
 }
 
-// CreateSignedRequest will create a signed POST request of a payload to the provided destination.
-func CreateSignedRequest(payload []byte, url *url.URL, fromActorIRI *url.URL, signer *crypto.Signer) (*http.Request, error) {
-	log.Debugln("Sending", string(payload), "to", url)
-
-	req, _ := http.NewRequest(http.MethodPost, url.String(), bytes.NewBuffer(payload))
-
-	ua := fmt.Sprintf("%s; https://owncast.online", config.GetReleaseString())
-	req.Header.Set("User-Agent", ua)
-	req.Header.Set("Content-Type", "application/activity+json")
-
-	if err := signer.SignRequest(req, payload, fromActorIRI); err != nil {
-		log.Errorln("error signing request:", err)
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// validateRemoteInbox rejects inbox URLs that could be used for SSRF:
-// non-HTTPS schemes and internal/loopback hosts.
+// validateRemoteInbox rejects malformed or non-HTTPS inbox URLs. The durable
+// queue performs public-address validation before storing the delivery.
 func validateRemoteInbox(inbox *url.URL) error {
-	if inbox.Scheme != "https" {
-		return errors.Errorf("rejecting non-HTTPS inbox URL for SSRF protection: %s", inbox.String())
-	}
-	if utils.IsHostnameInternal(inbox.Hostname()) {
-		return errors.Errorf("rejecting internal/loopback inbox URL for SSRF protection: %s", inbox.String())
+	if inbox == nil || inbox.Scheme != "https" || inbox.Hostname() == "" {
+		return errors.Errorf("rejecting invalid inbox URL: %s", inbox)
 	}
 	return nil
 }

@@ -19,10 +19,12 @@ export interface UseDirectoryFollowersResult {
   directories: DirectoryFollower[];
   loading: boolean;
   remove: (actorIRI: string) => Promise<void>;
+  resendApproval: (actorIRI: string) => Promise<void>;
   refetch: () => void;
 }
 
 const API_DIRECTORY_FOLLOWERS = '/api/admin/followers/directory';
+const API_APPROVE_FOLLOWER = '/api/admin/followers/approve';
 const API_REMOVE_FOLLOWER = '/api/admin/followers/remove';
 
 // useDirectoryFollowers fetches the directories that are currently listing this
@@ -66,6 +68,19 @@ export function useDirectoryFollowers(): UseDirectoryFollowersResult {
     message.success(t(Localization.Admin.FeaturedStreams.directoryRemoved));
   };
 
+  const resendApproval = async (actorIRI: string) => {
+    const response = await fetch(API_APPROVE_FOLLOWER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ actorIRI, approved: true }),
+    });
+
+    if (!response.ok) {
+      throw new Error(t(Localization.Admin.FeaturedStreams.failedToResendApproval));
+    }
+  };
+
   // Fetch once on mount. fetchDirectories must NOT be a dependency: it is keyed
   // on `t`, which next-export-i18n returns fresh each render, so depending on it
   // would loop. Consumers refetch explicitly via remove.
@@ -73,5 +88,5 @@ export function useDirectoryFollowers(): UseDirectoryFollowersResult {
     fetchDirectories();
   }, []);
 
-  return { directories, loading, remove, refetch: fetchDirectories };
+  return { directories, loading, remove, resendApproval, refetch: fetchDirectories };
 }

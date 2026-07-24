@@ -71,6 +71,68 @@ INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name
 -- name: AddToOutbox :exec
 INSERT INTO ap_outbox(iri, value, type, live_notification) values(?, ?, ?, ?);
 
+-- name: QueueActivityPubDelivery :one
+INSERT INTO ap_delivery_queue (
+    inbox,
+    payload,
+    actor_iri,
+    activity_type,
+    coalesce_key,
+    next_attempt_at
+) VALUES (?, ?, ?, ?, ?, ?)
+ON CONFLICT(inbox, coalesce_key) WHERE coalesce_key IS NOT NULL AND failed_at IS NULL
+DO UPDATE SET
+    payload = excluded.payload,
+    actor_iri = excluded.actor_iri,
+    activity_type = excluded.activity_type,
+    next_attempt_at = excluded.next_attempt_at,
+    attempts = 0,
+    last_error = NULL,
+    revision = ap_delivery_queue.revision + 1
+RETURNING id;
+
+-- name: ClaimActivityPubDelivery :one
+UPDATE ap_delivery_queue
+SET claimed_until = @claimed_until,
+    attempts = attempts + 1
+WHERE id = (
+    SELECT candidate.id
+    FROM ap_delivery_queue AS candidate
+    WHERE candidate.failed_at IS NULL
+      AND candidate.next_attempt_at <= @now
+      AND (candidate.claimed_until IS NULL OR candidate.claimed_until <= @now)
+    ORDER BY candidate.next_attempt_at, candidate.id
+    LIMIT 1
+)
+RETURNING id, inbox, payload, actor_iri, activity_type, coalesce_key, attempts, revision;
+
+-- name: CompleteActivityPubDelivery :execrows
+DELETE FROM ap_delivery_queue WHERE id = ? AND revision = ?;
+
+-- name: RetryActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    next_attempt_at = ?,
+    last_error = ?
+WHERE id = ? AND revision = ?;
+
+-- name: DeferActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    next_attempt_at = ?,
+    attempts = MAX(attempts - 1, 0)
+WHERE id = ? AND revision = ?;
+
+-- name: FailActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    last_error = ?,
+    failed_at = ?
+WHERE id = ? AND revision = ?;
+
+-- name: ReleaseSupersededActivityPubDelivery :exec
+UPDATE ap_delivery_queue SET claimed_until = NULL WHERE id = ? AND revision != ?;
+
 -- name: AddToAcceptedActivities :exec
 INSERT INTO ap_accepted_activities(iri, actor, type, timestamp) values(?, ?, ?, ?);
 

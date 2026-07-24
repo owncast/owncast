@@ -70,7 +70,7 @@ func (s *Service) sendStreamStatusToFollowers(activity streamStatusActivity, isL
 		return errors.Wrapf(err, "unable to serialize %s", logLabel)
 	}
 
-	if err := s.SendToDirectoryFollowers(b); err != nil {
+	if err := s.SendToDirectoryFollowers(b, "stream-status"); err != nil {
 		return err
 	}
 
@@ -78,7 +78,7 @@ func (s *Service) sendStreamStatusToFollowers(activity streamStatusActivity, isL
 		return err
 	}
 
-	log.Debugln("Sent " + logLabel + " to directory followers")
+	log.Debugln("Queued " + logLabel + " to directory followers")
 	return nil
 }
 

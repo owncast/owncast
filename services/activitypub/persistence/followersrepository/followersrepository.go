@@ -44,12 +44,18 @@ type FollowersRepository interface {
 	GetByIRI(iri string) (*apmodels.ActivityPubActor, error)
 	// Add saves a new follow to the datastore.
 	Add(follow apmodels.ActivityPubActor, approved bool) error
+	// AddTx saves a new follow inside an existing transaction.
+	AddTx(ctx context.Context, tx *sql.Tx, follow apmodels.ActivityPubActor, approved bool) error
 	// Remove removes a follow from the datastore.
 	Remove(unfollow apmodels.ActivityPubActor) error
 	// ApprovePreviousRequest approves a pending follow request.
 	ApprovePreviousRequest(iri string) error
+	// ApprovePreviousRequestTx approves a follow inside an existing transaction.
+	ApprovePreviousRequestTx(ctx context.Context, tx *sql.Tx, iri string) error
 	// BlockOrReject blocks an existing follower or rejects a follow request.
 	BlockOrReject(iri string) error
+	// BlockOrRejectTx rejects a follow inside an existing transaction.
+	BlockOrRejectTx(ctx context.Context, tx *sql.Tx, iri string) error
 	// Update updates the details of a stored follower.
 	Update(actorIRI string, inbox string, sharedInbox string, name string, username string, image string) error
 	// GetFollowersToValidate returns followers needing validation, ordered by oldest validated first.
@@ -60,6 +66,8 @@ type FollowersRepository interface {
 	UpdateFollowerValidationFailure(iri string) error
 	// RemoveByIRI removes a follower directly by IRI string.
 	RemoveByIRI(iri string) error
+	// RemoveByIRITx removes a follower inside an existing transaction.
+	RemoveByIRITx(ctx context.Context, tx *sql.Tx, iri string) error
 }
 
 // SqlFollowersRepository is the SQL-based implementation of FollowersRepository.
@@ -285,6 +293,11 @@ func (r *SqlFollowersRepository) GetByIRI(iri string) (*apmodels.ActivityPubActo
 		disabledAt = &result.DisabledAt.Time
 	}
 
+	var approvedAt *time.Time
+	if result.ApprovedAt.Valid {
+		approvedAt = &result.ApprovedAt.Time
+	}
+
 	follower := apmodels.ActivityPubActor{
 		ActorIri:         iriURL,
 		Inbox:            inbox,
@@ -294,6 +307,7 @@ func (r *SqlFollowersRepository) GetByIRI(iri string) (*apmodels.ActivityPubActo
 		Image:            image,
 		FollowRequestIri: followIRI,
 		DisabledAt:       disabledAt,
+		ApprovedAt:       approvedAt,
 		RequestObject:    followRequestObject,
 		IsDirectory:      result.Directory.Bool,
 	}
@@ -303,18 +317,32 @@ func (r *SqlFollowersRepository) GetByIRI(iri string) (*apmodels.ActivityPubActo
 
 // Add saves a new follow to the datastore.
 func (r *SqlFollowersRepository) Add(follow apmodels.ActivityPubActor, approved bool) error {
-	if err := follow.Validate(); err != nil {
-		return errors.Wrap(err, "cannot add invalid follow")
-	}
+	r.datastore.DbLock.Lock()
+	defer r.datastore.DbLock.Unlock()
 
-	log.Traceln("Saving", follow.ActorIriString(), "as a follower.")
-
-	followRequestObject, err := apmodels.Serialize(follow.RequestObject)
+	tx, err := r.datastore.DB.Begin()
 	if err != nil {
-		return errors.Wrap(err, "error serializing follow request object")
+		return errors.Wrap(err, "error beginning transaction")
 	}
+	defer func() { _ = tx.Rollback() }()
 
-	return r.createFollow(follow.ActorIriString(), follow.InboxString(), follow.SharedInboxString(), follow.FollowRequestIriString(), follow.Name, follow.Username, follow.ImageString(), followRequestObject, approved, follow.IsDirectory)
+	if err := r.AddTx(context.Background(), tx, follow, approved); err != nil {
+		return err
+	}
+	return tx.Commit()
+}
+
+// AddTx saves a new follow inside an existing transaction.
+func (r *SqlFollowersRepository) AddTx(ctx context.Context, tx *sql.Tx, follow apmodels.ActivityPubActor, approved bool) error {
+	params, err := makeAddFollowerParams(follow, approved)
+	if err != nil {
+		return err
+	}
+	log.Traceln("Saving", follow.ActorIriString(), "as a follower.")
+	if err := db.New(tx).AddFollower(ctx, params); err != nil {
+		return errors.Wrap(err, "error creating new federation follow")
+	}
+	return nil
 }
 
 // Remove removes a follow from the datastore.
@@ -328,24 +356,22 @@ func (r *SqlFollowersRepository) Remove(unfollow apmodels.ActivityPubActor) erro
 
 // ApprovePreviousRequest approves a pending follow request.
 func (r *SqlFollowersRepository) ApprovePreviousRequest(iri string) error {
-	return r.datastore.GetQueries().ApproveFederationFollower(context.Background(), db.ApproveFederationFollowerParams{
-		Iri: iri,
-		ApprovedAt: sql.NullTime{
-			Time:  time.Now(),
-			Valid: true,
-		},
-	})
+	return r.datastore.GetQueries().ApproveFederationFollower(context.Background(), approveFollowerParams(iri))
+}
+
+// ApprovePreviousRequestTx approves a follow inside an existing transaction.
+func (r *SqlFollowersRepository) ApprovePreviousRequestTx(ctx context.Context, tx *sql.Tx, iri string) error {
+	return db.New(tx).ApproveFederationFollower(ctx, approveFollowerParams(iri))
 }
 
 // BlockOrReject blocks an existing follower or rejects a follow request.
 func (r *SqlFollowersRepository) BlockOrReject(iri string) error {
-	return r.datastore.GetQueries().RejectFederationFollower(context.Background(), db.RejectFederationFollowerParams{
-		Iri: iri,
-		DisabledAt: sql.NullTime{
-			Time:  time.Now(),
-			Valid: true,
-		},
-	})
+	return r.datastore.GetQueries().RejectFederationFollower(context.Background(), rejectFollowerParams(iri))
+}
+
+// BlockOrRejectTx rejects a follow inside an existing transaction.
+func (r *SqlFollowersRepository) BlockOrRejectTx(ctx context.Context, tx *sql.Tx, iri string) error {
+	return db.New(tx).RejectFederationFollower(ctx, rejectFollowerParams(iri))
 }
 
 // Update updates the details of a stored follower.
@@ -375,42 +401,44 @@ func (r *SqlFollowersRepository) Update(actorIRI string, inbox string, sharedInb
 	return tx.Commit()
 }
 
-func (r *SqlFollowersRepository) createFollow(actor, inbox, sharedInbox, request, name, username, image string, requestObject []byte, approved, directory bool) error {
-	r.datastore.DbLock.Lock()
-	defer r.datastore.DbLock.Unlock()
-
-	tx, err := r.datastore.DB.Begin()
+func makeAddFollowerParams(follow apmodels.ActivityPubActor, approved bool) (db.AddFollowerParams, error) {
+	if err := follow.Validate(); err != nil {
+		return db.AddFollowerParams{}, errors.Wrap(err, "cannot add invalid follow")
+	}
+	followRequestObject, err := apmodels.Serialize(follow.RequestObject)
 	if err != nil {
-		return errors.Wrap(err, "error beginning transaction")
+		return db.AddFollowerParams{}, errors.Wrap(err, "error serializing follow request object")
 	}
-	defer func() {
-		_ = tx.Rollback()
-	}()
-
-	var approvedAt sql.NullTime
+	approvedAt := sql.NullTime{}
 	if approved {
-		approvedAt = sql.NullTime{
-			Time:  time.Now(),
-			Valid: true,
-		}
+		approvedAt = sql.NullTime{Time: time.Now(), Valid: true}
 	}
-
-	if err = r.datastore.GetQueries().WithTx(tx).AddFollower(context.Background(), db.AddFollowerParams{
-		Iri:           actor,
-		Inbox:         inbox,
-		SharedInbox:   sql.NullString{String: sharedInbox, Valid: sharedInbox != ""},
-		Name:          sql.NullString{String: name, Valid: true},
-		Username:      username,
-		Image:         sql.NullString{String: image, Valid: true},
+	return db.AddFollowerParams{
+		Iri:           follow.ActorIriString(),
+		Inbox:         follow.InboxString(),
+		SharedInbox:   sql.NullString{String: follow.SharedInboxString(), Valid: follow.SharedInboxString() != ""},
+		Name:          sql.NullString{String: follow.Name, Valid: true},
+		Username:      follow.Username,
+		Image:         sql.NullString{String: follow.ImageString(), Valid: true},
 		ApprovedAt:    approvedAt,
-		Request:       request,
-		RequestObject: requestObject,
-		Directory:     sql.NullBool{Bool: directory, Valid: true},
-	}); err != nil {
-		return errors.Wrap(err, "error creating new federation follow")
-	}
+		Request:       follow.FollowRequestIriString(),
+		RequestObject: followRequestObject,
+		Directory:     sql.NullBool{Bool: follow.IsDirectory, Valid: true},
+	}, nil
+}
 
-	return tx.Commit()
+func approveFollowerParams(iri string) db.ApproveFederationFollowerParams {
+	return db.ApproveFederationFollowerParams{
+		Iri:        iri,
+		ApprovedAt: sql.NullTime{Time: time.Now(), Valid: true},
+	}
+}
+
+func rejectFollowerParams(iri string) db.RejectFederationFollowerParams {
+	return db.RejectFederationFollowerParams{
+		Iri:        iri,
+		DisabledAt: sql.NullTime{Time: time.Now(), Valid: true},
+	}
 }
 
 func (r *SqlFollowersRepository) removeFollow(actor *url.URL) error {
@@ -516,13 +544,14 @@ func (r *SqlFollowersRepository) RemoveByIRI(iri string) error {
 	if err != nil {
 		return err
 	}
-	defer func() {
-		_ = tx.Rollback()
-	}()
-
-	if err := r.datastore.GetQueries().WithTx(tx).RemoveFollowerByIRI(context.Background(), iri); err != nil {
+	defer func() { _ = tx.Rollback() }()
+	if err := r.RemoveByIRITx(context.Background(), tx, iri); err != nil {
 		return err
 	}
-
 	return tx.Commit()
+}
+
+// RemoveByIRITx removes a follower inside an existing transaction.
+func (r *SqlFollowersRepository) RemoveByIRITx(ctx context.Context, tx *sql.Tx, iri string) error {
+	return db.New(tx).RemoveFollowerByIRI(ctx, iri)
 }

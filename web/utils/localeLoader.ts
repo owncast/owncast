@@ -5,7 +5,7 @@ interface TranslationCatalog {
   [key: string]: string | TranslationCatalog;
 }
 
-const withFallbackTranslations = (
+export const withFallbackTranslations = (
   catalog: TranslationCatalog,
   fallback: TranslationCatalog,
 ): TranslationCatalog => {
