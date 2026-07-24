@@ -66,12 +66,16 @@ behind the shared proxy. It:
 
 1. Starts both instances with federation enabled and public
 2. Has instance 1 add instance 2 via `POST /api/admin/federation/servers`
-3. Verifies instance 2 is persisted in instance 1's directory immediately
-   (a pending follow record)
-4. Verifies the follow transitions to `accepted` once instance 2 returns its
-   ActivityPub `Accept`
-5. Verifies the listing is readable on the public, unauthenticated endpoint
-6. Verifies the reverse direction (instance 2 adds instance 1) also works
+3. Verifies instance 2 is persisted immediately as a pending follow
+4. Confirms featured follows require explicit approval
+5. Stops the requesting instance before approval and verifies the failed
+   `Accept` is retained for retry
+6. Restarts the requester and verifies the retry completes the handshake and
+   removes the delivery from the queue
+7. Verifies metadata and the public listing contract
+8. Verifies the reverse follow direction
+9. Streams video and verifies live and offline status delivery
+10. Confirms directory relationships do not inflate follower lists
 
 ### `test-fediverse-otp.sh` (Fediverse authentication, snac2-based)
 

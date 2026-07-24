@@ -15,6 +15,7 @@ import (
 	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
 	activityevents "github.com/owncast/owncast/services/activitypub/events"
 	"github.com/owncast/owncast/services/activitypub/persistence"
+	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 	"github.com/owncast/owncast/services/datastore"
@@ -58,8 +59,10 @@ func newEngagementTestService(t *testing.T) (*Service, *persistence.Service, *[]
 	signer := apcrypto.New(apcrypto.Deps{ConfigRepository: configRepository})
 	builder := apmodels.New(apmodels.Deps{ConfigRepository: configRepository, Signer: signer})
 	resolver := apresolvers.New(apresolvers.Deps{ConfigRepository: configRepository, Builder: builder, Signer: signer})
-	outbound := workerpool.New(0)
+	followers := followersrepository.New(ds)
+	outbound := workerpool.New(workerpool.Deps{Datastore: ds, Signer: signer})
 	outbound.Start()
+	t.Cleanup(outbound.Stop)
 	eventDispatcher := dispatcher.New()
 	var publishedMu sync.Mutex
 	published := []dispatcher.Event{}
@@ -74,8 +77,8 @@ func newEngagementTestService(t *testing.T) (*Service, *persistence.Service, *[]
 		Persistence:      persistenceService,
 		Workerpool:       outbound,
 		ConfigRepository: configRepository,
+		Followers:        followers,
 		Builder:          builder,
-		Signer:           signer,
 		Resolver:         resolver,
 		Events:           eventDispatcher,
 	}), persistenceService, &published
@@ -320,5 +323,42 @@ func TestConcurrentQuoteDeliveriesPublishOnce(t *testing.T) {
 	}
 	if len(*published) != 1 {
 		t.Fatalf("concurrent quote deliveries published %d events, want 1", len(*published))
+	}
+}
+
+func TestDuplicateApprovedDirectoryFollowResendsAccept(t *testing.T) {
+	service, persistenceService, _ := newEngagementTestService(t)
+	person := makeFakePerson()
+	follow := streams.NewActivityStreamsFollow()
+	id := streams.NewJSONLDIdProperty()
+	id.Set(mustParseURL("https://freedom.eagle/follow/directory"))
+	follow.SetJSONLDId(id)
+	follow.SetActivityStreamsActor(actorProperty(person))
+	follow.SetActivityStreamsObject(objectProperty("https://owncast.example/federation/user/streamer"))
+	follow.GetUnknownProperties()[config.APOwncastNamespaceDirectory] = true
+
+	if err := service.handleFollowInboxRequest(context.Background(), follow); err != nil {
+		t.Fatalf("store pending directory follow: %v", err)
+	}
+	actorIRI := person.GetJSONLDId().GetIRI().String()
+	if err := service.followers.ApprovePreviousRequest(actorIRI); err != nil {
+		t.Fatalf("approve directory follow: %v", err)
+	}
+	if err := service.handleFollowInboxRequest(context.Background(), follow); err != nil {
+		t.Fatalf("handle first duplicate follow: %v", err)
+	}
+	if err := service.handleFollowInboxRequest(context.Background(), follow); err != nil {
+		t.Fatalf("handle second duplicate follow: %v", err)
+	}
+
+	var followerCount, deliveryCount, revision int
+	if err := persistenceService.Datastore().DB.QueryRow(`SELECT count(*) FROM ap_followers`).Scan(&followerCount); err != nil {
+		t.Fatal(err)
+	}
+	if err := persistenceService.Datastore().DB.QueryRow(`SELECT count(*), max(revision) FROM ap_delivery_queue`).Scan(&deliveryCount, &revision); err != nil {
+		t.Fatal(err)
+	}
+	if followerCount != 1 || deliveryCount != 1 || revision < 1 {
+		t.Fatalf("followers=%d deliveries=%d revision=%d, want one follower and one refreshed Accept", followerCount, deliveryCount, revision)
 	}
 }

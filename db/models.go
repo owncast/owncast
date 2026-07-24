@@ -17,6 +17,22 @@ type ApAcceptedActivity struct {
 	Timestamp time.Time
 }
 
+type ApDeliveryQueue struct {
+	ID            int64
+	Inbox         string
+	Payload       []byte
+	ActorIri      string
+	ActivityType  string
+	CoalesceKey   sql.NullString
+	Attempts      int64
+	NextAttemptAt time.Time
+	ClaimedUntil  sql.NullTime
+	LastError     sql.NullString
+	FailedAt      sql.NullTime
+	CreatedAt     time.Time
+	Revision      int64
+}
+
 type ApFollower struct {
 	Iri                      string
 	Inbox                    string

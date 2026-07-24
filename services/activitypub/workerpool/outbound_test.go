@@ -1,19 +1,65 @@
 package workerpool
 
 import (
+	"database/sql"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 	logtest "github.com/sirupsen/logrus/hooks/test"
+
+	"github.com/owncast/owncast/persistence/configrepository"
+	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
+	"github.com/owncast/owncast/services/datastore"
 )
 
-func newTestService() *Service {
-	return New(1)
+func TestMain(m *testing.M) {
+	_ = os.Setenv("OWNCAST_ALLOW_INTERNAL_FEDERATION", "true")
+	_ = os.Setenv("OWNCAST_INSECURE_SKIP_VERIFY", "true")
+	os.Exit(m.Run())
 }
 
-func TestCircuitBreaker(t *testing.T) {
+func TestDeliveryRetriesAfterTransientFailure(t *testing.T) {
+	var attempts atomic.Int32
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		if attempts.Add(1) < 3 {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.WriteHeader(http.StatusAccepted)
+	}))
+	defer server.Close()
+
+	service, database := newTestService(t)
+	service.retryDelay = func(int64) time.Duration { return 20 * time.Millisecond }
+	service.Start()
+	defer service.Stop()
+
+	destination, _ := url.Parse(server.URL)
+	actor, _ := url.Parse("https://sender.example/federation/user/streamer")
+	if err := service.Enqueue(Delivery{
+		Inbox:        destination,
+		Payload:      []byte(`{"type":"Accept"}`),
+		ActorIRI:     actor,
+		ActivityType: "Accept",
+	}); err != nil {
+		t.Fatalf("enqueue delivery: %v", err)
+	}
+
+	waitFor(t, 20*time.Second, func() bool { return attempts.Load() == 3 })
+	if count := deliveryCount(t, database.db); count != 0 {
+		t.Fatalf("delivery queue count = %d, want 0 after success", count)
+	}
+}
+
+func TestCircuitBreakerBackoffLogsAtDebug(t *testing.T) {
 	originalLevel := log.GetLevel()
 	log.SetLevel(log.DebugLevel)
 	defer log.SetLevel(originalLevel)
@@ -21,30 +67,12 @@ func TestCircuitBreaker(t *testing.T) {
 	hook := logtest.NewGlobal()
 	defer hook.Reset()
 
-	s := newTestService()
-
-	testDomain := "failing.example.com"
-
-	// Initially, domain should not be skipped.
-	if s.ShouldSkipDomain(testDomain) {
-		t.Error("Domain should not be skipped initially")
+	service, _ := newTestService(t)
+	const domain = "failing.example.com"
+	for range circuitBreakerFailureThreshold {
+		service.recordDomainFailure(domain)
 	}
 
-	// Record failures.
-	s.recordDomainFailure(testDomain)
-	s.recordDomainFailure(testDomain)
-	s.recordDomainFailure(testDomain)
-
-	// Domain should now be skipped.
-	if !s.ShouldSkipDomain(testDomain) {
-		t.Error("Domain should be skipped after failures")
-	}
-
-	// After successful delivery, domain should be reset.
-	s.resetDomainFailure(testDomain)
-	if s.ShouldSkipDomain(testDomain) {
-		t.Error("Domain should not be skipped after reset")
-	}
 	var backoffLogs int
 	for _, entry := range hook.AllEntries() {
 		if strings.Contains(entry.Message, "backing off") {
@@ -54,82 +82,126 @@ func TestCircuitBreaker(t *testing.T) {
 			}
 		}
 	}
-	if backoffLogs != 3 {
-		t.Errorf("backoff log count = %d, want 3", backoffLogs)
+	if backoffLogs != 1 {
+		t.Errorf("backoff log count = %d, want 1", backoffLogs)
 	}
 }
 
-func TestHTTPTimeouts(t *testing.T) {
-	s := New(1)
-	s.Start()
+func TestDeliverySurvivesWorkerRestart(t *testing.T) {
+	var available atomic.Bool
+	var attempts atomic.Int32
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		attempts.Add(1)
+		if !available.Load() {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.WriteHeader(http.StatusAccepted)
+	}))
+	defer server.Close()
 
-	if s.httpClient == nil {
-		t.Error("HTTP client should be initialized")
+	first, database := newTestService(t)
+	first.retryDelay = func(int64) time.Duration { return 200 * time.Millisecond }
+	first.Start()
+	destination, _ := url.Parse(server.URL)
+	actor, _ := url.Parse("https://sender.example/federation/user/streamer")
+	if err := first.Enqueue(Delivery{
+		Inbox:        destination,
+		Payload:      []byte(`{"type":"Accept"}`),
+		ActorIRI:     actor,
+		ActivityType: "Accept",
+	}); err != nil {
+		t.Fatalf("enqueue delivery: %v", err)
 	}
+	waitFor(t, 5*time.Second, func() bool { return attempts.Load() == 1 })
+	first.Stop()
 
-	if s.httpClient.Timeout != 8*time.Second {
-		t.Errorf("HTTP client should have 8 second timeout, got %v", s.httpClient.Timeout)
+	available.Store(true)
+	restarted := New(Deps{WorkerPoolSize: 1, Datastore: database.datastore, Signer: database.signer})
+	restarted.Start()
+	defer restarted.Stop()
+
+	waitFor(t, 2*time.Second, func() bool { return attempts.Load() == 2 })
+	if count := deliveryCount(t, database.db); count != 0 {
+		t.Fatalf("delivery queue count = %d, want 0 after restarted worker succeeds", count)
 	}
 }
 
-func TestWorkerPoolSizing(t *testing.T) {
-	// Queue buffer should be at least the 500-item minimum even for
-	// small worker pools.
-	s := New(5)
-	s.Start()
-	if cap(s.queue) < 500 {
-		t.Errorf("Queue capacity should be at least 500, got %d", cap(s.queue))
-	}
+func TestCoalescedDeliveryKeepsNewestPayload(t *testing.T) {
+	service, database := newTestService(t)
+	destination, _ := url.Parse("https://receiver.example/inbox")
+	actor, _ := url.Parse("https://sender.example/federation/user/streamer")
 
-	// Larger worker pools get proportionally larger buffers.
-	s2 := New(100)
-	s2.Start()
-	if cap(s2.queue) != 1000 {
-		t.Errorf("Queue capacity should be 1000 for 100 workers, got %d", cap(s2.queue))
-	}
-}
-
-func TestBackoffDurations(t *testing.T) {
-	expectedDurations := []time.Duration{
-		1 * time.Minute,
-		5 * time.Minute,
-		15 * time.Minute,
-		30 * time.Minute,
-		60 * time.Minute,
-	}
-
-	if len(circuitBreakerBackoffDurations) != len(expectedDurations) {
-		t.Errorf("Expected %d backoff durations, got %d", len(expectedDurations), len(circuitBreakerBackoffDurations))
-	}
-
-	for i, expected := range expectedDurations {
-		if circuitBreakerBackoffDurations[i] != expected {
-			t.Errorf("Backoff duration at index %d: expected %v, got %v", i, expected, circuitBreakerBackoffDurations[i])
+	for _, payload := range []string{"old", "new"} {
+		if err := service.Enqueue(Delivery{
+			Inbox:        destination,
+			Payload:      []byte(payload),
+			ActorIRI:     actor,
+			ActivityType: "Offer",
+			CoalesceKey:  "stream-status",
+		}); err != nil {
+			t.Fatalf("enqueue %q: %v", payload, err)
 		}
 	}
+
+	var payload string
+	var count int
+	if err := database.db.QueryRow(`SELECT CAST(payload AS TEXT), count(*) FROM ap_delivery_queue`).Scan(&payload, &count); err != nil {
+		t.Fatalf("read coalesced delivery: %v", err)
+	}
+	if payload != "new" || count != 1 {
+		t.Fatalf("coalesced delivery = (%q, %d rows), want newest payload in one row", payload, count)
+	}
 }
 
-func TestCircuitBreakerIsolation(t *testing.T) {
-	s := newTestService()
+type testDatabase struct {
+	db        *sql.DB
+	datastore *datastore.Datastore
+	signer    *apcrypto.Signer
+}
 
-	domain1 := "test1.example.com"
-	domain2 := "test2.example.com"
-
-	// Neither domain should be blocked initially.
-	if s.ShouldSkipDomain(domain1) || s.ShouldSkipDomain(domain2) {
-		t.Error("Domains should not be blocked initially")
+func newTestService(t *testing.T) (*Service, *testDatabase) {
+	t.Helper()
+	directory := t.TempDir()
+	ds, err := datastore.SetupPersistence(filepath.Join(directory, "owncast.db"), directory)
+	if err != nil {
+		t.Fatalf("set up persistence: %v", err)
 	}
+	t.Cleanup(func() { _ = ds.DB.Close() })
 
-	// Record failures for domain1 only.
-	s.recordDomainFailure(domain1)
-	s.recordDomainFailure(domain1)
-	s.recordDomainFailure(domain1)
+	configRepo := configrepository.New(ds)
+	privateKey, publicKey, err := apcrypto.GenerateKeys()
+	if err != nil {
+		t.Fatalf("generate signing keys: %v", err)
+	}
+	if err := configRepo.SetPrivateKey(string(privateKey)); err != nil {
+		t.Fatalf("store private key: %v", err)
+	}
+	if err := configRepo.SetPublicKey(string(publicKey)); err != nil {
+		t.Fatalf("store public key: %v", err)
+	}
+	signer := apcrypto.New(apcrypto.Deps{ConfigRepository: configRepo})
+	testDB := &testDatabase{db: ds.DB, datastore: ds, signer: signer}
+	return New(Deps{WorkerPoolSize: 1, Datastore: ds, Signer: signer}), testDB
+}
 
-	// Only domain1 should be blocked.
-	if !s.ShouldSkipDomain(domain1) {
-		t.Error("Domain1 should be blocked after failures")
+func deliveryCount(t *testing.T, database *sql.DB) int {
+	t.Helper()
+	var count int
+	if err := database.QueryRow(`SELECT count(*) FROM ap_delivery_queue`).Scan(&count); err != nil {
+		t.Fatalf("count deliveries: %v", err)
 	}
-	if s.ShouldSkipDomain(domain2) {
-		t.Error("Domain2 should not be blocked")
+	return count
+}
+
+func waitFor(t *testing.T, timeout time.Duration, condition func() bool) {
+	t.Helper()
+	deadline := time.Now().Add(timeout)
+	for time.Now().Before(deadline) {
+		if condition() {
+			return
+		}
+		time.Sleep(20 * time.Millisecond)
 	}
+	t.Fatal("condition was not met before timeout")
 }

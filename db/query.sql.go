@@ -232,6 +232,71 @@ func (q *Queries) ChangeDisplayName(ctx context.Context, arg ChangeDisplayNamePa
 	return err
 }
 
+const claimActivityPubDelivery = `-- name: ClaimActivityPubDelivery :one
+UPDATE ap_delivery_queue
+SET claimed_until = ?1,
+    attempts = attempts + 1
+WHERE id = (
+    SELECT candidate.id
+    FROM ap_delivery_queue AS candidate
+    WHERE candidate.failed_at IS NULL
+      AND candidate.next_attempt_at <= ?2
+      AND (candidate.claimed_until IS NULL OR candidate.claimed_until <= ?2)
+    ORDER BY candidate.next_attempt_at, candidate.id
+    LIMIT 1
+)
+RETURNING id, inbox, payload, actor_iri, activity_type, coalesce_key, attempts, revision
+`
+
+type ClaimActivityPubDeliveryParams struct {
+	ClaimedUntil sql.NullTime
+	Now          time.Time
+}
+
+type ClaimActivityPubDeliveryRow struct {
+	ID           int64
+	Inbox        string
+	Payload      []byte
+	ActorIri     string
+	ActivityType string
+	CoalesceKey  sql.NullString
+	Attempts     int64
+	Revision     int64
+}
+
+func (q *Queries) ClaimActivityPubDelivery(ctx context.Context, arg ClaimActivityPubDeliveryParams) (ClaimActivityPubDeliveryRow, error) {
+	row := q.db.QueryRowContext(ctx, claimActivityPubDelivery, arg.ClaimedUntil, arg.Now)
+	var i ClaimActivityPubDeliveryRow
+	err := row.Scan(
+		&i.ID,
+		&i.Inbox,
+		&i.Payload,
+		&i.ActorIri,
+		&i.ActivityType,
+		&i.CoalesceKey,
+		&i.Attempts,
+		&i.Revision,
+	)
+	return i, err
+}
+
+const completeActivityPubDelivery = `-- name: CompleteActivityPubDelivery :execrows
+DELETE FROM ap_delivery_queue WHERE id = ? AND revision = ?
+`
+
+type CompleteActivityPubDeliveryParams struct {
+	ID       int64
+	Revision int64
+}
+
+func (q *Queries) CompleteActivityPubDelivery(ctx context.Context, arg CompleteActivityPubDeliveryParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, completeActivityPubDelivery, arg.ID, arg.Revision)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const countUserAuthByProvider = `-- name: CountUserAuthByProvider :one
 SELECT count(*) FROM auth WHERE user_id = ? AND type = ? AND provider = ?
 `
@@ -270,6 +335,28 @@ func (q *Queries) CountUsers(ctx context.Context, arg CountUsersParams) (int64, 
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const deferActivityPubDelivery = `-- name: DeferActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    next_attempt_at = ?,
+    attempts = MAX(attempts - 1, 0)
+WHERE id = ? AND revision = ?
+`
+
+type DeferActivityPubDeliveryParams struct {
+	NextAttemptAt time.Time
+	ID            int64
+	Revision      int64
+}
+
+func (q *Queries) DeferActivityPubDelivery(ctx context.Context, arg DeferActivityPubDeliveryParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deferActivityPubDelivery, arg.NextAttemptAt, arg.ID, arg.Revision)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const deleteUserAccessTokens = `-- name: DeleteUserAccessTokens :exec
@@ -326,6 +413,34 @@ func (q *Queries) DoesInboundActivityExist(ctx context.Context, arg DoesInboundA
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const failActivityPubDelivery = `-- name: FailActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    last_error = ?,
+    failed_at = ?
+WHERE id = ? AND revision = ?
+`
+
+type FailActivityPubDeliveryParams struct {
+	LastError sql.NullString
+	FailedAt  sql.NullTime
+	ID        int64
+	Revision  int64
+}
+
+func (q *Queries) FailActivityPubDelivery(ctx context.Context, arg FailActivityPubDeliveryParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, failActivityPubDelivery,
+		arg.LastError,
+		arg.FailedAt,
+		arg.ID,
+		arg.Revision,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const getApprovedDirectoryFollowers = `-- name: GetApprovedDirectoryFollowers :many
@@ -1528,6 +1643,50 @@ func (q *Queries) IsIPAddressBlocked(ctx context.Context, ipAddress string) (int
 	return count, err
 }
 
+const queueActivityPubDelivery = `-- name: QueueActivityPubDelivery :one
+INSERT INTO ap_delivery_queue (
+    inbox,
+    payload,
+    actor_iri,
+    activity_type,
+    coalesce_key,
+    next_attempt_at
+) VALUES (?, ?, ?, ?, ?, ?)
+ON CONFLICT(inbox, coalesce_key) WHERE coalesce_key IS NOT NULL AND failed_at IS NULL
+DO UPDATE SET
+    payload = excluded.payload,
+    actor_iri = excluded.actor_iri,
+    activity_type = excluded.activity_type,
+    next_attempt_at = excluded.next_attempt_at,
+    attempts = 0,
+    last_error = NULL,
+    revision = ap_delivery_queue.revision + 1
+RETURNING id
+`
+
+type QueueActivityPubDeliveryParams struct {
+	Inbox         string
+	Payload       []byte
+	ActorIri      string
+	ActivityType  string
+	CoalesceKey   sql.NullString
+	NextAttemptAt time.Time
+}
+
+func (q *Queries) QueueActivityPubDelivery(ctx context.Context, arg QueueActivityPubDeliveryParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, queueActivityPubDelivery,
+		arg.Inbox,
+		arg.Payload,
+		arg.ActorIri,
+		arg.ActivityType,
+		arg.CoalesceKey,
+		arg.NextAttemptAt,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const rejectFederationFollower = `-- name: RejectFederationFollower :exec
 UPDATE ap_followers SET approved_at = null, disabled_at = ? WHERE iri = ?
 `
@@ -1539,6 +1698,20 @@ type RejectFederationFollowerParams struct {
 
 func (q *Queries) RejectFederationFollower(ctx context.Context, arg RejectFederationFollowerParams) error {
 	_, err := q.db.ExecContext(ctx, rejectFederationFollower, arg.DisabledAt, arg.Iri)
+	return err
+}
+
+const releaseSupersededActivityPubDelivery = `-- name: ReleaseSupersededActivityPubDelivery :exec
+UPDATE ap_delivery_queue SET claimed_until = NULL WHERE id = ? AND revision != ?
+`
+
+type ReleaseSupersededActivityPubDeliveryParams struct {
+	ID       int64
+	Revision int64
+}
+
+func (q *Queries) ReleaseSupersededActivityPubDelivery(ctx context.Context, arg ReleaseSupersededActivityPubDeliveryParams) error {
+	_, err := q.db.ExecContext(ctx, releaseSupersededActivityPubDelivery, arg.ID, arg.Revision)
 	return err
 }
 
@@ -1581,6 +1754,34 @@ type RemoveNotificationDestinationForChannelParams struct {
 func (q *Queries) RemoveNotificationDestinationForChannel(ctx context.Context, arg RemoveNotificationDestinationForChannelParams) error {
 	_, err := q.db.ExecContext(ctx, removeNotificationDestinationForChannel, arg.Channel, arg.Destination)
 	return err
+}
+
+const retryActivityPubDelivery = `-- name: RetryActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    next_attempt_at = ?,
+    last_error = ?
+WHERE id = ? AND revision = ?
+`
+
+type RetryActivityPubDeliveryParams struct {
+	NextAttemptAt time.Time
+	LastError     sql.NullString
+	ID            int64
+	Revision      int64
+}
+
+func (q *Queries) RetryActivityPubDelivery(ctx context.Context, arg RetryActivityPubDeliveryParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, retryActivityPubDelivery,
+		arg.NextAttemptAt,
+		arg.LastError,
+		arg.ID,
+		arg.Revision,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const setAccessTokenToOwner = `-- name: SetAccessTokenToOwner :exec

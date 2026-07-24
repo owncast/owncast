@@ -2,6 +2,7 @@ package inbox
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -39,35 +40,26 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 		approved = false
 	}
 
-	if err := s.followers.Add(followRequest, approved); err != nil {
-		log.Errorln("unable to save follow request", err)
-		return err
+	actorIRI := followRequest.ActorIriString()
+	if actorIRI == "" {
+		return errors.New("follow activity is missing actor IRI")
 	}
 
 	localAccountName := s.configRepository.GetDefaultFederationUsername()
+	if handled, err := s.respondToExistingFollow(activity, follow, actorIRI, localAccountName); handled {
+		return err
+	}
+	if err := s.addFollow(c, activity, followRequest, approved, localAccountName); err != nil {
+		return err
+	}
 
 	objectIRI, err := apmodels.GetIRIStringFromObjectProperty(activity.GetActivityStreamsObject())
 	if err != nil {
 		return errors.Wrap(err, "follow activity is missing object IRI")
 	}
 
-	actorIRI, err := apmodels.GetIRIStringFromActorProperty(activity.GetActivityStreamsActor())
-	if err != nil {
-		return errors.Wrap(err, "follow activity is missing actor IRI")
-	}
-
-	if approved {
-		// Only non-featured (fan) follows reach the auto-accept path here;
-		// featured follows always require manual approval, so live status in
-		// this Accept isn't needed and is reported as not-live.
-		if err := requests.SendFollowAccept(s.workerpool, follow.Inbox, activity, localAccountName, s.builder, s.signer, s.configRepository, false); err != nil {
-			log.Errorln("unable to send follow accept", err)
-			return err
-		}
-		// Don't fire the follower webhook for featured-streams follows.
-		if !followRequest.IsDirectory {
-			go s.webhooks.SendFediverseEngagementFollowEvent(actorIRI)
-		}
+	if approved && !followRequest.IsDirectory {
+		go s.webhooks.SendFediverseEngagementFollowEvent(actorIRI)
 	}
 
 	// A directory follow is a listing relationship, not a fan follow. It is kept
@@ -98,6 +90,56 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 		return s.handleEngagementActivity(events.FediverseEngagementFollow, false, followRequest, events.FediverseEngagementFollow)
 	}
 
+	return nil
+}
+
+func (s *Service) respondToExistingFollow(activity vocab.ActivityStreamsFollow, follow *apmodels.ActivityPubActor, actorIRI, localAccountName string) (bool, error) {
+	existing, err := s.followers.GetByIRI(actorIRI)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
+	if err != nil {
+		return true, err
+	}
+	if existing.DisabledAt != nil {
+		return true, requests.SendFollowReject(s.workerpool, follow.Inbox, activity, localAccountName, s.builder)
+	}
+	if existing.ApprovedAt != nil {
+		return true, requests.SendFollowAccept(s.workerpool, follow.Inbox, activity, localAccountName, s.builder, s.configRepository, false)
+	}
+	return true, nil
+}
+
+func (s *Service) addFollow(c context.Context, activity vocab.ActivityStreamsFollow, follow apmodels.ActivityPubActor, approved bool, localAccountName string) error {
+	if !approved {
+		if err := s.followers.Add(follow, false); err != nil {
+			log.Errorln("unable to save follow request", err)
+			return err
+		}
+		return nil
+	}
+
+	delivery, err := requests.MakeFollowAcceptDelivery(follow.Inbox, activity, localAccountName, s.builder, s.configRepository, false)
+	if err != nil {
+		return err
+	}
+	ds := s.persistence.Datastore()
+	ds.DbLock.Lock()
+	defer ds.DbLock.Unlock()
+	tx, err := ds.DB.BeginTx(c, nil)
+	if err != nil {
+		return errors.Wrap(err, "beginning follow transaction")
+	}
+	defer func() { _ = tx.Rollback() }()
+	if err := s.followers.AddTx(c, tx, follow, true); err != nil {
+		return err
+	}
+	if err := s.workerpool.EnqueueTx(c, tx, delivery); err != nil {
+		return err
+	}
+	if err := tx.Commit(); err != nil {
+		return errors.Wrap(err, "committing follow transaction")
+	}
 	return nil
 }
 

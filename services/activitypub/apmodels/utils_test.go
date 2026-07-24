@@ -137,6 +137,24 @@ func TestGetIRIFromActorPropertyWithEmbeddedObject(t *testing.T) {
 	}
 }
 
+func TestGetIRIFromActorPropertyWithEmbeddedActorID(t *testing.T) {
+	expected, _ := url.Parse("https://example.com/user/embedded")
+	person := streams.NewActivityStreamsPerson()
+	id := streams.NewJSONLDIdProperty()
+	id.SetIRI(expected)
+	person.SetJSONLDId(id)
+	actor := streams.NewActivityStreamsActorProperty()
+	actor.AppendActivityStreamsPerson(person)
+
+	result, err := GetIRIFromActorProperty(actor)
+	if err != nil {
+		t.Fatalf("GetIRIFromActorProperty with embedded actor: %v", err)
+	}
+	if result.String() != expected.String() {
+		t.Fatalf("GetIRIFromActorProperty = %q, want %q", result, expected)
+	}
+}
+
 func TestGetIRIFromJSONLDIdPropertyWithNil(t *testing.T) {
 	_, err := GetIRIFromJSONLDIdProperty(nil)
 	if err == nil {
