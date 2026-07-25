@@ -690,6 +690,11 @@ Web package: @img/sharp-libvips-linux-x64@1.2.4
   Declared license: LGPL-3.0-or-later
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: LGPL-3.0-or-later.
 
+Web package: @img/sharp-libvips-linux-x64@1.3.0
+  Source: https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.3.0.tgz
+  Declared license: LGPL-3.0-or-later
+  LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: LGPL-3.0-or-later.
+
 Web package: @img/sharp-libvips-linuxmusl-x64@1.2.4
   Source: https://registry.npmjs.org/@img/sharp-libvips-linuxmusl-x64/-/sharp-libvips-linuxmusl-x64-1.2.4.tgz
   Declared license: LGPL-3.0-or-later
@@ -697,6 +702,11 @@ Web package: @img/sharp-libvips-linuxmusl-x64@1.2.4
 
 Web package: @img/sharp-linux-x64@0.34.5
   Source: https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.34.5.tgz
+  Declared license: Apache-2.0
+  LICENSE: SHA256 73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68
+
+Web package: @img/sharp-linux-x64@0.35.0
+  Source: https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.0.tgz
   Declared license: Apache-2.0
   LICENSE: SHA256 73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68
 
@@ -2418,6 +2428,11 @@ Web package: shallow-clone@3.0.1
 
 Web package: sharp@0.34.5
   Source: https://registry.npmjs.org/sharp/-/sharp-0.34.5.tgz
+  Declared license: Apache-2.0
+  LICENSE: SHA256 73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68
+
+Web package: sharp@0.35.0
+  Source: https://registry.npmjs.org/sharp/-/sharp-0.35.0.tgz
   Declared license: Apache-2.0
   LICENSE: SHA256 73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68
 
@@ -9967,8 +9982,10 @@ THE SOFTWARE.
 ================================================================================
 SHA256: 73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68
 Used by: Web package: @img/sharp-linux-x64@0.34.5 (LICENSE)
+Used by: Web package: @img/sharp-linux-x64@0.35.0 (LICENSE)
 Used by: Web package: @img/sharp-linuxmusl-x64@0.34.5 (LICENSE)
 Used by: Web package: sharp@0.34.5 (LICENSE)
+Used by: Web package: sharp@0.35.0 (LICENSE)
 --------------------------------------------------------------------------------
 Apache License
 Version 2.0, January 2004
