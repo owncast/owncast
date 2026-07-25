@@ -830,18 +830,13 @@ Web package: @next/bundle-analyzer@16.2.10
   Declared license: MIT
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
-Web package: @next/env@16.2.10
-  Source: https://registry.npmjs.org/@next/env/-/env-16.2.10.tgz
+Web package: @next/env@16.2.11
+  Source: https://registry.npmjs.org/@next/env/-/env-16.2.11.tgz
   Declared license: MIT
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
-Web package: @next/swc-linux-x64-gnu@16.2.10
-  Source: https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-16.2.10.tgz
-  Declared license: MIT
-  LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
-
-Web package: @next/swc-linux-x64-musl@16.2.10
-  Source: https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-16.2.10.tgz
+Web package: @next/swc-linux-x64-gnu@16.2.11
+  Source: https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-16.2.11.tgz
   Declared license: MIT
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
@@ -2155,8 +2150,8 @@ Web package: next-export-i18n@2.3.5
   Declared license: MIT
   LICENSE: SHA256 ca0170ad904aabd8db7af8e7de2a817fa73821706bb1f06b8bde70895ca007bf
 
-Web package: next@16.2.10
-  Source: https://registry.npmjs.org/next/-/next-16.2.10.tgz
+Web package: next@16.2.11
+  Source: https://registry.npmjs.org/next/-/next-16.2.11.tgz
   Declared license: MIT
   license.md: SHA256 ee765244e2d59f5234d474f62e0766fa0c8b99af967fdd4c0cb8dcb0c76ea224
 
@@ -14933,7 +14928,7 @@ SOFTWARE.
 
 ================================================================================
 SHA256: ee765244e2d59f5234d474f62e0766fa0c8b99af967fdd4c0cb8dcb0c76ea224
-Used by: Web package: next@16.2.10 (license.md)
+Used by: Web package: next@16.2.11 (license.md)
 --------------------------------------------------------------------------------
 The MIT License (MIT)
 
