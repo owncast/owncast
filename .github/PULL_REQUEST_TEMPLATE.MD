@@ -50,6 +50,6 @@ Some things you might want to mention:
 2. Explain how it works and decisions you made.
 3. If you're fixing something, what was wrong? How should we stop from having this issue happen again?
 4. If this is a new feature or addition to functionality, why should it be added? What are the use cases? Who was asking for this functionality?
-5. If this is a frontend change, does the text support [translation](https://owncast.notion.site/web-translations)?
+5. If this is a frontend change, does the text support [translation](https://docs.owncast.dev/web-translations)?
 
 Thank you so much for contributing to Owncast! 🎉
