@@ -1,8 +1,9 @@
 package router
 
 import (
-	"fmt"
+	"net"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -126,10 +127,16 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 	protocols.SetUnencryptedHTTP2(true)
 
 	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
+	handler := compress(m)
+
+	if cfg.AutoHTTPSEnabled && cfg.AutoHTTPSHost != "" {
+		startAutoHTTPS(cfg, handler)
+	}
+
 	server := &http.Server{
-		Addr:              fmt.Sprintf("%s:%d", ip, port),
+		Addr:              net.JoinHostPort(ip, strconv.Itoa(port)),
 		ReadHeaderTimeout: 4 * time.Second,
-		Handler:           compress(m),
+		Handler:           handler,
 		Protocols:         protocols,
 	}
 
