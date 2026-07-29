@@ -298,9 +298,8 @@ func (m *Manifest) usesSharedEngine() bool {
 }
 
 // validateConfigKeys rejects author config keys reserved by the host. Keys
-// starting with "__" are used to inject per-instance state (e.g. "__slug") into
-// shared-engine plugins via Extism config, and must not collide with declared
-// plugin config.
+// starting with "__" are used to inject per-instance state (e.g. "__slug") via
+// Extism config, and must not collide with declared plugin config.
 func (m *Manifest) validateConfigKeys() error {
 	for key := range m.Config {
 		if strings.HasPrefix(key, "__") {

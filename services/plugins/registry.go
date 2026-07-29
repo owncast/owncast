@@ -12,12 +12,10 @@ import (
 )
 
 // pluginIdentity is everything a host function needs to serve a call on behalf
-// of a specific plugin. In the legacy self-contained-wasm model these values
-// were captured in each host function's closure at BuildHostFunctions time. In
-// the shared-engine model host functions are built once and shared across all
-// plugins, so the calling plugin's identity is resolved at call time from this
-// registry instead (keyed by the slug the host stashed in the instance's
-// Extism config under "__slug").
+// of a specific plugin. Host functions are built once and shared across all
+// plugins (of every runtime), so the calling plugin's identity is resolved at
+// call time from this registry, keyed by the slug the host stashed in the
+// instance's Extism config under "__slug".
 type pluginIdentity struct {
 	slug        string
 	granted     map[string]bool // permission set, gated at call time
@@ -43,11 +41,13 @@ type pluginRegistry struct {
 	byslug map[string]*pluginIdentity
 }
 
-// Reserved Extism config keys the host sets per shared-engine instance. They
-// are prefixed with "__" so they can't collide with author-declared config
-// (manifest validation rejects author keys starting with "__"). The guest
-// engine reads "script"/"manifest"; the host reads "__slug" back to resolve
-// identity inside shared host functions.
+// Reserved Extism config keys the host sets on a plugin instance at load. The
+// host reads "__slug" back to resolve identity inside shared host functions.
+// The guest reads "manifest" for every runtime and "script" for shared engines
+// only, since a self-contained module already is its code. These live in
+// Extism's config namespace, which is separate from the author's declared
+// manifest.config that owncast_config_get serves. Manifest validation also
+// rejects declared keys starting with "__".
 const (
 	configKeySlug     = "__slug"
 	configKeyScript   = "script"
@@ -76,12 +76,13 @@ func (r *pluginRegistry) remove(slug string) {
 }
 
 // resolveCaller resolves the calling plugin's identity and enforces its
-// permission grant. It is the single permission-gating boundary for shared host
-// functions (in the legacy per-plugin model, an ungranted capability simply
-// wasn't linked; now every plugin links every host import, so the gate must
-// live here). Pass perm == "" for ambient capabilities (timer, config, asset
-// read) that need no grant. On a false return the host function must abort
-// (returning zero/empty to the guest); permission denials are logged.
+// permission grant. It is the single permission-gating boundary for host
+// functions. Every plugin links every host import, so an ungranted capability
+// can only be refused here. It used to simply not be linked when host functions
+// were built per plugin. Pass perm == "" for ambient capabilities (timer,
+// config, asset read) that need no grant. On a false return the host function
+// must abort by returning zero or empty to the guest. Permission denials are
+// logged.
 func resolveCaller(ctx context.Context, fnName, perm string) (*pluginIdentity, bool) {
 	id, ok := callerIdentity(ctx)
 	if !ok {

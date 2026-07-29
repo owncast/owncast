@@ -838,3 +838,46 @@ func TestManager_Uninstall_RemovesRegistrySidecar(t *testing.T) {
 		t.Errorf("uninstall should remove the registry sidecar, stat err = %v", err)
 	}
 }
+
+// TestSelfContainedWasmInstanceConfig pins the reserved Extism config keys a
+// hand-authored wasm module reads at runtime. "__slug" is what shared host
+// functions resolve identity by. The packaged manifest is what such a plugin
+// echoes back from register() because there is no SDK to bake a copy into the
+// module. "script" is shared-engine only. The artifact already is the code for
+// a self-contained module.
+func TestSelfContainedWasmInstanceConfig(t *testing.T) {
+	manifestBytes := validManifestBytes()
+	manifest, err := ParseManifest(manifestBytes)
+	if err != nil {
+		t.Fatalf("parse manifest: %v", err)
+	}
+	manifest.Type = RuntimeWasm
+
+	ctx := context.Background()
+	// An exportless module is enough: instantiate only wires config, memory
+	// limits, and host functions. It never calls into the guest.
+	p, release, err := instantiate(ctx, &HostEnv{}, manifest, manifestBytes, emptyWasmModule(), "hello-world")
+	if err != nil {
+		t.Fatalf("instantiate: %v", err)
+	}
+	defer func() { _ = p.Close(ctx) }()
+
+	if release != nil {
+		t.Error("self-contained wasm holds no shared-engine reference, so its release func must be nil")
+	}
+	if got := p.Config[configKeySlug]; got != manifest.Slug {
+		t.Errorf("config[%q] = %q, want %q", configKeySlug, got, manifest.Slug)
+	}
+	if got := p.Config[configKeyManifest]; got != string(manifestBytes) {
+		t.Errorf("config[%q] = %q, want the packaged sidecar bytes %q", configKeyManifest, got, manifestBytes)
+	}
+	if got, ok := p.Config[configKeyScript]; ok {
+		t.Errorf("config[%q] must not be set for self-contained wasm; got %q", configKeyScript, got)
+	}
+}
+
+// emptyWasmModule is a valid module with no imports, exports, or memory: the
+// 8-byte header (magic + version) and nothing else.
+func emptyWasmModule() []byte {
+	return []byte{0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00}
+}
