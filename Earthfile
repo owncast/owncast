@@ -229,10 +229,13 @@ hls-tests:
 plugin-tests:
 	FROM --platform=linux/amd64 ghcr.io/gabek/go-crosscompile:latest
 	ENV GOTOOLCHAIN=auto
-	# git clones the plugin SDK; npm builds both the SDK-compiled plugin and
-	# this test suite; gcompat lets the SDK's prebuilt extism-js (glibc) run on
-	# this musl/alpine image.
-	RUN apk add npm git gcompat font-noto && fc-cache -f
+	# git clones the plugin SDK. npm builds the SDK examples and this test suite.
+	# Rust builds the self-contained wasm fixture. gcompat lets the SDK's prebuilt
+	# extism-js (glibc) run on this musl/alpine image.
+	RUN apk add npm git gcompat font-noto curl && fc-cache -f
+	RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+		sh -s -- -y --profile minimal --default-toolchain 1.97.1 --target wasm32-unknown-unknown
+	ENV PATH=/root/.cargo/bin:$PATH
 	COPY . /build
 	WORKDIR /build/test/automated/plugins
 	RUN ./run.sh

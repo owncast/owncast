@@ -1,3 +1,4 @@
 node_modules/
 package-lock.json
 ffmpeg
+native-wasm-plugin/target/

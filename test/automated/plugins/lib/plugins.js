@@ -15,6 +15,7 @@ const ALL = [
 	'viewer-gate',
 	'page-content-demo',
 	'tabs-demo',
+	'native-wasm-test',
 ];
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
