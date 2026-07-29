@@ -58,6 +58,14 @@ func TestHandleAutoHTTPSEnvironment(t *testing.T) {
 			wantServerURL: "https://live.example.com",
 		},
 		{
+			name:          "a trailing dot is removed",
+			hostName:      "Live.Example.COM.",
+			enable:        "true",
+			wantEnabled:   true,
+			wantHost:      "live.example.com",
+			wantServerURL: "https://live.example.com",
+		},
+		{
 			name:     "a url instead of a hostname is rejected",
 			hostName: "https://live.example.com",
 			enable:   "true",
@@ -65,6 +73,22 @@ func TestHandleAutoHTTPSEnvironment(t *testing.T) {
 		{
 			name:     "a hostname with a port is rejected",
 			hostName: "live.example.com:8080",
+			enable:   "true",
+		},
+		{
+			name:            "a hostname with a query is rejected",
+			hostName:        "live.example.com?unexpected=true",
+			enable:          "true",
+			presetServerURL: "https://old.example.com",
+		},
+		{
+			name:     "a hostname with a fragment is rejected",
+			hostName: "live.example.com#unexpected",
+			enable:   "true",
+		},
+		{
+			name:     "a hostname with internal whitespace is rejected",
+			hostName: "live.example.com\n.evil.example",
 			enable:   "true",
 		},
 		{

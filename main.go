@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -497,6 +498,7 @@ func handleCommandLineFlags(cfg *config.Config, configRepository configrepositor
 func handleAutoHTTPSEnvironment(cfg *config.Config, configRepository configrepository.ConfigRepository) {
 	enabled := strings.EqualFold(os.Getenv("OWNCAST_ENABLE_AUTO_HTTPS"), "true")
 	host := strings.ToLower(strings.TrimSpace(os.Getenv("OWNCAST_HOST_NAME")))
+	host = strings.TrimSuffix(host, ".")
 
 	if host == "" {
 		if enabled {
@@ -505,12 +507,13 @@ func handleAutoHTTPSEnvironment(cfg *config.Config, configRepository configrepos
 		return
 	}
 
-	if strings.ContainsAny(host, "/:@ \t") {
-		log.Errorf("OWNCAST_HOST_NAME %q is not a bare hostname (no scheme, port or path). Automatic HTTPS is disabled.", host)
+	serverURL := "https://" + host
+	parsedURL, err := url.Parse(serverURL)
+	if err != nil || parsedURL.Host != host || parsedURL.Hostname() != host {
+		log.Errorf("OWNCAST_HOST_NAME %q is not a bare hostname (no scheme, port, path, query, or fragment). Automatic HTTPS is disabled.", host)
 		return
 	}
 
-	serverURL := "https://" + host
 	if existing := configRepository.GetServerURL(); existing != "" && existing != serverURL {
 		log.Infof("Replacing the stored server URL %s with %s from OWNCAST_HOST_NAME. Unset the environment variable to manage it in the admin.", existing, serverURL)
 	}
