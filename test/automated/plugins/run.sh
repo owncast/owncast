@@ -96,13 +96,16 @@ for name in "${PLUGIN_NAMES[@]}"; do
 	cp "${SDK_DIR}/plugins/${name}.ocpkg" "${PLUGIN_DIR}/"
 done
 
-echo "Building native wasm fixture..."
-(
-	cd "$NATIVE_WASM_PROJECT"
-	cargo build --locked --release --target wasm32-unknown-unknown
-)
-cp "${NATIVE_WASM_PROJECT}/target/wasm32-unknown-unknown/release/native_wasm_test.wasm" \
-	"${PLUGIN_DIR}/native-wasm-test.wasm"
+NATIVE_WASM_ARTIFACT="${NATIVE_WASM_PROJECT}/native_wasm_test.wasm"
+if [[ ! -f "$NATIVE_WASM_ARTIFACT" ]]; then
+	echo "Building native wasm fixture..."
+	(
+		cd "$NATIVE_WASM_PROJECT"
+		cargo build --locked --release --target wasm32-unknown-unknown
+	)
+	NATIVE_WASM_ARTIFACT="${NATIVE_WASM_PROJECT}/target/wasm32-unknown-unknown/release/native_wasm_test.wasm"
+fi
+cp "$NATIVE_WASM_ARTIFACT" "${PLUGIN_DIR}/native-wasm-test.wasm"
 cp "${NATIVE_WASM_PROJECT}/plugin.manifest.json" \
 	"${PLUGIN_DIR}/native-wasm-test.manifest.json"
 

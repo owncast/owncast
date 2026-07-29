@@ -869,7 +869,7 @@ func TestSelfContainedWasmInstanceConfig(t *testing.T) {
 		t.Errorf("config[%q] = %q, want %q", configKeySlug, got, manifest.Slug)
 	}
 	if got := p.Config[configKeyManifest]; got != string(manifestBytes) {
-		t.Errorf("config[%q] = %q, want the packaged sidecar bytes %q", configKeyManifest, got, manifestBytes)
+		t.Errorf("config[%q] = %q, want the packaged sidecar bytes %q", configKeyManifest, got, string(manifestBytes))
 	}
 	if got, ok := p.Config[configKeyScript]; ok {
 		t.Errorf("config[%q] must not be set for self-contained wasm; got %q", configKeyScript, got)

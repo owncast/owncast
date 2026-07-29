@@ -226,16 +226,21 @@ hls-tests:
 	RUN npm install
 	RUN ./run.sh
 
+native-wasm-test-plugin:
+	FROM --platform=linux/amd64 rust:1.97.1-alpine
+	RUN rustup target add wasm32-unknown-unknown
+	COPY test/automated/plugins/native-wasm-plugin /plugin
+	WORKDIR /plugin
+	RUN cargo build --locked --release --target wasm32-unknown-unknown
+	SAVE ARTIFACT /plugin/target/wasm32-unknown-unknown/release/native_wasm_test.wasm
+
 plugin-tests:
 	FROM --platform=linux/amd64 ghcr.io/gabek/go-crosscompile:latest
 	ENV GOTOOLCHAIN=auto
 	# git clones the plugin SDK. npm builds the SDK examples and this test suite.
-	# Rust builds the self-contained wasm fixture. gcompat lets the SDK's prebuilt
-	# extism-js (glibc) run on this musl/alpine image.
-	RUN apk add npm git gcompat font-noto curl && fc-cache -f
-	RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
-		sh -s -- -y --profile minimal --default-toolchain 1.97.1 --target wasm32-unknown-unknown
-	ENV PATH=/root/.cargo/bin:$PATH
+	# gcompat lets the SDK's prebuilt extism-js (glibc) run on this musl/alpine image.
+	RUN apk add npm git gcompat font-noto && fc-cache -f
 	COPY . /build
+	COPY +native-wasm-test-plugin/native_wasm_test.wasm /build/test/automated/plugins/native-wasm-plugin/native_wasm_test.wasm
 	WORKDIR /build/test/automated/plugins
 	RUN ./run.sh
