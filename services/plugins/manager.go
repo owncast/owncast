@@ -56,8 +56,8 @@ type Loaded struct {
 	adminPaths []string    // original path strings, used for "page gates descendants" prefix-matching
 	plugin     *extism.Plugin
 	// releaseEngine drops this instance's reference on its shared compiled
-	// engine (nil for legacy self-contained wasm). Called exactly once by
-	// Close, after the instance itself is closed.
+	// engine (nil for self-contained wasm). Called exactly once by Close,
+	// after the instance itself is closed.
 	releaseEngine        func()
 	mu                   sync.Mutex
 	failureMu            sync.Mutex
@@ -282,8 +282,8 @@ func (l *Loaded) Close(ctx context.Context) {
 	if pl != nil {
 		// Closes this instance only; the shared compiled engine is
 		// reference-counted and torn down by releaseEngine below when this
-		// was the last plugin of its language. Legacy wasm plugins close
-		// their own runtime here.
+		// was the last plugin of its language. A self-contained wasm plugin
+		// closes its own runtime here.
 		_ = pl.Close(ctx)
 	}
 	if release != nil {
@@ -1479,7 +1479,7 @@ func runtimeForExt(path string) string {
 }
 
 // loadFromBytes is the shared core of LoadPlugin and LoadPackage. artifactBytes
-// is the plugin's wasm (for "wasm"/legacy) or its source (for the shared-engine
+// is the plugin's wasm (for "wasm") or its source (for the shared-engine
 // runtimes "javascript"/"python"); runtime — inferred by the caller from the
 // code artifact (its filename/extension), not authored in the manifest —
 // selects which. It is authoritative over any manifest-declared type.
@@ -1567,15 +1567,16 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 }
 
 // instantiate creates the extism plugin instance for a manifest: a per-plugin
-// instance of the shared engine for "js"/"python", or a self-contained module
-// for "wasm"/legacy. Either way the result is a *extism.Plugin with its
-// identity slug stashed in Config so shared host functions can resolve the
-// caller, and its per-plugin network scope applied.
+// instance of the shared engine for "javascript"/"python", or a self-contained
+// module for "wasm". Either way the result is a *extism.Plugin carrying the
+// reserved Extism config keys (see registry.go), including the identity slug
+// that shared host functions use to resolve the caller and the sidecar manifest
+// that the guest reads back. It also applies the per-plugin network scope.
 //
 // For shared-engine plugins the returned release func drops the instance's
-// reference on the compiled engine; the caller must invoke it exactly once
-// after closing the instance. nil for legacy self-contained wasm, whose
-// instance close tears down its whole runtime.
+// reference on the compiled engine. The caller must invoke it exactly once
+// after closing the instance. It is nil for self-contained wasm, whose instance
+// close tears down its whole runtime.
 func instantiate(ctx context.Context, env *HostEnv, manifest *Manifest, manifestBytes, artifactBytes []byte, displayName string) (*extism.Plugin, func(), error) {
 	// Give the guest the real host wall and monotonic clocks (wazero's default
 	// is a frozen 2022 clock). Nanosleep is deliberately NOT wired so a plugin
@@ -1592,8 +1593,8 @@ func instantiate(ctx context.Context, env *HostEnv, manifest *Manifest, manifest
 			release()
 			return nil, nil, fmt.Errorf("instantiate %s engine: %w", manifest.Type, err)
 		}
-		// Inject the per-plugin script + manifest the engine bootstrap reads at
-		// runtime, plus the slug shared host functions resolve identity by.
+		// The engine bootstrap reads the script and manifest at runtime. The
+		// slug is what shared host functions resolve identity by.
 		inst.Config = map[string]string{
 			configKeySlug:     manifest.Slug,
 			configKeyScript:   string(artifactBytes),
@@ -1603,11 +1604,11 @@ func instantiate(ctx context.Context, env *HostEnv, manifest *Manifest, manifest
 		return inst, release, nil
 	}
 
-	// Legacy self-contained wasm: each plugin compiles into its own runtime,
-	// deliberately without a shared compilation cache — a cache entry would
-	// pin the compiled native code for the life of the process, so disabling
-	// the plugin would never return its memory. Reloads recompile (fast
-	// relative to an explicit admin action).
+	// Self-contained wasm (Rust, Go, Zig, and others) compiles into its own
+	// runtime. It deliberately has no shared compilation cache because a cache
+	// entry would pin the compiled native code for the life of the process, so
+	// disabling the plugin would never return its memory. Reloads recompile,
+	// which is fast relative to an explicit admin action.
 	extismManifest := extism.Manifest{
 		Wasm:    []extism.Wasm{extism.WasmData{Data: artifactBytes, Name: displayName}},
 		Timeout: 10_000, // milliseconds; enables Wazero's WithCloseOnContextDone
@@ -1632,9 +1633,16 @@ func instantiate(ctx context.Context, env *HostEnv, manifest *Manifest, manifest
 	if err != nil {
 		return nil, nil, fmt.Errorf("instantiate wasm: %w", err)
 	}
-	// Even self-contained plugins now use the shared, identity-resolving host
-	// functions, so stash the slug for the registry lookup.
-	p.Config = map[string]string{configKeySlug: manifest.Slug}
+	// Self-contained plugins use the same identity-resolving host functions, so
+	// stash the slug for the registry lookup. The manifest rides along too: no
+	// SDK bakes it into a hand-authored module, so this is the only way such a
+	// guest can echo it back from register() (and read its own metadata)
+	// without compiling in a second copy that drifts from the packaged
+	// sidecar. There is no "script" key because the module is the code.
+	p.Config = map[string]string{
+		configKeySlug:     manifest.Slug,
+		configKeyManifest: string(manifestBytes),
+	}
 	// Return the compiler's transient scratch space now rather than letting
 	// the Go runtime sit on it (same reasoning as compileEngine).
 	debug.FreeOSMemory()

@@ -2,13 +2,14 @@
 
 # Standalone end-to-end plugin integration test.
 #
-# Unlike the Go unit tests, this builds plugins from source using the Owncast
-# plugin SDK (so no WASM is bundled in this repo), installs them into a real
-# Owncast instance, and verifies they actually run by exercising chat and HTTP
-# through them. Run by CI via the Earthly `+plugin-tests` target.
+# This builds JavaScript examples from the Owncast plugin SDK and a small Rust
+# fixture directly to wasm. It installs all of them into a real Owncast
+# instance, then exercises chat and HTTP through them. Run by CI via the
+# Earthly `+plugin-tests` target.
 #
-# The plugins built here are the SDK's own examples — the suite tracks them
-# rather than maintaining plugin source in this repo.
+# The feature examples come from the SDK so this suite does not duplicate their
+# source. The native-wasm fixture lives here because it tests the core loader
+# without a language SDK or runtime script.
 #
 # Env overrides:
 #   PLUGIN_SDK_DIR    path to an existing SDK checkout; if set, no clone happens
@@ -42,6 +43,7 @@ PLUGIN_SDK_REF="${PLUGIN_SDK_REF:-main}"
 
 # SDK example plugins exercised by the tests in this directory.
 PLUGIN_NAMES=(profanity-filter echo-bot overlay styles-demo scripts-demo viewer-gate page-content-demo tabs-demo)
+NATIVE_WASM_PROJECT="${REPO_ROOT}/test/automated/plugins/native-wasm-plugin"
 
 PLUGIN_DIR="${REPO_ROOT}/data/plugins"
 
@@ -93,6 +95,19 @@ for name in "${PLUGIN_NAMES[@]}"; do
 	(cd "$SDK_DIR" && ./tools/build-plugin.sh "examples/js/${name}")
 	cp "${SDK_DIR}/plugins/${name}.ocpkg" "${PLUGIN_DIR}/"
 done
+
+NATIVE_WASM_ARTIFACT="${NATIVE_WASM_PROJECT}/native_wasm_test.wasm"
+if [[ ! -f "$NATIVE_WASM_ARTIFACT" ]]; then
+	echo "Building native wasm fixture..."
+	(
+		cd "$NATIVE_WASM_PROJECT"
+		cargo build --locked --release --target wasm32-unknown-unknown
+	)
+	NATIVE_WASM_ARTIFACT="${NATIVE_WASM_PROJECT}/target/wasm32-unknown-unknown/release/native_wasm_test.wasm"
+fi
+cp "$NATIVE_WASM_ARTIFACT" "${PLUGIN_DIR}/native-wasm-test.wasm"
+cp "${NATIVE_WASM_PROJECT}/plugin.manifest.json" \
+	"${PLUGIN_DIR}/native-wasm-test.manifest.json"
 
 # Install the JS test framework for this suite.
 npm install --quiet --no-progress
