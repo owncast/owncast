@@ -88,6 +88,7 @@ type Host struct {
 	manager          *plugins.Manager
 	server           *plugins.Server
 	sse              *plugins.SSEHub
+	sqlStore         *pluginSQLStore
 	configRepository configrepository.ConfigRepository
 	// requireAdminAuth is the host's admin Basic Auth middleware, plumbed
 	// in from main.go so the management API and the plugin static server
@@ -186,6 +187,11 @@ func (p *Host) Stop(ctx context.Context) {
 		p.tickCancel()
 	}
 	p.manager.Stop(ctx)
+	// Unload callbacks close databases for loaded plugins; closeAll also
+	// handles any database opened during a final in-flight call.
+	if p.sqlStore != nil {
+		p.sqlStore.closeAll()
+	}
 }
 
 // Actions returns every action-button currently contributed by loaded
@@ -618,9 +624,20 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 		return nil, fmt.Errorf("create plugins directory: %w", err)
 	}
 
+	if err := migrateLegacyPluginFilesystemStorage(config.DataDirectory); err != nil {
+		return nil, err
+	}
+
+	sqlStore, err := newPluginSQLStore(filepath.Join(config.DataDirectory, pluginStorageRootDirName))
+	if err != nil {
+		return nil, err
+	}
 	env := &plugins.HostEnv{KV: newDatastoreKVStore(deps.Datastore)}
 	wirePluginHostEnv(env, deps)
 
+	env.SQLExec = sqlStore.exec
+	env.SQLQuery = sqlStore.query
+	env.AcquireSQLLease = sqlStore.acquire
 	sseHub := plugins.NewSSEHub()
 	env.SSE = sseHub
 
@@ -671,8 +688,8 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 	})
 	env.Timer = timerHub
 	// On unload (disable/reload/uninstall/disk-removal) cancel the plugin's
-	// pending timers AND close its open SSE streams, so neither lingers after
-	// the plugin is gone.
+	// pending timers and close its open SSE streams. SQL is tied directly to
+	// Loaded.Close so failed loads and package preflights release it too.
 	manager.SetOnUnload(func(slug string) {
 		timerHub.CancelForPlugin(slug)
 		sseHub.CloseForPlugin(slug)
@@ -711,6 +728,7 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 
 	return &Host{
 		manager:          manager,
+		sqlStore:         sqlStore,
 		server:           server,
 		sse:              sseHub,
 		configRepository: deps.ConfigRepository,
@@ -1118,12 +1136,85 @@ func wirePluginHostEnv(env *plugins.HostEnv, deps Deps) {
 	wireFilesystemHostFns(env)
 }
 
-// pluginDataRootDirName is the directory under config.DataDirectory that
-// holds each plugin's private, sandboxed filesystem (storage.fs). It is
+// pluginStorageRootDirName is the directory under config.DataDirectory that
+// holds everything a plugin stores on disk, one subdirectory per plugin. It is
 // deliberately separate from the plugins install/scan directory
 // (config.DataDirectory/plugins) so a plugin's writable data can never be
 // mistaken for, or collide with, an installed package or its assets.
-const pluginDataRootDirName = "plugin-data"
+const pluginStorageRootDirName = "plugin-storage"
+
+// legacyPluginDataRootDirName is where storage.fs data lived before SQL storage
+// gave every plugin one parent directory for all of its on-disk data.
+const legacyPluginDataRootDirName = "plugin-data"
+
+// Inside a plugin's storage directory, its two kinds of storage get their own
+// subdirectory: plugin-storage/<slug>/files for storage.fs and
+// plugin-storage/<slug>/db for storage.sql.
+//
+// The split is what keeps a database out of reach of the filesystem API. The
+// storage.fs sandbox is rooted at files/, so db/ is not merely a path the
+// resolver refuses, it is outside the tree the plugin can name at all. That
+// matters: max_page_count only refuses to grow a database, so a plugin that
+// could write its own database file would simply pre-seed one larger than its
+// quota and the host would open it. Reserving filenames inside a shared
+// directory would be the fragile version of this, since it would have to keep
+// pace with SQLite's journal and WAL sidecar naming forever.
+//
+// Keeping the trees apart also keeps the two quotas independent, so the limit a
+// plugin hits never depends on which API it wrote with first.
+const (
+	pluginFilesDirName    = "files"
+	pluginDatabaseDirName = "db"
+)
+
+// pluginStorageDir returns one plugin's storage subtree, the parent of both
+// files/ and db/.
+func pluginStorageDir(root, pluginName string) string {
+	return filepath.Join(root, pluginName)
+}
+
+// migrateLegacyPluginFilesystemStorage moves existing storage.fs data into the
+// files/ subtree before any plugin can access it. Rename keeps each plugin's
+// migration atomic on the data volume. A conflicting destination is refused
+// rather than hiding or overwriting either copy. Unrecognized files remain in
+// the legacy root and do not block well-formed plugin directories.
+func migrateLegacyPluginFilesystemStorage(dataDir string) error {
+	legacyRoot := filepath.Join(dataDir, legacyPluginDataRootDirName)
+	entries, err := os.ReadDir(legacyRoot)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("read legacy plugin storage: %w", err)
+	}
+
+	storageRoot := filepath.Join(dataDir, pluginStorageRootDirName)
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			log.Warnf("Skipping unexpected file in legacy plugin storage: %s", entry.Name())
+			continue
+		}
+		source := filepath.Join(legacyRoot, entry.Name())
+		destinationParent := pluginStorageDir(storageRoot, entry.Name())
+		destination := filepath.Join(destinationParent, pluginFilesDirName)
+		if _, err := os.Stat(destination); err == nil {
+			return fmt.Errorf("migrate legacy plugin storage for %q: destination already exists", entry.Name())
+		} else if !os.IsNotExist(err) {
+			return fmt.Errorf("inspect plugin storage destination for %q: %w", entry.Name(), err)
+		}
+		if err := os.MkdirAll(destinationParent, 0o700); err != nil {
+			return fmt.Errorf("create plugin storage directory for %q: %w", entry.Name(), err)
+		}
+		if err := os.Rename(source, destination); err != nil {
+			return fmt.Errorf("migrate legacy plugin storage for %q: %w", entry.Name(), err)
+		}
+		log.Infof("Migrated plugin filesystem storage for %s", entry.Name())
+	}
+	if err := os.Remove(legacyRoot); err != nil && !os.IsNotExist(err) {
+		log.Warnf("Unable to remove legacy plugin storage directory: %v", err)
+	}
+	return nil
+}
 
 // maxPluginFileBytes caps a single storage.fs write. It bounds how much a
 // misbehaving plugin can write in one call.
@@ -1162,16 +1253,33 @@ func dirSize(dir string) (int64, error) {
 	return total, err
 }
 
-// resolvePluginSandboxPath maps a plugin-supplied relative path to an
-// absolute path inside that plugin's sandbox (root/<pluginName>), and
-// guarantees the result cannot escape it. rel is treated as rooted before
-// cleaning, so "../", absolute paths, and other traversal tricks all
-// collapse back inside the sandbox; a defensive prefix check rejects
-// anything that still lands outside. pluginName is the plugin slug, which
-// the manifest layer has already constrained to [a-z][a-z0-9-]*, so it
-// cannot itself contain separators or "..".
+// resolvePluginSandboxPath maps a plugin-supplied relative path to an absolute
+// path inside that plugin's storage.fs sandbox
+// (root/<pluginName>/files), and guarantees the result cannot escape it. rel is
+// treated as rooted before cleaning, so "../", absolute paths, and other
+// traversal tricks all collapse back inside the sandbox; a defensive prefix
+// check rejects anything that still lands outside. pluginName is the plugin
+// slug, which the manifest layer has already constrained to [a-z][a-z0-9-]*, so
+// it cannot itself contain separators or "..".
+//
+// Because the sandbox is files/ rather than the whole per-plugin directory, the
+// same containment check that stops a plugin reaching another plugin's data also
+// stops it reaching its own database.
 func resolvePluginSandboxPath(root, pluginName, rel string) (string, error) {
-	sandbox, err := filepath.Abs(filepath.Join(root, pluginName))
+	return resolveContainedPath(filepath.Join(pluginStorageDir(root, pluginName), pluginFilesDirName), rel)
+}
+
+// resolvePluginDatabasePath is the same containment guarantee for the host's own
+// use of the db/ subtree. A plugin never supplies one of these paths, so this
+// exists to keep the layout in one place rather than to defend a boundary.
+func resolvePluginDatabasePath(root, pluginName, rel string) (string, error) {
+	return resolveContainedPath(filepath.Join(pluginStorageDir(root, pluginName), pluginDatabaseDirName), rel)
+}
+
+// resolveContainedPath joins rel under sandbox and refuses any result that
+// lands outside it.
+func resolveContainedPath(sandbox, rel string) (string, error) {
+	sandbox, err := filepath.Abs(sandbox)
 	if err != nil {
 		return "", err
 	}
@@ -1189,8 +1297,11 @@ func resolvePluginSandboxPath(root, pluginName, rel string) (string, error) {
 // aggregate quota. full is the absolute path being written; when it already
 // exists it's excluded from the current total, since the write overwrites it
 // in place rather than growing the footprint.
+//
+// It walks files/ only, so a plugin's database never consumes its filesystem
+// quota and the two limits stay independent.
 func fsQuotaCheck(root, pluginName, full string, addBytes int) error {
-	used, err := dirSize(filepath.Join(root, pluginName))
+	used, err := dirSize(filepath.Join(pluginStorageDir(root, pluginName), pluginFilesDirName))
 	if err != nil {
 		return err
 	}
@@ -1204,10 +1315,10 @@ func fsQuotaCheck(root, pluginName, full string, addBytes int) error {
 	return nil
 }
 
-// wireFilesystemHostFns implements the storage.fs host functions against a
-// per-plugin sandbox directory under config.DataDirectory/plugin-data.
+// wireFilesystemHostFns implements the storage.fs host functions against each
+// plugin's files/ subdirectory under config.DataDirectory/plugin-storage.
 func wireFilesystemHostFns(env *plugins.HostEnv) {
-	wireFilesystemHostFnsWithRoot(env, filepath.Join(config.DataDirectory, pluginDataRootDirName))
+	wireFilesystemHostFnsWithRoot(env, filepath.Join(config.DataDirectory, pluginStorageRootDirName))
 }
 
 // wireFilesystemHostFnsWithRoot is wireFilesystemHostFns with the sandbox

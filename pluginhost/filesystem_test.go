@@ -14,10 +14,14 @@ import (
 // host functions: every plugin-supplied path must resolve to somewhere
 // inside that plugin's own sandbox, no matter how the plugin tries to
 // climb out. These tests pin that contract.
+//
+// The sandbox is the files/ subdirectory of the plugin's storage directory, not
+// the storage directory itself, which is what keeps the sibling db/ subtree
+// holding its SQLite database out of reach.
 
 func TestResolvePluginSandboxPath_StaysInsideSandbox(t *testing.T) {
 	root := t.TempDir()
-	sandbox := filepath.Join(root, "my-plugin")
+	sandbox := filepath.Join(root, "my-plugin", pluginFilesDirName)
 
 	cases := []struct {
 		name string
@@ -64,7 +68,7 @@ func TestResolvePluginSandboxPath_IsolatesPlugins(t *testing.T) {
 	if got == sibling || strings.HasPrefix(got, sibling+string(os.PathSeparator)) {
 		t.Fatalf("plugin-a resolved into plugin-b's sandbox: %q", got)
 	}
-	if want := filepath.Join(root, "plugin-a", "plugin-b", "data.json"); got != want {
+	if want := filepath.Join(root, "plugin-a", pluginFilesDirName, "plugin-b", "data.json"); got != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}
 }
@@ -83,7 +87,7 @@ func TestFilesystemHostFns_RoundTrip(t *testing.T) {
 	}
 
 	// The bytes landed inside the plugin's sandbox, nowhere else.
-	onDisk := filepath.Join(root, slug, "sub", "greeting.txt")
+	onDisk := filepath.Join(root, slug, pluginFilesDirName, "sub", "greeting.txt")
 	if data, err := os.ReadFile(onDisk); err != nil || string(data) != "hello" {
 		t.Fatalf("expected file at %q with %q, got data=%q err=%v", onDisk, "hello", data, err)
 	}
@@ -128,9 +132,93 @@ func TestFilesystemHostFns_RoundTrip(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(root, "escape.txt")); !os.IsNotExist(err) {
 		t.Fatalf("traversal write leaked a file outside the sandbox")
 	}
-	if _, err := os.Stat(filepath.Join(root, slug, "escape.txt")); err != nil {
+	if _, err := os.Stat(filepath.Join(root, slug, pluginFilesDirName, "escape.txt")); err != nil {
 		t.Fatalf("traversal write should have landed inside the sandbox: %v", err)
 	}
+}
+
+func TestMigrateLegacyPluginFilesystemStorage(t *testing.T) {
+	t.Run("moves existing files beside the plugin database", func(t *testing.T) {
+		dataDir := t.TempDir()
+		legacyFile := filepath.Join(dataDir, legacyPluginDataRootDirName, "demo", "sub", "note.txt")
+		if err := os.MkdirAll(filepath.Dir(legacyFile), 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(legacyFile, []byte("kept"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		databaseFile := filepath.Join(dataDir, pluginStorageRootDirName, "demo", pluginDatabaseDirName, pluginSQLFileName)
+		if err := os.MkdirAll(filepath.Dir(databaseFile), 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(databaseFile, []byte("database"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := migrateLegacyPluginFilesystemStorage(dataDir); err != nil {
+			t.Fatal(err)
+		}
+		migratedFile := filepath.Join(dataDir, pluginStorageRootDirName, "demo", pluginFilesDirName, "sub", "note.txt")
+		if data, err := os.ReadFile(migratedFile); err != nil || string(data) != "kept" {
+			t.Fatalf("migrated file = %q, %v; want kept", data, err)
+		}
+		if data, err := os.ReadFile(databaseFile); err != nil || string(data) != "database" {
+			t.Fatalf("database sibling changed: %q, %v", data, err)
+		}
+		if _, err := os.Stat(filepath.Join(dataDir, legacyPluginDataRootDirName)); !os.IsNotExist(err) {
+			t.Fatalf("legacy root still exists after migration: %v", err)
+		}
+	})
+
+	t.Run("ignores stray files while migrating plugin directories", func(t *testing.T) {
+		dataDir := t.TempDir()
+		legacyRoot := filepath.Join(dataDir, legacyPluginDataRootDirName)
+		legacyFile := filepath.Join(legacyRoot, "demo", "note.txt")
+		if err := os.MkdirAll(filepath.Dir(legacyFile), 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(legacyFile, []byte("kept"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		strayFile := filepath.Join(legacyRoot, ".DS_Store")
+		if err := os.WriteFile(strayFile, []byte("stray"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := migrateLegacyPluginFilesystemStorage(dataDir); err != nil {
+			t.Fatal(err)
+		}
+		migratedFile := filepath.Join(dataDir, pluginStorageRootDirName, "demo", pluginFilesDirName, "note.txt")
+		if data, err := os.ReadFile(migratedFile); err != nil || string(data) != "kept" {
+			t.Fatalf("migrated file = %q, %v; want kept", data, err)
+		}
+		if data, err := os.ReadFile(strayFile); err != nil || string(data) != "stray" {
+			t.Fatalf("stray file = %q, %v; want it left in place", data, err)
+		}
+	})
+
+	t.Run("refuses to overwrite a destination", func(t *testing.T) {
+		dataDir := t.TempDir()
+		legacyFile := filepath.Join(dataDir, legacyPluginDataRootDirName, "demo", "note.txt")
+		newFile := filepath.Join(dataDir, pluginStorageRootDirName, "demo", pluginFilesDirName, "note.txt")
+		for path, contents := range map[string]string{legacyFile: "old", newFile: "new"} {
+			if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(path, []byte(contents), 0o600); err != nil {
+				t.Fatal(err)
+			}
+		}
+
+		if err := migrateLegacyPluginFilesystemStorage(dataDir); err == nil {
+			t.Fatal("expected conflicting destination to stop migration")
+		}
+		for path, want := range map[string]string{legacyFile: "old", newFile: "new"} {
+			if data, err := os.ReadFile(path); err != nil || string(data) != want {
+				t.Fatalf("%s = %q, %v; want %q", path, data, err, want)
+			}
+		}
+	})
 }
 
 func TestFilesystemHostFns_RejectsOversizedWrite(t *testing.T) {

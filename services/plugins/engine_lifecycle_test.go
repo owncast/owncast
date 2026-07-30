@@ -81,6 +81,11 @@ func TestLoadFailureReleasesEngine(t *testing.T) {
 	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
 
 	env, _, _ := captureEnv()
+	var acquired, released int
+	env.AcquireSQLLease = func(string) func() {
+		acquired++
+		return func() { released++ }
+	}
 	manifestBytes, _ := json.Marshal(map[string]any{
 		"api":         "1",
 		"name":        "boom",
@@ -94,6 +99,9 @@ func TestLoadFailureReleasesEngine(t *testing.T) {
 	}
 	if n, refs := engineCacheState(); n != 0 {
 		t.Fatalf("failed load leaked an engine reference: %d entries, %d refs", n, refs)
+	}
+	if acquired != 1 || released != 1 {
+		t.Fatalf("failed load acquired %d SQL leases and released %d, want 1 each", acquired, released)
 	}
 }
 
@@ -409,5 +417,73 @@ module.exports = definePlugin({ onChatMessage(msg) {} });`)
 				}
 				return ""
 			}())
+	}
+}
+
+// TestManager_UnloadHooksBracketTheInstanceClose defends the contract the
+// two-phase SQL teardown depends on: onUnload runs while the plugin can still
+// execute, and onUnloaded runs only once it cannot. A host resource an in-flight
+// call can still reach has to be released in the second hook, because releasing
+// it in the first lets that call reacquire it after the teardown is finished.
+func TestManager_UnloadHooksBracketTheInstanceClose(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+	dir := t.TempDir()
+	mgr := NewManager(dir, env)
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(ctx)
+
+	script := []byte(`
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage(msg) { owncast.chat.send("ran: " + msg.body); }
+});`)
+	if _, err := mgr.Install(ctx, buildJSPackageBytes(t, lifecycleManifest(t, "0.1.0", []string{PermChatSend}), script)); err != nil {
+		t.Fatalf("install: %v", err)
+	}
+	if err := mgr.Enable(ctx, "lifecycle-bot"); err != nil {
+		t.Fatalf("enable: %v", err)
+	}
+	loaded := mgr.Snapshot()
+	if len(loaded) != 1 {
+		t.Fatalf("precondition: expected one loaded plugin, got %d", len(loaded))
+	}
+	instance := loaded[0]
+
+	// Dispatching straight to the instance is how an in-flight export call
+	// reaches the host while a teardown is underway.
+	dispatch := func(body string) {
+		NewDispatcher([]*Loaded{instance}).Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", body))
+	}
+	var order []string
+	mgr.SetOnUnload(func(slug string) {
+		order = append(order, "unload:"+slug)
+		dispatch("during unload")
+	})
+	mgr.SetOnUnloaded(func(slug string) {
+		order = append(order, "unloaded:"+slug)
+		dispatch("after unloaded")
+	})
+
+	if err := mgr.Disable(ctx, "lifecycle-bot"); err != nil {
+		t.Fatalf("disable: %v", err)
+	}
+
+	if len(order) != 2 || order[0] != "unload:lifecycle-bot" || order[1] != "unloaded:lifecycle-bot" {
+		t.Fatalf("unload hooks fired as %v, want onUnload then onUnloaded exactly once each", order)
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	var ran []string
+	for _, send := range *sends {
+		ran = append(ran, send.Text)
+	}
+	if len(ran) != 1 || ran[0] != "ran: during unload" {
+		t.Fatalf("plugin calls observed during teardown: %v, want only the one from onUnload; a call reaching the plugin after onUnloaded means the hooks do not bracket Close", ran)
 	}
 }
