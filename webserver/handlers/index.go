@@ -5,9 +5,11 @@ import (
 	"crypto/md5" // nolint:gosec
 	"encoding/json"
 	"fmt"
+	"mime"
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -26,7 +28,7 @@ func (h *Handlers) IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	isIndexRequest := r.URL.Path == "/" || filepath.Base(r.URL.Path) == "index.html" || filepath.Base(r.URL.Path) == ""
 
-	if utils.IsUserAgentAPlayer(r.UserAgent()) && isIndexRequest {
+	if isIndexRequest && (utils.IsUserAgentAPlayer(r.UserAgent()) || requestAcceptsVideo(r)) {
 		http.Redirect(w, r, "/hls/stream.m3u8", http.StatusTemporaryRedirect)
 		return
 	}
@@ -52,6 +54,32 @@ func (h *Handlers) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	serveWeb(w, r)
+}
+
+func requestAcceptsVideo(r *http.Request) bool {
+	for _, accept := range r.Header.Values("Accept") {
+		for _, mediaRange := range strings.Split(accept, ",") {
+			mediaType, params, err := mime.ParseMediaType(strings.TrimSpace(mediaRange))
+			if err != nil {
+				continue
+			}
+
+			if quality, ok := params["q"]; ok {
+				q, err := strconv.ParseFloat(quality, 64)
+				if err != nil || q <= 0 || q > 1 {
+					continue
+				}
+			}
+
+			if strings.HasPrefix(mediaType, "video/") ||
+				mediaType == "application/vnd.apple.mpegurl" ||
+				mediaType == "application/x-mpegurl" {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func (h *Handlers) renderIndexHtml(w http.ResponseWriter, r *http.Request, nonce string) {
