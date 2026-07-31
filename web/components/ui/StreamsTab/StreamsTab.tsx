@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from 'react';
-import { Row, Col, Empty, Spin, Alert } from 'antd';
+import { Empty, Spin, Alert } from 'antd';
 import { StreamCard } from '../StreamCard/StreamCard';
 import { Translation } from '../Translation/Translation';
 import { Localization } from '../../../types/localization';
@@ -98,22 +98,21 @@ export const StreamsTab: FC<StreamsTabProps> = ({ servers = [], loading = false,
 
   return (
     <div className={styles.streamsContainer}>
-      <Row gutter={[16, 16]}>
+      <div className={styles.streamGrid}>
         {sortedServers.map(server => (
-          <Col key={server.id} xs={24} sm={12} md={8} lg={6} xl={6} xxl={4}>
-            <StreamCard
-              serverName={serverDisplayName(server)}
-              serverUrl={server.iri}
-              serverLogo={server.logoUrl}
-              streamTitle={server.streamTitle}
-              streamDescription={server.streamDescription || server.summary}
-              tags={server.tags}
-              thumbnail={server.thumbnailUrl}
-              isOnline={server.isOnline}
-            />
-          </Col>
+          <StreamCard
+            key={server.id}
+            serverName={serverDisplayName(server)}
+            serverUrl={server.iri}
+            serverLogo={server.logoUrl}
+            streamTitle={server.streamTitle}
+            streamDescription={server.streamDescription || server.summary}
+            tags={server.tags}
+            thumbnail={server.thumbnailUrl}
+            isOnline={server.isOnline}
+          />
         ))}
-      </Row>
+      </div>
     </div>
   );
 };
