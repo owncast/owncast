@@ -1,10 +1,12 @@
 package plugins
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -109,24 +111,48 @@ type Manifest struct {
 	// on_page_content(slug, user) to get rendered HTML dynamically.
 	// Requires ui.modify.
 	ExtraPageContent *ExtraPageContent `json:"extraPageContent,omitempty"`
-	// Tabs declares viewer-page tabs the plugin contributes to the
-	// row of tabs Owncast renders next to chat (alongside built-ins
-	// like Followers). Each entry's `content` is a relative path to
-	// an HTML file under `assets/`; the host reads the bytes and
-	// inlines them into the tab body on /api/config. Path and
-	// extension rules match ExtraPageContent.
-	Tabs []Tab `json:"tabs,omitempty"`
+	// Tabs declares viewer-page tabs keyed by the slug passed to
+	// onTabContent. Each entry's `content` is a relative path to an HTML
+	// file under `assets/`; the host reads the bytes and inlines them into
+	// the tab body on /api/config. Path and extension rules match
+	// ExtraPageContent.
+	Tabs Tabs `json:"tabs,omitempty"`
 }
 
-// Tab declares one viewer-page tab. Title is the label shown in the
-// UI. Slug is the stable identifier passed to the plugin's
-// onTabContent handler. Content is the optional path to a static HTML
-// file under assets/; when omitted the host calls on_tab_content with
-// the slug to get rendered HTML.
+// Tab declares one viewer-page tab. Title is the label shown in the UI.
+// Content is the optional path to a static HTML file under assets/. When
+// omitted the host calls on_tab_content with the tab's map key.
 type Tab struct {
 	Title   string `json:"title"`
-	Slug    string `json:"slug"`
+	Slug    string `json:"-"`
 	Content string `json:"content,omitempty"`
+}
+
+func (tab *Tab) UnmarshalJSON(data []byte) error {
+	type tabAlias Tab
+	var decoded struct {
+		tabAlias
+		LegacySlug json.RawMessage `json:"slug"`
+	}
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	if decoded.LegacySlug != nil {
+		return errors.New(`legacy "slug" member is not allowed; use the manifest.tabs object key`)
+	}
+	*tab = Tab(decoded.tabAlias)
+	return nil
+}
+
+type Tabs map[string]Tab
+
+func (tabs *Tabs) UnmarshalJSON(data []byte) error {
+	decoded, err := decodeUniqueObject[Tab](data, "manifest.tabs")
+	if err != nil {
+		return err
+	}
+	*tabs = decoded
+	return nil
 }
 
 // ExtraPageContent declares the plugin's contribution to the viewer
@@ -224,21 +250,79 @@ type ActionButton struct {
 }
 
 // AdminConfig declares admin-only surfaces a plugin exposes. The Owncast
-// admin web UI lists these in the "Plugins" section; each page renders the
-// plugin's content at /plugins/<name>/<path>. Paths declared here are
-// auth-gated by the host — unauthenticated requests get 401 before
-// reaching the plugin.
+// admin web UI lists these in the "Plugins" section. Pages are keyed by the
+// plugin-relative path that the host auth-gates and renders.
 type AdminConfig struct {
-	Pages []AdminPage `json:"pages,omitempty"`
+	Pages AdminPages `json:"pages,omitempty"`
 }
 
 type AdminPage struct {
 	Title string `json:"title"`
-	// Path is a glob (e.g. "/admin", "/admin/*"). Requests under
-	// /plugins/<name>/<rest> are checked against each glob and require
-	// admin authentication when any match.
-	Path string `json:"path"`
-	Icon string `json:"icon,omitempty"`
+	Path  string `json:"-"`
+	Icon  string `json:"icon,omitempty"`
+}
+
+func (page *AdminPage) UnmarshalJSON(data []byte) error {
+	type adminPageAlias AdminPage
+	var decoded struct {
+		adminPageAlias
+		LegacyPath json.RawMessage `json:"path"`
+	}
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	if decoded.LegacyPath != nil {
+		return errors.New(`legacy "path" member is not allowed; use the manifest.admin.pages object key`)
+	}
+	*page = AdminPage(decoded.adminPageAlias)
+	return nil
+}
+
+type AdminPages map[string]AdminPage
+
+func (pages *AdminPages) UnmarshalJSON(data []byte) error {
+	decoded, err := decodeUniqueObject[AdminPage](data, "manifest.admin.pages")
+	if err != nil {
+		return err
+	}
+	*pages = decoded
+	return nil
+}
+
+func decodeUniqueObject[T any](data []byte, field string) (map[string]T, error) {
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	token, err := decoder.Token()
+	if err != nil {
+		return nil, err
+	}
+	if token == nil {
+		return nil, nil
+	}
+	if token != json.Delim('{') {
+		return nil, fmt.Errorf("%s must be an object", field)
+	}
+
+	values := make(map[string]T)
+	for decoder.More() {
+		token, err := decoder.Token()
+		if err != nil {
+			return nil, err
+		}
+		key := token.(string)
+		if _, exists := values[key]; exists {
+			return nil, fmt.Errorf("%s: duplicate key %q", field, key)
+		}
+
+		var value T
+		if err := decoder.Decode(&value); err != nil {
+			return nil, fmt.Errorf("%s[%q]: %w", field, key, err)
+		}
+		values[key] = value
+	}
+	if _, err := decoder.Token(); err != nil {
+		return nil, err
+	}
+	return values, nil
 }
 
 func ParseManifest(b []byte) (*Manifest, error) {
@@ -383,19 +467,16 @@ func (m *Manifest) hasPermission(perm string) bool {
 }
 
 func (m *Manifest) validateAdminPages() error {
-	for i, page := range m.Admin.Pages {
+	for _, page := range m.OrderedAdminPages() {
 		if page.Title == "" {
-			return fmt.Errorf("manifest.admin.pages[%d].title is required", i)
-		}
-		if page.Path == "" {
-			return fmt.Errorf("manifest.admin.pages[%d].path is required", i)
+			return fmt.Errorf("manifest.admin.pages[%q].title is required", page.Path)
 		}
 		// Must be rooted. The auth gate matches request paths (which always
 		// start with "/") against this glob and its "<path>/" descendant prefix;
 		// an unrooted value like "admin" matches neither "/admin" nor
 		// "/admin/...", silently leaving the intended subtree unauthenticated.
 		if !strings.HasPrefix(page.Path, "/") {
-			return fmt.Errorf("manifest.admin.pages[%d].path %q must start with \"/\"", i, page.Path)
+			return fmt.Errorf("manifest.admin.pages key %q must start with \"/\"", page.Path)
 		}
 	}
 	return nil
@@ -581,40 +662,64 @@ func (m *Manifest) validateTabs() error {
 				"plugin paints inside Owncast's chrome")
 	}
 	seenTitles := make(map[string]bool, len(m.Tabs))
-	seenSlugs := make(map[string]bool, len(m.Tabs))
-	for i := range m.Tabs {
-		if strings.TrimSpace(m.Tabs[i].Title) == "" {
-			return fmt.Errorf("manifest.tabs[%d].title is required", i)
-		}
-		if seenTitles[m.Tabs[i].Title] {
-			return fmt.Errorf("manifest.tabs[%d].title %q is a duplicate; tab titles must be unique within a plugin", i, m.Tabs[i].Title)
-		}
-		seenTitles[m.Tabs[i].Title] = true
-		if strings.TrimSpace(m.Tabs[i].Slug) == "" {
-			if m.Tabs[i].Content == "" {
-				return fmt.Errorf("manifest.tabs[%d].slug is required", i)
-			}
-			derived, err := slugify(m.Tabs[i].Title)
-			if err != nil {
-				return fmt.Errorf("manifest.tabs[%d].slug is required and could not be derived from title %q: %w", i, m.Tabs[i].Title, err)
-			}
-			m.Tabs[i].Slug = derived
-		} else if err := validatePluginSlug(fmt.Sprintf("manifest.tabs[%d].slug", i), m.Tabs[i].Slug); err != nil {
+	for _, tab := range m.OrderedTabs() {
+		if err := validatePluginSlug("manifest.tabs key", tab.Slug); err != nil {
 			return err
 		}
-		if seenSlugs[m.Tabs[i].Slug] {
-			return fmt.Errorf("manifest.tabs[%d].slug %q is a duplicate; tab slugs must be unique within a plugin", i, m.Tabs[i].Slug)
+		if strings.TrimSpace(tab.Title) == "" {
+			return fmt.Errorf("manifest.tabs[%q].title is required", tab.Slug)
 		}
-		seenSlugs[m.Tabs[i].Slug] = true
-		if m.Tabs[i].Content != "" {
-			rewritten, err := rewritePluginAssetPath(m.Slug, m.Tabs[i].Content, ".html")
+		if seenTitles[tab.Title] {
+			return fmt.Errorf("manifest.tabs[%q].title %q is a duplicate; tab titles must be unique within a plugin", tab.Slug, tab.Title)
+		}
+		seenTitles[tab.Title] = true
+		if tab.Content != "" {
+			rewritten, err := rewritePluginAssetPath(m.Slug, tab.Content, ".html")
 			if err != nil {
-				return fmt.Errorf("manifest.tabs[%d].content: %w", i, err)
+				return fmt.Errorf("manifest.tabs[%q].content: %w", tab.Slug, err)
 			}
-			m.Tabs[i].Content = rewritten
+			tab.Content = rewritten
+			slug := tab.Slug
+			tab.Slug = ""
+			m.Tabs[slug] = tab
 		}
 	}
 	return nil
+}
+
+// OrderedTabs returns tabs in lexicographic slug order. JSON object order is
+// not part of the manifest contract, so every observable host surface uses
+// this deterministic order.
+func (m *Manifest) OrderedTabs() []Tab {
+	keys := sortedMapKeys(m.Tabs)
+	tabs := make([]Tab, 0, len(keys))
+	for _, slug := range keys {
+		tab := m.Tabs[slug]
+		tab.Slug = slug
+		tabs = append(tabs, tab)
+	}
+	return tabs
+}
+
+// OrderedAdminPages returns admin pages in lexicographic path order.
+func (m *Manifest) OrderedAdminPages() []AdminPage {
+	keys := sortedMapKeys(m.Admin.Pages)
+	pages := make([]AdminPage, 0, len(keys))
+	for _, path := range keys {
+		page := m.Admin.Pages[path]
+		page.Path = path
+		pages = append(pages, page)
+	}
+	return pages
+}
+
+func sortedMapKeys[T any](values map[string]T) []string {
+	keys := make([]string, 0, len(values))
+	for key := range values {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
 }
 
 // validatePluginSlug checks that s is a non-empty, valid plugin-style

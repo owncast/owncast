@@ -156,8 +156,8 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
   const { t } = useTranslation();
   const uniquePages = useMemo(() => {
     const seen = new Set<string>();
-    return (plugin.adminPages ?? [])
-      .map(page => ({ ...page, url: pluginAdminUrl(plugin.slug, page.path) }))
+    return Object.entries(plugin.adminPages ?? {})
+      .map(([path, page]) => ({ ...page, url: pluginAdminUrl(plugin.slug, path) }))
       .filter(page => {
         if (seen.has(page.url)) return false;
         seen.add(page.url);

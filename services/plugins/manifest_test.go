@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -237,21 +238,68 @@ func TestParseManifest_AdminPage_MustBeRooted(t *testing.T) {
 	// rejected at load.
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
-		"admin": {"pages": [{"title": "Dash", "path": "admin"}]}
+		"admin": {"pages": {"admin": {"title": "Dash"}}}
 	}`))
 	if err == nil {
 		t.Fatal("expected error: unrooted admin page path")
 	}
-	if !strings.Contains(err.Error(), "must start with") {
-		t.Errorf("error should explain the rooting requirement, got: %v", err)
+	if !strings.Contains(err.Error(), `key "admin" must start with "/"`) {
+		t.Errorf("error should identify the invalid path key, got: %v", err)
 	}
 
 	// A rooted path is accepted.
 	if _, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
-		"admin": {"pages": [{"title": "Dash", "path": "/admin/*"}]}
+		"admin": {"pages": {"/admin/*": {"title": "Dash"}}}
 	}`)); err != nil {
 		t.Errorf("rooted admin page path should be valid, got: %v", err)
+	}
+}
+
+func TestParseManifest_AdminPage_RequiresTitle(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "stats", "version": "1.0",
+		"admin": {"pages": {"/admin": {"title": ""}}}
+	}`))
+	if err == nil {
+		t.Fatal("expected error: admin page title is required")
+	}
+	if !strings.Contains(err.Error(), `manifest.admin.pages["/admin"].title is required`) {
+		t.Errorf("error should identify the admin page key, got: %v", err)
+	}
+}
+
+func TestParseManifest_AdminPages_RejectsDuplicatePathKeys(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "stats", "version": "1.0",
+		"admin": {"pages": {
+			"/admin": {"title": "First"},
+			"/admin": {"title": "Second"}
+		}}
+	}`))
+	if err == nil {
+		t.Fatal("expected error: duplicate admin page path key")
+	}
+	if !strings.Contains(err.Error(), `manifest.admin.pages: duplicate key "/admin"`) {
+		t.Errorf("error should identify the duplicate admin page key, got: %v", err)
+	}
+}
+
+func TestParseManifest_AdminPages_RejectsLegacyPathMember(t *testing.T) {
+	for _, path := range []string{"/admin", "/different"} {
+		_, err := ParseManifest([]byte(fmt.Sprintf(`{
+			"api": "1", "name": "stats", "version": "1.0",
+			"admin": {"pages": {
+				"/admin": {"title": "Admin", "path": %q}
+			}}
+		}`, path)))
+		if err == nil {
+			t.Fatalf("expected legacy path member %q to be rejected", path)
+		}
+		if !strings.Contains(err.Error(), `manifest.admin.pages["/admin"]`) ||
+			!strings.Contains(err.Error(), `legacy "path" member`) {
+			t.Errorf("error should identify the keyed page and legacy member, got: %v", err)
+		}
 	}
 }
 
@@ -407,7 +455,7 @@ func TestParseManifest_AdminPages_NoUIModifyRequired(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "stats", "version": "1.0",
 		"permissions": ["http.serve"],
-		"admin": {"pages": [{"title": "x", "path": "/admin"}]}
+		"admin": {"pages": {"/admin": {"title": "x"}}}
 	}`))
 	if err != nil {
 		t.Errorf("admin.pages should not require ui.modify: %v", err)
@@ -702,14 +750,14 @@ func TestParseManifest_ExtraPageContent_RejectsNonHtmlExtension(t *testing.T) {
 	}
 }
 
-func TestParseManifest_Tabs_RewritesContentPaths(t *testing.T) {
+func TestParseManifest_Tabs_RewritesContentPathsAndOrdersBySlug(t *testing.T) {
 	m, err := ParseManifest([]byte(`{
 		"api": "1", "name": "tabbed", "version": "1.0",
 		"permissions": ["ui.modify"],
-		"tabs": [
-			{ "title": "Music", "slug": "music", "content": "music.html" },
-			{ "title": "Photos", "slug": "photos", "content": "/photos.html" }
-		]
+		"tabs": {
+			"photos": { "title": "Photos", "content": "/photos.html" },
+			"music": { "title": "Music", "content": "music.html" }
+		}
 	}`))
 	if err != nil {
 		t.Fatalf("parse: %v", err)
@@ -718,46 +766,116 @@ func TestParseManifest_Tabs_RewritesContentPaths(t *testing.T) {
 		{Title: "Music", Slug: "music", Content: "/plugins/tabbed/music.html"},
 		{Title: "Photos", Slug: "photos", Content: "/plugins/tabbed/photos.html"},
 	}
-	if len(m.Tabs) != len(want) {
-		t.Fatalf("tabs count: got %d want %d", len(m.Tabs), len(want))
+	got := m.OrderedTabs()
+	if len(got) != len(want) {
+		t.Fatalf("tabs count: got %d want %d", len(got), len(want))
 	}
 	for i, w := range want {
-		if m.Tabs[i] != w {
-			t.Errorf("tabs[%d] = %+v, want %+v", i, m.Tabs[i], w)
+		if got[i] != w {
+			t.Errorf("tabs[%d] = %+v, want %+v", i, got[i], w)
 		}
 	}
 }
 
-func TestParseManifest_Tabs_AcceptsLegacyStaticTabsWithoutSlugs(t *testing.T) {
-	m, err := ParseManifest([]byte(`{
+func TestParseManifest_Tabs_RejectsDuplicateSlugKeys(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "tabbed", "version": "1.0",
 		"permissions": ["ui.modify"],
-		"tabs": [
-			{ "title": "Music", "content": "music.html" },
-			{ "title": "Schedule", "content": "/schedule.html" }
-		]
+		"tabs": {
+			"music": {"title": "First"},
+			"music": {"title": "Second"}
+		}
+	}`))
+	if err == nil {
+		t.Fatal("expected error: duplicate tab slug key")
+	}
+	if !strings.Contains(err.Error(), `manifest.tabs: duplicate key "music"`) {
+		t.Errorf("error should identify the duplicate tab key, got: %v", err)
+	}
+}
+
+func TestParseManifest_Tabs_RejectsLegacySlugMember(t *testing.T) {
+	for _, slug := range []string{"music", "different"} {
+		_, err := ParseManifest([]byte(fmt.Sprintf(`{
+			"api": "1", "name": "tabbed", "version": "1.0",
+			"permissions": ["ui.modify"],
+			"tabs": {
+				"music": {"title": "Music", "slug": %q}
+			}
+		}`, slug)))
+		if err == nil {
+			t.Fatalf("expected legacy slug member %q to be rejected", slug)
+		}
+		if !strings.Contains(err.Error(), `manifest.tabs["music"]`) ||
+			!strings.Contains(err.Error(), `legacy "slug" member`) {
+			t.Errorf("error should identify the keyed tab and legacy member, got: %v", err)
+		}
+	}
+}
+
+func TestParseManifest_KeyedValuesAllowUnknownMembers(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "future", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"tabs": {"music": {"title": "Music", "futureTabField": true}},
+		"admin": {"pages": {"/admin": {"title": "Admin", "futurePageField": true}}}
+	}`))
+	if err != nil {
+		t.Fatalf("unknown keyed value members should remain forward-compatible: %v", err)
+	}
+}
+
+func TestParseManifest_AdminPages_OrdersByPath(t *testing.T) {
+	m, err := ParseManifest([]byte(`{
+		"api": "1", "name": "admin", "version": "1.0",
+		"admin": {"pages": {
+			"/settings": {"title": "Settings"},
+			"/admin": {"title": "Admin", "icon": "gear"}
+		}}
 	}`))
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
-	want := []Tab{
-		{Title: "Music", Slug: "music", Content: "/plugins/tabbed/music.html"},
-		{Title: "Schedule", Slug: "schedule", Content: "/plugins/tabbed/schedule.html"},
+	want := []AdminPage{
+		{Title: "Admin", Path: "/admin", Icon: "gear"},
+		{Title: "Settings", Path: "/settings"},
 	}
-	if len(m.Tabs) != len(want) {
-		t.Fatalf("tabs count: got %d want %d", len(m.Tabs), len(want))
+	got := m.OrderedAdminPages()
+	if len(got) != len(want) {
+		t.Fatalf("admin pages count: got %d want %d", len(got), len(want))
 	}
 	for i, w := range want {
-		if m.Tabs[i] != w {
-			t.Errorf("tabs[%d] = %+v, want %+v", i, m.Tabs[i], w)
+		if got[i] != w {
+			t.Errorf("admin pages[%d] = %+v, want %+v", i, got[i], w)
 		}
+	}
+}
+
+func TestParseManifest_RejectsArrayTabs(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "tabbed", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"tabs": [{ "title": "Music", "slug": "music", "content": "music.html" }]
+	}`))
+	if err == nil {
+		t.Fatal("expected array-form tabs to be rejected")
+	}
+}
+
+func TestParseManifest_RejectsArrayAdminPages(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "admin", "version": "1.0",
+		"admin": {"pages": [{ "title": "Admin", "path": "/admin" }]}
+	}`))
+	if err == nil {
+		t.Fatal("expected array-form admin pages to be rejected")
 	}
 }
 
 func TestParseManifest_Tabs_RequiresUIModify(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "tabbed", "version": "1.0",
-		"tabs": [{ "title": "Music", "slug": "music", "content": "music.html" }]
+		"tabs": {"music": { "title": "Music", "content": "music.html" }}
 	}`))
 	if err == nil {
 		t.Fatal("expected error when tabs is set without ui.modify")
@@ -771,13 +889,30 @@ func TestParseManifest_Tabs_RequiresTitle(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "tabbed", "version": "1.0",
 		"permissions": ["ui.modify"],
-		"tabs": [{ "title": "", "slug": "music", "content": "music.html" }]
+		"tabs": {"music": { "title": "", "content": "music.html" }}
 	}`))
 	if err == nil {
 		t.Fatal("expected error when tab.title is empty")
 	}
-	if !strings.Contains(err.Error(), "title is required") {
-		t.Errorf("error should call out title, got: %v", err)
+	if !strings.Contains(err.Error(), `manifest.tabs["music"].title is required`) {
+		t.Errorf("error should identify the tab key, got: %v", err)
+	}
+}
+
+func TestParseManifest_Tabs_RejectsInvalidSlugKeyDeterministically(t *testing.T) {
+	_, err := ParseManifest([]byte(`{
+		"api": "1", "name": "tabbed", "version": "1.0",
+		"permissions": ["ui.modify"],
+		"tabs": {
+			"z_bad": { "title": "Z" },
+			"a_bad": { "title": "A" }
+		}
+	}`))
+	if err == nil {
+		t.Fatal("expected error: invalid tab slug key")
+	}
+	if !strings.Contains(err.Error(), `"a_bad"`) {
+		t.Errorf("validation should report the lexicographically first invalid key, got: %v", err)
 	}
 }
 
@@ -785,10 +920,10 @@ func TestParseManifest_Tabs_RejectsDuplicateTitles(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "tabbed", "version": "1.0",
 		"permissions": ["ui.modify"],
-		"tabs": [
-			{ "title": "Music", "slug": "music-a", "content": "a.html" },
-			{ "title": "Music", "slug": "music-b", "content": "b.html" }
-		]
+		"tabs": {
+			"music-a": { "title": "Music", "content": "a.html" },
+			"music-b": { "title": "Music", "content": "b.html" }
+		}
 	}`))
 	if err == nil {
 		t.Fatal("expected error: duplicate tab titles")
@@ -802,7 +937,7 @@ func TestParseManifest_Tabs_RejectsCrossPluginPath(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "tabbed", "version": "1.0",
 		"permissions": ["ui.modify"],
-		"tabs": [{ "title": "Other", "slug": "other", "content": "/plugins/some-other-plugin/x.html" }]
+		"tabs": {"other": { "title": "Other", "content": "/plugins/some-other-plugin/x.html" }}
 	}`))
 	if err == nil {
 		t.Fatal("expected error: cross-plugin tab content path")
@@ -816,7 +951,7 @@ func TestParseManifest_Tabs_RejectsNonHtmlExtension(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"api": "1", "name": "tabbed", "version": "1.0",
 		"permissions": ["ui.modify"],
-		"tabs": [{ "title": "Bad", "slug": "bad", "content": "music.txt" }]
+		"tabs": {"bad": { "title": "Bad", "content": "music.txt" }}
 	}`))
 	if err == nil {
 		t.Fatal("expected error: only .html extension allowed for tabs")

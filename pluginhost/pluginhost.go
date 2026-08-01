@@ -638,7 +638,7 @@ func (p *Host) Tabs(r *http.Request) []models.PluginTab {
 		}
 		pluginSlug := l.Manifest.Slug
 		pluginPrefix := "/plugins/" + pluginSlug + "/"
-		for _, tab := range l.Manifest.Tabs {
+		for _, tab := range l.Manifest.OrderedTabs() {
 			var html string
 			if tab.Content != "" {
 				// Static: read from assets/.
