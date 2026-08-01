@@ -58,7 +58,10 @@ type Loaded struct {
 	// releaseEngine drops this instance's reference on its shared compiled
 	// engine (nil for self-contained wasm). Called exactly once by Close,
 	// after the instance itself is closed.
-	releaseEngine        func()
+	releaseEngine func()
+	// releaseSQL drops this instance's claim on its per-slug database after
+	// plugin code can no longer call host functions.
+	releaseSQL           func()
 	mu                   sync.Mutex
 	failureMu            sync.Mutex
 	filterFails          int
@@ -278,6 +281,8 @@ func (l *Loaded) Close(ctx context.Context) {
 	l.plugin = nil
 	release := l.releaseEngine
 	l.releaseEngine = nil
+	releaseSQL := l.releaseSQL
+	l.releaseSQL = nil
 	l.mu.Unlock()
 	if pl != nil {
 		// Closes this instance only; the shared compiled engine is
@@ -288,6 +293,9 @@ func (l *Loaded) Close(ctx context.Context) {
 	}
 	if release != nil {
 		release()
+	}
+	if releaseSQL != nil {
+		releaseSQL()
 	}
 	// Drop the call-time identity so any in-flight or stale host call from this
 	// plugin resolves to "not found" and fails cleanly rather than acting on a
@@ -334,16 +342,40 @@ type Manager struct {
 	// host subsystems can release per-plugin resources. Timers use it to
 	// cancel a plugin's pending callbacks.
 	onUnload func(slug string)
+
+	// onUnloaded, if set, is called with the same slug once the instance is
+	// fully closed. Resources that an in-flight export call can still reach
+	// (a plugin's SQL database) release here: onUnload fires while a call may
+	// be mid-flight, and freeing them there lets the call reacquire them
+	// after the teardown believed it was done.
+	onUnloaded func(slug string)
 }
 
 // SetOnUnload registers a callback invoked with a plugin's slug right before
 // its instance is closed. Used to cancel per-plugin host resources (timers).
 func (m *Manager) SetOnUnload(fn func(slug string)) { m.onUnload = fn }
 
-// notifyUnload fires the onUnload hook for a plugin about to be closed.
-func (m *Manager) notifyUnload(l *Loaded) {
-	if m.onUnload != nil && l != nil && l.Manifest != nil {
-		m.onUnload(l.Manifest.Slug)
+// SetOnUnloaded registers a callback invoked with a plugin's slug once its
+// instance is closed and no further plugin code can run.
+func (m *Manager) SetOnUnloaded(fn func(slug string)) { m.onUnloaded = fn }
+
+// unload closes one plugin instance, bracketing it with the unload hooks so
+// every teardown path (disable, uninstall, reload, disk-removal, host stop)
+// releases per-plugin host resources the same way.
+func (m *Manager) unload(ctx context.Context, l *Loaded) {
+	if l == nil {
+		return
+	}
+	slug := ""
+	if l.Manifest != nil {
+		slug = l.Manifest.Slug
+	}
+	if m.onUnload != nil && slug != "" {
+		m.onUnload(slug)
+	}
+	l.Close(ctx)
+	if m.onUnloaded != nil && slug != "" {
+		m.onUnloaded(slug)
 	}
 }
 
@@ -533,8 +565,7 @@ func (m *Manager) Stop(ctx context.Context) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for _, l := range m.loaded {
-		m.notifyUnload(l)
-		l.Close(ctx)
+		m.unload(ctx, l)
 	}
 	m.loaded = map[string]*Loaded{}
 }
@@ -670,8 +701,7 @@ func (m *Manager) Enable(ctx context.Context, name string) error {
 	delete(m.loaded, name)
 	m.mu.Unlock()
 	if old != nil {
-		m.notifyUnload(old)
-		old.Close(ctx)
+		m.unload(ctx, old)
 	}
 	return m.loadInternal(ctx, name)
 }
@@ -948,8 +978,7 @@ func (m *Manager) Disable(ctx context.Context, name string) error {
 		fmt.Fprintf(os.Stderr, "persist enabled set: %v\n", err)
 	}
 	if loaded != nil {
-		m.notifyUnload(loaded)
-		loaded.Close(ctx)
+		m.unload(ctx, loaded)
 	}
 	// Hand freed pages back to the OS promptly so an operator watching
 	// process memory sees the disable take effect (the Go scavenger would
@@ -980,8 +1009,7 @@ func (m *Manager) Uninstall(ctx context.Context, name string) error {
 	m.mu.Unlock()
 
 	if loaded != nil {
-		m.notifyUnload(loaded)
-		loaded.Close(ctx)
+		m.unload(ctx, loaded)
 		debug.FreeOSMemory()
 	}
 
@@ -1042,8 +1070,7 @@ func (m *Manager) Reload(ctx context.Context, name string) error {
 	delete(m.loaded, name)
 	m.mu.Unlock()
 	if loaded != nil {
-		m.notifyUnload(loaded)
-		loaded.Close(ctx)
+		m.unload(ctx, loaded)
 	}
 
 	// Re-read the manifest from disk so any author-side edits (new admin
@@ -1222,8 +1249,7 @@ func (m *Manager) scan(ctx context.Context) error {
 		delete(m.loaded, name)
 		m.mu.Unlock()
 		if loaded != nil {
-			m.notifyUnload(loaded)
-			loaded.Close(ctx)
+			m.unload(ctx, loaded)
 		}
 	}
 	return nil
@@ -1495,25 +1521,30 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 		return nil, err
 	}
 
-	// fail tears down the just-created instance (and its engine reference) on
-	// any load-path error below.
-	fail := func(err error) error {
-		_ = p.Close(ctx)
-		if releaseEngine != nil {
-			releaseEngine()
-		}
-		return err
+	// Register before register() because engine bootstrap evaluates author
+	// top-level code there, and that code may call host functions.
+	globalPluginRegistry.put(buildIdentity(env, manifest, assetsFS))
+	var releaseSQL func()
+	if env.AcquireSQLLease != nil {
+		releaseSQL = env.AcquireSQLLease(manifest.Slug)
+	}
+	loaded := &Loaded{
+		Manifest:      manifest,
+		plugin:        p,
+		releaseEngine: releaseEngine,
+		releaseSQL:    releaseSQL,
+		AssetsFS:      assetsFS,
 	}
 
-	// Register the plugin's identity so shared host functions can resolve it at
-	// call time (by the slug stashed in the instance's Extism config). Done
-	// before register() because the engine bootstrap evals author top-level
-	// code during register(), which may call host functions. On any failure
-	// below, drop the identity again.
-	globalPluginRegistry.put(buildIdentity(env, manifest, assetsFS))
-	loaded := false
+	// Any load error closes the instance and releases every acquired host
+	// resource, including SQL opened by top-level code during register().
+	fail := func(err error) error {
+		loaded.Close(ctx)
+		return err
+	}
+	succeeded := false
 	defer func() {
-		if !loaded {
+		if !succeeded {
 			globalPluginRegistry.remove(manifest.Slug)
 		}
 	}()
@@ -1562,8 +1593,10 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 		adminPaths = append(adminPaths, lowered)
 	}
 
-	loaded = true
-	return &Loaded{Manifest: manifest, plugin: p, releaseEngine: releaseEngine, adminGlobs: adminGlobs, adminPaths: adminPaths, AssetsFS: assetsFS}, nil
+	loaded.adminGlobs = adminGlobs
+	loaded.adminPaths = adminPaths
+	succeeded = true
+	return loaded, nil
 }
 
 // instantiate creates the extism plugin instance for a manifest: a per-plugin

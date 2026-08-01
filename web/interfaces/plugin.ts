@@ -10,6 +10,7 @@ export const PluginPermission = {
   StorageKV: 'storage.kv',
   StorageUpload: 'storage.upload',
   StorageFS: 'storage.fs',
+  StorageSQL: 'storage.sql',
   ChatSend: 'chat.send',
   ChatHistory: 'chat.history',
   ChatModerate: 'chat.moderate',
