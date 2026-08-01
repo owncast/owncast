@@ -20,8 +20,8 @@ Owncast logs and continues rather than aborting startup.
 
 | Path | Responsibility |
 |---|---|
-| `services/plugins/` | The plugin **runtime** — discovery/enable lifecycle (`manager.go`), event + filter fan-out (`dispatcher.go`), the HTTP handler for `/plugins/<name>/*` (`server.go`), the host functions and their types/permissions (`hostfns.go`), the KV store interface (`kv/`), and the SSE hub (`sse.go`). |
-| `pluginhost/` | The **Owncast integration layer** — builds the runtime's `HostEnv` from Owncast services, starts the manager, and exposes the HTTP handlers. This is the only package that knows about both the runtime and Owncast's internals. |
+| `services/plugins/` | The plugin **runtime** — discovery/enable lifecycle (`manager.go`), event + filter fan-out (`dispatcher.go`), the HTTP handler for `/plugins/<name>/*` (`server.go`), the host functions and their types/permissions (`hostfns.go`), the driver-agnostic SQL request validation and result limits (`sqlrunner.go`), the KV store interface (`kv/`), and the SSE hub (`sse.go`). |
+| `pluginhost/` | The **Owncast integration layer** — builds the runtime's `HostEnv` from Owncast services, starts the manager, exposes the HTTP handlers, and owns each plugin's SQLite database (`sqlite.go`). This is the only package that knows about both the runtime and Owncast's internals. |
 
 `services/plugins/` is a **vendored copy** of the upstream plugin SDK's
 `host-runtime/plugin` package (`github.com/owncast/plugin-sdk`). See
@@ -97,12 +97,40 @@ that decoupling, and it lives at the boundary on purpose.
 - **Users** (`users.read` / `users.moderate`) — list/get users, set enabled,
   ban IP.
 - **Notifications** (`notifications.send`) — Discord, browser push, fediverse.
-- **Storage** — KV backed by Owncast's datastore (`newDatastoreKVStore`),
-  `storage.upload` for browser-accessible plugin assets (written under
-  `public/`), and `storage.fs` for a private, sandboxed filesystem
-  (`data/plugin-data/<slug>/`) the plugin can read/write/list/delete within.
-  The host rejects any `storage.fs` path that escapes the plugin's own
-  directory, and the bytes are never served over HTTP.
+- **Storage** — everything a plugin persists lives under one directory,
+  `data/plugin-storage/<slug>/`, so an operator has a single place to look, back
+  up, or delete. Inside it, `files/` is the `storage.fs` sandbox and `db/` holds
+  the `storage.sql` database. KV is separate, backed by Owncast's datastore
+  (`newDatastoreKVStore`), and `storage.upload` publishes browser-accessible
+  assets under `public/`.
+  On the first startup after upgrading, existing `data/plugin-data/<slug>/`
+  directories are renamed into the new `files/` location before plugins load.
+  A conflicting destination stops plugin startup rather than hiding or
+  overwriting either copy.
+- **Filesystem** (`storage.fs`) — a private, sandboxed filesystem rooted at
+  `data/plugin-storage/<slug>/files/` the plugin can read/write/list/delete
+  within. The host rejects any path that escapes it, and the bytes are never
+  served over HTTP.
+- **SQL** (`storage.sql`) — one private SQLite database per plugin at
+  `data/plugin-storage/<slug>/db/plugin.db`. The sandbox handed to `storage.fs`
+  is `files/`, so `db/` is not a path the filesystem API refuses but one it
+  cannot express. That is load-bearing rather than tidiness: `max_page_count`
+  only refuses to grow a database, so a plugin able to write its own database
+  file would pre-seed one already over its quota. Reserving filenames in a shared
+  directory would be the fragile version, since it would have to track SQLite's
+  journal and WAL sidecar naming forever. The quota walk covers `files/` only, so
+  the two limits stay independent. A SQLite authorizer denies
+  `ATTACH`/`DETACH`, every `PRAGMA`, temp-schema DDL (by
+  schema name, since SQLite reports `CREATE TABLE temp.x` as ordinary DDL), and
+  `load_extension`, which is what makes the 128 MiB size cap a real quota rather
+  than a value the plugin can raise. Results are capped at 1 MiB and 10000 rows,
+  a call at 2 seconds, and each `exec` runs as one host-owned transaction.
+  Plugin databases are not part of Owncast's database backups.
+  `services/plugins/sqlrunner.go` holds the driver-agnostic request validation
+  and result limits, `services/plugins/sqldenied.go` refuses the same statements
+  the authorizer refuses so the SDK's hosts can agree with us without a cgo
+  driver, and `pluginhost/sqlite.go` owns the driver configuration, the
+  authorizer, per-plugin files, and the lifecycle.
 - **HTTP** (`http.serve`, `http.sse`) — `req.authenticated` / `req.user` from
   Owncast's auth middleware, plus the SSE hub for server-pushed events.
 

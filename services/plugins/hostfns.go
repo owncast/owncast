@@ -21,12 +21,13 @@ const (
 	PermStorageKV     = "storage.kv"
 	PermStorageUpload = "storage.upload"
 	// PermStorageFS grants a plugin a private, sandboxed area on disk
-	// (data/plugin-data/<slug>/) it can read, write, list, and delete
+	// (data/plugin-storage/<slug>/files/) it can read, write, list, and delete
 	// within. Unlike storage.upload (which publishes browser-accessible
 	// files under public/), this storage is server-side only and never
 	// exposed over HTTP. A plugin cannot reach outside its own directory
 	// or read another plugin's files.
 	PermStorageFS    = "storage.fs"
+	PermStorageSQL   = "storage.sql"
 	PermChatSend     = "chat.send"
 	PermChatHistory  = "chat.history"
 	PermChatModerate = "chat.moderate"
@@ -268,6 +269,34 @@ type UploadResult struct {
 	URL string `json:"url"`
 }
 
+// SQLRequest is a statement, its JSON-serializable bind parameters, and an
+// optional cap on how many rows a query should return. MaxRows of 0 means "no
+// caller-supplied limit", which the host bounds with MaxSQLRows.
+type SQLRequest struct {
+	SQL     string `json:"sql"`
+	Params  []any  `json:"params,omitempty"`
+	MaxRows int    `json:"maxRows,omitempty"`
+}
+
+// SQLExecResult reports the effect of one committed SQL statement batch.
+type SQLExecResult struct {
+	OK           bool   `json:"ok"`
+	Error        string `json:"error,omitempty"`
+	RowsAffected int64  `json:"rowsAffected"`
+	LastInsertID int64  `json:"lastInsertId"`
+}
+
+// SQLQueryResult is a bounded set of rows returned by a plugin SQL query.
+// Rows use the same column order as Columns. Truncated reports that the query
+// matched more rows than the caller's MaxRows.
+type SQLQueryResult struct {
+	OK        bool     `json:"ok"`
+	Error     string   `json:"error,omitempty"`
+	Columns   []string `json:"columns"`
+	Rows      [][]any  `json:"rows"`
+	Truncated bool     `json:"truncated,omitempty"`
+}
+
 // SSEConnectionEvent is the payload for the sse.connect / sse.disconnect
 // events, fired when a browser opens or closes one of the plugin's
 // Server-Sent-Events streams. ConnectionID is unique for the life of the host
@@ -338,16 +367,22 @@ type HostEnv struct {
 	BanIP          func(pluginName, ip string)                                  // users.moderate
 	UploadStorage  func(pluginName, name string, data []byte) (string, error)   // storage.upload
 	// Sandboxed per-plugin filesystem (storage.fs). Each plugin sees only
-	// its own directory under data/plugin-data/<slug>/; the host rejects any
-	// path that escapes it. Paths are relative to that root.
-	FSRead     func(pluginName, path string) ([]byte, error) // storage.fs
-	FSWrite    func(pluginName, path string, data []byte) error
-	FSList     func(pluginName, dir string) ([]string, error)
-	FSDelete   func(pluginName, path string) error
-	FSExists   func(pluginName, path string) (bool, error)
-	Socials    func() []SocialHandle // server.read
-	Emotes     func() []Emote        // server.read
-	Federation func() FederationInfo // server.read
+	// its own directory under data/plugin-storage/<slug>/files/, and the host
+	// rejects any path that escapes it. Paths are relative to that root.
+	FSRead   func(pluginName, path string) ([]byte, error) // storage.fs
+	FSWrite  func(pluginName, path string, data []byte) error
+	FSList   func(pluginName, dir string) ([]string, error)
+	FSDelete func(pluginName, path string) error
+	FSExists func(pluginName, path string) (bool, error)
+	SQLExec  func(ctx context.Context, pluginName string, req SQLRequest) SQLExecResult
+	SQLQuery func(ctx context.Context, pluginName string, req SQLRequest) SQLQueryResult
+	// AcquireSQLLease ties a plugin instance to its shared per-slug database.
+	// The returned release runs after the instance is fully closed. Optional;
+	// hosts without persistent SQL leave it nil.
+	AcquireSQLLease func(pluginName string) func()
+	Socials         func() []SocialHandle // server.read
+	Emotes          func() []Emote        // server.read
+	Federation      func() FederationInfo // server.read
 	// ConfigValue resolves an admin-set override for one of the plugin's
 	// manifest-declared config keys (owncast.config.get). Returns the override
 	// value and true when the admin has set one; false to fall back to the
@@ -466,9 +501,9 @@ func BuildHostFunctions(env *HostEnv) []extism.HostFunction {
 	return fns
 }
 
-// storageHostFunctions returns the storage.upload / storage.fs host functions
-// a plugin is granted. Split out of BuildHostFunctions to keep that function's
-// cyclomatic complexity in check.
+// storageHostFunctions returns the storage.upload / storage.fs / storage.sql
+// host functions a plugin is granted. Split out of BuildHostFunctions to keep
+// that function's cyclomatic complexity in check.
 func storageHostFunctions(env *HostEnv) []extism.HostFunction {
 	return []extism.HostFunction{
 		hostStorageUpload(env),
@@ -477,7 +512,77 @@ func storageHostFunctions(env *HostEnv) []extism.HostFunction {
 		hostFSList(env),
 		hostFSDelete(env),
 		hostFSExists(env),
+		hostSQLExec(env),
+		hostSQLQuery(env),
 	}
+}
+
+// readSQLRequest pulls the plugin's JSON SQL request out of guest memory and
+// hands it to the shared validator.
+func readSQLRequest(p *extism.CurrentPlugin, ptr uint64) (SQLRequest, error) {
+	raw, err := p.ReadString(ptr)
+	if err != nil {
+		return SQLRequest{}, err
+	}
+	return ParseSQLRequest(raw)
+}
+
+func hostSQLExec(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_sql_exec",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_sql_exec", PermStorageSQL)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			result := SQLExecResult{}
+			req, err := readSQLRequest(p, stack[0])
+			switch {
+			case err != nil:
+				result.Error = err.Error()
+			case env.SQLExec == nil:
+				result.Error = sqlStorageUnavailable
+			default:
+				result = env.SQLExec(ctx, id.slug, req)
+			}
+			result.OK = result.Error == ""
+			stack[0] = writeJSON(p, result)
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+func hostSQLQuery(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_sql_query",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_sql_query", PermStorageSQL)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			result := SQLQueryResult{}
+			req, err := readSQLRequest(p, stack[0])
+			switch {
+			case err != nil:
+				result.Error = err.Error()
+			case env.SQLQuery == nil:
+				result.Error = sqlStorageUnavailable
+			default:
+				result = env.SQLQuery(ctx, id.slug, req)
+			}
+			result.OK = result.Error == ""
+			stack[0] = writeJSON(p, result)
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
 }
 
 // videoConfigHostFunctions returns the videoconfig.read / videoconfig.write

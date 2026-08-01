@@ -15,6 +15,7 @@
     "PermServerRead": "server.read",
     "PermStorageFS": "storage.fs",
     "PermStorageKV": "storage.kv",
+    "PermStorageSQL": "storage.sql",
     "PermStorageUpload": "storage.upload",
     "PermUIModify": "ui.modify",
     "PermUsersModerate": "users.moderate",
@@ -56,6 +57,8 @@
     "owncast_server_info",
     "owncast_server_socials",
     "owncast_server_tags",
+    "owncast_sql_exec",
+    "owncast_sql_query",
     "owncast_sse_send",
     "owncast_storage_upload",
     "owncast_stream_broadcaster",
@@ -137,6 +140,24 @@
       "isBot": "bool",
       "previousNames": "[]string",
       "scopes": "[]string"
+    },
+    "SQLExecResult": {
+      "error": "string",
+      "lastInsertId": "int64",
+      "ok": "bool",
+      "rowsAffected": "int64"
+    },
+    "SQLQueryResult": {
+      "columns": "[]string",
+      "error": "string",
+      "ok": "bool",
+      "rows": "[][]any",
+      "truncated": "bool"
+    },
+    "SQLRequest": {
+      "maxRows": "int",
+      "params": "[]any",
+      "sql": "string"
     },
     "SSEConnectionEvent": {
       "channel": "string",

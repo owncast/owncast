@@ -71,7 +71,7 @@ Do not test against `http://localhost:8080`. That serves the web bundle embedded
 - `db/`: sqlc-generated type-safe database code. Queries in `db/query.sql`; the schema comes from the migrations, there is no `schema.sql`. Run `make sqlc` after changes.
 - `services/`: constructor-injected services (stream, chat, transcoder, storage, rtmp, activitypub, plugins, webhooks, notifications, geoip, cache, datastore, dispatcher).
 - `services/activitypub/`: federation (controllers, inbox/outbox, HTTP signatures, WebFinger, NodeInfo, delivery queue).
-- `pluginhost/`: plugin host surface (auth gates, chat bots, plugin events) on top of `services/plugins/`.
+- `pluginhost/`: plugin host surface (auth gates, chat bots, plugin events, per-plugin SQLite storage in `sqlite.go`) on top of `services/plugins/`.
 - `models/`: shared data models. `config/`: defaults and constants. `auth/`: IndieAuth and Fediverse chat auth. `yp/`: directory registration. `utils/`, `logging/`, `metrics/`, `notifications/`: supporting packages.
 - `tools/`: separate `go.mod` for dev tool pins, installed to `./bin/`.
 
