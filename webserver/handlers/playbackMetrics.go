@@ -6,6 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -20,7 +21,7 @@ func (h *Handlers) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request)
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	var request generated.ReportPlaybackMetricsJSONRequestBody
+	var request generated.PlaybackMetrics
 	if err := decoder.Decode(&request); err != nil {
 		log.Errorln("error decoding playback metrics payload:", err)
 		webutils.WriteSimpleResponse(w, false, err.Error())
@@ -42,18 +43,27 @@ func (h *Handlers) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request)
 	clientID := utils.GenerateClientIDFromRequest(r)
 	h.metrics.RegisterSelfReportingClient(clientID)
 
-	h.metrics.RegisterPlaybackErrorCount(clientID, *request.Errors)
-	h.metrics.RegisterQualityVariantChangesCount(clientID, *request.QualityVariantChanges)
-
-	if request.Bandwidth != nil && *request.Bandwidth != 0.0 {
-		h.metrics.RegisterPlayerBandwidth(clientID, *request.Bandwidth)
+	// This endpoint predates CMCD, so the client has no session identity
+	// of its own: it is both the playback client and the viewer.
+	report := metrics.PlaybackReport{
+		ClientID:                 clientID,
+		ViewerID:                 clientID,
+		ErrorCount:               *request.Errors,
+		HasErrorCount:            true,
+		QualityVariantChanges:    *request.QualityVariantChanges,
+		HasQualityVariantChanges: true,
+		ClientReported:           true,
 	}
 
-	if request.Latency != nil && *request.Latency != 0.0 {
-		h.metrics.RegisterPlayerLatency(clientID, *request.Latency)
+	if request.Bandwidth != nil {
+		report.BandwidthKbps = *request.Bandwidth
+	}
+	if request.Latency != nil {
+		report.LatencySeconds = *request.Latency
+	}
+	if request.DownloadDuration != nil {
+		report.DownloadSeconds = *request.DownloadDuration
 	}
 
-	if request.DownloadDuration != nil && *request.DownloadDuration != 0.0 {
-		h.metrics.RegisterPlayerSegmentDownloadDuration(clientID, *request.DownloadDuration)
-	}
+	h.metrics.RegisterPlaybackReport(report)
 }

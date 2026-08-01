@@ -152,6 +152,23 @@ func TestParseCmcdReportsQuery(t *testing.T) {
 	}
 }
 
+func TestParseCmcdReportsHeaders(t *testing.T) {
+	r := httptest.NewRequest("POST", "/api/metrics/cmcd", nil)
+	r.Header.Set("CMCD-Request", "mtp=48100")
+	r.Header.Set("CMCD-Session", `sid="header-player",sta="p"`)
+
+	reports, err := parseCmcdReports(r)
+	if err != nil || len(reports) != 1 {
+		t.Fatalf("expected 1 header report, got %d (err %v)", len(reports), err)
+	}
+	if mtp, _ := cmcdNumber(reports[0], "mtp"); mtp != 48100 {
+		t.Errorf("expected mtp 48100, got %v", reports[0]["mtp"])
+	}
+	if sid, _ := reports[0]["sid"].(string); sid != "header-player" {
+		t.Errorf("expected header player session, got %v", reports[0]["sid"])
+	}
+}
+
 func TestSegmentSpeedSample(t *testing.T) {
 	const oneMB = 1024 * 1024
 

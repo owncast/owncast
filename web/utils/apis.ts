@@ -21,8 +21,8 @@ export const SERVER_CONFIG_UPDATE_URL = `${API_LOCATION}config`;
 // Get viewer count over time
 export const VIEWERS_OVER_TIME = `${API_LOCATION}viewersOverTime`;
 
-// Get active viewer details
-export const ACTIVE_VIEWER_DETAILS = `${API_LOCATION}viewers`;
+// Get the clients currently playing back video, with their playback health
+export const PLAYBACK_CLIENT_DETAILS = `${API_LOCATION}viewers/playback`;
 
 // Get currently connected chat clients
 export const CONNECTED_CLIENTS = `${API_LOCATION}chat/clients`;

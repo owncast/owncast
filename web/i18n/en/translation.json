@@ -188,6 +188,32 @@
 			"noNews": "No news.",
 			"title": "News & Updates from Owncast"
 		},
+		"PlaybackClients": {
+			"description": "Every client currently playing your video, with the most recent playback health measured for it. Clients that report their own playback provide more detail than the ones the server can only observe. Quality is the bitrate advertised in your stream playlist, which includes audio, so it sits near but not exactly on the video bitrate you configured.",
+			"errors": "Errors",
+			"lastMeasured": "Measured {{age}} ago",
+			"latency": "Latency (s)",
+			"location": "Location",
+			"player": "Player",
+			"quality": "Quality (kbps)",
+			"qualityChanges": "Quality changes",
+			"segmentDownload": "Segment download (s)",
+			"sourceClient": "Player reporting",
+			"sourceServer": "Server measuring",
+			"sourceUnknown": "No data",
+			"serverUnmeasurable": "Server can't measure",
+			"serverUnmeasurableDescription": "The server has no trustworthy measurement for this client.",
+			"speed": "Speed (kbps)",
+			"state": "State",
+			"playing": "Playing",
+			"paused": "Paused",
+			"buffering": "Buffering",
+			"seeking": "Seeking",
+			"ended": "Ended",
+			"unknownState": "Unknown",
+			"title": "Playback clients",
+			"watchTime": "Watch time"
+		},
 		"Plugins": {
 			"Categories": {
 				"adminUtilities": "Admin utilities",
@@ -380,6 +406,7 @@
 			"bitrateValueKbps": "{{bitrate}} kbps"
 		},
 		"ViewerInfo": {
+			"chartNoData": "Viewer counts over time are sampled every couple of minutes, so there is nothing to chart for this window yet.",
 			"currentStream": "Current stream",
 			"currentViewers": "Current viewers",
 			"last12Hours": "Last 12 hours",

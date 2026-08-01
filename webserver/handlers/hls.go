@@ -41,11 +41,9 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	// media requests; harvest them from every request that carries them.
 	// The CMCD identity, when present, is the client's metrics identity.
 	requestClientID := utils.GenerateClientIDFromRequest(r)
-	metricsID := requestClientID
 	cmcdKeys := parseCMCDRequest(r)
 	if cmcdKeys != nil {
-		metricsID = cmcdClientID(r, cmcdKeys)
-		h.registerCMCDKeys(metricsID, cmcdKeys)
+		h.registerCMCDKeys(cmcdClientID(r, cmcdKeys), requestClientID, cmcdKeys)
 	}
 
 	isPlaylist := path.Ext(r.URL.Path) == ".m3u8"
@@ -67,14 +65,15 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Time segment transfers as a server-side observation: for players
 	// that report nothing themselves (Safari/iOS native HLS, VLC, mpv, ...)
-	// it provides both speed and download duration; for request-mode-only
-	// CMCD players it provides the download duration while their reported
-	// throughput owns the speed metric. Clients that self-report through
-	// the metrics API or the CMCD collector measure their own downloads,
-	// so no server observation is needed for them.
+	// it provides both speed and download duration; for players whose own
+	// throughput measurement is current it provides only the download
+	// duration. Clients that self-report through the metrics API or the
+	// CMCD collector measure their own downloads, so no server
+	// observation is needed for them.
+	observation := h.metrics.ServerObservationFor(requestClientID)
 	observe := !isPlaylist &&
 		h.stream.GetStatus().Online &&
-		!h.metrics.IsClientSelfReporting(requestClientID)
+		!observation.Suppressed
 
 	file, err := os.OpenInRoot(config.HLSStoragePath, relativePath)
 	if err != nil {
@@ -93,6 +92,6 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	http.ServeContent(cw, r, relativePath, info.ModTime(), file)
 	if observe {
-		h.registerServedSegmentMetrics(r, metricsID, cw.bytes, time.Since(start), cmcdKeys != nil)
+		h.registerServedSegmentMetrics(r, observation.ClientID, requestClientID, cw.bytes, time.Since(start), observation.SpeedKnown)
 	}
 }
