@@ -1267,10 +1267,24 @@ func (s *configEnabledStore) Save(d plugins.StoreData) error {
 	return s.datastore.SetString(pluginsApprovedPermsConfigKey, string(encoded))
 }
 
+func wirePluginLoggingHostFn(env *plugins.HostEnv) {
+	env.Log = func(pluginName string, level plugins.PluginLogLevel, message string) {
+		switch level {
+		case plugins.PluginLogWarning:
+			log.Warnf("plugin %s: %s", pluginName, message)
+		case plugins.PluginLogError:
+			log.Errorf("plugin %s: %s", pluginName, message)
+		default:
+			log.Infof("plugin %s: %s", pluginName, message)
+		}
+	}
+}
+
 // wirePluginHostEnv connects each HostEnv host-function pointer to the
 // corresponding Owncast service call. Closures read services lazily so they
 // observe current config/state on every call.
 func wirePluginHostEnv(env *plugins.HostEnv, deps Deps) {
+	wirePluginLoggingHostFn(env)
 	chatbots := newPluginChatbotProvisioner(deps.UserRepository, deps.Datastore)
 	wireChatSendHostFns(env, deps, chatbots)
 	wireChatReadHostFns(env, deps)
