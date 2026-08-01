@@ -83,6 +83,7 @@ const categoryNameKey: Record<string, string> = {
   video: Localization.Admin.Plugins.Categories.video,
   analytics: Localization.Admin.Plugins.Categories.analytics,
   games: Localization.Admin.Plugins.Categories.games,
+  'viewer-ui': Localization.Admin.Plugins.Categories.viewerUi,
   'admin-utilities': Localization.Admin.Plugins.Categories.adminUtilities,
   examples: Localization.Admin.Plugins.Categories.examples,
   other: Localization.Admin.Plugins.Categories.other,

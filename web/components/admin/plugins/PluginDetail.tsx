@@ -8,6 +8,7 @@ import { Localization } from '../../../types/localization';
 import { fetchText, pluginInstructionsUrl } from '../../../utils/apis';
 import { permissionDescriptionKey } from './permissionDescriptions';
 import { PluginConfigForm } from './PluginConfigForm';
+import { AuthGateSettingsForm } from './AuthGateSettingsForm';
 import s from './PluginDetail.module.scss';
 
 const { Title, Text, Paragraph } = Typography;
@@ -394,11 +395,27 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
         : null,
     [plugin, t],
   );
+  const authGateSettingsTab = useMemo(
+    () =>
+      plugin.permissions?.includes(PluginPermission.AuthGate)
+        ? {
+            key: '__auth-settings',
+            label: (
+              <span>
+                <LockOutlined /> {t(Localization.Admin.Plugins.authSettingsTab)}
+              </span>
+            ),
+            children: <AuthGateSettingsForm plugin={plugin} />,
+          }
+        : null,
+    [plugin, t],
+  );
 
   const tabs = useMemo(() => {
     const base = [
       ...pageTabs,
       permissionsTab,
+      ...(authGateSettingsTab ? [authGateSettingsTab] : []),
       ...(configTab ? [configTab] : []),
       ...(commandsTab ? [commandsTab] : []),
     ];
@@ -406,7 +423,7 @@ export const PluginDetail = ({ plugin }: PluginDetailProps) => {
     // after Permissions when the plugin declares no admin pages), so the
     // primary page stays the landing tab.
     return instructionsTab ? [base[0], instructionsTab, ...base.slice(1)] : base;
-  }, [instructionsTab, pageTabs, permissionsTab, configTab, commandsTab]);
+  }, [instructionsTab, pageTabs, permissionsTab, authGateSettingsTab, configTab, commandsTab]);
 
   return (
     <div>

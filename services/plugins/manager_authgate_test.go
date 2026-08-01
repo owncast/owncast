@@ -73,3 +73,33 @@ func TestManager_ActiveAuthGate(t *testing.T) {
 		t.Fatalf("ActiveAuthGate with no gate: got %q want empty", slug)
 	}
 }
+
+// IsAuthGate decides whether the admin UI offers host-owned access-policy
+// settings for a plugin. It must answer on the declared permission alone, not
+// on whether the plugin happens to be enabled, so an operator can review the
+// policy before arming the gate.
+func TestManager_IsAuthGate(t *testing.T) {
+	m := seedManager(
+		map[string]*DiscoveredEntry{
+			"gate-on":  {Slug: "gate-on", Permissions: []string{PermAuthGate}},
+			"gate-off": {Slug: "gate-off", Permissions: []string{PermAuthGate}},
+			"chatbot":  {Slug: "chatbot", Permissions: []string{"chat.send", "chat.history"}},
+			"nothing":  {Slug: "nothing"},
+		},
+		map[string]bool{"gate-on": true, "chatbot": true},
+		nil,
+	)
+
+	cases := map[string]bool{
+		"gate-on":  true,
+		"gate-off": true,
+		"chatbot":  false,
+		"nothing":  false,
+		"unknown":  false,
+	}
+	for slug, want := range cases {
+		if got := m.IsAuthGate(slug); got != want {
+			t.Errorf("IsAuthGate(%q) = %v, want %v", slug, got, want)
+		}
+	}
+}
