@@ -68,10 +68,6 @@ const (
 	PermUIModify = "ui.modify"
 )
 
-// resultErrorKey is the JSON key host functions use to return an error
-// string to the plugin in their {ok, error?} result envelope.
-const resultErrorKey = "error"
-
 // ChatSendKind distinguishes how a plugin asked to post to chat. All sends
 // post under the plugin's own chat identity — provisioned by the host at
 // install time as a chat user with IsBot=true and DisplayName=plugin name.
@@ -161,6 +157,11 @@ type VideoConfigUpdate struct {
 	LatencyLevel *int            `json:"latencyLevel,omitempty"`
 	Codec        *string         `json:"codec,omitempty"`
 	Variants     []StreamVariant `json:"variants,omitempty"`
+}
+
+// VideoConfigWriteResult reports whether a video config update failed.
+type VideoConfigWriteResult struct {
+	Error string `json:"error,omitempty"`
 }
 
 // SocialHandle is one entry returned by owncast.server.socials().
@@ -269,9 +270,14 @@ type UploadResult struct {
 	URL string `json:"url"`
 }
 
-// SQLRequest is a statement, its JSON-serializable bind parameters, and an
-// optional cap on how many rows a query should return. MaxRows of 0 means "no
-// caller-supplied limit", which the host bounds with MaxSQLRows.
+// FSResult reports whether a filesystem mutation failed.
+type FSResult struct {
+	Error string `json:"error,omitempty"`
+}
+
+// SQLRequest is a statement, an optional array of scalar bind parameters, and
+// an optional cap on how many rows a query should return. MaxRows of 0 means
+// "no caller-supplied limit", which the host bounds with MaxSQLRows.
 type SQLRequest struct {
 	SQL     string `json:"sql"`
 	Params  []any  `json:"params,omitempty"`
@@ -279,8 +285,8 @@ type SQLRequest struct {
 }
 
 // SQLExecResult reports the effect of one committed SQL statement batch.
+// Absence of Error means success.
 type SQLExecResult struct {
-	OK           bool   `json:"ok"`
 	Error        string `json:"error,omitempty"`
 	RowsAffected int64  `json:"rowsAffected"`
 	LastInsertID int64  `json:"lastInsertId"`
@@ -288,9 +294,8 @@ type SQLExecResult struct {
 
 // SQLQueryResult is a bounded set of rows returned by a plugin SQL query.
 // Rows use the same column order as Columns. Truncated reports that the query
-// matched more rows than the caller's MaxRows.
+// matched more rows than the caller's MaxRows. Absence of Error means success.
 type SQLQueryResult struct {
-	OK        bool     `json:"ok"`
 	Error     string   `json:"error,omitempty"`
 	Columns   []string `json:"columns"`
 	Rows      [][]any  `json:"rows"`
@@ -546,7 +551,6 @@ func hostSQLExec(env *HostEnv) extism.HostFunction {
 			default:
 				result = env.SQLExec(ctx, id.slug, req)
 			}
-			result.OK = result.Error == ""
 			stack[0] = writeJSON(p, result)
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
@@ -575,7 +579,6 @@ func hostSQLQuery(env *HostEnv) extism.HostFunction {
 			default:
 				result = env.SQLQuery(ctx, id.slug, req)
 			}
-			result.OK = result.Error == ""
 			stack[0] = writeJSON(p, result)
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
@@ -882,8 +885,8 @@ type GrantSessionRequest struct {
 	TTL    int64  `json:"ttl,omitempty"` // seconds; 0 = host default
 }
 
-// authResult is the {error?} envelope returned by grantSession.
-type authResult struct {
+// GrantSessionResult reports whether granting an auth session failed.
+type GrantSessionResult struct {
 	Error string `json:"error,omitempty"`
 }
 
@@ -958,15 +961,15 @@ func hostAuthGrantSession(env *HostEnv) extism.HostFunction {
 			}
 			var req GrantSessionRequest
 			if err := json.Unmarshal([]byte(raw), &req); err != nil {
-				stack[0] = writeJSON(p, authResult{Error: "invalid request: " + err.Error()})
+				stack[0] = writeJSON(p, GrantSessionResult{Error: "invalid request: " + err.Error()})
 				return
 			}
 			if req.UserID == "" {
-				stack[0] = writeJSON(p, authResult{Error: "userId is required"})
+				stack[0] = writeJSON(p, GrantSessionResult{Error: "userId is required"})
 				return
 			}
 			if env.GrantSession == nil {
-				stack[0] = writeJSON(p, authResult{Error: "auth.gate is not available on this host"})
+				stack[0] = writeJSON(p, GrantSessionResult{Error: "auth.gate is not available on this host"})
 				return
 			}
 			// A session is only meaningful when there's an in-flight response to
@@ -976,18 +979,18 @@ func hostAuthGrantSession(env *HostEnv) extism.HostFunction {
 			// handler where no cookie is ever set.
 			sink := authSinkFrom(ctx)
 			if sink == nil {
-				stack[0] = writeJSON(p, authResult{Error: "grantSession is only available inside an on_http_request handler"})
+				stack[0] = writeJSON(p, GrantSessionResult{Error: "grantSession is only available inside an on_http_request handler"})
 				return
 			}
 			token, err := env.GrantSession(ident.slug, req.UserID, req.TTL)
 			if err != nil {
-				stack[0] = writeJSON(p, authResult{Error: err.Error()})
+				stack[0] = writeJSON(p, GrantSessionResult{Error: err.Error()})
 				return
 			}
 			// Hand the freshly-minted token to the request-scoped sink so the
 			// HTTP layer can set the cookie on the response after the wasm returns.
 			sink.grant(token, ClampSessionTTL(req.TTL))
-			stack[0] = writeJSON(p, authResult{})
+			stack[0] = writeJSON(p, GrantSessionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},
@@ -1406,7 +1409,7 @@ func hostFSRead(env *HostEnv) extism.HostFunction {
 
 // hostFSWrite backs owncast.fs.write(path, data). Creates parent
 // directories as needed and writes the bytes, returning a JSON
-// {ok, error?} result so the plugin can react to a rejected write
+// {error?} result so the plugin can react to a rejected write
 // (sandbox escape, oversized payload, disk error). Requires storage.fs.
 func hostFSWrite(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
@@ -1428,24 +1431,14 @@ func hostFSWrite(env *HostEnv) extism.HostFunction {
 				stack[0] = 0
 				return
 			}
-			result := map[string]any{"ok": true}
+			result := FSResult{}
 			if env.FSWrite == nil {
-				result = map[string]any{"ok": false, resultErrorKey: "filesystem unavailable"}
+				result.Error = "filesystem unavailable"
 			} else if err := env.FSWrite(pluginName, path, data); err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_fs_write from %s: %v\n", pluginName, err)
-				result = map[string]any{"ok": false, resultErrorKey: err.Error()}
+				result.Error = err.Error()
 			}
-			out, err := json.Marshal(result)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			offset, err := p.WriteBytes(out)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			stack[0] = offset
+			stack[0] = writeJSON(p, result)
 		},
 		[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},
@@ -1501,8 +1494,7 @@ func hostFSList(env *HostEnv) extism.HostFunction {
 }
 
 // hostFSDelete backs owncast.fs.delete(path). Removes a single file or
-// empty directory, returning a JSON {ok, error?} result. Requires
-// storage.fs.
+// empty directory, returning a JSON {error?} result. Requires storage.fs.
 func hostFSDelete(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_fs_delete",
@@ -1518,24 +1510,14 @@ func hostFSDelete(env *HostEnv) extism.HostFunction {
 				stack[0] = 0
 				return
 			}
-			result := map[string]any{"ok": true}
+			result := FSResult{}
 			if env.FSDelete == nil {
-				result = map[string]any{"ok": false, resultErrorKey: "filesystem unavailable"}
+				result.Error = "filesystem unavailable"
 			} else if err := env.FSDelete(pluginName, path); err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_fs_delete from %s: %v\n", pluginName, err)
-				result = map[string]any{"ok": false, resultErrorKey: err.Error()}
+				result.Error = err.Error()
 			}
-			out, err := json.Marshal(result)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			offset, err := p.WriteBytes(out)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			stack[0] = offset
+			stack[0] = writeJSON(p, result)
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},
@@ -2014,8 +1996,8 @@ func hostVideoConfigRead(env *HostEnv) extism.HostFunction {
 }
 
 // hostVideoConfigWrite backs owncast.videoConfig.write(config). It applies a
-// partial video/transcoding configuration change via the host. Returns a
-// JSON {ok, error?} result so the plugin can react to a rejected config.
+// partial video/transcoding configuration change via the host, returning an
+// empty JSON object on success or an error on failure.
 // Requires the videoconfig.write permission.
 func hostVideoConfigWrite(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
@@ -2038,23 +2020,13 @@ func hostVideoConfigWrite(env *HostEnv) extism.HostFunction {
 				stack[0] = 0
 				return
 			}
-			result := map[string]any{"ok": true}
+			result := VideoConfigWriteResult{}
 			if env.WriteVideoConfig != nil {
 				if err := env.WriteVideoConfig(pluginName, update); err != nil {
-					result = map[string]any{"ok": false, resultErrorKey: err.Error()}
+					result.Error = err.Error()
 				}
 			}
-			data, err := json.Marshal(result)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			offset, err := p.WriteBytes(data)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			stack[0] = offset
+			stack[0] = writeJSON(p, result)
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},

@@ -161,6 +161,37 @@ func normalizeNewlines(b []byte) []byte {
 	return []byte(strings.ReplaceAll(string(b), "\r\n", "\n"))
 }
 
+func TestOperationResultsUseErrorAsTheOnlyFailureSignal(t *testing.T) {
+	tests := map[string]struct {
+		result any
+		want   string
+	}{
+		"filesystem write success":   {FSResult{}, `{}`},
+		"filesystem write failure":   {FSResult{Error: "failed"}, `{"error":"failed"}`},
+		"filesystem delete success":  {FSResult{}, `{}`},
+		"filesystem delete failure":  {FSResult{Error: "failed"}, `{"error":"failed"}`},
+		"SQL exec success":           {SQLExecResult{RowsAffected: 1, LastInsertID: 2}, `{"rowsAffected":1,"lastInsertId":2}`},
+		"SQL exec failure":           {SQLExecResult{Error: "failed"}, `{"error":"failed","rowsAffected":0,"lastInsertId":0}`},
+		"SQL query success":          {SQLQueryResult{Columns: []string{}, Rows: [][]any{}}, `{"columns":[],"rows":[]}`},
+		"SQL query failure":          {SQLQueryResult{Error: "failed"}, `{"error":"failed","columns":null,"rows":null}`},
+		"video config write success": {VideoConfigWriteResult{}, `{}`},
+		"video config write failure": {VideoConfigWriteResult{Error: "failed"}, `{"error":"failed"}`},
+		"auth session success":       {GrantSessionResult{}, `{}`},
+		"auth session failure":       {GrantSessionResult{Error: "failed"}, `{"error":"failed"}`},
+	}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			got, err := json.Marshal(test.result)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if string(got) != test.want {
+				t.Fatalf("got %s, want %s", got, test.want)
+			}
+		})
+	}
+}
+
 func TestPluginContractMatchesSDK(t *testing.T) {
 	_, thisFile, _, _ := runtime.Caller(0)
 	repoRoot := filepath.Join(filepath.Dir(thisFile), "..", "..")
