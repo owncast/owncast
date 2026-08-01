@@ -37,7 +37,7 @@ const plugins: RegistryPlugin[] = [
     slug: 'beta',
     name: 'Beta Plugin',
     authorName: 'Bob',
-    latest: { version: '2.0.0', manifest: { permissions: ['chat.send'], category: 'overlays' } },
+    latest: { version: '2.0.0', manifest: { permissions: ['chat.send'], category: 'viewer-ui' } },
   },
   {
     slug: 'gamma',
@@ -134,11 +134,11 @@ describe('BrowseRegistry filters', () => {
 
   it('shows the filtered-empty state and clears filters', () => {
     renderRegistry();
-    // Alice + overlays matches nothing: Alice authored a chat-bot.
+    // Alice + viewer UI matches nothing: Alice authored a chat-bot.
     openSelect(AUTHOR_PLACEHOLDER);
     clickOption('Alice');
     openSelect(CATEGORY_PLACEHOLDER);
-    clickOption('Admin.Plugins.Categories.overlays');
+    clickOption('Admin.Plugins.Categories.viewerUi');
     expect(visiblePlugins()).toEqual([]);
     expect(screen.getByText('Admin.Plugins.browseFilteredEmpty')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Admin.Plugins.browseClearFilters'));
@@ -165,8 +165,8 @@ describe('BrowseRegistry filters', () => {
     expect(screen.getByText('Admin.Plugins.Categories.chatBots')).toBeInTheDocument();
   });
 
-  it('renders a category tag from the embedded manifest fallback', () => {
+  it('renders a viewer UI category tag from the embedded manifest fallback', () => {
     renderRegistry([plugins[1]]);
-    expect(screen.getByText('Admin.Plugins.Categories.overlays')).toBeInTheDocument();
+    expect(screen.getByText('Admin.Plugins.Categories.viewerUi')).toBeInTheDocument();
   });
 });

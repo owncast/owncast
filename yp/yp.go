@@ -32,10 +32,10 @@ type YP struct {
 	// server URL/name, registration key, etc.) read on each ping and on
 	// every YP API response.
 	configRepository configrepository.ConfigRepository
-
-	// inErrorState tracks whether we've already logged an error for the
-	// current configuration to avoid spamming the log on repeated pings.
-	inErrorState bool
+	// directoryAvailable is controlled by the active auth gate. A blocked
+	// stream-status policy disables both pings and the public YP response.
+	directoryAvailable func() bool
+	inErrorState       bool
 }
 
 // Deps lists the explicit dependencies for the YP service.
@@ -73,6 +73,11 @@ func (yp *YP) SetGetStatus(fn func() models.Status) {
 	yp.getStatus = fn
 }
 
+// SetDirectoryAvailable wires the auth-gate policy after plugin host startup.
+func (yp *YP) SetDirectoryAvailable(fn func() bool) {
+	yp.directoryAvailable = fn
+}
+
 // Start is run when a live stream begins to start pinging YP.
 func (yp *YP) Start() {
 	yp.timer = time.NewTicker(pingInterval)
@@ -88,28 +93,42 @@ func (yp *YP) Stop() {
 	yp.timer.Stop()
 }
 
-func (yp *YP) ping() {
+// shouldPing reports whether this instance is currently in a state where
+// announcing itself to the directory makes sense: the gate's access policy
+// allows directory listing, the operator has listing switched on, the stream
+// is live, and the configured public URL is usable.
+func (yp *YP) shouldPing() (instanceURL string, ok bool) {
+	if yp.directoryAvailable != nil && !yp.directoryAvailable() {
+		return "", false
+	}
 	if !yp.configRepository.GetDirectoryEnabled() {
-		return
+		return "", false
 	}
 
 	// Hack: Don't allow ping'ing when offline.
 	// It shouldn't even be trying to, but on some instances the ping timer isn't stopping.
 	if !yp.getStatus().Online {
-		return
+		return "", false
 	}
 
 	myInstanceURL := yp.configRepository.GetServerURL()
 	if myInstanceURL == "" {
 		log.Warnln("Server URL not set in the configuration. Directory access is disabled until this is set.")
-		return
+		return "", false
 	}
-	isValidInstanceURL := isURL(myInstanceURL)
-	if myInstanceURL == "" || !isValidInstanceURL {
+	if !isURL(myInstanceURL) {
 		if !yp.inErrorState {
 			log.Warnln("YP Error: unable to use", myInstanceURL, "as a public instance URL. Fix this value in your configuration.")
 		}
 		yp.inErrorState = true
+		return "", false
+	}
+	return myInstanceURL, true
+}
+
+func (yp *YP) ping() {
+	myInstanceURL, ok := yp.shouldPing()
+	if !ok {
 		return
 	}
 

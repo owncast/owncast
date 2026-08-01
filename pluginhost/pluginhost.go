@@ -16,6 +16,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -44,9 +45,15 @@ import (
 // admin-enabled plugin names is persisted.
 const pluginsEnabledConfigKey = "plugins.enabled"
 
-// jsonErrorKey is the JSON map key used to surface a single human-readable
-// error string back to the admin UI in error responses.
-const jsonErrorKey = "error"
+// JSON map keys used in the admin API's small status/error response bodies.
+const (
+	// jsonErrorKey surfaces a single human-readable error string to the admin UI.
+	jsonErrorKey = "error"
+	// jsonSlugKey echoes back the plugin a mutating request acted on.
+	jsonSlugKey = "slug"
+	// jsonStatusKey carries the "ok" acknowledgement of a mutating request.
+	jsonStatusKey = "status"
+)
 
 // pluginsApprovedPermsConfigKey is the datastore key under which the
 // per-plugin admin-approved permission snapshots are persisted (as a
@@ -114,8 +121,57 @@ type Host struct {
 	// userByToken resolves a viewer's identity from their access token, used by
 	// the onAuthCheck re-validation hook to build the identity it passes the
 	// gate plugin.
-	userByToken func(token string) *plugins.HostUser
+	userByToken      func(token string) *plugins.HostUser
+	authGateSettings atomic.Value
 }
+
+// AuthGateAccessMode is the operator-selected boundary of the viewer gate.
+// Modes are cumulative: each mode includes everything protected by the one
+// before it.
+type AuthGateAccessMode string
+
+const (
+	AuthGateAccessWebsiteOnly            AuthGateAccessMode = "website-only"
+	AuthGateAccessWebsiteAndStream       AuthGateAccessMode = "website-and-stream"
+	AuthGateAccessWebsiteStreamAndStatus AuthGateAccessMode = "website-stream-and-status"
+)
+
+// AuthGateSettings are host-owned settings for a plugin that declares
+// auth.gate.
+type AuthGateSettings struct {
+	AccessMode AuthGateAccessMode `json:"accessMode"`
+}
+
+func defaultAuthGateSettings() AuthGateSettings {
+	return AuthGateSettings{AccessMode: AuthGateAccessWebsiteOnly}
+}
+
+func (s AuthGateSettings) valid() bool {
+	switch s.AccessMode {
+	case AuthGateAccessWebsiteOnly,
+		AuthGateAccessWebsiteAndStream,
+		AuthGateAccessWebsiteStreamAndStatus:
+		return true
+	default:
+		return false
+	}
+}
+
+func (s AuthGateSettings) protectsStream() bool {
+	return s.AccessMode == AuthGateAccessWebsiteAndStream ||
+		s.AccessMode == AuthGateAccessWebsiteStreamAndStatus
+}
+
+func (s AuthGateSettings) blocksStreamStatusRequests() bool {
+	return s.AccessMode == AuthGateAccessWebsiteStreamAndStatus
+}
+
+type authGateSettingsSnapshot struct {
+	slug     string
+	settings AuthGateSettings
+}
+
+const authGateSettingsKey = "owncast.auth-gate-settings"
 
 // runtimeActionsConfigKey is the reserved key inside a plugin's own
 // config namespace that holds action buttons the plugin has added at
@@ -140,11 +196,78 @@ func readConfigOverrides(store kv.Store, slug string) map[string]any {
 	if err != nil || len(raw) == 0 {
 		return nil
 	}
+
 	var m map[string]any
 	if err := json.Unmarshal(raw, &m); err != nil {
 		return nil
 	}
 	return m
+}
+
+// authGateSettingsFor returns the operator's access policy for a gate plugin,
+// memoized in a single-slot snapshot because it is read on every request,
+// including the per-segment HLS hot path.
+//
+// A storage failure or a corrupt value is not cached: it returns the
+// website-only default for this request and retries on the next one, rather
+// than pinning a wrong policy until restart.
+func (p *Host) authGateSettingsFor(slug string) AuthGateSettings {
+	snapshot, ok := p.authGateSettings.Load().(authGateSettingsSnapshot)
+	if ok && snapshot.slug == slug {
+		return snapshot.settings
+	}
+	defaults := defaultAuthGateSettings()
+	if p.kv == nil {
+		return defaults
+	}
+
+	raw, err := p.kv.Namespace(slug).Get(authGateSettingsKey)
+	if err != nil {
+		log.Warnf("plugin auth: could not read gate settings for %q, using defaults: %v", slug, err)
+		return defaults
+	}
+
+	settings := defaults
+	if len(raw) > 0 {
+		var stored AuthGateSettings
+		if err := json.Unmarshal(raw, &stored); err != nil {
+			log.Warnf("plugin auth: gate settings for %q are unreadable, using defaults: %v", slug, err)
+			return defaults
+		}
+		if !stored.valid() {
+			log.Warnf("plugin auth: gate settings for %q have unsupported access mode %q, using defaults", slug, stored.AccessMode)
+			return defaults
+		}
+		settings = stored
+	}
+	p.authGateSettings.Store(authGateSettingsSnapshot{slug: slug, settings: settings})
+	return settings
+}
+
+func (p *Host) saveAuthGateSettings(slug string, settings AuthGateSettings) error {
+	if !settings.valid() {
+		return fmt.Errorf("unsupported authentication access mode %q", settings.AccessMode)
+	}
+	data, err := json.Marshal(settings)
+	if err != nil {
+		return err
+	}
+	if p.kv == nil {
+		return fmt.Errorf("settings storage unavailable")
+	}
+	if err := p.kv.Namespace(slug).Set(authGateSettingsKey, data); err != nil {
+		return err
+	}
+	p.authGateSettings.Store(authGateSettingsSnapshot{slug: slug, settings: settings})
+	return nil
+}
+
+// DirectoryAvailable reports whether the active auth gate permits public
+// directory metadata. The most restrictive access mode disables directory
+// access along with public stream status.
+func (p *Host) DirectoryAvailable() bool {
+	slug, _ := p.manager.ActiveAuthGate()
+	return slug == "" || !p.authGateSettingsFor(slug).blocksStreamStatusRequests()
 }
 
 // coerceConfigValue validates an incoming admin-set value against a config
@@ -726,7 +849,7 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 		log.Errorln("plugin auth: could not establish session signing secret:", err)
 	}
 
-	return &Host{
+	host := &Host{
 		manager:          manager,
 		sqlStore:         sqlStore,
 		server:           server,
@@ -745,7 +868,9 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 			hu := toHostUser(u)
 			return &hu
 		},
-	}, nil
+	}
+	host.authGateSettings.Store(authGateSettingsSnapshot{})
+	return host, nil
 }
 
 // AdminHandler returns the HTTP handler for plugin management:
@@ -917,6 +1042,10 @@ func (p *Host) handlePluginAction(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(data) //nolint:gosec // G705
 		return
 	}
+	if action == "auth-settings" {
+		p.handleAuthGateSettings(w, r, slug)
+		return
+	}
 
 	// GET/POST /api/admin/plugins/<slug>/config reads and writes the admin's
 	// overrides for the plugin's manifest-declared config fields. The admin UI
@@ -943,7 +1072,7 @@ func (p *Host) handlePluginAction(w http.ResponseWriter, r *http.Request) {
 	if action == "uninstall" {
 		log.Infof("plugin %q uninstalled by admin", slug)
 	}
-	writeJSONResponse(w, http.StatusOK, map[string]string{"status": "ok", "slug": slug, "action": action})
+	writeJSONResponse(w, http.StatusOK, map[string]string{jsonStatusKey: "ok", jsonSlugKey: slug, "action": action})
 }
 
 // handlePluginConfig serves the admin config form's backend:
@@ -1009,8 +1138,35 @@ func (p *Host) handlePluginConfig(w http.ResponseWriter, r *http.Request, slug s
 			writeJSONResponse(w, http.StatusInternalServerError, map[string]string{jsonErrorKey: err.Error()})
 			return
 		}
-		writeJSONResponse(w, http.StatusOK, map[string]string{"status": "ok", "slug": slug})
+		writeJSONResponse(w, http.StatusOK, map[string]string{jsonStatusKey: "ok", jsonSlugKey: slug})
 
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func (p *Host) handleAuthGateSettings(w http.ResponseWriter, r *http.Request, slug string) {
+	if !p.manager.IsAuthGate(slug) {
+		http.NotFound(w, r)
+		return
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		writeJSONResponse(w, http.StatusOK, p.authGateSettingsFor(slug))
+	case http.MethodPost:
+		var settings AuthGateSettings
+		decoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<20))
+		decoder.DisallowUnknownFields()
+		if err := decoder.Decode(&settings); err != nil || !settings.valid() {
+			http.Error(w, "invalid authentication access mode", http.StatusBadRequest)
+			return
+		}
+		if err := p.saveAuthGateSettings(slug, settings); err != nil {
+			writeJSONResponse(w, http.StatusInternalServerError, map[string]string{jsonErrorKey: err.Error()})
+			return
+		}
+		writeJSONResponse(w, http.StatusOK, map[string]string{jsonStatusKey: "ok", jsonSlugKey: slug})
 	default:
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}

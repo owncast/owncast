@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/debug"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -463,6 +464,16 @@ func (m *Manager) ConfigSchema(slug string) map[string]ConfigField {
 	return nil
 }
 
+// IsAuthGate reports whether a discovered plugin declares the auth.gate
+// permission. It is used to expose host-owned authentication settings only for
+// plugins that can actually become the viewer-authentication gate.
+func (m *Manager) IsAuthGate(slug string) bool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	d := m.discovered[slug]
+	return d != nil && declaresAuthGate(d.Permissions)
+}
+
 // ScanInterval is how often the manager re-scans the plugins directory.
 const ScanInterval = 2 * time.Second
 
@@ -605,7 +616,7 @@ func (m *Manager) ActiveAuthGate() (slug string, loaded bool) {
 			continue
 		}
 		d := m.discovered[name]
-		if d == nil || !hasPerm(d.Permissions, PermAuthGate) {
+		if d == nil || !declaresAuthGate(d.Permissions) {
 			continue
 		}
 		_, isLoaded := m.loaded[name]
@@ -614,14 +625,10 @@ func (m *Manager) ActiveAuthGate() (slug string, loaded bool) {
 	return "", false
 }
 
-// hasPerm reports whether perms contains want.
-func hasPerm(perms []string, want string) bool {
-	for _, p := range perms {
-		if p == want {
-			return true
-		}
-	}
-	return false
+// declaresAuthGate reports whether a manifest's permission list claims the
+// viewer-authentication gate.
+func declaresAuthGate(perms []string) bool {
+	return slices.Contains(perms, PermAuthGate)
 }
 
 // Snapshot returns the currently-loaded, active plugins. Dispatcher and Server
@@ -673,12 +680,12 @@ func (m *Manager) Enable(ctx context.Context, name string) error {
 	}
 	// Only one auth.gate plugin may be enabled at a time — the viewer-auth gate
 	// is singular (two gates would be ambiguous). Refuse to enable a second.
-	if hasPerm(d.Permissions, PermAuthGate) {
+	if declaresAuthGate(d.Permissions) {
 		for other, on := range m.enabledSet {
 			if !on || other == name {
 				continue
 			}
-			if od := m.discovered[other]; od != nil && hasPerm(od.Permissions, PermAuthGate) {
+			if od := m.discovered[other]; od != nil && declaresAuthGate(od.Permissions) {
 				m.mu.Unlock()
 				return fmt.Errorf("cannot enable %q: another authentication-gate plugin (%q) is already enabled; disable it first", d.Slug, od.Slug)
 			}

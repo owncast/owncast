@@ -83,6 +83,8 @@ export const pluginInstructionsUrl = (slug: string) =>
 // config form auto-rendered from the plugin's manifest config schema uses this.
 export const pluginConfigUrl = (slug: string) =>
   `/api/admin/plugins/${encodeURIComponent(slug)}/config`;
+export const authGateSettingsUrl = (slug: string) =>
+  `/api/admin/plugins/${encodeURIComponent(slug)}/auth-settings`;
 
 // Upload a new custom emoji
 export const UPLOAD_EMOJI = `${API_LOCATION}emoji/upload`;
