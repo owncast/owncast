@@ -79,7 +79,7 @@ export default function ViewersOverTime() {
   useEffect(() => {
     if (!online) {
       setPlaybackClients([]);
-      return () => [];
+      return () => {};
     }
 
     getPlaybackClients();

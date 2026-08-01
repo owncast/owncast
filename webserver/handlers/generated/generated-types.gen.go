@@ -779,13 +779,13 @@ type PlaybackMetrics struct {
 	DownloadDuration *float64 `json:"downloadDuration,omitempty"`
 
 	// Errors Errors since the previous report, not a running total. Reports accumulate, so a client sending a cumulative count inflates the recorded figure.
-	Errors *float64 `json:"errors,omitempty"`
+	Errors *float64 `json:"errors"`
 
 	// Latency How far behind the live edge the player is, in seconds.
 	Latency *float64 `json:"latency,omitempty"`
 
 	// QualityVariantChanges Quality variant switches since the previous report, not a running total.
-	QualityVariantChanges *float64 `json:"qualityVariantChanges,omitempty"`
+	QualityVariantChanges *float64 `json:"qualityVariantChanges"`
 }
 
 // S3Info defines model for S3Info.

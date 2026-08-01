@@ -4434,6 +4434,9 @@ components:
             $ref: '#/components/schemas/CmcdReport'
     PlaybackMetrics:
       type: object
+      required:
+        - errors
+        - qualityVariantChanges
       properties:
         bandwidth:
           type: number
@@ -4444,7 +4447,7 @@ components:
           format: double
           description: How far behind the live edge the player is, in seconds.
         errors:
-          type: number
+          type: [number, 'null']
           format: double
           description: Errors since the previous report, not a running total. Reports accumulate, so a client sending a cumulative count inflates the recorded figure.
         downloadDuration:
@@ -4452,7 +4455,7 @@ components:
           format: double
           description: How long the player's most recent segment took to download, in seconds.
         qualityVariantChanges:
-          type: number
+          type: [number, 'null']
           format: double
           description: Quality variant switches since the previous report, not a running total.
     Broadcaster:
