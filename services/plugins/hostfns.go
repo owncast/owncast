@@ -340,6 +340,12 @@ type TimerFireEvent struct {
 	ID uint64 `json:"id"`
 }
 
+// MaxPluginLogMessageBytes caps one plugin-authored log entry. Logging is
+// ambient, so every plugin gets it without a permission grant.
+const MaxPluginLogMessageBytes = 4 << 10
+
+const pluginLogTruncationSuffix = " [truncated]"
+
 // PluginLogLevel is the fixed set of severities a plugin can send to the
 // Owncast log.
 type PluginLogLevel uint8
@@ -567,13 +573,21 @@ func hostLog(env *HostEnv, fnName string, level PluginLogLevel) extism.HostFunct
 			if err != nil || env.Log == nil {
 				return
 			}
-			env.Log(id.slug, level, message)
+			env.Log(id.slug, level, truncatePluginLogMessage(message))
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
 		[]extism.ValueType{},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
+}
+
+func truncatePluginLogMessage(message string) string {
+	if len(message) <= MaxPluginLogMessageBytes {
+		return message
+	}
+	bodyBytes := MaxPluginLogMessageBytes - len(pluginLogTruncationSuffix)
+	return strings.ToValidUTF8(message[:bodyBytes], "") + pluginLogTruncationSuffix
 }
 
 // readSQLRequest pulls the plugin's JSON SQL request out of guest memory and

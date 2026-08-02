@@ -144,6 +144,7 @@ const { definePlugin, owncast } = require("@owncast/plugin-sdk");
 owncast.log.info("ready");
 owncast.log.warning("needs attention");
 owncast.log.error("failed");
+owncast.log.info("x".repeat(5000));
 module.exports = definePlugin({});`, nil)
 	defer js.Close(ctx)
 
@@ -158,6 +159,11 @@ owncast.log.error("failed")
 		{plugin: "js-logger", level: PluginLogInfo, message: "ready"},
 		{plugin: "js-logger", level: PluginLogWarning, message: "needs attention"},
 		{plugin: "js-logger", level: PluginLogError, message: "failed"},
+		{
+			plugin:  "js-logger",
+			level:   PluginLogInfo,
+			message: strings.Repeat("x", MaxPluginLogMessageBytes-len(pluginLogTruncationSuffix)) + pluginLogTruncationSuffix,
+		},
 		{plugin: "py-logger", level: PluginLogInfo, message: "ready"},
 		{plugin: "py-logger", level: PluginLogWarning, message: "needs attention"},
 		{plugin: "py-logger", level: PluginLogError, message: "failed"},
