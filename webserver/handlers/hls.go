@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
@@ -63,17 +64,15 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	middleware.EnableCors(w)
 
-	// Time segment transfers as a server-side observation: for players
-	// that report nothing themselves (Safari/iOS native HLS, VLC, mpv, ...)
-	// it provides both speed and download duration; for players whose own
-	// throughput measurement is current it provides only the download
-	// duration. Clients that self-report through the metrics API or the
-	// CMCD collector measure their own downloads, so no server
-	// observation is needed for them.
-	observation := h.metrics.ServerObservationFor(requestClientID)
-	observe := !isPlaylist &&
-		h.stream.GetStatus().Online &&
-		!observation.Suppressed
+	// Time online segment transfers as a server-side observation. Playlist
+	// requests and offline streams cannot be observed, so avoid their metrics
+	// lock acquisition on this hot path.
+	observe := !isPlaylist && h.stream.GetStatus().Online
+	var observation metrics.ServerObservation
+	if observe {
+		observation = h.metrics.ServerObservationFor(requestClientID)
+		observe = !observation.Suppressed
+	}
 
 	file, err := os.OpenInRoot(config.HLSStoragePath, relativePath)
 	if err != nil {

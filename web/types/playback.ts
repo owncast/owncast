@@ -19,8 +19,8 @@ export type PlaybackSource = 'client' | 'server';
 export interface PlaybackClientHealth {
   source: PlaybackSource;
   lastUpdate: string;
-  playerState?: 'p' | 'a' | 'w' | 'k' | 'e' | string;
-  measurementStatus?: 'unmeasurable' | string;
+  playerState?: string;
+  measurementStatus?: string;
   bandwidthKbps: number | null;
   latencySeconds: number | null;
   downloadSeconds: number | null;
