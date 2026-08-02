@@ -84,6 +84,19 @@ trap plugins_finish EXIT
 echo "Installing plugin SDK build dependencies..."
 (cd "${SDK_DIR}/sdks/js" && npm install --no-audit --no-fund)
 
+# Package examples with a host binary built against this core checkout. The
+# released binary can lag pre-release manifest changes shared with SDK main.
+(
+	HOST_WORK_DIR="$(mktemp -d)"
+	trap 'rm -rf "$HOST_WORK_DIR"' EXIT
+	cd "$HOST_WORK_DIR"
+	go work init "$REPO_ROOT" "${SDK_DIR}/host-runtime"
+	cd "${SDK_DIR}/host-runtime"
+	GOWORK="${HOST_WORK_DIR}/go.work" go build \
+		-o "${SDK_DIR}/sdks/js/bin/.cache/owncast-plugin-test" \
+		./cmd/owncast-plugin-test
+)
+
 echo "Building example plugins..."
 rm -rf "$PLUGIN_DIR"
 mkdir -p "$PLUGIN_DIR"
