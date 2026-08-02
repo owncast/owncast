@@ -65,6 +65,11 @@ beforeAll(async () => {
 		.post(`/api/admin/plugins/${SLUG}/enable`)
 		.auth(...ADMIN)
 		.expect(200);
+	await request
+		.post(`/api/admin/plugins/${SLUG}/auth-settings`)
+		.auth(...ADMIN)
+		.send({ accessMode: 'website-and-stream' })
+		.expect(200);
 	await sleep(1500);
 });
 

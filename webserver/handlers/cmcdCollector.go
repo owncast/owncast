@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 
 	"github.com/owncast/owncast/utils"
@@ -35,12 +36,13 @@ func (h *Handlers) ReportCmcd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	viewerID := utils.GenerateClientIDFromRequest(r)
 	registered := false
 	for _, keys := range reports {
 		if len(keys) == 0 {
 			continue
 		}
-		h.registerCMCDKeys(cmcdClientID(r, keys), keys)
+		h.registerCMCDKeys(cmcdClientID(r, keys), viewerID, keys)
 		registered = true
 	}
 
@@ -53,18 +55,28 @@ func (h *Handlers) ReportCmcd(w http.ResponseWriter, r *http.Request) {
 	// suppress the lower-fidelity server-derived observation for it even
 	// if it doesn't decorate its media requests. Only a request that
 	// actually carried a report earns the suppression.
-	h.metrics.RegisterSelfReportingClient(utils.GenerateClientIDFromRequest(r))
+	h.metrics.RegisterSelfReportingClient(viewerID)
 
 	w.WriteHeader(http.StatusOK)
 }
 
 // parseCmcdReports extracts CMCD reports from a collector request: a JSON
-// object, a JSON array of objects, or a CMCD query parameter.
+// object, a JSON array of objects, a CMCD query parameter, or the four
+// CMCD transmission headers.
 func parseCmcdReports(r *http.Request) ([]map[string]any, error) {
+	requestKeys := parseCMCDRequest(r)
+
 	if r.Method == http.MethodPost {
 		var body any
-		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil && err != io.EOF {
 			return nil, err
+		}
+		if err == io.EOF {
+			if requestKeys == nil {
+				return nil, nil
+			}
+			return []map[string]any{requestKeys}, nil
 		}
 
 		switch payload := body.(type) {
@@ -75,19 +87,22 @@ func parseCmcdReports(r *http.Request) ([]map[string]any, error) {
 					reports = append(reports, keys)
 				}
 			}
+			if requestKeys != nil {
+				reports = append(reports, requestKeys)
+			}
 			return reports, nil
 		case map[string]any:
+			for key, value := range requestKeys {
+				payload[key] = value
+			}
 			return []map[string]any{payload}, nil
 		default:
 			return nil, nil
 		}
 	}
 
-	if payload := r.URL.Query().Get("CMCD"); payload != "" {
-		keys := map[string]any{}
-		parseCMCDPayload(payload, keys)
-		return []map[string]any{keys}, nil
+	if requestKeys != nil {
+		return []map[string]any{requestKeys}, nil
 	}
-
 	return nil, nil
 }

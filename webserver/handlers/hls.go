@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/router/middleware"
@@ -41,11 +42,9 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	// media requests; harvest them from every request that carries them.
 	// The CMCD identity, when present, is the client's metrics identity.
 	requestClientID := utils.GenerateClientIDFromRequest(r)
-	metricsID := requestClientID
 	cmcdKeys := parseCMCDRequest(r)
 	if cmcdKeys != nil {
-		metricsID = cmcdClientID(r, cmcdKeys)
-		h.registerCMCDKeys(metricsID, cmcdKeys)
+		h.registerCMCDKeys(cmcdClientID(r, cmcdKeys), requestClientID, cmcdKeys)
 	}
 
 	isPlaylist := path.Ext(r.URL.Path) == ".m3u8"
@@ -65,16 +64,15 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	middleware.EnableCors(w)
 
-	// Time segment transfers as a server-side observation: for players
-	// that report nothing themselves (Safari/iOS native HLS, VLC, mpv, ...)
-	// it provides both speed and download duration; for request-mode-only
-	// CMCD players it provides the download duration while their reported
-	// throughput owns the speed metric. Clients that self-report through
-	// the metrics API or the CMCD collector measure their own downloads,
-	// so no server observation is needed for them.
-	observe := !isPlaylist &&
-		h.stream.GetStatus().Online &&
-		!h.metrics.IsClientSelfReporting(requestClientID)
+	// Time online segment transfers as a server-side observation. Playlist
+	// requests and offline streams cannot be observed, so avoid their metrics
+	// lock acquisition on this hot path.
+	observe := !isPlaylist && h.stream.GetStatus().Online
+	var observation metrics.ServerObservation
+	if observe {
+		observation = h.metrics.ServerObservationFor(requestClientID)
+		observe = !observation.Suppressed
+	}
 
 	file, err := os.OpenInRoot(config.HLSStoragePath, relativePath)
 	if err != nil {
@@ -93,6 +91,6 @@ func (h *Handlers) HandleHLSRequest(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	http.ServeContent(cw, r, relativePath, info.ModTime(), file)
 	if observe {
-		h.registerServedSegmentMetrics(r, metricsID, cw.bytes, time.Since(start), cmcdKeys != nil)
+		h.registerServedSegmentMetrics(r, observation.ClientID, requestClientID, cw.bytes, time.Since(start), observation.SpeedKnown)
 	}
 }
