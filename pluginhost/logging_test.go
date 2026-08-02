@@ -1,6 +1,7 @@
 package pluginhost
 
 import (
+	"strings"
 	"testing"
 
 	log "github.com/sirupsen/logrus"
@@ -16,6 +17,7 @@ func TestPluginLoggingPreservesLevelAndIdentity(t *testing.T) {
 
 	hook := logtest.NewGlobal()
 	defer hook.Reset()
+	log.Info("unrelated log entry")
 
 	env := &plugins.HostEnv{}
 	wirePluginLoggingHostFn(env)
@@ -32,7 +34,13 @@ func TestPluginLoggingPreservesLevelAndIdentity(t *testing.T) {
 		env.Log("weather-alerts", tc.level, "forecast changed")
 	}
 
-	entries := hook.AllEntries()
+	allEntries := hook.AllEntries()
+	entries := allEntries[:0]
+	for _, entry := range allEntries {
+		if strings.HasPrefix(entry.Message, "plugin weather-alerts:") {
+			entries = append(entries, entry)
+		}
+	}
 	if len(entries) != len(cases) {
 		t.Fatalf("log entries = %d, want %d", len(entries), len(cases))
 	}

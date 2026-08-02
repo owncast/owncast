@@ -145,6 +145,7 @@ owncast.log.info("ready");
 owncast.log.warning("needs attention");
 owncast.log.error("failed");
 owncast.log.info("x".repeat(5000));
+owncast.log.info("line one\nline two\u001b[31m");
 module.exports = definePlugin({});`, nil)
 	defer js.Close(ctx)
 
@@ -164,6 +165,7 @@ owncast.log.error("failed")
 			level:   PluginLogInfo,
 			message: strings.Repeat("x", MaxPluginLogMessageBytes-len(pluginLogTruncationSuffix)) + pluginLogTruncationSuffix,
 		},
+		{plugin: "js-logger", level: PluginLogInfo, message: "line one line two [31m"},
 		{plugin: "py-logger", level: PluginLogInfo, message: "ready"},
 		{plugin: "py-logger", level: PluginLogWarning, message: "needs attention"},
 		{plugin: "py-logger", level: PluginLogError, message: "failed"},

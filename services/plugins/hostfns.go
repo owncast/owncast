@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"unicode"
 
 	extism "github.com/extism/go-sdk"
 	"github.com/owncast/owncast/services/plugins/kv"
@@ -573,7 +574,7 @@ func hostLog(env *HostEnv, fnName string, level PluginLogLevel) extism.HostFunct
 			if err != nil || env.Log == nil {
 				return
 			}
-			env.Log(id.slug, level, truncatePluginLogMessage(message))
+			env.Log(id.slug, level, sanitizePluginLogMessage(message))
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
 		[]extism.ValueType{},
@@ -582,7 +583,13 @@ func hostLog(env *HostEnv, fnName string, level PluginLogLevel) extism.HostFunct
 	return fn
 }
 
-func truncatePluginLogMessage(message string) string {
+func sanitizePluginLogMessage(message string) string {
+	message = strings.Map(func(r rune) rune {
+		if unicode.IsControl(r) {
+			return ' '
+		}
+		return r
+	}, message)
 	if len(message) <= MaxPluginLogMessageBytes {
 		return message
 	}
