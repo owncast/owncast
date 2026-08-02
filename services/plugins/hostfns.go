@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"unicode"
 
 	extism "github.com/extism/go-sdk"
 	"github.com/owncast/owncast/services/plugins/kv"
@@ -340,12 +341,29 @@ type TimerFireEvent struct {
 	ID uint64 `json:"id"`
 }
 
+// MaxPluginLogMessageBytes caps one plugin-authored log entry. Logging is
+// ambient, so every plugin gets it without a permission grant.
+const MaxPluginLogMessageBytes = 4 << 10
+
+const pluginLogTruncationSuffix = " [truncated]"
+
+// PluginLogLevel is the fixed set of severities a plugin can send to the
+// Owncast log.
+type PluginLogLevel uint8
+
+const (
+	PluginLogInfo PluginLogLevel = iota
+	PluginLogWarning
+	PluginLogError
+)
+
 // HostEnv is everything host functions need to do their job. Function-pointer
 // fields are wired by the host (the production Owncast binary, the demo
 // binary, or the test runner); each host function reads them lazily at call
 // time so that fields wired post-load (Emit) work correctly.
 type HostEnv struct {
 	KV              kv.Store
+	Log             func(pluginName string, level PluginLogLevel, message string)
 	OnChat          func(ChatSendRequest)
 	Emit            func(ctx context.Context, eventType string, payload any)
 	StreamCurrent   func() StreamInfo
@@ -451,9 +469,10 @@ type HostEnv struct {
 func BuildHostFunctions(env *HostEnv) []extism.HostFunction {
 	// Capacity hint for the full host-function set built below; an off-by-a-few
 	// estimate just trades one reallocation, so it needn't track exactly.
-	fns := make([]extism.HostFunction, 0, 48)
+	fns := make([]extism.HostFunction, 0, 49)
 
 	fns = append(fns, hostKVGet(), hostKVSet())
+	fns = append(fns, loggingHostFunctions(env)...)
 	// Chat send fns resolve both slug and chat display name at call time:
 	// slug routes to the right bot user, display name is what chat viewers
 	// see.
@@ -531,6 +550,56 @@ func storageHostFunctions(env *HostEnv) []extism.HostFunction {
 		hostSQLExec(env),
 		hostSQLQuery(env),
 	}
+}
+
+// loggingHostFunctions returns the ambient logging functions. Separate
+// functions keep invalid severity values out of the wire protocol.
+func loggingHostFunctions(env *HostEnv) []extism.HostFunction {
+	return []extism.HostFunction{
+		hostLog(env, "owncast_log_info", PluginLogInfo),
+		hostLog(env, "owncast_log_warning", PluginLogWarning),
+		hostLog(env, "owncast_log_error", PluginLogError),
+	}
+}
+
+func hostLog(env *HostEnv, fnName string, level PluginLogLevel) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		fnName,
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, fnName, "")
+			if !ok {
+				return
+			}
+			message, err := p.ReadString(stack[0])
+			if err != nil || env.Log == nil {
+				return
+			}
+			env.Log(id.slug, level, sanitizePluginLogMessage(message))
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+func sanitizePluginLogMessage(message string) string {
+	truncated := len(message) > MaxPluginLogMessageBytes
+	if truncated {
+		bodyBytes := MaxPluginLogMessageBytes - len(pluginLogTruncationSuffix)
+		message = message[:bodyBytes]
+	}
+	message = strings.ToValidUTF8(message, "")
+	message = strings.Map(func(r rune) rune {
+		if unicode.IsControl(r) {
+			return ' '
+		}
+		return r
+	}, message)
+	if truncated {
+		return message + pluginLogTruncationSuffix
+	}
+	return message
 }
 
 // readSQLRequest pulls the plugin's JSON SQL request out of guest memory and
