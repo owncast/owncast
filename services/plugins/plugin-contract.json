@@ -99,6 +99,9 @@
       "name": "string",
       "url": "string"
     },
+    "FSResult": {
+      "error": "string"
+    },
     "FederationInfo": {
       "enabled": "bool",
       "isPrivate": "bool",
@@ -113,6 +116,9 @@
     "GrantSessionRequest": {
       "ttl": "int64",
       "userId": "string"
+    },
+    "GrantSessionResult": {
+      "error": "string"
     },
     "HostChatClient": {
       "connectedAt": "string",
@@ -144,13 +150,11 @@
     "SQLExecResult": {
       "error": "string",
       "lastInsertId": "int64",
-      "ok": "bool",
       "rowsAffected": "int64"
     },
     "SQLQueryResult": {
       "columns": "[]string",
       "error": "string",
-      "ok": "bool",
       "rows": "[][]any",
       "truncated": "bool"
     },
@@ -230,7 +234,7 @@
       "latencyLevel": "*int",
       "variants": "[]StreamVariant"
     },
-    "authResult": {
+    "VideoConfigWriteResult": {
       "error": "string"
     }
   }

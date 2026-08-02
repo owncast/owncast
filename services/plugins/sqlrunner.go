@@ -153,7 +153,7 @@ func (r SQLRunner) Exec(ctx context.Context, req SQLRequest) SQLExecResult {
 	if err := tx.Commit(); err != nil {
 		return SQLExecResult{Error: err.Error()}
 	}
-	return SQLExecResult{OK: true, RowsAffected: rowsAffected, LastInsertID: lastInsertID}
+	return SQLExecResult{RowsAffected: rowsAffected, LastInsertID: lastInsertID}
 }
 
 // Query runs the request and returns a bounded result set.
@@ -251,10 +251,10 @@ func newSQLResultBuilder(columns []string, rowBudget int) (*sqlResultBuilder, er
 		return nil, err
 	}
 	return &sqlResultBuilder{
-		result: SQLQueryResult{OK: true, Columns: columns, Rows: make([][]any, 0, min(rowBudget, 64))},
+		result: SQLQueryResult{Columns: columns, Rows: make([][]any, 0, min(rowBudget, 64))},
 		// The envelope's fixed keys, column names, and optional truncation marker
 		// count against the budget so every encoded result stays within the cap.
-		used:      len(encodedColumns) + len(`{"ok":true,"columns":,"rows":[]}`) + len(`,"truncated":true`),
+		used:      len(encodedColumns) + len(`{"columns":,"rows":[]}`) + len(`,"truncated":true`),
 		rowBudget: rowBudget,
 	}, nil
 }

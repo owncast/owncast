@@ -106,9 +106,6 @@ func TestSQLRunnerRowCapIsAnErrorWhenUnbounded(t *testing.T) {
 	if result.Error == "" || !strings.Contains(result.Error, "add a LIMIT") {
 		t.Fatalf("expected a row-cap error, got %d rows and error %q", len(result.Rows), result.Error)
 	}
-	if result.OK {
-		t.Fatal("a failed query must not report ok")
-	}
 }
 
 // A caller-supplied MaxRows is intent, so the host stops there and says it
@@ -221,7 +218,6 @@ func TestSQLRunnerResultEncodesWithinBudget(t *testing.T) {
 	// value would fit if the builder forgot to count `,"truncated":true`, but
 	// the final JSON would be one byte over the advertised cap.
 	probe, err := json.Marshal(SQLQueryResult{
-		OK:        true,
 		Columns:   []string{"v"},
 		Rows:      [][]any{{""}},
 		Truncated: true,
@@ -247,10 +243,10 @@ func TestSQLRunnerResultEncodesWithinBudget(t *testing.T) {
 func TestSQLRunnerWithoutDatabaseReportsUnavailable(t *testing.T) {
 	var runner SQLRunner
 	ctx := context.Background()
-	if result := runner.Exec(ctx, SQLRequest{SQL: "SELECT 1"}); result.Error == "" || result.OK {
+	if result := runner.Exec(ctx, SQLRequest{SQL: "SELECT 1"}); result.Error == "" {
 		t.Fatalf("expected exec to report the store unavailable, got %+v", result)
 	}
-	if result := runner.Query(ctx, SQLRequest{SQL: "SELECT 1"}); result.Error == "" || result.OK {
+	if result := runner.Query(ctx, SQLRequest{SQL: "SELECT 1"}); result.Error == "" {
 		t.Fatalf("expected query to report the store unavailable, got %+v", result)
 	}
 }
