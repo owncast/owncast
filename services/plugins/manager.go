@@ -53,8 +53,8 @@ type Loaded struct {
 	WasmPath   string
 	PublicFS   fs.FS
 	AssetsFS   fs.FS
-	adminGlobs []glob.Glob // compiled from manifest.admin.pages[].path
-	adminPaths []string    // original path strings, used for "page gates descendants" prefix-matching
+	adminGlobs []glob.Glob // compiled from manifest.admin.pages keys
+	adminPaths []string    // original path keys, used for "page gates descendants" prefix-matching
 	plugin     *extism.Plugin
 	// releaseEngine drops this instance's reference on its shared compiled
 	// engine (nil for self-contained wasm). Called exactly once by Close,
@@ -439,10 +439,10 @@ type DiscoveredEntry struct {
 	// network.fetch; the host's load-time validator rejects
 	// network.fetch without an entry, so a present permission
 	// without a non-empty list never occurs.
-	AllowedHosts []string    `json:"allowedHosts,omitempty"`
-	LastError    string      `json:"lastError,omitempty"`
-	DiscoveredAt time.Time   `json:"discoveredAt"`
-	AdminPages   []AdminPage `json:"adminPages,omitempty"`
+	AllowedHosts []string             `json:"allowedHosts,omitempty"`
+	LastError    string               `json:"lastError,omitempty"`
+	DiscoveredAt time.Time            `json:"discoveredAt"`
+	AdminPages   map[string]AdminPage `json:"adminPages,omitempty"`
 	// Commands lists the plugin's chat commands for the admin details view.
 	// Derived by the SDK and reported via register(), so it's only known once
 	// the plugin is loaded — empty for discovered-but-not-loaded plugins.
@@ -1588,7 +1588,7 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 
 	var adminGlobs []glob.Glob
 	var adminPaths []string
-	for _, page := range manifest.Admin.Pages {
+	for _, page := range manifest.OrderedAdminPages() {
 		// Lower the pattern so admin-path matching is case-insensitive (see
 		// IsAdminPath); the request path is lowered there to match.
 		lowered := strings.ToLower(page.Path)

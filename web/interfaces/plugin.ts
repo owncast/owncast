@@ -88,7 +88,7 @@ export interface Plugin {
   allowedHosts?: string[];
   lastError?: string;
   discoveredAt: string;
-  adminPages?: PluginAdminPage[];
+  adminPages?: Record<string, PluginAdminPage>;
   // config is the plugin's manifest-declared settings schema (key → field).
   // The admin auto-renders an editable form from it; saved values are read
   // back by the plugin via owncast.config.get(). Absent when the plugin
@@ -123,11 +123,9 @@ export interface PluginCommand {
   modOnly?: boolean;
 }
 
-// PluginAdminPage is a single admin-only page declared in a plugin's
-// manifest.admin.pages entry. The body is rendered as an iframe to
-// /plugins/<slug><path>.
+// PluginAdminPage is one admin-only page declared in the
+// manifest.admin.pages object. Its object key is the plugin-relative path.
 export interface PluginAdminPage {
   title: string;
-  path: string;
   icon?: string;
 }
