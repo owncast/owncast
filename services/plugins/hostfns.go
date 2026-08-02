@@ -302,6 +302,17 @@ type SQLQueryResult struct {
 	Truncated bool     `json:"truncated,omitempty"`
 }
 
+func (r SQLQueryResult) MarshalJSON() ([]byte, error) {
+	type result SQLQueryResult
+	if r.Columns == nil {
+		r.Columns = []string{}
+	}
+	if r.Rows == nil {
+		r.Rows = [][]any{}
+	}
+	return json.Marshal(result(r))
+}
+
 // SSEConnectionEvent is the payload for the sse.connect / sse.disconnect
 // events, fired when a browser opens or closes one of the plugin's
 // Server-Sent-Events streams. ConnectionID is unique for the life of the host

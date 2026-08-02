@@ -173,7 +173,7 @@ func TestOperationResultsUseErrorAsTheOnlyFailureSignal(t *testing.T) {
 		"SQL exec success":           {SQLExecResult{RowsAffected: 1, LastInsertID: 2}, `{"rowsAffected":1,"lastInsertId":2}`},
 		"SQL exec failure":           {SQLExecResult{Error: "failed"}, `{"error":"failed","rowsAffected":0,"lastInsertId":0}`},
 		"SQL query success":          {SQLQueryResult{Columns: []string{}, Rows: [][]any{}}, `{"columns":[],"rows":[]}`},
-		"SQL query failure":          {SQLQueryResult{Error: "failed"}, `{"error":"failed","columns":null,"rows":null}`},
+		"SQL query failure":          {SQLQueryResult{Error: "failed"}, `{"error":"failed","columns":[],"rows":[]}`},
 		"video config write success": {VideoConfigWriteResult{}, `{}`},
 		"video config write failure": {VideoConfigWriteResult{Error: "failed"}, `{"error":"failed"}`},
 		"auth session success":       {GrantSessionResult{}, `{}`},
