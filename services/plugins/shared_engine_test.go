@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"runtime"
 	"strings"
 	"sync"
@@ -118,6 +119,59 @@ module.exports = definePlugin({
 	defer mu.Unlock()
 	if len(*sends) != 0 {
 		t.Fatalf("ungranted chat.send must be blocked; got %d sends: %+v", len(*sends), *sends)
+	}
+}
+
+func TestSharedEngineLoggingIsAmbientAndPreservesIdentity(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	type logEntry struct {
+		plugin  string
+		level   PluginLogLevel
+		message string
+	}
+	var entries []logEntry
+	env := &HostEnv{
+		Log: func(plugin string, level PluginLogLevel, message string) {
+			entries = append(entries, logEntry{plugin: plugin, level: level, message: message})
+		},
+	}
+
+	js := loadShared(t, ctx, env, RuntimeJavaScript, "js-logger", `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+owncast.log.info("ready");
+owncast.log.warning("needs attention");
+owncast.log.error("failed");
+owncast.log.info("x".repeat(5000));
+owncast.log.info("line one\nline two\u001b[31m");
+module.exports = definePlugin({});`, nil)
+	defer js.Close(ctx)
+
+	py := loadShared(t, ctx, env, RuntimePython, "py-logger", `
+owncast.log.info("ready")
+owncast.log.warning("needs attention")
+owncast.log.error("failed")
+`, nil)
+	defer py.Close(ctx)
+
+	want := []logEntry{
+		{plugin: "js-logger", level: PluginLogInfo, message: "ready"},
+		{plugin: "js-logger", level: PluginLogWarning, message: "needs attention"},
+		{plugin: "js-logger", level: PluginLogError, message: "failed"},
+		{
+			plugin:  "js-logger",
+			level:   PluginLogInfo,
+			message: strings.Repeat("x", MaxPluginLogMessageBytes-len(pluginLogTruncationSuffix)) + pluginLogTruncationSuffix,
+		},
+		{plugin: "js-logger", level: PluginLogInfo, message: "line one line two [31m"},
+		{plugin: "py-logger", level: PluginLogInfo, message: "ready"},
+		{plugin: "py-logger", level: PluginLogWarning, message: "needs attention"},
+		{plugin: "py-logger", level: PluginLogError, message: "failed"},
+	}
+	if !reflect.DeepEqual(entries, want) {
+		t.Fatalf("log entries = %+v, want %+v", entries, want)
 	}
 }
 
