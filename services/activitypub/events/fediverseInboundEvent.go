@@ -21,7 +21,7 @@ type FediverseEngagementEvent struct {
 
 // FediverseQuoteEvent is the payload for an accepted inbound quote request.
 // The post fields describe the remote quote post when its Note is embedded in
-// the request. URL is always present because it identifies the instrument.
+// the request. URL is its public permalink when available, otherwise its IRI.
 type FediverseQuoteEvent struct {
 	Actor       FediverseActor        `json:"actor"`
 	Target      *FediverseTarget      `json:"target"`
