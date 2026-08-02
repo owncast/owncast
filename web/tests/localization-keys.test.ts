@@ -330,6 +330,18 @@ describe('Localization Keys Cross-Language Validation', () => {
       },
     ];
 
+    test('should provide English text for plugin SQL storage and configuration', () => {
+      expect(
+        getNestedValue(englishTranslations, Localization.Admin.Plugins.PermissionNames.storageSql),
+      ).toBe('Store data in a private SQLite database');
+      expect(
+        getNestedValue(englishTranslations, Localization.Admin.Plugins.Permissions.storageSql),
+      ).toBe('Read and write a private SQLite database that persists across reloads.');
+      expect(getNestedValue(englishTranslations, Localization.Admin.Plugins.configure)).toBe(
+        'Configure',
+      );
+    });
+
     adminTestKeys.forEach(({ key, name }) => {
       test(`should verify admin key "${name}" has appropriate translation structure`, () => {
         const englishValue = getNestedValue(englishTranslations, key);
