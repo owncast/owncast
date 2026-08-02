@@ -42,6 +42,25 @@ func loadStress(t *testing.T) (*Loaded, func()) {
 	return loaded, func() { loaded.Close(ctx) }
 }
 
+func TestSanitizePluginLogMessage(t *testing.T) {
+	t.Run("normalizes control and invalid bytes", func(t *testing.T) {
+		got := sanitizePluginLogMessage("line\n\xfftwo")
+		if got != "line two" {
+			t.Fatalf("sanitized message = %q, want %q", got, "line two")
+		}
+	})
+
+	t.Run("bounds work before normalization", func(t *testing.T) {
+		got := sanitizePluginLogMessage(strings.Repeat("\n", MaxPluginLogMessageBytes*1024))
+		if len(got) != MaxPluginLogMessageBytes {
+			t.Fatalf("sanitized message bytes = %d, want %d", len(got), MaxPluginLogMessageBytes)
+		}
+		if !strings.HasSuffix(got, pluginLogTruncationSuffix) {
+			t.Fatalf("sanitized message does not end with %q", pluginLogTruncationSuffix)
+		}
+	})
+}
+
 // --- Filter safeguards ---
 
 func TestSafeguard_FilterHugeOutputRejected(t *testing.T) {

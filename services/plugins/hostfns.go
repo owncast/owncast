@@ -584,17 +584,22 @@ func hostLog(env *HostEnv, fnName string, level PluginLogLevel) extism.HostFunct
 }
 
 func sanitizePluginLogMessage(message string) string {
+	truncated := len(message) > MaxPluginLogMessageBytes
+	if truncated {
+		bodyBytes := MaxPluginLogMessageBytes - len(pluginLogTruncationSuffix)
+		message = message[:bodyBytes]
+	}
+	message = strings.ToValidUTF8(message, "")
 	message = strings.Map(func(r rune) rune {
 		if unicode.IsControl(r) {
 			return ' '
 		}
 		return r
 	}, message)
-	if len(message) <= MaxPluginLogMessageBytes {
-		return message
+	if truncated {
+		return message + pluginLogTruncationSuffix
 	}
-	bodyBytes := MaxPluginLogMessageBytes - len(pluginLogTruncationSuffix)
-	return strings.ToValidUTF8(message[:bodyBytes], "") + pluginLogTruncationSuffix
+	return message
 }
 
 // readSQLRequest pulls the plugin's JSON SQL request out of guest memory and
