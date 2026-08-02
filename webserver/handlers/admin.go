@@ -48,6 +48,14 @@ func (s *ServerInterfaceImpl) GetActiveViewersOptions(w http.ResponseWriter, r *
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetActiveViewers)(w, r)
 }
 
+func (s *ServerInterfaceImpl) GetPlaybackClients(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetPlaybackClients)(w, r)
+}
+
+func (s *ServerInterfaceImpl) GetPlaybackClientsOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetPlaybackClients)(w, r)
+}
+
 func (s *ServerInterfaceImpl) GetHardwareStats(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetHardwareStats)(w, r)
 }
