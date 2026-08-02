@@ -209,8 +209,8 @@ Go module: github.com/nareix/joy5@v0.0.0-20210317075623-2c912ca30590
   Source: https://pkg.go.dev/github.com/nareix/joy5@v0.0.0-20210317075623-2c912ca30590
   LICENSE TEXT NOT FOUND: No license is published with this version or in the upstream repository. Redistribution permission is unresolved.
 
-Go module: github.com/oapi-codegen/runtime@v1.4.2
-  Source: https://pkg.go.dev/github.com/oapi-codegen/runtime@v1.4.2
+Go module: github.com/oapi-codegen/runtime@v1.5.0
+  Source: https://pkg.go.dev/github.com/oapi-codegen/runtime@v1.5.0
   LICENSE: SHA256 50e6751797c50dedd75ef1b8a0d9e42f5f8472e9fbce91f34718e9f97b0c780a
 
 Go module: github.com/oschwald/geoip2-golang@v1.13.0
@@ -8523,7 +8523,7 @@ Used by: Go module: github.com/aws/aws-sdk-go-v2/service/internal/s3shared@v1.19
 Used by: Go module: github.com/aws/aws-sdk-go-v2/service/s3@v1.103.3 (LICENSE.txt)
 Used by: Go module: github.com/aws/aws-sdk-go-v2@v1.42.0 (LICENSE.txt)
 Used by: Go module: github.com/nakabonne/tstorage@v0.3.6 (LICENSE)
-Used by: Go module: github.com/oapi-codegen/runtime@v1.4.2 (LICENSE)
+Used by: Go module: github.com/oapi-codegen/runtime@v1.5.0 (LICENSE)
 Used by: Go module: github.com/prometheus/client_golang@v1.23.2 (LICENSE)
 Used by: Go module: github.com/prometheus/client_model@v0.6.2 (LICENSE)
 Used by: Go module: github.com/prometheus/common@v0.66.1 (LICENSE)
