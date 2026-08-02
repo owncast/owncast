@@ -8,7 +8,6 @@ import (
 
 	"github.com/owncast/owncast/metrics"
 	"github.com/owncast/owncast/utils"
-	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -20,8 +19,14 @@ func (h *Handlers) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	var request struct {
+		Bandwidth             *float64 `json:"bandwidth"`
+		Latency               *float64 `json:"latency"`
+		Errors                *float64 `json:"errors"`
+		DownloadDuration      *float64 `json:"downloadDuration"`
+		QualityVariantChanges *float64 `json:"qualityVariantChanges"`
+	}
 	decoder := json.NewDecoder(r.Body)
-	var request generated.PlaybackMetrics
 	if err := decoder.Decode(&request); err != nil {
 		log.Errorln("error decoding playback metrics payload:", err)
 		webutils.WriteSimpleResponse(w, false, err.Error())
