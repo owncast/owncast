@@ -1859,11 +1859,9 @@ func wireUserHostFns(env *plugins.HostEnv, deps Deps) {
 			return err
 		}
 		if !enabled {
-			clients, err := chatSvc.GetClientsForUser(userID)
-			if err != nil {
-				return err
+			if clients, err := chatSvc.GetClientsForUser(userID); err == nil {
+				chatSvc.DisconnectClients(clients)
 			}
-			chatSvc.DisconnectClients(clients)
 		}
 		return nil
 	}

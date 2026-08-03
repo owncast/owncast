@@ -959,7 +959,7 @@ type UserRegisterResult struct {
 	Error  string `json:"error,omitempty"`
 }
 
-// ActionResult reports whether a plugin action mutation failed.
+// ActionResult reports whether a plugin mutation failed.
 type ActionResult struct {
 	Error string `json:"error,omitempty"`
 }
