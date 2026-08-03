@@ -76,6 +76,9 @@
     "owncast_video_config_write"
   ],
   "wireTypes": {
+    "ActionResult": {
+      "error": "string"
+    },
     "BrowserPushPayload": {
       "body": "string",
       "title": "string",

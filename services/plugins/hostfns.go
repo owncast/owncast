@@ -372,10 +372,10 @@ type HostEnv struct {
 	Tags            func() []string          // server.read
 	VideoConfig     func() VideoConfig       // videoconfig.read
 	ChatHistory     func(limit int) []HostChatMessage
-	ChatClients     func() []HostChatClient                  // chat.history
-	DeleteMessage   func(pluginName, messageID string)       // chat.moderate
-	KickClient      func(pluginName string, clientID uint64) // chat.moderate
-	SendDiscord     func(pluginName, text string)            // notifications.send
+	ChatClients     func() []HostChatClient                        // chat.history
+	DeleteMessage   func(pluginName, messageID string) error       // chat.moderate
+	KickClient      func(pluginName string, clientID uint64) error // chat.moderate
+	SendDiscord     func(pluginName, text string)                  // notifications.send
 	SendBrowserPush func(pluginName string, p BrowserPushPayload)
 	Users           func() []HostUser                // users.read
 	UserGet         func(id string) (HostUser, bool) // users.read
@@ -397,9 +397,9 @@ type HostEnv struct {
 	// cookie itself is cleared via the request-scoped sink regardless; this is
 	// for any additional cleanup. Optional; nil → no-op.
 	EndSession     func(pluginName string)
-	SetUserEnabled func(pluginName, userID string, enabled bool, reason string) // users.moderate
-	BanIP          func(pluginName, ip string)                                  // users.moderate
-	UploadStorage  func(pluginName, name string, data []byte) (string, error)   // storage.upload
+	SetUserEnabled func(pluginName, userID string, enabled bool, reason string) error // users.moderate
+	BanIP          func(pluginName, ip string) error                                  // users.moderate
+	UploadStorage  func(pluginName, name string, data []byte) (string, error)         // storage.upload
 	// Sandboxed per-plugin filesystem (storage.fs). Each plugin sees only
 	// its own directory under data/plugin-storage/<slug>/files/, and the host
 	// rejects any path that escapes it. Paths are relative to that root.
@@ -959,6 +959,11 @@ type UserRegisterResult struct {
 	Error  string `json:"error,omitempty"`
 }
 
+// ActionResult reports whether a plugin action mutation failed.
+type ActionResult struct {
+	Error string `json:"error,omitempty"`
+}
+
 // GrantSessionRequest is the JSON payload a plugin sends to owncast.auth.grantSession.
 type GrantSessionRequest struct {
 	UserID string `json:"userId"`
@@ -1108,21 +1113,33 @@ func hostUserSetEnabled(env *HostEnv) extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			ident, ok := resolveCaller(ctx, "owncast_user_set_enabled", PermUsersModerate)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			pluginName := ident.slug
 			id, err := p.ReadString(stack[0])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read user ID: " + err.Error()})
 				return
 			}
 			enabled := stack[1] != 0
-			reason, _ := p.ReadString(stack[2])
-			if env.SetUserEnabled != nil {
-				env.SetUserEnabled(pluginName, id, enabled, reason)
+			reason, err := p.ReadString(stack[2])
+			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read reason: " + err.Error()})
+				return
 			}
+			if env.SetUserEnabled == nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "users.moderate is not available on this host"})
+				return
+			}
+			if err := env.SetUserEnabled(pluginName, id, enabled, reason); err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
+				return
+			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypeI64, extism.ValueTypePTR},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -1134,19 +1151,27 @@ func hostBanIP(env *HostEnv) extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			id, ok := resolveCaller(ctx, "owncast_ban_ip", PermUsersModerate)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			pluginName := id.slug
 			ip, err := p.ReadString(stack[0])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read IP: " + err.Error()})
 				return
 			}
-			if env.BanIP != nil {
-				env.BanIP(pluginName, ip)
+			if env.BanIP == nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "users.moderate is not available on this host"})
+				return
 			}
+			if err := env.BanIP(pluginName, ip); err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
+				return
+			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -1649,19 +1674,27 @@ func hostDeleteMessage(env *HostEnv) extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			ident, ok := resolveCaller(ctx, "owncast_delete_message", PermChatModerate)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			pluginName := ident.slug
 			id, err := p.ReadString(stack[0])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read message ID: " + err.Error()})
 				return
 			}
-			if env.DeleteMessage != nil {
-				env.DeleteMessage(pluginName, id)
+			if env.DeleteMessage == nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "chat.moderate is not available on this host"})
+				return
 			}
+			if err := env.DeleteMessage(pluginName, id); err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
+				return
+			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -1673,16 +1706,23 @@ func hostKickClient(env *HostEnv) extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			id, ok := resolveCaller(ctx, "owncast_kick_client", PermChatModerate)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			pluginName := id.slug
 			clientID := stack[0]
-			if env.KickClient != nil {
-				env.KickClient(pluginName, clientID)
+			if env.KickClient == nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "chat.moderate is not available on this host"})
+				return
 			}
+			if err := env.KickClient(pluginName, clientID); err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
+				return
+			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypeI64},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -2155,31 +2195,41 @@ func hostKVSet() extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			id, ok := resolveCaller(ctx, "owncast_kv_set", PermStorageKV)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			ns := id.kvNamespace
 			key, err := p.ReadString(stack[0])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read key: " + err.Error()})
 				return
 			}
 			val, err := p.ReadBytes(stack[1])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read value: " + err.Error()})
 				return
 			}
 			if len(key) > MaxKVKeyBytes {
-				fmt.Fprintf(os.Stderr, "owncast_kv_set from %s: key is %d bytes, limit is %d — dropped\n", id.slug, len(key), MaxKVKeyBytes)
+				message := fmt.Sprintf("key is %d bytes, limit is %d", len(key), MaxKVKeyBytes)
+				fmt.Fprintf(os.Stderr, "owncast_kv_set from %s: %s — dropped\n", id.slug, message)
+				stack[0] = writeJSON(p, ActionResult{Error: message})
 				return
 			}
 			if len(val) > MaxKVValueBytes {
-				fmt.Fprintf(os.Stderr, "owncast_kv_set from %s: value is %d bytes, limit is %d — dropped\n", id.slug, len(val), MaxKVValueBytes)
+				message := fmt.Sprintf("value is %d bytes, limit is %d", len(val), MaxKVValueBytes)
+				fmt.Fprintf(os.Stderr, "owncast_kv_set from %s: %s — dropped\n", id.slug, message)
+				stack[0] = writeJSON(p, ActionResult{Error: message})
 				return
 			}
 			if err := ns.Set(key, val); err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_kv_set: %v\n", err)
+				stack[0] = writeJSON(p, ActionResult{Error: "kv write: " + err.Error()})
+				return
 			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypePTR},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -2198,14 +2248,15 @@ const RuntimeActionsConfigKey = "owncast.actions"
 // cross-plugin URLs rejected), and appends to the runtime list in the
 // plugin's config.
 //
-// Requires the ui.modify permission; invalid input is logged but not
-// surfaced back to the plugin.
+// Requires the ui.modify permission. The returned error describes why the
+// action list was rejected or could not be persisted.
 func hostAddActions(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_add_actions",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			id, ok := resolveCaller(ctx, "owncast_add_actions", PermUIModify)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			manifest := id.manifest
@@ -2219,19 +2270,25 @@ func hostAddActions(env *HostEnv) extism.HostFunction {
 			}
 			payloadBytes, err := p.ReadBytes(stack[0])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read payload: " + err.Error()})
 				return
 			}
 			var incoming []ActionButton
 			if err := json.Unmarshal(payloadBytes, &incoming); err != nil {
-				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: invalid JSON: %v\n", pluginSlug, err)
+				message := "invalid JSON: " + err.Error()
+				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: %s\n", pluginSlug, message)
+				stack[0] = writeJSON(p, ActionResult{Error: message})
 				return
 			}
 			normalized, err := validateRuntimeActions(pluginSlug, hasHTTPServe, incoming)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: %v\n", pluginSlug, err)
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
 				return
 			}
 			if env.KV == nil {
+				message := "storage is not available on this host"
+				stack[0] = writeJSON(p, ActionResult{Error: message})
 				return
 			}
 			ns := env.KV.Namespace(pluginSlug)
@@ -2244,15 +2301,20 @@ func hostAddActions(env *HostEnv) extism.HostFunction {
 			combined = append(combined, normalized...)
 			out, err := json.Marshal(combined)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: marshal: %v\n", pluginSlug, err)
+				message := "marshal: " + err.Error()
+				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: %s\n", pluginSlug, message)
+				stack[0] = writeJSON(p, ActionResult{Error: message})
 				return
 			}
 			if err := ns.Set(RuntimeActionsConfigKey, out); err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: kv write: %v\n", pluginSlug, err)
+				stack[0] = writeJSON(p, ActionResult{Error: "kv write: " + err.Error()})
+				return
 			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -2267,18 +2329,23 @@ func hostClearActions(env *HostEnv) extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			id, ok := resolveCaller(ctx, "owncast_clear_actions", PermUIModify)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			pluginSlug := id.slug
 			if env.KV == nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "storage is not available on this host"})
 				return
 			}
 			if err := env.KV.Namespace(pluginSlug).Delete(RuntimeActionsConfigKey); err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_clear_actions from %s: %v\n", pluginSlug, err)
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
+				return
 			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		nil,
-		nil,
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn

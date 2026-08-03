@@ -1717,16 +1717,20 @@ func wireChatReadHostFns(env *plugins.HostEnv, deps Deps) {
 func wireChatModerationHostFns(env *plugins.HostEnv, deps Deps) {
 	chatSvc := deps.Chat
 
-	env.DeleteMessage = func(pluginName, messageID string) {
+	env.DeleteMessage = func(pluginName, messageID string) error {
 		if err := chatSvc.SetMessagesVisibility([]string{messageID}, false); err != nil {
-			log.Errorln("plugin", pluginName, "delete message:", err)
+			return err
 		}
+		return nil
 	}
 
-	env.KickClient = func(pluginName string, clientID uint64) {
-		if c, ok := chatSvc.FindClientByID(uint(clientID)); ok {
-			chatSvc.DisconnectClients([]*chat.Client{c})
+	env.KickClient = func(pluginName string, clientID uint64) error {
+		c, ok := chatSvc.FindClientByID(uint(clientID))
+		if !ok {
+			return fmt.Errorf("chat client %d not found", clientID)
 		}
+		chatSvc.DisconnectClients([]*chat.Client{c})
+		return nil
 	}
 }
 
@@ -1850,22 +1854,22 @@ func wireUserHostFns(env *plugins.HostEnv, deps Deps) {
 		return toHostUser(u), true
 	}
 
-	env.SetUserEnabled = func(pluginName, userID string, enabled bool, reason string) {
+	env.SetUserEnabled = func(pluginName, userID string, enabled bool, reason string) error {
 		if err := users.SetEnabled(userID, enabled); err != nil {
-			log.Errorln("plugin", pluginName, "set user enabled:", err)
-			return
+			return err
 		}
 		if !enabled {
-			if clients, err := chatSvc.GetClientsForUser(userID); err == nil {
-				chatSvc.DisconnectClients(clients)
+			clients, err := chatSvc.GetClientsForUser(userID)
+			if err != nil {
+				return err
 			}
+			chatSvc.DisconnectClients(clients)
 		}
+		return nil
 	}
 
-	env.BanIP = func(pluginName, ip string) {
-		if err := deps.AuthRepository.BanIPAddress(ip, "banned by plugin "+pluginName); err != nil {
-			log.Errorln("plugin", pluginName, "ban ip:", err)
-		}
+	env.BanIP = func(pluginName, ip string) error {
+		return deps.AuthRepository.BanIPAddress(ip, "banned by plugin "+pluginName)
 	}
 }
 
