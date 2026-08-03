@@ -79,9 +79,37 @@ func (s *Service) handleQuoteRequestInboxRequest(c context.Context, activity voc
 	if !claimed {
 		return nil
 	}
-	s.publishFediverseEvent(c, models.FediverseEngagementQuote, &activityevents.FediverseEngagementEvent{
-		Actor:  fediverseActorFromResolvedActor(actor),
-		Target: &activityevents.FediverseTarget{URL: quotedPostIRI.String()},
-	})
+	s.publishFediverseEvent(c, models.FediverseEngagementQuote, quoteEventPayload(
+		activity.GetActivityStreamsInstrument(),
+		actor,
+		quotePostIRI.String(),
+		quotedPostIRI.String(),
+	))
 	return nil
+}
+
+func quoteEventPayload(instrument vocab.ActivityStreamsInstrumentProperty, actor apmodels.ActivityPubActor, quotePostIRI, quotedPostIRI string) *activityevents.FediverseQuoteEvent {
+	event := &activityevents.FediverseQuoteEvent{
+		Actor:  fediverseActorFromResolvedActor(actor),
+		Target: &activityevents.FediverseTarget{URL: quotedPostIRI},
+		URL:    quotePostIRI,
+	}
+	if instrument == nil || instrument.Len() == 0 || instrument.At(0) == nil || !instrument.At(0).IsActivityStreamsNote() {
+		return event
+	}
+
+	note := instrument.At(0).GetActivityStreamsNote()
+	if note == nil || validateNoteAttribution(note.GetActivityStreamsAttributedTo(), actor.ActorIriString()) != nil {
+		return event
+	}
+
+	post := createPostPayload(note, quotePostIRI, firstInReplyToIRI(note.GetActivityStreamsInReplyTo()), actor)
+	event.Content = post.Content
+	event.ContentText = post.ContentText
+	event.URL = post.URL
+	event.PostedAt = post.PostedAt
+	event.InReplyTo = post.InReplyTo
+	event.Attachments = post.Attachments
+	event.Language = post.Language
+	return event
 }

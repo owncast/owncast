@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync"
 	"testing"
+	"time"
 
 	"code.superseriousbusiness.org/activity/streams"
 	"code.superseriousbusiness.org/activity/streams/vocab"
@@ -120,6 +121,30 @@ func assertEngagementEvent(t *testing.T, published []dispatcher.Event, eventType
 	}
 }
 
+func assertQuoteEvent(t *testing.T, published []dispatcher.Event, target, quotePost string) *activityevents.FediverseQuoteEvent {
+	t.Helper()
+	if len(published) != 1 {
+		t.Fatalf("published %d events, want 1", len(published))
+	}
+	if published[0].Type != models.FediverseEngagementQuote {
+		t.Fatalf("event type = %q, want %q", published[0].Type, models.FediverseEngagementQuote)
+	}
+	payload, ok := published[0].Payload.(*activityevents.FediverseQuoteEvent)
+	if !ok || payload == nil {
+		t.Fatalf("payload type = %T, want *events.FediverseQuoteEvent", published[0].Payload)
+	}
+	if payload.Actor.Name != "Mr Foo" || payload.Actor.Handle != "foodawg@freedom.eagle" {
+		t.Fatalf("unexpected actor payload: %+v", payload.Actor)
+	}
+	if payload.Target == nil || payload.Target.URL != target {
+		t.Fatalf("target = %+v, want %q", payload.Target, target)
+	}
+	if payload.URL != quotePost {
+		t.Fatalf("quote post URL = %q, want %q", payload.URL, quotePost)
+	}
+	return payload
+}
+
 func TestEngagementPublishesWithChatDisplayDisabledAndSkipsDuplicates(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -223,6 +248,36 @@ func quoteRequest(inbox string) vocab.GoToSocialQuoteRequest {
 	return activity
 }
 
+func quoteRequestWithEmbeddedNote(inbox string) vocab.GoToSocialQuoteRequest {
+	activity := quoteRequest(inbox)
+	note := streams.NewActivityStreamsNote()
+
+	id := streams.NewJSONLDIdProperty()
+	id.SetIRI(mustParseURL("https://remote.example/posts/quote"))
+	note.SetJSONLDId(id)
+
+	attributedTo := streams.NewActivityStreamsAttributedToProperty()
+	attributedTo.AppendIRI(mustParseURL("https://freedom.eagle/user/mrfoo"))
+	note.SetActivityStreamsAttributedTo(attributedTo)
+
+	content := streams.NewActivityStreamsContentProperty()
+	content.AppendXMLSchemaString("<p>This stream is worth watching.</p>")
+	note.SetActivityStreamsContent(content)
+
+	postURL := streams.NewActivityStreamsUrlProperty()
+	postURL.AppendIRI(mustParseURL("https://remote.example/@mrfoo/quote"))
+	note.SetActivityStreamsUrl(postURL)
+
+	published := streams.NewActivityStreamsPublishedProperty()
+	published.Set(time.Date(2026, 7, 10, 12, 0, 0, 0, time.UTC))
+	note.SetActivityStreamsPublished(published)
+
+	instrument := streams.NewActivityStreamsInstrumentProperty()
+	instrument.AppendActivityStreamsNote(note)
+	activity.SetActivityStreamsInstrument(instrument)
+	return activity
+}
+
 func TestQuotePublishesOnlyAfterSuccessfulAccept(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		service, persistenceService, published := newEngagementTestService(t)
@@ -234,7 +289,48 @@ func TestQuotePublishesOnlyAfterSuccessfulAccept(t *testing.T) {
 		if err := service.handleQuoteRequestInboxRequest(context.Background(), quoteRequest("https://remote.example/inbox")); err != nil {
 			t.Fatal(err)
 		}
-		assertEngagementEvent(t, *published, models.FediverseEngagementQuote, target)
+		assertQuoteEvent(t, *published, target, "https://remote.example/posts/quote")
+	})
+
+	t.Run("embedded quote post content", func(t *testing.T) {
+		service, persistenceService, published := newEngagementTestService(t)
+		const target = "https://owncast.example/federation/quoted"
+		if err := persistenceService.AddToOutbox(target, []byte(`{"type":"Note"}`), "Note", false); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := service.handleQuoteRequestInboxRequest(context.Background(), quoteRequestWithEmbeddedNote("https://remote.example/inbox")); err != nil {
+			t.Fatal(err)
+		}
+		event := assertQuoteEvent(t, *published, target, "https://remote.example/@mrfoo/quote")
+		if event.Content != "<p>This stream is worth watching.</p>" || event.ContentText != "This stream is worth watching." {
+			t.Fatalf("unexpected quote content: %+v", event)
+		}
+		if event.PostedAt != "2026-07-10T12:00:00Z" {
+			t.Fatalf("postedAt = %q, want 2026-07-10T12:00:00Z", event.PostedAt)
+		}
+	})
+
+	t.Run("untrusted embedded quote content is omitted", func(t *testing.T) {
+		service, persistenceService, published := newEngagementTestService(t)
+		const target = "https://owncast.example/federation/quoted"
+		if err := persistenceService.AddToOutbox(target, []byte(`{"type":"Note"}`), "Note", false); err != nil {
+			t.Fatal(err)
+		}
+
+		activity := quoteRequestWithEmbeddedNote("https://remote.example/inbox")
+		note := activity.GetActivityStreamsInstrument().At(0).GetActivityStreamsNote()
+		attributedTo := streams.NewActivityStreamsAttributedToProperty()
+		attributedTo.AppendIRI(mustParseURL("https://remote.example/users/someone-else"))
+		note.SetActivityStreamsAttributedTo(attributedTo)
+
+		if err := service.handleQuoteRequestInboxRequest(context.Background(), activity); err != nil {
+			t.Fatal(err)
+		}
+		event := assertQuoteEvent(t, *published, target, "https://remote.example/posts/quote")
+		if event.Content != "" || event.ContentText != "" || event.PostedAt != "" {
+			t.Fatalf("untrusted quote metadata was exposed: %+v", event)
+		}
 	})
 
 	t.Run("replay retries accept without republishing", func(t *testing.T) {
