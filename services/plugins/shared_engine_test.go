@@ -93,6 +93,74 @@ module.exports = definePlugin({
 	}
 }
 
+func TestSharedEngineActionValidationErrorReachesJavaScript(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+	script := `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage() {
+    try {
+      owncast.actions.add({ title: "broken" });
+    } catch (err) {
+      owncast.chat.send(err.message);
+    }
+  }
+});`
+	loaded := loadShared(t, ctx, env, RuntimeJavaScript, "action-errors", script,
+		[]string{PermChatSend, PermUIModify})
+	defer loaded.Close(ctx)
+
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{loaded} })
+	d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(*sends) != 1 {
+		t.Fatalf("expected one error message, got %d: %+v", len(*sends), *sends)
+	}
+	if got := (*sends)[0].Text; got != "actions[0]: exactly one of url or html is required" {
+		t.Fatalf("action error = %q", got)
+	}
+}
+
+func TestSharedEngineActionPermissionErrorReachesJavaScript(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+	script := `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage() {
+    try {
+      owncast.actions.add({ title: "blocked" });
+    } catch (err) {
+      owncast.chat.send(err.message);
+    }
+  }
+});`
+	loaded := loadShared(t, ctx, env, RuntimeJavaScript, "action-permission-errors", script,
+		[]string{PermChatSend})
+	defer loaded.Close(ctx)
+
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{loaded} })
+	d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(*sends) != 1 {
+		t.Fatalf("expected one permission error message, got %d: %+v", len(*sends), *sends)
+	}
+	if got := (*sends)[0].Text; got != "owncast.actions.add failed" {
+		t.Fatalf("permission error = %q", got)
+	}
+}
+
 // TestSharedEnginePermissionGate is the R1 check: a plugin that calls a host
 // function for a permission it was not granted must be denied at call time
 // (the shared engine links every host import, so the gate is the only
@@ -441,6 +509,68 @@ func assertHasCommand(t *testing.T, l *Loaded, name, desc string) {
 		}
 	}
 	t.Errorf("%s: register() did not report command %q; got %+v", l.Manifest.Slug, name, l.Manifest.Commands)
+}
+
+func TestSharedEngineActionValidationErrorReachesPython(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+	script := `
+@plugin.on_chat_message
+def handle(msg):
+    try:
+        owncast.actions.add({"title": "broken"})
+    except Exception as err:
+        owncast.chat.send(str(err))
+`
+	loaded := loadShared(t, ctx, env, RuntimePython, "python-action-errors", script,
+		[]string{PermChatSend, PermUIModify})
+	defer loaded.Close(ctx)
+
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{loaded} })
+	d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(*sends) != 1 {
+		t.Fatalf("expected one error message, got %d: %+v", len(*sends), *sends)
+	}
+	if got := (*sends)[0].Text; got != "actions[0]: exactly one of url or html is required" {
+		t.Fatalf("action error = %q", got)
+	}
+}
+
+func TestSharedEngineActionPermissionErrorReachesPython(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+	script := `
+@plugin.on_chat_message
+def handle(msg):
+    try:
+        owncast.actions.add({"title": "blocked"})
+    except Exception as err:
+        owncast.chat.send(str(err))
+`
+	loaded := loadShared(t, ctx, env, RuntimePython, "python-action-permission-errors", script,
+		[]string{PermChatSend})
+	defer loaded.Close(ctx)
+
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{loaded} })
+	d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(*sends) != 1 {
+		t.Fatalf("expected one permission error message, got %d: %+v", len(*sends), *sends)
+	}
+	if got := (*sends)[0].Text; got != "owncast.actions.add failed" {
+		t.Fatalf("permission error = %q", got)
+	}
 }
 
 func TestSharedEnginePythonRegister(t *testing.T) {

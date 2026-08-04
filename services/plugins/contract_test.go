@@ -178,6 +178,8 @@ func TestOperationResultsUseErrorAsTheOnlyFailureSignal(t *testing.T) {
 		"video config write failure": {VideoConfigWriteResult{Error: "failed"}, `{"error":"failed"}`},
 		"auth session success":       {GrantSessionResult{}, `{}`},
 		"auth session failure":       {GrantSessionResult{Error: "failed"}, `{"error":"failed"}`},
+		"action add success":         {ActionResult{}, `{}`},
+		"action add failure":         {ActionResult{Error: "failed"}, `{"error":"failed"}`},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
