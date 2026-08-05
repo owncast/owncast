@@ -422,6 +422,51 @@ func TestConcurrentQuoteDeliveriesPublishOnce(t *testing.T) {
 	}
 }
 
+func TestConcurrentPendingFollowDeliveriesSucceed(t *testing.T) {
+	service, persistenceService, _ := newEngagementTestService(t)
+	persistenceService.Datastore().DB.SetMaxOpenConns(1)
+	if err := configrepository.New(persistenceService.Datastore()).SetFederationIsPrivate(true); err != nil {
+		t.Fatal(err)
+	}
+	person := makeFakePerson()
+	follow := streams.NewActivityStreamsFollow()
+	id := streams.NewJSONLDIdProperty()
+	id.Set(mustParseURL("https://freedom.eagle/follow/concurrent"))
+	follow.SetJSONLDId(id)
+	follow.SetActivityStreamsActor(actorProperty(person))
+	follow.SetActivityStreamsObject(objectProperty("https://owncast.example/federation/user/streamer"))
+
+	const deliveries = 8
+	start := make(chan struct{})
+	errs := make(chan error, deliveries)
+	var wg sync.WaitGroup
+	wg.Add(deliveries)
+	for range deliveries {
+		go func() {
+			defer wg.Done()
+			<-start
+			if err := service.handleFollowInboxRequest(context.Background(), follow); err != nil {
+				errs <- err
+			}
+		}()
+	}
+	close(start)
+	wg.Wait()
+	close(errs)
+
+	for err := range errs {
+		t.Fatalf("concurrent delivery: %v", err)
+	}
+
+	var followerCount int
+	if err := persistenceService.Datastore().DB.QueryRow(`SELECT count(*) FROM ap_followers`).Scan(&followerCount); err != nil {
+		t.Fatal(err)
+	}
+	if followerCount != 1 {
+		t.Fatalf("followers=%d, want 1", followerCount)
+	}
+}
+
 func TestDuplicateApprovedDirectoryFollowResendsAccept(t *testing.T) {
 	service, persistenceService, _ := newEngagementTestService(t)
 	person := makeFakePerson()
