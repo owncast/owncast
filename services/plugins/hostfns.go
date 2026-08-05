@@ -136,7 +136,7 @@ type StreamVariant struct {
 	Height        int  `json:"height"`
 	Framerate     int  `json:"framerate"`
 	VideoBitrate  int  `json:"videoBitrate"`
-	AudioBitrate  int  `json:"audioBitrate"`
+	CPUUsageLevel int  `json:"cpuUsageLevel"`
 	IsPassthrough bool `json:"isPassthrough"`
 }
 
@@ -147,6 +147,7 @@ type StreamVariant struct {
 type VideoConfig struct {
 	LatencyLevel int             `json:"latencyLevel"`
 	Codec        string          `json:"codec"`
+	Autoplay     string          `json:"autoplay"`
 	Variants     []StreamVariant `json:"variants"`
 }
 
@@ -157,6 +158,7 @@ type VideoConfig struct {
 type VideoConfigUpdate struct {
 	LatencyLevel *int            `json:"latencyLevel,omitempty"`
 	Codec        *string         `json:"codec,omitempty"`
+	Autoplay     *string         `json:"autoplay,omitempty"`
 	Variants     []StreamVariant `json:"variants,omitempty"`
 }
 
