@@ -197,6 +197,57 @@ func TestManager_ScanRemovesDeletedFiles(t *testing.T) {
 	t.Errorf("expected scan to drop deleted plugin within 2s, still have %d", len(mgr.List()))
 }
 
+func TestManager_ScanIgnoresUploadStagingPackages(t *testing.T) {
+	dir := t.TempDir()
+	ctx := context.Background()
+	mgr := NewManager(dir, &HostEnv{})
+	manifest := func(slug string) []byte {
+		t.Helper()
+		data, err := json.Marshal(map[string]any{
+			"api":         "1",
+			"name":        slug,
+			"slug":        slug,
+			"version":     "0.1.0",
+			"permissions": []string{},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return data
+	}
+
+	installed := buildJSPackageBytes(t,
+		manifest("installed"),
+		[]byte(`const { definePlugin } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({ onChatMessage(msg) {} });`))
+	if err := os.WriteFile(filepath.Join(dir, "installed.ocpkg"), installed, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(ctx)
+
+	staging := buildJSPackageBytes(t,
+		manifest("not-installed"),
+		[]byte(`const { definePlugin } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({ onChatMessage(msg) {} });`))
+	if err := os.WriteFile(filepath.Join(dir, ".upload-not-installed.ocpkg"), staging, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := mgr.scan(ctx); err != nil {
+		t.Fatalf("scan: %v", err)
+	}
+	if got := len(mgr.List()); got != 1 {
+		t.Fatalf("staging package was discovered: got %d entries, want 1", got)
+	}
+	if got := mgr.List()[0].Slug; got != "installed" {
+		t.Fatalf("discovered staging package %q, want installed", got)
+	}
+}
+
 func TestManager_EnableUnknownPluginErrors(t *testing.T) {
 	dir := t.TempDir()
 	mgr := NewManager(dir, &HostEnv{})
