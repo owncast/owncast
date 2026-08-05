@@ -1936,6 +1936,13 @@ func validateProfileURL(profileURL string) error {
 	return nil
 }
 
+func generatedDisplayName(displayName string) string {
+	if displayName == "" {
+		return utils.GeneratePhrase()
+	}
+	return displayName
+}
+
 // wireAuthHostFns wires the viewer-authentication host functions: register an
 // authenticated user for an external (plugin-provided) identity, and mint a
 // signed gate session for them.
@@ -1966,7 +1973,7 @@ func wireAuthHostFns(env *plugins.HostEnv, deps Deps) {
 		if existing := users.GetUserByPluginAuth(pluginName, req.AuthID); existing != nil {
 			userID = existing.ID
 		} else {
-			user, _, err := users.CreateAnonymousUser(req.DisplayName)
+			user, _, err := users.CreateAnonymousUser(generatedDisplayName(req.DisplayName))
 			if err != nil {
 				return "", err
 			}
