@@ -333,6 +333,9 @@ type Manager struct {
 	loaded      map[string]*Loaded          // subset of discovered that's currently running
 	enabledSet  map[string]bool             // names the admin has enabled
 	approvedSet map[string][]string         // plugin name -> sorted approved permission set
+	// duplicatePluginPaths records rejected package paths and their accepted
+	// counterpart, preventing the periodic scan from logging the same conflict.
+	duplicatePluginPaths map[string]string
 	// packageFilesMu serializes scans with package replacement. Windows does
 	// not allow an .ocpkg opened by a scan to be replaced by Install.
 	packageFilesMu sync.Mutex
@@ -493,15 +496,16 @@ func NewManager(pluginsDir string, env *HostEnv) *Manager {
 // datastore) instead of a JSON file in the plugins directory.
 func NewManagerWithStore(pluginsDir string, env *HostEnv, store EnabledStore) *Manager {
 	return &Manager{
-		pluginsDir:   pluginsDir,
-		enabledStore: store,
-		env:          env,
-		discovered:   make(map[string]*DiscoveredEntry),
-		loaded:       make(map[string]*Loaded),
-		enabledSet:   make(map[string]bool),
-		approvedSet:  make(map[string][]string),
-		scanInterval: ScanInterval,
-		scanCh:       make(chan struct{}, 1),
+		pluginsDir:           pluginsDir,
+		enabledStore:         store,
+		env:                  env,
+		discovered:           make(map[string]*DiscoveredEntry),
+		loaded:               make(map[string]*Loaded),
+		enabledSet:           make(map[string]bool),
+		approvedSet:          make(map[string][]string),
+		duplicatePluginPaths: make(map[string]string),
+		scanInterval:         ScanInterval,
+		scanCh:               make(chan struct{}, 1),
 	}
 }
 
@@ -856,29 +860,37 @@ func atomicWritePackage(pluginsDir, destPath string, packageBytes []byte) error 
 // upload can't fill the plugins directory.
 const MaxUploadBytes = 50 * 1024 * 1024
 
-// Install validates a .ocpkg's contents, writes it into the plugins
-// directory, and forces a scan so the new (or updated) plugin shows up
-// in the next List() without waiting for the scan tick. The destination
-// filename is derived from the manifest's name, not from the uploaded
-// name, so an admin can't drop a file outside the plugins directory by
-// abusing the upload filename, and a plugin update from a differently
-// named .ocpkg ends up replacing the right file.
-//
-// When the plugin is already enabled and the new manifest declares no
-// permissions beyond the approved set, the running instance is reloaded in
-// place so the update takes effect immediately. If the update expands
-// permissions, the old instance keeps running (it holds only approved
-// permissions) and the entry reports PendingPermissions so the admin UI can
-// run the re-approval flow.
-//
-// Returns the discovered entry for the installed plugin, with Enabled and
-// Loaded populated the same way List() reports them.
+// Install validates a registry .ocpkg, writes it into the plugins directory,
+// and updates an existing plugin with the same slug when necessary.
 func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*DiscoveredEntry, error) {
+	return m.install(ctx, packageBytes, true)
+}
+
+// InstallUploaded validates a manually uploaded .ocpkg and writes it into the
+// plugins directory. Uploads must not replace an existing plugin: only the
+// registry update path is allowed to do that.
+func (m *Manager) InstallUploaded(ctx context.Context, packageBytes []byte) (*DiscoveredEntry, error) {
+	return m.install(ctx, packageBytes, false)
+}
+
+// install writes a validated package. Registry installs may replace an existing
+// slug, while manual uploads must be a new plugin.
+func (m *Manager) install(ctx context.Context, packageBytes []byte, replaceExisting bool) (*DiscoveredEntry, error) {
 	manifest, err := validateUploadedPackage(ctx, m.env, packageBytes)
 	if err != nil {
 		return nil, err
 	}
 	m.packageFilesMu.Lock()
+	if !replaceExisting {
+		m.mu.RLock()
+		existing, found := m.discovered[manifest.Slug]
+		m.mu.RUnlock()
+		if found {
+			m.packageFilesMu.Unlock()
+			return nil, fmt.Errorf("plugin upload rejected: slug %q is already used by %q at %s; uninstall it before uploading another plugin with the same slug",
+				manifest.Slug, existing.DisplayName, existing.Path)
+		}
+	}
 	destPath := m.destPathForInstall(manifest.Slug)
 	installErr := atomicWritePackage(m.pluginsDir, destPath, packageBytes)
 	if installErr == nil {
@@ -1197,6 +1209,23 @@ func (m *Manager) scan(ctx context.Context) error {
 	return m.scanLocked(ctx)
 }
 
+// claimPluginPath records the first package for a slug and rejects later
+// packages with that identity. scanLocked serializes calls, so these maps need
+// no additional synchronization.
+func (m *Manager) claimPluginPath(manifest *Manifest, path string, claimedPaths, duplicatePaths map[string]string) bool {
+	firstPath, duplicate := claimedPaths[manifest.Slug]
+	if !duplicate {
+		claimedPaths[manifest.Slug] = path
+		return true
+	}
+	duplicatePaths[path] = firstPath
+	if m.duplicatePluginPaths[path] != firstPath {
+		log.Errorf("plugin %q at %s disabled: duplicate slug %q is already provided by %s",
+			manifest.DisplayName, path, manifest.Slug, firstPath)
+	}
+	return false
+}
+
 // scanLocked re-reads the plugins directory, updates the discovered map, and
 // unloads anything whose underlying file has gone away. packageFilesMu must be
 // held by the caller.
@@ -1207,6 +1236,8 @@ func (m *Manager) scanLocked(ctx context.Context) error {
 	}
 
 	seen := make(map[string]bool)
+	claimedPaths := make(map[string]string)
+	duplicatePaths := make(map[string]string)
 	for _, entry := range entries {
 		if entry.IsDir() {
 			continue
@@ -1223,6 +1254,9 @@ func (m *Manager) scanLocked(ctx context.Context) error {
 		manifest, err := readManifestForPath(path)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "discover %s: %v\n", name, err)
+			continue
+		}
+		if !m.claimPluginPath(manifest, path, claimedPaths, duplicatePaths) {
 			continue
 		}
 		seen[manifest.Slug] = true
@@ -1268,6 +1302,7 @@ func (m *Manager) scanLocked(ctx context.Context) error {
 		}
 		m.mu.Unlock()
 	}
+	m.duplicatePluginPaths = duplicatePaths
 
 	// Anything we knew about but didn't see this scan: gone from disk.
 	var removed []string
