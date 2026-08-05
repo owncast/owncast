@@ -333,6 +333,9 @@ type Manager struct {
 	loaded      map[string]*Loaded          // subset of discovered that's currently running
 	enabledSet  map[string]bool             // names the admin has enabled
 	approvedSet map[string][]string         // plugin name -> sorted approved permission set
+	// packageFilesMu serializes scans with package replacement. Windows does
+	// not allow an .ocpkg opened by a scan to be replaced by Install.
+	packageFilesMu sync.Mutex
 
 	scanInterval time.Duration
 	cancel       context.CancelFunc // stops the scan loop
@@ -875,14 +878,20 @@ func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*Discovered
 	if err != nil {
 		return nil, err
 	}
+	m.packageFilesMu.Lock()
 	destPath := m.destPathForInstall(manifest.Slug)
-	if err := atomicWritePackage(m.pluginsDir, destPath, packageBytes); err != nil {
-		return nil, err
+	installErr := atomicWritePackage(m.pluginsDir, destPath, packageBytes)
+	if installErr == nil {
+		// Keep the write and the immediate scan together. On Windows a scan
+		// cannot hold either the temporary or destination package open while
+		// the rename replaces it.
+		if scanErr := m.scanLocked(ctx); scanErr != nil {
+			installErr = fmt.Errorf("scan after install: %w", scanErr)
+		}
 	}
-	// Force an immediate scan so the upload appears in List() before
-	// this call returns.
-	if err := m.scan(ctx); err != nil {
-		return nil, fmt.Errorf("scan after install: %w", err)
+	m.packageFilesMu.Unlock()
+	if installErr != nil {
+		return nil, installErr
 	}
 
 	m.mu.RLock()
@@ -1001,6 +1010,12 @@ func (m *Manager) Disable(ctx context.Context, name string) error {
 // uninstall followed by a reinstall doesn't lose the streamer's
 // settings.
 func (m *Manager) Uninstall(ctx context.Context, name string) error {
+	// Keep the state removal and file deletion in the same filesystem
+	// transaction. A scan that runs between them could otherwise rediscover
+	// the plugin just before its file disappears.
+	m.packageFilesMu.Lock()
+	defer m.packageFilesMu.Unlock()
+
 	m.mu.Lock()
 	entry, ok := m.discovered[name]
 	if !ok {
@@ -1028,9 +1043,6 @@ func (m *Manager) Uninstall(ctx context.Context, name string) error {
 		fmt.Fprintf(os.Stderr, "persist enabled set after uninstall: %v\n", err)
 	}
 
-	// Delete the .ocpkg (or the loose .wasm + sidecar manifest pair).
-	// A missing file is fine; the scan that picks up our state change
-	// would have dropped the entry anyway.
 	if err := removePluginFiles(path); err != nil {
 		return fmt.Errorf("delete plugin file: %w", err)
 	}
@@ -1109,12 +1121,18 @@ func (m *Manager) Reload(ctx context.Context, name string) error {
 func (m *Manager) loadInternal(ctx context.Context, name string) error {
 	m.mu.RLock()
 	d, ok := m.discovered[name]
-	approved := m.approvedSet[name]
+	approved := slices.Clone(m.approvedSet[name])
+	var path string
+	var permissions []string
+	if ok {
+		path = d.Path
+		permissions = slices.Clone(d.Permissions)
+	}
 	m.mu.RUnlock()
 	if !ok {
 		return fmt.Errorf("plugin %q not discovered", name)
 	}
-	if pending := pendingPermissions(d.Permissions, approved); len(pending) > 0 {
+	if pending := pendingPermissions(permissions, approved); len(pending) > 0 {
 		err := fmt.Errorf("plugin %q declares new permissions that need admin approval: %s",
 			name, strings.Join(pending, ", "))
 		m.mu.Lock()
@@ -1126,7 +1144,7 @@ func (m *Manager) loadInternal(ctx context.Context, name string) error {
 		return err
 	}
 
-	loaded, err := loadByPath(ctx, m.env, d.Path)
+	loaded, err := loadByPath(ctx, m.env, path)
 	if err != nil {
 		m.mu.Lock()
 		m.discovered[name].LastError = err.Error()
@@ -1172,9 +1190,17 @@ func dirExists(path string) bool {
 	return err == nil && info.IsDir()
 }
 
-// scan re-reads the plugins directory, updates the discovered map, and
-// unloads anything whose underlying file has gone away.
+// scan serializes directory scans with package installation.
 func (m *Manager) scan(ctx context.Context) error {
+	m.packageFilesMu.Lock()
+	defer m.packageFilesMu.Unlock()
+	return m.scanLocked(ctx)
+}
+
+// scanLocked re-reads the plugins directory, updates the discovered map, and
+// unloads anything whose underlying file has gone away. packageFilesMu must be
+// held by the caller.
+func (m *Manager) scanLocked(ctx context.Context) error {
 	entries, err := os.ReadDir(m.pluginsDir)
 	if err != nil {
 		return fmt.Errorf("read plugins dir %q: %w", m.pluginsDir, err)
@@ -1186,6 +1212,10 @@ func (m *Manager) scan(ctx context.Context) error {
 			continue
 		}
 		name := entry.Name()
+		if strings.HasPrefix(name, ".upload-") && strings.HasSuffix(name, packageSuffix) {
+			// Install writes this staging file before its atomic rename.
+			continue
+		}
 		if !strings.HasSuffix(name, ".wasm") && !strings.HasSuffix(name, packageSuffix) {
 			continue
 		}
