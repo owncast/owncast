@@ -573,6 +573,45 @@ func TestManager_InstallUploaded_RejectsExistingSlug(t *testing.T) {
 	}
 }
 
+func TestManager_Install_RejectsReplacingLoosePlugin(t *testing.T) {
+	wasmPath := findExampleWasm(t)
+	wasmBytes, err := os.ReadFile(wasmPath)
+	if err != nil {
+		t.Fatalf("read example wasm: %v", err)
+	}
+
+	dir := t.TempDir()
+	loosePath := filepath.Join(dir, "local-copy.wasm")
+	if err := os.WriteFile(loosePath, wasmBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "local-copy.manifest.json"), validManifestBytes(), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	ctx := context.Background()
+	mgr := NewManager(dir, &HostEnv{})
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(ctx)
+
+	pkg := buildPackageBytes(t, validManifestBytes(), wasmBytes, nil)
+	_, err = mgr.Install(ctx, pkg)
+	if err == nil || !strings.Contains(err.Error(), `slug "hello-world"`) ||
+		!strings.Contains(err.Error(), "loose plugin") ||
+		!strings.Contains(err.Error(), loosePath) {
+		t.Fatalf("install error = %v, want loose-plugin conflict", err)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "hello-world.ocpkg")); !os.IsNotExist(err) {
+		t.Fatalf("conflicting package was written, stat error = %v", err)
+	}
+	entries := mgr.List()
+	if len(entries) != 1 || entries[0].Path != loosePath {
+		t.Fatalf("discovered entries = %+v, want original loose plugin", entries)
+	}
+}
+
 func TestManager_ScanDisablesLaterPluginWithDuplicateSlug(t *testing.T) {
 	dir := t.TempDir()
 	manifest := func(name string) []byte {

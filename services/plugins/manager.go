@@ -329,10 +329,10 @@ type Manager struct {
 	env          *HostEnv
 
 	mu          sync.RWMutex
-	discovered  map[string]*DiscoveredEntry // keyed by manifest.name
+	discovered  map[string]*DiscoveredEntry // keyed by manifest slug
 	loaded      map[string]*Loaded          // subset of discovered that's currently running
-	enabledSet  map[string]bool             // names the admin has enabled
-	approvedSet map[string][]string         // plugin name -> sorted approved permission set
+	enabledSet  map[string]bool             // slugs the admin has enabled
+	approvedSet map[string][]string         // plugin slug -> sorted approved permission set
 	// duplicatePluginPaths records rejected package paths and their accepted
 	// counterpart, preventing the periodic scan from logging the same conflict.
 	duplicatePluginPaths map[string]string
@@ -881,15 +881,18 @@ func (m *Manager) install(ctx context.Context, packageBytes []byte, replaceExist
 		return nil, err
 	}
 	m.packageFilesMu.Lock()
-	if !replaceExisting {
-		m.mu.RLock()
-		existing, found := m.discovered[manifest.Slug]
-		m.mu.RUnlock()
-		if found {
-			m.packageFilesMu.Unlock()
-			return nil, fmt.Errorf("plugin upload rejected: slug %q is already used by %q at %s; uninstall it before uploading another plugin with the same slug",
-				manifest.Slug, existing.DisplayName, existing.Path)
-		}
+	m.mu.RLock()
+	existing, found := m.discovered[manifest.Slug]
+	m.mu.RUnlock()
+	if found && !replaceExisting {
+		m.packageFilesMu.Unlock()
+		return nil, fmt.Errorf("plugin upload rejected: slug %q is already used by %q at %s; uninstall it before uploading another plugin with the same slug",
+			manifest.Slug, existing.DisplayName, existing.Path)
+	}
+	if found && !strings.HasSuffix(existing.Path, packageSuffix) {
+		m.packageFilesMu.Unlock()
+		return nil, fmt.Errorf("plugin install rejected: slug %q is already used by loose plugin %q at %s; uninstall it before installing another plugin with the same slug",
+			manifest.Slug, existing.DisplayName, existing.Path)
 	}
 	destPath := m.destPathForInstall(manifest.Slug)
 	installErr := atomicWritePackage(m.pluginsDir, destPath, packageBytes)
