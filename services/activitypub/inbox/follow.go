@@ -46,13 +46,33 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 	}
 
 	localAccountName := s.configRepository.GetDefaultFederationUsername()
-	if handled, err := s.respondToExistingFollow(activity, follow, actorIRI, localAccountName); handled {
+	handled, err := s.createOrHandleFollow(c, activity, follow, followRequest, approved, actorIRI, localAccountName)
+	if err != nil {
 		return err
+	}
+	if handled {
+		return nil
+	}
+	return s.handleNewFollow(activity, followRequest, approved, actorIRI)
+}
+
+func (s *Service) createOrHandleFollow(c context.Context, activity vocab.ActivityStreamsFollow, follow *apmodels.ActivityPubActor, followRequest apmodels.ActivityPubActor, approved bool, actorIRI, localAccountName string) (bool, error) {
+	// The duplicate check and insert must be one critical section. Some
+	// ActivityPub servers deliver the same Follow concurrently.
+	ds := s.persistence.Datastore()
+	ds.DbLock.Lock()
+	defer ds.DbLock.Unlock()
+
+	if handled, err := s.respondToExistingFollow(activity, follow, actorIRI, localAccountName); handled {
+		return true, err
 	}
 	if err := s.addFollow(c, activity, followRequest, approved, localAccountName); err != nil {
-		return err
+		return false, err
 	}
+	return false, nil
+}
 
+func (s *Service) handleNewFollow(activity vocab.ActivityStreamsFollow, followRequest apmodels.ActivityPubActor, approved bool, actorIRI string) error {
 	objectIRI, err := apmodels.GetIRIStringFromObjectProperty(activity.GetActivityStreamsObject())
 	if err != nil {
 		return errors.Wrap(err, "follow activity is missing object IRI")
@@ -111,10 +131,18 @@ func (s *Service) respondToExistingFollow(activity vocab.ActivityStreamsFollow, 
 }
 
 func (s *Service) addFollow(c context.Context, activity vocab.ActivityStreamsFollow, follow apmodels.ActivityPubActor, approved bool, localAccountName string) error {
+	ds := s.persistence.Datastore()
 	if !approved {
-		if err := s.followers.Add(follow, false); err != nil {
-			log.Errorln("unable to save follow request", err)
+		tx, err := ds.DB.BeginTx(c, nil)
+		if err != nil {
+			return errors.Wrap(err, "beginning follow transaction")
+		}
+		defer func() { _ = tx.Rollback() }()
+		if err := s.followers.AddTx(c, tx, follow, false); err != nil {
 			return err
+		}
+		if err := tx.Commit(); err != nil {
+			return errors.Wrap(err, "committing follow transaction")
 		}
 		return nil
 	}
@@ -123,9 +151,7 @@ func (s *Service) addFollow(c context.Context, activity vocab.ActivityStreamsFol
 	if err != nil {
 		return err
 	}
-	ds := s.persistence.Datastore()
-	ds.DbLock.Lock()
-	defer ds.DbLock.Unlock()
+
 	tx, err := ds.DB.BeginTx(c, nil)
 	if err != nil {
 		return errors.Wrap(err, "beginning follow transaction")
