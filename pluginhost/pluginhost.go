@@ -1957,7 +1957,12 @@ func wireAuthHostFns(env *plugins.HostEnv, deps Deps) {
 		return
 	}
 
-	env.RegisterUser = func(pluginName string, req plugins.UserRegisterRequest) (string, error) {
+	env.RegisterUser = registerPluginUser(users)
+	env.GrantSession = grantPluginSession(users, secret)
+}
+
+func registerPluginUser(users userrepository.UserRepository) func(string, plugins.UserRegisterRequest) (string, error) {
+	return func(pluginName string, req plugins.UserRegisterRequest) (string, error) {
 		// Validate requested scopes and the profile URL against their boundaries
 		// BEFORE creating any user, so a disallowed scope (e.g. HAS_ADMIN_ACCESS)
 		// or a bad URL fails cleanly without leaving an orphan account.
@@ -2019,8 +2024,10 @@ func wireAuthHostFns(env *plugins.HostEnv, deps Deps) {
 		}
 		return userID, nil
 	}
+}
 
-	env.GrantSession = func(pluginName, userID string, ttlSeconds int64) (string, error) {
+func grantPluginSession(users userrepository.UserRepository, secret []byte) func(string, string, int64) (string, error) {
+	return func(pluginName, userID string, ttlSeconds int64) (string, error) {
 		// Only mint a session for a user THIS plugin registered. RegisterUser
 		// namespaces every plugin identity by slug; mirror that here so a gate
 		// plugin can't grant a session impersonating an arbitrary existing user
