@@ -60,7 +60,7 @@ self.__BUILD_MANIFEST = {
     "static/chunks/384frqxtuxqt8.js"
   ],
   "/admin/plugins": [
-    "static/chunks/1ya6i_2yau3qq.js"
+    "static/chunks/3f6d5ha18_88z.js"
   ],
   "/admin/plugins/configure": [
     "static/chunks/2nbuxijnel5fd.js"
