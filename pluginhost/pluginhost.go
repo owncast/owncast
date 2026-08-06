@@ -1220,7 +1220,7 @@ func (p *Host) handlePluginUpload(w http.ResponseWriter, r *http.Request) {
 		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: "read upload: " + err.Error()})
 		return
 	}
-	entry, err := p.manager.Install(r.Context(), packageBytes)
+	entry, err := p.manager.InstallUploaded(r.Context(), packageBytes)
 	if err != nil {
 		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: err.Error()})
 		return

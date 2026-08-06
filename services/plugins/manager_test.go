@@ -10,6 +10,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // TestSnapshot_OmitsStrikeDisabledPlugins is the C4 regression: a plugin the
@@ -545,6 +547,115 @@ func TestManager_Install_WritesPackageAndDiscovers(t *testing.T) {
 	}
 	if len(mgr.List()) != 1 {
 		t.Errorf("install should leave one discovered plugin, got %d", len(mgr.List()))
+	}
+}
+
+func TestManager_InstallUploaded_RejectsExistingSlug(t *testing.T) {
+	wasmPath := findExampleWasm(t)
+	wasmBytes, err := os.ReadFile(wasmPath)
+	if err != nil {
+		t.Fatalf("read example wasm: %v", err)
+	}
+
+	ctx := context.Background()
+	mgr := NewManager(t.TempDir(), &HostEnv{})
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(ctx)
+
+	pkg := buildPackageBytes(t, validManifestBytes(), wasmBytes, nil)
+	if _, err := mgr.Install(ctx, pkg); err != nil {
+		t.Fatalf("install first plugin: %v", err)
+	}
+	if _, err := mgr.InstallUploaded(ctx, pkg); err == nil || !strings.Contains(err.Error(), `slug "hello-world"`) {
+		t.Fatalf("duplicate upload error = %v, want slug-specific rejection", err)
+	}
+}
+
+func TestManager_Install_RejectsReplacingLoosePlugin(t *testing.T) {
+	wasmPath := findExampleWasm(t)
+	wasmBytes, err := os.ReadFile(wasmPath)
+	if err != nil {
+		t.Fatalf("read example wasm: %v", err)
+	}
+
+	dir := t.TempDir()
+	loosePath := filepath.Join(dir, "local-copy.wasm")
+	if err := os.WriteFile(loosePath, wasmBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "local-copy.manifest.json"), validManifestBytes(), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	ctx := context.Background()
+	mgr := NewManager(dir, &HostEnv{})
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(ctx)
+
+	pkg := buildPackageBytes(t, validManifestBytes(), wasmBytes, nil)
+	_, err = mgr.Install(ctx, pkg)
+	if err == nil || !strings.Contains(err.Error(), `slug "hello-world"`) ||
+		!strings.Contains(err.Error(), "loose plugin") ||
+		!strings.Contains(err.Error(), loosePath) {
+		t.Fatalf("install error = %v, want loose-plugin conflict", err)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "hello-world.ocpkg")); !os.IsNotExist(err) {
+		t.Fatalf("conflicting package was written, stat error = %v", err)
+	}
+	entries := mgr.List()
+	if len(entries) != 1 || entries[0].Path != loosePath {
+		t.Fatalf("discovered entries = %+v, want original loose plugin", entries)
+	}
+}
+
+func TestManager_ScanDisablesLaterPluginWithDuplicateSlug(t *testing.T) {
+	dir := t.TempDir()
+	manifest := func(name string) []byte {
+		t.Helper()
+		data, err := json.Marshal(map[string]any{
+			"api":     "1",
+			"name":    name,
+			"slug":    "shared-slug",
+			"version": "0.1.0",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return data
+	}
+	if err := os.WriteFile(filepath.Join(dir, "first.ocpkg"), buildPackageBytes(t, manifest("First plugin"), nil, nil), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "second.ocpkg"), buildPackageBytes(t, manifest("Second plugin"), nil, nil), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	previousLogOutput := log.StandardLogger().Out
+	var logOutput bytes.Buffer
+	log.SetOutput(&logOutput)
+	t.Cleanup(func() { log.SetOutput(previousLogOutput) })
+
+	mgr := NewManager(dir, &HostEnv{})
+	if err := mgr.Start(context.Background()); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(context.Background())
+
+	entries := mgr.List()
+	if len(entries) != 1 {
+		t.Fatalf("discovered plugins = %d, want 1", len(entries))
+	}
+	if entries[0].DisplayName != "First plugin" || entries[0].Path != filepath.Join(dir, "first.ocpkg") {
+		t.Errorf("duplicate scan kept %+v, want first package", entries[0])
+	}
+	if output := logOutput.String(); !strings.Contains(output, "Second plugin") ||
+		!strings.Contains(output, "shared-slug") ||
+		!strings.Contains(output, "first.ocpkg") {
+		t.Errorf("duplicate plugin log = %q", output)
 	}
 }
 
