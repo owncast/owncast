@@ -4292,10 +4292,13 @@ components:
         nsfw:
           type: boolean
         autoplay:
-          type: string
-          enum: ['off', 'always', 'sound-only']
+          $ref: '#/components/schemas/AutoplayMode'
         authentication:
           $ref: '#/components/schemas/AuthenticationConfig'
+    AutoplayMode:
+      type: string
+      enum: ['off', 'always', 'sound-only']
+      description: Viewer autoplay behavior.
     SocialHandle:
       type: object
       properties:
@@ -4979,8 +4982,7 @@ components:
         nsfw:
           type: boolean
         autoplay:
-          type: string
-          enum: ['off', 'always', 'sound-only']
+          $ref: '#/components/schemas/AutoplayMode'
     AdminNotificationsConfig:
       type: object
       properties:

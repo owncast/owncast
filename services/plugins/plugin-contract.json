@@ -231,13 +231,13 @@
       "userId": "string"
     },
     "VideoConfig": {
-      "autoplay": "string",
+      "autoplay": "models.AutoplayMode",
       "codec": "string",
       "latencyLevel": "int",
       "variants": "[]StreamVariant"
     },
     "VideoConfigUpdate": {
-      "autoplay": "*string",
+      "autoplay": "*models.AutoplayMode",
       "codec": "*string",
       "latencyLevel": "*int",
       "variants": "[]StreamVariant"

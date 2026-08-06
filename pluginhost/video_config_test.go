@@ -26,7 +26,7 @@ func newVideoConfigEnv(t *testing.T) (*plugins.HostEnv, configrepository.ConfigR
 
 func TestVideoConfigReadMatchesAdminSettings(t *testing.T) {
 	env, repo := newVideoConfigEnv(t)
-	if err := repo.SetAutoplay("sound-only"); err != nil {
+	if err := repo.SetAutoplay(models.AutoplaySoundOnly); err != nil {
 		t.Fatal(err)
 	}
 	if err := repo.SetVideoCodec("h264_vaapi"); err != nil {
@@ -48,7 +48,7 @@ func TestVideoConfigReadMatchesAdminSettings(t *testing.T) {
 	want := plugins.VideoConfig{
 		LatencyLevel: repo.GetStreamLatencyLevel().Level,
 		Codec:        "h264_vaapi",
-		Autoplay:     "sound-only",
+		Autoplay:     models.AutoplaySoundOnly,
 		Variants: []plugins.StreamVariant{{
 			Width:         1280,
 			Height:        720,
@@ -79,7 +79,7 @@ func TestVideoConfigWriteMatchesAdminSettings(t *testing.T) {
 	}}); err != nil {
 		t.Fatal(err)
 	}
-	autoplay := "always"
+	autoplay := models.AutoplayAlways
 	codec := "h264_nvenc"
 	update := plugins.VideoConfigUpdate{
 		Autoplay: &autoplay,
@@ -119,7 +119,7 @@ func TestVideoConfigWriteMatchesAdminSettings(t *testing.T) {
 func TestVideoConfigWriteRejectsInvalidEnums(t *testing.T) {
 	env, _ := newVideoConfigEnv(t)
 
-	invalidAutoplay := "sometimes"
+	invalidAutoplay := models.AutoplayMode("sometimes")
 	if err := env.WriteVideoConfig("video-settings", plugins.VideoConfigUpdate{Autoplay: &invalidAutoplay}); err == nil {
 		t.Fatal("expected invalid autoplay to be rejected")
 	}

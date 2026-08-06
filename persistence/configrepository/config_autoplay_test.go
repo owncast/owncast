@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/datastore"
 )
 
@@ -18,19 +19,26 @@ func newAutoplayTestRepo(t *testing.T) ConfigRepository {
 
 func TestGetAutoplayDefaultsToOff(t *testing.T) {
 	repo := newAutoplayTestRepo(t)
-	if got := repo.GetAutoplay(); got != "off" {
+	if got := repo.GetAutoplay(); got != models.AutoplayOff {
 		t.Errorf("expected default autoplay 'off' on an unset key, got %q", got)
 	}
 }
 
 func TestSetAndGetAutoplayRoundTrip(t *testing.T) {
 	repo := newAutoplayTestRepo(t)
-	for _, value := range []string{"always", "sound-only", "off"} {
+	for _, value := range []models.AutoplayMode{models.AutoplayAlways, models.AutoplaySoundOnly, models.AutoplayOff} {
 		if err := repo.SetAutoplay(value); err != nil {
 			t.Fatalf("SetAutoplay(%q) returned error: %v", value, err)
 		}
 		if got := repo.GetAutoplay(); got != value {
 			t.Errorf("after SetAutoplay(%q), GetAutoplay() = %q", value, got)
 		}
+	}
+}
+
+func TestSetAutoplayRejectsInvalidValue(t *testing.T) {
+	repo := newAutoplayTestRepo(t)
+	if err := repo.SetAutoplay(models.AutoplayMode("invalid")); err == nil {
+		t.Fatal("expected invalid autoplay value to be rejected")
 	}
 }

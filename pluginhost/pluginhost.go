@@ -1574,10 +1574,8 @@ func wireFilesystemHostFnsWithRoot(env *plugins.HostEnv, root string) {
 
 func validateVideoConfigUpdate(u plugins.VideoConfigUpdate) error {
 	if u.Autoplay != nil {
-		switch *u.Autoplay {
-		case "off", "always", "sound-only":
-		default:
-			return fmt.Errorf("invalid autoplay value %q", *u.Autoplay)
+		if err := u.Autoplay.Validate(); err != nil {
+			return err
 		}
 	}
 	if u.Codec != nil && !transcoder.IsCodecSupported(*u.Codec) {
