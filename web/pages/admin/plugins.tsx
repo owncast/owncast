@@ -180,6 +180,7 @@ const Plugins = () => {
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
         setError(msg);
+        message.error(msg);
         onError?.(e as Error);
       }
     },
