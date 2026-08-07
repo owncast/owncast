@@ -62,6 +62,7 @@ var gateExemptions = []gateExemption{
 	{"logo", exemptLogoRoutes},
 	{"active-gate-plugin", exemptActiveGatePluginRoutes},
 	{"external-api", exemptExternalAPIRoutes},
+	{"federation", exemptFederationRoutes},
 	{"directory-api", exemptDirectoryAPI},
 	{"third-party-player", exemptThirdPartyPlayerRoutes},
 	{"stream-status", exemptStreamStatus},
@@ -152,6 +153,27 @@ func exemptExternalAPIRoutes(r *http.Request, _ string, _ AuthGateSettings) bool
 // the YP handler itself answers 404, which is why this rule is unconditional.
 func exemptDirectoryAPI(r *http.Request, _ string, _ AuthGateSettings) bool {
 	return r.URL.Path == "/api/yp"
+}
+
+// exemptFederationRoutes keeps the public ActivityPub protocol surface
+// reachable. These endpoints authenticate signed activities themselves and
+// enforce federation and privacy settings in their handlers.
+func exemptFederationRoutes(r *http.Request, _ string, _ AuthGateSettings) bool {
+	if strings.HasPrefix(r.URL.Path, "/federation/") {
+		return true
+	}
+
+	switch r.URL.Path {
+	case "/.well-known/webfinger",
+		"/.well-known/host-meta",
+		"/.well-known/nodeinfo",
+		"/.well-known/x-nodeinfo2",
+		"/nodeinfo/2.0",
+		"/api/v1/instance":
+		return true
+	default:
+		return false
+	}
 }
 
 // exemptThirdPartyPlayerRoutes keeps the HLS playlist and segments reachable
