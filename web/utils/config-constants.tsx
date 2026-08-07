@@ -60,6 +60,10 @@ export const API_FEDERATION_BLOCKED_DOMAINS = '/federation/blockdomains';
 
 const TEXTFIELD_TYPE_URL = 'url';
 
+// Config paths for the scheduled streams feature.
+export const API_SCHEDULE_ENABLED = '/schedule/enabled';
+export const API_SCHEDULE_REMINDER_MESSAGE = '/schedule/remindermessage';
+
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const { apiPath, data, onSuccess, onError } = args;
   try {
