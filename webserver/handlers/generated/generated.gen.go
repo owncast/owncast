@@ -318,6 +318,18 @@ type ServerInterface interface {
 	// (POST /admin/config/s3)
 	SetS3Configuration(w http.ResponseWriter, r *http.Request)
 
+	// (OPTIONS /admin/config/schedule/enabled)
+	SetScheduleEnabledOptions(w http.ResponseWriter, r *http.Request)
+	// SetScheduleEnabled Enable or disable the schedule feature
+	// (POST /admin/config/schedule/enabled)
+	SetScheduleEnabled(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/schedule/remindermessage)
+	SetScheduleReminderMessageOptions(w http.ResponseWriter, r *http.Request)
+	// SetScheduleReminderMessage Set the message posted to the Fediverse before a scheduled event starts
+	// (POST /admin/config/schedule/remindermessage)
+	SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request)
+
 	// (OPTIONS /admin/config/serversummary)
 	SetServerSummaryOptions(w http.ResponseWriter, r *http.Request)
 	// SetServerSummary Change the server summary
@@ -524,6 +536,30 @@ type ServerInterface interface {
 	// PutPrometheusAPI Endpoint to interface with Prometheus
 	// (PUT /admin/prometheus)
 	PutPrometheusAPI(w http.ResponseWriter, r *http.Request)
+	// GetAdminSchedule Get every scheduled event and recurring series for the admin
+	// (GET /admin/schedule)
+	GetAdminSchedule(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/schedule)
+	GetAdminScheduleOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/schedule/event)
+	UpsertScheduledEventOptions(w http.ResponseWriter, r *http.Request)
+	// UpsertScheduledEvent Create or update a scheduled event or recurring series
+	// (POST /admin/schedule/event)
+	UpsertScheduledEvent(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/schedule/event/delete)
+	DeleteScheduledEventOptions(w http.ResponseWriter, r *http.Request)
+	// DeleteScheduledEvent Delete or cancel a scheduled event or recurring series
+	// (POST /admin/schedule/event/delete)
+	DeleteScheduledEvent(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/schedule/preview)
+	PreviewScheduleRecurrenceOptions(w http.ResponseWriter, r *http.Request)
+	// PreviewScheduleRecurrence Preview the occurrences a recurrence rule would produce
+	// (POST /admin/schedule/preview)
+	PreviewScheduleRecurrence(w http.ResponseWriter, r *http.Request)
 	// GetServerConfig Get the current server config
 	// (GET /admin/serverconfig)
 	GetServerConfig(w http.ResponseWriter, r *http.Request)
@@ -743,6 +779,12 @@ type ServerInterface interface {
 	// RemoteFollow Request remote follow
 	// (POST /remotefollow)
 	RemoteFollow(w http.ResponseWriter, r *http.Request)
+	// GetSchedule Get the public schedule of upcoming and recent stream events
+	// (GET /schedule)
+	GetSchedule(w http.ResponseWriter, r *http.Request, params GetScheduleParams)
+
+	// (OPTIONS /schedule)
+	GetScheduleOptions(w http.ResponseWriter, r *http.Request)
 	// GetAllSocialPlatforms Get all social platforms
 	// (GET /socialplatforms)
 	GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request)
@@ -1317,6 +1359,28 @@ func (_ Unimplemented) SetS3Configuration(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/schedule/enabled)
+func (_ Unimplemented) SetScheduleEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetScheduleEnabled Enable or disable the schedule feature
+// (POST /admin/config/schedule/enabled)
+func (_ Unimplemented) SetScheduleEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/schedule/remindermessage)
+func (_ Unimplemented) SetScheduleReminderMessageOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetScheduleReminderMessage Set the message posted to the Fediverse before a scheduled event starts
+// (POST /admin/config/schedule/remindermessage)
+func (_ Unimplemented) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // (OPTIONS /admin/config/serversummary)
 func (_ Unimplemented) SetServerSummaryOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
@@ -1697,6 +1761,50 @@ func (_ Unimplemented) PostPrometheusAPI(w http.ResponseWriter, r *http.Request)
 // PutPrometheusAPI Endpoint to interface with Prometheus
 // (PUT /admin/prometheus)
 func (_ Unimplemented) PutPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetAdminSchedule Get every scheduled event and recurring series for the admin
+// (GET /admin/schedule)
+func (_ Unimplemented) GetAdminSchedule(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/schedule)
+func (_ Unimplemented) GetAdminScheduleOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/schedule/event)
+func (_ Unimplemented) UpsertScheduledEventOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpsertScheduledEvent Create or update a scheduled event or recurring series
+// (POST /admin/schedule/event)
+func (_ Unimplemented) UpsertScheduledEvent(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/schedule/event/delete)
+func (_ Unimplemented) DeleteScheduledEventOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DeleteScheduledEvent Delete or cancel a scheduled event or recurring series
+// (POST /admin/schedule/event/delete)
+func (_ Unimplemented) DeleteScheduledEvent(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/schedule/preview)
+func (_ Unimplemented) PreviewScheduleRecurrenceOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PreviewScheduleRecurrence Preview the occurrences a recurrence rule would produce
+// (POST /admin/schedule/preview)
+func (_ Unimplemented) PreviewScheduleRecurrence(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2107,6 +2215,17 @@ func (_ Unimplemented) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// GetSchedule Get the public schedule of upcoming and recent stream events
+// (GET /schedule)
+func (_ Unimplemented) GetSchedule(w http.ResponseWriter, r *http.Request, params GetScheduleParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /schedule)
+func (_ Unimplemented) GetScheduleOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // GetAllSocialPlatforms Get all social platforms
 // (GET /socialplatforms)
 func (_ Unimplemented) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
@@ -2142,6 +2261,7 @@ type MiddlewareFunc func(http.Handler) http.Handler
 
 // GetExternalAPIUsers operation middleware
 func (siw *ServerInterfaceWrapper) GetExternalAPIUsers(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetExternalAPIUsers(w, r)
 	}))
@@ -2155,6 +2275,7 @@ func (siw *ServerInterfaceWrapper) GetExternalAPIUsers(w http.ResponseWriter, r 
 
 // GetExternalAPIUsersOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetExternalAPIUsersOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetExternalAPIUsersOptions(w, r)
 	}))
@@ -2168,6 +2289,7 @@ func (siw *ServerInterfaceWrapper) GetExternalAPIUsersOptions(w http.ResponseWri
 
 // CreateExternalAPIUserOptions operation middleware
 func (siw *ServerInterfaceWrapper) CreateExternalAPIUserOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateExternalAPIUserOptions(w, r)
 	}))
@@ -2181,6 +2303,7 @@ func (siw *ServerInterfaceWrapper) CreateExternalAPIUserOptions(w http.ResponseW
 
 // CreateExternalAPIUser operation middleware
 func (siw *ServerInterfaceWrapper) CreateExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateExternalAPIUser(w, r)
 	}))
@@ -2194,6 +2317,7 @@ func (siw *ServerInterfaceWrapper) CreateExternalAPIUser(w http.ResponseWriter, 
 
 // DeleteExternalAPIUserOptions operation middleware
 func (siw *ServerInterfaceWrapper) DeleteExternalAPIUserOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteExternalAPIUserOptions(w, r)
 	}))
@@ -2207,6 +2331,7 @@ func (siw *ServerInterfaceWrapper) DeleteExternalAPIUserOptions(w http.ResponseW
 
 // DeleteExternalAPIUser operation middleware
 func (siw *ServerInterfaceWrapper) DeleteExternalAPIUser(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteExternalAPIUser(w, r)
 	}))
@@ -2220,6 +2345,7 @@ func (siw *ServerInterfaceWrapper) DeleteExternalAPIUser(w http.ResponseWriter, 
 
 // GetConnectedChatClients operation middleware
 func (siw *ServerInterfaceWrapper) GetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetConnectedChatClients(w, r)
 	}))
@@ -2233,6 +2359,7 @@ func (siw *ServerInterfaceWrapper) GetConnectedChatClients(w http.ResponseWriter
 
 // GetConnectedChatClientsOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetConnectedChatClientsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetConnectedChatClientsOptions(w, r)
 	}))
@@ -2246,6 +2373,7 @@ func (siw *ServerInterfaceWrapper) GetConnectedChatClientsOptions(w http.Respons
 
 // GetChatMessagesAdmin operation middleware
 func (siw *ServerInterfaceWrapper) GetChatMessagesAdmin(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetChatMessagesAdmin(w, r)
 	}))
@@ -2259,6 +2387,7 @@ func (siw *ServerInterfaceWrapper) GetChatMessagesAdmin(w http.ResponseWriter, r
 
 // GetChatMessagesAdminOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetChatMessagesAdminOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetChatMessagesAdminOptions(w, r)
 	}))
@@ -2272,6 +2401,7 @@ func (siw *ServerInterfaceWrapper) GetChatMessagesAdminOptions(w http.ResponseWr
 
 // UpdateMessageVisibilityAdminOptions operation middleware
 func (siw *ServerInterfaceWrapper) UpdateMessageVisibilityAdminOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateMessageVisibilityAdminOptions(w, r)
 	}))
@@ -2285,6 +2415,7 @@ func (siw *ServerInterfaceWrapper) UpdateMessageVisibilityAdminOptions(w http.Re
 
 // UpdateMessageVisibilityAdmin operation middleware
 func (siw *ServerInterfaceWrapper) UpdateMessageVisibilityAdmin(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateMessageVisibilityAdmin(w, r)
 	}))
@@ -2298,6 +2429,7 @@ func (siw *ServerInterfaceWrapper) UpdateMessageVisibilityAdmin(w http.ResponseW
 
 // GetDisabledUsers operation middleware
 func (siw *ServerInterfaceWrapper) GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetDisabledUsers(w, r)
 	}))
@@ -2311,6 +2443,7 @@ func (siw *ServerInterfaceWrapper) GetDisabledUsers(w http.ResponseWriter, r *ht
 
 // GetDisabledUsersOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetDisabledUsersOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetDisabledUsersOptions(w, r)
 	}))
@@ -2324,6 +2457,7 @@ func (siw *ServerInterfaceWrapper) GetDisabledUsersOptions(w http.ResponseWriter
 
 // GetIPAddressBans operation middleware
 func (siw *ServerInterfaceWrapper) GetIPAddressBans(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetIPAddressBans(w, r)
 	}))
@@ -2337,6 +2471,7 @@ func (siw *ServerInterfaceWrapper) GetIPAddressBans(w http.ResponseWriter, r *ht
 
 // GetIPAddressBansOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetIPAddressBansOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetIPAddressBansOptions(w, r)
 	}))
@@ -2350,6 +2485,7 @@ func (siw *ServerInterfaceWrapper) GetIPAddressBansOptions(w http.ResponseWriter
 
 // BanIPAddressOptions operation middleware
 func (siw *ServerInterfaceWrapper) BanIPAddressOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.BanIPAddressOptions(w, r)
 	}))
@@ -2363,6 +2499,7 @@ func (siw *ServerInterfaceWrapper) BanIPAddressOptions(w http.ResponseWriter, r 
 
 // BanIPAddress operation middleware
 func (siw *ServerInterfaceWrapper) BanIPAddress(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.BanIPAddress(w, r)
 	}))
@@ -2376,6 +2513,7 @@ func (siw *ServerInterfaceWrapper) BanIPAddress(w http.ResponseWriter, r *http.R
 
 // UnbanIPAddressOptions operation middleware
 func (siw *ServerInterfaceWrapper) UnbanIPAddressOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UnbanIPAddressOptions(w, r)
 	}))
@@ -2389,6 +2527,7 @@ func (siw *ServerInterfaceWrapper) UnbanIPAddressOptions(w http.ResponseWriter, 
 
 // UnbanIPAddress operation middleware
 func (siw *ServerInterfaceWrapper) UnbanIPAddress(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UnbanIPAddress(w, r)
 	}))
@@ -2402,6 +2541,7 @@ func (siw *ServerInterfaceWrapper) UnbanIPAddress(w http.ResponseWriter, r *http
 
 // GetModerators operation middleware
 func (siw *ServerInterfaceWrapper) GetModerators(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetModerators(w, r)
 	}))
@@ -2415,6 +2555,7 @@ func (siw *ServerInterfaceWrapper) GetModerators(w http.ResponseWriter, r *http.
 
 // GetModeratorsOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetModeratorsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetModeratorsOptions(w, r)
 	}))
@@ -2428,6 +2569,7 @@ func (siw *ServerInterfaceWrapper) GetModeratorsOptions(w http.ResponseWriter, r
 
 // UpdateUserEnabledAdminOptions operation middleware
 func (siw *ServerInterfaceWrapper) UpdateUserEnabledAdminOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateUserEnabledAdminOptions(w, r)
 	}))
@@ -2441,6 +2583,7 @@ func (siw *ServerInterfaceWrapper) UpdateUserEnabledAdminOptions(w http.Response
 
 // UpdateUserEnabledAdmin operation middleware
 func (siw *ServerInterfaceWrapper) UpdateUserEnabledAdmin(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateUserEnabledAdmin(w, r)
 	}))
@@ -2454,6 +2597,7 @@ func (siw *ServerInterfaceWrapper) UpdateUserEnabledAdmin(w http.ResponseWriter,
 
 // UpdateUserModeratorOptions operation middleware
 func (siw *ServerInterfaceWrapper) UpdateUserModeratorOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateUserModeratorOptions(w, r)
 	}))
@@ -2467,6 +2611,7 @@ func (siw *ServerInterfaceWrapper) UpdateUserModeratorOptions(w http.ResponseWri
 
 // UpdateUserModerator operation middleware
 func (siw *ServerInterfaceWrapper) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateUserModerator(w, r)
 	}))
@@ -2480,6 +2625,7 @@ func (siw *ServerInterfaceWrapper) UpdateUserModerator(w http.ResponseWriter, r 
 
 // SetAdminPasswordOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetAdminPasswordOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetAdminPasswordOptions(w, r)
 	}))
@@ -2493,6 +2639,7 @@ func (siw *ServerInterfaceWrapper) SetAdminPasswordOptions(w http.ResponseWriter
 
 // SetAdminPassword operation middleware
 func (siw *ServerInterfaceWrapper) SetAdminPassword(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetAdminPassword(w, r)
 	}))
@@ -2506,6 +2653,7 @@ func (siw *ServerInterfaceWrapper) SetAdminPassword(w http.ResponseWriter, r *ht
 
 // SetCustomColorVariableValuesOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetCustomColorVariableValuesOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetCustomColorVariableValuesOptions(w, r)
 	}))
@@ -2519,6 +2667,7 @@ func (siw *ServerInterfaceWrapper) SetCustomColorVariableValuesOptions(w http.Re
 
 // SetCustomColorVariableValues operation middleware
 func (siw *ServerInterfaceWrapper) SetCustomColorVariableValues(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetCustomColorVariableValues(w, r)
 	}))
@@ -2532,6 +2681,7 @@ func (siw *ServerInterfaceWrapper) SetCustomColorVariableValues(w http.ResponseW
 
 // SetAutoplayOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetAutoplayOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetAutoplayOptions(w, r)
 	}))
@@ -2545,6 +2695,7 @@ func (siw *ServerInterfaceWrapper) SetAutoplayOptions(w http.ResponseWriter, r *
 
 // SetAutoplay operation middleware
 func (siw *ServerInterfaceWrapper) SetAutoplay(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetAutoplay(w, r)
 	}))
@@ -2558,6 +2709,7 @@ func (siw *ServerInterfaceWrapper) SetAutoplay(w http.ResponseWriter, r *http.Re
 
 // SetChatDisabledOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetChatDisabledOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatDisabledOptions(w, r)
 	}))
@@ -2571,6 +2723,7 @@ func (siw *ServerInterfaceWrapper) SetChatDisabledOptions(w http.ResponseWriter,
 
 // SetChatDisabled operation middleware
 func (siw *ServerInterfaceWrapper) SetChatDisabled(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatDisabled(w, r)
 	}))
@@ -2584,6 +2737,7 @@ func (siw *ServerInterfaceWrapper) SetChatDisabled(w http.ResponseWriter, r *htt
 
 // SetEnableEstablishedChatUserModeOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetEnableEstablishedChatUserModeOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetEnableEstablishedChatUserModeOptions(w, r)
 	}))
@@ -2597,6 +2751,7 @@ func (siw *ServerInterfaceWrapper) SetEnableEstablishedChatUserModeOptions(w htt
 
 // SetEnableEstablishedChatUserMode operation middleware
 func (siw *ServerInterfaceWrapper) SetEnableEstablishedChatUserMode(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetEnableEstablishedChatUserMode(w, r)
 	}))
@@ -2610,6 +2765,7 @@ func (siw *ServerInterfaceWrapper) SetEnableEstablishedChatUserMode(w http.Respo
 
 // SetForbiddenUsernameListOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetForbiddenUsernameListOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetForbiddenUsernameListOptions(w, r)
 	}))
@@ -2623,6 +2779,7 @@ func (siw *ServerInterfaceWrapper) SetForbiddenUsernameListOptions(w http.Respon
 
 // SetForbiddenUsernameList operation middleware
 func (siw *ServerInterfaceWrapper) SetForbiddenUsernameList(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetForbiddenUsernameList(w, r)
 	}))
@@ -2636,6 +2793,7 @@ func (siw *ServerInterfaceWrapper) SetForbiddenUsernameList(w http.ResponseWrite
 
 // SetChatJoinMessagesEnabledOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetChatJoinMessagesEnabledOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatJoinMessagesEnabledOptions(w, r)
 	}))
@@ -2649,6 +2807,7 @@ func (siw *ServerInterfaceWrapper) SetChatJoinMessagesEnabledOptions(w http.Resp
 
 // SetChatJoinMessagesEnabled operation middleware
 func (siw *ServerInterfaceWrapper) SetChatJoinMessagesEnabled(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatJoinMessagesEnabled(w, r)
 	}))
@@ -2662,6 +2821,7 @@ func (siw *ServerInterfaceWrapper) SetChatJoinMessagesEnabled(w http.ResponseWri
 
 // SetChatRequireAuthenticationOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetChatRequireAuthenticationOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatRequireAuthenticationOptions(w, r)
 	}))
@@ -2675,6 +2835,7 @@ func (siw *ServerInterfaceWrapper) SetChatRequireAuthenticationOptions(w http.Re
 
 // SetChatRequireAuthentication operation middleware
 func (siw *ServerInterfaceWrapper) SetChatRequireAuthentication(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatRequireAuthentication(w, r)
 	}))
@@ -2688,6 +2849,7 @@ func (siw *ServerInterfaceWrapper) SetChatRequireAuthentication(w http.ResponseW
 
 // SetChatSlurFilterEnabledOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetChatSlurFilterEnabledOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatSlurFilterEnabledOptions(w, r)
 	}))
@@ -2701,6 +2863,7 @@ func (siw *ServerInterfaceWrapper) SetChatSlurFilterEnabledOptions(w http.Respon
 
 // SetChatSlurFilterEnabled operation middleware
 func (siw *ServerInterfaceWrapper) SetChatSlurFilterEnabled(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatSlurFilterEnabled(w, r)
 	}))
@@ -2714,6 +2877,7 @@ func (siw *ServerInterfaceWrapper) SetChatSlurFilterEnabled(w http.ResponseWrite
 
 // SetChatSpamProtectionEnabledOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetChatSpamProtectionEnabledOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatSpamProtectionEnabledOptions(w, r)
 	}))
@@ -2727,6 +2891,7 @@ func (siw *ServerInterfaceWrapper) SetChatSpamProtectionEnabledOptions(w http.Re
 
 // SetChatSpamProtectionEnabled operation middleware
 func (siw *ServerInterfaceWrapper) SetChatSpamProtectionEnabled(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetChatSpamProtectionEnabled(w, r)
 	}))
@@ -2740,6 +2905,7 @@ func (siw *ServerInterfaceWrapper) SetChatSpamProtectionEnabled(w http.ResponseW
 
 // SetSuggestedUsernameListOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetSuggestedUsernameListOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetSuggestedUsernameListOptions(w, r)
 	}))
@@ -2753,6 +2919,7 @@ func (siw *ServerInterfaceWrapper) SetSuggestedUsernameListOptions(w http.Respon
 
 // SetSuggestedUsernameList operation middleware
 func (siw *ServerInterfaceWrapper) SetSuggestedUsernameList(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetSuggestedUsernameList(w, r)
 	}))
@@ -2766,6 +2933,7 @@ func (siw *ServerInterfaceWrapper) SetSuggestedUsernameList(w http.ResponseWrite
 
 // SetCustomJavascriptOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetCustomJavascriptOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetCustomJavascriptOptions(w, r)
 	}))
@@ -2779,6 +2947,7 @@ func (siw *ServerInterfaceWrapper) SetCustomJavascriptOptions(w http.ResponseWri
 
 // SetCustomJavascript operation middleware
 func (siw *ServerInterfaceWrapper) SetCustomJavascript(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetCustomJavascript(w, r)
 	}))
@@ -2792,6 +2961,7 @@ func (siw *ServerInterfaceWrapper) SetCustomJavascript(w http.ResponseWriter, r 
 
 // SetCustomStylesOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetCustomStylesOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetCustomStylesOptions(w, r)
 	}))
@@ -2805,6 +2975,7 @@ func (siw *ServerInterfaceWrapper) SetCustomStylesOptions(w http.ResponseWriter,
 
 // SetCustomStyles operation middleware
 func (siw *ServerInterfaceWrapper) SetCustomStyles(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetCustomStyles(w, r)
 	}))
@@ -2818,6 +2989,7 @@ func (siw *ServerInterfaceWrapper) SetCustomStyles(w http.ResponseWriter, r *htt
 
 // SetDirectoryEnabledOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetDirectoryEnabledOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetDirectoryEnabledOptions(w, r)
 	}))
@@ -2831,6 +3003,7 @@ func (siw *ServerInterfaceWrapper) SetDirectoryEnabledOptions(w http.ResponseWri
 
 // SetDirectoryEnabled operation middleware
 func (siw *ServerInterfaceWrapper) SetDirectoryEnabled(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetDirectoryEnabled(w, r)
 	}))
@@ -2844,6 +3017,7 @@ func (siw *ServerInterfaceWrapper) SetDirectoryEnabled(w http.ResponseWriter, r 
 
 // SetDisableSearchIndexingOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetDisableSearchIndexingOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetDisableSearchIndexingOptions(w, r)
 	}))
@@ -2857,6 +3031,7 @@ func (siw *ServerInterfaceWrapper) SetDisableSearchIndexingOptions(w http.Respon
 
 // SetDisableSearchIndexing operation middleware
 func (siw *ServerInterfaceWrapper) SetDisableSearchIndexing(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetDisableSearchIndexing(w, r)
 	}))
@@ -2870,6 +3045,7 @@ func (siw *ServerInterfaceWrapper) SetDisableSearchIndexing(w http.ResponseWrite
 
 // SetExternalActionsOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetExternalActionsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetExternalActionsOptions(w, r)
 	}))
@@ -2883,6 +3059,7 @@ func (siw *ServerInterfaceWrapper) SetExternalActionsOptions(w http.ResponseWrit
 
 // SetExternalActions operation middleware
 func (siw *ServerInterfaceWrapper) SetExternalActions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetExternalActions(w, r)
 	}))
@@ -2896,6 +3073,7 @@ func (siw *ServerInterfaceWrapper) SetExternalActions(w http.ResponseWriter, r *
 
 // ResetFavicon operation middleware
 func (siw *ServerInterfaceWrapper) ResetFavicon(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ResetFavicon(w, r)
 	}))
@@ -2909,6 +3087,7 @@ func (siw *ServerInterfaceWrapper) ResetFavicon(w http.ResponseWriter, r *http.R
 
 // SetFaviconOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetFaviconOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFaviconOptions(w, r)
 	}))
@@ -2922,6 +3101,7 @@ func (siw *ServerInterfaceWrapper) SetFaviconOptions(w http.ResponseWriter, r *h
 
 // SetFavicon operation middleware
 func (siw *ServerInterfaceWrapper) SetFavicon(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFavicon(w, r)
 	}))
@@ -2935,6 +3115,7 @@ func (siw *ServerInterfaceWrapper) SetFavicon(w http.ResponseWriter, r *http.Req
 
 // SetFederationBlockDomainsOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationBlockDomainsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationBlockDomainsOptions(w, r)
 	}))
@@ -2948,6 +3129,7 @@ func (siw *ServerInterfaceWrapper) SetFederationBlockDomainsOptions(w http.Respo
 
 // SetFederationBlockDomains operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationBlockDomains(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationBlockDomains(w, r)
 	}))
@@ -2961,6 +3143,7 @@ func (siw *ServerInterfaceWrapper) SetFederationBlockDomains(w http.ResponseWrit
 
 // SetFederationEnabledOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationEnabledOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationEnabledOptions(w, r)
 	}))
@@ -2974,6 +3157,7 @@ func (siw *ServerInterfaceWrapper) SetFederationEnabledOptions(w http.ResponseWr
 
 // SetFederationEnabled operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationEnabled(w, r)
 	}))
@@ -2987,6 +3171,7 @@ func (siw *ServerInterfaceWrapper) SetFederationEnabled(w http.ResponseWriter, r
 
 // SetFederationEnableQuotesOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationEnableQuotesOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationEnableQuotesOptions(w, r)
 	}))
@@ -3000,6 +3185,7 @@ func (siw *ServerInterfaceWrapper) SetFederationEnableQuotesOptions(w http.Respo
 
 // SetFederationEnableQuotes operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationEnableQuotes(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationEnableQuotes(w, r)
 	}))
@@ -3013,6 +3199,7 @@ func (siw *ServerInterfaceWrapper) SetFederationEnableQuotes(w http.ResponseWrit
 
 // SetFederationHideFollowersTabOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationHideFollowersTabOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationHideFollowersTabOptions(w, r)
 	}))
@@ -3026,6 +3213,7 @@ func (siw *ServerInterfaceWrapper) SetFederationHideFollowersTabOptions(w http.R
 
 // SetFederationHideFollowersTab operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationHideFollowersTab(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationHideFollowersTab(w, r)
 	}))
@@ -3039,6 +3227,7 @@ func (siw *ServerInterfaceWrapper) SetFederationHideFollowersTab(w http.Response
 
 // SetFederationGoLiveMessageOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationGoLiveMessageOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationGoLiveMessageOptions(w, r)
 	}))
@@ -3052,6 +3241,7 @@ func (siw *ServerInterfaceWrapper) SetFederationGoLiveMessageOptions(w http.Resp
 
 // SetFederationGoLiveMessage operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationGoLiveMessage(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationGoLiveMessage(w, r)
 	}))
@@ -3065,6 +3255,7 @@ func (siw *ServerInterfaceWrapper) SetFederationGoLiveMessage(w http.ResponseWri
 
 // SetFederationActivityPrivateOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationActivityPrivateOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationActivityPrivateOptions(w, r)
 	}))
@@ -3078,6 +3269,7 @@ func (siw *ServerInterfaceWrapper) SetFederationActivityPrivateOptions(w http.Re
 
 // SetFederationActivityPrivate operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationActivityPrivate(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationActivityPrivate(w, r)
 	}))
@@ -3091,6 +3283,7 @@ func (siw *ServerInterfaceWrapper) SetFederationActivityPrivate(w http.ResponseW
 
 // SetFederationShowEngagementOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationShowEngagementOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationShowEngagementOptions(w, r)
 	}))
@@ -3104,6 +3297,7 @@ func (siw *ServerInterfaceWrapper) SetFederationShowEngagementOptions(w http.Res
 
 // SetFederationShowEngagement operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationShowEngagement(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationShowEngagement(w, r)
 	}))
@@ -3117,6 +3311,7 @@ func (siw *ServerInterfaceWrapper) SetFederationShowEngagement(w http.ResponseWr
 
 // SetFederationUsernameOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationUsernameOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationUsernameOptions(w, r)
 	}))
@@ -3130,6 +3325,7 @@ func (siw *ServerInterfaceWrapper) SetFederationUsernameOptions(w http.ResponseW
 
 // SetFederationUsername operation middleware
 func (siw *ServerInterfaceWrapper) SetFederationUsername(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFederationUsername(w, r)
 	}))
@@ -3143,6 +3339,7 @@ func (siw *ServerInterfaceWrapper) SetFederationUsername(w http.ResponseWriter, 
 
 // SetFfmpegPathOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetFfmpegPathOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFfmpegPathOptions(w, r)
 	}))
@@ -3156,6 +3353,7 @@ func (siw *ServerInterfaceWrapper) SetFfmpegPathOptions(w http.ResponseWriter, r
 
 // SetFfmpegPath operation middleware
 func (siw *ServerInterfaceWrapper) SetFfmpegPath(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetFfmpegPath(w, r)
 	}))
@@ -3169,6 +3367,7 @@ func (siw *ServerInterfaceWrapper) SetFfmpegPath(w http.ResponseWriter, r *http.
 
 // SetHideViewerCountOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetHideViewerCountOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetHideViewerCountOptions(w, r)
 	}))
@@ -3182,6 +3381,7 @@ func (siw *ServerInterfaceWrapper) SetHideViewerCountOptions(w http.ResponseWrit
 
 // SetHideViewerCount operation middleware
 func (siw *ServerInterfaceWrapper) SetHideViewerCount(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetHideViewerCount(w, r)
 	}))
@@ -3195,6 +3395,7 @@ func (siw *ServerInterfaceWrapper) SetHideViewerCount(w http.ResponseWriter, r *
 
 // SetLogoOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetLogoOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetLogoOptions(w, r)
 	}))
@@ -3208,6 +3409,7 @@ func (siw *ServerInterfaceWrapper) SetLogoOptions(w http.ResponseWriter, r *http
 
 // SetLogo operation middleware
 func (siw *ServerInterfaceWrapper) SetLogo(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetLogo(w, r)
 	}))
@@ -3221,6 +3423,7 @@ func (siw *ServerInterfaceWrapper) SetLogo(w http.ResponseWriter, r *http.Reques
 
 // SetServerNameOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetServerNameOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerNameOptions(w, r)
 	}))
@@ -3234,6 +3437,7 @@ func (siw *ServerInterfaceWrapper) SetServerNameOptions(w http.ResponseWriter, r
 
 // SetServerName operation middleware
 func (siw *ServerInterfaceWrapper) SetServerName(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerName(w, r)
 	}))
@@ -3247,6 +3451,7 @@ func (siw *ServerInterfaceWrapper) SetServerName(w http.ResponseWriter, r *http.
 
 // SetBrowserNotificationConfigurationOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetBrowserNotificationConfigurationOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetBrowserNotificationConfigurationOptions(w, r)
 	}))
@@ -3260,6 +3465,7 @@ func (siw *ServerInterfaceWrapper) SetBrowserNotificationConfigurationOptions(w 
 
 // SetBrowserNotificationConfiguration operation middleware
 func (siw *ServerInterfaceWrapper) SetBrowserNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetBrowserNotificationConfiguration(w, r)
 	}))
@@ -3273,6 +3479,7 @@ func (siw *ServerInterfaceWrapper) SetBrowserNotificationConfiguration(w http.Re
 
 // SetDiscordNotificationConfigurationOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetDiscordNotificationConfigurationOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetDiscordNotificationConfigurationOptions(w, r)
 	}))
@@ -3286,6 +3493,7 @@ func (siw *ServerInterfaceWrapper) SetDiscordNotificationConfigurationOptions(w 
 
 // SetDiscordNotificationConfiguration operation middleware
 func (siw *ServerInterfaceWrapper) SetDiscordNotificationConfiguration(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetDiscordNotificationConfiguration(w, r)
 	}))
@@ -3299,6 +3507,7 @@ func (siw *ServerInterfaceWrapper) SetDiscordNotificationConfiguration(w http.Re
 
 // SetNSFWOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetNSFWOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetNSFWOptions(w, r)
 	}))
@@ -3312,6 +3521,7 @@ func (siw *ServerInterfaceWrapper) SetNSFWOptions(w http.ResponseWriter, r *http
 
 // SetNSFW operation middleware
 func (siw *ServerInterfaceWrapper) SetNSFW(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetNSFW(w, r)
 	}))
@@ -3325,6 +3535,7 @@ func (siw *ServerInterfaceWrapper) SetNSFW(w http.ResponseWriter, r *http.Reques
 
 // SetCustomOfflineMessageOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetCustomOfflineMessageOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetCustomOfflineMessageOptions(w, r)
 	}))
@@ -3338,6 +3549,7 @@ func (siw *ServerInterfaceWrapper) SetCustomOfflineMessageOptions(w http.Respons
 
 // SetCustomOfflineMessage operation middleware
 func (siw *ServerInterfaceWrapper) SetCustomOfflineMessage(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetCustomOfflineMessage(w, r)
 	}))
@@ -3351,6 +3563,7 @@ func (siw *ServerInterfaceWrapper) SetCustomOfflineMessage(w http.ResponseWriter
 
 // SetExtraPageContentOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetExtraPageContentOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetExtraPageContentOptions(w, r)
 	}))
@@ -3364,6 +3577,7 @@ func (siw *ServerInterfaceWrapper) SetExtraPageContentOptions(w http.ResponseWri
 
 // SetExtraPageContent operation middleware
 func (siw *ServerInterfaceWrapper) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetExtraPageContent(w, r)
 	}))
@@ -3377,6 +3591,7 @@ func (siw *ServerInterfaceWrapper) SetExtraPageContent(w http.ResponseWriter, r 
 
 // SetRTMPServerBindAddressOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetRTMPServerBindAddressOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetRTMPServerBindAddressOptions(w, r)
 	}))
@@ -3390,6 +3605,7 @@ func (siw *ServerInterfaceWrapper) SetRTMPServerBindAddressOptions(w http.Respon
 
 // SetRTMPServerBindAddress operation middleware
 func (siw *ServerInterfaceWrapper) SetRTMPServerBindAddress(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetRTMPServerBindAddress(w, r)
 	}))
@@ -3403,6 +3619,7 @@ func (siw *ServerInterfaceWrapper) SetRTMPServerBindAddress(w http.ResponseWrite
 
 // SetRTMPServerPortOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetRTMPServerPortOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetRTMPServerPortOptions(w, r)
 	}))
@@ -3416,6 +3633,7 @@ func (siw *ServerInterfaceWrapper) SetRTMPServerPortOptions(w http.ResponseWrite
 
 // SetRTMPServerPort operation middleware
 func (siw *ServerInterfaceWrapper) SetRTMPServerPort(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetRTMPServerPort(w, r)
 	}))
@@ -3429,6 +3647,7 @@ func (siw *ServerInterfaceWrapper) SetRTMPServerPort(w http.ResponseWriter, r *h
 
 // SetS3ConfigurationOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetS3ConfigurationOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetS3ConfigurationOptions(w, r)
 	}))
@@ -3442,6 +3661,7 @@ func (siw *ServerInterfaceWrapper) SetS3ConfigurationOptions(w http.ResponseWrit
 
 // SetS3Configuration operation middleware
 func (siw *ServerInterfaceWrapper) SetS3Configuration(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetS3Configuration(w, r)
 	}))
@@ -3453,8 +3673,65 @@ func (siw *ServerInterfaceWrapper) SetS3Configuration(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r)
 }
 
+// SetScheduleEnabledOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleEnabledOptions(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleEnabledOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleEnabled operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleEnabled(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleReminderMessageOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleReminderMessageOptions(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleReminderMessageOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleReminderMessage operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleReminderMessage(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // SetServerSummaryOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetServerSummaryOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerSummaryOptions(w, r)
 	}))
@@ -3468,6 +3745,7 @@ func (siw *ServerInterfaceWrapper) SetServerSummaryOptions(w http.ResponseWriter
 
 // SetServerSummary operation middleware
 func (siw *ServerInterfaceWrapper) SetServerSummary(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerSummary(w, r)
 	}))
@@ -3481,6 +3759,7 @@ func (siw *ServerInterfaceWrapper) SetServerSummary(w http.ResponseWriter, r *ht
 
 // SetServerURLOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetServerURLOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerURLOptions(w, r)
 	}))
@@ -3494,6 +3773,7 @@ func (siw *ServerInterfaceWrapper) SetServerURLOptions(w http.ResponseWriter, r 
 
 // SetServerURL operation middleware
 func (siw *ServerInterfaceWrapper) SetServerURL(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerURL(w, r)
 	}))
@@ -3507,6 +3787,7 @@ func (siw *ServerInterfaceWrapper) SetServerURL(w http.ResponseWriter, r *http.R
 
 // SetSocialHandlesOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetSocialHandlesOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetSocialHandlesOptions(w, r)
 	}))
@@ -3520,6 +3801,7 @@ func (siw *ServerInterfaceWrapper) SetSocialHandlesOptions(w http.ResponseWriter
 
 // SetSocialHandles operation middleware
 func (siw *ServerInterfaceWrapper) SetSocialHandles(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetSocialHandles(w, r)
 	}))
@@ -3533,6 +3815,7 @@ func (siw *ServerInterfaceWrapper) SetSocialHandles(w http.ResponseWriter, r *ht
 
 // SetSocketHostOverrideOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetSocketHostOverrideOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetSocketHostOverrideOptions(w, r)
 	}))
@@ -3546,6 +3829,7 @@ func (siw *ServerInterfaceWrapper) SetSocketHostOverrideOptions(w http.ResponseW
 
 // SetSocketHostOverride operation middleware
 func (siw *ServerInterfaceWrapper) SetSocketHostOverride(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetSocketHostOverride(w, r)
 	}))
@@ -3559,6 +3843,7 @@ func (siw *ServerInterfaceWrapper) SetSocketHostOverride(w http.ResponseWriter, 
 
 // SetStreamKeysOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetStreamKeysOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamKeysOptions(w, r)
 	}))
@@ -3572,6 +3857,7 @@ func (siw *ServerInterfaceWrapper) SetStreamKeysOptions(w http.ResponseWriter, r
 
 // SetStreamKeys operation middleware
 func (siw *ServerInterfaceWrapper) SetStreamKeys(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamKeys(w, r)
 	}))
@@ -3585,6 +3871,7 @@ func (siw *ServerInterfaceWrapper) SetStreamKeys(w http.ResponseWriter, r *http.
 
 // SetStreamTitleOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetStreamTitleOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamTitleOptions(w, r)
 	}))
@@ -3598,6 +3885,7 @@ func (siw *ServerInterfaceWrapper) SetStreamTitleOptions(w http.ResponseWriter, 
 
 // SetStreamTitle operation middleware
 func (siw *ServerInterfaceWrapper) SetStreamTitle(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamTitle(w, r)
 	}))
@@ -3611,6 +3899,7 @@ func (siw *ServerInterfaceWrapper) SetStreamTitle(w http.ResponseWriter, r *http
 
 // SetTagsOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetTagsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetTagsOptions(w, r)
 	}))
@@ -3624,6 +3913,7 @@ func (siw *ServerInterfaceWrapper) SetTagsOptions(w http.ResponseWriter, r *http
 
 // SetTags operation middleware
 func (siw *ServerInterfaceWrapper) SetTags(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetTags(w, r)
 	}))
@@ -3637,6 +3927,7 @@ func (siw *ServerInterfaceWrapper) SetTags(w http.ResponseWriter, r *http.Reques
 
 // SetVideoCodecOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetVideoCodecOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetVideoCodecOptions(w, r)
 	}))
@@ -3650,6 +3941,7 @@ func (siw *ServerInterfaceWrapper) SetVideoCodecOptions(w http.ResponseWriter, r
 
 // SetVideoCodec operation middleware
 func (siw *ServerInterfaceWrapper) SetVideoCodec(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetVideoCodec(w, r)
 	}))
@@ -3663,6 +3955,7 @@ func (siw *ServerInterfaceWrapper) SetVideoCodec(w http.ResponseWriter, r *http.
 
 // SetStreamLatencyLevelOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetStreamLatencyLevelOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamLatencyLevelOptions(w, r)
 	}))
@@ -3676,6 +3969,7 @@ func (siw *ServerInterfaceWrapper) SetStreamLatencyLevelOptions(w http.ResponseW
 
 // SetStreamLatencyLevel operation middleware
 func (siw *ServerInterfaceWrapper) SetStreamLatencyLevel(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamLatencyLevel(w, r)
 	}))
@@ -3689,6 +3983,7 @@ func (siw *ServerInterfaceWrapper) SetStreamLatencyLevel(w http.ResponseWriter, 
 
 // SetStreamOutputVariantsOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetStreamOutputVariantsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamOutputVariantsOptions(w, r)
 	}))
@@ -3702,6 +3997,7 @@ func (siw *ServerInterfaceWrapper) SetStreamOutputVariantsOptions(w http.Respons
 
 // SetStreamOutputVariants operation middleware
 func (siw *ServerInterfaceWrapper) SetStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetStreamOutputVariants(w, r)
 	}))
@@ -3715,6 +4011,7 @@ func (siw *ServerInterfaceWrapper) SetStreamOutputVariants(w http.ResponseWriter
 
 // SetVideoServingEndpointOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetVideoServingEndpointOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetVideoServingEndpointOptions(w, r)
 	}))
@@ -3728,6 +4025,7 @@ func (siw *ServerInterfaceWrapper) SetVideoServingEndpointOptions(w http.Respons
 
 // SetVideoServingEndpoint operation middleware
 func (siw *ServerInterfaceWrapper) SetVideoServingEndpoint(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetVideoServingEndpoint(w, r)
 	}))
@@ -3741,6 +4039,7 @@ func (siw *ServerInterfaceWrapper) SetVideoServingEndpoint(w http.ResponseWriter
 
 // SetWebServerIPOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetWebServerIPOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetWebServerIPOptions(w, r)
 	}))
@@ -3754,6 +4053,7 @@ func (siw *ServerInterfaceWrapper) SetWebServerIPOptions(w http.ResponseWriter, 
 
 // SetWebServerIP operation middleware
 func (siw *ServerInterfaceWrapper) SetWebServerIP(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetWebServerIP(w, r)
 	}))
@@ -3767,6 +4067,7 @@ func (siw *ServerInterfaceWrapper) SetWebServerIP(w http.ResponseWriter, r *http
 
 // SetWebServerPortOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetWebServerPortOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetWebServerPortOptions(w, r)
 	}))
@@ -3780,6 +4081,7 @@ func (siw *ServerInterfaceWrapper) SetWebServerPortOptions(w http.ResponseWriter
 
 // SetWebServerPort operation middleware
 func (siw *ServerInterfaceWrapper) SetWebServerPort(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetWebServerPort(w, r)
 	}))
@@ -3793,6 +4095,7 @@ func (siw *ServerInterfaceWrapper) SetWebServerPort(w http.ResponseWriter, r *ht
 
 // SetServerWelcomeMessageOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetServerWelcomeMessageOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerWelcomeMessageOptions(w, r)
 	}))
@@ -3806,6 +4109,7 @@ func (siw *ServerInterfaceWrapper) SetServerWelcomeMessageOptions(w http.Respons
 
 // SetServerWelcomeMessage operation middleware
 func (siw *ServerInterfaceWrapper) SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetServerWelcomeMessage(w, r)
 	}))
@@ -3819,6 +4123,7 @@ func (siw *ServerInterfaceWrapper) SetServerWelcomeMessage(w http.ResponseWriter
 
 // DisconnectInboundConnection operation middleware
 func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DisconnectInboundConnection(w, r)
 	}))
@@ -3832,6 +4137,7 @@ func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWr
 
 // DisconnectInboundConnectionOptions operation middleware
 func (siw *ServerInterfaceWrapper) DisconnectInboundConnectionOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DisconnectInboundConnectionOptions(w, r)
 	}))
@@ -3845,6 +4151,7 @@ func (siw *ServerInterfaceWrapper) DisconnectInboundConnectionOptions(w http.Res
 
 // DeleteCustomEmojiOptions operation middleware
 func (siw *ServerInterfaceWrapper) DeleteCustomEmojiOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteCustomEmojiOptions(w, r)
 	}))
@@ -3858,6 +4165,7 @@ func (siw *ServerInterfaceWrapper) DeleteCustomEmojiOptions(w http.ResponseWrite
 
 // DeleteCustomEmoji operation middleware
 func (siw *ServerInterfaceWrapper) DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteCustomEmoji(w, r)
 	}))
@@ -3871,6 +4179,7 @@ func (siw *ServerInterfaceWrapper) DeleteCustomEmoji(w http.ResponseWriter, r *h
 
 // UploadCustomEmojiOptions operation middleware
 func (siw *ServerInterfaceWrapper) UploadCustomEmojiOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UploadCustomEmojiOptions(w, r)
 	}))
@@ -3884,6 +4193,7 @@ func (siw *ServerInterfaceWrapper) UploadCustomEmojiOptions(w http.ResponseWrite
 
 // UploadCustomEmoji operation middleware
 func (siw *ServerInterfaceWrapper) UploadCustomEmoji(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UploadCustomEmoji(w, r)
 	}))
@@ -3897,6 +4207,7 @@ func (siw *ServerInterfaceWrapper) UploadCustomEmoji(w http.ResponseWriter, r *h
 
 // GetFederatedActions operation middleware
 func (siw *ServerInterfaceWrapper) GetFederatedActions(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -3942,6 +4253,7 @@ func (siw *ServerInterfaceWrapper) GetFederatedActions(w http.ResponseWriter, r 
 
 // GetFederatedActionsOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetFederatedActionsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFederatedActionsOptions(w, r)
 	}))
@@ -3955,6 +4267,7 @@ func (siw *ServerInterfaceWrapper) GetFederatedActionsOptions(w http.ResponseWri
 
 // GetFeatureRequests operation middleware
 func (siw *ServerInterfaceWrapper) GetFeatureRequests(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFeatureRequests(w, r)
 	}))
@@ -3968,6 +4281,7 @@ func (siw *ServerInterfaceWrapper) GetFeatureRequests(w http.ResponseWriter, r *
 
 // SendFederatedMessageOptions operation middleware
 func (siw *ServerInterfaceWrapper) SendFederatedMessageOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendFederatedMessageOptions(w, r)
 	}))
@@ -3981,6 +4295,7 @@ func (siw *ServerInterfaceWrapper) SendFederatedMessageOptions(w http.ResponseWr
 
 // SendFederatedMessage operation middleware
 func (siw *ServerInterfaceWrapper) SendFederatedMessage(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendFederatedMessage(w, r)
 	}))
@@ -3994,6 +4309,7 @@ func (siw *ServerInterfaceWrapper) SendFederatedMessage(w http.ResponseWriter, r
 
 // GetAdminFederatedServers operation middleware
 func (siw *ServerInterfaceWrapper) GetAdminFederatedServers(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAdminFederatedServers(w, r)
 	}))
@@ -4007,6 +4323,7 @@ func (siw *ServerInterfaceWrapper) GetAdminFederatedServers(w http.ResponseWrite
 
 // AddFederatedServerOptions operation middleware
 func (siw *ServerInterfaceWrapper) AddFederatedServerOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AddFederatedServerOptions(w, r)
 	}))
@@ -4020,6 +4337,7 @@ func (siw *ServerInterfaceWrapper) AddFederatedServerOptions(w http.ResponseWrit
 
 // AddFederatedServer operation middleware
 func (siw *ServerInterfaceWrapper) AddFederatedServer(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AddFederatedServer(w, r)
 	}))
@@ -4033,6 +4351,7 @@ func (siw *ServerInterfaceWrapper) AddFederatedServer(w http.ResponseWriter, r *
 
 // RemoveFederatedServer operation middleware
 func (siw *ServerInterfaceWrapper) RemoveFederatedServer(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -4058,6 +4377,7 @@ func (siw *ServerInterfaceWrapper) RemoveFederatedServer(w http.ResponseWriter, 
 
 // RemoveFederatedServerOptions operation middleware
 func (siw *ServerInterfaceWrapper) RemoveFederatedServerOptions(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -4083,6 +4403,7 @@ func (siw *ServerInterfaceWrapper) RemoveFederatedServerOptions(w http.ResponseW
 
 // GetFollowersAdmin operation middleware
 func (siw *ServerInterfaceWrapper) GetFollowersAdmin(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -4128,6 +4449,7 @@ func (siw *ServerInterfaceWrapper) GetFollowersAdmin(w http.ResponseWriter, r *h
 
 // GetFollowersAdminOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetFollowersAdminOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFollowersAdminOptions(w, r)
 	}))
@@ -4141,6 +4463,7 @@ func (siw *ServerInterfaceWrapper) GetFollowersAdminOptions(w http.ResponseWrite
 
 // ApproveFollowerOptions operation middleware
 func (siw *ServerInterfaceWrapper) ApproveFollowerOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ApproveFollowerOptions(w, r)
 	}))
@@ -4154,6 +4477,7 @@ func (siw *ServerInterfaceWrapper) ApproveFollowerOptions(w http.ResponseWriter,
 
 // ApproveFollower operation middleware
 func (siw *ServerInterfaceWrapper) ApproveFollower(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ApproveFollower(w, r)
 	}))
@@ -4167,6 +4491,7 @@ func (siw *ServerInterfaceWrapper) ApproveFollower(w http.ResponseWriter, r *htt
 
 // GetBlockedAndRejectedFollowers operation middleware
 func (siw *ServerInterfaceWrapper) GetBlockedAndRejectedFollowers(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetBlockedAndRejectedFollowers(w, r)
 	}))
@@ -4180,6 +4505,7 @@ func (siw *ServerInterfaceWrapper) GetBlockedAndRejectedFollowers(w http.Respons
 
 // GetBlockedAndRejectedFollowersOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetBlockedAndRejectedFollowersOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetBlockedAndRejectedFollowersOptions(w, r)
 	}))
@@ -4193,6 +4519,7 @@ func (siw *ServerInterfaceWrapper) GetBlockedAndRejectedFollowersOptions(w http.
 
 // GetDirectoryFollowers operation middleware
 func (siw *ServerInterfaceWrapper) GetDirectoryFollowers(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetDirectoryFollowers(w, r)
 	}))
@@ -4206,6 +4533,7 @@ func (siw *ServerInterfaceWrapper) GetDirectoryFollowers(w http.ResponseWriter, 
 
 // GetDirectoryFollowersOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetDirectoryFollowersOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetDirectoryFollowersOptions(w, r)
 	}))
@@ -4219,6 +4547,7 @@ func (siw *ServerInterfaceWrapper) GetDirectoryFollowersOptions(w http.ResponseW
 
 // GetPendingFollowRequests operation middleware
 func (siw *ServerInterfaceWrapper) GetPendingFollowRequests(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetPendingFollowRequests(w, r)
 	}))
@@ -4232,6 +4561,7 @@ func (siw *ServerInterfaceWrapper) GetPendingFollowRequests(w http.ResponseWrite
 
 // GetPendingFollowRequestsOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetPendingFollowRequestsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetPendingFollowRequestsOptions(w, r)
 	}))
@@ -4245,6 +4575,7 @@ func (siw *ServerInterfaceWrapper) GetPendingFollowRequestsOptions(w http.Respon
 
 // RemoveFollowerOptions operation middleware
 func (siw *ServerInterfaceWrapper) RemoveFollowerOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.RemoveFollowerOptions(w, r)
 	}))
@@ -4258,6 +4589,7 @@ func (siw *ServerInterfaceWrapper) RemoveFollowerOptions(w http.ResponseWriter, 
 
 // RemoveFollower operation middleware
 func (siw *ServerInterfaceWrapper) RemoveFollower(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.RemoveFollower(w, r)
 	}))
@@ -4271,6 +4603,7 @@ func (siw *ServerInterfaceWrapper) RemoveFollower(w http.ResponseWriter, r *http
 
 // GetHardwareStats operation middleware
 func (siw *ServerInterfaceWrapper) GetHardwareStats(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetHardwareStats(w, r)
 	}))
@@ -4284,6 +4617,7 @@ func (siw *ServerInterfaceWrapper) GetHardwareStats(w http.ResponseWriter, r *ht
 
 // GetHardwareStatsOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetHardwareStatsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetHardwareStatsOptions(w, r)
 	}))
@@ -4297,6 +4631,7 @@ func (siw *ServerInterfaceWrapper) GetHardwareStatsOptions(w http.ResponseWriter
 
 // GetLogs operation middleware
 func (siw *ServerInterfaceWrapper) GetLogs(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetLogs(w, r)
 	}))
@@ -4310,6 +4645,7 @@ func (siw *ServerInterfaceWrapper) GetLogs(w http.ResponseWriter, r *http.Reques
 
 // GetLogsOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetLogsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetLogsOptions(w, r)
 	}))
@@ -4323,6 +4659,7 @@ func (siw *ServerInterfaceWrapper) GetLogsOptions(w http.ResponseWriter, r *http
 
 // GetWarnings operation middleware
 func (siw *ServerInterfaceWrapper) GetWarnings(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetWarnings(w, r)
 	}))
@@ -4336,6 +4673,7 @@ func (siw *ServerInterfaceWrapper) GetWarnings(w http.ResponseWriter, r *http.Re
 
 // GetWarningsOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetWarningsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetWarningsOptions(w, r)
 	}))
@@ -4349,6 +4687,7 @@ func (siw *ServerInterfaceWrapper) GetWarningsOptions(w http.ResponseWriter, r *
 
 // GetVideoPlaybackMetrics operation middleware
 func (siw *ServerInterfaceWrapper) GetVideoPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetVideoPlaybackMetrics(w, r)
 	}))
@@ -4362,6 +4701,7 @@ func (siw *ServerInterfaceWrapper) GetVideoPlaybackMetrics(w http.ResponseWriter
 
 // GetVideoPlaybackMetricsOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetVideoPlaybackMetricsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetVideoPlaybackMetricsOptions(w, r)
 	}))
@@ -4375,6 +4715,7 @@ func (siw *ServerInterfaceWrapper) GetVideoPlaybackMetricsOptions(w http.Respons
 
 // DeletePrometheusAPI operation middleware
 func (siw *ServerInterfaceWrapper) DeletePrometheusAPI(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeletePrometheusAPI(w, r)
 	}))
@@ -4388,6 +4729,7 @@ func (siw *ServerInterfaceWrapper) DeletePrometheusAPI(w http.ResponseWriter, r 
 
 // GetPrometheusAPI operation middleware
 func (siw *ServerInterfaceWrapper) GetPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetPrometheusAPI(w, r)
 	}))
@@ -4401,6 +4743,7 @@ func (siw *ServerInterfaceWrapper) GetPrometheusAPI(w http.ResponseWriter, r *ht
 
 // OptionsPrometheusAPI operation middleware
 func (siw *ServerInterfaceWrapper) OptionsPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.OptionsPrometheusAPI(w, r)
 	}))
@@ -4414,6 +4757,7 @@ func (siw *ServerInterfaceWrapper) OptionsPrometheusAPI(w http.ResponseWriter, r
 
 // PostPrometheusAPI operation middleware
 func (siw *ServerInterfaceWrapper) PostPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PostPrometheusAPI(w, r)
 	}))
@@ -4427,6 +4771,7 @@ func (siw *ServerInterfaceWrapper) PostPrometheusAPI(w http.ResponseWriter, r *h
 
 // PutPrometheusAPI operation middleware
 func (siw *ServerInterfaceWrapper) PutPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PutPrometheusAPI(w, r)
 	}))
@@ -4438,8 +4783,121 @@ func (siw *ServerInterfaceWrapper) PutPrometheusAPI(w http.ResponseWriter, r *ht
 	handler.ServeHTTP(w, r)
 }
 
+// GetAdminSchedule operation middleware
+func (siw *ServerInterfaceWrapper) GetAdminSchedule(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAdminSchedule(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAdminScheduleOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetAdminScheduleOptions(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAdminScheduleOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpsertScheduledEventOptions operation middleware
+func (siw *ServerInterfaceWrapper) UpsertScheduledEventOptions(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpsertScheduledEventOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpsertScheduledEvent operation middleware
+func (siw *ServerInterfaceWrapper) UpsertScheduledEvent(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpsertScheduledEvent(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteScheduledEventOptions operation middleware
+func (siw *ServerInterfaceWrapper) DeleteScheduledEventOptions(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteScheduledEventOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteScheduledEvent operation middleware
+func (siw *ServerInterfaceWrapper) DeleteScheduledEvent(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteScheduledEvent(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PreviewScheduleRecurrenceOptions operation middleware
+func (siw *ServerInterfaceWrapper) PreviewScheduleRecurrenceOptions(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PreviewScheduleRecurrenceOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PreviewScheduleRecurrence operation middleware
+func (siw *ServerInterfaceWrapper) PreviewScheduleRecurrence(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PreviewScheduleRecurrence(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetServerConfig operation middleware
 func (siw *ServerInterfaceWrapper) GetServerConfig(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetServerConfig(w, r)
 	}))
@@ -4453,6 +4911,7 @@ func (siw *ServerInterfaceWrapper) GetServerConfig(w http.ResponseWriter, r *htt
 
 // GetServerConfigOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetServerConfigOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetServerConfigOptions(w, r)
 	}))
@@ -4466,6 +4925,7 @@ func (siw *ServerInterfaceWrapper) GetServerConfigOptions(w http.ResponseWriter,
 
 // StatusAdmin operation middleware
 func (siw *ServerInterfaceWrapper) StatusAdmin(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.StatusAdmin(w, r)
 	}))
@@ -4479,6 +4939,7 @@ func (siw *ServerInterfaceWrapper) StatusAdmin(w http.ResponseWriter, r *http.Re
 
 // StatusAdminOptions operation middleware
 func (siw *ServerInterfaceWrapper) StatusAdminOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.StatusAdminOptions(w, r)
 	}))
@@ -4492,6 +4953,7 @@ func (siw *ServerInterfaceWrapper) StatusAdminOptions(w http.ResponseWriter, r *
 
 // AutoUpdateForceQuit operation middleware
 func (siw *ServerInterfaceWrapper) AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AutoUpdateForceQuit(w, r)
 	}))
@@ -4505,6 +4967,7 @@ func (siw *ServerInterfaceWrapper) AutoUpdateForceQuit(w http.ResponseWriter, r 
 
 // AutoUpdateForceQuitOptions operation middleware
 func (siw *ServerInterfaceWrapper) AutoUpdateForceQuitOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AutoUpdateForceQuitOptions(w, r)
 	}))
@@ -4518,6 +4981,7 @@ func (siw *ServerInterfaceWrapper) AutoUpdateForceQuitOptions(w http.ResponseWri
 
 // AutoUpdateOptions operation middleware
 func (siw *ServerInterfaceWrapper) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AutoUpdateOptions(w, r)
 	}))
@@ -4531,6 +4995,7 @@ func (siw *ServerInterfaceWrapper) AutoUpdateOptions(w http.ResponseWriter, r *h
 
 // AutoUpdateOptionsOptions operation middleware
 func (siw *ServerInterfaceWrapper) AutoUpdateOptionsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AutoUpdateOptionsOptions(w, r)
 	}))
@@ -4544,6 +5009,7 @@ func (siw *ServerInterfaceWrapper) AutoUpdateOptionsOptions(w http.ResponseWrite
 
 // AutoUpdateStart operation middleware
 func (siw *ServerInterfaceWrapper) AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AutoUpdateStart(w, r)
 	}))
@@ -4557,6 +5023,7 @@ func (siw *ServerInterfaceWrapper) AutoUpdateStart(w http.ResponseWriter, r *htt
 
 // AutoUpdateStartOptions operation middleware
 func (siw *ServerInterfaceWrapper) AutoUpdateStartOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AutoUpdateStartOptions(w, r)
 	}))
@@ -4570,6 +5037,7 @@ func (siw *ServerInterfaceWrapper) AutoUpdateStartOptions(w http.ResponseWriter,
 
 // GetUsers operation middleware
 func (siw *ServerInterfaceWrapper) GetUsers(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -4654,6 +5122,7 @@ func (siw *ServerInterfaceWrapper) GetUsers(w http.ResponseWriter, r *http.Reque
 
 // GetUsersOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetUsersOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetUsersOptions(w, r)
 	}))
@@ -4667,6 +5136,7 @@ func (siw *ServerInterfaceWrapper) GetUsersOptions(w http.ResponseWriter, r *htt
 
 // DeleteUserOptions operation middleware
 func (siw *ServerInterfaceWrapper) DeleteUserOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteUserOptions(w, r)
 	}))
@@ -4680,6 +5150,7 @@ func (siw *ServerInterfaceWrapper) DeleteUserOptions(w http.ResponseWriter, r *h
 
 // DeleteUser operation middleware
 func (siw *ServerInterfaceWrapper) DeleteUser(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteUser(w, r)
 	}))
@@ -4693,6 +5164,7 @@ func (siw *ServerInterfaceWrapper) DeleteUser(w http.ResponseWriter, r *http.Req
 
 // GetActiveViewers operation middleware
 func (siw *ServerInterfaceWrapper) GetActiveViewers(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetActiveViewers(w, r)
 	}))
@@ -4706,6 +5178,7 @@ func (siw *ServerInterfaceWrapper) GetActiveViewers(w http.ResponseWriter, r *ht
 
 // GetActiveViewersOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetActiveViewersOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetActiveViewersOptions(w, r)
 	}))
@@ -4719,6 +5192,7 @@ func (siw *ServerInterfaceWrapper) GetActiveViewersOptions(w http.ResponseWriter
 
 // GetPlaybackClients operation middleware
 func (siw *ServerInterfaceWrapper) GetPlaybackClients(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetPlaybackClients(w, r)
 	}))
@@ -4732,6 +5206,7 @@ func (siw *ServerInterfaceWrapper) GetPlaybackClients(w http.ResponseWriter, r *
 
 // GetPlaybackClientsOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetPlaybackClientsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetPlaybackClientsOptions(w, r)
 	}))
@@ -4745,6 +5220,7 @@ func (siw *ServerInterfaceWrapper) GetPlaybackClientsOptions(w http.ResponseWrit
 
 // GetViewersOverTime operation middleware
 func (siw *ServerInterfaceWrapper) GetViewersOverTime(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -4777,6 +5253,7 @@ func (siw *ServerInterfaceWrapper) GetViewersOverTime(w http.ResponseWriter, r *
 
 // GetViewersOverTimeOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetViewersOverTimeOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetViewersOverTimeOptions(w, r)
 	}))
@@ -4790,6 +5267,7 @@ func (siw *ServerInterfaceWrapper) GetViewersOverTimeOptions(w http.ResponseWrit
 
 // GetWebhooks operation middleware
 func (siw *ServerInterfaceWrapper) GetWebhooks(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetWebhooks(w, r)
 	}))
@@ -4803,6 +5281,7 @@ func (siw *ServerInterfaceWrapper) GetWebhooks(w http.ResponseWriter, r *http.Re
 
 // GetWebhooksOptions operation middleware
 func (siw *ServerInterfaceWrapper) GetWebhooksOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetWebhooksOptions(w, r)
 	}))
@@ -4816,6 +5295,7 @@ func (siw *ServerInterfaceWrapper) GetWebhooksOptions(w http.ResponseWriter, r *
 
 // CreateWebhookOptions operation middleware
 func (siw *ServerInterfaceWrapper) CreateWebhookOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateWebhookOptions(w, r)
 	}))
@@ -4829,6 +5309,7 @@ func (siw *ServerInterfaceWrapper) CreateWebhookOptions(w http.ResponseWriter, r
 
 // CreateWebhook operation middleware
 func (siw *ServerInterfaceWrapper) CreateWebhook(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateWebhook(w, r)
 	}))
@@ -4842,6 +5323,7 @@ func (siw *ServerInterfaceWrapper) CreateWebhook(w http.ResponseWriter, r *http.
 
 // DeleteWebhookOptions operation middleware
 func (siw *ServerInterfaceWrapper) DeleteWebhookOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteWebhookOptions(w, r)
 	}))
@@ -4855,6 +5337,7 @@ func (siw *ServerInterfaceWrapper) DeleteWebhookOptions(w http.ResponseWriter, r
 
 // DeleteWebhook operation middleware
 func (siw *ServerInterfaceWrapper) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DeleteWebhook(w, r)
 	}))
@@ -4868,6 +5351,7 @@ func (siw *ServerInterfaceWrapper) DeleteWebhook(w http.ResponseWriter, r *http.
 
 // ResetYPRegistration operation middleware
 func (siw *ServerInterfaceWrapper) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ResetYPRegistration(w, r)
 	}))
@@ -4881,6 +5365,7 @@ func (siw *ServerInterfaceWrapper) ResetYPRegistration(w http.ResponseWriter, r 
 
 // ResetYPRegistrationOptions operation middleware
 func (siw *ServerInterfaceWrapper) ResetYPRegistrationOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ResetYPRegistrationOptions(w, r)
 	}))
@@ -4894,6 +5379,7 @@ func (siw *ServerInterfaceWrapper) ResetYPRegistrationOptions(w http.ResponseWri
 
 // RegisterFediverseOTPRequest operation middleware
 func (siw *ServerInterfaceWrapper) RegisterFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -4926,6 +5412,7 @@ func (siw *ServerInterfaceWrapper) RegisterFediverseOTPRequest(w http.ResponseWr
 
 // VerifyFediverseOTPRequest operation middleware
 func (siw *ServerInterfaceWrapper) VerifyFediverseOTPRequest(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.VerifyFediverseOTPRequest(w, r)
 	}))
@@ -4939,6 +5426,7 @@ func (siw *ServerInterfaceWrapper) VerifyFediverseOTPRequest(w http.ResponseWrit
 
 // StartIndieAuthFlow operation middleware
 func (siw *ServerInterfaceWrapper) StartIndieAuthFlow(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -4971,6 +5459,7 @@ func (siw *ServerInterfaceWrapper) StartIndieAuthFlow(w http.ResponseWriter, r *
 
 // HandleIndieAuthRedirect operation middleware
 func (siw *ServerInterfaceWrapper) HandleIndieAuthRedirect(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5003,6 +5492,7 @@ func (siw *ServerInterfaceWrapper) HandleIndieAuthRedirect(w http.ResponseWriter
 
 // HandleIndieAuthEndpointGet operation middleware
 func (siw *ServerInterfaceWrapper) HandleIndieAuthEndpointGet(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5074,6 +5564,7 @@ func (siw *ServerInterfaceWrapper) HandleIndieAuthEndpointGet(w http.ResponseWri
 
 // HandleIndieAuthEndpointPost operation middleware
 func (siw *ServerInterfaceWrapper) HandleIndieAuthEndpointPost(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.HandleIndieAuthEndpointPost(w, r)
 	}))
@@ -5087,6 +5578,7 @@ func (siw *ServerInterfaceWrapper) HandleIndieAuthEndpointPost(w http.ResponseWr
 
 // GetChatMessages operation middleware
 func (siw *ServerInterfaceWrapper) GetChatMessages(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5119,6 +5611,7 @@ func (siw *ServerInterfaceWrapper) GetChatMessages(w http.ResponseWriter, r *htt
 
 // UpdateMessageVisibility operation middleware
 func (siw *ServerInterfaceWrapper) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5151,6 +5644,7 @@ func (siw *ServerInterfaceWrapper) UpdateMessageVisibility(w http.ResponseWriter
 
 // RegisterAnonymousChatUserOptions operation middleware
 func (siw *ServerInterfaceWrapper) RegisterAnonymousChatUserOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.RegisterAnonymousChatUserOptions(w, r)
 	}))
@@ -5164,6 +5658,7 @@ func (siw *ServerInterfaceWrapper) RegisterAnonymousChatUserOptions(w http.Respo
 
 // RegisterAnonymousChatUser operation middleware
 func (siw *ServerInterfaceWrapper) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5204,6 +5699,7 @@ func (siw *ServerInterfaceWrapper) RegisterAnonymousChatUser(w http.ResponseWrit
 
 // UpdateUserEnabled operation middleware
 func (siw *ServerInterfaceWrapper) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5236,6 +5732,7 @@ func (siw *ServerInterfaceWrapper) UpdateUserEnabled(w http.ResponseWriter, r *h
 
 // GetWebConfig operation middleware
 func (siw *ServerInterfaceWrapper) GetWebConfig(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetWebConfig(w, r)
 	}))
@@ -5249,6 +5746,7 @@ func (siw *ServerInterfaceWrapper) GetWebConfig(w http.ResponseWriter, r *http.R
 
 // GetCustomEmojiList operation middleware
 func (siw *ServerInterfaceWrapper) GetCustomEmojiList(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetCustomEmojiList(w, r)
 	}))
@@ -5262,6 +5760,7 @@ func (siw *ServerInterfaceWrapper) GetCustomEmojiList(w http.ResponseWriter, r *
 
 // GetFederatedServers operation middleware
 func (siw *ServerInterfaceWrapper) GetFederatedServers(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFederatedServers(w, r)
 	}))
@@ -5275,6 +5774,7 @@ func (siw *ServerInterfaceWrapper) GetFederatedServers(w http.ResponseWriter, r 
 
 // GetFollowers operation middleware
 func (siw *ServerInterfaceWrapper) GetFollowers(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5320,6 +5820,7 @@ func (siw *ServerInterfaceWrapper) GetFollowers(w http.ResponseWriter, r *http.R
 
 // ExternalGetChatMessages operation middleware
 func (siw *ServerInterfaceWrapper) ExternalGetChatMessages(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ExternalGetChatMessages(w, r)
 	}))
@@ -5333,6 +5834,7 @@ func (siw *ServerInterfaceWrapper) ExternalGetChatMessages(w http.ResponseWriter
 
 // ExternalGetChatMessagesOptions operation middleware
 func (siw *ServerInterfaceWrapper) ExternalGetChatMessagesOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ExternalGetChatMessagesOptions(w, r)
 	}))
@@ -5346,6 +5848,7 @@ func (siw *ServerInterfaceWrapper) ExternalGetChatMessagesOptions(w http.Respons
 
 // SendChatActionOptions operation middleware
 func (siw *ServerInterfaceWrapper) SendChatActionOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendChatActionOptions(w, r)
 	}))
@@ -5359,6 +5862,7 @@ func (siw *ServerInterfaceWrapper) SendChatActionOptions(w http.ResponseWriter, 
 
 // SendChatAction operation middleware
 func (siw *ServerInterfaceWrapper) SendChatAction(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendChatAction(w, r)
 	}))
@@ -5372,6 +5876,7 @@ func (siw *ServerInterfaceWrapper) SendChatAction(w http.ResponseWriter, r *http
 
 // ExternalUpdateMessageVisibilityOptions operation middleware
 func (siw *ServerInterfaceWrapper) ExternalUpdateMessageVisibilityOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ExternalUpdateMessageVisibilityOptions(w, r)
 	}))
@@ -5385,6 +5890,7 @@ func (siw *ServerInterfaceWrapper) ExternalUpdateMessageVisibilityOptions(w http
 
 // ExternalUpdateMessageVisibility operation middleware
 func (siw *ServerInterfaceWrapper) ExternalUpdateMessageVisibility(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ExternalUpdateMessageVisibility(w, r)
 	}))
@@ -5398,6 +5904,7 @@ func (siw *ServerInterfaceWrapper) ExternalUpdateMessageVisibility(w http.Respon
 
 // SendIntegrationChatMessageOptions operation middleware
 func (siw *ServerInterfaceWrapper) SendIntegrationChatMessageOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendIntegrationChatMessageOptions(w, r)
 	}))
@@ -5411,6 +5918,7 @@ func (siw *ServerInterfaceWrapper) SendIntegrationChatMessageOptions(w http.Resp
 
 // SendIntegrationChatMessage operation middleware
 func (siw *ServerInterfaceWrapper) SendIntegrationChatMessage(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendIntegrationChatMessage(w, r)
 	}))
@@ -5424,6 +5932,7 @@ func (siw *ServerInterfaceWrapper) SendIntegrationChatMessage(w http.ResponseWri
 
 // SendSystemMessageOptions operation middleware
 func (siw *ServerInterfaceWrapper) SendSystemMessageOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendSystemMessageOptions(w, r)
 	}))
@@ -5437,6 +5946,7 @@ func (siw *ServerInterfaceWrapper) SendSystemMessageOptions(w http.ResponseWrite
 
 // SendSystemMessage operation middleware
 func (siw *ServerInterfaceWrapper) SendSystemMessage(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendSystemMessage(w, r)
 	}))
@@ -5450,6 +5960,7 @@ func (siw *ServerInterfaceWrapper) SendSystemMessage(w http.ResponseWriter, r *h
 
 // SendSystemMessageToConnectedClientOptions operation middleware
 func (siw *ServerInterfaceWrapper) SendSystemMessageToConnectedClientOptions(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5475,6 +5986,7 @@ func (siw *ServerInterfaceWrapper) SendSystemMessageToConnectedClientOptions(w h
 
 // SendSystemMessageToConnectedClient operation middleware
 func (siw *ServerInterfaceWrapper) SendSystemMessageToConnectedClient(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5500,6 +6012,7 @@ func (siw *ServerInterfaceWrapper) SendSystemMessageToConnectedClient(w http.Res
 
 // SendUserMessageOptions operation middleware
 func (siw *ServerInterfaceWrapper) SendUserMessageOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendUserMessageOptions(w, r)
 	}))
@@ -5513,6 +6026,7 @@ func (siw *ServerInterfaceWrapper) SendUserMessageOptions(w http.ResponseWriter,
 
 // SendUserMessage operation middleware
 func (siw *ServerInterfaceWrapper) SendUserMessage(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SendUserMessage(w, r)
 	}))
@@ -5526,6 +6040,7 @@ func (siw *ServerInterfaceWrapper) SendUserMessage(w http.ResponseWriter, r *htt
 
 // ExternalGetConnectedChatClients operation middleware
 func (siw *ServerInterfaceWrapper) ExternalGetConnectedChatClients(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ExternalGetConnectedChatClients(w, r)
 	}))
@@ -5539,6 +6054,7 @@ func (siw *ServerInterfaceWrapper) ExternalGetConnectedChatClients(w http.Respon
 
 // ExternalGetConnectedChatClientsOptions operation middleware
 func (siw *ServerInterfaceWrapper) ExternalGetConnectedChatClientsOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ExternalGetConnectedChatClientsOptions(w, r)
 	}))
@@ -5552,6 +6068,7 @@ func (siw *ServerInterfaceWrapper) ExternalGetConnectedChatClientsOptions(w http
 
 // ExternalGetUserDetails operation middleware
 func (siw *ServerInterfaceWrapper) ExternalGetUserDetails(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5577,6 +6094,7 @@ func (siw *ServerInterfaceWrapper) ExternalGetUserDetails(w http.ResponseWriter,
 
 // ExternalGetStatus operation middleware
 func (siw *ServerInterfaceWrapper) ExternalGetStatus(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ExternalGetStatus(w, r)
 	}))
@@ -5590,6 +6108,7 @@ func (siw *ServerInterfaceWrapper) ExternalGetStatus(w http.ResponseWriter, r *h
 
 // ExternalSetStreamTitleOptions operation middleware
 func (siw *ServerInterfaceWrapper) ExternalSetStreamTitleOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ExternalSetStreamTitleOptions(w, r)
 	}))
@@ -5603,6 +6122,7 @@ func (siw *ServerInterfaceWrapper) ExternalSetStreamTitleOptions(w http.Response
 
 // ExternalSetStreamTitle operation middleware
 func (siw *ServerInterfaceWrapper) ExternalSetStreamTitle(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ExternalSetStreamTitle(w, r)
 	}))
@@ -5616,6 +6136,7 @@ func (siw *ServerInterfaceWrapper) ExternalSetStreamTitle(w http.ResponseWriter,
 
 // ReportCmcdQuery operation middleware
 func (siw *ServerInterfaceWrapper) ReportCmcdQuery(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5648,6 +6169,7 @@ func (siw *ServerInterfaceWrapper) ReportCmcdQuery(w http.ResponseWriter, r *htt
 
 // ReportCmcdOptions operation middleware
 func (siw *ServerInterfaceWrapper) ReportCmcdOptions(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ReportCmcdOptions(w, r)
 	}))
@@ -5661,6 +6183,7 @@ func (siw *ServerInterfaceWrapper) ReportCmcdOptions(w http.ResponseWriter, r *h
 
 // ReportCmcd operation middleware
 func (siw *ServerInterfaceWrapper) ReportCmcd(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ReportCmcd(w, r)
 	}))
@@ -5674,6 +6197,7 @@ func (siw *ServerInterfaceWrapper) ReportCmcd(w http.ResponseWriter, r *http.Req
 
 // ReportPlaybackMetrics operation middleware
 func (siw *ServerInterfaceWrapper) ReportPlaybackMetrics(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ReportPlaybackMetrics(w, r)
 	}))
@@ -5687,6 +6211,7 @@ func (siw *ServerInterfaceWrapper) ReportPlaybackMetrics(w http.ResponseWriter, 
 
 // GetUserDetails operation middleware
 func (siw *ServerInterfaceWrapper) GetUserDetails(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5728,6 +6253,7 @@ func (siw *ServerInterfaceWrapper) GetUserDetails(w http.ResponseWriter, r *http
 
 // RegisterForLiveNotifications operation middleware
 func (siw *ServerInterfaceWrapper) RegisterForLiveNotifications(w http.ResponseWriter, r *http.Request) {
+
 	var err error
 	_ = err
 
@@ -5760,6 +6286,7 @@ func (siw *ServerInterfaceWrapper) RegisterForLiveNotifications(w http.ResponseW
 
 // Ping operation middleware
 func (siw *ServerInterfaceWrapper) Ping(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.Ping(w, r)
 	}))
@@ -5773,6 +6300,7 @@ func (siw *ServerInterfaceWrapper) Ping(w http.ResponseWriter, r *http.Request) 
 
 // RemoteFollow operation middleware
 func (siw *ServerInterfaceWrapper) RemoteFollow(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.RemoteFollow(w, r)
 	}))
@@ -5784,8 +6312,69 @@ func (siw *ServerInterfaceWrapper) RemoteFollow(w http.ResponseWriter, r *http.R
 	handler.ServeHTTP(w, r)
 }
 
+// GetSchedule operation middleware
+func (siw *ServerInterfaceWrapper) GetSchedule(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetScheduleParams
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetSchedule(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetScheduleOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetScheduleOptions(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetScheduleOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetAllSocialPlatforms operation middleware
 func (siw *ServerInterfaceWrapper) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAllSocialPlatforms(w, r)
 	}))
@@ -5799,6 +6388,7 @@ func (siw *ServerInterfaceWrapper) GetAllSocialPlatforms(w http.ResponseWriter, 
 
 // GetStatus operation middleware
 func (siw *ServerInterfaceWrapper) GetStatus(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetStatus(w, r)
 	}))
@@ -5812,6 +6402,7 @@ func (siw *ServerInterfaceWrapper) GetStatus(w http.ResponseWriter, r *http.Requ
 
 // GetVideoStreamOutputVariants operation middleware
 func (siw *ServerInterfaceWrapper) GetVideoStreamOutputVariants(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetVideoStreamOutputVariants(w, r)
 	}))
@@ -5825,6 +6416,7 @@ func (siw *ServerInterfaceWrapper) GetVideoStreamOutputVariants(w http.ResponseW
 
 // GetYPResponse operation middleware
 func (siw *ServerInterfaceWrapper) GetYPResponse(w http.ResponseWriter, r *http.Request) {
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetYPResponse(w, r)
 	}))
@@ -6527,6 +7119,48 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/webhooks/create", wrapper.CreateWebhook)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/schedule", wrapper.GetSchedule)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/schedule", wrapper.GetScheduleOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/schedule", wrapper.GetAdminSchedule)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/schedule", wrapper.GetAdminScheduleOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/schedule/event", wrapper.UpsertScheduledEventOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/schedule/event", wrapper.UpsertScheduledEvent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/schedule/event/delete", wrapper.DeleteScheduledEventOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/schedule/event/delete", wrapper.DeleteScheduledEvent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/schedule/preview", wrapper.PreviewScheduleRecurrenceOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/schedule/preview", wrapper.PreviewScheduleRecurrence)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/schedule/enabled", wrapper.SetScheduleEnabledOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/schedule/enabled", wrapper.SetScheduleEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/schedule/remindermessage", wrapper.SetScheduleReminderMessageOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/schedule/remindermessage", wrapper.SetScheduleReminderMessage)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/accesstokens", wrapper.GetExternalAPIUsers)
