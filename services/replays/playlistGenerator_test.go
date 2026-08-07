@@ -13,14 +13,16 @@ var (
 	pureGenerator = &PlaylistGenerator{}
 	testConfigs   = []HLSOutputConfiguration{
 		{
-			ID:           "1",
-			VideoBitrate: 1000,
-			Framerate:    30,
+			ID:              "1",
+			VideoBitrate:    1000,
+			Framerate:       30,
+			SegmentDuration: 2,
 		},
 		{
-			ID:           "2",
-			VideoBitrate: 2000,
-			Framerate:    30,
+			ID:              "2",
+			VideoBitrate:    2000,
+			Framerate:       30,
+			SegmentDuration: 2,
 		},
 	}
 )
@@ -32,6 +34,17 @@ var testSegments = []HLSSegment{
 		Timestamp:             time.Now(),
 		OutputConfigurationID: "testOutputConfigId",
 		Path:                  "hls/testStreamId/testOutputConfigId/testSegmentId.ts",
+		Duration:              2.5,
+		MediaOffset:           0,
+	},
+	{
+		ID:                    "testSegmentId2",
+		StreamID:              "testStreamId",
+		Timestamp:             time.Now(),
+		OutputConfigurationID: "testOutputConfigId",
+		Path:                  "hls/testStreamId/testOutputConfigId/testSegmentId2.ts",
+		Duration:              1.5,
+		MediaOffset:           2.5,
 	},
 }
 
@@ -75,8 +88,14 @@ func TestCompletedMediaPlaylist(t *testing.T) {
 		t.Error(err)
 	}
 
-	if playlist.TargetDuration != conf.SegmentDuration {
-		t.Error("expected target duration", conf.SegmentDuration, "got", playlist.TargetDuration)
+	// TARGETDURATION must cover the longest real segment.
+	if playlist.TargetDuration != 3 {
+		t.Error("expected target duration 3, got", playlist.TargetDuration)
+	}
+
+	// EXTINF values come from the recorded durations.
+	if playlist.Segments[0].Duration != testSegments[0].Duration {
+		t.Error("expected segment duration", testSegments[0].Duration, "got", playlist.Segments[0].Duration)
 	}
 
 	// Verify it's marked as cachable.

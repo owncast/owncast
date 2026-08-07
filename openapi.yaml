@@ -3989,23 +3989,220 @@ paths:
                 $ref: '#/components/schemas/BaseAPIResponse'
         '400':
           $ref: '#/components/responses/400'
-  /replays:
+  /admin/replays:
     get:
-      summary: Get a list of all available stream replays
-      description: Requires the experimental replay features to be enabled, otherwise responds with 404.
-      operationId: GetReplays
-      tags: ['Internal']
+      summary: Get all replays, with disk usage and clip counts
+      description: Requires replay features to be enabled, otherwise responds with 404.
+      operationId: GetAdminReplays
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
       responses:
         '200':
-          description: List of replayable streams
+          description: List of replays
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Replay'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
         '404':
           description: Replay features are not enabled
+    options:
+      operationId: GetAdminReplaysOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/replays/delete:
+    post:
+      summary: Delete a replay along with its clips and recorded video
+      operationId: DeleteReplay
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+      responses:
+        '200':
+          description: Replay deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        '404':
+          description: Replay features are not enabled
+    options:
+      operationId: DeleteReplayOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/clips:
+    get:
+      summary: Get all clips for administration
+      description: Requires replay features to be enabled, otherwise responds with 404.
+      operationId: GetAdminClips
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of clips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Clip'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        '404':
+          description: Replay features are not enabled
+    options:
+      operationId: GetAdminClipsOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/clips/delete:
+    post:
+      summary: Delete a clip
+      operationId: DeleteClip
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+      responses:
+        '200':
+          description: Clip deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        '404':
+          description: Replay features are not enabled
+    options:
+      operationId: DeleteClipOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/replay/enable:
+    post:
+      summary: Enable/disable replay and clip features
+      description: Enabling this stops automatic cleanup of video segments so recorded video persists.
+      operationId: SetReplayFeaturesEnabled
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Replay features enabled/disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetReplayFeaturesEnabledOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/replay/clipsenabled:
+    post:
+      summary: Enable/disable viewer clip creation
+      operationId: SetClipsEnabled
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Clip creation enabled/disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetClipsEnabledOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/replay/maxclipduration:
+    post:
+      summary: Set the maximum length of a viewer-created clip
+      operationId: SetMaxClipDuration
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Maximum clip duration saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetMaxClipDurationOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /clips:
     get:
       summary: Get a list of all created clips
@@ -4026,11 +4223,15 @@ paths:
   /clip:
     post:
       summary: Create a clip from a recorded stream
-      description: Requires the experimental replay features to be enabled, otherwise responds with 404.
+      description: >
+        Requires the experimental replay features to be enabled, otherwise responds with 404.
+        Provide durationSeconds to clip a trailing window of the newest recorded video (the
+        live "clip that" case), or an explicit relativeStartTimeSeconds/relativeEndTimeSeconds
+        window in media time.
       operationId: AddClip
       tags: ['Internal']
       requestBody:
-        description: The stream and time window (in seconds, relative to the start of the stream) to clip.
+        description: The stream and the window to clip.
         content:
           application/json:
             schema:
@@ -4040,6 +4241,9 @@ paths:
                   type: string
                 clipTitle:
                   type: string
+                durationSeconds:
+                  type: number
+                  description: Length of a trailing clip ending at the newest recorded video.
                 relativeStartTimeSeconds:
                   type: number
                 relativeEndTimeSeconds:
@@ -4050,17 +4254,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseAPIResponse'
+                $ref: '#/components/schemas/ClipCreatedResponse'
         '400':
           $ref: '#/components/responses/400'
         '404':
           description: Replay features are not enabled
+        '429':
+          description: Too many clips created by this client
 
 components:
   schemas:
     Replay:
       type: object
-      description: A recorded stream that can be replayed
+      description: A recorded stream. Clips are taken from replays.
       properties:
         id:
           type: string
@@ -4075,19 +4281,28 @@ components:
         manifest:
           type: string
           description: Path to the replay's HLS master playlist
+        durationSeconds:
+          type: number
+          description: Recorded media duration of the replay
+        totalBytes:
+          type: integer
+          description: Disk space the replay's video segments occupy
+        clipCount:
+          type: integer
+          description: Number of clips taken from this replay
     Clip:
       type: object
-      description: A clip created from a window of a recorded stream
+      description: A clip created from a window of a replay
       properties:
         id:
           type: string
-        stream_id:
+        streamId:
           type: string
-        clipped_by:
+        clippedBy:
           type: string
         title:
           type: string
-        stream_title:
+        streamTitle:
           type: string
         relativeStartTime:
           type: number
@@ -4098,8 +4313,23 @@ components:
         manifest:
           type: string
           description: Path to the clip's HLS master playlist
+        thumbnail:
+          type: string
+          description: Path to the clip's poster image, when one was generated
         timestamp:
           type: string
+    ClipCreatedResponse:
+      type: object
+      description: The result of creating a clip
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        id:
+          type: string
+        durationSeconds:
+          type: integer
     Error:
       type: object
       description: Structure for an error response
@@ -4404,6 +4634,18 @@ components:
           enum: ['off', 'always', 'sound-only']
         authentication:
           $ref: '#/components/schemas/AuthenticationConfig'
+        clips:
+          $ref: '#/components/schemas/ClipsConfig'
+    ClipsConfig:
+      type: object
+      description: Whether viewers may create clips, and the limits that apply
+      properties:
+        enabled:
+          type: boolean
+        maxDurationSeconds:
+          type: integer
+        defaultDurationSeconds:
+          type: integer
     SocialHandle:
       type: object
       properties:
@@ -5049,6 +5291,22 @@ components:
           type: boolean
         hideViewerCount:
           type: boolean
+        replay:
+          $ref: '#/components/schemas/ReplayAdminConfig'
+    ReplayAdminConfig:
+      type: object
+      description: Current state of the replay and clip settings
+      properties:
+        enabled:
+          type: boolean
+          description: Whether replays are being recorded. Automatic segment cleanup is suppressed while true.
+        clipsEnabled:
+          type: boolean
+        maxClipDurationSeconds:
+          type: integer
+        forcedByCommandLine:
+          type: boolean
+          description: The -enableReplayFeatures flag is holding the feature on, so the admin toggle cannot turn it off.
     AdminWebConfig:
       type: object
       properties:

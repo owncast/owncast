@@ -120,8 +120,8 @@ func (s *Service) resetDirectories() {
 	log.Trace("Resetting file directories to a clean slate.")
 
 	// Wipe hls data directory. When replay features are enabled we keep
-	// previously recorded video so past streams remain replayable.
-	utils.CleanupDirectory(config.HLSStoragePath, config.EnableReplayFeatures)
+	// previously recorded video so recorded streams stay available for clips.
+	utils.CleanupDirectory(config.HLSStoragePath, s.configRepository.GetReplayFeaturesEnabled())
 
 	// Remove the previous thumbnail
 	logo := s.configRepository.GetLogoPath()
@@ -192,7 +192,7 @@ func (s *Service) applyStreamOnline() {
 	// handler's recorder unset so nothing is recorded.
 	s.recorder = nil
 	s.handler.Recorder = nil
-	if config.EnableReplayFeatures && s.replays != nil && s.currentBroadcast != nil {
+	if s.configRepository.GetReplayFeaturesEnabled() && s.replays != nil && s.currentBroadcast != nil {
 		if recorder := s.replays.NewRecording(s.currentBroadcast.StreamID); recorder != nil {
 			s.recorder = recorder
 			s.handler.Recorder = recorder
@@ -203,7 +203,7 @@ func (s *Service) applyStreamOnline() {
 
 	// While recording for replay we must not prune segments mid-stream, so
 	// don't run the periodic online cleanup.
-	if !config.EnableReplayFeatures {
+	if !s.configRepository.GetReplayFeaturesEnabled() {
 		s.startOnlineCleanupTimer()
 	}
 

@@ -6,6 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
@@ -69,6 +70,12 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ChatRequireAuthentication: configRepository.GetChatRequireAuthentication(),
 		HideViewerCount:           configRepository.GetHideViewerCount(),
 		DisableSearchIndexing:     configRepository.GetDisableSearchIndexing(),
+		Replay: replayConfigResponse{
+			Enabled:                configRepository.GetReplayFeaturesEnabled(),
+			ClipsEnabled:           configRepository.GetClipsEnabled(),
+			MaxClipDurationSeconds: configRepository.GetMaxClipDurationSeconds(),
+			ForcedByCommandLine:    config.EnableReplayFeatures,
+		},
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         configRepository.GetStreamLatencyLevel().Level,
@@ -154,6 +161,22 @@ type serverConfigAdminResponse struct {
 	DisableSearchIndexing     bool                        `json:"disableSearchIndexing"`
 	StreamKeyOverridden       bool                        `json:"streamKeyOverridden"`
 	HideViewerCount           bool                        `json:"hideViewerCount"`
+	// Replay carries the replay/clip settings for the admin's Clips section.
+	Replay replayConfigResponse `json:"replay"`
+}
+
+// replayConfigResponse is the current state of the replay and clip settings.
+type replayConfigResponse struct {
+	// Enabled reports whether replays are being recorded. While true,
+	// automatic cleanup of video segments is suppressed.
+	Enabled bool `json:"enabled"`
+	// ClipsEnabled reports whether viewers may create clips.
+	ClipsEnabled bool `json:"clipsEnabled"`
+	// MaxClipDurationSeconds is the longest clip a viewer may create.
+	MaxClipDurationSeconds int `json:"maxClipDurationSeconds"`
+	// ForcedByCommandLine is true when the -enableReplayFeatures flag is
+	// holding the feature on, so the admin toggle cannot turn it off.
+	ForcedByCommandLine bool `json:"forcedByCommandLine"`
 }
 
 type videoSettings struct {

@@ -54,6 +54,20 @@ type webConfigResponse struct {
 	NSFW                       bool                         `json:"nsfw"`
 	Autoplay                   string                       `json:"autoplay"`
 	Authentication             authenticationConfigResponse `json:"authentication"`
+	// Clips reports whether viewers may create clips and whether the Clips
+	// tab has anything to show.
+	Clips clipsConfigResponse `json:"clips"`
+}
+
+// clipsConfigResponse tells the viewer whether the clip UI applies.
+type clipsConfigResponse struct {
+	// Enabled is true when replay features are on and clip creation is
+	// allowed, so the viewer may show the clip button and Clips tab.
+	Enabled bool `json:"enabled"`
+	// MaxDurationSeconds caps how long a viewer-created clip may be.
+	MaxDurationSeconds int `json:"maxDurationSeconds"`
+	// DefaultDurationSeconds is the trailing window a live clip captures.
+	DefaultDurationSeconds int `json:"defaultDurationSeconds"`
 }
 
 type federationConfigResponse struct {
@@ -168,6 +182,11 @@ func (h *Handlers) getConfigResponse(r *http.Request) webConfigResponse {
 		Authentication:             authenticationResponse,
 		AppearanceVariables:        configRepository.GetCustomColorVariableValues(),
 		HideViewerCount:            configRepository.GetHideViewerCount(),
+		Clips: clipsConfigResponse{
+			Enabled:                configRepository.GetReplayFeaturesEnabled() && configRepository.GetClipsEnabled(),
+			MaxDurationSeconds:     configRepository.GetMaxClipDurationSeconds(),
+			DefaultDurationSeconds: models.DefaultClipDurationSeconds,
+		},
 	}
 }
 

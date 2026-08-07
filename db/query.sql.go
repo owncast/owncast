@@ -359,6 +359,70 @@ func (q *Queries) DeferActivityPubDelivery(ctx context.Context, arg DeferActivit
 	return result.RowsAffected()
 }
 
+const deleteClip = `-- name: DeleteClip :execrows
+DELETE FROM replay_clips WHERE id = ?
+`
+
+func (q *Queries) DeleteClip(ctx context.Context, id string) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteClip, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+const deleteClipsForStream = `-- name: DeleteClipsForStream :exec
+DELETE FROM replay_clips WHERE stream_id = ?
+`
+
+func (q *Queries) DeleteClipsForStream(ctx context.Context, streamID string) error {
+	_, err := q.db.ExecContext(ctx, deleteClipsForStream, streamID)
+	return err
+}
+
+const deleteEmptyStreams = `-- name: DeleteEmptyStreams :exec
+DELETE FROM streams WHERE
+	NOT EXISTS (SELECT 1 FROM video_segments vs WHERE vs.stream_id = streams.id)
+	AND NOT EXISTS (SELECT 1 FROM replay_clips rc WHERE rc.stream_id = streams.id)
+`
+
+// Streams that recorded nothing at all (crashed before any segment landed)
+// and have no clips: they are never playable, so they're pruned at startup.
+func (q *Queries) DeleteEmptyStreams(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteEmptyStreams)
+	return err
+}
+
+const deleteOutputConfigurationsForStream = `-- name: DeleteOutputConfigurationsForStream :exec
+DELETE FROM video_segment_output_configuration WHERE stream_id = ?
+`
+
+func (q *Queries) DeleteOutputConfigurationsForStream(ctx context.Context, streamID string) error {
+	_, err := q.db.ExecContext(ctx, deleteOutputConfigurationsForStream, streamID)
+	return err
+}
+
+const deleteSegmentsForStream = `-- name: DeleteSegmentsForStream :exec
+DELETE FROM video_segments WHERE stream_id = ?
+`
+
+func (q *Queries) DeleteSegmentsForStream(ctx context.Context, streamID string) error {
+	_, err := q.db.ExecContext(ctx, deleteSegmentsForStream, streamID)
+	return err
+}
+
+const deleteStream = `-- name: DeleteStream :execrows
+DELETE FROM streams WHERE id = ?
+`
+
+func (q *Queries) DeleteStream(ctx context.Context, id string) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteStream, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const deleteUserAccessTokens = `-- name: DeleteUserAccessTokens :exec
 DELETE FROM user_access_tokens WHERE user_id = ?
 `
@@ -675,6 +739,33 @@ func (q *Queries) GetClip(ctx context.Context, id string) (GetClipRow, error) {
 	return i, err
 }
 
+const getClipIDsForStream = `-- name: GetClipIDsForStream :many
+SELECT id FROM replay_clips WHERE stream_id = ?
+`
+
+func (q *Queries) GetClipIDsForStream(ctx context.Context, streamID string) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getClipIDsForStream, streamID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getFederatedServer = `-- name: GetFederatedServer :one
 SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE iri = ?
 `
@@ -859,24 +950,6 @@ func (q *Queries) GetFederationFollowersWithOffset(ctx context.Context, arg GetF
 		return nil, err
 	}
 	return items, nil
-}
-
-const getFinalSegmentForStream = `-- name: GetFinalSegmentForStream :one
-SELECT id, stream_id, output_configuration_id, path, relative_timestamp, timestamp FROM video_segments WHERE stream_id = ? ORDER BY relative_timestamp DESC LIMIT 1
-`
-
-func (q *Queries) GetFinalSegmentForStream(ctx context.Context, streamID string) (VideoSegment, error) {
-	row := q.db.QueryRowContext(ctx, getFinalSegmentForStream, streamID)
-	var i VideoSegment
-	err := row.Scan(
-		&i.ID,
-		&i.StreamID,
-		&i.OutputConfigurationID,
-		&i.Path,
-		&i.RelativeTimestamp,
-		&i.Timestamp,
-	)
-	return i, err
 }
 
 const getFollowerByIRI = `-- name: GetFollowerByIRI :one
@@ -1439,8 +1512,35 @@ func (q *Queries) GetRejectedAndBlockedFollowers(ctx context.Context) ([]GetReje
 	return items, nil
 }
 
+const getSegmentPathsForStream = `-- name: GetSegmentPathsForStream :many
+SELECT path FROM video_segments WHERE stream_id = ?
+`
+
+func (q *Queries) GetSegmentPathsForStream(ctx context.Context, streamID string) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getSegmentPathsForStream, streamID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var path string
+		if err := rows.Scan(&path); err != nil {
+			return nil, err
+		}
+		items = append(items, path)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSegmentsForOutputId = `-- name: GetSegmentsForOutputId :many
-SELECT id, stream_id, output_configuration_id, path, timestamp FROM video_segments WHERE output_configuration_id = ? ORDER BY timestamp ASC
+SELECT id, stream_id, output_configuration_id, path, duration, media_offset, timestamp FROM video_segments WHERE output_configuration_id = ? AND duration IS NOT NULL ORDER BY media_offset ASC
 `
 
 type GetSegmentsForOutputIdRow struct {
@@ -1448,9 +1548,13 @@ type GetSegmentsForOutputIdRow struct {
 	StreamID              string
 	OutputConfigurationID string
 	Path                  string
+	Duration              sql.NullFloat64
+	MediaOffset           sql.NullFloat64
 	Timestamp             sql.NullTime
 }
 
+// Only segments whose media timing is known are playable; ones still waiting
+// for their variant-playlist EXTINF are excluded.
 func (q *Queries) GetSegmentsForOutputId(ctx context.Context, outputConfigurationID string) ([]GetSegmentsForOutputIdRow, error) {
 	rows, err := q.db.QueryContext(ctx, getSegmentsForOutputId, outputConfigurationID)
 	if err != nil {
@@ -1465,6 +1569,8 @@ func (q *Queries) GetSegmentsForOutputId(ctx context.Context, outputConfiguratio
 			&i.StreamID,
 			&i.OutputConfigurationID,
 			&i.Path,
+			&i.Duration,
+			&i.MediaOffset,
 			&i.Timestamp,
 		); err != nil {
 			return nil, err
@@ -1481,30 +1587,44 @@ func (q *Queries) GetSegmentsForOutputId(ctx context.Context, outputConfiguratio
 }
 
 const getSegmentsForOutputIdAndWindow = `-- name: GetSegmentsForOutputIdAndWindow :many
-SELECT id, stream_id, output_configuration_id, path, relative_timestamp, timestamp FROM video_segments WHERE output_configuration_id = ?1 AND relative_timestamp >= ?2 AND relative_timestamp <= ?3 ORDER BY relative_timestamp ASC
+SELECT id, stream_id, output_configuration_id, path, duration, media_offset, timestamp FROM video_segments WHERE output_configuration_id = ?1 AND duration IS NOT NULL AND media_offset < CAST(?2 AS REAL) AND media_offset + duration > CAST(?3 AS REAL) ORDER BY media_offset ASC
 `
 
 type GetSegmentsForOutputIdAndWindowParams struct {
 	OutputConfigurationID string
-	StartSeconds          float64
 	EndSeconds            float64
+	StartSeconds          float64
 }
 
-func (q *Queries) GetSegmentsForOutputIdAndWindow(ctx context.Context, arg GetSegmentsForOutputIdAndWindowParams) ([]VideoSegment, error) {
-	rows, err := q.db.QueryContext(ctx, getSegmentsForOutputIdAndWindow, arg.OutputConfigurationID, arg.StartSeconds, arg.EndSeconds)
+type GetSegmentsForOutputIdAndWindowRow struct {
+	ID                    string
+	StreamID              string
+	OutputConfigurationID string
+	Path                  string
+	Duration              sql.NullFloat64
+	MediaOffset           sql.NullFloat64
+	Timestamp             sql.NullTime
+}
+
+// Segments overlapping the [start, end) media-time window. Overlap selection
+// (rather than containment) means a clip window always yields every segment
+// that contributes any media to it.
+func (q *Queries) GetSegmentsForOutputIdAndWindow(ctx context.Context, arg GetSegmentsForOutputIdAndWindowParams) ([]GetSegmentsForOutputIdAndWindowRow, error) {
+	rows, err := q.db.QueryContext(ctx, getSegmentsForOutputIdAndWindow, arg.OutputConfigurationID, arg.EndSeconds, arg.StartSeconds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []VideoSegment
+	var items []GetSegmentsForOutputIdAndWindowRow
 	for rows.Next() {
-		var i VideoSegment
+		var i GetSegmentsForOutputIdAndWindowRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.StreamID,
 			&i.OutputConfigurationID,
 			&i.Path,
-			&i.RelativeTimestamp,
+			&i.Duration,
+			&i.MediaOffset,
 			&i.Timestamp,
 		); err != nil {
 			return nil, err
@@ -1536,6 +1656,19 @@ func (q *Queries) GetStreamById(ctx context.Context, id string) (Stream, error) 
 	return i, err
 }
 
+const getStreamMediaEnd = `-- name: GetStreamMediaEnd :one
+SELECT CAST(COALESCE(MAX(media_offset + duration), 0) AS REAL) FROM video_segments WHERE stream_id = ? AND duration IS NOT NULL
+`
+
+// The media-time end (in seconds) of everything recorded so far for a
+// stream: the maximum end offset across every variant.
+func (q *Queries) GetStreamMediaEnd(ctx context.Context, streamID string) (float64, error) {
+	row := q.db.QueryRowContext(ctx, getStreamMediaEnd, streamID)
+	var column_1 float64
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const getStreams = `-- name: GetStreams :many
 
 SELECT id, stream_title, start_time, end_time FROM streams ORDER BY start_time DESC
@@ -1556,6 +1689,58 @@ func (q *Queries) GetStreams(ctx context.Context) ([]Stream, error) {
 			&i.StreamTitle,
 			&i.StartTime,
 			&i.EndTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStreamsWithDetails = `-- name: GetStreamsWithDetails :many
+SELECT s.id, s.stream_title, s.start_time, s.end_time,
+	CAST(COALESCE((SELECT SUM(vs.bytes) FROM video_segments vs WHERE vs.stream_id = s.id), 0) AS INTEGER) AS total_bytes,
+	CAST(COALESCE((SELECT MAX(vs.media_offset + vs.duration) FROM video_segments vs WHERE vs.stream_id = s.id AND vs.duration IS NOT NULL), 0) AS REAL) AS duration_seconds,
+	CAST((SELECT COUNT(*) FROM replay_clips rc WHERE rc.stream_id = s.id) AS INTEGER) AS clip_count
+	FROM streams s
+	ORDER BY s.start_time DESC
+`
+
+type GetStreamsWithDetailsRow struct {
+	ID              string
+	StreamTitle     sql.NullString
+	StartTime       sql.NullTime
+	EndTime         sql.NullTime
+	TotalBytes      int64
+	DurationSeconds float64
+	ClipCount       int64
+}
+
+// Recorded streams with the numbers the admin needs to manage them: how much
+// disk their segments occupy and how many clips depend on them.
+func (q *Queries) GetStreamsWithDetails(ctx context.Context) ([]GetStreamsWithDetailsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getStreamsWithDetails)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetStreamsWithDetailsRow
+	for rows.Next() {
+		var i GetStreamsWithDetailsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.StreamTitle,
+			&i.StartTime,
+			&i.EndTime,
+			&i.TotalBytes,
+			&i.DurationSeconds,
+			&i.ClipCount,
 		); err != nil {
 			return nil, err
 		}
@@ -1993,12 +2178,13 @@ func (q *Queries) GetUsersPaginatedAsc(ctx context.Context, arg GetUsersPaginate
 }
 
 const insertClip = `-- name: InsertClip :exec
-INSERT INTO replay_clips (id, stream_id, clip_title, relative_start_time, relative_end_time, timestamp) VALUES(?, ?, ?, ?, ?, ?)
+INSERT INTO replay_clips (id, stream_id, clipped_by, clip_title, relative_start_time, relative_end_time, timestamp) VALUES(?, ?, ?, ?, ?, ?, ?)
 `
 
 type InsertClipParams struct {
 	ID                string
 	StreamID          string
+	ClippedBy         sql.NullString
 	ClipTitle         sql.NullString
 	RelativeStartTime sql.NullFloat64
 	RelativeEndTime   sql.NullFloat64
@@ -2009,6 +2195,7 @@ func (q *Queries) InsertClip(ctx context.Context, arg InsertClipParams) error {
 	_, err := q.db.ExecContext(ctx, insertClip,
 		arg.ID,
 		arg.StreamID,
+		arg.ClippedBy,
 		arg.ClipTitle,
 		arg.RelativeStartTime,
 		arg.RelativeEndTime,
@@ -2051,7 +2238,7 @@ func (q *Queries) InsertOutputConfiguration(ctx context.Context, arg InsertOutpu
 }
 
 const insertSegment = `-- name: InsertSegment :exec
-INSERT INTO video_segments (id, stream_id, output_configuration_id, path, relative_timestamp, timestamp) VALUES(?, ?, ?, ?, ?, ?)
+INSERT INTO video_segments (id, stream_id, output_configuration_id, path, bytes, timestamp) VALUES(?, ?, ?, ?, ?, ?)
 `
 
 type InsertSegmentParams struct {
@@ -2059,7 +2246,7 @@ type InsertSegmentParams struct {
 	StreamID              string
 	OutputConfigurationID string
 	Path                  string
-	RelativeTimestamp     float64
+	Bytes                 int64
 	Timestamp             sql.NullTime
 }
 
@@ -2069,7 +2256,7 @@ func (q *Queries) InsertSegment(ctx context.Context, arg InsertSegmentParams) er
 		arg.StreamID,
 		arg.OutputConfigurationID,
 		arg.Path,
-		arg.RelativeTimestamp,
+		arg.Bytes,
 		arg.Timestamp,
 	)
 	return err
@@ -2271,6 +2458,33 @@ type SetAccessTokenToOwnerParams struct {
 func (q *Queries) SetAccessTokenToOwner(ctx context.Context, arg SetAccessTokenToOwnerParams) error {
 	_, err := q.db.ExecContext(ctx, setAccessTokenToOwner, arg.UserID, arg.Token)
 	return err
+}
+
+const setSegmentTiming = `-- name: SetSegmentTiming :execrows
+UPDATE video_segments SET duration = ?1, media_offset = ?2 WHERE output_configuration_id = ?3 AND substr(path, -length(CAST(?4 AS TEXT))) = ?4 AND duration IS NULL
+`
+
+type SetSegmentTimingParams struct {
+	Duration              sql.NullFloat64
+	MediaOffset           sql.NullFloat64
+	OutputConfigurationID string
+	Filename              string
+}
+
+// Fill in the real media timing for a stored segment once its variant
+// playlist reports the EXTINF. Matched on filename suffix because local
+// paths and S3 URLs share only the segment filename.
+func (q *Queries) SetSegmentTiming(ctx context.Context, arg SetSegmentTimingParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, setSegmentTiming,
+		arg.Duration,
+		arg.MediaOffset,
+		arg.OutputConfigurationID,
+		arg.Filename,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const setStreamEnded = `-- name: SetStreamEnded :exec

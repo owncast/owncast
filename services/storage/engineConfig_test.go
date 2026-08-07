@@ -26,6 +26,7 @@ func (f fakeEngineConfig) GetStreamLatencyLevel() models.LatencyLevel {
 func (f fakeEngineConfig) GetStreamOutputVariants() []models.StreamOutputVariant { return nil }
 func (f fakeEngineConfig) GetVideoServingEndpoint() string                       { return f.servingEndpoint }
 func (f fakeEngineConfig) GetStreamKeys() []models.StreamKey                     { return nil }
+func (f fakeEngineConfig) GetReplayFeaturesEnabled() bool                        { return false }
 
 var _ models.EngineConfig = fakeEngineConfig{}
 

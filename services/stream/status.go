@@ -17,8 +17,14 @@ func (s *Service) GetStatus() models.Status {
 		viewerCount = len(s.stats.Viewers)
 	}
 
+	streamID := ""
+	if s.currentBroadcast != nil {
+		streamID = s.currentBroadcast.StreamID
+	}
+
 	return models.Status{
 		Online:                s.IsStreamConnected(),
+		StreamID:              streamID,
 		ViewerCount:           viewerCount,
 		OverallMaxViewerCount: s.stats.OverallMaxViewerCount,
 		SessionMaxViewerCount: s.stats.SessionMaxViewerCount,

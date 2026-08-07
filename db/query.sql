@@ -353,10 +353,15 @@ SELECT id, stream_id, variant_id, name, segment_duration, bitrate, framerate, re
 SELECT id, stream_id, variant_id, name, segment_duration, bitrate, framerate, resolution_width, resolution_height FROM video_segment_output_configuration WHERE id = ?;
 
 -- name: GetSegmentsForOutputId :many
-SELECT id, stream_id, output_configuration_id, path, timestamp FROM video_segments WHERE output_configuration_id = ? ORDER BY timestamp ASC;
+-- Only segments whose media timing is known are playable; ones still waiting
+-- for their variant-playlist EXTINF are excluded.
+SELECT id, stream_id, output_configuration_id, path, duration, media_offset, timestamp FROM video_segments WHERE output_configuration_id = ? AND duration IS NOT NULL ORDER BY media_offset ASC;
 
 -- name: GetSegmentsForOutputIdAndWindow :many
-SELECT id, stream_id, output_configuration_id, path, relative_timestamp, timestamp FROM video_segments WHERE output_configuration_id = @output_configuration_id AND relative_timestamp >= @start_seconds AND relative_timestamp <= @end_seconds ORDER BY relative_timestamp ASC;
+-- Segments overlapping the [start, end) media-time window. Overlap selection
+-- (rather than containment) means a clip window always yields every segment
+-- that contributes any media to it.
+SELECT id, stream_id, output_configuration_id, path, duration, media_offset, timestamp FROM video_segments WHERE output_configuration_id = @output_configuration_id AND duration IS NOT NULL AND media_offset < CAST(@end_seconds AS REAL) AND media_offset + duration > CAST(@start_seconds AS REAL) ORDER BY media_offset ASC;
 
 -- name: InsertStream :exec
 INSERT INTO streams (id, stream_title, start_time, end_time) VALUES(?, ?, ?, ?);
@@ -365,13 +370,19 @@ INSERT INTO streams (id, stream_title, start_time, end_time) VALUES(?, ?, ?, ?);
 INSERT INTO video_segment_output_configuration (id, variant_id, stream_id, name, segment_duration, bitrate, framerate, resolution_width, resolution_height, timestamp) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: InsertSegment :exec
-INSERT INTO video_segments (id, stream_id, output_configuration_id, path, relative_timestamp, timestamp) VALUES(?, ?, ?, ?, ?, ?);
+INSERT INTO video_segments (id, stream_id, output_configuration_id, path, bytes, timestamp) VALUES(?, ?, ?, ?, ?, ?);
+
+-- name: SetSegmentTiming :execrows
+-- Fill in the real media timing for a stored segment once its variant
+-- playlist reports the EXTINF. Matched on filename suffix because local
+-- paths and S3 URLs share only the segment filename.
+UPDATE video_segments SET duration = @duration, media_offset = @media_offset WHERE output_configuration_id = @output_configuration_id AND substr(path, -length(CAST(@filename AS TEXT))) = @filename AND duration IS NULL;
 
 -- name: SetStreamEnded :exec
 UPDATE streams SET end_time = ? WHERE id = ?;
 
 -- name: InsertClip :exec
-INSERT INTO replay_clips (id, stream_id, clip_title, relative_start_time, relative_end_time, timestamp) VALUES(?, ?, ?, ?, ?, ?);
+INSERT INTO replay_clips (id, stream_id, clipped_by, clip_title, relative_start_time, relative_end_time, timestamp) VALUES(?, ?, ?, ?, ?, ?, ?);
 
 -- name: GetAllClips :many
 SELECT rc.id AS id, rc.clip_title, rc.stream_id, rc.relative_start_time, rc.relative_end_time, (rc.relative_end_time - rc.relative_start_time) AS duration_seconds, rc.timestamp, s.stream_title AS stream_title
@@ -390,8 +401,49 @@ SELECT rc.id AS clip_id, rc.stream_id, rc.clipped_by, rc.clip_title, rc.relative
 -- name: GetClip :one
 SELECT id AS clip_id, stream_id, clipped_by, clip_title, timestamp AS clip_timestamp, relative_start_time, relative_end_time FROM replay_clips WHERE id = ?;
 
--- name: GetFinalSegmentForStream :one
-SELECT id, stream_id, output_configuration_id, path, relative_timestamp, timestamp FROM video_segments WHERE stream_id = ? ORDER BY relative_timestamp DESC LIMIT 1;
+-- name: GetStreamMediaEnd :one
+-- The media-time end (in seconds) of everything recorded so far for a
+-- stream: the maximum end offset across every variant.
+SELECT CAST(COALESCE(MAX(media_offset + duration), 0) AS REAL) FROM video_segments WHERE stream_id = ? AND duration IS NOT NULL;
+
+
+-- name: DeleteClip :execrows
+DELETE FROM replay_clips WHERE id = ?;
+
+-- name: DeleteClipsForStream :exec
+DELETE FROM replay_clips WHERE stream_id = ?;
+
+-- name: GetClipIDsForStream :many
+SELECT id FROM replay_clips WHERE stream_id = ?;
+
+-- name: GetSegmentPathsForStream :many
+SELECT path FROM video_segments WHERE stream_id = ?;
+
+-- name: DeleteSegmentsForStream :exec
+DELETE FROM video_segments WHERE stream_id = ?;
+
+-- name: DeleteOutputConfigurationsForStream :exec
+DELETE FROM video_segment_output_configuration WHERE stream_id = ?;
+
+-- name: DeleteStream :execrows
+DELETE FROM streams WHERE id = ?;
+
+-- name: GetStreamsWithDetails :many
+-- Recorded streams with the numbers the admin needs to manage them: how much
+-- disk their segments occupy and how many clips depend on them.
+SELECT s.id, s.stream_title, s.start_time, s.end_time,
+	CAST(COALESCE((SELECT SUM(vs.bytes) FROM video_segments vs WHERE vs.stream_id = s.id), 0) AS INTEGER) AS total_bytes,
+	CAST(COALESCE((SELECT MAX(vs.media_offset + vs.duration) FROM video_segments vs WHERE vs.stream_id = s.id AND vs.duration IS NOT NULL), 0) AS REAL) AS duration_seconds,
+	CAST((SELECT COUNT(*) FROM replay_clips rc WHERE rc.stream_id = s.id) AS INTEGER) AS clip_count
+	FROM streams s
+	ORDER BY s.start_time DESC;
+
+-- name: DeleteEmptyStreams :exec
+-- Streams that recorded nothing at all (crashed before any segment landed)
+-- and have no clips: they are never playable, so they're pruned at startup.
+DELETE FROM streams WHERE
+	NOT EXISTS (SELECT 1 FROM video_segments vs WHERE vs.stream_id = streams.id)
+	AND NOT EXISTS (SELECT 1 FROM replay_clips rc WHERE rc.stream_id = streams.id);
 
 -- name: FixUnfinishedStreams :exec
 UPDATE streams SET end_time = (SELECT MAX(timestamp) FROM video_segments WHERE stream_id = streams.id) WHERE end_time IS NULL;

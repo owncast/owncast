@@ -39,13 +39,20 @@ func (p *PlaylistGenerator) GetConfigurationsForStream(streamID string) ([]*HLSO
 
 func (p *PlaylistGenerator) createMediaPlaylistForConfigurationAndSegments(configuration *HLSOutputConfiguration, startTime time.Time, inProgress bool, segments []HLSSegment) (*m3u8.MediaPlaylist, error) {
 	playlistSize := len(segments)
-	segmentDuration := configuration.SegmentDuration
 	playlist, err := m3u8.NewMediaPlaylist(0, uint(playlistSize))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create media playlist")
 	}
 
-	playlist.TargetDuration = configuration.SegmentDuration
+	// TARGETDURATION must be >= the longest real segment duration. Fall back
+	// to the configured duration when there are no segments yet.
+	targetDuration := configuration.SegmentDuration
+	for _, segment := range segments {
+		if segment.Duration > targetDuration {
+			targetDuration = math.Ceil(segment.Duration)
+		}
+	}
+	playlist.TargetDuration = targetDuration
 
 	if !inProgress {
 		playlist.MediaType = m3u8.VOD
@@ -53,7 +60,7 @@ func (p *PlaylistGenerator) createMediaPlaylistForConfigurationAndSegments(confi
 		playlist.MediaType = m3u8.EVENT
 	}
 
-	// Add the segments to the playlist.
+	// Add the segments to the playlist with their real recorded durations.
 	for index, segment := range segments {
 		// If it's a URL leave it as is, if it's a local path then append a slash.
 		path := segment.Path
@@ -63,7 +70,7 @@ func (p *PlaylistGenerator) createMediaPlaylistForConfigurationAndSegments(confi
 
 		mediaSegment := m3u8.MediaSegment{
 			URI:             path,
-			Duration:        segmentDuration,
+			Duration:        segment.Duration,
 			SeqId:           uint64(index),
 			ProgramDateTime: segment.Timestamp,
 		}
@@ -122,6 +129,8 @@ func (p *PlaylistGenerator) GetAllSegmentsForOutputConfiguration(outputID string
 			ID:                    row.ID,
 			StreamID:              row.StreamID,
 			OutputConfigurationID: row.OutputConfigurationID,
+			Duration:              row.Duration.Float64,
+			MediaOffset:           row.MediaOffset.Float64,
 			Timestamp:             row.Timestamp.Time,
 			Path:                  row.Path,
 		}

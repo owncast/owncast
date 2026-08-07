@@ -167,7 +167,9 @@ type VideoSegment struct {
 	StreamID              string
 	OutputConfigurationID string
 	Path                  string
-	RelativeTimestamp     float64
+	Duration              sql.NullFloat64
+	MediaOffset           sql.NullFloat64
+	Bytes                 int64
 	Timestamp             sql.NullTime
 }
 

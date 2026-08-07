@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/pkg/errors"
@@ -13,23 +14,34 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
-// Clip represents a clip that has been created from a stream.
-// A clip is a subset of a stream that has start and end seconds
+// Clip represents a clip that has been created from a replay.
+// A clip is a window of a replay with start and end seconds in media time,
 // relative to the start of the stream.
 type Clip struct {
 	ID                string    `json:"id"`
-	StreamID          string    `json:"stream_id"`
-	ClippedBy         string    `json:"clipped_by,omitempty"`
+	StreamID          string    `json:"streamId"`
+	ClippedBy         string    `json:"clippedBy,omitempty"`
 	ClipTitle         string    `json:"title,omitempty"`
-	StreamTitle       string    `json:"stream_title,omitempty"`
+	StreamTitle       string    `json:"streamTitle,omitempty"`
 	RelativeStartTime float32   `json:"relativeStartTime"`
 	RelativeEndTime   float32   `json:"relativeEndTime"`
 	DurationSeconds   int       `json:"durationSeconds"`
 	Manifest          string    `json:"manifest,omitempty"`
+	Thumbnail         string    `json:"thumbnail,omitempty"`
 	Timestamp         time.Time `json:"timestamp"`
 }
 
-// GetAllClips will return all clips that have been recorded.
+// clipThumbnailURL returns the public path of a clip's poster image, or an
+// empty string when it has none.
+func clipThumbnailURL(clipID string) string {
+	if !utils.DoesFileExists(ClipThumbnailPath(clipID)) {
+		return ""
+	}
+
+	return "/clips/thumbnail/" + ClipThumbnailFilename(clipID)
+}
+
+// GetAllClips will return all clips that have been created.
 func (s *Service) GetAllClips() ([]*Clip, error) {
 	clips, err := s.datastore.GetQueries().GetAllClips(context.Background())
 	if err != nil {
@@ -48,13 +60,14 @@ func (s *Service) GetAllClips() ([]*Clip, error) {
 			DurationSeconds:   numericToInt(clip.DurationSeconds),
 			Timestamp:         clip.Timestamp.Time,
 			Manifest:          fmt.Sprintf("/clip/%s", clip.ID),
+			Thumbnail:         clipThumbnailURL(clip.ID),
 		}
 		response = append(response, &c)
 	}
 	return response, nil
 }
 
-// GetAllClipsForStream will return all clips that have been recorded for a stream.
+// GetAllClipsForStream will return all clips created from a single replay.
 func (s *Service) GetAllClipsForStream(streamID string) ([]*Clip, error) {
 	clips, err := s.datastore.GetQueries().GetAllClipsForStream(context.Background(), streamID)
 	if err != nil {
@@ -73,6 +86,7 @@ func (s *Service) GetAllClipsForStream(streamID string) ([]*Clip, error) {
 			RelativeEndTime:   float32(clip.RelativeEndTime.Float64),
 			Timestamp:         clip.Timestamp.Time,
 			Manifest:          fmt.Sprintf("/clip/%s", clip.ClipID),
+			Thumbnail:         clipThumbnailURL(clip.ClipID),
 		}
 		response = append(response, &c)
 	}
@@ -80,7 +94,10 @@ func (s *Service) GetAllClipsForStream(streamID string) ([]*Clip, error) {
 }
 
 // AddClipForStream will save a new clip for a stream and return the new clip's
-// ID and its duration in seconds.
+// ID and its duration in seconds. The requested window is stored verbatim;
+// segment selection happens at playback time by media-time overlap, so the
+// clip plays exactly the requested range without snapping to segment
+// boundaries at creation.
 func (s *Service) AddClipForStream(streamID, clipTitle, clippedBy string, relativeStartTimeSeconds, relativeEndTimeSeconds float32) (string, int, error) {
 	playlistGenerator := s.NewPlaylistGenerator()
 
@@ -99,22 +116,20 @@ func (s *Service) AddClipForStream(streamID, clipTitle, clippedBy string, relati
 		return "", 0, errors.New("no configurations found for stream")
 	}
 
-	// We want the start and end seconds to be aligned to the segment so
-	// round down and up the values to get a fully inclusive segment range.
-	config := configs[0]
-	segmentDuration := int(config.SegmentDuration)
+	if relativeStartTimeSeconds < 0 || relativeEndTimeSeconds <= relativeStartTimeSeconds {
+		return "", 0, errors.New("invalid clip time window")
+	}
 
-	updatedRelativeStartTimeSeconds := utils.RoundDownToNearest(relativeStartTimeSeconds, segmentDuration)
-	updatedRelativeEndTimeSeconds := utils.RoundUpToNearest(relativeEndTimeSeconds, segmentDuration)
 	clipID := shortid.MustGenerate()
-	duration := updatedRelativeEndTimeSeconds - updatedRelativeStartTimeSeconds
+	duration := int(math.Round(float64(relativeEndTimeSeconds - relativeStartTimeSeconds)))
 
 	err = s.datastore.GetQueries().InsertClip(context.Background(), db.InsertClipParams{
 		ID:                clipID,
 		StreamID:          streamID,
+		ClippedBy:         sql.NullString{String: clippedBy, Valid: clippedBy != ""},
 		ClipTitle:         sql.NullString{String: clipTitle, Valid: clipTitle != ""},
-		RelativeStartTime: sql.NullFloat64{Float64: float64(updatedRelativeStartTimeSeconds), Valid: true},
-		RelativeEndTime:   sql.NullFloat64{Float64: float64(updatedRelativeEndTimeSeconds), Valid: true},
+		RelativeStartTime: sql.NullFloat64{Float64: float64(relativeStartTimeSeconds), Valid: true},
+		RelativeEndTime:   sql.NullFloat64{Float64: float64(relativeEndTimeSeconds), Valid: true},
 		Timestamp:         sql.NullTime{Time: time.Now(), Valid: true},
 	})
 	if err != nil {
@@ -124,23 +139,15 @@ func (s *Service) AddClipForStream(streamID, clipTitle, clippedBy string, relati
 	return clipID, duration, nil
 }
 
-// GetFinalSegmentForStream will return the final known segment for a stream.
-func (s *Service) GetFinalSegmentForStream(streamID string) (*HLSSegment, error) {
-	segmentResponse, err := s.datastore.GetQueries().GetFinalSegmentForStream(context.Background(), streamID)
+// GetStreamMediaEnd returns the media-time end (in seconds) of everything
+// recorded so far for a stream: the maximum end offset across every variant.
+// Zero means no segment has known timing yet.
+func (s *Service) GetStreamMediaEnd(streamID string) (float64, error) {
+	end, err := s.datastore.GetQueries().GetStreamMediaEnd(context.Background(), streamID)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to get final segment for stream")
+		return 0, errors.Wrap(err, "unable to get stream media end")
 	}
-
-	segment := HLSSegment{
-		ID:                    segmentResponse.ID,
-		StreamID:              segmentResponse.StreamID,
-		OutputConfigurationID: segmentResponse.OutputConfigurationID,
-		Path:                  segmentResponse.Path,
-		RelativeTimestamp:     segmentResponse.RelativeTimestamp,
-		Timestamp:             segmentResponse.Timestamp.Time,
-	}
-
-	return &segment, nil
+	return end, nil
 }
 
 // numericToInt converts the dynamically-typed numeric result of a SQL

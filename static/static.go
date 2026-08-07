@@ -95,3 +95,15 @@ func GetBotMetadataTemplate() (*template.Template, error) {
 	tmpl := template.Must(t, err)
 	return tmpl, err
 }
+
+//go:embed clip-metadata.html.tmpl
+var clipMetadataTemplate embed.FS
+
+// GetClipMetadataTemplate will return the metadata template used for clip
+// share links, so a clip URL unfurls with its own title and thumbnail.
+func GetClipMetadataTemplate() (*template.Template, error) {
+	name := "clip-metadata.html.tmpl"
+	t, err := template.ParseFS(clipMetadataTemplate, name)
+	tmpl := template.Must(t, err)
+	return tmpl, err
+}
