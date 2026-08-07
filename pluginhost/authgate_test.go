@@ -75,6 +75,12 @@ func TestGateExemptions(t *testing.T) {
 		{"public api/config is still gated", req("/api/config", ""), "g", ""},
 		{"logo is exempt", req("/logo", ""), "g", "logo"},
 		{"external logo is exempt", req("/logo/external", ""), "g", "logo"},
+		{"federation inbox is exempt", req("/federation/user/streamer/inbox", ""), "g", "federation"},
+		{"federation object is exempt", req("/federation/stream/123", ""), "g", "federation"},
+		{"webfinger is exempt", req("/.well-known/webfinger?resource=acct:streamer@example.com", ""), "g", "federation"},
+		{"nodeinfo is exempt", req("/nodeinfo/2.0", ""), "g", "federation"},
+		{"instance metadata is exempt", req("/api/v1/instance", ""), "g", "federation"},
+		{"similarly named route is not exempt", req("/federationish/actor", ""), "g", ""},
 		{"active gate plugin root", req("/plugins/g", ""), "g", "active-gate-plugin"},
 		{"active gate plugin subpath", req("/plugins/g/callback", ""), "g", "active-gate-plugin"},
 		{"a different plugin is NOT exempt", req("/plugins/other/x", ""), "g", ""},
@@ -101,6 +107,39 @@ func TestGateExemptions(t *testing.T) {
 				t.Fatalf("gateExemptionFor: got %q want %q", got, tc.want)
 			}
 		})
+	}
+}
+
+func TestFederationEndpointsRemainPublicInEveryAccessMode(t *testing.T) {
+	endpoints := []string{
+		"/federation/user/streamer",
+		"/federation/user/streamer/inbox",
+		"/federation/user/streamer/outbox",
+		"/federation/user/streamer/followers",
+		"/federation/stream/123",
+		"/.well-known/webfinger?resource=acct:streamer@example.com",
+		"/.well-known/host-meta",
+		"/.well-known/nodeinfo",
+		"/.well-known/x-nodeinfo2",
+		"/nodeinfo/2.0",
+		"/api/v1/instance",
+	}
+	modes := []AuthGateSettings{
+		defaultAuthGateSettings(),
+		{AccessMode: AuthGateAccessWebsiteAndStream},
+		{AccessMode: AuthGateAccessWebsiteStreamAndStatus},
+	}
+
+	for _, settings := range modes {
+		for _, endpoint := range endpoints {
+			t.Run(string(settings.AccessMode)+" "+endpoint, func(t *testing.T) {
+				r := httptest.NewRequest(http.MethodPost, endpoint, nil)
+				got, _ := decideGate(r, "gate", true, true, false, settings)
+				if got != gateAllow {
+					t.Fatalf("%s: got %d want gateAllow", endpoint, got)
+				}
+			})
+		}
 	}
 }
 
