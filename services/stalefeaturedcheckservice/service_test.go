@@ -1,6 +1,7 @@
 package stalefeaturedcheckservice
 
 import (
+	"context"
 	"errors"
 	"sync"
 	"testing"
@@ -65,7 +66,7 @@ func (f *fakeServersRepo) marked() []string {
 }
 
 func TestCheckMarksOnlyStaleServers(t *testing.T) {
-	now := time.Date(2026, 7, 16, 12, 0, 0, 0, time.UTC)
+	now := time.Now()
 
 	tests := []struct {
 		name       string
@@ -74,7 +75,7 @@ func TestCheckMarksOnlyStaleServers(t *testing.T) {
 		wantMarked bool
 	}{
 		{"stale online server is marked offline", true, new(now.Add(-staleThreshold - time.Hour)), true},
-		{"exactly at threshold is not stale", true, new(now.Add(-staleThreshold)), false},
+		{"inside threshold is not stale", true, new(now.Add(-staleThreshold + time.Second)), false},
 		{"one nanosecond past threshold is stale", true, new(now.Add(-staleThreshold - time.Nanosecond)), true},
 		{"fresh online server is untouched", true, new(now.Add(-time.Second)), false},
 		{"offline server is untouched even if stale", false, new(now.Add(-staleThreshold - time.Hour)), false},
@@ -86,9 +87,9 @@ func TestCheckMarksOnlyStaleServers(t *testing.T) {
 			repo := &fakeServersRepo{servers: []models.FederatedServer{
 				{IRI: "https://example.com/actor", IsOnline: tt.isOnline, LastStatusUpdate: tt.lastUpdate},
 			}}
-			c := New(&fakeConfigRepo{federationEnabled: true}, repo, func() time.Time { return now }, nil)
+			c := New(Deps{ConfigRepository: &fakeConfigRepo{federationEnabled: true}, FederatedServersRepository: repo})
 
-			c.check()
+			c.Run(context.Background())
 
 			marked := repo.marked()
 			if tt.wantMarked && len(marked) != 1 {
@@ -103,9 +104,9 @@ func TestCheckMarksOnlyStaleServers(t *testing.T) {
 
 func TestCheckGetErrorMarksNothing(t *testing.T) {
 	repo := &fakeServersRepo{getErr: errors.New("db closed")}
-	c := New(&fakeConfigRepo{federationEnabled: true}, repo, time.Now, nil)
+	c := New(Deps{ConfigRepository: &fakeConfigRepo{federationEnabled: true}, FederatedServersRepository: repo})
 
-	c.check()
+	c.Run(context.Background())
 
 	if marked := repo.marked(); len(marked) != 0 {
 		t.Fatalf("expected no updates after fetch error, marked = %v", marked)
@@ -121,67 +122,8 @@ func TestCheckUpdateErrorDoesNotPanic(t *testing.T) {
 			{IRI: "https://b.example.com", IsOnline: true, LastStatusUpdate: &stale},
 		},
 	}
-	c := New(&fakeConfigRepo{federationEnabled: true}, repo, time.Now, nil)
+	c := New(Deps{ConfigRepository: &fakeConfigRepo{federationEnabled: true}, FederatedServersRepository: repo})
 
 	// Must attempt both servers and not panic on per-server failure.
-	c.check()
-}
-
-func TestStartWithFederationDisabledDoesNothing(t *testing.T) {
-	repo := &fakeServersRepo{}
-	ticksCalled := false
-	c := New(&fakeConfigRepo{federationEnabled: false}, repo, time.Now, func() (<-chan time.Time, func()) {
-		ticksCalled = true
-		return make(chan time.Time), func() {}
-	})
-
-	c.Start()
-
-	if ticksCalled {
-		t.Fatal("Start must not create a ticker when federation is disabled")
-	}
-	if c.done != nil {
-		t.Fatal("Start must not begin the background loop when federation is disabled")
-	}
-	c.Stop() // Stop on a never-started checker must be a no-op.
-}
-
-func TestStartStopLifecycle(t *testing.T) {
-	tickCh := make(chan time.Time)
-	tickerStops := 0
-	repo := &fakeServersRepo{getCalls: make(chan struct{}, 16)}
-	c := New(&fakeConfigRepo{federationEnabled: true}, repo, time.Now, func() (<-chan time.Time, func()) {
-		tickerStops++
-		return tickCh, func() {}
-	})
-
-	c.Start()
-	<-repo.getCalls // immediate check on start
-
-	firstDone := c.done
-	c.Start() // second Start is a no-op, not a second goroutine
-	if c.done != firstDone {
-		t.Fatal("double Start must not restart the checker")
-	}
-	if tickerStops != 1 {
-		t.Fatalf("double Start created %d tickers, want 1", tickerStops)
-	}
-
-	tickCh <- time.Now()
-	<-repo.getCalls // tick-driven check
-
-	stopped := c.stopped
-	c.Stop()
-	<-stopped // goroutine exited: no leak
-	if c.done != nil {
-		t.Fatal("Stop must clear running state")
-	}
-	c.Stop() // idempotent
-
-	// Restart works after Stop.
-	c.Start()
-	<-repo.getCalls
-	stopped = c.stopped
-	c.Stop()
-	<-stopped
+	c.Run(context.Background())
 }
