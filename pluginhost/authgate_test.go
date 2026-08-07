@@ -73,6 +73,8 @@ func TestGateExemptions(t *testing.T) {
 		{"admin API is exempt (cookie-authed, no Authorization header)", req("/api/admin/status", ""), "g", "admin"},
 		{"admin API subpath", req("/api/admin/plugins/x/enable", ""), "g", "admin"},
 		{"public api/config is still gated", req("/api/config", ""), "g", ""},
+		{"logo is exempt", req("/logo", ""), "g", "logo"},
+		{"external logo is exempt", req("/logo/external", ""), "g", "logo"},
 		{"active gate plugin root", req("/plugins/g", ""), "g", "active-gate-plugin"},
 		{"active gate plugin subpath", req("/plugins/g/callback", ""), "g", "active-gate-plugin"},
 		{"a different plugin is NOT exempt", req("/plugins/other/x", ""), "g", ""},
@@ -123,6 +125,8 @@ func TestAuthGateAccessPolicyMatrix(t *testing.T) {
 		{"website-only", websiteOnly, "/api/config", gateLogin},
 		{"website-only", websiteOnly, "/hls/stream.m3u8", gateAllow},
 		{"website-only", websiteOnly, "/hls/0/stream0.ts", gateAllow},
+		{"website-only", websiteOnly, "/logo", gateAllow},
+		{"website-only", websiteOnly, "/logo/external", gateAllow},
 		{"website-only", websiteOnly, "/api/status", gateAllow},
 		{"website-only", websiteOnly, "/api/yp", gateAllow},
 
@@ -131,6 +135,8 @@ func TestAuthGateAccessPolicyMatrix(t *testing.T) {
 		{"website-and-stream", websiteAndStream, "/hls/0/stream0.ts", gateLogin},
 		{"website-and-stream", websiteAndStream, "/api/status", gateAllow},
 		{"website-and-stream", websiteAndStream, "/api/yp", gateAllow},
+		{"website-and-stream", websiteAndStream, "/logo", gateAllow},
+		{"website-and-stream", websiteAndStream, "/logo/external", gateAllow},
 		{"website-and-stream", websiteAndStream, "/", gateLogin},
 
 		// The final mode adds stream status. The directory endpoint stays past
@@ -138,6 +144,8 @@ func TestAuthGateAccessPolicyMatrix(t *testing.T) {
 		{"website-stream-and-status", websiteStreamAndStatus, "/hls/0/stream0.ts", gateLogin},
 		{"website-stream-and-status", websiteStreamAndStatus, "/api/status", gateLogin},
 		{"website-stream-and-status", websiteStreamAndStatus, "/api/yp", gateAllow},
+		{"website-stream-and-status", websiteStreamAndStatus, "/logo", gateAllow},
+		{"website-stream-and-status", websiteStreamAndStatus, "/logo/external", gateAllow},
 
 		// No mode may ever re-gate the recovery or self-credentialed surfaces.
 		{"website-stream-and-status", websiteStreamAndStatus, "/admin", gateAllow},
