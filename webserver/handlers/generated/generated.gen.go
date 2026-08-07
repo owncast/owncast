@@ -92,6 +92,18 @@ type ServerInterface interface {
 	// UpdateUserModerator Set moderator status for a user
 	// (POST /admin/chat/users/setmoderator)
 	UpdateUserModerator(w http.ResponseWriter, r *http.Request)
+	// GetAdminClips Get all clips for administration
+	// (GET /admin/clips)
+	GetAdminClips(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/clips)
+	GetAdminClipsOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/clips/delete)
+	DeleteClipOptions(w http.ResponseWriter, r *http.Request)
+	// DeleteClip Delete a clip
+	// (POST /admin/clips/delete)
+	DeleteClip(w http.ResponseWriter, r *http.Request)
 
 	// (OPTIONS /admin/config/adminpass)
 	SetAdminPasswordOptions(w http.ResponseWriter, r *http.Request)
@@ -299,6 +311,24 @@ type ServerInterface interface {
 	// SetExtraPageContent Change the extra page content in memory
 	// (POST /admin/config/pagecontent)
 	SetExtraPageContent(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/replay/clipsenabled)
+	SetClipsEnabledOptions(w http.ResponseWriter, r *http.Request)
+	// SetClipsEnabled Enable/disable viewer clip creation
+	// (POST /admin/config/replay/clipsenabled)
+	SetClipsEnabled(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/replay/enable)
+	SetReplayFeaturesEnabledOptions(w http.ResponseWriter, r *http.Request)
+	// SetReplayFeaturesEnabled Enable/disable replay and clip features
+	// (POST /admin/config/replay/enable)
+	SetReplayFeaturesEnabled(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/replay/maxclipduration)
+	SetMaxClipDurationOptions(w http.ResponseWriter, r *http.Request)
+	// SetMaxClipDuration Set the maximum length of a viewer-created clip
+	// (POST /admin/config/replay/maxclipduration)
+	SetMaxClipDuration(w http.ResponseWriter, r *http.Request)
 
 	// (OPTIONS /admin/config/rtmpserverbindaddress)
 	SetRTMPServerBindAddressOptions(w http.ResponseWriter, r *http.Request)
@@ -524,6 +554,18 @@ type ServerInterface interface {
 	// PutPrometheusAPI Endpoint to interface with Prometheus
 	// (PUT /admin/prometheus)
 	PutPrometheusAPI(w http.ResponseWriter, r *http.Request)
+	// GetAdminReplays Get all replays, with disk usage and clip counts
+	// (GET /admin/replays)
+	GetAdminReplays(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/replays)
+	GetAdminReplaysOptions(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/replays/delete)
+	DeleteReplayOptions(w http.ResponseWriter, r *http.Request)
+	// DeleteReplay Delete a replay along with its clips and recorded video
+	// (POST /admin/replays/delete)
+	DeleteReplay(w http.ResponseWriter, r *http.Request)
 	// GetServerConfig Get the current server config
 	// (GET /admin/serverconfig)
 	GetServerConfig(w http.ResponseWriter, r *http.Request)
@@ -749,9 +791,6 @@ type ServerInterface interface {
 	// RemoteFollow Request remote follow
 	// (POST /remotefollow)
 	RemoteFollow(w http.ResponseWriter, r *http.Request)
-	// GetReplays Get a list of all available stream replays
-	// (GET /replays)
-	GetReplays(w http.ResponseWriter, r *http.Request)
 	// GetAllSocialPlatforms Get all social platforms
 	// (GET /socialplatforms)
 	GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request)
@@ -910,6 +949,28 @@ func (_ Unimplemented) UpdateUserModeratorOptions(w http.ResponseWriter, r *http
 // UpdateUserModerator Set moderator status for a user
 // (POST /admin/chat/users/setmoderator)
 func (_ Unimplemented) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetAdminClips Get all clips for administration
+// (GET /admin/clips)
+func (_ Unimplemented) GetAdminClips(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/clips)
+func (_ Unimplemented) GetAdminClipsOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/clips/delete)
+func (_ Unimplemented) DeleteClipOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DeleteClip Delete a clip
+// (POST /admin/clips/delete)
+func (_ Unimplemented) DeleteClip(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1290,6 +1351,39 @@ func (_ Unimplemented) SetExtraPageContentOptions(w http.ResponseWriter, r *http
 // SetExtraPageContent Change the extra page content in memory
 // (POST /admin/config/pagecontent)
 func (_ Unimplemented) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/replay/clipsenabled)
+func (_ Unimplemented) SetClipsEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetClipsEnabled Enable/disable viewer clip creation
+// (POST /admin/config/replay/clipsenabled)
+func (_ Unimplemented) SetClipsEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/replay/enable)
+func (_ Unimplemented) SetReplayFeaturesEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetReplayFeaturesEnabled Enable/disable replay and clip features
+// (POST /admin/config/replay/enable)
+func (_ Unimplemented) SetReplayFeaturesEnabled(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/replay/maxclipduration)
+func (_ Unimplemented) SetMaxClipDurationOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetMaxClipDuration Set the maximum length of a viewer-created clip
+// (POST /admin/config/replay/maxclipduration)
+func (_ Unimplemented) SetMaxClipDuration(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1706,6 +1800,28 @@ func (_ Unimplemented) PostPrometheusAPI(w http.ResponseWriter, r *http.Request)
 // PutPrometheusAPI Endpoint to interface with Prometheus
 // (PUT /admin/prometheus)
 func (_ Unimplemented) PutPrometheusAPI(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetAdminReplays Get all replays, with disk usage and clip counts
+// (GET /admin/replays)
+func (_ Unimplemented) GetAdminReplays(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/replays)
+func (_ Unimplemented) GetAdminReplaysOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/replays/delete)
+func (_ Unimplemented) DeleteReplayOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DeleteReplay Delete a replay along with its clips and recorded video
+// (POST /admin/replays/delete)
+func (_ Unimplemented) DeleteReplay(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2128,12 +2244,6 @@ func (_ Unimplemented) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// GetReplays Get a list of all available stream replays
-// (GET /replays)
-func (_ Unimplemented) GetReplays(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
 // GetAllSocialPlatforms Get all social platforms
 // (GET /socialplatforms)
 func (_ Unimplemented) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
@@ -2496,6 +2606,58 @@ func (siw *ServerInterfaceWrapper) UpdateUserModeratorOptions(w http.ResponseWri
 func (siw *ServerInterfaceWrapper) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateUserModerator(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAdminClips operation middleware
+func (siw *ServerInterfaceWrapper) GetAdminClips(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAdminClips(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAdminClipsOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetAdminClipsOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAdminClipsOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteClipOptions operation middleware
+func (siw *ServerInterfaceWrapper) DeleteClipOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteClipOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteClip operation middleware
+func (siw *ServerInterfaceWrapper) DeleteClip(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteClip(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3393,6 +3555,84 @@ func (siw *ServerInterfaceWrapper) SetExtraPageContentOptions(w http.ResponseWri
 func (siw *ServerInterfaceWrapper) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetExtraPageContent(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetClipsEnabledOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetClipsEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetClipsEnabledOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetClipsEnabled operation middleware
+func (siw *ServerInterfaceWrapper) SetClipsEnabled(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetClipsEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetReplayFeaturesEnabledOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetReplayFeaturesEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetReplayFeaturesEnabledOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetReplayFeaturesEnabled operation middleware
+func (siw *ServerInterfaceWrapper) SetReplayFeaturesEnabled(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetReplayFeaturesEnabled(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetMaxClipDurationOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetMaxClipDurationOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetMaxClipDurationOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetMaxClipDuration operation middleware
+func (siw *ServerInterfaceWrapper) SetMaxClipDuration(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetMaxClipDuration(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -4456,6 +4696,58 @@ func (siw *ServerInterfaceWrapper) PostPrometheusAPI(w http.ResponseWriter, r *h
 func (siw *ServerInterfaceWrapper) PutPrometheusAPI(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PutPrometheusAPI(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAdminReplays operation middleware
+func (siw *ServerInterfaceWrapper) GetAdminReplays(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAdminReplays(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAdminReplaysOptions operation middleware
+func (siw *ServerInterfaceWrapper) GetAdminReplaysOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAdminReplaysOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteReplayOptions operation middleware
+func (siw *ServerInterfaceWrapper) DeleteReplayOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteReplayOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteReplay operation middleware
+func (siw *ServerInterfaceWrapper) DeleteReplay(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteReplay(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -5837,19 +6129,6 @@ func (siw *ServerInterfaceWrapper) RemoteFollow(w http.ResponseWriter, r *http.R
 	handler.ServeHTTP(w, r)
 }
 
-// GetReplays operation middleware
-func (siw *ServerInterfaceWrapper) GetReplays(w http.ResponseWriter, r *http.Request) {
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetReplays(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
 // GetAllSocialPlatforms operation middleware
 func (siw *ServerInterfaceWrapper) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -6751,7 +7030,46 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/auth/fediverse/verify", wrapper.VerifyFediverseOTPRequest)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/replays", wrapper.GetReplays)
+		r.Get(options.BaseURL+"/admin/replays", wrapper.GetAdminReplays)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/replays", wrapper.GetAdminReplaysOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/replays/delete", wrapper.DeleteReplayOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/replays/delete", wrapper.DeleteReplay)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/admin/clips", wrapper.GetAdminClips)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/clips", wrapper.GetAdminClipsOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/clips/delete", wrapper.DeleteClipOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/clips/delete", wrapper.DeleteClip)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/replay/enable", wrapper.SetReplayFeaturesEnabledOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/replay/enable", wrapper.SetReplayFeaturesEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/replay/clipsenabled", wrapper.SetClipsEnabledOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/replay/clipsenabled", wrapper.SetClipsEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/replay/maxclipduration", wrapper.SetMaxClipDurationOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/replay/maxclipduration", wrapper.SetMaxClipDuration)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/clips", wrapper.GetAllClips)

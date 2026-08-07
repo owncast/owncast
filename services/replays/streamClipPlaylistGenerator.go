@@ -2,6 +2,7 @@ package replays
 
 import (
 	"context"
+	"math"
 	"strings"
 
 	"github.com/grafov/m3u8"
@@ -104,7 +105,10 @@ func (p *PlaylistGenerator) GetClip(clipID string) (*Clip, error) {
 		ClippedBy:         clip.ClippedBy.String,
 		RelativeStartTime: float32(clip.RelativeStartTime.Float64),
 		RelativeEndTime:   float32(clip.RelativeEndTime.Float64),
+		DurationSeconds:   int(math.Round(clip.RelativeEndTime.Float64 - clip.RelativeStartTime.Float64)),
 		Timestamp:         clip.ClipTimestamp.Time,
+		Manifest:          "/clip/" + clip.ClipID,
+		Thumbnail:         clipThumbnailURL(clip.ClipID),
 	}
 
 	return &c, nil
@@ -128,6 +132,8 @@ func (p *PlaylistGenerator) GetAllSegmentsForOutputConfigurationAndWindow(config
 			ID:                    row.ID,
 			StreamID:              row.StreamID,
 			OutputConfigurationID: row.OutputConfigurationID,
+			Duration:              row.Duration.Float64,
+			MediaOffset:           row.MediaOffset.Float64,
 			Timestamp:             row.Timestamp.Time,
 			Path:                  row.Path,
 		}

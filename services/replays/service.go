@@ -40,6 +40,7 @@ func New(ds *datastore.Datastore, configRepository configrepository.ConfigReposi
 // Setup performs one-time startup work for the replay subsystem.
 func (s *Service) Setup() {
 	s.fixUnfinishedStreams()
+	s.deleteEmptyStreams()
 }
 
 // fixUnfinishedStreams will find streams with no end time (left over from a
@@ -47,6 +48,16 @@ func (s *Service) Setup() {
 // last segment recorded for that stream.
 func (s *Service) fixUnfinishedStreams() {
 	if err := s.datastore.GetQueries().FixUnfinishedStreams(context.Background()); err != nil {
+		log.Warnln(err)
+	}
+}
+
+// deleteEmptyStreams prunes recordings that captured no segments at all (a
+// stream that died before the first segment landed). Without this they would
+// stay listed as in-progress forever, since there is no segment to derive an
+// end time from.
+func (s *Service) deleteEmptyStreams() {
+	if err := s.datastore.GetQueries().DeleteEmptyStreams(context.Background()); err != nil {
 		log.Warnln(err)
 	}
 }

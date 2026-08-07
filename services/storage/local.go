@@ -7,7 +7,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 )
 
@@ -68,8 +67,8 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 // Cleanup will remove old files from the storage provider.
 func (s *LocalStorage) Cleanup() error {
 	// If we're recording for replay, don't prune old segments; they must be
-	// kept on disk so completed streams remain replayable.
-	if config.EnableReplayFeatures {
+	// kept on disk so recorded streams stay available for clips.
+	if s.configRepository.GetReplayFeaturesEnabled() {
 		return nil
 	}
 

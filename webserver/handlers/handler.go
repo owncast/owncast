@@ -78,16 +78,44 @@ func (s *ServerInterfaceImpl) Ping(w http.ResponseWriter, r *http.Request) {
 	s.h.Ping(w, r)
 }
 
-func (s *ServerInterfaceImpl) GetReplays(w http.ResponseWriter, r *http.Request) {
-	s.h.GetReplays(w, r)
-}
-
 func (s *ServerInterfaceImpl) GetAllClips(w http.ResponseWriter, r *http.Request) {
 	s.h.GetAllClips(w, r)
 }
 
 func (s *ServerInterfaceImpl) AddClip(w http.ResponseWriter, r *http.Request) {
 	s.h.AddClip(w, r)
+}
+
+func (s *ServerInterfaceImpl) GetAdminReplays(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetAdminReplays)(w, r)
+}
+
+func (s *ServerInterfaceImpl) GetAdminReplaysOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetAdminReplays)(w, r)
+}
+
+func (s *ServerInterfaceImpl) GetAdminClips(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetAdminClips)(w, r)
+}
+
+func (s *ServerInterfaceImpl) GetAdminClipsOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetAdminClips)(w, r)
+}
+
+func (s *ServerInterfaceImpl) DeleteReplay(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.DeleteReplay)(w, r)
+}
+
+func (s *ServerInterfaceImpl) DeleteReplayOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.DeleteReplay)(w, r)
+}
+
+func (s *ServerInterfaceImpl) DeleteClip(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.DeleteClip)(w, r)
+}
+
+func (s *ServerInterfaceImpl) DeleteClipOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.DeleteClip)(w, r)
 }
 
 func (s *ServerInterfaceImpl) RemoteFollow(w http.ResponseWriter, r *http.Request) {

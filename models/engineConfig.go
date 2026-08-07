@@ -19,4 +19,8 @@ type EngineConfig interface {
 	GetStreamOutputVariants() []StreamOutputVariant
 	GetVideoServingEndpoint() string
 	GetStreamKeys() []StreamKey
+	// GetReplayFeaturesEnabled reports whether recorded video must be
+	// retained. Segment cleanup is suppressed while it is true so recorded
+	// streams stay available for clips.
+	GetReplayFeaturesEnabled() bool
 }

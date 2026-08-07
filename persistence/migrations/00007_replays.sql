@@ -37,18 +37,27 @@ CREATE INDEX IF NOT EXISTS video_segment_output_configuration_stream_id ON video
 
 -- +goose StatementBegin
 -- Every HLS segment written for a recorded stream, so a stream (or a window
--- of it, for clips) can be reconstructed into a playlist.
+-- of it, for clips) can be reconstructed into a playlist. duration and
+-- media_offset are media time: duration is the real EXTINF value ffmpeg
+-- reported for the segment and media_offset is the running sum of the
+-- durations before it. Both are NULL until the variant playlist that
+-- references the segment has been parsed.
 CREATE TABLE IF NOT EXISTS video_segments (
 	"id" TEXT NOT NULL PRIMARY KEY,
 	"stream_id" TEXT NOT NULL,
 	"output_configuration_id" TEXT NOT NULL,
 	"path" TEXT NOT NULL,
-	"relative_timestamp" REAL NOT NULL,
+	"duration" REAL,
+	"media_offset" REAL,
+	"bytes" INTEGER NOT NULL DEFAULT 0,
 	"timestamp" DATETIME
 );
 -- +goose StatementEnd
 -- +goose StatementBegin
 CREATE INDEX IF NOT EXISTS video_segments_stream_id ON video_segments (stream_id);
+-- +goose StatementEnd
+-- +goose StatementBegin
+CREATE INDEX IF NOT EXISTS video_segments_output_config_offset ON video_segments (output_configuration_id, media_offset);
 -- +goose StatementEnd
 -- +goose StatementBegin
 CREATE INDEX IF NOT EXISTS video_segments_stream_id_timestamp ON video_segments (stream_id, timestamp);

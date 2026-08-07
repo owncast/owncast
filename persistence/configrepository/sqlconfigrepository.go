@@ -139,6 +139,63 @@ func (r *SqlConfigRepository) SetFaviconPath(favicon string) error {
 	return r.datastore.SetString(faviconPathKey, favicon)
 }
 
+// GetReplayFeaturesEnabled returns whether stream recording, replays and clips
+// are enabled. The -enableReplayFeatures command line flag forces it on for
+// development regardless of the stored value.
+func (r *SqlConfigRepository) GetReplayFeaturesEnabled() bool {
+	if config.EnableReplayFeatures {
+		return true
+	}
+
+	enabled, err := r.datastore.GetBool(replayFeaturesEnabledKey)
+	if err != nil {
+		log.Traceln(replayFeaturesEnabledKey, err)
+		return false
+	}
+
+	return enabled
+}
+
+// SetReplayFeaturesEnabled enables or disables stream recording, replays and
+// clips. Enabling it stops automatic pruning of video segments, since recorded
+// streams must stay on disk to remain replayable.
+func (r *SqlConfigRepository) SetReplayFeaturesEnabled(enabled bool) error {
+	return r.datastore.SetBool(replayFeaturesEnabledKey, enabled)
+}
+
+// GetClipsEnabled returns whether viewers may create clips. Defaults to true
+// so clips work as soon as replay features are enabled.
+func (r *SqlConfigRepository) GetClipsEnabled() bool {
+	enabled, err := r.datastore.GetBool(clipsEnabledKey)
+	if err != nil {
+		log.Traceln(clipsEnabledKey, err)
+		return true
+	}
+
+	return enabled
+}
+
+// SetClipsEnabled enables or disables viewer clip creation.
+func (r *SqlConfigRepository) SetClipsEnabled(enabled bool) error {
+	return r.datastore.SetBool(clipsEnabledKey, enabled)
+}
+
+// GetMaxClipDurationSeconds returns the longest clip a viewer may create.
+func (r *SqlConfigRepository) GetMaxClipDurationSeconds() int {
+	seconds, err := r.datastore.GetNumber(maxClipDurationSecondsKey)
+	if err != nil || seconds <= 0 {
+		log.Traceln(maxClipDurationSecondsKey, err)
+		return models.DefaultMaxClipDurationSeconds
+	}
+
+	return int(seconds)
+}
+
+// SetMaxClipDurationSeconds sets the longest clip a viewer may create.
+func (r *SqlConfigRepository) SetMaxClipDurationSeconds(seconds int) error {
+	return r.datastore.SetNumber(maxClipDurationSecondsKey, float64(seconds))
+}
+
 // GetServerSummary will return the server summary text.
 func (r *SqlConfigRepository) GetServerSummary() string {
 	summary, err := r.datastore.GetString(serverSummaryKey)

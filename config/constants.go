@@ -47,4 +47,8 @@ var (
 
 	// PublicFilesPath is the optional directory for hosting public files.
 	PublicFilesPath = filepath.Join(DataDirectory, "public")
+
+	// ClipThumbnailsPath is the directory clip poster images are written to.
+	// Served publicly so clip listings and link previews can show them.
+	ClipThumbnailsPath = filepath.Join(DataDirectory, "clips")
 )

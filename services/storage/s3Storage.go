@@ -210,8 +210,8 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 // Cleanup will fire the different cleanup tasks required.
 func (s *S3Storage) Cleanup() error {
 	// If we're recording for replay, don't prune old segments; they must be
-	// kept so completed streams remain replayable.
-	if config.EnableReplayFeatures {
+	// kept so recorded streams stay available for clips.
+	if s.configRepository.GetReplayFeaturesEnabled() {
 		return nil
 	}
 

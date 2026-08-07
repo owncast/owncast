@@ -376,6 +376,7 @@ func main() {
 		Webhooks:                webhooksSvc,
 		Chat:                    chatSvc,
 		Metrics:                 metricsSvc,
+		Replays:                 replaysSvc,
 		ConfigRepository:        configRepository,
 		AuthRepository:          authRepository,
 		FollowersRepository:     followersRepository,
