@@ -244,6 +244,54 @@ func (s *ServerInterfaceImpl) GetWebhooks(w http.ResponseWriter, r *http.Request
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetWebhooks)(w, r)
 }
 
+func (s *ServerInterfaceImpl) GetAdminSchedule(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetAdminSchedule)(w, r)
+}
+
+func (s *ServerInterfaceImpl) GetAdminScheduleOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetAdminSchedule)(w, r)
+}
+
+func (s *ServerInterfaceImpl) UpsertScheduledEvent(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.UpsertScheduledEvent)(w, r)
+}
+
+func (s *ServerInterfaceImpl) UpsertScheduledEventOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.UpsertScheduledEvent)(w, r)
+}
+
+func (s *ServerInterfaceImpl) DeleteScheduledEvent(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.DeleteScheduledEvent)(w, r)
+}
+
+func (s *ServerInterfaceImpl) DeleteScheduledEventOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.DeleteScheduledEvent)(w, r)
+}
+
+func (s *ServerInterfaceImpl) PreviewScheduleRecurrence(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.PreviewScheduleRecurrence)(w, r)
+}
+
+func (s *ServerInterfaceImpl) PreviewScheduleRecurrenceOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.PreviewScheduleRecurrence)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetScheduleEnabled(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleEnabled)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetScheduleEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleEnabled)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleReminderMessage)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetScheduleReminderMessageOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleReminderMessage)(w, r)
+}
+
 func (s *ServerInterfaceImpl) GetWebhooksOptions(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetWebhooks)(w, r)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/chatmessagerepository"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/persistence/scheduleeventsrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 	"github.com/owncast/owncast/services/activitypub"
@@ -15,6 +16,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/rtmp"
+	"github.com/owncast/owncast/services/schedule"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
 )
@@ -28,21 +30,23 @@ import (
 // this package; they migrate to methods on *Admin as the services they
 // need to consume move to services/<domain>/.
 type Admin struct {
-	stream                *stream.Service
-	rtmp                  *rtmp.Service
-	activitypub           *activitypub.Service
-	webhooks              *webhooks.Service
-	chat                  *chat.Service
-	metrics               *metrics.Service
-	configRepository      configrepository.ConfigRepository
-	authRepository        authrepository.AuthRepository
-	followersRepository   followersrepository.FollowersRepository
-	webhookRepository     webhookrepository.WebhookRepository
-	chatMessageRepository chatmessagerepository.ChatMessageRepository
-	userRepository        userrepository.UserRepository
-	apBuilder             *apmodels.Builder
-	apSigner              *apcrypto.Signer
-	cfg                   *config.Config
+	stream                   *stream.Service
+	rtmp                     *rtmp.Service
+	activitypub              *activitypub.Service
+	webhooks                 *webhooks.Service
+	chat                     *chat.Service
+	metrics                  *metrics.Service
+	configRepository         configrepository.ConfigRepository
+	authRepository           authrepository.AuthRepository
+	followersRepository      followersrepository.FollowersRepository
+	webhookRepository        webhookrepository.WebhookRepository
+	chatMessageRepository    chatmessagerepository.ChatMessageRepository
+	userRepository           userrepository.UserRepository
+	scheduleEventsRepository scheduleeventsrepository.ScheduleEventsRepository
+	schedule                 *schedule.Service
+	apBuilder                *apmodels.Builder
+	apSigner                 *apcrypto.Signer
+	cfg                      *config.Config
 
 	// pluginStyleContributors, when non-nil, returns the per-plugin
 	// page-styling report (which enabled plugins emit CSS and which
@@ -57,21 +61,23 @@ type Admin struct {
 // Deps lists every service a *Admin consumes. New deps appear here as
 // more admin handlers migrate.
 type Deps struct {
-	Stream                *stream.Service
-	Rtmp                  *rtmp.Service
-	Activitypub           *activitypub.Service
-	Webhooks              *webhooks.Service
-	Chat                  *chat.Service
-	Metrics               *metrics.Service
-	ConfigRepository      configrepository.ConfigRepository
-	AuthRepository        authrepository.AuthRepository
-	FollowersRepository   followersrepository.FollowersRepository
-	WebhookRepository     webhookrepository.WebhookRepository
-	ChatMessageRepository chatmessagerepository.ChatMessageRepository
-	UserRepository        userrepository.UserRepository
-	APBuilder             *apmodels.Builder
-	APSigner              *apcrypto.Signer
-	Config                *config.Config
+	Stream                   *stream.Service
+	Rtmp                     *rtmp.Service
+	Activitypub              *activitypub.Service
+	Webhooks                 *webhooks.Service
+	Chat                     *chat.Service
+	Metrics                  *metrics.Service
+	ConfigRepository         configrepository.ConfigRepository
+	AuthRepository           authrepository.AuthRepository
+	FollowersRepository      followersrepository.FollowersRepository
+	WebhookRepository        webhookrepository.WebhookRepository
+	ChatMessageRepository    chatmessagerepository.ChatMessageRepository
+	UserRepository           userrepository.UserRepository
+	ScheduleEventsRepository scheduleeventsrepository.ScheduleEventsRepository
+	Schedule                 *schedule.Service
+	APBuilder                *apmodels.Builder
+	APSigner                 *apcrypto.Signer
+	Config                   *config.Config
 	// PluginStyleContributors is an optional getter that returns the
 	// per-plugin page-styling report. Wired by main.go to the plugin
 	// host's StyleContributors() method; nil when the plugin host is
@@ -82,21 +88,23 @@ type Deps struct {
 // New constructs the dependency-bearing admin handler set.
 func New(deps Deps) *Admin {
 	return &Admin{
-		stream:                  deps.Stream,
-		rtmp:                    deps.Rtmp,
-		activitypub:             deps.Activitypub,
-		webhooks:                deps.Webhooks,
-		chat:                    deps.Chat,
-		metrics:                 deps.Metrics,
-		configRepository:        deps.ConfigRepository,
-		authRepository:          deps.AuthRepository,
-		followersRepository:     deps.FollowersRepository,
-		webhookRepository:       deps.WebhookRepository,
-		chatMessageRepository:   deps.ChatMessageRepository,
-		userRepository:          deps.UserRepository,
-		apBuilder:               deps.APBuilder,
-		apSigner:                deps.APSigner,
-		cfg:                     deps.Config,
-		pluginStyleContributors: deps.PluginStyleContributors,
+		stream:                   deps.Stream,
+		rtmp:                     deps.Rtmp,
+		activitypub:              deps.Activitypub,
+		webhooks:                 deps.Webhooks,
+		chat:                     deps.Chat,
+		metrics:                  deps.Metrics,
+		configRepository:         deps.ConfigRepository,
+		authRepository:           deps.AuthRepository,
+		followersRepository:      deps.FollowersRepository,
+		webhookRepository:        deps.WebhookRepository,
+		chatMessageRepository:    deps.ChatMessageRepository,
+		userRepository:           deps.UserRepository,
+		scheduleEventsRepository: deps.ScheduleEventsRepository,
+		schedule:                 deps.Schedule,
+		apBuilder:                deps.APBuilder,
+		apSigner:                 deps.APSigner,
+		cfg:                      deps.Config,
+		pluginStyleContributors:  deps.PluginStyleContributors,
 	}
 }

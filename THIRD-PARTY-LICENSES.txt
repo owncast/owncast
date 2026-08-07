@@ -273,6 +273,10 @@ Go module: github.com/sirupsen/logrus@v1.9.4
   Source: https://pkg.go.dev/github.com/sirupsen/logrus@v1.9.4
   LICENSE: SHA256 51a0c9ec7f8b7634181b8d4c03e5b5d204ac21d6e72f46c313973424664b2e6b
 
+Go module: github.com/teambition/rrule-go@v1.8.2
+  Source: https://pkg.go.dev/github.com/teambition/rrule-go@v1.8.2
+  LICENSE: SHA256 2c5aa8001e37c2ba4488e1c809772c9372623f2eaa0605b9abd8863cf7a3470f
+
 Go module: github.com/teris-io/shortid@v0.0.0-20220617161101-71ec9f2aa569
   Source: https://pkg.go.dev/github.com/teris-io/shortid@v0.0.0-20220617161101-71ec9f2aa569
   LICENSE: SHA256 9d2f5e4c03900631b09c64443d2fd8e38118114267294d45f967387069a65ca0
@@ -6749,6 +6753,32 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+================================================================================
+SHA256: 2c5aa8001e37c2ba4488e1c809772c9372623f2eaa0605b9abd8863cf7a3470f
+Used by: Go module: github.com/teambition/rrule-go@v1.8.2 (LICENSE)
+--------------------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2017-2023 Teambition
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ================================================================================
 SHA256: 2c7c5d22ed5a8ee968c64757710979afcd77438c48b4a265b94e615babd8a901
