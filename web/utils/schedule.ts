@@ -17,16 +17,6 @@ export const WEEKDAYS = WEEKDAY_CODES.map((code, index) => ({
   ),
 }));
 
-const WEEKDAY_LABELS: Record<string, string> = {
-  MO: 'Mon',
-  TU: 'Tue',
-  WE: 'Wed',
-  TH: 'Thu',
-  FR: 'Fri',
-  SA: 'Sat',
-  SU: 'Sun',
-};
-
 export interface WeeklyRecurrence {
   // RRULE BYDAY codes, e.g. ['MO', 'FR'].
   days: string[];
@@ -124,20 +114,6 @@ export function parseWeeklyRecurrence(recurrence: string): WeeklyRecurrence | nu
     rule.endsOn = wallTimeInZone(instant.toISOString(), timezone).date;
   }
   return rule;
-}
-
-// describeRecurrence renders a stored recurrence value as a short human
-// summary for the admin table, e.g. "Weekly on Mon, Fri at 18:00
-// (America/Los_Angeles)". Falls back to the raw value for rules this UI
-// does not understand.
-export function describeRecurrence(recurrence: string): string {
-  const rule = parseWeeklyRecurrence(recurrence);
-  if (!rule) {
-    return recurrence;
-  }
-  const days = rule.days.map(code => WEEKDAY_LABELS[code] || code).join(', ');
-  const until = rule.endsOn ? ` until ${rule.endsOn}` : '';
-  return `Weekly on ${days} at ${rule.time} (${rule.timezone})${until}`;
 }
 
 // timezoneOffsetAt returns the UTC offset in milliseconds of an IANA zone at

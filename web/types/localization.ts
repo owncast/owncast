@@ -526,6 +526,9 @@ export const Localization = {
       columnStatus: 'Admin.Schedule.columnStatus',
       columnRepeats: 'Admin.Schedule.columnRepeats',
       durationValue: 'Admin.Schedule.durationValue',
+      recurrenceOn: 'Admin.Schedule.recurrenceOn',
+      recurrenceAt: 'Admin.Schedule.recurrenceAt',
+      recurrenceUntil: 'Admin.Schedule.recurrenceUntil',
     },
 
     // Access Tokens page

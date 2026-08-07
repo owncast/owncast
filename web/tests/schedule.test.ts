@@ -1,6 +1,5 @@
 import {
   composeWeeklyRecurrence,
-  describeRecurrence,
   parseWeeklyRecurrence,
   wallTimeInZone,
   wallTimeInZoneToUTC,
@@ -161,24 +160,5 @@ describe('wallTimeInZone', () => {
       date: '2026-07-20',
       time: '00:00',
     });
-  });
-});
-
-describe('describeRecurrence', () => {
-  test('summarizes a weekly rule with an end date', () => {
-    expect(describeRecurrence(composeWeeklyRecurrence(laRule))).toBe(
-      'Weekly on Mon, Fri at 18:00 (America/Los_Angeles) until 2026-07-20',
-    );
-  });
-
-  test('summarizes an open-ended weekly rule without an until clause', () => {
-    expect(describeRecurrence(composeWeeklyRecurrence({ ...laRule, endsOn: undefined }))).toBe(
-      'Weekly on Mon, Fri at 18:00 (America/Los_Angeles)',
-    );
-  });
-
-  test('falls back to the raw value for rules this UI does not understand', () => {
-    const foreign = 'DTSTART;TZID=UTC:20260706T180000\nRRULE:FREQ=WEEKLY;BYDAY=MO;INTERVAL=2';
-    expect(describeRecurrence(foreign)).toBe(foreign);
   });
 });

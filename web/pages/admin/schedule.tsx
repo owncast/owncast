@@ -27,7 +27,6 @@ import { API_SCHEDULE_ENABLED, API_SCHEDULE_REMINDER_MESSAGE } from '../../utils
 import {
   WEEKDAYS,
   composeWeeklyRecurrence,
-  describeRecurrence,
   parseWeeklyRecurrence,
   timezoneChoices,
   wallTimeInZone,
@@ -519,7 +518,27 @@ const Schedule = () => {
       title: t(Localization.Admin.Schedule.columnRepeats),
       dataIndex: 'recurrence',
       key: 'recurrence',
-      render: (recurrence: string) => describeRecurrence(recurrence),
+      render: (recurrence: string) => {
+        const rule = parseWeeklyRecurrence(recurrence);
+        if (!rule) {
+          return recurrence;
+        }
+        const days = rule.days
+          .map(code => WEEKDAYS.find(day => day.code === code)?.label || code)
+          .join(', ');
+        return (
+          <>
+            {t(Localization.Admin.Schedule.weekly)} {t(Localization.Admin.Schedule.recurrenceOn)}{' '}
+            {days} {t(Localization.Admin.Schedule.recurrenceAt)} {rule.time} ({rule.timezone})
+            {rule.endsOn && (
+              <>
+                {' '}
+                {t(Localization.Admin.Schedule.recurrenceUntil)} {rule.endsOn}
+              </>
+            )}
+          </>
+        );
+      },
     },
     {
       title: t(Localization.Admin.Schedule.columnDuration),
