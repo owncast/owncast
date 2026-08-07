@@ -40,6 +40,7 @@ import (
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/rtmp"
+	"github.com/owncast/owncast/services/schedule"
 	"github.com/owncast/owncast/services/stalefeaturedcheckservice"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
@@ -299,6 +300,12 @@ func main() {
 	stalefeaturedcheckservice.Start()
 	defer stalefeaturedcheckservice.Stop()
 
+	// Materializes scheduled stream occurrences from recurring series and
+	// keeps the next-event answer warm for the status endpoint.
+	scheduleSvc := schedule.New(schedule.Deps{ScheduleEventsRepository: scheduleEventsRepository})
+	scheduleSvc.Start()
+	defer scheduleSvc.Stop()
+
 	// Stage 8: late services. metrics polls stream + chat, fediverseAuth
 	// owns OTP state for the chat-side handler.
 	metricsSvc := metrics.New(metrics.Deps{
@@ -365,22 +372,24 @@ func main() {
 	}
 
 	adminHandlers := admin.New(admin.Deps{
-		Stream:                  streamSvc,
-		Rtmp:                    rtmpSvc,
-		Activitypub:             apSvc,
-		Webhooks:                webhooksSvc,
-		Chat:                    chatSvc,
-		Metrics:                 metricsSvc,
-		ConfigRepository:        configRepository,
-		AuthRepository:          authRepository,
-		FollowersRepository:     followersRepository,
-		WebhookRepository:       webhookRepository,
-		ChatMessageRepository:   chatMessageRepository,
-		UserRepository:          userRepository,
-		APBuilder:               apBuilder,
-		APSigner:                apSigner,
-		Config:                  cfg,
-		PluginStyleContributors: pluginStyleContributors,
+		Stream:                   streamSvc,
+		Rtmp:                     rtmpSvc,
+		Activitypub:              apSvc,
+		Webhooks:                 webhooksSvc,
+		Chat:                     chatSvc,
+		Metrics:                  metricsSvc,
+		ConfigRepository:         configRepository,
+		AuthRepository:           authRepository,
+		FollowersRepository:      followersRepository,
+		WebhookRepository:        webhookRepository,
+		ChatMessageRepository:    chatMessageRepository,
+		UserRepository:           userRepository,
+		ScheduleEventsRepository: scheduleEventsRepository,
+		Schedule:                 scheduleSvc,
+		APBuilder:                apBuilder,
+		APSigner:                 apSigner,
+		Config:                   cfg,
+		PluginStyleContributors:  pluginStyleContributors,
 	})
 
 	fediverseAuthSvc := fediverseauth.New()
@@ -408,29 +417,31 @@ func main() {
 	})
 
 	h := handlers.NewHandlers(handlers.Deps{
-		Cache:                   cacheContainer,
-		Stream:                  streamSvc,
-		Chat:                    chatSvc,
-		Admin:                   adminHandlers,
-		Activitypub:             apSvc,
-		Fediverse:               fediverseHandler,
-		IndieAuth:               indieauthHandler,
-		Moderation:              moderationHandler,
-		Middleware:              mw,
-		YP:                      ypSvc,
-		Metrics:                 metricsSvc,
-		ConfigRepository:        configRepository,
-		FollowersRepository:     followersRepository,
-		ChatMessageRepository:   chatMessageRepository,
-		UserRepository:          userRepository,
-		NotificationsRepository: notificationsRepository,
-		APBuilder:               apBuilder,
-		Config:                  cfg,
-		PluginActions:           pluginActions,
-		PluginCSSContent:        pluginCSSContent,
-		PluginJSContent:         pluginJSContent,
-		PluginPageContent:       pluginPageContent,
-		PluginTabs:              pluginTabs,
+		Cache:                    cacheContainer,
+		Stream:                   streamSvc,
+		Chat:                     chatSvc,
+		Admin:                    adminHandlers,
+		Activitypub:              apSvc,
+		Fediverse:                fediverseHandler,
+		IndieAuth:                indieauthHandler,
+		Moderation:               moderationHandler,
+		Middleware:               mw,
+		YP:                       ypSvc,
+		Metrics:                  metricsSvc,
+		ConfigRepository:         configRepository,
+		FollowersRepository:      followersRepository,
+		ChatMessageRepository:    chatMessageRepository,
+		UserRepository:           userRepository,
+		NotificationsRepository:  notificationsRepository,
+		ScheduleEventsRepository: scheduleEventsRepository,
+		Schedule:                 scheduleSvc,
+		APBuilder:                apBuilder,
+		Config:                   cfg,
+		PluginActions:            pluginActions,
+		PluginCSSContent:         pluginCSSContent,
+		PluginJSContent:          pluginJSContent,
+		PluginPageContent:        pluginPageContent,
+		PluginTabs:               pluginTabs,
 	})
 
 	// Stage 10: serve. Blocks until shutdown.

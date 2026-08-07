@@ -3101,6 +3101,244 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /schedule:
+    get:
+      summary: Get the public schedule of upcoming and recent stream events
+      operationId: GetSchedule
+      tags: ['Internal', 'Schedule']
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: Include events starting at or after this time. Defaults to 7 days ago.
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          required: false
+          description: Include events starting before this time. Defaults to 90 days from now.
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Scheduled stream events. Empty when the schedule feature is disabled.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScheduledEvent'
+        '400':
+          $ref: '#/components/responses/400'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetScheduleOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Schedule']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/schedule:
+    get:
+      summary: Get every scheduled event and recurring series for the admin
+      operationId: GetAdminSchedule
+      tags: ['Internal', 'Admin', 'Schedule']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: The full schedule state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSchedule'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetAdminScheduleOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Schedule']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/schedule/event:
+    post:
+      summary: Create or update a scheduled event or recurring series
+      operationId: UpsertScheduledEvent
+      tags: ['Internal', 'Admin', 'Schedule']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduledEventInput'
+      responses:
+        '200':
+          description: The updated schedule state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSchedule'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: UpsertScheduledEventOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Schedule']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/schedule/event/delete:
+    post:
+      summary: Delete or cancel a scheduled event or recurring series
+      operationId: DeleteScheduledEvent
+      tags: ['Internal', 'Admin', 'Schedule']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id:
+                  type: string
+                  description: An event id or series id
+                cancel:
+                  type: boolean
+                  description: Cancel the occurrence (kept and shown as cancelled) instead of deleting it
+      responses:
+        '200':
+          description: The updated schedule state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSchedule'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: DeleteScheduledEventOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Schedule']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/schedule/preview:
+    post:
+      summary: Preview the occurrences a recurrence rule would produce
+      operationId: PreviewScheduleRecurrence
+      tags: ['Internal', 'Admin', 'Schedule']
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [recurrence]
+              properties:
+                recurrence:
+                  type: string
+                  description: An RFC 5545 recurrence value (DTSTART with TZID plus RRULE)
+      responses:
+        '200':
+          description: The next occurrences the rule produces
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  occurrences:
+                    type: array
+                    items:
+                      type: string
+                      format: date-time
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: PreviewScheduleRecurrenceOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Schedule']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/schedule/enabled:
+    post:
+      summary: Enable or disable the schedule feature
+      operationId: SetScheduleEnabled
+      tags: ['Internal', 'Admin', 'Schedule']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Schedule feature toggled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetScheduleEnabledOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Schedule']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/schedule/remindermessage:
+    post:
+      summary: Set the message posted to the Fediverse before a scheduled event starts
+      operationId: SetScheduleReminderMessage
+      tags: ['Internal', 'Admin', 'Schedule']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Reminder message updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetScheduleReminderMessageOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Schedule']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /admin/accesstokens:
     get:
       summary: Get all access tokens
@@ -3935,6 +4173,19 @@ components:
           type: boolean
         streamTitle:
           type: string
+        scheduledEvent:
+          type: object
+          description: Present while the schedule feature is enabled and an event is current or upcoming
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            startTime:
+              type: string
+              format: date-time
+            chatOpen:
+              type: boolean
     Emojis:
       type: array
       items:
@@ -4161,6 +4412,11 @@ components:
     WebConfig:
       type: object
       properties:
+        schedule:
+          type: object
+          properties:
+            enabled:
+              type: boolean
         appearanceVariables:
           type: object
           additionalProperties:
@@ -4661,6 +4917,83 @@ components:
           type: string
         notes:
           type: string
+    ScheduledEvent:
+      type: object
+      description: One concrete scheduled stream occurrence, either a one-off or produced by a recurring series
+      properties:
+        id:
+          type: string
+        seriesId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        durationMinutes:
+          type: integer
+        timezone:
+          type: string
+          description: IANA timezone name the event was scheduled in
+        status:
+          type: string
+          enum: [scheduled, cancelled]
+    ScheduledEventSeries:
+      type: object
+      description: A recurring schedule rule that produces concrete occurrences
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        recurrence:
+          type: string
+          description: RFC 5545 recurrence value (DTSTART with TZID plus RRULE)
+        durationMinutes:
+          type: integer
+        active:
+          type: boolean
+    ScheduledEventInput:
+      type: object
+      description: Create or update a one-off event (start set) or a recurring series (recurrence set)
+      required: [name]
+      properties:
+        id:
+          type: string
+          description: When set, updates the existing event or series with this id
+        name:
+          type: string
+        description:
+          type: string
+        start:
+          type: string
+          format: date-time
+          description: Start time for a one-off event. Mutually exclusive with recurrence.
+        timezone:
+          type: string
+          description: IANA timezone for a one-off event. Defaults to UTC.
+        durationMinutes:
+          type: integer
+          description: Defaults to 60
+        recurrence:
+          type: string
+          description: RFC 5545 recurrence value. Presence makes this a recurring series.
+    AdminSchedule:
+      type: object
+      description: The full schedule state for the admin interface
+      properties:
+        series:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduledEventSeries'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduledEvent'
     Webhook:
       type: object
       properties:
@@ -4801,6 +5134,13 @@ components:
     AdminServerConfig:
       type: object
       properties:
+        schedule:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+            reminderMessage:
+              type: string
         instanceDetails:
           $ref: '#/components/schemas/AdminWebConfig'
         notifications:

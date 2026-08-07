@@ -1,6 +1,7 @@
 package scheduleeventsrepository
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -421,5 +422,92 @@ func TestGetEventsNeedingReminderSelectsOnce(t *testing.T) {
 	}
 	if !containsEventID(events, atUpper) {
 		t.Errorf("GetEventsNeedingReminder() dropped an unreminded event after stamping a different one")
+	}
+}
+
+func TestGetCurrentOrUpcomingEventsEndTimePredicate(t *testing.T) {
+	repo := testRepo
+
+	// The SQL predicate compares stored end times against this bound
+	// instant, so nothing here races the wall clock. Every helper event
+	// runs 60 minutes.
+	now := time.Date(2034, 2, 1, 12, 0, 0, 0, time.UTC)
+
+	running := mustAddOneOffEvent(t, "current still running", now.Add(-30*time.Minute))
+	endsAtNow := mustAddOneOffEvent(t, "current ends exactly now", now.Add(-60*time.Minute))
+	endsJustAfter := mustAddOneOffEvent(t, "current ends one second from now", now.Add(-60*time.Minute+time.Second))
+	longEnded := mustAddOneOffEvent(t, "current ended hours ago", now.Add(-3*time.Hour))
+	future := mustAddOneOffEvent(t, "current not yet started", now.Add(2*time.Hour))
+	cancelled := mustAddOneOffEvent(t, "current cancelled upcoming", now.Add(time.Hour))
+	if err := repo.CancelEvent(cancelled); err != nil {
+		t.Fatalf("CancelEvent() unexpected error = %v", err)
+	}
+
+	events, err := repo.GetCurrentOrUpcomingEvents(now, 100)
+	if err != nil {
+		t.Fatalf("GetCurrentOrUpcomingEvents() unexpected error = %v", err)
+	}
+
+	if !containsEventID(events, running) {
+		t.Errorf("GetCurrentOrUpcomingEvents() omits a still-running event")
+	}
+	if !containsEventID(events, endsJustAfter) {
+		t.Errorf("GetCurrentOrUpcomingEvents() omits an event ending one second after now")
+	}
+	if !containsEventID(events, future) {
+		t.Errorf("GetCurrentOrUpcomingEvents() omits an upcoming event")
+	}
+	if containsEventID(events, endsAtNow) {
+		t.Errorf("GetCurrentOrUpcomingEvents() includes an event ending exactly at now (start+duration bound must be exclusive)")
+	}
+	if containsEventID(events, longEnded) {
+		t.Errorf("GetCurrentOrUpcomingEvents() includes an ended event")
+	}
+	if containsEventID(events, cancelled) {
+		t.Errorf("GetCurrentOrUpcomingEvents() includes a cancelled event")
+	}
+
+	// Soonest first by start time. Filtering to this test's own events
+	// keeps the ordering assertion isolated from other tests' rows.
+	wantOrder := []string{endsJustAfter, running, future}
+	mine := map[string]bool{endsJustAfter: true, running: true, future: true}
+	gotOrder := []string{}
+	for _, e := range events {
+		if mine[e.ID] {
+			gotOrder = append(gotOrder, e.ID)
+		}
+	}
+	if len(gotOrder) != len(wantOrder) {
+		t.Fatalf("GetCurrentOrUpcomingEvents() returned %d of this test's events, want %d", len(gotOrder), len(wantOrder))
+	}
+	for i := range wantOrder {
+		if gotOrder[i] != wantOrder[i] {
+			t.Errorf("GetCurrentOrUpcomingEvents() order[%d] = %v, want %v (soonest first)", i, gotOrder[i], wantOrder[i])
+		}
+	}
+}
+
+func TestGetCurrentOrUpcomingEventsDensePastNextEvent(t *testing.T) {
+	repo := testRepo
+
+	now := time.Date(2035, 4, 10, 18, 0, 0, 0, time.UTC)
+
+	// A dense run of occurrences that all started and ended within the
+	// last several hours. A fixed-size scan over recent rows by start
+	// time would fill up on these and drop the true next event.
+	for i := range 6 {
+		mustAddOneOffEvent(t, fmt.Sprintf("dense past occurrence %d", i), now.Add(time.Duration(i-7)*time.Hour))
+	}
+	future := mustAddOneOffEvent(t, "dense past next event", now.Add(45*time.Minute))
+
+	events, err := repo.GetCurrentOrUpcomingEvents(now, 1)
+	if err != nil {
+		t.Fatalf("GetCurrentOrUpcomingEvents() unexpected error = %v", err)
+	}
+	if len(events) != 1 {
+		t.Fatalf("GetCurrentOrUpcomingEvents(limit 1) returned %d events, want 1", len(events))
+	}
+	if events[0].ID != future {
+		t.Errorf("GetCurrentOrUpcomingEvents(limit 1) returned %v (%q), want the upcoming event %v", events[0].ID, events[0].Name, future)
 	}
 }
