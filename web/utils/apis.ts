@@ -112,6 +112,18 @@ export const DELETE_WEBHOOK = `${API_LOCATION}webhooks/delete`;
 // Create a single webhook
 export const CREATE_WEBHOOK = `${API_LOCATION}webhooks/create`;
 
+// Get the full schedule state (series + events)
+export const SCHEDULE_ADMIN = `${API_LOCATION}schedule`;
+
+// Create or update a scheduled event or recurring series
+export const SCHEDULE_UPSERT_EVENT = `${API_LOCATION}schedule/event`;
+
+// Delete or cancel a scheduled event or recurring series
+export const SCHEDULE_DELETE_EVENT = `${API_LOCATION}schedule/event/delete`;
+
+// Preview the occurrences a recurrence rule would produce
+export const SCHEDULE_PREVIEW = `${API_LOCATION}schedule/preview`;
+
 // hard coded social icons list
 export const SOCIAL_PLATFORMS_LIST = `${NEXT_PUBLIC_API_HOST}api/socialplatforms`;
 

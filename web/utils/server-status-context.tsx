@@ -63,6 +63,10 @@ const initialServerConfigState: ConfigDetails = {
     hideFollowersTab: false,
     blockedDomains: [],
   },
+  schedule: {
+    enabled: false,
+    reminderMessage: '',
+  },
   notifications: {
     browser: { enabled: false, goLiveMessage: '' },
     discord: { enabled: false, webhook: '', goLiveMessage: '' },

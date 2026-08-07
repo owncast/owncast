@@ -150,6 +150,11 @@ export interface StreamKey {
   comment: string;
 }
 
+export interface ScheduleConfig {
+  enabled: boolean;
+  reminderMessage: string;
+}
+
 export interface ConfigDetails {
   externalActions: ExternalAction[];
   styleContributors: PluginStyleInfo[];
@@ -175,6 +180,7 @@ export interface ConfigDetails {
   chatSlurFilterEnabled: boolean;
   chatRequireAuthentication: boolean;
   federation: Federation;
+  schedule: ScheduleConfig;
   notifications: NotificationsConfig;
   chatJoinMessagesEnabled: boolean;
   chatEstablishedUserMode: boolean;
