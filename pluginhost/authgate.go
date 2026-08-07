@@ -59,6 +59,7 @@ type gateExemption struct {
 var gateExemptions = []gateExemption{
 	{"admin", exemptAdminRoutes},
 	{"static-assets", exemptStaticAssets},
+	{"logo", exemptLogoRoutes},
 	{"active-gate-plugin", exemptActiveGatePluginRoutes},
 	{"external-api", exemptExternalAPIRoutes},
 	{"directory-api", exemptDirectoryAPI},
@@ -93,6 +94,13 @@ func exemptStaticAssets(r *http.Request, _ string, _ AuthGateSettings) bool {
 	}
 	info, err := fs.Stat(webFS, p)
 	return err == nil && !info.IsDir()
+}
+
+// exemptLogoRoutes keeps the instance's own logo publicly reachable. It is
+// referenced by the viewer shell and federation metadata, and does not expose
+// any viewer or stream content.
+func exemptLogoRoutes(r *http.Request, _ string, _ AuthGateSettings) bool {
+	return r.URL.Path == "/logo" || r.URL.Path == "/logo/external"
 }
 
 // exemptAdminRoutes: the admin surfaces carry their own credential (Basic auth
