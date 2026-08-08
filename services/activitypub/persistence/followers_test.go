@@ -55,13 +55,11 @@ func setup() {
 		followers = append(followers, u)
 	}
 
-	// Pin every row's created_at deterministically, newest first in
-	// insertion order, so GetFollowers' ORDER BY created_at DESC is stable.
-	// The loop above inserts fast enough that rows share second-precision
-	// timestamps, and on a slow CI runner a second boundary landing
-	// mid-loop shuffled the order and flaked the pagination tests.
+	// Pin every row's created_at deterministically, preserving insertion
+	// order. GetFollowers returns the latest insertion first, with rowid
+	// breaking ties, so later rowids must also receive later timestamps.
 	if _, err := ds.DB.Exec(
-		"UPDATE ap_followers SET created_at = datetime('now', '-' || rowid || ' seconds')",
+		"UPDATE ap_followers SET created_at = datetime('2000-01-01', '+' || rowid || ' seconds')",
 	); err != nil {
 		panic(err)
 	}
