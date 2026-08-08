@@ -13,7 +13,7 @@ import {
   message,
 } from 'antd';
 import dynamic from 'next/dynamic';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'next-export-i18n';
 import {
