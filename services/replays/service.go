@@ -13,7 +13,9 @@ package replays
 
 import (
 	"context"
+	"path"
 
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -37,7 +39,6 @@ func New(ds *datastore.Datastore, configRepository configrepository.ConfigReposi
 	}
 }
 
-// Setup performs one-time startup work for the replay subsystem.
 func (s *Service) Setup() {
 	s.fixUnfinishedStreams()
 	s.deleteEmptyStreams()
@@ -73,4 +74,25 @@ func (s *Service) NewRecording(streamID string) *HLSRecorder {
 // clip playlists from recorded metadata.
 func (s *Service) NewPlaylistGenerator() *PlaylistGenerator {
 	return &PlaylistGenerator{datastore: s.datastore}
+}
+
+// ProtectedSegmentFilenames returns the filenames of every segment the replay
+// ledger still references, which automatic cleanup must not delete. Implements
+// models.SegmentProtector.
+//
+// Only the filename is compared: local segments are stored as paths relative
+// to the data directory while remote ones are absolute URLs, and the filename
+// is the part both forms share with the file on disk.
+func (s *Service) ProtectedSegmentFilenames() (map[string]bool, error) {
+	paths, err := s.datastore.GetQueries().GetAllSegmentPaths(context.Background())
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to list recorded segments")
+	}
+
+	protected := make(map[string]bool, len(paths))
+	for _, p := range paths {
+		protected[path.Base(p)] = true
+	}
+
+	return protected, nil
 }

@@ -93,6 +93,7 @@ func (s *Service) transitionToOfflineVideoStreamContent() {
 	log.Traceln("Firing transcoder with offline stream state")
 
 	offlineTranscoder := transcoder.NewTranscoder(s.cfg, s.configRepository)
+	offlineTranscoder.SetSegmentProtector(s.replayProtector())
 	offlineTranscoder.SetIdentifier("offline")
 	offlineTranscoder.SetLatencyLevel(models.GetLatencyLevel(4))
 	offlineTranscoder.SetIsEvent(true)
@@ -119,9 +120,9 @@ func (s *Service) transitionToOfflineVideoStreamContent() {
 func (s *Service) resetDirectories() {
 	log.Trace("Resetting file directories to a clean slate.")
 
-	// Wipe hls data directory. When replay features are enabled we keep
-	// previously recorded video so recorded streams stay available for clips.
-	utils.CleanupDirectory(config.HLSStoragePath, s.configRepository.GetReplayFeaturesEnabled())
+	// Wipe hls data directory, keeping any segment a clip or replay still
+	// references.
+	utils.CleanupDirectory(config.HLSStoragePath, s.protectedSegmentFilenames())
 
 	// Remove the previous thumbnail
 	logo := s.configRepository.GetLogoPath()
@@ -147,6 +148,7 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 
 	go func() {
 		s.transcoder = transcoder.NewTranscoder(s.cfg, s.configRepository)
+		s.transcoder.SetSegmentProtector(s.replayProtector())
 		// Tie segment filenames to this stream so segments from different
 		// streams never collide on disk when replay recording is enabled.
 		s.transcoder.SetIdentifier(broadcast.StreamID)
@@ -201,11 +203,10 @@ func (s *Service) applyStreamOnline() {
 
 	s.StopOfflineCleanupTimer()
 
-	// While recording for replay we must not prune segments mid-stream, so
-	// don't run the periodic online cleanup.
-	if !s.configRepository.GetReplayFeaturesEnabled() {
-		s.startOnlineCleanupTimer()
-	}
+	// Cleanup runs for every stream. Segments a clip or replay references are
+	// protected from it, so recorded video survives while the live window
+	// stays bounded.
+	s.startOnlineCleanupTimer()
 
 	if s.yp != nil {
 		go s.yp.Start()

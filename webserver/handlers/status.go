@@ -35,6 +35,13 @@ func (h *Handlers) getStatusResponse() webStatusResponse {
 	if !h.configRepository.GetHideViewerCount() {
 		response.ViewerCount = status.ViewerCount
 	}
+
+	// The live broadcast's id is only useful to a viewer who can clip it, so
+	// it is published only while clipping is actually available.
+	if h.configRepository.GetReplayFeaturesEnabled() && h.configRepository.GetClipsEnabled() {
+		response.StreamID = status.StreamID
+	}
+
 	return response
 }
 
@@ -45,6 +52,9 @@ type webStatusResponse struct {
 
 	VersionNumber string `json:"versionNumber"`
 	StreamTitle   string `json:"streamTitle"`
-	ViewerCount   int    `json:"viewerCount,omitempty"`
-	Online        bool   `json:"online"`
+	// StreamID identifies the live broadcast so a viewer can clip it. Only
+	// present while a stream is live and clipping is enabled.
+	StreamID    string `json:"streamId,omitempty"`
+	ViewerCount int    `json:"viewerCount,omitempty"`
+	Online      bool   `json:"online"`
 }

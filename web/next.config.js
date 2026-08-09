@@ -27,6 +27,22 @@ async function rewrites() {
         source: '/api/:path*',
         destination: `${BACKEND}/api/:path*`,
       },
+      // The standalone clip page is a Next page that reads the clip id from
+      // the path. In production the Go server maps every /clips/* route to
+      // the exported clips/index.html; mirror that here so shared clip links
+      // load the live dev page rather than the backend's embedded bundle.
+      {
+        source: '/clips/:path*',
+        destination: '/clips',
+      },
+      {
+        source: '/clip/:path*',
+        destination: `${BACKEND}/clip/:path*`,
+      },
+      {
+        source: '/clip-thumbnail/:path*',
+        destination: `${BACKEND}/clip-thumbnail/:path*`,
+      },
       // Plugin admin iframes proxied so they're same-origin to the admin UI
       // in dev. Two patterns: the first matches slash-terminated URLs and
       // preserves the trailing slash through the rewrite; the second handles
@@ -111,6 +127,9 @@ module.exports = async phase => {
     nextConfig = {
       ...nextConfig,
       rewrites,
+      // Keep proxied API paths from being redirected to a trailing slash before
+      // the rewrite handles them.
+      skipTrailingSlashRedirect: true,
       // Isolate the dev build cache so a second dev server (pointed at
       // another backend via OWNCAST_DEV_BACKEND) doesn't fight the first
       // over .next. Dev-phase only: production builds always emit to

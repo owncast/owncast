@@ -44,15 +44,24 @@ else
   ffmpeg_version=$("$ffmpeg_exec" -version | awk -F 'ffmpeg version' '{print $2}' | awk 'NR==1{print $1}')
   echo "ffmpeg executable: $ffmpeg_exec ($ffmpeg_version)"
   echo "ffmpeg path: $(readlink -f "$(which "$ffmpeg_exec")")"
+
+  if "$ffmpeg_exec" -hide_banner -filters 2>/dev/null | awk '$2 == "drawtext" { found = 1 } END { exit !found }'; then
+    drawtext_available=true
+  else
+    drawtext_available=false
+    echo "WARNING: ffmpeg has no drawtext filter; streaming without text overlay." >&2
+  fi
 fi
 
 if [[ ${FILE_COUNT} -eq 0 ]]; then
   echo "Streaming internal test video loop to $DESTINATION_HOST"
   echo "...press ctrl+c to exit"
 
-  command "${ffmpeg_exec}" -hide_banner -loglevel panic -nostdin -re -f lavfi \
+  video_filter=(-vf "[in]drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/-2): text='Owncast Test Stream', drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/2): text='%{gmtime\:%H\\\\\:%M\\\\\:%S} UTC'[out]")
+
+  command "${ffmpeg_exec}" -hide_banner -loglevel error -nostdin -re -f lavfi \
     -i "testsrc=size=1280x720:rate=60[out0];sine=frequency=400:sample_rate=48000[out1]" \
-    -vf "[in]drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/-2): text='Owncast Test Stream', drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/2): text='%{gmtime\:%H\\\\\:%M\\\\\:%S} UTC'[out]" \
+    "${video_filter[@]}" \
     -nal-hrd cbr \
     -metadata:s:v encoder=test \
     -vcodec libx264 \
@@ -105,8 +114,12 @@ else
   fi
   echo "$CONTENT"
   echo "...press ctrl+c to exit"
+  video_filter=()
+  if [[ "$drawtext_available" == true ]]; then
+    video_filter+=(-vf "drawtext=fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/4): text='%{gmtime\:%H\\\\\:%M\\\\\:%S}'")
+  fi
 
-  command "${ffmpeg_exec}" -hide_banner -loglevel panic -nostdin -stream_loop -1 -re -f concat \
+  command "${ffmpeg_exec}" -hide_banner -loglevel error -nostdin -stream_loop -1 -re -f concat \
     -safe 0 \
     -i list.txt \
     -vcodec libx264 \
@@ -117,6 +130,6 @@ else
     -b:v 1300k \
     -preset veryfast \
     -acodec copy \
-    -vf drawtext="fontsize=96: box=1: boxcolor=black@0.75: boxborderw=5: fontcolor=white: x=(w-text_w)/2: y=((h-text_h)/2)+((h-text_h)/4): text='%{gmtime\:%H\\\\\:%M\\\\\:%S}'" \
+    "${video_filter[@]}" \
     -f flv "$DESTINATION_HOST"
 fi

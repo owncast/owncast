@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
@@ -71,42 +72,10 @@ func TestReplayEndpointsDisabled(t *testing.T) {
 	}
 }
 
-// TestResolveClipWindow covers the clip-window arithmetic: a trailing window
-// resolves against the newest recorded media, and explicit windows are
-// validated and clamped.
+// TestResolveClipWindow covers explicit media-time window validation.
 func TestResolveClipWindow(t *testing.T) {
 	const mediaEnd = 100.0
 	const maxDuration = 60.0
-
-	t.Run("trailing window ends at the newest media", func(t *testing.T) {
-		start, end, err := resolveClipWindow(clipWindowRequest{DurationSeconds: 30}, mediaEnd, maxDuration)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if start != 70 || end != 100 {
-			t.Errorf("expected window 70-100, got %v-%v", start, end)
-		}
-	})
-
-	t.Run("trailing window is capped at the operator maximum", func(t *testing.T) {
-		start, end, err := resolveClipWindow(clipWindowRequest{DurationSeconds: 600}, mediaEnd, maxDuration)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if end-start != maxDuration {
-			t.Errorf("expected a %v second window, got %v", maxDuration, end-start)
-		}
-	})
-
-	t.Run("trailing window never starts before the stream", func(t *testing.T) {
-		start, _, err := resolveClipWindow(clipWindowRequest{DurationSeconds: 50}, 20, maxDuration)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if start != 0 {
-			t.Errorf("expected the window to start at 0, got %v", start)
-		}
-	})
 
 	t.Run("explicit window is kept verbatim", func(t *testing.T) {
 		start, end, err := resolveClipWindow(clipWindowRequest{StartSeconds: 10.5, EndSeconds: 25.25}, mediaEnd, maxDuration)
@@ -128,18 +97,30 @@ func TestResolveClipWindow(t *testing.T) {
 		}
 	})
 
-	t.Run("rejects invalid and oversized windows", func(t *testing.T) {
+	t.Run("rejects invalid windows", func(t *testing.T) {
 		cases := map[string]clipWindowRequest{
-			"negative start":     {StartSeconds: -1, EndSeconds: 10},
-			"end before start":   {StartSeconds: 20, EndSeconds: 10},
-			"start past the end": {StartSeconds: 150, EndSeconds: 160},
-			"longer than max":    {StartSeconds: 0, EndSeconds: 90},
+			"negative start":   {StartSeconds: -1, EndSeconds: 10},
+			"end before start": {StartSeconds: 20, EndSeconds: 10},
+			"start past the end": {
+				StartSeconds: 150,
+				EndSeconds:   160,
+			},
 		}
 
 		for name, request := range cases {
 			if _, _, err := resolveClipWindow(request, mediaEnd, maxDuration); err == nil {
 				t.Errorf("%s: expected an error", name)
 			}
+		}
+	})
+
+	t.Run("over-long window keeps its end", func(t *testing.T) {
+		start, end, err := resolveClipWindow(clipWindowRequest{StartSeconds: 0, EndSeconds: 90}, mediaEnd, maxDuration)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if start != 30 || end != 90 {
+			t.Errorf("expected window 30-90, got %v-%v", start, end)
 		}
 	})
 }
@@ -186,7 +167,7 @@ func TestAddClipRejectsUnknownStream(t *testing.T) {
 	h, _, cr := newReplayTestHandlers(t)
 	enableReplays(t, cr)
 
-	req := httptest.NewRequest(http.MethodPost, "/api/clip", strings.NewReader(`{"streamId":"nope","durationSeconds":30}`))
+	req := httptest.NewRequest(http.MethodPost, "/api/clip", strings.NewReader(`{"streamId":"nope","relativeStartTimeSeconds":0,"relativeEndTimeSeconds":30}`))
 	rec := httptest.NewRecorder()
 	h.AddClip(rec, req)
 
@@ -205,7 +186,7 @@ func TestAddClipRejectsStreamWithNoVideo(t *testing.T) {
 		t.Fatal("expected a recording to be created")
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/api/clip", strings.NewReader(`{"streamId":"teststream3","durationSeconds":30}`))
+	req := httptest.NewRequest(http.MethodPost, "/api/clip", strings.NewReader(`{"streamId":"teststream3","relativeStartTimeSeconds":0,"relativeEndTimeSeconds":30}`))
 	rec := httptest.NewRecorder()
 	h.AddClip(rec, req)
 
@@ -224,7 +205,7 @@ func TestAddClipDisabledByOperator(t *testing.T) {
 		t.Fatalf("unable to disable clips: %v", err)
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/api/clip", strings.NewReader(`{"streamId":"teststream1","durationSeconds":30}`))
+	req := httptest.NewRequest(http.MethodPost, "/api/clip", strings.NewReader(`{"streamId":"teststream1","relativeStartTimeSeconds":0,"relativeEndTimeSeconds":30}`))
 	rec := httptest.NewRecorder()
 	h.AddClip(rec, req)
 
@@ -255,5 +236,47 @@ func TestClipRateLimit(t *testing.T) {
 
 	if allowClipFromIP(ip) {
 		t.Error("expected a clip request beyond the burst to be denied")
+	}
+}
+
+// TestClipPermissionDenialReason covers who may create clips at each
+// permission level: identity required everywhere, moderators always allowed,
+// authentication and account age gates enforced.
+func TestClipPermissionDenialReason(t *testing.T) {
+	oldUser := &models.User{CreatedAt: time.Now().Add(-2 * time.Hour), DisplayName: "old"}
+	newUser := &models.User{CreatedAt: time.Now().Add(-5 * time.Minute), DisplayName: "new"}
+	authedNewUser := &models.User{CreatedAt: time.Now().Add(-5 * time.Minute), Authenticated: true}
+	moderator := &models.User{CreatedAt: time.Now(), Scopes: []string{"MODERATOR"}}
+	disabledAt := time.Now()
+	banned := &models.User{CreatedAt: time.Now().Add(-2 * time.Hour), DisabledAt: &disabledAt}
+
+	cases := []struct {
+		name        string
+		user        *models.User
+		permissions string
+		allowed     bool
+	}{
+		{"anonymous is always rejected", nil, models.ClipPermissionsEstablished, false},
+		{"banned is always rejected", banned, models.ClipPermissionsEstablished, false},
+		{"established allows old accounts", oldUser, models.ClipPermissionsEstablished, true},
+		{"established rejects young accounts", newUser, models.ClipPermissionsEstablished, false},
+		{"authenticated rejects unauthenticated", oldUser, models.ClipPermissionsAuthenticated, false},
+		{"authenticated allows authenticated", authedNewUser, models.ClipPermissionsAuthenticated, true},
+		{"moderators rejects non-moderators", oldUser, models.ClipPermissionsModerators, false},
+		{"moderators allows moderators", moderator, models.ClipPermissionsModerators, true},
+		{"moderator bypasses account age", moderator, models.ClipPermissionsEstablished, true},
+		{"moderator bypasses authentication", moderator, models.ClipPermissionsAuthenticated, true},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			reason := clipPermissionDenialReason(tc.user, tc.permissions)
+			if tc.allowed && reason != "" {
+				t.Errorf("expected allowed, got %q", reason)
+			}
+			if !tc.allowed && reason == "" {
+				t.Error("expected a denial reason")
+			}
+		})
 	}
 }

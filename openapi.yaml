@@ -4118,7 +4118,7 @@ paths:
   /admin/config/replay/enable:
     post:
       summary: Enable/disable replay and clip features
-      description: Enabling this stops automatic cleanup of video segments so recorded video persists.
+      description: Recorded video is kept on disk for as long as a replay or clip references it.
       operationId: SetReplayFeaturesEnabled
       tags: ['Internal', 'Admin']
       security:
@@ -4203,6 +4203,38 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /admin/config/replay/clippermissions:
+    post:
+      summary: Set who may create clips
+      description:
+        Accepts one of "moderators", "authenticated" or "established" (any
+        chat identity at least an hour old).
+      operationId: SetClipPermissions
+      tags: ['Internal', 'Admin']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Clip permissions saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetClipPermissionsOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /clips:
     get:
       summary: Get a list of all created clips
@@ -4220,13 +4252,33 @@ paths:
                   $ref: '#/components/schemas/Clip'
         '404':
           description: Replay features are not enabled
+  /clips/{clipId}:
+    get:
+      summary: Get a single clip
+      description: Requires the experimental replay features to be enabled, otherwise responds with 404.
+      operationId: GetClipDetails
+      tags: ['Internal']
+      parameters:
+        - name: clipId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The clip
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clip'
+        '404':
+          description: Clip not found, or replay features are not enabled
   /clip:
     post:
       summary: Create a clip from a recorded stream
       description: >
         Requires the experimental replay features to be enabled, otherwise responds with 404.
-        Provide durationSeconds to clip a trailing window of the newest recorded video (the
-        live "clip that" case), or an explicit relativeStartTimeSeconds/relativeEndTimeSeconds
+        The request contains the explicit relativeStartTimeSeconds/relativeEndTimeSeconds
         window in media time.
       operationId: AddClip
       tags: ['Internal']
@@ -4241,9 +4293,6 @@ paths:
                   type: string
                 clipTitle:
                   type: string
-                durationSeconds:
-                  type: number
-                  description: Length of a trailing clip ending at the newest recorded video.
                 relativeStartTimeSeconds:
                   type: number
                 relativeEndTimeSeconds:
@@ -4261,6 +4310,8 @@ paths:
           description: Replay features are not enabled
         '429':
           description: Too many clips created by this client
+        '403':
+          description: This viewer is not allowed to create clips
 
 components:
   schemas:
@@ -4362,6 +4413,9 @@ components:
           type: boolean
         streamTitle:
           type: string
+        streamId:
+          type: string
+          description: Identifies the live broadcast so a viewer can clip it. Only present while a stream is live and clipping is enabled.
     Emojis:
       type: array
       items:
@@ -4644,8 +4698,8 @@ components:
           type: boolean
         maxDurationSeconds:
           type: integer
-        defaultDurationSeconds:
-          type: integer
+        permissions:
+          type: string
     SocialHandle:
       type: object
       properties:
@@ -5299,11 +5353,15 @@ components:
       properties:
         enabled:
           type: boolean
-          description: Whether replays are being recorded. Automatic segment cleanup is suppressed while true.
+          description: Whether replays are being recorded. Recorded video is kept on disk for as long as a replay or clip references it.
         clipsEnabled:
           type: boolean
         maxClipDurationSeconds:
           type: integer
+        clipPermissions:
+          type: string
+          enum: [moderators, authenticated, established]
+          description: Who may create clips.
         forcedByCommandLine:
           type: boolean
           description: The -enableReplayFeatures flag is holding the feature on, so the admin toggle cannot turn it off.

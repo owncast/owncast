@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math"
 	"strings"
-	"time"
 
 	"github.com/grafov/m3u8"
 	"github.com/pkg/errors"
@@ -37,7 +36,7 @@ func (p *PlaylistGenerator) GetConfigurationsForStream(streamID string) ([]*HLSO
 	return outputConfigs, nil
 }
 
-func (p *PlaylistGenerator) createMediaPlaylistForConfigurationAndSegments(configuration *HLSOutputConfiguration, startTime time.Time, inProgress bool, segments []HLSSegment) (*m3u8.MediaPlaylist, error) {
+func (p *PlaylistGenerator) createMediaPlaylistForConfigurationAndSegments(configuration *HLSOutputConfiguration, inProgress bool, segments []HLSSegment) (*m3u8.MediaPlaylist, error) {
 	playlistSize := len(segments)
 	playlist, err := m3u8.NewMediaPlaylist(0, uint(playlistSize))
 	if err != nil {
@@ -79,15 +78,8 @@ func (p *PlaylistGenerator) createMediaPlaylistForConfigurationAndSegments(confi
 		}
 	}
 
-	// Configure the properties of this media playlist. SetProgramDateTime
-	// attaches to the first segment, so it's only meaningful (and only valid)
-	// when the playlist actually has segments. A stream that has just started
-	// may legitimately have none yet.
-	if len(segments) > 0 {
-		if err := playlist.SetProgramDateTime(startTime); err != nil {
-			return nil, errors.Wrap(err, "failed to set media playlist program date time")
-		}
-	}
+	// Each segment carries its own EXT-X-PROGRAM-DATE-TIME, set from its
+	// recorded wall-clock time when appended above.
 
 	// Our live output is specified as v6, so let's match it to be as close as
 	// possible to what we're doing for live streams.

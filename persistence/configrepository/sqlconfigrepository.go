@@ -157,8 +157,8 @@ func (r *SqlConfigRepository) GetReplayFeaturesEnabled() bool {
 }
 
 // SetReplayFeaturesEnabled enables or disables stream recording, replays and
-// clips. Enabling it stops automatic pruning of video segments, since recorded
-// streams must stay on disk to remain replayable.
+// clips. Recorded segments are exempt from automatic pruning for as long as a
+// replay or clip references them.
 func (r *SqlConfigRepository) SetReplayFeaturesEnabled(enabled bool) error {
 	return r.datastore.SetBool(replayFeaturesEnabledKey, enabled)
 }
@@ -194,6 +194,26 @@ func (r *SqlConfigRepository) GetMaxClipDurationSeconds() int {
 // SetMaxClipDurationSeconds sets the longest clip a viewer may create.
 func (r *SqlConfigRepository) SetMaxClipDurationSeconds(seconds int) error {
 	return r.datastore.SetNumber(maxClipDurationSecondsKey, float64(seconds))
+}
+
+// GetClipPermissions returns who may create clips. Unset or unknown values
+// fall back to the default level.
+func (r *SqlConfigRepository) GetClipPermissions() string {
+	permissions, err := r.datastore.GetString(clipPermissionsKey)
+	if err != nil || !models.IsValidClipPermissions(permissions) {
+		log.Traceln(clipPermissionsKey, err)
+		return models.DefaultClipPermissions
+	}
+
+	return permissions
+}
+
+// SetClipPermissions sets who may create clips.
+func (r *SqlConfigRepository) SetClipPermissions(permissions string) error {
+	if !models.IsValidClipPermissions(permissions) {
+		return errors.New("unknown clip permission level")
+	}
+	return r.datastore.SetString(clipPermissionsKey, permissions)
 }
 
 // GetServerSummary will return the server summary text.

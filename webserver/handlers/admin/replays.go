@@ -122,9 +122,8 @@ func (a *Admin) DeleteClip(w http.ResponseWriter, r *http.Request) {
 
 // SetReplayFeaturesEnabled enables or disables replay recording and clips.
 //
-// Enabling it stops automatic cleanup of video segments: recorded video has to
-// stay on disk for clips to remain playable, so disk use grows until replays
-// are deleted.
+// Recorded video is kept on disk for as long as a replay or clip references
+// it, so disk use grows with every recorded stream until replays are deleted.
 func (a *Admin) SetReplayFeaturesEnabled(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return
@@ -202,4 +201,29 @@ func (a *Admin) SetMaxClipDuration(w http.ResponseWriter, r *http.Request) {
 	}
 
 	webutils.WriteSimpleResponse(w, true, "maximum clip duration saved")
+}
+
+// SetClipPermissions sets who may create clips.
+func (a *Admin) SetClipPermissions(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	permissions, ok := configValue.Value.(string)
+	if !ok || !models.IsValidClipPermissions(permissions) {
+		webutils.WriteSimpleResponse(w, false, "clip permissions must be one of: moderators, authenticated, established")
+		return
+	}
+
+	if err := a.configRepository.SetClipPermissions(permissions); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	webutils.WriteSimpleResponse(w, true, "clip permissions saved")
 }

@@ -6,6 +6,7 @@ import { ActionButtonMenu } from '../../action-buttons/ActionButtonMenu/ActionBu
 import { ActionButtonRow } from '../../action-buttons/ActionButtonRow/ActionButtonRow';
 import { FollowButton } from '../../action-buttons/FollowButton';
 import { NotifyButton } from '../../action-buttons/NotifyButton';
+import { ClipButton } from '../../action-buttons/ClipButton';
 import styles from './Content.module.scss';
 import { ActionButton } from '../../action-buttons/ActionButton/ActionButton';
 
@@ -18,6 +19,14 @@ interface ActionButtonProps {
   setShowNotifyModal: Dispatch<SetStateAction<boolean>>;
   disableNotifyReminderPopup: () => void;
   externalActionSelected: (action: ExternalAction) => void;
+  // showClipButton renders the clip control for a registered, unbanned viewer.
+  showClipButton: boolean;
+  // canClip is true when pressing it would work: a live stream is identified
+  // and video is actively playing.
+  canClip: boolean;
+  clipActive: boolean;
+  clipRemainingSeconds: number;
+  onClipAction: () => void;
 }
 
 const NotifyReminderPopup = dynamic(
@@ -37,6 +46,11 @@ const ActionButtons: FC<ActionButtonProps> = ({
   disableNotifyReminderPopup,
   externalActions,
   externalActionSelected,
+  showClipButton,
+  canClip,
+  clipActive,
+  clipRemainingSeconds,
+  onClipAction,
 }) => {
   const externalActionButtons = externalActions.map(action => (
     <ActionButton
@@ -51,6 +65,15 @@ const ActionButtons: FC<ActionButtonProps> = ({
       <div className={styles.desktopActionButtons}>
         <ActionButtonRow>
           {externalActionButtons}
+          {showClipButton && (
+            <ClipButton
+              size="small"
+              disabled={!canClip && !clipActive}
+              active={clipActive}
+              remainingSeconds={clipRemainingSeconds}
+              onClick={onClipAction}
+            />
+          )}
           {supportFediverseFeatures && (
             <FollowButton size="small" onClick={() => setShowFollowModal(true)} />
           )}
@@ -66,16 +89,19 @@ const ActionButtons: FC<ActionButtonProps> = ({
         </ActionButtonRow>
       </div>
       <div className={styles.mobileActionButtons}>
-        {(supportsBrowserNotifications ||
-          supportsBrowserNotifications ||
-          externalActions.length > 0) && (
+        {(showClipButton || supportsBrowserNotifications || externalActions.length > 0) && (
           <ActionButtonMenu
             actions={externalActions}
             showFollowItem={supportFediverseFeatures}
             showNotifyItem={supportsBrowserNotifications}
+            showClipItem={showClipButton}
+            clipItemEnabled={canClip}
+            clipActive={clipActive}
+            clipRemainingSeconds={clipRemainingSeconds}
             externalActionSelected={externalActionSelected}
             notifyItemSelected={() => setShowNotifyModal(true)}
             followItemSelected={() => setShowFollowModal(true)}
+            clipItemSelected={onClipAction}
           />
         )}
       </div>

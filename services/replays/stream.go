@@ -15,7 +15,8 @@ import (
 )
 
 // Stream is a single recorded stream: a replay. Replays are the container
-// clips are taken from; full-stream replay playback is admin-only for now.
+// clips are taken from. Replay playback is an admin capability; viewers are
+// served clips.
 type Stream struct {
 	ID         string    `json:"id"`
 	Title      string    `json:"title,omitempty"`

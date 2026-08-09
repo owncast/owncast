@@ -33,6 +33,20 @@ export interface ClientConfig {
   notifications: Notifications;
   authentication: Authentication;
   socketHostOverride?: string;
+  clips: ClipsConfig;
+}
+
+// ClipsConfig tells the viewer whether the clip UI applies, and the limits
+// the server will enforce on a clip request.
+export interface ClipsConfig {
+  enabled: boolean;
+  // permissions names who may create clips: 'moderators', 'authenticated',
+  // or 'established' (any chat identity at least an hour old). Moderators
+  // always qualify. Mirrors the server's enforcement so the UI can hide the
+  // clip button from viewers who would be rejected. Absent means
+  // 'established'.
+  permissions?: string;
+  maxDurationSeconds: number;
 }
 
 interface Authentication {
@@ -105,6 +119,11 @@ export function makeEmptyClientConfig(): ClientConfig {
     },
     authentication: {
       indieAuthEnabled: false,
+    },
+    clips: {
+      enabled: false,
+      permissions: 'established',
+      maxDurationSeconds: 0,
     },
   };
 }

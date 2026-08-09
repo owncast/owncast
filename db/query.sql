@@ -385,7 +385,7 @@ UPDATE streams SET end_time = ? WHERE id = ?;
 INSERT INTO replay_clips (id, stream_id, clipped_by, clip_title, relative_start_time, relative_end_time, timestamp) VALUES(?, ?, ?, ?, ?, ?, ?);
 
 -- name: GetAllClips :many
-SELECT rc.id AS id, rc.clip_title, rc.stream_id, rc.relative_start_time, rc.relative_end_time, (rc.relative_end_time - rc.relative_start_time) AS duration_seconds, rc.timestamp, s.stream_title AS stream_title
+SELECT rc.id AS id, rc.clip_title, rc.stream_id, rc.clipped_by, rc.relative_start_time, rc.relative_end_time, (rc.relative_end_time - rc.relative_start_time) AS duration_seconds, rc.timestamp, s.stream_title AS stream_title
 	FROM replay_clips rc
 	JOIN streams s ON rc.stream_id = s.id
 	ORDER BY rc.timestamp DESC;
@@ -399,7 +399,16 @@ SELECT rc.id AS clip_id, rc.stream_id, rc.clipped_by, rc.clip_title, rc.relative
 	ORDER BY rc.timestamp DESC;
 
 -- name: GetClip :one
-SELECT id AS clip_id, stream_id, clipped_by, clip_title, timestamp AS clip_timestamp, relative_start_time, relative_end_time FROM replay_clips WHERE id = ?;
+SELECT rc.id AS clip_id, rc.stream_id, rc.clipped_by, rc.clip_title, rc.timestamp AS clip_timestamp, rc.relative_start_time, rc.relative_end_time,
+	s.stream_title AS stream_title
+	FROM replay_clips rc
+	JOIN streams s ON rc.stream_id = s.id
+	WHERE rc.id = ?;
+
+-- name: UpdateClipTitle :execrows
+UPDATE replay_clips SET clip_title = ? WHERE id = ?;
+
+
 
 -- name: GetStreamMediaEnd :one
 -- The media-time end (in seconds) of everything recorded so far for a
@@ -418,6 +427,11 @@ SELECT id FROM replay_clips WHERE stream_id = ?;
 
 -- name: GetSegmentPathsForStream :many
 SELECT path FROM video_segments WHERE stream_id = ?;
+
+-- name: GetAllSegmentPaths :many
+-- Every stored segment path. Automatic cleanup consults this so it never
+-- deletes video a clip or replay still references.
+SELECT path FROM video_segments;
 
 -- name: DeleteSegmentsForStream :exec
 DELETE FROM video_segments WHERE stream_id = ?;

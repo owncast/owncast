@@ -23,6 +23,9 @@ export type MobileContentProps = {
   pluginTabs: PluginTab[];
   setShowFollowModal: (show: boolean) => void;
   showFollowersTab: boolean;
+  // showClipsTab adds the viewer-facing Clips tab. Enabled when the operator
+  // has clips turned on.
+  showClipsTab: boolean;
   online: boolean;
   federatedServers?: any[]; // Will be properly typed when API is implemented
 };
@@ -51,6 +54,10 @@ const StreamsTab = dynamic(() => import('../StreamsTab/StreamsTab').then(mod => 
   ssr: false,
 });
 
+const ClipsTab = dynamic(() => import('../ClipsTab/ClipsTab').then(mod => mod.ClipsTab), {
+  ssr: false,
+});
+
 const ComponentErrorFallback = ({ error, resetErrorBoundary }) => (
   <ComponentError
     message={error}
@@ -68,6 +75,7 @@ export const MobileContent: FC<MobileContentProps> = ({
   pluginTabs,
   setShowFollowModal,
   showFollowersTab,
+  showClipsTab,
   online,
   federatedServers = [],
 }) => {
@@ -96,9 +104,22 @@ export const MobileContent: FC<MobileContentProps> = ({
     </div>
   );
 
+  const clipsTabContent = (
+    <div className={styles.bottomPageContentContainer}>
+      <ClipsTab />
+    </div>
+  );
+
   const items: NonNullable<TabsProps['items']> = [];
 
   items.push({ label: 'About', key: '0', children: aboutTabContent });
+  if (showClipsTab) {
+    items.push({
+      label: t(Localization.Frontend.Clips.title),
+      key: 'clips',
+      children: clipsTabContent,
+    });
+  }
   if (showFollowersTab) {
     items.push({ label: 'Followers', key: '1', children: followersTabContent });
   }

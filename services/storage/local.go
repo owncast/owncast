@@ -14,11 +14,21 @@ import (
 type LocalStorage struct {
 	host             string
 	configRepository models.EngineConfig
+
+	// segmentProtector, when set, names the segments cleanup must keep
+	// because a clip or replay still references them.
+	segmentProtector models.SegmentProtector
 }
 
 // NewLocalStorage returns a new LocalStorage instance.
 func NewLocalStorage(configRepository models.EngineConfig) *LocalStorage {
 	return &LocalStorage{configRepository: configRepository}
+}
+
+// SetSegmentProtector supplies the source of truth for which recorded
+// segments must survive cleanup.
+func (s *LocalStorage) SetSegmentProtector(protector models.SegmentProtector) {
+	s.segmentProtector = protector
 }
 
 // Setup configures this storage provider.
@@ -64,18 +74,13 @@ func (s *LocalStorage) Save(filePath string, retryCount int) (string, error) {
 	return filePath, nil
 }
 
-// Cleanup will remove old files from the storage provider.
+// Cleanup will remove old files from the storage provider, keeping any
+// segment a clip or replay still references.
 func (s *LocalStorage) Cleanup() error {
-	// If we're recording for replay, don't prune old segments; they must be
-	// kept on disk so recorded streams stay available for clips.
-	if s.configRepository.GetReplayFeaturesEnabled() {
-		return nil
-	}
-
 	// Determine how many files we should keep on disk
 	maxNumber := s.configRepository.GetStreamLatencyLevel().SegmentCount
 	buffer := 10
-	return localCleanup(maxNumber + buffer)
+	return localCleanup(maxNumber+buffer, s.segmentProtector)
 }
 
 func getAllFilesRecursive(baseDirectory string) (map[string][]os.FileInfo, error) {

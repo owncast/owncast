@@ -47,6 +47,10 @@ const API_CHAT_REQUIRE_AUTHENTICATION = '/chat/requireauthentication';
 const API_DISABLE_SEARCH_INDEXING = '/disablesearchindexing';
 const API_SOCKET_HOST_OVERRIDE = '/sockethostoverride';
 const API_VIDEO_SERVING_ENDPOINT = '/videoservingendpoint';
+const API_REPLAY_ENABLED = '/replay/enable';
+const API_CLIPS_ENABLED = '/replay/clipsenabled';
+const API_MAX_CLIP_DURATION = '/replay/maxclipduration';
+const API_CLIP_PERMISSIONS = '/replay/clippermissions';
 
 // Federation
 const API_FEDERATION_ENABLED = '/federation/enable';
@@ -263,6 +267,54 @@ export const FIELD_PROPS_DISABLE_SEARCH_INDEXING = {
   label: 'Disable search engine indexing',
   tip: 'Turn this ON to ask search engines to not index this site.',
 };
+
+export const FIELD_PROPS_REPLAY_ENABLED = {
+  apiPath: API_REPLAY_ENABLED,
+  configPath: 'replay',
+  label: 'Save replays',
+  tip: 'Turn this ON to keep recorded video so clips can be created. Recorded video is kept on disk for as long as a replay or clip references it, so disk use grows until replays are deleted.',
+};
+
+export const FIELD_PROPS_CLIPS_ENABLED = {
+  apiPath: API_CLIPS_ENABLED,
+  configPath: 'replay',
+  label: 'Allow viewers to create clips',
+  tip: 'Turn this ON to let viewers clip moments from your live stream.',
+};
+
+export const FIELD_PROPS_MAX_CLIP_DURATION = {
+  apiPath: API_MAX_CLIP_DURATION,
+  configPath: 'replay',
+  maxLength: 4,
+  placeholder: '120',
+  label: 'Maximum clip length',
+  tip: 'The longest clip, in seconds, that a viewer may create.',
+};
+
+export const FIELD_PROPS_CLIP_PERMISSIONS = {
+  apiPath: API_CLIP_PERMISSIONS,
+  configPath: 'replay',
+  label: 'Who can create clips',
+  tip: 'Limit clip creation to trusted viewers. Moderators can always create clips.',
+};
+
+export const CLIP_PERMISSION_OPTIONS = [
+  {
+    value: 'established',
+    label: 'Established viewers',
+    description: 'Anyone whose chat identity is at least an hour old.',
+  },
+  {
+    value: 'authenticated',
+    label: 'Authenticated viewers',
+    description: 'Only viewers who verified their identity with IndieAuth or FediAuth.',
+  },
+  {
+    value: 'moderators',
+    label: 'Moderators only',
+    description: 'Only moderators may create clips.',
+  },
+];
 
 export const DEFAULT_VARIANT_STATE: VideoVariant = {
   framerate: 24,

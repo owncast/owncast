@@ -81,6 +81,13 @@ const initialServerConfigState: ConfigDetails = {
   chatEstablishedUserMode: false,
   hideViewerCount: false,
   disableSearchIndexing: false,
+  replay: {
+    enabled: false,
+    clipsEnabled: true,
+    maxClipDurationSeconds: 120,
+    clipPermissions: 'established',
+    forcedByCommandLine: false,
+  },
 };
 
 const initialServerStatusState = {

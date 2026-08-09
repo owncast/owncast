@@ -26,6 +26,11 @@ func GetWeb() fs.FS {
 	return wf
 }
 
+// GetWebFile returns the contents of a single file from the embedded web app.
+func GetWebFile(name string) ([]byte, error) {
+	return fs.ReadFile(GetWeb(), name)
+}
+
 //go:embed img/emoji/*
 var emojiFiles embed.FS
 

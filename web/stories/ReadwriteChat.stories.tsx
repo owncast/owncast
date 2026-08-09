@@ -49,6 +49,7 @@ const Page = () => {
     notifications: undefined,
     authentication: undefined,
     appearanceVariables: undefined,
+    clips: { enabled: false, maxDurationSeconds: 0 },
   };
 
   useEffect(() => {

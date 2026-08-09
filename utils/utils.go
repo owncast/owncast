@@ -129,6 +129,9 @@ func IsUserAgentABot(userAgent string) bool {
 		return false
 	}
 
+	// Link-preview crawlers that fetch a URL to build an unfurl card. They
+	// need the server-rendered metadata page, since the web app is a static
+	// export and cannot produce per-page metadata itself.
 	botStrings := []string{
 		"mastodon",
 		"pleroma",
@@ -139,6 +142,22 @@ func IsUserAgentABot(userAgent string) bool {
 		"element",
 		"rocket.chat",
 		"duckduckbot",
+		"facebookexternalhit",
+		"twitterbot",
+		"discordbot",
+		"telegrambot",
+		"slackbot",
+		"linkedinbot",
+		"signal",
+		"embedly",
+		"iframely",
+		"opengraph",
+		"skypeuripreview",
+		"redditbot",
+		"pinterest",
+		"vkshare",
+		"nuzzel",
+		"bufferbot",
 	}
 
 	for _, botString := range botStrings {
@@ -308,17 +327,13 @@ func VerifyFFMpegPath(path string) error {
 	return nil
 }
 
-// CleanupDirectory removes all contents within the directory, or creates it if
-// it does not exist. Throws fatal error on failure. When keepOldFiles is true
-// the existing contents are preserved (used when replay features are enabled
-// and previously recorded video must not be wiped between streams).
-func CleanupDirectory(path string, keepOldFiles bool) {
+// CleanupDirectory removes contents within the directory, or creates it if it
+// does not exist. Throws fatal error on failure. Files named in keep are left
+// in place, along with any directory holding one, so recorded video a clip or
+// replay still references survives the wipe between streams.
+func CleanupDirectory(path string, keep map[string]bool) {
 	if err := os.MkdirAll(path, 0o750); err != nil {
 		log.Fatalf("Unable to create '%s'. Please check the ownership and permissions: %s\n", path, err)
-	}
-
-	if keepOldFiles {
-		return
 	}
 
 	log.Traceln("Cleaning", path)
@@ -328,6 +343,18 @@ func CleanupDirectory(path string, keepOldFiles bool) {
 	}
 	for _, entry := range entries {
 		entryPath := filepath.Join(path, entry.Name())
+
+		if entry.IsDir() {
+			// Variant directories hold the segments, so recurse instead of
+			// removing the directory outright.
+			if len(keep) > 0 {
+				CleanupDirectory(entryPath, keep)
+				continue
+			}
+		} else if keep[entry.Name()] {
+			continue
+		}
+
 		if err := os.RemoveAll(entryPath); err != nil {
 			log.Fatalf("Unable to remove file or directory contained in '%s'. Please check the ownership and permissions: %s\n", path, err)
 		}

@@ -92,6 +92,27 @@ func (e PlaybackClientHealthSource) Valid() bool {
 	}
 }
 
+// Defines values for ReplayAdminConfigClipPermissions.
+const (
+	Authenticated ReplayAdminConfigClipPermissions = "authenticated"
+	Established   ReplayAdminConfigClipPermissions = "established"
+	Moderators    ReplayAdminConfigClipPermissions = "moderators"
+)
+
+// Valid indicates whether the value is a known member of the ReplayAdminConfigClipPermissions enum.
+func (e ReplayAdminConfigClipPermissions) Valid() bool {
+	switch e {
+	case Authenticated:
+		return true
+	case Established:
+		return true
+	case Moderators:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for WebConfigAutoplay.
 const (
 	WebConfigAutoplayAlways    WebConfigAutoplay = "always"
@@ -424,9 +445,9 @@ type ClipCreatedResponse struct {
 
 // ClipsConfig Whether viewers may create clips, and the limits that apply
 type ClipsConfig struct {
-	DefaultDurationSeconds *int  `json:"defaultDurationSeconds,omitempty"`
-	Enabled                *bool `json:"enabled,omitempty"`
-	MaxDurationSeconds     *int  `json:"maxDurationSeconds,omitempty"`
+	Enabled            *bool   `json:"enabled,omitempty"`
+	MaxDurationSeconds *int    `json:"maxDurationSeconds,omitempty"`
+	Permissions        *string `json:"permissions,omitempty"`
 }
 
 // CmcdReport A CMCD v2 (CTA-5004-A) report keyed by CMCD key names. Any valid CMCD key is accepted; the keys below are the ones consumed.
@@ -847,15 +868,20 @@ type Replay struct {
 
 // ReplayAdminConfig Current state of the replay and clip settings
 type ReplayAdminConfig struct {
-	ClipsEnabled *bool `json:"clipsEnabled,omitempty"`
+	// ClipPermissions Who may create clips.
+	ClipPermissions *ReplayAdminConfigClipPermissions `json:"clipPermissions,omitempty"`
+	ClipsEnabled    *bool                             `json:"clipsEnabled,omitempty"`
 
-	// Enabled Whether replays are being recorded. Automatic segment cleanup is suppressed while true.
+	// Enabled Whether replays are being recorded. Recorded video is kept on disk for as long as a replay or clip references it.
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// ForcedByCommandLine The -enableReplayFeatures flag is holding the feature on, so the admin toggle cannot turn it off.
 	ForcedByCommandLine    *bool `json:"forcedByCommandLine,omitempty"`
 	MaxClipDurationSeconds *int  `json:"maxClipDurationSeconds,omitempty"`
 }
+
+// ReplayAdminConfigClipPermissions Who may create clips.
+type ReplayAdminConfigClipPermissions string
 
 // S3Info defines model for S3Info.
 type S3Info struct {
@@ -883,9 +909,12 @@ type Status struct {
 	LastDisconnectTime *string `json:"lastDisconnectTime,omitempty"`
 	Online             *bool   `json:"online,omitempty"`
 	ServerTime         *string `json:"serverTime,omitempty"`
-	StreamTitle        *string `json:"streamTitle,omitempty"`
-	VersionNumber      *string `json:"versionNumber,omitempty"`
-	ViewerCount        *int    `json:"viewerCount,omitempty"`
+
+	// StreamId Identifies the live broadcast so a viewer can clip it. Only present while a stream is live and clipping is enabled.
+	StreamId      *string `json:"streamId,omitempty"`
+	StreamTitle   *string `json:"streamTitle,omitempty"`
+	VersionNumber *string `json:"versionNumber,omitempty"`
+	ViewerCount   *int    `json:"viewerCount,omitempty"`
 }
 
 // StreamHealthOverview defines model for StreamHealthOverview.
@@ -1329,10 +1358,7 @@ type UpdateUserEnabledParams struct {
 
 // AddClipJSONBody defines parameters for AddClip.
 type AddClipJSONBody struct {
-	ClipTitle *string `json:"clipTitle,omitempty"`
-
-	// DurationSeconds Length of a trailing clip ending at the newest recorded video.
-	DurationSeconds          *float32 `json:"durationSeconds,omitempty"`
+	ClipTitle                *string  `json:"clipTitle,omitempty"`
 	RelativeEndTimeSeconds   *float32 `json:"relativeEndTimeSeconds,omitempty"`
 	RelativeStartTimeSeconds *float32 `json:"relativeStartTimeSeconds,omitempty"`
 	StreamId                 *string  `json:"streamId,omitempty"`
@@ -1499,6 +1525,9 @@ type SetCustomOfflineMessageJSONRequestBody = AdminConfigValue
 
 // SetExtraPageContentJSONRequestBody defines body for SetExtraPageContent for application/json ContentType.
 type SetExtraPageContentJSONRequestBody = AdminConfigValue
+
+// SetClipPermissionsJSONRequestBody defines body for SetClipPermissions for application/json ContentType.
+type SetClipPermissionsJSONRequestBody = AdminConfigValue
 
 // SetClipsEnabledJSONRequestBody defines body for SetClipsEnabled for application/json ContentType.
 type SetClipsEnabledJSONRequestBody = AdminConfigValue

@@ -6,6 +6,9 @@ export interface ServerStatus {
   versionNumber?: string;
   streamTitle?: string;
   serverTime: Date;
+  // streamId identifies the currently-live broadcast, needed to clip what is
+  // happening right now. Absent while offline.
+  streamId?: string;
 }
 
 export function makeEmptyServerStatus(): ServerStatus {

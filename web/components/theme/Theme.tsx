@@ -6,13 +6,22 @@ import { clientConfigStateAtom } from '../stores/ClientConfigStore';
 
 export const Theme: FC = () => {
   const clientConfig = useAtomValue(clientConfigStateAtom);
+  // The server export has empty config. Defer instance-specific CSS until
+  // after hydration, including during Fast Refresh when Jotai keeps its
+  // already-loaded client state.
+  const [mounted, setMounted] = useState(false);
   const { appearanceVariables, customStyles, pluginStyles } = clientConfig;
-
-  const appearanceVars = Object.keys(appearanceVariables || {})
-    .filter(variable => !!appearanceVariables[variable])
-    .map(variable => `--${variable}: ${appearanceVariables[variable]}`);
+  const appearanceVars = mounted
+    ? Object.keys(appearanceVariables || {})
+        .filter(variable => !!appearanceVariables[variable])
+        .map(variable => `--${variable}: ${appearanceVariables[variable]}`)
+    : [];
 
   const [themeColor, setThemeColor] = useState('#fff');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const color = getComputedStyle(document.documentElement).getPropertyValue(
@@ -39,26 +48,32 @@ export const Theme: FC = () => {
       */}
       <style
         dangerouslySetInnerHTML={{
-          __html: `
+          __html: mounted
+            ? `
 				${pluginStyles}
-			`,
+			`
+            : '',
         }}
       />
       <style
         dangerouslySetInnerHTML={{
-          __html: `
+          __html: mounted
+            ? `
 				:root {
 					${appearanceVars.join(';\n')}
 				}
-			`,
+			`
+            : '',
         }}
       />
       {/* customStyles is the admin's own custom CSS, rendered last. */}
       <style
         dangerouslySetInnerHTML={{
-          __html: `
+          __html: mounted
+            ? `
 				${customStyles}
-			`,
+			`
+            : '',
         }}
       />
     </>

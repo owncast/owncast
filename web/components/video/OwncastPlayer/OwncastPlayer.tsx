@@ -9,6 +9,7 @@ import { VideoJS } from '../VideoJS/VideoJS';
 import ViewerPing from '../viewer-ping';
 import { VideoPoster } from '../VideoPoster/VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
+import { setVideoPositionSupplier } from '../../../utils/video-latency';
 import { autoplayModeForSetting } from '../../../utils/autoplay';
 import { Localization } from '../../../types/localization';
 import { isVideoPlayingAtom, clockSkewAtom } from '../../stores/ClientConfigStore';
@@ -344,6 +345,19 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     setupAirplay(player, videojs);
     setupUnmuteButton(player, videojs);
 
+    // The browser's media time is the same coordinate as the replay recorder.
+    // It lets clip start/end use exactly what the viewer saw rather than an
+    // inferred live-edge delay.
+    setVideoPositionSupplier(() => {
+      const { liveTracker } = player;
+      if (!liveTracker || !liveTracker.isLive() || player.paused()) {
+        return null;
+      }
+      const playheadSeconds = player.currentTime();
+      const latencySeconds = liveTracker.liveCurrentTime() - playheadSeconds;
+      return { latencySeconds, playheadSeconds };
+    });
+
     // You can handle player events here, for example:
     player.on('waiting', () => {
       console.debug('player is waiting');
@@ -352,6 +366,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     player.on('dispose', () => {
       console.debug('player will dispose');
       ping.stop();
+      setVideoPositionSupplier(null);
     });
 
     player.on('playing', () => {
@@ -392,6 +407,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
     () => () => {
       stopLatencyCompensator();
       playbackMetrics?.stop();
+      setVideoPositionSupplier(null);
     },
     [],
   );

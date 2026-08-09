@@ -68,4 +68,5 @@ const (
 	replayFeaturesEnabledKey             = "replay_features_enabled"
 	clipsEnabledKey                      = "clips_enabled"
 	maxClipDurationSecondsKey            = "max_clip_duration_seconds"
+	clipPermissionsKey                   = "clip_permissions"
 )

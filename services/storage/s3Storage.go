@@ -51,9 +51,19 @@ type S3Storage struct {
 
 	configRepository models.EngineConfig
 
+	// segmentProtector, when set, names the segments cleanup must keep
+	// because a clip or replay still references them.
+	segmentProtector models.SegmentProtector
+
 	performanceTracker *utils.PerformanceTracker
 
 	s3ForcePathStyle bool
+}
+
+// SetSegmentProtector supplies the source of truth for which recorded
+// segments must survive cleanup.
+func (s *S3Storage) SetSegmentProtector(protector models.SegmentProtector) {
+	s.segmentProtector = protector
 }
 
 // NewS3Storage returns a new S3Storage instance.
@@ -207,19 +217,14 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	return url.JoinPath(s.host, remotePath)
 }
 
-// Cleanup will fire the different cleanup tasks required.
+// Cleanup will fire the different cleanup tasks required, keeping any segment
+// a clip or replay still references.
 func (s *S3Storage) Cleanup() error {
-	// If we're recording for replay, don't prune old segments; they must be
-	// kept so recorded streams stay available for clips.
-	if s.configRepository.GetReplayFeaturesEnabled() {
-		return nil
-	}
-
 	if err := s.RemoteCleanup(); err != nil {
 		log.Errorln(err)
 	}
 
-	return localCleanup(4)
+	return localCleanup(4, s.segmentProtector)
 }
 
 // RemoteCleanup will remove old files from the remote storage provider.
@@ -233,8 +238,17 @@ func (s *S3Storage) RemoteCleanup() error {
 		return err
 	}
 
-	if len(keys) > 0 {
-		s.deleteObjects(keys)
+	protected := protectedSegments(s.segmentProtector)
+	deletable := make([]s3object, 0, len(keys))
+	for _, key := range keys {
+		if protected[path.Base(key.key)] {
+			continue
+		}
+		deletable = append(deletable, key)
+	}
+
+	if len(deletable) > 0 {
+		s.deleteObjects(deletable)
 	}
 
 	return nil

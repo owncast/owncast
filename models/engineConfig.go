@@ -19,8 +19,14 @@ type EngineConfig interface {
 	GetStreamOutputVariants() []StreamOutputVariant
 	GetVideoServingEndpoint() string
 	GetStreamKeys() []StreamKey
-	// GetReplayFeaturesEnabled reports whether recorded video must be
-	// retained. Segment cleanup is suppressed while it is true so recorded
-	// streams stay available for clips.
-	GetReplayFeaturesEnabled() bool
+}
+
+// SegmentProtector reports which recorded video segments must survive
+// automatic cleanup because a clip or replay still references them. The
+// replay subsystem implements it; storage providers consult it before
+// deleting anything, and treat a nil protector as "nothing is protected".
+type SegmentProtector interface {
+	// ProtectedSegmentFilenames returns the set of segment filenames that
+	// must be kept. Called once per cleanup pass.
+	ProtectedSegmentFilenames() (map[string]bool, error)
 }

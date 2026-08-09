@@ -54,11 +54,9 @@ func TestRun_FreshDatabase(t *testing.T) {
 		"datastore", "webhooks", "users", "user_access_tokens",
 		"ap_followers", "ap_outbox", "ap_accepted_activities",
 		"notifications", "messages", "auth", "ip_bans",
-		"federated_servers",
-		"ap_delivery_queue",
+		"federated_servers", "ap_delivery_queue",
 		"streams", "video_segment_output_configuration",
-		"video_segments", "replay_clips",
-		"goose_db_version",
+		"video_segments", "replay_clips", "goose_db_version",
 	}
 	for _, name := range expectedTables {
 		if !tableExists(t, db, name) {
@@ -95,7 +93,6 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 		t.Fatalf("Run on v9 legacy DB: %v", err)
 	}
 
-	// Goose should record the latest migration.
 	if v := gooseVersion(t, db); v != 7 {
 		t.Errorf("goose version = %d, want 7", v)
 	}
@@ -143,7 +140,6 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 		t.Errorf("config.version = %d after legacy bridge, want 9", version)
 	}
 
-	// Goose should have recorded the latest migration.
 	if v := gooseVersion(t, db); v != 7 {
 		t.Errorf("goose version = %d, want 7", v)
 	}
