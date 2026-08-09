@@ -38,6 +38,7 @@ import (
 	"github.com/owncast/owncast/services/plugins"
 	"github.com/owncast/owncast/services/plugins/kv"
 	"github.com/owncast/owncast/services/stream"
+	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -1571,6 +1572,18 @@ func wireFilesystemHostFnsWithRoot(env *plugins.HostEnv, root string) {
 	}
 }
 
+func validateVideoConfigUpdate(u plugins.VideoConfigUpdate) error {
+	if u.Autoplay != nil {
+		if err := u.Autoplay.Validate(); err != nil {
+			return err
+		}
+	}
+	if u.Codec != nil && !transcoder.IsCodecSupported(*u.Codec) {
+		return fmt.Errorf("invalid video codec %q", *u.Codec)
+	}
+	return nil
+}
+
 // wireVideoConfigHostFns wires the settable video/transcoding configuration:
 // videoconfig.read (owncast.videoConfig.read) and videoconfig.write
 // (owncast.videoConfig.write). The plugin-facing VideoConfig/StreamVariant
@@ -1584,6 +1597,7 @@ func wireVideoConfigHostFns(env *plugins.HostEnv, deps Deps) {
 		out := plugins.VideoConfig{
 			LatencyLevel: cfg.GetStreamLatencyLevel().Level,
 			Codec:        cfg.GetVideoCodec(),
+			Autoplay:     cfg.GetAutoplay(),
 			Variants:     make([]plugins.StreamVariant, 0, len(variants)),
 		}
 		for _, v := range variants {
@@ -1592,7 +1606,7 @@ func wireVideoConfigHostFns(env *plugins.HostEnv, deps Deps) {
 				Height:        v.ScaledHeight,
 				Framerate:     v.Framerate,
 				VideoBitrate:  v.VideoBitrate,
-				AudioBitrate:  v.AudioBitrate,
+				CPUUsageLevel: v.CPUUsageLevel,
 				IsPassthrough: v.IsVideoPassthrough,
 			})
 		}
@@ -1600,6 +1614,14 @@ func wireVideoConfigHostFns(env *plugins.HostEnv, deps Deps) {
 	}
 
 	env.WriteVideoConfig = func(pluginName string, u plugins.VideoConfigUpdate) error {
+		if err := validateVideoConfigUpdate(u); err != nil {
+			return err
+		}
+		if u.Autoplay != nil {
+			if err := cfg.SetAutoplay(*u.Autoplay); err != nil {
+				return err
+			}
+		}
 		if u.LatencyLevel != nil {
 			if err := cfg.SetStreamLatencyLevel(float64(*u.LatencyLevel)); err != nil {
 				return err
@@ -1611,16 +1633,20 @@ func wireVideoConfigHostFns(env *plugins.HostEnv, deps Deps) {
 			}
 		}
 		if u.Variants != nil {
+			existing := cfg.GetStreamOutputVariants()
 			variants := make([]models.StreamOutputVariant, 0, len(u.Variants))
-			for _, v := range u.Variants {
-				variants = append(variants, models.StreamOutputVariant{
-					ScaledWidth:        v.Width,
-					ScaledHeight:       v.Height,
-					Framerate:          v.Framerate,
-					VideoBitrate:       v.VideoBitrate,
-					AudioBitrate:       v.AudioBitrate,
-					IsVideoPassthrough: v.IsPassthrough,
-				})
+			for i, v := range u.Variants {
+				variant := models.StreamOutputVariant{}
+				if i < len(existing) {
+					variant = existing[i]
+				}
+				variant.ScaledWidth = v.Width
+				variant.ScaledHeight = v.Height
+				variant.Framerate = v.Framerate
+				variant.VideoBitrate = v.VideoBitrate
+				variant.CPUUsageLevel = v.CPUUsageLevel
+				variant.IsVideoPassthrough = v.IsPassthrough
+				variants = append(variants, variant)
 			}
 			if err := cfg.SetStreamOutputVariants(variants); err != nil {
 				return err

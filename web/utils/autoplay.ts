@@ -1,12 +1,17 @@
-// Viewer-facing autoplay behaviors. Mirrors the backend config enum
-// (off / always / sound-only) served in the client config.
-const AUTOPLAY_VALUES = ['off', 'always', 'sound-only'];
+// Viewer-facing autoplay settings shared by the config model, player, and admin UI.
+export enum AutoplaySetting {
+  Off = 'off',
+  Always = 'always',
+  SoundOnly = 'sound-only',
+}
 
-// video.js autoplay option values:
+const AUTOPLAY_VALUES = Object.values(AutoplaySetting);
+
+// Video.js autoplay option values:
 //   false  -> no autoplay
 //   'any'  -> try to play with sound, fall back to muted if the browser blocks it
 //   'play' -> play with sound when the browser allows it, otherwise stay paused
-type AutoplayMode = false | 'any' | 'play';
+type VideoJSAutoplayMode = false | 'any' | 'play';
 
 // Map an autoplay setting to the video.js autoplay value. A viewer who has
 // signaled they would rather not autoplay (data-saver on, or reduced-motion
@@ -18,14 +23,14 @@ export function autoplayModeForSetting(
     saveData?: boolean;
     startsInaudible?: boolean;
   } = {},
-): AutoplayMode {
+): VideoJSAutoplayMode {
   if (preferences.prefersReducedMotion || preferences.saveData) {
     return false;
   }
-  if (setting === 'always') {
+  if (setting === AutoplaySetting.Always) {
     return 'any';
   }
-  if (setting === 'sound-only') {
+  if (setting === AutoplaySetting.SoundOnly) {
     // "Only with sound" must never start silently. If the player would begin
     // inaudible (an embed asking to start muted, or a persisted volume of 0),
     // a play attempt can succeed silently anyway: Firefox permits autoplay of
@@ -40,10 +45,10 @@ export function autoplayModeForSetting(
 // unrecognized falls back to the config value.
 export function resolveAutoplaySetting(
   queryValue: string | undefined,
-  configValue: string,
-): string {
-  if (queryValue && AUTOPLAY_VALUES.includes(queryValue)) {
-    return queryValue;
+  configValue: AutoplaySetting,
+): AutoplaySetting {
+  if (queryValue && AUTOPLAY_VALUES.includes(queryValue as AutoplaySetting)) {
+    return queryValue as AutoplaySetting;
   }
   return configValue;
 }

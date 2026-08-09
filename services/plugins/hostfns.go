@@ -11,6 +11,7 @@ import (
 	"unicode"
 
 	extism "github.com/extism/go-sdk"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/plugins/kv"
 )
 
@@ -136,7 +137,7 @@ type StreamVariant struct {
 	Height        int  `json:"height"`
 	Framerate     int  `json:"framerate"`
 	VideoBitrate  int  `json:"videoBitrate"`
-	AudioBitrate  int  `json:"audioBitrate"`
+	CPUUsageLevel int  `json:"cpuUsageLevel"`
 	IsPassthrough bool `json:"isPassthrough"`
 }
 
@@ -145,9 +146,10 @@ type StreamVariant struct {
 // as opposed to read-only inbound-broadcast telemetry (StreamBroadcaster).
 // Requires the videoconfig.read permission.
 type VideoConfig struct {
-	LatencyLevel int             `json:"latencyLevel"`
-	Codec        string          `json:"codec"`
-	Variants     []StreamVariant `json:"variants"`
+	LatencyLevel int                 `json:"latencyLevel"`
+	Codec        string              `json:"codec"`
+	Autoplay     models.AutoplayMode `json:"autoplay"`
+	Variants     []StreamVariant     `json:"variants"`
 }
 
 // VideoConfigUpdate is a partial change passed to owncast.videoConfig.write().
@@ -155,9 +157,10 @@ type VideoConfig struct {
 // level without disturbing the configured output variants. Requires the
 // videoconfig.write permission.
 type VideoConfigUpdate struct {
-	LatencyLevel *int            `json:"latencyLevel,omitempty"`
-	Codec        *string         `json:"codec,omitempty"`
-	Variants     []StreamVariant `json:"variants,omitempty"`
+	LatencyLevel *int                 `json:"latencyLevel,omitempty"`
+	Codec        *string              `json:"codec,omitempty"`
+	Autoplay     *models.AutoplayMode `json:"autoplay,omitempty"`
+	Variants     []StreamVariant      `json:"variants,omitempty"`
 }
 
 // VideoConfigWriteResult reports whether a video config update failed.

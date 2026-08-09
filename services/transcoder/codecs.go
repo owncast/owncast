@@ -39,7 +39,14 @@ var supportedCodecs = map[string]string{
 	(&VaapiCodec{}).Name():        codecNameVAAPI,
 	(&QuicksyncCodec{}).Name():    "qsv",
 	(&NvencCodec{}).Name():        "NVIDIA nvenc",
+	(&Video4Linux{}).Name():       "v4l2m2m",
 	(&VideoToolboxCodec{}).Name(): "videotoolbox",
+}
+
+// IsCodecSupported reports whether Owncast recognizes the ffmpeg video encoder.
+func IsCodecSupported(name string) bool {
+	_, ok := supportedCodecs[name]
+	return ok
 }
 
 // Libx264Codec represents an instance of the Libx264 Codec.

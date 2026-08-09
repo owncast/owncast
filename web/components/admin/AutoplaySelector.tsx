@@ -13,20 +13,21 @@ import { Localization } from '../../types/localization';
 import { Translation } from '../ui/Translation/Translation';
 import { FormStatusIndicator } from './FormStatusIndicator';
 
+import { AutoplaySetting } from '../../utils/autoplay';
 // The three viewer-facing autoplay behaviors. `value` is what's persisted and
 // what the player maps to a video.js autoplay option (off -> false,
 // always -> 'any', sound-only -> 'play'). The description is shown live under
 // the dropdown and updates as the selection changes.
 const AUTOPLAY_OPTIONS = [
   {
-    value: 'off',
+    value: AutoplaySetting.Off,
     labelKey: Localization.Admin.Autoplay.optionOffLabel,
     labelDefault: 'Never',
     descriptionKey: Localization.Admin.Autoplay.optionOffDescription,
     descriptionDefault: 'Viewers will press play to start watching.',
   },
   {
-    value: 'always',
+    value: AutoplaySetting.Always,
     labelKey: Localization.Admin.Autoplay.optionAlwaysLabel,
     labelDefault: 'Always',
     descriptionKey: Localization.Admin.Autoplay.optionAlwaysDescription,
@@ -34,7 +35,7 @@ const AUTOPLAY_OPTIONS = [
       'The stream always starts on its own the moment someone opens the page. It plays with sound where the browser allows it, and starts muted everywhere else.',
   },
   {
-    value: 'sound-only',
+    value: AutoplaySetting.SoundOnly,
     labelKey: Localization.Admin.Autoplay.optionSoundOnlyLabel,
     labelDefault: 'Only if sound is available',
     descriptionKey: Localization.Admin.Autoplay.optionSoundOnlyDescription,
@@ -83,8 +84,7 @@ export const AutoplaySelector: FC<AutoplaySelectorProps> = () => {
       resetTimer.current = null;
     }, RESET_TIMEOUT);
   };
-
-  async function save(value: string) {
+  async function save(value: AutoplaySetting) {
     setSelectedAutoplay(value);
     await postConfigUpdateToAPI({
       apiPath: API_AUTOPLAY,
