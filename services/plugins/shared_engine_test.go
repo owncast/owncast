@@ -293,11 +293,12 @@ func TestEmitSelfSubscriptionDoesNotDeadlock(t *testing.T) {
 	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
 
 	env, _, _ := captureEnv()
-	// Emits "ping" on every chat message AND subscribes (notify) to "ping".
+	// Emits its fully qualified hook on every chat message AND subscribes
+	// (notify) to the local "ping" hook.
 	script := `
 const { definePlugin, owncast } = require("@owncast/plugin-sdk");
 module.exports = definePlugin({
-  onChatMessage(msg) { owncast.events.emit("ping", {}); },
+  onChatMessage(msg) { owncast.events.emit("echoer.ping", {}); },
   on: { ping(payload) {} },
 });`
 	loaded := loadShared(t, ctx, env, RuntimeJavaScript, "echoer", script, []string{PermEmitEvent})
@@ -313,7 +314,7 @@ module.exports = definePlugin({
 	}()
 	select {
 	case <-done:
-	case <-time.After(10 * time.Second):
+	case <-time.After(NotifyTimeout / 2):
 		t.Fatal("Dispatch deadlocked on a re-entrant self-subscribed emit")
 	}
 }

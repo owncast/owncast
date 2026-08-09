@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 )
@@ -240,8 +241,17 @@ func (d *Dispatcher) Notify(ctx context.Context, eventType string, payload any) 
 			// not receive its own in-call emission.
 			continue
 		}
+		input := encoded
+		if !reservedEventTypes[eventType] {
+			localEventType := strings.TrimPrefix(eventType, p.Manifest.Slug+".")
+			input, err = json.Marshal(Envelope{EventType: localEventType, Payload: payload})
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "dispatcher: marshal envelope for %s: %v\n", eventType, err)
+				continue
+			}
+		}
 		wg.Add(1)
-		go func(p *Loaded) {
+		go func(p *Loaded, input []byte) {
 			defer wg.Done()
 			// A plugin must never take down the host. A panic in this goroutine
 			// can't be recovered by the caller, so recover it here.
@@ -250,11 +260,11 @@ func (d *Dispatcher) Notify(ctx context.Context, eventType string, payload any) 
 					fmt.Fprintf(os.Stderr, "plugin %s: on_event(%s) panicked: %v\n", p.Manifest.Slug, eventType, rec)
 				}
 			}()
-			if err := callOnEvent(ctx, p, encoded); err != nil &&
+			if err := callOnEvent(ctx, p, input); err != nil &&
 				!errors.Is(err, errPluginNotLoaded) && !errors.Is(err, errPluginNoSuchExport) {
 				fmt.Fprintf(os.Stderr, "plugin %s: on_event(%s) failed: %v\n", p.Manifest.Slug, eventType, err)
 			}
-		}(p)
+		}(p, input)
 	}
 	wg.Wait()
 }
