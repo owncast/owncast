@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 	"sync"
@@ -61,6 +60,38 @@ func allowClipFromIP(ip string) bool {
 	return entry.limiter.Allow()
 }
 
+// clipPermissionDenialReason reports why the given chat identity may not
+// create clips under the configured permission level, or "" when it may.
+// Every level requires a registered, enabled identity; moderators always
+// qualify. The client hides the clip button using the same rules, so viewers
+// normally never see these messages.
+func clipPermissionDenialReason(user *models.User, permissions string) string {
+	if user == nil {
+		return "clip creation requires joining chat first"
+	}
+	if !user.IsEnabled() {
+		return "clip creation is not available"
+	}
+	if user.IsModerator() {
+		return ""
+	}
+
+	switch permissions {
+	case models.ClipPermissionsModerators:
+		return "clip creation is limited to moderators"
+	case models.ClipPermissionsAuthenticated:
+		if !user.Authenticated {
+			return "clip creation is limited to authenticated viewers"
+		}
+	default:
+		// Established: any identity old enough.
+		if time.Since(user.CreatedAt) < models.MinClipperAccountAge {
+			return "your account is too new to create clips"
+		}
+	}
+	return ""
+}
+
 // replayFeaturesEnabled reports whether the replay subsystem is available.
 func (h *Handlers) replayFeaturesEnabled() bool {
 	return h.replays != nil && h.configRepository != nil && h.configRepository.GetReplayFeaturesEnabled()
@@ -70,7 +101,8 @@ func (h *Handlers) replayFeaturesEnabled() bool {
 // /replay/{streamId} returns the master playlist.
 // /replay/{streamId}/{outputConfigId} returns a media playlist.
 //
-// Full-stream replay playback is admin-only for now; viewers only get clips.
+// The route requires admin auth: full-stream replay playback is an admin
+// capability, while viewers are served clips.
 func (h *Handlers) GetReplay(w http.ResponseWriter, r *http.Request) {
 	if !h.replayFeaturesEnabled() {
 		w.WriteHeader(http.StatusNotFound)
@@ -136,7 +168,7 @@ func (h *Handlers) getReplayMediaPlaylist(streamID, outputConfigID string, w htt
 	writePlaylistResponse(w, playlist.Encode().Bytes(), !stream.InProgress)
 }
 
-// GetAllClips will return all clips that have been previously created.
+// GetAllClips will return every clip that exists.
 func (h *Handlers) GetAllClips(w http.ResponseWriter, r *http.Request) {
 	if !h.replayFeaturesEnabled() {
 		w.WriteHeader(http.StatusNotFound)
@@ -153,28 +185,32 @@ func (h *Handlers) GetAllClips(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteResponse(w, clips)
 }
 
-// clipWindowRequest is the caller's requested clip window: either a trailing
-// duration, or an explicit media-time range.
-type clipWindowRequest struct {
-	DurationSeconds float32
-	StartSeconds    float32
-	EndSeconds      float32
-}
-
-// resolveClipWindow turns a clip request into a concrete media-time window,
-// clamped to what has actually been recorded and to the operator's maximum
-// clip length.
-//
-// A trailing duration is resolved against the newest recorded media, which is
-// what a viewer clipping a live stream sends: the server owns this arithmetic
-// so the client never has to know where the media timeline currently sits.
-func resolveClipWindow(request clipWindowRequest, mediaEnd float64, maxDuration float32) (float32, float32, error) {
-	if request.DurationSeconds > 0 {
-		duration := min(request.DurationSeconds, maxDuration)
-		end := float32(mediaEnd)
-		return max(end-duration, 0), end, nil
+// GetClipDetails returns a single clip, so a clip page can render its title,
+// creation time and source stream without fetching the whole list.
+func (h *Handlers) GetClipDetails(w http.ResponseWriter, r *http.Request, clipID string) {
+	if !h.replayFeaturesEnabled() {
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
 
+	clip, err := h.replays.NewPlaylistGenerator().GetClip(clipID)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	webutils.WriteResponse(w, clip)
+}
+
+// clipWindowRequest is the caller's explicit media-time clip window.
+type clipWindowRequest struct {
+	StartSeconds float32
+	EndSeconds   float32
+}
+
+// resolveClipWindow validates the requested media-time window against recorded
+// media and the operator's maximum clip duration.
+func resolveClipWindow(request clipWindowRequest, mediaEnd float64, maxDuration float32) (float32, float32, error) {
 	start := request.StartSeconds
 	end := request.EndSeconds
 
@@ -190,21 +226,19 @@ func resolveClipWindow(request clipWindowRequest, mediaEnd float64, maxDuration 
 		return 0, 0, errors.New("start time is after the known end of the stream")
 	}
 
-	// Clamp to what actually exists, then enforce the operator's limit.
+	// Preserve the newest part of an over-long request. Playhead samples and
+	// wall-clock countdowns drift independently, so rejecting it would lose a
+	// capture at confirmation time.
 	end = float32(min(float64(end), mediaEnd))
 	if end-start > maxDuration {
-		return 0, 0, fmt.Errorf("clips may be at most %.0f seconds long", maxDuration)
+		start = end - maxDuration
 	}
 
 	return start, end, nil
 }
 
-// AddClip will create a new clip for a given stream.
-//
-// A clip is either an explicit media-time window
-// (relativeStartTimeSeconds + relativeEndTimeSeconds) or, for a viewer
-// clipping what just happened on a live stream, a trailing window of
-// durationSeconds ending at the newest recorded media.
+// AddClip creates a clip from the explicit media-time window supplied by the
+// viewer after the capture ends.
 func (h *Handlers) AddClip(w http.ResponseWriter, r *http.Request) {
 	if !h.replayFeaturesEnabled() {
 		w.WriteHeader(http.StatusNotFound)
@@ -216,34 +250,21 @@ func (h *Handlers) AddClip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !allowClipFromIP(utils.GetIPAddressFromRequest(r)) {
-		w.WriteHeader(http.StatusTooManyRequests)
-		webutils.WriteSimpleResponse(w, false, "too many clips created, please wait before creating another")
-		return
-	}
-
 	type addClipRequest struct {
-		StreamID  string `json:"streamId"`
-		ClipTitle string `json:"clipTitle"`
-		// DurationSeconds requests a trailing clip of this length ending at
-		// the newest recorded media for the stream.
-		DurationSeconds float32 `json:"durationSeconds"`
-		// An explicit media-time window, used instead of DurationSeconds.
+		StreamID                 string  `json:"streamId"`
+		ClipTitle                string  `json:"clipTitle"`
 		RelativeStartTimeSeconds float32 `json:"relativeStartTimeSeconds"`
 		RelativeEndTimeSeconds   float32 `json:"relativeEndTimeSeconds"`
 	}
 
-	decoder := json.NewDecoder(r.Body)
 	var request addClipRequest
-	if err := decoder.Decode(&request); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		log.Errorln(err)
 		webutils.WriteSimpleResponse(w, false, "unable to create clip")
 		return
 	}
 
 	streamID := request.StreamID
-
-	// Verify the stream exists and has a known media timeline.
 	playlistGenerator := h.replays.NewPlaylistGenerator()
 	stream, err := playlistGenerator.GetStream(streamID)
 	if err != nil {
@@ -261,31 +282,44 @@ func (h *Handlers) AddClip(w http.ResponseWriter, r *http.Request) {
 		webutils.InternalErrorHandler(w, err)
 		return
 	}
-
 	if mediaEnd <= 0 {
 		webutils.BadRequestHandler(w, errors.New("stream has no recorded video to clip yet"))
 		return
 	}
 
-	startTime, endTime, err := resolveClipWindow(clipWindowRequest{
-		DurationSeconds: request.DurationSeconds,
-		StartSeconds:    request.RelativeStartTimeSeconds,
-		EndSeconds:      request.RelativeEndTimeSeconds,
-	}, mediaEnd, float32(h.configRepository.GetMaxClipDurationSeconds()))
+	startTime, endTime, err := resolveClipWindow(
+		clipWindowRequest{
+			StartSeconds: request.RelativeStartTimeSeconds,
+			EndSeconds:   request.RelativeEndTimeSeconds,
+		},
+		mediaEnd,
+		float32(h.configRepository.GetMaxClipDurationSeconds()),
+	)
 	if err != nil {
 		webutils.BadRequestHandler(w, err)
 		return
 	}
 
-	// Attribute the clip when the requester has a chat identity. Clipping
-	// does not require one.
-	clippedBy := ""
+	var user *models.User
 	if token := utils.ChatAccessTokenFromRequest(r); token != "" && h.userRepository != nil {
-		if user := h.userRepository.GetUserByToken(token); user != nil {
-			clippedBy = user.DisplayName
-		}
+		user = h.userRepository.GetUserByToken(token)
+	}
+	if reason := clipPermissionDenialReason(user, h.configRepository.GetClipPermissions()); reason != "" {
+		w.WriteHeader(http.StatusForbidden)
+		webutils.WriteSimpleResponse(w, false, reason)
+		return
 	}
 
+	if !allowClipFromIP(utils.GetIPAddressFromRequest(r)) {
+		w.WriteHeader(http.StatusTooManyRequests)
+		webutils.WriteSimpleResponse(w, false, "too many clips created, please wait before creating another")
+		return
+	}
+
+	clippedBy := ""
+	if user != nil {
+		clippedBy = user.DisplayName
+	}
 	clipID, duration, err := h.replays.AddClipForStream(streamID, request.ClipTitle, clippedBy, startTime, endTime)
 	if err != nil {
 		log.Errorln(err)
@@ -293,9 +327,7 @@ func (h *Handlers) AddClip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate a poster image for the clip so it has a thumbnail in listings
-	// and in link previews. Best effort: a clip without one still plays.
-	h.replays.GenerateClipThumbnail(clipID)
+	go h.replays.GenerateClipThumbnail(clipID)
 
 	webutils.WriteResponse(w, models.ClipCreatedResponse{
 		Success:         true,

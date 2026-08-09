@@ -212,9 +212,9 @@ func (h *HLSRecorder) VariantPlaylistWritten(localFilePath string) {
 			return
 		}
 		if rows == 0 {
-			// The segment row isn't stored (yet) -- e.g. its storage write
-			// failed. Stop here so offsets stay contiguous; the next playlist
-			// write retries.
+			// No stored segment row matches this playlist entry, so its
+			// storage write failed. Stopping here keeps offsets contiguous;
+			// the next playlist write retries.
 			return
 		}
 

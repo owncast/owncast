@@ -197,3 +197,58 @@ func TestVerifyFFMpegPath(t *testing.T) {
 		}
 	}
 }
+
+// TestCleanupDirectoryKeepsProtectedFiles verifies the between-streams wipe
+// leaves recorded video that a clip or replay still references, including the
+// variant directory holding it.
+func TestCleanupDirectoryKeepsProtectedFiles(t *testing.T) {
+	root := t.TempDir()
+	variant := filepath.Join(root, "0")
+	if err := os.MkdirAll(variant, 0o750); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, name := range []string{"keep.ts", "drop.ts"} {
+		if err := os.WriteFile(filepath.Join(variant, name), []byte("x"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(filepath.Join(root, "stream.m3u8"), []byte("x"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	CleanupDirectory(root, map[string]bool{"keep.ts": true})
+
+	if !DoesFileExists(filepath.Join(variant, "keep.ts")) {
+		t.Error("expected the protected segment to survive the wipe")
+	}
+	if DoesFileExists(filepath.Join(variant, "drop.ts")) {
+		t.Error("expected the unprotected segment to be removed")
+	}
+	if DoesFileExists(filepath.Join(root, "stream.m3u8")) {
+		t.Error("expected unprotected files to be removed")
+	}
+}
+
+// TestCleanupDirectoryWithoutProtectionWipes verifies the wipe still empties
+// the directory when nothing is protected.
+func TestCleanupDirectoryWithoutProtectionWipes(t *testing.T) {
+	root := t.TempDir()
+	variant := filepath.Join(root, "0")
+	if err := os.MkdirAll(variant, 0o750); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(variant, "a.ts"), []byte("x"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	CleanupDirectory(root, nil)
+
+	entries, err := os.ReadDir(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(entries) != 0 {
+		t.Errorf("expected an empty directory, got %d entries", len(entries))
+	}
+}

@@ -6,7 +6,7 @@ export function handleConnectedClientInfoMessage(
   setCurrentUser: (CurrentUser) => void,
 ) {
   const { user } = message;
-  const { id, displayName, displayColor, scopes, authenticated } = user;
+  const { id, displayName, displayColor, scopes, authenticated, createdAt } = user;
   setChatAuthenticated(authenticated);
 
   setCurrentUser({
@@ -14,5 +14,7 @@ export function handleConnectedClientInfoMessage(
     displayName,
     displayColor,
     isModerator: scopes?.includes('MODERATOR'),
+    authenticated: !!authenticated,
+    createdAt,
   });
 }

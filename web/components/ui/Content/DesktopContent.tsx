@@ -1,9 +1,11 @@
 import { ComponentType, FC } from 'react';
+import { useTranslation } from 'next-export-i18n';
 import dynamic from 'next/dynamic';
 import { TabsProps } from 'antd';
 import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import { PluginTab } from '../../../interfaces/client-config.model';
+import { Localization } from '../../../types/localization';
 import styles from './Content.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { PluginTabFrame } from '../PluginTabFrame/PluginTabFrame';
@@ -19,6 +21,9 @@ export type DesktopContentProps = {
   pluginTabs: PluginTab[];
   setShowFollowModal: (show: boolean) => void;
   showFollowersTab: boolean;
+  // showClipsTab adds the viewer-facing Clips tab. Enabled when the operator
+  // has clips turned on.
+  showClipsTab: boolean;
   federatedServers?: any[]; // Will be properly typed when API is implemented
 };
 
@@ -42,6 +47,10 @@ const StreamsTab = dynamic(() => import('../StreamsTab/StreamsTab').then(mod => 
   ssr: false,
 });
 
+const ClipsTab = dynamic(() => import('../ClipsTab/ClipsTab').then(mod => mod.ClipsTab), {
+  ssr: false,
+});
+
 export const DesktopContent: FC<DesktopContentProps> = ({
   name,
   summary,
@@ -51,8 +60,10 @@ export const DesktopContent: FC<DesktopContentProps> = ({
   pluginTabs,
   setShowFollowModal,
   showFollowersTab,
+  showClipsTab,
   federatedServers = [],
 }) => {
+  const { t } = useTranslation();
   const aboutTabContent = (
     <div className={styles.bottomPageContentContainer}>
       <CustomPageContent content={extraPageContent} />
@@ -71,9 +82,22 @@ export const DesktopContent: FC<DesktopContentProps> = ({
     </div>
   );
 
+  const clipsTabContent = (
+    <div className={styles.bottomPageContentContainer}>
+      <ClipsTab />
+    </div>
+  );
+
   const items: NonNullable<TabsProps['items']> = [];
   if (extraPageContent) {
     items.push({ label: 'About', key: '2', children: aboutTabContent });
+  }
+  if (showClipsTab) {
+    items.push({
+      label: t(Localization.Frontend.Clips.title),
+      key: 'clips',
+      children: clipsTabContent,
+    });
   }
   if (showFollowersTab) {
     items.push({ label: 'Followers', key: '3', children: followersTabContent });

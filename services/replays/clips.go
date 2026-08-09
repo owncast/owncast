@@ -38,7 +38,7 @@ func clipThumbnailURL(clipID string) string {
 		return ""
 	}
 
-	return "/clips/thumbnail/" + ClipThumbnailFilename(clipID)
+	return "/clip-thumbnail/" + ClipThumbnailFilename(clipID)
 }
 
 // GetAllClips will return all clips that have been created.
@@ -54,6 +54,7 @@ func (s *Service) GetAllClips() ([]*Clip, error) {
 			ID:                clip.ID,
 			ClipTitle:         clip.ClipTitle.String,
 			StreamID:          clip.StreamID,
+			ClippedBy:         clip.ClippedBy.String,
 			StreamTitle:       clip.StreamTitle.String,
 			RelativeStartTime: float32(clip.RelativeStartTime.Float64),
 			RelativeEndTime:   float32(clip.RelativeEndTime.Float64),

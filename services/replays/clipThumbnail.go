@@ -73,22 +73,23 @@ func (s *Service) GenerateClipThumbnail(clipID string) {
 
 	// Seek to where the clip actually starts inside its first segment so the
 	// poster shows the clipped moment, not the segment boundary.
-	seekSeconds := float64(clip.RelativeStartTime) - first.MediaOffset
-	if seekSeconds < 0 {
-		seekSeconds = 0
-	}
+	seekSeconds := max(float64(clip.RelativeStartTime)-first.MediaOffset, 0)
 
 	ffmpegPath := utils.ValidatedFfmpegPath(s.configRepository.GetFfMpegPath())
 	outputPath := ClipThumbnailPath(clipID)
 
+	// -ss follows -i so the seek is relative to the first decoded frame. HLS
+	// segments keep the broadcast's timestamps, so a segment recorded 99
+	// seconds in starts at PTS 99, which an input-side seek would measure
+	// against. scale=480:-2 keeps the height even, as the JPEG encoder requires.
 	flags := []string{
 		"-y",            // Overwrite existing
 		"-threads", "1", // Low priority processing
-		"-ss", formatSeconds(seekSeconds), // Seek within the segment
 		"-i", sourcePath,
+		"-ss", formatSeconds(seekSeconds),
 		"-f", "image2",
-		"-vframes", "1",
-		"-vf", "scale=480:-1",
+		"-frames:v", "1",
+		"-vf", "scale=480:-2",
 		outputPath,
 	}
 

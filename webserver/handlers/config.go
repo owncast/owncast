@@ -66,8 +66,10 @@ type clipsConfigResponse struct {
 	Enabled bool `json:"enabled"`
 	// MaxDurationSeconds caps how long a viewer-created clip may be.
 	MaxDurationSeconds int `json:"maxDurationSeconds"`
-	// DefaultDurationSeconds is the trailing window a live clip captures.
-	DefaultDurationSeconds int `json:"defaultDurationSeconds"`
+	// Permissions names who may create clips: moderators, authenticated, or
+	// established. The client uses it to hide the clip button from viewers
+	// the server would reject anyway; the server enforces it regardless.
+	Permissions string `json:"permissions"`
 }
 
 type federationConfigResponse struct {
@@ -183,9 +185,9 @@ func (h *Handlers) getConfigResponse(r *http.Request) webConfigResponse {
 		AppearanceVariables:        configRepository.GetCustomColorVariableValues(),
 		HideViewerCount:            configRepository.GetHideViewerCount(),
 		Clips: clipsConfigResponse{
-			Enabled:                configRepository.GetReplayFeaturesEnabled() && configRepository.GetClipsEnabled(),
-			MaxDurationSeconds:     configRepository.GetMaxClipDurationSeconds(),
-			DefaultDurationSeconds: models.DefaultClipDurationSeconds,
+			Enabled:            configRepository.GetReplayFeaturesEnabled() && configRepository.GetClipsEnabled(),
+			MaxDurationSeconds: configRepository.GetMaxClipDurationSeconds(),
+			Permissions:        configRepository.GetClipPermissions(),
 		},
 	}
 }

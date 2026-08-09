@@ -75,7 +75,7 @@ func (p *PlaylistGenerator) GenerateMediaPlaylistForClipAndConfiguration(clipID,
 	}
 
 	// Create the media playlist for this configuration and add the segments.
-	mediaPlaylist, err := p.createMediaPlaylistForConfigurationAndSegments(config, clip.Timestamp, false, segments)
+	mediaPlaylist, err := p.createMediaPlaylistForConfigurationAndSegments(config, false, segments)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create clip media playlist")
 	}
@@ -102,6 +102,7 @@ func (p *PlaylistGenerator) GetClip(clipID string) (*Clip, error) {
 		ID:                clip.ClipID,
 		StreamID:          clip.StreamID,
 		ClipTitle:         clip.ClipTitle.String,
+		StreamTitle:       clip.StreamTitle.String,
 		ClippedBy:         clip.ClippedBy.String,
 		RelativeStartTime: float32(clip.RelativeStartTime.Float64),
 		RelativeEndTime:   float32(clip.RelativeEndTime.Float64),

@@ -82,6 +82,10 @@ func (s *ServerInterfaceImpl) GetAllClips(w http.ResponseWriter, r *http.Request
 	s.h.GetAllClips(w, r)
 }
 
+func (s *ServerInterfaceImpl) GetClipDetails(w http.ResponseWriter, r *http.Request, clipID string) {
+	s.h.GetClipDetails(w, r, clipID)
+}
+
 func (s *ServerInterfaceImpl) AddClip(w http.ResponseWriter, r *http.Request) {
 	s.h.AddClip(w, r)
 }

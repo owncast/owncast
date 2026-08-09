@@ -51,7 +51,7 @@ var testSegments = []HLSSegment{
 func TestMasterPlaylist(t *testing.T) {
 	playlist := pureGenerator.createNewMasterPlaylist()
 
-	mediaPlaylists, err := pureGenerator.createMediaPlaylistForConfigurationAndSegments(&testConfigs[0], time.Now(), false, testSegments)
+	mediaPlaylists, err := pureGenerator.createMediaPlaylistForConfigurationAndSegments(&testConfigs[0], false, testSegments)
 	if err != nil {
 		t.Error(err)
 	}
@@ -79,11 +79,10 @@ func TestMasterPlaylist(t *testing.T) {
 }
 
 func TestCompletedMediaPlaylist(t *testing.T) {
-	startTime := testSegments[0].Timestamp
 	conf := testConfigs[0]
 
 	// Create a completed media playlist.
-	playlist, err := pureGenerator.createMediaPlaylistForConfigurationAndSegments(&conf, startTime, false, testSegments)
+	playlist, err := pureGenerator.createMediaPlaylistForConfigurationAndSegments(&conf, false, testSegments)
 	if err != nil {
 		t.Error(err)
 	}
@@ -125,11 +124,10 @@ func TestCompletedMediaPlaylist(t *testing.T) {
 }
 
 func TestInProgressMediaPlaylist(t *testing.T) {
-	startTime := testSegments[0].Timestamp
 	conf := testConfigs[0]
 
 	// Create an in-progress media playlist.
-	playlist, err := pureGenerator.createMediaPlaylistForConfigurationAndSegments(&conf, startTime, true, testSegments)
+	playlist, err := pureGenerator.createMediaPlaylistForConfigurationAndSegments(&conf, true, testSegments)
 	if err != nil {
 		t.Error(err)
 	}

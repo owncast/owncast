@@ -312,6 +312,12 @@ type ServerInterface interface {
 	// (POST /admin/config/pagecontent)
 	SetExtraPageContent(w http.ResponseWriter, r *http.Request)
 
+	// (OPTIONS /admin/config/replay/clippermissions)
+	SetClipPermissionsOptions(w http.ResponseWriter, r *http.Request)
+	// SetClipPermissions Set who may create clips
+	// (POST /admin/config/replay/clippermissions)
+	SetClipPermissions(w http.ResponseWriter, r *http.Request)
+
 	// (OPTIONS /admin/config/replay/clipsenabled)
 	SetClipsEnabledOptions(w http.ResponseWriter, r *http.Request)
 	// SetClipsEnabled Enable/disable viewer clip creation
@@ -689,6 +695,9 @@ type ServerInterface interface {
 	// GetAllClips Get a list of all created clips
 	// (GET /clips)
 	GetAllClips(w http.ResponseWriter, r *http.Request)
+	// GetClipDetails Get a single clip
+	// (GET /clips/{clipId})
+	GetClipDetails(w http.ResponseWriter, r *http.Request, clipId string)
 	// GetWebConfig Get the web config
 	// (GET /config)
 	GetWebConfig(w http.ResponseWriter, r *http.Request)
@@ -1351,6 +1360,17 @@ func (_ Unimplemented) SetExtraPageContentOptions(w http.ResponseWriter, r *http
 // SetExtraPageContent Change the extra page content in memory
 // (POST /admin/config/pagecontent)
 func (_ Unimplemented) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/replay/clippermissions)
+func (_ Unimplemented) SetClipPermissionsOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetClipPermissions Set who may create clips
+// (POST /admin/config/replay/clippermissions)
+func (_ Unimplemented) SetClipPermissions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2053,6 +2073,12 @@ func (_ Unimplemented) AddClip(w http.ResponseWriter, r *http.Request) {
 // GetAllClips Get a list of all created clips
 // (GET /clips)
 func (_ Unimplemented) GetAllClips(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetClipDetails Get a single clip
+// (GET /clips/{clipId})
+func (_ Unimplemented) GetClipDetails(w http.ResponseWriter, r *http.Request, clipId string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3555,6 +3581,32 @@ func (siw *ServerInterfaceWrapper) SetExtraPageContentOptions(w http.ResponseWri
 func (siw *ServerInterfaceWrapper) SetExtraPageContent(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetExtraPageContent(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetClipPermissionsOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetClipPermissionsOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetClipPermissionsOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetClipPermissions operation middleware
+func (siw *ServerInterfaceWrapper) SetClipPermissions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetClipPermissions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -5579,6 +5631,31 @@ func (siw *ServerInterfaceWrapper) GetAllClips(w http.ResponseWriter, r *http.Re
 	handler.ServeHTTP(w, r)
 }
 
+// GetClipDetails operation middleware
+func (siw *ServerInterfaceWrapper) GetClipDetails(w http.ResponseWriter, r *http.Request) {
+	var err error
+	_ = err
+
+	// ------------- Path parameter "clipId" -------------
+	var clipId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "clipId", chi.URLParam(r, "clipId"), &clipId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clipId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetClipDetails(w, r, clipId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetWebConfig operation middleware
 func (siw *ServerInterfaceWrapper) GetWebConfig(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -7072,7 +7149,16 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/admin/config/replay/maxclipduration", wrapper.SetMaxClipDuration)
 	})
 	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/replay/clippermissions", wrapper.SetClipPermissionsOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/replay/clippermissions", wrapper.SetClipPermissions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/clips", wrapper.GetAllClips)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/clips/{clipId}", wrapper.GetClipDetails)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/clip", wrapper.AddClip)

@@ -360,6 +360,14 @@ func (s *ServerInterfaceImpl) SetMaxClipDurationOptions(w http.ResponseWriter, r
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetMaxClipDuration)(w, r)
 }
 
+func (s *ServerInterfaceImpl) SetClipPermissions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetClipPermissions)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetClipPermissionsOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetClipPermissions)(w, r)
+}
+
 func (s *ServerInterfaceImpl) SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetFederationEnabled)(w, r)
 }

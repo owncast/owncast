@@ -19,6 +19,11 @@ export const Default: Story = {
     supportFediverseFeatures: true,
     supportsBrowserNotifications: true,
     showNotifyReminder: false,
+    showClipButton: false,
+    canClip: false,
+    clipActive: false,
+    clipRemainingSeconds: 0,
+    onClipAction: noop,
     externalActions: [
       {
         title: 'Support the stream',

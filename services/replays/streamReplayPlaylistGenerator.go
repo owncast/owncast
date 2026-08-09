@@ -79,7 +79,7 @@ func (p *PlaylistGenerator) GenerateMediaPlaylistForStreamAndConfiguration(strea
 	}
 
 	// Create the media playlist for this configuration and add the segments.
-	mediaPlaylist, err := p.createMediaPlaylistForConfigurationAndSegments(config, stream.StartTime, stream.InProgress, segments)
+	mediaPlaylist, err := p.createMediaPlaylistForConfigurationAndSegments(config, stream.InProgress, segments)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create media playlist")
 	}

@@ -16,6 +16,10 @@ import (
 	"github.com/owncast/owncast/webserver/router/middleware"
 )
 
+// clipPageDocument is the exported standalone clip page. Every /clips route is
+// served from it; the page reads the clip id out of the path.
+const clipPageDocument = "clips/index.html"
+
 // clipMetadataPage is the server-rendered metadata for a shared clip link.
 type clipMetadataPage struct {
 	Name            string
@@ -30,10 +34,10 @@ type clipMetadataPage struct {
 // GetClipPage serves the viewer-facing page for a single clip at
 // /clips/{clipId}.
 //
-// Real browsers get the web app, which reads the clip id out of the URL and
-// plays it. Social scrapers and bots get a server-rendered page carrying that
-// clip's own OpenGraph metadata, since the web app is a static export and
-// cannot render per-clip meta tags itself.
+// Browsers get the standalone clip page, which plays the clip named in the
+// URL. Social scrapers get a server-rendered page carrying that clip's own
+// OpenGraph metadata, since the web app is a static export and cannot render
+// per-clip meta tags itself.
 func (h *Handlers) GetClipPage(w http.ResponseWriter, r *http.Request) {
 	if !h.replayFeaturesEnabled() {
 		w.WriteHeader(http.StatusNotFound)
@@ -42,17 +46,10 @@ func (h *Handlers) GetClipPage(w http.ResponseWriter, r *http.Request) {
 
 	middleware.EnableCors(w)
 
-	clipID := strings.TrimPrefix(strings.Trim(r.URL.Path, "/"), "clips/")
-	clipID = strings.TrimSuffix(clipID, "/")
+	clipID := strings.Trim(strings.TrimPrefix(strings.Trim(r.URL.Path, "/"), "clips"), "/")
 
-	// No clip id: this is the clips listing, which the web app renders.
-	if clipID == "" {
-		h.serveWebApp(w, r)
-		return
-	}
-
-	if !utils.IsUserAgentABot(r.UserAgent()) {
-		h.serveWebApp(w, r)
+	if clipID == "" || !utils.IsUserAgentABot(r.UserAgent()) {
+		h.serveClipPageDocument(w, r)
 		return
 	}
 
@@ -118,21 +115,35 @@ func (h *Handlers) GetClipPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// serveWebApp renders the web app's index for a deep-linked route so the
-// client-side app can take over. The static export only ships one HTML
-// document, so every viewer route is served from it.
-func (h *Handlers) serveWebApp(w http.ResponseWriter, r *http.Request) {
+// serveClipPageDocument returns the exported clip page for any /clips route so
+// the client-side app can take over. The static export ships one document per
+// route, so every clip is served from the same file.
+func (h *Handlers) serveClipPageDocument(w http.ResponseWriter, r *http.Request) {
 	middleware.SetCachingHeaders(w, r)
 
 	nonceRandom, _ := utils.GenerateRandomString(5)
 	middleware.SetHeaders(w, fmt.Sprintf("nonce-%s", nonceRandom))
 
-	h.renderIndexHtml(w, r, nonceRandom)
+	document, err := static.GetWebFile(clipPageDocument)
+	if err != nil {
+		log.Errorln(err)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(http.StatusOK)
+	if _, err := w.Write(document); err != nil {
+		log.Errorln(err)
+	}
 }
 
 // clipThumbnailServer serves files out of the clip poster directory. http.Dir
-// confines every lookup to that directory, so a request can't escape it.
-var clipThumbnailServer = http.StripPrefix("/clips/thumbnail/", http.FileServer(http.Dir(config.ClipThumbnailsPath)))
+// confines every lookup to that directory, so a request cannot escape it.
+var clipThumbnailServer = http.StripPrefix(
+	"/clip-thumbnail/",
+	http.FileServer(http.Dir(config.ClipThumbnailsPath)),
+)
 
 // GetClipThumbnail serves a clip's poster image.
 func (h *Handlers) GetClipThumbnail(w http.ResponseWriter, r *http.Request) {

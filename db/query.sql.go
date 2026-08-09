@@ -517,7 +517,7 @@ func (q *Queries) FixUnfinishedStreams(ctx context.Context) error {
 }
 
 const getAllClips = `-- name: GetAllClips :many
-SELECT rc.id AS id, rc.clip_title, rc.stream_id, rc.relative_start_time, rc.relative_end_time, (rc.relative_end_time - rc.relative_start_time) AS duration_seconds, rc.timestamp, s.stream_title AS stream_title
+SELECT rc.id AS id, rc.clip_title, rc.stream_id, rc.clipped_by, rc.relative_start_time, rc.relative_end_time, (rc.relative_end_time - rc.relative_start_time) AS duration_seconds, rc.timestamp, s.stream_title AS stream_title
 	FROM replay_clips rc
 	JOIN streams s ON rc.stream_id = s.id
 	ORDER BY rc.timestamp DESC
@@ -527,6 +527,7 @@ type GetAllClipsRow struct {
 	ID                string
 	ClipTitle         sql.NullString
 	StreamID          string
+	ClippedBy         sql.NullString
 	RelativeStartTime sql.NullFloat64
 	RelativeEndTime   sql.NullFloat64
 	DurationSeconds   interface{}
@@ -547,6 +548,7 @@ func (q *Queries) GetAllClips(ctx context.Context) ([]GetAllClipsRow, error) {
 			&i.ID,
 			&i.ClipTitle,
 			&i.StreamID,
+			&i.ClippedBy,
 			&i.RelativeStartTime,
 			&i.RelativeEndTime,
 			&i.DurationSeconds,
@@ -608,6 +610,35 @@ func (q *Queries) GetAllClipsForStream(ctx context.Context, streamID string) ([]
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllSegmentPaths = `-- name: GetAllSegmentPaths :many
+SELECT path FROM video_segments
+`
+
+// Every stored segment path. Automatic cleanup consults this so it never
+// deletes video a clip or replay still references.
+func (q *Queries) GetAllSegmentPaths(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getAllSegmentPaths)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var path string
+		if err := rows.Scan(&path); err != nil {
+			return nil, err
+		}
+		items = append(items, path)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err
@@ -711,7 +742,11 @@ func (q *Queries) GetAuthForUsers(ctx context.Context, userIds []string) ([]GetA
 }
 
 const getClip = `-- name: GetClip :one
-SELECT id AS clip_id, stream_id, clipped_by, clip_title, timestamp AS clip_timestamp, relative_start_time, relative_end_time FROM replay_clips WHERE id = ?
+SELECT rc.id AS clip_id, rc.stream_id, rc.clipped_by, rc.clip_title, rc.timestamp AS clip_timestamp, rc.relative_start_time, rc.relative_end_time,
+	s.stream_title AS stream_title
+	FROM replay_clips rc
+	JOIN streams s ON rc.stream_id = s.id
+	WHERE rc.id = ?
 `
 
 type GetClipRow struct {
@@ -722,6 +757,7 @@ type GetClipRow struct {
 	ClipTimestamp     sql.NullTime
 	RelativeStartTime sql.NullFloat64
 	RelativeEndTime   sql.NullFloat64
+	StreamTitle       sql.NullString
 }
 
 func (q *Queries) GetClip(ctx context.Context, id string) (GetClipRow, error) {
@@ -735,6 +771,7 @@ func (q *Queries) GetClip(ctx context.Context, id string) (GetClipRow, error) {
 		&i.ClipTimestamp,
 		&i.RelativeStartTime,
 		&i.RelativeEndTime,
+		&i.StreamTitle,
 	)
 	return i, err
 }
@@ -2508,6 +2545,23 @@ UPDATE users SET authenticated_at = CURRENT_TIMESTAMP WHERE id = ?
 func (q *Queries) SetUserAsAuthenticated(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, setUserAsAuthenticated, id)
 	return err
+}
+
+const updateClipTitle = `-- name: UpdateClipTitle :execrows
+UPDATE replay_clips SET clip_title = ? WHERE id = ?
+`
+
+type UpdateClipTitleParams struct {
+	ClipTitle sql.NullString
+	ID        string
+}
+
+func (q *Queries) UpdateClipTitle(ctx context.Context, arg UpdateClipTitleParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateClipTitle, arg.ClipTitle, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const updateFederatedServerFollowStatus = `-- name: UpdateFederatedServerFollowStatus :exec

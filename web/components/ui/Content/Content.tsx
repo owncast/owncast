@@ -1,13 +1,14 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { Skeleton, Row, Button, Spin } from 'antd';
 import MessageFilled from '@ant-design/icons/MessageFilled';
-import { FC, useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
+import { FC, useCallback, useEffect, useState } from 'react';
 import classnames from 'classnames';
+import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';
 import ActionButtons from './ActionButtons';
 import { LOCAL_STORAGE_KEYS, getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
 import { canPushNotificationsBeSupported } from '../../../utils/browserPushNotifications';
+import { getVideoPosition } from '../../../utils/video-latency';
 import { Localization } from '../../../types/localization';
 
 import {
@@ -23,6 +24,8 @@ import {
   visibleChatMessagesSelector,
   chatAuthenticatedAtom,
   isClientConfigLoadedAtom,
+  canShowClipButtonSelector,
+  canCreateClipSelector,
 } from '../../stores/ClientConfigStore';
 
 import styles from './Content.module.scss';
@@ -80,6 +83,10 @@ const ChatModal = dynamic(
   },
 );
 
+const ClipModal = dynamic(
+  () => import('../../modals/ClipModal/ClipModal').then(mod => mod.ClipModal),
+  { ssr: false },
+);
 const ExternalModal = ({ externalActionToDisplay, setExternalActionToDisplay }) => {
   const { title, description, url, html } = externalActionToDisplay;
   return (
@@ -119,7 +126,7 @@ export const Content: FC = () => {
   const isChatAvailable = useAtomValue(isChatAvailableSelector);
   const isUserAuthenticated = useAtomValue(chatAuthenticatedAtom);
 
-  const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } = serverStatus;
+  const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle, streamId } = serverStatus;
   const {
     extraPageContent,
     name,
@@ -134,11 +141,26 @@ export const Content: FC = () => {
     notifications,
     pluginTabs,
     autoplay,
+    clips,
   } = clientConfig;
+  const { enabled: fediverseEnabled, account: fediverseAccount, hideFollowersTab } = federation;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyModal, setShowNotifyModal] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
-  const { account: fediverseAccount, enabled: fediverseEnabled, hideFollowersTab } = federation;
+  const [showClipModal, setShowClipModal] = useState(false);
+  const [activeClip, setActiveClip] = useState<{
+    streamId: string;
+    startSeconds: number;
+    remainingSeconds: number;
+  } | null>(null);
+  const [pendingClipWindow, setPendingClipWindow] = useState<{
+    streamId: string;
+    startSeconds: number;
+    endSeconds: number;
+  } | null>(null);
+  const [completedClipId, setCompletedClipId] = useState('');
+  const [clipError, setClipError] = useState('');
+  const [clipSaving, setClipSaving] = useState(false);
   const { browser: browserNotifications } = notifications;
   const { enabled: browserNotificationsEnabled } = browserNotifications;
   const { online: isStreamLive } = serverStatus;
@@ -152,6 +174,102 @@ export const Content: FC = () => {
   // engagement) but the public followers list is not shown.
   const showFollowersTab = fediverseEnabled && !hideFollowersTab;
   const { servers: federatedServers } = useFederatedServers();
+
+  // Capture the explicit media-time window locally. Nothing is persisted until
+  // the viewer confirms the title prompt after ending the capture.
+  const endClip = useCallback((capture: { streamId: string; startSeconds: number }) => {
+    const endSeconds = getVideoPosition()?.playheadSeconds;
+    if (endSeconds === null || endSeconds === undefined || endSeconds <= capture.startSeconds) {
+      return;
+    }
+    setActiveClip(null);
+    setPendingClipWindow({
+      streamId: capture.streamId,
+      startSeconds: capture.startSeconds,
+      endSeconds,
+    });
+    setClipError('');
+    setShowClipModal(true);
+  }, []);
+
+  const saveClip = useCallback(
+    async (title: string) => {
+      if (!pendingClipWindow) {
+        return;
+      }
+      setClipSaving(true);
+      setClipError('');
+      try {
+        const response = await fetch('/api/clip', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            streamId: pendingClipWindow.streamId,
+            clipTitle: title,
+            relativeStartTimeSeconds: pendingClipWindow.startSeconds,
+            relativeEndTimeSeconds: pendingClipWindow.endSeconds,
+          }),
+        });
+        const result = await response.json();
+        if (!response.ok || result.success === false) {
+          throw new Error(result.message || 'Unable to create clip');
+        }
+        setPendingClipWindow(null);
+        setCompletedClipId(result.id || '');
+      } catch (error) {
+        setClipError(error instanceof Error ? error.message : 'Unable to create clip');
+      } finally {
+        setClipSaving(false);
+      }
+    },
+    [pendingClipWindow],
+  );
+
+  const startClip = useCallback(() => {
+    const playheadSeconds = getVideoPosition()?.playheadSeconds;
+    if (playheadSeconds === null || playheadSeconds === undefined || !streamId) {
+      return;
+    }
+    setActiveClip({
+      streamId,
+      startSeconds: Math.max(playheadSeconds - 10, 0),
+      remainingSeconds: Math.max(1, (clips?.maxDurationSeconds ?? 1) - 10),
+    });
+  }, [clips?.maxDurationSeconds, streamId]);
+
+  useEffect(() => {
+    if (!activeClip) {
+      return undefined;
+    }
+
+    const { startSeconds } = activeClip;
+    const timer = window.setInterval(() => {
+      setActiveClip(current => {
+        if (!current || current.startSeconds !== startSeconds) {
+          return current;
+        }
+        if (current.remainingSeconds <= 1) {
+          endClip(current);
+          return null;
+        }
+        return { ...current, remainingSeconds: current.remainingSeconds - 1 };
+      });
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [activeClip, endClip]);
+
+  const discardClip = useCallback(() => {
+    setActiveClip(null);
+    setPendingClipWindow(null);
+    setShowClipModal(false);
+    setClipError('');
+  }, []);
+
+  const clipAction = activeClip ? () => endClip(activeClip) : startClip;
+  const clipsEnabled = !!clips?.enabled;
+  const canShowClipButton = useAtomValue(canShowClipButtonSelector);
+  const canClipNow = useAtomValue(canCreateClipSelector);
 
   const [showChatModal, setShowChatModal] = useState(false);
 
@@ -218,8 +336,6 @@ export const Content: FC = () => {
       if (w <= 768) setIsMobile(true);
       else setIsMobile(false);
     }
-    if (!isMobile && w <= 768) setIsMobile(true);
-    if (isMobile && w > 768) setIsMobile(false);
   };
 
   useEffect(() => {
@@ -313,6 +429,11 @@ export const Content: FC = () => {
             externalActions={externalActions || []}
             setShowFollowModal={setShowFollowModal}
             externalActionSelected={externalActionSelected}
+            showClipButton={canShowClipButton}
+            canClip={canClipNow}
+            clipActive={!!activeClip}
+            clipRemainingSeconds={activeClip?.remainingSeconds || 0}
+            onClipAction={clipAction}
           />
         </Row>
 
@@ -334,6 +455,7 @@ export const Content: FC = () => {
               pluginTabs={pluginTabs}
               setShowFollowModal={setShowFollowModal}
               showFollowersTab={showFollowersTab}
+              showClipsTab={clipsEnabled}
               online={online}
               federatedServers={federatedServers}
             />
@@ -348,6 +470,7 @@ export const Content: FC = () => {
                 pluginTabs={pluginTabs}
                 setShowFollowModal={setShowFollowModal}
                 showFollowersTab={showFollowersTab}
+                showClipsTab={clipsEnabled}
                 federatedServers={federatedServers}
               />
             </div>
@@ -381,6 +504,22 @@ export const Content: FC = () => {
           account={fediverseAccount}
           name={name}
           handleClose={() => setShowFollowModal(false)}
+        />
+      )}
+      {(showClipModal || !!completedClipId) && (
+        <ClipModal
+          open={showClipModal || !!completedClipId}
+          completedClipId={completedClipId}
+          onSaveTitle={saveClip}
+          onDiscard={discardClip}
+          saving={clipSaving}
+          error={clipError}
+          handleClose={() => {
+            setShowClipModal(false);
+            setPendingClipWindow(null);
+            setCompletedClipId('');
+            setClipError('');
+          }}
         />
       )}
       {isMobile && showChatModal && chatState === ChatState.VISIBLE && (
