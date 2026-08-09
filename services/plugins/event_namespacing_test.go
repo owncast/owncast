@@ -11,13 +11,14 @@ import (
 // Custom plugin events are namespaced by the host, not by the plugin. The
 // emitting plugin passes a suffix and hostEmitEvent prefixes it with the slug
 // that resolveCaller derived from the wasm call, which the guest cannot
-// influence. These tests pin the three properties that follow from that:
+// influence. These tests pin the properties that follow from that:
 //
 //  1. a plugin can only publish under "<its-own-slug>.",
 //  2. it therefore cannot impersonate another plugin's custom event, and
-//  3. it cannot forge a core host event either, because a prefixed name can
-//     never equal one (this is what makes the old reservedEventTypes
-//     allowlist unnecessary).
+//  3. it cannot forge a core host event: the prefix keeps almost every
+//     composed name distinct from the built-ins, and hostEmitEvent rejects
+//     the residual collisions (a plugin slugged "chat" composing
+//     "chat.message.received") against reservedEventTypes.
 //
 // The tests deliberately assert on the FULL set of deliveries rather than
 // "the good one arrived": a forged delivery is an extra entry, so an
@@ -230,5 +231,39 @@ func TestSubscriptionsAreNotRewritten(t *testing.T) {
 	}
 	if subscribed(receiver.Manifest.Subscriptions.Notify, "receiver.emitter.ping") {
 		t.Fatal("subscription was prefixed with the subscriber slug; cross-plugin events would never match")
+	}
+}
+
+// TestEmitCannotComposeCoreEventName closes the gap the slug prefix leaves
+// open: a plugin whose slug matches a core name's first segment could
+// otherwise compose an exact built-in name and have it fan out as if the
+// host originated it. The emitter here is slugged "chat" and emits
+// "message.received"; the composed "chat.message.received" must be dropped,
+// so the receiver sees only the genuine host dispatch.
+func TestEmitCannotComposeCoreEventName(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+
+	emitter := loadShared(t, ctx, env, RuntimeJavaScript, "chat", `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage() { owncast.events.emit("message.received", { n: 7 }); },
+});`, []string{PermEmitEvent})
+	defer emitter.Close(ctx)
+
+	receiver := loadShared(t, ctx, env, RuntimeJavaScript, "receiver",
+		receiverScript([]string{"chat.message.received"}), []string{PermChatSend})
+	defer receiver.Close(ctx)
+
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{emitter, receiver} })
+	env.Emit = d.Dispatch
+	d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+
+	want := []string{"got:chat.message.received:undefined"}
+	if got := drainSends(sends, mu); !sameStrings(got, want) {
+		t.Fatalf("forged core event reached subscribers\n got:  %q\n want: %q", got, want)
 	}
 }
