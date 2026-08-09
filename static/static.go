@@ -26,6 +26,11 @@ func GetWeb() fs.FS {
 	return wf
 }
 
+// GetWebFile returns the contents of a single file from the embedded web app.
+func GetWebFile(name string) ([]byte, error) {
+	return fs.ReadFile(GetWeb(), name)
+}
+
 //go:embed img/emoji/*
 var emojiFiles embed.FS
 
@@ -92,6 +97,18 @@ var botMetadataTemplate embed.FS
 func GetBotMetadataTemplate() (*template.Template, error) {
 	name := "metadata.html.tmpl"
 	t, err := template.ParseFS(botMetadataTemplate, name)
+	tmpl := template.Must(t, err)
+	return tmpl, err
+}
+
+//go:embed clip-metadata.html.tmpl
+var clipMetadataTemplate embed.FS
+
+// GetClipMetadataTemplate will return the metadata template used for clip
+// share links, so a clip URL unfurls with its own title and thumbnail.
+func GetClipMetadataTemplate() (*template.Template, error) {
+	name := "clip-metadata.html.tmpl"
+	t, err := template.ParseFS(clipMetadataTemplate, name)
 	tmpl := template.Must(t, err)
 	return tmpl, err
 }

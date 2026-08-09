@@ -6,6 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
@@ -69,6 +70,13 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 		ChatRequireAuthentication: configRepository.GetChatRequireAuthentication(),
 		HideViewerCount:           configRepository.GetHideViewerCount(),
 		DisableSearchIndexing:     configRepository.GetDisableSearchIndexing(),
+		Replay: replayConfigResponse{
+			Enabled:                configRepository.GetReplayFeaturesEnabled(),
+			ClipsEnabled:           configRepository.GetClipsEnabled(),
+			MaxClipDurationSeconds: configRepository.GetMaxClipDurationSeconds(),
+			ClipPermissions:        configRepository.GetClipPermissions(),
+			ForcedByCommandLine:    config.EnableReplayFeatures,
+		},
 		VideoSettings: videoSettings{
 			VideoQualityVariants: videoQualityVariants,
 			LatencyLevel:         configRepository.GetStreamLatencyLevel().Level,
@@ -154,6 +162,25 @@ type serverConfigAdminResponse struct {
 	DisableSearchIndexing     bool                        `json:"disableSearchIndexing"`
 	StreamKeyOverridden       bool                        `json:"streamKeyOverridden"`
 	HideViewerCount           bool                        `json:"hideViewerCount"`
+	// Replay carries the replay/clip settings for the admin's Clips section.
+	Replay replayConfigResponse `json:"replay"`
+}
+
+// replayConfigResponse is the current state of the replay and clip settings.
+type replayConfigResponse struct {
+	// Enabled reports whether replays are being recorded. Recorded video is
+	// kept on disk for as long as a replay or clip references it.
+	Enabled bool `json:"enabled"`
+	// ClipsEnabled reports whether viewers may create clips.
+	ClipsEnabled bool `json:"clipsEnabled"`
+	// MaxClipDurationSeconds is the longest clip a viewer may create.
+	MaxClipDurationSeconds int `json:"maxClipDurationSeconds"`
+	// ClipPermissions names who may create clips: moderators, authenticated,
+	// or established (any chat identity at least an hour old).
+	ClipPermissions string `json:"clipPermissions"`
+	// ForcedByCommandLine is true when the -enableReplayFeatures flag is
+	// holding the feature on, so the admin toggle cannot turn it off.
+	ForcedByCommandLine bool `json:"forcedByCommandLine"`
 }
 
 type videoSettings struct {

@@ -51,9 +51,19 @@ type S3Storage struct {
 
 	configRepository models.EngineConfig
 
+	// segmentProtector, when set, names the segments cleanup must keep
+	// because a clip or replay still references them.
+	segmentProtector models.SegmentProtector
+
 	performanceTracker *utils.PerformanceTracker
 
 	s3ForcePathStyle bool
+}
+
+// SetSegmentProtector supplies the source of truth for which recorded
+// segments must survive cleanup.
+func (s *S3Storage) SetSegmentProtector(protector models.SegmentProtector) {
+	s.segmentProtector = protector
 }
 
 // NewS3Storage returns a new S3Storage instance.
@@ -93,16 +103,18 @@ func (s *S3Storage) Setup() error {
 	return nil
 }
 
-// SegmentWritten is called when a single segment of video is written.
-func (s *S3Storage) SegmentWritten(localFilePath string) {
+// SegmentWritten is called when a single segment of video is written. It
+// returns the absolute remote URL the uploaded segment is served from.
+func (s *S3Storage) SegmentWritten(localFilePath string) (string, error) {
 	index := utils.GetIndexFromFilePath(localFilePath)
 	performanceMonitorKey := "s3upload-" + index
 	s.performanceTracker.StartPerformanceMonitor(performanceMonitorKey)
 
 	// Upload the segment
-	if _, err := s.Save(localFilePath, 0); err != nil {
+	remotePath, err := s.Save(localFilePath, 0)
+	if err != nil {
 		log.Errorln(err)
-		return
+		return "", err
 	}
 	averagePerformance := s.performanceTracker.GetAveragePerformance(performanceMonitorKey)
 
@@ -122,9 +134,11 @@ func (s *S3Storage) SegmentWritten(localFilePath string) {
 		s.queuedPlaylistUpdates[playlistPath] = playlistPath
 		if pErr, ok := err.(*os.PathError); ok {
 			log.Debugln(pErr.Path, "does not yet exist locally when trying to upload to S3 storage.")
-			return
+			return remotePath, nil
 		}
 	}
+
+	return remotePath, nil
 }
 
 // VariantPlaylistWritten is called when a variant hls playlist is written.
@@ -203,13 +217,14 @@ func (s *S3Storage) Save(filePath string, retryCount int) (string, error) {
 	return url.JoinPath(s.host, remotePath)
 }
 
-// Cleanup will fire the different cleanup tasks required.
+// Cleanup will fire the different cleanup tasks required, keeping any segment
+// a clip or replay still references.
 func (s *S3Storage) Cleanup() error {
 	if err := s.RemoteCleanup(); err != nil {
 		log.Errorln(err)
 	}
 
-	return localCleanup(4)
+	return localCleanup(4, s.segmentProtector)
 }
 
 // RemoteCleanup will remove old files from the remote storage provider.
@@ -223,8 +238,17 @@ func (s *S3Storage) RemoteCleanup() error {
 		return err
 	}
 
-	if len(keys) > 0 {
-		s.deleteObjects(keys)
+	protected := protectedSegments(s.segmentProtector)
+	deletable := make([]s3object, 0, len(keys))
+	for _, key := range keys {
+		if protected[path.Base(key.key)] {
+			continue
+		}
+		deletable = append(deletable, key)
+	}
+
+	if len(deletable) > 0 {
+		s.deleteObjects(deletable)
 	}
 
 	return nil

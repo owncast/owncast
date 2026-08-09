@@ -336,6 +336,38 @@ func (s *ServerInterfaceImpl) SetDisableSearchIndexingOptions(w http.ResponseWri
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetDisableSearchIndexing)(w, r)
 }
 
+func (s *ServerInterfaceImpl) SetReplayFeaturesEnabled(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetReplayFeaturesEnabled)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetReplayFeaturesEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetReplayFeaturesEnabled)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetClipsEnabled(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetClipsEnabled)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetClipsEnabledOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetClipsEnabled)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetMaxClipDuration(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetMaxClipDuration)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetMaxClipDurationOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetMaxClipDuration)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetClipPermissions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetClipPermissions)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetClipPermissionsOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetClipPermissions)(w, r)
+}
+
 func (s *ServerInterfaceImpl) SetFederationEnabled(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetFederationEnabled)(w, r)
 }

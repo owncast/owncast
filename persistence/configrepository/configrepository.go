@@ -138,6 +138,14 @@ type ConfigRepository interface {
 	SetPrivateKey(key string) error
 	GetFaviconPath() string
 	SetFaviconPath(favicon string) error
+	GetReplayFeaturesEnabled() bool
+	SetReplayFeaturesEnabled(enabled bool) error
+	GetClipsEnabled() bool
+	SetClipsEnabled(enabled bool) error
+	GetMaxClipDurationSeconds() int
+	SetMaxClipDurationSeconds(seconds int) error
+	GetClipPermissions() string
+	SetClipPermissions(permissions string) error
 }
 
 // temporaryGlobalInstance is set once during application startup so

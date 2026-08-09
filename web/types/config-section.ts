@@ -179,4 +179,20 @@ export interface ConfigDetails {
   chatEstablishedUserMode: boolean;
   hideViewerCount: boolean;
   disableSearchIndexing: boolean;
+  replay: ReplayConfig;
+}
+
+// ReplayConfig is the current state of the replay and clip settings.
+export interface ReplayConfig {
+  // enabled means recorded video is kept so clips can be created. Automatic
+  // segment cleanup is suppressed while it is on.
+  enabled: boolean;
+  clipsEnabled: boolean;
+  maxClipDurationSeconds: number;
+  // clipPermissions names who may create clips: 'moderators',
+  // 'authenticated', or 'established' (chat identity at least an hour old).
+  clipPermissions: string;
+  // forcedByCommandLine means the -enableReplayFeatures flag is holding the
+  // feature on, so the toggle cannot turn it off.
+  forcedByCommandLine: boolean;
 }

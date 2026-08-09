@@ -116,8 +116,9 @@ func (t *Transcoder) handleTranscoderMessage(message string) {
 }
 
 func (t *Transcoder) createVariantDirectories() {
-	// Create private hls data dirs
-	utils.CleanupDirectory(config.HLSStoragePath)
+	// Create private hls data dirs, keeping any segment a clip or replay still
+	// references.
+	utils.CleanupDirectory(config.HLSStoragePath, protectedSegmentFilenames(t.segmentProtector))
 	if len(t.configRepository.GetStreamOutputVariants()) != 0 {
 		for index := range t.configRepository.GetStreamOutputVariants() {
 			if err := os.MkdirAll(path.Join(config.HLSStoragePath, strconv.Itoa(index)), 0o750); err != nil {

@@ -1,0 +1,29 @@
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.serverLink {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.title {
+  margin-bottom: 0;
+}
+
+.streamTitle,
+.clippedBy,
+.created {
+  font-size: 0.95rem;
+}

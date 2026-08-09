@@ -129,6 +129,9 @@ func IsUserAgentABot(userAgent string) bool {
 		return false
 	}
 
+	// Link-preview crawlers that fetch a URL to build an unfurl card. They
+	// need the server-rendered metadata page, since the web app is a static
+	// export and cannot produce per-page metadata itself.
 	botStrings := []string{
 		"mastodon",
 		"pleroma",
@@ -139,6 +142,22 @@ func IsUserAgentABot(userAgent string) bool {
 		"element",
 		"rocket.chat",
 		"duckduckbot",
+		"facebookexternalhit",
+		"twitterbot",
+		"discordbot",
+		"telegrambot",
+		"slackbot",
+		"linkedinbot",
+		"signal",
+		"embedly",
+		"iframely",
+		"opengraph",
+		"skypeuripreview",
+		"redditbot",
+		"pinterest",
+		"vkshare",
+		"nuzzel",
+		"bufferbot",
 	}
 
 	for _, botString := range botStrings {
@@ -308,22 +327,66 @@ func VerifyFFMpegPath(path string) error {
 	return nil
 }
 
-// CleanupDirectory removes all contents within the directory, or creates it if it does not exist. Throws fatal error on failure.
-func CleanupDirectory(path string) {
-	log.Traceln("Cleaning", path)
+// CleanupDirectory removes contents within the directory, or creates it if it
+// does not exist. Throws fatal error on failure. Files named in keep are left
+// in place, along with any directory holding one, so recorded video a clip or
+// replay still references survives the wipe between streams.
+func CleanupDirectory(path string, keep map[string]bool) {
 	if err := os.MkdirAll(path, 0o750); err != nil {
 		log.Fatalf("Unable to create '%s'. Please check the ownership and permissions: %s\n", path, err)
 	}
+
+	log.Traceln("Cleaning", path)
 	entries, err := os.ReadDir(path)
 	if err != nil {
 		log.Fatalf("Unable to read contents of '%s'. Please check the ownership and permissions: %s\n", path, err)
 	}
 	for _, entry := range entries {
 		entryPath := filepath.Join(path, entry.Name())
+
+		if entry.IsDir() {
+			// Variant directories hold the segments, so recurse instead of
+			// removing the directory outright.
+			if len(keep) > 0 {
+				CleanupDirectory(entryPath, keep)
+				continue
+			}
+		} else if keep[entry.Name()] {
+			continue
+		}
+
 		if err := os.RemoveAll(entryPath); err != nil {
 			log.Fatalf("Unable to remove file or directory contained in '%s'. Please check the ownership and permissions: %s\n", path, err)
 		}
 	}
+}
+
+// RoundUpToNearest rounds x up to the nearest multiple of `to`.
+func RoundUpToNearest(x float32, to int) int {
+	if to == 0 {
+		return int(math.Ceil(float64(x)))
+	}
+
+	xInt := int(math.Ceil(float64(x)))
+
+	if xInt%to == 0 {
+		return xInt
+	}
+	return xInt + to - xInt%to
+}
+
+// RoundDownToNearest rounds x down to the nearest multiple of `to`.
+func RoundDownToNearest(x float32, to int) int {
+	if to == 0 {
+		return int(math.Floor(float64(x)))
+	}
+
+	xInt := int(math.Floor(float64(x)))
+
+	if xInt%to == 0 {
+		return xInt
+	}
+	return xInt - xInt%to
 }
 
 // FindInSlice will return if a string is in a slice, and the index of that string.

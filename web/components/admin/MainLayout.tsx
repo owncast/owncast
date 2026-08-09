@@ -252,6 +252,10 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       label: <Link href="/admin/config-notify">Notifications</Link>,
       key: '/admin/config-notify',
     },
+    {
+      label: <Link href="/admin/clips">Replays &amp; Clips</Link>,
+      key: '/admin/clips',
+    },
   ];
 
   const menuItems = [

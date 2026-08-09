@@ -9,6 +9,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/teris-io/shortid"
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
@@ -92,6 +93,7 @@ func (s *Service) transitionToOfflineVideoStreamContent() {
 	log.Traceln("Firing transcoder with offline stream state")
 
 	offlineTranscoder := transcoder.NewTranscoder(s.cfg, s.configRepository)
+	offlineTranscoder.SetSegmentProtector(s.replayProtector())
 	offlineTranscoder.SetIdentifier("offline")
 	offlineTranscoder.SetLatencyLevel(models.GetLatencyLevel(4))
 	offlineTranscoder.SetIsEvent(true)
@@ -118,8 +120,9 @@ func (s *Service) transitionToOfflineVideoStreamContent() {
 func (s *Service) resetDirectories() {
 	log.Trace("Resetting file directories to a clean slate.")
 
-	// Wipe hls data directory
-	utils.CleanupDirectory(config.HLSStoragePath)
+	// Wipe hls data directory, keeping any segment a clip or replay still
+	// references.
+	utils.CleanupDirectory(config.HLSStoragePath, s.protectedSegmentFilenames())
 
 	// Remove the previous thumbnail
 	logo := s.configRepository.GetLogoPath()
@@ -145,6 +148,10 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 
 	go func() {
 		s.transcoder = transcoder.NewTranscoder(s.cfg, s.configRepository)
+		s.transcoder.SetSegmentProtector(s.replayProtector())
+		// Tie segment filenames to this stream so segments from different
+		// streams never collide on disk when replay recording is enabled.
+		s.transcoder.SetIdentifier(broadcast.StreamID)
 		s.transcoder.TranscoderCompleted = func(err error) {
 			s.StreamDisconnected(err)
 			s.transcoder = nil
@@ -162,6 +169,9 @@ func (s *Service) setStreamAsConnected(rtmpOut *io.PipeReader) {
 // go-live side effects. Implements StreamEvents; the local engine calls it
 // in-process, a remote engine over its signaling channel.
 func (s *Service) StreamConnected(broadcast *models.CurrentBroadcast) {
+	if broadcast.StreamID == "" {
+		broadcast.StreamID = shortid.MustGenerate()
+	}
 	s.currentBroadcast = broadcast
 	s.applyStreamOnline()
 }
@@ -178,7 +188,24 @@ func (s *Service) applyStreamOnline() {
 	s.stats.LastConnectTime = &now
 	s.stats.SessionMaxViewerCount = 0
 
+	// When replay features are enabled, begin recording this stream. The
+	// recorder notes each written segment so the stream can be replayed
+	// later. A nil recorder (e.g. the offline placeholder) leaves the
+	// handler's recorder unset so nothing is recorded.
+	s.recorder = nil
+	s.handler.Recorder = nil
+	if s.configRepository.GetReplayFeaturesEnabled() && s.replays != nil && s.currentBroadcast != nil {
+		if recorder := s.replays.NewRecording(s.currentBroadcast.StreamID); recorder != nil {
+			s.recorder = recorder
+			s.handler.Recorder = recorder
+		}
+	}
+
 	s.StopOfflineCleanupTimer()
+
+	// Cleanup runs for every stream. Segments a clip or replay references are
+	// protected from it, so recorded video survives while the live window
+	// stays bounded.
 	s.startOnlineCleanupTimer()
 
 	if s.yp != nil {
@@ -220,6 +247,12 @@ func (s *Service) StreamDisconnected(_ error) {
 // applyStreamOffline handles the always-on cleanup when a live stream ends.
 func (s *Service) applyStreamOffline() {
 	_ = s.chat.SendSystemAction("The stream is ending.", true)
+
+	// Note the end of the stream in the replay recording, if any, then
+	// detach the recorder so the next stream starts fresh.
+	s.handler.StreamEnded()
+	s.recorder = nil
+	s.handler.Recorder = nil
 
 	now := utils.NullTime{Time: time.Now(), Valid: true}
 	if s.onlineTimerCancelFunc != nil {

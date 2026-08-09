@@ -45,6 +45,10 @@ type Transcoder struct {
 	// and codec selection consulted at Start.
 	configRepository models.EngineConfig
 
+	// segmentProtector, when set, names the segments the variant-directory
+	// wipe must keep because a clip or replay still references them.
+	segmentProtector models.SegmentProtector
+
 	stdin *io.PipeReader
 
 	// commandExec holds the live ffmpeg child process while the
@@ -513,6 +517,28 @@ func (t *Transcoder) SetOutputPath(output string) {
 // SetIdentifier enables appending a unique identifier to segment file name.
 func (t *Transcoder) SetIdentifier(output string) {
 	t.segmentIdentifier = output
+}
+
+// SetSegmentProtector supplies the source of truth for which recorded
+// segments must survive the variant-directory wipe.
+func (t *Transcoder) SetSegmentProtector(protector models.SegmentProtector) {
+	t.segmentProtector = protector
+}
+
+// protectedSegmentFilenames asks the protector which segments to keep. A nil
+// protector, or one that fails to answer, protects nothing.
+func protectedSegmentFilenames(protector models.SegmentProtector) map[string]bool {
+	if protector == nil {
+		return nil
+	}
+
+	protected, err := protector.ProtectedSegmentFilenames()
+	if err != nil {
+		log.Warnln("unable to determine which video segments are in use:", err)
+		return nil
+	}
+
+	return protected
 }
 
 // SetInternalHTTPPort will set the port to be used for internal communication.

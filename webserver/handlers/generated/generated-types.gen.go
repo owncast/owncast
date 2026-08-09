@@ -92,6 +92,27 @@ func (e PlaybackClientHealthSource) Valid() bool {
 	}
 }
 
+// Defines values for ReplayAdminConfigClipPermissions.
+const (
+	Authenticated ReplayAdminConfigClipPermissions = "authenticated"
+	Established   ReplayAdminConfigClipPermissions = "established"
+	Moderators    ReplayAdminConfigClipPermissions = "moderators"
+)
+
+// Valid indicates whether the value is a known member of the ReplayAdminConfigClipPermissions enum.
+func (e ReplayAdminConfigClipPermissions) Valid() bool {
+	switch e {
+	case Authenticated:
+		return true
+	case Established:
+		return true
+	case Moderators:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for WebConfigAutoplay.
 const (
 	WebConfigAutoplayAlways    WebConfigAutoplay = "always"
@@ -272,20 +293,23 @@ type AdminServerConfig struct {
 	HideViewerCount         *bool                     `json:"hideViewerCount,omitempty"`
 	InstanceDetails         *AdminWebConfig           `json:"instanceDetails,omitempty"`
 	Notifications           *AdminNotificationsConfig `json:"notifications,omitempty"`
-	RtmpServerAddress       *string                   `json:"rtmpServerAddress,omitempty"`
-	RtmpServerPort          *int                      `json:"rtmpServerPort,omitempty"`
-	S3                      *S3Info                   `json:"s3,omitempty"`
-	SocketHostOverride      *string                   `json:"socketHostOverride,omitempty"`
-	StreamKeyOverridden     *bool                     `json:"streamKeyOverridden,omitempty"`
-	StreamKeys              *[]StreamKey              `json:"streamKeys,omitempty"`
-	SuggestedUsernames      *[]string                 `json:"suggestedUsernames,omitempty"`
-	SupportedCodecs         *[]string                 `json:"supportedCodecs,omitempty"`
-	VideoCodec              *string                   `json:"videoCodec,omitempty"`
-	VideoServingEndpoint    *string                   `json:"videoServingEndpoint,omitempty"`
-	VideoSettings           *AdminVideoSettings       `json:"videoSettings,omitempty"`
-	WebServerIP             *string                   `json:"webServerIP,omitempty"`
-	WebServerPort           *int                      `json:"webServerPort,omitempty"`
-	Yp                      *AdminYPInfo              `json:"yp,omitempty"`
+
+	// Replay Current state of the replay and clip settings
+	Replay               *ReplayAdminConfig  `json:"replay,omitempty"`
+	RtmpServerAddress    *string             `json:"rtmpServerAddress,omitempty"`
+	RtmpServerPort       *int                `json:"rtmpServerPort,omitempty"`
+	S3                   *S3Info             `json:"s3,omitempty"`
+	SocketHostOverride   *string             `json:"socketHostOverride,omitempty"`
+	StreamKeyOverridden  *bool               `json:"streamKeyOverridden,omitempty"`
+	StreamKeys           *[]StreamKey        `json:"streamKeys,omitempty"`
+	SuggestedUsernames   *[]string           `json:"suggestedUsernames,omitempty"`
+	SupportedCodecs      *[]string           `json:"supportedCodecs,omitempty"`
+	VideoCodec           *string             `json:"videoCodec,omitempty"`
+	VideoServingEndpoint *string             `json:"videoServingEndpoint,omitempty"`
+	VideoSettings        *AdminVideoSettings `json:"videoSettings,omitempty"`
+	WebServerIP          *string             `json:"webServerIP,omitempty"`
+	WebServerPort        *int                `json:"webServerPort,omitempty"`
+	Yp                   *AdminYPInfo        `json:"yp,omitempty"`
 }
 
 // AdminStatus defines model for AdminStatus.
@@ -390,6 +414,40 @@ type ChatMessages = []ChatMessages_Item
 // ChatMessages_Item defines model for ChatMessages.Item.
 type ChatMessages_Item struct {
 	union json.RawMessage
+}
+
+// Clip A clip created from a window of a replay
+type Clip struct {
+	ClippedBy       *string `json:"clippedBy,omitempty"`
+	DurationSeconds *int    `json:"durationSeconds,omitempty"`
+	Id              *string `json:"id,omitempty"`
+
+	// Manifest Path to the clip's HLS master playlist
+	Manifest          *string  `json:"manifest,omitempty"`
+	RelativeEndTime   *float32 `json:"relativeEndTime,omitempty"`
+	RelativeStartTime *float32 `json:"relativeStartTime,omitempty"`
+	StreamId          *string  `json:"streamId,omitempty"`
+	StreamTitle       *string  `json:"streamTitle,omitempty"`
+
+	// Thumbnail Path to the clip's poster image, when one was generated
+	Thumbnail *string `json:"thumbnail,omitempty"`
+	Timestamp *string `json:"timestamp,omitempty"`
+	Title     *string `json:"title,omitempty"`
+}
+
+// ClipCreatedResponse The result of creating a clip
+type ClipCreatedResponse struct {
+	DurationSeconds *int    `json:"durationSeconds,omitempty"`
+	Id              *string `json:"id,omitempty"`
+	Message         *string `json:"message,omitempty"`
+	Success         *bool   `json:"success,omitempty"`
+}
+
+// ClipsConfig Whether viewers may create clips, and the limits that apply
+type ClipsConfig struct {
+	Enabled            *bool   `json:"enabled,omitempty"`
+	MaxDurationSeconds *int    `json:"maxDurationSeconds,omitempty"`
+	Permissions        *string `json:"permissions,omitempty"`
 }
 
 // CmcdReport A CMCD v2 (CTA-5004-A) report keyed by CMCD key names. Any valid CMCD key is accepted; the keys below are the ones consumed.
@@ -788,6 +846,43 @@ type PlaybackMetrics struct {
 	QualityVariantChanges float64 `json:"qualityVariantChanges"`
 }
 
+// Replay A recorded stream. Clips are taken from replays.
+type Replay struct {
+	// ClipCount Number of clips taken from this replay
+	ClipCount *int `json:"clipCount,omitempty"`
+
+	// DurationSeconds Recorded media duration of the replay
+	DurationSeconds *float32 `json:"durationSeconds,omitempty"`
+	EndTime         *string  `json:"endTime,omitempty"`
+	Id              *string  `json:"id,omitempty"`
+	InProgress      *bool    `json:"inProgress,omitempty"`
+
+	// Manifest Path to the replay's HLS master playlist
+	Manifest  *string `json:"manifest,omitempty"`
+	StartTime *string `json:"startTime,omitempty"`
+	Title     *string `json:"title,omitempty"`
+
+	// TotalBytes Disk space the replay's video segments occupy
+	TotalBytes *int `json:"totalBytes,omitempty"`
+}
+
+// ReplayAdminConfig Current state of the replay and clip settings
+type ReplayAdminConfig struct {
+	// ClipPermissions Who may create clips.
+	ClipPermissions *ReplayAdminConfigClipPermissions `json:"clipPermissions,omitempty"`
+	ClipsEnabled    *bool                             `json:"clipsEnabled,omitempty"`
+
+	// Enabled Whether replays are being recorded. Recorded video is kept on disk for as long as a replay or clip references it.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// ForcedByCommandLine The -enableReplayFeatures flag is holding the feature on, so the admin toggle cannot turn it off.
+	ForcedByCommandLine    *bool `json:"forcedByCommandLine,omitempty"`
+	MaxClipDurationSeconds *int  `json:"maxClipDurationSeconds,omitempty"`
+}
+
+// ReplayAdminConfigClipPermissions Who may create clips.
+type ReplayAdminConfigClipPermissions string
+
 // S3Info defines model for S3Info.
 type S3Info struct {
 	AccessKey      *string `json:"accessKey,omitempty"`
@@ -814,9 +909,12 @@ type Status struct {
 	LastDisconnectTime *string `json:"lastDisconnectTime,omitempty"`
 	Online             *bool   `json:"online,omitempty"`
 	ServerTime         *string `json:"serverTime,omitempty"`
-	StreamTitle        *string `json:"streamTitle,omitempty"`
-	VersionNumber      *string `json:"versionNumber,omitempty"`
-	ViewerCount        *int    `json:"viewerCount,omitempty"`
+
+	// StreamId Identifies the live broadcast so a viewer can clip it. Only present while a stream is live and clipping is enabled.
+	StreamId      *string `json:"streamId,omitempty"`
+	StreamTitle   *string `json:"streamTitle,omitempty"`
+	VersionNumber *string `json:"versionNumber,omitempty"`
+	ViewerCount   *int    `json:"viewerCount,omitempty"`
 }
 
 // StreamHealthOverview defines model for StreamHealthOverview.
@@ -920,24 +1018,27 @@ type WebConfig struct {
 	ChatDisabled        *bool                 `json:"chatDisabled,omitempty"`
 
 	// ChatRequireAuthentication Whether users must authenticate before sending chat messages
-	ChatRequireAuthentication *bool               `json:"chatRequireAuthentication,omitempty"`
-	CustomStyles              *string             `json:"customStyles,omitempty"`
-	ExternalActions           *[]ExternalAction   `json:"externalActions,omitempty"`
-	ExtraPageContent          *string             `json:"extraPageContent,omitempty"`
-	Federation                *FederationConfig   `json:"federation,omitempty"`
-	HideViewerCount           *bool               `json:"hideViewerCount,omitempty"`
-	Logo                      *string             `json:"logo,omitempty"`
-	MaxSocketPayloadSize      *int                `json:"maxSocketPayloadSize,omitempty"`
-	Name                      *string             `json:"name,omitempty"`
-	Notifications             *NotificationConfig `json:"notifications,omitempty"`
-	Nsfw                      *bool               `json:"nsfw,omitempty"`
-	OfflineMessage            *string             `json:"offlineMessage,omitempty"`
-	SocialHandles             *[]SocialHandle     `json:"socialHandles,omitempty"`
-	SocketHostOverride        *string             `json:"socketHostOverride,omitempty"`
-	StreamTitle               *string             `json:"streamTitle,omitempty"`
-	Summary                   *string             `json:"summary,omitempty"`
-	Tags                      *[]string           `json:"tags,omitempty"`
-	Version                   *string             `json:"version,omitempty"`
+	ChatRequireAuthentication *bool `json:"chatRequireAuthentication,omitempty"`
+
+	// Clips Whether viewers may create clips, and the limits that apply
+	Clips                *ClipsConfig        `json:"clips,omitempty"`
+	CustomStyles         *string             `json:"customStyles,omitempty"`
+	ExternalActions      *[]ExternalAction   `json:"externalActions,omitempty"`
+	ExtraPageContent     *string             `json:"extraPageContent,omitempty"`
+	Federation           *FederationConfig   `json:"federation,omitempty"`
+	HideViewerCount      *bool               `json:"hideViewerCount,omitempty"`
+	Logo                 *string             `json:"logo,omitempty"`
+	MaxSocketPayloadSize *int                `json:"maxSocketPayloadSize,omitempty"`
+	Name                 *string             `json:"name,omitempty"`
+	Notifications        *NotificationConfig `json:"notifications,omitempty"`
+	Nsfw                 *bool               `json:"nsfw,omitempty"`
+	OfflineMessage       *string             `json:"offlineMessage,omitempty"`
+	SocialHandles        *[]SocialHandle     `json:"socialHandles,omitempty"`
+	SocketHostOverride   *string             `json:"socketHostOverride,omitempty"`
+	StreamTitle          *string             `json:"streamTitle,omitempty"`
+	Summary              *string             `json:"summary,omitempty"`
+	Tags                 *[]string           `json:"tags,omitempty"`
+	Version              *string             `json:"version,omitempty"`
 }
 
 // WebConfigAutoplay defines model for WebConfig.Autoplay.
@@ -1025,6 +1126,11 @@ type UpdateUserEnabledAdminJSONBody struct {
 type UpdateUserModeratorJSONBody struct {
 	IsModerator *bool   `json:"isModerator,omitempty"`
 	UserId      *string `json:"userId,omitempty"`
+}
+
+// DeleteClipJSONBody defines parameters for DeleteClip.
+type DeleteClipJSONBody struct {
+	Id *string `json:"id,omitempty"`
 }
 
 // SetCustomColorVariableValuesJSONBody defines parameters for SetCustomColorVariableValues.
@@ -1117,6 +1223,11 @@ type ApproveFollowerJSONBody struct {
 type RemoveFollowerJSONBody struct {
 	// ActorIRI IRI of the follower to remove
 	ActorIRI string `json:"actorIRI"`
+}
+
+// DeleteReplayJSONBody defines parameters for DeleteReplay.
+type DeleteReplayJSONBody struct {
+	Id *string `json:"id,omitempty"`
 }
 
 // GetUsersParams defines parameters for GetUsers.
@@ -1245,6 +1356,14 @@ type UpdateUserEnabledParams struct {
 	AccessToken AccessToken `form:"accessToken" json:"accessToken"`
 }
 
+// AddClipJSONBody defines parameters for AddClip.
+type AddClipJSONBody struct {
+	ClipTitle                *string  `json:"clipTitle,omitempty"`
+	RelativeEndTimeSeconds   *float32 `json:"relativeEndTimeSeconds,omitempty"`
+	RelativeStartTimeSeconds *float32 `json:"relativeStartTimeSeconds,omitempty"`
+	StreamId                 *string  `json:"streamId,omitempty"`
+}
+
 // GetFollowersParams defines parameters for GetFollowers.
 type GetFollowersParams struct {
 	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
@@ -1301,6 +1420,9 @@ type UpdateUserEnabledAdminJSONRequestBody UpdateUserEnabledAdminJSONBody
 
 // UpdateUserModeratorJSONRequestBody defines body for UpdateUserModerator for application/json ContentType.
 type UpdateUserModeratorJSONRequestBody UpdateUserModeratorJSONBody
+
+// DeleteClipJSONRequestBody defines body for DeleteClip for application/json ContentType.
+type DeleteClipJSONRequestBody DeleteClipJSONBody
 
 // SetAdminPasswordJSONRequestBody defines body for SetAdminPassword for application/json ContentType.
 type SetAdminPasswordJSONRequestBody = AdminConfigValue
@@ -1404,6 +1526,18 @@ type SetCustomOfflineMessageJSONRequestBody = AdminConfigValue
 // SetExtraPageContentJSONRequestBody defines body for SetExtraPageContent for application/json ContentType.
 type SetExtraPageContentJSONRequestBody = AdminConfigValue
 
+// SetClipPermissionsJSONRequestBody defines body for SetClipPermissions for application/json ContentType.
+type SetClipPermissionsJSONRequestBody = AdminConfigValue
+
+// SetClipsEnabledJSONRequestBody defines body for SetClipsEnabled for application/json ContentType.
+type SetClipsEnabledJSONRequestBody = AdminConfigValue
+
+// SetReplayFeaturesEnabledJSONRequestBody defines body for SetReplayFeaturesEnabled for application/json ContentType.
+type SetReplayFeaturesEnabledJSONRequestBody = AdminConfigValue
+
+// SetMaxClipDurationJSONRequestBody defines body for SetMaxClipDuration for application/json ContentType.
+type SetMaxClipDurationJSONRequestBody = AdminConfigValue
+
 // SetRTMPServerBindAddressJSONRequestBody defines body for SetRTMPServerBindAddress for application/json ContentType.
 type SetRTMPServerBindAddressJSONRequestBody = AdminConfigValue
 
@@ -1473,6 +1607,9 @@ type ApproveFollowerJSONRequestBody ApproveFollowerJSONBody
 // RemoveFollowerJSONRequestBody defines body for RemoveFollower for application/json ContentType.
 type RemoveFollowerJSONRequestBody RemoveFollowerJSONBody
 
+// DeleteReplayJSONRequestBody defines body for DeleteReplay for application/json ContentType.
+type DeleteReplayJSONRequestBody DeleteReplayJSONBody
+
 // DeleteUserJSONRequestBody defines body for DeleteUser for application/json ContentType.
 type DeleteUserJSONRequestBody DeleteUserJSONBody
 
@@ -1502,6 +1639,9 @@ type RegisterAnonymousChatUserJSONRequestBody RegisterAnonymousChatUserJSONBody
 
 // UpdateUserEnabledJSONRequestBody defines body for UpdateUserEnabled for application/json ContentType.
 type UpdateUserEnabledJSONRequestBody UpdateUserEnabledJSONBody
+
+// AddClipJSONRequestBody defines body for AddClip for application/json ContentType.
+type AddClipJSONRequestBody AddClipJSONBody
 
 // SendChatActionJSONRequestBody defines body for SendChatAction for application/json ContentType.
 type SendChatActionJSONRequestBody = MessageEvent

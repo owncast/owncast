@@ -57,6 +57,29 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 	// Return HLS video
 	r.HandleFunc("/hls/*", h.HandleHLSRequest)
 
+	// HLS playback for replays and clips. These are not /api routes (they
+	// return HLS playlists, not JSON), so like /hls they're bound directly
+	// here rather than through the OpenAPI handler. The handler methods gate
+	// on the replay feature setting and return 404 when it's off.
+	// Subtree matches cover /replay/{streamId}[/{outputConfigId}] and
+	// /clip/{clipId}[/{outputConfigId}].
+	//
+	// Full-stream replay playback is admin-only: viewers get clips, not whole
+	// broadcasts. The admin app is same-origin behind basic auth, so its player
+	// authenticates. Clips are public.
+	r.HandleFunc("/replay/*", mw.RequireAdminAuth(h.GetReplay))
+	r.HandleFunc("/clip/*", h.GetClip)
+
+	// Clip poster images, referenced by clip listings and share-link previews.
+	// Kept off the /clips/ path so a clip id can never collide with it.
+	r.HandleFunc("/clip-thumbnail/*", h.GetClipThumbnail)
+
+	// The viewer-facing clip page. Browsers get the standalone clip page,
+	// which plays the clip named in the URL; social scrapers get
+	// server-rendered OpenGraph metadata for that clip so share links unfurl.
+	r.HandleFunc("/clips/*", h.GetClipPage)
+	r.HandleFunc("/clips", h.GetClipPage)
+
 	// The admin web app.
 	r.HandleFunc("/admin/*", mw.RequireAdminAuth(h.IndexHandler))
 

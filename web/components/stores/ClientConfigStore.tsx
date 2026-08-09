@@ -153,6 +153,56 @@ export const isOnlineSelector = atom(get => {
   return state.videoAvailable || isVideoPlaying;
 });
 
+// Minimum chat-identity age before the 'established' clip permission level
+// allows clipping. Mirrors the server's models.MinClipperAccountAge.
+const MIN_CLIPPER_ACCOUNT_AGE_MS = 60 * 60 * 1000;
+
+// Whether the clip button is shown at all. It belongs to viewers the server
+// would accept a clip from:
+//   - the operator has clips enabled
+//   - a registered chat identity that is not banned, which the server
+//     reports by taking chat away from this viewer while the stream is online
+//   - the identity satisfies the operator's clip permission level:
+//     moderators only, authenticated viewers, or any identity older than an
+//     hour. Moderators always qualify.
+export const canShowClipButtonSelector = atom(get => {
+  const config: ClientConfig = get(clientConfigStateAtom);
+  const state: AppStateOptions = get(appStateAtom);
+  const accessToken: string = get(accessTokenAtom);
+  const currentUser: CurrentUser = get(currentUserAtom);
+
+  if (!config.clips?.enabled || !accessToken || !currentUser || !state.chatAvailable) {
+    return false;
+  }
+  if (currentUser.isModerator) {
+    return true;
+  }
+
+  switch (config.clips.permissions) {
+    case 'moderators':
+      return false;
+    case 'authenticated':
+      return !!currentUser.authenticated;
+    default: {
+      // 'established': the identity must be old enough. An unknown creation
+      // time counts as too new.
+      const createdAt = currentUser.createdAt ? new Date(currentUser.createdAt).getTime() : NaN;
+      return Number.isFinite(createdAt) && Date.now() - createdAt >= MIN_CLIPPER_ACCOUNT_AGE_MS;
+    }
+  }
+});
+
+// Whether pressing the clip button would work right now. On top of the
+// visibility rules it needs something to clip: a live broadcast that
+// identifies itself, and video actively playing so the viewer is clipping what
+// they are watching.
+export const canCreateClipSelector = atom(get => {
+  const status: ServerStatus = get(serverStatusState);
+  const isVideoPlaying: boolean = get(isVideoPlayingAtom);
+
+  return Boolean(get(canShowClipButtonSelector) && status.streamId && isVideoPlaying);
+});
+
 export const visibleChatMessagesSelector = atom<ChatMessage[]>(get => {
   const messages: ChatMessage[] = get(chatMessagesAtom);
   const removedIds: string[] = get(removedMessageIdsAtom);

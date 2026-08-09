@@ -53,6 +53,7 @@ const defaultArgs: MobileContentProps = {
   pluginTabs: [],
   setShowFollowModal: () => {},
   showFollowersTab: false,
+  showClipsTab: false,
   online: false,
   federatedServers: [],
 };

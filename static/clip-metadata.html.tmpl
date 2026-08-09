@@ -1,0 +1,47 @@
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>{{.Title}} - {{.Name}}</title>
+		<meta name="description" content="{{.Summary}}">
+
+		<meta property="og:title" content="{{.Title}}">
+		<meta property="og:site_name" content="{{.Name}}">
+		<meta property="og:url" content="{{.RequestedURL}}">
+		<meta property="og:description" content="{{.Summary}}">
+		<meta property="og:type" content="video.other">
+
+		<meta property="og:image" content="{{.Thumbnail}}">
+		<meta property="og:image:url" content="{{.Thumbnail}}">
+		<meta property="og:image:alt" content="{{.Title}}">
+
+		<meta property="og:video" content="{{.PlaylistURL}}" />
+		<meta property="og:video:secure_url" content="{{.PlaylistURL}}" />
+		<meta property="og:video:type" content="application/x-mpegURL" />
+		<meta property="og:video:duration" content="{{.DurationSeconds}}" />
+		<meta property="og:video:actor" content="{{.Name}}" />
+
+		<meta property="twitter:title" content="{{.Title}}">
+		<meta property="twitter:url" content="{{.RequestedURL}}">
+		<meta property="twitter:description" content="{{.Summary}}">
+		<meta property="twitter:image" content="{{.Thumbnail}}">
+		<meta property="twitter:card" content="summary_large_image" />
+
+		<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+		<meta name="theme-color" content="#ffffff">
+	</head>
+
+	<body>
+		<h1>{{.Title}}</h1>
+
+		<center>
+			<a href="{{.RequestedURL}}"><img src="{{.Thumbnail}}" width=40% alt="Clip thumbnail"/></a>
+		</center>
+
+		<h3>{{.Summary}}</h3>
+
+		<p><a href="{{.RequestedURL}}">Watch this clip on {{.Name}}</a></p>
+	</body>
+</html>

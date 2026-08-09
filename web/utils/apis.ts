@@ -54,6 +54,18 @@ export const MODERATORS = `${API_LOCATION}chat/users/moderators`;
 // Get hardware stats
 export const HARDWARE_STATS = `${API_LOCATION}hardwarestats`;
 
+// Get all replays with disk usage and clip counts
+export const REPLAYS = `${API_LOCATION}replays`;
+
+// Delete a replay along with its clips and recorded video
+export const REPLAY_DELETE = `${API_LOCATION}replays/delete`;
+
+// Get all clips for administration
+export const ADMIN_CLIPS = `${API_LOCATION}clips`;
+
+// Delete a single clip
+export const CLIP_DELETE = `${API_LOCATION}clips/delete`;
+
 // Get all logs
 export const LOGS_ALL = `${API_LOCATION}logs`;
 

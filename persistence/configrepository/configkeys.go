@@ -65,4 +65,8 @@ const (
 	disableSearchIndexingKey             = "disable_search_indexing"
 	videoServingEndpointKey              = "video_serving_endpoint"
 	faviconPathKey                       = "favicon_path"
+	replayFeaturesEnabledKey             = "replay_features_enabled"
+	clipsEnabledKey                      = "clips_enabled"
+	maxClipDurationSecondsKey            = "max_clip_duration_seconds"
+	clipPermissionsKey                   = "clip_permissions"
 )

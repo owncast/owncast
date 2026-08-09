@@ -13,5 +13,9 @@ type Status struct {
 	OverallMaxViewerCount int    `json:"overallMaxViewerCount"`
 	SessionMaxViewerCount int    `json:"sessionMaxViewerCount"`
 
+	// StreamID identifies the currently-live broadcast. Empty when offline.
+	// A viewer needs it to clip what is happening right now.
+	StreamID string `json:"streamId,omitempty"`
+
 	Online bool `json:"online"`
 }

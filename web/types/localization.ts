@@ -27,6 +27,27 @@ export const Localization = {
     follow: 'Follow',
     connected: 'Connected',
     unmute: 'Frontend.unmute',
+    clip: 'Clip',
+
+    // Clips
+    Clips: {
+      title: 'Frontend.Clips.title',
+      empty: 'Frontend.Clips.empty',
+      discard: 'Frontend.Clips.discard',
+      titlePlaceholder: 'Frontend.Clips.titlePlaceholder',
+      titlePrompt: 'Frontend.Clips.titlePrompt',
+      start: 'Frontend.Clips.start',
+      end: 'Frontend.Clips.end',
+      saveTitle: 'Frontend.Clips.saveTitle',
+      skipTitle: 'Frontend.Clips.skipTitle',
+      lastSeconds: 'Frontend.Clips.lastSeconds',
+      create: 'Frontend.Clips.create',
+      created: 'Frontend.Clips.created',
+      createFailed: 'Frontend.Clips.createFailed',
+      copyLink: 'Frontend.Clips.copyLink',
+      linkCopied: 'Frontend.Clips.linkCopied',
+      clippedBy: 'Frontend.Clips.clippedBy',
+    },
 
     // Navigation and accessibility
     skipToPlayer: 'Skip to player',

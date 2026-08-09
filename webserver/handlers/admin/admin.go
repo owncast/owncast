@@ -14,6 +14,7 @@ import (
 	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	"github.com/owncast/owncast/services/chat"
+	"github.com/owncast/owncast/services/replays"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
@@ -34,6 +35,7 @@ type Admin struct {
 	webhooks              *webhooks.Service
 	chat                  *chat.Service
 	metrics               *metrics.Service
+	replays               *replays.Service
 	configRepository      configrepository.ConfigRepository
 	authRepository        authrepository.AuthRepository
 	followersRepository   followersrepository.FollowersRepository
@@ -63,6 +65,7 @@ type Deps struct {
 	Webhooks              *webhooks.Service
 	Chat                  *chat.Service
 	Metrics               *metrics.Service
+	Replays               *replays.Service
 	ConfigRepository      configrepository.ConfigRepository
 	AuthRepository        authrepository.AuthRepository
 	FollowersRepository   followersrepository.FollowersRepository
@@ -88,6 +91,7 @@ func New(deps Deps) *Admin {
 		webhooks:                deps.Webhooks,
 		chat:                    deps.Chat,
 		metrics:                 deps.Metrics,
+		replays:                 deps.Replays,
 		configRepository:        deps.ConfigRepository,
 		authRepository:          deps.AuthRepository,
 		followersRepository:     deps.FollowersRepository,
