@@ -476,14 +476,16 @@ func BuildHostFunctions(env *HostEnv) []extism.HostFunction {
 	// Chat send fns resolve both slug and chat display name at call time:
 	// slug routes to the right bot user, display name is what chat viewers
 	// see.
-	fns = append(fns,
+	fns = append(
+		fns,
 		hostSendChat(env),
 		hostSendChatAction(env),
 		hostSendChatSystem(env),
 		hostSendChatTo(env),
 	)
 	fns = append(fns, hostEmitEvent(env))
-	fns = append(fns,
+	fns = append(
+		fns,
 		hostStreamCurrent(env),
 		hostServerInfo(env),
 		hostServerSocials(env),
@@ -493,23 +495,27 @@ func BuildHostFunctions(env *HostEnv) []extism.HostFunction {
 		hostServerTags(env),
 	)
 	fns = append(fns, hostChatHistory(env))
-	fns = append(fns,
+	fns = append(
+		fns,
 		hostDeleteMessage(env),
 		hostKickClient(env),
 	)
-	fns = append(fns,
+	fns = append(
+		fns,
 		hostSendDiscord(env),
 		hostSendBrowserPush(env),
 		hostSendFediverse(env),
 	)
 	fns = append(fns, hostChatClients(env))
 	fns = append(fns, hostUsersList(env), hostUserGet(env))
-	fns = append(fns,
+	fns = append(
+		fns,
 		hostUsersRegister(env),
 		hostAuthGrantSession(env),
 		hostAuthEndSession(env),
 	)
-	fns = append(fns,
+	fns = append(
+		fns,
 		hostUserSetEnabled(env),
 		hostBanIP(env),
 	)
@@ -528,7 +534,8 @@ func BuildHostFunctions(env *HostEnv) []extism.HostFunction {
 	fns = append(fns, hostConfigGet(env))
 	// Asset reading is ambient: a plugin reads only files it shipped itself.
 	fns = append(fns, hostAssetRead())
-	fns = append(fns,
+	fns = append(
+		fns,
 		hostAddActions(env),
 		hostClearActions(env),
 	)
@@ -1833,10 +1840,14 @@ func hostEmitEvent(env *HostEnv) extism.HostFunction {
 			if err != nil {
 				return
 			}
-			if reservedEventTypes[eventType] {
-				fmt.Fprintf(os.Stderr, "owncast_emit_event from %s: %q is a reserved host event type and cannot be emitted by a plugin\n", pluginName, eventType)
-				return
-			}
+			// Namespace the event with the caller's slug, which the host
+			// resolved above and the guest never supplies. A plugin can
+			// therefore only publish under "<its-own-slug>.", so it can
+			// neither impersonate another plugin's custom event nor forge a
+			// core event like "chat.message.received" (a prefixed name can
+			// never equal one). Subscriptions stay literal, so a subscriber
+			// names the sender it wants to hear from.
+			eventType = pluginName + "." + eventType
 			payloadBytes, err := p.ReadBytes(stack[1])
 			if err != nil {
 				return

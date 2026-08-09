@@ -293,12 +293,13 @@ func TestEmitSelfSubscriptionDoesNotDeadlock(t *testing.T) {
 	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
 
 	env, _, _ := captureEnv()
-	// Emits "ping" on every chat message AND subscribes (notify) to "ping".
+	// Emits "ping" on every chat message AND subscribes (notify) to its
+	// host-namespaced event.
 	script := `
 const { definePlugin, owncast } = require("@owncast/plugin-sdk");
 module.exports = definePlugin({
   onChatMessage(msg) { owncast.events.emit("ping", {}); },
-  on: { ping(payload) {} },
+  on: { "echoer.ping"(payload) {} },
 });`
 	loaded := loadShared(t, ctx, env, RuntimeJavaScript, "echoer", script, []string{PermEmitEvent})
 	defer loaded.Close(ctx)

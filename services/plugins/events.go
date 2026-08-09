@@ -2,7 +2,8 @@ package plugins
 
 // Built-in Owncast event types. These mirror the SDK's `Events` const so the
 // host and plugins agree on names without typo risk. Plugin-emitted custom
-// events are arbitrary strings; define those at the call site.
+// events are arbitrary strings, which hostEmitEvent prefixes with the emitting
+// plugin's slug, so they can never collide with the names below.
 const (
 	// Chat events.
 	EventChatMessageReceived  = "chat.message.received"
@@ -48,30 +49,3 @@ const (
 	EventFediverseQuote    = "fediverse.quote"
 	EventFediverseActivity = "fediverse.activity"
 )
-
-// reservedEventTypes are the built-in event types the host originates. A
-// plugin's owncast.emit must not forge them: emitting e.g.
-// "chat.message.received" would deliver a fake core event to every other
-// plugin's on_event handler. Plugin-emitted custom events use any other string.
-var reservedEventTypes = map[string]bool{
-	EventChatMessageReceived:  true,
-	EventChatUserJoined:       true,
-	EventChatUserParted:       true,
-	EventChatUserRenamed:      true,
-	EventChatMessageModerated: true,
-	EventChatCommand:          true,
-	EventStreamStarted:        true,
-	EventStreamStopped:        true,
-	EventStreamTitleChanged:   true,
-	EventSSEConnect:           true,
-	EventSSEDisconnect:        true,
-	EventTick:                 true,
-	EventTimerFire:            true,
-	EventFediverseFollow:      true,
-	EventFediverseLike:        true,
-	EventFediverseRepost:      true,
-	EventFediverseMention:     true,
-	EventFediverseReply:       true,
-	EventFediverseQuote:       true,
-	EventFediverseActivity:    true,
-}

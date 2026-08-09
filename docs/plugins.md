@@ -146,7 +146,12 @@ Owncast and plugins communicate through a shared dispatcher
   plugins' `filterChatMessage` handlers run on inbound messages before they're
   broadcast (redact, drop, rewrite).
 - Plugins can also **emit** custom events to each other; `env.Emit` is wired to
-  the runtime's live dispatcher after the manager starts.
+  the runtime's live dispatcher after the manager starts. `hostEmitEvent`
+  prefixes the emitted name with the calling plugin's slug (resolved by the
+  host, never supplied by the guest), so a plugin can only publish under
+  `<its-own-slug>.` and can neither forge a core event nor impersonate another
+  plugin. Subscriptions stay literal, so listening to
+  `other-plugin.something` still works.
 
 ## Lifecycle, persistence, and HTTP
 
