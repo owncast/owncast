@@ -202,7 +202,7 @@
       "viewers": "int"
     },
     "StreamVariant": {
-      "audioBitrate": "int",
+      "cpuUsageLevel": "int",
       "framerate": "int",
       "height": "int",
       "isPassthrough": "bool",
@@ -231,11 +231,13 @@
       "userId": "string"
     },
     "VideoConfig": {
+      "autoplay": "models.AutoplayMode",
       "codec": "string",
       "latencyLevel": "int",
       "variants": "[]StreamVariant"
     },
     "VideoConfigUpdate": {
+      "autoplay": "*models.AutoplayMode",
       "codec": "*string",
       "latencyLevel": "*int",
       "variants": "[]StreamVariant"

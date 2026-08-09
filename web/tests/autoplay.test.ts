@@ -1,16 +1,16 @@
-import { autoplayModeForSetting, resolveAutoplaySetting } from '../utils/autoplay';
+import { AutoplaySetting, autoplayModeForSetting, resolveAutoplaySetting } from '../utils/autoplay';
 
 describe('autoplayModeForSetting', () => {
   test('off maps to no autoplay', () => {
-    expect(autoplayModeForSetting('off')).toBe(false);
+    expect(autoplayModeForSetting(AutoplaySetting.Off)).toBe(false);
   });
 
   test('always maps to the muted-fallback mode', () => {
-    expect(autoplayModeForSetting('always')).toBe('any');
+    expect(autoplayModeForSetting(AutoplaySetting.Always)).toBe('any');
   });
 
   test('sound-only maps to the sound-or-paused mode', () => {
-    expect(autoplayModeForSetting('sound-only')).toBe('play');
+    expect(autoplayModeForSetting(AutoplaySetting.SoundOnly)).toBe('play');
   });
 
   test('unrecognized values map to no autoplay', () => {
@@ -19,47 +19,64 @@ describe('autoplayModeForSetting', () => {
   });
 
   test('reduced-motion forces autoplay off even when set to always', () => {
-    expect(autoplayModeForSetting('always', { prefersReducedMotion: true })).toBe(false);
+    expect(autoplayModeForSetting(AutoplaySetting.Always, { prefersReducedMotion: true })).toBe(
+      false,
+    );
   });
 
   test('data-saver forces autoplay off even when set to sound-only', () => {
-    expect(autoplayModeForSetting('sound-only', { saveData: true })).toBe(false);
+    expect(autoplayModeForSetting(AutoplaySetting.SoundOnly, { saveData: true })).toBe(false);
   });
 
   test('an inaudible start suppresses sound-only autoplay', () => {
     // A persisted mute (volume 0) or an embed starting muted would let the
     // browser autoplay silently, violating "never starts silently".
-    expect(autoplayModeForSetting('sound-only', { startsInaudible: true })).toBe(false);
+    expect(autoplayModeForSetting(AutoplaySetting.SoundOnly, { startsInaudible: true })).toBe(
+      false,
+    );
   });
 
   test('an inaudible start does not affect always', () => {
-    expect(autoplayModeForSetting('always', { startsInaudible: true })).toBe('any');
+    expect(autoplayModeForSetting(AutoplaySetting.Always, { startsInaudible: true })).toBe('any');
   });
 
   test('an audible start keeps sound-only autoplay', () => {
-    expect(autoplayModeForSetting('sound-only', { startsInaudible: false })).toBe('play');
+    expect(autoplayModeForSetting(AutoplaySetting.SoundOnly, { startsInaudible: false })).toBe(
+      'play',
+    );
   });
 
   test('preferences left unset do not change the mapping', () => {
-    expect(autoplayModeForSetting('always', { prefersReducedMotion: false, saveData: false })).toBe(
-      'any',
-    );
+    expect(
+      autoplayModeForSetting(AutoplaySetting.Always, {
+        prefersReducedMotion: false,
+        saveData: false,
+      }),
+    ).toBe('any');
   });
 });
 
 describe('resolveAutoplaySetting', () => {
   test('a valid query value overrides the config value', () => {
-    expect(resolveAutoplaySetting('off', 'always')).toBe('off');
-    expect(resolveAutoplaySetting('always', 'off')).toBe('always');
-    expect(resolveAutoplaySetting('sound-only', 'off')).toBe('sound-only');
+    expect(resolveAutoplaySetting(AutoplaySetting.Off, AutoplaySetting.Always)).toBe(
+      AutoplaySetting.Off,
+    );
+    expect(resolveAutoplaySetting(AutoplaySetting.Always, AutoplaySetting.Off)).toBe(
+      AutoplaySetting.Always,
+    );
+    expect(resolveAutoplaySetting(AutoplaySetting.SoundOnly, AutoplaySetting.Off)).toBe(
+      AutoplaySetting.SoundOnly,
+    );
   });
 
   test('a missing query value falls back to the config value', () => {
-    expect(resolveAutoplaySetting(undefined, 'always')).toBe('always');
+    expect(resolveAutoplaySetting(undefined, AutoplaySetting.Always)).toBe(AutoplaySetting.Always);
   });
 
   test('an unrecognized query value falls back to the config value', () => {
-    expect(resolveAutoplaySetting('bogus', 'sound-only')).toBe('sound-only');
-    expect(resolveAutoplaySetting('', 'off')).toBe('off');
+    expect(resolveAutoplaySetting('bogus', AutoplaySetting.SoundOnly)).toBe(
+      AutoplaySetting.SoundOnly,
+    );
+    expect(resolveAutoplaySetting('', AutoplaySetting.Off)).toBe(AutoplaySetting.Off);
   });
 });

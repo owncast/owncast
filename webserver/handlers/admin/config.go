@@ -402,16 +402,14 @@ func (a *Admin) SetAutoplay(w http.ResponseWriter, r *http.Request) {
 		webutils.WriteSimpleResponse(w, false, "invalid autoplay value")
 		return
 	}
-
-	switch value {
-	case "off", "always", "sound-only":
-	default:
+	autoplay := models.AutoplayMode(value)
+	if !autoplay.Valid() {
 		webutils.WriteSimpleResponse(w, false, "invalid autoplay value")
 		return
 	}
 
 	configRepository := a.configRepository
-	if err := configRepository.SetAutoplay(value); err != nil {
+	if err := configRepository.SetAutoplay(autoplay); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}

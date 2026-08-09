@@ -1,3 +1,5 @@
+import { AutoplaySetting } from '../utils/autoplay';
+
 export interface ClientConfig {
   name: string;
   title?: string;
@@ -6,7 +8,7 @@ export interface ClientConfig {
   logo: string;
   tags: string[];
   nsfw: boolean;
-  autoplay: string;
+  autoplay: AutoplaySetting;
   extraPageContent: string;
   socialHandles: SocialHandle[];
   chatDisabled: boolean;
@@ -80,7 +82,7 @@ export function makeEmptyClientConfig(): ClientConfig {
     logo: '',
     tags: [],
     nsfw: false,
-    autoplay: 'off',
+    autoplay: AutoplaySetting.Off,
     extraPageContent: '',
     socialHandles: [],
     chatDisabled: false,

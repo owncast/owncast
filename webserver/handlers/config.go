@@ -52,7 +52,7 @@ type webConfigResponse struct {
 	ChatSpamProtectionDisabled bool                         `json:"chatSpamProtectionDisabled"`
 	ChatRequireAuthentication  bool                         `json:"chatRequireAuthentication"`
 	NSFW                       bool                         `json:"nsfw"`
-	Autoplay                   string                       `json:"autoplay"`
+	Autoplay                   models.AutoplayMode          `json:"autoplay"`
 	Authentication             authenticationConfigResponse `json:"authentication"`
 }
 

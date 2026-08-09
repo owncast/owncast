@@ -9,7 +9,7 @@ import { VideoJS } from '../VideoJS/VideoJS';
 import ViewerPing from '../viewer-ping';
 import { VideoPoster } from '../VideoPoster/VideoPoster';
 import { getLocalStorage, setLocalStorage } from '../../../utils/localStorage';
-import { autoplayModeForSetting } from '../../../utils/autoplay';
+import { AutoplaySetting, autoplayModeForSetting } from '../../../utils/autoplay';
 import { Localization } from '../../../types/localization';
 import { isVideoPlayingAtom, clockSkewAtom } from '../../stores/ClientConfigStore';
 import PlaybackMetrics from '../metrics/playback';
@@ -30,7 +30,7 @@ export type OwncastPlayerProps = {
   source: string;
   online: boolean;
   initiallyMuted?: boolean;
-  autoplay?: string;
+  autoplay?: AutoplaySetting;
   title: string;
   className?: string;
 };
@@ -39,7 +39,7 @@ export const OwncastPlayer: FC<OwncastPlayerProps> = ({
   source,
   online,
   initiallyMuted = false,
-  autoplay = 'off',
+  autoplay = AutoplaySetting.Off,
   title,
   className,
 }) => {
