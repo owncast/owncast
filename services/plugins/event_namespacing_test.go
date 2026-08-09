@@ -267,3 +267,51 @@ module.exports = definePlugin({
 		t.Fatalf("forged core event reached subscribers\n got:  %q\n want: %q", got, want)
 	}
 }
+
+// TestEmitCannotSpoofAnotherPluginsEvents is issue #5093's scenario run
+// against this design. The attacker wants events under the victim's name to
+// fire with attacker-controlled payloads. Under host-side emit prefixing the
+// attempt dispatches as "attacker.victim.foo", so "victim.foo" only ever
+// fires when the victim itself emits - and registration squatting gains the
+// attacker nothing, because subscribing to "victim.foo" only ever yields
+// events the victim really sent.
+func TestEmitCannotSpoofAnotherPluginsEvents(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+
+	// Emits under its own name when told to.
+	victim := loadShared(t, ctx, env, RuntimeJavaScript, "victim", `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage(msg) { if (msg.body === "victim") owncast.events.emit("foo", { n: 1 }); },
+});`, []string{PermEmitEvent})
+	defer victim.Close(ctx)
+
+	// Tries to emit the victim's fully qualified name.
+	attacker := loadShared(t, ctx, env, RuntimeJavaScript, "attacker", `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage(msg) { if (msg.body === "attacker") owncast.events.emit("victim.foo", { n: 2 }); },
+});`, []string{PermEmitEvent})
+	defer attacker.Close(ctx)
+
+	listener := loadShared(t, ctx, env, RuntimeJavaScript, "listener",
+		receiverScript([]string{"victim.foo", "attacker.victim.foo"}), []string{PermChatSend})
+	defer listener.Close(ctx)
+
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{victim, attacker, listener} })
+	env.Emit = d.Dispatch
+
+	d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "victim"))
+	if got, want := drainSends(sends, mu), []string{"got:victim.foo:1"}; !sameStrings(got, want) {
+		t.Fatalf("genuine victim emit\n got:  %q\n want: %q", got, want)
+	}
+
+	d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "attacker"))
+	if got, want := drainSends(sends, mu), []string{"got:attacker.victim.foo:2"}; !sameStrings(got, want) {
+		t.Fatalf("spoof attempt must surface under the attacker's own name only\n got:  %q\n want: %q", got, want)
+	}
+}
