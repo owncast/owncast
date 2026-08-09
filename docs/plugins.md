@@ -149,8 +149,10 @@ Owncast and plugins communicate through a shared dispatcher
   the runtime's live dispatcher after the manager starts. `hostEmitEvent`
   prefixes the emitted name with the calling plugin's slug (resolved by the
   host, never supplied by the guest), so a plugin can only publish under
-  `<its-own-slug>.` and can neither forge a core event nor impersonate another
-  plugin. Subscriptions stay literal, so listening to
+  `<its-own-slug>.` and cannot impersonate another plugin. Composed names that
+  would equal a built-in event (a plugin slugged `chat` emitting
+  `message.received`) are rejected against `reservedEventTypes`, so core
+  events can't be forged either. Subscriptions stay literal, so listening to
   `other-plugin.something` still works.
 
 ## Lifecycle, persistence, and HTTP

@@ -3,7 +3,7 @@ package plugins
 // Built-in Owncast event types. These mirror the SDK's `Events` const so the
 // host and plugins agree on names without typo risk. Plugin-emitted custom
 // events are arbitrary strings, which hostEmitEvent prefixes with the emitting
-// plugin's slug, so they can never collide with the names below.
+// plugin's slug and then checks against reservedEventTypes below.
 const (
 	// Chat events.
 	EventChatMessageReceived  = "chat.message.received"
@@ -49,3 +49,33 @@ const (
 	EventFediverseQuote    = "fediverse.quote"
 	EventFediverseActivity = "fediverse.activity"
 )
+
+// reservedEventTypes are the built-in event types the host originates. The
+// emit path prefixes every plugin-emitted name with the caller's slug, which
+// keeps plugin events out of this set in almost every case - but not all: a
+// plugin whose slug matches a core name's first segment can compose an exact
+// core name (slug "chat" emitting "message.received" yields
+// "chat.message.received"). hostEmitEvent rejects any composed name found in
+// this set, so a forged core event never reaches the dispatcher.
+var reservedEventTypes = map[string]bool{
+	EventChatMessageReceived:  true,
+	EventChatUserJoined:       true,
+	EventChatUserParted:       true,
+	EventChatUserRenamed:      true,
+	EventChatMessageModerated: true,
+	EventChatCommand:          true,
+	EventStreamStarted:        true,
+	EventStreamStopped:        true,
+	EventStreamTitleChanged:   true,
+	EventSSEConnect:           true,
+	EventSSEDisconnect:        true,
+	EventTick:                 true,
+	EventTimerFire:            true,
+	EventFediverseFollow:      true,
+	EventFediverseLike:        true,
+	EventFediverseRepost:      true,
+	EventFediverseMention:     true,
+	EventFediverseReply:       true,
+	EventFediverseQuote:       true,
+	EventFediverseActivity:    true,
+}

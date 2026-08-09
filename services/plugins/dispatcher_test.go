@@ -8,6 +8,28 @@ import (
 	"time"
 )
 
+// TestReservedEventTypes_CoversCoreEvents: the set hostEmitEvent rejects
+// after slug-prefixing must include every built-in event type, so a plugin
+// slugged like a core namespace (e.g. "chat") can't compose a forged core
+// event. Catches a new Event* constant added without updating the set.
+func TestReservedEventTypes_CoversCoreEvents(t *testing.T) {
+	for _, e := range []string{
+		EventChatMessageReceived, EventChatUserJoined, EventChatUserParted,
+		EventChatUserRenamed, EventChatMessageModerated, EventChatCommand, EventStreamStarted,
+		EventStreamStopped, EventStreamTitleChanged, EventSSEConnect,
+		EventSSEDisconnect, EventTick, EventTimerFire, EventFediverseFollow,
+		EventFediverseLike, EventFediverseRepost, EventFediverseMention,
+		EventFediverseReply, EventFediverseQuote, EventFediverseActivity,
+	} {
+		if !reservedEventTypes[e] {
+			t.Errorf("core event %q must be reserved (a plugin must not be able to compose it)", e)
+		}
+	}
+	if reservedEventTypes["my-plugin.custom"] {
+		t.Error("a plugin's custom event type must not be treated as reserved")
+	}
+}
+
 // TestFilterTimeoutErrorShape verifies the error-string the dispatcher
 // produces when CallWithContext returns a deadline-exceeded error. The
 // real Wazero-level cancellation is verified separately by integration

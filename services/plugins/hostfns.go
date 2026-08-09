@@ -1842,12 +1842,18 @@ func hostEmitEvent(env *HostEnv) extism.HostFunction {
 			}
 			// Namespace the event with the caller's slug, which the host
 			// resolved above and the guest never supplies. A plugin can
-			// therefore only publish under "<its-own-slug>.", so it can
-			// neither impersonate another plugin's custom event nor forge a
-			// core event like "chat.message.received" (a prefixed name can
-			// never equal one). Subscriptions stay literal, so a subscriber
-			// names the sender it wants to hear from.
+			// therefore only publish under "<its-own-slug>.", so it cannot
+			// impersonate another plugin's custom events. Subscriptions stay
+			// literal, so a subscriber names the sender it wants to hear from.
 			eventType = pluginName + "." + eventType
+			// The prefix alone does not rule out core-event forgery: a plugin
+			// whose slug matches a core name's first segment can compose an
+			// exact built-in name (slug "chat" + "message.received"). Reject
+			// any composed name that lands in the reserved set.
+			if reservedEventTypes[eventType] {
+				fmt.Fprintf(os.Stderr, "owncast_emit_event from %s: composed name %q is a reserved host event type and was dropped\n", pluginName, eventType)
+				return
+			}
 			payloadBytes, err := p.ReadBytes(stack[1])
 			if err != nil {
 				return
