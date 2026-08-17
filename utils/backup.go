@@ -28,6 +28,8 @@ func Restore(backupFile string, databaseFile string) error {
 	if err != nil {
 		return fmt.Errorf("unable to read backup file %s", err)
 	}
+	// Older Owncast backups can contain trailing bytes from an untruncated overwrite.
+	gz.Multistream(false)
 	defer gz.Close()
 
 	var b bytes.Buffer
@@ -80,7 +82,7 @@ func Backup(db *sql.DB, backupFile string) {
 	_ = out.Flush()
 
 	// Create a new backup file
-	f, err := os.OpenFile(backupFile, os.O_WRONLY|os.O_CREATE, 0o600) // nolint
+	f, err := os.OpenFile(backupFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600) // nolint
 	if err != nil {
 		handleError(err)
 		return
