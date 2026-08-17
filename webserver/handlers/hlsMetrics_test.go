@@ -169,6 +169,18 @@ func TestParseCmcdReportsHeaders(t *testing.T) {
 	}
 }
 
+func TestCMCDReportsDownloadDuration(t *testing.T) {
+	if cmcdReportsDownloadDuration(map[string]any{"e": "t", "ltc": 4200}) {
+		t.Error("event-only CMCD must retain server segment timing")
+	}
+	if cmcdReportsDownloadDuration(map[string]any{"ttlb": 0.0}) {
+		t.Error("zero TTLB is not a download measurement")
+	}
+	if !cmcdReportsDownloadDuration(map[string]any{"ttlb": 250.0}) {
+		t.Error("positive TTLB must replace server segment timing")
+	}
+}
+
 func TestSegmentSpeedSample(t *testing.T) {
 	const oneMB = 1024 * 1024
 

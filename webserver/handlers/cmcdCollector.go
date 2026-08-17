@@ -38,12 +38,16 @@ func (h *Handlers) ReportCmcd(w http.ResponseWriter, r *http.Request) {
 
 	viewerID := utils.GenerateClientIDFromRequest(r)
 	registered := false
+	reportsDownloadDuration := false
 	for _, keys := range reports {
 		if len(keys) == 0 {
 			continue
 		}
 		h.registerCMCDKeys(cmcdClientID(r, keys), viewerID, keys)
 		registered = true
+		if cmcdReportsDownloadDuration(keys) {
+			reportsDownloadDuration = true
+		}
 	}
 
 	if !registered {
@@ -51,13 +55,18 @@ func (h *Handlers) ReportCmcd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// A beaconing player's media requests come from the same client, so
-	// suppress the lower-fidelity server-derived observation for it even
-	// if it doesn't decorate its media requests. Only a request that
-	// actually carried a report earns the suppression.
-	h.metrics.RegisterSelfReportingClient(viewerID)
+	// Keep server timing for event-only clients. They report playback state
+	// and latency but cannot measure each HLS segment's transfer duration.
+	if reportsDownloadDuration {
+		h.metrics.RegisterSelfReportingClient(viewerID)
+	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func cmcdReportsDownloadDuration(keys map[string]any) bool {
+	ttlb, ok := cmcdNumber(keys, "ttlb")
+	return ok && ttlb > 0
 }
 
 // parseCmcdReports extracts CMCD reports from a collector request: a JSON
