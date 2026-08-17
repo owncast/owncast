@@ -4,6 +4,7 @@ type Listener = () => void;
 
 const makePlayer = () => {
   const listeners = new Map<string, Listener>();
+  let paused = false;
   return {
     buffered: () => [],
     currentTime: () => 0,
@@ -11,9 +12,12 @@ const makePlayer = () => {
     error: () => null,
     off: jest.fn(),
     on: jest.fn((event: string, listener: Listener) => listeners.set(event, listener)),
-    paused: () => false,
+    paused: () => paused,
     playbackRate: () => 1,
     seeking: () => false,
+    setPaused: (value: boolean) => {
+      paused = value;
+    },
     tech: () => undefined,
     trigger: (event: string) => listeners.get(event)?.(),
   };
@@ -55,5 +59,21 @@ describe('PlaybackMetrics', () => {
 
     const reports = (global.fetch as jest.Mock).mock.calls.map(([, init]) => JSON.parse(init.body));
     expect(reports.map(report => report.sta)).toEqual(['p', 'a']);
+  });
+
+  test('keeps a paused session fresh beyond the server stale timeout', async () => {
+    jest.useFakeTimers();
+    const player = makePlayer();
+    const metrics = new PlaybackMetrics(player, { Vhs: {}, xhr: jest.fn() });
+    expect(metrics).toBeDefined();
+
+    player.trigger('playing');
+    player.setPaused(true);
+    player.trigger('pause');
+    jest.advanceTimersByTime(60_000);
+    await Promise.resolve();
+
+    const reports = (global.fetch as jest.Mock).mock.calls.map(([, init]) => JSON.parse(init.body));
+    expect(reports.map(report => report.sta)).toEqual(['p', 'a', 'a', 'a', 'a', 'a', 'a', 'a']);
   });
 });

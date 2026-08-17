@@ -155,9 +155,13 @@ class PlaybackMetrics {
     };
 
     this.eventReportTimer = setInterval(() => {
-      // Pauses are reported as their own state transition; a paused player
-      // has nothing new to say in between.
-      if (!this.player || this.player.paused() || !this.hasStartedPlaying) {
+      if (!this.player || !this.hasStartedPlaying) {
+        return;
+      }
+      if (this.player.paused()) {
+        // Viewer pings keep a paused tab active. Refresh its CMCD state too,
+        // or the server prunes its health before the viewer.
+        this.sendEventReport('t', { sta: 'a' });
         return;
       }
       this.sendEventReport('t');
