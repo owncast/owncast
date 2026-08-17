@@ -12,11 +12,11 @@ __turbopack_load_page_chunks__("/embed/video", [
   "static/chunks/0tz6_10jr3hn4.js",
   "static/chunks/2ii8si9sk1wly.js",
   "static/chunks/2k8g7zb9bac3i.js",
-  "static/chunks/1bbxoomsvpdkv.js",
+  "static/chunks/16d2ydsugc1sl.js",
   "static/chunks/1t-krkjczdddv.js",
   "static/chunks/2ln-03xpwc5sv.js",
   "static/chunks/35vcczplrxizt.js",
   "static/chunks/104d86xx2atb3.js",
   "static/chunks/3vc46-_rdy1hv.css",
-  "static/chunks/turbopack-0n-_ekc442u2-.js"
+  "static/chunks/turbopack-2rlqcvw-5mno_.js"
 ])
