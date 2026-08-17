@@ -166,6 +166,11 @@ class PlaybackMetrics {
 
   stop() {
     clearInterval(this.eventReportTimer);
+    // Component teardown does not reliably emit Video.js's ended event.
+    // Preserve the terminal state while its viewer is still active.
+    if (this.hasStartedPlaying && !this.player.ended()) {
+      this.sendEventReport('ps', { sta: 'e' });
+    }
     this.player.off();
   }
 
