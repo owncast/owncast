@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -30,4 +31,139 @@ func TestInvalidAccessTokenLogIncludesRequestContext(t *testing.T) {
 	if strings.Contains(entry.Message, "secret-token") || strings.Contains(entry.Message, "ignored=true") {
 		t.Errorf("log entry includes sensitive request data: %q", entry.Message)
 	}
+}
+
+func TestRequireAdminAuthRejectsCrossOriginRequests(t *testing.T) {
+	m := &Middleware{adminSessions: newAdminSessionStore()}
+	handler := m.RequireAdminAuth(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	for _, method := range []string{http.MethodGet, http.MethodPost, http.MethodOptions} {
+		t.Run(method, func(t *testing.T) {
+			req := httptest.NewRequest(method, "http://owncast.example/api/admin/config", nil)
+			req.Header.Set("Origin", "https://attacker.example")
+			req.Header.Set(adminCSRFHeader, "1")
+			rec := httptest.NewRecorder()
+
+			handler(rec, req)
+
+			if rec.Code != http.StatusForbidden {
+				t.Fatalf("expected %d, got %d", http.StatusForbidden, rec.Code)
+			}
+		})
+	}
+}
+
+func TestRequireAdminAuthRejectsDevelopmentOriginForRemoteHost(t *testing.T) {
+	m := &Middleware{adminSessions: newAdminSessionStore()}
+	handler := m.RequireAdminAuth(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	req := httptest.NewRequest(http.MethodOptions, "https://owncast.example/api/admin/config", nil)
+	req.Header.Set("Origin", developmentAdminOrigin)
+	rec := httptest.NewRecorder()
+	handler(rec, req)
+
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("expected remote development-origin request to return %d, got %d", http.StatusForbidden, rec.Code)
+	}
+	if got := rec.Header().Get("Access-Control-Allow-Origin"); got != "" {
+		t.Fatalf("remote host advertised development CORS origin %q", got)
+	}
+}
+
+func TestRequireAdminAuthRequiresCSRFHeaderWithoutOrigin(t *testing.T) {
+	m := &Middleware{adminSessions: newAdminSessionStore()}
+	handler := m.RequireAdminAuth(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "http://owncast.example/api/admin/config", nil)
+	rec := httptest.NewRecorder()
+	handler(rec, req)
+	if rec.Code != http.StatusUnauthorized {
+		t.Fatalf("expected unauthenticated request to return %d, got %d", http.StatusUnauthorized, rec.Code)
+	}
+
+	token, err := m.adminSessions.mint()
+	if err != nil {
+		t.Fatal(err)
+	}
+	req = httptest.NewRequest(http.MethodPost, "http://owncast.example/api/admin/config", nil)
+	req.AddCookie(&http.Cookie{Name: adminSessionCookieName, Value: token})
+	rec = httptest.NewRecorder()
+	handler(rec, req)
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("expected authenticated request without CSRF header to return %d, got %d", http.StatusForbidden, rec.Code)
+	}
+
+	req = httptest.NewRequest(http.MethodPost, "http://owncast.example/api/admin/config", nil)
+	req.AddCookie(&http.Cookie{Name: adminSessionCookieName, Value: token})
+	req.Header.Set(adminCSRFHeader, "1")
+	rec = httptest.NewRecorder()
+	handler(rec, req)
+	if rec.Code != http.StatusNoContent {
+		t.Fatalf("expected CSRF-protected authenticated request to reach handler, got %d", rec.Code)
+	}
+
+	req = httptest.NewRequest(http.MethodPost, "http://owncast.example/api/admin/config", nil)
+	req.Header.Set("Authorization", "Bearer test")
+	rec = httptest.NewRecorder()
+	handler(rec, req)
+	if rec.Code != http.StatusUnauthorized {
+		t.Fatalf("expected originless Authorization client to reach authentication, got %d", rec.Code)
+	}
+}
+
+func TestRequireAdminAuthAllowsSameOriginMutation(t *testing.T) {
+	m := &Middleware{adminSessions: newAdminSessionStore()}
+	handler := m.RequireAdminAuth(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "https://owncast.example/api/admin/config", nil)
+	req.Host = "owncast.example"
+	req.Header.Set("Origin", "https://owncast.example")
+	req.Header.Set("X-Forwarded-Proto", "https")
+	rec := httptest.NewRecorder()
+
+	handler(rec, req)
+
+	if rec.Code != http.StatusUnauthorized {
+		t.Fatalf("expected same-origin request to reach authentication, got %d", rec.Code)
+	}
+}
+
+func TestRequireAdminAuthAllowsDevelopmentPreflight(t *testing.T) {
+	m := &Middleware{adminSessions: newAdminSessionStore()}
+	handler := m.RequireAdminAuth(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	})
+
+	req := httptest.NewRequest(http.MethodOptions, "http://localhost:8080/api/admin/config", nil)
+	req.Header.Set("Origin", "http://localhost:3000")
+	rec := httptest.NewRecorder()
+
+	handler(rec, req)
+
+	if rec.Code != http.StatusNoContent {
+		t.Fatalf("expected development preflight to return %d, got %d", http.StatusNoContent, rec.Code)
+	}
+	if got := rec.Header().Get("Access-Control-Allow-Origin"); got != "http://localhost:3000" {
+		t.Fatalf("unexpected allowed origin %q", got)
+	}
+	if got := rec.Header().Get("Access-Control-Allow-Headers"); !containsHeader(got, adminCSRFHeader) {
+		t.Fatalf("expected %s in allowed headers, got %q", adminCSRFHeader, got)
+	}
+}
+
+func containsHeader(value, header string) bool {
+	for _, candidate := range strings.Split(value, ",") {
+		if strings.EqualFold(strings.TrimSpace(candidate), header) {
+			return true
+		}
+	}
+	return false
 }
