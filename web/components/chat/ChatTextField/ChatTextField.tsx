@@ -34,9 +34,7 @@ const SmileOutlined = dynamic(() => import('@ant-design/icons/SmileOutlined'), {
 });
 
 type CustomElement =
-  | { type: 'paragraph' | 'span'; children: CustomText[] }
-  | ImageNode
-  | MentionElement;
+  { type: 'paragraph' | 'span'; children: CustomText[] } | ImageNode | MentionElement;
 type CustomText = { text: string };
 
 type EmptyText = {
