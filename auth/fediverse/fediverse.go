@@ -104,7 +104,7 @@ func (s *Service) RegisterFediverseOTP(accessToken, userID, userDisplayName, acc
 	return r, true, nil
 }
 
-// ValidateFediverseOTP will verify a OTP code for an auth request.
+// ValidateFediverseOTP will verify an OTP code for an auth request.
 func (s *Service) ValidateFediverseOTP(accessToken, code string) (bool, *OTPRegistration) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
