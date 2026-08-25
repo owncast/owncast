@@ -51,6 +51,7 @@ func Restore(backupFile string, databaseFile string) error {
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 	if _, err := db.Exec(rawSQL); err != nil {
 		return err
 	}
