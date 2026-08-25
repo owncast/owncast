@@ -3,7 +3,7 @@
     "EditInstanceDetails": {
       "directoryDescription": "Aumenta tu audiencia apareciendo en el <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Directorio de Owncast</strong></a>. Este es un servicio externo gestionado por el proyecto Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Aprende más</a>.",
       "offlineMessageDescription": "El mensaje fuera de línea se muestra a los visitantes de la página cuando no se está transmitiendo. Markdown es compatible.",
-      "serverUrlRequiredForDirectory": "Debe configurar la <strong>URL de</strong> su servidor para habilitar el directorio."
+      "serverUrlRequiredForDirectory": "You must set your <strong>Server URL</strong> above to enable the directory."
     },
     "HardwareInfo": {
       "title": "Info de hardware",
@@ -85,55 +85,55 @@
     "emojis": "Emojis",
     "uploadNewEmoji": "Subir nuevos emoji",
     "StatusMessages": {
-      "updated": "Actualizado.",
-      "tagsUpdated": "Etiquetas actualizadas.",
-      "variantsUpdated": "Variantes actualizadas",
-      "videoCodecUpdated": "Código de vídeo actualizado.",
-      "latencyBufferUpdated": "Nivel de búfer de latencia actualizado.",
-      "deletingEmoji": "Eliminando emoji...",
-      "emojiDeleted": "Emoji eliminado",
-      "convertingEmoji": "Convirtiendo emoji...",
-      "uploadingEmoji": "Subiendo emoji...",
-      "emojiUploadedSuccessfully": "¡Emoji subido con éxito!",
-      "thereWasAnError": "Hubo un error: {{message}}",
-      "fileSizeTooBig": "El tamaño del archivo es demasiado grande: {{size}}",
-      "fileTypeNotSupported": "El tipo de archivo no es compatible: {{type}}",
-      "pleaseEnterTag": "Por favor, introduzca una etiqueta",
-      "tagAlreadyUsed": "¡Esta etiqueta ya está en uso!"
+      "updated": "Updated.",
+      "tagsUpdated": "Tags updated.",
+      "variantsUpdated": "Variants updated",
+      "videoCodecUpdated": "Video codec updated.",
+      "latencyBufferUpdated": "Latency buffer level updated.",
+      "deletingEmoji": "Deleting emoji...",
+      "emojiDeleted": "Emoji deleted",
+      "convertingEmoji": "Converting emoji...",
+      "uploadingEmoji": "Uploading emoji...",
+      "emojiUploadedSuccessfully": "Emoji uploaded successfully!",
+      "thereWasAnError": "There was an error: {{message}}",
+      "fileSizeTooBig": "File size is too big: {{size}}",
+      "fileTypeNotSupported": "File type is not supported: {{type}}",
+      "pleaseEnterTag": "Please enter a tag",
+      "tagAlreadyUsed": "This tag is already used!"
     },
     "Actions": {
-      "title": "Acciones externas",
-      "description": "Las URL de acción externa son UI de terceros que puedes mostrar, incrustar, en tu página de Owncast cuando un usuario hace clic en un botón para iniciar tu acción.",
-      "readMoreLink": "Lea más sobre cómo utilizar acciones, con ejemplos, en",
-      "createNewAction": "Crear nueva acción",
-      "createNewActionTitle": "Crear nueva acción",
-      "editActionTitle": "Editar acción",
-      "modalDescription": "Añada la URL para la acción externa que desea presentar.",
-      "onlyHttpsSupported": "Sólo se admiten URLs HTTPS y embeds.",
-      "readMoreAboutActions": "Lea más sobre acciones externas.",
-      "selectActionType": "Seleccione un tipo de acción",
+      "title": "External Actions",
+      "description": "External action URLs are 3rd party UI you can display, embedded, into your Owncast page when a user clicks on a button to launch your action.",
+      "readMoreLink": "Read more about how to use actions, with examples, at",
+      "createNewAction": "Create New Action",
+      "createNewActionTitle": "Create New Action",
+      "editActionTitle": "Edit Action",
+      "modalDescription": "Add the URL for the external action you want to present.",
+      "onlyHttpsSupported": "Only HTTPS URLs and embeds are supported.",
+      "readMoreAboutActions": "Read more about external actions.",
+      "selectActionType": "Select an action type",
       "linkOrEmbedUrl": "Link or embed an URL",
-      "customHtml": "HTML personalizado",
-      "htmlEmbedPlaceholder": "Código HTML embebido (requerido)",
-      "urlPlaceholder": "https://myserver.com/action (requerido)",
-      "titlePlaceholder": "Tu título de acción (requerido)",
-      "descriptionPlaceholder": "Descripción opcional",
-      "iconPlaceholder": "https://myserver.com/action/icon.png (opcional)",
-      "optionalBackgroundColor": "Color de fondo opcional del botón de acción.",
-      "openExternally": "Abrir en una nueva pestaña en lugar de dentro de su página."
+      "customHtml": "Custom HTML",
+      "htmlEmbedPlaceholder": "HTML embed code (required)",
+      "urlPlaceholder": "https://myserver.com/action (required)",
+      "titlePlaceholder": "Your action title (required)",
+      "descriptionPlaceholder": "Optional description",
+      "iconPlaceholder": "https://myserver.com/action/icon.png (optional)",
+      "optionalBackgroundColor": "Optional background color of the action button.",
+      "openExternally": "Open in a new tab instead of within your page."
     },
     "Webhooks": {
-      "createNewWebhook": "Crear nuevo Webhook",
+      "createNewWebhook": "Create New Webhook",
       "webhookUrlPlaceholder": "https://myserver.com/webhook",
-      "selectEvents": "Seleccione los eventos que se enviarán a este webhook.",
-      "selectAll": "Seleccionar todo"
+      "selectEvents": "Select the events that will be sent to this webhook.",
+      "selectAll": "Select all"
     },
     "AccessTokens": {
-      "createNewAccessToken": "Crear nuevo token de acceso",
-      "nameDescription": "El nombre se mostrará como el usuario del chat cuando envíe mensajes con este token de acceso.",
-      "namePlaceholder": "Nombre del bot, servicio o integración",
-      "selectPermissions": "Seleccione los permisos que tendrá este token de acceso. No puede ser editado después de haber sido creado.",
-      "selectAll": "Seleccionar todo"
+      "createNewAccessToken": "Create New Access token",
+      "nameDescription": "The name will be displayed as the chat user when sending messages with this access token.",
+      "namePlaceholder": "Name of bot, service, or integration",
+      "selectPermissions": "Select the permissions this access token will have. It cannot be edited after it's created.",
+      "selectAll": "Select all"
     }
   },
   "Common": {
@@ -208,13 +208,13 @@
     "helloWorld": "Hola mundo",
     "offlineBasic": "Esta corriente está fuera de línea. ¡Vuelve pronto!",
     "offlineFediverseOnly": "Este stream está fuera de línea. <span class='follow-link'>Sigue</span> {{fediverseAccount}} en el Fediverso para ver la próxima vez que {{streamer}} se ponga en directo.",
-    "offlineNotifyAndFediverse": "Esta transmisión está desconectada. Puede <span class='notify-link'>recibir una notificación</span> la próxima vez que {{streamer}} salga en directo o <span class='follow-link'>seguir</span> {{fediverseAccount}} en Fediverse.",
+    "offlineNotifyAndFediverse": "This stream is offline. You can <span class='notify-link'>be notified</span> the next time {{streamer}} goes live or <span class='follow-link'>follow</span> {{fediverseAccount}} on the Fediverse.",
     "offlineNotifyOnly": "Este stream está desconectado. <span class='notify-link'>Ser notificado</span> la próxima vez que {{streamer}} vaya en directo.",
     "lastLiveAgo": "Última versión de {{timeAgo}} hace"
   },
   "Testing": {
-    "itemCount": "Tienes {{count}} elementos",
-    "messageCount": "Tienes {{count}} mensajes de {{sender}}",
+    "itemCount": "You have {{count}} items",
+    "messageCount": "You have {{count}} messages from {{sender}}",
     "noPluralKey": "Esta clave no tiene variantes en plural - {{count}} cosas",
     "simpleKey": "Texto de traducción simple"
   }

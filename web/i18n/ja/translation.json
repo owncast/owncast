@@ -1,9 +1,9 @@
 {
   "Admin": {
     "EditInstanceDetails": {
-      "directoryDescription": "<a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast ディレクトリ</strong></a> に表示されることでオーディエンスを増やしましょう。これは Owncast プロジェクトが運営する外部サービスです。<a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">詳細はこちら</a>。",
+      "directoryDescription": "Increase your audience by appearing in the <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast Directory</strong></a>. This is an external service run by the Owncast project. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Learn more</a>.",
       "offlineMessageDescription": "オフラインメッセージは、ストリーミングしていないときにページ訪問者に表示されます。Markdown はサポートされています。",
-      "serverUrlRequiredForDirectory": "ディレクトリを有効にするには、上記の<strong>サーバーURLを</strong>設定する必要があります。"
+      "serverUrlRequiredForDirectory": "You must set your <strong>Server URL</strong> above to enable the directory."
     },
     "HardwareInfo": {
       "title": "ハードウェア情報",
@@ -67,7 +67,7 @@
       "currentViewers": "現在の視聴者数",
       "maxViewersThisStream": "このストリームの視聴者を最大にする",
       "maxViewersLastStream": "視聴者の最後のストリームの最大数",
-      "maxViewers": "視聴者数の上限",
+      "maxViewers": "Max viewers",
       "pleaseWait": "お待ちください",
       "noData": "ビューアデータはまだ収集されていません。",
       "viewers": "閲覧者"
@@ -85,55 +85,55 @@
     "emojis": "Emojis",
     "uploadNewEmoji": "新しい絵文字をアップロード",
     "StatusMessages": {
-      "updated": "更新しました。",
-      "tagsUpdated": "タグを更新しました。",
-      "variantsUpdated": "バリアントが更新されました",
-      "videoCodecUpdated": "ビデオコーデックを更新しました。",
-      "latencyBufferUpdated": "レイテンシーバッファーレベルを更新しました。",
-      "deletingEmoji": "絵文字を削除しています...",
-      "emojiDeleted": "絵文字を削除しました",
-      "convertingEmoji": "絵文字を変換しています...",
-      "uploadingEmoji": "絵文字をアップロードしています...",
-      "emojiUploadedSuccessfully": "絵文字が正常にアップロードされました！",
-      "thereWasAnError": "エラーがありました: {{message}}",
-      "fileSizeTooBig": "ファイルサイズが大きすぎます: {{size}}",
-      "fileTypeNotSupported": "ファイルタイプはサポートされていません: {{type}}",
-      "pleaseEnterTag": "タグを入力してください",
-      "tagAlreadyUsed": "このタグは既に使用されています！"
+      "updated": "Updated.",
+      "tagsUpdated": "Tags updated.",
+      "variantsUpdated": "Variants updated",
+      "videoCodecUpdated": "Video codec updated.",
+      "latencyBufferUpdated": "Latency buffer level updated.",
+      "deletingEmoji": "Deleting emoji...",
+      "emojiDeleted": "Emoji deleted",
+      "convertingEmoji": "Converting emoji...",
+      "uploadingEmoji": "Uploading emoji...",
+      "emojiUploadedSuccessfully": "Emoji uploaded successfully!",
+      "thereWasAnError": "There was an error: {{message}}",
+      "fileSizeTooBig": "File size is too big: {{size}}",
+      "fileTypeNotSupported": "File type is not supported: {{type}}",
+      "pleaseEnterTag": "Please enter a tag",
+      "tagAlreadyUsed": "This tag is already used!"
     },
     "Actions": {
-      "title": "外部アクション",
-      "description": "外部アクションURLはあなたが表示できるサードパーティUIです、埋め込まれています ユーザーがアクションを起動するためのボタンをクリックしたときに、Owncastページに移動します。",
-      "readMoreLink": "アクションの使用方法の詳細については、以下を参照してください:",
-      "createNewAction": "新しいアクションを作成",
-      "createNewActionTitle": "新しいアクションを作成",
-      "editActionTitle": "アクションを編集",
-      "modalDescription": "外部アクションのURLを追加します。",
-      "onlyHttpsSupported": "HTTPS URLと埋め込みのみがサポートされています。",
-      "readMoreAboutActions": "外部のアクションについてもっと読む。",
-      "selectActionType": "アクションの種類を選択",
+      "title": "External Actions",
+      "description": "External action URLs are 3rd party UI you can display, embedded, into your Owncast page when a user clicks on a button to launch your action.",
+      "readMoreLink": "Read more about how to use actions, with examples, at",
+      "createNewAction": "Create New Action",
+      "createNewActionTitle": "Create New Action",
+      "editActionTitle": "Edit Action",
+      "modalDescription": "Add the URL for the external action you want to present.",
+      "onlyHttpsSupported": "Only HTTPS URLs and embeds are supported.",
+      "readMoreAboutActions": "Read more about external actions.",
+      "selectActionType": "Select an action type",
       "linkOrEmbedUrl": "Link or embed an URL",
-      "customHtml": "カスタム HTML",
-      "htmlEmbedPlaceholder": "HTML 埋め込みコード (必須)",
+      "customHtml": "Custom HTML",
+      "htmlEmbedPlaceholder": "HTML embed code (required)",
       "urlPlaceholder": "https://myserver.com/action (required)",
-      "titlePlaceholder": "アクションタイトル (必須)",
-      "descriptionPlaceholder": "オプションの説明",
-      "iconPlaceholder": "https://myserver.com/action/icon.png (任意)",
-      "optionalBackgroundColor": "アクションボタンのオプションの背景色",
-      "openExternally": "ページ内ではなく新しいタブで開きます。"
+      "titlePlaceholder": "Your action title (required)",
+      "descriptionPlaceholder": "Optional description",
+      "iconPlaceholder": "https://myserver.com/action/icon.png (optional)",
+      "optionalBackgroundColor": "Optional background color of the action button.",
+      "openExternally": "Open in a new tab instead of within your page."
     },
     "Webhooks": {
-      "createNewWebhook": "新しいWebhookを作成",
+      "createNewWebhook": "Create New Webhook",
       "webhookUrlPlaceholder": "https://myserver.com/webhook",
-      "selectEvents": "このWebhookに送信されるイベントを選択します。",
-      "selectAll": "すべて選択"
+      "selectEvents": "Select the events that will be sent to this webhook.",
+      "selectAll": "Select all"
     },
     "AccessTokens": {
-      "createNewAccessToken": "新しいアクセストークンを作成",
-      "nameDescription": "このアクセストークンでメッセージを送信するときに、チャットユーザーとして名前が表示されます。",
-      "namePlaceholder": "Bot、サービス、統合の名前",
-      "selectPermissions": "このアクセストークンの権限を選択してください。作成後に編集することはできません。",
-      "selectAll": "すべて選択"
+      "createNewAccessToken": "Create New Access token",
+      "nameDescription": "The name will be displayed as the chat user when sending messages with this access token.",
+      "namePlaceholder": "Name of bot, service, or integration",
+      "selectPermissions": "Select the permissions this access token will have. It cannot be edited after it's created.",
+      "selectAll": "Select all"
     }
   },
   "Common": {
@@ -143,9 +143,9 @@
     "BrowserNotifyModal": {
       "allowButton": "許可する",
       "blockButton": "ブロック",
-      "deniedDescription": "{{hostname}}からのプッシュ通知を有効にするには、このサイトのブラウザの権限にアクセスして通知をオンにしてください。それから、このページをリロードして、サイトの設定を更新されたものに適用してください。<a href='https://owncast.online/docs/notifications'>詳細を見る。</a>",
+      "deniedDescription": "To enable push notifications from {{hostname}} access your browser permissions for this site and turn on notifications. Then reload this page to apply your updated settings on this site. <a href='https://owncast.online/docs/notifications'>Learn more.</a>",
       "deniedTitle": "お使いの端末で通知がブロックされています",
-      "enabledDescription": "{{hostname}}からのプッシュ通知を無効にするには、このサイトのブラウザの権限にアクセスして通知をオフにしてください。<a href='https://owncast.online/docs/notifications'>詳細を見る。</a>",
+      "enabledDescription": "To disable push notifications from {{hostname}} access your browser permissions for this site and turn off notifications. <a href='https://owncast.online/docs/notifications'>Learn more.</a>",
       "enabledTitle": "通知が有効です",
       "errorMessage": "ライブ通知の登録エラー： {{message}}。プライベートブラウザ環境内にいないか、以前にこのストリームの通知が無効になっていることを確認してください。",
       "errorTitle": "ブラウザ通知エラー",
@@ -208,7 +208,7 @@
     "helloWorld": "Hello world",
     "offlineBasic": "このストリームはオフラインです。もう一度お試しください！",
     "offlineFediverseOnly": "このストリームはオフラインです。 <span class='follow-link'></span> {{fediverseAccount}} をFediverse でフォローして、次回 {{streamer}} がライブになるのを確認します。",
-    "offlineNotifyAndFediverse": "このストリームはオフラインです。次回のライブ配信は {{streamer}} <span class='notify-link'>に通知さ</span>れるか、Fediverse で {{fediverseAccount}} を<span class='follow-link'>フォローして</span>ください。",
+    "offlineNotifyAndFediverse": "This stream is offline. You can <span class='notify-link'>be notified</span> the next time {{streamer}} goes live or <span class='follow-link'>follow</span> {{fediverseAccount}} on the Fediverse.",
     "offlineNotifyOnly": "このストリームはオフラインです。 <span class='notify-link'></span> 次回 {{streamer}} がライブになるときに通知されます。",
     "lastLiveAgo": "前回のライブ {{timeAgo}} 前"
   },
