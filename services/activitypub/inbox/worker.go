@@ -172,28 +172,35 @@ func signedHeaders(signature string) (map[string]struct{}, error) {
 
 func verifyRequestBody(request *http.Request, body []byte) error {
 	digest := request.Header.Get("Digest")
-	parts := strings.SplitN(digest, "=", 2)
-	if len(parts) != 2 {
+	if digest == "" {
 		return errors.New("request body digest is missing or malformed")
 	}
 
-	var actual []byte
-	switch strings.ToUpper(parts[0]) {
-	case "SHA-256":
-		sum := sha256.Sum256(body)
-		actual = sum[:]
-	case "SHA-512":
-		sum := sha512.Sum512(body)
-		actual = sum[:]
-	default:
-		return errors.New("request body digest uses an unsupported algorithm")
+	for _, candidate := range strings.Split(digest, ",") {
+		parts := strings.SplitN(strings.TrimSpace(candidate), "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		var actual []byte
+		switch strings.ToUpper(strings.TrimSpace(parts[0])) {
+		case "SHA-256":
+			sum := sha256.Sum256(body)
+			actual = sum[:]
+		case "SHA-512":
+			sum := sha512.Sum512(body)
+			actual = sum[:]
+		default:
+			continue
+		}
+
+		expected, err := base64.StdEncoding.DecodeString(strings.TrimSpace(parts[1]))
+		if err == nil && subtle.ConstantTimeCompare(actual, expected) == 1 {
+			return nil
+		}
 	}
 
-	expected, err := base64.StdEncoding.DecodeString(parts[1])
-	if err != nil || subtle.ConstantTimeCompare(actual, expected) != 1 {
-		return errors.New("request body digest does not match")
-	}
-	return nil
+	return errors.New("request body digest does not match")
 }
 
 // Verify validates the HTTP signature of an inbound request against the
@@ -237,13 +244,12 @@ func (s *Service) Verify(request *http.Request, body []byte) (*url.URL, error) {
 	var algorithmString string
 	signatureComponents := strings.Split(signature, ",")
 	for _, component := range signatureComponents {
-		kv := strings.SplitN(component, "=", 2)
-		if len(kv) == 2 && kv[0] == "algorithm" {
+		kv := strings.SplitN(strings.TrimSpace(component), "=", 2)
+		if len(kv) == 2 && strings.EqualFold(strings.TrimSpace(kv[0]), "algorithm") {
 			algorithmString = kv[1]
 			break
 		}
 	}
-
 	algorithmString = strings.Trim(algorithmString, "\"")
 	if algorithmString == "" {
 		return nil, errors.New("Unable to determine algorithm to verify request")

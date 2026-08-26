@@ -227,6 +227,8 @@ func TestVerifyRequestBody(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "matching digest", digest: digest, body: body},
+		{name: "whitespace", digest: " SHA-256 = " + base64.StdEncoding.EncodeToString(sum[:]) + " ", body: body},
+		{name: "multiple digests", digest: "SHA-512=invalid, " + digest, body: body},
 		{name: "changed body", digest: digest, body: []byte(`{"type":"Follow"}`), wantErr: true},
 		{name: "missing digest", body: body, wantErr: true},
 		{name: "malformed digest", digest: "SHA-256", body: body, wantErr: true},
