@@ -161,7 +161,7 @@ jobs:
       # test step halts the job.
       - name: Upload test evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: browser-test-evidence
           if-no-files-found: ignore
@@ -178,7 +178,7 @@ jobs:
       - name: Upload UI test videos
         id: video-upload
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: browser-test-videos
           if-no-files-found: ignore

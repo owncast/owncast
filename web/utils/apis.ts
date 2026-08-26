@@ -7,6 +7,8 @@ export const NEXT_PUBLIC_API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
 const API_LOCATION = `${NEXT_PUBLIC_API_HOST}api/admin/`;
 
+export const ADMIN_CSRF_HEADER = 'X-Owncast-CSRF-Protection';
+
 export const FETCH_INTERVAL = 15000;
 
 // Current inbound broadcaster info
@@ -174,15 +176,20 @@ export async function fetchData<T = any>(url: string, options?: FetchOptions): P
     method,
   };
 
+  const headers: Record<string, string> = {};
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase())) {
+    headers[ADMIN_CSRF_HEADER] = '1';
+  }
+
   if (data) {
     requestOptions.body = JSON.stringify(data);
   }
 
+  requestOptions.headers = headers;
+
   if (auth && ADMIN_USERNAME && ADMIN_STREAMKEY) {
     const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
-    requestOptions.headers = {
-      Authorization: `Basic ${encoded}`,
-    };
+    headers.Authorization = `Basic ${encoded}`;
     requestOptions.mode = 'cors';
     requestOptions.credentials = 'include';
   }
@@ -217,11 +224,15 @@ export async function fetchText(url: string, options?: FetchOptions) {
     method,
   };
 
+  const headers: Record<string, string> = {};
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase())) {
+    headers[ADMIN_CSRF_HEADER] = '1';
+  }
+  requestOptions.headers = headers;
+
   if (auth && ADMIN_USERNAME && ADMIN_STREAMKEY) {
     const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
-    requestOptions.headers = {
-      Authorization: `Basic ${encoded}`,
-    };
+    headers.Authorization = `Basic ${encoded}`;
     requestOptions.mode = 'cors';
     requestOptions.credentials = 'include';
   }

@@ -18,11 +18,13 @@ type OTPRegistration struct {
 	UserDisplayName string
 	Code            string
 	Account         string
+	FailedAttempts  int
 }
 
 const (
 	registrationTimeout = time.Minute * 10
 	maxPendingRequests  = 1000
+	maxOTPAttempts      = 5
 )
 
 // Service bundles the per-instance state for the Fediverse OTP flow.
@@ -102,13 +104,24 @@ func (s *Service) RegisterFediverseOTP(accessToken, userID, userDisplayName, acc
 	return r, true, nil
 }
 
-// ValidateFediverseOTP will verify a OTP code for a auth request.
+// ValidateFediverseOTP will verify an OTP code for an auth request.
 func (s *Service) ValidateFediverseOTP(accessToken, code string) (bool, *OTPRegistration) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
 	request, ok := s.pendingAuthRequests[accessToken]
-	if !ok || request.Code != code || time.Since(request.Timestamp) > registrationTimeout {
+	if !ok || time.Since(request.Timestamp) > registrationTimeout {
+		delete(s.pendingAuthRequests, accessToken)
+		return false, nil
+	}
+
+	if request.Code != code {
+		request.FailedAttempts++
+		if request.FailedAttempts >= maxOTPAttempts {
+			delete(s.pendingAuthRequests, accessToken)
+		} else {
+			s.pendingAuthRequests[accessToken] = request
+		}
 		return false, nil
 	}
 

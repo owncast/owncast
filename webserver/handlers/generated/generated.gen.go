@@ -401,12 +401,12 @@ type ServerInterface interface {
 	// SetServerWelcomeMessage Change the welcome message
 	// (POST /admin/config/welcomemessage)
 	SetServerWelcomeMessage(w http.ResponseWriter, r *http.Request)
-	// DisconnectInboundConnection Disconnect inbound stream
-	// (GET /admin/disconnect)
-	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
 
 	// (OPTIONS /admin/disconnect)
 	DisconnectInboundConnectionOptions(w http.ResponseWriter, r *http.Request)
+	// DisconnectInboundConnection Disconnect inbound stream
+	// (POST /admin/disconnect)
+	DisconnectInboundConnection(w http.ResponseWriter, r *http.Request)
 
 	// (OPTIONS /admin/emoji/delete)
 	DeleteCustomEmojiOptions(w http.ResponseWriter, r *http.Request)
@@ -536,24 +536,6 @@ type ServerInterface interface {
 
 	// (OPTIONS /admin/status)
 	StatusAdminOptions(w http.ResponseWriter, r *http.Request)
-	// AutoUpdateForceQuit Force quit the server and restart it
-	// (GET /admin/update/forcequit)
-	AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request)
-
-	// (OPTIONS /admin/update/forcequit)
-	AutoUpdateForceQuitOptions(w http.ResponseWriter, r *http.Request)
-	// AutoUpdateOptions Return the auto-update features that are supported for this instance
-	// (GET /admin/update/options)
-	AutoUpdateOptions(w http.ResponseWriter, r *http.Request)
-
-	// (OPTIONS /admin/update/options)
-	AutoUpdateOptionsOptions(w http.ResponseWriter, r *http.Request)
-	// AutoUpdateStart Begin the auto-update
-	// (GET /admin/update/start)
-	AutoUpdateStart(w http.ResponseWriter, r *http.Request)
-
-	// (OPTIONS /admin/update/start)
-	AutoUpdateStartOptions(w http.ResponseWriter, r *http.Request)
 	// GetUsers Get a paginated list of all users
 	// (GET /admin/users)
 	GetUsers(w http.ResponseWriter, r *http.Request, params GetUsersParams)
@@ -602,12 +584,12 @@ type ServerInterface interface {
 	// DeleteWebhook Delete a single webhook
 	// (POST /admin/webhooks/delete)
 	DeleteWebhook(w http.ResponseWriter, r *http.Request)
-	// ResetYPRegistration Reset YP configuration
-	// (GET /admin/yp/reset)
-	ResetYPRegistration(w http.ResponseWriter, r *http.Request)
 
 	// (OPTIONS /admin/yp/reset)
 	ResetYPRegistrationOptions(w http.ResponseWriter, r *http.Request)
+	// ResetYPRegistration Reset YP configuration
+	// (POST /admin/yp/reset)
+	ResetYPRegistration(w http.ResponseWriter, r *http.Request)
 	// RegisterFediverseOTPRequest Register a Fediverse OTP request
 	// (POST /auth/fediverse)
 	RegisterFediverseOTPRequest(w http.ResponseWriter, r *http.Request, params RegisterFediverseOTPRequestParams)
@@ -1471,14 +1453,14 @@ func (_ Unimplemented) SetServerWelcomeMessage(w http.ResponseWriter, r *http.Re
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// DisconnectInboundConnection Disconnect inbound stream
-// (GET /admin/disconnect)
-func (_ Unimplemented) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
+// (OPTIONS /admin/disconnect)
+func (_ Unimplemented) DisconnectInboundConnectionOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// (OPTIONS /admin/disconnect)
-func (_ Unimplemented) DisconnectInboundConnectionOptions(w http.ResponseWriter, r *http.Request) {
+// DisconnectInboundConnection Disconnect inbound stream
+// (POST /admin/disconnect)
+func (_ Unimplemented) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1722,39 +1704,6 @@ func (_ Unimplemented) StatusAdminOptions(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// AutoUpdateForceQuit Force quit the server and restart it
-// (GET /admin/update/forcequit)
-func (_ Unimplemented) AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// (OPTIONS /admin/update/forcequit)
-func (_ Unimplemented) AutoUpdateForceQuitOptions(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// AutoUpdateOptions Return the auto-update features that are supported for this instance
-// (GET /admin/update/options)
-func (_ Unimplemented) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// (OPTIONS /admin/update/options)
-func (_ Unimplemented) AutoUpdateOptionsOptions(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// AutoUpdateStart Begin the auto-update
-// (GET /admin/update/start)
-func (_ Unimplemented) AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// (OPTIONS /admin/update/start)
-func (_ Unimplemented) AutoUpdateStartOptions(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
 // GetUsers Get a paginated list of all users
 // (GET /admin/users)
 func (_ Unimplemented) GetUsers(w http.ResponseWriter, r *http.Request, params GetUsersParams) {
@@ -1843,14 +1792,14 @@ func (_ Unimplemented) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// ResetYPRegistration Reset YP configuration
-// (GET /admin/yp/reset)
-func (_ Unimplemented) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
+// (OPTIONS /admin/yp/reset)
+func (_ Unimplemented) ResetYPRegistrationOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// (OPTIONS /admin/yp/reset)
-func (_ Unimplemented) ResetYPRegistrationOptions(w http.ResponseWriter, r *http.Request) {
+// ResetYPRegistration Reset YP configuration
+// (POST /admin/yp/reset)
+func (_ Unimplemented) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3817,10 +3766,10 @@ func (siw *ServerInterfaceWrapper) SetServerWelcomeMessage(w http.ResponseWriter
 	handler.ServeHTTP(w, r)
 }
 
-// DisconnectInboundConnection operation middleware
-func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
+// DisconnectInboundConnectionOptions operation middleware
+func (siw *ServerInterfaceWrapper) DisconnectInboundConnectionOptions(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DisconnectInboundConnection(w, r)
+		siw.Handler.DisconnectInboundConnectionOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3830,10 +3779,10 @@ func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWr
 	handler.ServeHTTP(w, r)
 }
 
-// DisconnectInboundConnectionOptions operation middleware
-func (siw *ServerInterfaceWrapper) DisconnectInboundConnectionOptions(w http.ResponseWriter, r *http.Request) {
+// DisconnectInboundConnection operation middleware
+func (siw *ServerInterfaceWrapper) DisconnectInboundConnection(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DisconnectInboundConnectionOptions(w, r)
+		siw.Handler.DisconnectInboundConnection(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -4490,84 +4439,6 @@ func (siw *ServerInterfaceWrapper) StatusAdminOptions(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r)
 }
 
-// AutoUpdateForceQuit operation middleware
-func (siw *ServerInterfaceWrapper) AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request) {
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.AutoUpdateForceQuit(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// AutoUpdateForceQuitOptions operation middleware
-func (siw *ServerInterfaceWrapper) AutoUpdateForceQuitOptions(w http.ResponseWriter, r *http.Request) {
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.AutoUpdateForceQuitOptions(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// AutoUpdateOptions operation middleware
-func (siw *ServerInterfaceWrapper) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.AutoUpdateOptions(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// AutoUpdateOptionsOptions operation middleware
-func (siw *ServerInterfaceWrapper) AutoUpdateOptionsOptions(w http.ResponseWriter, r *http.Request) {
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.AutoUpdateOptionsOptions(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// AutoUpdateStart operation middleware
-func (siw *ServerInterfaceWrapper) AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.AutoUpdateStart(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// AutoUpdateStartOptions operation middleware
-func (siw *ServerInterfaceWrapper) AutoUpdateStartOptions(w http.ResponseWriter, r *http.Request) {
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.AutoUpdateStartOptions(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
 // GetUsers operation middleware
 func (siw *ServerInterfaceWrapper) GetUsers(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -4866,10 +4737,10 @@ func (siw *ServerInterfaceWrapper) DeleteWebhook(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r)
 }
 
-// ResetYPRegistration operation middleware
-func (siw *ServerInterfaceWrapper) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
+// ResetYPRegistrationOptions operation middleware
+func (siw *ServerInterfaceWrapper) ResetYPRegistrationOptions(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ResetYPRegistration(w, r)
+		siw.Handler.ResetYPRegistrationOptions(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -4879,10 +4750,10 @@ func (siw *ServerInterfaceWrapper) ResetYPRegistration(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
-// ResetYPRegistrationOptions operation middleware
-func (siw *ServerInterfaceWrapper) ResetYPRegistrationOptions(w http.ResponseWriter, r *http.Request) {
+// ResetYPRegistration operation middleware
+func (siw *ServerInterfaceWrapper) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ResetYPRegistrationOptions(w, r)
+		siw.Handler.ResetYPRegistration(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6013,10 +5884,10 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Options(options.BaseURL+"/admin/status", wrapper.StatusAdminOptions)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)
+		r.Options(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnectionOptions)
 	})
 	r.Group(func(r chi.Router) {
-		r.Options(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnectionOptions)
+		r.Post(options.BaseURL+"/admin/disconnect", wrapper.DisconnectInboundConnection)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/serverconfig", wrapper.GetServerConfig)
@@ -6547,28 +6418,10 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/admin/accesstokens/create", wrapper.CreateExternalAPIUser)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/admin/update/options", wrapper.AutoUpdateOptions)
-	})
-	r.Group(func(r chi.Router) {
-		r.Options(options.BaseURL+"/admin/update/options", wrapper.AutoUpdateOptionsOptions)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/admin/update/start", wrapper.AutoUpdateStart)
-	})
-	r.Group(func(r chi.Router) {
-		r.Options(options.BaseURL+"/admin/update/start", wrapper.AutoUpdateStartOptions)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/admin/update/forcequit", wrapper.AutoUpdateForceQuit)
-	})
-	r.Group(func(r chi.Router) {
-		r.Options(options.BaseURL+"/admin/update/forcequit", wrapper.AutoUpdateForceQuitOptions)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/admin/yp/reset", wrapper.ResetYPRegistration)
-	})
-	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/admin/yp/reset", wrapper.ResetYPRegistrationOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/yp/reset", wrapper.ResetYPRegistration)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/metrics/video", wrapper.GetVideoPlaybackMetrics)

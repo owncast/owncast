@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-export-i18n';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import {
+  ADMIN_CSRF_HEADER,
   fetchData,
   isPluginUpdateAvailable,
   PLUGIN_REGISTRY_INSTALL,
@@ -162,7 +163,11 @@ const Plugins = () => {
       const form = new FormData();
       form.append('plugin', blob, (file as File).name);
       try {
-        const res = await fetch(PLUGIN_UPLOAD, { method: 'POST', body: form });
+        const res = await fetch(PLUGIN_UPLOAD, {
+          method: 'POST',
+          headers: { [ADMIN_CSRF_HEADER]: '1' },
+          body: form,
+        });
         if (!res.ok) {
           const body = await res.text();
           let detail = body;

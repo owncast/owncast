@@ -225,13 +225,6 @@ func segmentSpeedSample(bytes int64, duration time.Duration, segmentSeconds int)
 	return kbps, seconds, true
 }
 
-// Serve-rate readings above this aren't measurements of any real viewer
-// connection: they mean a local relay (reverse proxy, CDN edge, tunnel
-// agent) drained the socket instead of the viewer, which reads as
-// multi-gigabit "speed". No honest viewer health signal lives above this
-// ceiling — stream bitrates top out orders of magnitude below it.
-const maxPlausibleViewerKbps = 50000
-
 const serverMeasurementStatusUnmeasurable = "unmeasurable"
 
 // registerServedSegmentMetrics records a server-observed sample for a
@@ -249,17 +242,6 @@ func (h *Handlers) registerServedSegmentMetrics(r *http.Request, clientID, viewe
 	segmentSeconds := h.configRepository.GetStreamLatencyLevel().SecondsPerSegment
 	kbps, seconds, ok := segmentSpeedSample(bytes, duration, segmentSeconds)
 	if !ok {
-		h.metrics.RegisterUnmeasurableServerSample(
-			clientID,
-			viewerID,
-			serverMeasurementStatusUnmeasurable,
-		)
-		return
-	}
-	// A reading above the plausibility ceiling means a local relay drained
-	// the socket, not the viewer — neither the speed nor the duration
-	// measured anything about the viewer, so explain the missing sample.
-	if kbps > maxPlausibleViewerKbps {
 		h.metrics.RegisterUnmeasurableServerSample(
 			clientID,
 			viewerID,

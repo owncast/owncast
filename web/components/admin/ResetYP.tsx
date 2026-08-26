@@ -30,7 +30,7 @@ export const ResetYP: FC = () => {
   const resetDirectoryRegistration = async () => {
     setSubmitStatus(createInputStatus(STATUS_PROCESSING));
     try {
-      await fetchData(API_YP_RESET);
+      await fetchData(API_YP_RESET, { method: 'POST' });
       setMessage('');
       setSubmitStatus(createInputStatus(STATUS_SUCCESS));
       resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
