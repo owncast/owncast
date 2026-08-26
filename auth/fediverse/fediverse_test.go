@@ -55,6 +55,49 @@ func TestOTPFlowValidation(t *testing.T) {
 	}
 }
 
+func TestOTPFlowLimitsFailedAttempts(t *testing.T) {
+	svc := New()
+	token := "attempt-limit-token"
+	registration, _, err := svc.RegisterFediverseOTP(token, userID, userDisplayName, account)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for attempt := 1; attempt < maxOTPAttempts; attempt++ {
+		if valid, _ := svc.ValidateFediverseOTP(token, "wrong-code"); valid {
+			t.Fatalf("wrong code succeeded on attempt %d", attempt)
+		}
+		pending, ok := svc.pendingAuthRequests[token]
+		if !ok {
+			t.Fatalf("request was removed before attempt limit on attempt %d", attempt)
+		}
+		if pending.FailedAttempts != attempt {
+			t.Fatalf("failed attempts = %d, want %d", pending.FailedAttempts, attempt)
+		}
+	}
+
+	if valid, _ := svc.ValidateFediverseOTP(token, registration.Code); !valid {
+		t.Fatal("correct code should succeed before the attempt limit")
+	}
+
+	exhaustedToken := "exhausted-attempt-token"
+	exhausted, _, err := svc.RegisterFediverseOTP(exhaustedToken, userID, userDisplayName, account)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for attempt := 1; attempt <= maxOTPAttempts; attempt++ {
+		if valid, _ := svc.ValidateFediverseOTP(exhaustedToken, "wrong-code"); valid {
+			t.Fatalf("wrong code succeeded on attempt %d", attempt)
+		}
+	}
+	if _, ok := svc.pendingAuthRequests[exhaustedToken]; ok {
+		t.Fatal("request remained after the attempt limit")
+	}
+	if valid, _ := svc.ValidateFediverseOTP(exhaustedToken, exhausted.Code); valid {
+		t.Fatal("correct code succeeded after the attempt limit")
+	}
+}
+
 func TestSingleOTPFlowRequest(t *testing.T) {
 	svc := New()
 	r1, _, _ := svc.RegisterFediverseOTP(accessToken, userID, userDisplayName, account)
