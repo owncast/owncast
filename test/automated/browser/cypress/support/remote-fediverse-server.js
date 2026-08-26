@@ -176,6 +176,7 @@ async function deliverSignedActivity(actor, inboxUrl, activity) {
 	const date = new Date().toUTCString();
 	const signingString = [
 		`(request-target): post ${url.pathname}`,
+		`host: ${url.host}`,
 		`date: ${date}`,
 		`digest: ${digest}`,
 	].join('\n');
@@ -189,9 +190,10 @@ async function deliverSignedActivity(actor, inboxUrl, activity) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/activity+json',
+				Host: url.host,
 				Date: date,
 				Digest: digest,
-				Signature: `keyId="${actor.iri}#main-key",algorithm="rsa-sha256",headers="(request-target) date digest",signature="${signature}"`,
+				Signature: `keyId="${actor.iri}#main-key",algorithm="rsa-sha256",headers="(request-target) host date digest",signature="${signature}"`,
 			},
 			body,
 		});

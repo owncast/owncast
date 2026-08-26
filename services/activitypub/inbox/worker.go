@@ -2,7 +2,11 @@ package inbox
 
 import (
 	"context"
+	"crypto/sha256"
+	"crypto/sha512"
+	"crypto/subtle"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
@@ -20,7 +24,7 @@ import (
 )
 
 func (s *Service) handle(request apmodels.InboxRequest) {
-	keyOwner, err := s.Verify(request.Request)
+	keyOwner, err := s.Verify(request.Request, request.Body)
 	if err != nil {
 		log.Debugln("Error in attempting to verify request", err)
 		return
@@ -149,13 +153,63 @@ func requestDateWithinTolerance(request *http.Request) error {
 	return nil
 }
 
+func signedHeaders(signature string) (map[string]struct{}, error) {
+	headers := make(map[string]struct{})
+	for _, component := range strings.Split(signature, ",") {
+		kv := strings.SplitN(strings.TrimSpace(component), "=", 2)
+		if len(kv) != 2 {
+			return nil, errors.New("malformed HTTP signature parameter")
+		}
+		if strings.EqualFold(kv[0], "headers") {
+			for _, header := range strings.Fields(strings.Trim(kv[1], "\"")) {
+				headers[strings.ToLower(header)] = struct{}{}
+			}
+			return headers, nil
+		}
+	}
+	return headers, nil
+}
+
+func verifyRequestBody(request *http.Request, body []byte) error {
+	digest := request.Header.Get("Digest")
+	if digest == "" {
+		return errors.New("request body digest is missing or malformed")
+	}
+
+	for _, candidate := range strings.Split(digest, ",") {
+		parts := strings.SplitN(strings.TrimSpace(candidate), "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		var actual []byte
+		switch strings.ToUpper(strings.TrimSpace(parts[0])) {
+		case "SHA-256":
+			sum := sha256.Sum256(body)
+			actual = sum[:]
+		case "SHA-512":
+			sum := sha512.Sum512(body)
+			actual = sum[:]
+		default:
+			continue
+		}
+
+		expected, err := base64.StdEncoding.DecodeString(strings.TrimSpace(parts[1]))
+		if err == nil && subtle.ConstantTimeCompare(actual, expected) == 1 {
+			return nil
+		}
+	}
+
+	return errors.New("request body digest does not match")
+}
+
 // Verify validates the HTTP signature of an inbound request against the
 // signing actor's public key and checks it against blocked domains/actors. On
 // success it returns the verified key owner's actor IRI (used by the caller to
 // bind the activity's actor to its signer); on failure it returns a nil IRI
 // and an error.
 // nolint: cyclop
-func (s *Service) Verify(request *http.Request) (*url.URL, error) {
+func (s *Service) Verify(request *http.Request, body []byte) (*url.URL, error) {
 	verifier, err := httpsig.NewVerifier(request)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create key verifier for request")
@@ -174,17 +228,28 @@ func (s *Service) Verify(request *http.Request) (*url.URL, error) {
 	if signature == "" {
 		return nil, errors.New("http signature header not found in request")
 	}
+	signed, err := signedHeaders(signature)
+	if err != nil {
+		return nil, err
+	}
+	for _, required := range []string{httpsig.RequestTarget, "host", "date", "digest"} {
+		if _, ok := signed[strings.ToLower(required)]; !ok {
+			return nil, errors.Errorf("http signature does not sign required header %q", required)
+		}
+	}
+	if err := verifyRequestBody(request, body); err != nil {
+		return nil, err
+	}
 
 	var algorithmString string
 	signatureComponents := strings.Split(signature, ",")
 	for _, component := range signatureComponents {
-		kv := strings.Split(component, "=")
-		if kv[0] == "algorithm" {
+		kv := strings.SplitN(strings.TrimSpace(component), "=", 2)
+		if len(kv) == 2 && strings.EqualFold(strings.TrimSpace(kv[0]), "algorithm") {
 			algorithmString = kv[1]
 			break
 		}
 	}
-
 	algorithmString = strings.Trim(algorithmString, "\"")
 	if algorithmString == "" {
 		return nil, errors.New("Unable to determine algorithm to verify request")
