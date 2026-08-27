@@ -17,7 +17,7 @@ func TestDisabledReasonIsAdminOnly(t *testing.T) {
 		t.Fatalf("public user payload exposed disabled reason: %s", publicPayload)
 	}
 
-	adminPayload, err := json.Marshal(AdminUserFrom(user))
+	adminPayload, err := json.Marshal(UserWithDisabledReasonFrom(user))
 	if err != nil {
 		t.Fatal(err)
 	}

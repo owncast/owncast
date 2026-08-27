@@ -26,27 +26,28 @@ type User struct {
 	Authenticated   bool       `json:"authenticated"`
 }
 
-// AdminUser includes moderation-only fields that must not appear in public
-// chat or webhook payloads.
-type AdminUser struct {
+// UserWithDisabledReason includes the moderation-only reason that must not
+// appear in public chat or webhook payloads.
+type UserWithDisabledReason struct {
 	*User
 	DisabledReason string `json:"disabledReason,omitempty"`
 }
 
-// AdminUserFrom exposes a user's moderation-only fields to authenticated
-// admin and moderator endpoints.
-func AdminUserFrom(user *User) *AdminUser {
+// UserWithDisabledReasonFrom exposes the moderation-only reason to
+// authenticated admin and moderator endpoints.
+func UserWithDisabledReasonFrom(user *User) *UserWithDisabledReason {
 	if user == nil {
 		return nil
 	}
-	return &AdminUser{User: user, DisabledReason: user.DisabledReason}
+	return &UserWithDisabledReason{User: user, DisabledReason: user.DisabledReason}
 }
 
-// AdminUsersFrom converts a collection for authenticated admin endpoints.
-func AdminUsersFrom(users []*User) []*AdminUser {
-	result := make([]*AdminUser, 0, len(users))
+// UsersWithDisabledReasonsFrom converts a collection for authenticated admin
+// endpoints.
+func UsersWithDisabledReasonsFrom(users []*User) []*UserWithDisabledReason {
+	result := make([]*UserWithDisabledReason, 0, len(users))
 	for _, user := range users {
-		result = append(result, AdminUserFrom(user))
+		result = append(result, UserWithDisabledReasonFrom(user))
 	}
 	return result
 }

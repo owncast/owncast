@@ -3990,7 +3990,7 @@ components:
           type: boolean
         authenticated:
           type: boolean
-    AdminUser:
+    UserWithDisabledReason:
       allOf:
         - $ref: '#/components/schemas/User'
         - type: object
@@ -4001,7 +4001,7 @@ components:
     Users:
       type: array
       items:
-        $ref: '#/components/schemas/AdminUser'
+        $ref: '#/components/schemas/UserWithDisabledReason'
     PaginatedUsers:
       type: object
       properties:
@@ -4732,7 +4732,7 @@ components:
       type: object
       properties:
         user:
-          $ref: '#/components/schemas/AdminUser'
+          $ref: '#/components/schemas/UserWithDisabledReason'
         connectedClients:
           type: array
           items:

@@ -280,25 +280,6 @@ type AdminStatus struct {
 	ViewerCount            *int                  `json:"viewerCount,omitempty"`
 }
 
-// AdminUser defines model for AdminUser.
-type AdminUser struct {
-	// AuthProviders Friendly names of the external auth methods this user signed in with (e.g. IndieAuth, Fediverse, or a plugin slug). Absent for anonymous users.
-	AuthProviders *[]string `json:"authProviders,omitempty"`
-	Authenticated *bool     `json:"authenticated,omitempty"`
-	CreatedAt     *string   `json:"createdAt,omitempty"`
-	DisabledAt    *string   `json:"disabledAt,omitempty"`
-
-	// DisabledReason Reason provided when the user was disabled.
-	DisabledReason *string   `json:"disabledReason,omitempty"`
-	DisplayColor   *int      `json:"displayColor,omitempty"`
-	DisplayName    *string   `json:"displayName,omitempty"`
-	Id             *string   `json:"id,omitempty"`
-	IsBot          *bool     `json:"isBot,omitempty"`
-	NameChangedAt  *string   `json:"nameChangedAt,omitempty"`
-	PreviousNames  *[]string `json:"previousNames,omitempty"`
-	Scopes         *[]string `json:"scopes,omitempty"`
-}
-
 // AdminVideoSettings defines model for AdminVideoSettings.
 type AdminVideoSettings struct {
 	LatencyLevel         *int                   `json:"latencyLevel,omitempty"`
@@ -683,7 +664,7 @@ type ModerationConnectedClient struct {
 type ModerationUserDetails struct {
 	ConnectedClients *[]ModerationConnectedClient `json:"connectedClients,omitempty"`
 	Messages         *[]UserMessage               `json:"messages,omitempty"`
-	User             *AdminUser                   `json:"user,omitempty"`
+	User             *UserWithDisabledReason      `json:"user,omitempty"`
 }
 
 // NotificationConfig defines model for NotificationConfig.
@@ -894,8 +875,27 @@ type UserMessage struct {
 	User      *User   `json:"user,omitempty"`
 }
 
+// UserWithDisabledReason defines model for UserWithDisabledReason.
+type UserWithDisabledReason struct {
+	// AuthProviders Friendly names of the external auth methods this user signed in with (e.g. IndieAuth, Fediverse, or a plugin slug). Absent for anonymous users.
+	AuthProviders *[]string `json:"authProviders,omitempty"`
+	Authenticated *bool     `json:"authenticated,omitempty"`
+	CreatedAt     *string   `json:"createdAt,omitempty"`
+	DisabledAt    *string   `json:"disabledAt,omitempty"`
+
+	// DisabledReason Reason provided when the user was disabled.
+	DisabledReason *string   `json:"disabledReason,omitempty"`
+	DisplayColor   *int      `json:"displayColor,omitempty"`
+	DisplayName    *string   `json:"displayName,omitempty"`
+	Id             *string   `json:"id,omitempty"`
+	IsBot          *bool     `json:"isBot,omitempty"`
+	NameChangedAt  *string   `json:"nameChangedAt,omitempty"`
+	PreviousNames  *[]string `json:"previousNames,omitempty"`
+	Scopes         *[]string `json:"scopes,omitempty"`
+}
+
 // Users defines model for Users.
-type Users = []AdminUser
+type Users = []UserWithDisabledReason
 
 // VideoVariant defines model for VideoVariant.
 type VideoVariant struct {

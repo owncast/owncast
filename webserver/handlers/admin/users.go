@@ -44,11 +44,11 @@ func (a *Admin) GetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := struct {
-		Total   int                 `json:"total"`
-		Results []*models.AdminUser `json:"results"`
+		Total   int                              `json:"total"`
+		Results []*models.UserWithDisabledReason `json:"results"`
 	}{
 		Total:   total,
-		Results: models.AdminUsersFrom(users),
+		Results: models.UsersWithDisabledReasonsFrom(users),
 	}
 
 	webutils.WriteResponse(w, response)
