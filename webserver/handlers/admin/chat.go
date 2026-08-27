@@ -16,6 +16,7 @@ import (
 	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
+	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
@@ -46,7 +47,7 @@ func (a *Admin) UpdateMessageVisibility(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if err := a.chat.SetMessagesVisibility(*request.IdArray, *request.Visible); err != nil {
+	if err := a.chat.SetMessagesVisibility(*request.IdArray, *request.Visible, middleware.UserFromRequest(r)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -126,7 +127,7 @@ func (a *Admin) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := a.updateUserStatus(request); err != nil {
+	if err := a.updateUserStatus(request, middleware.UserFromRequest(r)); err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
@@ -141,7 +142,7 @@ func (a *Admin) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteSimpleResponse(w, true, fmt.Sprintf("%s enabled: %t", *request.UserId, *request.Enabled))
 }
 
-func (a *Admin) updateUserStatus(request generated.UpdateUserEnabledJSONBody) error {
+func (a *Admin) updateUserStatus(request generated.UpdateUserEnabledJSONBody, moderator *models.User) error {
 	if err := a.userRepository.SetEnabled(*request.UserId, *request.Enabled); err != nil {
 		log.Errorln("error changing user enabled status", err)
 		return err
@@ -153,7 +154,7 @@ func (a *Admin) updateUserStatus(request generated.UpdateUserEnabledJSONBody) er
 	}
 
 	if !*request.Enabled && len(messageIDs) > 0 {
-		if err := a.chat.SetMessagesVisibility(messageIDs, *request.Enabled); err != nil {
+		if err := a.chat.SetMessagesVisibility(messageIDs, *request.Enabled, moderator); err != nil {
 			log.Errorln("error changing user messages visibility", err)
 			return err
 		}

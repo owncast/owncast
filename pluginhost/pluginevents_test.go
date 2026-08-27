@@ -279,6 +279,7 @@ func TestTranslateWebhookEvent_VisibilityFansOutPerMessage(t *testing.T) {
 	evt := webhooks.WebhookEvent{
 		Type: models.VisibiltyToggled,
 		EventData: &webhooks.WebhookVisibilityToggleEventData{
+			User:       &models.User{ID: "moderator-id"},
 			Visible:    false,
 			MessageIDs: []string{"a", "b", "c"},
 		},
@@ -294,6 +295,9 @@ func TestTranslateWebhookEvent_VisibilityFansOutPerMessage(t *testing.T) {
 		}
 		if mod.MessageID != id || mod.Visible {
 			t.Errorf("event %d = %+v want id %q visible false", i, mod, id)
+		}
+		if mod.Moderator == nil || mod.Moderator.ID != "moderator-id" {
+			t.Errorf("event %d moderator = %+v, want moderator-id", i, mod.Moderator)
 		}
 	}
 }
