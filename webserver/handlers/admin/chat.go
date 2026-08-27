@@ -197,7 +197,7 @@ func (a *Admin) handleUserDisabling(userID string) error {
 func (a *Admin) GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	users := a.userRepository.GetDisabledUsers()
+	users := models.AdminUsersFrom(a.userRepository.GetDisabledUsers())
 	webutils.WriteResponse(w, users)
 }
 
@@ -234,7 +234,7 @@ func (a *Admin) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 func (a *Admin) GetModerators(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	users := a.userRepository.GetModeratorUsers()
+	users := models.AdminUsersFrom(a.userRepository.GetModeratorUsers())
 	webutils.WriteResponse(w, users)
 }
 

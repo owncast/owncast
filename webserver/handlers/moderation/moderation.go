@@ -50,7 +50,7 @@ func (h *Handler) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type response struct {
-		User             *models.User              `json:"user"`
+		User             *models.AdminUser         `json:"user"`
 		ConnectedClients []connectedClient         `json:"connectedClients"`
 		Messages         []events.UserMessageEvent `json:"messages"`
 	}
@@ -58,7 +58,7 @@ func (h *Handler) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	pathComponents := strings.Split(r.URL.Path, "/")
 	uid := pathComponents[len(pathComponents)-1]
 
-	u := h.userRepository.GetUserByID(uid)
+	u := models.AdminUserFrom(h.userRepository.GetUserByID(uid))
 
 	if u == nil {
 		w.WriteHeader(http.StatusNotFound)

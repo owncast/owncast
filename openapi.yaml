@@ -3965,9 +3965,6 @@ components:
           type: string
         disabledAt:
           type: string
-        disabledReason:
-          type: string
-          description: Reason provided when the user was disabled.
         nameChangedAt:
           type: string
         id:
@@ -3993,10 +3990,18 @@ components:
           type: boolean
         authenticated:
           type: boolean
+    AdminUser:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            disabledReason:
+              type: string
+              description: Reason provided when the user was disabled.
     Users:
       type: array
       items:
-        $ref: '#/components/schemas/User'
+        $ref: '#/components/schemas/AdminUser'
     PaginatedUsers:
       type: object
       properties:
@@ -4727,7 +4732,7 @@ components:
       type: object
       properties:
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/AdminUser'
         connectedClients:
           type: array
           items:
