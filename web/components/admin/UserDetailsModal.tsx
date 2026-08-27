@@ -12,7 +12,9 @@ import { BanUserButton } from './BanUserButton';
 import { ModeratorUserButton } from './ModeratorUserButton';
 
 import { User, UserConnectionInfo } from '../../types/chat';
+import { Localization } from '../../types/localization';
 import { formatDisplayDate, formatUAstring } from '../../utils/format';
+import { Translation } from '../ui/Translation/Translation';
 
 export type UserDetailsModalProps = {
   user: User;
@@ -27,7 +29,7 @@ export const UserDetailsModal: FC<UserDetailsModalProps> = ({
   onClose,
   connectionInfo = null,
 }) => {
-  const { displayName, createdAt, previousNames, nameChangedAt, disabledAt } = user;
+  const { displayName, createdAt, previousNames, nameChangedAt, disabledAt, disabledReason } = user;
   const { connectedAt, messageCount, userAgent } = connectionInfo || {};
 
   let lastNameChangeDate = null;
@@ -99,8 +101,18 @@ export const UserDetailsModal: FC<UserDetailsModalProps> = ({
           {disabledAt ? (
             <>
               This user was banned on <code>{formatDisplayDate(disabledAt)}</code>.
-              <br />
-              <br />
+              {disabledReason && (
+                <p>
+                  <strong>
+                    <Translation
+                      translationKey={Localization.Admin.Users.banReason}
+                      defaultText="Ban reason"
+                    />
+                    :
+                  </strong>{' '}
+                  {disabledReason}
+                </p>
+              )}
               <BanUserButton
                 label="Unban this user"
                 user={user}

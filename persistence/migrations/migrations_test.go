@@ -34,6 +34,13 @@ func gooseVersion(t *testing.T, db *sql.DB) int64 {
 	return v
 }
 
+func columnExists(t *testing.T, db *sql.DB, table, column string) bool {
+	t.Helper()
+	var name string
+	err := db.QueryRow("SELECT name FROM pragma_table_info(?) WHERE name = ?", table, column).Scan(&name)
+	return err == nil
+}
+
 func mustExec(t *testing.T, db *sql.DB, query string) {
 	t.Helper()
 	if _, err := db.Exec(query); err != nil {
@@ -64,13 +71,17 @@ func TestRun_FreshDatabase(t *testing.T) {
 		}
 	}
 
+	if !columnExists(t, db, "users", "disabled_reason") {
+		t.Error("users table is missing disabled_reason column")
+	}
+
 	// Fresh installs should not have the legacy config table.
 	if tableExists(t, db, "config") {
 		t.Error("fresh install should not have legacy config table")
 	}
 
-	if v := gooseVersion(t, db); v != 6 {
-		t.Errorf("goose version = %d, want 6", v)
+	if v := gooseVersion(t, db); v != 7 {
+		t.Errorf("goose version = %d, want 7", v)
 	}
 
 	// Calling Run a second time should be a no-op (idempotent).
@@ -80,7 +91,7 @@ func TestRun_FreshDatabase(t *testing.T) {
 }
 
 // TestRun_LegacyDatabaseAtV9 verifies that an existing v9 install transitions
-// to goose without invoking legacy migrations and without altering the schema.
+// to goose without invoking legacy migrations, then applies current migrations.
 func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	db := openTestDB(t)
 	createV9Schema(t, db)
@@ -94,8 +105,8 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	}
 
 	// Goose should record the latest migration.
-	if v := gooseVersion(t, db); v != 6 {
-		t.Errorf("goose version = %d, want 6", v)
+	if v := gooseVersion(t, db); v != 7 {
+		t.Errorf("goose version = %d, want 7", v)
 	}
 
 	// Config version should still be 9, the legacy bridge was not invoked.
@@ -111,6 +122,10 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	mustScan(t, db.QueryRow(`SELECT count(*) FROM sqlite_master WHERE type='table'`), &newTableCount)
 	if newTableCount != tableCount+3 {
 		t.Errorf("table count changed from %d to %d (expected +3)", tableCount, newTableCount)
+	}
+
+	if !columnExists(t, db, "users", "disabled_reason") {
+		t.Error("legacy users table is missing disabled_reason column")
 	}
 }
 
@@ -141,8 +156,8 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 	}
 
 	// Goose should have recorded the latest migration.
-	if v := gooseVersion(t, db); v != 6 {
-		t.Errorf("goose version = %d, want 6", v)
+	if v := gooseVersion(t, db); v != 7 {
+		t.Errorf("goose version = %d, want 7", v)
 	}
 }
 

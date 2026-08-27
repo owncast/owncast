@@ -50,15 +50,15 @@ func (h *Handler) GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type response struct {
-		User             *models.User              `json:"user"`
-		ConnectedClients []connectedClient         `json:"connectedClients"`
-		Messages         []events.UserMessageEvent `json:"messages"`
+		User             *models.UserWithDisabledReason `json:"user"`
+		ConnectedClients []connectedClient              `json:"connectedClients"`
+		Messages         []events.UserMessageEvent      `json:"messages"`
 	}
 
 	pathComponents := strings.Split(r.URL.Path, "/")
 	uid := pathComponents[len(pathComponents)-1]
 
-	u := h.userRepository.GetUserByID(uid)
+	u := models.UserWithDisabledReasonFrom(h.userRepository.GetUserByID(uid))
 
 	if u == nil {
 		w.WriteHeader(http.StatusNotFound)

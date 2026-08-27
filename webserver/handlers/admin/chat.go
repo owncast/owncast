@@ -143,7 +143,7 @@ func (a *Admin) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *Admin) updateUserStatus(request generated.UpdateUserEnabledJSONBody, moderator *models.User) error {
-	if err := a.userRepository.SetEnabled(*request.UserId, *request.Enabled); err != nil {
+	if err := a.userRepository.SetEnabled(*request.UserId, *request.Enabled, ""); err != nil {
 		log.Errorln("error changing user enabled status", err)
 		return err
 	}
@@ -197,7 +197,7 @@ func (a *Admin) handleUserDisabling(userID string) error {
 func (a *Admin) GetDisabledUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	users := a.userRepository.GetDisabledUsers()
+	users := models.UsersWithDisabledReasonsFrom(a.userRepository.GetDisabledUsers())
 	webutils.WriteResponse(w, users)
 }
 
@@ -234,7 +234,7 @@ func (a *Admin) UpdateUserModerator(w http.ResponseWriter, r *http.Request) {
 func (a *Admin) GetModerators(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	users := a.userRepository.GetModeratorUsers()
+	users := models.UsersWithDisabledReasonsFrom(a.userRepository.GetModeratorUsers())
 	webutils.WriteResponse(w, users)
 }
 

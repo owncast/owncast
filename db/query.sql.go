@@ -1256,7 +1256,7 @@ func (q *Queries) GetUniqueDirectoryDeliveryInboxes(ctx context.Context) ([]stri
 }
 
 const getUserByAccessToken = `-- name: GetUserByAccessToken :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, users.type = 'API' AS is_bot FROM users, user_access_tokens WHERE token = ? AND users.id = user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, users.type = 'API' AS is_bot FROM users, user_access_tokens WHERE token = ? AND users.id = user_id
 `
 
 type GetUserByAccessTokenRow struct {
@@ -1265,6 +1265,7 @@ type GetUserByAccessTokenRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1281,6 +1282,7 @@ func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUs
 		&i.DisplayColor,
 		&i.CreatedAt,
 		&i.DisabledAt,
+		&i.DisabledReason,
 		&i.PreviousNames,
 		&i.NamechangedAt,
 		&i.AuthenticatedAt,
@@ -1291,7 +1293,7 @@ func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUs
 }
 
 const getUserByAuth = `-- name: GetUserByAuth :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth_key = ? AND auth.type = ? AND users.id = auth.user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth_key = ? AND auth.type = ? AND users.id = auth.user_id
 `
 
 type GetUserByAuthParams struct {
@@ -1305,6 +1307,7 @@ type GetUserByAuthRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1320,6 +1323,7 @@ func (q *Queries) GetUserByAuth(ctx context.Context, arg GetUserByAuthParams) (G
 		&i.DisplayColor,
 		&i.CreatedAt,
 		&i.DisabledAt,
+		&i.DisabledReason,
 		&i.PreviousNames,
 		&i.NamechangedAt,
 		&i.AuthenticatedAt,
@@ -1329,7 +1333,7 @@ func (q *Queries) GetUserByAuth(ctx context.Context, arg GetUserByAuthParams) (G
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users WHERE id = ?
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users WHERE id = ?
 `
 
 type GetUserByIDRow struct {
@@ -1338,6 +1342,7 @@ type GetUserByIDRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1354,6 +1359,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (GetUserByIDRow, e
 		&i.DisplayColor,
 		&i.CreatedAt,
 		&i.DisabledAt,
+		&i.DisabledReason,
 		&i.PreviousNames,
 		&i.NamechangedAt,
 		&i.AuthenticatedAt,
@@ -1364,7 +1370,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (GetUserByIDRow, e
 }
 
 const getUserByPluginAuth = `-- name: GetUserByPluginAuth :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth.type = 'plugin.auth' AND auth.provider = ? AND auth.auth_key = ? AND users.id = auth.user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth.type = 'plugin.auth' AND auth.provider = ? AND auth.auth_key = ? AND users.id = auth.user_id
 `
 
 type GetUserByPluginAuthParams struct {
@@ -1378,6 +1384,7 @@ type GetUserByPluginAuthRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1396,6 +1403,7 @@ func (q *Queries) GetUserByPluginAuth(ctx context.Context, arg GetUserByPluginAu
 		&i.DisplayColor,
 		&i.CreatedAt,
 		&i.DisabledAt,
+		&i.DisabledReason,
 		&i.PreviousNames,
 		&i.NamechangedAt,
 		&i.AuthenticatedAt,
@@ -1416,7 +1424,7 @@ func (q *Queries) GetUserDisplayNameByToken(ctx context.Context, token string) (
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users ORDER BY created_at DESC
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users ORDER BY created_at DESC
 `
 
 type GetUsersRow struct {
@@ -1425,6 +1433,7 @@ type GetUsersRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1447,6 +1456,7 @@ func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
 			&i.DisplayColor,
 			&i.CreatedAt,
 			&i.DisabledAt,
+			&i.DisabledReason,
 			&i.PreviousNames,
 			&i.NamechangedAt,
 			&i.AuthenticatedAt,
@@ -1467,7 +1477,7 @@ func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
 }
 
 const getUsersPaginated = `-- name: GetUsersPaginated :many
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
 FROM users
 WHERE display_name LIKE '%' || ?1 || '%'
   AND (
@@ -1492,6 +1502,7 @@ type GetUsersPaginatedRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1528,6 +1539,7 @@ func (q *Queries) GetUsersPaginated(ctx context.Context, arg GetUsersPaginatedPa
 			&i.DisplayColor,
 			&i.CreatedAt,
 			&i.DisabledAt,
+			&i.DisabledReason,
 			&i.PreviousNames,
 			&i.NamechangedAt,
 			&i.AuthenticatedAt,
@@ -1548,7 +1560,7 @@ func (q *Queries) GetUsersPaginated(ctx context.Context, arg GetUsersPaginatedPa
 }
 
 const getUsersPaginatedAsc = `-- name: GetUsersPaginatedAsc :many
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
 FROM users
 WHERE display_name LIKE '%' || ?1 || '%'
   AND (
@@ -1573,6 +1585,7 @@ type GetUsersPaginatedAscRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1602,6 +1615,7 @@ func (q *Queries) GetUsersPaginatedAsc(ctx context.Context, arg GetUsersPaginate
 			&i.DisplayColor,
 			&i.CreatedAt,
 			&i.DisabledAt,
+			&i.DisabledReason,
 			&i.PreviousNames,
 			&i.NamechangedAt,
 			&i.AuthenticatedAt,
