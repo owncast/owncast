@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
 
@@ -8,28 +8,18 @@ export type EmojiPickerProps = {
 };
 
 export const EmojiPicker: FC<EmojiPickerProps> = ({ onEmojiSelect, customEmoji }) => {
-  const [custom, setCustom] = useState({});
-  const categories = [
-    'frequent',
-    'custom', // same id as in the setCustom call below
-    'people',
-    'nature',
-    'foods',
-    'activity',
-    'places',
-    'objects',
-    'symbols',
-    'flags',
+  const custom = [
+    {
+      id: 'custom',
+      name: 'Custom',
+      emojis: customEmoji.map(emoji => ({
+        id: emoji.name,
+        name: emoji.name,
+        skins: [{ src: emoji.url }],
+      })),
+    },
   ];
-  // Recreate the emoji picker when the custom emoji changes.
   useEffect(() => {
-    const e = customEmoji.map(emoji => ({
-      id: emoji.name,
-      name: emoji.name,
-      skins: [{ src: emoji.url }],
-    }));
-
-    setCustom([{ id: 'custom', name: 'Custom', emojis: e }]);
 
     // hack to make the picker work with viewbox only svgs, 24px is default size
     const shadow = document.querySelector('em-emoji-picker').shadowRoot;
@@ -43,7 +33,6 @@ export const EmojiPicker: FC<EmojiPickerProps> = ({ onEmojiSelect, customEmoji }
       data={data}
       custom={custom}
       onEmojiSelect={onEmojiSelect}
-      categories={categories}
       dynamicWidth
     />
   );
