@@ -145,8 +145,12 @@ Owncast and plugins communicate through a shared dispatcher
 - For chat, `pluginhost` registers a **filter** (`newPluginChatFilter`) so
   plugins' `filterChatMessage` handlers run on inbound messages before they're
   broadcast (redact, drop, rewrite).
-- Plugins can also **emit** custom events to each other; `env.Emit` is wired to
-  the runtime's live dispatcher after the manager starts.
+- Plugins can also **emit** custom events to each other. The manager prefixes
+  each custom notification hook with its declaring plugin's slug, so a plugin
+  declaring `foo` owns `<slug>.foo`. Emitters target that fully qualified name.
+  The dispatcher removes the owner prefix before calling the plugin's local
+  handler. A custom hook that would collide with a built-in event is rejected.
+  `env.Emit` is wired to the runtime's live dispatcher after the manager starts.
 
 ## Lifecycle, persistence, and HTTP
 

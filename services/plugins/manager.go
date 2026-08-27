@@ -1648,6 +1648,9 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 	if err := requireSubscriptionPermissions(manifest, runtime.Subscriptions); err != nil {
 		return nil, fail(err)
 	}
+	if err := namespaceCustomSubscriptions(manifest.Slug, &runtime.Subscriptions); err != nil {
+		return nil, fail(err)
+	}
 	manifest.Subscriptions = runtime.Subscriptions
 	// Command registrations are derived by the SDK. They have no sidecar
 	// counterpart for AgreesWith to compare. Core uses them for matching,
@@ -1817,6 +1820,23 @@ func requireSubscriptionPermissions(manifest *Manifest, subs Subscriptions) erro
 		}
 	}
 
+	return nil
+}
+
+// namespaceCustomSubscriptions gives each plugin exclusive ownership of its
+// custom notification hooks. Built-in subscriptions keep their canonical
+// names.
+func namespaceCustomSubscriptions(slug string, subs *Subscriptions) error {
+	for i := range subs.Notify {
+		if reservedEventTypes[subs.Notify[i].Event] {
+			continue
+		}
+		qualified := slug + "." + subs.Notify[i].Event
+		if reservedEventTypes[qualified] {
+			return fmt.Errorf("custom event hook %q collides with a built-in event", qualified)
+		}
+		subs.Notify[i].Event = qualified
+	}
 	return nil
 }
 
