@@ -1,6 +1,6 @@
 self.__BUILD_MANIFEST = {
   "/": [
-    "static/chunks/1bzsrz8wcfbwy.js"
+    "static/chunks/2ps0-4ehfsozu.js"
   ],
   "/_error": [
     "static/chunks/29a_jpa_bvh0a.js"
@@ -81,10 +81,10 @@ self.__BUILD_MANIFEST = {
     "static/chunks/1-v2lyn6c7f2p.js"
   ],
   "/embed/chat/readonly": [
-    "static/chunks/0flzo7ze4o0br.js"
+    "static/chunks/2g125ad0_mved.js"
   ],
   "/embed/chat/readwrite": [
-    "static/chunks/3du22plkdxwid.js"
+    "static/chunks/36c_7t6b8-ox5.js"
   ],
   "/embed/video": [
     "static/chunks/05c5f1f6t8vv2.js"
