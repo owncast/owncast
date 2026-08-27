@@ -16,8 +16,8 @@ import (
 
 type userContextKey struct{}
 
-// UserFromRequest returns the authenticated user attached by user-token
-// middleware, or nil when the request was not authenticated that way.
+// UserFromRequest returns the moderator attached by
+// RequireUserModerationScopeAccesstoken, or nil for other authentication paths.
 func UserFromRequest(r *http.Request) *models.User {
 	user, _ := r.Context().Value(userContextKey{}).(*models.User)
 	return user

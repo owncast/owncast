@@ -38,7 +38,7 @@ func TestRequireUserModerationScopeAttachesAuthenticatedUser(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
 	}
-	if got != moderator {
-		t.Fatalf("authenticated user = %#v, want %#v", got, moderator)
+	if got == nil || got.ID != moderator.ID {
+		t.Fatalf("authenticated user = %#v, want ID %q", got, moderator.ID)
 	}
 }

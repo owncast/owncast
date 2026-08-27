@@ -81,7 +81,7 @@ func TestSetMessagesVisibilityIncludesModeratorInWebhookEvent(t *testing.T) {
 	if !ok {
 		t.Fatalf("event data type = %T, want *WebhookVisibilityToggleEventData", received.EventData)
 	}
-	if payload.User != moderator {
-		t.Fatalf("moderator = %#v, want %#v", payload.User, moderator)
+	if payload.User == nil || payload.User.ID != moderator.ID {
+		t.Fatalf("moderator = %#v, want ID %q", payload.User, moderator.ID)
 	}
 }
