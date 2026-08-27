@@ -203,13 +203,13 @@ DELETE FROM notifications WHERE channel = ? AND destination = ?;
 INSERT INTO auth(user_id, auth_key, type, provider, profile_url, handle, is_public) values(?, ?, ?, ?, ?, ?, ?);
 
 -- name: GetUserByAuth :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth_key = ? AND auth.type = ? AND users.id = auth.user_id;
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth_key = ? AND auth.type = ? AND users.id = auth.user_id;
 
 -- name: GetUserByPluginAuth :one
 -- Plugin-auth lookup keyed on (provider, auth_key). The type literal mirrors
 -- models.PluginAuth and pins the lookup to the plugin namespace, so a plugin
 -- slug can never resolve a built-in identity.
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth.type = 'plugin.auth' AND auth.provider = ? AND auth.auth_key = ? AND users.id = auth.user_id;
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth.type = 'plugin.auth' AND auth.provider = ? AND auth.auth_key = ? AND users.id = auth.user_id;
 
 -- name: CountUserAuthByProvider :one
 SELECT count(*) FROM auth WHERE user_id = ? AND type = ? AND provider = ?;
@@ -223,13 +223,13 @@ SELECT user_id, type, provider FROM auth WHERE user_id IN (sqlc.slice('user_ids'
 INSERT INTO user_access_tokens(token, user_id) values(?, ?);
 
 -- name: GetUserByAccessToken :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, users.type = 'API' AS is_bot FROM users, user_access_tokens WHERE token = ? AND users.id = user_id;
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, users.type = 'API' AS is_bot FROM users, user_access_tokens WHERE token = ? AND users.id = user_id;
 
 -- name: GetUserByID :one
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users WHERE id = ?;
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users WHERE id = ?;
 
 -- name: GetUsers :many
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users ORDER BY created_at DESC;
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users ORDER BY created_at DESC;
 
 -- name: GetUserDisplayNameByToken :one
 SELECT display_name FROM users JOIN user_access_tokens ON users.id = user_access_tokens.user_id WHERE token = ? AND users.disabled_at IS NULL;
@@ -262,7 +262,7 @@ UPDATE users SET display_color = ? WHERE id = ?;
 -- rather than a page. GetUsersPaginatedAsc is the oldest-first counterpart;
 -- the two exist as separate queries because sqlc can't bind a sort direction
 -- into ORDER BY.
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
 FROM users
 WHERE display_name LIKE '%' || @search || '%'
   AND (
@@ -276,7 +276,7 @@ LIMIT @page_limit OFFSET @page_offset;
 -- name: GetUsersPaginatedAsc :many
 -- Oldest-first counterpart to GetUsersPaginated. Same @search/@status filter,
 -- only the created_at ordering differs.
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
 FROM users
 WHERE display_name LIKE '%' || @search || '%'
   AND (

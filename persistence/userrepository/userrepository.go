@@ -38,7 +38,7 @@ type UserRepository interface {
 	InsertExternalAPIUser(token string, name string, color int, scopes []string) error
 	IsDisplayNameAvailable(displayName string) (bool, error)
 	SetAccessTokenToOwner(token, userID string) error
-	SetEnabled(userID string, enabled bool) error
+	SetEnabled(userID string, enabled bool, reason string) error
 	SetModerator(userID string, isModerator bool) error
 	SetUserAsAuthenticated(userID string) error
 	HasValidScopes(scopes []string) bool
@@ -190,7 +190,7 @@ func (r *SqlUserRepository) create(user *models.User) error {
 }
 
 // SetEnabled will set the enabled status of a single user by ID.
-func (r *SqlUserRepository) SetEnabled(userID string, enabled bool) error {
+func (r *SqlUserRepository) SetEnabled(userID string, enabled bool, reason string) error {
 	r.datastore.DbLock.Lock()
 	defer r.datastore.DbLock.Unlock()
 
@@ -203,9 +203,9 @@ func (r *SqlUserRepository) SetEnabled(userID string, enabled bool) error {
 
 	var stmt *sql.Stmt
 	if !enabled {
-		stmt, err = tx.Prepare("UPDATE users SET disabled_at=DATETIME('now', 'localtime') WHERE id IS ?")
+		stmt, err = tx.Prepare("UPDATE users SET disabled_at=DATETIME('now', 'localtime'), disabled_reason=? WHERE id IS ?")
 	} else {
-		stmt, err = tx.Prepare("UPDATE users SET disabled_at=null WHERE id IS ?")
+		stmt, err = tx.Prepare("UPDATE users SET disabled_at=null, disabled_reason=null WHERE id IS ?")
 	}
 
 	if err != nil {
@@ -214,7 +214,12 @@ func (r *SqlUserRepository) SetEnabled(userID string, enabled bool) error {
 
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(userID); err != nil {
+	if !enabled {
+		_, err = stmt.Exec(reason, userID)
+	} else {
+		_, err = stmt.Exec(userID)
+	}
+	if err != nil {
 		return err
 	}
 
@@ -228,6 +233,7 @@ func userFromColumns(
 	id, displayName string,
 	displayColor int64,
 	createdAt, disabledAt sql.NullTime,
+	disabledReason sql.NullString,
 	previousNames sql.NullString,
 	namechangedAt, authenticatedAt sql.NullTime,
 	scopes sql.NullString,
@@ -254,6 +260,7 @@ func userFromColumns(
 		DisplayColor:    int(displayColor),
 		CreatedAt:       createdAt.Time,
 		DisabledAt:      disabled,
+		DisabledReason:  disabledReason.String,
 		PreviousNames:   strings.Split(previousNames.String, ","),
 		NameChangedAt:   &namechangedAt.Time,
 		AuthenticatedAt: authAt,
@@ -269,7 +276,7 @@ func (r *SqlUserRepository) GetUserByToken(token string) *models.User {
 	if err != nil {
 		return nil
 	}
-	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot)
+	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.DisabledReason, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot)
 }
 
 // SetAccessTokenToOwner will reassign an access token to be owned by a
@@ -356,7 +363,7 @@ func (r *SqlUserRepository) GetUserByAuth(authToken string, authType models.Auth
 	if err != nil {
 		return nil
 	}
-	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, false)
+	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.DisabledReason, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, false)
 }
 
 // GetUserByPluginAuth returns the user a viewer-auth plugin registered for the
@@ -372,7 +379,7 @@ func (r *SqlUserRepository) GetUserByPluginAuth(pluginName, authKey string) *mod
 	if err != nil {
 		return nil
 	}
-	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, false)
+	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.DisabledReason, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, false)
 }
 
 // SetUserScopes replaces a user's full scope set. Used by viewer-auth plugins
@@ -457,12 +464,12 @@ func (r *SqlUserRepository) GetUserByID(id string) *models.User {
 	if err != nil {
 		return nil
 	}
-	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot)
+	return userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.DisabledReason, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot)
 }
 
 // GetDisabledUsers will return back all the currently disabled users that are not API users.
 func (r *SqlUserRepository) GetDisabledUsers() []*models.User {
-	query := "SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at FROM users WHERE disabled_at IS NOT NULL AND type IS NOT 'API'"
+	query := "SELECT id, display_name, scopes, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at FROM users WHERE disabled_at IS NOT NULL AND type IS NOT 'API'"
 
 	rows, err := r.datastore.DB.Query(query)
 	if err != nil {
@@ -490,7 +497,7 @@ func (r *SqlUserRepository) GetUsers() []*models.User {
 
 	users := make([]*models.User, 0, len(rows))
 	for _, u := range rows {
-		users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
+		users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.DisabledReason, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
 	}
 	return users
 }
@@ -534,7 +541,7 @@ func (r *SqlUserRepository) GetUsersPaginated(offset int, limit int, search stri
 			return nil, 0, errors.Wrap(err, "unable to query users")
 		}
 		for _, u := range rows {
-			users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
+			users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.DisabledReason, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
 		}
 	} else {
 		rows, err := r.datastore.GetQueries().GetUsersPaginated(ctx, db.GetUsersPaginatedParams{
@@ -547,7 +554,7 @@ func (r *SqlUserRepository) GetUsersPaginated(offset int, limit int, search stri
 			return nil, 0, errors.Wrap(err, "unable to query users")
 		}
 		for _, u := range rows {
-			users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
+			users = append(users, userFromColumns(u.ID, u.DisplayName, u.DisplayColor, u.CreatedAt, u.DisabledAt, u.DisabledReason, u.PreviousNames, u.NamechangedAt, u.AuthenticatedAt, u.Scopes, u.IsBot))
 		}
 	}
 
@@ -660,16 +667,16 @@ func (r *SqlUserRepository) DeleteUser(userID string) error {
 
 // GetModeratorUsers will return a list of users with moderator access.
 func (r *SqlUserRepository) GetModeratorUsers() []*models.User {
-	query := `SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at FROM (
-		WITH RECURSIVE split(id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at, scope, rest) AS (
-		  SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at, '', scopes || ',' FROM users
+	query := `SELECT id, display_name, scopes, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at FROM (
+		WITH RECURSIVE split(id, display_name, scopes, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, scope, rest) AS (
+		  SELECT id, display_name, scopes, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, '', scopes || ',' FROM users
 		   UNION ALL
-		  SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at,
+		  SELECT id, display_name, scopes, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at,
 				 substr(rest, 0, instr(rest, ',')),
 				 substr(rest, instr(rest, ',')+1)
 			FROM split
 		   WHERE rest <> '')
-		SELECT id, display_name, scopes, display_color, created_at, disabled_at, previous_names, namechanged_at, scope
+		SELECT id, display_name, scopes, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, scope
 		  FROM split
 		 WHERE scope <> ''
 		 ORDER BY created_at
@@ -696,11 +703,12 @@ func (r *SqlUserRepository) getUsersFromRows(rows *sql.Rows) []*models.User {
 		var displayColor int
 		var createdAt time.Time
 		var disabledAt *time.Time
+		var disabledReason *string
 		var previousUsernames string
 		var userNameChangedAt *time.Time
 		var scopesString *string
 
-		if err := rows.Scan(&id, &displayName, &scopesString, &displayColor, &createdAt, &disabledAt, &previousUsernames, &userNameChangedAt); err != nil {
+		if err := rows.Scan(&id, &displayName, &scopesString, &displayColor, &createdAt, &disabledAt, &disabledReason, &previousUsernames, &userNameChangedAt); err != nil {
 			log.Errorln("error creating collection of users from results", err)
 			return nil
 		}
@@ -709,16 +717,21 @@ func (r *SqlUserRepository) getUsersFromRows(rows *sql.Rows) []*models.User {
 		if scopesString != nil {
 			scopes = strings.Split(*scopesString, ",")
 		}
+		var reason string
+		if disabledReason != nil {
+			reason = *disabledReason
+		}
 
 		user := &models.User{
-			ID:            id,
-			DisplayName:   displayName,
-			DisplayColor:  displayColor,
-			CreatedAt:     createdAt,
-			DisabledAt:    disabledAt,
-			PreviousNames: strings.Split(previousUsernames, ","),
-			NameChangedAt: userNameChangedAt,
-			Scopes:        scopes,
+			ID:             id,
+			DisplayName:    displayName,
+			DisplayColor:   displayColor,
+			CreatedAt:      createdAt,
+			DisabledAt:     disabledAt,
+			DisabledReason: reason,
+			PreviousNames:  strings.Split(previousUsernames, ","),
+			NameChangedAt:  userNameChangedAt,
+			Scopes:         scopes,
 		}
 		users = append(users, user)
 	}

@@ -143,7 +143,7 @@ func (a *Admin) UpdateUserEnabled(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *Admin) updateUserStatus(request generated.UpdateUserEnabledJSONBody, moderator *models.User) error {
-	if err := a.userRepository.SetEnabled(*request.UserId, *request.Enabled); err != nil {
+	if err := a.userRepository.SetEnabled(*request.UserId, *request.Enabled, ""); err != nil {
 		log.Errorln("error changing user enabled status", err)
 		return err
 	}

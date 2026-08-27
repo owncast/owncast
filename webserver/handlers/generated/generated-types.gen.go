@@ -848,13 +848,16 @@ type User struct {
 	Authenticated *bool     `json:"authenticated,omitempty"`
 	CreatedAt     *string   `json:"createdAt,omitempty"`
 	DisabledAt    *string   `json:"disabledAt,omitempty"`
-	DisplayColor  *int      `json:"displayColor,omitempty"`
-	DisplayName   *string   `json:"displayName,omitempty"`
-	Id            *string   `json:"id,omitempty"`
-	IsBot         *bool     `json:"isBot,omitempty"`
-	NameChangedAt *string   `json:"nameChangedAt,omitempty"`
-	PreviousNames *[]string `json:"previousNames,omitempty"`
-	Scopes        *[]string `json:"scopes,omitempty"`
+
+	// DisabledReason Reason provided when the user was disabled.
+	DisabledReason *string   `json:"disabledReason,omitempty"`
+	DisplayColor   *int      `json:"displayColor,omitempty"`
+	DisplayName    *string   `json:"displayName,omitempty"`
+	Id             *string   `json:"id,omitempty"`
+	IsBot          *bool     `json:"isBot,omitempty"`
+	NameChangedAt  *string   `json:"nameChangedAt,omitempty"`
+	PreviousNames  *[]string `json:"previousNames,omitempty"`
+	Scopes         *[]string `json:"scopes,omitempty"`
 }
 
 // UserEvent defines model for UserEvent.

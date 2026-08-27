@@ -1881,7 +1881,7 @@ func wireUserHostFns(env *plugins.HostEnv, deps Deps) {
 	}
 
 	env.SetUserEnabled = func(pluginName, userID string, enabled bool, reason string) error {
-		if err := users.SetEnabled(userID, enabled); err != nil {
+		if err := users.SetEnabled(userID, enabled, reason); err != nil {
 			return err
 		}
 		if !enabled {

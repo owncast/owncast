@@ -13,6 +13,7 @@ const (
 type User struct {
 	CreatedAt       time.Time  `json:"createdAt"`
 	DisabledAt      *time.Time `json:"disabledAt,omitempty"`
+	DisabledReason  string     `json:"disabledReason,omitempty"`
 	NameChangedAt   *time.Time `json:"nameChangedAt,omitempty"`
 	AuthenticatedAt *time.Time `json:"-"`
 	ID              string     `json:"id"`

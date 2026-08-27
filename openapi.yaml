@@ -3965,6 +3965,9 @@ components:
           type: string
         disabledAt:
           type: string
+        disabledReason:
+          type: string
+          description: Reason provided when the user was disabled.
         nameChangedAt:
           type: string
         id:
