@@ -1744,7 +1744,7 @@ func wireChatModerationHostFns(env *plugins.HostEnv, deps Deps) {
 	chatSvc := deps.Chat
 
 	env.DeleteMessage = func(pluginName, messageID string) error {
-		if err := chatSvc.SetMessagesVisibility([]string{messageID}, false); err != nil {
+		if err := chatSvc.SetMessagesVisibility([]string{messageID}, false, nil); err != nil {
 			return err
 		}
 		return nil
