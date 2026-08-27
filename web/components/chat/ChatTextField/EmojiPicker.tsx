@@ -20,7 +20,6 @@ export const EmojiPicker: FC<EmojiPickerProps> = ({ onEmojiSelect, customEmoji }
     },
   ];
   useEffect(() => {
-
     // hack to make the picker work with viewbox only svgs, 24px is default size
     const shadow = document.querySelector('em-emoji-picker').shadowRoot;
     const pickerStyles = new CSSStyleSheet();
@@ -28,12 +27,5 @@ export const EmojiPicker: FC<EmojiPickerProps> = ({ onEmojiSelect, customEmoji }
     shadow.adoptedStyleSheets = [pickerStyles];
   }, []);
 
-  return (
-    <Picker
-      data={data}
-      custom={custom}
-      onEmojiSelect={onEmojiSelect}
-      dynamicWidth
-    />
-  );
+  return <Picker data={data} custom={custom} onEmojiSelect={onEmojiSelect} dynamicWidth />;
 };
