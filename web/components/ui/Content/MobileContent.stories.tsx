@@ -58,6 +58,7 @@ const defaultArgs: MobileContentProps = {
     <p>Music, conversation, and a place to meet people who care about the same things.</p>
   `,
   pluginTabs: [],
+  setShowFollowModal: () => {},
   showFollowersTab: false,
   online: false,
   federatedServers: [],
