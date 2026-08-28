@@ -128,7 +128,7 @@
     "npm": "^11.0.0",
     "postcss": "^8.4.31",
     "prettier": "3.9.6",
-    "puppeteer-core": "^22.15.0",
+    "puppeteer-core": "^25.0.0",
     "sass": "1.100.0",
     "storybook": "^10.4.6",
     "style-dictionary": "5.5.0",
