@@ -79,6 +79,23 @@ jobs:
           # named in EARTHLY_BUILD_BRANCH below.
           fetch-depth: 0
 
+      - name: Download latest Owncast FFmpeg
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          release="$(curl -fsSL https://api.github.com/repos/owncast/ffmpeg-builds/releases/latest)"
+          for arch in amd64 arm64; do
+            ffmpeg_url="$(
+              printf '%s' "$release" |
+                jq -er --arg arch "$arch" '
+                  [.assets[] | select(.name | endswith("-linux-\($arch)-static.tar.gz"))] |
+                  if length == 1 then .[0].browser_download_url else error("latest release has no unique linux \($arch) static ffmpeg asset") end
+                '
+            )"
+            curl -fsSL "$ffmpeg_url" | tar -xzOf - ffmpeg > "ffmpeg-linux-$arch"
+            chmod 755 "ffmpeg-linux-$arch"
+            "./ffmpeg-linux-$arch" -version
+          done
+
       - name: Build and push
         if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && env.GH_CR_PAT != null }}
         env:

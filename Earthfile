@@ -152,6 +152,12 @@ docker-image:
   RUN apk update && apk add --no-cache ffmpeg ffmpeg-libs ca-certificates unzip && update-ca-certificates
   RUN addgroup -g 101 -S owncast && adduser -u 101 -S owncast -G owncast
   WORKDIR /app
+  IF [ "$TARGETPLATFORM" = "linux/amd64" ]
+    COPY --keep-ts ffmpeg-linux-amd64 /app/ffmpeg
+  ELSE IF [ "$TARGETPLATFORM" = "linux/arm64" ]
+    COPY --keep-ts ffmpeg-linux-arm64 /app/ffmpeg
+  END
+
   COPY --keep-ts --platform=$TARGETPLATFORM +package/owncast.zip /app
   RUN unzip -x owncast.zip && mkdir data
 
