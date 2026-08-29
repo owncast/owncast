@@ -31,6 +31,8 @@ type ActivityPubActor struct {
 	Image *url.URL
 	// DisabledAt is the time, if any, this follower was blocked/removed.
 	DisabledAt *time.Time
+	// ApprovedAt is the time this follower was approved.
+	ApprovedAt *time.Time
 	// Name is the display name of the follower.
 	Name string
 	// Username is the account username of the remote actor.

@@ -10,6 +10,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // TestSnapshot_OmitsStrikeDisabledPlugins is the C4 regression: a plugin the
@@ -195,6 +197,57 @@ func TestManager_ScanRemovesDeletedFiles(t *testing.T) {
 		time.Sleep(20 * time.Millisecond)
 	}
 	t.Errorf("expected scan to drop deleted plugin within 2s, still have %d", len(mgr.List()))
+}
+
+func TestManager_ScanIgnoresUploadStagingPackages(t *testing.T) {
+	dir := t.TempDir()
+	ctx := context.Background()
+	mgr := NewManager(dir, &HostEnv{})
+	manifest := func(slug string) []byte {
+		t.Helper()
+		data, err := json.Marshal(map[string]any{
+			"api":         "1",
+			"name":        slug,
+			"slug":        slug,
+			"version":     "0.1.0",
+			"permissions": []string{},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return data
+	}
+
+	installed := buildJSPackageBytes(t,
+		manifest("installed"),
+		[]byte(`const { definePlugin } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({ onChatMessage(msg) {} });`))
+	if err := os.WriteFile(filepath.Join(dir, "installed.ocpkg"), installed, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(ctx)
+
+	staging := buildJSPackageBytes(t,
+		manifest("not-installed"),
+		[]byte(`const { definePlugin } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({ onChatMessage(msg) {} });`))
+	if err := os.WriteFile(filepath.Join(dir, ".upload-not-installed.ocpkg"), staging, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := mgr.scan(ctx); err != nil {
+		t.Fatalf("scan: %v", err)
+	}
+	if got := len(mgr.List()); got != 1 {
+		t.Fatalf("staging package was discovered: got %d entries, want 1", got)
+	}
+	if got := mgr.List()[0].Slug; got != "installed" {
+		t.Fatalf("discovered staging package %q, want installed", got)
+	}
 }
 
 func TestManager_EnableUnknownPluginErrors(t *testing.T) {
@@ -494,6 +547,115 @@ func TestManager_Install_WritesPackageAndDiscovers(t *testing.T) {
 	}
 	if len(mgr.List()) != 1 {
 		t.Errorf("install should leave one discovered plugin, got %d", len(mgr.List()))
+	}
+}
+
+func TestManager_InstallUploaded_RejectsExistingSlug(t *testing.T) {
+	wasmPath := findExampleWasm(t)
+	wasmBytes, err := os.ReadFile(wasmPath)
+	if err != nil {
+		t.Fatalf("read example wasm: %v", err)
+	}
+
+	ctx := context.Background()
+	mgr := NewManager(t.TempDir(), &HostEnv{})
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(ctx)
+
+	pkg := buildPackageBytes(t, validManifestBytes(), wasmBytes, nil)
+	if _, err := mgr.Install(ctx, pkg); err != nil {
+		t.Fatalf("install first plugin: %v", err)
+	}
+	if _, err := mgr.InstallUploaded(ctx, pkg); err == nil || !strings.Contains(err.Error(), `slug "hello-world"`) {
+		t.Fatalf("duplicate upload error = %v, want slug-specific rejection", err)
+	}
+}
+
+func TestManager_Install_RejectsReplacingLoosePlugin(t *testing.T) {
+	wasmPath := findExampleWasm(t)
+	wasmBytes, err := os.ReadFile(wasmPath)
+	if err != nil {
+		t.Fatalf("read example wasm: %v", err)
+	}
+
+	dir := t.TempDir()
+	loosePath := filepath.Join(dir, "local-copy.wasm")
+	if err := os.WriteFile(loosePath, wasmBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "local-copy.manifest.json"), validManifestBytes(), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	ctx := context.Background()
+	mgr := NewManager(dir, &HostEnv{})
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(ctx)
+
+	pkg := buildPackageBytes(t, validManifestBytes(), wasmBytes, nil)
+	_, err = mgr.Install(ctx, pkg)
+	if err == nil || !strings.Contains(err.Error(), `slug "hello-world"`) ||
+		!strings.Contains(err.Error(), "loose plugin") ||
+		!strings.Contains(err.Error(), loosePath) {
+		t.Fatalf("install error = %v, want loose-plugin conflict", err)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "hello-world.ocpkg")); !os.IsNotExist(err) {
+		t.Fatalf("conflicting package was written, stat error = %v", err)
+	}
+	entries := mgr.List()
+	if len(entries) != 1 || entries[0].Path != loosePath {
+		t.Fatalf("discovered entries = %+v, want original loose plugin", entries)
+	}
+}
+
+func TestManager_ScanDisablesLaterPluginWithDuplicateSlug(t *testing.T) {
+	dir := t.TempDir()
+	manifest := func(name string) []byte {
+		t.Helper()
+		data, err := json.Marshal(map[string]any{
+			"api":     "1",
+			"name":    name,
+			"slug":    "shared-slug",
+			"version": "0.1.0",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return data
+	}
+	if err := os.WriteFile(filepath.Join(dir, "first.ocpkg"), buildPackageBytes(t, manifest("First plugin"), nil, nil), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "second.ocpkg"), buildPackageBytes(t, manifest("Second plugin"), nil, nil), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	previousLogOutput := log.StandardLogger().Out
+	var logOutput bytes.Buffer
+	log.SetOutput(&logOutput)
+	t.Cleanup(func() { log.SetOutput(previousLogOutput) })
+
+	mgr := NewManager(dir, &HostEnv{})
+	if err := mgr.Start(context.Background()); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(context.Background())
+
+	entries := mgr.List()
+	if len(entries) != 1 {
+		t.Fatalf("discovered plugins = %d, want 1", len(entries))
+	}
+	if entries[0].DisplayName != "First plugin" || entries[0].Path != filepath.Join(dir, "first.ocpkg") {
+		t.Errorf("duplicate scan kept %+v, want first package", entries[0])
+	}
+	if output := logOutput.String(); !strings.Contains(output, "Second plugin") ||
+		!strings.Contains(output, "shared-slug") ||
+		!strings.Contains(output, "first.ocpkg") {
+		t.Errorf("duplicate plugin log = %q", output)
 	}
 }
 
@@ -837,4 +999,47 @@ func TestManager_Uninstall_RemovesRegistrySidecar(t *testing.T) {
 	if _, err := os.Stat(sidecarPath(dir, "hello-world")); !os.IsNotExist(err) {
 		t.Errorf("uninstall should remove the registry sidecar, stat err = %v", err)
 	}
+}
+
+// TestSelfContainedWasmInstanceConfig pins the reserved Extism config keys a
+// hand-authored wasm module reads at runtime. "__slug" is what shared host
+// functions resolve identity by. The packaged manifest is what such a plugin
+// echoes back from register() because there is no SDK to bake a copy into the
+// module. "script" is shared-engine only. The artifact already is the code for
+// a self-contained module.
+func TestSelfContainedWasmInstanceConfig(t *testing.T) {
+	manifestBytes := validManifestBytes()
+	manifest, err := ParseManifest(manifestBytes)
+	if err != nil {
+		t.Fatalf("parse manifest: %v", err)
+	}
+	manifest.Type = RuntimeWasm
+
+	ctx := context.Background()
+	// An exportless module is enough: instantiate only wires config, memory
+	// limits, and host functions. It never calls into the guest.
+	p, release, err := instantiate(ctx, &HostEnv{}, manifest, manifestBytes, emptyWasmModule(), "hello-world")
+	if err != nil {
+		t.Fatalf("instantiate: %v", err)
+	}
+	defer func() { _ = p.Close(ctx) }()
+
+	if release != nil {
+		t.Error("self-contained wasm holds no shared-engine reference, so its release func must be nil")
+	}
+	if got := p.Config[configKeySlug]; got != manifest.Slug {
+		t.Errorf("config[%q] = %q, want %q", configKeySlug, got, manifest.Slug)
+	}
+	if got := p.Config[configKeyManifest]; got != string(manifestBytes) {
+		t.Errorf("config[%q] = %q, want the packaged sidecar bytes %q", configKeyManifest, got, string(manifestBytes))
+	}
+	if got, ok := p.Config[configKeyScript]; ok {
+		t.Errorf("config[%q] must not be set for self-contained wasm; got %q", configKeyScript, got)
+	}
+}
+
+// emptyWasmModule is a valid module with no imports, exports, or memory: the
+// 8-byte header (magic + version) and nothing else.
+func emptyWasmModule() []byte {
+	return []byte{0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00}
 }

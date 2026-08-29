@@ -3,6 +3,12 @@
   min-height: 400px;
 }
 
+.streamGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 350px));
+  gap: 16px;
+}
+
 .loadingContainer,
 .errorContainer,
 .emptyContainer {

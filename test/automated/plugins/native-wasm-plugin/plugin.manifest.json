@@ -1,0 +1,16 @@
+{
+  "api": "1",
+  "name": "Native Wasm Test",
+  "slug": "native-wasm-test",
+  "version": "0.1.0",
+  "description": "Core integration fixture compiled directly to wasm with no runtime script.",
+  "permissions": ["chat.send"],
+  "subscriptions": {
+    "notify": [
+      { "event": "chat.message.received" }
+    ]
+  },
+  "bot": {
+    "displayName": "Native Wasm Test"
+  }
+}

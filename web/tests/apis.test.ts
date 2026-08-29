@@ -1,4 +1,4 @@
-import { extractAPIErrorMessage, fetchData } from '../utils/apis';
+import { ADMIN_CSRF_HEADER, extractAPIErrorMessage, fetchData } from '../utils/apis';
 
 describe('extractAPIErrorMessage', () => {
   test('prefers backend error field when present', () => {
@@ -42,6 +42,27 @@ describe('fetchData', () => {
 
     await expect(fetchData('/api/admin/plugins/registry/install')).rejects.toThrow(
       'Invalid JSON response from server',
+    );
+  });
+
+  test('adds CSRF protection to state-changing admin requests', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => '{}',
+    } as Response);
+
+    await fetchData('/api/admin/config/name', {
+      method: 'POST',
+      data: { value: 'Owncast' },
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/api/admin/config/name',
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({ [ADMIN_CSRF_HEADER]: '1' }),
+      }),
     );
   });
 });

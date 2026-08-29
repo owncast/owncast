@@ -73,10 +73,18 @@ func (s *Service) SetViewerActive(viewer *models.Viewer) {
 	s.statsMu.Lock()
 	defer s.statsMu.Unlock()
 
-	// Asynchronously, optionally, fetch GeoIP info.
-	go func(viewer *models.Viewer) {
-		viewer.Geo = s.geoIPClient.GetGeoFromIP(viewer.IPAddress)
-	}(viewer)
+	// Asynchronously, optionally, fetch GeoIP info. The lookup can be slow,
+	// so it lands on the stored viewer later, under the same lock every
+	// other reader takes.
+	go func(clientID, ipAddress string) {
+		geo := s.geoIPClient.GetGeoFromIP(ipAddress)
+
+		s.statsMu.Lock()
+		defer s.statsMu.Unlock()
+		if stored, ok := s.stats.Viewers[clientID]; ok {
+			stored.Geo = geo
+		}
+	}(viewer.ClientID, viewer.IPAddress)
 
 	if _, exists := s.stats.Viewers[viewer.ClientID]; exists {
 		s.stats.Viewers[viewer.ClientID].LastSeen = time.Now()
@@ -87,13 +95,22 @@ func (s *Service) SetViewerActive(viewer *models.Viewer) {
 	s.stats.OverallMaxViewerCount = int(math.Max(float64(s.stats.SessionMaxViewerCount), float64(s.stats.OverallMaxViewerCount)))
 }
 
-// GetActiveViewers returns the currently-tracked viewers. The returned
-// map is the live one — callers should not modify it.
-func (s *Service) GetActiveViewers() map[string]*models.Viewer {
+// GetActiveViewers returns a snapshot of the currently-tracked viewers.
+// The viewers are copied because the live map and the viewers in it are
+// mutated by request handlers and the prune goroutine while callers read.
+func (s *Service) GetActiveViewers() map[string]models.Viewer {
 	if s.stats == nil {
 		return nil
 	}
-	return s.stats.Viewers
+
+	s.statsMu.Lock()
+	defer s.statsMu.Unlock()
+
+	viewers := make(map[string]models.Viewer, len(s.stats.Viewers))
+	for id, viewer := range s.stats.Viewers {
+		viewers[id] = *viewer
+	}
+	return viewers
 }
 
 func (s *Service) pruneViewerCount() {

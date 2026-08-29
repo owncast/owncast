@@ -18,7 +18,9 @@ SELECT count(*) FROM ap_outbox WHERE type = 'Note';
 -- Excludes featured-streams (Owncast-server) follows so they don't show up in
 -- the public or admin followers list; they are tracked as a directory
 -- relationship, not surfaced as followers.
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1 ORDER BY created_at DESC LIMIT ? OFFSET ?;
+-- rowid breaks created_at ties (second resolution) so pagination order is
+-- deterministic; without it, same-second follows shift between pages.
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1 ORDER BY created_at DESC, rowid DESC LIMIT ? OFFSET ?;
 
 -- name: GetRejectedAndBlockedFollowers :many
 SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null;
@@ -68,6 +70,68 @@ INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name
 
 -- name: AddToOutbox :exec
 INSERT INTO ap_outbox(iri, value, type, live_notification) values(?, ?, ?, ?);
+
+-- name: QueueActivityPubDelivery :one
+INSERT INTO ap_delivery_queue (
+    inbox,
+    payload,
+    actor_iri,
+    activity_type,
+    coalesce_key,
+    next_attempt_at
+) VALUES (?, ?, ?, ?, ?, ?)
+ON CONFLICT(inbox, coalesce_key) WHERE coalesce_key IS NOT NULL AND failed_at IS NULL
+DO UPDATE SET
+    payload = excluded.payload,
+    actor_iri = excluded.actor_iri,
+    activity_type = excluded.activity_type,
+    next_attempt_at = excluded.next_attempt_at,
+    attempts = 0,
+    last_error = NULL,
+    revision = ap_delivery_queue.revision + 1
+RETURNING id;
+
+-- name: ClaimActivityPubDelivery :one
+UPDATE ap_delivery_queue
+SET claimed_until = @claimed_until,
+    attempts = attempts + 1
+WHERE id = (
+    SELECT candidate.id
+    FROM ap_delivery_queue AS candidate
+    WHERE candidate.failed_at IS NULL
+      AND candidate.next_attempt_at <= @now
+      AND (candidate.claimed_until IS NULL OR candidate.claimed_until <= @now)
+    ORDER BY candidate.next_attempt_at, candidate.id
+    LIMIT 1
+)
+RETURNING id, inbox, payload, actor_iri, activity_type, coalesce_key, attempts, revision;
+
+-- name: CompleteActivityPubDelivery :execrows
+DELETE FROM ap_delivery_queue WHERE id = ? AND revision = ?;
+
+-- name: RetryActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    next_attempt_at = ?,
+    last_error = ?
+WHERE id = ? AND revision = ?;
+
+-- name: DeferActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    next_attempt_at = ?,
+    attempts = MAX(attempts - 1, 0)
+WHERE id = ? AND revision = ?;
+
+-- name: FailActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    last_error = ?,
+    failed_at = ?
+WHERE id = ? AND revision = ?;
+
+-- name: ReleaseSupersededActivityPubDelivery :exec
+UPDATE ap_delivery_queue SET claimed_until = NULL WHERE id = ? AND revision != ?;
 
 -- name: AddToAcceptedActivities :exec
 INSERT INTO ap_accepted_activities(iri, actor, type, timestamp) values(?, ?, ?, ?);
@@ -139,13 +203,13 @@ DELETE FROM notifications WHERE channel = ? AND destination = ?;
 INSERT INTO auth(user_id, auth_key, type, provider, profile_url, handle, is_public) values(?, ?, ?, ?, ?, ?, ?);
 
 -- name: GetUserByAuth :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth_key = ? AND auth.type = ? AND users.id = auth.user_id;
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth_key = ? AND auth.type = ? AND users.id = auth.user_id;
 
 -- name: GetUserByPluginAuth :one
 -- Plugin-auth lookup keyed on (provider, auth_key). The type literal mirrors
 -- models.PluginAuth and pins the lookup to the plugin namespace, so a plugin
 -- slug can never resolve a built-in identity.
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth.type = 'plugin.auth' AND auth.provider = ? AND auth.auth_key = ? AND users.id = auth.user_id;
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth.type = 'plugin.auth' AND auth.provider = ? AND auth.auth_key = ? AND users.id = auth.user_id;
 
 -- name: CountUserAuthByProvider :one
 SELECT count(*) FROM auth WHERE user_id = ? AND type = ? AND provider = ?;
@@ -159,13 +223,13 @@ SELECT user_id, type, provider FROM auth WHERE user_id IN (sqlc.slice('user_ids'
 INSERT INTO user_access_tokens(token, user_id) values(?, ?);
 
 -- name: GetUserByAccessToken :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, users.type = 'API' AS is_bot FROM users, user_access_tokens WHERE token = ? AND users.id = user_id;
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, users.type = 'API' AS is_bot FROM users, user_access_tokens WHERE token = ? AND users.id = user_id;
 
 -- name: GetUserByID :one
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users WHERE id = ?;
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users WHERE id = ?;
 
 -- name: GetUsers :many
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users ORDER BY created_at DESC;
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users ORDER BY created_at DESC;
 
 -- name: GetUserDisplayNameByToken :one
 SELECT display_name FROM users JOIN user_access_tokens ON users.id = user_access_tokens.user_id WHERE token = ? AND users.disabled_at IS NULL;
@@ -198,7 +262,7 @@ UPDATE users SET display_color = ? WHERE id = ?;
 -- rather than a page. GetUsersPaginatedAsc is the oldest-first counterpart;
 -- the two exist as separate queries because sqlc can't bind a sort direction
 -- into ORDER BY.
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
 FROM users
 WHERE display_name LIKE '%' || @search || '%'
   AND (
@@ -212,7 +276,7 @@ LIMIT @page_limit OFFSET @page_offset;
 -- name: GetUsersPaginatedAsc :many
 -- Oldest-first counterpart to GetUsersPaginated. Same @search/@status filter,
 -- only the created_at ordering differs.
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
 FROM users
 WHERE display_name LIKE '%' || @search || '%'
   AND (

@@ -34,6 +34,13 @@ func gooseVersion(t *testing.T, db *sql.DB) int64 {
 	return v
 }
 
+func columnExists(t *testing.T, db *sql.DB, table, column string) bool {
+	t.Helper()
+	var name string
+	err := db.QueryRow("SELECT name FROM pragma_table_info(?) WHERE name = ?", table, column).Scan(&name)
+	return err == nil
+}
+
 func mustExec(t *testing.T, db *sql.DB, query string) {
 	t.Helper()
 	if _, err := db.Exec(query); err != nil {
@@ -55,6 +62,7 @@ func TestRun_FreshDatabase(t *testing.T) {
 		"ap_followers", "ap_outbox", "ap_accepted_activities",
 		"notifications", "messages", "auth", "ip_bans",
 		"federated_servers",
+		"ap_delivery_queue",
 		"goose_db_version",
 	}
 	for _, name := range expectedTables {
@@ -63,13 +71,17 @@ func TestRun_FreshDatabase(t *testing.T) {
 		}
 	}
 
+	if !columnExists(t, db, "users", "disabled_reason") {
+		t.Error("users table is missing disabled_reason column")
+	}
+
 	// Fresh installs should not have the legacy config table.
 	if tableExists(t, db, "config") {
 		t.Error("fresh install should not have legacy config table")
 	}
 
-	if v := gooseVersion(t, db); v != 5 {
-		t.Errorf("goose version = %d, want 5", v)
+	if v := gooseVersion(t, db); v != 7 {
+		t.Errorf("goose version = %d, want 7", v)
 	}
 
 	// Calling Run a second time should be a no-op (idempotent).
@@ -79,7 +91,7 @@ func TestRun_FreshDatabase(t *testing.T) {
 }
 
 // TestRun_LegacyDatabaseAtV9 verifies that an existing v9 install transitions
-// to goose without invoking legacy migrations and without altering the schema.
+// to goose without invoking legacy migrations, then applies current migrations.
 func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	db := openTestDB(t)
 	createV9Schema(t, db)
@@ -93,8 +105,8 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	}
 
 	// Goose should record the latest migration.
-	if v := gooseVersion(t, db); v != 5 {
-		t.Errorf("goose version = %d, want 5", v)
+	if v := gooseVersion(t, db); v != 7 {
+		t.Errorf("goose version = %d, want 7", v)
 	}
 
 	// Config version should still be 9, the legacy bridge was not invoked.
@@ -104,13 +116,16 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 		t.Errorf("config.version = %d, want 9", version)
 	}
 
-	// goose_db_version plus the federated_servers table were added by
-	// the featured-streams migration; legacy schemas already have an
-	// ap_followers.owncast_server column applied via the same migration.
+	// goose_db_version, federated_servers, and the durable ActivityPub
+	// delivery queue are added to a legacy schema.
 	var newTableCount int
 	mustScan(t, db.QueryRow(`SELECT count(*) FROM sqlite_master WHERE type='table'`), &newTableCount)
-	if newTableCount != tableCount+2 { // +1 goose_db_version, +1 federated_servers
-		t.Errorf("table count changed from %d to %d (expected +2 for goose_db_version + federated_servers)", tableCount, newTableCount)
+	if newTableCount != tableCount+3 {
+		t.Errorf("table count changed from %d to %d (expected +3)", tableCount, newTableCount)
+	}
+
+	if !columnExists(t, db, "users", "disabled_reason") {
+		t.Error("legacy users table is missing disabled_reason column")
 	}
 }
 
@@ -141,8 +156,8 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 	}
 
 	// Goose should have recorded the latest migration.
-	if v := gooseVersion(t, db); v != 5 {
-		t.Errorf("goose version = %d, want 5", v)
+	if v := gooseVersion(t, db); v != 7 {
+		t.Errorf("goose version = %d, want 7", v)
 	}
 }
 

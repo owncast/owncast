@@ -13,10 +13,25 @@ type FediverseTarget struct {
 	URL string `json:"url"`
 }
 
-// FediverseEngagementEvent is the payload for inbound like, repost, and quote events.
+// FediverseEngagementEvent is the payload for inbound like and repost events.
 type FediverseEngagementEvent struct {
 	Actor  FediverseActor   `json:"actor"`
 	Target *FediverseTarget `json:"target,omitempty"`
+}
+
+// FediverseQuoteEvent is the payload for an accepted inbound quote request.
+// The post fields describe the remote quote post when its Note is embedded in
+// the request. URL is its public permalink when available, otherwise its IRI.
+type FediverseQuoteEvent struct {
+	Actor       FediverseActor        `json:"actor"`
+	Target      *FediverseTarget      `json:"target"`
+	Content     string                `json:"content,omitempty"`
+	ContentText string                `json:"contentText,omitempty"`
+	URL         string                `json:"url"`
+	PostedAt    string                `json:"postedAt,omitempty"`
+	InReplyTo   string                `json:"inReplyTo,omitempty"`
+	Attachments []FediverseAttachment `json:"attachments,omitempty"`
+	Language    string                `json:"language,omitempty"`
 }
 
 // FediverseAttachment is media attached to an inbound post.

@@ -9,7 +9,6 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"
-	"github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 
 	"github.com/teris-io/shortid"
@@ -19,7 +18,7 @@ import (
 // delivering an Accept whose result carries the IRI of the stored
 // QuoteAuthorization stamp. The requesting server flips its pending quote to
 // approved and passes the stamp IRI along so other servers can verify it.
-func SendQuoteRequestAccept(wp *workerpool.Service, inbox *url.URL, originalQuoteRequest vocab.GoToSocialQuoteRequest, stampIRI *url.URL, fromLocalAccountName string, builder *apmodels.Builder, signer *crypto.Signer) error {
+func SendQuoteRequestAccept(wp *workerpool.Service, inbox *url.URL, originalQuoteRequest vocab.GoToSocialQuoteRequest, stampIRI *url.URL, fromLocalAccountName string, builder *apmodels.Builder) error {
 	accept := streams.NewActivityStreamsAccept()
 	setQuoteResponseProperties(accept, originalQuoteRequest, fromLocalAccountName, builder)
 
@@ -27,16 +26,16 @@ func SendQuoteRequestAccept(wp *workerpool.Service, inbox *url.URL, originalQuot
 	result.AppendIRI(stampIRI)
 	accept.SetActivityStreamsResult(result)
 
-	return signAndQueueQuoteResponse(wp, inbox, accept, fromLocalAccountName, builder, signer)
+	return queueQuoteResponse(wp, inbox, accept, fromLocalAccountName, builder)
 }
 
 // SendQuoteRequestReject declines a remote QuoteRequest, clearing the pending
 // quote on the requesting server.
-func SendQuoteRequestReject(wp *workerpool.Service, inbox *url.URL, originalQuoteRequest vocab.GoToSocialQuoteRequest, fromLocalAccountName string, builder *apmodels.Builder, signer *crypto.Signer) error {
+func SendQuoteRequestReject(wp *workerpool.Service, inbox *url.URL, originalQuoteRequest vocab.GoToSocialQuoteRequest, fromLocalAccountName string, builder *apmodels.Builder) error {
 	reject := streams.NewActivityStreamsReject()
 	setQuoteResponseProperties(reject, originalQuoteRequest, fromLocalAccountName, builder)
 
-	return signAndQueueQuoteResponse(wp, inbox, reject, fromLocalAccountName, builder, signer)
+	return queueQuoteResponse(wp, inbox, reject, fromLocalAccountName, builder)
 }
 
 // quoteResponse is the intersection of Accept and Reject used when responding
@@ -65,29 +64,26 @@ func setQuoteResponseProperties(response quoteResponse, originalQuoteRequest voc
 	response.SetActivityStreamsObject(object)
 }
 
-func signAndQueueQuoteResponse(wp *workerpool.Service, inbox *url.URL, response vocab.Type, fromLocalAccountName string, builder *apmodels.Builder, signer *crypto.Signer) error {
-	// SSRF protection: reject non-HTTPS schemes and internal/loopback hosts.
+func queueQuoteResponse(wp *workerpool.Service, inbox *url.URL, response vocab.Type, fromLocalAccountName string, builder *apmodels.Builder) error {
 	if err := validateRemoteInbox(inbox); err != nil {
 		return err
 	}
 
 	localAccountIRI := builder.MakeLocalIRIForAccount(fromLocalAccountName)
 
-	jsonmap, err := streams.Serialize(response)
+	jsonMap, err := streams.Serialize(response)
 	if err != nil {
 		return errors.Wrap(err, "unable to serialize quote request response")
 	}
-	b, err := json.Marshal(jsonmap)
+	payload, err := json.Marshal(jsonMap)
 	if err != nil {
 		return errors.Wrap(err, "unable to marshal quote request response")
 	}
 
-	req, err := signer.CreateSignedRequest(b, inbox, localAccountIRI)
-	if err != nil {
-		return err
-	}
-
-	wp.AddToOutboundQueue(req)
-
-	return nil
+	return wp.Enqueue(workerpool.Delivery{
+		Inbox:        inbox,
+		Payload:      payload,
+		ActorIRI:     localAccountIRI,
+		ActivityType: response.GetTypeName(),
+	})
 }

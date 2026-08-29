@@ -7,6 +7,8 @@ export const NEXT_PUBLIC_API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
 const API_LOCATION = `${NEXT_PUBLIC_API_HOST}api/admin/`;
 
+export const ADMIN_CSRF_HEADER = 'X-Owncast-CSRF-Protection';
+
 export const FETCH_INTERVAL = 15000;
 
 // Current inbound broadcaster info
@@ -21,8 +23,8 @@ export const SERVER_CONFIG_UPDATE_URL = `${API_LOCATION}config`;
 // Get viewer count over time
 export const VIEWERS_OVER_TIME = `${API_LOCATION}viewersOverTime`;
 
-// Get active viewer details
-export const ACTIVE_VIEWER_DETAILS = `${API_LOCATION}viewers`;
+// Get the clients currently playing back video, with their playback health
+export const PLAYBACK_CLIENT_DETAILS = `${API_LOCATION}viewers/playback`;
 
 // Get currently connected chat clients
 export const CONNECTED_CLIENTS = `${API_LOCATION}chat/clients`;
@@ -83,6 +85,8 @@ export const pluginInstructionsUrl = (slug: string) =>
 // config form auto-rendered from the plugin's manifest config schema uses this.
 export const pluginConfigUrl = (slug: string) =>
   `/api/admin/plugins/${encodeURIComponent(slug)}/config`;
+export const authGateSettingsUrl = (slug: string) =>
+  `/api/admin/plugins/${encodeURIComponent(slug)}/auth-settings`;
 
 // Upload a new custom emoji
 export const UPLOAD_EMOJI = `${API_LOCATION}emoji/upload`;
@@ -172,15 +176,20 @@ export async function fetchData<T = any>(url: string, options?: FetchOptions): P
     method,
   };
 
+  const headers: Record<string, string> = {};
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase())) {
+    headers[ADMIN_CSRF_HEADER] = '1';
+  }
+
   if (data) {
     requestOptions.body = JSON.stringify(data);
   }
 
+  requestOptions.headers = headers;
+
   if (auth && ADMIN_USERNAME && ADMIN_STREAMKEY) {
     const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
-    requestOptions.headers = {
-      Authorization: `Basic ${encoded}`,
-    };
+    headers.Authorization = `Basic ${encoded}`;
     requestOptions.mode = 'cors';
     requestOptions.credentials = 'include';
   }
@@ -215,11 +224,15 @@ export async function fetchText(url: string, options?: FetchOptions) {
     method,
   };
 
+  const headers: Record<string, string> = {};
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase())) {
+    headers[ADMIN_CSRF_HEADER] = '1';
+  }
+  requestOptions.headers = headers;
+
   if (auth && ADMIN_USERNAME && ADMIN_STREAMKEY) {
     const encoded = btoa(`${ADMIN_USERNAME}:${ADMIN_STREAMKEY}`);
-    requestOptions.headers = {
-      Authorization: `Basic ${encoded}`,
-    };
+    headers.Authorization = `Basic ${encoded}`;
     requestOptions.mode = 'cors';
     requestOptions.credentials = 'include';
   }

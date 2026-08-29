@@ -1,3 +1,4 @@
+import { AutoplaySetting } from '../utils/autoplay';
 // TS types for elements on the Config pages
 
 // for dropdown
@@ -34,7 +35,7 @@ export interface ConfigInstanceDetailsFields {
   logo: string;
   name: string;
   nsfw: boolean;
-  autoplay: string;
+  autoplay: AutoplaySetting;
   socialHandles: SocialHandle[];
   streamTitle: string;
   summary: string;

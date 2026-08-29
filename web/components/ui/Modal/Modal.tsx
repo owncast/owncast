@@ -77,7 +77,6 @@ export const Modal: FC<ModalProps> = ({
       centered
       maskClosable={maskClosable}
       destroyOnClose={destroyOnClose}
-      className={styles.modal}
     >
       <ErrorBoundary
         // eslint-disable-next-line react/no-unstable-nested-components

@@ -1,4 +1,5 @@
 {
+  "cssVar": { "key": "owncast" },
   "token": {
     "colorPrimary": "#6544e9",
     "colorLink": "#6544e9",
@@ -18,6 +19,8 @@
     "Modal": {
       "headerBg": "#2d3748",
       "titleColor": "#e2e8f0",
+      "colorIcon": "#e2e8f0",
+      "colorIconHover": "#ffffff",
       "contentBg": "#e2e8f0",
       "wireframe": true
     },

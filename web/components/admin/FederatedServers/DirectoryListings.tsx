@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { Spin, Button, Avatar, Typography, Popconfirm, message } from 'antd';
 import { useTranslation } from 'next-export-i18n';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, SendOutlined } from '@ant-design/icons';
 import { Translation } from '../../ui/Translation/Translation';
 import { Localization } from '../../../types/localization';
 import { DirectoryFollower } from '../../../hooks/useDirectoryFollowers';
@@ -14,6 +14,7 @@ export interface DirectoryListingsProps {
   directories: DirectoryFollower[];
   loading?: boolean;
   onRemove: (actorIRI: string) => Promise<void>;
+  onResendApproval: (actorIRI: string) => Promise<void>;
 }
 
 // DirectoryListings shows the directories that are currently listing this
@@ -23,18 +24,31 @@ export const DirectoryListings: FC<DirectoryListingsProps> = ({
   directories,
   loading = false,
   onRemove,
+  onResendApproval,
 }) => {
   const { t } = useTranslation();
-  const [pendingIRI, setPendingIRI] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<string | null>(null);
 
   const handleRemove = async (actorIRI: string) => {
-    setPendingIRI(actorIRI);
+    setPendingAction(`remove:${actorIRI}`);
     try {
       await onRemove(actorIRI);
     } catch {
       message.error(t(Localization.Admin.FeaturedStreams.failedToRemoveDirectory));
     } finally {
-      setPendingIRI(null);
+      setPendingAction(null);
+    }
+  };
+
+  const handleResendApproval = async (actorIRI: string) => {
+    setPendingAction(`resend:${actorIRI}`);
+    try {
+      await onResendApproval(actorIRI);
+      message.success(t(Localization.Admin.FeaturedStreams.approvalResent));
+    } catch {
+      message.error(t(Localization.Admin.FeaturedStreams.failedToResendApproval));
+    } finally {
+      setPendingAction(null);
     }
   };
 
@@ -85,6 +99,18 @@ export const DirectoryListings: FC<DirectoryListingsProps> = ({
                   </div>
                 </div>
                 <div className={styles.actions}>
+                  <Button
+                    size="small"
+                    icon={<SendOutlined />}
+                    loading={pendingAction === `resend:${directory.link}`}
+                    disabled={pendingAction === `remove:${directory.link}`}
+                    onClick={() => handleResendApproval(directory.link)}
+                  >
+                    <Translation
+                      translationKey={Localization.Admin.FeaturedStreams.resendApprovalButton}
+                      defaultText="Resend approval"
+                    />
+                  </Button>
                   <Popconfirm
                     title={
                       <Translation
@@ -112,7 +138,8 @@ export const DirectoryListings: FC<DirectoryListingsProps> = ({
                       danger
                       size="small"
                       icon={<DeleteOutlined />}
-                      loading={pendingIRI === directory.link}
+                      loading={pendingAction === `remove:${directory.link}`}
+                      disabled={pendingAction === `resend:${directory.link}`}
                     >
                       <Translation
                         translationKey={

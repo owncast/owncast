@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"unicode"
 
 	extism "github.com/extism/go-sdk"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/plugins/kv"
 )
 
@@ -21,12 +23,13 @@ const (
 	PermStorageKV     = "storage.kv"
 	PermStorageUpload = "storage.upload"
 	// PermStorageFS grants a plugin a private, sandboxed area on disk
-	// (data/plugin-data/<slug>/) it can read, write, list, and delete
+	// (data/plugin-storage/<slug>/files/) it can read, write, list, and delete
 	// within. Unlike storage.upload (which publishes browser-accessible
 	// files under public/), this storage is server-side only and never
 	// exposed over HTTP. A plugin cannot reach outside its own directory
 	// or read another plugin's files.
 	PermStorageFS    = "storage.fs"
+	PermStorageSQL   = "storage.sql"
 	PermChatSend     = "chat.send"
 	PermChatHistory  = "chat.history"
 	PermChatModerate = "chat.moderate"
@@ -66,10 +69,6 @@ const (
 	// in the admin UI or viewer chrome without opting in explicitly.
 	PermUIModify = "ui.modify"
 )
-
-// resultErrorKey is the JSON key host functions use to return an error
-// string to the plugin in their {ok, error?} result envelope.
-const resultErrorKey = "error"
 
 // ChatSendKind distinguishes how a plugin asked to post to chat. All sends
 // post under the plugin's own chat identity — provisioned by the host at
@@ -138,7 +137,7 @@ type StreamVariant struct {
 	Height        int  `json:"height"`
 	Framerate     int  `json:"framerate"`
 	VideoBitrate  int  `json:"videoBitrate"`
-	AudioBitrate  int  `json:"audioBitrate"`
+	CPUUsageLevel int  `json:"cpuUsageLevel"`
 	IsPassthrough bool `json:"isPassthrough"`
 }
 
@@ -147,9 +146,10 @@ type StreamVariant struct {
 // as opposed to read-only inbound-broadcast telemetry (StreamBroadcaster).
 // Requires the videoconfig.read permission.
 type VideoConfig struct {
-	LatencyLevel int             `json:"latencyLevel"`
-	Codec        string          `json:"codec"`
-	Variants     []StreamVariant `json:"variants"`
+	LatencyLevel int                 `json:"latencyLevel"`
+	Codec        string              `json:"codec"`
+	Autoplay     models.AutoplayMode `json:"autoplay"`
+	Variants     []StreamVariant     `json:"variants"`
 }
 
 // VideoConfigUpdate is a partial change passed to owncast.videoConfig.write().
@@ -157,9 +157,15 @@ type VideoConfig struct {
 // level without disturbing the configured output variants. Requires the
 // videoconfig.write permission.
 type VideoConfigUpdate struct {
-	LatencyLevel *int            `json:"latencyLevel,omitempty"`
-	Codec        *string         `json:"codec,omitempty"`
-	Variants     []StreamVariant `json:"variants,omitempty"`
+	LatencyLevel *int                 `json:"latencyLevel,omitempty"`
+	Codec        *string              `json:"codec,omitempty"`
+	Autoplay     *models.AutoplayMode `json:"autoplay,omitempty"`
+	Variants     []StreamVariant      `json:"variants,omitempty"`
+}
+
+// VideoConfigWriteResult reports whether a video config update failed.
+type VideoConfigWriteResult struct {
+	Error string `json:"error,omitempty"`
 }
 
 // SocialHandle is one entry returned by owncast.server.socials().
@@ -268,6 +274,49 @@ type UploadResult struct {
 	URL string `json:"url"`
 }
 
+// FSResult reports whether a filesystem mutation failed.
+type FSResult struct {
+	Error string `json:"error,omitempty"`
+}
+
+// SQLRequest is a statement, an optional array of scalar bind parameters, and
+// an optional cap on how many rows a query should return. MaxRows of 0 means
+// "no caller-supplied limit", which the host bounds with MaxSQLRows.
+type SQLRequest struct {
+	SQL     string `json:"sql"`
+	Params  []any  `json:"params,omitempty"`
+	MaxRows int    `json:"maxRows,omitempty"`
+}
+
+// SQLExecResult reports the effect of one committed SQL statement batch.
+// Absence of Error means success.
+type SQLExecResult struct {
+	Error        string `json:"error,omitempty"`
+	RowsAffected int64  `json:"rowsAffected"`
+	LastInsertID int64  `json:"lastInsertId"`
+}
+
+// SQLQueryResult is a bounded set of rows returned by a plugin SQL query.
+// Rows use the same column order as Columns. Truncated reports that the query
+// matched more rows than the caller's MaxRows. Absence of Error means success.
+type SQLQueryResult struct {
+	Error     string   `json:"error,omitempty"`
+	Columns   []string `json:"columns"`
+	Rows      [][]any  `json:"rows"`
+	Truncated bool     `json:"truncated,omitempty"`
+}
+
+func (r SQLQueryResult) MarshalJSON() ([]byte, error) {
+	type result SQLQueryResult
+	if r.Columns == nil {
+		r.Columns = []string{}
+	}
+	if r.Rows == nil {
+		r.Rows = [][]any{}
+	}
+	return json.Marshal(result(r))
+}
+
 // SSEConnectionEvent is the payload for the sse.connect / sse.disconnect
 // events, fired when a browser opens or closes one of the plugin's
 // Server-Sent-Events streams. ConnectionID is unique for the life of the host
@@ -295,12 +344,29 @@ type TimerFireEvent struct {
 	ID uint64 `json:"id"`
 }
 
+// MaxPluginLogMessageBytes caps one plugin-authored log entry. Logging is
+// ambient, so every plugin gets it without a permission grant.
+const MaxPluginLogMessageBytes = 4 << 10
+
+const pluginLogTruncationSuffix = " [truncated]"
+
+// PluginLogLevel is the fixed set of severities a plugin can send to the
+// Owncast log.
+type PluginLogLevel uint8
+
+const (
+	PluginLogInfo PluginLogLevel = iota
+	PluginLogWarning
+	PluginLogError
+)
+
 // HostEnv is everything host functions need to do their job. Function-pointer
 // fields are wired by the host (the production Owncast binary, the demo
 // binary, or the test runner); each host function reads them lazily at call
 // time so that fields wired post-load (Emit) work correctly.
 type HostEnv struct {
 	KV              kv.Store
+	Log             func(pluginName string, level PluginLogLevel, message string)
 	OnChat          func(ChatSendRequest)
 	Emit            func(ctx context.Context, eventType string, payload any)
 	StreamCurrent   func() StreamInfo
@@ -309,10 +375,10 @@ type HostEnv struct {
 	Tags            func() []string          // server.read
 	VideoConfig     func() VideoConfig       // videoconfig.read
 	ChatHistory     func(limit int) []HostChatMessage
-	ChatClients     func() []HostChatClient                  // chat.history
-	DeleteMessage   func(pluginName, messageID string)       // chat.moderate
-	KickClient      func(pluginName string, clientID uint64) // chat.moderate
-	SendDiscord     func(pluginName, text string)            // notifications.send
+	ChatClients     func() []HostChatClient                        // chat.history
+	DeleteMessage   func(pluginName, messageID string) error       // chat.moderate
+	KickClient      func(pluginName string, clientID uint64) error // chat.moderate
+	SendDiscord     func(pluginName, text string)                  // notifications.send
 	SendBrowserPush func(pluginName string, p BrowserPushPayload)
 	Users           func() []HostUser                // users.read
 	UserGet         func(id string) (HostUser, bool) // users.read
@@ -334,20 +400,26 @@ type HostEnv struct {
 	// cookie itself is cleared via the request-scoped sink regardless; this is
 	// for any additional cleanup. Optional; nil → no-op.
 	EndSession     func(pluginName string)
-	SetUserEnabled func(pluginName, userID string, enabled bool, reason string) // users.moderate
-	BanIP          func(pluginName, ip string)                                  // users.moderate
-	UploadStorage  func(pluginName, name string, data []byte) (string, error)   // storage.upload
+	SetUserEnabled func(pluginName, userID string, enabled bool, reason string) error // users.moderate
+	BanIP          func(pluginName, ip string) error                                  // users.moderate
+	UploadStorage  func(pluginName, name string, data []byte) (string, error)         // storage.upload
 	// Sandboxed per-plugin filesystem (storage.fs). Each plugin sees only
-	// its own directory under data/plugin-data/<slug>/; the host rejects any
-	// path that escapes it. Paths are relative to that root.
-	FSRead     func(pluginName, path string) ([]byte, error) // storage.fs
-	FSWrite    func(pluginName, path string, data []byte) error
-	FSList     func(pluginName, dir string) ([]string, error)
-	FSDelete   func(pluginName, path string) error
-	FSExists   func(pluginName, path string) (bool, error)
-	Socials    func() []SocialHandle // server.read
-	Emotes     func() []Emote        // server.read
-	Federation func() FederationInfo // server.read
+	// its own directory under data/plugin-storage/<slug>/files/, and the host
+	// rejects any path that escapes it. Paths are relative to that root.
+	FSRead   func(pluginName, path string) ([]byte, error) // storage.fs
+	FSWrite  func(pluginName, path string, data []byte) error
+	FSList   func(pluginName, dir string) ([]string, error)
+	FSDelete func(pluginName, path string) error
+	FSExists func(pluginName, path string) (bool, error)
+	SQLExec  func(ctx context.Context, pluginName string, req SQLRequest) SQLExecResult
+	SQLQuery func(ctx context.Context, pluginName string, req SQLRequest) SQLQueryResult
+	// AcquireSQLLease ties a plugin instance to its shared per-slug database.
+	// The returned release runs after the instance is fully closed. Optional;
+	// hosts without persistent SQL leave it nil.
+	AcquireSQLLease func(pluginName string) func()
+	Socials         func() []SocialHandle // server.read
+	Emotes          func() []Emote        // server.read
+	Federation      func() FederationInfo // server.read
 	// ConfigValue resolves an admin-set override for one of the plugin's
 	// manifest-declared config keys (owncast.config.get). Returns the override
 	// value and true when the admin has set one; false to fall back to the
@@ -400,9 +472,10 @@ type HostEnv struct {
 func BuildHostFunctions(env *HostEnv) []extism.HostFunction {
 	// Capacity hint for the full host-function set built below; an off-by-a-few
 	// estimate just trades one reallocation, so it needn't track exactly.
-	fns := make([]extism.HostFunction, 0, 48)
+	fns := make([]extism.HostFunction, 0, 49)
 
 	fns = append(fns, hostKVGet(), hostKVSet())
+	fns = append(fns, loggingHostFunctions(env)...)
 	// Chat send fns resolve both slug and chat display name at call time:
 	// slug routes to the right bot user, display name is what chat viewers
 	// see.
@@ -466,9 +539,9 @@ func BuildHostFunctions(env *HostEnv) []extism.HostFunction {
 	return fns
 }
 
-// storageHostFunctions returns the storage.upload / storage.fs host functions
-// a plugin is granted. Split out of BuildHostFunctions to keep that function's
-// cyclomatic complexity in check.
+// storageHostFunctions returns the storage.upload / storage.fs / storage.sql
+// host functions a plugin is granted. Split out of BuildHostFunctions to keep
+// that function's cyclomatic complexity in check.
 func storageHostFunctions(env *HostEnv) []extism.HostFunction {
 	return []extism.HostFunction{
 		hostStorageUpload(env),
@@ -477,7 +550,125 @@ func storageHostFunctions(env *HostEnv) []extism.HostFunction {
 		hostFSList(env),
 		hostFSDelete(env),
 		hostFSExists(env),
+		hostSQLExec(env),
+		hostSQLQuery(env),
 	}
+}
+
+// loggingHostFunctions returns the ambient logging functions. Separate
+// functions keep invalid severity values out of the wire protocol.
+func loggingHostFunctions(env *HostEnv) []extism.HostFunction {
+	return []extism.HostFunction{
+		hostLog(env, "owncast_log_info", PluginLogInfo),
+		hostLog(env, "owncast_log_warning", PluginLogWarning),
+		hostLog(env, "owncast_log_error", PluginLogError),
+	}
+}
+
+func hostLog(env *HostEnv, fnName string, level PluginLogLevel) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		fnName,
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, fnName, "")
+			if !ok {
+				return
+			}
+			message, err := p.ReadString(stack[0])
+			if err != nil || env.Log == nil {
+				return
+			}
+			env.Log(id.slug, level, sanitizePluginLogMessage(message))
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+func sanitizePluginLogMessage(message string) string {
+	truncated := len(message) > MaxPluginLogMessageBytes
+	if truncated {
+		bodyBytes := MaxPluginLogMessageBytes - len(pluginLogTruncationSuffix)
+		message = message[:bodyBytes]
+	}
+	message = strings.ToValidUTF8(message, "")
+	message = strings.Map(func(r rune) rune {
+		if unicode.IsControl(r) {
+			return ' '
+		}
+		return r
+	}, message)
+	if truncated {
+		return message + pluginLogTruncationSuffix
+	}
+	return message
+}
+
+// readSQLRequest pulls the plugin's JSON SQL request out of guest memory and
+// hands it to the shared validator.
+func readSQLRequest(p *extism.CurrentPlugin, ptr uint64) (SQLRequest, error) {
+	raw, err := p.ReadString(ptr)
+	if err != nil {
+		return SQLRequest{}, err
+	}
+	return ParseSQLRequest(raw)
+}
+
+func hostSQLExec(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_sql_exec",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_sql_exec", PermStorageSQL)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			result := SQLExecResult{}
+			req, err := readSQLRequest(p, stack[0])
+			switch {
+			case err != nil:
+				result.Error = err.Error()
+			case env.SQLExec == nil:
+				result.Error = sqlStorageUnavailable
+			default:
+				result = env.SQLExec(ctx, id.slug, req)
+			}
+			stack[0] = writeJSON(p, result)
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
+}
+
+func hostSQLQuery(env *HostEnv) extism.HostFunction {
+	fn := extism.NewHostFunctionWithStack(
+		"owncast_sql_query",
+		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
+			id, ok := resolveCaller(ctx, "owncast_sql_query", PermStorageSQL)
+			if !ok {
+				stack[0] = 0
+				return
+			}
+			result := SQLQueryResult{}
+			req, err := readSQLRequest(p, stack[0])
+			switch {
+			case err != nil:
+				result.Error = err.Error()
+			case env.SQLQuery == nil:
+				result.Error = sqlStorageUnavailable
+			default:
+				result = env.SQLQuery(ctx, id.slug, req)
+			}
+			stack[0] = writeJSON(p, result)
+		},
+		[]extism.ValueType{extism.ValueTypePTR},
+		[]extism.ValueType{extism.ValueTypePTR},
+	)
+	fn.SetNamespace("extism:host/user")
+	return fn
 }
 
 // videoConfigHostFunctions returns the videoconfig.read / videoconfig.write
@@ -771,14 +962,19 @@ type UserRegisterResult struct {
 	Error  string `json:"error,omitempty"`
 }
 
+// ActionResult reports whether a plugin mutation failed.
+type ActionResult struct {
+	Error string `json:"error,omitempty"`
+}
+
 // GrantSessionRequest is the JSON payload a plugin sends to owncast.auth.grantSession.
 type GrantSessionRequest struct {
 	UserID string `json:"userId"`
 	TTL    int64  `json:"ttl,omitempty"` // seconds; 0 = host default
 }
 
-// authResult is the {error?} envelope returned by grantSession.
-type authResult struct {
+// GrantSessionResult reports whether granting an auth session failed.
+type GrantSessionResult struct {
 	Error string `json:"error,omitempty"`
 }
 
@@ -853,15 +1049,15 @@ func hostAuthGrantSession(env *HostEnv) extism.HostFunction {
 			}
 			var req GrantSessionRequest
 			if err := json.Unmarshal([]byte(raw), &req); err != nil {
-				stack[0] = writeJSON(p, authResult{Error: "invalid request: " + err.Error()})
+				stack[0] = writeJSON(p, GrantSessionResult{Error: "invalid request: " + err.Error()})
 				return
 			}
 			if req.UserID == "" {
-				stack[0] = writeJSON(p, authResult{Error: "userId is required"})
+				stack[0] = writeJSON(p, GrantSessionResult{Error: "userId is required"})
 				return
 			}
 			if env.GrantSession == nil {
-				stack[0] = writeJSON(p, authResult{Error: "auth.gate is not available on this host"})
+				stack[0] = writeJSON(p, GrantSessionResult{Error: "auth.gate is not available on this host"})
 				return
 			}
 			// A session is only meaningful when there's an in-flight response to
@@ -871,18 +1067,18 @@ func hostAuthGrantSession(env *HostEnv) extism.HostFunction {
 			// handler where no cookie is ever set.
 			sink := authSinkFrom(ctx)
 			if sink == nil {
-				stack[0] = writeJSON(p, authResult{Error: "grantSession is only available inside an on_http_request handler"})
+				stack[0] = writeJSON(p, GrantSessionResult{Error: "grantSession is only available inside an on_http_request handler"})
 				return
 			}
 			token, err := env.GrantSession(ident.slug, req.UserID, req.TTL)
 			if err != nil {
-				stack[0] = writeJSON(p, authResult{Error: err.Error()})
+				stack[0] = writeJSON(p, GrantSessionResult{Error: err.Error()})
 				return
 			}
 			// Hand the freshly-minted token to the request-scoped sink so the
 			// HTTP layer can set the cookie on the response after the wasm returns.
 			sink.grant(token, ClampSessionTTL(req.TTL))
-			stack[0] = writeJSON(p, authResult{})
+			stack[0] = writeJSON(p, GrantSessionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},
@@ -920,21 +1116,33 @@ func hostUserSetEnabled(env *HostEnv) extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			ident, ok := resolveCaller(ctx, "owncast_user_set_enabled", PermUsersModerate)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			pluginName := ident.slug
 			id, err := p.ReadString(stack[0])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read user ID: " + err.Error()})
 				return
 			}
 			enabled := stack[1] != 0
-			reason, _ := p.ReadString(stack[2])
-			if env.SetUserEnabled != nil {
-				env.SetUserEnabled(pluginName, id, enabled, reason)
+			reason, err := p.ReadString(stack[2])
+			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read reason: " + err.Error()})
+				return
 			}
+			if env.SetUserEnabled == nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "users.moderate is not available on this host"})
+				return
+			}
+			if err := env.SetUserEnabled(pluginName, id, enabled, reason); err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
+				return
+			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypeI64, extism.ValueTypePTR},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -946,19 +1154,27 @@ func hostBanIP(env *HostEnv) extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			id, ok := resolveCaller(ctx, "owncast_ban_ip", PermUsersModerate)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			pluginName := id.slug
 			ip, err := p.ReadString(stack[0])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read IP: " + err.Error()})
 				return
 			}
-			if env.BanIP != nil {
-				env.BanIP(pluginName, ip)
+			if env.BanIP == nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "users.moderate is not available on this host"})
+				return
 			}
+			if err := env.BanIP(pluginName, ip); err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
+				return
+			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -1301,7 +1517,7 @@ func hostFSRead(env *HostEnv) extism.HostFunction {
 
 // hostFSWrite backs owncast.fs.write(path, data). Creates parent
 // directories as needed and writes the bytes, returning a JSON
-// {ok, error?} result so the plugin can react to a rejected write
+// {error?} result so the plugin can react to a rejected write
 // (sandbox escape, oversized payload, disk error). Requires storage.fs.
 func hostFSWrite(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
@@ -1323,24 +1539,14 @@ func hostFSWrite(env *HostEnv) extism.HostFunction {
 				stack[0] = 0
 				return
 			}
-			result := map[string]any{"ok": true}
+			result := FSResult{}
 			if env.FSWrite == nil {
-				result = map[string]any{"ok": false, resultErrorKey: "filesystem unavailable"}
+				result.Error = "filesystem unavailable"
 			} else if err := env.FSWrite(pluginName, path, data); err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_fs_write from %s: %v\n", pluginName, err)
-				result = map[string]any{"ok": false, resultErrorKey: err.Error()}
+				result.Error = err.Error()
 			}
-			out, err := json.Marshal(result)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			offset, err := p.WriteBytes(out)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			stack[0] = offset
+			stack[0] = writeJSON(p, result)
 		},
 		[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},
@@ -1396,8 +1602,7 @@ func hostFSList(env *HostEnv) extism.HostFunction {
 }
 
 // hostFSDelete backs owncast.fs.delete(path). Removes a single file or
-// empty directory, returning a JSON {ok, error?} result. Requires
-// storage.fs.
+// empty directory, returning a JSON {error?} result. Requires storage.fs.
 func hostFSDelete(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_fs_delete",
@@ -1413,24 +1618,14 @@ func hostFSDelete(env *HostEnv) extism.HostFunction {
 				stack[0] = 0
 				return
 			}
-			result := map[string]any{"ok": true}
+			result := FSResult{}
 			if env.FSDelete == nil {
-				result = map[string]any{"ok": false, resultErrorKey: "filesystem unavailable"}
+				result.Error = "filesystem unavailable"
 			} else if err := env.FSDelete(pluginName, path); err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_fs_delete from %s: %v\n", pluginName, err)
-				result = map[string]any{"ok": false, resultErrorKey: err.Error()}
+				result.Error = err.Error()
 			}
-			out, err := json.Marshal(result)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			offset, err := p.WriteBytes(out)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			stack[0] = offset
+			stack[0] = writeJSON(p, result)
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},
@@ -1482,19 +1677,27 @@ func hostDeleteMessage(env *HostEnv) extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			ident, ok := resolveCaller(ctx, "owncast_delete_message", PermChatModerate)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			pluginName := ident.slug
 			id, err := p.ReadString(stack[0])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read message ID: " + err.Error()})
 				return
 			}
-			if env.DeleteMessage != nil {
-				env.DeleteMessage(pluginName, id)
+			if env.DeleteMessage == nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "chat.moderate is not available on this host"})
+				return
 			}
+			if err := env.DeleteMessage(pluginName, id); err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
+				return
+			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -1506,16 +1709,23 @@ func hostKickClient(env *HostEnv) extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			id, ok := resolveCaller(ctx, "owncast_kick_client", PermChatModerate)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			pluginName := id.slug
 			clientID := stack[0]
-			if env.KickClient != nil {
-				env.KickClient(pluginName, clientID)
+			if env.KickClient == nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "chat.moderate is not available on this host"})
+				return
 			}
+			if err := env.KickClient(pluginName, clientID); err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
+				return
+			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypeI64},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -1909,8 +2119,8 @@ func hostVideoConfigRead(env *HostEnv) extism.HostFunction {
 }
 
 // hostVideoConfigWrite backs owncast.videoConfig.write(config). It applies a
-// partial video/transcoding configuration change via the host. Returns a
-// JSON {ok, error?} result so the plugin can react to a rejected config.
+// partial video/transcoding configuration change via the host, returning an
+// empty JSON object on success or an error on failure.
 // Requires the videoconfig.write permission.
 func hostVideoConfigWrite(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
@@ -1933,23 +2143,13 @@ func hostVideoConfigWrite(env *HostEnv) extism.HostFunction {
 				stack[0] = 0
 				return
 			}
-			result := map[string]any{"ok": true}
+			result := VideoConfigWriteResult{}
 			if env.WriteVideoConfig != nil {
 				if err := env.WriteVideoConfig(pluginName, update); err != nil {
-					result = map[string]any{"ok": false, resultErrorKey: err.Error()}
+					result.Error = err.Error()
 				}
 			}
-			data, err := json.Marshal(result)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			offset, err := p.WriteBytes(data)
-			if err != nil {
-				stack[0] = 0
-				return
-			}
-			stack[0] = offset
+			stack[0] = writeJSON(p, result)
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
 		[]extism.ValueType{extism.ValueTypePTR},
@@ -1998,31 +2198,41 @@ func hostKVSet() extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			id, ok := resolveCaller(ctx, "owncast_kv_set", PermStorageKV)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			ns := id.kvNamespace
 			key, err := p.ReadString(stack[0])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read key: " + err.Error()})
 				return
 			}
 			val, err := p.ReadBytes(stack[1])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read value: " + err.Error()})
 				return
 			}
 			if len(key) > MaxKVKeyBytes {
-				fmt.Fprintf(os.Stderr, "owncast_kv_set from %s: key is %d bytes, limit is %d — dropped\n", id.slug, len(key), MaxKVKeyBytes)
+				message := fmt.Sprintf("key is %d bytes, limit is %d", len(key), MaxKVKeyBytes)
+				fmt.Fprintf(os.Stderr, "owncast_kv_set from %s: %s — dropped\n", id.slug, message)
+				stack[0] = writeJSON(p, ActionResult{Error: message})
 				return
 			}
 			if len(val) > MaxKVValueBytes {
-				fmt.Fprintf(os.Stderr, "owncast_kv_set from %s: value is %d bytes, limit is %d — dropped\n", id.slug, len(val), MaxKVValueBytes)
+				message := fmt.Sprintf("value is %d bytes, limit is %d", len(val), MaxKVValueBytes)
+				fmt.Fprintf(os.Stderr, "owncast_kv_set from %s: %s — dropped\n", id.slug, message)
+				stack[0] = writeJSON(p, ActionResult{Error: message})
 				return
 			}
 			if err := ns.Set(key, val); err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_kv_set: %v\n", err)
+				stack[0] = writeJSON(p, ActionResult{Error: "kv write: " + err.Error()})
+				return
 			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypePTR},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -2041,14 +2251,15 @@ const RuntimeActionsConfigKey = "owncast.actions"
 // cross-plugin URLs rejected), and appends to the runtime list in the
 // plugin's config.
 //
-// Requires the ui.modify permission; invalid input is logged but not
-// surfaced back to the plugin.
+// Requires the ui.modify permission. The returned error describes why the
+// action list was rejected or could not be persisted.
 func hostAddActions(env *HostEnv) extism.HostFunction {
 	fn := extism.NewHostFunctionWithStack(
 		"owncast_add_actions",
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			id, ok := resolveCaller(ctx, "owncast_add_actions", PermUIModify)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			manifest := id.manifest
@@ -2062,19 +2273,25 @@ func hostAddActions(env *HostEnv) extism.HostFunction {
 			}
 			payloadBytes, err := p.ReadBytes(stack[0])
 			if err != nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "read payload: " + err.Error()})
 				return
 			}
 			var incoming []ActionButton
 			if err := json.Unmarshal(payloadBytes, &incoming); err != nil {
-				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: invalid JSON: %v\n", pluginSlug, err)
+				message := "invalid JSON: " + err.Error()
+				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: %s\n", pluginSlug, message)
+				stack[0] = writeJSON(p, ActionResult{Error: message})
 				return
 			}
 			normalized, err := validateRuntimeActions(pluginSlug, hasHTTPServe, incoming)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: %v\n", pluginSlug, err)
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
 				return
 			}
 			if env.KV == nil {
+				message := "storage is not available on this host"
+				stack[0] = writeJSON(p, ActionResult{Error: message})
 				return
 			}
 			ns := env.KV.Namespace(pluginSlug)
@@ -2087,15 +2304,20 @@ func hostAddActions(env *HostEnv) extism.HostFunction {
 			combined = append(combined, normalized...)
 			out, err := json.Marshal(combined)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: marshal: %v\n", pluginSlug, err)
+				message := "marshal: " + err.Error()
+				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: %s\n", pluginSlug, message)
+				stack[0] = writeJSON(p, ActionResult{Error: message})
 				return
 			}
 			if err := ns.Set(RuntimeActionsConfigKey, out); err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_add_actions from %s: kv write: %v\n", pluginSlug, err)
+				stack[0] = writeJSON(p, ActionResult{Error: "kv write: " + err.Error()})
+				return
 			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		[]extism.ValueType{extism.ValueTypePTR},
-		[]extism.ValueType{},
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn
@@ -2110,18 +2332,23 @@ func hostClearActions(env *HostEnv) extism.HostFunction {
 		func(ctx context.Context, p *extism.CurrentPlugin, stack []uint64) {
 			id, ok := resolveCaller(ctx, "owncast_clear_actions", PermUIModify)
 			if !ok {
+				stack[0] = 0
 				return
 			}
 			pluginSlug := id.slug
 			if env.KV == nil {
+				stack[0] = writeJSON(p, ActionResult{Error: "storage is not available on this host"})
 				return
 			}
 			if err := env.KV.Namespace(pluginSlug).Delete(RuntimeActionsConfigKey); err != nil {
 				fmt.Fprintf(os.Stderr, "owncast_clear_actions from %s: %v\n", pluginSlug, err)
+				stack[0] = writeJSON(p, ActionResult{Error: err.Error()})
+				return
 			}
+			stack[0] = writeJSON(p, ActionResult{})
 		},
 		nil,
-		nil,
+		[]extism.ValueType{extism.ValueTypePTR},
 	)
 	fn.SetNamespace("extism:host/user")
 	return fn

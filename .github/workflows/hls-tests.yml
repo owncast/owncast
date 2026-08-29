@@ -37,15 +37,14 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  tests:
+  # Detect relevant changes in a standalone job so the test job can be gated
+  # at the job level: a run with no relevant changes reports as "skipped"
+  # instead of a misleading "success".
+  changes:
     runs-on: ubuntu-latest
-
+    outputs:
+      src_any_changed: ${{ steps.changed-files-yaml.outputs.src_any_changed }}
     steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@v5
-        with:
-          concurrent_skipping: 'same_content_newer'
-
       - name: Check out pull request code
         uses: actions/checkout@v7
         if: github.event_name == 'pull_request'
@@ -72,8 +71,30 @@ jobs:
             src:
               - '**/*.{go,mod,sum}'
 
+  tests:
+    needs: changes
+    if: needs.changes.outputs.src_any_changed == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          concurrent_skipping: 'same_content_newer'
+
+      - name: Check out pull request code
+        uses: actions/checkout@v7
+        if: github.event_name == 'pull_request'
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Check out repository code
+        uses: actions/checkout@v7
+        if: github.event_name == 'push'
+
       - uses: actions/setup-go@v6
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
         with:
           go-version: '1.26.5'
           cache: true
@@ -91,7 +112,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Local stroage
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        id: local-storage
         uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
@@ -99,9 +120,40 @@ jobs:
           command: cd test/automated/hls && ./run.sh
 
       - name: S3 storage
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
+        id: s3-storage
         uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
           max_attempts: 3
           command: cd test/automated/hls && ./run-s3.sh
+
+      # Passing only after a retry is a flake, not a pass: make it visible.
+      - name: Report flaky retries
+        if: steps.local-storage.outputs.total_attempts > 1 || steps.s3-storage.outputs.total_attempts > 1
+        env:
+          LOCAL_ATTEMPTS: ${{ steps.local-storage.outputs.total_attempts }}
+          S3_ATTEMPTS: ${{ steps.s3-storage.outputs.total_attempts }}
+        run: |
+          report() {
+            echo "::warning title=Flaky test suite::$1"
+            echo ":warning: $1" >> "$GITHUB_STEP_SUMMARY"
+          }
+          if [ "${LOCAL_ATTEMPTS:-1}" -gt 1 ]; then
+            report "HLS local storage tests passed only on attempt $LOCAL_ATTEMPTS"
+          fi
+          if [ "${S3_ATTEMPTS:-1}" -gt 1 ]; then
+            report "HLS S3 storage tests passed only on attempt $S3_ATTEMPTS"
+          fi
+
+      # Preserve test evidence (server logs/DBs, coverage, machine-readable
+      # results) even when a failed test step halts the job.
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: hls-test-evidence
+          if-no-files-found: ignore
+          path: |
+            test/automated/*/test-artifacts/**
+            test/automated/*/e2e-coverage/**
+            test/automated/*/results/*.json

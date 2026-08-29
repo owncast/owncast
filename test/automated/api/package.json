@@ -21,11 +21,17 @@
 	"devDependencies": {
 		"jest": "^29.7.0",
 		"jest-jasmine2": "^29.7.0",
+		"js-yaml": "^4.3.0",
 		"ws": "^7.5.9"
 	},
 	"jest": {
 		"verbose": false,
 		"maxWorkers": 1,
-		"testRunner": "jest-jasmine2"
+		"testRunner": "jest-jasmine2",
+		"setupFilesAfterEnv": [
+			"<rootDir>/lib/openapi.setup.js"
+		],
+		"globalSetup": "<rootDir>/lib/openapi.globalSetup.js",
+		"globalTeardown": "<rootDir>/lib/openapi.globalTeardown.js"
 	}
 }

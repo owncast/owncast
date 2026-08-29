@@ -5,11 +5,12 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/chat/events"
 )
 
 // SetMessagesVisibility sets the visibility of multiple messages by ID.
-func (s *Service) SetMessagesVisibility(messageIDs []string, visibility bool) error {
+func (s *Service) SetMessagesVisibility(messageIDs []string, visibility bool, moderator *models.User) error {
 	// Save new message visibility
 	if err := s.chatMessageRepository.SetMessageVisibilityForMessageIDs(messageIDs, visibility); err != nil {
 		log.Errorln(err)
@@ -22,6 +23,7 @@ func (s *Service) SetMessagesVisibility(messageIDs []string, visibility bool) er
 		MessageIDs: messageIDs,
 		Visible:    visibility,
 	}
+	event.User = moderator
 	event.Event.SetDefaults()
 
 	payload := event.GetBroadcastPayload()

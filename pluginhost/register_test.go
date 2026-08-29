@@ -1,6 +1,7 @@
 package pluginhost
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/owncast/owncast/models"
@@ -82,14 +83,22 @@ func TestRegisterUser(t *testing.T) {
 		t.Fatalf("re-register: got %q err=%v, want %q", again, err, id)
 	}
 
-	// A different plugin with the same raw authId is a distinct user. (A new-user
-	// registration must carry a display name; CreateAnonymousUser rejects empty.)
-	other, err := env.RegisterUser("discord-auth", plugins.UserRegisterRequest{AuthID: "583231", DisplayName: "octocat"})
+	// A different plugin with the same raw authId creates a distinct user. A
+	// nullable display name receives a generated name.
+	var nullDisplayName plugins.UserRegisterRequest
+	if err := json.Unmarshal([]byte(`{"authId":"583231","displayName":null}`), &nullDisplayName); err != nil {
+		t.Fatalf("decode nullable display name: %v", err)
+	}
+	other, err := env.RegisterUser("discord-auth", nullDisplayName)
 	if err != nil {
 		t.Fatalf("other plugin register: %v", err)
 	}
 	if other == id {
 		t.Error("a different plugin must not resolve to the same user")
+	}
+
+	if user := users.GetUserByPluginAuth("discord-auth", "583231"); user == nil || user.DisplayName == "" {
+		t.Error("missing display name was not generated")
 	}
 
 	// A disallowed scope is rejected, and no orphan user is left behind.

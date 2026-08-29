@@ -332,6 +332,9 @@ func main() {
 		pluginContentHandler = pluginHostInstance.Handler()
 		pluginAdminHandler = pluginHostInstance.AdminHandler()
 		viewerAuthGate = pluginHostInstance.AuthGateMiddleware()
+		// The gate's access policy can disable directory listing, so YP has
+		// to consult it before pinging or answering /api/yp.
+		ypSvc.SetDirectoryAvailable(pluginHostInstance.DirectoryAvailable)
 		defer pluginHostInstance.Stop(ctx)
 	}
 

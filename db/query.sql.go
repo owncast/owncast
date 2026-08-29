@@ -41,8 +41,7 @@ type AddAuthForUserParams struct {
 }
 
 func (q *Queries) AddAuthForUser(ctx context.Context, arg AddAuthForUserParams) error {
-	_, err := q.db.ExecContext(
-		ctx, addAuthForUser,
+	_, err := q.db.ExecContext(ctx, addAuthForUser,
 		arg.UserID,
 		arg.AuthKey,
 		arg.Type,
@@ -69,8 +68,7 @@ type AddFederatedServerParams struct {
 }
 
 func (q *Queries) AddFederatedServer(ctx context.Context, arg AddFederatedServerParams) error {
-	_, err := q.db.ExecContext(
-		ctx, addFederatedServer,
+	_, err := q.db.ExecContext(ctx, addFederatedServer,
 		arg.Iri,
 		arg.Name,
 		arg.LogoUrl,
@@ -100,8 +98,7 @@ type AddFollowerParams struct {
 }
 
 func (q *Queries) AddFollower(ctx context.Context, arg AddFollowerParams) error {
-	_, err := q.db.ExecContext(
-		ctx, addFollower,
+	_, err := q.db.ExecContext(ctx, addFollower,
 		arg.Iri,
 		arg.Inbox,
 		arg.SharedInbox,
@@ -142,8 +139,7 @@ type AddToAcceptedActivitiesParams struct {
 }
 
 func (q *Queries) AddToAcceptedActivities(ctx context.Context, arg AddToAcceptedActivitiesParams) error {
-	_, err := q.db.ExecContext(
-		ctx, addToAcceptedActivities,
+	_, err := q.db.ExecContext(ctx, addToAcceptedActivities,
 		arg.Iri,
 		arg.Actor,
 		arg.Type,
@@ -164,8 +160,7 @@ type AddToOutboxParams struct {
 }
 
 func (q *Queries) AddToOutbox(ctx context.Context, arg AddToOutboxParams) error {
-	_, err := q.db.ExecContext(
-		ctx, addToOutbox,
+	_, err := q.db.ExecContext(ctx, addToOutbox,
 		arg.Iri,
 		arg.Value,
 		arg.Type,
@@ -228,14 +223,78 @@ type ChangeDisplayNameParams struct {
 }
 
 func (q *Queries) ChangeDisplayName(ctx context.Context, arg ChangeDisplayNameParams) error {
-	_, err := q.db.ExecContext(
-		ctx, changeDisplayName,
+	_, err := q.db.ExecContext(ctx, changeDisplayName,
 		arg.DisplayName,
 		arg.PreviousNames,
 		arg.NamechangedAt,
 		arg.ID,
 	)
 	return err
+}
+
+const claimActivityPubDelivery = `-- name: ClaimActivityPubDelivery :one
+UPDATE ap_delivery_queue
+SET claimed_until = ?1,
+    attempts = attempts + 1
+WHERE id = (
+    SELECT candidate.id
+    FROM ap_delivery_queue AS candidate
+    WHERE candidate.failed_at IS NULL
+      AND candidate.next_attempt_at <= ?2
+      AND (candidate.claimed_until IS NULL OR candidate.claimed_until <= ?2)
+    ORDER BY candidate.next_attempt_at, candidate.id
+    LIMIT 1
+)
+RETURNING id, inbox, payload, actor_iri, activity_type, coalesce_key, attempts, revision
+`
+
+type ClaimActivityPubDeliveryParams struct {
+	ClaimedUntil sql.NullTime
+	Now          time.Time
+}
+
+type ClaimActivityPubDeliveryRow struct {
+	ID           int64
+	Inbox        string
+	Payload      []byte
+	ActorIri     string
+	ActivityType string
+	CoalesceKey  sql.NullString
+	Attempts     int64
+	Revision     int64
+}
+
+func (q *Queries) ClaimActivityPubDelivery(ctx context.Context, arg ClaimActivityPubDeliveryParams) (ClaimActivityPubDeliveryRow, error) {
+	row := q.db.QueryRowContext(ctx, claimActivityPubDelivery, arg.ClaimedUntil, arg.Now)
+	var i ClaimActivityPubDeliveryRow
+	err := row.Scan(
+		&i.ID,
+		&i.Inbox,
+		&i.Payload,
+		&i.ActorIri,
+		&i.ActivityType,
+		&i.CoalesceKey,
+		&i.Attempts,
+		&i.Revision,
+	)
+	return i, err
+}
+
+const completeActivityPubDelivery = `-- name: CompleteActivityPubDelivery :execrows
+DELETE FROM ap_delivery_queue WHERE id = ? AND revision = ?
+`
+
+type CompleteActivityPubDeliveryParams struct {
+	ID       int64
+	Revision int64
+}
+
+func (q *Queries) CompleteActivityPubDelivery(ctx context.Context, arg CompleteActivityPubDeliveryParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, completeActivityPubDelivery, arg.ID, arg.Revision)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const countUserAuthByProvider = `-- name: CountUserAuthByProvider :one
@@ -276,6 +335,28 @@ func (q *Queries) CountUsers(ctx context.Context, arg CountUsersParams) (int64, 
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const deferActivityPubDelivery = `-- name: DeferActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    next_attempt_at = ?,
+    attempts = MAX(attempts - 1, 0)
+WHERE id = ? AND revision = ?
+`
+
+type DeferActivityPubDeliveryParams struct {
+	NextAttemptAt time.Time
+	ID            int64
+	Revision      int64
+}
+
+func (q *Queries) DeferActivityPubDelivery(ctx context.Context, arg DeferActivityPubDeliveryParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deferActivityPubDelivery, arg.NextAttemptAt, arg.ID, arg.Revision)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const deleteUserAccessTokens = `-- name: DeleteUserAccessTokens :exec
@@ -332,6 +413,34 @@ func (q *Queries) DoesInboundActivityExist(ctx context.Context, arg DoesInboundA
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const failActivityPubDelivery = `-- name: FailActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    last_error = ?,
+    failed_at = ?
+WHERE id = ? AND revision = ?
+`
+
+type FailActivityPubDeliveryParams struct {
+	LastError sql.NullString
+	FailedAt  sql.NullTime
+	ID        int64
+	Revision  int64
+}
+
+func (q *Queries) FailActivityPubDelivery(ctx context.Context, arg FailActivityPubDeliveryParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, failActivityPubDelivery,
+		arg.LastError,
+		arg.FailedAt,
+		arg.ID,
+		arg.Revision,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const getApprovedDirectoryFollowers = `-- name: GetApprovedDirectoryFollowers :many
@@ -558,7 +667,7 @@ func (q *Queries) GetFederationFollowerApprovalRequests(ctx context.Context) ([]
 }
 
 const getFederationFollowersWithOffset = `-- name: GetFederationFollowersWithOffset :many
-SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1 ORDER BY created_at DESC LIMIT ? OFFSET ?
+SELECT iri, inbox, shared_inbox, name, username, image, created_at FROM ap_followers WHERE approved_at is not null AND directory IS NOT 1 ORDER BY created_at DESC, rowid DESC LIMIT ? OFFSET ?
 `
 
 type GetFederationFollowersWithOffsetParams struct {
@@ -579,6 +688,8 @@ type GetFederationFollowersWithOffsetRow struct {
 // Excludes featured-streams (Owncast-server) follows so they don't show up in
 // the public or admin followers list; they are tracked as a directory
 // relationship, not surfaced as followers.
+// rowid breaks created_at ties (second resolution) so pagination order is
+// deterministic; without it, same-second follows shift between pages.
 func (q *Queries) GetFederationFollowersWithOffset(ctx context.Context, arg GetFederationFollowersWithOffsetParams) ([]GetFederationFollowersWithOffsetRow, error) {
 	rows, err := q.db.QueryContext(ctx, getFederationFollowersWithOffset, arg.Limit, arg.Offset)
 	if err != nil {
@@ -1145,7 +1256,7 @@ func (q *Queries) GetUniqueDirectoryDeliveryInboxes(ctx context.Context) ([]stri
 }
 
 const getUserByAccessToken = `-- name: GetUserByAccessToken :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, users.type = 'API' AS is_bot FROM users, user_access_tokens WHERE token = ? AND users.id = user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, users.type = 'API' AS is_bot FROM users, user_access_tokens WHERE token = ? AND users.id = user_id
 `
 
 type GetUserByAccessTokenRow struct {
@@ -1154,6 +1265,7 @@ type GetUserByAccessTokenRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1170,6 +1282,7 @@ func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUs
 		&i.DisplayColor,
 		&i.CreatedAt,
 		&i.DisabledAt,
+		&i.DisabledReason,
 		&i.PreviousNames,
 		&i.NamechangedAt,
 		&i.AuthenticatedAt,
@@ -1180,7 +1293,7 @@ func (q *Queries) GetUserByAccessToken(ctx context.Context, token string) (GetUs
 }
 
 const getUserByAuth = `-- name: GetUserByAuth :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth_key = ? AND auth.type = ? AND users.id = auth.user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth_key = ? AND auth.type = ? AND users.id = auth.user_id
 `
 
 type GetUserByAuthParams struct {
@@ -1194,6 +1307,7 @@ type GetUserByAuthRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1209,6 +1323,7 @@ func (q *Queries) GetUserByAuth(ctx context.Context, arg GetUserByAuthParams) (G
 		&i.DisplayColor,
 		&i.CreatedAt,
 		&i.DisabledAt,
+		&i.DisabledReason,
 		&i.PreviousNames,
 		&i.NamechangedAt,
 		&i.AuthenticatedAt,
@@ -1218,7 +1333,7 @@ func (q *Queries) GetUserByAuth(ctx context.Context, arg GetUserByAuthParams) (G
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users WHERE id = ?
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users WHERE id = ?
 `
 
 type GetUserByIDRow struct {
@@ -1227,6 +1342,7 @@ type GetUserByIDRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1243,6 +1359,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (GetUserByIDRow, e
 		&i.DisplayColor,
 		&i.CreatedAt,
 		&i.DisabledAt,
+		&i.DisabledReason,
 		&i.PreviousNames,
 		&i.NamechangedAt,
 		&i.AuthenticatedAt,
@@ -1253,7 +1370,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (GetUserByIDRow, e
 }
 
 const getUserByPluginAuth = `-- name: GetUserByPluginAuth :one
-SELECT users.id, display_name, display_color, users.created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth.type = 'plugin.auth' AND auth.provider = ? AND auth.auth_key = ? AND users.id = auth.user_id
+SELECT users.id, display_name, display_color, users.created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes FROM auth, users WHERE auth.type = 'plugin.auth' AND auth.provider = ? AND auth.auth_key = ? AND users.id = auth.user_id
 `
 
 type GetUserByPluginAuthParams struct {
@@ -1267,6 +1384,7 @@ type GetUserByPluginAuthRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1285,6 +1403,7 @@ func (q *Queries) GetUserByPluginAuth(ctx context.Context, arg GetUserByPluginAu
 		&i.DisplayColor,
 		&i.CreatedAt,
 		&i.DisabledAt,
+		&i.DisabledReason,
 		&i.PreviousNames,
 		&i.NamechangedAt,
 		&i.AuthenticatedAt,
@@ -1305,7 +1424,7 @@ func (q *Queries) GetUserDisplayNameByToken(ctx context.Context, token string) (
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users ORDER BY created_at DESC
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot FROM users ORDER BY created_at DESC
 `
 
 type GetUsersRow struct {
@@ -1314,6 +1433,7 @@ type GetUsersRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1336,6 +1456,7 @@ func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
 			&i.DisplayColor,
 			&i.CreatedAt,
 			&i.DisabledAt,
+			&i.DisabledReason,
 			&i.PreviousNames,
 			&i.NamechangedAt,
 			&i.AuthenticatedAt,
@@ -1356,7 +1477,7 @@ func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
 }
 
 const getUsersPaginated = `-- name: GetUsersPaginated :many
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
 FROM users
 WHERE display_name LIKE '%' || ?1 || '%'
   AND (
@@ -1381,6 +1502,7 @@ type GetUsersPaginatedRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1398,8 +1520,7 @@ type GetUsersPaginatedRow struct {
 // the two exist as separate queries because sqlc can't bind a sort direction
 // into ORDER BY.
 func (q *Queries) GetUsersPaginated(ctx context.Context, arg GetUsersPaginatedParams) ([]GetUsersPaginatedRow, error) {
-	rows, err := q.db.QueryContext(
-		ctx, getUsersPaginated,
+	rows, err := q.db.QueryContext(ctx, getUsersPaginated,
 		arg.Search,
 		arg.Status,
 		arg.PageOffset,
@@ -1418,6 +1539,7 @@ func (q *Queries) GetUsersPaginated(ctx context.Context, arg GetUsersPaginatedPa
 			&i.DisplayColor,
 			&i.CreatedAt,
 			&i.DisabledAt,
+			&i.DisabledReason,
 			&i.PreviousNames,
 			&i.NamechangedAt,
 			&i.AuthenticatedAt,
@@ -1438,7 +1560,7 @@ func (q *Queries) GetUsersPaginated(ctx context.Context, arg GetUsersPaginatedPa
 }
 
 const getUsersPaginatedAsc = `-- name: GetUsersPaginatedAsc :many
-SELECT id, display_name, display_color, created_at, disabled_at, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
+SELECT id, display_name, display_color, created_at, disabled_at, disabled_reason, previous_names, namechanged_at, authenticated_at, scopes, type = 'API' AS is_bot
 FROM users
 WHERE display_name LIKE '%' || ?1 || '%'
   AND (
@@ -1463,6 +1585,7 @@ type GetUsersPaginatedAscRow struct {
 	DisplayColor    int64
 	CreatedAt       sql.NullTime
 	DisabledAt      sql.NullTime
+	DisabledReason  sql.NullString
 	PreviousNames   sql.NullString
 	NamechangedAt   sql.NullTime
 	AuthenticatedAt sql.NullTime
@@ -1473,8 +1596,7 @@ type GetUsersPaginatedAscRow struct {
 // Oldest-first counterpart to GetUsersPaginated. Same @search/@status filter,
 // only the created_at ordering differs.
 func (q *Queries) GetUsersPaginatedAsc(ctx context.Context, arg GetUsersPaginatedAscParams) ([]GetUsersPaginatedAscRow, error) {
-	rows, err := q.db.QueryContext(
-		ctx, getUsersPaginatedAsc,
+	rows, err := q.db.QueryContext(ctx, getUsersPaginatedAsc,
 		arg.Search,
 		arg.Status,
 		arg.PageOffset,
@@ -1493,6 +1615,7 @@ func (q *Queries) GetUsersPaginatedAsc(ctx context.Context, arg GetUsersPaginate
 			&i.DisplayColor,
 			&i.CreatedAt,
 			&i.DisabledAt,
+			&i.DisabledReason,
 			&i.PreviousNames,
 			&i.NamechangedAt,
 			&i.AuthenticatedAt,
@@ -1534,6 +1657,50 @@ func (q *Queries) IsIPAddressBlocked(ctx context.Context, ipAddress string) (int
 	return count, err
 }
 
+const queueActivityPubDelivery = `-- name: QueueActivityPubDelivery :one
+INSERT INTO ap_delivery_queue (
+    inbox,
+    payload,
+    actor_iri,
+    activity_type,
+    coalesce_key,
+    next_attempt_at
+) VALUES (?, ?, ?, ?, ?, ?)
+ON CONFLICT(inbox, coalesce_key) WHERE coalesce_key IS NOT NULL AND failed_at IS NULL
+DO UPDATE SET
+    payload = excluded.payload,
+    actor_iri = excluded.actor_iri,
+    activity_type = excluded.activity_type,
+    next_attempt_at = excluded.next_attempt_at,
+    attempts = 0,
+    last_error = NULL,
+    revision = ap_delivery_queue.revision + 1
+RETURNING id
+`
+
+type QueueActivityPubDeliveryParams struct {
+	Inbox         string
+	Payload       []byte
+	ActorIri      string
+	ActivityType  string
+	CoalesceKey   sql.NullString
+	NextAttemptAt time.Time
+}
+
+func (q *Queries) QueueActivityPubDelivery(ctx context.Context, arg QueueActivityPubDeliveryParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, queueActivityPubDelivery,
+		arg.Inbox,
+		arg.Payload,
+		arg.ActorIri,
+		arg.ActivityType,
+		arg.CoalesceKey,
+		arg.NextAttemptAt,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const rejectFederationFollower = `-- name: RejectFederationFollower :exec
 UPDATE ap_followers SET approved_at = null, disabled_at = ? WHERE iri = ?
 `
@@ -1545,6 +1712,20 @@ type RejectFederationFollowerParams struct {
 
 func (q *Queries) RejectFederationFollower(ctx context.Context, arg RejectFederationFollowerParams) error {
 	_, err := q.db.ExecContext(ctx, rejectFederationFollower, arg.DisabledAt, arg.Iri)
+	return err
+}
+
+const releaseSupersededActivityPubDelivery = `-- name: ReleaseSupersededActivityPubDelivery :exec
+UPDATE ap_delivery_queue SET claimed_until = NULL WHERE id = ? AND revision != ?
+`
+
+type ReleaseSupersededActivityPubDeliveryParams struct {
+	ID       int64
+	Revision int64
+}
+
+func (q *Queries) ReleaseSupersededActivityPubDelivery(ctx context.Context, arg ReleaseSupersededActivityPubDeliveryParams) error {
+	_, err := q.db.ExecContext(ctx, releaseSupersededActivityPubDelivery, arg.ID, arg.Revision)
 	return err
 }
 
@@ -1589,6 +1770,34 @@ func (q *Queries) RemoveNotificationDestinationForChannel(ctx context.Context, a
 	return err
 }
 
+const retryActivityPubDelivery = `-- name: RetryActivityPubDelivery :execrows
+UPDATE ap_delivery_queue
+SET claimed_until = NULL,
+    next_attempt_at = ?,
+    last_error = ?
+WHERE id = ? AND revision = ?
+`
+
+type RetryActivityPubDeliveryParams struct {
+	NextAttemptAt time.Time
+	LastError     sql.NullString
+	ID            int64
+	Revision      int64
+}
+
+func (q *Queries) RetryActivityPubDelivery(ctx context.Context, arg RetryActivityPubDeliveryParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, retryActivityPubDelivery,
+		arg.NextAttemptAt,
+		arg.LastError,
+		arg.ID,
+		arg.Revision,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const setAccessTokenToOwner = `-- name: SetAccessTokenToOwner :exec
 UPDATE user_access_tokens SET user_id = ? WHERE token = ?
 `
@@ -1625,8 +1834,7 @@ type UpdateFederatedServerFollowStatusParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerFollowStatus(ctx context.Context, arg UpdateFederatedServerFollowStatusParams) error {
-	_, err := q.db.ExecContext(
-		ctx, updateFederatedServerFollowStatus,
+	_, err := q.db.ExecContext(ctx, updateFederatedServerFollowStatus,
 		arg.FollowStatus,
 		arg.Pending,
 		arg.AcceptedAt,
@@ -1649,8 +1857,7 @@ type UpdateFederatedServerMetadataParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerMetadata(ctx context.Context, arg UpdateFederatedServerMetadataParams) error {
-	_, err := q.db.ExecContext(
-		ctx, updateFederatedServerMetadata,
+	_, err := q.db.ExecContext(ctx, updateFederatedServerMetadata,
 		arg.Name,
 		arg.DisplayName,
 		arg.Summary,
@@ -1672,8 +1879,7 @@ type UpdateFederatedServerOnlineStatusParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerOnlineStatus(ctx context.Context, arg UpdateFederatedServerOnlineStatusParams) error {
-	_, err := q.db.ExecContext(
-		ctx, updateFederatedServerOnlineStatus,
+	_, err := q.db.ExecContext(ctx, updateFederatedServerOnlineStatus,
 		arg.IsOnline,
 		arg.LastSeenOnline,
 		arg.LastStatusUpdate,
@@ -1697,8 +1903,7 @@ type UpdateFederatedServerStatusParams struct {
 }
 
 func (q *Queries) UpdateFederatedServerStatus(ctx context.Context, arg UpdateFederatedServerStatusParams) error {
-	_, err := q.db.ExecContext(
-		ctx, updateFederatedServerStatus,
+	_, err := q.db.ExecContext(ctx, updateFederatedServerStatus,
 		arg.IsOnline,
 		arg.StreamTitle,
 		arg.StreamDescription,
@@ -1724,8 +1929,7 @@ type UpdateFollowerByIRIParams struct {
 }
 
 func (q *Queries) UpdateFollowerByIRI(ctx context.Context, arg UpdateFollowerByIRIParams) error {
-	_, err := q.db.ExecContext(
-		ctx, updateFollowerByIRI,
+	_, err := q.db.ExecContext(ctx, updateFollowerByIRI,
 		arg.Inbox,
 		arg.SharedInbox,
 		arg.Name,

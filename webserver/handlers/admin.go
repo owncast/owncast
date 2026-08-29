@@ -48,6 +48,14 @@ func (s *ServerInterfaceImpl) GetActiveViewersOptions(w http.ResponseWriter, r *
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetActiveViewers)(w, r)
 }
 
+func (s *ServerInterfaceImpl) GetPlaybackClients(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetPlaybackClients)(w, r)
+}
+
+func (s *ServerInterfaceImpl) GetPlaybackClientsOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.GetPlaybackClients)(w, r)
+}
+
 func (s *ServerInterfaceImpl) GetHardwareStats(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetHardwareStats)(w, r)
 }
@@ -278,30 +286,6 @@ func (s *ServerInterfaceImpl) CreateExternalAPIUser(w http.ResponseWriter, r *ht
 
 func (s *ServerInterfaceImpl) CreateExternalAPIUserOptions(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.CreateExternalAPIUser)(w, r)
-}
-
-func (s *ServerInterfaceImpl) AutoUpdateOptions(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateOptions)(w, r)
-}
-
-func (s *ServerInterfaceImpl) AutoUpdateOptionsOptions(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateOptions)(w, r)
-}
-
-func (s *ServerInterfaceImpl) AutoUpdateStart(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateStart)(w, r)
-}
-
-func (s *ServerInterfaceImpl) AutoUpdateStartOptions(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateStart)(w, r)
-}
-
-func (s *ServerInterfaceImpl) AutoUpdateForceQuit(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateForceQuit)(w, r)
-}
-
-func (s *ServerInterfaceImpl) AutoUpdateForceQuitOptions(w http.ResponseWriter, r *http.Request) {
-	s.h.middleware.RequireAdminAuth(admin.AutoUpdateForceQuit)(w, r)
 }
 
 func (s *ServerInterfaceImpl) ResetYPRegistration(w http.ResponseWriter, r *http.Request) {

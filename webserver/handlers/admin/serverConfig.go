@@ -176,7 +176,7 @@ type webConfigResponse struct {
 	Tags                []string              `json:"tags"`
 	SocialHandles       []models.SocialHandle `json:"socialHandles"`
 	NSFW                bool                  `json:"nsfw"`
-	Autoplay            string                `json:"autoplay"`
+	Autoplay            models.AutoplayMode   `json:"autoplay"`
 }
 
 type yp struct {

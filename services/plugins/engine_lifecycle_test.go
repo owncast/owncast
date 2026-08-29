@@ -6,6 +6,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -79,6 +81,11 @@ func TestLoadFailureReleasesEngine(t *testing.T) {
 	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
 
 	env, _, _ := captureEnv()
+	var acquired, released int
+	env.AcquireSQLLease = func(string) func() {
+		acquired++
+		return func() { released++ }
+	}
 	manifestBytes, _ := json.Marshal(map[string]any{
 		"api":         "1",
 		"name":        "boom",
@@ -92,6 +99,9 @@ func TestLoadFailureReleasesEngine(t *testing.T) {
 	}
 	if n, refs := engineCacheState(); n != 0 {
 		t.Fatalf("failed load leaked an engine reference: %d entries, %d refs", n, refs)
+	}
+	if acquired != 1 || released != 1 {
+		t.Fatalf("failed load acquired %d SQL leases and released %d, want 1 each", acquired, released)
 	}
 }
 
@@ -333,5 +343,147 @@ module.exports = definePlugin({ onChatMessage(msg) {} });`)
 	}
 	if n, refs := engineCacheState(); n != 1 || refs != 1 {
 		t.Fatalf("engine cache after no-op Enable: %d engines with %d refs, want unchanged 1/1", n, refs)
+	}
+}
+
+// TestManager_Install_LoadsEnabledButUnloadedPluginOnUpdate defends the last
+// corner of the Install update contract: a plugin can be enabled but not
+// running (an on-disk update expanded its permissions, so the host held it
+// unloaded across a restart). Installing a version whose permissions are
+// covered by the approved baseline must bring it back up — the admin already
+// consented to everything this package asks for.
+func TestManager_Install_LoadsEnabledButUnloadedPluginOnUpdate(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, _, _ := captureEnv()
+	dir := t.TempDir()
+	mgr := NewManager(dir, env)
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+
+	script := []byte(`
+const { definePlugin } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({ onChatMessage(msg) {} });`)
+	perms := []string{PermChatSend}
+
+	if _, err := mgr.Install(ctx, buildJSPackageBytes(t, lifecycleManifest(t, "0.1.0", perms), script)); err != nil {
+		t.Fatalf("install v1: %v", err)
+	}
+	if err := mgr.Enable(ctx, "lifecycle-bot"); err != nil {
+		t.Fatalf("enable: %v", err)
+	}
+	mgr.Stop(ctx)
+
+	// The author drops a permission-expanding v2 on disk while the host is
+	// down; the restarted manager discovers it, sees an unapproved
+	// permission, and keeps the plugin unloaded.
+	v2 := buildJSPackageBytes(t, lifecycleManifest(t, "0.2.0", []string{PermChatSend, PermStorageKV}), script)
+	if err := os.WriteFile(filepath.Join(dir, "lifecycle-bot.ocpkg"), v2, 0o600); err != nil {
+		t.Fatalf("drop v2 on disk: %v", err)
+	}
+	mgr = NewManager(dir, env)
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("restart: %v", err)
+	}
+	defer mgr.Stop(ctx)
+	if len(mgr.Snapshot()) != 0 {
+		t.Fatal("precondition: the expanded-permission v2 must be held unloaded")
+	}
+
+	// The admin installs v3, back inside the approved baseline. The plugin
+	// is enabled and everything v3 asks for is approved, so the update must
+	// leave it running — not stranded at "enabled, not loaded" until the
+	// next restart.
+	entry, err := mgr.Install(ctx, buildJSPackageBytes(t, lifecycleManifest(t, "0.3.0", perms), script))
+	if err != nil {
+		t.Fatalf("install v3: %v", err)
+	}
+	if !entry.Enabled || !entry.Loaded {
+		t.Fatalf("baseline-conforming update of an enabled plugin must end up loaded: Enabled=%v Loaded=%v LastError=%q",
+			entry.Enabled, entry.Loaded, entry.LastError)
+	}
+	if len(entry.PendingPermissions) != 0 {
+		t.Errorf("pending permissions after conforming update: got %v, want none", entry.PendingPermissions)
+	}
+	snap := mgr.Snapshot()
+	if len(snap) != 1 || snap[0].Manifest.Version != "0.3.0" {
+		t.Fatalf("running instance after conforming update: got %d loaded (want 1) with version %q (want 0.3.0)",
+			len(snap), func() string {
+				if len(snap) > 0 {
+					return snap[0].Manifest.Version
+				}
+				return ""
+			}())
+	}
+}
+
+// TestManager_UnloadHooksBracketTheInstanceClose defends the contract the
+// two-phase SQL teardown depends on: onUnload runs while the plugin can still
+// execute, and onUnloaded runs only once it cannot. A host resource an in-flight
+// call can still reach has to be released in the second hook, because releasing
+// it in the first lets that call reacquire it after the teardown is finished.
+func TestManager_UnloadHooksBracketTheInstanceClose(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+	dir := t.TempDir()
+	mgr := NewManager(dir, env)
+	if err := mgr.Start(ctx); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer mgr.Stop(ctx)
+
+	script := []byte(`
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage(msg) { owncast.chat.send("ran: " + msg.body); }
+});`)
+	if _, err := mgr.Install(ctx, buildJSPackageBytes(t, lifecycleManifest(t, "0.1.0", []string{PermChatSend}), script)); err != nil {
+		t.Fatalf("install: %v", err)
+	}
+	if err := mgr.Enable(ctx, "lifecycle-bot"); err != nil {
+		t.Fatalf("enable: %v", err)
+	}
+	loaded := mgr.Snapshot()
+	if len(loaded) != 1 {
+		t.Fatalf("precondition: expected one loaded plugin, got %d", len(loaded))
+	}
+	instance := loaded[0]
+
+	// Dispatching straight to the instance is how an in-flight export call
+	// reaches the host while a teardown is underway.
+	dispatch := func(body string) {
+		NewDispatcher([]*Loaded{instance}).Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", body))
+	}
+	var order []string
+	mgr.SetOnUnload(func(slug string) {
+		order = append(order, "unload:"+slug)
+		dispatch("during unload")
+	})
+	mgr.SetOnUnloaded(func(slug string) {
+		order = append(order, "unloaded:"+slug)
+		dispatch("after unloaded")
+	})
+
+	if err := mgr.Disable(ctx, "lifecycle-bot"); err != nil {
+		t.Fatalf("disable: %v", err)
+	}
+
+	if len(order) != 2 || order[0] != "unload:lifecycle-bot" || order[1] != "unloaded:lifecycle-bot" {
+		t.Fatalf("unload hooks fired as %v, want onUnload then onUnloaded exactly once each", order)
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	var ran []string
+	for _, send := range *sends {
+		ran = append(ran, send.Text)
+	}
+	if len(ran) != 1 || ran[0] != "ran: during unload" {
+		t.Fatalf("plugin calls observed during teardown: %v, want only the one from onUnload; a call reaching the plugin after onUnloaded means the hooks do not bracket Close", ran)
 	}
 }

@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/models"
+	browsernotifications "github.com/owncast/owncast/notifications/browser"
 	notificationsrepo "github.com/owncast/owncast/persistence/notificationsrepository"
 	"github.com/owncast/owncast/utils"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -40,6 +41,12 @@ func (h *Handlers) RegisterForLiveNotifications(u models.User, w http.ResponseWr
 	_, validChannel := utils.FindInSlice(validTypes, req.Channel)
 	if !validChannel {
 		webutils.WriteSimpleResponse(w, false, "invalid notification channel: "+req.Channel)
+		return
+	}
+
+	if _, err := browsernotifications.ParseAndValidateSubscription(req.Destination); err != nil {
+		log.Debugln(err)
+		webutils.WriteSimpleResponse(w, false, "invalid browser notification destination")
 		return
 	}
 

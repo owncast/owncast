@@ -157,14 +157,18 @@ func cmcdClientID(r *http.Request, keys map[string]any) string {
 
 // registerCMCDKeys maps the consumed subset of a CMCD report — from any
 // transmission or reporting mode — onto the playback metrics pipeline in a
-// single locked update, since this runs per media request.
-func (h *Handlers) registerCMCDKeys(id string, keys map[string]any) {
+// single locked update, since this runs per media request. viewerID is the
+// request-derived identity of the viewer the report arrived from, which
+// ties the player-supplied session identity back to an active viewer.
+func (h *Handlers) registerCMCDKeys(id, viewerID string, keys map[string]any) {
 	report := metrics.PlaybackReport{
-		ClientID: id,
-		// A zero error count is registered for every report so healthy
-		// clients stay in the health overview's denominator, matching the
-		// legacy metrics endpoint's behavior.
-		HasErrorCount: true,
+		ClientID:       id,
+		ViewerID:       viewerID,
+		HasErrorCount:  true,
+		ClientReported: true,
+	}
+	if state, ok := keys["sta"].(string); ok {
+		report.PlayerState = state
 	}
 
 	if mtp, ok := cmcdNumber(keys, "mtp"); ok && mtp > 0 {
@@ -221,18 +225,13 @@ func segmentSpeedSample(bytes int64, duration time.Duration, segmentSeconds int)
 	return kbps, seconds, true
 }
 
-// Serve-rate readings above this aren't measurements of any real viewer
-// connection: they mean a local relay (reverse proxy, CDN edge, tunnel
-// agent) drained the socket instead of the viewer, which reads as
-// multi-gigabit "speed". No honest viewer health signal lives above this
-// ceiling — stream bitrates top out orders of magnitude below it.
-const maxPlausibleViewerKbps = 50000
+const serverMeasurementStatusUnmeasurable = "unmeasurable"
 
 // registerServedSegmentMetrics records a server-observed sample for a
 // served segment. durationOnly is set for CMCD clients: their reported
 // throughput owns the speed metric, but the serve timing still provides
 // the download duration.
-func (h *Handlers) registerServedSegmentMetrics(r *http.Request, clientID string, bytes int64, duration time.Duration, durationOnly bool) {
+func (h *Handlers) registerServedSegmentMetrics(r *http.Request, clientID, viewerID string, bytes int64, duration time.Duration, durationOnly bool) {
 	// An aborted transfer isn't a complete download, so it isn't a speed
 	// sample. Aborts are normal player behavior (quality switches, seeks,
 	// leaving), not errors.
@@ -243,18 +242,17 @@ func (h *Handlers) registerServedSegmentMetrics(r *http.Request, clientID string
 	segmentSeconds := h.configRepository.GetStreamLatencyLevel().SecondsPerSegment
 	kbps, seconds, ok := segmentSpeedSample(bytes, duration, segmentSeconds)
 	if !ok {
-		return
-	}
-
-	// A reading above the plausibility ceiling means a local relay drained
-	// the socket, not the viewer — neither the speed nor the duration
-	// measured anything about the viewer, so drop the whole sample.
-	if kbps > maxPlausibleViewerKbps {
+		h.metrics.RegisterUnmeasurableServerSample(
+			clientID,
+			viewerID,
+			serverMeasurementStatusUnmeasurable,
+		)
 		return
 	}
 
 	report := metrics.PlaybackReport{
 		ClientID:        clientID,
+		ViewerID:        viewerID,
 		DownloadSeconds: seconds,
 	}
 	if !durationOnly {

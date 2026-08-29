@@ -1,7 +1,8 @@
 # See https://docs.earthly.dev/ci-integration/vendor-specific-guides/gh-actions-integration
 # for details.
 
-# This workflow builds the development container image
+# This workflow builds the development container image and, on nightly and
+# manual runs, standalone install binaries published to object storage.
 # Triggers:
 #   - Nightly scheduled builds (2 AM UTC)
 #   - Manual runs from the Actions tab (workflow_dispatch)
@@ -89,3 +90,91 @@ jobs:
           timeout_minutes: 20
           max_attempts: 3
           command: ./build/develop/container.sh
+
+      - name: Build and publish standalone binaries
+        if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET: ${{ secrets.S3_SECRET }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+        run: |
+          if [ -z "$S3_BUCKET" ] || [ -z "$S3_ENDPOINT" ]; then
+            echo "No S3 storage configured; skipping standalone binary publish."
+            exit 0
+          fi
+          VERSION="$(date +%Y%m%d)-nightly"
+          # No --ci here: it implies --no-output, which would suppress the
+          # SAVE ... AS LOCAL zips in dist/.
+          earthly -P +package-all --version="$VERSION"
+
+          zips=(dist/*.zip)
+          if [ ! -e "${zips[0]}" ]; then
+            echo "Earthly produced no zips in dist/; refusing to publish."
+            exit 1
+          fi
+
+          export AWS_ACCESS_KEY_ID="$S3_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$S3_SECRET"
+          export AWS_DEFAULT_REGION="${S3_REGION:-us-east-1}"
+          PREFIX="nightly"
+          # Stable keys (owncast-nightly-<arch>.zip) and index.html are overwritten
+          # in place below, so no wipe is needed. Only sweep legacy date-stamped
+          # zips (owncast-<date>-nightly-*) left over from the old naming scheme;
+          # the include pattern never matches the stable keys, so links never 403.
+          aws s3 rm "s3://$S3_BUCKET/$PREFIX/" --recursive \
+            --exclude "*" --include "owncast-2*-nightly-*" \
+            --endpoint-url "$S3_ENDPOINT" --quiet || true
+
+          # Owncast-built ffmpeg binaries from the latest ffmpeg-builds release.
+          # Best effort: if the API call fails the section just lists nothing
+          # beyond the link to the releases page.
+          FFMPEG_ASSETS=$(curl -fsSL https://api.github.com/repos/owncast/ffmpeg-builds/releases/latest \
+            | jq -r '.assets[] | "<li><a href=\"\(.browser_download_url)\">\(.name)</a> (\(.size / 1048576 | floor) MB)</li>"' || true)
+          {
+            printf '%s\n' \
+              '<!doctype html>' \
+              '<html lang="en">' \
+              '<head><meta charset="utf-8"><title>Owncast nightly builds</title></head>' \
+              '<body>' \
+              '<h1>Owncast nightly builds</h1>' \
+              "<p>Version $VERSION, built $(date -u +'%Y-%m-%d %H:%M UTC') from commit" \
+              "<a href=\"https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA\">${GITHUB_SHA:0:7}</a>.</p>" \
+              '<ul>'
+            for f in dist/*.zip; do
+              name=$(basename "$f")
+              size=$(du -h "$f" | cut -f1)
+              # Link to a stable, un-dated key (e.g. owncast-nightly-linux-64bit.zip)
+              # that always points at the latest build. The dated filenames are wiped
+              # and re-created every night, so any consumer that caches this page
+              # (e.g. the docs site's fetch-nightly-builds.js) would otherwise link to
+              # objects that no longer exist and get a 403 AccessDenied.
+              stable="owncast-nightly-${name#owncast-$VERSION-}"
+              printf '<li><a href="%s/%s/%s/%s">%s</a> (%s)</li>\n' \
+                "$S3_ENDPOINT" "$S3_BUCKET" "$PREFIX" "$stable" "$name" "$size"
+            done
+            printf '%s\n' \
+              '</ul>' \
+              '<p>Also available as a Docker image:' \
+              '<a href="https://github.com/owncast/owncast/pkgs/container/owncast"><code>ghcr.io/owncast/owncast:nightly</code></a></p>' \
+              '<h2>ffmpeg</h2>' \
+              '<p>Owncast-built <a href="https://github.com/owncast/ffmpeg-builds/releases/latest">ffmpeg binaries</a>:</p>' \
+              '<ul>'
+            printf '%s\n' "$FFMPEG_ASSETS"
+            printf '%s\n' \
+              '</ul>' \
+              '</body></html>'
+          } > dist/index.html
+
+          for f in dist/*.zip; do
+            name=$(basename "$f")
+            stable="owncast-nightly-${name#owncast-$VERSION-}"
+            # Stable key for a durable URL; Content-Disposition preserves the dated
+            # filename when the browser saves the download.
+            aws s3 cp "$f" "s3://$S3_BUCKET/$PREFIX/$stable" --endpoint-url "$S3_ENDPOINT" \
+              --acl public-read --content-type application/zip \
+              --content-disposition "attachment; filename=$name" --no-progress
+          done
+          aws s3 cp dist/index.html "s3://$S3_BUCKET/$PREFIX/index.html" --endpoint-url "$S3_ENDPOINT" \
+            --acl public-read --content-type text/html --no-progress
+          echo "Published binaries: $S3_ENDPOINT/$S3_BUCKET/$PREFIX/index.html"

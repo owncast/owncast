@@ -29,6 +29,7 @@ func (s *Service) handlePlaybackPolling() {
 	s.collectQualityVariantChanges()
 
 	s.pruneSelfReportingClients()
+	s.prunePlaybackClients()
 }
 
 // RegisterSelfReportingClient marks a client as directly reporting its own
@@ -38,15 +39,6 @@ func (s *Service) RegisterSelfReportingClient(clientID string) {
 	s.metrics.m.Lock()
 	defer s.metrics.m.Unlock()
 	s.selfReportingClients[clientID] = time.Now()
-}
-
-// IsClientSelfReporting returns true if the client recently reported its
-// own playback metrics.
-func (s *Service) IsClientSelfReporting(clientID string) bool {
-	s.metrics.m.Lock()
-	defer s.metrics.m.Unlock()
-	t, ok := s.selfReportingClients[clientID]
-	return ok && time.Since(t) < selfReportSuppressionWindow
 }
 
 // pruneSelfReportingClients drops clients that have stopped reporting.
@@ -64,13 +56,48 @@ func (s *Service) pruneSelfReportingClients() {
 // whenever HasErrorCount is set so a zero count still marks the client as a
 // healthy participant in the stream health overview.
 type PlaybackReport struct {
-	ClientID        string
-	BandwidthKbps   float64
-	LatencySeconds  float64
-	DownloadSeconds float64
-	BitrateKbps     float64
-	ErrorCount      float64
-	HasErrorCount   bool
+	// ClientID is the playback identity of the report: the CMCD session
+	// ID when the player supplies one, otherwise the request-derived
+	// viewer identity.
+	ClientID string
+	// ViewerID is the request-derived identity of the viewer this report
+	// came from. It ties a playback client back to an active viewer even
+	// when ClientID is a player-supplied session ID.
+	ViewerID string
+
+	BandwidthKbps         float64
+	LatencySeconds        float64
+	DownloadSeconds       float64
+	BitrateKbps           float64
+	ErrorCount            float64
+	QualityVariantChanges float64
+	HasErrorCount         bool
+	// HasQualityVariantChanges marks a report that carries its own count
+	// of variant switches, so a reported zero counts as "none" rather
+	// than "unknown".
+	HasQualityVariantChanges bool
+	// ClientReported marks measurements the player produced itself,
+	// rather than ones the server observed while serving segments.
+	ClientReported bool
+	// PlayerState is the latest CMCD playback state token.
+	PlayerState string
+}
+
+// RegisterUnmeasurableServerSample keeps an active client visible when a
+// completed segment could not produce a trustworthy server-side measurement.
+// It deliberately records only the explanation, never a fabricated value.
+func (s *Service) RegisterUnmeasurableServerSample(clientID, viewerID, status string) {
+	s.metrics.m.Lock()
+	defer s.metrics.m.Unlock()
+
+	state := s.clientPlaybackState(PlaybackReport{
+		ClientID: clientID,
+		ViewerID: viewerID,
+	})
+	if state.IsSelfReporting() {
+		return
+	}
+	state.ServerMeasurementStatus = status
 }
 
 // RegisterPlaybackReport applies a client's playback measurements under one
@@ -81,66 +108,55 @@ func (s *Service) RegisterPlaybackReport(report PlaybackReport) {
 	s.metrics.m.Lock()
 	defer s.metrics.m.Unlock()
 
+	state := s.clientPlaybackState(report)
+	if report.ClientReported {
+		state.ServerMeasurementStatus = ""
+		if report.PlayerState != "" {
+			state.PlayerState = report.PlayerState
+		}
+	} else {
+		state.ServerMeasurementStatus = ""
+	}
 	if report.BandwidthKbps > 0 {
 		s.windowedBandwidths[report.ClientID] = report.BandwidthKbps
+		state.BandwidthKbps = report.BandwidthKbps
+		state.BandwidthAt = state.LastUpdate
 	}
 	if report.LatencySeconds > 0 {
 		s.windowedLatencies[report.ClientID] = report.LatencySeconds
+		state.LatencySeconds = report.LatencySeconds
+		state.LatencyAt = state.LastUpdate
 	}
 	if report.DownloadSeconds > 0 {
 		s.windowedDownloadDurations[report.ClientID] = report.DownloadSeconds
+		state.DownloadSeconds = report.DownloadSeconds
+		state.DownloadAt = state.LastUpdate
 	}
 	// A change in the encoded bitrate being played is a quality variant
-	// change, giving variant switch tracking for every CMCD player.
+	// change, giving variant switch tracking for every CMCD player. The
+	// client's own last bitrate is the baseline, so a switch is still
+	// counted when it spans a collection window.
 	if report.BitrateKbps > 0 {
-		if prev, ok := s.lastClientBitrates[report.ClientID]; ok && prev != report.BitrateKbps {
+		if !state.BitrateAt.IsZero() && state.BitrateKbps != report.BitrateKbps {
 			s.windowedQualityVariantChanges[report.ClientID]++
+			state.QualityVariantChanges++
 		}
-		s.lastClientBitrates[report.ClientID] = report.BitrateKbps
+		state.BitrateKbps = report.BitrateKbps
+		state.BitrateAt = state.LastUpdate
+		state.HasQualityChanges = true
+	}
+	// Players that count their own variant switches report them directly
+	// instead of having them inferred from an observed bitrate.
+	if report.HasQualityVariantChanges {
+		s.windowedQualityVariantChanges[report.ClientID] += report.QualityVariantChanges
+		state.QualityVariantChanges += report.QualityVariantChanges
+		state.HasQualityChanges = true
 	}
 	if report.HasErrorCount {
 		s.windowedErrorCounts[report.ClientID] += report.ErrorCount
+		state.ErrorCount += report.ErrorCount
+		state.HasErrorCount = true
 	}
-}
-
-// RegisterPlaybackErrorCount will add to the windowed playback error count.
-// Players report deltas every ~10s but the window is only harvested every
-// 2 minutes, so counts must accumulate — assignment would drop every report
-// that is followed by a zero before the collector runs.
-func (s *Service) RegisterPlaybackErrorCount(clientID string, count float64) {
-	s.metrics.m.Lock()
-	defer s.metrics.m.Unlock()
-	s.windowedErrorCounts[clientID] += count
-}
-
-// RegisterQualityVariantChangesCount will add to the windowed quality variant
-// change count.
-func (s *Service) RegisterQualityVariantChangesCount(clientID string, count float64) {
-	s.metrics.m.Lock()
-	defer s.metrics.m.Unlock()
-	s.windowedQualityVariantChanges[clientID] += count
-}
-
-// RegisterPlayerBandwidth will add to the windowed playback bandwidth.
-func (s *Service) RegisterPlayerBandwidth(clientID string, kbps float64) {
-	s.metrics.m.Lock()
-	defer s.metrics.m.Unlock()
-	s.windowedBandwidths[clientID] = kbps
-}
-
-// RegisterPlayerLatency will add to the windowed player latency values.
-func (s *Service) RegisterPlayerLatency(clientID string, seconds float64) {
-	s.metrics.m.Lock()
-	defer s.metrics.m.Unlock()
-	s.windowedLatencies[clientID] = seconds
-}
-
-// RegisterPlayerSegmentDownloadDuration will add to the windowed player segment
-// download duration values.
-func (s *Service) RegisterPlayerSegmentDownloadDuration(clientID string, seconds float64) {
-	s.metrics.m.Lock()
-	defer s.metrics.m.Unlock()
-	s.windowedDownloadDurations[clientID] = seconds
 }
 
 // collectPlaybackErrorCount will take all of the error counts each individual
@@ -387,9 +403,6 @@ func (s *Service) collectQualityVariantChanges() {
 	valueSlice := utils.Float64MapToSlice(s.windowedQualityVariantChanges)
 	count := utils.Sum(valueSlice)
 	s.windowedQualityVariantChanges = map[string]float64{}
-	// Resetting the baselines each window bounds the map at the
-	// cost of missing a variant switch that spans a harvest boundary.
-	s.lastClientBitrates = map[string]float64{}
 
 	s.metrics.qualityVariantChanges = append(s.metrics.qualityVariantChanges, TimestampedValue{
 		Time:  time.Now(),

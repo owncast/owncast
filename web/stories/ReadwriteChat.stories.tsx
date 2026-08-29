@@ -1,3 +1,4 @@
+import { AutoplaySetting } from '../utils/autoplay';
 import { useEffect } from 'react';
 import { StoryFn, Meta } from '@storybook/nextjs';
 import { Provider, useAtom, useSetAtom } from 'jotai';
@@ -37,7 +38,7 @@ const Page = () => {
     logo: '',
     tags: [],
     nsfw: false,
-    autoplay: 'off',
+    autoplay: AutoplaySetting.Off,
     extraPageContent: '',
     socialHandles: [],
     externalActions: [],

@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"time"
 
 	netutils "github.com/owncast/owncast/utils"
 )
@@ -77,9 +76,7 @@ func FetchNodeInfo(serverURL string) (*NodeInfoV2, error) {
 		return nil, fmt.Errorf("well-known nodeinfo URL %q is not allowed", wellKnownURL)
 	}
 
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
+	client := netutils.GetFederationHTTPClient()
 
 	resp, err := client.Get(wellKnownURL)
 	if err != nil {

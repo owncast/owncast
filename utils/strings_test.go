@@ -2,6 +2,8 @@ package utils
 
 import (
 	"fmt"
+	"html"
+	"strings"
 	"testing"
 )
 
@@ -28,6 +30,33 @@ func TestSafeString(t *testing.T) {
 
 	if result != expectedResult {
 		t.Errorf("Expected %s, got %s", expectedResult, result)
+	}
+}
+
+func TestMakeSafeStringDecodesEntitiesBeforeStrippingHTML(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{input: `&lt;img src=x onerror=alert(1)&gt;Alice`, want: "Alice"},
+		{input: `&lt;b&gt;Alice&lt;/b&gt;`, want: "Alice"},
+		{input: `Alice &amp; Bob`, want: "Alice & Bob"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.input, func(t *testing.T) {
+			if got := MakeSafeStringOfLength(test.input, 100); got != test.want {
+				t.Fatalf("MakeSafeStringOfLength(%q) = %q, want %q", test.input, got, test.want)
+			}
+		})
+	}
+
+	nested := `<img src=x onerror=alert(1)>`
+	for range 10 {
+		nested = html.EscapeString(nested)
+	}
+	if got := MakeSafeStringOfLength(nested, 100); strings.Contains(got, "<img") {
+		t.Fatalf("deeply encoded HTML became active markup: %q", got)
 	}
 }
 

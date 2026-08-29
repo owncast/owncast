@@ -81,6 +81,20 @@ func TestTranslatePluginEvent_FediverseEvents(t *testing.T) {
 		}},
 		Language: "en",
 	}
+	quote := &activityevents.FediverseQuoteEvent{
+		Actor:       actor,
+		Target:      &activityevents.FediverseTarget{URL: "https://owncast.example/federation/post/quoted"},
+		Content:     "<p>Worth watching</p>",
+		ContentText: "Worth watching",
+		URL:         "https://social.example/posts/quote",
+		PostedAt:    "2026-07-10T13:00:00Z",
+		Attachments: []activityevents.FediverseAttachment{{
+			URL:       "https://social.example/media/quote.jpg",
+			MediaType: "image/jpeg",
+			Alt:       "A quoted stream",
+		}},
+		Language: "en",
+	}
 
 	tests := []struct {
 		name      string
@@ -128,9 +142,9 @@ func TestTranslatePluginEvent_FediverseEvents(t *testing.T) {
 		},
 		{
 			name:      "quote",
-			event:     dispatcher.Event{Type: models.FediverseEngagementQuote, Payload: engagement("https://owncast.example/federation/post/quoted")},
+			event:     dispatcher.Event{Type: models.FediverseEngagementQuote, Payload: quote},
 			eventType: "fediverse.quote",
-			json:      `{"actor":{"name":"Alice Example","handle":"@alice@social.example","url":"https://social.example/users/alice","image":"https://social.example/users/alice/avatar.png"},"target":{"url":"https://owncast.example/federation/post/quoted"}}`,
+			json:      `{"actor":{"name":"Alice Example","handle":"@alice@social.example","url":"https://social.example/users/alice","image":"https://social.example/users/alice/avatar.png"},"target":{"url":"https://owncast.example/federation/post/quoted"},"content":"\u003cp\u003eWorth watching\u003c/p\u003e","contentText":"Worth watching","url":"https://social.example/posts/quote","postedAt":"2026-07-10T13:00:00Z","attachments":[{"url":"https://social.example/media/quote.jpg","mediaType":"image/jpeg","alt":"A quoted stream"}],"language":"en"}`,
 		},
 	}
 
@@ -265,6 +279,7 @@ func TestTranslateWebhookEvent_VisibilityFansOutPerMessage(t *testing.T) {
 	evt := webhooks.WebhookEvent{
 		Type: models.VisibiltyToggled,
 		EventData: &webhooks.WebhookVisibilityToggleEventData{
+			User:       &models.User{ID: "moderator-id"},
 			Visible:    false,
 			MessageIDs: []string{"a", "b", "c"},
 		},
@@ -280,6 +295,9 @@ func TestTranslateWebhookEvent_VisibilityFansOutPerMessage(t *testing.T) {
 		}
 		if mod.MessageID != id || mod.Visible {
 			t.Errorf("event %d = %+v want id %q visible false", i, mod, id)
+		}
+		if mod.Moderator == nil || mod.Moderator.ID != "moderator-id" {
+			t.Errorf("event %d moderator = %+v, want moderator-id", i, mod.Moderator)
 		}
 	}
 }

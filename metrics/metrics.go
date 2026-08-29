@@ -109,9 +109,15 @@ type Service struct {
 	// observation is suppressed for them.
 	selfReportingClients map[string]time.Time
 
-	// Last observed encoded bitrate per client (CMCD br), used to detect
-	// quality variant changes.
-	lastClientBitrates map[string]float64
+	// Live per-client playback state powering the admin's per-client
+	// view. Unlike the windowed maps above this is not cleared by the
+	// aggregation pass; entries expire once a client stops reporting.
+	clientPlayback map[string]*ClientPlaybackState
+
+	// Which playback client a viewer's player identifies as, so requests
+	// that player leaves without CMCD data are still measured against
+	// the same client.
+	viewerPlaybackClients map[string]string
 
 	// Alerting state: whether we've already logged a threshold-exceeded
 	// warning for the given resource (debounced by errorResetDuration).
@@ -135,7 +141,8 @@ func New(deps Deps) *Service {
 		windowedLatencies:             map[string]float64{},
 		windowedDownloadDurations:     map[string]float64{},
 		selfReportingClients:          map[string]time.Time{},
-		lastClientBitrates:            map[string]float64{},
+		clientPlayback:                map[string]*ClientPlaybackState{},
+		viewerPlaybackClients:         map[string]string{},
 	}
 }
 

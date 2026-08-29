@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/owncast/owncast/services/datastore"
+	"github.com/owncast/owncast/utils"
 )
 
 // Browser is an instance of the Browser service.
@@ -35,6 +36,19 @@ func GenerateBrowserPushKeys() (string, string, error) {
 	return privateKey, publicKey, nil
 }
 
+// ParseAndValidateSubscription decodes a browser push subscription and
+// requires a public HTTPS endpoint.
+func ParseAndValidateSubscription(subscription string) (*webpush.Subscription, error) {
+	s := &webpush.Subscription{}
+	if err := json.Unmarshal([]byte(subscription), s); err != nil {
+		return nil, errors.Wrap(err, "error decoding destination subscription")
+	}
+	if err := utils.ValidatePublicHTTPSURL(s.Endpoint); err != nil {
+		return nil, errors.Wrap(err, "invalid browser push endpoint")
+	}
+	return s, nil
+}
+
 // Send will send a browser push notification to the given subscription.
 func (b *Browser) Send(
 	subscription string,
@@ -58,14 +72,14 @@ func (b *Browser) Send(
 		return false, errors.Wrap(err, "error marshalling web push message")
 	}
 
-	// Decode subscription
-	s := &webpush.Subscription{}
-	if err := json.Unmarshal([]byte(subscription), s); err != nil {
-		return false, errors.Wrap(err, "error decoding destination subscription")
+	s, err := ParseAndValidateSubscription(subscription)
+	if err != nil {
+		return false, err
 	}
 
 	// Send Notification
 	resp, err := webpush.SendNotification(d, s, &webpush.Options{
+		HTTPClient:      utils.GetPublicHTTPClient(),
 		VAPIDPublicKey:  b.publicKey,
 		VAPIDPrivateKey: b.privateKey,
 		Topic:           "owncast-go-live",

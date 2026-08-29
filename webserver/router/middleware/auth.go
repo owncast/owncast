@@ -1,8 +1,11 @@
 package middleware
 
 import (
+	"context"
 	"crypto/subtle"
+	"net"
 	"net/http"
+	"net/url"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -10,6 +13,15 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
+
+type userContextKey struct{}
+
+// UserFromRequest returns the moderator attached by
+// RequireUserModerationScopeAccesstoken, or nil for other authentication paths.
+func UserFromRequest(r *http.Request) *models.User {
+	user, _ := r.Context().Value(userContextKey{}).(*models.User)
+	return user
+}
 
 // ExternalAccessTokenHandlerFunc is a function that is called after validing access.
 type ExternalAccessTokenHandlerFunc func(models.ExternalAPIUser, http.ResponseWriter, *http.Request)
@@ -23,6 +35,11 @@ type UserAccessTokenHandlerFunc func(models.User, http.ResponseWriter, *http.Req
 // challenge with this exact realm so the browser shares one credential
 // cache across all of them.
 const adminAuthRealm = "Owncast Authenticated Request"
+
+const (
+	adminCSRFHeader        = "X-Owncast-CSRF-Protection"
+	developmentAdminOrigin = "http://localhost:3000"
+)
 
 // IsAdminRequest reports whether r carries valid admin credentials. The
 // Owncast admin UI sends Basic Auth on every API call; embedded contexts
@@ -49,17 +66,67 @@ func (m *Middleware) IsAdminRequest(r *http.Request) bool {
 // header (notably plugin admin iframes) authenticate via that cookie on
 // their next same-origin request, so the user isn't prompted by the
 // browser's native Basic Auth dialog.
+func isAdminOriginAllowed(r *http.Request) bool {
+	originValue := r.Header.Get("Origin")
+	if originValue == "" {
+		return true
+	}
+
+	origin, err := url.Parse(originValue)
+	if err != nil || origin.Scheme == "" || origin.Host == "" || origin.User != nil ||
+		origin.Path != "" || origin.RawQuery != "" || origin.Fragment != "" {
+		return false
+	}
+
+	if originValue == developmentAdminOrigin {
+		return isDevelopmentAdminOrigin(r)
+	}
+
+	scheme := "http"
+	if r.TLS != nil || strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https") {
+		scheme = "https"
+	}
+
+	return strings.EqualFold(origin.Scheme, scheme) && strings.EqualFold(origin.Host, r.Host)
+}
+
+func isDevelopmentAdminOrigin(r *http.Request) bool {
+	if r.Header.Get("Origin") != developmentAdminOrigin {
+		return false
+	}
+
+	hostname := r.Host
+	if host, _, err := net.SplitHostPort(r.Host); err == nil {
+		hostname = host
+	}
+	hostname = strings.Trim(hostname, "[]")
+	if strings.EqualFold(hostname, "localhost") {
+		return true
+	}
+	ip := net.ParseIP(hostname)
+	return ip != nil && ip.IsLoopback()
+}
+
+func requiresCSRFHeader(r *http.Request) bool {
+	return r.Method != http.MethodGet && r.Method != http.MethodHead && r.Method != http.MethodOptions &&
+		r.Header.Get("Origin") == "" && r.Header.Get("Authorization") == ""
+}
+
 func (m *Middleware) RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Allow CORS only for localhost:3000 to support Owncast development.
-		validAdminHost := "http://localhost:3000"
-		w.Header().Set("Access-Control-Allow-Origin", validAdminHost)
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
+		if isDevelopmentAdminOrigin(r) {
+			w.Header().Set("Access-Control-Allow-Origin", developmentAdminOrigin)
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+		}
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, "+adminCSRFHeader)
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 
-		// For request needing CORS, send a 204.
-		if r.Method == "OPTIONS" {
+		if !isAdminOriginAllowed(r) {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
+		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
@@ -68,6 +135,11 @@ func (m *Middleware) RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc
 			w.Header().Set("WWW-Authenticate", `Basic realm="`+adminAuthRealm+`"`)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			log.Debugln("Failed admin authentication")
+			return
+		}
+
+		if requiresCSRFHeader(r) && r.Header.Get(adminCSRFHeader) != "1" {
+			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
 
@@ -84,6 +156,16 @@ func (m *Middleware) RequireAdminAuth(handler http.HandlerFunc) http.HandlerFunc
 func accessDenied(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusUnauthorized) //nolint
 	w.Write([]byte("unauthorized"))        //nolint
+}
+
+func logInvalidAccessToken(r *http.Request, scope string) {
+	log.Warnf(
+		"Invalid access token from %s for %s %s (required scope: %s)",
+		utils.GetIPAddressFromRequest(r),
+		r.Method,
+		r.URL.Path,
+		scope,
+	)
 }
 
 // RequireExternalAPIAccessToken will validate a 3rd party access token.
@@ -104,13 +186,14 @@ func (m *Middleware) RequireExternalAPIAccessToken(scope string, handler Externa
 		}
 
 		if token == "" {
-			log.Warnln("invalid access token")
+			logInvalidAccessToken(r, scope)
 			accessDenied(w)
 			return
 		}
 
 		integration, err := m.userRepository.GetExternalAPIUserForAccessTokenAndScope(token, scope)
 		if integration == nil || err != nil {
+			logInvalidAccessToken(r, scope)
 			accessDenied(w)
 			return
 		}
@@ -166,7 +249,6 @@ func (m *Middleware) RequireUserModerationScopeAccesstoken(handler http.HandlerF
 			accessDenied(w)
 			return
 		}
-
 		// A user is required to use the websocket
 		user := m.userRepository.GetUserByToken(accessToken)
 		if user == nil || !user.IsEnabled() || !user.IsModerator() {
@@ -174,6 +256,10 @@ func (m *Middleware) RequireUserModerationScopeAccesstoken(handler http.HandlerF
 			return
 		}
 
+		// Keep the authenticated moderator attached to the request so handlers
+		// can attribute moderation events without re-reading untrusted request
+		// parameters.
+		r = r.WithContext(context.WithValue(r.Context(), userContextKey{}, user))
 		handler(w, r)
 	})
 }

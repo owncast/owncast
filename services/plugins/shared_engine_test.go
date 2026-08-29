@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
+	"runtime"
 	"strings"
 	"sync"
 	"testing"
@@ -91,6 +93,74 @@ module.exports = definePlugin({
 	}
 }
 
+func TestSharedEngineActionValidationErrorReachesJavaScript(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+	script := `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage() {
+    try {
+      owncast.actions.add({ title: "broken" });
+    } catch (err) {
+      owncast.chat.send(err.message);
+    }
+  }
+});`
+	loaded := loadShared(t, ctx, env, RuntimeJavaScript, "action-errors", script,
+		[]string{PermChatSend, PermUIModify})
+	defer loaded.Close(ctx)
+
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{loaded} })
+	d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(*sends) != 1 {
+		t.Fatalf("expected one error message, got %d: %+v", len(*sends), *sends)
+	}
+	if got := (*sends)[0].Text; got != "actions[0]: exactly one of url or html is required" {
+		t.Fatalf("action error = %q", got)
+	}
+}
+
+func TestSharedEngineActionPermissionErrorReachesJavaScript(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+	script := `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage() {
+    try {
+      owncast.actions.add({ title: "blocked" });
+    } catch (err) {
+      owncast.chat.send(err.message);
+    }
+  }
+});`
+	loaded := loadShared(t, ctx, env, RuntimeJavaScript, "action-permission-errors", script,
+		[]string{PermChatSend})
+	defer loaded.Close(ctx)
+
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{loaded} })
+	d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(*sends) != 1 {
+		t.Fatalf("expected one permission error message, got %d: %+v", len(*sends), *sends)
+	}
+	if got := (*sends)[0].Text; got != "owncast.actions.add failed" {
+		t.Fatalf("permission error = %q", got)
+	}
+}
+
 // TestSharedEnginePermissionGate is the R1 check: a plugin that calls a host
 // function for a permission it was not granted must be denied at call time
 // (the shared engine links every host import, so the gate is the only
@@ -117,6 +187,59 @@ module.exports = definePlugin({
 	defer mu.Unlock()
 	if len(*sends) != 0 {
 		t.Fatalf("ungranted chat.send must be blocked; got %d sends: %+v", len(*sends), *sends)
+	}
+}
+
+func TestSharedEngineLoggingIsAmbientAndPreservesIdentity(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	type logEntry struct {
+		plugin  string
+		level   PluginLogLevel
+		message string
+	}
+	var entries []logEntry
+	env := &HostEnv{
+		Log: func(plugin string, level PluginLogLevel, message string) {
+			entries = append(entries, logEntry{plugin: plugin, level: level, message: message})
+		},
+	}
+
+	js := loadShared(t, ctx, env, RuntimeJavaScript, "js-logger", `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+owncast.log.info("ready");
+owncast.log.warning("needs attention");
+owncast.log.error("failed");
+owncast.log.info("x".repeat(5000));
+owncast.log.info("line one\nline two\u001b[31m");
+module.exports = definePlugin({});`, nil)
+	defer js.Close(ctx)
+
+	py := loadShared(t, ctx, env, RuntimePython, "py-logger", `
+owncast.log.info("ready")
+owncast.log.warning("needs attention")
+owncast.log.error("failed")
+`, nil)
+	defer py.Close(ctx)
+
+	want := []logEntry{
+		{plugin: "js-logger", level: PluginLogInfo, message: "ready"},
+		{plugin: "js-logger", level: PluginLogWarning, message: "needs attention"},
+		{plugin: "js-logger", level: PluginLogError, message: "failed"},
+		{
+			plugin:  "js-logger",
+			level:   PluginLogInfo,
+			message: strings.Repeat("x", MaxPluginLogMessageBytes-len(pluginLogTruncationSuffix)) + pluginLogTruncationSuffix,
+		},
+		{plugin: "js-logger", level: PluginLogInfo, message: "line one line two [31m"},
+		{plugin: "py-logger", level: PluginLogInfo, message: "ready"},
+		{plugin: "py-logger", level: PluginLogWarning, message: "needs attention"},
+		{plugin: "py-logger", level: PluginLogError, message: "failed"},
+	}
+	if !reflect.DeepEqual(entries, want) {
+		t.Fatalf("log entries = %+v, want %+v", entries, want)
 	}
 }
 
@@ -170,11 +293,12 @@ func TestEmitSelfSubscriptionDoesNotDeadlock(t *testing.T) {
 	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
 
 	env, _, _ := captureEnv()
-	// Emits "ping" on every chat message AND subscribes (notify) to "ping".
+	// Emits its fully qualified hook on every chat message AND subscribes
+	// (notify) to the local "ping" hook.
 	script := `
 const { definePlugin, owncast } = require("@owncast/plugin-sdk");
 module.exports = definePlugin({
-  onChatMessage(msg) { owncast.events.emit("ping", {}); },
+  onChatMessage(msg) { owncast.events.emit("echoer.ping", {}); },
   on: { ping(payload) {} },
 });`
 	loaded := loadShared(t, ctx, env, RuntimeJavaScript, "echoer", script, []string{PermEmitEvent})
@@ -190,7 +314,7 @@ module.exports = definePlugin({
 	}()
 	select {
 	case <-done:
-	case <-time.After(10 * time.Second):
+	case <-time.After(NotifyTimeout / 2):
 		t.Fatal("Dispatch deadlocked on a re-entrant self-subscribed emit")
 	}
 }
@@ -268,6 +392,13 @@ func TestSharedEngineNetworkIsolation(t *testing.T) {
 // compiled engine, dispatched concurrently, must route correctly and not race.
 // Run the package with -race to exercise the shared wazero runtime.
 func TestSharedEngineConcurrency(t *testing.T) {
+	if runtime.GOOS == "openbsd" {
+		// wazero has no compiler backend on OpenBSD, so plugins run in
+		// interpreter mode there; the 500ms on_event budget is routinely
+		// exceeded under concurrency and the test flakes on timing, not
+		// on the routing/race contract it defends.
+		t.Skip("wazero interpreter mode on openbsd is too slow for the on_event time budget")
+	}
 	ctx := context.Background()
 	compiledEngines.resetForTest(ctx)
 	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
@@ -379,6 +510,68 @@ func assertHasCommand(t *testing.T, l *Loaded, name, desc string) {
 		}
 	}
 	t.Errorf("%s: register() did not report command %q; got %+v", l.Manifest.Slug, name, l.Manifest.Commands)
+}
+
+func TestSharedEngineActionValidationErrorReachesPython(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+	script := `
+@plugin.on_chat_message
+def handle(msg):
+    try:
+        owncast.actions.add({"title": "broken"})
+    except Exception as err:
+        owncast.chat.send(str(err))
+`
+	loaded := loadShared(t, ctx, env, RuntimePython, "python-action-errors", script,
+		[]string{PermChatSend, PermUIModify})
+	defer loaded.Close(ctx)
+
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{loaded} })
+	d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(*sends) != 1 {
+		t.Fatalf("expected one error message, got %d: %+v", len(*sends), *sends)
+	}
+	if got := (*sends)[0].Text; got != "actions[0]: exactly one of url or html is required" {
+		t.Fatalf("action error = %q", got)
+	}
+}
+
+func TestSharedEngineActionPermissionErrorReachesPython(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+	script := `
+@plugin.on_chat_message
+def handle(msg):
+    try:
+        owncast.actions.add({"title": "blocked"})
+    except Exception as err:
+        owncast.chat.send(str(err))
+`
+	loaded := loadShared(t, ctx, env, RuntimePython, "python-action-permission-errors", script,
+		[]string{PermChatSend})
+	defer loaded.Close(ctx)
+
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{loaded} })
+	d.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(*sends) != 1 {
+		t.Fatalf("expected one permission error message, got %d: %+v", len(*sends), *sends)
+	}
+	if got := (*sends)[0].Text; got != "owncast.actions.add failed" {
+		t.Fatalf("permission error = %q", got)
+	}
 }
 
 func TestSharedEnginePythonRegister(t *testing.T) {

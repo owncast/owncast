@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync"
 	"testing"
+	"time"
 
 	"code.superseriousbusiness.org/activity/streams"
 	"code.superseriousbusiness.org/activity/streams/vocab"
@@ -15,6 +16,7 @@ import (
 	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
 	activityevents "github.com/owncast/owncast/services/activitypub/events"
 	"github.com/owncast/owncast/services/activitypub/persistence"
+	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
 	"github.com/owncast/owncast/services/datastore"
@@ -58,8 +60,10 @@ func newEngagementTestService(t *testing.T) (*Service, *persistence.Service, *[]
 	signer := apcrypto.New(apcrypto.Deps{ConfigRepository: configRepository})
 	builder := apmodels.New(apmodels.Deps{ConfigRepository: configRepository, Signer: signer})
 	resolver := apresolvers.New(apresolvers.Deps{ConfigRepository: configRepository, Builder: builder, Signer: signer})
-	outbound := workerpool.New(0)
+	followers := followersrepository.New(ds)
+	outbound := workerpool.New(workerpool.Deps{Datastore: ds, Signer: signer})
 	outbound.Start()
+	t.Cleanup(outbound.Stop)
 	eventDispatcher := dispatcher.New()
 	var publishedMu sync.Mutex
 	published := []dispatcher.Event{}
@@ -74,8 +78,8 @@ func newEngagementTestService(t *testing.T) (*Service, *persistence.Service, *[]
 		Persistence:      persistenceService,
 		Workerpool:       outbound,
 		ConfigRepository: configRepository,
+		Followers:        followers,
 		Builder:          builder,
-		Signer:           signer,
 		Resolver:         resolver,
 		Events:           eventDispatcher,
 	}), persistenceService, &published
@@ -115,6 +119,30 @@ func assertEngagementEvent(t *testing.T, published []dispatcher.Event, eventType
 	if payload.Target == nil || payload.Target.URL != target {
 		t.Fatalf("target = %+v, want %q", payload.Target, target)
 	}
+}
+
+func assertQuoteEvent(t *testing.T, published []dispatcher.Event, target, quotePost string) *activityevents.FediverseQuoteEvent {
+	t.Helper()
+	if len(published) != 1 {
+		t.Fatalf("published %d events, want 1", len(published))
+	}
+	if published[0].Type != models.FediverseEngagementQuote {
+		t.Fatalf("event type = %q, want %q", published[0].Type, models.FediverseEngagementQuote)
+	}
+	payload, ok := published[0].Payload.(*activityevents.FediverseQuoteEvent)
+	if !ok || payload == nil {
+		t.Fatalf("payload type = %T, want *events.FediverseQuoteEvent", published[0].Payload)
+	}
+	if payload.Actor.Name != "Mr Foo" || payload.Actor.Handle != "foodawg@freedom.eagle" {
+		t.Fatalf("unexpected actor payload: %+v", payload.Actor)
+	}
+	if payload.Target == nil || payload.Target.URL != target {
+		t.Fatalf("target = %+v, want %q", payload.Target, target)
+	}
+	if payload.URL != quotePost {
+		t.Fatalf("quote post URL = %q, want %q", payload.URL, quotePost)
+	}
+	return payload
 }
 
 func TestEngagementPublishesWithChatDisplayDisabledAndSkipsDuplicates(t *testing.T) {
@@ -220,6 +248,36 @@ func quoteRequest(inbox string) vocab.GoToSocialQuoteRequest {
 	return activity
 }
 
+func quoteRequestWithEmbeddedNote(inbox string) vocab.GoToSocialQuoteRequest {
+	activity := quoteRequest(inbox)
+	note := streams.NewActivityStreamsNote()
+
+	id := streams.NewJSONLDIdProperty()
+	id.SetIRI(mustParseURL("https://remote.example/posts/quote"))
+	note.SetJSONLDId(id)
+
+	attributedTo := streams.NewActivityStreamsAttributedToProperty()
+	attributedTo.AppendIRI(mustParseURL("https://freedom.eagle/user/mrfoo"))
+	note.SetActivityStreamsAttributedTo(attributedTo)
+
+	content := streams.NewActivityStreamsContentProperty()
+	content.AppendXMLSchemaString("<p>This stream is worth watching.</p>")
+	note.SetActivityStreamsContent(content)
+
+	postURL := streams.NewActivityStreamsUrlProperty()
+	postURL.AppendIRI(mustParseURL("https://remote.example/@mrfoo/quote"))
+	note.SetActivityStreamsUrl(postURL)
+
+	published := streams.NewActivityStreamsPublishedProperty()
+	published.Set(time.Date(2026, 7, 10, 12, 0, 0, 0, time.UTC))
+	note.SetActivityStreamsPublished(published)
+
+	instrument := streams.NewActivityStreamsInstrumentProperty()
+	instrument.AppendActivityStreamsNote(note)
+	activity.SetActivityStreamsInstrument(instrument)
+	return activity
+}
+
 func TestQuotePublishesOnlyAfterSuccessfulAccept(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		service, persistenceService, published := newEngagementTestService(t)
@@ -231,7 +289,48 @@ func TestQuotePublishesOnlyAfterSuccessfulAccept(t *testing.T) {
 		if err := service.handleQuoteRequestInboxRequest(context.Background(), quoteRequest("https://remote.example/inbox")); err != nil {
 			t.Fatal(err)
 		}
-		assertEngagementEvent(t, *published, models.FediverseEngagementQuote, target)
+		assertQuoteEvent(t, *published, target, "https://remote.example/posts/quote")
+	})
+
+	t.Run("embedded quote post content", func(t *testing.T) {
+		service, persistenceService, published := newEngagementTestService(t)
+		const target = "https://owncast.example/federation/quoted"
+		if err := persistenceService.AddToOutbox(target, []byte(`{"type":"Note"}`), "Note", false); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := service.handleQuoteRequestInboxRequest(context.Background(), quoteRequestWithEmbeddedNote("https://remote.example/inbox")); err != nil {
+			t.Fatal(err)
+		}
+		event := assertQuoteEvent(t, *published, target, "https://remote.example/@mrfoo/quote")
+		if event.Content != "<p>This stream is worth watching.</p>" || event.ContentText != "This stream is worth watching." {
+			t.Fatalf("unexpected quote content: %+v", event)
+		}
+		if event.PostedAt != "2026-07-10T12:00:00Z" {
+			t.Fatalf("postedAt = %q, want 2026-07-10T12:00:00Z", event.PostedAt)
+		}
+	})
+
+	t.Run("untrusted embedded quote content is omitted", func(t *testing.T) {
+		service, persistenceService, published := newEngagementTestService(t)
+		const target = "https://owncast.example/federation/quoted"
+		if err := persistenceService.AddToOutbox(target, []byte(`{"type":"Note"}`), "Note", false); err != nil {
+			t.Fatal(err)
+		}
+
+		activity := quoteRequestWithEmbeddedNote("https://remote.example/inbox")
+		note := activity.GetActivityStreamsInstrument().At(0).GetActivityStreamsNote()
+		attributedTo := streams.NewActivityStreamsAttributedToProperty()
+		attributedTo.AppendIRI(mustParseURL("https://remote.example/users/someone-else"))
+		note.SetActivityStreamsAttributedTo(attributedTo)
+
+		if err := service.handleQuoteRequestInboxRequest(context.Background(), activity); err != nil {
+			t.Fatal(err)
+		}
+		event := assertQuoteEvent(t, *published, target, "https://remote.example/posts/quote")
+		if event.Content != "" || event.ContentText != "" || event.PostedAt != "" {
+			t.Fatalf("untrusted quote metadata was exposed: %+v", event)
+		}
 	})
 
 	t.Run("replay retries accept without republishing", func(t *testing.T) {
@@ -320,5 +419,87 @@ func TestConcurrentQuoteDeliveriesPublishOnce(t *testing.T) {
 	}
 	if len(*published) != 1 {
 		t.Fatalf("concurrent quote deliveries published %d events, want 1", len(*published))
+	}
+}
+
+func TestConcurrentPendingFollowDeliveriesSucceed(t *testing.T) {
+	service, persistenceService, _ := newEngagementTestService(t)
+	persistenceService.Datastore().DB.SetMaxOpenConns(1)
+	if err := configrepository.New(persistenceService.Datastore()).SetFederationIsPrivate(true); err != nil {
+		t.Fatal(err)
+	}
+	person := makeFakePerson()
+	follow := streams.NewActivityStreamsFollow()
+	id := streams.NewJSONLDIdProperty()
+	id.Set(mustParseURL("https://freedom.eagle/follow/concurrent"))
+	follow.SetJSONLDId(id)
+	follow.SetActivityStreamsActor(actorProperty(person))
+	follow.SetActivityStreamsObject(objectProperty("https://owncast.example/federation/user/streamer"))
+
+	const deliveries = 8
+	start := make(chan struct{})
+	errs := make(chan error, deliveries)
+	var wg sync.WaitGroup
+	wg.Add(deliveries)
+	for range deliveries {
+		go func() {
+			defer wg.Done()
+			<-start
+			if err := service.handleFollowInboxRequest(context.Background(), follow); err != nil {
+				errs <- err
+			}
+		}()
+	}
+	close(start)
+	wg.Wait()
+	close(errs)
+
+	for err := range errs {
+		t.Fatalf("concurrent delivery: %v", err)
+	}
+
+	var followerCount int
+	if err := persistenceService.Datastore().DB.QueryRow(`SELECT count(*) FROM ap_followers`).Scan(&followerCount); err != nil {
+		t.Fatal(err)
+	}
+	if followerCount != 1 {
+		t.Fatalf("followers=%d, want 1", followerCount)
+	}
+}
+
+func TestDuplicateApprovedDirectoryFollowResendsAccept(t *testing.T) {
+	service, persistenceService, _ := newEngagementTestService(t)
+	person := makeFakePerson()
+	follow := streams.NewActivityStreamsFollow()
+	id := streams.NewJSONLDIdProperty()
+	id.Set(mustParseURL("https://freedom.eagle/follow/directory"))
+	follow.SetJSONLDId(id)
+	follow.SetActivityStreamsActor(actorProperty(person))
+	follow.SetActivityStreamsObject(objectProperty("https://owncast.example/federation/user/streamer"))
+	follow.GetUnknownProperties()[config.APOwncastNamespaceDirectory] = true
+
+	if err := service.handleFollowInboxRequest(context.Background(), follow); err != nil {
+		t.Fatalf("store pending directory follow: %v", err)
+	}
+	actorIRI := person.GetJSONLDId().GetIRI().String()
+	if err := service.followers.ApprovePreviousRequest(actorIRI); err != nil {
+		t.Fatalf("approve directory follow: %v", err)
+	}
+	if err := service.handleFollowInboxRequest(context.Background(), follow); err != nil {
+		t.Fatalf("handle first duplicate follow: %v", err)
+	}
+	if err := service.handleFollowInboxRequest(context.Background(), follow); err != nil {
+		t.Fatalf("handle second duplicate follow: %v", err)
+	}
+
+	var followerCount, deliveryCount, revision int
+	if err := persistenceService.Datastore().DB.QueryRow(`SELECT count(*) FROM ap_followers`).Scan(&followerCount); err != nil {
+		t.Fatal(err)
+	}
+	if err := persistenceService.Datastore().DB.QueryRow(`SELECT count(*), max(revision) FROM ap_delivery_queue`).Scan(&deliveryCount, &revision); err != nil {
+		t.Fatal(err)
+	}
+	if followerCount != 1 || deliveryCount != 1 || revision < 1 {
+		t.Fatalf("followers=%d deliveries=%d revision=%d, want one follower and one refreshed Accept", followerCount, deliveryCount, revision)
 	}
 }

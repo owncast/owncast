@@ -27,5 +27,8 @@ start_stream
 
 sleep 10
 
-# Re-run the HLS test against the external storage configuration.
-npm test
+# Re-run the HLS test against the external storage configuration. Also write
+# machine-readable results for CI artifact upload; jest keeps human-readable
+# progress on stderr.
+mkdir -p results
+npm test -- --json --outputFile=results/jest-results-s3.json

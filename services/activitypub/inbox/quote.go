@@ -51,7 +51,7 @@ func (s *Service) handleQuoteRequestInboxRequest(c context.Context, activity voc
 	// not be quotable themselves. In private federation mode posts are
 	// follower-only, so quoting them would leak them to a wider audience.
 	if _, _, _, noteErr := s.persistence.GetNoteByIRI(quotedPostIRI.String()); noteErr != nil || s.configRepository.GetFederationIsPrivate() || !s.configRepository.GetFederationEnableQuotes() {
-		return requests.SendQuoteRequestReject(s.workerpool, actor.Inbox, activity, localAccountName, s.builder, s.signer)
+		return requests.SendQuoteRequestReject(s.workerpool, actor.Inbox, activity, localAccountName, s.builder)
 	}
 
 	// Store the QuoteAuthorization stamp so other servers can fetch it by IRI
@@ -69,7 +69,7 @@ func (s *Service) handleQuoteRequestInboxRequest(c context.Context, activity voc
 		return errors.Wrap(err, "unable to store quote authorization")
 	}
 
-	if err := requests.SendQuoteRequestAccept(s.workerpool, actor.Inbox, activity, stampIRI, localAccountName, s.builder, s.signer); err != nil {
+	if err := requests.SendQuoteRequestAccept(s.workerpool, actor.Inbox, activity, stampIRI, localAccountName, s.builder); err != nil {
 		return err
 	}
 	claimed, err := s.persistence.ClaimInboundFediverseActivity(activityIRI, actorIRI, activity.GetTypeName(), time.Now())
@@ -79,9 +79,37 @@ func (s *Service) handleQuoteRequestInboxRequest(c context.Context, activity voc
 	if !claimed {
 		return nil
 	}
-	s.publishFediverseEvent(c, models.FediverseEngagementQuote, &activityevents.FediverseEngagementEvent{
-		Actor:  fediverseActorFromResolvedActor(actor),
-		Target: &activityevents.FediverseTarget{URL: quotedPostIRI.String()},
-	})
+	s.publishFediverseEvent(c, models.FediverseEngagementQuote, quoteEventPayload(
+		activity.GetActivityStreamsInstrument(),
+		actor,
+		quotePostIRI.String(),
+		quotedPostIRI.String(),
+	))
 	return nil
+}
+
+func quoteEventPayload(instrument vocab.ActivityStreamsInstrumentProperty, actor apmodels.ActivityPubActor, quotePostIRI, quotedPostIRI string) *activityevents.FediverseQuoteEvent {
+	event := &activityevents.FediverseQuoteEvent{
+		Actor:  fediverseActorFromResolvedActor(actor),
+		Target: &activityevents.FediverseTarget{URL: quotedPostIRI},
+		URL:    quotePostIRI,
+	}
+	if instrument == nil || instrument.Len() == 0 || instrument.At(0) == nil || !instrument.At(0).IsActivityStreamsNote() {
+		return event
+	}
+
+	note := instrument.At(0).GetActivityStreamsNote()
+	if note == nil || validateNoteAttribution(note.GetActivityStreamsAttributedTo(), actor.ActorIriString()) != nil {
+		return event
+	}
+
+	post := createPostPayload(note, quotePostIRI, firstInReplyToIRI(note.GetActivityStreamsInReplyTo()), actor)
+	event.Content = post.Content
+	event.ContentText = post.ContentText
+	event.URL = post.URL
+	event.PostedAt = post.PostedAt
+	event.InReplyTo = post.InReplyTo
+	event.Attachments = post.Attachments
+	event.Language = post.Language
+	return event
 }

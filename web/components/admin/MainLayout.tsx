@@ -351,7 +351,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
         // enumerate plugin identifiers at build time. Sidebar labels use
         // the human-readable display name.
         ...plugins
-          .filter(p => p.enabled && (p.adminPages?.length ?? 0) > 0)
+          .filter(p => p.enabled && Object.keys(p.adminPages ?? {}).length > 0)
           .map(p => ({
             key: `/admin/plugins/configure?id=${p.slug}`,
             label: (

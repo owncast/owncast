@@ -44,152 +44,152 @@ theme:
       comment: 'Colors used in the user interface for the default theme.'
       0:
         value: 'var(--color-owncast-palette-0)'
-        comment: '{color.owncast.palette.0.comment}'
+        comment: 'Dark primary'
       1:
         value: 'var(--color-owncast-palette-1)'
-        comment: '{color.owncast.palette.1.comment}'
+        comment: 'Dark secondary'
       2:
         value: 'var(--color-owncast-palette-2)'
-        comment: '{color.owncast.palette.2.comment}'
+        comment: 'Dark alternate'
       3:
         value: 'var(--color-owncast-palette-3)'
-        comment: '{color.owncast.palette.3.comment}'
+        comment: 'Light primary'
       4:
         value: 'var(--color-owncast-palette-4)'
-        comment: '{color.owncast.palette.4.comment}'
+        comment: 'Light secondary'
       5:
         value: 'var(--color-owncast-palette-5)'
-        comment: '{color.owncast.palette.5.comment}'
+        comment: 'Light alternate'
       6:
         value: 'var(--color-owncast-palette-6)'
-        comment: '{color.owncast.palette.6.comment}'
+        comment: 'Text link/secondary light text'
       7:
         value: 'var(--color-owncast-palette-7)'
-        comment: '{color.owncast.palette.7.comment}'
+        comment: 'Text link hover'
       8:
         value: 'var(--color-owncast-palette-8)'
-        comment: '{color.owncast.palette.8.comment}'
+        comment: 'Disabled background'
       9:
         value: 'var(--color-owncast-palette-9)'
-        comment: '{color.owncast.palette.9.comment}'
+        comment: 'Neutral dark'
       10:
         value: 'var(--color-owncast-palette-10)'
-        comment: '{color.owncast.palette.10.comment}'
+        comment: 'Neutral gray light'
       11:
         value: 'var(--color-owncast-palette-11)'
-        comment: '{color.owncast.palette.11.comment}'
+        comment: 'Fun color 1'
       12:
         value: 'var(--color-owncast-palette-12)'
-        comment: '{color.owncast.palette.12.comment}'
+        comment: 'Fun color 2'
       13:
         value: 'var(--color-owncast-palette-13)'
-        comment: '{color.owncast.palette.13.comment}'
+        comment: 'Fun color 3'
       14:
         value: 'var(--color-owncast-palette-14)'
-        comment: '{color.owncast.palette.14.comment}'
+        comment: 'Light background'
       15:
         value: 'var(--color-owncast-palette-15)'
-        comment: '{color.owncast.palette.15.comment}'
+        comment: 'Lighter background'
       error:
         value: 'var(--color-owncast-palette-error)'
-        comment: '{color.owncast.palette.error.comment}'
+        comment: 'Error'
       warning:
         value: 'var(--color-owncast-palette-warning)'
-        comment: '{color.owncast.palette.warning.comment}'
+        comment: 'Warning'
 
     background:
       main:
         value: 'var(--theme-color-palette-3)'
-        comment: '{theme.color.palette.3.comment}'
+        comment: 'Light primary'
       light:
         value: 'var(--theme-color-palette-3)'
-        comment: '{theme.color.palette.3.comment}'
+        comment: 'Light primary'
       header:
         value: 'var(--theme-color-palette-0)'
-        comment: '{theme.color.palette.0.comment}'
+        comment: 'Dark primary'
       # Secondary dark surface, a lighter dark blue than the near-black
       # header/footer. Used by surfaces that sit on top of the page rather than
       # framing it, such as the modal header.
       secondary:
         value: 'var(--theme-color-palette-1)'
-        comment: '{theme.color.palette.1.comment}'
+        comment: 'Dark secondary'
 
     action:
       value: 'var(--theme-color-palette-6)'
-      comment: '{theme.color.palette.6.comment}'
+      comment: 'Text link/secondary light text'
     action-hover:
       value: 'var(--theme-color-palette-7)'
-      comment: '{theme.color.palette.7.comment}'
+      comment: 'Text link hover'
     action-disabled:
       value: 'var(--theme-color-palette-8)'
-      comment: '{theme.color.palette.8.comment}'
+      comment: 'Disabled background'
 
     error:
       value: 'var(--theme-color-palette-error)'
-      comment: '{theme.color.palette.error.comment}'
+      comment: 'Error'
     warning:
       value: 'var(--theme-color-palette-warning)'
-      comment: '{theme.color.palette.warning.comment}'
+      comment: 'Warning'
 
     components:
       text-on-light:
         value: 'var(--theme-color-palette-0)'
-        comment: '{theme.color.palette.0.comment}'
+        comment: 'Dark primary'
       text-on-dark:
         value: 'var(--theme-color-palette-3)'
-        comment: '{theme.color.palette.3.comment}'
+        comment: 'Light primary'
 
       primary-button:
         background:
           value: 'var(--theme-color-action)'
-          comment: '{theme.color.action.comment}'
+          comment: 'Text link/secondary light text'
         background-disabled:
           value: 'var(--theme-color-action-disabled)'
-          comment: '{theme.color.action-disabled.comment}'
+          comment: 'Disabled background'
         text:
           value: 'var(--theme-color-palette-4)'
-          comment: '{theme.color.palette.4.comment}'
+          comment: 'Light secondary'
         text-disabled:
           value: 'var(--theme-color-palette-10)'
-          comment: '{theme.color.palette.10.comment}'
+          comment: 'Neutral gray light'
         border:
           value: 'var(--theme-color-action)'
-          comment: '{theme.color.palette.4.comment}'
+          comment: 'Text link/secondary light text'
         border-disabled:
           value: 'var(--theme-color-action-disabled)'
-          comment: '{theme.color.action-disabled.comment}'
+          comment: 'Disabled background'
 
       secondary-button:
         background:
           value: 'var(--theme-color-palette-4)'
-          comment: '{theme.color.palette.4.comment}'
+          comment: 'Light secondary'
         background-disabled:
           value: 'transparent'
         text:
           value: 'var(--theme-color-action-disabled)'
-          comment: '{theme.color.action-disabled.comment}'
+          comment: 'Disabled background'
         text-disabled:
           value: 'var(--theme-color-action-disabled)'
-          comment: '{theme.color.action-disabled.comment}'
+          comment: 'Disabled background'
         border:
           value: 'var(--theme-color-action)'
-          comment: '{theme.color.action.comment}'
+          comment: 'Text link/secondary light text'
         border-disabled:
           value: 'var(--theme-color-action-disabled)'
-          comment: '{theme.color.action-disabled.comment}'
+          comment: 'Disabled background'
 
       chat:
         background:
           value: 'var(--theme-color-palette-1)'
-          comment: '{theme.color.palette.0.comment}'
+          comment: 'Dark secondary'
         text:
           value: 'var(--theme-color-palette-15)'
-          comment: '{theme.color.palette.15.comment}'
+          comment: 'Lighter background'
 
       content:
         background:
           value: 'var(--theme-color-palette-15)'
-          comment: '{theme.color.palette.15.comment}'
+          comment: 'Lighter background'
 
       # Modal colors follow the admin-configurable theme rather than fixed
       # palette entries so modals respect a custom appearance. The header is the
@@ -200,26 +200,26 @@ theme:
         header:
           background:
             value: 'var(--theme-color-background-secondary)'
-            comment: '{theme.color.palette.1.comment}'
+            comment: 'Dark secondary'
           text:
             value: 'var(--theme-color-components-text-on-dark)'
-            comment: '{theme.color.palette.3.comment}'
+            comment: 'Light primary'
         content:
           background:
             value: 'var(--theme-color-components-content-background)'
-            comment: '{theme.color.palette.15.comment}'
+            comment: 'Lighter background'
           text:
             value: 'var(--theme-color-components-text-on-light)'
-            comment: '{theme.color.palette.0.comment}'
+            comment: 'Dark primary'
 
       menu:
         background:
           value: 'var(--theme-color-palette-3)'
-          comment: '{theme.color.palette.3.comment}'
+          comment: 'Light primary'
         item:
           text:
             value: 'var(--theme-color-palette-0)'
-            comment: '{theme.color.palette.0.comment}'
+            comment: 'Dark primary'
           bg:
             value: 'transparent'
           hover-bg:
@@ -230,21 +230,21 @@ theme:
       form-field:
         background:
           value: 'var(--theme-color-palette-4)'
-          comment: '{theme.color.palette.4.comment}'
+          comment: 'Light secondary'
         placeholder:
           value: 'var(--theme-color-action-disabled)'
-          comment: '{theme.color.action-disabled.comment}'
+          comment: 'Disabled background'
         text:
           value: 'var(--theme-color-palette-0)'
-          comment: '{theme.color.palette.0.comment}'
+          comment: 'Dark primary'
         border:
           value: 'var(--theme-color-palette-0)'
-          comment: '{theme.color.palette.0.comment}'
+          comment: 'Dark primary'
 
       video:
         background:
           value: 'var(--theme-color-palette-2)'
-          comment: '{theme.color.palette.2.comment}'
+          comment: 'Dark alternate'
         live-indicator:
           value: 'var(--theme-color-action)'
           comment: 'The Live dot indicator in the control bar of the video player'

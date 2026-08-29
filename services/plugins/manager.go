@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/debug"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -52,13 +53,16 @@ type Loaded struct {
 	WasmPath   string
 	PublicFS   fs.FS
 	AssetsFS   fs.FS
-	adminGlobs []glob.Glob // compiled from manifest.admin.pages[].path
-	adminPaths []string    // original path strings, used for "page gates descendants" prefix-matching
+	adminGlobs []glob.Glob // compiled from manifest.admin.pages keys
+	adminPaths []string    // original path keys, used for "page gates descendants" prefix-matching
 	plugin     *extism.Plugin
 	// releaseEngine drops this instance's reference on its shared compiled
-	// engine (nil for legacy self-contained wasm). Called exactly once by
-	// Close, after the instance itself is closed.
-	releaseEngine        func()
+	// engine (nil for self-contained wasm). Called exactly once by Close,
+	// after the instance itself is closed.
+	releaseEngine func()
+	// releaseSQL drops this instance's claim on its per-slug database after
+	// plugin code can no longer call host functions.
+	releaseSQL           func()
 	mu                   sync.Mutex
 	failureMu            sync.Mutex
 	filterFails          int
@@ -278,16 +282,21 @@ func (l *Loaded) Close(ctx context.Context) {
 	l.plugin = nil
 	release := l.releaseEngine
 	l.releaseEngine = nil
+	releaseSQL := l.releaseSQL
+	l.releaseSQL = nil
 	l.mu.Unlock()
 	if pl != nil {
 		// Closes this instance only; the shared compiled engine is
 		// reference-counted and torn down by releaseEngine below when this
-		// was the last plugin of its language. Legacy wasm plugins close
-		// their own runtime here.
+		// was the last plugin of its language. A self-contained wasm plugin
+		// closes its own runtime here.
 		_ = pl.Close(ctx)
 	}
 	if release != nil {
 		release()
+	}
+	if releaseSQL != nil {
+		releaseSQL()
 	}
 	// Drop the call-time identity so any in-flight or stale host call from this
 	// plugin resolves to "not found" and fails cleanly rather than acting on a
@@ -320,10 +329,16 @@ type Manager struct {
 	env          *HostEnv
 
 	mu          sync.RWMutex
-	discovered  map[string]*DiscoveredEntry // keyed by manifest.name
+	discovered  map[string]*DiscoveredEntry // keyed by manifest slug
 	loaded      map[string]*Loaded          // subset of discovered that's currently running
-	enabledSet  map[string]bool             // names the admin has enabled
-	approvedSet map[string][]string         // plugin name -> sorted approved permission set
+	enabledSet  map[string]bool             // slugs the admin has enabled
+	approvedSet map[string][]string         // plugin slug -> sorted approved permission set
+	// duplicatePluginPaths records rejected package paths and their accepted
+	// counterpart, preventing the periodic scan from logging the same conflict.
+	duplicatePluginPaths map[string]string
+	// packageFilesMu serializes scans with package replacement. Windows does
+	// not allow an .ocpkg opened by a scan to be replaced by Install.
+	packageFilesMu sync.Mutex
 
 	scanInterval time.Duration
 	cancel       context.CancelFunc // stops the scan loop
@@ -334,16 +349,40 @@ type Manager struct {
 	// host subsystems can release per-plugin resources. Timers use it to
 	// cancel a plugin's pending callbacks.
 	onUnload func(slug string)
+
+	// onUnloaded, if set, is called with the same slug once the instance is
+	// fully closed. Resources that an in-flight export call can still reach
+	// (a plugin's SQL database) release here: onUnload fires while a call may
+	// be mid-flight, and freeing them there lets the call reacquire them
+	// after the teardown believed it was done.
+	onUnloaded func(slug string)
 }
 
 // SetOnUnload registers a callback invoked with a plugin's slug right before
 // its instance is closed. Used to cancel per-plugin host resources (timers).
 func (m *Manager) SetOnUnload(fn func(slug string)) { m.onUnload = fn }
 
-// notifyUnload fires the onUnload hook for a plugin about to be closed.
-func (m *Manager) notifyUnload(l *Loaded) {
-	if m.onUnload != nil && l != nil && l.Manifest != nil {
-		m.onUnload(l.Manifest.Slug)
+// SetOnUnloaded registers a callback invoked with a plugin's slug once its
+// instance is closed and no further plugin code can run.
+func (m *Manager) SetOnUnloaded(fn func(slug string)) { m.onUnloaded = fn }
+
+// unload closes one plugin instance, bracketing it with the unload hooks so
+// every teardown path (disable, uninstall, reload, disk-removal, host stop)
+// releases per-plugin host resources the same way.
+func (m *Manager) unload(ctx context.Context, l *Loaded) {
+	if l == nil {
+		return
+	}
+	slug := ""
+	if l.Manifest != nil {
+		slug = l.Manifest.Slug
+	}
+	if m.onUnload != nil && slug != "" {
+		m.onUnload(slug)
+	}
+	l.Close(ctx)
+	if m.onUnloaded != nil && slug != "" {
+		m.onUnloaded(slug)
 	}
 }
 
@@ -406,10 +445,10 @@ type DiscoveredEntry struct {
 	// network.fetch; the host's load-time validator rejects
 	// network.fetch without an entry, so a present permission
 	// without a non-empty list never occurs.
-	AllowedHosts []string    `json:"allowedHosts,omitempty"`
-	LastError    string      `json:"lastError,omitempty"`
-	DiscoveredAt time.Time   `json:"discoveredAt"`
-	AdminPages   []AdminPage `json:"adminPages,omitempty"`
+	AllowedHosts []string             `json:"allowedHosts,omitempty"`
+	LastError    string               `json:"lastError,omitempty"`
+	DiscoveredAt time.Time            `json:"discoveredAt"`
+	AdminPages   map[string]AdminPage `json:"adminPages,omitempty"`
 	// Commands lists the plugin's chat commands for the admin details view.
 	// Derived by the SDK and reported via register(), so it's only known once
 	// the plugin is loaded — empty for discovered-but-not-loaded plugins.
@@ -431,6 +470,16 @@ func (m *Manager) ConfigSchema(slug string) map[string]ConfigField {
 	return nil
 }
 
+// IsAuthGate reports whether a discovered plugin declares the auth.gate
+// permission. It is used to expose host-owned authentication settings only for
+// plugins that can actually become the viewer-authentication gate.
+func (m *Manager) IsAuthGate(slug string) bool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	d := m.discovered[slug]
+	return d != nil && declaresAuthGate(d.Permissions)
+}
+
 // ScanInterval is how often the manager re-scans the plugins directory.
 const ScanInterval = 2 * time.Second
 
@@ -447,15 +496,16 @@ func NewManager(pluginsDir string, env *HostEnv) *Manager {
 // datastore) instead of a JSON file in the plugins directory.
 func NewManagerWithStore(pluginsDir string, env *HostEnv, store EnabledStore) *Manager {
 	return &Manager{
-		pluginsDir:   pluginsDir,
-		enabledStore: store,
-		env:          env,
-		discovered:   make(map[string]*DiscoveredEntry),
-		loaded:       make(map[string]*Loaded),
-		enabledSet:   make(map[string]bool),
-		approvedSet:  make(map[string][]string),
-		scanInterval: ScanInterval,
-		scanCh:       make(chan struct{}, 1),
+		pluginsDir:           pluginsDir,
+		enabledStore:         store,
+		env:                  env,
+		discovered:           make(map[string]*DiscoveredEntry),
+		loaded:               make(map[string]*Loaded),
+		enabledSet:           make(map[string]bool),
+		approvedSet:          make(map[string][]string),
+		duplicatePluginPaths: make(map[string]string),
+		scanInterval:         ScanInterval,
+		scanCh:               make(chan struct{}, 1),
 	}
 }
 
@@ -533,8 +583,7 @@ func (m *Manager) Stop(ctx context.Context) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for _, l := range m.loaded {
-		m.notifyUnload(l)
-		l.Close(ctx)
+		m.unload(ctx, l)
 	}
 	m.loaded = map[string]*Loaded{}
 }
@@ -574,7 +623,7 @@ func (m *Manager) ActiveAuthGate() (slug string, loaded bool) {
 			continue
 		}
 		d := m.discovered[name]
-		if d == nil || !hasPerm(d.Permissions, PermAuthGate) {
+		if d == nil || !declaresAuthGate(d.Permissions) {
 			continue
 		}
 		_, isLoaded := m.loaded[name]
@@ -583,14 +632,10 @@ func (m *Manager) ActiveAuthGate() (slug string, loaded bool) {
 	return "", false
 }
 
-// hasPerm reports whether perms contains want.
-func hasPerm(perms []string, want string) bool {
-	for _, p := range perms {
-		if p == want {
-			return true
-		}
-	}
-	return false
+// declaresAuthGate reports whether a manifest's permission list claims the
+// viewer-authentication gate.
+func declaresAuthGate(perms []string) bool {
+	return slices.Contains(perms, PermAuthGate)
 }
 
 // Snapshot returns the currently-loaded, active plugins. Dispatcher and Server
@@ -642,12 +687,12 @@ func (m *Manager) Enable(ctx context.Context, name string) error {
 	}
 	// Only one auth.gate plugin may be enabled at a time — the viewer-auth gate
 	// is singular (two gates would be ambiguous). Refuse to enable a second.
-	if hasPerm(d.Permissions, PermAuthGate) {
+	if declaresAuthGate(d.Permissions) {
 		for other, on := range m.enabledSet {
 			if !on || other == name {
 				continue
 			}
-			if od := m.discovered[other]; od != nil && hasPerm(od.Permissions, PermAuthGate) {
+			if od := m.discovered[other]; od != nil && declaresAuthGate(od.Permissions) {
 				m.mu.Unlock()
 				return fmt.Errorf("cannot enable %q: another authentication-gate plugin (%q) is already enabled; disable it first", d.Slug, od.Slug)
 			}
@@ -670,8 +715,7 @@ func (m *Manager) Enable(ctx context.Context, name string) error {
 	delete(m.loaded, name)
 	m.mu.Unlock()
 	if old != nil {
-		m.notifyUnload(old)
-		old.Close(ctx)
+		m.unload(ctx, old)
 	}
 	return m.loadInternal(ctx, name)
 }
@@ -816,42 +860,58 @@ func atomicWritePackage(pluginsDir, destPath string, packageBytes []byte) error 
 // upload can't fill the plugins directory.
 const MaxUploadBytes = 50 * 1024 * 1024
 
-// Install validates a .ocpkg's contents, writes it into the plugins
-// directory, and forces a scan so the new (or updated) plugin shows up
-// in the next List() without waiting for the scan tick. The destination
-// filename is derived from the manifest's name, not from the uploaded
-// name, so an admin can't drop a file outside the plugins directory by
-// abusing the upload filename, and a plugin update from a differently
-// named .ocpkg ends up replacing the right file.
-//
-// When the plugin is already enabled and the new manifest declares no
-// permissions beyond the approved set, the running instance is reloaded in
-// place so the update takes effect immediately. If the update expands
-// permissions, the old instance keeps running (it holds only approved
-// permissions) and the entry reports PendingPermissions so the admin UI can
-// run the re-approval flow.
-//
-// Returns the discovered entry for the installed plugin, with Enabled and
-// Loaded populated the same way List() reports them.
+// Install validates a registry .ocpkg, writes it into the plugins directory,
+// and updates an existing plugin with the same slug when necessary.
 func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*DiscoveredEntry, error) {
+	return m.install(ctx, packageBytes, true)
+}
+
+// InstallUploaded validates a manually uploaded .ocpkg and writes it into the
+// plugins directory. Uploads must not replace an existing plugin: only the
+// registry update path is allowed to do that.
+func (m *Manager) InstallUploaded(ctx context.Context, packageBytes []byte) (*DiscoveredEntry, error) {
+	return m.install(ctx, packageBytes, false)
+}
+
+// install writes a validated package. Registry installs may replace an existing
+// slug, while manual uploads must be a new plugin.
+func (m *Manager) install(ctx context.Context, packageBytes []byte, replaceExisting bool) (*DiscoveredEntry, error) {
 	manifest, err := validateUploadedPackage(ctx, m.env, packageBytes)
 	if err != nil {
 		return nil, err
 	}
-	destPath := m.destPathForInstall(manifest.Slug)
-	if err := atomicWritePackage(m.pluginsDir, destPath, packageBytes); err != nil {
-		return nil, err
+	m.packageFilesMu.Lock()
+	m.mu.RLock()
+	existing, found := m.discovered[manifest.Slug]
+	m.mu.RUnlock()
+	if found && !replaceExisting {
+		m.packageFilesMu.Unlock()
+		return nil, fmt.Errorf("plugin upload rejected: slug %q is already used by %q at %s; uninstall it before uploading another plugin with the same slug",
+			manifest.Slug, existing.DisplayName, existing.Path)
 	}
-	// Force an immediate scan so the upload appears in List() before
-	// this call returns.
-	if err := m.scan(ctx); err != nil {
-		return nil, fmt.Errorf("scan after install: %w", err)
+	if found && !strings.HasSuffix(existing.Path, packageSuffix) {
+		m.packageFilesMu.Unlock()
+		return nil, fmt.Errorf("plugin install rejected: slug %q is already used by loose plugin %q at %s; uninstall it before installing another plugin with the same slug",
+			manifest.Slug, existing.DisplayName, existing.Path)
+	}
+	destPath := m.destPathForInstall(manifest.Slug)
+	installErr := atomicWritePackage(m.pluginsDir, destPath, packageBytes)
+	if installErr == nil {
+		// Keep the write and the immediate scan together. On Windows a scan
+		// cannot hold either the temporary or destination package open while
+		// the rename replaces it.
+		if scanErr := m.scanLocked(ctx); scanErr != nil {
+			installErr = fmt.Errorf("scan after install: %w", scanErr)
+		}
+	}
+	m.packageFilesMu.Unlock()
+	if installErr != nil {
+		return nil, installErr
 	}
 
 	m.mu.RLock()
 	entry, ok := m.discovered[manifest.Slug]
 	enabled := m.enabledSet[manifest.Slug]
-	_, isLoaded := m.loaded[manifest.Slug]
 	pending := 0
 	if ok {
 		pending = len(entry.PendingPermissions)
@@ -863,10 +923,14 @@ func (m *Manager) Install(ctx context.Context, packageBytes []byte) (*Discovered
 
 	// An update of an enabled plugin whose permissions are still covered by
 	// the admin's approval takes effect now: swap the running instance for
-	// one built from the new package. A failure surfaces via LastError (set
-	// by loadInternal) rather than failing the install — the file on disk is
-	// already the new version either way.
-	if enabled && isLoaded && pending == 0 {
+	// one built from the new package. The plugin need not be running — a
+	// previous version may have been held unloaded because it declared
+	// unapproved permissions; a conforming update clears that hold (and the
+	// stale "needs approval" LastError) instead of stranding the plugin at
+	// "enabled, not loaded" until the next restart. A failure surfaces via
+	// LastError (set by loadInternal) rather than failing the install — the
+	// file on disk is already the new version either way.
+	if enabled && pending == 0 {
 		if err := m.Reload(ctx, manifest.Slug); err != nil {
 			fmt.Fprintf(os.Stderr, "plugin %s: reload after update failed: %v\n", manifest.Slug, err)
 		}
@@ -945,8 +1009,7 @@ func (m *Manager) Disable(ctx context.Context, name string) error {
 		fmt.Fprintf(os.Stderr, "persist enabled set: %v\n", err)
 	}
 	if loaded != nil {
-		m.notifyUnload(loaded)
-		loaded.Close(ctx)
+		m.unload(ctx, loaded)
 	}
 	// Hand freed pages back to the OS promptly so an operator watching
 	// process memory sees the disable take effect (the Go scavenger would
@@ -962,6 +1025,12 @@ func (m *Manager) Disable(ctx context.Context, name string) error {
 // uninstall followed by a reinstall doesn't lose the streamer's
 // settings.
 func (m *Manager) Uninstall(ctx context.Context, name string) error {
+	// Keep the state removal and file deletion in the same filesystem
+	// transaction. A scan that runs between them could otherwise rediscover
+	// the plugin just before its file disappears.
+	m.packageFilesMu.Lock()
+	defer m.packageFilesMu.Unlock()
+
 	m.mu.Lock()
 	entry, ok := m.discovered[name]
 	if !ok {
@@ -977,8 +1046,7 @@ func (m *Manager) Uninstall(ctx context.Context, name string) error {
 	m.mu.Unlock()
 
 	if loaded != nil {
-		m.notifyUnload(loaded)
-		loaded.Close(ctx)
+		m.unload(ctx, loaded)
 		debug.FreeOSMemory()
 	}
 
@@ -990,9 +1058,6 @@ func (m *Manager) Uninstall(ctx context.Context, name string) error {
 		fmt.Fprintf(os.Stderr, "persist enabled set after uninstall: %v\n", err)
 	}
 
-	// Delete the .ocpkg (or the loose .wasm + sidecar manifest pair).
-	// A missing file is fine; the scan that picks up our state change
-	// would have dropped the entry anyway.
 	if err := removePluginFiles(path); err != nil {
 		return fmt.Errorf("delete plugin file: %w", err)
 	}
@@ -1039,8 +1104,7 @@ func (m *Manager) Reload(ctx context.Context, name string) error {
 	delete(m.loaded, name)
 	m.mu.Unlock()
 	if loaded != nil {
-		m.notifyUnload(loaded)
-		loaded.Close(ctx)
+		m.unload(ctx, loaded)
 	}
 
 	// Re-read the manifest from disk so any author-side edits (new admin
@@ -1072,12 +1136,18 @@ func (m *Manager) Reload(ctx context.Context, name string) error {
 func (m *Manager) loadInternal(ctx context.Context, name string) error {
 	m.mu.RLock()
 	d, ok := m.discovered[name]
-	approved := m.approvedSet[name]
+	approved := slices.Clone(m.approvedSet[name])
+	var path string
+	var permissions []string
+	if ok {
+		path = d.Path
+		permissions = slices.Clone(d.Permissions)
+	}
 	m.mu.RUnlock()
 	if !ok {
 		return fmt.Errorf("plugin %q not discovered", name)
 	}
-	if pending := pendingPermissions(d.Permissions, approved); len(pending) > 0 {
+	if pending := pendingPermissions(permissions, approved); len(pending) > 0 {
 		err := fmt.Errorf("plugin %q declares new permissions that need admin approval: %s",
 			name, strings.Join(pending, ", "))
 		m.mu.Lock()
@@ -1089,7 +1159,7 @@ func (m *Manager) loadInternal(ctx context.Context, name string) error {
 		return err
 	}
 
-	loaded, err := loadByPath(ctx, m.env, d.Path)
+	loaded, err := loadByPath(ctx, m.env, path)
 	if err != nil {
 		m.mu.Lock()
 		m.discovered[name].LastError = err.Error()
@@ -1135,20 +1205,51 @@ func dirExists(path string) bool {
 	return err == nil && info.IsDir()
 }
 
-// scan re-reads the plugins directory, updates the discovered map, and
-// unloads anything whose underlying file has gone away.
+// scan serializes directory scans with package installation.
 func (m *Manager) scan(ctx context.Context) error {
+	m.packageFilesMu.Lock()
+	defer m.packageFilesMu.Unlock()
+	return m.scanLocked(ctx)
+}
+
+// claimPluginPath records the first package for a slug and rejects later
+// packages with that identity. scanLocked serializes calls, so these maps need
+// no additional synchronization.
+func (m *Manager) claimPluginPath(manifest *Manifest, path string, claimedPaths, duplicatePaths map[string]string) bool {
+	firstPath, duplicate := claimedPaths[manifest.Slug]
+	if !duplicate {
+		claimedPaths[manifest.Slug] = path
+		return true
+	}
+	duplicatePaths[path] = firstPath
+	if m.duplicatePluginPaths[path] != firstPath {
+		log.Errorf("plugin %q at %s disabled: duplicate slug %q is already provided by %s",
+			manifest.DisplayName, path, manifest.Slug, firstPath)
+	}
+	return false
+}
+
+// scanLocked re-reads the plugins directory, updates the discovered map, and
+// unloads anything whose underlying file has gone away. packageFilesMu must be
+// held by the caller.
+func (m *Manager) scanLocked(ctx context.Context) error {
 	entries, err := os.ReadDir(m.pluginsDir)
 	if err != nil {
 		return fmt.Errorf("read plugins dir %q: %w", m.pluginsDir, err)
 	}
 
 	seen := make(map[string]bool)
+	claimedPaths := make(map[string]string)
+	duplicatePaths := make(map[string]string)
 	for _, entry := range entries {
 		if entry.IsDir() {
 			continue
 		}
 		name := entry.Name()
+		if strings.HasPrefix(name, ".upload-") && strings.HasSuffix(name, packageSuffix) {
+			// Install writes this staging file before its atomic rename.
+			continue
+		}
 		if !strings.HasSuffix(name, ".wasm") && !strings.HasSuffix(name, packageSuffix) {
 			continue
 		}
@@ -1156,6 +1257,9 @@ func (m *Manager) scan(ctx context.Context) error {
 		manifest, err := readManifestForPath(path)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "discover %s: %v\n", name, err)
+			continue
+		}
+		if !m.claimPluginPath(manifest, path, claimedPaths, duplicatePaths) {
 			continue
 		}
 		seen[manifest.Slug] = true
@@ -1201,6 +1305,7 @@ func (m *Manager) scan(ctx context.Context) error {
 		}
 		m.mu.Unlock()
 	}
+	m.duplicatePluginPaths = duplicatePaths
 
 	// Anything we knew about but didn't see this scan: gone from disk.
 	var removed []string
@@ -1219,8 +1324,7 @@ func (m *Manager) scan(ctx context.Context) error {
 		delete(m.loaded, name)
 		m.mu.Unlock()
 		if loaded != nil {
-			m.notifyUnload(loaded)
-			loaded.Close(ctx)
+			m.unload(ctx, loaded)
 		}
 	}
 	return nil
@@ -1476,7 +1580,7 @@ func runtimeForExt(path string) string {
 }
 
 // loadFromBytes is the shared core of LoadPlugin and LoadPackage. artifactBytes
-// is the plugin's wasm (for "wasm"/legacy) or its source (for the shared-engine
+// is the plugin's wasm (for "wasm") or its source (for the shared-engine
 // runtimes "javascript"/"python"); runtime — inferred by the caller from the
 // code artifact (its filename/extension), not authored in the manifest —
 // selects which. It is authoritative over any manifest-declared type.
@@ -1492,25 +1596,30 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 		return nil, err
 	}
 
-	// fail tears down the just-created instance (and its engine reference) on
-	// any load-path error below.
-	fail := func(err error) error {
-		_ = p.Close(ctx)
-		if releaseEngine != nil {
-			releaseEngine()
-		}
-		return err
+	// Register before register() because engine bootstrap evaluates author
+	// top-level code there, and that code may call host functions.
+	globalPluginRegistry.put(buildIdentity(env, manifest, assetsFS))
+	var releaseSQL func()
+	if env.AcquireSQLLease != nil {
+		releaseSQL = env.AcquireSQLLease(manifest.Slug)
+	}
+	loaded := &Loaded{
+		Manifest:      manifest,
+		plugin:        p,
+		releaseEngine: releaseEngine,
+		releaseSQL:    releaseSQL,
+		AssetsFS:      assetsFS,
 	}
 
-	// Register the plugin's identity so shared host functions can resolve it at
-	// call time (by the slug stashed in the instance's Extism config). Done
-	// before register() because the engine bootstrap evals author top-level
-	// code during register(), which may call host functions. On any failure
-	// below, drop the identity again.
-	globalPluginRegistry.put(buildIdentity(env, manifest, assetsFS))
-	loaded := false
+	// Any load error closes the instance and releases every acquired host
+	// resource, including SQL opened by top-level code during register().
+	fail := func(err error) error {
+		loaded.Close(ctx)
+		return err
+	}
+	succeeded := false
 	defer func() {
-		if !loaded {
+		if !succeeded {
 			globalPluginRegistry.remove(manifest.Slug)
 		}
 	}()
@@ -1539,6 +1648,9 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 	if err := requireSubscriptionPermissions(manifest, runtime.Subscriptions); err != nil {
 		return nil, fail(err)
 	}
+	if err := namespaceCustomSubscriptions(manifest.Slug, &runtime.Subscriptions); err != nil {
+		return nil, fail(err)
+	}
 	manifest.Subscriptions = runtime.Subscriptions
 	// Command registrations are derived by the SDK. They have no sidecar
 	// counterpart for AgreesWith to compare. Core uses them for matching,
@@ -1547,7 +1659,7 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 
 	var adminGlobs []glob.Glob
 	var adminPaths []string
-	for _, page := range manifest.Admin.Pages {
+	for _, page := range manifest.OrderedAdminPages() {
 		// Lower the pattern so admin-path matching is case-insensitive (see
 		// IsAdminPath); the request path is lowered there to match.
 		lowered := strings.ToLower(page.Path)
@@ -1559,20 +1671,23 @@ func loadFromBytes(ctx context.Context, env *HostEnv, manifestBytes, artifactByt
 		adminPaths = append(adminPaths, lowered)
 	}
 
-	loaded = true
-	return &Loaded{Manifest: manifest, plugin: p, releaseEngine: releaseEngine, adminGlobs: adminGlobs, adminPaths: adminPaths, AssetsFS: assetsFS}, nil
+	loaded.adminGlobs = adminGlobs
+	loaded.adminPaths = adminPaths
+	succeeded = true
+	return loaded, nil
 }
 
 // instantiate creates the extism plugin instance for a manifest: a per-plugin
-// instance of the shared engine for "js"/"python", or a self-contained module
-// for "wasm"/legacy. Either way the result is a *extism.Plugin with its
-// identity slug stashed in Config so shared host functions can resolve the
-// caller, and its per-plugin network scope applied.
+// instance of the shared engine for "javascript"/"python", or a self-contained
+// module for "wasm". Either way the result is a *extism.Plugin carrying the
+// reserved Extism config keys (see registry.go), including the identity slug
+// that shared host functions use to resolve the caller and the sidecar manifest
+// that the guest reads back. It also applies the per-plugin network scope.
 //
 // For shared-engine plugins the returned release func drops the instance's
-// reference on the compiled engine; the caller must invoke it exactly once
-// after closing the instance. nil for legacy self-contained wasm, whose
-// instance close tears down its whole runtime.
+// reference on the compiled engine. The caller must invoke it exactly once
+// after closing the instance. It is nil for self-contained wasm, whose instance
+// close tears down its whole runtime.
 func instantiate(ctx context.Context, env *HostEnv, manifest *Manifest, manifestBytes, artifactBytes []byte, displayName string) (*extism.Plugin, func(), error) {
 	// Give the guest the real host wall and monotonic clocks (wazero's default
 	// is a frozen 2022 clock). Nanosleep is deliberately NOT wired so a plugin
@@ -1589,8 +1704,8 @@ func instantiate(ctx context.Context, env *HostEnv, manifest *Manifest, manifest
 			release()
 			return nil, nil, fmt.Errorf("instantiate %s engine: %w", manifest.Type, err)
 		}
-		// Inject the per-plugin script + manifest the engine bootstrap reads at
-		// runtime, plus the slug shared host functions resolve identity by.
+		// The engine bootstrap reads the script and manifest at runtime. The
+		// slug is what shared host functions resolve identity by.
 		inst.Config = map[string]string{
 			configKeySlug:     manifest.Slug,
 			configKeyScript:   string(artifactBytes),
@@ -1600,11 +1715,11 @@ func instantiate(ctx context.Context, env *HostEnv, manifest *Manifest, manifest
 		return inst, release, nil
 	}
 
-	// Legacy self-contained wasm: each plugin compiles into its own runtime,
-	// deliberately without a shared compilation cache — a cache entry would
-	// pin the compiled native code for the life of the process, so disabling
-	// the plugin would never return its memory. Reloads recompile (fast
-	// relative to an explicit admin action).
+	// Self-contained wasm (Rust, Go, Zig, and others) compiles into its own
+	// runtime. It deliberately has no shared compilation cache because a cache
+	// entry would pin the compiled native code for the life of the process, so
+	// disabling the plugin would never return its memory. Reloads recompile,
+	// which is fast relative to an explicit admin action.
 	extismManifest := extism.Manifest{
 		Wasm:    []extism.Wasm{extism.WasmData{Data: artifactBytes, Name: displayName}},
 		Timeout: 10_000, // milliseconds; enables Wazero's WithCloseOnContextDone
@@ -1629,9 +1744,16 @@ func instantiate(ctx context.Context, env *HostEnv, manifest *Manifest, manifest
 	if err != nil {
 		return nil, nil, fmt.Errorf("instantiate wasm: %w", err)
 	}
-	// Even self-contained plugins now use the shared, identity-resolving host
-	// functions, so stash the slug for the registry lookup.
-	p.Config = map[string]string{configKeySlug: manifest.Slug}
+	// Self-contained plugins use the same identity-resolving host functions, so
+	// stash the slug for the registry lookup. The manifest rides along too: no
+	// SDK bakes it into a hand-authored module, so this is the only way such a
+	// guest can echo it back from register() (and read its own metadata)
+	// without compiling in a second copy that drifts from the packaged
+	// sidecar. There is no "script" key because the module is the code.
+	p.Config = map[string]string{
+		configKeySlug:     manifest.Slug,
+		configKeyManifest: string(manifestBytes),
+	}
 	// Return the compiler's transient scratch space now rather than letting
 	// the Go runtime sit on it (same reasoning as compileEngine).
 	debug.FreeOSMemory()
@@ -1698,6 +1820,23 @@ func requireSubscriptionPermissions(manifest *Manifest, subs Subscriptions) erro
 		}
 	}
 
+	return nil
+}
+
+// namespaceCustomSubscriptions gives each plugin exclusive ownership of its
+// custom notification hooks. Built-in subscriptions keep their canonical
+// names.
+func namespaceCustomSubscriptions(slug string, subs *Subscriptions) error {
+	for i := range subs.Notify {
+		if reservedEventTypes[subs.Notify[i].Event] {
+			continue
+		}
+		qualified := slug + "." + subs.Notify[i].Event
+		if reservedEventTypes[qualified] {
+			return fmt.Errorf("custom event hook %q collides with a built-in event", qualified)
+		}
+		subs.Notify[i].Event = qualified
+	}
 	return nil
 }
 

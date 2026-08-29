@@ -81,9 +81,20 @@
   padding: 0 1rem;
 }
 
-// Constrain the emoji picker popover to the viewport and allow scrolling.
+// emoji-mart's shadow root sets `:host { width: min-content }` and its preview
+// label is nowrap, so without an explicit width the picker resizes every time you
+// hover a different emoji. Both rules below are needed: an outer-document rule is
+// what overrides `:host`. The popover is anchored `topRight` to the emoji button,
+// so the usable width is the viewport minus the gutter to the right of that
+// button (send button plus the input's padding) — anything wider is clipped off
+// the left edge on phones, since antd only flips `topRight` on overflow, it never
+// shifts it.
 .emojiPickerContainer {
+  width: min(350px, calc(100vw - 5rem));
   max-height: 70vh;
-  max-width: 90vw;
   overflow: auto hidden;
+
+  em-emoji-picker {
+    width: 100%;
+  }
 }

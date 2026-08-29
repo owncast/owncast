@@ -205,23 +205,26 @@ func translateFediverseEvent(evt dispatcher.Event) []pluginEvent {
 			return nil
 		}
 		return []pluginEvent{{plugins.EventFediverseActivity, payload}}
-	case models.FediverseEngagementLike, models.FediverseEngagementRepost, models.FediverseEngagementQuote:
+	case models.FediverseEngagementLike, models.FediverseEngagementRepost:
 		payload, ok := evt.Payload.(*activityevents.FediverseEngagementEvent)
 		if !ok || payload == nil {
 			return nil
 		}
 		translated := *payload
 		translated.Actor.Handle = normalizeFediverseHandle(translated.Actor.Handle)
-		var eventType string
-		switch evt.Type {
-		case models.FediverseEngagementLike:
-			eventType = plugins.EventFediverseLike
-		case models.FediverseEngagementRepost:
+		eventType := plugins.EventFediverseLike
+		if evt.Type == models.FediverseEngagementRepost {
 			eventType = plugins.EventFediverseRepost
-		case models.FediverseEngagementQuote:
-			eventType = plugins.EventFediverseQuote
 		}
 		return []pluginEvent{{eventType, translated}}
+	case models.FediverseEngagementQuote:
+		payload, ok := evt.Payload.(*activityevents.FediverseQuoteEvent)
+		if !ok || payload == nil {
+			return nil
+		}
+		translated := *payload
+		translated.Actor.Handle = normalizeFediverseHandle(translated.Actor.Handle)
+		return []pluginEvent{{plugins.EventFediverseQuote, translated}}
 	case models.FediverseMention, models.FediverseReply:
 		payload, ok := evt.Payload.(*activityevents.FediverseInboundPostEvent)
 		if !ok || payload == nil {

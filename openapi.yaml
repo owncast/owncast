@@ -380,7 +380,7 @@ paths:
         '204':
           $ref: '#/components/responses/204'
   /admin/disconnect:
-    get:
+    post:
       summary: Disconnect inbound stream
       operationId: DisconnectInboundConnection
       tags: ['Internal', 'Admin', 'Video']
@@ -492,6 +492,40 @@ paths:
           $ref: '#/components/responses/Default'
     options:
       operationId: GetActiveViewersOptions
+      x-internal: true
+      tags: ['Objects', 'Video']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/viewers/playback:
+    get:
+      summary: Get the playback clients of active viewers with their current playback health
+      description: |-
+        One entry per playback client currently watching, with the most recent playback measurements
+        for that client. Clients that report CMCD are identified by their player-supplied session ID,
+        which distinguishes players sharing an address; every other client is identified the same way
+        viewers are. A viewer with no playback measurements is still listed, with a null `playback`.
+      operationId: GetPlaybackClients
+      tags: ['Internal', 'Admin', 'Video']
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: List of active playback clients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlaybackClient'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: GetPlaybackClientsOptions
       x-internal: true
       tags: ['Objects', 'Video']
       responses:
@@ -3170,97 +3204,8 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
-  /admin/update/options:
-    get:
-      summary: Return the auto-update features that are supported for this instance
-      operationId: AutoUpdateOptions
-      tags: ['Internal', 'Admin']
-      x-internal: true
-      security:
-        - BasicAuth: []
-      responses:
-        '200':
-          description: Current auto-update options
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  supportsUpdate:
-                    type: boolean
-                  canRestart:
-                    type: boolean
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401BasicAuth'
-        default:
-          $ref: '#/components/responses/Default'
-    options:
-      operationId: AutoUpdateOptionsOptions
-      x-internal: true
-      tags: ['Objects', 'Internal', 'Admin']
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-  /admin/update/start:
-    get:
-      summary: Begin the auto-update
-      operationId: AutoUpdateStart
-      tags: ['Internal', 'Admin']
-      x-internal: true
-      security:
-        - BasicAuth: []
-      responses:
-        '200':
-          description: Console output from update
-          content:
-            text/plain:
-              schema:
-                type: string
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401BasicAuth'
-        default:
-          $ref: '#/components/responses/Default'
-    options:
-      operationId: AutoUpdateStartOptions
-      x-internal: true
-      tags: ['Objects', 'Internal', 'Admin']
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
-  /admin/update/forcequit:
-    get:
-      summary: Force quit the server and restart it
-      operationId: AutoUpdateForceQuit
-      x-internal: true
-      tags: ['Internal', 'Admin']
-      security:
-        - BasicAuth: []
-      responses:
-        '200':
-          description: Server force restart has been ordered
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BaseAPIResponse'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401BasicAuth'
-        default:
-          $ref: '#/components/responses/Default'
-    options:
-      operationId: AutoUpdateForceQuitOptions
-      tags: ['Objects', 'Internal', 'Admin']
-      x-internal: true
-      responses:
-        '204':
-          $ref: '#/components/responses/204'
   /admin/yp/reset:
-    get:
+    post:
       summary: Reset YP configuration
       operationId: ResetYPRegistration
       tags: ['Internal', 'Admin']
@@ -3979,9 +3924,9 @@ components:
         serverTime:
           type: string
         lastConnectTime:
-          type: string
+          type: ['string', 'null']
         lastDisconnectTime:
-          type: string
+          type: ['string', 'null']
         versionNumber:
           type: string
         viewerCount:
@@ -4045,10 +3990,18 @@ components:
           type: boolean
         authenticated:
           type: boolean
+    UserWithDisabledReason:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            disabledReason:
+              type: string
+              description: Reason provided when the user was disabled.
     Users:
       type: array
       items:
-        $ref: '#/components/schemas/User'
+        $ref: '#/components/schemas/UserWithDisabledReason'
     PaginatedUsers:
       type: object
       properties:
@@ -4258,10 +4211,13 @@ components:
         nsfw:
           type: boolean
         autoplay:
-          type: string
-          enum: ['off', 'always', 'sound-only']
+          $ref: '#/components/schemas/AutoplayMode'
         authentication:
           $ref: '#/components/schemas/AuthenticationConfig'
+    AutoplayMode:
+      type: string
+      enum: ['off', 'always', 'sound-only']
+      description: Viewer autoplay behavior.
     SocialHandle:
       type: object
       properties:
@@ -4400,22 +4356,30 @@ components:
             $ref: '#/components/schemas/CmcdReport'
     PlaybackMetrics:
       type: object
+      required:
+        - errors
+        - qualityVariantChanges
       properties:
         bandwidth:
           type: number
           format: double
+          description: The player's measured throughput in kbps.
         latency:
           type: number
           format: double
+          description: How far behind the live edge the player is, in seconds.
         errors:
           type: number
           format: double
+          description: Errors since the previous report, not a running total. Reports accumulate, so a client sending a cumulative count inflates the recorded figure.
         downloadDuration:
           type: number
           format: double
+          description: How long the player's most recent segment took to download, in seconds.
         qualityVariantChanges:
           type: number
           format: double
+          description: Quality variant switches since the previous report, not a running total.
     Broadcaster:
       type: object
       properties:
@@ -4552,13 +4516,97 @@ components:
           type: string
           format: date-time
         geo:
-          $ref: '#/components/schemas/GeoDetails'
+          anyOf:
+            - $ref: '#/components/schemas/GeoDetails'
+            - type: 'null'
         userAgent:
           type: string
         ipAddress:
           type: string
         clientID:
           type: string
+    PlaybackClient:
+      type: object
+      description: A single client currently playing back video, with its most recent playback health.
+      properties:
+        clientID:
+          type: string
+          description: Playback identity of the client. The player-supplied CMCD session ID when it provides one, otherwise the same request-derived identity used for viewers.
+        viewerID:
+          type: string
+          description: Request-derived identity of the viewer this client belongs to. Clients sharing an address and user agent share a viewer identity.
+        firstSeen:
+          type: string
+          format: date-time
+        geo:
+          anyOf:
+            - $ref: '#/components/schemas/GeoDetails'
+            - type: 'null'
+        userAgent:
+          type: string
+        ipAddress:
+          type: string
+        playback:
+          anyOf:
+            - $ref: '#/components/schemas/PlaybackClientHealth'
+            - type: 'null'
+          description: Null when no playback measurements exist for this client. A non-null playback object with measurementStatus explains why server-side measurements are unavailable.
+      required:
+        - clientID
+        - viewerID
+      additionalProperties: false
+    PlaybackClientHealth:
+      type: object
+      description: |-
+        The most recent playback measurements for one client. A measurement is null when it is
+        unknown for this client rather than measured as zero, because not every player reports every
+        value, server-side observation cannot measure latency at all, and a value the player has
+        stopped reporting expires rather than standing in for the current one.
+      properties:
+        source:
+          type: string
+          enum: [client, server]
+          description: Whether the player is currently reporting its own playback, or the server is measuring it while serving segments. Individual values can still come from the other side, most often the segment download duration of a player that reports everything except how long its downloads took.
+        lastUpdate:
+          type: string
+          format: date-time
+          description: When the most recent measurement of any value for this client arrived.
+        playerState:
+          type: string
+          enum: [p, a, w, k, e]
+          description: Latest player state from CMCD, where p is playing, a is paused, w is buffering, k is seeking, and e is ended.
+        measurementStatus:
+          type: string
+          enum: [unmeasurable]
+          description: Explains why the server could not produce a trustworthy segment measurement.
+        bandwidthKbps:
+          type: [number, 'null']
+          format: double
+          description: How fast video is reaching the client, either the player's own throughput estimate or the rate at which the server served its most recent segment. Server-side measurement may be unavailable when the server cannot see a trustworthy transfer, so clients report null unless the player measures itself.
+        latencySeconds:
+          type: [number, 'null']
+          format: double
+          description: How far behind the live edge the client is playing. Only players that report it provide this, currently those supporting CMCD and those using the deprecated playback metrics endpoint.
+        downloadSeconds:
+          type: [number, 'null']
+          format: double
+          description: How long the client's most recent video segment took to transfer.
+        bitrateKbps:
+          type: [number, 'null']
+          format: double
+          description: Encoded bitrate of the quality variant the client is playing, as advertised in the stream playlist. That figure includes audio, so it is near but not equal to the configured video bitrate of the matching output variant. Only players that report it provide this.
+        errorCount:
+          type: [number, 'null']
+          format: double
+          description: Errors, including buffering, since this client started playing. Null for a client the server can only observe, which reveals nothing about the player's errors.
+        qualityVariantChanges:
+          type: [number, 'null']
+          format: double
+          description: Quality variant switches since this client started playing. Null when the client reveals nothing about the quality it is playing.
+      required:
+        - source
+        - lastUpdate
+      additionalProperties: false
     GeoDetails:
       type: object
       properties:
@@ -4592,7 +4640,9 @@ components:
         user:
           $ref: '#/components/schemas/User'
         geo:
-          $ref: '#/components/schemas/GeoDetails'
+          anyOf:
+            - $ref: '#/components/schemas/GeoDetails'
+            - type: 'null'
         userAgent:
           type: string
         messageCount:
@@ -4618,7 +4668,7 @@ components:
           type: string
           format: date-time
         lastUsed:
-          type: string
+          type: ['string', 'null']
           format: date-time
         url:
           type: string
@@ -4682,7 +4732,7 @@ components:
       type: object
       properties:
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/UserWithDisabledReason'
         connectedClients:
           type: array
           items:
@@ -4733,7 +4783,9 @@ components:
         currentBroadcast:
           $ref: '#/components/schemas/CurrentBroadcast'
         health:
-          $ref: '#/components/schemas/StreamHealthOverview'
+          anyOf:
+            - $ref: '#/components/schemas/StreamHealthOverview'
+            - type: 'null'
         streamTitle:
           type: string
         versionNumber:
@@ -4849,8 +4901,7 @@ components:
         nsfw:
           type: boolean
         autoplay:
-          type: string
-          enum: ['off', 'always', 'sound-only']
+          $ref: '#/components/schemas/AutoplayMode'
     AdminNotificationsConfig:
       type: object
       properties:

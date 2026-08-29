@@ -24,43 +24,77 @@ const (
 	checkInterval = 1 * time.Minute
 )
 
-var (
-	stalenessChecker      *time.Ticker
-	stalenessCheckerDone  chan bool
-	stalenessCheckerMutex sync.Mutex
-)
+// Checker periodically marks stale federated servers as offline.
+// Dependencies are injected so the logic is testable without globals.
+type Checker struct {
+	config  configrepository.ConfigRepository
+	servers federatedserversrepository.FederatedServersRepository
+	now     func() time.Time
+	// ticks returns a tick channel plus a func that releases its resources.
+	ticks func() (<-chan time.Time, func())
+
+	mu         sync.Mutex
+	done       chan bool
+	stopTicker func()
+	// stopped is closed when the background goroutine exits; used by tests to
+	// prove there is no goroutine leak.
+	stopped chan struct{}
+}
+
+// New returns a Checker using the given dependencies. A nil now defaults to
+// time.Now; a nil ticks defaults to a real time.Ticker at checkInterval.
+func New(
+	config configrepository.ConfigRepository,
+	servers federatedserversrepository.FederatedServersRepository,
+	now func() time.Time,
+	ticks func() (<-chan time.Time, func()),
+) *Checker {
+	if now == nil {
+		now = time.Now
+	}
+	if ticks == nil {
+		ticks = func() (<-chan time.Time, func()) {
+			t := time.NewTicker(checkInterval)
+			return t.C, t.Stop
+		}
+	}
+	return &Checker{config: config, servers: servers, now: now, ticks: ticks}
+}
 
 // Start begins checking for stale federated servers in the background.
-func Start() {
-	stalenessCheckerMutex.Lock()
-	defer stalenessCheckerMutex.Unlock()
+func (c *Checker) Start() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
-	configRepository := configrepository.Get()
-	if !configRepository.GetFederationEnabled() {
+	if !c.config.GetFederationEnabled() {
 		return
 	}
 
 	// Don't start if already running
-	if stalenessChecker != nil {
+	if c.done != nil {
 		log.Debugln("Stale featured server checker already running")
 		return
 	}
 
-	stalenessChecker = time.NewTicker(checkInterval)
-	stalenessCheckerDone = make(chan bool)
+	tickCh, stopTicker := c.ticks()
+	c.stopTicker = stopTicker
+	c.done = make(chan bool)
+	c.stopped = make(chan struct{})
 
-	// Capture the done channel in a local variable to avoid race conditions
-	done := stalenessCheckerDone
-	ticker := stalenessChecker
+	// Capture in locals so a later Start/Stop cycle can't race this goroutine.
+	done := c.done
+	stopped := c.stopped
 
 	go func() {
+		defer close(stopped)
+
 		// Run immediately on start
-		checkAndMarkStaleServers()
+		c.check()
 
 		for {
 			select {
-			case <-ticker.C:
-				checkAndMarkStaleServers()
+			case <-tickCh:
+				c.check()
 			case <-done:
 				return
 			}
@@ -71,31 +105,31 @@ func Start() {
 }
 
 // Stop halts the stale server checker if it is running.
-func Stop() {
-	stalenessCheckerMutex.Lock()
-	defer stalenessCheckerMutex.Unlock()
+func (c *Checker) Stop() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
-	if stalenessChecker != nil {
-		stalenessChecker.Stop()
-		close(stalenessCheckerDone)
-		stalenessChecker = nil
-		stalenessCheckerDone = nil
-		log.Infoln("Stopped stale featured server checker")
+	if c.done == nil {
+		return
 	}
+
+	c.stopTicker()
+	close(c.done)
+	c.done = nil
+	c.stopTicker = nil
+	log.Infoln("Stopped stale featured server checker")
 }
 
-// checkAndMarkStaleServers checks all online federated servers and marks them as offline
+// check inspects all online federated servers and marks them as offline
 // if they haven't sent a status update within the stale threshold.
-func checkAndMarkStaleServers() {
-	repo := federatedserversrepository.Get()
-
-	servers, err := repo.GetFederatedServers()
+func (c *Checker) check() {
+	servers, err := c.servers.GetFederatedServers()
 	if err != nil {
 		log.Errorf("Failed to get federated servers for staleness check: %v", err)
 		return
 	}
 
-	now := time.Now()
+	now := c.now()
 	markedOfflineCount := 0
 
 	for _, server := range servers {
@@ -115,7 +149,7 @@ func checkAndMarkStaleServers() {
 			log.Infof("Marking federated server %s as offline due to staleness (%v since last update)",
 				server.IRI, timeSinceLastUpdate)
 
-			err := repo.UpdateServerStatus(server.IRI, false, nil)
+			err := c.servers.UpdateServerStatus(server.IRI, false, nil)
 			if err != nil {
 				log.Errorf("Failed to mark server %s as offline: %v", server.IRI, err)
 			} else {
@@ -126,5 +160,31 @@ func checkAndMarkStaleServers() {
 
 	if markedOfflineCount > 0 {
 		log.Infof("Marked %d federated server(s) as offline due to staleness", markedOfflineCount)
+	}
+}
+
+var (
+	defaultMu      sync.Mutex
+	defaultChecker *Checker
+)
+
+// Start begins the default background checker using the global repositories.
+func Start() {
+	defaultMu.Lock()
+	defer defaultMu.Unlock()
+
+	if defaultChecker == nil {
+		defaultChecker = New(configrepository.Get(), federatedserversrepository.Get(), nil, nil)
+	}
+	defaultChecker.Start()
+}
+
+// Stop halts the default background checker if it is running.
+func Stop() {
+	defaultMu.Lock()
+	defer defaultMu.Unlock()
+
+	if defaultChecker != nil {
+		defaultChecker.Stop()
 	}
 }

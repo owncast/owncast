@@ -16,6 +16,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -37,6 +38,7 @@ import (
 	"github.com/owncast/owncast/services/plugins"
 	"github.com/owncast/owncast/services/plugins/kv"
 	"github.com/owncast/owncast/services/stream"
+	"github.com/owncast/owncast/services/transcoder"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -44,9 +46,15 @@ import (
 // admin-enabled plugin names is persisted.
 const pluginsEnabledConfigKey = "plugins.enabled"
 
-// jsonErrorKey is the JSON map key used to surface a single human-readable
-// error string back to the admin UI in error responses.
-const jsonErrorKey = "error"
+// JSON map keys used in the admin API's small status/error response bodies.
+const (
+	// jsonErrorKey surfaces a single human-readable error string to the admin UI.
+	jsonErrorKey = "error"
+	// jsonSlugKey echoes back the plugin a mutating request acted on.
+	jsonSlugKey = "slug"
+	// jsonStatusKey carries the "ok" acknowledgement of a mutating request.
+	jsonStatusKey = "status"
+)
 
 // pluginsApprovedPermsConfigKey is the datastore key under which the
 // per-plugin admin-approved permission snapshots are persisted (as a
@@ -88,6 +96,7 @@ type Host struct {
 	manager          *plugins.Manager
 	server           *plugins.Server
 	sse              *plugins.SSEHub
+	sqlStore         *pluginSQLStore
 	configRepository configrepository.ConfigRepository
 	// requireAdminAuth is the host's admin Basic Auth middleware, plumbed
 	// in from main.go so the management API and the plugin static server
@@ -113,8 +122,57 @@ type Host struct {
 	// userByToken resolves a viewer's identity from their access token, used by
 	// the onAuthCheck re-validation hook to build the identity it passes the
 	// gate plugin.
-	userByToken func(token string) *plugins.HostUser
+	userByToken      func(token string) *plugins.HostUser
+	authGateSettings atomic.Value
 }
+
+// AuthGateAccessMode is the operator-selected boundary of the viewer gate.
+// Modes are cumulative: each mode includes everything protected by the one
+// before it.
+type AuthGateAccessMode string
+
+const (
+	AuthGateAccessWebsiteOnly            AuthGateAccessMode = "website-only"
+	AuthGateAccessWebsiteAndStream       AuthGateAccessMode = "website-and-stream"
+	AuthGateAccessWebsiteStreamAndStatus AuthGateAccessMode = "website-stream-and-status"
+)
+
+// AuthGateSettings are host-owned settings for a plugin that declares
+// auth.gate.
+type AuthGateSettings struct {
+	AccessMode AuthGateAccessMode `json:"accessMode"`
+}
+
+func defaultAuthGateSettings() AuthGateSettings {
+	return AuthGateSettings{AccessMode: AuthGateAccessWebsiteOnly}
+}
+
+func (s AuthGateSettings) valid() bool {
+	switch s.AccessMode {
+	case AuthGateAccessWebsiteOnly,
+		AuthGateAccessWebsiteAndStream,
+		AuthGateAccessWebsiteStreamAndStatus:
+		return true
+	default:
+		return false
+	}
+}
+
+func (s AuthGateSettings) protectsStream() bool {
+	return s.AccessMode == AuthGateAccessWebsiteAndStream ||
+		s.AccessMode == AuthGateAccessWebsiteStreamAndStatus
+}
+
+func (s AuthGateSettings) blocksStreamStatusRequests() bool {
+	return s.AccessMode == AuthGateAccessWebsiteStreamAndStatus
+}
+
+type authGateSettingsSnapshot struct {
+	slug     string
+	settings AuthGateSettings
+}
+
+const authGateSettingsKey = "owncast.auth-gate-settings"
 
 // runtimeActionsConfigKey is the reserved key inside a plugin's own
 // config namespace that holds action buttons the plugin has added at
@@ -139,11 +197,78 @@ func readConfigOverrides(store kv.Store, slug string) map[string]any {
 	if err != nil || len(raw) == 0 {
 		return nil
 	}
+
 	var m map[string]any
 	if err := json.Unmarshal(raw, &m); err != nil {
 		return nil
 	}
 	return m
+}
+
+// authGateSettingsFor returns the operator's access policy for a gate plugin,
+// memoized in a single-slot snapshot because it is read on every request,
+// including the per-segment HLS hot path.
+//
+// A storage failure or a corrupt value is not cached: it returns the
+// website-only default for this request and retries on the next one, rather
+// than pinning a wrong policy until restart.
+func (p *Host) authGateSettingsFor(slug string) AuthGateSettings {
+	snapshot, ok := p.authGateSettings.Load().(authGateSettingsSnapshot)
+	if ok && snapshot.slug == slug {
+		return snapshot.settings
+	}
+	defaults := defaultAuthGateSettings()
+	if p.kv == nil {
+		return defaults
+	}
+
+	raw, err := p.kv.Namespace(slug).Get(authGateSettingsKey)
+	if err != nil {
+		log.Warnf("plugin auth: could not read gate settings for %q, using defaults: %v", slug, err)
+		return defaults
+	}
+
+	settings := defaults
+	if len(raw) > 0 {
+		var stored AuthGateSettings
+		if err := json.Unmarshal(raw, &stored); err != nil {
+			log.Warnf("plugin auth: gate settings for %q are unreadable, using defaults: %v", slug, err)
+			return defaults
+		}
+		if !stored.valid() {
+			log.Warnf("plugin auth: gate settings for %q have unsupported access mode %q, using defaults", slug, stored.AccessMode)
+			return defaults
+		}
+		settings = stored
+	}
+	p.authGateSettings.Store(authGateSettingsSnapshot{slug: slug, settings: settings})
+	return settings
+}
+
+func (p *Host) saveAuthGateSettings(slug string, settings AuthGateSettings) error {
+	if !settings.valid() {
+		return fmt.Errorf("unsupported authentication access mode %q", settings.AccessMode)
+	}
+	data, err := json.Marshal(settings)
+	if err != nil {
+		return err
+	}
+	if p.kv == nil {
+		return fmt.Errorf("settings storage unavailable")
+	}
+	if err := p.kv.Namespace(slug).Set(authGateSettingsKey, data); err != nil {
+		return err
+	}
+	p.authGateSettings.Store(authGateSettingsSnapshot{slug: slug, settings: settings})
+	return nil
+}
+
+// DirectoryAvailable reports whether the active auth gate permits public
+// directory metadata. The most restrictive access mode disables directory
+// access along with public stream status.
+func (p *Host) DirectoryAvailable() bool {
+	slug, _ := p.manager.ActiveAuthGate()
+	return slug == "" || !p.authGateSettingsFor(slug).blocksStreamStatusRequests()
 }
 
 // coerceConfigValue validates an incoming admin-set value against a config
@@ -186,6 +311,11 @@ func (p *Host) Stop(ctx context.Context) {
 		p.tickCancel()
 	}
 	p.manager.Stop(ctx)
+	// Unload callbacks close databases for loaded plugins; closeAll also
+	// handles any database opened during a final in-flight call.
+	if p.sqlStore != nil {
+		p.sqlStore.closeAll()
+	}
 }
 
 // Actions returns every action-button currently contributed by loaded
@@ -509,7 +639,7 @@ func (p *Host) Tabs(r *http.Request) []models.PluginTab {
 		}
 		pluginSlug := l.Manifest.Slug
 		pluginPrefix := "/plugins/" + pluginSlug + "/"
-		for _, tab := range l.Manifest.Tabs {
+		for _, tab := range l.Manifest.OrderedTabs() {
 			var html string
 			if tab.Content != "" {
 				// Static: read from assets/.
@@ -618,9 +748,20 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 		return nil, fmt.Errorf("create plugins directory: %w", err)
 	}
 
+	if err := migrateLegacyPluginFilesystemStorage(config.DataDirectory); err != nil {
+		return nil, err
+	}
+
+	sqlStore, err := newPluginSQLStore(filepath.Join(config.DataDirectory, pluginStorageRootDirName))
+	if err != nil {
+		return nil, err
+	}
 	env := &plugins.HostEnv{KV: newDatastoreKVStore(deps.Datastore)}
 	wirePluginHostEnv(env, deps)
 
+	env.SQLExec = sqlStore.exec
+	env.SQLQuery = sqlStore.query
+	env.AcquireSQLLease = sqlStore.acquire
 	sseHub := plugins.NewSSEHub()
 	env.SSE = sseHub
 
@@ -671,8 +812,8 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 	})
 	env.Timer = timerHub
 	// On unload (disable/reload/uninstall/disk-removal) cancel the plugin's
-	// pending timers AND close its open SSE streams, so neither lingers after
-	// the plugin is gone.
+	// pending timers and close its open SSE streams. SQL is tied directly to
+	// Loaded.Close so failed loads and package preflights release it too.
 	manager.SetOnUnload(func(slug string) {
 		timerHub.CancelForPlugin(slug)
 		sseHub.CloseForPlugin(slug)
@@ -709,8 +850,9 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 		log.Errorln("plugin auth: could not establish session signing secret:", err)
 	}
 
-	return &Host{
+	host := &Host{
 		manager:          manager,
+		sqlStore:         sqlStore,
 		server:           server,
 		sse:              sseHub,
 		configRepository: deps.ConfigRepository,
@@ -727,7 +869,9 @@ func New(ctx context.Context, deps Deps) (*Host, error) {
 			hu := toHostUser(u)
 			return &hu
 		},
-	}, nil
+	}
+	host.authGateSettings.Store(authGateSettingsSnapshot{})
+	return host, nil
 }
 
 // AdminHandler returns the HTTP handler for plugin management:
@@ -899,6 +1043,10 @@ func (p *Host) handlePluginAction(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(data) //nolint:gosec // G705
 		return
 	}
+	if action == "auth-settings" {
+		p.handleAuthGateSettings(w, r, slug)
+		return
+	}
 
 	// GET/POST /api/admin/plugins/<slug>/config reads and writes the admin's
 	// overrides for the plugin's manifest-declared config fields. The admin UI
@@ -925,7 +1073,7 @@ func (p *Host) handlePluginAction(w http.ResponseWriter, r *http.Request) {
 	if action == "uninstall" {
 		log.Infof("plugin %q uninstalled by admin", slug)
 	}
-	writeJSONResponse(w, http.StatusOK, map[string]string{"status": "ok", "slug": slug, "action": action})
+	writeJSONResponse(w, http.StatusOK, map[string]string{jsonStatusKey: "ok", jsonSlugKey: slug, "action": action})
 }
 
 // handlePluginConfig serves the admin config form's backend:
@@ -991,8 +1139,35 @@ func (p *Host) handlePluginConfig(w http.ResponseWriter, r *http.Request, slug s
 			writeJSONResponse(w, http.StatusInternalServerError, map[string]string{jsonErrorKey: err.Error()})
 			return
 		}
-		writeJSONResponse(w, http.StatusOK, map[string]string{"status": "ok", "slug": slug})
+		writeJSONResponse(w, http.StatusOK, map[string]string{jsonStatusKey: "ok", jsonSlugKey: slug})
 
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func (p *Host) handleAuthGateSettings(w http.ResponseWriter, r *http.Request, slug string) {
+	if !p.manager.IsAuthGate(slug) {
+		http.NotFound(w, r)
+		return
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		writeJSONResponse(w, http.StatusOK, p.authGateSettingsFor(slug))
+	case http.MethodPost:
+		var settings AuthGateSettings
+		decoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<20))
+		decoder.DisallowUnknownFields()
+		if err := decoder.Decode(&settings); err != nil || !settings.valid() {
+			http.Error(w, "invalid authentication access mode", http.StatusBadRequest)
+			return
+		}
+		if err := p.saveAuthGateSettings(slug, settings); err != nil {
+			writeJSONResponse(w, http.StatusInternalServerError, map[string]string{jsonErrorKey: err.Error()})
+			return
+		}
+		writeJSONResponse(w, http.StatusOK, map[string]string{jsonStatusKey: "ok", jsonSlugKey: slug})
 	default:
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
@@ -1046,7 +1221,7 @@ func (p *Host) handlePluginUpload(w http.ResponseWriter, r *http.Request) {
 		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: "read upload: " + err.Error()})
 		return
 	}
-	entry, err := p.manager.Install(r.Context(), packageBytes)
+	entry, err := p.manager.InstallUploaded(r.Context(), packageBytes)
 	if err != nil {
 		writeJSONResponse(w, http.StatusBadRequest, map[string]string{jsonErrorKey: err.Error()})
 		return
@@ -1093,10 +1268,24 @@ func (s *configEnabledStore) Save(d plugins.StoreData) error {
 	return s.datastore.SetString(pluginsApprovedPermsConfigKey, string(encoded))
 }
 
+func wirePluginLoggingHostFn(env *plugins.HostEnv) {
+	env.Log = func(pluginName string, level plugins.PluginLogLevel, message string) {
+		switch level {
+		case plugins.PluginLogWarning:
+			log.Warnf("plugin %s: %s", pluginName, message)
+		case plugins.PluginLogError:
+			log.Errorf("plugin %s: %s", pluginName, message)
+		default:
+			log.Infof("plugin %s: %s", pluginName, message)
+		}
+	}
+}
+
 // wirePluginHostEnv connects each HostEnv host-function pointer to the
 // corresponding Owncast service call. Closures read services lazily so they
 // observe current config/state on every call.
 func wirePluginHostEnv(env *plugins.HostEnv, deps Deps) {
+	wirePluginLoggingHostFn(env)
 	chatbots := newPluginChatbotProvisioner(deps.UserRepository, deps.Datastore)
 	wireChatSendHostFns(env, deps, chatbots)
 	wireChatReadHostFns(env, deps)
@@ -1118,12 +1307,85 @@ func wirePluginHostEnv(env *plugins.HostEnv, deps Deps) {
 	wireFilesystemHostFns(env)
 }
 
-// pluginDataRootDirName is the directory under config.DataDirectory that
-// holds each plugin's private, sandboxed filesystem (storage.fs). It is
+// pluginStorageRootDirName is the directory under config.DataDirectory that
+// holds everything a plugin stores on disk, one subdirectory per plugin. It is
 // deliberately separate from the plugins install/scan directory
 // (config.DataDirectory/plugins) so a plugin's writable data can never be
 // mistaken for, or collide with, an installed package or its assets.
-const pluginDataRootDirName = "plugin-data"
+const pluginStorageRootDirName = "plugin-storage"
+
+// legacyPluginDataRootDirName is where storage.fs data lived before SQL storage
+// gave every plugin one parent directory for all of its on-disk data.
+const legacyPluginDataRootDirName = "plugin-data"
+
+// Inside a plugin's storage directory, its two kinds of storage get their own
+// subdirectory: plugin-storage/<slug>/files for storage.fs and
+// plugin-storage/<slug>/db for storage.sql.
+//
+// The split is what keeps a database out of reach of the filesystem API. The
+// storage.fs sandbox is rooted at files/, so db/ is not merely a path the
+// resolver refuses, it is outside the tree the plugin can name at all. That
+// matters: max_page_count only refuses to grow a database, so a plugin that
+// could write its own database file would simply pre-seed one larger than its
+// quota and the host would open it. Reserving filenames inside a shared
+// directory would be the fragile version of this, since it would have to keep
+// pace with SQLite's journal and WAL sidecar naming forever.
+//
+// Keeping the trees apart also keeps the two quotas independent, so the limit a
+// plugin hits never depends on which API it wrote with first.
+const (
+	pluginFilesDirName    = "files"
+	pluginDatabaseDirName = "db"
+)
+
+// pluginStorageDir returns one plugin's storage subtree, the parent of both
+// files/ and db/.
+func pluginStorageDir(root, pluginName string) string {
+	return filepath.Join(root, pluginName)
+}
+
+// migrateLegacyPluginFilesystemStorage moves existing storage.fs data into the
+// files/ subtree before any plugin can access it. Rename keeps each plugin's
+// migration atomic on the data volume. A conflicting destination is refused
+// rather than hiding or overwriting either copy. Unrecognized files remain in
+// the legacy root and do not block well-formed plugin directories.
+func migrateLegacyPluginFilesystemStorage(dataDir string) error {
+	legacyRoot := filepath.Join(dataDir, legacyPluginDataRootDirName)
+	entries, err := os.ReadDir(legacyRoot)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("read legacy plugin storage: %w", err)
+	}
+
+	storageRoot := filepath.Join(dataDir, pluginStorageRootDirName)
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			log.Warnf("Skipping unexpected file in legacy plugin storage: %s", entry.Name())
+			continue
+		}
+		source := filepath.Join(legacyRoot, entry.Name())
+		destinationParent := pluginStorageDir(storageRoot, entry.Name())
+		destination := filepath.Join(destinationParent, pluginFilesDirName)
+		if _, err := os.Stat(destination); err == nil {
+			return fmt.Errorf("migrate legacy plugin storage for %q: destination already exists", entry.Name())
+		} else if !os.IsNotExist(err) {
+			return fmt.Errorf("inspect plugin storage destination for %q: %w", entry.Name(), err)
+		}
+		if err := os.MkdirAll(destinationParent, 0o700); err != nil {
+			return fmt.Errorf("create plugin storage directory for %q: %w", entry.Name(), err)
+		}
+		if err := os.Rename(source, destination); err != nil {
+			return fmt.Errorf("migrate legacy plugin storage for %q: %w", entry.Name(), err)
+		}
+		log.Infof("Migrated plugin filesystem storage for %s", entry.Name())
+	}
+	if err := os.Remove(legacyRoot); err != nil && !os.IsNotExist(err) {
+		log.Warnf("Unable to remove legacy plugin storage directory: %v", err)
+	}
+	return nil
+}
 
 // maxPluginFileBytes caps a single storage.fs write. It bounds how much a
 // misbehaving plugin can write in one call.
@@ -1162,16 +1424,33 @@ func dirSize(dir string) (int64, error) {
 	return total, err
 }
 
-// resolvePluginSandboxPath maps a plugin-supplied relative path to an
-// absolute path inside that plugin's sandbox (root/<pluginName>), and
-// guarantees the result cannot escape it. rel is treated as rooted before
-// cleaning, so "../", absolute paths, and other traversal tricks all
-// collapse back inside the sandbox; a defensive prefix check rejects
-// anything that still lands outside. pluginName is the plugin slug, which
-// the manifest layer has already constrained to [a-z][a-z0-9-]*, so it
-// cannot itself contain separators or "..".
+// resolvePluginSandboxPath maps a plugin-supplied relative path to an absolute
+// path inside that plugin's storage.fs sandbox
+// (root/<pluginName>/files), and guarantees the result cannot escape it. rel is
+// treated as rooted before cleaning, so "../", absolute paths, and other
+// traversal tricks all collapse back inside the sandbox; a defensive prefix
+// check rejects anything that still lands outside. pluginName is the plugin
+// slug, which the manifest layer has already constrained to [a-z][a-z0-9-]*, so
+// it cannot itself contain separators or "..".
+//
+// Because the sandbox is files/ rather than the whole per-plugin directory, the
+// same containment check that stops a plugin reaching another plugin's data also
+// stops it reaching its own database.
 func resolvePluginSandboxPath(root, pluginName, rel string) (string, error) {
-	sandbox, err := filepath.Abs(filepath.Join(root, pluginName))
+	return resolveContainedPath(filepath.Join(pluginStorageDir(root, pluginName), pluginFilesDirName), rel)
+}
+
+// resolvePluginDatabasePath is the same containment guarantee for the host's own
+// use of the db/ subtree. A plugin never supplies one of these paths, so this
+// exists to keep the layout in one place rather than to defend a boundary.
+func resolvePluginDatabasePath(root, pluginName, rel string) (string, error) {
+	return resolveContainedPath(filepath.Join(pluginStorageDir(root, pluginName), pluginDatabaseDirName), rel)
+}
+
+// resolveContainedPath joins rel under sandbox and refuses any result that
+// lands outside it.
+func resolveContainedPath(sandbox, rel string) (string, error) {
+	sandbox, err := filepath.Abs(sandbox)
 	if err != nil {
 		return "", err
 	}
@@ -1189,8 +1468,11 @@ func resolvePluginSandboxPath(root, pluginName, rel string) (string, error) {
 // aggregate quota. full is the absolute path being written; when it already
 // exists it's excluded from the current total, since the write overwrites it
 // in place rather than growing the footprint.
+//
+// It walks files/ only, so a plugin's database never consumes its filesystem
+// quota and the two limits stay independent.
 func fsQuotaCheck(root, pluginName, full string, addBytes int) error {
-	used, err := dirSize(filepath.Join(root, pluginName))
+	used, err := dirSize(filepath.Join(pluginStorageDir(root, pluginName), pluginFilesDirName))
 	if err != nil {
 		return err
 	}
@@ -1204,10 +1486,10 @@ func fsQuotaCheck(root, pluginName, full string, addBytes int) error {
 	return nil
 }
 
-// wireFilesystemHostFns implements the storage.fs host functions against a
-// per-plugin sandbox directory under config.DataDirectory/plugin-data.
+// wireFilesystemHostFns implements the storage.fs host functions against each
+// plugin's files/ subdirectory under config.DataDirectory/plugin-storage.
 func wireFilesystemHostFns(env *plugins.HostEnv) {
-	wireFilesystemHostFnsWithRoot(env, filepath.Join(config.DataDirectory, pluginDataRootDirName))
+	wireFilesystemHostFnsWithRoot(env, filepath.Join(config.DataDirectory, pluginStorageRootDirName))
 }
 
 // wireFilesystemHostFnsWithRoot is wireFilesystemHostFns with the sandbox
@@ -1290,6 +1572,18 @@ func wireFilesystemHostFnsWithRoot(env *plugins.HostEnv, root string) {
 	}
 }
 
+func validateVideoConfigUpdate(u plugins.VideoConfigUpdate) error {
+	if u.Autoplay != nil {
+		if err := u.Autoplay.Validate(); err != nil {
+			return err
+		}
+	}
+	if u.Codec != nil && !transcoder.IsCodecSupported(*u.Codec) {
+		return fmt.Errorf("invalid video codec %q", *u.Codec)
+	}
+	return nil
+}
+
 // wireVideoConfigHostFns wires the settable video/transcoding configuration:
 // videoconfig.read (owncast.videoConfig.read) and videoconfig.write
 // (owncast.videoConfig.write). The plugin-facing VideoConfig/StreamVariant
@@ -1303,6 +1597,7 @@ func wireVideoConfigHostFns(env *plugins.HostEnv, deps Deps) {
 		out := plugins.VideoConfig{
 			LatencyLevel: cfg.GetStreamLatencyLevel().Level,
 			Codec:        cfg.GetVideoCodec(),
+			Autoplay:     cfg.GetAutoplay(),
 			Variants:     make([]plugins.StreamVariant, 0, len(variants)),
 		}
 		for _, v := range variants {
@@ -1311,7 +1606,7 @@ func wireVideoConfigHostFns(env *plugins.HostEnv, deps Deps) {
 				Height:        v.ScaledHeight,
 				Framerate:     v.Framerate,
 				VideoBitrate:  v.VideoBitrate,
-				AudioBitrate:  v.AudioBitrate,
+				CPUUsageLevel: v.CPUUsageLevel,
 				IsPassthrough: v.IsVideoPassthrough,
 			})
 		}
@@ -1319,6 +1614,14 @@ func wireVideoConfigHostFns(env *plugins.HostEnv, deps Deps) {
 	}
 
 	env.WriteVideoConfig = func(pluginName string, u plugins.VideoConfigUpdate) error {
+		if err := validateVideoConfigUpdate(u); err != nil {
+			return err
+		}
+		if u.Autoplay != nil {
+			if err := cfg.SetAutoplay(*u.Autoplay); err != nil {
+				return err
+			}
+		}
 		if u.LatencyLevel != nil {
 			if err := cfg.SetStreamLatencyLevel(float64(*u.LatencyLevel)); err != nil {
 				return err
@@ -1330,16 +1633,20 @@ func wireVideoConfigHostFns(env *plugins.HostEnv, deps Deps) {
 			}
 		}
 		if u.Variants != nil {
+			existing := cfg.GetStreamOutputVariants()
 			variants := make([]models.StreamOutputVariant, 0, len(u.Variants))
-			for _, v := range u.Variants {
-				variants = append(variants, models.StreamOutputVariant{
-					ScaledWidth:        v.Width,
-					ScaledHeight:       v.Height,
-					Framerate:          v.Framerate,
-					VideoBitrate:       v.VideoBitrate,
-					AudioBitrate:       v.AudioBitrate,
-					IsVideoPassthrough: v.IsPassthrough,
-				})
+			for i, v := range u.Variants {
+				variant := models.StreamOutputVariant{}
+				if i < len(existing) {
+					variant = existing[i]
+				}
+				variant.ScaledWidth = v.Width
+				variant.ScaledHeight = v.Height
+				variant.Framerate = v.Framerate
+				variant.VideoBitrate = v.VideoBitrate
+				variant.CPUUsageLevel = v.CPUUsageLevel
+				variant.IsVideoPassthrough = v.IsPassthrough
+				variants = append(variants, variant)
 			}
 			if err := cfg.SetStreamOutputVariants(variants); err != nil {
 				return err
@@ -1436,16 +1743,20 @@ func wireChatReadHostFns(env *plugins.HostEnv, deps Deps) {
 func wireChatModerationHostFns(env *plugins.HostEnv, deps Deps) {
 	chatSvc := deps.Chat
 
-	env.DeleteMessage = func(pluginName, messageID string) {
-		if err := chatSvc.SetMessagesVisibility([]string{messageID}, false); err != nil {
-			log.Errorln("plugin", pluginName, "delete message:", err)
+	env.DeleteMessage = func(pluginName, messageID string) error {
+		if err := chatSvc.SetMessagesVisibility([]string{messageID}, false, nil); err != nil {
+			return err
 		}
+		return nil
 	}
 
-	env.KickClient = func(pluginName string, clientID uint64) {
-		if c, ok := chatSvc.FindClientByID(uint(clientID)); ok {
-			chatSvc.DisconnectClients([]*chat.Client{c})
+	env.KickClient = func(pluginName string, clientID uint64) error {
+		c, ok := chatSvc.FindClientByID(uint(clientID))
+		if !ok {
+			return fmt.Errorf("chat client %d not found", clientID)
 		}
+		chatSvc.DisconnectClients([]*chat.Client{c})
+		return nil
 	}
 }
 
@@ -1569,22 +1880,20 @@ func wireUserHostFns(env *plugins.HostEnv, deps Deps) {
 		return toHostUser(u), true
 	}
 
-	env.SetUserEnabled = func(pluginName, userID string, enabled bool, reason string) {
-		if err := users.SetEnabled(userID, enabled); err != nil {
-			log.Errorln("plugin", pluginName, "set user enabled:", err)
-			return
+	env.SetUserEnabled = func(pluginName, userID string, enabled bool, reason string) error {
+		if err := users.SetEnabled(userID, enabled, reason); err != nil {
+			return err
 		}
 		if !enabled {
 			if clients, err := chatSvc.GetClientsForUser(userID); err == nil {
 				chatSvc.DisconnectClients(clients)
 			}
 		}
+		return nil
 	}
 
-	env.BanIP = func(pluginName, ip string) {
-		if err := deps.AuthRepository.BanIPAddress(ip, "banned by plugin "+pluginName); err != nil {
-			log.Errorln("plugin", pluginName, "ban ip:", err)
-		}
+	env.BanIP = func(pluginName, ip string) error {
+		return deps.AuthRepository.BanIPAddress(ip, "banned by plugin "+pluginName)
 	}
 }
 
@@ -1653,6 +1962,13 @@ func validateProfileURL(profileURL string) error {
 	return nil
 }
 
+func generatedDisplayName(displayName string) string {
+	if displayName == "" {
+		return utils.GeneratePhrase()
+	}
+	return displayName
+}
+
 // wireAuthHostFns wires the viewer-authentication host functions: register an
 // authenticated user for an external (plugin-provided) identity, and mint a
 // signed gate session for them.
@@ -1667,7 +1983,12 @@ func wireAuthHostFns(env *plugins.HostEnv, deps Deps) {
 		return
 	}
 
-	env.RegisterUser = func(pluginName string, req plugins.UserRegisterRequest) (string, error) {
+	env.RegisterUser = registerPluginUser(users)
+	env.GrantSession = grantPluginSession(users, secret)
+}
+
+func registerPluginUser(users userrepository.UserRepository) func(string, plugins.UserRegisterRequest) (string, error) {
+	return func(pluginName string, req plugins.UserRegisterRequest) (string, error) {
 		// Validate requested scopes and the profile URL against their boundaries
 		// BEFORE creating any user, so a disallowed scope (e.g. HAS_ADMIN_ACCESS)
 		// or a bad URL fails cleanly without leaving an orphan account.
@@ -1683,7 +2004,7 @@ func wireAuthHostFns(env *plugins.HostEnv, deps Deps) {
 		if existing := users.GetUserByPluginAuth(pluginName, req.AuthID); existing != nil {
 			userID = existing.ID
 		} else {
-			user, _, err := users.CreateAnonymousUser(req.DisplayName)
+			user, _, err := users.CreateAnonymousUser(generatedDisplayName(req.DisplayName))
 			if err != nil {
 				return "", err
 			}
@@ -1729,8 +2050,10 @@ func wireAuthHostFns(env *plugins.HostEnv, deps Deps) {
 		}
 		return userID, nil
 	}
+}
 
-	env.GrantSession = func(pluginName, userID string, ttlSeconds int64) (string, error) {
+func grantPluginSession(users userrepository.UserRepository, secret []byte) func(string, string, int64) (string, error) {
+	return func(pluginName, userID string, ttlSeconds int64) (string, error) {
 		// Only mint a session for a user THIS plugin registered. RegisterUser
 		// namespaces every plugin identity by slug; mirror that here so a gate
 		// plugin can't grant a session impersonating an arbitrary existing user

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import type { NextRouter } from 'next/router';
 import type { loadViewerLocale, shouldCleanUrlAfterFlip } from '../utils/localeLoader';
-import { AVAILABLE_LOCALES, pickLocale } from '../utils/localeLoader';
+import { AVAILABLE_LOCALES, pickLocale, withFallbackTranslations } from '../utils/localeLoader';
 
 type LoadViewerLocale = typeof loadViewerLocale;
 type ShouldCleanUrlAfterFlip = typeof shouldCleanUrlAfterFlip;
@@ -69,6 +69,31 @@ describe('pickLocale', () => {
   });
 });
 
+describe('withFallbackTranslations', () => {
+  test('fills missing and blank values without replacing translations', () => {
+    expect(
+      withFallbackTranslations(
+        {
+          translated: 'Μετάφραση',
+          blank: ' ',
+          nested: { empty: '' },
+        },
+        {
+          translated: 'Translation',
+          missing: 'Missing',
+          blank: 'Blank',
+          nested: { empty: 'Empty', missing: 'Nested missing' },
+        },
+      ),
+    ).toEqual({
+      translated: 'Μετάφραση',
+      missing: 'Missing',
+      blank: 'Blank',
+      nested: { empty: 'Empty', missing: 'Nested missing' },
+    });
+  });
+});
+
 describe('AVAILABLE_LOCALES', () => {
   test('offers en and de but deliberately not eu', () => {
     expect(AVAILABLE_LOCALES).toContain('en');
@@ -108,6 +133,20 @@ describe('loadViewerLocale', () => {
       shallow: true,
       scroll: false,
     });
+  });
+
+  test('loaded catalog retains translated values', async () => {
+    setBrowserLanguage('el-GR');
+    const { load, i18n } = freshModules();
+    const { router } = makeRouter({});
+
+    await load(router);
+
+    const english = i18n.translations.en as {
+      Testing: Record<string, string>;
+    };
+    const greek = i18n.translations.el as typeof english;
+    expect(greek.Testing.simpleKey).not.toBe(english.Testing.simpleKey);
   });
 
   test('explicit ?lang=de bounces the query param off and back on', async () => {

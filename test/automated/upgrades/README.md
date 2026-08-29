@@ -1,11 +1,16 @@
-# Automated Owncast releases and upgrade test
+# Automated upgrade test
 
-The list of releases is fetched dynamically from the GitHub API, so the test always covers every published release without needing to be updated by hand. Running it requires `curl` and `jq`.
+Proves that a data directory created by the latest published Owncast release survives an upgrade to the code in this checkout.
 
-## Upgrades in succession tests
+`run.sh`:
 
-This test will automatically download each release, one after another, to verify they all run in order. It concludes by creating a build from the `develop` branch and running the upgrade to that in order to verify the upcoming release.
+1. Downloads the latest GitHub release asset for the current platform (Linux amd64/arm64 and macOS Intel/Apple Silicon are supported).
+2. Runs it in a scratch directory on non-default ports (web 8098, RTMP 1998) and writes recognizable config values through the admin API.
+3. Stops it, builds this checkout, and starts the new binary on the same data directory.
+4. Asserts the upgraded server becomes ready, reports the dev version, kept the previously written config, and migrated the database to the newest goose schema version.
 
-## First to last test
+Any failed assertion exits nonzero. Server logs are left in `scratch/` for inspection.
 
-This test will automatically download the first release and then upgrade to the development branch to verify that a user can successfully skip versions when upgrading.
+Requires `curl`, `jq`, `unzip`, `sqlite3`, `go`, and `ffmpeg`. Runs in CI via `.github/workflows/upgrade-tests.yml` (weekly, on demand, and on PRs touching this suite).
+
+This intentionally tests a single hop: latest release to local HEAD, which is the upgrade every user performs when a release ships. It does not replay the full historical release chain.

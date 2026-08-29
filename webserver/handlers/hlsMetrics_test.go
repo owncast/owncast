@@ -152,6 +152,35 @@ func TestParseCmcdReportsQuery(t *testing.T) {
 	}
 }
 
+func TestParseCmcdReportsHeaders(t *testing.T) {
+	r := httptest.NewRequest("POST", "/api/metrics/cmcd", nil)
+	r.Header.Set("CMCD-Request", "mtp=48100")
+	r.Header.Set("CMCD-Session", `sid="header-player",sta="p"`)
+
+	reports, err := parseCmcdReports(r)
+	if err != nil || len(reports) != 1 {
+		t.Fatalf("expected 1 header report, got %d (err %v)", len(reports), err)
+	}
+	if mtp, _ := cmcdNumber(reports[0], "mtp"); mtp != 48100 {
+		t.Errorf("expected mtp 48100, got %v", reports[0]["mtp"])
+	}
+	if sid, _ := reports[0]["sid"].(string); sid != "header-player" {
+		t.Errorf("expected header player session, got %v", reports[0]["sid"])
+	}
+}
+
+func TestCMCDReportsDownloadDuration(t *testing.T) {
+	if cmcdReportsDownloadDuration(map[string]any{"e": "t", "ltc": 4200}) {
+		t.Error("event-only CMCD must retain server segment timing")
+	}
+	if cmcdReportsDownloadDuration(map[string]any{"ttlb": 0.0}) {
+		t.Error("zero TTLB is not a download measurement")
+	}
+	if !cmcdReportsDownloadDuration(map[string]any{"ttlb": 250.0}) {
+		t.Error("positive TTLB must replace server segment timing")
+	}
+}
+
 func TestSegmentSpeedSample(t *testing.T) {
 	const oneMB = 1024 * 1024
 

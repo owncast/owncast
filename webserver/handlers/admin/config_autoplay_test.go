@@ -6,14 +6,15 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 )
 
 func TestSetAutoplayValidValues(t *testing.T) {
 	configRepository := configrepository.New(testDatastore)
 
-	for _, value := range []string{"off", "always", "sound-only"} {
-		body := makeConfigValueBody(value)
+	for _, value := range []models.AutoplayMode{models.AutoplayOff, models.AutoplayAlways, models.AutoplaySoundOnly} {
+		body := makeConfigValueBody(string(value))
 		req := httptest.NewRequest(http.MethodPost, "/api/admin/config/autoplay", strings.NewReader(body))
 		req.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
@@ -34,7 +35,11 @@ func TestSetAutoplayRejectsInvalidValue(t *testing.T) {
 	configRepository := configrepository.New(testDatastore)
 
 	// Set a known-good value so we can confirm a rejected set leaves it unchanged.
-	good := httptest.NewRequest(http.MethodPost, "/api/admin/config/autoplay", strings.NewReader(makeConfigValueBody("always")))
+	good := httptest.NewRequest(
+		http.MethodPost,
+		"/api/admin/config/autoplay",
+		strings.NewReader(makeConfigValueBody(string(models.AutoplayAlways))),
+	)
 	good.Header.Set("Content-Type", "application/json")
 	testAdmin.SetAutoplay(httptest.NewRecorder(), good)
 
@@ -51,7 +56,7 @@ func TestSetAutoplayRejectsInvalidValue(t *testing.T) {
 	if resp.Message != "invalid autoplay value" {
 		t.Errorf("expected message 'invalid autoplay value', got %q", resp.Message)
 	}
-	if got := configRepository.GetAutoplay(); got != "always" {
+	if got := configRepository.GetAutoplay(); got != models.AutoplayAlways {
 		t.Errorf("expected autoplay to stay 'always' after a rejected set, got %q", got)
 	}
 }

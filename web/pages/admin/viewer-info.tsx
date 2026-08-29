@@ -5,11 +5,11 @@ import dynamic from 'next/dynamic';
 import { useTranslation } from 'next-export-i18n';
 import { Chart } from '../../components/admin/Chart';
 import { StatisticItem } from '../../components/admin/StatisticItem';
-import { ViewerTable } from '../../components/admin/ViewerTable';
+import { PlaybackClientTable } from '../../components/admin/PlaybackClientTable';
 
 import { ServerStatusContext } from '../../utils/server-status-context';
 
-import { VIEWERS_OVER_TIME, ACTIVE_VIEWER_DETAILS, fetchData } from '../../utils/apis';
+import { VIEWERS_OVER_TIME, PLAYBACK_CLIENT_DETAILS, fetchData } from '../../utils/apis';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import { Localization } from '../../types/localization';
@@ -25,6 +25,7 @@ const UserOutlined = dynamic(() => import('@ant-design/icons/UserOutlined'), {
 });
 
 const FETCH_INTERVAL = 60 * 1000; // 1 min
+const PLAYBACK_FETCH_INTERVAL = 15 * 1000; // 15 sec
 
 export default function ViewersOverTime() {
   const context = useContext(ServerStatusContext);
@@ -48,7 +49,7 @@ export default function ViewersOverTime() {
 
   const [loadingChart, setLoadingChart] = useState(true);
   const [viewerInfo, setViewerInfo] = useState([]);
-  const [viewerDetails, setViewerDetails] = useState([]);
+  const [playbackClients, setPlaybackClients] = useState([]);
   const [timeWindowStart, setTimeWindowStart] = useState(times[1]);
   const [timeWindowKey, setTimeWindowKey] = useState(1);
 
@@ -61,14 +62,32 @@ export default function ViewersOverTime() {
     } catch (error) {
       console.log('==== error', error);
     }
+  };
 
+  const getPlaybackClients = async () => {
     try {
-      const result = await fetchData(ACTIVE_VIEWER_DETAILS);
-      setViewerDetails(result);
+      const result = await fetchData(PLAYBACK_CLIENT_DETAILS);
+      setPlaybackClients(result);
     } catch (error) {
       console.log('==== error', error);
     }
   };
+
+  // Playback health describes what viewers are experiencing right now, and
+  // a client's measurements expire a minute after it stops playing, so this
+  // polls faster than the viewer count chart above it.
+  useEffect(() => {
+    if (!online) {
+      setPlaybackClients([]);
+      return () => {};
+    }
+
+    getPlaybackClients();
+    const intervalId = setInterval(getPlaybackClients, PLAYBACK_FETCH_INTERVAL);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [online]);
 
   useEffect(() => {
     let getStatusIntervalId = null;
@@ -130,17 +149,19 @@ export default function ViewersOverTime() {
           />
         </Col>
       </Row>
-      {!viewerInfo.length && (
+      {/* Scoped to the chart above the playback table: viewer counts are
+          sampled every couple of minutes, so a stream can have viewers
+          watching right now and still have nothing to plot. */}
+      {!viewerInfo.length && !loadingChart && (
         <Alert
           style={{ marginTop: '10px' }}
           banner
-          message={t(Localization.Admin.ViewerInfo.pleaseWait)}
-          description={t(Localization.Admin.ViewerInfo.noData)}
+          message={t(Localization.Admin.ViewerInfo.chartNoData)}
           type="info"
         />
       )}
 
-      <Spin spinning={!viewerInfo.length || loadingChart}>
+      <Spin spinning={loadingChart}>
         {viewerInfo.length > 0 && (
           <Chart
             title={t(Localization.Admin.ViewerInfo.viewers)}
@@ -167,8 +188,15 @@ export default function ViewersOverTime() {
             {timeWindowStart.title} <DownOutlined />
           </button>
         </Dropdown>
-        <ViewerTable data={viewerDetails} />
       </Spin>
+      {/* Rendered whether or not a stream is live. Offline it is an empty
+          table, which is the honest answer to "who is watching" and keeps
+          the section from vanishing when a streamer goes looking for it. */}
+      <Typography.Title level={3}>{t(Localization.Admin.PlaybackClients.title)}</Typography.Title>
+      <Typography.Paragraph>
+        {t(Localization.Admin.PlaybackClients.description)}
+      </Typography.Paragraph>
+      <PlaybackClientTable data={playbackClients} />
     </>
   );
 }

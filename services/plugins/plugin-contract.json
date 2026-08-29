@@ -15,6 +15,7 @@
     "PermServerRead": "server.read",
     "PermStorageFS": "storage.fs",
     "PermStorageKV": "storage.kv",
+    "PermStorageSQL": "storage.sql",
     "PermStorageUpload": "storage.upload",
     "PermUIModify": "ui.modify",
     "PermUsersModerate": "users.moderate",
@@ -44,6 +45,9 @@
     "owncast_kick_client",
     "owncast_kv_get",
     "owncast_kv_set",
+    "owncast_log_error",
+    "owncast_log_info",
+    "owncast_log_warning",
     "owncast_notify_browser_push",
     "owncast_notify_discord",
     "owncast_notify_fediverse",
@@ -56,6 +60,8 @@
     "owncast_server_info",
     "owncast_server_socials",
     "owncast_server_tags",
+    "owncast_sql_exec",
+    "owncast_sql_query",
     "owncast_sse_send",
     "owncast_storage_upload",
     "owncast_stream_broadcaster",
@@ -70,6 +76,9 @@
     "owncast_video_config_write"
   ],
   "wireTypes": {
+    "ActionResult": {
+      "error": "string"
+    },
     "BrowserPushPayload": {
       "body": "string",
       "title": "string",
@@ -96,6 +105,9 @@
       "name": "string",
       "url": "string"
     },
+    "FSResult": {
+      "error": "string"
+    },
     "FederationInfo": {
       "enabled": "bool",
       "isPrivate": "bool",
@@ -110,6 +122,9 @@
     "GrantSessionRequest": {
       "ttl": "int64",
       "userId": "string"
+    },
+    "GrantSessionResult": {
+      "error": "string"
     },
     "HostChatClient": {
       "connectedAt": "string",
@@ -137,6 +152,22 @@
       "isBot": "bool",
       "previousNames": "[]string",
       "scopes": "[]string"
+    },
+    "SQLExecResult": {
+      "error": "string",
+      "lastInsertId": "int64",
+      "rowsAffected": "int64"
+    },
+    "SQLQueryResult": {
+      "columns": "[]string",
+      "error": "string",
+      "rows": "[][]any",
+      "truncated": "bool"
+    },
+    "SQLRequest": {
+      "maxRows": "int",
+      "params": "[]any",
+      "sql": "string"
     },
     "SSEConnectionEvent": {
       "channel": "string",
@@ -171,7 +202,7 @@
       "viewers": "int"
     },
     "StreamVariant": {
-      "audioBitrate": "int",
+      "cpuUsageLevel": "int",
       "framerate": "int",
       "height": "int",
       "isPassthrough": "bool",
@@ -200,16 +231,18 @@
       "userId": "string"
     },
     "VideoConfig": {
+      "autoplay": "models.AutoplayMode",
       "codec": "string",
       "latencyLevel": "int",
       "variants": "[]StreamVariant"
     },
     "VideoConfigUpdate": {
+      "autoplay": "*models.AutoplayMode",
       "codec": "*string",
       "latencyLevel": "*int",
       "variants": "[]StreamVariant"
     },
-    "authResult": {
+    "VideoConfigWriteResult": {
       "error": "string"
     }
   }

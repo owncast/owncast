@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from '@storybook/nextjs';
+import { Meta, StoryFn, StoryObj } from '@storybook/nextjs';
 import { Provider } from 'jotai';
 import { http, HttpResponse } from 'msw';
 import { FollowerCollection } from './FollowerCollection';
@@ -6,6 +6,23 @@ import { FollowerCollection } from './FollowerCollection';
 const mockFollowersData = {
   total: 100,
   results: [
+    {
+      link: 'https://fedi-test.example.social/users/feditestc21c4124',
+      name: '',
+      username: 'feditestc21c4124@fedi-test.example.social',
+      image: '',
+      timestamp: '2022-04-28T09:00:00Z',
+      disabledAt: null,
+    },
+    {
+      link: 'https://an-extremely-long-fediverse-server-hostname.example.technology/users/somebodywithareallylongusername',
+      name: 'Somebody With A Really Long Display Name',
+      username:
+        'somebodywithareallylongusername@an-extremely-long-fediverse-server-hostname.example.technology',
+      image: '',
+      timestamp: '2022-04-28T08:00:00Z',
+      disabledAt: null,
+    },
     {
       link: 'https://sun.minuscule.space/users/mardijker',
       name: 'mardijker',
@@ -217,6 +234,11 @@ const noFollowersData = {
   results: [],
 };
 
+const singleFollowerData = {
+  total: 1,
+  results: mockFollowersData.results.slice(0, 1),
+};
+
 const meta = {
   title: 'owncast/Components/Followers/Followers collection',
   component: FollowerCollection,
@@ -226,6 +248,7 @@ const meta = {
 } satisfies Meta<typeof FollowerCollection>;
 
 export default meta;
+type Story = StoryObj<typeof meta>;
 
 const Template: StoryFn<typeof FollowerCollection> = (args: object) => (
   <Provider>
@@ -246,6 +269,73 @@ export const NoFollowers = {
     },
   },
 };
+
+const singleFollowerStory = {
+  render: Template,
+  args: {
+    name: 'Example stream name',
+    onFollowButtonClick: () => {},
+  },
+
+  parameters: {
+    msw: {
+      handlers: [
+        http.get('/api/followers*', () => {
+          return HttpResponse.json(singleFollowerData);
+        }),
+      ],
+    },
+  },
+
+  play: async ({ canvasElement }) => {
+    const deadline = Date.now() + 5000;
+    let follower: HTMLElement | null = null;
+
+    while (!follower && Date.now() < deadline) {
+      follower = canvasElement.querySelector<HTMLElement>('.followers-follower');
+      if (!follower) {
+        const { promise, resolve } = Promise.withResolvers<void>();
+        window.setTimeout(resolve, 100);
+        // eslint-disable-next-line no-await-in-loop
+        await promise;
+      }
+    }
+
+    const collection = canvasElement.querySelector('#followers-collection');
+    if (!follower || !collection) {
+      throw new Error('Single follower story did not render');
+    }
+
+    const collectionWidth = collection.getBoundingClientRect().width;
+    const followerWidth = follower.getBoundingClientRect().width;
+    if (collectionWidth >= 600 && followerWidth > collectionWidth / 2) {
+      throw new Error('Single follower expanded beyond one grid column');
+    }
+  },
+} satisfies Story;
+
+export const SingleFollowerOfflineFullWidth = {
+  ...singleFollowerStory,
+  parameters: {
+    ...singleFollowerStory.parameters,
+    chromatic: { viewports: [1568] },
+  },
+} satisfies Story;
+
+export const SingleFollowerOnlineWithChatWidth = {
+  ...singleFollowerStory,
+  decorators: [
+    Story => (
+      <div style={{ width: 'calc(100% - 320px)' }}>
+        <Story />
+      </div>
+    ),
+  ],
+  parameters: {
+    ...singleFollowerStory.parameters,
+    chromatic: { viewports: [1568] },
+  },
+} satisfies Story;
 
 export const Example = {
   render: Template,

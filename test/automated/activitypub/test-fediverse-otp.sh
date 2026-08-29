@@ -199,9 +199,10 @@ run_otp_test() {
 	fi
 
 	log_test "Waiting for the OTP to arrive as a Fediverse DM in snac2..."
+	# Ignore transient inbox queue files that can be removed after rejection.
 	local code=""
 	for _ in $(seq 1 30); do
-		code=$(grep -rl 'One-time code' "${SNAC_DATA_DIR}" 2>/dev/null |
+		code=$(grep -rl 'One-time code' "${SNAC_DATA_DIR}/object" 2>/dev/null |
 			xargs -r grep -hoE 'One-time code[^0-9]*[0-9]{6}' 2>/dev/null |
 			grep -oE '[0-9]{6}' | head -1)
 		[[ -n "${code}" ]] && break
@@ -210,6 +211,11 @@ run_otp_test() {
 	if [[ -z "${code}" ]]; then
 		log_error "OTP code never arrived in snac2's inbox"
 		log_error "snac2 log tail:"; tail -20 "${TEMP_DIR}/snac2.log" 2>/dev/null
+		log_error "Owncast log tail:"; tail -50 "${TEMP_DIR}/owncast.log" 2>/dev/null
+		log_error "ActivityPub delivery queue:"
+		sqlite3 "${OWNCAST_DB}" \
+			"SELECT id, inbox, activity_type, attempts, next_attempt_at, last_error, failed_at, claimed_until FROM ap_delivery_queue;" \
+			2>/dev/null
 		return 1
 	fi
 	log_info "Received OTP via federation: ${code}"

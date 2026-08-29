@@ -28,6 +28,10 @@ type ypDetailsResponse struct {
 
 // GetYPResponse gets the status of the server for YP purposes.
 func (yp *YP) GetYPResponse(w http.ResponseWriter, r *http.Request) {
+	if yp.directoryAvailable != nil && !yp.directoryAvailable() {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 	if !yp.configRepository.GetDirectoryEnabled() {
 		w.WriteHeader(http.StatusNotFound)
 		return
