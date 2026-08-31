@@ -53,9 +53,9 @@
 			"tip": "カスタム favicon (PNG または ICO 形式) をアップロードします。このアイコンはブラウザのタブとブックマークに表示されます。"
 		},
 		"EditInstanceDetails": {
-			"directoryDescription": "<a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Owncast ディレクトリ</strong></a> に表示されることでオーディエンスを増やしましょう。これは Owncast プロジェクトが運営する外部サービスです。<a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">詳細はこちら</a>。",
+			"directoryDescription": "",
 			"offlineMessageDescription": "オフラインメッセージは、ストリーミングしていないときにページ訪問者に表示されます。Markdown はサポートされています。",
-			"serverUrlRequiredForDirectory": "ディレクトリを有効にするには、上記の<strong>サーバーURLを</strong>設定する必要があります。"
+			"serverUrlRequiredForDirectory": ""
 		},
 		"FeaturedStreams": {
 			"actions": "アクション",
@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "あなたのサーバーに知られているすべての人（チャットビューアー、認証済み、プラグイン作成済みのユーザー、API統合）。モデレーターのアクセスを変更、禁止、または永久にユーザーを削除します。",
+			"banReason": "禁止の理由",
 			"pageTitle": "ユーザー"
 		},
 		"VideoVariantForm": {
@@ -445,9 +446,9 @@
 		"BrowserNotifyModal": {
 			"allowButton": "許可する",
 			"blockButton": "ブロック",
-			"deniedDescription": "{{hostname}}からのプッシュ通知を有効にするには、このサイトのブラウザの権限にアクセスして通知をオンにしてください。それから、このページをリロードして、サイトの設定を更新されたものに適用してください。<a href='https://owncast.online/docs/notifications'>詳細を見る。</a>",
+			"deniedDescription": "",
 			"deniedTitle": "お使いの端末で通知がブロックされています",
-			"enabledDescription": "{{hostname}}からのプッシュ通知を無効にするには、このサイトのブラウザの権限にアクセスして通知をオフにしてください。<a href='https://owncast.online/docs/notifications'>詳細を見る。</a>",
+			"enabledDescription": "",
 			"enabledTitle": "通知が有効です",
 			"errorMessage": "ライブ通知の登録エラー： {{message}}。プライベートブラウザ環境内にいないか、以前にこのストリームの通知が無効になっていることを確認してください。",
 			"errorTitle": "ブラウザ通知エラー",
@@ -460,7 +461,7 @@
 			"iosShareButton": "共有",
 			"iosTitle": "iOS で通知を受け取る",
 			"learnMore": "もっと詳しく",
-			"learnMoreAboutNotifications": "<a href='https://owncast.online/docs/notifications/#browser-notifications'>Owncast のブラウザ通知</a> についての詳細を学ぶ。",
+			"learnMoreAboutNotifications": "",
 			"mainDescription": "このストリームが配信されるたびに、ブラウザで通知を受け取ります。",
 			"permissionWantsTo": "{{hostname}} が望んでいます",
 			"showNotifications": "通知を表示",
@@ -520,7 +521,7 @@
 		"lastLiveAgo": "前回のライブ {{timeAgo}} 前",
 		"offlineBasic": "このストリームはオフラインです。もう一度お試しください！",
 		"offlineFediverseOnly": "このストリームはオフラインです。 <span class='follow-link'></span> {{fediverseAccount}} をFediverse でフォローして、次回 {{streamer}} がライブになるのを確認します。",
-		"offlineNotifyAndFediverse": "このストリームはオフラインです。次回のライブ配信は {{streamer}} <span class='notify-link'>に通知さ</span>れるか、Fediverse で {{fediverseAccount}} を<span class='follow-link'>フォローして</span>ください。",
+		"offlineNotifyAndFediverse": "",
 		"offlineNotifyOnly": "このストリームはオフラインです。 <span class='notify-link'></span> 次回 {{streamer}} がライブになるときに通知されます。",
 		"showAllTabs": "すべてのタブを表示",
 		"unmute": "ミュート解除"

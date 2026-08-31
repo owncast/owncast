@@ -55,7 +55,7 @@
 		"EditInstanceDetails": {
 			"directoryDescription": "Aumenta tu audiencia apareciendo en el <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Directorio de Owncast</strong></a>. Este es un servicio externo gestionado por el proyecto Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Aprende más</a>.",
 			"offlineMessageDescription": "El mensaje fuera de línea se muestra a los visitantes de la página cuando no se está transmitiendo. Markdown es compatible.",
-			"serverUrlRequiredForDirectory": "Debe configurar la <strong>URL de</strong> su servidor para habilitar el directorio."
+			"serverUrlRequiredForDirectory": ""
 		},
 		"FeaturedStreams": {
 			"actions": "Acciones",
@@ -307,7 +307,7 @@
 			"browseFilteredEmpty": "Ningún plugin coincide con los filtros actuales.",
 			"browseInstall": "Instalar",
 			"browseInstalled": "Instalado",
-			"browsePreviewAlt": "captura de pantalla de vista previa de {{name}}",
+			"browsePreviewAlt": "",
 			"browseSearch": "Buscar plugins",
 			"browseUnavailableDescription": "Owncast no puede acceder al catálogo de plugins en este momento. Todavía puedes subir archivos .ocpkg directamente desde la pestaña Instalada.",
 			"browseUnavailableRetry": "Reintentar",
@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Todo el mundo conocido por su servidor: espectadores de chat, usuarios autenticados y creados por plugin, e integraciones de API. Cambie el acceso de moderador, bloquee o elimine usuarios permanentemente.",
+			"banReason": "Razón de ban",
 			"pageTitle": "Usuarios"
 		},
 		"VideoVariantForm": {
@@ -520,14 +521,14 @@
 		"lastLiveAgo": "Última versión de {{timeAgo}} hace",
 		"offlineBasic": "Esta corriente está fuera de línea. ¡Vuelve pronto!",
 		"offlineFediverseOnly": "Este stream está fuera de línea. <span class='follow-link'>Sigue</span> {{fediverseAccount}} en el Fediverso para ver la próxima vez que {{streamer}} se ponga en directo.",
-		"offlineNotifyAndFediverse": "Esta transmisión está desconectada. Puede <span class='notify-link'>recibir una notificación</span> la próxima vez que {{streamer}} salga en directo o <span class='follow-link'>seguir</span> {{fediverseAccount}} en Fediverse.",
+		"offlineNotifyAndFediverse": "",
 		"offlineNotifyOnly": "Este stream está desconectado. <span class='notify-link'>Ser notificado</span> la próxima vez que {{streamer}} vaya en directo.",
 		"showAllTabs": "Mostrar todas las pestañas",
 		"unmute": "Reactivar"
 	},
 	"Testing": {
-		"itemCount": "Tienes {{count}} elementos",
-		"messageCount": "Tienes {{count}} mensajes de {{sender}}",
+		"itemCount": "",
+		"messageCount": "",
 		"noPluralKey": "Esta clave no tiene variantes en plural - {{count}} cosas",
 		"simpleKey": "Texto de traducción simple"
 	}

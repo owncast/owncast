@@ -32,7 +32,7 @@
 			"alsoSetByPlugin": "Ορίστηκε επίσης από {{plugins}}",
 			"alsoSetByPluginTooltip": "Η αξία σας έχει προτεραιότητα εδώ. Χρησιμοποιήστε την Επαναφορά στις Προεπιλογές για να πέσετε πίσω στο χρώμα από το {{plugins}}.",
 			"pluginStylingActive": "Το πρόσθετο στυλ είναι ενεργό",
-			"pluginStylingDescription": "Αυτά τα πρόσθετα εφαρμόζουν τα δικά τους στυλ στον ιστότοπό σας, συνδυασμένα με τα χρώματα που ορίσατε εδώ: {{plugins}}. Οι ρυθμίσεις σας εφαρμόζονται από πάνω, επομένως κερδίζουν εκεί που επικαλύπτονται. Αν η σελίδα δεν φαίνεται όπως περιμένατε, χρησιμοποιήστε την επιλογή Επαναφορά στις προεπιλογές παρακάτω για να επιτρέψετε στο στυλ του πρόσθετου να εμφανιστεί, ή απενεργοποιήστε το πρόσθετο από τη σελίδα Προσθέτων."
+			"pluginStylingDescription": ""
 		},
 		"Autoplay": {
 			"description": "Επιλέξτε αν η ροή ξεκινά να παίζει μόνο της, όταν ένας προβολέας ανοίγει τη σελίδα σας.",
@@ -116,7 +116,7 @@
 			"streamUrlPlaceholder": "stream.example.com",
 			"streamsYouFeatureTab": "Μεταδόσεις που διαθέτεις",
 			"unfeatureButton": "Κατάργηση",
-			"unfeatureConfirm": "Να αφαιρέσετε τη δυνατότητα από τον {{name}};",
+			"unfeatureConfirm": "",
 			"unsupportedFeaturedStreams": "Αυτός ο διακομιστής Owncast δεν υποστηρίζει ακόμα επιλεγμένες ροές. Ζητήστε από τον ιδιοκτήτη του διακομιστή να αναβαθμίσει το Owncast.",
 			"url": "URL"
 		},
@@ -298,7 +298,7 @@
 			"authSettingsWebsiteOnlyDescription": "Ο ιστότοπος απαιτεί έλεγχο ταυτότητας. Οι παίκτες HLS, τα αιτήματα κατάστασης διακομιστή και η λίστα καταλόγου Owncast παραμένουν δημόσια.",
 			"authSettingsWebsiteStreamAndStatus": "Ιστοσελίδα, εφαρμογές αναπαραγωγής βίντεο και αιτήματα κατάστασης διακομιστή",
 			"authSettingsWebsiteStreamAndStatusDescription": "Ο ιστότοπος, το Owncast-hosted HLS και το /api/status απαιτούν έλεγχο ταυτότητας. Η καταχώρηση καταλόγου Owncast είναι απενεργοποιημένη.",
-			"browseAuthor": "από {{name}}",
+			"browseAuthor": "",
 			"browseClearFilters": "Εκκαθάριση φίλτρων",
 			"browseEmpty": "Δεν υπάρχουν ακόμα πρόσθετα στο μητρώο.",
 			"browseFilterAuthor": "Φιλτράρισμα ανά συγγραφέα",
@@ -330,7 +330,7 @@
 			"installConfirmNoPermissions": "Αυτό το πρόσθετο δεν απαιτεί άδεια.",
 			"installConfirmPrompt": "Αυτό το πρόσθετο χρησιμοποιεί αυτές τις δυνατότητες:",
 			"installConfirmTitle": "Ενεργοποίηση {{name}}?",
-			"installEnabledSuccess": "Ενεργοποιήθηκε {{name}}",
+			"installEnabledSuccess": "",
 			"instructionsLoadError": "Αδύνατη η φόρτωση των οδηγιών αυτού του πρόσθετου.",
 			"instructionsTab": "Οδηγίες",
 			"modOnlyTag": "μόνο mods",
@@ -369,7 +369,7 @@
 			"uninstallConfirmDescription": "Αυτό αφαιρεί το \"{{name}}\" από το διακομιστή.",
 			"uninstallConfirmOk": "Απεγκατάσταση",
 			"uninstallConfirmTitle": "Κατάργηση εγκατάστασης?",
-			"uninstallSuccess": "Απεγκαταστάθηκε {{name}}",
+			"uninstallSuccess": "",
 			"uninstallTooltip": "Απεγκατάσταση αυτού του πρόσθετου",
 			"updateAvailable": "Διαθέσιμη ενημέρωση: v{{version}}",
 			"updateConfirmCancel": "Ακύρωση",
@@ -384,13 +384,13 @@
 			"deletingEmoji": "Διαγραφή emoji...",
 			"emojiDeleted": "Τα Emoji διαγράφηκαν",
 			"emojiUploadedSuccessfully": "Τα Emoji ανέβηκαν επιτυχώς!",
-			"fileSizeTooBig": "Το μέγεθος του αρχείου είναι πολύ μεγάλο: {{size}}",
-			"fileTypeNotSupported": "Ο τύπος αρχείου δεν υποστηρίζεται: {{type}}",
+			"fileSizeTooBig": "",
+			"fileTypeNotSupported": "",
 			"latencyBufferUpdated": "Το επίπεδο λανθάνουσας μνήμης ενημερώθηκε.",
 			"pleaseEnterTag": "Παρακαλώ εισάγετε μια ετικέτα",
 			"tagAlreadyUsed": "Αυτή η ετικέτα χρησιμοποιείται ήδη!",
 			"tagsUpdated": "Οι ετικέτες ενημερώθηκαν.",
-			"thereWasAnError": "Υπήρξε ένα σφάλμα: {{message}}",
+			"thereWasAnError": "",
 			"updated": "Ενημερώθηκε.",
 			"uploadingEmoji": "Μεταφόρτωση emoji...",
 			"variantsUpdated": "Οι παραλλαγές ενημερώθηκαν",
@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Όλοι είναι γνωστοί στον διακομιστή σας: θεατές συνομιλίας, πιστοποιημένοι χρήστες και χρήστες που έχουν δημιουργηθεί με plugin, και ενσωματώσεις API. Αλλάξτε πρόσβαση συντονιστή, απαγόρευση ή οριστικά αφαίρεση χρηστών.",
+			"banReason": "Λόγος αποκλεισμού",
 			"pageTitle": "Χρήστες"
 		},
 		"VideoVariantForm": {
@@ -405,7 +406,7 @@
 			"bitrateGoodForHigh": "Καλό για τηλεθεατές υψηλής ταχύτητας & υψηλού ρυθμού bitt.",
 			"bitrateGoodForMost": "Καλό για τους περισσότερους θεατές, εύρος ζώνης και ψηφίσματα.",
 			"bitrateGoodForSlow": "Καλό για αργούς, κινητούς και χαμηλούς ρυθμούς bit θεατές.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
+			"bitrateValueKbps": ""
 		},
 		"ViewerInfo": {
 			"chartNoData": "Ο θεατής μετράει με την πάροδο του χρόνου λαμβάνονται δείγματα κάθε δύο λεπτά, οπότε δεν υπάρχει τίποτα για να γραφτεί για αυτό το παράθυρο ακόμα.",
@@ -449,7 +450,7 @@
 			"deniedTitle": "Οι ειδοποιήσεις έχουν αποκλειστεί στη συσκευή σας",
 			"enabledDescription": "Για να απενεργοποιήσετε τις ειδοποιήσεις από το {{hostname}} έχετε πρόσβαση στα δικαιώματα του προγράμματος περιήγησης για αυτόν τον ιστότοπο και απενεργοποιήστε τις ειδοποιήσεις. <a href='https://owncast.online/docs/notifications'>Μάθετε περισσότερα.</a>",
 			"enabledTitle": "Οι ειδοποιήσεις είναι ενεργοποιημένες",
-			"errorMessage": "Σφάλμα κατά την εγγραφή για ζωντανές ειδοποιήσεις: {{message}}. Βεβαιωθείτε ότι δεν βρίσκεστε σε περιβάλλον ιδιωτικού προγράμματος περιήγησης ή ότι δεν έχετε απενεργοποιήσει προηγουμένως τις ειδοποιήσεις για αυτό το ρεύμα.",
+			"errorMessage": "",
 			"errorTitle": "Σφάλμα Ειδοποιήσεων Περιηγητή",
 			"iosAddButton": "Προσθήκη",
 			"iosAddToHomeScreen": "Προσθήκη στην αρχική οθόνη",
@@ -460,9 +461,9 @@
 			"iosShareButton": "κοινοποίηση",
 			"iosTitle": "Ειδοποιηθείτε στο iOS",
 			"learnMore": "Μάθετε περισσότερα",
-			"learnMoreAboutNotifications": "<a href='https://owncast.online/docs/notifications/#browser-notifications'>Μάθετε περισσότερα</a> για τις ειδοποιήσεις του Owncast στον περιηγητή.",
+			"learnMoreAboutNotifications": "",
 			"mainDescription": "Λάβετε ειδοποίηση απευθείας στο πρόγραμμα περιήγησης κάθε φορά που αυτό το ρεύμα πηγαίνει ζωντανά.",
-			"permissionWantsTo": "{{hostname}} θέλει να",
+			"permissionWantsTo": "",
 			"showNotifications": "Εμφάνιση ειδοποιήσεων",
 			"unsupported": "Οι ειδοποιήσεις του προγράμματος περιήγησης δεν υποστηρίζονται στο πρόγραμμα περιήγησης.",
 			"unsupportedLocal": "Οι ειδοποιήσεις του προγράμματος περιήγησης δεν υποστηρίζονται για τοπικούς διακομιστές."
@@ -513,20 +514,20 @@
 			"noFeaturedStreams": "Δεν υπάρχουν διαθέσιμες επιλεγμένες ροές"
 		},
 		"chatDisabled": "Η συνομιλία είναι απενεργοποιημένη",
-		"chatEmbedTitle": "{{name}} Συζήτηση",
+		"chatEmbedTitle": "",
 		"chatOffline": "Η συνομιλία είναι εκτός σύνδεσης",
-		"componentError": "Σφάλμα: {{message}}",
+		"componentError": "",
 		"helloWorld": "Γεια σας κόσμο",
-		"lastLiveAgo": "Πριν από {{timeAgo}}",
+		"lastLiveAgo": "",
 		"offlineBasic": "Αυτό το ρεύμα είναι εκτός σύνδεσης. Ελέγξτε ξανά σύντομα!",
 		"offlineFediverseOnly": "Αυτό το ρεύμα είναι εκτός σύνδεσης. <span class='follow-link'>Ακολουθήστε</span> {{fediverseAccount}} στο Fediverse για να δείτε την επόμενη φορά που το {{streamer}} ζωντανά.",
 		"offlineNotifyAndFediverse": "Αυτή η ροή είναι εκτός σύνδεσης. Μπορείτε να ειδοποιηθείτε <span class='notify-link'></span> την επόμενη φορά που το {{streamer}} πηγαίνει ζωντανά ή <span class='follow-link'>ακολουθήστε το</span> {{fediverseAccount}} στο Fediverse.",
-		"offlineNotifyOnly": "Αυτή η ροή είναι εκτός σύνδεσης. <span class='notify-link'>Θα ειδοποιηθείτε</span> την επόμενη φορά που το {{streamer}} θα συνδεθεί.",
+		"offlineNotifyOnly": "",
 		"showAllTabs": "Εμφάνιση όλων των καρτελών",
 		"unmute": "Κατάργηση Σίγασης"
 	},
 	"Testing": {
-		"itemCount": "Έχετε {{count}} αντικείμενα",
+		"itemCount": "",
 		"messageCount": "Έχετε {{count}} μηνύματα από {{sender}}",
 		"noPluralKey": "",
 		"simpleKey": "Απλό κείμενο μετάφρασης"

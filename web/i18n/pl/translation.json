@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Wszyscy znani na Twoim serwerze: widzowie czatu, użytkownicy uwierzytelnieni i tworzeni wtyczki oraz integracje API. Zmień dostęp moderatora, zbanuj lub trwale usuń użytkowników.",
+			"banReason": "Powód bana",
 			"pageTitle": "Użytkownicy"
 		},
 		"VideoVariantForm": {
@@ -405,7 +406,7 @@
 			"bitrateGoodForHigh": "Dobre dla widzów wysokiej prędkości i wysokiej przepływności.",
 			"bitrateGoodForMost": "Dobre dla większości widzów, przepustowości i rozdzielczości.",
 			"bitrateGoodForSlow": "Dobre dla widzów powolnych, mobilnych i o niskiej przepływności.",
-			"bitrateValueKbps": "{{bitrate}} kbps"
+			"bitrateValueKbps": ""
 		},
 		"ViewerInfo": {
 			"chartNoData": "Liczniki oglądających są pobierane co parę minut, więc nie ma jeszcze nic do wykresu dla tego okna.",
@@ -521,12 +522,12 @@
 		"offlineBasic": "Ten strumień jest offline. Sprawdź wkrótce!",
 		"offlineFediverseOnly": "Ten strumień jest offline. <span class='follow-link'>Śledź</span> {{fediverseAccount}} na Fediwerse, aby zobaczyć kiedy następny {{streamer}} będzie na żywo.",
 		"offlineNotifyAndFediverse": "Ten strumień jest offline. Możesz <span class='notify-link'>zostać powiadomiony</span> następnym razem, gdy {{streamer}} pojawi się lub <span class='follow-link'>podążaj za</span> {{fediverseAccount}} na Fediverse.",
-		"offlineNotifyOnly": "Ta transmisja jest wyłączona. <span class='notify-link'>Otrzymaj powiadomienie</span>, gdy następnym razem strona {{streamer}} zostanie uruchomiona.",
+		"offlineNotifyOnly": "",
 		"showAllTabs": "Pokaż wszystkie karty",
 		"unmute": "Wyłącz wyciszenie"
 	},
 	"Testing": {
-		"itemCount": "Masz {{count}} przedmiotów",
+		"itemCount": "",
 		"messageCount": "Masz wiadomości {{count}} od {{sender}}",
 		"noPluralKey": "Ten klucz nie ma wariantów liczby mnogiej - {{count}} rzeczy",
 		"simpleKey": "Prosty tekst tłumaczenia"

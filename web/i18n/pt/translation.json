@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Todos conhecidos pelo seu servidor: visualizadores de chat, usuários autenticados e criados por plugin, e integrações da API. Altere o acesso de moderador, banir ou remova permanentemente os usuários.",
+			"banReason": "Motivo do banimento",
 			"pageTitle": "Utilizadores"
 		},
 		"VideoVariantForm": {
@@ -513,13 +514,13 @@
 			"noFeaturedStreams": "Nenhuma transmissão em destaque disponível"
 		},
 		"chatDisabled": "Bate-papo está desativado",
-		"chatEmbedTitle": "{{name}} Chat",
+		"chatEmbedTitle": "",
 		"chatOffline": "O bate-papo está offline",
 		"componentError": "Erro: {{message}}",
 		"helloWorld": "Olá, mundo",
-		"lastLiveAgo": "Última transmissão realizada {{timeAgo}} atrás",
+		"lastLiveAgo": "",
 		"offlineBasic": "Esta transmissão está offline. Volte em breve!",
-		"offlineFediverseOnly": "Esta transmissão está off-line. <span class='follow-link'>Siga</span> {{fediverseAccount}} no Fediverse para ver a próxima vez que {{streamer}} estiver ao vivo.",
+		"offlineFediverseOnly": "",
 		"offlineNotifyAndFediverse": "Esta transmissão está offline. <span class='notify-link'>Pode ser notificado</span> na próxima vez que {{streamer}} for ao ar ou <span class='follow-link'>siga</span> {{fediverseAccount}} no Fediverse.",
 		"offlineNotifyOnly": "Esta transmissão está offline. U <span class='notify-link'>Seja notificado</span> na próxima vez que {{streamer}} for ao ar.",
 		"showAllTabs": "Mostrar todas as abas",

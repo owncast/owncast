@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "الجميع معروفون للخادم الخاص بك: مشاهدي الدردشة، المستخدمين المصادقين والمحققين والمحققين والمحققين من المكونات، وتكامل API. تغيير وصول المشرف أو حظر أو إزالة المستخدمين بشكل دائم.",
+			"banReason": "سبب الحظر",
 			"pageTitle": "المستخدمون"
 		},
 		"VideoVariantForm": {
@@ -460,9 +461,9 @@
 			"iosShareButton": "مشاركة",
 			"iosTitle": "الحصول على إشعار على iOS",
 			"learnMore": "اعرف المزيد",
-			"learnMoreAboutNotifications": "<a href='https://owncast.online/docs/notifications/#browser-notifications'>تعرّف على المزيد</a> حول إشعارات متصفح Owncast.",
+			"learnMoreAboutNotifications": "",
 			"mainDescription": "احصل على إشعار صحيح في المتصفح في كل مرة يذهب فيها هذا البث مباشرة.",
-			"permissionWantsTo": "{{hostname}} يريد أن",
+			"permissionWantsTo": "",
 			"showNotifications": "إظهار الإشعارات",
 			"unsupported": "إشعارات المتصفح غير مدعومة في المتصفح الخاص بك.",
 			"unsupportedLocal": "إشعارات المتصفح غير مدعومة للخوادم المحلية."
@@ -520,8 +521,8 @@
 		"lastLiveAgo": "آخر بث مباشر {{timeAgo}}",
 		"offlineBasic": "هذا البث غير متصل. تحقق قريباً!",
 		"offlineFediverseOnly": "هذا البث غير متصل. <span class='follow-link'>تابع</span> {{fediverseAccount}} على فيديفيرس لرؤية المرة القادمة التي يذهب فيها {{streamer}} للحياة.",
-		"offlineNotifyAndFediverse": "هذا البث غير متصل بالإنترنت. يمكنك أن تتلقى <span class='notify-link'>إشعارًا</span> في المرة القادمة {{streamer}} أو <span class='follow-link'>متابعة</span> {{fediverseAccount}} على موقع Fediverse.",
-		"offlineNotifyOnly": "هذا البث غير متصل بالإنترنت. <span class='notify-link'>كن على علم</span> في المرة القادمة التي يتم فيها البث المباشر {{streamer}} .",
+		"offlineNotifyAndFediverse": "",
+		"offlineNotifyOnly": "",
 		"showAllTabs": "إظهار جميع علامات التبويب",
 		"unmute": "إلغاء الكتم"
 	},

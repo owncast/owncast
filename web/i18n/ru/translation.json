@@ -53,7 +53,7 @@
 			"tip": "Загрузите пользовательский значок фаворита (PNG или ICO формат, макс. 200KB). Эта иконка отображается на вкладках браузера и закладках."
 		},
 		"EditInstanceDetails": {
-			"directoryDescription": "Увеличьте свою аудиторию, появляясь в <a href=\"https://owncast.directory\" target=\"_blank\" rel=\"noreferrer\"><strong>Каталоге Owncast</strong></a>. Это внешний сервис, управляемый проектом Owncast. <a href=\"https://owncast.online/docs/directory/?source=admin\" target=\"_blank\" rel=\"noopener noreferrer\">Узнайте больше</a>.",
+			"directoryDescription": "",
 			"offlineMessageDescription": "Оффлайн сообщение отображается посетителям ваших страниц, когда вы не транслируете. Поддерживается Markdown.",
 			"serverUrlRequiredForDirectory": "Вы должны установить <strong>сервер URL</strong> выше, чтобы включить каталог."
 		},
@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Все, что известно вашему серверу: просмотрщики чата, аутентифицированные и созданные плагинами пользователи и интеграция с API. Измените доступ модератора, запретите или навсегда удалите пользователей.",
+			"banReason": "Причина бана",
 			"pageTitle": "Пользователи"
 		},
 		"VideoVariantForm": {
@@ -434,7 +435,7 @@
 		},
 		"deleteEmoji": "Удалить эмодзи",
 		"emojiPageDescription": "Здесь вы можете загрузить новые пользовательские эмодзи для использования в чате. При загрузке новых emoji, имя файла без расширения будет использоваться как имя эмодзи. Кроме того, имена эмодзи не чувствительны к регистру. Для получения наилучших результатов убедитесь, что все эмодзи имеют уникальные имена.",
-		"emojiUploadBulkGuide": "Хотите загружать пользовательские эмодзи оптом? Ознакомьтесь с нашим <a href=\"https://owncast.online/docs/chat/emoji\" rel=\"noopener noreferrer\" target=\"_blank\">руководством по эмодзи</a>.",
+		"emojiUploadBulkGuide": "",
 		"emojis": "Emojis",
 		"uploadNewEmoji": "Загрузить новые эмодзи"
 	},
@@ -445,9 +446,9 @@
 		"BrowserNotifyModal": {
 			"allowButton": "Разрешить",
 			"blockButton": "Блок",
-			"deniedDescription": "Чтобы включить push-уведомления от {{hostname}}, перейдите в настройки браузера для этого сайта и включите уведомления. Затем перезагрузите эту страницу, чтобы применить ваши обновленные настройки для этого сайта. <a href='https://owncast.online/docs/notifications'>Узнать больше.</a>",
+			"deniedDescription": "",
 			"deniedTitle": "Уведомления заблокированы на вашем устройстве",
-			"enabledDescription": "Чтобы отключить push-уведомления от {{hostname}}, перейдите в настройки браузера для этого сайта и отключите уведомления. <a href='https://owncast.online/docs/notifications'>Узнать больше.</a>",
+			"enabledDescription": "",
 			"enabledTitle": "Уведомления включены",
 			"errorMessage": "Ошибка при регистрации уведомлений: {{message}}. Убедитесь, что вы не в приватном окружении браузера или ранее отключили уведомления для этого потока.",
 			"errorTitle": "Ошибка уведомления браузера",
@@ -460,7 +461,7 @@
 			"iosShareButton": "поделиться",
 			"iosTitle": "Получать уведомления на iOS",
 			"learnMore": "Узнать больше",
-			"learnMoreAboutNotifications": "<a href='https://owncast.online/docs/notifications/#browser-notifications'>Узнать больше</a> об уведомлениях браузера Owncast.",
+			"learnMoreAboutNotifications": "",
 			"mainDescription": "Получайте уведомления прямо в браузере каждый раз, когда этот поток будет работать.",
 			"permissionWantsTo": "{{hostname}} хочет",
 			"showNotifications": "Показать уведомления",
@@ -519,9 +520,9 @@
 		"helloWorld": "Здравствуй, мир",
 		"lastLiveAgo": "Последняя живая {{timeAgo}} назад",
 		"offlineBasic": "Этот поток оффлайн. Возвращайтесь в ближайшее время!",
-		"offlineFediverseOnly": "Этот поток отключен. <span class='follow-link'>Следите за</span> {{fediverseAccount}} на Fediverse, чтобы узнать, когда {{streamer}} выйдет в эфир в следующий раз.",
-		"offlineNotifyAndFediverse": "Этот поток отключен. Вы можете <span class='notify-link'>получить уведомление о</span> следующем выходе {{streamer}} в прямой эфир или <span class='follow-link'>следить за</span> {{fediverseAccount}} на Fediverse.",
-		"offlineNotifyOnly": "Этот поток отключен. <span class='notify-link'>Получите уведомление</span>, когда {{streamer}} появится в следующий раз.",
+		"offlineFediverseOnly": "",
+		"offlineNotifyAndFediverse": "",
+		"offlineNotifyOnly": "",
 		"showAllTabs": "Показать все вкладки",
 		"unmute": "Включить звук"
 	},
