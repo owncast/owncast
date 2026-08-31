@@ -1,9 +1,11 @@
 package chat
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"sync"
 	"testing"
 	"time"
 
@@ -105,5 +107,57 @@ func TestSendUserJoinedMessage_WebhookFiresRegardlessOfJoinPartSetting(t *testin
 				t.Errorf("broadcast sent=%v, want %v (joinPartEnabled=%v)", gotBroadcast, joinPartEnabled, joinPartEnabled)
 			}
 		})
+	}
+}
+
+func TestUserPartedTimersHandleConcurrentDisconnectsAndReconnects(t *testing.T) {
+	chatSvc := &Service{
+		clients:          map[uint]*Client{},
+		userPartedTimers: map[string]*pendingUserPart{},
+	}
+
+	const (
+		workers    = 8
+		iterations = 100
+	)
+
+	start := make(chan struct{})
+	var wg sync.WaitGroup
+	for worker := range workers {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			<-start
+
+			for iteration := range iterations {
+				id := uint(worker*iterations + iteration)
+				client := &Client{
+					Id:   id,
+					User: &models.User{ID: fmt.Sprintf("user-%d", id)},
+				}
+
+				chatSvc.mu.Lock()
+				chatSvc.clients[id] = client
+				chatSvc.mu.Unlock()
+
+				chatSvc.handleClientDisconnected(client)
+				chatSvc.cancelUserPartedMessage(client.User.ID)
+			}
+		}()
+	}
+
+	close(start)
+	wg.Wait()
+
+	chatSvc.mu.RLock()
+	defer chatSvc.mu.RUnlock()
+	if len(chatSvc.clients) != 0 {
+		t.Fatalf("connected clients = %d, want 0", len(chatSvc.clients))
+	}
+
+	chatSvc.userPartedTimersMu.Lock()
+	defer chatSvc.userPartedTimersMu.Unlock()
+	if len(chatSvc.userPartedTimers) != 0 {
+		t.Fatalf("pending part timers = %d, want 0", len(chatSvc.userPartedTimers))
 	}
 }

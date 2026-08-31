@@ -81,8 +81,9 @@ type Service struct {
 	// each accepted inbound message.
 	chatMessagesSentCounter prometheus.Gauge
 
-	// a map of user IDs and timers that fire for chat part messages.
-	userPartedTimers         map[string]*time.Ticker
+	// a map of user IDs and pending chat part messages.
+	userPartedTimers         map[string]*pendingUserPart
+	userPartedTimersMu       sync.Mutex
 	seq                      uint
 	maxSocketConnectionLimit uint64
 
@@ -102,7 +103,7 @@ func newServer(webhooksSvc *webhooks.Service) *Service {
 		maxSocketConnectionLimit: maximumConcurrentConnectionLimit,
 		geoipClient:              geoip.NewClient(),
 		webhooks:                 webhooksSvc,
-		userPartedTimers:         map[string]*time.Ticker{},
+		userPartedTimers:         map[string]*pendingUserPart{},
 	}
 
 	return server
@@ -113,11 +114,11 @@ func (s *Service) Run() {
 	for {
 		select {
 		case clientID := <-s.unregister:
-			if client, ok := s.clients[clientID]; ok {
+			s.mu.RLock()
+			client, ok := s.clients[clientID]
+			s.mu.RUnlock()
+			if ok {
 				s.handleClientDisconnected(client)
-				s.mu.Lock()
-				delete(s.clients, clientID)
-				s.mu.Unlock()
 			}
 
 		case message := <-s.inbound:
@@ -159,9 +160,7 @@ func (s *Service) Addclient(conn *websocket.Conn, user *models.User, accessToken
 		// If there is a pending disconnect timer then clear it. A quick
 		// reconnect before the part was sent is not a new join, so neither the
 		// join broadcast nor the webhook should fire for it.
-		if ticker, ok := s.userPartedTimers[user.ID]; ok {
-			ticker.Stop()
-			delete(s.userPartedTimers, user.ID)
+		if s.cancelUserPartedMessage(user.ID) {
 			isNewJoin = false
 		}
 
@@ -211,29 +210,68 @@ func (s *Service) sendUserJoinedMessage(c *Client) {
 	s.webhooks.SendChatEventUserJoined(userJoinedEvent)
 }
 
-func (s *Service) handleClientDisconnected(c *Client) {
-	if _, ok := s.clients[c.Id]; ok {
-		log.Debugln("Deleting", c.Id)
-		delete(s.clients, c.Id)
-	}
+type pendingUserPart struct {
+	timer *time.Timer
+}
 
-	additionalClientCheck, _ := s.GetClientsForUser(c.User.ID)
-	if len(additionalClientCheck) > 0 {
-		// This user is still connected to chat with another client.
+func (s *Service) handleClientDisconnected(c *Client) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if _, ok := s.clients[c.Id]; !ok {
 		return
 	}
 
-	s.userPartedTimers[c.User.ID] = time.NewTicker(10 * time.Second)
+	log.Debugln("Deleting", c.Id)
+	delete(s.clients, c.Id)
 
-	go func() {
-		<-s.userPartedTimers[c.User.ID].C
-		s.sendUserPartedMessage(c)
-	}()
+	for _, client := range s.clients {
+		if client.User.ID == c.User.ID {
+			// This user is still connected to chat with another client.
+			return
+		}
+	}
+
+	s.scheduleUserPartedMessage(c)
 }
 
-func (s *Service) sendUserPartedMessage(c *Client) {
-	s.userPartedTimers[c.User.ID].Stop()
+func (s *Service) scheduleUserPartedMessage(c *Client) {
+	pending := &pendingUserPart{}
+
+	s.userPartedTimersMu.Lock()
+	if existing, ok := s.userPartedTimers[c.User.ID]; ok {
+		existing.timer.Stop()
+	}
+	s.userPartedTimers[c.User.ID] = pending
+	pending.timer = time.AfterFunc(10*time.Second, func() {
+		s.sendUserPartedMessage(c, pending)
+	})
+	s.userPartedTimersMu.Unlock()
+}
+
+func (s *Service) cancelUserPartedMessage(userID string) bool {
+	s.userPartedTimersMu.Lock()
+	defer s.userPartedTimersMu.Unlock()
+
+	pending, ok := s.userPartedTimers[userID]
+	if !ok {
+		return false
+	}
+
+	delete(s.userPartedTimers, userID)
+	pending.timer.Stop()
+	return true
+}
+
+func (s *Service) sendUserPartedMessage(c *Client, pending *pendingUserPart) {
+	s.userPartedTimersMu.Lock()
+	current, ok := s.userPartedTimers[c.User.ID]
+	if !ok || current != pending {
+		s.userPartedTimersMu.Unlock()
+		return
+	}
 	delete(s.userPartedTimers, c.User.ID)
+	s.userPartedTimersMu.Unlock()
 
 	userPartEvent := events.UserPartEvent{}
 	userPartEvent.SetDefaults()
