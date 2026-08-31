@@ -114,11 +114,11 @@ func (s *Service) Run() {
 	for {
 		select {
 		case clientID := <-s.unregister:
-			if client, ok := s.clients[clientID]; ok {
+			s.mu.RLock()
+			client, ok := s.clients[clientID]
+			s.mu.RUnlock()
+			if ok {
 				s.handleClientDisconnected(client)
-				s.mu.Lock()
-				delete(s.clients, clientID)
-				s.mu.Unlock()
 			}
 
 		case message := <-s.inbound:
@@ -215,15 +215,21 @@ type pendingUserPart struct {
 }
 
 func (s *Service) handleClientDisconnected(c *Client) {
-	if _, ok := s.clients[c.Id]; ok {
-		log.Debugln("Deleting", c.Id)
-		delete(s.clients, c.Id)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if _, ok := s.clients[c.Id]; !ok {
+		return
 	}
 
-	additionalClientCheck, _ := s.GetClientsForUser(c.User.ID)
-	if len(additionalClientCheck) > 0 {
-		// This user is still connected to chat with another client.
-		return
+	log.Debugln("Deleting", c.Id)
+	delete(s.clients, c.Id)
+
+	for _, client := range s.clients {
+		if client.User.ID == c.User.ID {
+			// This user is still connected to chat with another client.
+			return
+		}
 	}
 
 	s.scheduleUserPartedMessage(c)

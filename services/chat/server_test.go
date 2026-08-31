@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -111,10 +112,8 @@ func TestSendUserJoinedMessage_WebhookFiresRegardlessOfJoinPartSetting(t *testin
 
 func TestUserPartedTimersHandleConcurrentDisconnectsAndReconnects(t *testing.T) {
 	chatSvc := &Service{
+		clients:          map[uint]*Client{},
 		userPartedTimers: map[string]*pendingUserPart{},
-	}
-	client := &Client{
-		User: &models.User{ID: "user-1"},
 	}
 
 	const (
@@ -124,14 +123,24 @@ func TestUserPartedTimersHandleConcurrentDisconnectsAndReconnects(t *testing.T) 
 
 	start := make(chan struct{})
 	var wg sync.WaitGroup
-	for range workers {
+	for worker := range workers {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			<-start
 
-			for range iterations {
-				chatSvc.scheduleUserPartedMessage(client)
+			for iteration := range iterations {
+				id := uint(worker*iterations + iteration)
+				client := &Client{
+					Id:   id,
+					User: &models.User{ID: fmt.Sprintf("user-%d", id)},
+				}
+
+				chatSvc.mu.Lock()
+				chatSvc.clients[id] = client
+				chatSvc.mu.Unlock()
+
+				chatSvc.handleClientDisconnected(client)
 				chatSvc.cancelUserPartedMessage(client.User.ID)
 			}
 		}()
@@ -139,6 +148,12 @@ func TestUserPartedTimersHandleConcurrentDisconnectsAndReconnects(t *testing.T) 
 
 	close(start)
 	wg.Wait()
+
+	chatSvc.mu.RLock()
+	defer chatSvc.mu.RUnlock()
+	if len(chatSvc.clients) != 0 {
+		t.Fatalf("connected clients = %d, want 0", len(chatSvc.clients))
+	}
 
 	chatSvc.userPartedTimersMu.Lock()
 	defer chatSvc.userPartedTimersMu.Unlock()
