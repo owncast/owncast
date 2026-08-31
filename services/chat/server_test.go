@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"sync"
 	"testing"
 	"time"
 
@@ -105,5 +106,43 @@ func TestSendUserJoinedMessage_WebhookFiresRegardlessOfJoinPartSetting(t *testin
 				t.Errorf("broadcast sent=%v, want %v (joinPartEnabled=%v)", gotBroadcast, joinPartEnabled, joinPartEnabled)
 			}
 		})
+	}
+}
+
+func TestUserPartedTimersHandleConcurrentDisconnectsAndReconnects(t *testing.T) {
+	chatSvc := &Service{
+		userPartedTimers: map[string]*pendingUserPart{},
+	}
+	client := &Client{
+		User: &models.User{ID: "user-1"},
+	}
+
+	const (
+		workers    = 8
+		iterations = 100
+	)
+
+	start := make(chan struct{})
+	var wg sync.WaitGroup
+	for range workers {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			<-start
+
+			for range iterations {
+				chatSvc.scheduleUserPartedMessage(client)
+				chatSvc.cancelUserPartedMessage(client.User.ID)
+			}
+		}()
+	}
+
+	close(start)
+	wg.Wait()
+
+	chatSvc.userPartedTimersMu.Lock()
+	defer chatSvc.userPartedTimersMu.Unlock()
+	if len(chatSvc.userPartedTimers) != 0 {
+		t.Fatalf("pending part timers = %d, want 0", len(chatSvc.userPartedTimers))
 	}
 }
