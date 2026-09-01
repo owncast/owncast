@@ -92,7 +92,7 @@ jobs:
         uses: actions/checkout@v7
         if: github.event_name == 'push'
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24.12.0'
 
@@ -243,14 +243,26 @@ jobs:
                 mv "${f%.mp4}.fast.mp4" "$f"
             fi
             key="$PREFIX/${f#videos/}"
+            url="$S3_ENDPOINT/$S3_BUCKET/$key"
             aws s3 cp "$f" "s3://$S3_BUCKET/$key" --endpoint-url "$S3_ENDPOINT" \
               --acl public-read --content-type video/mp4 --no-progress >&2
+            poster_url=""
+            if [ -n "$FFMPEG" ] && "$FFMPEG" -v error -ss 3 -i "$f" -frames:v 1 "${f%.mp4}.png"; then
+              poster="${f%.mp4}.png"
+              poster_url="$S3_ENDPOINT/$S3_BUCKET/${key%.mp4}.png"
+              aws s3 cp "$poster" "s3://$S3_BUCKET/${key%.mp4}.png" --endpoint-url "$S3_ENDPOINT" \
+                --acl public-read --content-type image/png --no-progress >&2
+            fi
             dir="${f#videos/}"; dir="${dir%%/*}"
             if [ "$dir" != "$group" ]; then
               group="$dir"
               printf '\n**%s**\n\n' "$group"
             fi
-            printf -- '- [%s](%s/%s/%s)\n' "$(basename "$f" .mp4)" "$S3_ENDPOINT" "$S3_BUCKET" "$key"
+            if [ -n "$poster_url" ]; then
+              printf -- '- [%s](%s) [![%s preview](%s)](%s)\n' "$(basename "$f" .mp4)" "$url" "$(basename "$f" .mp4)" "$poster_url" "$url"
+            else
+              printf -- '- [%s](%s)\n' "$(basename "$f" .mp4)" "$url"
+            fi
           done > results/video-links.md
           echo "Published $(grep -c '^- ' results/video-links.md) videos."
 
@@ -276,7 +288,7 @@ jobs:
             echo "## E2E UI test videos"
             echo
             if [ -s "$LINKS_FILE" ]; then
-              echo "Click a recording to watch it in your browser (commit $HEAD_SHA):"
+              echo "Preview a recording below, then click it to watch it in your browser (commit $HEAD_SHA):"
               cat "$LINKS_FILE"
               echo
             fi

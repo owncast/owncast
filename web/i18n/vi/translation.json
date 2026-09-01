@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Tất cả mọi người biết đến máy chủ của bạn: người xem trò chuyện, người dùng đã xác thực và được tạo bởi plugin, và các tích hợp API. Thay đổi quyền truy cập quản trị viên, cấm, hoặc xóa vĩnh viễn người dùng.",
+			"banReason": "",
 			"pageTitle": "Người dùng"
 		},
 		"VideoVariantForm": {

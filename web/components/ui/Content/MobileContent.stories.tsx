@@ -14,6 +14,7 @@ const makePluginTabs = (count: number): PluginTab[] =>
 const meta = {
   title: 'owncast/Components/Mobile content',
   component: MobileContent,
+  tags: ['screenshot-mobile'],
   globals: {
     viewport: { value: 'iphone12Portrait', isRotated: false },
   },
@@ -46,10 +47,16 @@ const Template: StoryFn<MobileContentProps> = args => (
 
 const defaultArgs: MobileContentProps = {
   name: 'Demo stream',
-  summary: 'A stream for exercising the mobile tab bar.',
-  tags: ['demo', 'tabs'],
+  summary: 'A live community stream with conversation, music, and the occasional guest.',
+  tags: ['live music', 'community', 'weekly show'],
   socialHandles: [],
-  extraPageContent: '<p>This is the About tab content.</p>',
+  extraPageContent: `
+    <h2>Tonight’s broadcast</h2>
+    <p>Join us for a relaxed live set, followed by a chat with local artists. New listeners are always welcome.</p>
+    <p>Schedule, guest details, and community links are available at <a href="https://demo.example.org/schedule-and-special-guest-announcements">demo.example.org/schedule-and-special-guest-announcements</a>.</p>
+    <h3>What to expect</h3>
+    <p>Music, conversation, and a place to meet people who care about the same things.</p>
+  `,
   pluginTabs: [],
   setShowFollowModal: () => {},
   showFollowersTab: false,

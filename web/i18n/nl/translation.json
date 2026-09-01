@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Iedereen die je server kent: chatkijkers, aangemelde gebruikers, door plug-ins gemaakte gebruikers en API-integraties. Je kunt moderatorrechten wijzigen en gebruikers verbannen of definitief verwijderen.",
+			"banReason": "Blokkeer reden",
 			"pageTitle": "Gebruikers"
 		},
 		"VideoVariantForm": {

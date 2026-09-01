@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Tous les utilisateurs connus de votre serveur : viewers du chat, utilisateurs authentifiés, utilisateurs créés par des plugins et utilisateurs utilisés par les intégrations API. Vous pouvez gérer les droits de modération, bannir ou supprimer les utilisateurs définitivement.",
+			"banReason": "Raison du bannissement",
 			"pageTitle": "Utilisateurs"
 		},
 		"VideoVariantForm": {

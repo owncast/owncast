@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, FC } from 'react';
+import { useContext, useState, useEffect, useRef, FC } from 'react';
 import { Typography, Slider } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import { ServerStatusContext } from '../../utils/server-status-context';
@@ -47,20 +47,29 @@ export const VideoLatency: FC = () => {
   const { serverConfig, setFieldInConfigState } = serverStatusData || {};
   const { videoSettings } = serverConfig || {};
 
-  let resetTimer = null;
+  const resetTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (videoSettings) {
+      setSelectedOption(videoSettings.latencyLevel);
+    }
+  }, [videoSettings]);
+
+  useEffect(
+    () => () => {
+      clearTimeout(resetTimer.current);
+      resetTimer.current = null;
+    },
+    [],
+  );
 
   if (!videoSettings) {
     return null;
   }
 
-  useEffect(() => {
-    setSelectedOption(videoSettings.latencyLevel);
-  }, [videoSettings]);
-
   const resetStates = () => {
     setSubmitStatus(null);
-    resetTimer = null;
-    clearTimeout(resetTimer);
+    resetTimer.current = null;
   };
 
   // posts all the variants at once as an array obj
@@ -83,7 +92,8 @@ export const VideoLatency: FC = () => {
           ),
         );
 
-        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+        clearTimeout(resetTimer.current);
+        resetTimer.current = window.setTimeout(resetStates, RESET_TIMEOUT);
         if (serverStatusData.online) {
           setMessage(
             'Your latency buffer setting will take effect the next time you begin a live stream.',
@@ -93,7 +103,8 @@ export const VideoLatency: FC = () => {
       onError: (message: string) => {
         setSubmitStatus(createInputStatus(STATUS_ERROR, message));
 
-        resetTimer = setTimeout(resetStates, RESET_TIMEOUT);
+        clearTimeout(resetTimer.current);
+        resetTimer.current = window.setTimeout(resetStates, RESET_TIMEOUT);
       },
     });
   };

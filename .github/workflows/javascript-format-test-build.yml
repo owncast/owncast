@@ -70,7 +70,7 @@ jobs:
           git fetch upstream ${{ github.event.pull_request.base.ref }}
 
       - name: Setup Nodejs
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '24.12.0'
 
@@ -88,7 +88,7 @@ jobs:
             web/next.config.js
           files_yaml: |
             src:
-              - '**/*.{js,ts,tsx,jsx}'
+              - '**/*.{js,mjs,ts,tsx,jsx}'
 
       - name: Cache node modules
         uses: actions/cache@v6
@@ -170,7 +170,7 @@ jobs:
         if: github.event_name == 'push'
 
       - name: Setup Nodejs
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '24.12.0'
 
@@ -224,7 +224,7 @@ jobs:
         if: github.event_name == 'push'
 
       - name: Setup Nodejs
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '24.12.0'
 
@@ -265,7 +265,7 @@ jobs:
           skip_after_successful_duplicate: 'true'
 
       - name: Setup Nodejs
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '24.12.0'
 

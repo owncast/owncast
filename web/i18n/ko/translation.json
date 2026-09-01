@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "서버에 알려진 모든 사용자: 채팅 시청자, 인증된 사용자 및 플러그인 생성 사용자, API 통합. 관리자 접근 권한을 변경하거나 사용자를 차단하거나 영구적으로 제거합니다.",
+			"banReason": "",
 			"pageTitle": "사용자"
 		},
 		"VideoVariantForm": {
