@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Wszyscy znani na Twoim serwerze: widzowie czatu, użytkownicy uwierzytelnieni i tworzeni wtyczki oraz integracje API. Zmień dostęp moderatora, zbanuj lub trwale usuń użytkowników.",
+			"banReason": "",
 			"pageTitle": "Użytkownicy"
 		},
 		"VideoVariantForm": {
