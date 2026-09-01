@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Todo el mundo conocido por su servidor: espectadores de chat, usuarios autenticados y creados por plugin, e integraciones de API. Cambie el acceso de moderador, bloquee o elimine usuarios permanentemente.",
+			"banReason": "Razón de ban",
 			"pageTitle": "Usuarios"
 		},
 		"VideoVariantForm": {

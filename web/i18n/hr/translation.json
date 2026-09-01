@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Svi poznati vašem poslužitelju: gledatelji chata, autentificirani i korisnici stvoreni putem dodataka, te API integracije. Promijenite pristup moderatora, zabranite ili trajno uklonite korisnike.",
+			"banReason": "",
 			"pageTitle": "Korisnici"
 		},
 		"VideoVariantForm": {

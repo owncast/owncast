@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Semua yang dikenali di pelayan anda: penonton perbualan, pengguna yang disahkan dan yang dicipta oleh plugin, serta integrasi API. Tukar akses moderator, sekat, atau keluarkan pengguna secara kekal.",
+			"banReason": "",
 			"pageTitle": "Pengguna"
 		},
 		"VideoVariantForm": {

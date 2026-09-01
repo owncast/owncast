@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Jeder, der Ihrem Server bekannt ist: Chat-Viewer, authentifizierte und plugin-erstellte Benutzer und API-Integrationen. Ändern Sie den Moderator-Zugang, Sperrung oder permanente Entfernen von Benutzern.",
+			"banReason": "Sperrgrund",
 			"pageTitle": "Benutzer"
 		},
 		"VideoVariantForm": {
