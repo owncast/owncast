@@ -1,5 +1,5 @@
 __turbopack_load_page_chunks__("/_app", [
-  "static/chunks/0xbbez39q2-i8.js",
+  "static/chunks/10715odt9cz7o.js",
   "static/chunks/2bbj3xnn7n6mg.js",
   "static/chunks/2sluzv3dkij08.js",
   "static/chunks/02if5pgqr6o9c.js",
@@ -11,5 +11,5 @@ __turbopack_load_page_chunks__("/_app", [
   "static/chunks/373088e7vtrza.css",
   "static/chunks/3gk_13ezf4fl_.css",
   "static/chunks/1nagaaiy_1kil.css",
-  "static/chunks/turbopack-0ib3di8x7w-k_.js"
+  "static/chunks/turbopack-1x_4a8-a52g0k.js"
 ])
