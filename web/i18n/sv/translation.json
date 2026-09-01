@@ -398,7 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Alla som är kända för din server: chatttittare, autentiserade och plugin-skapade användare och API-integrationer. Ändra moderatoråtkomst, bannlysning eller permanent ta bort användare.",
-			"banReason": "",
+			"banReason": "Bannlys anledning",
 			"pageTitle": "Användare"
 		},
 		"VideoVariantForm": {
