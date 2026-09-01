@@ -27,7 +27,7 @@ __turbopack_load_page_chunks__("/admin/config-video", [
   "static/chunks/07hkums1rnde8.js",
   "static/chunks/2beq1ceqmzi0h.js",
   "static/chunks/0tz6_10jr3hn4.js",
-  "static/chunks/2-hf-y255mtf-.js",
+  "static/chunks/0674436-p4xv8.js",
   "static/chunks/3vc46-_rdy1hv.css",
-  "static/chunks/turbopack-11lfa9jkq_2cp.js"
+  "static/chunks/turbopack-2y2wad5u9qp07.js"
 ])
