@@ -515,8 +515,8 @@ Web package: @codemirror/lang-go@6.0.1
   Declared license: MIT
   LICENSE: SHA256 8ac9cfc9c82c397298c2139028d2474d8e0470f2092a97edddccf353bc5d4d36
 
-Web package: @codemirror/lang-html@6.4.11
-  Source: https://registry.npmjs.org/@codemirror/lang-html/-/lang-html-6.4.11.tgz
+Web package: @codemirror/lang-html@6.4.12
+  Source: https://registry.npmjs.org/@codemirror/lang-html/-/lang-html-6.4.12.tgz
   Declared license: MIT
   LICENSE: SHA256 05c6130cda97e7600ca91427a41e8a065efcf82365fc0293e7de80faec494c07
 
@@ -550,8 +550,8 @@ Web package: @codemirror/lang-liquid@6.3.2
   Declared license: MIT
   LICENSE: SHA256 eef03b313cffb45dc43cc7f0c99dcb3b3f48dc39b4ea659c4a13fdcefbab7213
 
-Web package: @codemirror/lang-markdown@6.5.0
-  Source: https://registry.npmjs.org/@codemirror/lang-markdown/-/lang-markdown-6.5.0.tgz
+Web package: @codemirror/lang-markdown@6.5.2
+  Source: https://registry.npmjs.org/@codemirror/lang-markdown/-/lang-markdown-6.5.2.tgz
   Declared license: MIT
   LICENSE: SHA256 05c6130cda97e7600ca91427a41e8a065efcf82365fc0293e7de80faec494c07
 
@@ -2893,12 +2893,12 @@ Used by: Web package: @codemirror/commands@6.10.4 (LICENSE)
 Used by: Web package: @codemirror/lang-angular@0.1.4 (LICENSE)
 Used by: Web package: @codemirror/lang-cpp@6.0.3 (LICENSE)
 Used by: Web package: @codemirror/lang-css@6.3.1 (LICENSE)
-Used by: Web package: @codemirror/lang-html@6.4.11 (LICENSE)
+Used by: Web package: @codemirror/lang-html@6.4.12 (LICENSE)
 Used by: Web package: @codemirror/lang-java@6.0.2 (LICENSE)
 Used by: Web package: @codemirror/lang-javascript@6.2.5 (LICENSE)
 Used by: Web package: @codemirror/lang-json@6.0.2 (LICENSE)
 Used by: Web package: @codemirror/lang-less@6.0.2 (LICENSE)
-Used by: Web package: @codemirror/lang-markdown@6.5.0 (LICENSE)
+Used by: Web package: @codemirror/lang-markdown@6.5.2 (LICENSE)
 Used by: Web package: @codemirror/lang-php@6.0.2 (LICENSE)
 Used by: Web package: @codemirror/lang-python@6.2.1 (LICENSE)
 Used by: Web package: @codemirror/lang-rust@6.0.2 (LICENSE)
