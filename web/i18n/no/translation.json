@@ -398,7 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Alle som er kjent for serveren: chat viewere, autentiserte og plugin-created users, and API integrations. Change moderator access, Bane eller permanent fjerne brukere.",
-			"banReason": "",
+			"banReason": "Utestengelse årsak",
 			"pageTitle": "Brukere"
 		},
 		"VideoVariantForm": {
