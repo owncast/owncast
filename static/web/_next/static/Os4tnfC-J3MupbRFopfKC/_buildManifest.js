@@ -18,7 +18,7 @@ self.__BUILD_MANIFEST = {
     "static/chunks/2e4xv74zlvg88.js"
   ],
   "/admin/chat/messages": [
-    "static/chunks/07y54p_yhhyga.js"
+    "static/chunks/1yu4wx3gr2ua-.js"
   ],
   "/admin/config-chat": [
     "static/chunks/19jbirba8uh_j.js"
@@ -36,7 +36,7 @@ self.__BUILD_MANIFEST = {
     "static/chunks/0i0lfvwtnebh9.js"
   ],
   "/admin/config-video": [
-    "static/chunks/2onj97m0hxgjp.js"
+    "static/chunks/3ehg-zuit9el2.js"
   ],
   "/admin/config/general": [
     "static/chunks/2zyrcpyvddk03.js"
