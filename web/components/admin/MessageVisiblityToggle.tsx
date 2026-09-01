@@ -1,5 +1,5 @@
 // Custom component for AntDesign Button that makes an api call, then displays a confirmation icon upon
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, useRef, FC } from 'react';
 import { Button, Tooltip } from 'antd';
 
 import dynamic from 'next/dynamic';
@@ -36,27 +36,32 @@ export const MessageVisiblityToggle: FC<MessageToggleProps> = ({
   message,
   setMessage,
 }) => {
+  const outcomeTimeout = useRef<number | null>(null);
+  const [outcome, setOutcome] = useState(0);
+
+  useEffect(
+    () => () => {
+      clearTimeout(outcomeTimeout.current);
+      outcomeTimeout.current = null;
+    },
+    [],
+  );
+
   if (!message || isEmptyObject(message)) {
     return null;
   }
 
-  let outcomeTimeout = null;
-  const [outcome, setOutcome] = useState(0);
-
-  const { id: messageId } = message || {};
+  const { id: messageId } = message;
 
   const resetOutcome = () => {
-    outcomeTimeout = setTimeout(() => {
+    clearTimeout(outcomeTimeout.current);
+    outcomeTimeout.current = window.setTimeout(() => {
       setOutcome(0);
     }, 3000);
   };
 
-  useEffect(() => () => {
-    clearTimeout(outcomeTimeout);
-  });
-
   const updateChatMessage = async () => {
-    clearTimeout(outcomeTimeout);
+    clearTimeout(outcomeTimeout.current);
     setOutcome(0);
     const result = await fetchData(UPDATE_CHAT_MESSGAE_VIZ, {
       auth: true,

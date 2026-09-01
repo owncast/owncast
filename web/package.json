@@ -15,7 +15,7 @@
     "check:format": "files=$(git diff --name-only --diff-filter=ACMR origin/develop... | grep -E '^web/.*\\.(mjs|js|jsx|ts|tsx|css|scss)$' | sed 's|^web/||'); [ -z \"$files\" ] || echo \"$files\" | xargs prettier --check",
     "check:unused": "knip --include dependencies,files,exports",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint --fix eslint.config.mjs types/ pages/ components/ && npm run stylelint",
+    "lint": "eslint --fix --ext .js,.ts,.tsx eslint.config.mjs types/ pages/ components/ && npm run stylelint",
     "lint:changed": "files=$(git diff --name-only --diff-filter=ACMR origin/develop... | grep -E '^web/.*\\.(mjs|js|jsx|ts|tsx)$' | sed 's|^web/||'); [ -z \"$files\" ] || echo \"$files\" | xargs eslint --fix",
     "stylelint": "stylelint --fix **/*.scss",
     "stylelint:changed": "files=$(git diff --name-only origin/develop... | grep '^web/.*\\.s\\?css$' | grep -vE '^web/(public/styles/plugin.css|styles/variables.css)$' | sed 's|^web/||'); [ -z \"$files\" ] || echo \"$files\" | xargs stylelint --fix",
