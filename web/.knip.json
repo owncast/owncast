@@ -1,7 +1,6 @@
 {
 	"ignoreExportsUsedInFile": true,
 	"ignore": [
-		"**/.eslintrc.js",
 		".storybook/**",
 		"**/*config.?s",
 		"**/*mock.?s",
@@ -39,7 +38,6 @@
 		"stylelint-config-standard",
 		"@babel/core",
 		"npm",
-		"eslint-config-next",
 		"@commitlint/cli",
 		"@commitlint/config-conventional",
 		"babel-plugin-dynamic-import-node",

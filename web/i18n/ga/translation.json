@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Gach duine a bhfuil aithne ag do shócmhainn orthu: lucht féachana comhoibrithe, úsáideoirí bailithe agus údaraithe, agus comhtháthachtaí API. Athraigh rochtain an mhodair, cuir cosc ar, nó bain úsáideoirí go buan.",
+			"banReason": "",
 			"pageTitle": "Úsáideoirí"
 		},
 		"VideoVariantForm": {

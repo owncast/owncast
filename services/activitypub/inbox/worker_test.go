@@ -2,10 +2,13 @@ package inbox
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"strings"
 	"testing"
 
 	"code.superseriousbusiness.org/activity/streams"
@@ -209,6 +212,63 @@ func TestHandleVerifiedIngress(t *testing.T) {
 				t.Fatalf("payload = %q, want exact raw JSON %q", payload, tt.body)
 			}
 		})
+	}
+}
+
+func TestVerifyRequestBody(t *testing.T) {
+	body := []byte(`{"type":"Like"}`)
+	sum := sha256.Sum256(body)
+	digest := "SHA-256=" + base64.StdEncoding.EncodeToString(sum[:])
+
+	tests := []struct {
+		name    string
+		digest  string
+		body    []byte
+		wantErr bool
+	}{
+		{name: "matching digest", digest: digest, body: body},
+		{name: "whitespace", digest: " SHA-256 = " + base64.StdEncoding.EncodeToString(sum[:]) + " ", body: body},
+		{name: "multiple digests", digest: "SHA-512=invalid, " + digest, body: body},
+		{name: "changed body", digest: digest, body: []byte(`{"type":"Follow"}`), wantErr: true},
+		{name: "missing digest", body: body, wantErr: true},
+		{name: "malformed digest", digest: "SHA-256", body: body, wantErr: true},
+		{name: "unsupported algorithm", digest: "MD5=abc", body: body, wantErr: true},
+		{name: "invalid encoding", digest: "SHA-256=not-base64", body: body, wantErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			request := httptest.NewRequest("POST", "https://local.example/inbox", nil)
+			if tt.digest != "" {
+				request.Header.Set("Digest", tt.digest)
+			}
+			if err := verifyRequestBody(request, tt.body); (err != nil) != tt.wantErr {
+				t.Fatalf("verifyRequestBody() error = %v, want error: %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestSignedHeaders(t *testing.T) {
+	signature := `keyId="https://remote.example/actor#key",headers="(request-target) host date digest",signature="abc"`
+	headers, err := signedHeaders(signature)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, required := range []string{"(request-target)", "host", "date", "digest"} {
+		if _, ok := headers[required]; !ok {
+			t.Errorf("signed headers missing %q", required)
+		}
+	}
+}
+
+func TestVerifyRequiresSignedDigest(t *testing.T) {
+	request := httptest.NewRequest("POST", "https://local.example/inbox", nil)
+	request.Header.Set("Signature", `keyId="https://remote.example/actor#main-key",algorithm="rsa-sha256",headers="(request-target) host date",signature="abc"`)
+
+	_, err := (&Service{}).Verify(request, []byte(`{"type":"Like"}`))
+	if err == nil || !strings.Contains(err.Error(), `does not sign required header "digest"`) {
+		t.Fatalf("Verify() error = %v, want missing signed Digest error", err)
 	}
 }
 

@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Zure zerbitzari ezagutzen duten guztiak: txat ikusleak, autenticatu eta plugin bidez sortutako erabiltzaileak, eta API integrazioak. Aldatu moderatzaile sarbidea, debekatu edo erabiltzaileak behin betiko ezabatu.",
+			"banReason": "",
 			"pageTitle": "Erabiltzaileak"
 		},
 		"VideoVariantForm": {

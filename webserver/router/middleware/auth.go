@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"crypto/subtle"
 	"net"
 	"net/http"
@@ -12,6 +13,15 @@ import (
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
 )
+
+type userContextKey struct{}
+
+// UserFromRequest returns the moderator attached by
+// RequireUserModerationScopeAccesstoken, or nil for other authentication paths.
+func UserFromRequest(r *http.Request) *models.User {
+	user, _ := r.Context().Value(userContextKey{}).(*models.User)
+	return user
+}
 
 // ExternalAccessTokenHandlerFunc is a function that is called after validing access.
 type ExternalAccessTokenHandlerFunc func(models.ExternalAPIUser, http.ResponseWriter, *http.Request)
@@ -239,7 +249,6 @@ func (m *Middleware) RequireUserModerationScopeAccesstoken(handler http.HandlerF
 			accessDenied(w)
 			return
 		}
-
 		// A user is required to use the websocket
 		user := m.userRepository.GetUserByToken(accessToken)
 		if user == nil || !user.IsEnabled() || !user.IsModerator() {
@@ -247,6 +256,10 @@ func (m *Middleware) RequireUserModerationScopeAccesstoken(handler http.HandlerF
 			return
 		}
 
+		// Keep the authenticated moderator attached to the request so handlers
+		// can attribute moderation events without re-reading untrusted request
+		// parameters.
+		r = r.WithContext(context.WithValue(r.Context(), userContextKey{}, user))
 		handler(w, r)
 	})
 }

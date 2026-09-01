@@ -49,8 +49,11 @@ const CHROME = chromeEnv.includes('/')
 
 // Keep the comment reviewable on sweeping changes; Chromatic covers the rest.
 const MAX_STORIES = 12;
-const WIDTH = 1000;
-const HEIGHT = 800;
+
+// Storybook tags mobile stories explicitly so PR screenshots show the
+// rendered phone viewport, not a desktop canvas containing phone-width CSS.
+const DESKTOP_VIEWPORT = { width: 1000, height: 800 };
+const MOBILE_VIEWPORT = { width: 390, height: 844 };
 
 const changed = (process.env.CHANGED_FILES || '').split(/\s+/).filter(Boolean);
 
@@ -87,11 +90,23 @@ const browser = await puppeteer.launch({
   args: ['--no-sandbox', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1'],
 });
 
-async function capture(base, id, file) {
+const viewportFor = story =>
+  story.tags?.includes('screenshot-mobile') ? MOBILE_VIEWPORT : DESKTOP_VIEWPORT;
+
+async function capture(base, story, file) {
+  const { id } = story;
   const url = `${base}/iframe.html?id=${id}&viewMode=story`;
   const page = await browser.newPage();
+  await page.setRequestInterception(true);
+  page.on('request', request => {
+    if (new URL(request.url()).pathname === '/logo') {
+      request.continue({ url: `${base}/project/logo-semisimple-white.svg` });
+      return;
+    }
+    request.continue();
+  });
   try {
-    await page.setViewport({ width: WIDTH, height: HEIGHT });
+    await page.setViewport(viewportFor(story));
     for (let attempt = 1; ; attempt += 1) {
       await page.goto(url, { waitUntil: 'networkidle0', timeout: 60_000 });
       try {
@@ -102,7 +117,7 @@ async function capture(base, id, file) {
           () =>
             document.body.classList.contains('sb-show-main') &&
             document.getElementById('storybook-root')?.childElementCount > 0,
-          { timeout: 30_000 }
+          { timeout: 30_000 },
         );
         break;
       } catch {
@@ -134,10 +149,11 @@ for (const story of shown) {
   const beforeName = `${story.id}-before.png`;
   const afterName = `${story.id}-after.png`;
   const hasBefore =
-    !isNew && (await capture(BASELINE_URL, story.id, path.join(OUT_DIR, 'img', beforeName)));
-  const hasAfter = await capture(STATIC_URL, story.id, path.join(OUT_DIR, 'img', afterName));
+    !isNew && (await capture(BASELINE_URL, story, path.join(OUT_DIR, 'img', beforeName)));
+  const hasAfter = await capture(STATIC_URL, story, path.join(OUT_DIR, 'img', afterName));
 
-  const img = (name, alt) => `<img src="${PUBLIC_BASE_URL}/${name}" alt="${alt}" width="420">`;
+  const img = (name, alt) =>
+    `<img src="${PUBLIC_BASE_URL}/${name}" alt="${alt}" width="${viewportFor(story).width}">`;
   const beforeCell = isNew
     ? '_new story_'
     : hasBefore
@@ -153,11 +169,14 @@ for (const story of shown) {
     '| develop | this PR |',
     '| --- | --- |',
     `| ${beforeCell} | ${afterCell} |`,
-    ''
+    '',
   );
 }
 if (omitted.length) {
-  lines.push(`_+${omitted.length} more affected ${omitted.length === 1 ? 'story' : 'stories'} not shown._`, '');
+  lines.push(
+    `_+${omitted.length} more affected ${omitted.length === 1 ? 'story' : 'stories'} not shown._`,
+    '',
+  );
 }
 fs.writeFileSync(path.join(OUT_DIR, 'comment-body.md'), lines.join('\n'));
 await browser.close();

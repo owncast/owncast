@@ -257,3 +257,37 @@ func TestAuthProviderLabel(t *testing.T) {
 		}
 	}
 }
+
+func TestSetEnabledPersistsReason(t *testing.T) {
+	r := newTestRepo(t)
+	user, _, err := r.CreateAnonymousUser("viewer")
+	if err != nil {
+		t.Fatalf("create user: %v", err)
+	}
+
+	const reason = "Repeated spam"
+	if err := r.SetEnabled(user.ID, false, reason); err != nil {
+		t.Fatalf("disable user: %v", err)
+	}
+
+	var disabled *models.User
+	for _, candidate := range r.GetDisabledUsers() {
+		if candidate.ID == user.ID {
+			disabled = candidate
+			break
+		}
+	}
+	if disabled == nil {
+		t.Fatalf("disabled user %q was not returned", user.ID)
+	}
+	if disabled.DisabledReason != reason {
+		t.Fatalf("disabled reason = %q, want %q", disabled.DisabledReason, reason)
+	}
+
+	if err := r.SetEnabled(user.ID, true, "ignored"); err != nil {
+		t.Fatalf("enable user: %v", err)
+	}
+	if enabled := r.GetUserByID(user.ID); enabled.DisabledReason != "" {
+		t.Fatalf("enabled user retained disabled reason %q", enabled.DisabledReason)
+	}
+}

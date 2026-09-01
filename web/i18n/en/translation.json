@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Everyone known to your server: chat viewers, authenticated and plugin-created users, and API integrations. Change moderator access, ban, or permanently remove users.",
+			"banReason": "Ban reason",
 			"pageTitle": "Users"
 		},
 		"VideoVariantForm": {

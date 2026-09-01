@@ -12,6 +12,7 @@
 name: Translation job
 
 on:
+  workflow_dispatch:
   schedule:
     # Run the workflow every hour
     - cron: '0 * * * *'

@@ -3990,10 +3990,18 @@ components:
           type: boolean
         authenticated:
           type: boolean
+    UserWithDisabledReason:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            disabledReason:
+              type: string
+              description: Reason provided when the user was disabled.
     Users:
       type: array
       items:
-        $ref: '#/components/schemas/User'
+        $ref: '#/components/schemas/UserWithDisabledReason'
     PaginatedUsers:
       type: object
       properties:
@@ -4724,7 +4732,7 @@ components:
       type: object
       properties:
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/UserWithDisabledReason'
         connectedClients:
           type: array
           items:

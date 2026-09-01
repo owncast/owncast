@@ -137,6 +137,7 @@ type User struct {
 	Scopes          sql.NullString
 	Type            sql.NullString
 	LastUsed        sql.NullTime
+	DisabledReason  sql.NullString
 }
 
 type UserAccessToken struct {

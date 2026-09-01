@@ -1744,7 +1744,7 @@ func wireChatModerationHostFns(env *plugins.HostEnv, deps Deps) {
 	chatSvc := deps.Chat
 
 	env.DeleteMessage = func(pluginName, messageID string) error {
-		if err := chatSvc.SetMessagesVisibility([]string{messageID}, false); err != nil {
+		if err := chatSvc.SetMessagesVisibility([]string{messageID}, false, nil); err != nil {
 			return err
 		}
 		return nil
@@ -1881,7 +1881,7 @@ func wireUserHostFns(env *plugins.HostEnv, deps Deps) {
 	}
 
 	env.SetUserEnabled = func(pluginName, userID string, enabled bool, reason string) error {
-		if err := users.SetEnabled(userID, enabled); err != nil {
+		if err := users.SetEnabled(userID, enabled, reason); err != nil {
 			return err
 		}
 		if !enabled {

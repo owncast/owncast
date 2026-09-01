@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Tutti noti al tuo server: visualizzatori di chat, utenti autenticati e creati con plugin, e integrazioni API. Cambia l'accesso moderatore, bandi o rimuovere permanentemente gli utenti.",
+			"banReason": "Motivo del divieto",
 			"pageTitle": "Utenti"
 		},
 		"VideoVariantForm": {

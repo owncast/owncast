@@ -171,7 +171,7 @@ export const MobileContent: FC<MobileContentProps> = ({
           />
         </div>
       ) : (
-        <div>{aboutTabContent}</div>
+        <div style={{ width: '100%' }}>{aboutTabContent}</div>
       )}
     </ErrorBoundary>
   );

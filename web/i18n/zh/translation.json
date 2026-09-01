@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "您伺服器上的所有人：聊天觀眾、經過身份驗證的用戶、插件創建的用戶和 API 集成。變更管理員訪問權限、禁止或永久刪除用戶。",
+			"banReason": "",
 			"pageTitle": "用戶"
 		},
 		"VideoVariantForm": {

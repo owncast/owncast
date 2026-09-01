@@ -497,6 +497,7 @@ export const Localization = {
       pageTitle: 'Admin.Users.pageTitle',
       pageDescription: 'Admin.Users.pageDescription',
       searchPlaceholder: 'Admin.Users.searchPlaceholder',
+      banReason: 'Admin.Users.banReason',
     },
 
     // Plugins admin (overview list, per-plugin detail, sidebar submenu)

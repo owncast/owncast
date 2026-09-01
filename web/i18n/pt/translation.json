@@ -398,6 +398,7 @@
 		},
 		"Users": {
 			"pageDescription": "Todos conhecidos pelo seu servidor: visualizadores de chat, usuários autenticados e criados por plugin, e integrações da API. Altere o acesso de moderador, banir ou remova permanentemente os usuários.",
+			"banReason": "Motivo do banimento",
 			"pageTitle": "Utilizadores"
 		},
 		"VideoVariantForm": {
