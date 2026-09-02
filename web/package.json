@@ -124,7 +124,7 @@
     "puppeteer-core": "^25.0.0",
     "sass": "1.100.0",
     "storybook": "^10.4.6",
-    "style-dictionary": "5.5.0",
+    "style-dictionary": "5.5.2",
     "style-loader": "4.0.0",
     "stylelint": "^17.0.0",
     "stylelint-config-standard": "^40.0.0",
