@@ -1,0 +1,21 @@
+__turbopack_load_page_chunks__("/embed/chat/readwrite", [
+  "static/chunks/26xks9g5qi6o3.js",
+  "static/chunks/1ukb2iog8fua7.js",
+  "static/chunks/1--8uh4rqje2c.js",
+  "static/chunks/23pcko4tzph_s.js",
+  "static/chunks/2sluzv3dkij08.js",
+  "static/chunks/3nxwz_0i1y65m.js",
+  "static/chunks/02if5pgqr6o9c.js",
+  "static/chunks/2ii8si9sk1wly.js",
+  "static/chunks/2xlx6h5xthqc-.js",
+  "static/chunks/08ncx1vjsvcx_.js",
+  "static/chunks/3-37nv3rf10se.js",
+  "static/chunks/34q-ksq18l-e_.js",
+  "static/chunks/0tz6_10jr3hn4.js",
+  "static/chunks/0yskmokwi_7db.js",
+  "static/chunks/0fw_mn16ugp1k.js",
+  "static/chunks/3-_y9cw7j9z92.js",
+  "static/chunks/022mg-8k3zi0c.css",
+  "static/chunks/1lf_8qt6_uhzs.css",
+  "static/chunks/turbopack-2k4bes3418l0-.js"
+])
