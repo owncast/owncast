@@ -15,7 +15,7 @@ SHELLCHECK := $(GOBIN)/shellcheck
 install-tools: $(LEFTHOOK) $(GOLANGCI_LINT) $(GOFUMPT) $(SQLC) $(OAPI_CODEGEN) $(SHELLCHECK)
 
 $(LEFTHOOK):
-	GOBIN=$(GOBIN) go install -C tools github.com/evilmartians/lefthook
+	GOBIN=$(GOBIN) go install -C tools github.com/evilmartians/lefthook/v2
 
 $(GOLANGCI_LINT):
 	GOBIN=$(GOBIN) go install -C tools github.com/golangci/golangci-lint/v2/cmd/golangci-lint
