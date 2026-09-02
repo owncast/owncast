@@ -92,6 +92,23 @@ func (e PlaybackClientHealthSource) Valid() bool {
 	}
 }
 
+// Defines values for ScheduledEventStatus.
+const (
+	Cancelled ScheduledEventStatus = "cancelled"
+	Scheduled ScheduledEventStatus = "scheduled"
+)
+
+// Valid indicates whether the value is a known member of the ScheduledEventStatus enum.
+func (e ScheduledEventStatus) Valid() bool {
+	switch e {
+	case Cancelled:
+		return true
+	case Scheduled:
+		return true
+	default:
+		return false
+	}
+}
 
 // Defines values for WebhookEventType.
 const (
