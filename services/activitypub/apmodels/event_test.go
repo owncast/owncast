@@ -63,6 +63,17 @@ func TestScheduledEventFEP8a8eRepresentation(t *testing.T) {
 	if !ok || location["type"] != "VirtualLocation" || location["url"] != "https://my.cool.site.biz/schedule/weekly-show" {
 		t.Fatalf("location = %#v", got["location"])
 	}
+
+	attachments, ok := got["attachment"].([]interface{})
+	if !ok || len(attachments) != 1 {
+		t.Fatalf("attachment = %#v", got["attachment"])
+	}
+	attachment, ok := attachments[0].(map[string]interface{})
+	if !ok || attachment["type"] != "Image" ||
+		attachment["url"] != "https://my.cool.site.biz/logo/external" ||
+		attachment["mediaType"] != "image/svg+xml" {
+		t.Fatalf("attachment = %#v", attachments[0])
+	}
 }
 
 func assertEventRecipients(t *testing.T, event map[string]interface{}, key, want string) {

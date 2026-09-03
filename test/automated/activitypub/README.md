@@ -87,9 +87,9 @@ This probe starts Owncast, Gancio v2, and a shared HTTPS proxy. It:
 
 - trusts and follows the Owncast actor from Gancio
 - creates a future Owncast scheduled event
-- verifies the stable FEP-8a8e `Event` object
+- verifies the stable FEP-8a8e `Event` object with the Owncast logo attached
 - waits for Gancio to import the delivered `Create` activity
-- verifies Gancio links the imported event back to Owncast
+- verifies Gancio links the imported event back to Owncast and receives its logo
 
 Only this test receives the host Docker socket. The Gancio image is pinned by
 digest for repeatability. Set `GANCIO_IMAGE` to test another build.

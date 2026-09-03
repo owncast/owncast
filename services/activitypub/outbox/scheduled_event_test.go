@@ -92,6 +92,10 @@ func TestSendScheduledEventQueuesCreateForEveryFollowerInbox(t *testing.T) {
 		if !ok || object["type"] != "Event" || object["id"] != "https://owncast.example.com/federation/event/weekly-show" {
 			t.Errorf("%s object = %#v", inbox, activity["object"])
 		}
+		attachment, ok := object["attachment"].([]interface{})
+		if !ok || len(attachment) != 1 {
+			t.Errorf("%s attachment = %#v", inbox, object["attachment"])
+		}
 		deliveries++
 	}
 	if err := rows.Err(); err != nil {

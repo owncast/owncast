@@ -102,6 +102,23 @@ func (b *Builder) MakeScheduledEvent(event models.ScheduledEvent) (vocab.Activit
 		properties["timezone"] = event.Timezone
 	}
 
+	logoURL := b.MakeLocalIRIforLogo()
+	if logoURL != nil {
+		attachments := streams.NewActivityStreamsAttachmentProperty()
+		image := streams.NewActivityStreamsImage()
+		imageURL := streams.NewActivityStreamsUrlProperty()
+		imageURL.AppendIRI(logoURL)
+		image.SetActivityStreamsUrl(imageURL)
+		name := streams.NewActivityStreamsNameProperty()
+		name.AppendXMLSchemaString(serverName + " logo")
+		image.SetActivityStreamsName(name)
+		mediaType := streams.NewActivityStreamsMediaTypeProperty()
+		mediaType.Set(b.GetLogoType())
+		image.SetActivityStreamsMediaType(mediaType)
+		attachments.AppendActivityStreamsImage(image)
+		result.SetActivityStreamsAttachment(attachments)
+	}
+
 	return result, nil
 }
 
@@ -127,7 +144,7 @@ func normalizeEventRecipients(payload map[string]interface{}) {
 	if event["type"] != "Event" {
 		return
 	}
-	for _, property := range []string{"to", "cc"} {
+	for _, property := range []string{"to", "cc", "attachment"} {
 		value, ok := event[property]
 		if !ok {
 			continue

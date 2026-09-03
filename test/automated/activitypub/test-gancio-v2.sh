@@ -230,8 +230,8 @@ if [[ -z "${gancio_event}" ]]; then
     fail "Gancio did not import the Owncast event"
 fi
 printf '%s' "${gancio_event}" | jq -e --arg url "${event_url}" \
-    '(.online_locations | index($url)) != null' >/dev/null \
-    || fail "Gancio imported the event without the Owncast event URL: ${gancio_event}"
+    '(.online_locations | index($url)) != null and (.media | length) > 0' >/dev/null \
+    || fail "Gancio imported the event without the Owncast event URL and logo: ${gancio_event}"
 
 digest=$(docker image inspect "${GANCIO_IMAGE}" --format '{{index .RepoDigests 0}}')
 [[ -n "${digest}" ]] || fail "could not resolve Gancio image digest"
