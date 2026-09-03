@@ -152,6 +152,8 @@ export interface StreamKey {
 
 export interface ScheduleConfig {
   enabled: boolean;
+  showCountdown: boolean;
+  chatOpenMinutesBefore: number;
   reminderMessage: string;
 }
 

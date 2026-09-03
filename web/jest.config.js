@@ -24,7 +24,8 @@ module.exports = {
   // @ant-design/icons v6's CJS build requires the ESM path
   // @ant-design/colors/es/generate directly; webpack transpiles it via
   // transpilePackages, jest needs the same exception here.
-  transformIgnorePatterns: ['/node_modules/(?!@ant-design/colors)'],
+  // FullCalendar publishes modern CommonJS that still needs Babel in Jest.
+  transformIgnorePatterns: ['/node_modules/(?!@ant-design/colors|@fullcalendar)'],
   moduleNameMapper: {
     '\\.(css|less|scss)$': '<rootDir>/tests/__mocks__/styleMock.js',
   },

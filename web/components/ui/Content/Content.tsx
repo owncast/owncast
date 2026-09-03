@@ -28,6 +28,7 @@ import {
 import styles from './Content.module.scss';
 import desktopStyles from './DesktopContent.module.scss';
 import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
+import { EventCountdown } from '../EventCountdown/EventCountdown';
 import { Statusbar } from '../Statusbar/Statusbar';
 import { ExternalAction } from '../../../interfaces/external-action';
 import { Modal } from '../Modal/Modal';
@@ -119,7 +120,8 @@ export const Content: FC = () => {
   const isChatAvailable = useAtomValue(isChatAvailableSelector);
   const isUserAuthenticated = useAtomValue(chatAuthenticatedAtom);
 
-  const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle } = serverStatus;
+  const { viewerCount, lastConnectTime, lastDisconnectTime, streamTitle, scheduledEvent } =
+    serverStatus;
   const {
     extraPageContent,
     name,
@@ -131,10 +133,13 @@ export const Content: FC = () => {
     chatDisabled,
     chatRequireAuthentication,
     federation,
+    schedule,
     notifications,
     pluginTabs,
     autoplay,
   } = clientConfig;
+  const scheduleEnabled = schedule?.enabled ?? false;
+  const showEventCountdown = schedule?.showCountdown && scheduledEvent;
   const [showNotifyReminder, setShowNotifyReminder] = useState(false);
   const [showNotifyModal, setShowNotifyModal] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
@@ -278,17 +283,25 @@ export const Content: FC = () => {
           )}
           {!online && !appState.appLoading && (
             <div id="offline-message" style={{ width: '100%' }}>
-              <OfflineBanner
-                showsHeader={false}
-                streamName={name}
-                customText={offlineMessage}
-                notificationsEnabled={supportsBrowserNotifications}
-                fediverseAccount={fediverseAccount}
-                lastLive={lastDisconnectTime}
-                onNotifyClick={() => setShowNotifyModal(true)}
-                onFollowClick={() => setShowFollowModal(true)}
-                className={classnames([styles.topSectionElement, styles.offlineBanner])}
-              />
+              {showEventCountdown ? (
+                <EventCountdown
+                  event={scheduledEvent}
+                  lastLive={lastDisconnectTime}
+                  className={classnames([styles.topSectionElement, styles.offlineBanner])}
+                />
+              ) : (
+                <OfflineBanner
+                  showsHeader={false}
+                  streamName={name}
+                  customText={offlineMessage}
+                  notificationsEnabled={supportsBrowserNotifications}
+                  fediverseAccount={fediverseAccount}
+                  lastLive={lastDisconnectTime}
+                  onNotifyClick={() => setShowNotifyModal(true)}
+                  onFollowClick={() => setShowFollowModal(true)}
+                  className={classnames([styles.topSectionElement, styles.offlineBanner])}
+                />
+              )}
             </div>
           )}
         </Row>
@@ -334,6 +347,7 @@ export const Content: FC = () => {
               pluginTabs={pluginTabs}
               setShowFollowModal={setShowFollowModal}
               showFollowersTab={showFollowersTab}
+              scheduleEnabled={scheduleEnabled}
               online={online}
               federatedServers={federatedServers}
             />
@@ -346,6 +360,7 @@ export const Content: FC = () => {
                 socialHandles={socialHandles}
                 extraPageContent={extraPageContent}
                 pluginTabs={pluginTabs}
+                scheduleEnabled={scheduleEnabled}
                 setShowFollowModal={setShowFollowModal}
                 showFollowersTab={showFollowersTab}
                 federatedServers={federatedServers}

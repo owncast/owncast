@@ -43,6 +43,13 @@ const GOODBYE_META = {
   videoAvailable: false,
   appLoading: false,
 };
+const SCHEDULED_CHAT_META = {
+  chatAvailable: true,
+  chatLoading: false,
+  videoAvailable: false,
+  appLoading: false,
+};
+
 const CHAT_USER_DISABLED_META = { ...ONLINE_META, chatAvailable: false };
 
 const GOODBYE_TIMEOUT_MS = 300000;
@@ -91,6 +98,17 @@ describe('application state machine', () => {
     expect(snapshot.matches({ ready: 'offline' })).toBe(true);
     expect(snapshot.matches('loading')).toBe(false);
     expect(mergedMeta(snapshot)).toEqual(OFFLINE_META);
+  });
+  test('scheduled chat opens without making video available and closes on OFFLINE', () => {
+    const actor = startActor();
+    actor.send({ type: AppStateEvent.Loaded });
+    actor.send({ type: AppStateEvent.ScheduledChatOpen });
+
+    expect(actor.getSnapshot().matches({ ready: 'scheduledChat' })).toBe(true);
+    expect(mergedMeta(actor.getSnapshot())).toEqual(SCHEDULED_CHAT_META);
+
+    actor.send({ type: AppStateEvent.Offline });
+    expect(actor.getSnapshot().matches({ ready: 'offline' })).toBe(true);
   });
 
   test('full online walk: offline -> online -> goodbye -> back online', () => {

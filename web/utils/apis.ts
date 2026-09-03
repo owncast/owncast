@@ -1,4 +1,4 @@
-const semverGt = require('semver/functions/gt');
+import semverGt from 'semver/functions/gt';
 
 /* eslint-disable prefer-destructuring */
 const ADMIN_USERNAME = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
@@ -6,6 +6,11 @@ const ADMIN_STREAMKEY = process.env.NEXT_PUBLIC_ADMIN_STREAMKEY;
 export const NEXT_PUBLIC_API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
 const API_LOCATION = `${NEXT_PUBLIC_API_HOST}api/admin/`;
+
+// Public scheduled stream occurrences. Keep this same-origin so the viewer
+// works in production and through the Next.js development proxy.
+export const PUBLIC_SCHEDULE = '/api/schedule';
+export const PUBLIC_SCHEDULE_ICS = '/api/schedule.ics';
 
 export const ADMIN_CSRF_HEADER = 'X-Owncast-CSRF-Protection';
 

@@ -62,6 +62,8 @@ const TEXTFIELD_TYPE_URL = 'url';
 
 // Config paths for the scheduled streams feature.
 export const API_SCHEDULE_ENABLED = '/schedule/enabled';
+export const API_SCHEDULE_SHOW_COUNTDOWN = '/schedule/showcountdown';
+export const API_SCHEDULE_CHAT_OPEN_MINUTES = '/schedule/chatopenminutes';
 export const API_SCHEDULE_REMINDER_MESSAGE = '/schedule/remindermessage';
 
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {

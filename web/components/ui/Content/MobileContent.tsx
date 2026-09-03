@@ -7,13 +7,14 @@ import { ErrorBoundary } from 'react-error-boundary';
 import classNames from 'classnames';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import { PluginTab } from '../../../interfaces/client-config.model';
+import type { FederatedServer } from '../StreamsTab/StreamsTab';
 import { Localization } from '../../../types/localization';
 import styles from './Content.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { PluginTabFrame } from '../PluginTabFrame/PluginTabFrame';
+import { Translation } from '../Translation/Translation';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ComponentError } from '../ComponentError/ComponentError';
-
 export type MobileContentProps = {
   name: string;
   summary: string;
@@ -23,8 +24,9 @@ export type MobileContentProps = {
   pluginTabs: PluginTab[];
   setShowFollowModal: (show: boolean) => void;
   showFollowersTab: boolean;
+  scheduleEnabled?: boolean;
   online: boolean;
-  federatedServers?: any[]; // Will be properly typed when API is implemented
+  federatedServers?: FederatedServer[];
 };
 
 // lazy loaded components
@@ -42,6 +44,13 @@ const FollowerCollection = dynamic(
     import('../followers/FollowerCollection/FollowerCollection').then(
       mod => mod.FollowerCollection,
     ),
+  {
+    ssr: false,
+  },
+);
+
+const ScheduleTab = dynamic(
+  () => import('../ScheduleTab/ScheduleTab').then(mod => mod.ScheduleTab),
   {
     ssr: false,
   },
@@ -69,6 +78,7 @@ export const MobileContent: FC<MobileContentProps> = ({
   setShowFollowModal,
   showFollowersTab,
   online,
+  scheduleEnabled = false,
   federatedServers = [],
 }) => {
   const { t } = useTranslation();
@@ -90,6 +100,12 @@ export const MobileContent: FC<MobileContentProps> = ({
     </div>
   );
 
+  const scheduleTabContent = (
+    <div className={styles.bottomPageContentContainer}>
+      <ScheduleTab />
+    </div>
+  );
+
   const streamsTabContent = (
     <div className={styles.bottomPageContentContainer}>
       <StreamsTab servers={federatedServers} />
@@ -101,6 +117,15 @@ export const MobileContent: FC<MobileContentProps> = ({
   items.push({ label: 'About', key: '0', children: aboutTabContent });
   if (showFollowersTab) {
     items.push({ label: 'Followers', key: '1', children: followersTabContent });
+  }
+  if (scheduleEnabled) {
+    items.push({
+      label: (
+        <Translation translationKey={Localization.Frontend.Schedule.tab} defaultText="Schedule" />
+      ),
+      key: 'schedule',
+      children: scheduleTabContent,
+    });
   }
   // Add Featured tab if there are featured streams
   if (federatedServers && federatedServers.length > 0) {

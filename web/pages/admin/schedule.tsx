@@ -12,6 +12,7 @@ import {
   Typography,
   message,
 } from 'antd';
+import type { ModalProps } from 'antd';
 import dynamic from 'next/dynamic';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactElement } from 'react';
@@ -23,7 +24,13 @@ import {
   SCHEDULE_UPSERT_EVENT,
   fetchData,
 } from '../../utils/apis';
-import { API_SCHEDULE_ENABLED, API_SCHEDULE_REMINDER_MESSAGE } from '../../utils/config-constants';
+import {
+  API_SCHEDULE_CHAT_OPEN_MINUTES,
+  API_SCHEDULE_ENABLED,
+  API_SCHEDULE_SHOW_COUNTDOWN,
+  API_SCHEDULE_REMINDER_MESSAGE,
+  postConfigUpdateToAPI,
+} from '../../utils/config-constants';
 import {
   WEEKDAYS,
   composeWeeklyRecurrence,
@@ -33,12 +40,15 @@ import {
   wallTimeInZoneToUTC,
 } from '../../utils/schedule';
 import type { WeeklyRecurrence } from '../../utils/schedule';
+import type { ScheduledEvent } from '../../interfaces/scheduled-event.model';
 import { Localization } from '../../types/localization';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import { ServerStatusContext } from '../../utils/server-status-context';
 import { ToggleSwitch } from '../../components/admin/ToggleSwitch';
 import { TextFieldWithSubmit } from '../../components/admin/TextFieldWithSubmit';
 import { TEXTFIELD_TYPE_TEXTAREA } from '../../components/admin/TextField';
+import { ScheduleChatOpenSelector } from '../../components/admin/ScheduleChatOpenSelector';
+import { ScheduleCalendar } from '../../components/ui/ScheduleTab/ScheduleCalendar';
 import type { UpdateArgs } from '../../types/config-section';
 
 const { Title, Paragraph } = Typography;
@@ -52,17 +62,6 @@ const DeleteOutlined = dynamic(() => import('@ant-design/icons/DeleteOutlined'),
 const EditOutlined = dynamic(() => import('@ant-design/icons/EditOutlined'), {
   ssr: false,
 });
-
-interface ScheduledEvent {
-  id: string;
-  seriesId?: string;
-  name: string;
-  description: string;
-  startTime: string;
-  durationMinutes: number;
-  timezone: string;
-  status: string;
-}
 
 interface ScheduledEventSeries {
   id: string;
@@ -90,10 +89,11 @@ interface EventModalProps {
   open: boolean;
   onCancel: () => void;
   onSaved: (schedule: AdminSchedule) => void;
+  onRemoveOrCancel: (id: string, cancel: boolean) => Promise<boolean>;
 }
 
 const EventModal = (props: EventModalProps) => {
-  const { target, open, onCancel, onSaved } = props;
+  const { target, open, onCancel, onSaved, onRemoveOrCancel } = props;
   const { t } = useTranslation();
 
   const browserZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
@@ -265,9 +265,52 @@ const EventModal = (props: EventModalProps) => {
     target.kind === 'create'
       ? t(Localization.Admin.Schedule.addEvent)
       : t(Localization.Admin.Schedule.editEvent);
+  const eventFooter: ModalProps['footer'] =
+    target.kind === 'edit-event'
+      ? (_, { OkBtn, CancelBtn }) => (
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Space>
+              {target.event.status !== 'cancelled' && (
+                <Button
+                  onClick={async () => {
+                    if (await onRemoveOrCancel(target.event.id, true)) {
+                      onCancel();
+                    }
+                  }}
+                >
+                  {t(Localization.Admin.Schedule.cancelEventAction)}
+                </Button>
+              )}
+              <Popconfirm
+                title={t(Localization.Admin.Schedule.deleteEventConfirm)}
+                onConfirm={async () => {
+                  if (await onRemoveOrCancel(target.event.id, false)) {
+                    onCancel();
+                  }
+                }}
+              >
+                <Button danger icon={<DeleteOutlined />}>
+                  {t(Localization.Admin.Schedule.deleteEventAction)}
+                </Button>
+              </Popconfirm>
+            </Space>
+            <Space>
+              <CancelBtn />
+              <OkBtn />
+            </Space>
+          </div>
+        )
+      : undefined;
 
   return (
-    <Modal title={title} open={open} onOk={save} onCancel={onCancel} okButtonProps={okButtonProps}>
+    <Modal
+      title={title}
+      open={open}
+      onOk={save}
+      onCancel={onCancel}
+      okButtonProps={okButtonProps}
+      footer={eventFooter}
+    >
       <p>{t(Localization.Admin.Schedule.nameLabel)}</p>
       <Input
         value={name}
@@ -390,8 +433,13 @@ const EventModal = (props: EventModalProps) => {
 const Schedule = () => {
   const { t } = useTranslation();
   const serverStatusData = useContext(ServerStatusContext);
-  const { serverConfig } = serverStatusData || ({} as never);
-  const scheduleConfig = serverConfig?.schedule || { enabled: false, reminderMessage: '' };
+  const { serverConfig, setFieldInConfigState } = serverStatusData || ({} as never);
+  const scheduleConfig = serverConfig?.schedule || {
+    enabled: false,
+    showCountdown: false,
+    chatOpenMinutesBefore: 0,
+    reminderMessage: '',
+  };
 
   const [schedule, setSchedule] = useState<AdminSchedule>({ series: [], events: [] });
   const [modalTarget, setModalTarget] = useState<EventModalTarget>({ kind: 'create' });
@@ -401,6 +449,29 @@ const Schedule = () => {
   useEffect(() => {
     setReminderMessage(scheduleConfig.reminderMessage);
   }, [scheduleConfig.reminderMessage]);
+
+  const chatOpenOptions = [
+    { value: 0, label: t(Localization.Admin.Schedule.chatOpenMinutesDisabled) },
+    { value: 5, label: t(Localization.Admin.Schedule.chatOpenMinutes5) },
+    { value: 10, label: t(Localization.Admin.Schedule.chatOpenMinutes10) },
+    { value: 30, label: t(Localization.Admin.Schedule.chatOpenMinutes30) },
+    { value: 60, label: t(Localization.Admin.Schedule.chatOpenMinutes60) },
+  ];
+
+  const updateChatOpenMinutes = async (value: number) => {
+    await postConfigUpdateToAPI({
+      apiPath: API_SCHEDULE_CHAT_OPEN_MINUTES,
+      data: { value },
+      onSuccess: () => {
+        setFieldInConfigState({
+          fieldName: 'chatOpenMinutesBefore',
+          value,
+          path: 'schedule',
+        });
+      },
+      onError: error => message.error(error),
+    });
+  };
 
   async function getSchedule() {
     try {
@@ -431,8 +502,10 @@ const Schedule = () => {
           ? t(Localization.Admin.Schedule.cancelledToast)
           : t(Localization.Admin.Schedule.deletedToast),
       );
+      return true;
     } catch (error) {
       message.error(`${error}`);
+      return false;
     }
   }
 
@@ -441,72 +514,33 @@ const Schedule = () => {
     setIsModalOpen(true);
   };
 
-  const eventColumns = [
-    {
-      title: t(Localization.Admin.Schedule.columnName),
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: t(Localization.Admin.Schedule.columnWhen),
-      dataIndex: 'startTime',
-      key: 'startTime',
-      // Render the wall time in the event's own timezone so the value
-      // matches the zone label beside it, wherever the admin's browser is.
-      render: (startTime: string, record: ScheduledEvent) =>
-        `${new Date(startTime).toLocaleString(undefined, { timeZone: record.timezone })} (${
-          record.timezone
-        })`,
-    },
-    {
-      title: t(Localization.Admin.Schedule.columnDuration),
-      dataIndex: 'durationMinutes',
-      key: 'durationMinutes',
-      render: (minutes: number) =>
-        t(Localization.Admin.Schedule.durationValue, { minutes: `${minutes}` }),
-    },
-    {
-      title: t(Localization.Admin.Schedule.columnStatus),
-      key: 'status',
-      render: (_, record: ScheduledEvent) => (
-        <>
-          {record.status === 'cancelled' ? (
-            <Tag color="red">{t(Localization.Admin.Schedule.statusCancelled)}</Tag>
-          ) : (
-            <Tag color="green">{t(Localization.Admin.Schedule.statusScheduled)}</Tag>
-          )}
-          {record.seriesId && <Tag>{t(Localization.Admin.Schedule.statusRecurring)}</Tag>}
-        </>
-      ),
-    },
-    {
-      title: '',
-      key: 'actions',
-      render: (_, record: ScheduledEvent) => (
-        <Space size="middle">
-          <Button
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setModalTarget({ kind: 'edit-event', event: record });
-              setIsModalOpen(true);
-            }}
-          />
-          {record.status !== 'cancelled' && (
-            <Button size="small" onClick={() => removeOrCancel(record.id, true)}>
-              {t(Localization.Admin.Schedule.cancelAction)}
-            </Button>
-          )}
-          <Popconfirm
-            title={t(Localization.Admin.Schedule.deleteEventConfirm)}
-            onConfirm={() => removeOrCancel(record.id, false)}
-          >
-            <Button size="small" icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+  const editEvent = (event: ScheduledEvent) => {
+    setModalTarget({ kind: 'edit-event', event });
+    setIsModalOpen(true);
+  };
+
+  const renderEventActions = (event: ScheduledEvent) => (
+    <Space size="small">
+      <Button size="small" icon={<EditOutlined />} onClick={() => editEvent(event)}>
+        {t(Localization.Admin.Schedule.editAction)}
+      </Button>
+      <Button
+        size="small"
+        disabled={event.status === 'cancelled'}
+        onClick={() => removeOrCancel(event.id, true)}
+      >
+        {t(Localization.Admin.Schedule.cancelAction)}
+      </Button>
+      <Popconfirm
+        title={t(Localization.Admin.Schedule.deleteEventConfirm)}
+        onConfirm={() => removeOrCancel(event.id, false)}
+      >
+        <Button size="small" danger icon={<DeleteOutlined />}>
+          {t(Localization.Admin.Schedule.deleteAction)}
+        </Button>
+      </Popconfirm>
+    </Space>
+  );
 
   const seriesColumns = [
     {
@@ -593,6 +627,23 @@ const Schedule = () => {
         label={t(Localization.Admin.Schedule.enableLabel)}
         tip={t(Localization.Admin.Schedule.enableTip)}
       />
+      <ToggleSwitch
+        fieldName="showCountdown"
+        configPath="schedule"
+        apiPath={API_SCHEDULE_SHOW_COUNTDOWN}
+        checked={scheduleConfig.showCountdown}
+        useSubmit
+        label={t(Localization.Admin.Schedule.countdownLabel)}
+        tip={t(Localization.Admin.Schedule.countdownTip)}
+      />
+
+      <ScheduleChatOpenSelector
+        value={scheduleConfig.chatOpenMinutesBefore}
+        options={chatOpenOptions}
+        label={t(Localization.Admin.Schedule.chatOpenMinutesLabel)}
+        tip={t(Localization.Admin.Schedule.chatOpenMinutesTip)}
+        onChange={updateChatOpenMinutes}
+      />
 
       <TextFieldWithSubmit
         fieldName="reminderMessage"
@@ -608,17 +659,17 @@ const Schedule = () => {
       />
 
       <Title level={3}>{t(Localization.Admin.Schedule.upcomingEvents)}</Title>
-      <Table
-        rowKey={(record: ScheduledEvent) => record.id}
-        columns={eventColumns}
-        dataSource={sortedEvents}
-        pagination={false}
-        size="small"
+      <ScheduleCalendar
+        events={sortedEvents}
+        initialView="listMonth"
+        initialDate={sortedEvents[0]?.startTime}
+        headerAction={{
+          text: t(Localization.Admin.Schedule.addEvent),
+          onClick: openCreateModal,
+        }}
+        onEventClick={editEvent}
+        renderEventActions={renderEventActions}
       />
-      <br />
-      <Button type="primary" onClick={openCreateModal}>
-        {t(Localization.Admin.Schedule.addEvent)}
-      </Button>
 
       <Title level={3}>{t(Localization.Admin.Schedule.recurringSchedules)}</Title>
       <Table
@@ -633,6 +684,7 @@ const Schedule = () => {
         target={modalTarget}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
+        onRemoveOrCancel={removeOrCancel}
         onSaved={result => {
           setIsModalOpen(false);
           applyScheduleResponse(result);

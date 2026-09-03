@@ -56,11 +56,19 @@ const GOODBYE_STATE: AppStateOptions = {
   appLoading: false,
 };
 
+const SCHEDULED_CHAT_STATE: AppStateOptions = {
+  chatAvailable: true,
+  chatLoading: false,
+  videoAvailable: false,
+  appLoading: false,
+};
+
 export enum AppStateEvent {
   Loading = 'LOADING', // Have not pulled configuration data from the server.
   Loaded = 'LOADED', // Configuration data has been pulled from the server.
   Online = 'ONLINE', // Stream is live
   Offline = 'OFFLINE', // Stream is not live
+  ScheduledChatOpen = 'SCHEDULED_CHAT_OPEN', // Chat is open before a scheduled stream.
   NeedsRegister = 'NEEDS_REGISTER', // Needs to register a chat user
   Fail = 'FAIL', // Error
   ChatUserDisabled = 'CHAT_USER_DISABLED', // Chat user is disabled
@@ -101,6 +109,10 @@ const appStateModel =
               OFFLINE: {
                 target: 'goodbye',
               },
+              SCHEDULED_CHAT_OPEN: {
+                target: 'scheduledChat',
+              },
+
               CHAT_USER_DISABLED: {
                 target: 'chatUserDisabled',
               },
@@ -111,6 +123,10 @@ const appStateModel =
               ...OFFLINE_STATE,
             },
             on: {
+              SCHEDULED_CHAT_OPEN: {
+                target: 'scheduledChat',
+              },
+
               ONLINE: {
                 target: 'online',
               },
@@ -118,6 +134,9 @@ const appStateModel =
           },
           goodbye: {
             on: {
+              SCHEDULED_CHAT_OPEN: {
+                target: 'scheduledChat',
+              },
               ONLINE: {
                 target: 'online',
               },
@@ -128,6 +147,25 @@ const appStateModel =
             after: {
               '300000': {
                 target: 'offline',
+              },
+            },
+          },
+          scheduledChat: {
+            meta: {
+              ...SCHEDULED_CHAT_STATE,
+            },
+            on: {
+              SCHEDULED_CHAT_OPEN: {
+                target: 'scheduledChat',
+              },
+              ONLINE: {
+                target: 'online',
+              },
+              OFFLINE: {
+                target: 'offline',
+              },
+              CHAT_USER_DISABLED: {
+                target: 'chatUserDisabled',
               },
             },
           },
