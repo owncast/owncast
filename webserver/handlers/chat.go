@@ -8,6 +8,7 @@ import (
 
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
@@ -80,8 +81,10 @@ func (h *Handlers) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Requ
 
 	// Sanitize before the empty check so a proposed name that sanitizes to
 	// nothing (e.g. only HTML tags or whitespace) still falls back to a
-	// generated name instead of failing registration.
 	proposedNewDisplayName = utils.MakeSafeStringOfLength(proposedNewDisplayName, config.MaxChatDisplayNameLength)
+	if _, forbidden := chat.ForbiddenUsername(proposedNewDisplayName, h.configRepository.GetForbiddenUsernameList()); forbidden {
+		proposedNewDisplayName = ""
+	}
 	if proposedNewDisplayName == "" {
 		proposedNewDisplayName = utils.MakeSafeStringOfLength(h.generateDisplayName(), config.MaxChatDisplayNameLength)
 	}
