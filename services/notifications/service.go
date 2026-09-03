@@ -16,14 +16,15 @@ import (
 // Service defines the interface for notification operations.
 type Service interface {
 	Notify()
+	NotifyScheduledEvent(message string)
 }
 
 // notificationService handles notification dispatching and channel management.
 type notificationService struct {
 	repository       notificationsrepository.NotificationsRepository
 	configRepository configrepository.ConfigRepository
-	browser          *browser.Browser
-	discord          *discord.Discord
+	sendBrowser      func(subscription, title, body string) (bool, error)
+	sendDiscord      func(message string) error
 }
 
 // New creates a new instance of the notification service.
@@ -59,7 +60,7 @@ func (s *notificationService) setupBrowserPush(datastore *datastore.Datastore) e
 		if err != nil {
 			return errors.Wrap(err, "error creating browser notifier")
 		}
-		s.browser = browserNotifier
+		s.sendBrowser = browserNotifier.Send
 	}
 	return nil
 }
@@ -79,18 +80,18 @@ func (s *notificationService) setupDiscord() error {
 		if err != nil {
 			return errors.Wrap(err, "error creating discord notifier")
 		}
-		s.discord = discordNotifier
+		s.sendDiscord = discordNotifier.Send
 	}
 	return nil
 }
 
-func (s *notificationService) notifyBrowserPush() {
+func (s *notificationService) notifyBrowserPush(body string) {
 	destinations, err := s.repository.GetNotificationDestinationsForChannel(notificationsrepository.BrowserPushNotification)
 	if err != nil {
 		log.Errorln("error getting browser push notification destinations", err)
 	}
 	for _, destination := range destinations {
-		unsubscribed, err := s.browser.Send(destination, s.configRepository.GetServerName(), s.configRepository.GetBrowserPushConfig().GoLiveMessage)
+		unsubscribed, err := s.sendBrowser(destination, s.configRepository.GetServerName(), body)
 		if unsubscribed {
 			// If the error is "unsubscribed", then remove the destination from the database.
 			if err := s.repository.RemoveNotificationForChannel(notificationsrepository.BrowserPushNotification, destination); err != nil {
@@ -102,27 +103,38 @@ func (s *notificationService) notifyBrowserPush() {
 	}
 }
 
-func (s *notificationService) notifyDiscord() {
-	goLiveMessage := s.configRepository.GetDiscordConfig().GoLiveMessage
-	streamTitle := s.configRepository.GetStreamTitle()
-	if streamTitle != "" {
-		goLiveMessage += "\n" + streamTitle
-	}
-	message := fmt.Sprintf("%s\n\n%s", goLiveMessage, s.configRepository.GetServerURL())
-
-	if err := s.discord.Send(message); err != nil {
+func (s *notificationService) notifyDiscord(message string) {
+	if err := s.sendDiscord(message); err != nil {
 		log.Errorln("error sending discord message", err)
 	}
 }
 
-// Notify will fire the different notification channels.
-func (s *notificationService) Notify() {
-	if s.browser != nil {
-		s.notifyBrowserPush()
+func (s *notificationService) goLiveMessage() string {
+	message := s.configRepository.GetDiscordConfig().GoLiveMessage
+	streamTitle := s.configRepository.GetStreamTitle()
+	if streamTitle != "" {
+		message += "\n" + streamTitle
 	}
+	return fmt.Sprintf("%s\n\n%s", message, s.configRepository.GetServerURL())
+}
 
-	if s.discord != nil {
-		s.notifyDiscord()
+// Notify sends the go-live message to each configured notification channel.
+func (s *notificationService) Notify() {
+	if s.sendBrowser != nil {
+		s.notifyBrowserPush(s.configRepository.GetBrowserPushConfig().GoLiveMessage)
+	}
+	if s.sendDiscord != nil {
+		s.notifyDiscord(s.goLiveMessage())
+	}
+}
+
+// NotifyScheduledEvent sends a fully formatted scheduled-event reminder.
+func (s *notificationService) NotifyScheduledEvent(message string) {
+	if s.sendBrowser != nil {
+		s.notifyBrowserPush(message)
+	}
+	if s.sendDiscord != nil {
+		s.notifyDiscord(message)
 	}
 }
 

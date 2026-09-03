@@ -330,11 +330,23 @@ type ServerInterface interface {
 	// (POST /admin/config/schedule/enabled)
 	SetScheduleEnabled(w http.ResponseWriter, r *http.Request)
 
+	// (OPTIONS /admin/config/schedule/firstreminderminutes)
+	SetScheduleFirstReminderMinutesOptions(w http.ResponseWriter, r *http.Request)
+	// SetScheduleFirstReminderMinutes Set the first scheduled event reminder lead time
+	// (POST /admin/config/schedule/firstreminderminutes)
+	SetScheduleFirstReminderMinutes(w http.ResponseWriter, r *http.Request)
+
 	// (OPTIONS /admin/config/schedule/remindermessage)
 	SetScheduleReminderMessageOptions(w http.ResponseWriter, r *http.Request)
-	// SetScheduleReminderMessage Set the message posted to the Fediverse before a scheduled event starts
+	// SetScheduleReminderMessage Set the notification message sent before a scheduled event starts
 	// (POST /admin/config/schedule/remindermessage)
 	SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/schedule/secondreminderminutes)
+	SetScheduleSecondReminderMinutesOptions(w http.ResponseWriter, r *http.Request)
+	// SetScheduleSecondReminderMinutes Set the second scheduled event reminder lead time
+	// (POST /admin/config/schedule/secondreminderminutes)
+	SetScheduleSecondReminderMinutes(w http.ResponseWriter, r *http.Request)
 
 	// (OPTIONS /admin/config/schedule/showcountdown)
 	SetScheduleShowCountdownOptions(w http.ResponseWriter, r *http.Request)
@@ -1378,14 +1390,36 @@ func (_ Unimplemented) SetScheduleEnabled(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/schedule/firstreminderminutes)
+func (_ Unimplemented) SetScheduleFirstReminderMinutesOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetScheduleFirstReminderMinutes Set the first scheduled event reminder lead time
+// (POST /admin/config/schedule/firstreminderminutes)
+func (_ Unimplemented) SetScheduleFirstReminderMinutes(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // (OPTIONS /admin/config/schedule/remindermessage)
 func (_ Unimplemented) SetScheduleReminderMessageOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// SetScheduleReminderMessage Set the message posted to the Fediverse before a scheduled event starts
+// SetScheduleReminderMessage Set the notification message sent before a scheduled event starts
 // (POST /admin/config/schedule/remindermessage)
 func (_ Unimplemented) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/schedule/secondreminderminutes)
+func (_ Unimplemented) SetScheduleSecondReminderMinutesOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetScheduleSecondReminderMinutes Set the second scheduled event reminder lead time
+// (POST /admin/config/schedule/secondreminderminutes)
+func (_ Unimplemented) SetScheduleSecondReminderMinutes(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3616,6 +3650,32 @@ func (siw *ServerInterfaceWrapper) SetScheduleEnabled(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r)
 }
 
+// SetScheduleFirstReminderMinutesOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleFirstReminderMinutesOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleFirstReminderMinutesOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleFirstReminderMinutes operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleFirstReminderMinutes(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleFirstReminderMinutes(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // SetScheduleReminderMessageOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetScheduleReminderMessageOptions(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -3633,6 +3693,32 @@ func (siw *ServerInterfaceWrapper) SetScheduleReminderMessageOptions(w http.Resp
 func (siw *ServerInterfaceWrapper) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetScheduleReminderMessage(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleSecondReminderMinutesOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleSecondReminderMinutesOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleSecondReminderMinutesOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleSecondReminderMinutes operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleSecondReminderMinutes(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleSecondReminderMinutes(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6896,6 +6982,18 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/schedule/remindermessage", wrapper.SetScheduleReminderMessage)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/schedule/firstreminderminutes", wrapper.SetScheduleFirstReminderMinutesOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/schedule/firstreminderminutes", wrapper.SetScheduleFirstReminderMinutes)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/schedule/secondreminderminutes", wrapper.SetScheduleSecondReminderMinutesOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/schedule/secondreminderminutes", wrapper.SetScheduleSecondReminderMinutes)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/accesstokens", wrapper.GetExternalAPIUsers)

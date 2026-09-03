@@ -550,20 +550,48 @@ func (r *SqlConfigRepository) GetScheduleEnabled() bool {
 	return false
 }
 
-// SetScheduleReminderMessage sets the message posted to the Fediverse before
-// a scheduled event starts.
+// SetScheduleReminderMessage sets the message sent through configured
+// notification channels before a scheduled event starts.
 func (r *SqlConfigRepository) SetScheduleReminderMessage(message string) error {
 	return r.datastore.SetString(scheduleReminderMessageKey, message)
 }
 
-// GetScheduleReminderMessage returns the message posted to the Fediverse
-// before a scheduled event starts. Empty means reminders are disabled.
+// GetScheduleReminderMessage returns the default scheduled-event notification
+// message. Empty disables scheduled-event reminders.
 func (r *SqlConfigRepository) GetScheduleReminderMessage() string {
 	message, err := r.datastore.GetString(scheduleReminderMessageKey)
 	if err != nil {
 		return ""
 	}
 	return message
+}
+
+// SetScheduleFirstReminderMinutes sets the first reminder lead time.
+func (r *SqlConfigRepository) SetScheduleFirstReminderMinutes(minutes int) error {
+	return r.datastore.SetNumber(scheduleFirstReminderMinutesKey, float64(minutes))
+}
+
+// GetScheduleFirstReminderMinutes returns the first reminder lead time.
+func (r *SqlConfigRepository) GetScheduleFirstReminderMinutes() int {
+	minutes, err := r.datastore.GetNumber(scheduleFirstReminderMinutesKey)
+	if err != nil {
+		return DefaultScheduleFirstReminderMinutes
+	}
+	return int(minutes)
+}
+
+// SetScheduleSecondReminderMinutes sets the second reminder lead time.
+func (r *SqlConfigRepository) SetScheduleSecondReminderMinutes(minutes int) error {
+	return r.datastore.SetNumber(scheduleSecondReminderMinutesKey, float64(minutes))
+}
+
+// GetScheduleSecondReminderMinutes returns the second reminder lead time.
+func (r *SqlConfigRepository) GetScheduleSecondReminderMinutes() int {
+	minutes, err := r.datastore.GetNumber(scheduleSecondReminderMinutesKey)
+	if err != nil {
+		return DefaultScheduleSecondReminderMinutes
+	}
+	return int(minutes)
 }
 
 // GetScheduleShowCountdown returns whether the viewer countdown is enabled.

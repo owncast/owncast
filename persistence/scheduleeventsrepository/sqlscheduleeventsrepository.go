@@ -295,27 +295,52 @@ func (r *SqlScheduleEventsRepository) SetEventFederatedAt(id string, t time.Time
 	})
 }
 
-// GetEventsNeedingReminder returns unreminded scheduled occurrences starting
-// inside (startAfter, startBefore].
-func (r *SqlScheduleEventsRepository) GetEventsNeedingReminder(startAfter, startBefore time.Time) ([]models.ScheduledEvent, error) {
+// GetEventsNeedingReminder returns scheduled occurrences whose selected
+// reminder has not been sent and that start inside (startAfter, startBefore].
+func (r *SqlScheduleEventsRepository) GetEventsNeedingReminder(startAfter, startBefore time.Time, reminderNumber int) ([]models.ScheduledEvent, error) {
 	queries := db.New(r.datastore.DB)
-	rows, err := queries.GetStreamEventsNeedingReminder(context.Background(), db.GetStreamEventsNeedingReminderParams{
-		StartTime:   startAfter.UTC(),
-		StartTime_2: startBefore.UTC(),
-	})
+	var (
+		rows []db.StreamEvent
+		err  error
+	)
+	switch reminderNumber {
+	case ReminderFirst:
+		rows, err = queries.GetStreamEventsNeedingReminder1(context.Background(), db.GetStreamEventsNeedingReminder1Params{
+			StartTime:   startAfter.UTC(),
+			StartTime_2: startBefore.UTC(),
+		})
+	case ReminderSecond:
+		rows, err = queries.GetStreamEventsNeedingReminder2(context.Background(), db.GetStreamEventsNeedingReminder2Params{
+			StartTime:   startAfter.UTC(),
+			StartTime_2: startBefore.UTC(),
+		})
+	default:
+		return nil, errors.New("invalid reminder number")
+	}
 	if err != nil {
 		return nil, err
 	}
 	return eventsFromRows(rows), nil
 }
 
-// SetEventReminderSentAt stamps an occurrence's reminder as sent.
-func (r *SqlScheduleEventsRepository) SetEventReminderSentAt(id string, t time.Time) error {
+// SetEventReminderSentAt stamps the selected occurrence reminder as sent.
+func (r *SqlScheduleEventsRepository) SetEventReminderSentAt(id string, reminderNumber int, t time.Time) error {
 	queries := db.New(r.datastore.DB)
-	return queries.SetStreamEventReminderSentAt(context.Background(), db.SetStreamEventReminderSentAtParams{
-		ReminderSentAt: models.TimeToNullTime(t.UTC()),
-		ID:             id,
-	})
+	sentAt := models.TimeToNullTime(t.UTC())
+	switch reminderNumber {
+	case ReminderFirst:
+		return queries.SetStreamEventReminder1SentAt(context.Background(), db.SetStreamEventReminder1SentAtParams{
+			Reminder1SentAt: sentAt,
+			ID:              id,
+		})
+	case ReminderSecond:
+		return queries.SetStreamEventReminder2SentAt(context.Background(), db.SetStreamEventReminder2SentAtParams{
+			Reminder2SentAt: sentAt,
+			ID:              id,
+		})
+	default:
+		return errors.New("invalid reminder number")
+	}
 }
 
 // GetEventsNeedingWebhookWarning returns scheduled events entering their warning window.
@@ -410,9 +435,13 @@ func eventFromRow(row db.StreamEvent) models.ScheduledEvent {
 		federatedAt := row.FederatedAt.Time.UTC()
 		event.FederatedAt = &federatedAt
 	}
-	if row.ReminderSentAt.Valid {
-		reminderSentAt := row.ReminderSentAt.Time.UTC()
-		event.ReminderSentAt = &reminderSentAt
+	if row.Reminder1SentAt.Valid {
+		reminder1SentAt := row.Reminder1SentAt.Time.UTC()
+		event.Reminder1SentAt = &reminder1SentAt
+	}
+	if row.Reminder2SentAt.Valid {
+		reminder2SentAt := row.Reminder2SentAt.Time.UTC()
+		event.Reminder2SentAt = &reminder2SentAt
 	}
 	return event
 }

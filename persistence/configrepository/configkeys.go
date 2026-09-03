@@ -67,6 +67,8 @@ const (
 	faviconPathKey                       = "favicon_path"
 	scheduleEnabledKey                   = "schedule_enabled"
 	scheduleReminderMessageKey           = "schedule_reminder_message"
+	scheduleFirstReminderMinutesKey      = "schedule_first_reminder_minutes"
+	scheduleSecondReminderMinutesKey     = "schedule_second_reminder_minutes"
 	scheduleShowCountdownKey             = "schedule_show_countdown"
 	scheduleChatOpenMinutesKey           = "schedule_chat_open_minutes"
 )

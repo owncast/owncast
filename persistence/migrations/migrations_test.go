@@ -76,7 +76,7 @@ func TestRun_FreshDatabase(t *testing.T) {
 		t.Error("users table is missing disabled_reason column")
 	}
 
-	for _, column := range []string{"webhook_warning_sent_at", "webhook_started_sent_at", "webhook_ended_sent_at", "reminder_message"} {
+	for _, column := range []string{"webhook_warning_sent_at", "webhook_started_sent_at", "webhook_ended_sent_at", "reminder_message", "reminder_1_sent_at", "reminder_2_sent_at"} {
 		if !columnExists(t, db, "stream_events", column) {
 			t.Errorf("stream_events table is missing %s", column)
 		}
@@ -90,8 +90,8 @@ func TestRun_FreshDatabase(t *testing.T) {
 		t.Error("fresh install should not have legacy config table")
 	}
 
-	if v := gooseVersion(t, db); v != 10 {
-		t.Errorf("goose version = %d, want 10", v)
+	if v := gooseVersion(t, db); v != 11 {
+		t.Errorf("goose version = %d, want 11", v)
 	}
 
 	// Calling Run a second time should be a no-op (idempotent).
@@ -115,8 +115,8 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	}
 
 	// Goose should record the latest migration.
-	if v := gooseVersion(t, db); v != 10 {
-		t.Errorf("goose version = %d, want 10", v)
+	if v := gooseVersion(t, db); v != 11 {
+		t.Errorf("goose version = %d, want 11", v)
 	}
 
 	// Config version should still be 9, the legacy bridge was not invoked.
@@ -166,8 +166,8 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 	}
 
 	// Goose should have recorded the latest migration.
-	if v := gooseVersion(t, db); v != 10 {
-		t.Errorf("goose version = %d, want 10", v)
+	if v := gooseVersion(t, db); v != 11 {
+		t.Errorf("goose version = %d, want 11", v)
 	}
 }
 

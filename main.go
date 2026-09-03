@@ -40,6 +40,7 @@ import (
 	"github.com/owncast/owncast/services/chat"
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/dispatcher"
+	"github.com/owncast/owncast/services/notifications"
 	"github.com/owncast/owncast/services/rtmp"
 	"github.com/owncast/owncast/services/schedule"
 	"github.com/owncast/owncast/services/scheduler"
@@ -296,11 +297,23 @@ func main() {
 	// warm for the status endpoint, and closes chat when a pre-opened event
 	// never starts.
 	scheduleSvc := schedule.New(schedule.Deps{
-		ScheduleEventsRepository: scheduleEventsRepository,
-		GetStatus:                streamSvc.GetStatus,
-		GetChatOpenMinutes:       configRepository.GetScheduleChatOpenMinutes,
-		GetScheduleEnabled:       configRepository.GetScheduleEnabled,
-		Webhooks:                 webhooksSvc,
+		ScheduleEventsRepository:         scheduleEventsRepository,
+		GetStatus:                        streamSvc.GetStatus,
+		GetChatOpenMinutes:               configRepository.GetScheduleChatOpenMinutes,
+		GetScheduleEnabled:               configRepository.GetScheduleEnabled,
+		GetScheduleReminderMessage:       configRepository.GetScheduleReminderMessage,
+		GetScheduleFirstReminderMinutes:  configRepository.GetScheduleFirstReminderMinutes,
+		GetScheduleSecondReminderMinutes: configRepository.GetScheduleSecondReminderMinutes,
+		GetServerURL:                     configRepository.GetServerURL,
+		NotifyScheduledEvent: func(message string) {
+			notificationService, err := notifications.New(dataStore, configRepository)
+			if err != nil {
+				log.Errorln(err)
+				return
+			}
+			notificationService.NotifyScheduledEvent(message)
+		},
+		Webhooks: webhooksSvc,
 		OnMissedEventWarning: func(_ *models.ScheduledEvent) {
 			if err := chatSvc.SendSystemMessage(schedule.MissedEventChatMessage, false); err != nil {
 				log.Errorf("unable to send missed scheduled stream chat message: %v", err)

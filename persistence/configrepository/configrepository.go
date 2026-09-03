@@ -7,6 +7,11 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
+const (
+	DefaultScheduleFirstReminderMinutes  = 120
+	DefaultScheduleSecondReminderMinutes = 15
+)
+
 type ConfigRepository interface {
 	GetExtraPageBodyContent() string
 	SetExtraPageBodyContent(content string) error
@@ -98,6 +103,10 @@ type ConfigRepository interface {
 	GetScheduleEnabled() bool
 	SetScheduleReminderMessage(message string) error
 	GetScheduleReminderMessage() string
+	SetScheduleFirstReminderMinutes(minutes int) error
+	GetScheduleFirstReminderMinutes() int
+	SetScheduleSecondReminderMinutes(minutes int) error
+	GetScheduleSecondReminderMinutes() int
 	GetScheduleShowCountdown() bool
 	SetScheduleShowCountdown(enabled bool) error
 	GetScheduleChatOpenMinutes() int

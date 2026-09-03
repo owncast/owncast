@@ -1,6 +1,7 @@
 package schedule
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -50,14 +51,18 @@ type chatWindowState struct {
 // occurrence rows from recurring series and answering "what's next" for the
 // status endpoint. Construct with New in main.go and inject into consumers.
 type Service struct {
-	repo scheduleeventsrepository.ScheduleEventsRepository
-
-	getStatus            func() models.Status
-	getChatOpenMinutes   func() int
-	onMissedEventWarning func(*models.ScheduledEvent)
-	getScheduleEnabled   func() bool
-	webhooks             *webhooks.Service
-	chatWindowStates     map[string]chatWindowState
+	repo                             scheduleeventsrepository.ScheduleEventsRepository
+	getStatus                        func() models.Status
+	getChatOpenMinutes               func() int
+	onMissedEventWarning             func(*models.ScheduledEvent)
+	getScheduleEnabled               func() bool
+	getScheduleReminderMessage       func() string
+	getScheduleFirstReminderMinutes  func() int
+	getScheduleSecondReminderMinutes func() int
+	getServerURL                     func() string
+	notifyScheduledEvent             func(string)
+	webhooks                         *webhooks.Service
+	chatWindowStates                 map[string]chatWindowState
 
 	tickerMutex sync.Mutex
 	ticker      *time.Ticker
@@ -70,24 +75,34 @@ type Service struct {
 
 // Deps lists everything a schedule Service consumes.
 type Deps struct {
-	ScheduleEventsRepository scheduleeventsrepository.ScheduleEventsRepository
-	GetStatus                func() models.Status
-	GetChatOpenMinutes       func() int
-	OnMissedEventWarning     func(*models.ScheduledEvent)
-	GetScheduleEnabled       func() bool
-	Webhooks                 *webhooks.Service
+	ScheduleEventsRepository         scheduleeventsrepository.ScheduleEventsRepository
+	GetStatus                        func() models.Status
+	GetChatOpenMinutes               func() int
+	OnMissedEventWarning             func(*models.ScheduledEvent)
+	GetScheduleEnabled               func() bool
+	GetScheduleReminderMessage       func() string
+	GetScheduleFirstReminderMinutes  func() int
+	GetScheduleSecondReminderMinutes func() int
+	GetServerURL                     func() string
+	NotifyScheduledEvent             func(string)
+	Webhooks                         *webhooks.Service
 }
 
 // New constructs the schedule service.
 func New(deps Deps) *Service {
 	return &Service{
-		repo:                 deps.ScheduleEventsRepository,
-		getStatus:            deps.GetStatus,
-		getChatOpenMinutes:   deps.GetChatOpenMinutes,
-		onMissedEventWarning: deps.OnMissedEventWarning,
-		getScheduleEnabled:   deps.GetScheduleEnabled,
-		webhooks:             deps.Webhooks,
-		chatWindowStates:     make(map[string]chatWindowState),
+		repo:                             deps.ScheduleEventsRepository,
+		getStatus:                        deps.GetStatus,
+		getChatOpenMinutes:               deps.GetChatOpenMinutes,
+		onMissedEventWarning:             deps.OnMissedEventWarning,
+		getScheduleEnabled:               deps.GetScheduleEnabled,
+		getScheduleReminderMessage:       deps.GetScheduleReminderMessage,
+		getScheduleFirstReminderMinutes:  deps.GetScheduleFirstReminderMinutes,
+		getScheduleSecondReminderMinutes: deps.GetScheduleSecondReminderMinutes,
+		getServerURL:                     deps.GetServerURL,
+		notifyScheduledEvent:             deps.NotifyScheduledEvent,
+		webhooks:                         deps.Webhooks,
+		chatWindowStates:                 make(map[string]chatWindowState),
 	}
 }
 
@@ -151,8 +166,89 @@ func (s *Service) tick() {
 
 	s.Refresh()
 	s.updateChatWindow(now)
+	s.sendScheduledEventReminders(now)
 
 	s.sendScheduledEventWebhooks(now)
+}
+
+func (s *Service) sendScheduledEventReminders(now time.Time) {
+	if s.repo == nil || s.notifyScheduledEvent == nil || (s.getScheduleEnabled != nil && !s.getScheduleEnabled()) {
+		return
+	}
+
+	defaultMessage := ""
+	if s.getScheduleReminderMessage != nil {
+		defaultMessage = s.getScheduleReminderMessage()
+	}
+	serverURL := ""
+	if s.getServerURL != nil {
+		serverURL = s.getServerURL()
+	}
+	firstReminderMinutes := 0
+	if s.getScheduleFirstReminderMinutes != nil {
+		firstReminderMinutes = s.getScheduleFirstReminderMinutes()
+	}
+	secondReminderMinutes := 0
+	if s.getScheduleSecondReminderMinutes != nil {
+		secondReminderMinutes = s.getScheduleSecondReminderMinutes()
+	}
+	slots := []struct {
+		number  int
+		minutes int
+	}{
+		{number: scheduleeventsrepository.ReminderFirst, minutes: firstReminderMinutes},
+		{number: scheduleeventsrepository.ReminderSecond, minutes: secondReminderMinutes},
+	}
+	seenOffsets := make(map[int]struct{}, len(slots))
+	for _, slot := range slots {
+		if slot.minutes <= 0 {
+			continue
+		}
+		if _, seen := seenOffsets[slot.minutes]; seen {
+			continue
+		}
+		seenOffsets[slot.minutes] = struct{}{}
+		events, err := s.repo.GetEventsNeedingReminder(now, now.Add(time.Duration(slot.minutes)*time.Minute), slot.number)
+		if err != nil {
+			log.Errorf("unable to fetch scheduled stream reminders: %v", err)
+			continue
+		}
+		for _, event := range events {
+			if event.StartTime.Add(-time.Duration(slot.minutes) * time.Minute).After(now) {
+				continue
+			}
+			s.sendScheduledEventReminder(event, slot.number, now, defaultMessage, serverURL)
+		}
+	}
+}
+
+func (s *Service) sendScheduledEventReminder(event models.ScheduledEvent, reminderNumber int, sentAt time.Time, defaultMessage, serverURL string) {
+	message := event.ReminderMessage
+	if message == "" {
+		message = defaultMessage
+	}
+	if message == "" {
+		return
+	}
+	message = formatScheduledEventReminder(message, event, serverURL)
+	s.notifyScheduledEvent(message)
+	if err := s.repo.SetEventReminderSentAt(event.ID, reminderNumber, sentAt); err != nil {
+		log.Errorf("unable to mark scheduled stream reminder %s as sent: %v", event.ID, err)
+	}
+}
+
+func formatScheduledEventReminder(message string, event models.ScheduledEvent, serverURL string) string {
+	location := time.UTC
+	if event.Timezone != "" {
+		if loaded, err := time.LoadLocation(event.Timezone); err == nil {
+			location = loaded
+		}
+	}
+	start := event.StartTime.In(location).Format("Monday, January 2 at 3:04 PM MST")
+	if serverURL == "" {
+		return fmt.Sprintf("%s\n\n%s\n%s", message, event.Name, start)
+	}
+	return fmt.Sprintf("%s\n\n%s\n%s\n%s", message, event.Name, start, serverURL)
 }
 
 func (s *Service) sendScheduledEventWebhooks(now time.Time) {

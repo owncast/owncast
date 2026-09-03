@@ -3384,7 +3384,7 @@ paths:
           $ref: '#/components/responses/204'
   /admin/config/schedule/remindermessage:
     post:
-      summary: Set the message posted to the Fediverse before a scheduled event starts
+      summary: Set the notification message sent before a scheduled event starts
       operationId: SetScheduleReminderMessage
       tags: ['Internal', 'Admin', 'Schedule']
       security:
@@ -3406,6 +3406,64 @@ paths:
           $ref: '#/components/responses/Default'
     options:
       operationId: SetScheduleReminderMessageOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Schedule']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/schedule/firstreminderminutes:
+    post:
+      summary: Set the first scheduled event reminder lead time
+      operationId: SetScheduleFirstReminderMinutes
+      tags: ['Internal', 'Admin', 'Schedule']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: First reminder setting updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetScheduleFirstReminderMinutesOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Schedule']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/schedule/secondreminderminutes:
+    post:
+      summary: Set the second scheduled event reminder lead time
+      operationId: SetScheduleSecondReminderMinutes
+      tags: ['Internal', 'Admin', 'Schedule']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Second reminder setting updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetScheduleSecondReminderMinutesOptions
       x-internal: true
       tags: ['Objects', 'Internal', 'Admin', 'Schedule']
       responses:
@@ -5233,6 +5291,12 @@ components:
               type: boolean
             reminderMessage:
               type: string
+            firstReminderMinutes:
+              type: integer
+              enum: [0, 15, 30, 60, 120, 1440]
+            secondReminderMinutes:
+              type: integer
+              enum: [0, 15, 30, 60, 120, 1440]
             showCountdown:
               type: boolean
             chatOpenMinutesBefore:

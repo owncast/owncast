@@ -38,6 +38,66 @@ func (e AdminServerConfigScheduleChatOpenMinutesBefore) Valid() bool {
 	}
 }
 
+// Defines values for AdminServerConfigScheduleFirstReminderMinutes.
+const (
+	AdminServerConfigScheduleFirstReminderMinutesN0    AdminServerConfigScheduleFirstReminderMinutes = 0
+	AdminServerConfigScheduleFirstReminderMinutesN120  AdminServerConfigScheduleFirstReminderMinutes = 120
+	AdminServerConfigScheduleFirstReminderMinutesN1440 AdminServerConfigScheduleFirstReminderMinutes = 1440
+	AdminServerConfigScheduleFirstReminderMinutesN15   AdminServerConfigScheduleFirstReminderMinutes = 15
+	AdminServerConfigScheduleFirstReminderMinutesN30   AdminServerConfigScheduleFirstReminderMinutes = 30
+	AdminServerConfigScheduleFirstReminderMinutesN60   AdminServerConfigScheduleFirstReminderMinutes = 60
+)
+
+// Valid indicates whether the value is a known member of the AdminServerConfigScheduleFirstReminderMinutes enum.
+func (e AdminServerConfigScheduleFirstReminderMinutes) Valid() bool {
+	switch e {
+	case AdminServerConfigScheduleFirstReminderMinutesN0:
+		return true
+	case AdminServerConfigScheduleFirstReminderMinutesN120:
+		return true
+	case AdminServerConfigScheduleFirstReminderMinutesN1440:
+		return true
+	case AdminServerConfigScheduleFirstReminderMinutesN15:
+		return true
+	case AdminServerConfigScheduleFirstReminderMinutesN30:
+		return true
+	case AdminServerConfigScheduleFirstReminderMinutesN60:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AdminServerConfigScheduleSecondReminderMinutes.
+const (
+	AdminServerConfigScheduleSecondReminderMinutesN0    AdminServerConfigScheduleSecondReminderMinutes = 0
+	AdminServerConfigScheduleSecondReminderMinutesN120  AdminServerConfigScheduleSecondReminderMinutes = 120
+	AdminServerConfigScheduleSecondReminderMinutesN1440 AdminServerConfigScheduleSecondReminderMinutes = 1440
+	AdminServerConfigScheduleSecondReminderMinutesN15   AdminServerConfigScheduleSecondReminderMinutes = 15
+	AdminServerConfigScheduleSecondReminderMinutesN30   AdminServerConfigScheduleSecondReminderMinutes = 30
+	AdminServerConfigScheduleSecondReminderMinutesN60   AdminServerConfigScheduleSecondReminderMinutes = 60
+)
+
+// Valid indicates whether the value is a known member of the AdminServerConfigScheduleSecondReminderMinutes enum.
+func (e AdminServerConfigScheduleSecondReminderMinutes) Valid() bool {
+	switch e {
+	case AdminServerConfigScheduleSecondReminderMinutesN0:
+		return true
+	case AdminServerConfigScheduleSecondReminderMinutesN120:
+		return true
+	case AdminServerConfigScheduleSecondReminderMinutesN1440:
+		return true
+	case AdminServerConfigScheduleSecondReminderMinutesN15:
+		return true
+	case AdminServerConfigScheduleSecondReminderMinutesN30:
+		return true
+	case AdminServerConfigScheduleSecondReminderMinutesN60:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AutoplayMode.
 const (
 	Always    AutoplayMode = "always"
@@ -338,7 +398,9 @@ type AdminServerConfig struct {
 	Schedule                *struct {
 		ChatOpenMinutesBefore *AdminServerConfigScheduleChatOpenMinutesBefore `json:"chatOpenMinutesBefore,omitempty"`
 		Enabled               *bool                                           `json:"enabled,omitempty"`
+		FirstReminderMinutes  *AdminServerConfigScheduleFirstReminderMinutes  `json:"firstReminderMinutes,omitempty"`
 		ReminderMessage       *string                                         `json:"reminderMessage,omitempty"`
+		SecondReminderMinutes *AdminServerConfigScheduleSecondReminderMinutes `json:"secondReminderMinutes,omitempty"`
 		ShowCountdown         *bool                                           `json:"showCountdown,omitempty"`
 	} `json:"schedule,omitempty"`
 	SocketHostOverride   *string             `json:"socketHostOverride,omitempty"`
@@ -356,6 +418,12 @@ type AdminServerConfig struct {
 
 // AdminServerConfigScheduleChatOpenMinutesBefore defines model for AdminServerConfig.Schedule.ChatOpenMinutesBefore.
 type AdminServerConfigScheduleChatOpenMinutesBefore int
+
+// AdminServerConfigScheduleFirstReminderMinutes defines model for AdminServerConfig.Schedule.FirstReminderMinutes.
+type AdminServerConfigScheduleFirstReminderMinutes int
+
+// AdminServerConfigScheduleSecondReminderMinutes defines model for AdminServerConfig.Schedule.SecondReminderMinutes.
+type AdminServerConfigScheduleSecondReminderMinutes int
 
 // AdminStatus defines model for AdminStatus.
 type AdminStatus struct {
@@ -1611,8 +1679,14 @@ type SetScheduleChatOpenMinutesJSONRequestBody = AdminConfigValue
 // SetScheduleEnabledJSONRequestBody defines body for SetScheduleEnabled for application/json ContentType.
 type SetScheduleEnabledJSONRequestBody = AdminConfigValue
 
+// SetScheduleFirstReminderMinutesJSONRequestBody defines body for SetScheduleFirstReminderMinutes for application/json ContentType.
+type SetScheduleFirstReminderMinutesJSONRequestBody = AdminConfigValue
+
 // SetScheduleReminderMessageJSONRequestBody defines body for SetScheduleReminderMessage for application/json ContentType.
 type SetScheduleReminderMessageJSONRequestBody = AdminConfigValue
+
+// SetScheduleSecondReminderMinutesJSONRequestBody defines body for SetScheduleSecondReminderMinutes for application/json ContentType.
+type SetScheduleSecondReminderMinutesJSONRequestBody = AdminConfigValue
 
 // SetScheduleShowCountdownJSONRequestBody defines body for SetScheduleShowCountdown for application/json ContentType.
 type SetScheduleShowCountdownJSONRequestBody = AdminConfigValue

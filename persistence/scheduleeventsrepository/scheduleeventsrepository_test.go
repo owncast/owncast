@@ -246,8 +246,11 @@ func TestOneOffEventCRUDRoundtrip(t *testing.T) {
 	if event.FederatedAt != nil {
 		t.Errorf("new event FederatedAt = %v, want nil", *event.FederatedAt)
 	}
-	if event.ReminderSentAt != nil {
-		t.Errorf("new event ReminderSentAt = %v, want nil", *event.ReminderSentAt)
+	if event.Reminder1SentAt != nil {
+		t.Errorf("new event Reminder1SentAt = %v, want nil", *event.Reminder1SentAt)
+	}
+	if event.Reminder2SentAt != nil {
+		t.Errorf("new event Reminder2SentAt = %v, want nil", *event.Reminder2SentAt)
 	}
 
 	if err := repo.UpdateEventDetails(id, "event-crud renamed", "updated description", "updated event reminder", 75); err != nil {
@@ -390,7 +393,7 @@ func TestGetEventsNeedingReminderSelectsOnce(t *testing.T) {
 		t.Fatalf("CancelEvent() unexpected error = %v", err)
 	}
 
-	events, err := repo.GetEventsNeedingReminder(startAfter, startBefore)
+	events, err := repo.GetEventsNeedingReminder(startAfter, startBefore, ReminderFirst)
 	if err != nil {
 		t.Fatalf("GetEventsNeedingReminder() unexpected error = %v", err)
 	}
@@ -411,21 +414,18 @@ func TestGetEventsNeedingReminderSelectsOnce(t *testing.T) {
 	}
 
 	stamp := time.Date(2033, 6, 1, 12, 5, 0, 0, time.UTC)
-	if err := repo.SetEventReminderSentAt(inside, stamp); err != nil {
+	if err := repo.SetEventReminderSentAt(inside, ReminderFirst, stamp); err != nil {
 		t.Fatalf("SetEventReminderSentAt() unexpected error = %v", err)
 	}
 	event, err := repo.GetEvent(inside)
 	if err != nil || event == nil {
 		t.Fatalf("GetEvent() after reminder stamp = %v, %v", event, err)
 	}
-	if event.ReminderSentAt == nil {
-		t.Fatalf("event ReminderSentAt = nil after SetEventReminderSentAt()")
-	}
-	if !event.ReminderSentAt.Equal(stamp) {
-		t.Errorf("event ReminderSentAt = %v, want %v", event.ReminderSentAt, stamp)
+	if event.Reminder1SentAt == nil || !event.Reminder1SentAt.Equal(stamp) {
+		t.Errorf("event Reminder1SentAt = %v, want %v", event.Reminder1SentAt, stamp)
 	}
 
-	events, err = repo.GetEventsNeedingReminder(startAfter, startBefore)
+	events, err = repo.GetEventsNeedingReminder(startAfter, startBefore, ReminderFirst)
 	if err != nil {
 		t.Fatalf("GetEventsNeedingReminder() second call unexpected error = %v", err)
 	}
@@ -434,6 +434,17 @@ func TestGetEventsNeedingReminderSelectsOnce(t *testing.T) {
 	}
 	if !containsEventID(events, atUpper) {
 		t.Errorf("GetEventsNeedingReminder() dropped an unreminded event after stamping a different one")
+	}
+
+	if err := repo.SetEventReminderSentAt(inside, ReminderSecond, stamp); err != nil {
+		t.Fatalf("SetEventReminderSentAt() second reminder unexpected error = %v", err)
+	}
+	event, err = repo.GetEvent(inside)
+	if err != nil || event == nil {
+		t.Fatalf("GetEvent() after second reminder stamp = %v, %v", event, err)
+	}
+	if event.Reminder2SentAt == nil || !event.Reminder2SentAt.Equal(stamp) {
+		t.Errorf("event Reminder2SentAt = %v, want %v", event.Reminder2SentAt, stamp)
 	}
 }
 

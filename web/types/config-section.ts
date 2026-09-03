@@ -155,6 +155,8 @@ export interface ScheduleConfig {
   showCountdown: boolean;
   chatOpenMinutesBefore: number;
   reminderMessage: string;
+  firstReminderMinutes: number;
+  secondReminderMinutes: number;
 }
 
 export interface ConfigDetails {

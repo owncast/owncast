@@ -69,6 +69,8 @@ const initialServerConfigState: ConfigDetails = {
     showCountdown: false,
     chatOpenMinutesBefore: 0,
     reminderMessage: '',
+    firstReminderMinutes: 120,
+    secondReminderMinutes: 15,
   },
   notifications: {
     browser: { enabled: false, goLiveMessage: '' },

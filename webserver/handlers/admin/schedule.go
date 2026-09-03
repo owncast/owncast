@@ -466,8 +466,49 @@ func (a *Admin) SetScheduleChatOpenMinutes(w http.ResponseWriter, r *http.Reques
 	webutils.WriteSimpleResponse(w, true, "schedule chat open setting updated")
 }
 
-// SetScheduleReminderMessage sets the message posted to the Fediverse before
-// a scheduled event starts. Empty disables reminders.
+func (a *Admin) setScheduleReminderMinutes(w http.ResponseWriter, r *http.Request, setter func(int) error) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	value, ok := configValue.Value.(float64)
+	if !ok || value != float64(int(value)) {
+		webutils.BadRequestHandler(w, errors.New("value must be a whole number of minutes"))
+		return
+	}
+	minutes := int(value)
+	switch minutes {
+	case 0, 15, 30, 60, 120, 1440:
+	default:
+		webutils.BadRequestHandler(w, errors.New("value must be 0, 15, 30, 60, 120, or 1440 minutes"))
+		return
+	}
+
+	if err := setter(minutes); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	webutils.WriteSimpleResponse(w, true, "schedule reminder setting updated")
+}
+
+// SetScheduleFirstReminderMinutes sets the first reminder lead time.
+func (a *Admin) SetScheduleFirstReminderMinutes(w http.ResponseWriter, r *http.Request) {
+	a.setScheduleReminderMinutes(w, r, a.configRepository.SetScheduleFirstReminderMinutes)
+}
+
+// SetScheduleSecondReminderMinutes sets the second reminder lead time.
+func (a *Admin) SetScheduleSecondReminderMinutes(w http.ResponseWriter, r *http.Request) {
+	a.setScheduleReminderMinutes(w, r, a.configRepository.SetScheduleSecondReminderMinutes)
+}
+
+// SetScheduleReminderMessage sets the message sent through configured
+// notification channels before an event starts. Empty disables reminders.
 func (a *Admin) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) {
 		return

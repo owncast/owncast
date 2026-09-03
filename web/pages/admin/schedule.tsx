@@ -27,8 +27,10 @@ import {
 import {
   API_SCHEDULE_CHAT_OPEN_MINUTES,
   API_SCHEDULE_ENABLED,
-  API_SCHEDULE_SHOW_COUNTDOWN,
+  API_SCHEDULE_FIRST_REMINDER_MINUTES,
   API_SCHEDULE_REMINDER_MESSAGE,
+  API_SCHEDULE_SECOND_REMINDER_MINUTES,
+  API_SCHEDULE_SHOW_COUNTDOWN,
   postConfigUpdateToAPI,
 } from '../../utils/config-constants';
 import {
@@ -454,6 +456,8 @@ const Schedule = () => {
     showCountdown: false,
     chatOpenMinutesBefore: 0,
     reminderMessage: '',
+    firstReminderMinutes: 120,
+    secondReminderMinutes: 15,
   };
 
   const [schedule, setSchedule] = useState<AdminSchedule>({ series: [], events: [] });
@@ -483,6 +487,30 @@ const Schedule = () => {
           value,
           path: 'schedule',
         });
+      },
+      onError: error => message.error(error),
+    });
+  };
+
+  const reminderOptions = [
+    { value: 0, label: t(Localization.Admin.Schedule.reminderDisabled) },
+    { value: 15, label: t(Localization.Admin.Schedule.reminder15Minutes) },
+    { value: 30, label: t(Localization.Admin.Schedule.reminder30Minutes) },
+    { value: 60, label: t(Localization.Admin.Schedule.reminder60Minutes) },
+    { value: 120, label: t(Localization.Admin.Schedule.reminder2Hours) },
+    { value: 1440, label: t(Localization.Admin.Schedule.reminder24Hours) },
+  ];
+
+  const updateReminderMinutes = async (
+    fieldName: 'firstReminderMinutes' | 'secondReminderMinutes',
+    apiPath: string,
+    value: number,
+  ) => {
+    await postConfigUpdateToAPI({
+      apiPath,
+      data: { value },
+      onSuccess: () => {
+        setFieldInConfigState({ fieldName, value, path: 'schedule' });
       },
       onError: error => message.error(error),
     });
@@ -658,6 +686,28 @@ const Schedule = () => {
         label={t(Localization.Admin.Schedule.chatOpenMinutesLabel)}
         tip={t(Localization.Admin.Schedule.chatOpenMinutesTip)}
         onChange={updateChatOpenMinutes}
+      />
+      <ScheduleChatOpenSelector
+        value={scheduleConfig.firstReminderMinutes ?? 120}
+        options={reminderOptions}
+        label={t(Localization.Admin.Schedule.firstReminderLabel)}
+        tip={t(Localization.Admin.Schedule.firstReminderTip)}
+        onChange={value =>
+          updateReminderMinutes('firstReminderMinutes', API_SCHEDULE_FIRST_REMINDER_MINUTES, value)
+        }
+      />
+      <ScheduleChatOpenSelector
+        value={scheduleConfig.secondReminderMinutes ?? 15}
+        options={reminderOptions}
+        label={t(Localization.Admin.Schedule.secondReminderLabel)}
+        tip={t(Localization.Admin.Schedule.secondReminderTip)}
+        onChange={value =>
+          updateReminderMinutes(
+            'secondReminderMinutes',
+            API_SCHEDULE_SECOND_REMINDER_MINUTES,
+            value,
+          )
+        }
       />
 
       <TextFieldWithSubmit

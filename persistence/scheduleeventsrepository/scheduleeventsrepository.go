@@ -6,6 +6,11 @@ import (
 	"github.com/owncast/owncast/models"
 )
 
+const (
+	ReminderFirst  = 1
+	ReminderSecond = 2
+)
+
 // ScheduleEventsRepository defines the interface for scheduled stream event
 // storage. All timestamps are normalized to UTC at this boundary so SQLite
 // string comparisons on TIMESTAMP columns stay consistent.
@@ -45,8 +50,8 @@ type ScheduleEventsRepository interface {
 	GetNextUpcomingEvents(after time.Time, limit int) ([]models.ScheduledEvent, error)
 	GetEventsToFederate(startingAfter time.Time) ([]models.ScheduledEvent, error)
 	SetEventFederatedAt(id string, t time.Time) error
-	GetEventsNeedingReminder(startAfter, startBefore time.Time) ([]models.ScheduledEvent, error)
-	SetEventReminderSentAt(id string, t time.Time) error
+	GetEventsNeedingReminder(startAfter, startBefore time.Time, reminderNumber int) ([]models.ScheduledEvent, error)
+	SetEventReminderSentAt(id string, reminderNumber int, t time.Time) error
 	GetEventsNeedingWebhookWarning(startAfter, startBefore time.Time) ([]models.ScheduledEvent, error)
 	GetEventsNeedingWebhookStart(now time.Time) ([]models.ScheduledEvent, error)
 	GetEventsNeedingWebhookEnd(now time.Time) ([]models.ScheduledEvent, error)

@@ -419,11 +419,17 @@ SELECT * FROM stream_events WHERE federated_at IS NULL AND status = 'scheduled' 
 -- name: SetStreamEventFederatedAt :exec
 UPDATE stream_events SET federated_at = ? WHERE id = ?;
 
--- name: GetStreamEventsNeedingReminder :many
-SELECT * FROM stream_events WHERE reminder_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time;
+-- name: GetStreamEventsNeedingReminder1 :many
+SELECT * FROM stream_events WHERE reminder_1_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time;
 
--- name: SetStreamEventReminderSentAt :exec
-UPDATE stream_events SET reminder_sent_at = ? WHERE id = ?;
+-- name: GetStreamEventsNeedingReminder2 :many
+SELECT * FROM stream_events WHERE reminder_2_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time;
+
+-- name: SetStreamEventReminder1SentAt :exec
+UPDATE stream_events SET reminder_1_sent_at = ? WHERE id = ?;
+
+-- name: SetStreamEventReminder2SentAt :exec
+UPDATE stream_events SET reminder_2_sent_at = ? WHERE id = ?;
 
 -- name: GetStreamEventsNeedingWebhookWarning :many
 SELECT * FROM stream_events WHERE webhook_warning_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time;

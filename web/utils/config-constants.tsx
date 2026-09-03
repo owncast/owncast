@@ -65,6 +65,8 @@ export const API_SCHEDULE_ENABLED = '/schedule/enabled';
 export const API_SCHEDULE_SHOW_COUNTDOWN = '/schedule/showcountdown';
 export const API_SCHEDULE_CHAT_OPEN_MINUTES = '/schedule/chatopenminutes';
 export const API_SCHEDULE_REMINDER_MESSAGE = '/schedule/remindermessage';
+export const API_SCHEDULE_FIRST_REMINDER_MINUTES = '/schedule/firstreminderminutes';
+export const API_SCHEDULE_SECOND_REMINDER_MINUTES = '/schedule/secondreminderminutes';
 
 export async function postConfigUpdateToAPI(args: ApiPostArgs) {
   const { apiPath, data, onSuccess, onError } = args;

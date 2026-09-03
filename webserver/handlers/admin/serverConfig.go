@@ -99,6 +99,8 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			ShowCountdown:         configRepository.GetScheduleShowCountdown(),
 			ChatOpenMinutesBefore: configRepository.GetScheduleChatOpenMinutes(),
 			ReminderMessage:       configRepository.GetScheduleReminderMessage(),
+			FirstReminderMinutes:  configRepository.GetScheduleFirstReminderMinutes(),
+			SecondReminderMinutes: configRepository.GetScheduleSecondReminderMinutes(),
 		},
 		Notifications: notificationsConfigResponse{
 			Discord: configRepository.GetDiscordConfig(),
@@ -208,6 +210,8 @@ type scheduleAdminConfigResponse struct {
 	ShowCountdown         bool   `json:"showCountdown"`
 	ChatOpenMinutesBefore int    `json:"chatOpenMinutesBefore"`
 	ReminderMessage       string `json:"reminderMessage"`
+	FirstReminderMinutes  int    `json:"firstReminderMinutes"`
+	SecondReminderMinutes int    `json:"secondReminderMinutes"`
 }
 
 type notificationsConfigResponse struct {

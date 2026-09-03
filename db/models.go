@@ -143,6 +143,8 @@ type StreamEvent struct {
 	WebhookStartedSentAt sql.NullTime
 	WebhookEndedSentAt   sql.NullTime
 	ReminderMessage      string
+	Reminder1SentAt      sql.NullTime
+	Reminder2SentAt      sql.NullTime
 }
 
 type StreamEventSeries struct {

@@ -51,5 +51,6 @@ type ScheduledEvent struct {
 	Timezone        string     `json:"timezone"`
 	Status          string     `json:"status"`
 	FederatedAt     *time.Time `json:"-"`
-	ReminderSentAt  *time.Time `json:"-"`
+	Reminder1SentAt *time.Time `json:"-"`
+	Reminder2SentAt *time.Time `json:"-"`
 }

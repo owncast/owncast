@@ -308,6 +308,22 @@ func (s *ServerInterfaceImpl) SetScheduleChatOpenMinutesOptions(w http.ResponseW
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleChatOpenMinutes)(w, r)
 }
 
+func (s *ServerInterfaceImpl) SetScheduleFirstReminderMinutes(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleFirstReminderMinutes)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetScheduleFirstReminderMinutesOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleFirstReminderMinutes)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetScheduleSecondReminderMinutes(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleSecondReminderMinutes)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetScheduleSecondReminderMinutesOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleSecondReminderMinutes)(w, r)
+}
+
 func (s *ServerInterfaceImpl) GetWebhooksOptions(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetWebhooks)(w, r)
 }
