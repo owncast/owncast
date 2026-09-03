@@ -8,16 +8,20 @@ import (
 // GetStatus returns a snapshot of the current stream state suitable for
 // the public/admin status APIs.
 func (s *Service) GetStatus() models.Status {
+	s.statsMu.RLock()
+	if s.stats == nil {
+		s.statsMu.RUnlock()
+		return models.Status{}
+	}
+	s.statsMu.RUnlock()
+
 	waitTime := float64(s.configRepository.GetStreamLatencyLevel().SecondsPerSegment) * 3.0
 	if waitTime < 7 {
 		waitTime = 7
 	}
 
 	s.statsMu.RLock()
-	if s.stats == nil {
-		s.statsMu.RUnlock()
-		return models.Status{}
-	}
+	defer s.statsMu.RUnlock()
 
 	online := s.isStreamConnectedLocked(waitTime)
 	viewerCount := 0
@@ -32,10 +36,8 @@ func (s *Service) GetStatus() models.Status {
 		LastDisconnectTime:    s.stats.LastDisconnectTime,
 		LastConnectTime:       s.stats.LastConnectTime,
 		VersionNumber:         config.VersionNumber,
+		StreamTitle:           s.configRepository.GetStreamTitle(),
 	}
-	s.statsMu.RUnlock()
-
-	status.StreamTitle = s.configRepository.GetStreamTitle()
 	return status
 }
 
