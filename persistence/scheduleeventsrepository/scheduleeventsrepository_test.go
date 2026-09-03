@@ -435,6 +435,13 @@ func TestGetEventsNeedingReminderSelectsOnce(t *testing.T) {
 	if !containsEventID(events, atUpper) {
 		t.Errorf("GetEventsNeedingReminder() dropped an unreminded event after stamping a different one")
 	}
+	events, err = repo.GetEventsNeedingReminder(startAfter, startBefore, ReminderSecond)
+	if err != nil {
+		t.Fatalf("GetEventsNeedingReminder() second reminder call unexpected error = %v", err)
+	}
+	if !containsEventID(events, inside) {
+		t.Fatal("second reminder selected no longer-reminded event")
+	}
 
 	if err := repo.SetEventReminderSentAt(inside, ReminderSecond, stamp); err != nil {
 		t.Fatalf("SetEventReminderSentAt() second reminder unexpected error = %v", err)
@@ -445,6 +452,24 @@ func TestGetEventsNeedingReminderSelectsOnce(t *testing.T) {
 	}
 	if event.Reminder2SentAt == nil || !event.Reminder2SentAt.Equal(stamp) {
 		t.Errorf("event Reminder2SentAt = %v, want %v", event.Reminder2SentAt, stamp)
+	}
+	events, err = repo.GetEventsNeedingReminder(startAfter, startBefore, ReminderSecond)
+	if err != nil {
+		t.Fatalf("GetEventsNeedingReminder() after second reminder unexpected error = %v", err)
+	}
+	if containsEventID(events, inside) {
+		t.Fatal("second reminder returned an already-reminded event")
+	}
+}
+
+func TestReminderRepositoryRejectsUnknownReminderNumber(t *testing.T) {
+	repo := testRepo
+	now := time.Date(2033, 6, 1, 12, 0, 0, 0, time.UTC)
+	if _, err := repo.GetEventsNeedingReminder(now, now.Add(time.Hour), 3); err == nil {
+		t.Fatal("GetEventsNeedingReminder() accepted an unknown reminder number")
+	}
+	if err := repo.SetEventReminderSentAt("missing", 3, now); err == nil {
+		t.Fatal("SetEventReminderSentAt() accepted an unknown reminder number")
 	}
 }
 

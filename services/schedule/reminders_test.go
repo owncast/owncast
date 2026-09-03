@@ -61,10 +61,16 @@ func TestScheduledEventRemindersUseOverridesAndFireOnce(t *testing.T) {
 	if len(messages) != 2 {
 		t.Fatalf("sent %d reminders, want 2", len(messages))
 	}
-	if !strings.Contains(messages[0], "Custom reminder") || !strings.Contains(messages[0], "Custom Event") {
+	if !strings.Contains(messages[0], "Custom reminder") ||
+		!strings.Contains(messages[0], "Custom Event") ||
+		!strings.Contains(messages[0], "Sunday, September 8 at 8:00 PM UTC") ||
+		!strings.Contains(messages[0], "https://owncast.example") {
 		t.Errorf("custom reminder message = %q", messages[0])
 	}
-	if !strings.Contains(messages[1], "Default reminder") || !strings.Contains(messages[1], "Default Event") {
+	if !strings.Contains(messages[1], "Default reminder") ||
+		!strings.Contains(messages[1], "Default Event") ||
+		!strings.Contains(messages[1], "Sunday, September 8 at 6:15 PM UTC") ||
+		!strings.Contains(messages[1], "https://owncast.example") {
 		t.Errorf("default reminder message = %q", messages[1])
 	}
 	if _, ok := repo.sentAt[scheduleeventsrepository.ReminderFirst]["custom"]; !ok {
@@ -118,5 +124,91 @@ func TestScheduledEventRemindersDoNotSendEarly(t *testing.T) {
 	service.sendScheduledEventReminders(now)
 	if called {
 		t.Error("reminder was sent before its due time")
+	}
+}
+
+func TestScheduledEventRemindersSkipWhenScheduleDisabled(t *testing.T) {
+	repo := &reminderScheduleRepo{
+		events: map[int][]models.ScheduledEvent{
+			scheduleeventsrepository.ReminderFirst: {{ID: "event", StartTime: time.Now().Add(time.Hour)}},
+		},
+		sentAt: map[int]map[string]time.Time{
+			scheduleeventsrepository.ReminderFirst: {},
+		},
+	}
+	called := false
+	service := New(Deps{
+		ScheduleEventsRepository:        repo,
+		GetScheduleEnabled:              func() bool { return false },
+		GetScheduleFirstReminderMinutes: func() int { return 60 },
+		NotifyScheduledEvent: func(string) {
+			called = true
+		},
+	})
+
+	service.sendScheduledEventReminders(time.Now())
+	if called {
+		t.Error("disabled schedule sent a reminder")
+	}
+}
+
+func TestScheduledEventRemindersDoNotMarkEmptyMessages(t *testing.T) {
+	now := time.Date(2030, time.September, 8, 18, 0, 0, 0, time.UTC)
+	repo := &reminderScheduleRepo{
+		events: map[int][]models.ScheduledEvent{
+			scheduleeventsrepository.ReminderFirst: {
+				{ID: "empty", StartTime: now.Add(2 * time.Hour)},
+				{ID: "custom", ReminderMessage: "Custom", StartTime: now.Add(2 * time.Hour)},
+			},
+		},
+		sentAt: map[int]map[string]time.Time{
+			scheduleeventsrepository.ReminderFirst: {},
+		},
+	}
+	var messages []string
+	service := New(Deps{
+		ScheduleEventsRepository:        repo,
+		GetScheduleFirstReminderMinutes: func() int { return 120 },
+		NotifyScheduledEvent: func(message string) {
+			messages = append(messages, message)
+		},
+	})
+
+	service.sendScheduledEventReminders(now)
+
+	if len(messages) != 1 || !strings.Contains(messages[0], "Custom") {
+		t.Errorf("messages = %#v, want one custom reminder", messages)
+	}
+	if _, marked := repo.sentAt[scheduleeventsrepository.ReminderFirst]["empty"]; marked {
+		t.Error("empty reminder was marked sent")
+	}
+}
+
+func TestScheduledEventRemindersDoNotDuplicateEqualOffsets(t *testing.T) {
+	now := time.Date(2030, time.September, 8, 18, 0, 0, 0, time.UTC)
+	repo := &reminderScheduleRepo{
+		events: map[int][]models.ScheduledEvent{
+			scheduleeventsrepository.ReminderFirst:  {{ID: "first", StartTime: now.Add(15 * time.Minute)}},
+			scheduleeventsrepository.ReminderSecond: {{ID: "second", StartTime: now.Add(15 * time.Minute)}},
+		},
+		sentAt: map[int]map[string]time.Time{
+			scheduleeventsrepository.ReminderFirst:  {},
+			scheduleeventsrepository.ReminderSecond: {},
+		},
+	}
+	count := 0
+	service := New(Deps{
+		ScheduleEventsRepository:         repo,
+		GetScheduleFirstReminderMinutes:  func() int { return 15 },
+		GetScheduleSecondReminderMinutes: func() int { return 15 },
+		GetScheduleReminderMessage:       func() string { return "Reminder" },
+		NotifyScheduledEvent: func(string) {
+			count++
+		},
+	})
+
+	service.sendScheduledEventReminders(now)
+	if count != 1 {
+		t.Errorf("sent %d reminders for equal offsets, want 1", count)
 	}
 }
