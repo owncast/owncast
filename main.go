@@ -313,7 +313,8 @@ func main() {
 			}
 			notificationService.NotifyScheduledEvent(message)
 		},
-		Webhooks: webhooksSvc,
+		SetStreamTitle: configRepository.SetStreamTitle,
+		Webhooks:       webhooksSvc,
 		OnMissedEventWarning: func(_ *models.ScheduledEvent) {
 			if err := chatSvc.SendSystemMessage(schedule.MissedEventChatMessage, false); err != nil {
 				log.Errorf("unable to send missed scheduled stream chat message: %v", err)

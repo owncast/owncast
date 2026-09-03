@@ -2,6 +2,7 @@ package schedule
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -73,7 +74,7 @@ func TestScheduledEventWebhooksFireOnce(t *testing.T) {
 	now := time.Date(2030, time.September, 8, 18, 0, 0, 0, time.UTC)
 	repo := &lifecycleScheduleRepo{
 		warning: models.ScheduledEvent{ID: "warning"},
-		started: models.ScheduledEvent{ID: "started"},
+		started: models.ScheduledEvent{ID: "started", Name: "Scheduled title"},
 		ended:   models.ScheduledEvent{ID: "ended"},
 	}
 	events := dispatcher.New()
@@ -89,10 +90,15 @@ func TestScheduledEventWebhooksFireOnce(t *testing.T) {
 		WebhookRepository: lifecycleWebhookRepo{},
 		Events:            events,
 	})
+	var titles []string
 	service := New(Deps{
 		ScheduleEventsRepository: repo,
 		GetScheduleEnabled:       func() bool { return true },
-		Webhooks:                 webhookService,
+		SetStreamTitle: func(title string) error {
+			titles = append(titles, title)
+			return nil
+		},
+		Webhooks: webhookService,
 	})
 
 	service.sendScheduledEventWebhooks(now)
@@ -110,5 +116,50 @@ func TestScheduledEventWebhooksFireOnce(t *testing.T) {
 		if actions[i] != want[i] {
 			t.Errorf("webhook action %d = %q, want %q", i, actions[i], want[i])
 		}
+	}
+	if len(titles) != 1 || titles[0] != "Scheduled title" {
+		t.Errorf("stream titles = %v, want [Scheduled title]", titles)
+	}
+}
+
+func TestScheduledEventTitleFailureRetriesWithoutStartingLifecycle(t *testing.T) {
+	now := time.Date(2030, time.September, 8, 18, 0, 0, 0, time.UTC)
+	repo := &lifecycleScheduleRepo{started: models.ScheduledEvent{ID: "started", Name: "Scheduled title"}}
+	events := dispatcher.New()
+	var actions []models.ScheduledEventWebhookAction
+	events.AddListener(func(_ context.Context, event dispatcher.Event) {
+		data := event.Payload.(webhooks.WebhookEvent).EventData.(*webhooks.WebhookScheduledEventData)
+		actions = append(actions, data.Action)
+	})
+	webhookService := webhooks.New(webhooks.Deps{
+		GetStatus:         func() models.Status { return models.Status{} },
+		ConfigRepository:  lifecycleWebhookConfig{},
+		WebhookRepository: lifecycleWebhookRepo{},
+		Events:            events,
+	})
+	attempts := 0
+	service := New(Deps{
+		ScheduleEventsRepository: repo,
+		GetScheduleEnabled:       func() bool { return true },
+		SetStreamTitle: func(string) error {
+			attempts++
+			if attempts == 1 {
+				return errors.New("storage unavailable")
+			}
+			return nil
+		},
+		Webhooks: webhookService,
+	})
+
+	service.sendScheduledEventWebhooks(now)
+	if len(actions) != 0 {
+		t.Fatalf("actions after title failure = %v, want none", actions)
+	}
+	service.sendScheduledEventWebhooks(now.Add(time.Minute))
+	if len(actions) != 1 || actions[0] != models.ScheduledEventStarted {
+		t.Fatalf("actions after title retry = %v, want [started]", actions)
+	}
+	if attempts != 2 {
+		t.Errorf("title attempts = %d, want 2", attempts)
 	}
 }

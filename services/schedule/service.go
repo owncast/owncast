@@ -61,6 +61,7 @@ type Service struct {
 	getScheduleSecondReminderMinutes func() int
 	getServerURL                     func() string
 	notifyScheduledEvent             func(string)
+	setStreamTitle                   func(string) error
 	webhooks                         *webhooks.Service
 	chatWindowStates                 map[string]chatWindowState
 
@@ -85,6 +86,7 @@ type Deps struct {
 	GetScheduleSecondReminderMinutes func() int
 	GetServerURL                     func() string
 	NotifyScheduledEvent             func(string)
+	SetStreamTitle                   func(string) error
 	Webhooks                         *webhooks.Service
 }
 
@@ -101,6 +103,7 @@ func New(deps Deps) *Service {
 		getScheduleSecondReminderMinutes: deps.GetScheduleSecondReminderMinutes,
 		getServerURL:                     deps.GetServerURL,
 		notifyScheduledEvent:             deps.NotifyScheduledEvent,
+		setStreamTitle:                   deps.SetStreamTitle,
 		webhooks:                         deps.Webhooks,
 		chatWindowStates:                 make(map[string]chatWindowState),
 	}
@@ -268,17 +271,7 @@ func (s *Service) sendScheduledEventWebhooks(now time.Time) {
 		}
 	}
 
-	started, err := s.repo.GetEventsNeedingWebhookStart(now)
-	if err != nil {
-		log.Errorf("unable to fetch started scheduled stream events: %v", err)
-	} else {
-		for _, event := range started {
-			s.webhooks.SendScheduledEvent(event, models.ScheduledEventStarted)
-			if err := s.repo.SetEventWebhookStartedSentAt(event.ID, now); err != nil {
-				log.Errorf("unable to mark scheduled stream event start %s as sent: %v", event.ID, err)
-			}
-		}
-	}
+	s.sendScheduledEventStartedWebhooks(now)
 
 	ended, err := s.repo.GetEventsNeedingWebhookEnd(now)
 	if err != nil {
@@ -289,6 +282,26 @@ func (s *Service) sendScheduledEventWebhooks(now time.Time) {
 			if err := s.repo.SetEventWebhookEndedSentAt(event.ID, now); err != nil {
 				log.Errorf("unable to mark scheduled stream event end %s as sent: %v", event.ID, err)
 			}
+		}
+	}
+}
+
+func (s *Service) sendScheduledEventStartedWebhooks(now time.Time) {
+	started, err := s.repo.GetEventsNeedingWebhookStart(now)
+	if err != nil {
+		log.Errorf("unable to fetch started scheduled stream events: %v", err)
+		return
+	}
+	for _, event := range started {
+		if s.setStreamTitle != nil {
+			if err := s.setStreamTitle(event.Name); err != nil {
+				log.Errorf("unable to set scheduled stream title %q: %v", event.Name, err)
+				continue
+			}
+		}
+		s.webhooks.SendScheduledEvent(event, models.ScheduledEventStarted)
+		if err := s.repo.SetEventWebhookStartedSentAt(event.ID, now); err != nil {
+			log.Errorf("unable to mark scheduled stream event start %s as sent: %v", event.ID, err)
 		}
 	}
 }
