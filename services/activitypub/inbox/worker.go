@@ -266,7 +266,11 @@ func (s *Service) Verify(request *http.Request, body []byte) (*url.URL, error) {
 	}
 
 	if publicKeyActorIRI == nil {
-		return nil, errors.New("public key owner IRI is empty")
+		return nil, errors.New("public key has no owner")
+	}
+
+	if !strings.EqualFold(pubKeyID.Hostname(), publicKeyActorIRI.Hostname()) {
+		return nil, fmt.Errorf("public key host does not match key owner host")
 	}
 
 	// Test to see if the actor is in the list of blocked federated domains.
