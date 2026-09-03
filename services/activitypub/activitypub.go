@@ -170,6 +170,11 @@ func (s *Service) SendDirectFederatedMessage(message, account string) error {
 	return s.outbox.SendDirectMessageToAccount(message, account)
 }
 
+// SendScheduledEvent publishes one scheduled stream occurrence to all followers.
+func (s *Service) SendScheduledEvent(event models.ScheduledEvent) error {
+	return s.outbox.SendScheduledEvent(event)
+}
+
 // GetFollowerCount returns the local tracked follower count.
 func (s *Service) GetFollowerCount() (int64, error) {
 	return s.followers.GetCount()

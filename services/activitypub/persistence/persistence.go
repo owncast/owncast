@@ -100,6 +100,17 @@ func (s *Service) AddToOutbox(iri string, itemData []byte, typeString string, is
 	return tx.Commit()
 }
 
+// UpsertOutboxObject stores the latest representation of a dereferenceable
+// ActivityPub object.
+func (s *Service) UpsertOutboxObject(iri string, itemData []byte, typeString string) error {
+	return s.datastore.GetQueries().UpsertOutboxObject(context.Background(), db.UpsertOutboxObjectParams{
+		Iri:              iri,
+		Value:            itemData,
+		Type:             typeString,
+		LiveNotification: sql.NullBool{Bool: false, Valid: true},
+	})
+}
+
 // GetObjectByIRI returns a string representation of a single object by the IRI.
 func (s *Service) GetObjectByIRI(iri string) (string, bool, time.Time, error) {
 	row, err := s.datastore.GetQueries().GetObjectFromOutboxByIRI(context.Background(), iri)

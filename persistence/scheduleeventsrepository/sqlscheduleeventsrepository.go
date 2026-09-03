@@ -435,6 +435,14 @@ func eventFromRow(row db.StreamEvent) models.ScheduledEvent {
 		federatedAt := row.FederatedAt.Time.UTC()
 		event.FederatedAt = &federatedAt
 	}
+	if row.CreatedAt.Valid {
+		createdAt := row.CreatedAt.Time.UTC()
+		event.CreatedAt = &createdAt
+	}
+	if row.UpdatedAt.Valid {
+		updatedAt := row.UpdatedAt.Time.UTC()
+		event.UpdatedAt = &updatedAt
+	}
 	if row.Reminder1SentAt.Valid {
 		reminder1SentAt := row.Reminder1SentAt.Time.UTC()
 		event.Reminder1SentAt = &reminder1SentAt

@@ -94,6 +94,7 @@ func (a *Admin) UpsertScheduledEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	a.schedule.Refresh()
+	a.schedule.PublishPendingEvents()
 	a.writeAdminSchedule(w)
 }
 

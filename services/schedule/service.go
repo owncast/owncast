@@ -56,6 +56,8 @@ type Service struct {
 	getChatOpenMinutes               func() int
 	onMissedEventWarning             func(*models.ScheduledEvent)
 	getScheduleEnabled               func() bool
+	getFederationEnabled             func() bool
+	federateScheduledEvent           func(models.ScheduledEvent) error
 	getScheduleReminderMessage       func() string
 	getScheduleFirstReminderMinutes  func() int
 	getScheduleSecondReminderMinutes func() int
@@ -81,6 +83,8 @@ type Deps struct {
 	GetChatOpenMinutes               func() int
 	OnMissedEventWarning             func(*models.ScheduledEvent)
 	GetScheduleEnabled               func() bool
+	GetFederationEnabled             func() bool
+	FederateScheduledEvent           func(models.ScheduledEvent) error
 	GetScheduleReminderMessage       func() string
 	GetScheduleFirstReminderMinutes  func() int
 	GetScheduleSecondReminderMinutes func() int
@@ -98,6 +102,8 @@ func New(deps Deps) *Service {
 		getChatOpenMinutes:               deps.GetChatOpenMinutes,
 		onMissedEventWarning:             deps.OnMissedEventWarning,
 		getScheduleEnabled:               deps.GetScheduleEnabled,
+		getFederationEnabled:             deps.GetFederationEnabled,
+		federateScheduledEvent:           deps.FederateScheduledEvent,
 		getScheduleReminderMessage:       deps.GetScheduleReminderMessage,
 		getScheduleFirstReminderMinutes:  deps.GetScheduleFirstReminderMinutes,
 		getScheduleSecondReminderMinutes: deps.GetScheduleSecondReminderMinutes,
@@ -167,11 +173,41 @@ func (s *Service) tick() {
 		log.Debugf("Materialized %d scheduled stream event(s)", inserted)
 	}
 
+	s.publishPendingEvents(now)
 	s.Refresh()
 	s.updateChatWindow(now)
 	s.sendScheduledEventReminders(now)
 
 	s.sendScheduledEventWebhooks(now)
+}
+
+// PublishPendingEvents immediately queues new occurrences for ActivityPub
+// delivery. Admin mutations call this instead of waiting for the next tick.
+func (s *Service) PublishPendingEvents() {
+	s.publishPendingEvents(time.Now())
+}
+
+func (s *Service) publishPendingEvents(now time.Time) {
+	if s.repo == nil || s.federateScheduledEvent == nil ||
+		(s.getScheduleEnabled != nil && !s.getScheduleEnabled()) ||
+		(s.getFederationEnabled != nil && !s.getFederationEnabled()) {
+		return
+	}
+
+	events, err := s.repo.GetEventsToFederate(now)
+	if err != nil {
+		log.Errorf("unable to fetch scheduled stream events for federation: %v", err)
+		return
+	}
+	for _, event := range events {
+		if err := s.federateScheduledEvent(event); err != nil {
+			log.Errorf("unable to federate scheduled stream event %s: %v", event.ID, err)
+			continue
+		}
+		if err := s.repo.SetEventFederatedAt(event.ID, now); err != nil {
+			log.Errorf("unable to mark scheduled stream event %s as federated: %v", event.ID, err)
+		}
+	}
 }
 
 func (s *Service) sendScheduledEventReminders(now time.Time) {

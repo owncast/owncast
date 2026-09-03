@@ -10,6 +10,7 @@ mkdir -p "${CERT_DIR}"
 mkcert -cert-file "${CERT_DIR}/cert.pem" \
        -key-file "${CERT_DIR}/key.pem" \
        owncast.local owncast2.local snac.local indieauth.local gancio.local localhost 127.0.0.1
+cp "$(mkcert -CAROOT)/rootCA.pem" "${CERT_DIR}/rootCA.pem"
 
 # This container runs as root and the repo is bind-mounted from the host, so
 # anything the test writes into the tree (Owncast's ./data dir, created mode

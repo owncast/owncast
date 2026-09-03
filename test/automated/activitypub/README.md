@@ -83,17 +83,26 @@ behind the shared proxy. It:
 
 ### `test-gancio-v2.sh` (Owncast and Gancio v2)
 
-This probe starts the official Gancio v2 beta image beside Owncast, sharing the
-test container's network namespace. Caddy serves it as `gancio.local` with the
-same trusted test certificate used for Owncast. The probe verifies Gancio
-NodeInfo discovery and Owncast actor discovery through the proxy.
+This probe starts Owncast, Gancio v2, and a shared HTTPS proxy. It:
+
+- trusts and follows the Owncast actor from Gancio
+- creates a future Owncast scheduled event
+- verifies the stable FEP-8a8e `Event` object
+- waits for Gancio to import the delivered `Create` activity
+- verifies Gancio links the imported event back to Owncast
 
 Only this test receives the host Docker socket. The Gancio image is pinned by
-digest for repeatable runs. Set `GANCIO_IMAGE` to test another build.
+digest for repeatability. Set `GANCIO_IMAGE` to test another build.
 
-Scheduled ActivityPub `Event` delivery is not tested yet because Owncast does
-not publish scheduled events. This probe establishes the cross-instance
-topology that test will use.
+Keep the completed stack running for manual inspection:
+
+```bash
+KEEP_RUNNING=true ./run.sh test-gancio-v2.sh
+```
+
+The command prints the Owncast and Gancio URLs. Add `owncast.local` and
+`gancio.local` as `127.0.0.1` entries in `/etc/hosts` if they do not resolve
+locally. Press Ctrl+C to stop and remove the test stack.
 
 ### `test-fediverse-otp.sh` (Fediverse authentication, snac2-based)
 

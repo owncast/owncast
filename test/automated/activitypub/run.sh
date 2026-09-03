@@ -16,17 +16,24 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 IMAGE_NAME="owncast-ap-test"
+TEST_SCRIPT="${1:-test-federation.sh}"
 
 echo "Building Docker image..."
 docker build -t "${IMAGE_NAME}" "${SCRIPT_DIR}"
 
 # Collect environment variables to pass through
 ENV_ARGS=()
-for var in USER_COUNT FOLLOW_DELAY KEEP_RUNNING CI PROXY_PORT SNAC_PORT OWNCAST_PORT OWNCAST2_PORT CLEAR_SHARED_INBOX_PERCENT GANCIO_IMAGE; do
+for var in USER_COUNT FOLLOW_DELAY KEEP_RUNNING CI SNAC_PORT OWNCAST_PORT OWNCAST2_PORT CLEAR_SHARED_INBOX_PERCENT GANCIO_IMAGE; do
     if [[ -n "${!var}" ]]; then
         ENV_ARGS+=("-e" "${var}=${!var}")
     fi
 done
+if [[ "${TEST_SCRIPT}" == "test-gancio-v2.sh" ]]; then
+    # Gancio v2 signs the Host header without non-default ports.
+    ENV_ARGS+=("-e" "PROXY_PORT=443")
+elif [[ -n "${PROXY_PORT:-}" ]]; then
+    ENV_ARGS+=("-e" "PROXY_PORT=${PROXY_PORT}")
+fi
 
 # Always skip interactive prompts inside the container
 ENV_ARGS+=("-e" "CI=true")
@@ -38,17 +45,23 @@ ENV_ARGS+=("-e" "HOST_UID=$(id -u)" "-e" "HOST_GID=$(id -g)")
 
 # Port-forward when KEEP_RUNNING is set so the user can access the services
 EXTRA_ARGS=()
-if [[ "${KEEP_RUNNING}" == "true" ]]; then
+if [[ "${KEEP_RUNNING:-}" == "true" ]]; then
     OWNCAST_PORT="${OWNCAST_PORT:-8080}"
-    OWNCAST2_PORT="${OWNCAST2_PORT:-8081}"
-    PROXY_PORT="${PROXY_PORT:-8443}"
-    EXTRA_ARGS+=("-p" "${OWNCAST_PORT}:${OWNCAST_PORT}" "-p" "${OWNCAST2_PORT}:${OWNCAST2_PORT}" "-p" "${PROXY_PORT}:${PROXY_PORT}")
+    if [[ "${TEST_SCRIPT}" == "test-gancio-v2.sh" ]]; then
+        HOST_PROXY_PORT="${PROXY_PORT:-8443}"
+        ENV_ARGS+=("-e" "HOST_PROXY_PORT=${HOST_PROXY_PORT}")
+        EXTRA_ARGS+=("-p" "${OWNCAST_PORT}:${OWNCAST_PORT}" "-p" "${HOST_PROXY_PORT}:443")
+    else
+        OWNCAST2_PORT="${OWNCAST2_PORT:-8081}"
+        PROXY_PORT="${PROXY_PORT:-8443}"
+        EXTRA_ARGS+=("-p" "${OWNCAST_PORT}:${OWNCAST_PORT}" "-p" "${OWNCAST2_PORT}:${OWNCAST2_PORT}" "-p" "${PROXY_PORT}:${PROXY_PORT}")
+    fi
 fi
 
 # The Gancio v2 probe starts its official Docker image as a sidecar sharing
 # this test container's network namespace. Mount the daemon socket only for
 # that explicit scenario.
-if [[ "${1:-}" == "test-gancio-v2.sh" ]]; then
+if [[ "${TEST_SCRIPT}" == "test-gancio-v2.sh" ]]; then
     ENV_ARGS+=("-e" "HOST_REPO_ROOT=${REPO_ROOT}")
     EXTRA_ARGS+=("-v" "/var/run/docker.sock:/var/run/docker.sock")
 fi

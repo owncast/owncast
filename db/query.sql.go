@@ -2878,3 +2878,25 @@ func (q *Queries) UpdateStreamEventSeries(ctx context.Context, arg UpdateStreamE
 	)
 	return err
 }
+
+const upsertOutboxObject = `-- name: UpsertOutboxObject :exec
+INSERT INTO ap_outbox(iri, value, type, live_notification) VALUES(?, ?, ?, ?)
+ON CONFLICT(iri) DO UPDATE SET value = excluded.value, type = excluded.type, live_notification = excluded.live_notification
+`
+
+type UpsertOutboxObjectParams struct {
+	Iri              string
+	Value            []byte
+	Type             string
+	LiveNotification sql.NullBool
+}
+
+func (q *Queries) UpsertOutboxObject(ctx context.Context, arg UpsertOutboxObjectParams) error {
+	_, err := q.db.ExecContext(ctx, upsertOutboxObject,
+		arg.Iri,
+		arg.Value,
+		arg.Type,
+		arg.LiveNotification,
+	)
+	return err
+}

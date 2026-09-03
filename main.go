@@ -301,6 +301,8 @@ func main() {
 		GetStatus:                        streamSvc.GetStatus,
 		GetChatOpenMinutes:               configRepository.GetScheduleChatOpenMinutes,
 		GetScheduleEnabled:               configRepository.GetScheduleEnabled,
+		GetFederationEnabled:             configRepository.GetFederationEnabled,
+		FederateScheduledEvent:           apSvc.SendScheduledEvent,
 		GetScheduleReminderMessage:       configRepository.GetScheduleReminderMessage,
 		GetScheduleFirstReminderMinutes:  configRepository.GetScheduleFirstReminderMinutes,
 		GetScheduleSecondReminderMinutes: configRepository.GetScheduleSecondReminderMinutes,

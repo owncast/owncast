@@ -71,6 +71,10 @@ INSERT INTO ap_followers(iri, inbox, shared_inbox, request, request_object, name
 -- name: AddToOutbox :exec
 INSERT INTO ap_outbox(iri, value, type, live_notification) values(?, ?, ?, ?);
 
+-- name: UpsertOutboxObject :exec
+INSERT INTO ap_outbox(iri, value, type, live_notification) VALUES(?, ?, ?, ?)
+ON CONFLICT(iri) DO UPDATE SET value = excluded.value, type = excluded.type, live_notification = excluded.live_notification;
+
 -- name: QueueActivityPubDelivery :one
 INSERT INTO ap_delivery_queue (
     inbox,
