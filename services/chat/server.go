@@ -158,8 +158,8 @@ func (s *Service) Addclient(conn *websocket.Conn, user *models.User, accessToken
 	s.mu.Lock()
 	{
 		// If there is a pending disconnect timer then clear it. A quick
-		// reconnect before the part was sent is not a new join, so neither the
-		// join broadcast nor the webhook should fire for it.
+		// reconnect before the part was sent is not a new join, so neither
+		// the join broadcast nor the webhook should fire for it.
 		if s.cancelUserPartedMessage(user.ID) {
 			isNewJoin = false
 		}
@@ -167,10 +167,10 @@ func (s *Service) Addclient(conn *websocket.Conn, user *models.User, accessToken
 		client.Id = s.seq
 		s.clients[client.Id] = client
 		s.seq++
+		logTotal := len(s.clients)
+		s.mu.Unlock()
+		log.Traceln("Adding client", client.Id, "total count:", logTotal)
 	}
-	s.mu.Unlock()
-
-	log.Traceln("Adding client", client.Id, "total count:", len(s.clients))
 
 	go client.writePump()
 	go client.readPump()
@@ -306,8 +306,10 @@ func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request)
 		log.Errorln("error determining if IP address is blocked: ", err)
 	}
 
-	// Limit concurrent chat connections
-	if uint64(len(s.clients)) >= s.maxSocketConnectionLimit {
+	s.mu.RLock()
+	clientCount := len(s.clients)
+	s.mu.RUnlock()
+	if uint64(clientCount) >= s.maxSocketConnectionLimit {
 		log.Warnln("rejecting incoming client connection as it exceeds the max client count of", s.maxSocketConnectionLimit)
 		_, _ = w.Write([]byte(events.ErrorMaxConnectionsExceeded))
 		return
@@ -383,17 +385,13 @@ func (s *Service) Broadcast(payload events.EventPayload) error {
 		return err
 	}
 
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	for _, client := range s.clients {
+	clients := s.GetClients()
+	for _, client := range clients {
 		if client == nil {
 			continue
 		}
 
-		select {
-		case client.send <- data:
-		default:
+		if !client.trySend(data) {
 			go client.close()
 		}
 	}
@@ -403,13 +401,10 @@ func (s *Service) Broadcast(payload events.EventPayload) error {
 
 // Send will send a single payload to a single connected client.
 func (s *Service) Send(payload events.EventPayload, client *Client) {
-	data, err := json.Marshal(payload)
-	if err != nil {
-		log.Errorln(err)
+	if client == nil {
 		return
 	}
-
-	client.send <- data
+	client.sendPayload(payload)
 }
 
 // DisconnectClients will forcefully disconnect all clients belonging to a user by ID.

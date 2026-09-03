@@ -252,6 +252,22 @@ func (c *Client) sendPayload(payload interface{}) {
 	}
 }
 
+func (c *Client) trySend(data []byte) bool {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	if c.send == nil {
+		return false
+	}
+
+	select {
+	case c.send <- data:
+		return true
+	default:
+		return false
+	}
+}
+
 func (c *Client) sendAction(message string) {
 	clientMessage := events.ActionEvent{
 		MessageEvent: events.MessageEvent{

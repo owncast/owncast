@@ -83,8 +83,8 @@ func (s *Service) Start() error {
 
 // GetClientsForUser will return chat connections that are owned by a specific user.
 func (s *Service) GetClientsForUser(userID string) ([]*Client, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 
 	clients := map[string][]*Client{}
 
@@ -101,21 +101,24 @@ func (s *Service) GetClientsForUser(userID string) ([]*Client, error) {
 
 // FindClientByID will return a single connected client by ID.
 func (s *Service) FindClientByID(clientID uint) (*Client, bool) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	client, found := s.clients[clientID]
 	return client, found
 }
 
 // GetClients will return all the current chat clients connected.
 func (s *Service) GetClients() []*Client {
-	clients := []*Client{}
-
 	if s == nil {
-		return clients
+		return []*Client{}
 	}
 
+	s.mu.RLock()
+	clients := make([]*Client, 0, len(s.clients))
 	for _, client := range s.clients {
 		clients = append(clients, client)
 	}
+	s.mu.RUnlock()
 
 	sort.Slice(clients, func(i, j int) bool {
 		return clients[i].ConnectedAt.Before(clients[j].ConnectedAt)

@@ -173,10 +173,12 @@ func (s *Service) StreamConnected(broadcast *models.CurrentBroadcast) {
 // these reactions through StreamConnected.
 func (s *Service) applyStreamOnline() {
 	now := utils.NullTime{Time: time.Now(), Valid: true}
+	s.statsMu.Lock()
 	s.stats.StreamConnected = true
 	s.stats.LastDisconnectTime = nil
 	s.stats.LastConnectTime = &now
 	s.stats.SessionMaxViewerCount = 0
+	s.statsMu.Unlock()
 
 	s.StopOfflineCleanupTimer()
 	s.startOnlineCleanupTimer()
@@ -222,13 +224,11 @@ func (s *Service) applyStreamOffline() {
 	_ = s.chat.SendSystemAction("The stream is ending.", true)
 
 	now := utils.NullTime{Time: time.Now(), Valid: true}
-	if s.onlineTimerCancelFunc != nil {
-		s.onlineTimerCancelFunc()
-	}
-
+	s.statsMu.Lock()
 	s.stats.StreamConnected = false
 	s.stats.LastDisconnectTime = &now
 	s.stats.LastConnectTime = nil
+	s.statsMu.Unlock()
 	s.broadcaster = nil
 
 	// Stop the federated stream-ping ticker so we don't keep advertising

@@ -8,25 +8,35 @@ import (
 // GetStatus returns a snapshot of the current stream state suitable for
 // the public/admin status APIs.
 func (s *Service) GetStatus() models.Status {
+	waitTime := float64(s.configRepository.GetStreamLatencyLevel().SecondsPerSegment) * 3.0
+	if waitTime < 7 {
+		waitTime = 7
+	}
+
+	s.statsMu.RLock()
 	if s.stats == nil {
+		s.statsMu.RUnlock()
 		return models.Status{}
 	}
 
+	online := s.isStreamConnectedLocked(waitTime)
 	viewerCount := 0
-	if s.IsStreamConnected() {
+	if online {
 		viewerCount = len(s.stats.Viewers)
 	}
-
-	return models.Status{
-		Online:                s.IsStreamConnected(),
+	status := models.Status{
+		Online:                online,
 		ViewerCount:           viewerCount,
 		OverallMaxViewerCount: s.stats.OverallMaxViewerCount,
 		SessionMaxViewerCount: s.stats.SessionMaxViewerCount,
 		LastDisconnectTime:    s.stats.LastDisconnectTime,
 		LastConnectTime:       s.stats.LastConnectTime,
 		VersionNumber:         config.VersionNumber,
-		StreamTitle:           s.configRepository.GetStreamTitle(),
 	}
+	s.statsMu.RUnlock()
+
+	status.StreamTitle = s.configRepository.GetStreamTitle()
+	return status
 }
 
 // GetCurrentBroadcast returns the in-flight broadcast settings, or nil
