@@ -32,7 +32,7 @@ type Deps struct {
 }
 
 // New constructs a Service. It also starts a background goroutine that
-// periodically prunes expired client-side auth requests.
+// periodically prunes expired client- and server-side auth requests.
 func New(deps Deps) *Service {
 	s := &Service{
 		configRepository:          deps.ConfigRepository,
@@ -43,18 +43,29 @@ func New(deps Deps) *Service {
 	return s
 }
 
-// runExpiredRequestPruner clears out any pending client-side requests
-// that have been waiting longer than registrationTimeout.
 func (s *Service) runExpiredRequestPruner() {
 	ticker := time.NewTicker(registrationTimeout)
-	for range ticker.C {
-		s.pendingAuthRequestsLock.Lock()
+	defer ticker.Stop()
+	for now := range ticker.C {
 		log.Debugln("Pruning expired IndieAuth requests.")
-		for k, v := range s.pendingAuthRequests {
-			if time.Since(v.Timestamp) > registrationTimeout {
-				delete(s.pendingAuthRequests, k)
-			}
-		}
-		s.pendingAuthRequestsLock.Unlock()
+		s.pruneExpiredRequests(now)
 	}
+}
+
+func (s *Service) pruneExpiredRequests(now time.Time) {
+	s.pendingAuthRequestsLock.Lock()
+	for k, v := range s.pendingAuthRequests {
+		if now.Sub(v.Timestamp) > registrationTimeout {
+			delete(s.pendingAuthRequests, k)
+		}
+	}
+	s.pendingAuthRequestsLock.Unlock()
+
+	s.pendingServerAuthRequestsLock.Lock()
+	for k, v := range s.pendingServerAuthRequests {
+		if now.Sub(v.Timestamp) > registrationTimeout {
+			delete(s.pendingServerAuthRequests, k)
+		}
+	}
+	s.pendingServerAuthRequestsLock.Unlock()
 }

@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -53,9 +54,12 @@ func (s *Service) StartAuthFlow(authHost, userID, accessToken, displayName strin
 // HandleCallbackCode will handle the callback from the IndieAuth server
 // to continue the next step of the auth flow.
 func (s *Service) HandleCallbackCode(code, state string) (*Request, *Response, error) {
-	request, exists := s.getPendingAuthRequest(state)
+	request, exists := s.takePendingAuthRequest(state)
 	if !exists {
 		return nil, nil, errors.New("no auth requests pending")
+	}
+	if time.Since(request.Timestamp) > registrationTimeout {
+		return nil, nil, errors.New("auth request has expired")
 	}
 
 	data := url.Values{}
@@ -143,9 +147,12 @@ func (s *Service) storePendingAuthRequest(request *Request) error {
 	return nil
 }
 
-func (s *Service) getPendingAuthRequest(state string) (*Request, bool) {
+func (s *Service) takePendingAuthRequest(state string) (*Request, bool) {
 	s.pendingAuthRequestsLock.Lock()
 	defer s.pendingAuthRequestsLock.Unlock()
 	request, exists := s.pendingAuthRequests[state]
+	if exists {
+		delete(s.pendingAuthRequests, state)
+	}
 	return request, exists
 }

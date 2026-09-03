@@ -17,7 +17,7 @@ func TestPendingClientRequestsAreSynchronized(t *testing.T) {
 		for i := range maxPendingRequests {
 			state := fmt.Sprintf("state-goroutine-%d", i)
 			_ = svc.storePendingAuthRequest(&Request{State: state})
-			_, _ = svc.getPendingAuthRequest(state)
+			_, _ = svc.takePendingAuthRequest(state)
 		}
 		close(done)
 	}()
@@ -25,7 +25,7 @@ func TestPendingClientRequestsAreSynchronized(t *testing.T) {
 	for i := range maxPendingRequests {
 		state := fmt.Sprintf("state-main-%d", i)
 		_ = svc.storePendingAuthRequest(&Request{State: state})
-		_, _ = svc.getPendingAuthRequest(state)
+		_, _ = svc.takePendingAuthRequest(state)
 	}
 	<-done
 }

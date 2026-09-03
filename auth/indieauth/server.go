@@ -129,9 +129,15 @@ func isWebURL(u *url.URL) bool {
 func (s *Service) CompleteServerAuth(code, redirectURI, clientID string, codeVerifier string) (*ServerProfileResponse, error) {
 	s.pendingServerAuthRequestsLock.Lock()
 	request, pending := s.pendingServerAuthRequests[code]
+	if pending {
+		delete(s.pendingServerAuthRequests, code)
+	}
 	s.pendingServerAuthRequestsLock.Unlock()
 	if !pending {
 		return nil, errors.New("no pending authentication request")
+	}
+	if time.Since(request.Timestamp) > registrationTimeout {
+		return nil, errors.New("authentication request has expired")
 	}
 
 	if request.RedirectURI != redirectURI {
