@@ -94,6 +94,14 @@ type ConfigRepository interface {
 	GetFederationUsername() string
 	SetFederationGoLiveMessage(message string) error
 	GetFederationGoLiveMessage() string
+	SetScheduleEnabled(enabled bool) error
+	GetScheduleEnabled() bool
+	SetScheduleReminderMessage(message string) error
+	GetScheduleReminderMessage() string
+	GetScheduleShowCountdown() bool
+	SetScheduleShowCountdown(enabled bool) error
+	GetScheduleChatOpenMinutes() int
+	SetScheduleChatOpenMinutes(minutes int) error
 	SetFederationIsPrivate(isPrivate bool) error
 	GetFederationIsPrivate() bool
 	SetFederationShowEngagement(showEngagement bool) error

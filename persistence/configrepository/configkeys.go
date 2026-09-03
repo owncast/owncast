@@ -65,4 +65,8 @@ const (
 	disableSearchIndexingKey             = "disable_search_indexing"
 	videoServingEndpointKey              = "video_serving_endpoint"
 	faviconPathKey                       = "favicon_path"
+	scheduleEnabledKey                   = "schedule_enabled"
+	scheduleReminderMessageKey           = "schedule_reminder_message"
+	scheduleShowCountdownKey             = "schedule_show_countdown"
+	scheduleChatOpenMinutesKey           = "schedule_chat_open_minutes"
 )

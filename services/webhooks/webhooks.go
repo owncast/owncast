@@ -74,6 +74,14 @@ type WebhookVisibilityToggleEventData struct {
 	MessageIDs []string     `json:"ids"`
 }
 
+// WebhookScheduledEventData represents a scheduled-event lifecycle notification.
+type WebhookScheduledEventData struct {
+	BaseWebhookData
+	Event     models.ScheduledEvent              `json:"event"`
+	Action    models.ScheduledEventWebhookAction `json:"action"`
+	Timestamp time.Time                          `json:"timestamp"`
+}
+
 // WebhookFediverseEngagementFollowEventData represents Fediverse follow engagement
 // event data sent as a webhook payload. Unlike stream-state events it does not
 // embed BaseWebhookData; the live stream status is unrelated to a follow action.

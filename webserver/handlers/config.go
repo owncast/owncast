@@ -46,6 +46,7 @@ type webConfigResponse struct {
 	PluginTabs                 []models.PluginTab           `json:"pluginTabs"`
 	Notifications              notificationsConfigResponse  `json:"notifications"`
 	Federation                 federationConfigResponse     `json:"federation"`
+	Schedule                   scheduleConfigResponse       `json:"schedule"`
 	MaxSocketPayloadSize       int                          `json:"maxSocketPayloadSize"`
 	HideViewerCount            bool                         `json:"hideViewerCount"`
 	ChatDisabled               bool                         `json:"chatDisabled"`
@@ -54,6 +55,12 @@ type webConfigResponse struct {
 	NSFW                       bool                         `json:"nsfw"`
 	Autoplay                   models.AutoplayMode          `json:"autoplay"`
 	Authentication             authenticationConfigResponse `json:"authentication"`
+}
+
+type scheduleConfigResponse struct {
+	Enabled               bool `json:"enabled"`
+	ShowCountdown         bool `json:"showCountdown"`
+	ChatOpenMinutesBefore int  `json:"chatOpenMinutesBefore"`
 }
 
 type federationConfigResponse struct {
@@ -163,6 +170,7 @@ func (h *Handlers) getConfigResponse(r *http.Request) webConfigResponse {
 		CustomStyles:               configRepository.GetCustomStyles(),
 		PluginStyles:               pluginStylesString(h.pluginCSSContent),
 		MaxSocketPayloadSize:       config.MaxSocketPayloadSize,
+		Schedule:                   scheduleConfigResponse{Enabled: configRepository.GetScheduleEnabled(), ShowCountdown: configRepository.GetScheduleShowCountdown(), ChatOpenMinutesBefore: configRepository.GetScheduleChatOpenMinutes()},
 		Federation:                 federationResponse,
 		Notifications:              notificationsResponse,
 		Authentication:             authenticationResponse,

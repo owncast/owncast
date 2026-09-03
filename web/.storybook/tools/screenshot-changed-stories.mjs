@@ -87,7 +87,13 @@ fs.mkdirSync(path.join(OUT_DIR, 'img'), { recursive: true });
 
 const browser = await puppeteer.launch({
   executablePath: CHROME,
-  args: ['--no-sandbox', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1'],
+  args: [
+    '--no-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-gpu',
+    '--hide-scrollbars',
+    '--force-device-scale-factor=1',
+  ],
 });
 
 const viewportFor = story =>

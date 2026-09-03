@@ -60,6 +60,11 @@ const availableEvents = {
     description: 'When a stream title is changed',
     color: 'yellow',
   },
+  SCHEDULED_EVENTS: {
+    name: 'Scheduled events',
+    description: 'When a scheduled event starts, ends, or is ten minutes away',
+    color: 'blue',
+  },
 };
 
 function convertEventStringToTag(eventString: string) {

@@ -38,6 +38,8 @@ const (
 	StreamStopped EventType = "STREAM_STOPPED"
 	// StreamTitleUpdated is the event sent when a stream's title changes.
 	StreamTitleUpdated EventType = "STREAM_TITLE_UPDATED"
+	// ScheduledEvents groups lifecycle notifications for scheduled stream events.
+	ScheduledEvents EventType = "SCHEDULED_EVENTS"
 	// SystemMessageSent is the event sent when a system message is sent.
 	SystemMessageSent EventType = "SYSTEM"
 	// ChatActionSent is a generic chat action that can be used for anything that doesn't need specific handling or formatting.

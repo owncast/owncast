@@ -153,12 +153,12 @@ func (s *Service) userMessageSent(eventData chatClientEvent) {
 		return
 	}
 
-	// Ignore if the stream has been offline
-	if !s.getStatus().Online && s.getStatus().LastDisconnectTime != nil {
-		disconnectedTime := s.getStatus().LastDisconnectTime.Time
-		if time.Since(disconnectedTime) > 5*time.Minute {
-			return
-		}
+	// Ignore if the stream has been offline for too long, unless a scheduled
+	// event has explicitly opened its pre-event chat window.
+	status := s.getStatus()
+	scheduledChatOpen := s.isScheduledChatOpen != nil && s.isScheduledChatOpen()
+	if shouldRejectOfflineMessage(status, scheduledChatOpen, time.Now()) {
+		return
 	}
 
 	event.User = s.userRepository.GetUserByToken(eventData.client.accessToken)
@@ -185,6 +185,13 @@ func (s *Service) userMessageSent(eventData chatClientEvent) {
 	s.chatMessagesSentCounter.Inc()
 	s.chatMessageRepository.SaveUserMessage(event)
 	eventData.client.MessageCount++
+}
+
+func shouldRejectOfflineMessage(status models.Status, scheduledChatOpen bool, now time.Time) bool {
+	if status.Online || status.LastDisconnectTime == nil {
+		return false
+	}
+	return now.Sub(status.LastDisconnectTime.Time) > 5*time.Minute && !scheduledChatOpen
 }
 
 func logSanitize(userValue string) string {

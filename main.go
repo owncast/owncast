@@ -8,6 +8,11 @@ import (
 	"strconv"
 	"time"
 
+	// Embed IANA timezone data so recurrence expansion with named zones
+	// (e.g. America/Los_Angeles) works on hosts without a system tzdata,
+	// notably stock Windows.
+	_ "time/tzdata"
+
 	log "github.com/sirupsen/logrus"
 
 	fediverseauth "github.com/owncast/owncast/auth/fediverse"
@@ -18,6 +23,7 @@ import (
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/persistence/federatedserversrepository"
 	"github.com/owncast/owncast/persistence/notificationsrepository"
+	"github.com/owncast/owncast/persistence/scheduleeventsrepository"
 	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
 
@@ -35,6 +41,8 @@ import (
 	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/rtmp"
+	"github.com/owncast/owncast/services/schedule"
+	"github.com/owncast/owncast/services/scheduler"
 	"github.com/owncast/owncast/services/stalefeaturedcheckservice"
 	"github.com/owncast/owncast/services/stream"
 	"github.com/owncast/owncast/services/webhooks"
@@ -175,6 +183,7 @@ func main() {
 	userRepository := userrepository.New(dataStore)
 	notificationsRepository := notificationsrepository.New(dataStore, configRepository)
 	federatedServersRepository := federatedserversrepository.New(dataStore)
+	scheduleEventsRepository := scheduleeventsrepository.New(dataStore)
 
 	// Expose globals for helper code that still uses package-level
 	// Get accessors (the featured-streams ActivityPub paths). Long term
@@ -283,16 +292,56 @@ func main() {
 	chatSvc.SetGetStatus(streamSvc.GetStatus)
 	ypSvc.SetGetStatus(streamSvc.GetStatus)
 
+	// Materializes scheduled stream occurrences, keeps the next-event answer
+	// warm for the status endpoint, and closes chat when a pre-opened event
+	// never starts.
+	scheduleSvc := schedule.New(schedule.Deps{
+		ScheduleEventsRepository: scheduleEventsRepository,
+		GetStatus:                streamSvc.GetStatus,
+		GetChatOpenMinutes:       configRepository.GetScheduleChatOpenMinutes,
+		GetScheduleEnabled:       configRepository.GetScheduleEnabled,
+		Webhooks:                 webhooksSvc,
+		OnMissedEventWarning: func(_ *models.ScheduledEvent) {
+			if err := chatSvc.SendSystemMessage(schedule.MissedEventChatMessage, false); err != nil {
+				log.Errorf("unable to send missed scheduled stream chat message: %v", err)
+			}
+		},
+	})
+	chatSvc.SetIsScheduledChatOpen(scheduleSvc.IsChatOpen)
+
 	if err := streamSvc.Start(ctx); err != nil {
 		log.Fatalln("failed to start the stream service", err)
 	}
 	defer streamSvc.Stop(ctx)
+	scheduleSvc.Start()
+	defer scheduleSvc.Stop()
 
-	// Background sweep that marks federated peer servers offline when
-	// they stop sending stream-status pings, keeping the
-	// featured-streams directory honest.
-	stalefeaturedcheckservice.Start()
-	defer stalefeaturedcheckservice.Stop()
+	// The central scheduler owns all recurring background work. Services
+	// expose an idempotent job method plus an interval constant, and get
+	// registered here.
+	schedulerSvc, err := scheduler.New()
+	if err != nil {
+		log.Fatalln("failed to create the scheduler", err)
+	}
+
+	// Marks federated peer servers offline when they stop sending
+	// stream-status pings, keeping the featured-streams directory honest.
+	staleFeaturedSvc := stalefeaturedcheckservice.New(stalefeaturedcheckservice.Deps{
+		ConfigRepository:           configRepository,
+		FederatedServersRepository: federatedServersRepository,
+	})
+
+	schedulerJobs := []scheduler.Job{
+		{Name: "stale-featured-servers", Interval: stalefeaturedcheckservice.CheckInterval, RunAtStart: true, Run: staleFeaturedSvc.Run},
+		{Name: "chat-data-pruner", Interval: chat.DataPruneInterval, RunAtStart: true, Run: chatSvc.RunDataPruner},
+	}
+	for _, job := range schedulerJobs {
+		if err := schedulerSvc.Register(job); err != nil {
+			log.Fatalln("failed to register scheduler job", job.Name, err)
+		}
+	}
+	schedulerSvc.Start()
+	defer schedulerSvc.Stop()
 
 	// Stage 8: late services. metrics polls stream + chat, fediverseAuth
 	// owns OTP state for the chat-side handler.
@@ -360,22 +409,24 @@ func main() {
 	}
 
 	adminHandlers := admin.New(admin.Deps{
-		Stream:                  streamSvc,
-		Rtmp:                    rtmpSvc,
-		Activitypub:             apSvc,
-		Webhooks:                webhooksSvc,
-		Chat:                    chatSvc,
-		Metrics:                 metricsSvc,
-		ConfigRepository:        configRepository,
-		AuthRepository:          authRepository,
-		FollowersRepository:     followersRepository,
-		WebhookRepository:       webhookRepository,
-		ChatMessageRepository:   chatMessageRepository,
-		UserRepository:          userRepository,
-		APBuilder:               apBuilder,
-		APSigner:                apSigner,
-		Config:                  cfg,
-		PluginStyleContributors: pluginStyleContributors,
+		Stream:                   streamSvc,
+		Rtmp:                     rtmpSvc,
+		Activitypub:              apSvc,
+		Webhooks:                 webhooksSvc,
+		Chat:                     chatSvc,
+		Metrics:                  metricsSvc,
+		ConfigRepository:         configRepository,
+		AuthRepository:           authRepository,
+		FollowersRepository:      followersRepository,
+		WebhookRepository:        webhookRepository,
+		ChatMessageRepository:    chatMessageRepository,
+		UserRepository:           userRepository,
+		ScheduleEventsRepository: scheduleEventsRepository,
+		Schedule:                 scheduleSvc,
+		APBuilder:                apBuilder,
+		APSigner:                 apSigner,
+		Config:                   cfg,
+		PluginStyleContributors:  pluginStyleContributors,
 	})
 
 	fediverseAuthSvc := fediverseauth.New()
@@ -403,29 +454,31 @@ func main() {
 	})
 
 	h := handlers.NewHandlers(handlers.Deps{
-		Cache:                   cacheContainer,
-		Stream:                  streamSvc,
-		Chat:                    chatSvc,
-		Admin:                   adminHandlers,
-		Activitypub:             apSvc,
-		Fediverse:               fediverseHandler,
-		IndieAuth:               indieauthHandler,
-		Moderation:              moderationHandler,
-		Middleware:              mw,
-		YP:                      ypSvc,
-		Metrics:                 metricsSvc,
-		ConfigRepository:        configRepository,
-		FollowersRepository:     followersRepository,
-		ChatMessageRepository:   chatMessageRepository,
-		UserRepository:          userRepository,
-		NotificationsRepository: notificationsRepository,
-		APBuilder:               apBuilder,
-		Config:                  cfg,
-		PluginActions:           pluginActions,
-		PluginCSSContent:        pluginCSSContent,
-		PluginJSContent:         pluginJSContent,
-		PluginPageContent:       pluginPageContent,
-		PluginTabs:              pluginTabs,
+		Cache:                    cacheContainer,
+		Stream:                   streamSvc,
+		Chat:                     chatSvc,
+		Admin:                    adminHandlers,
+		Activitypub:              apSvc,
+		Fediverse:                fediverseHandler,
+		IndieAuth:                indieauthHandler,
+		Moderation:               moderationHandler,
+		Middleware:               mw,
+		YP:                       ypSvc,
+		Metrics:                  metricsSvc,
+		ConfigRepository:         configRepository,
+		FollowersRepository:      followersRepository,
+		ChatMessageRepository:    chatMessageRepository,
+		UserRepository:           userRepository,
+		NotificationsRepository:  notificationsRepository,
+		ScheduleEventsRepository: scheduleEventsRepository,
+		Schedule:                 scheduleSvc,
+		APBuilder:                apBuilder,
+		Config:                   cfg,
+		PluginActions:            pluginActions,
+		PluginCSSContent:         pluginCSSContent,
+		PluginJSContent:          pluginJSContent,
+		PluginPageContent:        pluginPageContent,
+		PluginTabs:               pluginTabs,
 	})
 
 	// Stage 10: serve. Blocks until shutdown.

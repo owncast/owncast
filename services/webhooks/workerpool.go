@@ -122,6 +122,9 @@ func (s *Service) sendWebhook(job Job) error {
 	}
 
 	req, err := http.NewRequest("POST", job.webhook.URL, bytes.NewReader(jsonText))
+	if err != nil {
+		return err
+	}
 	signature, err := s.generateSignature(jsonText, job)
 	if err != nil {
 		return err

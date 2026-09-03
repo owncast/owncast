@@ -4,12 +4,14 @@ import { TabsProps } from 'antd';
 import { ErrorBoundary, getErrorMessage } from 'react-error-boundary';
 import { SocialLink } from '../../../interfaces/social-link.model';
 import { PluginTab } from '../../../interfaces/client-config.model';
+import type { FederatedServer } from '../StreamsTab/StreamsTab';
+import { Localization } from '../../../types/localization';
 import styles from './Content.module.scss';
 import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { PluginTabFrame } from '../PluginTabFrame/PluginTabFrame';
+import { Translation } from '../Translation/Translation';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ComponentError } from '../ComponentError/ComponentError';
-
 export type DesktopContentProps = {
   name: string;
   summary: string;
@@ -19,9 +21,9 @@ export type DesktopContentProps = {
   pluginTabs: PluginTab[];
   setShowFollowModal: (show: boolean) => void;
   showFollowersTab: boolean;
-  federatedServers?: any[]; // Will be properly typed when API is implemented
+  scheduleEnabled?: boolean;
+  federatedServers?: FederatedServer[];
 };
-
 // lazy loaded components
 
 const Tabs: ComponentType<TabsProps> = dynamic(() => import('antd').then(mod => mod.Tabs), {
@@ -33,6 +35,13 @@ const FollowerCollection = dynamic(
     import('../followers/FollowerCollection/FollowerCollection').then(
       mod => mod.FollowerCollection,
     ),
+  {
+    ssr: false,
+  },
+);
+
+const ScheduleTab = dynamic(
+  () => import('../ScheduleTab/ScheduleTab').then(mod => mod.ScheduleTab),
   {
     ssr: false,
   },
@@ -51,6 +60,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
   pluginTabs,
   setShowFollowModal,
   showFollowersTab,
+  scheduleEnabled = false,
   federatedServers = [],
 }) => {
   const aboutTabContent = (
@@ -71,9 +81,24 @@ export const DesktopContent: FC<DesktopContentProps> = ({
     </div>
   );
 
+  const scheduleTabContent = (
+    <div className={styles.bottomPageContentContainer}>
+      <ScheduleTab />
+    </div>
+  );
+
   const items: NonNullable<TabsProps['items']> = [];
   if (extraPageContent) {
     items.push({ label: 'About', key: '2', children: aboutTabContent });
+  }
+  if (scheduleEnabled) {
+    items.push({
+      label: (
+        <Translation translationKey={Localization.Frontend.Schedule.tab} defaultText="Schedule" />
+      ),
+      key: 'schedule',
+      children: scheduleTabContent,
+    });
   }
   if (showFollowersTab) {
     items.push({ label: 'Followers', key: '3', children: followersTabContent });
@@ -127,11 +152,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
       </div>
 
       <div>
-        {items.length > 1 ? (
-          <Tabs defaultActiveKey="0" items={items} />
-        ) : (
-          !!extraPageContent && aboutTabContent
-        )}
+        {items.length > 1 ? <Tabs defaultActiveKey="0" items={items} /> : items[0]?.children}
       </div>
     </ErrorBoundary>
   );

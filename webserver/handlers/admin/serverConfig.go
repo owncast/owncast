@@ -94,6 +94,12 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			HideFollowersTab: configRepository.GetFederationHideFollowersTab(),
 			BlockedDomains:   configRepository.GetBlockedFederatedDomains(),
 		},
+		Schedule: scheduleAdminConfigResponse{
+			Enabled:               configRepository.GetScheduleEnabled(),
+			ShowCountdown:         configRepository.GetScheduleShowCountdown(),
+			ChatOpenMinutesBefore: configRepository.GetScheduleChatOpenMinutes(),
+			ReminderMessage:       configRepository.GetScheduleReminderMessage(),
+		},
 		Notifications: notificationsConfigResponse{
 			Discord: configRepository.GetDiscordConfig(),
 			Browser: configRepository.GetBrowserPushConfig(),
@@ -135,6 +141,7 @@ type serverConfigAdminResponse struct {
 	VideoServingEndpoint      string                      `json:"videoServingEndpoint"`
 	S3                        models.S3                   `json:"s3"`
 	Federation                federationConfigResponse    `json:"federation"`
+	Schedule                  scheduleAdminConfigResponse `json:"schedule"`
 	SupportedCodecs           []string                    `json:"supportedCodecs"`
 	ExternalActions           []models.ExternalAction     `json:"externalActions"`
 	StyleContributors         []models.PluginStyleInfo    `json:"styleContributors"`
@@ -194,6 +201,13 @@ type federationConfigResponse struct {
 	ShowEngagement   bool     `json:"showEngagement"`
 	EnableQuotes     bool     `json:"enableQuotes"`
 	HideFollowersTab bool     `json:"hideFollowersTab"`
+}
+
+type scheduleAdminConfigResponse struct {
+	Enabled               bool   `json:"enabled"`
+	ShowCountdown         bool   `json:"showCountdown"`
+	ChatOpenMinutesBefore int    `json:"chatOpenMinutesBefore"`
+	ReminderMessage       string `json:"reminderMessage"`
 }
 
 type notificationsConfigResponse struct {

@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, FC, ReactElement } from 'react';
 import { AutoplaySetting } from './autoplay';
-import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
 import { ConfigDetails, UpdateArgs } from '../types/config-section';
+import type { ScheduledEventStatus } from '../interfaces/server-status.model';
+import { STATUS, fetchData, FETCH_INTERVAL, SERVER_CONFIG } from './apis';
 import { DEFAULT_VARIANT_STATE } from './config-constants';
 
 const initialServerConfigState: ConfigDetails = {
@@ -63,6 +64,12 @@ const initialServerConfigState: ConfigDetails = {
     hideFollowersTab: false,
     blockedDomains: [],
   },
+  schedule: {
+    enabled: false,
+    showCountdown: false,
+    chatOpenMinutesBefore: 0,
+    reminderMessage: '',
+  },
   notifications: {
     browser: { enabled: false, goLiveMessage: '' },
     discord: { enabled: false, webhook: '', goLiveMessage: '' },
@@ -84,6 +91,7 @@ const initialServerConfigState: ConfigDetails = {
 };
 
 const initialServerStatusState = {
+  scheduledEvent: null as ScheduledEventStatus | null,
   broadcastActive: false,
   broadcaster: null,
   currentBroadcast: null,

@@ -32,6 +32,7 @@ export interface ClientConfig {
   appearanceVariables: Record<string, string>;
   maxSocketPayloadSize: number;
   federation: Federation;
+  schedule?: Schedule;
   notifications: Notifications;
   authentication: Authentication;
   socketHostOverride?: string;
@@ -48,6 +49,12 @@ interface Federation {
   // hideFollowersTab hides the public "Followers" tab on the viewer
   // page while leaving the rest of the social features active.
   hideFollowersTab: boolean;
+}
+
+interface Schedule {
+  enabled: boolean;
+  showCountdown: boolean;
+  chatOpenMinutesBefore: number;
 }
 
 interface Notifications {
@@ -98,6 +105,11 @@ export function makeEmptyClientConfig(): ClientConfig {
       account: '',
       followerCount: 0,
       hideFollowersTab: false,
+    },
+    schedule: {
+      enabled: false,
+      showCountdown: false,
+      chatOpenMinutesBefore: 0,
     },
     notifications: {
       browser: {

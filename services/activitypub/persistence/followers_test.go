@@ -54,6 +54,15 @@ func setup() {
 		}, true)
 		followers = append(followers, u)
 	}
+
+	// Pin every row's created_at deterministically, preserving insertion
+	// order. GetFollowers returns the latest insertion first, with rowid
+	// breaking ties, so later rowids must also receive later timestamps.
+	if _, err := ds.DB.Exec(
+		"UPDATE ap_followers SET created_at = datetime('2000-01-01', '+' || rowid || ' seconds')",
+	); err != nil {
+		panic(err)
+	}
 }
 
 func TestQueryFollowers(t *testing.T) {

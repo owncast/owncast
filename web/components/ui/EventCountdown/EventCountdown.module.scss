@@ -1,0 +1,58 @@
+@use '../../../styles/mixins' as *;
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 220px;
+  background-color: var(--theme-color-components-video-background);
+  color: var(--theme-color-palette-4);
+}
+
+.content {
+  width: clamp(0px, 100%, 600px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5vh auto;
+  padding: 2.4em;
+  text-align: center;
+
+  @include screen(tablet) {
+    font-size: 1.2rem;
+    padding: 1em;
+    margin: 1rem 0.2rem;
+  }
+}
+
+.container :global(.ant-typography) {
+  color: inherit;
+}
+
+.title {
+  margin-bottom: 0.5rem !important;
+}
+
+.countdown {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.calendarLink {
+  margin-top: 1rem;
+  color: inherit;
+  text-decoration: underline;
+}
+
+.lastLiveDate {
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  font-family: var(--theme-text-body-font-family);
+  font-weight: 300;
+
+  .clockIcon {
+    margin-right: 6px;
+  }
+}

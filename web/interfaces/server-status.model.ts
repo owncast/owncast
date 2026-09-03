@@ -1,3 +1,12 @@
+export interface ScheduledEventStatus {
+  id: string;
+  name: string;
+  description: string;
+  startTime: string;
+  durationMinutes: number;
+  chatOpen: boolean;
+}
+
 export interface ServerStatus {
   online: boolean;
   viewerCount: number;
@@ -6,6 +15,7 @@ export interface ServerStatus {
   versionNumber?: string;
   streamTitle?: string;
   serverTime: Date;
+  scheduledEvent?: ScheduledEventStatus;
 }
 
 export function makeEmptyServerStatus(): ServerStatus {

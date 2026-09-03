@@ -63,6 +63,7 @@ func TestRun_FreshDatabase(t *testing.T) {
 		"notifications", "messages", "auth", "ip_bans",
 		"federated_servers",
 		"ap_delivery_queue",
+		"stream_event_series", "stream_events",
 		"goose_db_version",
 	}
 	for _, name := range expectedTables {
@@ -75,13 +76,19 @@ func TestRun_FreshDatabase(t *testing.T) {
 		t.Error("users table is missing disabled_reason column")
 	}
 
+	for _, column := range []string{"webhook_warning_sent_at", "webhook_started_sent_at", "webhook_ended_sent_at"} {
+		if !columnExists(t, db, "stream_events", column) {
+			t.Errorf("stream_events table is missing %s column", column)
+		}
+	}
+
 	// Fresh installs should not have the legacy config table.
 	if tableExists(t, db, "config") {
 		t.Error("fresh install should not have legacy config table")
 	}
 
-	if v := gooseVersion(t, db); v != 7 {
-		t.Errorf("goose version = %d, want 7", v)
+	if v := gooseVersion(t, db); v != 9 {
+		t.Errorf("goose version = %d, want 9", v)
 	}
 
 	// Calling Run a second time should be a no-op (idempotent).
@@ -105,8 +112,8 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	}
 
 	// Goose should record the latest migration.
-	if v := gooseVersion(t, db); v != 7 {
-		t.Errorf("goose version = %d, want 7", v)
+	if v := gooseVersion(t, db); v != 9 {
+		t.Errorf("goose version = %d, want 9", v)
 	}
 
 	// Config version should still be 9, the legacy bridge was not invoked.
@@ -116,12 +123,12 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 		t.Errorf("config.version = %d, want 9", version)
 	}
 
-	// goose_db_version, federated_servers, and the durable ActivityPub
-	// delivery queue are added to a legacy schema.
+	// goose_db_version, federated_servers, the durable ActivityPub delivery
+	// queue, and the scheduled-streams tables are added to a legacy schema.
 	var newTableCount int
 	mustScan(t, db.QueryRow(`SELECT count(*) FROM sqlite_master WHERE type='table'`), &newTableCount)
-	if newTableCount != tableCount+3 {
-		t.Errorf("table count changed from %d to %d (expected +3)", tableCount, newTableCount)
+	if newTableCount != tableCount+5 {
+		t.Errorf("table count changed from %d to %d (expected +5)", tableCount, newTableCount)
 	}
 
 	if !columnExists(t, db, "users", "disabled_reason") {
@@ -156,8 +163,8 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 	}
 
 	// Goose should have recorded the latest migration.
-	if v := gooseVersion(t, db); v != 7 {
-		t.Errorf("goose version = %d, want 7", v)
+	if v := gooseVersion(t, db); v != 9 {
+		t.Errorf("goose version = %d, want 9", v)
 	}
 }
 

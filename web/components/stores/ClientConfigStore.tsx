@@ -192,10 +192,14 @@ export const ClientConfigStore: FC = () => {
   };
 
   const handleStatusChange = (status: ServerStatus) => {
+    const scheduledChatOpen = Boolean(status.scheduledEvent?.chatOpen);
+
     if (appState.matches('loading')) {
       const events = [AppStateEvent.Loaded];
       if (status.online) {
         events.push(AppStateEvent.Online);
+      } else if (scheduledChatOpen) {
+        events.push(AppStateEvent.ScheduledChatOpen);
       } else {
         events.push(AppStateEvent.Offline);
       }
@@ -205,6 +209,8 @@ export const ClientConfigStore: FC = () => {
 
     if (status.online && appState.matches('ready')) {
       sendEvent([AppStateEvent.Online]);
+    } else if (scheduledChatOpen) {
+      sendEvent([AppStateEvent.ScheduledChatOpen]);
     } else if (!status.online && !appState.matches({ ready: 'offline' })) {
       sendEvent([AppStateEvent.Offline]);
     }

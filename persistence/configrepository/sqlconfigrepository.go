@@ -535,6 +535,66 @@ func (r *SqlConfigRepository) GetChatDisabled() bool {
 	return false
 }
 
+// SetScheduleEnabled turns the scheduled streams feature on or off.
+func (r *SqlConfigRepository) SetScheduleEnabled(enabled bool) error {
+	return r.datastore.SetBool(scheduleEnabledKey, enabled)
+}
+
+// GetScheduleEnabled returns if the scheduled streams feature is enabled.
+func (r *SqlConfigRepository) GetScheduleEnabled() bool {
+	enabled, err := r.datastore.GetBool(scheduleEnabledKey)
+	if err == nil {
+		return enabled
+	}
+
+	return false
+}
+
+// SetScheduleReminderMessage sets the message posted to the Fediverse before
+// a scheduled event starts.
+func (r *SqlConfigRepository) SetScheduleReminderMessage(message string) error {
+	return r.datastore.SetString(scheduleReminderMessageKey, message)
+}
+
+// GetScheduleReminderMessage returns the message posted to the Fediverse
+// before a scheduled event starts. Empty means reminders are disabled.
+func (r *SqlConfigRepository) GetScheduleReminderMessage() string {
+	message, err := r.datastore.GetString(scheduleReminderMessageKey)
+	if err != nil {
+		return ""
+	}
+	return message
+}
+
+// GetScheduleShowCountdown returns whether the viewer countdown is enabled.
+func (r *SqlConfigRepository) GetScheduleShowCountdown() bool {
+	showCountdown, err := r.datastore.GetBool(scheduleShowCountdownKey)
+	if err != nil {
+		return false
+	}
+	return showCountdown
+}
+
+// SetScheduleShowCountdown controls whether the viewer shows an event countdown.
+func (r *SqlConfigRepository) SetScheduleShowCountdown(enabled bool) error {
+	return r.datastore.SetBool(scheduleShowCountdownKey, enabled)
+}
+
+// GetScheduleChatOpenMinutes returns how many minutes before an event chat opens.
+// Zero disables pre-event chat access.
+func (r *SqlConfigRepository) GetScheduleChatOpenMinutes() int {
+	minutes, err := r.datastore.GetNumber(scheduleChatOpenMinutesKey)
+	if err != nil {
+		return 0
+	}
+	return int(minutes)
+}
+
+// SetScheduleChatOpenMinutes sets how many minutes before an event chat opens.
+func (r *SqlConfigRepository) SetScheduleChatOpenMinutes(minutes int) error {
+	return r.datastore.SetNumber(scheduleChatOpenMinutesKey, float64(minutes))
+}
+
 // SetChatEstablishedUsersOnlyMode sets the state of established user only mode.
 func (r *SqlConfigRepository) SetChatEstablishedUsersOnlyMode(enabled bool) error {
 	return r.datastore.SetBool(chatEstablishedUsersOnlyModeKey, enabled)
