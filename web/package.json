@@ -103,7 +103,7 @@
     "@types/video.js": "^7.3.50",
     "babel-loader": "10.1.1",
     "chromatic": "18.7.1",
-    "css-loader": "7.1.4",
+    "css-loader": "7.1.5",
     "cypress": "^15.0.0",
     "eslint": "10.9.1",
     "eslint-config-next": "^16.3.4",
