@@ -1,10 +1,34 @@
 package indieauth
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/owncast/owncast/utils"
 )
+
+func TestPendingClientRequestsAreSynchronized(t *testing.T) {
+	svc := &Service{
+		pendingAuthRequests: make(map[string]*Request),
+	}
+
+	done := make(chan struct{})
+	go func() {
+		for i := range maxPendingRequests {
+			state := fmt.Sprintf("state-goroutine-%d", i)
+			_ = svc.storePendingAuthRequest(&Request{State: state})
+			_, _ = svc.getPendingAuthRequest(state)
+		}
+		close(done)
+	}()
+
+	for i := range maxPendingRequests {
+		state := fmt.Sprintf("state-main-%d", i)
+		_ = svc.storePendingAuthRequest(&Request{State: state})
+		_, _ = svc.getPendingAuthRequest(state)
+	}
+	<-done
+}
 
 func TestLimitGlobalPendingRequests(t *testing.T) {
 	// Construct an isolated Service for this test. CompleteServerAuth is

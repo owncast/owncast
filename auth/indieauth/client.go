@@ -17,11 +17,6 @@ import (
 
 // StartAuthFlow will begin the IndieAuth flow by generating an auth request.
 func (s *Service) StartAuthFlow(authHost, userID, accessToken, displayName string) (*url.URL, error) {
-	// Limit the number of pending requests
-	if len(s.pendingAuthRequests) >= maxPendingRequests {
-		return nil, errors.New("Please try again later. Too many pending requests.")
-	}
-
 	// Sanity check the server URL.
 	u, err := url.ParseRequestURI(authHost)
 	if err != nil {
@@ -48,7 +43,9 @@ func (s *Service) StartAuthFlow(authHost, userID, accessToken, displayName strin
 		return nil, errors.Wrap(err, "unable to generate IndieAuth request")
 	}
 
-	s.pendingAuthRequests[r.State] = r
+	if err := s.storePendingAuthRequest(r); err != nil {
+		return nil, err
+	}
 
 	return r.Redirect, nil
 }
@@ -56,7 +53,7 @@ func (s *Service) StartAuthFlow(authHost, userID, accessToken, displayName strin
 // HandleCallbackCode will handle the callback from the IndieAuth server
 // to continue the next step of the auth flow.
 func (s *Service) HandleCallbackCode(code, state string) (*Request, *Response, error) {
-	request, exists := s.pendingAuthRequests[state]
+	request, exists := s.getPendingAuthRequest(state)
 	if !exists {
 		return nil, nil, errors.New("no auth requests pending")
 	}
@@ -133,4 +130,22 @@ func makeIndieAuthClientErrorText(err string) string {
 	default:
 		return err
 	}
+}
+
+func (s *Service) storePendingAuthRequest(request *Request) error {
+	s.pendingAuthRequestsLock.Lock()
+	defer s.pendingAuthRequestsLock.Unlock()
+
+	if len(s.pendingAuthRequests) >= maxPendingRequests {
+		return errors.New("Please try again later. Too many pending requests.")
+	}
+	s.pendingAuthRequests[request.State] = request
+	return nil
+}
+
+func (s *Service) getPendingAuthRequest(state string) (*Request, bool) {
+	s.pendingAuthRequestsLock.Lock()
+	defer s.pendingAuthRequestsLock.Unlock()
+	request, exists := s.pendingAuthRequests[state]
+	return request, exists
 }
