@@ -110,6 +110,60 @@ func TestSendUserJoinedMessage_WebhookFiresRegardlessOfJoinPartSetting(t *testin
 	}
 }
 
+func TestClientCloseDoesNotDeadlockDelivery(t *testing.T) {
+	unregister := make(chan uint)
+	service := &Service{unregister: unregister}
+	client := &Client{
+		Id:     1,
+		User:   &models.User{DisplayName: "Tester"},
+		server: service,
+		send:   make(chan []byte, 1),
+	}
+
+	closed := make(chan struct{})
+	go func() {
+		client.close()
+		close(closed)
+	}()
+
+	deadline := time.After(time.Second)
+	for {
+		if client.mu.TryRLock() {
+			sendClosed := client.send == nil
+			client.mu.RUnlock()
+			if sendClosed {
+				break
+			}
+		}
+		select {
+		case <-deadline:
+			t.Fatal("client close kept the delivery lock while unregistering")
+		default:
+		}
+	}
+
+	delivered := make(chan struct{})
+	go func() {
+		client.trySend([]byte("message"))
+		close(delivered)
+	}()
+
+	select {
+	case <-delivered:
+	case <-time.After(time.Second):
+		t.Fatal("delivery deadlocked with client close")
+	}
+
+	if id := <-unregister; id != client.Id {
+		t.Fatalf("unregistered client %d, want %d", id, client.Id)
+	}
+	select {
+	case <-closed:
+	case <-time.After(time.Second):
+		t.Fatal("client close did not complete")
+	}
+}
+
 func TestUserPartedTimersHandleConcurrentDisconnectsAndReconnects(t *testing.T) {
 	chatSvc := &Service{
 		clients:          map[uint]*Client{},

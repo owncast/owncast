@@ -199,14 +199,21 @@ func (c *Client) close() {
 	log.Traceln("client closed:", c.User.DisplayName, c.Id, c.IPAddress)
 
 	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	if c.send != nil {
-		_ = c.conn.Close()
-		c.server.unregister <- c.Id
-		close(c.send)
-		c.send = nil
+	if c.send == nil {
+		c.mu.Unlock()
+		return
 	}
+	if c.conn != nil {
+		_ = c.conn.Close()
+	}
+	close(c.send)
+	c.send = nil
+	c.mu.Unlock()
+
+	// Do not hold c.mu while waiting for the server loop. The loop can be
+	// delivering to this client and needs the same mutex before it can receive
+	// the unregister request.
+	c.server.unregister <- c.Id
 }
 
 func (c *Client) passesRateLimit() bool {
