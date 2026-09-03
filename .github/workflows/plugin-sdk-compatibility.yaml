@@ -1,0 +1,70 @@
+# Run the complete plugin SDK example suite against the exact Owncast
+# checkout under test. The existing plugin-tests workflow remains the smaller
+# live-instance integration suite.
+name: Plugin SDK compatibility
+
+on:
+  push:
+    branches: [develop]
+    paths-ignore:
+      - 'web/**'
+  pull_request:
+    paths-ignore:
+      - 'web/**'
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      sdk_ref:
+        description: 'plugin-sdk ref to test (default: main)'
+        required: false
+        default: main
+
+concurrency:
+  group: plugin-sdk-compatibility-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  examples:
+    name: SDK examples (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript, python]
+    steps:
+      - name: Check out Owncast
+        uses: actions/checkout@v7
+
+      - name: Check out plugin SDK
+        uses: actions/checkout@v7
+        with:
+          repository: owncast/plugin-sdk
+          ref: ${{ inputs.sdk_ref || 'main' }}
+          path: plugin-sdk
+          fetch-depth: 1
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: plugin-sdk/host-runtime/go.mod
+          cache-dependency-path: plugin-sdk/host-runtime/go.sum
+
+      - uses: actions/setup-node@v4
+        if: matrix.language == 'javascript'
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-python@v5
+        if: matrix.language == 'python'
+        with:
+          python-version: '3.x'
+
+      - name: Run complete SDK example suite
+        env:
+          PLUGIN_SDK_DIR: ${{ github.workspace }}/plugin-sdk
+          PLUGIN_LANGUAGE: ${{ matrix.language }}
+        run: bash test/automated/plugins/sdk-compatibility.sh
