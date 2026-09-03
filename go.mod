@@ -34,6 +34,7 @@ require (
 	github.com/prometheus/client_golang v1.23.2
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/schollz/sqlite3dump v1.3.1
+	github.com/sherif-fanous/xmltv v1.2.1
 	github.com/shirou/gopsutil/v4 v4.25.8
 	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1

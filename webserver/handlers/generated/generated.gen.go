@@ -794,6 +794,9 @@ type ServerInterface interface {
 	// GetScheduleICS Get a subscribable iCalendar feed of scheduled stream events
 	// (GET /schedule.ics)
 	GetScheduleICS(w http.ResponseWriter, r *http.Request)
+	// GetScheduleXMLTV Get an XMLTV guide of scheduled stream events
+	// (GET /schedule.xml)
+	GetScheduleXMLTV(w http.ResponseWriter, r *http.Request)
 	// GetAllSocialPlatforms Get all social platforms
 	// (GET /socialplatforms)
 	GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request)
@@ -2249,6 +2252,12 @@ func (_ Unimplemented) GetScheduleOptions(w http.ResponseWriter, r *http.Request
 // GetScheduleICS Get a subscribable iCalendar feed of scheduled stream events
 // (GET /schedule.ics)
 func (_ Unimplemented) GetScheduleICS(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetScheduleXMLTV Get an XMLTV guide of scheduled stream events
+// (GET /schedule.xml)
+func (_ Unimplemented) GetScheduleXMLTV(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -6182,6 +6191,19 @@ func (siw *ServerInterfaceWrapper) GetScheduleICS(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r)
 }
 
+// GetScheduleXMLTV operation middleware
+func (siw *ServerInterfaceWrapper) GetScheduleXMLTV(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetScheduleXMLTV(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetAllSocialPlatforms operation middleware
 func (siw *ServerInterfaceWrapper) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -6934,6 +6956,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/schedule.ics", wrapper.GetScheduleICS)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/schedule.xml", wrapper.GetScheduleXMLTV)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/schedule", wrapper.GetAdminSchedule)

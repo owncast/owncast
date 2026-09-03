@@ -126,6 +126,10 @@ func (s *ServerInterfaceImpl) GetScheduleICS(w http.ResponseWriter, r *http.Requ
 	s.h.GetScheduleICS(w, r)
 }
 
+func (s *ServerInterfaceImpl) GetScheduleXMLTV(w http.ResponseWriter, r *http.Request) {
+	s.h.GetScheduleXMLTV(w, r)
+}
+
 func (s *ServerInterfaceImpl) GetAdminFederatedServers(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetAdminFederatedServers)(w, r)
 }

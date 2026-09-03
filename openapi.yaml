@@ -3155,6 +3155,20 @@ paths:
                 type: string
         default:
           $ref: '#/components/responses/Default'
+  /schedule.xml:
+    get:
+      summary: Get an XMLTV guide of scheduled stream events
+      operationId: GetScheduleXMLTV
+      tags: ['Internal', 'Schedule']
+      responses:
+        '200':
+          description: An always-current XMLTV guide. Empty when the schedule feature is disabled.
+          content:
+            application/xml:
+              schema:
+                type: string
+        default:
+          $ref: '#/components/responses/Default'
   /admin/schedule:
     get:
       summary: Get every scheduled event and recurring series for the admin

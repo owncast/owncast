@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"encoding/xml"
 	"errors"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -11,6 +13,7 @@ import (
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
 	webutils "github.com/owncast/owncast/webserver/utils"
+	"github.com/sherif-fanous/xmltv"
 )
 
 // maxScheduleRangeDays bounds how much schedule a single public request may
@@ -57,20 +60,111 @@ func (h *Handlers) GetSchedule(w http.ResponseWriter, r *http.Request, params ge
 // GetScheduleICS returns a subscribable, always-current iCalendar feed of
 // scheduled stream events.
 func (h *Handlers) GetScheduleICS(w http.ResponseWriter, r *http.Request) {
-	events := []models.ScheduledEvent{}
-	if h.configRepository.GetScheduleEnabled() {
-		now := time.Now()
-		var err error
-		events, err = h.scheduleEventsRepository.GetEventsInRange(now.AddDate(0, 0, -7), now.AddDate(1, 0, 0))
-		if err != nil {
-			webutils.InternalErrorHandler(w, err)
-			return
-		}
+	events, err := h.getScheduleFeedEvents()
+	if err != nil {
+		webutils.InternalErrorHandler(w, err)
+		return
 	}
 
 	middleware.DisableCache(w)
 	w.Header().Set("Content-Type", "text/calendar; charset=utf-8")
 	_, _ = w.Write([]byte(scheduleICS(events, time.Now())))
+}
+
+// GetScheduleXMLTV returns an always-current XMLTV guide of scheduled streams.
+func (h *Handlers) GetScheduleXMLTV(w http.ResponseWriter, r *http.Request) {
+	events, err := h.getScheduleFeedEvents()
+	if err != nil {
+		webutils.InternalErrorHandler(w, err)
+		return
+	}
+
+	guide, err := scheduleXMLTV(
+		events,
+		h.configRepository.GetServerName(),
+		h.configRepository.GetServerURL(),
+	)
+	if err != nil {
+		webutils.InternalErrorHandler(w, err)
+		return
+	}
+
+	middleware.DisableCache(w)
+	w.Header().Set("Content-Type", "application/xml; charset=utf-8")
+	_, _ = w.Write(guide)
+}
+
+func (h *Handlers) getScheduleFeedEvents() ([]models.ScheduledEvent, error) {
+	if !h.configRepository.GetScheduleEnabled() {
+		return []models.ScheduledEvent{}, nil
+	}
+
+	now := time.Now()
+	return h.scheduleEventsRepository.GetEventsInRange(now.AddDate(0, 0, -7), now.AddDate(1, 0, 0))
+}
+
+func scheduleXMLTV(events []models.ScheduledEvent, serverName string, serverURL string) ([]byte, error) {
+	serverName = normalizeXMLTVText(serverName)
+	if serverName == "" {
+		serverName = "Owncast"
+	}
+
+	serverURL = strings.TrimRight(serverURL, "/")
+	channelID := "owncast"
+	if parsedURL, err := url.Parse(serverURL); err == nil && parsedURL.Hostname() != "" {
+		channelID = parsedURL.Hostname()
+	}
+
+	generatorName := "Owncast"
+	generatorURL := "https://owncast.online"
+	guide := xmltv.TV{
+		GeneratorInfoName: &generatorName,
+		GeneratorInfoURL:  &generatorURL,
+		Channels: []xmltv.Channel{
+			{
+				ID:           channelID,
+				DisplayNames: []xmltv.DisplayName{{Text: serverName}},
+			},
+		},
+	}
+	if serverURL != "" {
+		sourceDataURL := serverURL + "/api/schedule.xml"
+		guide.SourceInfoName = &serverName
+		guide.SourceInfoURL = &serverURL
+		guide.SourceDataURL = &sourceDataURL
+		guide.Channels[0].Icons = []xmltv.Icon{{Source: serverURL + "/logo/external"}}
+		guide.Channels[0].URLs = []xmltv.URL{{Text: serverURL}}
+	}
+
+	for _, event := range events {
+		if event.Status == models.ScheduledEventStatusCancelled {
+			continue
+		}
+
+		start := xmltv.Time{Time: event.StartTime.UTC()}
+		stop := xmltv.Time{Time: event.StartTime.UTC().Add(time.Duration(event.DurationMinutes) * time.Minute)}
+		programme := xmltv.Programme{
+			Start:   start,
+			Stop:    &stop,
+			Channel: channelID,
+			Titles:  []xmltv.Title{{Text: normalizeXMLTVText(event.Name)}},
+		}
+		if description := normalizeXMLTVText(event.Description); description != "" {
+			programme.Descriptions = []xmltv.Description{{Text: description}}
+		}
+		guide.Programmes = append(guide.Programmes, programme)
+	}
+
+	body, err := xml.Marshal(guide)
+	if err != nil {
+		return nil, err
+	}
+
+	return append(append([]byte(xml.Header), body...), '\n'), nil
+}
+
+func normalizeXMLTVText(value string) string {
+	return strings.Join(strings.Fields(value), " ")
 }
 
 func scheduleICS(events []models.ScheduledEvent, generatedAt time.Time) string {
