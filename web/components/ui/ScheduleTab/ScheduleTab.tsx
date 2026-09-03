@@ -1,4 +1,5 @@
 import { Alert, Empty, Modal, Spin, Tag, Typography } from 'antd';
+import Link from 'next/link';
 import type { DatesSetArg } from '@fullcalendar/core';
 import { FC, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'next-export-i18n';
@@ -69,6 +70,7 @@ export const ScheduleTab: FC = () => {
   const retryText = getText(Localization.Frontend.Schedule.retry, 'Try again');
   const cancelledText = getText(Localization.Frontend.Schedule.cancelled, 'Cancelled');
   const timezoneText = getText(Localization.Frontend.Schedule.timezone, 'Schedule timezone');
+  const viewEventText = getText(Localization.Frontend.Schedule.viewEvent, 'View event page');
   const durationText = getText(Localization.Frontend.Schedule.duration, '{{minutes}} minutes');
 
   return (
@@ -138,6 +140,12 @@ export const ScheduleTab: FC = () => {
                 {timezoneText}: {selectedEvent.timezone}
               </Typography.Text>
             )}
+            <Link
+              className={styles.eventPageLink}
+              href={`/schedule/${encodeURIComponent(selectedEvent.id)}`}
+            >
+              {viewEventText}
+            </Link>
           </div>
         )}
       </Modal>

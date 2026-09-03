@@ -1,0 +1,141 @@
+@use '../../../styles/mixins' as *;
+
+.page {
+  min-height: 100vh;
+  background: var(--theme-color-background-main);
+  color: var(--theme-color-components-text-on-light);
+}
+
+.header {
+  align-items: center;
+  background: var(--theme-color-background-header);
+  border-bottom: 3px solid var(--theme-color-action);
+  color: var(--theme-color-components-text-on-dark);
+  display: flex;
+  justify-content: space-between;
+  min-height: 70px;
+  padding: 0 clamp(1rem, 5vw, 4rem);
+}
+
+.brand,
+.backLink {
+  align-items: center;
+  color: inherit;
+  display: inline-flex;
+  gap: 0.7rem;
+  text-decoration: none;
+}
+
+.brand {
+  font-family: var(--theme-text-display-font-family);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.brand img {
+  height: 32px;
+  object-fit: contain;
+  width: 32px;
+}
+
+.backLink {
+  font-size: 0.85rem;
+  opacity: 0.82;
+}
+
+.backLink:hover,
+.backLink:focus-visible {
+  color: var(--theme-color-components-text-on-dark);
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.main {
+  margin: 0 auto;
+  max-width: 760px;
+  padding: clamp(2rem, 7vw, 5rem) 1rem 4rem;
+}
+
+.eyebrow {
+  color: var(--theme-color-action);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+}
+
+.message {
+  background: var(--theme-color-components-content-background);
+  border-left: 4px solid var(--theme-color-action);
+  padding: 1.5rem;
+}
+
+.cancelledHero,
+.endedHero {
+  background: var(--theme-color-components-video-background);
+  color: var(--theme-color-components-text-on-dark);
+  padding: clamp(2rem, 6vw, 4rem);
+}
+
+.cancelledHero h1,
+.endedHero h1 {
+  font-size: clamp(2rem, 7vw, 4rem);
+  line-height: 1;
+  margin: 0.8rem 0 1rem;
+}
+
+.cancelledHero p,
+.endedHero p {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.cancelledLabel {
+  color: var(--theme-color-warning);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.details {
+  background: var(--theme-color-components-content-background);
+  margin-top: 1rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.details h2 {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  margin: 0;
+}
+
+.details p {
+  margin: 0.55rem 0 0;
+}
+
+.timezone {
+  color: var(--theme-color-action);
+  font-size: 0.85rem;
+}
+
+@media (width <= 600px) {
+  .header {
+    min-height: 60px;
+  }
+
+  .backLink {
+    font-size: 0;
+  }
+
+  .backLink::after {
+    content: '↗';
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page * {
+    scroll-behavior: auto;
+  }
+}

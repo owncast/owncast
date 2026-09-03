@@ -73,6 +73,10 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 		r.Handle("/plugins/*", pluginContent)
 	}
 
+	// Static schedule detail pages share one exported bundle and resolve the
+	// occurrence ID in the browser.
+	r.HandleFunc("/schedule/*", h.SchedulePageHandler)
+
 	// The primary web app.
 	r.HandleFunc("/*", h.IndexHandler)
 

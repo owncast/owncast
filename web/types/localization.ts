@@ -117,14 +117,20 @@ export const Localization = {
     Schedule: {
       tab: 'Frontend.Schedule.tab',
       addToCalendar: 'Frontend.Schedule.addToCalendar',
+      backToStream: 'Frontend.Schedule.backToStream',
+      pageEyebrow: 'Frontend.Schedule.pageEyebrow',
+      viewEvent: 'Frontend.Schedule.viewEvent',
       today: 'Frontend.Schedule.today',
       month: 'Frontend.Schedule.month',
       week: 'Frontend.Schedule.week',
       list: 'Frontend.Schedule.list',
       loading: 'Frontend.Schedule.loading',
+      loadingEvent: 'Frontend.Schedule.loadingEvent',
       error: 'Frontend.Schedule.error',
       retry: 'Frontend.Schedule.retry',
       noEvents: 'Frontend.Schedule.noEvents',
+      eventNotFound: 'Frontend.Schedule.eventNotFound',
+      eventEnded: 'Frontend.Schedule.eventEnded',
       cancelled: 'Frontend.Schedule.cancelled',
       timezone: 'Frontend.Schedule.timezone',
       duration: 'Frontend.Schedule.duration',
@@ -137,7 +143,6 @@ export const Localization = {
       countdownSeconds: 'Frontend.Schedule.countdownSeconds',
     },
 
-    // Chat message components
     Chat: {
       userJoined: 'Frontend.Chat.userJoined',
       userLeft: 'Frontend.Chat.userLeft',

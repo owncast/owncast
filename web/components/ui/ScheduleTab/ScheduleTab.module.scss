@@ -138,6 +138,11 @@
   color: var(--theme-color-components-modal-content-text);
 }
 
+.eventPageLink {
+  display: block;
+  margin-top: 1rem;
+}
+
 @media (width <= 768px) {
   .calendar {
     :global(.fc-toolbar) {
