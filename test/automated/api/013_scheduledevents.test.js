@@ -53,6 +53,8 @@ async function getAdminSchedule() {
 test('schedule feature is disabled by default', async () => {
 	const res = await request.get('/api/config').expect(200);
 	expect(res.body.schedule.enabled).toBe(false);
+	expect(res.body.schedule.showCountdown).toBe(false);
+	expect(res.body.schedule.chatOpenMinutesBefore).toBe(0);
 });
 
 test('public schedule is empty while the feature is disabled', async () => {
@@ -89,6 +91,37 @@ test('enable the schedule feature', async () => {
 
 	const config = await request.get('/api/config').expect(200);
 	expect(config.body.schedule.enabled).toBe(true);
+});
+
+test('enable the event countdown', async () => {
+	const res = await request
+		.post('/api/admin/config/schedule/showcountdown')
+		.auth('admin', adminPassword)
+		.send({ value: true })
+		.expect(200);
+	expect(res.body.success).toBe(true);
+
+	const config = await request.get('/api/config').expect(200);
+	expect(config.body.schedule.showCountdown).toBe(true);
+});
+
+test('set the chat open lead time', async () => {
+	const res = await request
+		.post('/api/admin/config/schedule/chatopenminutes')
+		.auth('admin', adminPassword)
+		.send({ value: 30 })
+		.expect(200);
+	expect(res.body.success).toBe(true);
+
+	const config = await request.get('/api/config').expect(200);
+	expect(config.body.schedule.chatOpenMinutesBefore).toBe(30);
+
+	const invalid = await request
+		.post('/api/admin/config/schedule/chatopenminutes')
+		.auth('admin', adminPassword)
+		.send({ value: 15 })
+		.expect(400);
+	expect(invalid.text).toContain('0, 5, 10, 30, or 60');
 });
 
 test('set the schedule reminder message', async () => {
@@ -141,11 +174,27 @@ test('one-off event appears in the public schedule', async () => {
 	expect(event.status).toBe('scheduled');
 });
 
+test('public iCalendar feed returns the current schedule', async () => {
+	const res = await request
+		.get('/api/schedule.ics')
+		.expect('content-type', /text\/calendar/)
+		.expect('cache-control', /no-cache/)
+		.expect(200);
+
+	expect(res.text).toContain('BEGIN:VCALENDAR\r\n');
+	expect(res.text).toContain(`UID:${oneOffId}@owncast\r\n`);
+	expect(res.text).toContain(`SUMMARY:${oneOffName}\r\n`);
+	expect(res.text).toContain('DTSTART:');
+	expect(res.text).toContain('END:VCALENDAR\r\n');
+});
+
 test('status shows the upcoming one-off with chat closed', async () => {
 	const res = await request.get('/api/status').expect(200);
 	expect(res.body.scheduledEvent).toBeDefined();
 	expect(res.body.scheduledEvent.id).toBe(oneOffId);
 	expect(res.body.scheduledEvent.name).toBe(oneOffName);
+	expect(res.body.scheduledEvent.description).toBe(oneOffDescription);
+	expect(res.body.scheduledEvent.durationMinutes).toBe(oneOffDuration);
 	expect(new Date(res.body.scheduledEvent.startTime).getTime()).toBe(
 		oneOffStart.getTime(),
 	);

@@ -122,6 +122,10 @@ func (s *ServerInterfaceImpl) GetScheduleOptions(w http.ResponseWriter, r *http.
 	s.h.GetSchedule(w, r, generated.GetScheduleParams{})
 }
 
+func (s *ServerInterfaceImpl) GetScheduleICS(w http.ResponseWriter, r *http.Request) {
+	s.h.GetScheduleICS(w, r)
+}
+
 func (s *ServerInterfaceImpl) GetAdminFederatedServers(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetAdminFederatedServers)(w, r)
 }

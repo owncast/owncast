@@ -14,10 +14,6 @@ const (
 	// recurring series. Far enough for a month-view calendar.
 	MaterializationHorizon = 30 * 24 * time.Hour
 
-	// chatOpenLeadTime is how long before a scheduled event chat is
-	// treated as open for early arrivals.
-	chatOpenLeadTime = 10 * time.Minute
-
 	// tickInterval is how often the scheduler materializes occurrences.
 	// Each tick is idempotent and driven purely from table state, so a
 	// missed or repeated tick never corrupts anything.
@@ -26,13 +22,37 @@ const (
 	// upcomingCacheTTL bounds how stale the next-event answer served to
 	// the 5s status poll may be. Admin mutations bypass it via Refresh.
 	upcomingCacheTTL = 10 * time.Second
+
+	// MissedEventGracePeriod is how long after the scheduled start chat stays
+	// open while waiting for a late stream.
+	MissedEventGracePeriod = 10 * time.Minute
+
+	// MissedEventWarningLeadTime leaves the chat shutdown message visible.
+	MissedEventWarningLeadTime = 1 * time.Minute
+
+	// MissedEventChatMessage is sent when a pre-opened event never starts.
+	MissedEventChatMessage = "This scheduled live stream never started, so chat is being turned off. Thanks for coming!"
 )
+
+type chatWindowState struct {
+	event       *models.ScheduledEvent
+	preEnabled  bool
+	started     bool
+	warningSent bool
+	cancelled   bool
+	expiresAt   time.Time
+}
 
 // Service owns the scheduled streams background loop: materializing
 // occurrence rows from recurring series and answering "what's next" for the
 // status endpoint. Construct with New in main.go and inject into consumers.
 type Service struct {
 	repo scheduleeventsrepository.ScheduleEventsRepository
+
+	getStatus            func() models.Status
+	getChatOpenMinutes   func() int
+	onMissedEventWarning func(*models.ScheduledEvent)
+	chatWindowStates     map[string]chatWindowState
 
 	tickerMutex sync.Mutex
 	ticker      *time.Ticker
@@ -46,12 +66,19 @@ type Service struct {
 // Deps lists everything a schedule Service consumes.
 type Deps struct {
 	ScheduleEventsRepository scheduleeventsrepository.ScheduleEventsRepository
+	GetStatus                func() models.Status
+	GetChatOpenMinutes       func() int
+	OnMissedEventWarning     func(*models.ScheduledEvent)
 }
 
 // New constructs the schedule service.
 func New(deps Deps) *Service {
 	return &Service{
-		repo: deps.ScheduleEventsRepository,
+		repo:                 deps.ScheduleEventsRepository,
+		getStatus:            deps.GetStatus,
+		getChatOpenMinutes:   deps.GetChatOpenMinutes,
+		onMissedEventWarning: deps.OnMissedEventWarning,
+		chatWindowStates:     make(map[string]chatWindowState),
 	}
 }
 
@@ -104,7 +131,8 @@ func (s *Service) Stop() {
 }
 
 func (s *Service) tick() {
-	inserted, err := MaterializeAllSeries(s.repo, time.Now(), MaterializationHorizon)
+	now := time.Now()
+	inserted, err := MaterializeAllSeries(s.repo, now, MaterializationHorizon)
 	if err != nil {
 		log.Errorf("unable to materialize scheduled stream events: %v", err)
 	}
@@ -113,6 +141,83 @@ func (s *Service) tick() {
 	}
 
 	s.Refresh()
+	s.updateChatWindow(now)
+}
+
+func (s *Service) updateChatWindow(now time.Time) {
+	if s.getStatus == nil || s.getChatOpenMinutes == nil {
+		return
+	}
+
+	event := s.GetUpcomingEvent()
+	s.cleanupChatWindowStates(now)
+	status := s.getStatus()
+	if event != nil {
+		state := s.chatWindowStates[event.ID]
+		state.event = event
+		leadTime := time.Duration(s.getChatOpenMinutes()) * time.Minute
+		state.preEnabled = state.preEnabled || shouldPreEnableChat(event, status, now, leadTime)
+		state.started = state.started || eventHasStarted(event, status, now)
+		state.expiresAt = event.StartTime.Add(time.Duration(event.DurationMinutes) * time.Minute)
+		graceExpiresAt := event.StartTime.Add(MissedEventGracePeriod + tickInterval)
+		if state.expiresAt.Before(graceExpiresAt) {
+			state.expiresAt = graceExpiresAt
+		}
+		s.chatWindowStates[event.ID] = state
+	}
+
+	s.processChatWindows(now, status)
+}
+
+func (s *Service) processChatWindows(now time.Time, status models.Status) {
+	for id, state := range s.chatWindowStates {
+		event := state.event
+		if event == nil || !state.preEnabled || state.started || status.Online {
+			continue
+		}
+
+		if !state.warningSent && IsEventMissedWarning(event, now) {
+			state.warningSent = true
+			if s.onMissedEventWarning != nil {
+				s.onMissedEventWarning(event)
+			}
+		}
+
+		if !state.cancelled && IsEventMissed(event, now) && s.repo != nil {
+			if err := s.repo.CancelEvent(id); err != nil {
+				log.Errorf("unable to cancel missed scheduled stream event %s: %v", id, err)
+			} else {
+				state.cancelled = true
+				s.Refresh()
+			}
+		}
+		s.chatWindowStates[id] = state
+	}
+}
+
+func (s *Service) cleanupChatWindowStates(now time.Time) {
+	for id, state := range s.chatWindowStates {
+		if !now.Before(state.expiresAt) {
+			delete(s.chatWindowStates, id)
+		}
+	}
+}
+
+func shouldPreEnableChat(event *models.ScheduledEvent, status models.Status, now time.Time, leadTime time.Duration) bool {
+	return leadTime > 0 &&
+		now.Before(event.StartTime) &&
+		!now.Before(event.StartTime.Add(-leadTime)) &&
+		!status.Online
+}
+
+func eventHasStarted(event *models.ScheduledEvent, status models.Status, now time.Time) bool {
+	if now.Before(event.StartTime) {
+		return false
+	}
+	if status.Online {
+		return true
+	}
+	return status.LastConnectTime != nil && !status.LastConnectTime.Time.Before(event.StartTime)
 }
 
 // Refresh invalidates the cached next-event answer. Called after admin
@@ -155,10 +260,35 @@ func (s *Service) GetUpcomingEvent() *models.ScheduledEvent {
 	return s.upcomingEvent
 }
 
-// IsChatOpenForEvent reports whether the pre-event chat window is open: the
-// event starts within chatOpenLeadTime, or has started and not yet run past
-// its duration.
-func IsChatOpenForEvent(event *models.ScheduledEvent, now time.Time) bool {
+// IsChatOpen reports whether a scheduled event currently permits chat while
+// the stream is offline.
+func (s *Service) IsChatOpen() bool {
+	if s.getStatus == nil || s.getChatOpenMinutes == nil {
+		return false
+	}
+	event := s.GetUpcomingEvent()
+	if event == nil {
+		return false
+	}
+	now := time.Now()
+	return !IsEventMissed(event, now) &&
+		IsChatOpenForEvent(event, now, time.Duration(s.getChatOpenMinutes())*time.Minute)
+}
+
+// IsEventMissed reports whether the late-start grace period has elapsed.
+func IsEventMissed(event *models.ScheduledEvent, now time.Time) bool {
+	return event != nil && !now.Before(event.StartTime.Add(MissedEventGracePeriod))
+}
+
+// IsEventMissedWarning reports whether it is time to warn before shutdown.
+func IsEventMissedWarning(event *models.ScheduledEvent, now time.Time) bool {
+	return event != nil && !now.Before(event.StartTime.Add(MissedEventGracePeriod-MissedEventWarningLeadTime))
+}
+
+// IsChatOpenForEvent reports whether the pre-event chat window is open:
+// the event starts within chatOpenLeadTime, or has started and not yet run
+// past its duration.
+func IsChatOpenForEvent(event *models.ScheduledEvent, now time.Time, chatOpenLeadTime time.Duration) bool {
 	if event == nil {
 		return false
 	}

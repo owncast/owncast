@@ -39,11 +39,22 @@ func (h *Handlers) getStatusResponse() webStatusResponse {
 
 	if h.configRepository.GetScheduleEnabled() && h.schedule != nil {
 		if event := h.schedule.GetUpcomingEvent(); event != nil {
+			now := time.Now()
+			chatOpen := schedule.IsChatOpenForEvent(
+				event,
+				now,
+				time.Duration(h.configRepository.GetScheduleChatOpenMinutes())*time.Minute,
+			)
+			if !status.Online && schedule.IsEventMissed(event, now) {
+				chatOpen = false
+			}
 			response.ScheduledEvent = &scheduledEventStatusResponse{
-				ID:        event.ID,
-				Name:      event.Name,
-				StartTime: event.StartTime,
-				ChatOpen:  schedule.IsChatOpenForEvent(event, time.Now()),
+				ID:              event.ID,
+				Name:            event.Name,
+				Description:     event.Description,
+				StartTime:       event.StartTime,
+				DurationMinutes: event.DurationMinutes,
+				ChatOpen:        chatOpen,
 			}
 		}
 	}
@@ -54,10 +65,12 @@ func (h *Handlers) getStatusResponse() webStatusResponse {
 // frequently-polled status endpoint. It drives the offline countdown and the
 // pre-event chat window without any extra polling.
 type scheduledEventStatusResponse struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	StartTime time.Time `json:"startTime"`
-	ChatOpen  bool      `json:"chatOpen"`
+	ID              string    `json:"id"`
+	Name            string    `json:"name"`
+	Description     string    `json:"description"`
+	StartTime       time.Time `json:"startTime"`
+	DurationMinutes int       `json:"durationMinutes"`
+	ChatOpen        bool      `json:"chatOpen"`
 }
 
 type webStatusResponse struct {

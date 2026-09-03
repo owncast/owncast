@@ -292,10 +292,27 @@ func main() {
 	chatSvc.SetGetStatus(streamSvc.GetStatus)
 	ypSvc.SetGetStatus(streamSvc.GetStatus)
 
+	// Materializes scheduled stream occurrences, keeps the next-event answer
+	// warm for the status endpoint, and closes chat when a pre-opened event
+	// never starts.
+	scheduleSvc := schedule.New(schedule.Deps{
+		ScheduleEventsRepository: scheduleEventsRepository,
+		GetStatus:                streamSvc.GetStatus,
+		GetChatOpenMinutes:       configRepository.GetScheduleChatOpenMinutes,
+		OnMissedEventWarning: func(_ *models.ScheduledEvent) {
+			if err := chatSvc.SendSystemMessage(schedule.MissedEventChatMessage, false); err != nil {
+				log.Errorf("unable to send missed scheduled stream chat message: %v", err)
+			}
+		},
+	})
+	chatSvc.SetIsScheduledChatOpen(scheduleSvc.IsChatOpen)
+
 	if err := streamSvc.Start(ctx); err != nil {
 		log.Fatalln("failed to start the stream service", err)
 	}
 	defer streamSvc.Stop(ctx)
+	scheduleSvc.Start()
+	defer scheduleSvc.Stop()
 
 	// The central scheduler owns all recurring background work. Services
 	// expose an idempotent job method plus an interval constant, and get
@@ -323,12 +340,6 @@ func main() {
 	}
 	schedulerSvc.Start()
 	defer schedulerSvc.Stop()
-
-	// Materializes scheduled stream occurrences from recurring series and
-	// keeps the next-event answer warm for the status endpoint.
-	scheduleSvc := schedule.New(schedule.Deps{ScheduleEventsRepository: scheduleEventsRepository})
-	scheduleSvc.Start()
-	defer scheduleSvc.Stop()
 
 	// Stage 8: late services. metrics polls stream + chat, fediverseAuth
 	// owns OTP state for the chat-side handler.

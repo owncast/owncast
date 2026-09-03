@@ -95,8 +95,10 @@ func (a *Admin) GetServerConfig(w http.ResponseWriter, r *http.Request) {
 			BlockedDomains:   configRepository.GetBlockedFederatedDomains(),
 		},
 		Schedule: scheduleAdminConfigResponse{
-			Enabled:         configRepository.GetScheduleEnabled(),
-			ReminderMessage: configRepository.GetScheduleReminderMessage(),
+			Enabled:               configRepository.GetScheduleEnabled(),
+			ShowCountdown:         configRepository.GetScheduleShowCountdown(),
+			ChatOpenMinutesBefore: configRepository.GetScheduleChatOpenMinutes(),
+			ReminderMessage:       configRepository.GetScheduleReminderMessage(),
 		},
 		Notifications: notificationsConfigResponse{
 			Discord: configRepository.GetDiscordConfig(),
@@ -202,8 +204,10 @@ type federationConfigResponse struct {
 }
 
 type scheduleAdminConfigResponse struct {
-	Enabled         bool   `json:"enabled"`
-	ReminderMessage string `json:"reminderMessage"`
+	Enabled               bool   `json:"enabled"`
+	ShowCountdown         bool   `json:"showCountdown"`
+	ChatOpenMinutesBefore int    `json:"chatOpenMinutesBefore"`
+	ReminderMessage       string `json:"reminderMessage"`
 }
 
 type notificationsConfigResponse struct {

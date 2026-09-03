@@ -3141,6 +3141,20 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /schedule.ics:
+    get:
+      summary: Get a subscribable iCalendar feed of scheduled stream events
+      operationId: GetScheduleICS
+      tags: ['Internal', 'Schedule']
+      responses:
+        '200':
+          description: An always-current iCalendar feed. Empty when the schedule feature is disabled.
+          content:
+            text/calendar:
+              schema:
+                type: string
+        default:
+          $ref: '#/components/responses/Default'
   /admin/schedule:
     get:
       summary: Get every scheduled event and recurring series for the admin
@@ -3305,6 +3319,64 @@ paths:
           $ref: '#/components/responses/Default'
     options:
       operationId: SetScheduleEnabledOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Schedule']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/schedule/showcountdown:
+    post:
+      summary: Show an event countdown instead of the offline message
+      operationId: SetScheduleShowCountdown
+      tags: ['Internal', 'Admin', 'Schedule']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Schedule countdown setting updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetScheduleShowCountdownOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Schedule']
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/config/schedule/chatopenminutes:
+    post:
+      summary: Set how many minutes before a scheduled event chat opens
+      operationId: SetScheduleChatOpenMinutes
+      tags: ['Internal', 'Admin', 'Schedule']
+      security:
+        - BasicAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AdminConfigValue'
+      responses:
+        '200':
+          description: Schedule chat open setting updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: SetScheduleChatOpenMinutesOptions
       x-internal: true
       tags: ['Objects', 'Internal', 'Admin', 'Schedule']
       responses:
@@ -4186,6 +4258,11 @@ components:
               format: date-time
             chatOpen:
               type: boolean
+            description:
+              type: string
+            durationMinutes:
+              type: integer
+              description: Duration of the scheduled event in minutes
     Emojis:
       type: array
       items:
@@ -4417,6 +4494,11 @@ components:
           properties:
             enabled:
               type: boolean
+            showCountdown:
+              type: boolean
+            chatOpenMinutesBefore:
+              type: integer
+              enum: [0, 5, 10, 30, 60]
         appearanceVariables:
           type: object
           additionalProperties:
@@ -5141,6 +5223,11 @@ components:
               type: boolean
             reminderMessage:
               type: string
+            showCountdown:
+              type: boolean
+            chatOpenMinutesBefore:
+              type: integer
+              enum: [0, 5, 10, 30, 60]
         instanceDetails:
           $ref: '#/components/schemas/AdminWebConfig'
         notifications:

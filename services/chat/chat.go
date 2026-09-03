@@ -60,6 +60,11 @@ func (s *Service) SetGetStatus(fn func() models.Status) {
 	s.getStatus = fn
 }
 
+// SetIsScheduledChatOpen wires the schedule-aware offline chat exception.
+func (s *Service) SetIsScheduledChatOpen(fn func() bool) {
+	s.isScheduledChatOpen = fn
+}
+
 // Start launches the broadcast loop and registers the Prometheus counter.
 // Safe to call once. History pruning runs as a job on the central
 // scheduler (RunDataPruner), registered by main.go.

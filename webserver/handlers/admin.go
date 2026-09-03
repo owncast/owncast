@@ -284,12 +284,28 @@ func (s *ServerInterfaceImpl) SetScheduleEnabledOptions(w http.ResponseWriter, r
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleEnabled)(w, r)
 }
 
+func (s *ServerInterfaceImpl) SetScheduleShowCountdown(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleShowCountdown)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetScheduleShowCountdownOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleShowCountdown)(w, r)
+}
+
 func (s *ServerInterfaceImpl) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleReminderMessage)(w, r)
 }
 
 func (s *ServerInterfaceImpl) SetScheduleReminderMessageOptions(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleReminderMessage)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetScheduleChatOpenMinutes(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleChatOpenMinutes)(w, r)
+}
+
+func (s *ServerInterfaceImpl) SetScheduleChatOpenMinutesOptions(w http.ResponseWriter, r *http.Request) {
+	s.h.middleware.RequireAdminAuth(s.h.admin.SetScheduleChatOpenMinutes)(w, r)
 }
 
 func (s *ServerInterfaceImpl) GetWebhooksOptions(w http.ResponseWriter, r *http.Request) {

@@ -11,6 +11,33 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
+// Defines values for AdminServerConfigScheduleChatOpenMinutesBefore.
+const (
+	AdminServerConfigScheduleChatOpenMinutesBeforeN0  AdminServerConfigScheduleChatOpenMinutesBefore = 0
+	AdminServerConfigScheduleChatOpenMinutesBeforeN10 AdminServerConfigScheduleChatOpenMinutesBefore = 10
+	AdminServerConfigScheduleChatOpenMinutesBeforeN30 AdminServerConfigScheduleChatOpenMinutesBefore = 30
+	AdminServerConfigScheduleChatOpenMinutesBeforeN5  AdminServerConfigScheduleChatOpenMinutesBefore = 5
+	AdminServerConfigScheduleChatOpenMinutesBeforeN60 AdminServerConfigScheduleChatOpenMinutesBefore = 60
+)
+
+// Valid indicates whether the value is a known member of the AdminServerConfigScheduleChatOpenMinutesBefore enum.
+func (e AdminServerConfigScheduleChatOpenMinutesBefore) Valid() bool {
+	switch e {
+	case AdminServerConfigScheduleChatOpenMinutesBeforeN0:
+		return true
+	case AdminServerConfigScheduleChatOpenMinutesBeforeN10:
+		return true
+	case AdminServerConfigScheduleChatOpenMinutesBeforeN30:
+		return true
+	case AdminServerConfigScheduleChatOpenMinutesBeforeN5:
+		return true
+	case AdminServerConfigScheduleChatOpenMinutesBeforeN60:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AutoplayMode.
 const (
 	Always    AutoplayMode = "always"
@@ -104,6 +131,33 @@ func (e ScheduledEventStatus) Valid() bool {
 	case Cancelled:
 		return true
 	case Scheduled:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for WebConfigScheduleChatOpenMinutesBefore.
+const (
+	WebConfigScheduleChatOpenMinutesBeforeN0  WebConfigScheduleChatOpenMinutesBefore = 0
+	WebConfigScheduleChatOpenMinutesBeforeN10 WebConfigScheduleChatOpenMinutesBefore = 10
+	WebConfigScheduleChatOpenMinutesBeforeN30 WebConfigScheduleChatOpenMinutesBefore = 30
+	WebConfigScheduleChatOpenMinutesBeforeN5  WebConfigScheduleChatOpenMinutesBefore = 5
+	WebConfigScheduleChatOpenMinutesBeforeN60 WebConfigScheduleChatOpenMinutesBefore = 60
+)
+
+// Valid indicates whether the value is a known member of the WebConfigScheduleChatOpenMinutesBefore enum.
+func (e WebConfigScheduleChatOpenMinutesBefore) Valid() bool {
+	switch e {
+	case WebConfigScheduleChatOpenMinutesBeforeN0:
+		return true
+	case WebConfigScheduleChatOpenMinutesBeforeN10:
+		return true
+	case WebConfigScheduleChatOpenMinutesBeforeN30:
+		return true
+	case WebConfigScheduleChatOpenMinutesBeforeN5:
+		return true
+	case WebConfigScheduleChatOpenMinutesBeforeN60:
 		return true
 	default:
 		return false
@@ -279,8 +333,10 @@ type AdminServerConfig struct {
 	RtmpServerPort          *int                      `json:"rtmpServerPort,omitempty"`
 	S3                      *S3Info                   `json:"s3,omitempty"`
 	Schedule                *struct {
-		Enabled         *bool   `json:"enabled,omitempty"`
-		ReminderMessage *string `json:"reminderMessage,omitempty"`
+		ChatOpenMinutesBefore *AdminServerConfigScheduleChatOpenMinutesBefore `json:"chatOpenMinutesBefore,omitempty"`
+		Enabled               *bool                                           `json:"enabled,omitempty"`
+		ReminderMessage       *string                                         `json:"reminderMessage,omitempty"`
+		ShowCountdown         *bool                                           `json:"showCountdown,omitempty"`
 	} `json:"schedule,omitempty"`
 	SocketHostOverride   *string             `json:"socketHostOverride,omitempty"`
 	StreamKeyOverridden  *bool               `json:"streamKeyOverridden,omitempty"`
@@ -294,6 +350,9 @@ type AdminServerConfig struct {
 	WebServerPort        *int                `json:"webServerPort,omitempty"`
 	Yp                   *AdminYPInfo        `json:"yp,omitempty"`
 }
+
+// AdminServerConfigScheduleChatOpenMinutesBefore defines model for AdminServerConfig.Schedule.ChatOpenMinutesBefore.
+type AdminServerConfigScheduleChatOpenMinutesBefore int
 
 // AdminStatus defines model for AdminStatus.
 type AdminStatus struct {
@@ -875,10 +934,14 @@ type Status struct {
 
 	// ScheduledEvent Present while the schedule feature is enabled and an event is current or upcoming
 	ScheduledEvent *struct {
-		ChatOpen  *bool      `json:"chatOpen,omitempty"`
-		Id        *string    `json:"id,omitempty"`
-		Name      *string    `json:"name,omitempty"`
-		StartTime *time.Time `json:"startTime,omitempty"`
+		ChatOpen    *bool   `json:"chatOpen,omitempty"`
+		Description *string `json:"description,omitempty"`
+
+		// DurationMinutes Duration of the scheduled event in minutes
+		DurationMinutes *int       `json:"durationMinutes,omitempty"`
+		Id              *string    `json:"id,omitempty"`
+		Name            *string    `json:"name,omitempty"`
+		StartTime       *time.Time `json:"startTime,omitempty"`
 	} `json:"scheduledEvent,omitempty"`
 	ServerTime    *string `json:"serverTime,omitempty"`
 	StreamTitle   *string `json:"streamTitle,omitempty"`
@@ -1021,7 +1084,9 @@ type WebConfig struct {
 	Nsfw                      *bool               `json:"nsfw,omitempty"`
 	OfflineMessage            *string             `json:"offlineMessage,omitempty"`
 	Schedule                  *struct {
-		Enabled *bool `json:"enabled,omitempty"`
+		ChatOpenMinutesBefore *WebConfigScheduleChatOpenMinutesBefore `json:"chatOpenMinutesBefore,omitempty"`
+		Enabled               *bool                                   `json:"enabled,omitempty"`
+		ShowCountdown         *bool                                   `json:"showCountdown,omitempty"`
 	} `json:"schedule,omitempty"`
 	SocialHandles      *[]SocialHandle `json:"socialHandles,omitempty"`
 	SocketHostOverride *string         `json:"socketHostOverride,omitempty"`
@@ -1030,6 +1095,9 @@ type WebConfig struct {
 	Tags               *[]string       `json:"tags,omitempty"`
 	Version            *string         `json:"version,omitempty"`
 }
+
+// WebConfigScheduleChatOpenMinutesBefore defines model for WebConfig.Schedule.ChatOpenMinutesBefore.
+type WebConfigScheduleChatOpenMinutesBefore int
 
 // Webhook defines model for Webhook.
 type Webhook struct {
@@ -1525,11 +1593,17 @@ type SetRTMPServerPortJSONRequestBody = AdminConfigValue
 // SetS3ConfigurationJSONRequestBody defines body for SetS3Configuration for application/json ContentType.
 type SetS3ConfigurationJSONRequestBody SetS3ConfigurationJSONBody
 
+// SetScheduleChatOpenMinutesJSONRequestBody defines body for SetScheduleChatOpenMinutes for application/json ContentType.
+type SetScheduleChatOpenMinutesJSONRequestBody = AdminConfigValue
+
 // SetScheduleEnabledJSONRequestBody defines body for SetScheduleEnabled for application/json ContentType.
 type SetScheduleEnabledJSONRequestBody = AdminConfigValue
 
 // SetScheduleReminderMessageJSONRequestBody defines body for SetScheduleReminderMessage for application/json ContentType.
 type SetScheduleReminderMessageJSONRequestBody = AdminConfigValue
+
+// SetScheduleShowCountdownJSONRequestBody defines body for SetScheduleShowCountdown for application/json ContentType.
+type SetScheduleShowCountdownJSONRequestBody = AdminConfigValue
 
 // SetServerSummaryJSONRequestBody defines body for SetServerSummary for application/json ContentType.
 type SetServerSummaryJSONRequestBody = AdminConfigValue

@@ -58,7 +58,9 @@ type webConfigResponse struct {
 }
 
 type scheduleConfigResponse struct {
-	Enabled bool `json:"enabled"`
+	Enabled               bool `json:"enabled"`
+	ShowCountdown         bool `json:"showCountdown"`
+	ChatOpenMinutesBefore int  `json:"chatOpenMinutesBefore"`
 }
 
 type federationConfigResponse struct {
@@ -168,8 +170,8 @@ func (h *Handlers) getConfigResponse(r *http.Request) webConfigResponse {
 		CustomStyles:               configRepository.GetCustomStyles(),
 		PluginStyles:               pluginStylesString(h.pluginCSSContent),
 		MaxSocketPayloadSize:       config.MaxSocketPayloadSize,
+		Schedule:                   scheduleConfigResponse{Enabled: configRepository.GetScheduleEnabled(), ShowCountdown: configRepository.GetScheduleShowCountdown(), ChatOpenMinutesBefore: configRepository.GetScheduleChatOpenMinutes()},
 		Federation:                 federationResponse,
-		Schedule:                   scheduleConfigResponse{Enabled: configRepository.GetScheduleEnabled()},
 		Notifications:              notificationsResponse,
 		Authentication:             authenticationResponse,
 		AppearanceVariables:        configRepository.GetCustomColorVariableValues(),

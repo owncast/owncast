@@ -318,6 +318,12 @@ type ServerInterface interface {
 	// (POST /admin/config/s3)
 	SetS3Configuration(w http.ResponseWriter, r *http.Request)
 
+	// (OPTIONS /admin/config/schedule/chatopenminutes)
+	SetScheduleChatOpenMinutesOptions(w http.ResponseWriter, r *http.Request)
+	// SetScheduleChatOpenMinutes Set how many minutes before a scheduled event chat opens
+	// (POST /admin/config/schedule/chatopenminutes)
+	SetScheduleChatOpenMinutes(w http.ResponseWriter, r *http.Request)
+
 	// (OPTIONS /admin/config/schedule/enabled)
 	SetScheduleEnabledOptions(w http.ResponseWriter, r *http.Request)
 	// SetScheduleEnabled Enable or disable the schedule feature
@@ -329,6 +335,12 @@ type ServerInterface interface {
 	// SetScheduleReminderMessage Set the message posted to the Fediverse before a scheduled event starts
 	// (POST /admin/config/schedule/remindermessage)
 	SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request)
+
+	// (OPTIONS /admin/config/schedule/showcountdown)
+	SetScheduleShowCountdownOptions(w http.ResponseWriter, r *http.Request)
+	// SetScheduleShowCountdown Show an event countdown instead of the offline message
+	// (POST /admin/config/schedule/showcountdown)
+	SetScheduleShowCountdown(w http.ResponseWriter, r *http.Request)
 
 	// (OPTIONS /admin/config/serversummary)
 	SetServerSummaryOptions(w http.ResponseWriter, r *http.Request)
@@ -767,6 +779,9 @@ type ServerInterface interface {
 
 	// (OPTIONS /schedule)
 	GetScheduleOptions(w http.ResponseWriter, r *http.Request)
+	// GetScheduleICS Get a subscribable iCalendar feed of scheduled stream events
+	// (GET /schedule.ics)
+	GetScheduleICS(w http.ResponseWriter, r *http.Request)
 	// GetAllSocialPlatforms Get all social platforms
 	// (GET /socialplatforms)
 	GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request)
@@ -1341,6 +1356,17 @@ func (_ Unimplemented) SetS3Configuration(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// (OPTIONS /admin/config/schedule/chatopenminutes)
+func (_ Unimplemented) SetScheduleChatOpenMinutesOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetScheduleChatOpenMinutes Set how many minutes before a scheduled event chat opens
+// (POST /admin/config/schedule/chatopenminutes)
+func (_ Unimplemented) SetScheduleChatOpenMinutes(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // (OPTIONS /admin/config/schedule/enabled)
 func (_ Unimplemented) SetScheduleEnabledOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
@@ -1360,6 +1386,17 @@ func (_ Unimplemented) SetScheduleReminderMessageOptions(w http.ResponseWriter, 
 // SetScheduleReminderMessage Set the message posted to the Fediverse before a scheduled event starts
 // (POST /admin/config/schedule/remindermessage)
 func (_ Unimplemented) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/config/schedule/showcountdown)
+func (_ Unimplemented) SetScheduleShowCountdownOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetScheduleShowCountdown Show an event countdown instead of the offline message
+// (POST /admin/config/schedule/showcountdown)
+func (_ Unimplemented) SetScheduleShowCountdown(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2172,6 +2209,12 @@ func (_ Unimplemented) GetSchedule(w http.ResponseWriter, r *http.Request, param
 
 // (OPTIONS /schedule)
 func (_ Unimplemented) GetScheduleOptions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetScheduleICS Get a subscribable iCalendar feed of scheduled stream events
+// (GET /schedule.ics)
+func (_ Unimplemented) GetScheduleICS(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3521,6 +3564,32 @@ func (siw *ServerInterfaceWrapper) SetS3Configuration(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r)
 }
 
+// SetScheduleChatOpenMinutesOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleChatOpenMinutesOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleChatOpenMinutesOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleChatOpenMinutes operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleChatOpenMinutes(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleChatOpenMinutes(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // SetScheduleEnabledOptions operation middleware
 func (siw *ServerInterfaceWrapper) SetScheduleEnabledOptions(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -3564,6 +3633,32 @@ func (siw *ServerInterfaceWrapper) SetScheduleReminderMessageOptions(w http.Resp
 func (siw *ServerInterfaceWrapper) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetScheduleReminderMessage(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleShowCountdownOptions operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleShowCountdownOptions(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleShowCountdownOptions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetScheduleShowCountdown operation middleware
+func (siw *ServerInterfaceWrapper) SetScheduleShowCountdown(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetScheduleShowCountdown(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -5988,6 +6083,19 @@ func (siw *ServerInterfaceWrapper) GetScheduleOptions(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r)
 }
 
+// GetScheduleICS operation middleware
+func (siw *ServerInterfaceWrapper) GetScheduleICS(w http.ResponseWriter, r *http.Request) {
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetScheduleICS(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetAllSocialPlatforms operation middleware
 func (siw *ServerInterfaceWrapper) GetAllSocialPlatforms(w http.ResponseWriter, r *http.Request) {
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -6739,6 +6847,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Options(options.BaseURL+"/schedule", wrapper.GetScheduleOptions)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/schedule.ics", wrapper.GetScheduleICS)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/schedule", wrapper.GetAdminSchedule)
 	})
 	r.Group(func(r chi.Router) {
@@ -6767,6 +6878,18 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/admin/config/schedule/enabled", wrapper.SetScheduleEnabled)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/schedule/showcountdown", wrapper.SetScheduleShowCountdownOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/schedule/showcountdown", wrapper.SetScheduleShowCountdown)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/config/schedule/chatopenminutes", wrapper.SetScheduleChatOpenMinutesOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/admin/config/schedule/chatopenminutes", wrapper.SetScheduleChatOpenMinutes)
 	})
 	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/admin/config/schedule/remindermessage", wrapper.SetScheduleReminderMessageOptions)

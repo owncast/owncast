@@ -53,6 +53,9 @@ type Service struct {
 	// inbound-message path to make stream-state-aware decisions
 	// (welcome messages, recent-disconnect heuristics).
 	getStatus func() models.Status
+	// isScheduledChatOpen allows scheduled events to keep chat writable during
+	// the pre-event window, even when the stream has been offline for a while.
+	isScheduledChatOpen func() bool
 
 	// events is the shared dispatcher. Inbound user messages are run through
 	// its filter chain before broadcast, letting consumers (the plugin host)

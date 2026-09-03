@@ -397,6 +397,63 @@ func (a *Admin) SetScheduleEnabled(w http.ResponseWriter, r *http.Request) {
 	webutils.WriteSimpleResponse(w, true, "schedule feature updated")
 }
 
+// SetScheduleShowCountdown enables or disables the viewer's event countdown.
+func (a *Admin) SetScheduleShowCountdown(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	showCountdown, ok := configValue.Value.(bool)
+	if !ok {
+		webutils.BadRequestHandler(w, errors.New("value must be a boolean"))
+		return
+	}
+
+	if err := a.configRepository.SetScheduleShowCountdown(showCountdown); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	webutils.WriteSimpleResponse(w, true, "schedule countdown setting updated")
+}
+
+// SetScheduleChatOpenMinutes sets how many minutes before an event chat opens.
+func (a *Admin) SetScheduleChatOpenMinutes(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	configValue, success := getValueFromRequest(w, r)
+	if !success {
+		return
+	}
+
+	value, ok := configValue.Value.(float64)
+	if !ok || value != float64(int(value)) {
+		webutils.BadRequestHandler(w, errors.New("value must be a whole number of minutes"))
+		return
+	}
+	minutes := int(value)
+	switch minutes {
+	case 0, 5, 10, 30, 60:
+	default:
+		webutils.BadRequestHandler(w, errors.New("value must be 0, 5, 10, 30, or 60 minutes"))
+		return
+	}
+
+	if err := a.configRepository.SetScheduleChatOpenMinutes(minutes); err != nil {
+		webutils.WriteSimpleResponse(w, false, err.Error())
+		return
+	}
+
+	webutils.WriteSimpleResponse(w, true, "schedule chat open setting updated")
+}
+
 // SetScheduleReminderMessage sets the message posted to the Fediverse before
 // a scheduled event starts. Empty disables reminders.
 func (a *Admin) SetScheduleReminderMessage(w http.ResponseWriter, r *http.Request) {
