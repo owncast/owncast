@@ -27,6 +27,7 @@ var validEvents = []EventType{
 	StreamStarted,
 	StreamStopped,
 	StreamTitleUpdated,
+	ScheduledEvents,
 }
 
 // HasValidEvents will verify that all the events provided are valid.

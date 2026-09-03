@@ -718,7 +718,7 @@ func (q *Queries) GetAuthForUsers(ctx context.Context, userIds []string) ([]GetA
 }
 
 const getCurrentOrUpcomingStreamEvents = `-- name: GetCurrentOrUpcomingStreamEvents :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE status = 'scheduled' AND datetime(start_time, '+' || duration_minutes || ' minutes') > datetime(?) ORDER BY start_time LIMIT ?
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at FROM stream_events WHERE status = 'scheduled' AND datetime(start_time, '+' || duration_minutes || ' minutes') > datetime(?) ORDER BY start_time LIMIT ?
 `
 
 type GetCurrentOrUpcomingStreamEventsParams struct {
@@ -753,6 +753,9 @@ func (q *Queries) GetCurrentOrUpcomingStreamEvents(ctx context.Context, arg GetC
 			&i.ReminderSentAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
 		); err != nil {
 			return nil, err
 		}
@@ -1195,7 +1198,7 @@ func (q *Queries) GetMessagesFromUser(ctx context.Context, userID sql.NullString
 }
 
 const getNextUpcomingStreamEvents = `-- name: GetNextUpcomingStreamEvents :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE status = 'scheduled' AND start_time > ? ORDER BY start_time LIMIT ?
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at FROM stream_events WHERE status = 'scheduled' AND start_time > ? ORDER BY start_time LIMIT ?
 `
 
 type GetNextUpcomingStreamEventsParams struct {
@@ -1226,6 +1229,9 @@ func (q *Queries) GetNextUpcomingStreamEvents(ctx context.Context, arg GetNextUp
 			&i.ReminderSentAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
 		); err != nil {
 			return nil, err
 		}
@@ -1478,7 +1484,7 @@ func (q *Queries) GetRejectedAndBlockedFollowers(ctx context.Context) ([]GetReje
 }
 
 const getStreamEvent = `-- name: GetStreamEvent :one
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE id = ?
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at FROM stream_events WHERE id = ?
 `
 
 func (q *Queries) GetStreamEvent(ctx context.Context, id string) (StreamEvent, error) {
@@ -1498,6 +1504,9 @@ func (q *Queries) GetStreamEvent(ctx context.Context, id string) (StreamEvent, e
 		&i.ReminderSentAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.WebhookWarningSentAt,
+		&i.WebhookStartedSentAt,
+		&i.WebhookEndedSentAt,
 	)
 	return i, err
 }
@@ -1523,7 +1532,7 @@ func (q *Queries) GetStreamEventSeries(ctx context.Context, id string) (StreamEv
 }
 
 const getStreamEventsForSeries = `-- name: GetStreamEventsForSeries :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE series_id = ? ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at FROM stream_events WHERE series_id = ? ORDER BY start_time
 `
 
 func (q *Queries) GetStreamEventsForSeries(ctx context.Context, seriesID sql.NullString) ([]StreamEvent, error) {
@@ -1549,6 +1558,9 @@ func (q *Queries) GetStreamEventsForSeries(ctx context.Context, seriesID sql.Nul
 			&i.ReminderSentAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
 		); err != nil {
 			return nil, err
 		}
@@ -1564,7 +1576,7 @@ func (q *Queries) GetStreamEventsForSeries(ctx context.Context, seriesID sql.Nul
 }
 
 const getStreamEventsInRange = `-- name: GetStreamEventsInRange :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE start_time >= ? AND start_time < ? ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at FROM stream_events WHERE start_time >= ? AND start_time < ? ORDER BY start_time
 `
 
 type GetStreamEventsInRangeParams struct {
@@ -1595,6 +1607,9 @@ func (q *Queries) GetStreamEventsInRange(ctx context.Context, arg GetStreamEvent
 			&i.ReminderSentAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
 		); err != nil {
 			return nil, err
 		}
@@ -1610,7 +1625,7 @@ func (q *Queries) GetStreamEventsInRange(ctx context.Context, arg GetStreamEvent
 }
 
 const getStreamEventsNeedingReminder = `-- name: GetStreamEventsNeedingReminder :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE reminder_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at FROM stream_events WHERE reminder_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time
 `
 
 type GetStreamEventsNeedingReminderParams struct {
@@ -1641,6 +1656,146 @@ func (q *Queries) GetStreamEventsNeedingReminder(ctx context.Context, arg GetStr
 			&i.ReminderSentAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStreamEventsNeedingWebhookEnd = `-- name: GetStreamEventsNeedingWebhookEnd :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at FROM stream_events WHERE webhook_started_sent_at IS NOT NULL AND webhook_ended_sent_at IS NULL AND datetime(start_time, '+' || duration_minutes || ' minutes') <= datetime(?) ORDER BY start_time
+`
+
+func (q *Queries) GetStreamEventsNeedingWebhookEnd(ctx context.Context, datetime interface{}) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getStreamEventsNeedingWebhookEnd, datetime)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStreamEventsNeedingWebhookStart = `-- name: GetStreamEventsNeedingWebhookStart :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at FROM stream_events WHERE webhook_started_sent_at IS NULL AND status = 'scheduled' AND start_time <= ? ORDER BY start_time
+`
+
+func (q *Queries) GetStreamEventsNeedingWebhookStart(ctx context.Context, startTime time.Time) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getStreamEventsNeedingWebhookStart, startTime)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStreamEventsNeedingWebhookWarning = `-- name: GetStreamEventsNeedingWebhookWarning :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at FROM stream_events WHERE webhook_warning_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time
+`
+
+type GetStreamEventsNeedingWebhookWarningParams struct {
+	StartTime   time.Time
+	StartTime_2 time.Time
+}
+
+func (q *Queries) GetStreamEventsNeedingWebhookWarning(ctx context.Context, arg GetStreamEventsNeedingWebhookWarningParams) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getStreamEventsNeedingWebhookWarning, arg.StartTime, arg.StartTime_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
 		); err != nil {
 			return nil, err
 		}
@@ -1656,7 +1811,7 @@ func (q *Queries) GetStreamEventsNeedingReminder(ctx context.Context, arg GetStr
 }
 
 const getStreamEventsToFederate = `-- name: GetStreamEventsToFederate :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at FROM stream_events WHERE federated_at IS NULL AND status = 'scheduled' AND start_time > ? ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at FROM stream_events WHERE federated_at IS NULL AND status = 'scheduled' AND start_time > ? ORDER BY start_time
 `
 
 func (q *Queries) GetStreamEventsToFederate(ctx context.Context, startTime time.Time) ([]StreamEvent, error) {
@@ -1682,6 +1837,9 @@ func (q *Queries) GetStreamEventsToFederate(ctx context.Context, startTime time.
 			&i.ReminderSentAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
 		); err != nil {
 			return nil, err
 		}
@@ -2155,7 +2313,7 @@ func (q *Queries) IsIPAddressBlocked(ctx context.Context, ipAddress string) (int
 }
 
 const moveStreamEvent = `-- name: MoveStreamEvent :exec
-UPDATE stream_events SET start_time = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+UPDATE stream_events SET start_time = ?, webhook_warning_sent_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?
 `
 
 type MoveStreamEventParams struct {
@@ -2164,7 +2322,8 @@ type MoveStreamEventParams struct {
 }
 
 // original_start is deliberately untouched: it is the identity the
-// materializer keys on, so the vacated slot is not re-inserted.
+// materializer keys on, so the vacated slot is not re-inserted. A moved
+// future event enters a new warning window.
 func (q *Queries) MoveStreamEvent(ctx context.Context, arg MoveStreamEventParams) error {
 	_, err := q.db.ExecContext(ctx, moveStreamEvent, arg.StartTime, arg.ID)
 	return err
@@ -2364,6 +2523,48 @@ type SetStreamEventSeriesActiveParams struct {
 
 func (q *Queries) SetStreamEventSeriesActive(ctx context.Context, arg SetStreamEventSeriesActiveParams) error {
 	_, err := q.db.ExecContext(ctx, setStreamEventSeriesActive, arg.Active, arg.ID)
+	return err
+}
+
+const setStreamEventWebhookEndedSentAt = `-- name: SetStreamEventWebhookEndedSentAt :exec
+UPDATE stream_events SET webhook_ended_sent_at = ? WHERE id = ?
+`
+
+type SetStreamEventWebhookEndedSentAtParams struct {
+	WebhookEndedSentAt sql.NullTime
+	ID                 string
+}
+
+func (q *Queries) SetStreamEventWebhookEndedSentAt(ctx context.Context, arg SetStreamEventWebhookEndedSentAtParams) error {
+	_, err := q.db.ExecContext(ctx, setStreamEventWebhookEndedSentAt, arg.WebhookEndedSentAt, arg.ID)
+	return err
+}
+
+const setStreamEventWebhookStartedSentAt = `-- name: SetStreamEventWebhookStartedSentAt :exec
+UPDATE stream_events SET webhook_started_sent_at = ? WHERE id = ?
+`
+
+type SetStreamEventWebhookStartedSentAtParams struct {
+	WebhookStartedSentAt sql.NullTime
+	ID                   string
+}
+
+func (q *Queries) SetStreamEventWebhookStartedSentAt(ctx context.Context, arg SetStreamEventWebhookStartedSentAtParams) error {
+	_, err := q.db.ExecContext(ctx, setStreamEventWebhookStartedSentAt, arg.WebhookStartedSentAt, arg.ID)
+	return err
+}
+
+const setStreamEventWebhookWarningSentAt = `-- name: SetStreamEventWebhookWarningSentAt :exec
+UPDATE stream_events SET webhook_warning_sent_at = ? WHERE id = ?
+`
+
+type SetStreamEventWebhookWarningSentAtParams struct {
+	WebhookWarningSentAt sql.NullTime
+	ID                   string
+}
+
+func (q *Queries) SetStreamEventWebhookWarningSentAt(ctx context.Context, arg SetStreamEventWebhookWarningSentAtParams) error {
+	_, err := q.db.ExecContext(ctx, setStreamEventWebhookWarningSentAt, arg.WebhookWarningSentAt, arg.ID)
 	return err
 }
 

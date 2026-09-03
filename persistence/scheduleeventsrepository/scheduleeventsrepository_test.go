@@ -425,6 +425,91 @@ func TestGetEventsNeedingReminderSelectsOnce(t *testing.T) {
 	}
 }
 
+func TestScheduledEventWebhookLifecycleSelectsOnce(t *testing.T) {
+	repo := testRepo
+	now := time.Date(2035, 3, 1, 12, 0, 0, 0, time.UTC)
+
+	warning := mustAddOneOffEvent(t, "webhook warning", now.Add(10*time.Minute))
+	started := mustAddOneOffEvent(t, "webhook started", now.Add(-30*time.Minute))
+	ended := mustAddOneOffEvent(t, "webhook ended", now.Add(-60*time.Minute))
+
+	events, err := repo.GetEventsNeedingWebhookWarning(now, now.Add(10*time.Minute))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !containsEventID(events, warning) {
+		t.Fatal("event at warning boundary was not selected")
+	}
+	if err := repo.SetEventWebhookWarningSentAt(warning, now); err != nil {
+		t.Fatal(err)
+	}
+	events, err = repo.GetEventsNeedingWebhookWarning(now, now.Add(10*time.Minute))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if containsEventID(events, warning) {
+		t.Fatal("warning event was selected twice")
+	}
+	if err := repo.MoveEvent(warning, now.Add(9*time.Minute)); err != nil {
+		t.Fatal(err)
+	}
+	events, err = repo.GetEventsNeedingWebhookWarning(now, now.Add(10*time.Minute))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !containsEventID(events, warning) {
+		t.Fatal("moved event did not enter a new warning window")
+	}
+	events, err = repo.GetEventsNeedingWebhookStart(now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !containsEventID(events, started) {
+		t.Fatal("running event was not selected for its start webhook")
+	}
+	if !containsEventID(events, ended) {
+		t.Fatal("ended event was not selected for its missed start webhook")
+	}
+	if err := repo.SetEventWebhookStartedSentAt(started, now); err != nil {
+		t.Fatal(err)
+	}
+	events, err = repo.GetEventsNeedingWebhookStart(now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if containsEventID(events, started) {
+		t.Fatal("started event was selected twice")
+	}
+
+	events, err = repo.GetEventsNeedingWebhookEnd(now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if containsEventID(events, ended) {
+		t.Fatal("ended event was selected before its start webhook was marked sent")
+	}
+	if err := repo.SetEventWebhookStartedSentAt(ended, now); err != nil {
+		t.Fatal(err)
+	}
+	events, err = repo.GetEventsNeedingWebhookEnd(now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !containsEventID(events, ended) {
+		t.Fatal("ended event was not selected")
+	}
+	if err := repo.SetEventWebhookEndedSentAt(ended, now); err != nil {
+		t.Fatal(err)
+	}
+	events, err = repo.GetEventsNeedingWebhookEnd(now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if containsEventID(events, ended) {
+		t.Fatal("ended event was selected twice")
+	}
+}
+
 func TestGetCurrentOrUpcomingEventsEndTimePredicate(t *testing.T) {
 	repo := testRepo
 

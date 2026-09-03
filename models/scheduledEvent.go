@@ -12,6 +12,15 @@ const (
 	ScheduledEventStatusCancelled = "cancelled"
 )
 
+// ScheduledEventWebhookAction identifies a scheduled-event lifecycle notification.
+type ScheduledEventWebhookAction string
+
+const (
+	ScheduledEventWarning ScheduledEventWebhookAction = "10-minute-warning"
+	ScheduledEventStarted ScheduledEventWebhookAction = "started"
+	ScheduledEventEnded   ScheduledEventWebhookAction = "ended"
+)
+
 // ScheduledEventSeries is a recurring schedule rule ("every Monday at 18:00")
 // that the scheduler expands into concrete ScheduledEvent occurrences on a
 // rolling horizon. The recurrence value is an iCalendar RFC 5545 string:

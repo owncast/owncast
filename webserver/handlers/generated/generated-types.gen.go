@@ -172,6 +172,7 @@ const (
 	NAMECHANGE                WebhookEventType = "NAME_CHANGE"
 	PING                      WebhookEventType = "PING"
 	PONG                      WebhookEventType = "PONG"
+	SCHEDULEDEVENTS           WebhookEventType = "SCHEDULED_EVENTS"
 	STREAMSTARTED             WebhookEventType = "STREAM_STARTED"
 	STREAMSTOPPED             WebhookEventType = "STREAM_STOPPED"
 	STREAMTITLEUPDATED        WebhookEventType = "STREAM_TITLE_UPDATED"
@@ -195,6 +196,8 @@ func (e WebhookEventType) Valid() bool {
 	case PING:
 		return true
 	case PONG:
+		return true
+	case SCHEDULEDEVENTS:
 		return true
 	case STREAMSTARTED:
 		return true

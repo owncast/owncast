@@ -5107,6 +5107,7 @@ components:
         - STREAM_STARTED
         - STREAM_STOPPED
         - STREAM_TITLE_UPDATED
+        - SCHEDULED_EVENTS
         - SYSTEM
         - CHAT_ACTION
     ExternalAPIUser:

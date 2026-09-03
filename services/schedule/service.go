@@ -6,6 +6,7 @@ import (
 
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/scheduleeventsrepository"
+	"github.com/owncast/owncast/services/webhooks"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,6 +19,8 @@ const (
 	// Each tick is idempotent and driven purely from table state, so a
 	// missed or repeated tick never corrupts anything.
 	tickInterval = 1 * time.Minute
+	// ScheduledEventWarningLeadTime is how long before an event its webhook fires.
+	ScheduledEventWarningLeadTime = 10 * time.Minute
 
 	// upcomingCacheTTL bounds how stale the next-event answer served to
 	// the 5s status poll may be. Admin mutations bypass it via Refresh.
@@ -52,6 +55,8 @@ type Service struct {
 	getStatus            func() models.Status
 	getChatOpenMinutes   func() int
 	onMissedEventWarning func(*models.ScheduledEvent)
+	getScheduleEnabled   func() bool
+	webhooks             *webhooks.Service
 	chatWindowStates     map[string]chatWindowState
 
 	tickerMutex sync.Mutex
@@ -69,6 +74,8 @@ type Deps struct {
 	GetStatus                func() models.Status
 	GetChatOpenMinutes       func() int
 	OnMissedEventWarning     func(*models.ScheduledEvent)
+	GetScheduleEnabled       func() bool
+	Webhooks                 *webhooks.Service
 }
 
 // New constructs the schedule service.
@@ -78,6 +85,8 @@ func New(deps Deps) *Service {
 		getStatus:            deps.GetStatus,
 		getChatOpenMinutes:   deps.GetChatOpenMinutes,
 		onMissedEventWarning: deps.OnMissedEventWarning,
+		getScheduleEnabled:   deps.GetScheduleEnabled,
+		webhooks:             deps.Webhooks,
 		chatWindowStates:     make(map[string]chatWindowState),
 	}
 }
@@ -142,6 +151,50 @@ func (s *Service) tick() {
 
 	s.Refresh()
 	s.updateChatWindow(now)
+
+	s.sendScheduledEventWebhooks(now)
+}
+
+func (s *Service) sendScheduledEventWebhooks(now time.Time) {
+	if s.webhooks == nil || s.repo == nil || (s.getScheduleEnabled != nil && !s.getScheduleEnabled()) {
+		return
+	}
+
+	warnings, err := s.repo.GetEventsNeedingWebhookWarning(now, now.Add(ScheduledEventWarningLeadTime))
+	if err != nil {
+		log.Errorf("unable to fetch scheduled stream event warnings: %v", err)
+	} else {
+		for _, event := range warnings {
+			s.webhooks.SendScheduledEvent(event, models.ScheduledEventWarning)
+			if err := s.repo.SetEventWebhookWarningSentAt(event.ID, now); err != nil {
+				log.Errorf("unable to mark scheduled stream event warning %s as sent: %v", event.ID, err)
+			}
+		}
+	}
+
+	started, err := s.repo.GetEventsNeedingWebhookStart(now)
+	if err != nil {
+		log.Errorf("unable to fetch started scheduled stream events: %v", err)
+	} else {
+		for _, event := range started {
+			s.webhooks.SendScheduledEvent(event, models.ScheduledEventStarted)
+			if err := s.repo.SetEventWebhookStartedSentAt(event.ID, now); err != nil {
+				log.Errorf("unable to mark scheduled stream event start %s as sent: %v", event.ID, err)
+			}
+		}
+	}
+
+	ended, err := s.repo.GetEventsNeedingWebhookEnd(now)
+	if err != nil {
+		log.Errorf("unable to fetch ended scheduled stream events: %v", err)
+	} else {
+		for _, event := range ended {
+			s.webhooks.SendScheduledEvent(event, models.ScheduledEventEnded)
+			if err := s.repo.SetEventWebhookEndedSentAt(event.ID, now); err != nil {
+				log.Errorf("unable to mark scheduled stream event end %s as sent: %v", event.ID, err)
+			}
+		}
+	}
 }
 
 func (s *Service) updateChatWindow(now time.Time) {

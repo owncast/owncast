@@ -313,6 +313,63 @@ func (r *SqlScheduleEventsRepository) SetEventReminderSentAt(id string, t time.T
 	})
 }
 
+// GetEventsNeedingWebhookWarning returns scheduled events entering their warning window.
+func (r *SqlScheduleEventsRepository) GetEventsNeedingWebhookWarning(startAfter, startBefore time.Time) ([]models.ScheduledEvent, error) {
+	queries := db.New(r.datastore.DB)
+	rows, err := queries.GetStreamEventsNeedingWebhookWarning(context.Background(), db.GetStreamEventsNeedingWebhookWarningParams{
+		StartTime:   startAfter.UTC(),
+		StartTime_2: startBefore.UTC(),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return eventsFromRows(rows), nil
+}
+
+// GetEventsNeedingWebhookStart returns active events whose start webhook has not fired.
+func (r *SqlScheduleEventsRepository) GetEventsNeedingWebhookStart(now time.Time) ([]models.ScheduledEvent, error) {
+	queries := db.New(r.datastore.DB)
+	rows, err := queries.GetStreamEventsNeedingWebhookStart(context.Background(), now.UTC())
+	if err != nil {
+		return nil, err
+	}
+	return eventsFromRows(rows), nil
+}
+
+// GetEventsNeedingWebhookEnd returns ended events whose start webhook fired.
+func (r *SqlScheduleEventsRepository) GetEventsNeedingWebhookEnd(now time.Time) ([]models.ScheduledEvent, error) {
+	queries := db.New(r.datastore.DB)
+	rows, err := queries.GetStreamEventsNeedingWebhookEnd(context.Background(), now.UTC())
+	if err != nil {
+		return nil, err
+	}
+	return eventsFromRows(rows), nil
+}
+
+// SetEventWebhookWarningSentAt stamps an occurrence's warning webhook as sent.
+func (r *SqlScheduleEventsRepository) SetEventWebhookWarningSentAt(id string, t time.Time) error {
+	return db.New(r.datastore.DB).SetStreamEventWebhookWarningSentAt(context.Background(), db.SetStreamEventWebhookWarningSentAtParams{
+		WebhookWarningSentAt: models.TimeToNullTime(t.UTC()),
+		ID:                   id,
+	})
+}
+
+// SetEventWebhookStartedSentAt stamps an occurrence's start webhook as sent.
+func (r *SqlScheduleEventsRepository) SetEventWebhookStartedSentAt(id string, t time.Time) error {
+	return db.New(r.datastore.DB).SetStreamEventWebhookStartedSentAt(context.Background(), db.SetStreamEventWebhookStartedSentAtParams{
+		WebhookStartedSentAt: models.TimeToNullTime(t.UTC()),
+		ID:                   id,
+	})
+}
+
+// SetEventWebhookEndedSentAt stamps an occurrence's end webhook as sent.
+func (r *SqlScheduleEventsRepository) SetEventWebhookEndedSentAt(id string, t time.Time) error {
+	return db.New(r.datastore.DB).SetStreamEventWebhookEndedSentAt(context.Background(), db.SetStreamEventWebhookEndedSentAtParams{
+		WebhookEndedSentAt: models.TimeToNullTime(t.UTC()),
+		ID:                 id,
+	})
+}
+
 func seriesFromRow(row db.StreamEventSeries) models.ScheduledEventSeries {
 	return models.ScheduledEventSeries{
 		ID:              row.ID,

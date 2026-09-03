@@ -126,19 +126,22 @@ type Notification struct {
 }
 
 type StreamEvent struct {
-	ID              string
-	SeriesID        sql.NullString
-	OriginalStart   sql.NullTime
-	Name            string
-	Description     string
-	StartTime       time.Time
-	DurationMinutes int64
-	Timezone        string
-	Status          string
-	FederatedAt     sql.NullTime
-	ReminderSentAt  sql.NullTime
-	CreatedAt       sql.NullTime
-	UpdatedAt       sql.NullTime
+	ID                   string
+	SeriesID             sql.NullString
+	OriginalStart        sql.NullTime
+	Name                 string
+	Description          string
+	StartTime            time.Time
+	DurationMinutes      int64
+	Timezone             string
+	Status               string
+	FederatedAt          sql.NullTime
+	ReminderSentAt       sql.NullTime
+	CreatedAt            sql.NullTime
+	UpdatedAt            sql.NullTime
+	WebhookWarningSentAt sql.NullTime
+	WebhookStartedSentAt sql.NullTime
+	WebhookEndedSentAt   sql.NullTime
 }
 
 type StreamEventSeries struct {

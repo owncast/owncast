@@ -389,8 +389,9 @@ UPDATE stream_events SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WH
 
 -- name: MoveStreamEvent :exec
 -- original_start is deliberately untouched: it is the identity the
--- materializer keys on, so the vacated slot is not re-inserted.
-UPDATE stream_events SET start_time = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+-- materializer keys on, so the vacated slot is not re-inserted. A moved
+-- future event enters a new warning window.
+UPDATE stream_events SET start_time = ?, webhook_warning_sent_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
 
 -- name: DeleteStreamEvent :exec
 DELETE FROM stream_events WHERE id = ?;
@@ -423,3 +424,21 @@ SELECT * FROM stream_events WHERE reminder_sent_at IS NULL AND status = 'schedul
 
 -- name: SetStreamEventReminderSentAt :exec
 UPDATE stream_events SET reminder_sent_at = ? WHERE id = ?;
+
+-- name: GetStreamEventsNeedingWebhookWarning :many
+SELECT * FROM stream_events WHERE webhook_warning_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time;
+
+-- name: GetStreamEventsNeedingWebhookStart :many
+SELECT * FROM stream_events WHERE webhook_started_sent_at IS NULL AND status = 'scheduled' AND start_time <= ? ORDER BY start_time;
+
+-- name: GetStreamEventsNeedingWebhookEnd :many
+SELECT * FROM stream_events WHERE webhook_started_sent_at IS NOT NULL AND webhook_ended_sent_at IS NULL AND datetime(start_time, '+' || duration_minutes || ' minutes') <= datetime(?) ORDER BY start_time;
+
+-- name: SetStreamEventWebhookWarningSentAt :exec
+UPDATE stream_events SET webhook_warning_sent_at = ? WHERE id = ?;
+
+-- name: SetStreamEventWebhookStartedSentAt :exec
+UPDATE stream_events SET webhook_started_sent_at = ? WHERE id = ?;
+
+-- name: SetStreamEventWebhookEndedSentAt :exec
+UPDATE stream_events SET webhook_ended_sent_at = ? WHERE id = ?;

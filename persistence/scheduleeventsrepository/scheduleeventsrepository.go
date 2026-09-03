@@ -47,4 +47,10 @@ type ScheduleEventsRepository interface {
 	SetEventFederatedAt(id string, t time.Time) error
 	GetEventsNeedingReminder(startAfter, startBefore time.Time) ([]models.ScheduledEvent, error)
 	SetEventReminderSentAt(id string, t time.Time) error
+	GetEventsNeedingWebhookWarning(startAfter, startBefore time.Time) ([]models.ScheduledEvent, error)
+	GetEventsNeedingWebhookStart(now time.Time) ([]models.ScheduledEvent, error)
+	GetEventsNeedingWebhookEnd(now time.Time) ([]models.ScheduledEvent, error)
+	SetEventWebhookWarningSentAt(id string, t time.Time) error
+	SetEventWebhookStartedSentAt(id string, t time.Time) error
+	SetEventWebhookEndedSentAt(id string, t time.Time) error
 }
