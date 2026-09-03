@@ -1,5 +1,5 @@
-# Caddyfile for ActivityPub federation testing
-# Routes requests to owncast.local, owncast2.local, and snac.local to their respective backends
+# Caddyfile for ActivityPub federation testing.
+# Routes test hostnames to Owncast, snac2, and the optional Gancio v2 sidecar.
 
 {
 	# Disable automatic HTTPS since we use mkcert certificates
@@ -20,6 +20,7 @@ https://:{$PROXY_PORT} {
 	@owncast host owncast.local
 	@owncast2 host owncast2.local
 	@snac host snac.local
+	@gancio host gancio.local
 
 	handle @owncast {
 		reverse_proxy localhost:{$OWNCAST_PORT}
@@ -31,6 +32,10 @@ https://:{$PROXY_PORT} {
 
 	handle @snac {
 		reverse_proxy localhost:{$SNAC_PORT}
+	}
+
+	handle @gancio {
+		reverse_proxy localhost:{$GANCIO_PORT:13120}
 	}
 
 	# Default: return error for unknown hosts

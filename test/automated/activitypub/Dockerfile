@@ -1,3 +1,5 @@
+FROM docker:27.4.0-cli AS docker-cli
+
 FROM golang:1.26-bookworm
 
 RUN apt-get update && apt-get install -y \
@@ -8,6 +10,8 @@ RUN apt-get update && apt-get install -y \
     libnss3-tools \
     lsof procps \
     && rm -rf /var/lib/apt/lists/*
+
+COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
 
 # Install mkcert (architecture-aware)
 RUN ARCH="$(dpkg --print-architecture)" && \

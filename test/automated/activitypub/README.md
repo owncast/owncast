@@ -23,6 +23,9 @@ USER_COUNT=10 ./run.sh
 # Run the featured streams test (two Owncast instances, no snac2)
 ./run.sh test-featured-streams.sh
 
+# Run the Gancio v2 sidecar topology probe
+./run.sh test-gancio-v2.sh
+
 # Run the user-authentication tests
 ./run.sh test-fediverse-otp.sh   # Fediverse OTP login (uses snac2)
 ./run.sh test-indieauth.sh       # IndieAuth login (uses a fake provider, no snac2)
@@ -46,6 +49,7 @@ FOLLOW_DELAY=0.2 ./run.sh
 | `SNAC_PORT` | 9080 | snac2 HTTP port |
 | `OWNCAST_PORT` | 8080 | Owncast HTTP port |
 | `OWNCAST2_PORT` | 8081 | Second Owncast HTTP port (featured streams test only) |
+| `GANCIO_IMAGE` | Pinned Gancio v2 beta digest | Gancio image used by `test-gancio-v2.sh` |
 
 ## What the Test Does
 
@@ -76,6 +80,20 @@ behind the shared proxy. It:
 8. Verifies the reverse follow direction
 9. Streams video and verifies live and offline status delivery
 10. Confirms directory relationships do not inflate follower lists
+
+### `test-gancio-v2.sh` (Owncast and Gancio v2)
+
+This probe starts the official Gancio v2 beta image beside Owncast, sharing the
+test container's network namespace. Caddy serves it as `gancio.local` with the
+same trusted test certificate used for Owncast. The probe verifies Gancio
+NodeInfo discovery and Owncast actor discovery through the proxy.
+
+Only this test receives the host Docker socket. The Gancio image is pinned by
+digest for repeatable runs. Set `GANCIO_IMAGE` to test another build.
+
+Scheduled ActivityPub `Event` delivery is not tested yet because Owncast does
+not publish scheduled events. This probe establishes the cross-instance
+topology that test will use.
 
 ### `test-fediverse-otp.sh` (Fediverse authentication, snac2-based)
 
@@ -126,6 +144,7 @@ The Docker image (`owncast-ap-test`) bundles all dependencies:
 - Caddy (HTTPS reverse proxy)
 - mkcert (TLS certificates trusted by the container)
 - sqlite3, jq, curl
+- Docker CLI (for the optional Gancio sidecar)
 
 Go module and build caches are stored in named Docker volumes (`owncast-ap-test-gomod`, `owncast-ap-test-gobuild`) so repeated runs are faster.
 

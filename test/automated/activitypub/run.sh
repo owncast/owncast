@@ -22,7 +22,7 @@ docker build -t "${IMAGE_NAME}" "${SCRIPT_DIR}"
 
 # Collect environment variables to pass through
 ENV_ARGS=()
-for var in USER_COUNT FOLLOW_DELAY KEEP_RUNNING CI PROXY_PORT SNAC_PORT OWNCAST_PORT OWNCAST2_PORT CLEAR_SHARED_INBOX_PERCENT; do
+for var in USER_COUNT FOLLOW_DELAY KEEP_RUNNING CI PROXY_PORT SNAC_PORT OWNCAST_PORT OWNCAST2_PORT CLEAR_SHARED_INBOX_PERCENT GANCIO_IMAGE; do
     if [[ -n "${!var}" ]]; then
         ENV_ARGS+=("-e" "${var}=${!var}")
     fi
@@ -45,12 +45,21 @@ if [[ "${KEEP_RUNNING}" == "true" ]]; then
     EXTRA_ARGS+=("-p" "${OWNCAST_PORT}:${OWNCAST_PORT}" "-p" "${OWNCAST2_PORT}:${OWNCAST2_PORT}" "-p" "${PROXY_PORT}:${PROXY_PORT}")
 fi
 
+# The Gancio v2 probe starts its official Docker image as a sidecar sharing
+# this test container's network namespace. Mount the daemon socket only for
+# that explicit scenario.
+if [[ "${1:-}" == "test-gancio-v2.sh" ]]; then
+    ENV_ARGS+=("-e" "HOST_REPO_ROOT=${REPO_ROOT}")
+    EXTRA_ARGS+=("-v" "/var/run/docker.sock:/var/run/docker.sock")
+fi
+
 echo "Running test in Docker container..."
 docker run --rm \
     --add-host owncast.local:127.0.0.1 \
     --add-host owncast2.local:127.0.0.1 \
     --add-host snac.local:127.0.0.1 \
     --add-host indieauth.local:127.0.0.1 \
+    --add-host gancio.local:127.0.0.1 \
     -v "${REPO_ROOT}:/owncast" \
     -v owncast-ap-test-gomod:/go/pkg/mod \
     -v owncast-ap-test-gobuild:/root/.cache/go-build \
