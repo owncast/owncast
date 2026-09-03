@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"runtime"
 	"sync"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -122,6 +123,9 @@ func (s *Service) sendWebhook(job Job) error {
 	}
 
 	req, err := http.NewRequest("POST", job.webhook.URL, bytes.NewReader(jsonText))
+	if err != nil {
+		return err
+	}
 	signature, err := s.generateSignature(jsonText, job)
 	if err != nil {
 		return err
@@ -130,7 +134,7 @@ func (s *Service) sendWebhook(job Job) error {
 	req.Header.Set("owncast-signature", signature)
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
+	client := &http.Client{Timeout: 30 * time.Second}
 
 	resp, err := client.Do(req)
 	if err != nil {

@@ -111,6 +111,23 @@ func TestPublicSend(t *testing.T) {
 	wg.Wait()
 }
 
+func TestMalformedWebhookURLReturnsError(t *testing.T) {
+	repo := webhookrepository.New(testDatastore)
+	hook, err := repo.InsertWebhook("http://example.com", []models.EventType{models.MessageSent}, "secret")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = repo.DeleteWebhook(hook) })
+
+	err = testSvc.sendWebhook(Job{
+		payload: WebhookEvent{Type: models.MessageSent, EventData: struct{}{}},
+		webhook: models.Webhook{ID: hook, URL: "http://example.com/\x01"},
+	})
+	if err == nil {
+		t.Fatal("expected malformed webhook URL to return an error")
+	}
+}
+
 // Every event dispatched to webhooks is also published to the shared
 // dispatcher, regardless of whether any HTTP webhook destinations exist —
 // this is how in-process consumers (the plugin host) receive events.
