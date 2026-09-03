@@ -874,10 +874,13 @@ type S3Info struct {
 
 // ScheduledEvent One concrete scheduled stream occurrence, either a one-off or produced by a recurring series
 type ScheduledEvent struct {
-	Description     *string               `json:"description,omitempty"`
-	DurationMinutes *int                  `json:"durationMinutes,omitempty"`
-	Id              *string               `json:"id,omitempty"`
-	Name            *string               `json:"name,omitempty"`
+	Description     *string `json:"description,omitempty"`
+	DurationMinutes *int    `json:"durationMinutes,omitempty"`
+	Id              *string `json:"id,omitempty"`
+	Name            *string `json:"name,omitempty"`
+
+	// ReminderMessage Optional reminder text override for this event
+	ReminderMessage *string               `json:"reminderMessage,omitempty"`
 	SeriesId        *string               `json:"seriesId,omitempty"`
 	StartTime       *time.Time            `json:"startTime,omitempty"`
 	Status          *ScheduledEventStatus `json:"status,omitempty"`
@@ -903,6 +906,9 @@ type ScheduledEventInput struct {
 	// Recurrence RFC 5545 recurrence value. Presence makes this a recurring series.
 	Recurrence *string `json:"recurrence,omitempty"`
 
+	// ReminderMessage Optional reminder text override. Empty uses the default schedule reminder message.
+	ReminderMessage *string `json:"reminderMessage,omitempty"`
+
 	// Start Start time for a one-off event. Mutually exclusive with recurrence.
 	Start *time.Time `json:"start,omitempty"`
 
@@ -920,6 +926,9 @@ type ScheduledEventSeries struct {
 
 	// Recurrence RFC 5545 recurrence value (DTSTART with TZID plus RRULE)
 	Recurrence *string `json:"recurrence,omitempty"`
+
+	// ReminderMessage Optional reminder text override for occurrences in this series
+	ReminderMessage *string `json:"reminderMessage,omitempty"`
 }
 
 // SocialHandle defines model for SocialHandle.

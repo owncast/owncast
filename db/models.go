@@ -142,6 +142,7 @@ type StreamEvent struct {
 	WebhookWarningSentAt sql.NullTime
 	WebhookStartedSentAt sql.NullTime
 	WebhookEndedSentAt   sql.NullTime
+	ReminderMessage      string
 }
 
 type StreamEventSeries struct {
@@ -153,6 +154,7 @@ type StreamEventSeries struct {
 	Active          bool
 	CreatedAt       sql.NullTime
 	UpdatedAt       sql.NullTime
+	ReminderMessage string
 }
 
 type User struct {

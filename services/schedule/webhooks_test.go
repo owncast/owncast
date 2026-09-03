@@ -66,7 +66,8 @@ type lifecycleWebhookConfig struct {
 	configrepository.ConfigRepository
 }
 
-func (lifecycleWebhookConfig) GetServerURL() string { return "https://owncast.example" }
+func (lifecycleWebhookConfig) GetServerURL() string               { return "https://owncast.example" }
+func (lifecycleWebhookConfig) GetScheduleReminderMessage() string { return "" }
 
 func TestScheduledEventWebhooksFireOnce(t *testing.T) {
 	now := time.Date(2030, time.September, 8, 18, 0, 0, 0, time.UTC)

@@ -26,7 +26,6 @@ func TestMain(m *testing.M) {
 
 	configRepo := configrepository.New(ds)
 	configRepo.SetServerURL("https://test.owncast.server")
-	configRepo.SetFederationUsername("testuser")
 	configrepository.SetGlobalInstance(configRepo)
 
 	testRepo = scheduleeventsrepository.New(ds)
@@ -39,7 +38,7 @@ func TestMain(m *testing.M) {
 // in the shared datastore.
 func mustAddSeries(t *testing.T, name, recurrence string, durationMinutes int) models.ScheduledEventSeries {
 	t.Helper()
-	id, err := testRepo.AddSeries(name, "description for "+name, recurrence, durationMinutes)
+	id, err := testRepo.AddSeries(name, "description for "+name, "", recurrence, durationMinutes)
 	if err != nil {
 		t.Fatalf("AddSeries(%s) unexpected error = %v", name, err)
 	}
@@ -228,6 +227,10 @@ func TestExpandBetweenGuardsAgainstDenseRules(t *testing.T) {
 func TestMaterializeSeriesIsIdempotent(t *testing.T) {
 	// Mondays Jan 3, 10, 17 2028 at 12:00 UTC inside [Jan 1, Jan 22).
 	series := mustAddSeries(t, "materialize idempotent", "DTSTART;TZID=UTC:20280103T120000\nRRULE:FREQ=WEEKLY;BYDAY=MO", 60)
+	if err := testRepo.UpdateSeries(series.ID, series.Name, series.Description, "series reminder", series.Recurrence, series.DurationMinutes); err != nil {
+		t.Fatalf("UpdateSeries() unexpected error = %v", err)
+	}
+	series.ReminderMessage = "series reminder"
 	now := time.Date(2028, 1, 1, 0, 0, 0, 0, time.UTC)
 	horizon := 21 * 24 * time.Hour
 
@@ -260,6 +263,9 @@ func TestMaterializeSeriesIsIdempotent(t *testing.T) {
 		}
 		if events[i].Name != series.Name {
 			t.Errorf("event[%d] Name = %v, want %v", i, events[i].Name, series.Name)
+		}
+		if events[i].ReminderMessage != series.ReminderMessage {
+			t.Errorf("event[%d] ReminderMessage = %q, want %q", i, events[i].ReminderMessage, series.ReminderMessage)
 		}
 		if events[i].Timezone != "UTC" {
 			t.Errorf("event[%d] Timezone = %v, want UTC", i, events[i].Timezone)
@@ -425,7 +431,7 @@ func TestRegenerateSeriesLeavesFederatedRowsAlone(t *testing.T) {
 		t.Fatalf("SetEventFederatedAt() unexpected error = %v", err)
 	}
 
-	if err := testRepo.UpdateSeries(series.ID, "regenerate renamed", "updated description", recurrence, 90); err != nil {
+	if err := testRepo.UpdateSeries(series.ID, "regenerate renamed", "updated description", "", recurrence, 90); err != nil {
 		t.Fatalf("UpdateSeries() unexpected error = %v", err)
 	}
 	updated, err := testRepo.GetSeries(series.ID)
@@ -498,7 +504,7 @@ func TestRegenerateSeriesLeavesCancelledRowsAlone(t *testing.T) {
 		t.Fatalf("CancelEvent() unexpected error = %v", err)
 	}
 
-	if err := testRepo.UpdateSeries(series.ID, "regenerate cancelled renamed", "updated description", recurrence, 90); err != nil {
+	if err := testRepo.UpdateSeries(series.ID, "regenerate cancelled renamed", "updated description", "", recurrence, 90); err != nil {
 		t.Fatalf("UpdateSeries() unexpected error = %v", err)
 	}
 	updated, err := testRepo.GetSeries(series.ID)

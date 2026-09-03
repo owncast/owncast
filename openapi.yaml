@@ -5011,6 +5011,9 @@ components:
           type: string
         description:
           type: string
+        reminderMessage:
+          type: string
+          description: Optional reminder text override for this event
         startTime:
           type: string
           format: date-time
@@ -5032,6 +5035,9 @@ components:
           type: string
         description:
           type: string
+        reminderMessage:
+          type: string
+          description: Optional reminder text override for occurrences in this series
         recurrence:
           type: string
           description: RFC 5545 recurrence value (DTSTART with TZID plus RRULE)
@@ -5051,6 +5057,9 @@ components:
           type: string
         description:
           type: string
+        reminderMessage:
+          type: string
+          description: Optional reminder text override. Empty uses the default schedule reminder message.
         start:
           type: string
           format: date-time

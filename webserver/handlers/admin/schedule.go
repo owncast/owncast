@@ -104,23 +104,27 @@ func (a *Admin) createScheduledEvent(w http.ResponseWriter, name, recurrence str
 	if request.Description != nil {
 		description = *request.Description
 	}
+	reminderMessage := ""
+	if request.ReminderMessage != nil {
+		reminderMessage = strings.TrimSpace(*request.ReminderMessage)
+	}
 	duration := defaultEventDurationMinutes
 	if request.DurationMinutes != nil {
 		duration = *request.DurationMinutes
 	}
 
 	if recurrence != "" {
-		return a.createSeries(w, name, description, recurrence, duration)
+		return a.createSeries(w, name, description, reminderMessage, recurrence, duration)
 	}
-	return a.createOneOffEvent(w, name, description, duration, request)
+	return a.createOneOffEvent(w, name, description, reminderMessage, duration, request)
 }
 
-func (a *Admin) createSeries(w http.ResponseWriter, name, description, recurrence string, duration int) error {
+func (a *Admin) createSeries(w http.ResponseWriter, name, description, reminderMessage, recurrence string, duration int) error {
 	if _, err := schedule.ParseRecurrence(recurrence); err != nil {
 		webutils.BadRequestHandler(w, err)
 		return err
 	}
-	seriesID, err := a.scheduleEventsRepository.AddSeries(name, description, recurrence, duration)
+	seriesID, err := a.scheduleEventsRepository.AddSeries(name, description, reminderMessage, recurrence, duration)
 	if err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return err
@@ -140,7 +144,7 @@ func (a *Admin) createSeries(w http.ResponseWriter, name, description, recurrenc
 	return nil
 }
 
-func (a *Admin) createOneOffEvent(w http.ResponseWriter, name, description string, duration int, request generated.ScheduledEventInput) error {
+func (a *Admin) createOneOffEvent(w http.ResponseWriter, name, description, reminderMessage string, duration int, request generated.ScheduledEventInput) error {
 	if request.Start == nil {
 		err := errors.New("start is required for a one-off event")
 		webutils.BadRequestHandler(w, err)
@@ -161,7 +165,7 @@ func (a *Admin) createOneOffEvent(w http.ResponseWriter, name, description strin
 		timezone = *request.Timezone
 	}
 
-	if _, err := a.scheduleEventsRepository.AddOneOffEvent(name, description, *request.Start, duration, timezone); err != nil {
+	if _, err := a.scheduleEventsRepository.AddOneOffEvent(name, description, reminderMessage, *request.Start, duration, timezone); err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return err
 	}
@@ -219,12 +223,16 @@ func (a *Admin) updateSeries(w http.ResponseWriter, series models.ScheduledEvent
 	if request.Description != nil {
 		description = *request.Description
 	}
+	reminderMessage := series.ReminderMessage
+	if request.ReminderMessage != nil {
+		reminderMessage = strings.TrimSpace(*request.ReminderMessage)
+	}
 	duration := series.DurationMinutes
 	if request.DurationMinutes != nil {
 		duration = *request.DurationMinutes
 	}
 
-	if err := a.scheduleEventsRepository.UpdateSeries(series.ID, name, description, recurrence, duration); err != nil {
+	if err := a.scheduleEventsRepository.UpdateSeries(series.ID, name, description, reminderMessage, recurrence, duration); err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return err
 	}
@@ -261,12 +269,16 @@ func (a *Admin) updateOneOffEvent(w http.ResponseWriter, event models.ScheduledE
 	if request.Description != nil {
 		description = *request.Description
 	}
+	reminderMessage := event.ReminderMessage
+	if request.ReminderMessage != nil {
+		reminderMessage = strings.TrimSpace(*request.ReminderMessage)
+	}
 	duration := event.DurationMinutes
 	if request.DurationMinutes != nil {
 		duration = *request.DurationMinutes
 	}
 
-	if err := a.scheduleEventsRepository.UpdateEventDetails(event.ID, name, description, duration); err != nil {
+	if err := a.scheduleEventsRepository.UpdateEventDetails(event.ID, name, description, reminderMessage, duration); err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return err
 	}

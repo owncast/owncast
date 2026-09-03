@@ -469,6 +469,8 @@
       "recurringSchedules": "Recurring schedules",
       "reminderLabel": "Reminder message",
       "reminderTip": "Posted to the Fediverse before a scheduled event starts, with the event name, time and a link added for you. Leave empty to disable reminders.",
+      "eventReminderLabel": "Event reminder message",
+      "eventReminderTip": "Optional override for this event. Leave empty to use the default reminder message.",
       "repeatsLabel": "Repeats",
       "recurrenceOn": "on",
       "recurrenceAt": "at",

@@ -341,7 +341,7 @@ SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, str
 -- Scheduled stream events (schedule feature).
 
 -- name: AddStreamEventSeries :exec
-INSERT INTO stream_event_series(id, name, description, recurrence, duration_minutes) VALUES(?, ?, ?, ?, ?);
+INSERT INTO stream_event_series(id, name, description, reminder_message, recurrence, duration_minutes) VALUES(?, ?, ?, ?, ?, ?);
 
 -- name: GetStreamEventSeries :one
 SELECT * FROM stream_event_series WHERE id = ?;
@@ -353,7 +353,7 @@ SELECT * FROM stream_event_series ORDER BY created_at;
 SELECT * FROM stream_event_series WHERE active = TRUE ORDER BY created_at;
 
 -- name: UpdateStreamEventSeries :exec
-UPDATE stream_event_series SET name = ?, description = ?, recurrence = ?, duration_minutes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+UPDATE stream_event_series SET name = ?, description = ?, reminder_message = ?, recurrence = ?, duration_minutes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
 
 -- name: SetStreamEventSeriesActive :exec
 UPDATE stream_event_series SET active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
@@ -367,7 +367,7 @@ DELETE FROM stream_event_series WHERE id = ?;
 -- and skips existing rows, while any other conflict (a generated primary
 -- key colliding with an existing row) still errors instead of silently
 -- reporting the slot as pre-existing.
-INSERT INTO stream_events(id, series_id, original_start, name, description, start_time, duration_minutes, timezone) VALUES(?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(series_id, original_start) DO NOTHING;
+INSERT INTO stream_events(id, series_id, original_start, name, description, reminder_message, start_time, duration_minutes, timezone) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(series_id, original_start) DO NOTHING;
 
 -- name: GetStreamEvent :one
 SELECT * FROM stream_events WHERE id = ?;
@@ -379,7 +379,7 @@ SELECT * FROM stream_events WHERE start_time >= ? AND start_time < ? ORDER BY st
 SELECT * FROM stream_events WHERE series_id = ? ORDER BY start_time;
 
 -- name: UpdateStreamEventDetails :exec
-UPDATE stream_events SET name = ?, description = ?, duration_minutes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+UPDATE stream_events SET name = ?, description = ?, reminder_message = ?, duration_minutes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
 
 -- name: CancelStreamEvent :exec
 -- The row is kept: it holds the federation state needed to announce the

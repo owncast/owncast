@@ -26,13 +26,14 @@ func New(datastore *datastore.Datastore) ScheduleEventsRepository {
 }
 
 // AddSeries creates a recurring series and returns its generated id.
-func (r *SqlScheduleEventsRepository) AddSeries(name, description, recurrence string, durationMinutes int) (string, error) {
+func (r *SqlScheduleEventsRepository) AddSeries(name, description, reminderMessage, recurrence string, durationMinutes int) (string, error) {
 	id := shortid.MustGenerate()
 	queries := db.New(r.datastore.DB)
 	err := queries.AddStreamEventSeries(context.Background(), db.AddStreamEventSeriesParams{
 		ID:              id,
 		Name:            name,
 		Description:     description,
+		ReminderMessage: reminderMessage,
 		Recurrence:      recurrence,
 		DurationMinutes: int64(durationMinutes),
 	})
@@ -86,11 +87,12 @@ func (r *SqlScheduleEventsRepository) GetActiveSeries() ([]models.ScheduledEvent
 
 // UpdateSeries rewrites a series' definition. The caller is responsible for
 // regenerating future occurrences afterwards.
-func (r *SqlScheduleEventsRepository) UpdateSeries(id, name, description, recurrence string, durationMinutes int) error {
+func (r *SqlScheduleEventsRepository) UpdateSeries(id, name, description, reminderMessage, recurrence string, durationMinutes int) error {
 	queries := db.New(r.datastore.DB)
 	return queries.UpdateStreamEventSeries(context.Background(), db.UpdateStreamEventSeriesParams{
 		Name:            name,
 		Description:     description,
+		ReminderMessage: reminderMessage,
 		Recurrence:      recurrence,
 		DurationMinutes: int64(durationMinutes),
 		ID:              id,
@@ -116,7 +118,7 @@ func (r *SqlScheduleEventsRepository) DeleteSeries(id string) error {
 
 // AddOneOffEvent creates a standalone occurrence with no series and returns
 // its generated id.
-func (r *SqlScheduleEventsRepository) AddOneOffEvent(name, description string, start time.Time, durationMinutes int, timezone string) (string, error) {
+func (r *SqlScheduleEventsRepository) AddOneOffEvent(name, description, reminderMessage string, start time.Time, durationMinutes int, timezone string) (string, error) {
 	id := shortid.MustGenerate()
 	queries := db.New(r.datastore.DB)
 	inserted, err := queries.AddStreamEvent(context.Background(), db.AddStreamEventParams{
@@ -125,6 +127,7 @@ func (r *SqlScheduleEventsRepository) AddOneOffEvent(name, description string, s
 		OriginalStart:   sql.NullTime{},
 		Name:            name,
 		Description:     description,
+		ReminderMessage: reminderMessage,
 		StartTime:       start.UTC(),
 		DurationMinutes: int64(durationMinutes),
 		Timezone:        timezone,
@@ -143,7 +146,7 @@ func (r *SqlScheduleEventsRepository) AddOneOffEvent(name, description string, s
 
 // AddOccurrence inserts a materialized occurrence for a series. Returns
 // false when the (series, originalStart) slot already exists.
-func (r *SqlScheduleEventsRepository) AddOccurrence(seriesID string, originalStart time.Time, name, description string, start time.Time, durationMinutes int, timezone string) (bool, error) {
+func (r *SqlScheduleEventsRepository) AddOccurrence(seriesID string, originalStart time.Time, name, description, reminderMessage string, start time.Time, durationMinutes int, timezone string) (bool, error) {
 	id := shortid.MustGenerate()
 	queries := db.New(r.datastore.DB)
 	inserted, err := queries.AddStreamEvent(context.Background(), db.AddStreamEventParams{
@@ -152,6 +155,7 @@ func (r *SqlScheduleEventsRepository) AddOccurrence(seriesID string, originalSta
 		OriginalStart:   models.TimeToNullTime(originalStart.UTC()),
 		Name:            name,
 		Description:     description,
+		ReminderMessage: reminderMessage,
 		StartTime:       start.UTC(),
 		DurationMinutes: int64(durationMinutes),
 		Timezone:        timezone,
@@ -200,11 +204,12 @@ func (r *SqlScheduleEventsRepository) GetEventsForSeries(seriesID string) ([]mod
 }
 
 // UpdateEventDetails rewrites an occurrence's descriptive fields.
-func (r *SqlScheduleEventsRepository) UpdateEventDetails(id, name, description string, durationMinutes int) error {
+func (r *SqlScheduleEventsRepository) UpdateEventDetails(id, name, description, reminderMessage string, durationMinutes int) error {
 	queries := db.New(r.datastore.DB)
 	return queries.UpdateStreamEventDetails(context.Background(), db.UpdateStreamEventDetailsParams{
 		Name:            name,
 		Description:     description,
+		ReminderMessage: reminderMessage,
 		DurationMinutes: int64(durationMinutes),
 		ID:              id,
 	})
@@ -375,6 +380,7 @@ func seriesFromRow(row db.StreamEventSeries) models.ScheduledEventSeries {
 		ID:              row.ID,
 		Name:            row.Name,
 		Description:     row.Description,
+		ReminderMessage: row.ReminderMessage,
 		Recurrence:      row.Recurrence,
 		DurationMinutes: int(row.DurationMinutes),
 		Active:          row.Active,
@@ -386,6 +392,7 @@ func eventFromRow(row db.StreamEvent) models.ScheduledEvent {
 		ID:              row.ID,
 		Name:            row.Name,
 		Description:     row.Description,
+		ReminderMessage: row.ReminderMessage,
 		StartTime:       row.StartTime.UTC(),
 		DurationMinutes: int(row.DurationMinutes),
 		Timezone:        row.Timezone,

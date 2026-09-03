@@ -5,6 +5,7 @@ export interface ScheduledEvent {
   seriesId?: string;
   name: string;
   description: string;
+  reminderMessage?: string;
   startTime: string;
   durationMinutes: number;
   timezone: string;

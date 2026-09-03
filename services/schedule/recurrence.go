@@ -127,7 +127,7 @@ func MaterializeSeries(repo scheduleeventsrepository.ScheduleEventsRepository, s
 
 	inserted := 0
 	for _, occurrence := range occurrences {
-		wasInserted, err := repo.AddOccurrence(series.ID, occurrence, series.Name, series.Description, occurrence, series.DurationMinutes, timezone)
+		wasInserted, err := repo.AddOccurrence(series.ID, occurrence, series.Name, series.Description, series.ReminderMessage, occurrence, series.DurationMinutes, timezone)
 		if err != nil {
 			return inserted, fmt.Errorf("series %s: %w", series.ID, err)
 		}

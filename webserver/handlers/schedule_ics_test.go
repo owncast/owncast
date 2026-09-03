@@ -77,6 +77,7 @@ func TestGetScheduleICSReturnsCurrentSchedule(t *testing.T) {
 	eventID, err := eventsRepo.AddOneOffEvent(
 		"Original name",
 		"Description",
+		"",
 		time.Now().Add(24*time.Hour),
 		60,
 		"UTC",
@@ -108,7 +109,7 @@ func TestGetScheduleICSReturnsCurrentSchedule(t *testing.T) {
 		t.Fatal("initial feed did not contain the scheduled event")
 	}
 
-	if err := eventsRepo.UpdateEventDetails(eventID, "Updated name", "Description", 60); err != nil {
+	if err := eventsRepo.UpdateEventDetails(eventID, "Updated name", "Description", "", 60); err != nil {
 		t.Fatal(err)
 	}
 	second := httptest.NewRecorder()

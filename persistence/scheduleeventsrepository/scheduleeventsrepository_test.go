@@ -53,7 +53,7 @@ func containsEventID(events []models.ScheduledEvent, id string) bool {
 
 func mustAddOneOffEvent(t *testing.T, name string, start time.Time) string {
 	t.Helper()
-	id, err := testRepo.AddOneOffEvent(name, "description for "+name, start, 60, "UTC")
+	id, err := testRepo.AddOneOffEvent(name, "description for "+name, "", start, 60, "UTC")
 	if err != nil {
 		t.Fatalf("AddOneOffEvent(%s) unexpected error = %v", name, err)
 	}
@@ -64,7 +64,7 @@ func TestSeriesCRUDRoundtrip(t *testing.T) {
 	repo := testRepo
 
 	recurrence := "DTSTART;TZID=America/Los_Angeles:20270301T180000\nRRULE:FREQ=WEEKLY;BYDAY=MO"
-	id, err := repo.AddSeries("series-crud original", "first description", recurrence, 90)
+	id, err := repo.AddSeries("series-crud original", "first description", "series reminder", recurrence, 90)
 	if err != nil {
 		t.Fatalf("AddSeries() unexpected error = %v", err)
 	}
@@ -88,6 +88,9 @@ func TestSeriesCRUDRoundtrip(t *testing.T) {
 	if series.Description != "first description" {
 		t.Errorf("series Description = %v, want %v", series.Description, "first description")
 	}
+	if series.ReminderMessage != "series reminder" {
+		t.Errorf("series ReminderMessage = %v, want %v", series.ReminderMessage, "series reminder")
+	}
 	if series.Recurrence != recurrence {
 		t.Errorf("series Recurrence = %v, want %v", series.Recurrence, recurrence)
 	}
@@ -104,7 +107,7 @@ func TestSeriesCRUDRoundtrip(t *testing.T) {
 	}
 
 	updatedRecurrence := "DTSTART;TZID=America/New_York:20270302T200000\nRRULE:FREQ=WEEKLY;BYDAY=TU"
-	if err := repo.UpdateSeries(id, "series-crud renamed", "second description", updatedRecurrence, 45); err != nil {
+	if err := repo.UpdateSeries(id, "series-crud renamed", "second description", "updated series reminder", updatedRecurrence, 45); err != nil {
 		t.Fatalf("UpdateSeries() unexpected error = %v", err)
 	}
 	series, err = repo.GetSeries(id)
@@ -116,6 +119,9 @@ func TestSeriesCRUDRoundtrip(t *testing.T) {
 	}
 	if series.Description != "second description" {
 		t.Errorf("updated series Description = %v, want %v", series.Description, "second description")
+	}
+	if series.ReminderMessage != "updated series reminder" {
+		t.Errorf("updated series ReminderMessage = %v, want %v", series.ReminderMessage, "updated series reminder")
 	}
 	if series.Recurrence != updatedRecurrence {
 		t.Errorf("updated series Recurrence = %v, want %v", series.Recurrence, updatedRecurrence)
@@ -192,7 +198,7 @@ func TestOneOffEventCRUDRoundtrip(t *testing.T) {
 	// normalization boundary.
 	start := time.Date(2030, 8, 15, 11, 30, 0, 0, la)
 
-	id, err := repo.AddOneOffEvent("event-crud original", "one-off description", start, 45, "America/Los_Angeles")
+	id, err := repo.AddOneOffEvent("event-crud original", "one-off description", "event reminder", start, 45, "America/Los_Angeles")
 	if err != nil {
 		t.Fatalf("AddOneOffEvent() unexpected error = %v", err)
 	}
@@ -222,6 +228,9 @@ func TestOneOffEventCRUDRoundtrip(t *testing.T) {
 	if event.Description != "one-off description" {
 		t.Errorf("event Description = %v, want %v", event.Description, "one-off description")
 	}
+	if event.ReminderMessage != "event reminder" {
+		t.Errorf("event ReminderMessage = %v, want %v", event.ReminderMessage, "event reminder")
+	}
 	if !event.StartTime.Equal(start) {
 		t.Errorf("event StartTime = %v, want the same instant as %v", event.StartTime, start)
 	}
@@ -241,7 +250,7 @@ func TestOneOffEventCRUDRoundtrip(t *testing.T) {
 		t.Errorf("new event ReminderSentAt = %v, want nil", *event.ReminderSentAt)
 	}
 
-	if err := repo.UpdateEventDetails(id, "event-crud renamed", "updated description", 75); err != nil {
+	if err := repo.UpdateEventDetails(id, "event-crud renamed", "updated description", "updated event reminder", 75); err != nil {
 		t.Fatalf("UpdateEventDetails() unexpected error = %v", err)
 	}
 	event, err = repo.GetEvent(id)
@@ -253,6 +262,9 @@ func TestOneOffEventCRUDRoundtrip(t *testing.T) {
 	}
 	if event.Description != "updated description" {
 		t.Errorf("updated event Description = %v, want %v", event.Description, "updated description")
+	}
+	if event.ReminderMessage != "updated event reminder" {
+		t.Errorf("updated event ReminderMessage = %v, want %v", event.ReminderMessage, "updated event reminder")
 	}
 	if event.DurationMinutes != 75 {
 		t.Errorf("updated event DurationMinutes = %v, want 75", event.DurationMinutes)

@@ -12,6 +12,10 @@ func (s *Service) SendScheduledEvent(event models.ScheduledEvent, action models.
 }
 
 func (s *Service) sendScheduledEvent(event models.ScheduledEvent, action models.ScheduledEventWebhookAction, timestamp time.Time) {
+	if event.ReminderMessage == "" && s.configRepository != nil {
+		event.ReminderMessage = s.configRepository.GetScheduleReminderMessage()
+	}
+
 	s.SendEventToWebhooks(WebhookEvent{
 		Type: models.ScheduledEvents,
 		EventData: &WebhookScheduledEventData{

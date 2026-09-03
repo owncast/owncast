@@ -67,6 +67,7 @@ interface ScheduledEventSeries {
   id: string;
   name: string;
   description: string;
+  reminderMessage?: string;
   recurrence: string;
   durationMinutes: number;
   active: boolean;
@@ -99,6 +100,7 @@ const EventModal = (props: EventModalProps) => {
   const browserZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [eventReminderMessage, setEventReminderMessage] = useState('');
   const [duration, setDuration] = useState(60);
   const [repeats, setRepeats] = useState<'none' | 'weekly'>('none');
   const [timezone, setTimezone] = useState(browserZone);
@@ -124,8 +126,9 @@ const EventModal = (props: EventModalProps) => {
     if (target.kind === 'create') {
       setName('');
       setDescription('');
-      setDuration(60);
+      setEventReminderMessage('');
       setRepeats('none');
+      setDuration(60);
       setTimezone(browserZone);
       setDate('');
       setTime('');
@@ -135,6 +138,7 @@ const EventModal = (props: EventModalProps) => {
       const wall = wallTimeInZone(target.event.startTime, target.event.timezone);
       setName(target.event.name);
       setDescription(target.event.description);
+      setEventReminderMessage(target.event.reminderMessage || '');
       setDuration(target.event.durationMinutes);
       setRepeats('none');
       setTimezone(target.event.timezone);
@@ -143,8 +147,9 @@ const EventModal = (props: EventModalProps) => {
     } else {
       setName(target.series.name);
       setDescription(target.series.description);
-      setDuration(target.series.durationMinutes);
+      setEventReminderMessage(target.series.reminderMessage || '');
       setRepeats('weekly');
+      setDuration(target.series.durationMinutes);
       if (seriesRule) {
         setTimezone(seriesRule.timezone);
         setDate(seriesRule.startsOn);
@@ -206,6 +211,7 @@ const EventModal = (props: EventModalProps) => {
     const payload: Record<string, unknown> = {
       name: name.trim(),
       description,
+      reminderMessage: eventReminderMessage.trim(),
       durationMinutes: duration,
     };
 
@@ -326,6 +332,15 @@ const EventModal = (props: EventModalProps) => {
         maxLength={500}
         onChange={input => setDescription(input.currentTarget.value)}
       />
+
+      <p>{t(Localization.Admin.Schedule.eventReminderLabel)}</p>
+      <Input.TextArea
+        value={eventReminderMessage}
+        rows={2}
+        maxLength={500}
+        onChange={input => setEventReminderMessage(input.currentTarget.value)}
+      />
+      <Paragraph type="secondary">{t(Localization.Admin.Schedule.eventReminderTip)}</Paragraph>
 
       {target.kind === 'create' && (
         <>

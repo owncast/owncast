@@ -11,24 +11,24 @@ import (
 // string comparisons on TIMESTAMP columns stay consistent.
 type ScheduleEventsRepository interface {
 	// Series (recurring schedules).
-	AddSeries(name, description, recurrence string, durationMinutes int) (string, error)
+	AddSeries(name, description, reminderMessage, recurrence string, durationMinutes int) (string, error)
 	GetSeries(id string) (*models.ScheduledEventSeries, error)
 	GetAllSeries() ([]models.ScheduledEventSeries, error)
 	GetActiveSeries() ([]models.ScheduledEventSeries, error)
-	UpdateSeries(id, name, description, recurrence string, durationMinutes int) error
+	UpdateSeries(id, name, description, reminderMessage, recurrence string, durationMinutes int) error
 	SetSeriesActive(id string, active bool) error
 	DeleteSeries(id string) error
 
 	// Occurrences (concrete events, one-off or materialized).
-	AddOneOffEvent(name, description string, start time.Time, durationMinutes int, timezone string) (string, error)
+	AddOneOffEvent(name, description, reminderMessage string, start time.Time, durationMinutes int, timezone string) (string, error)
 	// AddOccurrence inserts a materialized occurrence for a series. Returns
 	// false when the (series, originalStart) slot already exists, making
 	// repeat materialization a no-op.
-	AddOccurrence(seriesID string, originalStart time.Time, name, description string, start time.Time, durationMinutes int, timezone string) (bool, error)
+	AddOccurrence(seriesID string, originalStart time.Time, name, description, reminderMessage string, start time.Time, durationMinutes int, timezone string) (bool, error)
 	GetEvent(id string) (*models.ScheduledEvent, error)
 	GetEventsInRange(from, to time.Time) ([]models.ScheduledEvent, error)
 	GetEventsForSeries(seriesID string) ([]models.ScheduledEvent, error)
-	UpdateEventDetails(id, name, description string, durationMinutes int) error
+	UpdateEventDetails(id, name, description, reminderMessage string, durationMinutes int) error
 	CancelEvent(id string) error
 	// MoveEvent changes an occurrence's start time. Its original_start
 	// identity is untouched so the materializer will not re-insert the

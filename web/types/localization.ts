@@ -523,6 +523,8 @@ export const Localization = {
       chatOpenMinutes60: 'Admin.Schedule.chatOpenMinutes60',
       reminderLabel: 'Admin.Schedule.reminderLabel',
       reminderTip: 'Admin.Schedule.reminderTip',
+      eventReminderLabel: 'Admin.Schedule.eventReminderLabel',
+      eventReminderTip: 'Admin.Schedule.eventReminderTip',
       addEvent: 'Admin.Schedule.addEvent',
       editEvent: 'Admin.Schedule.editEvent',
       editAction: 'Admin.Schedule.editAction',

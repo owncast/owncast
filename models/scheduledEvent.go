@@ -29,6 +29,7 @@ type ScheduledEventSeries struct {
 	ID              string `json:"id"`
 	Name            string `json:"name"`
 	Description     string `json:"description"`
+	ReminderMessage string `json:"reminderMessage,omitempty"`
 	Recurrence      string `json:"recurrence"`
 	DurationMinutes int    `json:"durationMinutes"`
 	Active          bool   `json:"active"`
@@ -44,6 +45,7 @@ type ScheduledEvent struct {
 	OriginalStart   *time.Time `json:"-"`
 	Name            string     `json:"name"`
 	Description     string     `json:"description"`
+	ReminderMessage string     `json:"reminderMessage,omitempty"`
 	StartTime       time.Time  `json:"startTime"`
 	DurationMinutes int        `json:"durationMinutes"`
 	Timezone        string     `json:"timezone"`
