@@ -288,14 +288,24 @@ func getHashtagLinkHTMLFromTagString(baseHashtag string) string {
 // SendToFollowers sends an arbitrary payload to all follower inboxes,
 // preferring shared inboxes to reduce outbound request count.
 func (s *Service) SendToFollowers(payload []byte) error {
-	// Prefer shared inboxes over individual inboxes.
+	return s.sendToFollowers(payload, "")
+}
+
+func (s *Service) sendToFollowers(payload []byte, coalesceKey string) error {
+	deliveries, err := s.followerDeliveries(payload, coalesceKey, "", 0, false)
+	if err != nil {
+		return err
+	}
+	return s.workerpool.EnqueueBatch(deliveries)
+}
+
+func (s *Service) followerDeliveries(payload []byte, coalesceKey, orderingKey string, coalesceVersion int64, blocksFollowing bool) ([]workerpool.Delivery, error) {
 	inboxes, err := s.followers.GetUniqueDeliveryInboxes()
 	if err != nil {
 		log.Errorln("unable to fetch delivery inboxes", err)
-		return errors.New("unable to fetch delivery inboxes to send payload to")
+		return nil, errors.New("unable to fetch delivery inboxes to send payload to")
 	}
-
-	return s.sendToInboxes(payload, inboxes, "")
+	return s.deliveriesToInboxes(payload, inboxes, coalesceKey, orderingKey, coalesceVersion, blocksFollowing), nil
 }
 
 // SendToDirectoryFollowers sends a payload only to approved directory followers,
@@ -309,12 +319,11 @@ func (s *Service) SendToDirectoryFollowers(payload []byte, coalesceKey string) e
 		return errors.New("unable to fetch directory delivery inboxes to send payload to")
 	}
 
-	return s.sendToInboxes(payload, inboxes, coalesceKey)
+	return s.workerpool.EnqueueBatch(s.deliveriesToInboxes(payload, inboxes, coalesceKey, "", 0, false))
 }
 
-// sendToInboxes queues the payload for each inbox. Signing happens immediately
-// before each durable delivery attempt.
-func (s *Service) sendToInboxes(payload []byte, inboxes []string, coalesceKey string) error {
+// deliveriesToInboxes validates inboxes and builds unsigned queue records.
+func (s *Service) deliveriesToInboxes(payload []byte, inboxes []string, coalesceKey, orderingKey string, coalesceVersion int64, blocksFollowing bool) []workerpool.Delivery {
 	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 	deliveries := make([]workerpool.Delivery, 0, len(inboxes))
 	payloadType := activityType(payload)
@@ -330,15 +339,18 @@ func (s *Service) sendToInboxes(payload []byte, inboxes []string, coalesceKey st
 			continue
 		}
 		deliveries = append(deliveries, workerpool.Delivery{
-			Inbox:        inbox,
-			Payload:      payload,
-			ActorIRI:     localActor,
-			ActivityType: payloadType,
-			CoalesceKey:  coalesceKey,
+			Inbox:           inbox,
+			Payload:         payload,
+			ActorIRI:        localActor,
+			ActivityType:    payloadType,
+			CoalesceKey:     coalesceKey,
+			OrderingKey:     orderingKey,
+			CoalesceVersion: coalesceVersion,
+			BlocksFollowing: blocksFollowing,
 		})
 	}
 
-	return s.workerpool.EnqueueBatch(deliveries)
+	return deliveries
 }
 
 func activityType(payload []byte) string {

@@ -355,7 +355,7 @@ func TestGetEventsToFederateSelectsOnce(t *testing.T) {
 	}
 
 	stamp := time.Date(2032, 1, 2, 9, 0, 0, 0, time.UTC)
-	if err := repo.SetEventFederatedAt(pending, stamp); err != nil {
+	if err := repo.SetEventFederatedAt(pending, stamp, 0); err != nil {
 		t.Fatalf("SetEventFederatedAt() unexpected error = %v", err)
 	}
 	event, err := repo.GetEvent(pending)
@@ -375,6 +375,122 @@ func TestGetEventsToFederateSelectsOnce(t *testing.T) {
 	}
 	if containsEventID(events, pending) {
 		t.Errorf("GetEventsToFederate() returns an already-federated event a second time")
+	}
+}
+
+func TestCreateStampPreservesConcurrentMutation(t *testing.T) {
+	repo := testRepo
+	eventID := mustAddOneOffEvent(t, "create race", time.Now().Add(24*time.Hour))
+	if err := repo.UpdateEventDetails(eventID, "edited before create stamp", "", "", 60); err != nil {
+		t.Fatal(err)
+	}
+	if err := repo.SetEventFederatedAt(eventID, time.Now(), 0); err != nil {
+		t.Fatal(err)
+	}
+	events, err := repo.GetEventsNeedingFederationUpdate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !containsEventID(events, eventID) {
+		t.Fatal("create stamp cleared a concurrent mutation")
+	}
+	event, err := repo.GetEvent(eventID)
+	if err != nil || event == nil {
+		t.Fatalf("GetEvent() = %v, %v", event, err)
+	}
+	if err := repo.SetEventFederatedAt(eventID, time.Now(), event.FederationVersion); err != nil {
+		t.Fatal(err)
+	}
+	events, err = repo.GetEventsNeedingFederationUpdate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if containsEventID(events, eventID) {
+		t.Fatal("matching create version did not clear pending mutation")
+	}
+}
+
+func TestDeleteEventRecordsFederatedRetraction(t *testing.T) {
+	repo := testRepo
+	federatedID := mustAddOneOffEvent(t, "delete federated", time.Now().Add(24*time.Hour))
+	if err := repo.SetEventFederatedAt(federatedID, time.Now(), 0); err != nil {
+		t.Fatal(err)
+	}
+	unfederatedID := mustAddOneOffEvent(t, "delete local", time.Now().Add(25*time.Hour))
+	if err := repo.DeleteEvent(federatedID); err != nil {
+		t.Fatal(err)
+	}
+	if err := repo.DeleteEvent(unfederatedID); err != nil {
+		t.Fatal(err)
+	}
+
+	pending, err := repo.GetPendingFederationDeletes()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(pending) != 1 || pending[0] != federatedID {
+		t.Fatalf("pending federation deletes = %#v", pending)
+	}
+	if err := repo.ClearPendingFederationDelete(federatedID); err != nil {
+		t.Fatal(err)
+	}
+	pending, err = repo.GetPendingFederationDeletes()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(pending) != 0 {
+		t.Fatalf("cleared federation deletes = %#v", pending)
+	}
+}
+
+func TestFederatedEventMutationRemainsPendingUntilCleared(t *testing.T) {
+	repo := testRepo
+	eventID := mustAddOneOffEvent(t, "federated event", time.Now().Add(24*time.Hour))
+	if err := repo.SetEventFederatedAt(eventID, time.Now(), 0); err != nil {
+		t.Fatal(err)
+	}
+	if err := repo.UpdateEventDetails(eventID, "updated event", "", "", 60); err != nil {
+		t.Fatal(err)
+	}
+
+	events, err := repo.GetEventsNeedingFederationUpdate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !containsEventID(events, eventID) {
+		t.Fatal("updated federated event is not pending federation")
+	}
+	event, err := repo.GetEvent(eventID)
+	if err != nil || event == nil {
+		t.Fatalf("GetEvent() = %v, %v", event, err)
+	}
+	firstVersion := event.FederationVersion
+	if err := repo.UpdateEventDetails(eventID, "newer event", "", "", 60); err != nil {
+		t.Fatal(err)
+	}
+	if err := repo.ClearEventFederationUpdatePending(eventID, firstVersion); err != nil {
+		t.Fatal(err)
+	}
+	events, err = repo.GetEventsNeedingFederationUpdate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !containsEventID(events, eventID) {
+		t.Fatal("clearing an older version dropped a newer pending update")
+	}
+	event, err = repo.GetEvent(eventID)
+	if err != nil || event == nil {
+		t.Fatalf("GetEvent() = %v, %v", event, err)
+	}
+	if err := repo.ClearEventFederationUpdatePending(eventID, event.FederationVersion); err != nil {
+		t.Fatal(err)
+	}
+	events, err = repo.GetEventsNeedingFederationUpdate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if containsEventID(events, eventID) {
+		t.Fatal("cleared federated event is still pending federation")
 	}
 }
 

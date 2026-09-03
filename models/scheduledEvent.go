@@ -42,17 +42,20 @@ type ScheduledEvent struct {
 	SeriesID *string `json:"seriesId,omitempty"`
 	// OriginalStart is the instant the recurrence rule produced, immutable
 	// even if the occurrence is later moved. Nil for one-off events.
-	OriginalStart   *time.Time `json:"-"`
-	Name            string     `json:"name"`
-	Description     string     `json:"description"`
-	ReminderMessage string     `json:"reminderMessage,omitempty"`
-	StartTime       time.Time  `json:"startTime"`
-	DurationMinutes int        `json:"durationMinutes"`
-	Timezone        string     `json:"timezone"`
-	Status          string     `json:"status"`
-	FederatedAt     *time.Time `json:"-"`
-	CreatedAt       *time.Time `json:"-"`
-	UpdatedAt       *time.Time `json:"-"`
-	Reminder1SentAt *time.Time `json:"-"`
-	Reminder2SentAt *time.Time `json:"-"`
+	OriginalStart             *time.Time `json:"-"`
+	Name                      string     `json:"name"`
+	Description               string     `json:"description"`
+	ReminderMessage           string     `json:"reminderMessage,omitempty"`
+	StartTime                 time.Time  `json:"startTime"`
+	DurationMinutes           int        `json:"durationMinutes"`
+	Timezone                  string     `json:"timezone"`
+	Status                    string     `json:"status"`
+	FederatedAt               *time.Time `json:"-"`
+	FederationVersion         int64      `json:"-"`
+	CreatedAt                 *time.Time `json:"-"`
+	UpdatedAt                 *time.Time `json:"-"`
+	Reminder1SentAt           *time.Time `json:"-"`
+	Reminder2SentAt           *time.Time `json:"-"`
+	FederationReminder1SentAt *time.Time `json:"-"`
+	FederationReminder2SentAt *time.Time `json:"-"`
 }

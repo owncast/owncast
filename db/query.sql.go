@@ -127,6 +127,17 @@ func (q *Queries) AddNotification(ctx context.Context, arg AddNotificationParams
 	return err
 }
 
+const addPendingStreamEventFederationDelete = `-- name: AddPendingStreamEventFederationDelete :exec
+INSERT INTO stream_event_federation_deletes(event_id)
+SELECT id FROM stream_events WHERE id = ? AND federated_at IS NOT NULL
+ON CONFLICT(event_id) DO NOTHING
+`
+
+func (q *Queries) AddPendingStreamEventFederationDelete(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, addPendingStreamEventFederationDelete, id)
+	return err
+}
+
 const addStreamEvent = `-- name: AddStreamEvent :execrows
 INSERT INTO stream_events(id, series_id, original_start, name, description, reminder_message, start_time, duration_minutes, timezone) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(series_id, original_start) DO NOTHING
 `
@@ -264,7 +275,7 @@ func (q *Queries) BanIPAddress(ctx context.Context, arg BanIPAddressParams) erro
 }
 
 const cancelStreamEvent = `-- name: CancelStreamEvent :exec
-UPDATE stream_events SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE id = ?
+UPDATE stream_events SET status = 'cancelled', federation_update_pending = TRUE, federation_version = federation_version + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?
 `
 
 // The row is kept: it holds the federation state needed to announce the
@@ -320,10 +331,21 @@ WHERE id = (
     WHERE candidate.failed_at IS NULL
       AND candidate.next_attempt_at <= ?2
       AND (candidate.claimed_until IS NULL OR candidate.claimed_until <= ?2)
+      AND (
+        candidate.ordering_key IS NULL OR NOT EXISTS (
+            SELECT 1
+            FROM ap_delivery_queue AS predecessor
+            WHERE predecessor.inbox = candidate.inbox
+              AND predecessor.ordering_key = candidate.ordering_key
+              AND predecessor.failed_at IS NULL
+              AND predecessor.blocks_following = TRUE
+              AND predecessor.id < candidate.id
+        )
+      )
     ORDER BY candidate.next_attempt_at, candidate.id
     LIMIT 1
 )
-RETURNING id, inbox, payload, actor_iri, activity_type, coalesce_key, attempts, revision
+RETURNING id, inbox, payload, actor_iri, activity_type, coalesce_key, ordering_key, attempts, revision
 `
 
 type ClaimActivityPubDeliveryParams struct {
@@ -338,6 +360,7 @@ type ClaimActivityPubDeliveryRow struct {
 	ActorIri     string
 	ActivityType string
 	CoalesceKey  sql.NullString
+	OrderingKey  sql.NullString
 	Attempts     int64
 	Revision     int64
 }
@@ -352,10 +375,25 @@ func (q *Queries) ClaimActivityPubDelivery(ctx context.Context, arg ClaimActivit
 		&i.ActorIri,
 		&i.ActivityType,
 		&i.CoalesceKey,
+		&i.OrderingKey,
 		&i.Attempts,
 		&i.Revision,
 	)
 	return i, err
+}
+
+const clearStreamEventFederationUpdatePending = `-- name: ClearStreamEventFederationUpdatePending :exec
+UPDATE stream_events SET federation_update_pending = FALSE WHERE id = ? AND federation_version = ?
+`
+
+type ClearStreamEventFederationUpdatePendingParams struct {
+	ID                string
+	FederationVersion int64
+}
+
+func (q *Queries) ClearStreamEventFederationUpdatePending(ctx context.Context, arg ClearStreamEventFederationUpdatePendingParams) error {
+	_, err := q.db.ExecContext(ctx, clearStreamEventFederationUpdatePending, arg.ID, arg.FederationVersion)
+	return err
 }
 
 const completeActivityPubDelivery = `-- name: CompleteActivityPubDelivery :execrows
@@ -435,6 +473,25 @@ func (q *Queries) DeferActivityPubDelivery(ctx context.Context, arg DeferActivit
 		return 0, err
 	}
 	return result.RowsAffected()
+}
+
+const deleteActivityPubReminderDeliveries = `-- name: DeleteActivityPubReminderDeliveries :exec
+DELETE FROM ap_delivery_queue
+WHERE ordering_key = ? AND coalesce_key LIKE ordering_key || ':reminder:%'
+`
+
+func (q *Queries) DeleteActivityPubReminderDeliveries(ctx context.Context, orderingKey sql.NullString) error {
+	_, err := q.db.ExecContext(ctx, deleteActivityPubReminderDeliveries, orderingKey)
+	return err
+}
+
+const deletePendingStreamEventFederationDelete = `-- name: DeletePendingStreamEventFederationDelete :exec
+DELETE FROM stream_event_federation_deletes WHERE event_id = ?
+`
+
+func (q *Queries) DeletePendingStreamEventFederationDelete(ctx context.Context, eventID string) error {
+	_, err := q.db.ExecContext(ctx, deletePendingStreamEventFederationDelete, eventID)
+	return err
 }
 
 const deleteStreamEvent = `-- name: DeleteStreamEvent :exec
@@ -594,6 +651,17 @@ func (q *Queries) GetActiveStreamEventSeries(ctx context.Context) ([]StreamEvent
 	return items, nil
 }
 
+const getActivityPubDeliveryRevision = `-- name: GetActivityPubDeliveryRevision :one
+SELECT revision FROM ap_delivery_queue WHERE id = ?
+`
+
+func (q *Queries) GetActivityPubDeliveryRevision(ctx context.Context, id int64) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getActivityPubDeliveryRevision, id)
+	var revision int64
+	err := row.Scan(&revision)
+	return revision, err
+}
+
 const getAllStreamEventSeries = `-- name: GetAllStreamEventSeries :many
 SELECT id, name, description, recurrence, duration_minutes, active, created_at, updated_at, reminder_message FROM stream_event_series ORDER BY created_at
 `
@@ -724,7 +792,7 @@ func (q *Queries) GetAuthForUsers(ctx context.Context, userIds []string) ([]GetA
 }
 
 const getCurrentOrUpcomingStreamEvents = `-- name: GetCurrentOrUpcomingStreamEvents :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at FROM stream_events WHERE status = 'scheduled' AND datetime(start_time, '+' || duration_minutes || ' minutes') > datetime(?) ORDER BY start_time LIMIT ?
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE status = 'scheduled' AND datetime(start_time, '+' || duration_minutes || ' minutes') > datetime(?) ORDER BY start_time LIMIT ?
 `
 
 type GetCurrentOrUpcomingStreamEventsParams struct {
@@ -765,6 +833,10 @@ func (q *Queries) GetCurrentOrUpcomingStreamEvents(ctx context.Context, arg GetC
 			&i.ReminderMessage,
 			&i.Reminder1SentAt,
 			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -1207,7 +1279,7 @@ func (q *Queries) GetMessagesFromUser(ctx context.Context, userID sql.NullString
 }
 
 const getNextUpcomingStreamEvents = `-- name: GetNextUpcomingStreamEvents :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at FROM stream_events WHERE status = 'scheduled' AND start_time > ? ORDER BY start_time LIMIT ?
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE status = 'scheduled' AND start_time > ? ORDER BY start_time LIMIT ?
 `
 
 type GetNextUpcomingStreamEventsParams struct {
@@ -1244,6 +1316,10 @@ func (q *Queries) GetNextUpcomingStreamEvents(ctx context.Context, arg GetNextUp
 			&i.ReminderMessage,
 			&i.Reminder1SentAt,
 			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -1322,8 +1398,38 @@ func (q *Queries) GetObjectFromOutboxByIRI(ctx context.Context, iri string) (Get
 	return i, err
 }
 
+const getOutboxItemCount = `-- name: GetOutboxItemCount :one
+SELECT count(*) FROM ap_outbox WHERE type IN ('Note', 'Create', 'Update', 'Delete')
+`
+
+func (q *Queries) GetOutboxItemCount(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getOutboxItemCount)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const getOutboxObjectState = `-- name: GetOutboxObjectState :one
+SELECT type, coalesce_version FROM ap_outbox WHERE iri = ?
+`
+
+type GetOutboxObjectStateRow struct {
+	Type            string
+	CoalesceVersion int64
+}
+
+func (q *Queries) GetOutboxObjectState(ctx context.Context, iri string) (GetOutboxObjectStateRow, error) {
+	row := q.db.QueryRowContext(ctx, getOutboxObjectState, iri)
+	var i GetOutboxObjectStateRow
+	err := row.Scan(&i.Type, &i.CoalesceVersion)
+	return i, err
+}
+
 const getOutboxWithOffset = `-- name: GetOutboxWithOffset :many
-SELECT value FROM ap_outbox WHERE type = 'Note' LIMIT ? OFFSET ?
+SELECT value FROM ap_outbox
+WHERE type IN ('Note', 'Create', 'Update', 'Delete')
+ORDER BY created_at DESC, rowid DESC
+LIMIT ? OFFSET ?
 `
 
 type GetOutboxWithOffsetParams struct {
@@ -1331,9 +1437,8 @@ type GetOutboxWithOffsetParams struct {
 	Offset int64
 }
 
-// Only posts (Notes) are listed in the public outbox collection. Other stored
-// objects, such as QuoteAuthorization stamps, stay fetchable by IRI but are
-// not part of the collection.
+// Notes are stored as dereferenceable objects and wrapped as Create activities
+// when served. Event lifecycle activities are stored directly.
 func (q *Queries) GetOutboxWithOffset(ctx context.Context, arg GetOutboxWithOffsetParams) ([][]byte, error) {
 	rows, err := q.db.QueryContext(ctx, getOutboxWithOffset, arg.Limit, arg.Offset)
 	if err != nil {
@@ -1452,6 +1557,33 @@ func (q *Queries) GetPendingFederatedServers(ctx context.Context) ([]FederatedSe
 	return items, nil
 }
 
+const getPendingStreamEventFederationDeletes = `-- name: GetPendingStreamEventFederationDeletes :many
+SELECT event_id FROM stream_event_federation_deletes ORDER BY created_at
+`
+
+func (q *Queries) GetPendingStreamEventFederationDeletes(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getPendingStreamEventFederationDeletes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var event_id string
+		if err := rows.Scan(&event_id); err != nil {
+			return nil, err
+		}
+		items = append(items, event_id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getRejectedAndBlockedFollowers = `-- name: GetRejectedAndBlockedFollowers :many
 SELECT iri, name, username, image, created_at, disabled_at FROM ap_followers WHERE disabled_at is not null
 `
@@ -1496,7 +1628,7 @@ func (q *Queries) GetRejectedAndBlockedFollowers(ctx context.Context) ([]GetReje
 }
 
 const getStreamEvent = `-- name: GetStreamEvent :one
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at FROM stream_events WHERE id = ?
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE id = ?
 `
 
 func (q *Queries) GetStreamEvent(ctx context.Context, id string) (StreamEvent, error) {
@@ -1522,6 +1654,10 @@ func (q *Queries) GetStreamEvent(ctx context.Context, id string) (StreamEvent, e
 		&i.ReminderMessage,
 		&i.Reminder1SentAt,
 		&i.Reminder2SentAt,
+		&i.FederationReminder1SentAt,
+		&i.FederationReminder2SentAt,
+		&i.FederationUpdatePending,
+		&i.FederationVersion,
 	)
 	return i, err
 }
@@ -1548,7 +1684,7 @@ func (q *Queries) GetStreamEventSeries(ctx context.Context, id string) (StreamEv
 }
 
 const getStreamEventsForSeries = `-- name: GetStreamEventsForSeries :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at FROM stream_events WHERE series_id = ? ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE series_id = ? ORDER BY start_time
 `
 
 func (q *Queries) GetStreamEventsForSeries(ctx context.Context, seriesID sql.NullString) ([]StreamEvent, error) {
@@ -1580,6 +1716,10 @@ func (q *Queries) GetStreamEventsForSeries(ctx context.Context, seriesID sql.Nul
 			&i.ReminderMessage,
 			&i.Reminder1SentAt,
 			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -1595,7 +1735,7 @@ func (q *Queries) GetStreamEventsForSeries(ctx context.Context, seriesID sql.Nul
 }
 
 const getStreamEventsInRange = `-- name: GetStreamEventsInRange :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at FROM stream_events WHERE start_time >= ? AND start_time < ? ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE start_time >= ? AND start_time < ? ORDER BY start_time
 `
 
 type GetStreamEventsInRangeParams struct {
@@ -1632,6 +1772,173 @@ func (q *Queries) GetStreamEventsInRange(ctx context.Context, arg GetStreamEvent
 			&i.ReminderMessage,
 			&i.Reminder1SentAt,
 			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStreamEventsNeedingFederationReminder1 = `-- name: GetStreamEventsNeedingFederationReminder1 :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE federation_reminder_1_sent_at IS NULL AND status = 'scheduled' AND federated_at IS NOT NULL AND start_time > ? AND start_time <= ? ORDER BY start_time
+`
+
+type GetStreamEventsNeedingFederationReminder1Params struct {
+	StartTime   time.Time
+	StartTime_2 time.Time
+}
+
+func (q *Queries) GetStreamEventsNeedingFederationReminder1(ctx context.Context, arg GetStreamEventsNeedingFederationReminder1Params) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getStreamEventsNeedingFederationReminder1, arg.StartTime, arg.StartTime_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
+			&i.ReminderMessage,
+			&i.Reminder1SentAt,
+			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStreamEventsNeedingFederationReminder2 = `-- name: GetStreamEventsNeedingFederationReminder2 :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE federation_reminder_2_sent_at IS NULL AND status = 'scheduled' AND federated_at IS NOT NULL AND start_time > ? AND start_time <= ? ORDER BY start_time
+`
+
+type GetStreamEventsNeedingFederationReminder2Params struct {
+	StartTime   time.Time
+	StartTime_2 time.Time
+}
+
+func (q *Queries) GetStreamEventsNeedingFederationReminder2(ctx context.Context, arg GetStreamEventsNeedingFederationReminder2Params) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getStreamEventsNeedingFederationReminder2, arg.StartTime, arg.StartTime_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
+			&i.ReminderMessage,
+			&i.Reminder1SentAt,
+			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStreamEventsNeedingFederationUpdate = `-- name: GetStreamEventsNeedingFederationUpdate :many
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE federation_update_pending = TRUE AND federated_at IS NOT NULL ORDER BY updated_at
+`
+
+func (q *Queries) GetStreamEventsNeedingFederationUpdate(ctx context.Context) ([]StreamEvent, error) {
+	rows, err := q.db.QueryContext(ctx, getStreamEventsNeedingFederationUpdate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StreamEvent
+	for rows.Next() {
+		var i StreamEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeriesID,
+			&i.OriginalStart,
+			&i.Name,
+			&i.Description,
+			&i.StartTime,
+			&i.DurationMinutes,
+			&i.Timezone,
+			&i.Status,
+			&i.FederatedAt,
+			&i.ReminderSentAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.WebhookWarningSentAt,
+			&i.WebhookStartedSentAt,
+			&i.WebhookEndedSentAt,
+			&i.ReminderMessage,
+			&i.Reminder1SentAt,
+			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -1647,7 +1954,7 @@ func (q *Queries) GetStreamEventsInRange(ctx context.Context, arg GetStreamEvent
 }
 
 const getStreamEventsNeedingReminder1 = `-- name: GetStreamEventsNeedingReminder1 :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at FROM stream_events WHERE reminder_1_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE reminder_1_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time
 `
 
 type GetStreamEventsNeedingReminder1Params struct {
@@ -1684,6 +1991,10 @@ func (q *Queries) GetStreamEventsNeedingReminder1(ctx context.Context, arg GetSt
 			&i.ReminderMessage,
 			&i.Reminder1SentAt,
 			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -1699,7 +2010,7 @@ func (q *Queries) GetStreamEventsNeedingReminder1(ctx context.Context, arg GetSt
 }
 
 const getStreamEventsNeedingReminder2 = `-- name: GetStreamEventsNeedingReminder2 :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at FROM stream_events WHERE reminder_2_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE reminder_2_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time
 `
 
 type GetStreamEventsNeedingReminder2Params struct {
@@ -1736,6 +2047,10 @@ func (q *Queries) GetStreamEventsNeedingReminder2(ctx context.Context, arg GetSt
 			&i.ReminderMessage,
 			&i.Reminder1SentAt,
 			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -1751,7 +2066,7 @@ func (q *Queries) GetStreamEventsNeedingReminder2(ctx context.Context, arg GetSt
 }
 
 const getStreamEventsNeedingWebhookEnd = `-- name: GetStreamEventsNeedingWebhookEnd :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at FROM stream_events WHERE webhook_started_sent_at IS NOT NULL AND webhook_ended_sent_at IS NULL AND datetime(start_time, '+' || duration_minutes || ' minutes') <= datetime(?) ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE webhook_started_sent_at IS NOT NULL AND webhook_ended_sent_at IS NULL AND datetime(start_time, '+' || duration_minutes || ' minutes') <= datetime(?) ORDER BY start_time
 `
 
 func (q *Queries) GetStreamEventsNeedingWebhookEnd(ctx context.Context, datetime interface{}) ([]StreamEvent, error) {
@@ -1783,6 +2098,10 @@ func (q *Queries) GetStreamEventsNeedingWebhookEnd(ctx context.Context, datetime
 			&i.ReminderMessage,
 			&i.Reminder1SentAt,
 			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -1798,7 +2117,7 @@ func (q *Queries) GetStreamEventsNeedingWebhookEnd(ctx context.Context, datetime
 }
 
 const getStreamEventsNeedingWebhookStart = `-- name: GetStreamEventsNeedingWebhookStart :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at FROM stream_events WHERE webhook_started_sent_at IS NULL AND status = 'scheduled' AND start_time <= ? ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE webhook_started_sent_at IS NULL AND status = 'scheduled' AND start_time <= ? ORDER BY start_time
 `
 
 func (q *Queries) GetStreamEventsNeedingWebhookStart(ctx context.Context, startTime time.Time) ([]StreamEvent, error) {
@@ -1830,6 +2149,10 @@ func (q *Queries) GetStreamEventsNeedingWebhookStart(ctx context.Context, startT
 			&i.ReminderMessage,
 			&i.Reminder1SentAt,
 			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -1845,7 +2168,7 @@ func (q *Queries) GetStreamEventsNeedingWebhookStart(ctx context.Context, startT
 }
 
 const getStreamEventsNeedingWebhookWarning = `-- name: GetStreamEventsNeedingWebhookWarning :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at FROM stream_events WHERE webhook_warning_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE webhook_warning_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time
 `
 
 type GetStreamEventsNeedingWebhookWarningParams struct {
@@ -1882,6 +2205,10 @@ func (q *Queries) GetStreamEventsNeedingWebhookWarning(ctx context.Context, arg 
 			&i.ReminderMessage,
 			&i.Reminder1SentAt,
 			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -1897,7 +2224,7 @@ func (q *Queries) GetStreamEventsNeedingWebhookWarning(ctx context.Context, arg 
 }
 
 const getStreamEventsToFederate = `-- name: GetStreamEventsToFederate :many
-SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at FROM stream_events WHERE federated_at IS NULL AND status = 'scheduled' AND start_time > ? ORDER BY start_time
+SELECT id, series_id, original_start, name, description, start_time, duration_minutes, timezone, status, federated_at, reminder_sent_at, created_at, updated_at, webhook_warning_sent_at, webhook_started_sent_at, webhook_ended_sent_at, reminder_message, reminder_1_sent_at, reminder_2_sent_at, federation_reminder_1_sent_at, federation_reminder_2_sent_at, federation_update_pending, federation_version FROM stream_events WHERE federated_at IS NULL AND status = 'scheduled' AND start_time > ? ORDER BY start_time
 `
 
 func (q *Queries) GetStreamEventsToFederate(ctx context.Context, startTime time.Time) ([]StreamEvent, error) {
@@ -1929,6 +2256,10 @@ func (q *Queries) GetStreamEventsToFederate(ctx context.Context, startTime time.
 			&i.ReminderMessage,
 			&i.Reminder1SentAt,
 			&i.Reminder2SentAt,
+			&i.FederationReminder1SentAt,
+			&i.FederationReminder2SentAt,
+			&i.FederationUpdatePending,
+			&i.FederationVersion,
 		); err != nil {
 			return nil, err
 		}
@@ -2402,7 +2733,7 @@ func (q *Queries) IsIPAddressBlocked(ctx context.Context, ipAddress string) (int
 }
 
 const moveStreamEvent = `-- name: MoveStreamEvent :exec
-UPDATE stream_events SET start_time = ?, webhook_warning_sent_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+UPDATE stream_events SET start_time = ?, webhook_warning_sent_at = NULL, federation_update_pending = TRUE, federation_version = federation_version + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?
 `
 
 type MoveStreamEventParams struct {
@@ -2425,27 +2756,37 @@ INSERT INTO ap_delivery_queue (
     actor_iri,
     activity_type,
     coalesce_key,
+    ordering_key,
+    coalesce_version,
+    blocks_following,
     next_attempt_at
-) VALUES (?, ?, ?, ?, ?, ?)
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT(inbox, coalesce_key) WHERE coalesce_key IS NOT NULL AND failed_at IS NULL
 DO UPDATE SET
     payload = excluded.payload,
     actor_iri = excluded.actor_iri,
     activity_type = excluded.activity_type,
+    ordering_key = excluded.ordering_key,
+    coalesce_version = excluded.coalesce_version,
     next_attempt_at = excluded.next_attempt_at,
+    blocks_following = excluded.blocks_following,
     attempts = 0,
     last_error = NULL,
     revision = ap_delivery_queue.revision + 1
+WHERE excluded.coalesce_version >= ap_delivery_queue.coalesce_version
 RETURNING id
 `
 
 type QueueActivityPubDeliveryParams struct {
-	Inbox         string
-	Payload       []byte
-	ActorIri      string
-	ActivityType  string
-	CoalesceKey   sql.NullString
-	NextAttemptAt time.Time
+	Inbox           string
+	Payload         []byte
+	ActorIri        string
+	ActivityType    string
+	CoalesceKey     sql.NullString
+	OrderingKey     sql.NullString
+	CoalesceVersion int64
+	BlocksFollowing bool
+	NextAttemptAt   time.Time
 }
 
 func (q *Queries) QueueActivityPubDelivery(ctx context.Context, arg QueueActivityPubDeliveryParams) (int64, error) {
@@ -2455,6 +2796,9 @@ func (q *Queries) QueueActivityPubDelivery(ctx context.Context, arg QueueActivit
 		arg.ActorIri,
 		arg.ActivityType,
 		arg.CoalesceKey,
+		arg.OrderingKey,
+		arg.CoalesceVersion,
+		arg.BlocksFollowing,
 		arg.NextAttemptAt,
 	)
 	var id int64
@@ -2574,16 +2918,45 @@ func (q *Queries) SetAccessTokenToOwner(ctx context.Context, arg SetAccessTokenT
 }
 
 const setStreamEventFederatedAt = `-- name: SetStreamEventFederatedAt :exec
-UPDATE stream_events SET federated_at = ? WHERE id = ?
+UPDATE stream_events SET federated_at = ?, federation_update_pending = federation_version != ? WHERE id = ?
 `
 
 type SetStreamEventFederatedAtParams struct {
-	FederatedAt sql.NullTime
-	ID          string
+	FederatedAt       sql.NullTime
+	FederationVersion int64
+	ID                string
 }
 
 func (q *Queries) SetStreamEventFederatedAt(ctx context.Context, arg SetStreamEventFederatedAtParams) error {
-	_, err := q.db.ExecContext(ctx, setStreamEventFederatedAt, arg.FederatedAt, arg.ID)
+	_, err := q.db.ExecContext(ctx, setStreamEventFederatedAt, arg.FederatedAt, arg.FederationVersion, arg.ID)
+	return err
+}
+
+const setStreamEventFederationReminder1SentAt = `-- name: SetStreamEventFederationReminder1SentAt :exec
+UPDATE stream_events SET federation_reminder_1_sent_at = ? WHERE id = ?
+`
+
+type SetStreamEventFederationReminder1SentAtParams struct {
+	FederationReminder1SentAt sql.NullTime
+	ID                        string
+}
+
+func (q *Queries) SetStreamEventFederationReminder1SentAt(ctx context.Context, arg SetStreamEventFederationReminder1SentAtParams) error {
+	_, err := q.db.ExecContext(ctx, setStreamEventFederationReminder1SentAt, arg.FederationReminder1SentAt, arg.ID)
+	return err
+}
+
+const setStreamEventFederationReminder2SentAt = `-- name: SetStreamEventFederationReminder2SentAt :exec
+UPDATE stream_events SET federation_reminder_2_sent_at = ? WHERE id = ?
+`
+
+type SetStreamEventFederationReminder2SentAtParams struct {
+	FederationReminder2SentAt sql.NullTime
+	ID                        string
+}
+
+func (q *Queries) SetStreamEventFederationReminder2SentAt(ctx context.Context, arg SetStreamEventFederationReminder2SentAtParams) error {
+	_, err := q.db.ExecContext(ctx, setStreamEventFederationReminder2SentAt, arg.FederationReminder2SentAt, arg.ID)
 	return err
 }
 
@@ -2832,7 +3205,7 @@ func (q *Queries) UpdateFollowerValidationSuccess(ctx context.Context, arg Updat
 }
 
 const updateStreamEventDetails = `-- name: UpdateStreamEventDetails :exec
-UPDATE stream_events SET name = ?, description = ?, reminder_message = ?, duration_minutes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+UPDATE stream_events SET name = ?, description = ?, reminder_message = ?, duration_minutes = ?, federation_update_pending = TRUE, federation_version = federation_version + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?
 `
 
 type UpdateStreamEventDetailsParams struct {
@@ -2849,6 +3222,31 @@ func (q *Queries) UpdateStreamEventDetails(ctx context.Context, arg UpdateStream
 		arg.Description,
 		arg.ReminderMessage,
 		arg.DurationMinutes,
+		arg.ID,
+	)
+	return err
+}
+
+const updateStreamEventFromSeries = `-- name: UpdateStreamEventFromSeries :exec
+UPDATE stream_events SET name = ?, description = ?, reminder_message = ?, duration_minutes = ?, timezone = ?, federation_update_pending = TRUE, federation_version = federation_version + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+`
+
+type UpdateStreamEventFromSeriesParams struct {
+	Name            string
+	Description     string
+	ReminderMessage string
+	DurationMinutes int64
+	Timezone        string
+	ID              string
+}
+
+func (q *Queries) UpdateStreamEventFromSeries(ctx context.Context, arg UpdateStreamEventFromSeriesParams) error {
+	_, err := q.db.ExecContext(ctx, updateStreamEventFromSeries,
+		arg.Name,
+		arg.Description,
+		arg.ReminderMessage,
+		arg.DurationMinutes,
+		arg.Timezone,
 		arg.ID,
 	)
 	return err
@@ -2899,4 +3297,32 @@ func (q *Queries) UpsertOutboxObject(ctx context.Context, arg UpsertOutboxObject
 		arg.LiveNotification,
 	)
 	return err
+}
+
+const upsertVersionedOutboxObject = `-- name: UpsertVersionedOutboxObject :one
+INSERT INTO ap_outbox(iri, value, type, live_notification, coalesce_version) VALUES(?, ?, ?, ?, ?)
+ON CONFLICT(iri) DO UPDATE SET value = excluded.value, type = excluded.type, live_notification = excluded.live_notification, coalesce_version = excluded.coalesce_version
+WHERE excluded.coalesce_version >= ap_outbox.coalesce_version
+RETURNING 1
+`
+
+type UpsertVersionedOutboxObjectParams struct {
+	Iri              string
+	Value            []byte
+	Type             string
+	LiveNotification sql.NullBool
+	CoalesceVersion  int64
+}
+
+func (q *Queries) UpsertVersionedOutboxObject(ctx context.Context, arg UpsertVersionedOutboxObjectParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, upsertVersionedOutboxObject,
+		arg.Iri,
+		arg.Value,
+		arg.Type,
+		arg.LiveNotification,
+		arg.CoalesceVersion,
+	)
+	var column_1 int64
+	err := row.Scan(&column_1)
+	return column_1, err
 }

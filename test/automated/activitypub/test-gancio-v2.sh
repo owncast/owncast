@@ -2,8 +2,8 @@
 # shellcheck disable=SC2317 # cleanup() is invoked via trap, not direct call
 #
 # Boots the official Gancio v2 beta image beside Owncast, establishes a real
-# trusted-follow relationship, publishes an Owncast ActivityPub Event, and
-# verifies that Gancio imports it.
+# trusted-follow relationship, then verifies Event create, outbox backfill,
+# update, cancellation, deletion, and reminder delivery.
 
 set -euo pipefail
 
@@ -194,13 +194,13 @@ if [[ "${follower_count}" -lt 1 ]]; then
     fail "Gancio did not become an Owncast follower"
 fi
 event_name="Owncast Gancio interop ${RANDOM}"
-event_start=$(date -u -d '+4 hours' '+%Y-%m-%dT%H:%M:%SZ')
+event_start=$(date -u -d '+2 hours' '+%Y-%m-%dT%H:%M:%SZ')
 log "Publishing scheduled event ${event_name}"
 event_response=$(curl -sf -X POST "http://127.0.0.1:${OWNCAST_PORT}/api/admin/schedule/event" \
     -H "Authorization: Basic ${auth}" \
     -H 'Content-Type: application/json' \
     -d "$(jq -nc --arg name "${event_name}" --arg start "${event_start}" \
-        '{name: $name, description: "ActivityPub Event interoperability test", start: $start, durationMinutes: 90, timezone: "UTC"}')")
+        '{name: $name, description: "ActivityPub Event interoperability test", reminderMessage: "Starting soon", start: $start, durationMinutes: 90, timezone: "UTC"}')")
 event_id=$(printf '%s' "${event_response}" | jq -r --arg name "${event_name}" 'first(.events[]? | select(.name == $name) | .id) // empty')
 [[ -n "${event_id}" ]] || fail "Owncast schedule API did not return the created event"
 
@@ -209,11 +209,17 @@ object_url="${OWNCAST_URL}/federation/event/${event_id}"
 event_object=$(curl --cacert "${CERT_DIR}/cert.pem" -sf -H 'Accept: application/activity+json' "${object_url}")
 printf '%s' "${event_object}" | jq -e \
     --arg id "${object_url}" --arg name "${event_name}" --arg url "${event_url}" \
-    '.type == "Event" and .id == $id and .name == $name and .url == $url and
+    '.type == "Event" and .id == $id and .name == $name and .content == "ActivityPub Event interoperability test" and .url == $url and
      .eventStatus == "EventScheduled" and .joinMode == "none" and
      .location.type == "VirtualLocation" and .location.url == $url and
      (.organizers.totalItems == 1)' >/dev/null \
     || fail "Owncast event object does not match the FEP-8a8e contract"
+
+outbox=$(curl --cacert "${CERT_DIR}/cert.pem" -sf -H 'Accept: application/activity+json' \
+    "${OWNCAST_URL}/federation/user/${OWNCAST_FED_USERNAME}/outbox?page=1")
+printf '%s' "${outbox}" | jq -e --arg id "${object_url}" \
+    'any(.orderedItems[]?; type == "object" and .type == "Create" and .object.id == $id)' >/dev/null \
+    || fail "Owncast actor outbox does not backfill the Event Create"
 
 gancio_event=""
 for _ in $(seq 1 45); do
@@ -232,10 +238,76 @@ fi
 printf '%s' "${gancio_event}" | jq -e --arg url "${event_url}" \
     '(.online_locations | index($url)) != null and (.media | length) > 0' >/dev/null \
     || fail "Gancio imported the event without the Owncast event URL and logo: ${gancio_event}"
+reminder_found=false
+for _ in $(seq 1 75); do
+    outbox=$(curl --cacert "${CERT_DIR}/cert.pem" -sf -H 'Accept: application/activity+json' \
+        "${OWNCAST_URL}/federation/user/${OWNCAST_FED_USERNAME}/outbox?page=1")
+    if printf '%s' "${outbox}" | jq -e --arg id "${object_url}" \
+        'any(.orderedItems[]?; type == "object" and .type == "Create" and .object.type == "Note" and .object.inReplyTo == $id)' >/dev/null; then
+        reminder_found=true
+        break
+    fi
+    sleep 1
+done
+[[ "${reminder_found}" == "true" ]] || fail "Owncast did not publish the scheduled reminder Note"
+
+updated_name="${event_name} updated"
+log "Updating scheduled event"
+curl -sf -X POST "http://127.0.0.1:${OWNCAST_PORT}/api/admin/schedule/event" \
+    -H "Authorization: Basic ${auth}" -H 'Content-Type: application/json' \
+    -d "$(jq -nc --arg id "${event_id}" --arg name "${updated_name}" \
+        '{id: $id, name: $name, description: "Updated ActivityPub Event", durationMinutes: 120}')" >/dev/null
+for _ in $(seq 1 45); do
+    events=$(curl --cacert "${CERT_DIR}/cert.pem" -sfG "${GANCIO_URL}/api/events" \
+        --data-urlencode 'show_federated=true' --data-urlencode "query=${updated_name}")
+    gancio_event=$(printf '%s' "${events}" | jq -c --arg name "${updated_name}" 'first(.[]? | select(.title == $name)) // empty')
+    [[ -n "${gancio_event}" ]] && break
+    sleep 1
+done
+[[ -n "${gancio_event}" ]] || fail "Gancio did not apply the Owncast Event update"
+
+log "Cancelling scheduled event"
+curl -sf -X POST "http://127.0.0.1:${OWNCAST_PORT}/api/admin/schedule/event/delete" \
+    -H "Authorization: Basic ${auth}" -H 'Content-Type: application/json' \
+    -d "$(jq -nc --arg id "${event_id}" '{id: $id, cancel: true}')" >/dev/null
+event_object=$(curl --cacert "${CERT_DIR}/cert.pem" -sf -H 'Accept: application/activity+json' "${object_url}")
+printf '%s' "${event_object}" | jq -e '.type == "Event" and .eventStatus == "EventCancelled"' >/dev/null \
+    || fail "Owncast cancellation did not retain an EventCancelled object"
+for _ in $(seq 1 45); do
+    events=$(curl --cacert "${CERT_DIR}/cert.pem" -sfG "${GANCIO_URL}/api/events" \
+        --data-urlencode 'show_federated=true' --data-urlencode "query=${updated_name}")
+    gancio_event=$(printf '%s' "${events}" | jq -c --arg name "${updated_name}" 'first(.[]? | select(.title == $name)) // empty')
+    if [[ -n "${gancio_event}" ]] && [[ $(printf '%s' "${gancio_event}" | jq -r '.status // empty') == "EventCancelled" ]]; then
+        break
+    fi
+    sleep 1
+done
+[[ -n "${gancio_event}" ]] && [[ $(printf '%s' "${gancio_event}" | jq -r '.status // empty') == "EventCancelled" ]] \
+    || fail "Gancio did not apply the Owncast Event cancellation: ${gancio_event}"
+
+
+log "Deleting scheduled event"
+curl -sf -X POST "http://127.0.0.1:${OWNCAST_PORT}/api/admin/schedule/event/delete" \
+    -H "Authorization: Basic ${auth}" -H 'Content-Type: application/json' \
+    -d "$(jq -nc --arg id "${event_id}" '{id: $id, cancel: false}')" >/dev/null
+status=$(curl --cacert "${CERT_DIR}/cert.pem" -sS -o "${TEMP_DIR}/tombstone.json" -w '%{http_code}' \
+    -H 'Accept: application/activity+json' "${object_url}")
+[[ "${status}" == "410" ]] || fail "deleted Event returned HTTP ${status}, want 410"
+jq -e --arg id "${object_url}" '.type == "Tombstone" and .id == $id and .formerType == "Event"' \
+    "${TEMP_DIR}/tombstone.json" >/dev/null || fail "deleted Event did not leave a Tombstone"
+for _ in $(seq 1 45); do
+    events=$(curl --cacert "${CERT_DIR}/cert.pem" -sfG "${GANCIO_URL}/api/events" \
+        --data-urlencode 'show_federated=true' --data-urlencode "query=${updated_name}")
+    gancio_event=$(printf '%s' "${events}" | jq -c --arg name "${updated_name}" 'first(.[]? | select(.title == $name)) // empty')
+    [[ -z "${gancio_event}" ]] && break
+    sleep 1
+done
+[[ -z "${gancio_event}" ]] || fail "Gancio retained the deleted Owncast event: ${gancio_event}"
+
 
 digest=$(docker image inspect "${GANCIO_IMAGE}" --format '{{index .RepoDigests 0}}')
 [[ -n "${digest}" ]] || fail "could not resolve Gancio image digest"
-log "Gancio imported ${event_name}. Resolved image: ${digest}"
+log "Gancio completed the Event lifecycle for ${event_name}. Resolved image: ${digest}"
 
 if [[ "${KEEP_RUNNING:-}" == "true" ]]; then
     host_proxy_port="${HOST_PROXY_PORT:-8443}"

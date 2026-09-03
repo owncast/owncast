@@ -16,6 +16,7 @@ Owncast is a self-hosted live streaming server. Each instance federates as a sin
 - [FEP-67ff: FEDERATION.md](https://codeberg.org/fediverse/fep/src/branch/main/fep/67ff/fep-67ff.md)
 - [FEP-f1d5: NodeInfo in Fediverse Software](https://codeberg.org/fediverse/fep/src/branch/main/fep/f1d5/fep-f1d5.md)
 - [FEP-044f: Consent-respecting quote posts](https://codeberg.org/fediverse/fep/src/branch/main/fep/044f/fep-044f.md)
+- [FEP-8a8e: A common approach to using the Event object type](https://codeberg.org/fediverse/fep/src/branch/main/fep/8a8e/fep-8a8e.md)
 
 ## ActivityPub in Owncast
 
@@ -38,6 +39,9 @@ Owncast does not expose a `following` collection; that endpoint returns `404`. I
 | Activity       | Object         | Send | Receive | Notes                                                                                                                                                                       |
 | -------------- | -------------- | :--: | :-----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Create`       | `Note`         | Yes  |   Yes   | Sent on go-live and manual fediverse posts. Qualifying inbound notes produce plugin mention or reply events only.                                                           |
+| `Create`       | `Event`        | Yes  |   No    | Announces a scheduled stream occurrence to followers.                                                                                                                       |
+| `Update`       | `Event`        | Yes  |   No    | Sends the complete current Event after an announced occurrence is edited or cancelled.                                                                                      |
+| `Delete`       | `Tombstone`    | Yes  |   No    | Removes a deleted occurrence while preserving its stable IRI as a dereferenceable tombstone.                                                                                |
 | `Update`       | `Service`      | Yes  |   No    | Sent when the server profile changes.                                                                                                                                       |
 | `Update`       | `Person`       |  No  |   Yes   | Updates cached follower profile information.                                                                                                                                |
 | `Follow`       | -              | Yes  |   Yes   | Received from followers (queued for approval in private mode; directory follows always require approval). Sent to other servers to feature their stream (featured-streams). |
@@ -91,6 +95,30 @@ Posts from Owncast are `Note` objects with:
 When a stream starts, Owncast sends a `Create(Note)` go-live announcement containing the configured go-live message (defaulting to `I've gone live!`), the server's configured hashtags, a link to watch the stream, and the current stream preview image when one is available. If the operator clears the go-live message, no announcement is sent.
 
 Hashtags use the `Hashtag` type (Mastodon/`toot` vocabulary) and link to `https://owncast.directory/tags/{tag}` for discovery across Owncast instances.
+
+### Scheduled events
+
+Each scheduled stream occurrence has a stable ActivityPub `Event` IRI at
+`{server}/federation/event/{id}` and a public page at
+`{server}/schedule/{id}`. Owncast sends `Create(Event)` when the occurrence is
+announced, includes the activity in the actor's outbox, and delivers that Create
+before later lifecycle activities for the same occurrence.
+
+The Event follows FEP-8a8e and includes `name`, `content`, `startTime`,
+`endTime`, `duration`, `attributedTo`, `url`, `eventStatus`, `joinMode`,
+`location`, `organizers`, `timezone`, and an `attachment` array containing the
+server logo when available. `to`, `cc`, and `attachment` are always arrays.
+Owncast is the organizer and the location is the occurrence's public schedule
+page.
+
+Edits send a complete `Update(Event)` using the same Event IRI. Cancelling an
+occurrence keeps it dereferenceable and changes `eventStatus` to
+`EventCancelled`. Deleting an occurrence sends `Delete(Tombstone)`; subsequent
+dereferences of its Event IRI return the Tombstone with HTTP `410 Gone`.
+
+Configured schedule reminders are sent as `Create(Note)` activities addressed
+to the same followers. Each reminder Note uses the Event IRI as `inReplyTo` and
+links to the public occurrence page.
 
 ### Quote posts
 

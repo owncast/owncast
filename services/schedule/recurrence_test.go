@@ -427,7 +427,7 @@ func TestRegenerateSeriesLeavesFederatedRowsAlone(t *testing.T) {
 	unfederatedIDs := map[string]bool{events[0].ID: true, events[2].ID: true}
 
 	stamp := time.Date(2028, 4, 1, 6, 0, 0, 0, time.UTC)
-	if err := testRepo.SetEventFederatedAt(federated.ID, stamp); err != nil {
+	if err := testRepo.SetEventFederatedAt(federated.ID, stamp, federated.FederationVersion); err != nil {
 		t.Fatalf("SetEventFederatedAt() unexpected error = %v", err)
 	}
 

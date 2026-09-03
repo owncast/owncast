@@ -9,6 +9,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -19,6 +21,7 @@ import (
 
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/services/activitypub/apmodels"
 	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/datastore"
 )
@@ -47,10 +50,9 @@ func (s *Service) Datastore() *datastore.Datastore {
 	return s.datastore
 }
 
-// GetOutboxPostCount returns the number of posts in the outbox.
+// GetOutboxPostCount returns the number of activities in the public outbox.
 func (s *Service) GetOutboxPostCount() (int64, error) {
-	ctx := context.Background()
-	return s.datastore.GetQueries().GetLocalPostCount(ctx)
+	return s.datastore.GetQueries().GetOutboxItemCount(context.Background())
 }
 
 // GetOutbox returns an instance of the outbox populated by stored items.
@@ -70,12 +72,52 @@ func (s *Service) GetOutbox(limit int, offset int) (vocab.ActivityStreamsOrdered
 			orderedItems.AppendActivityStreamsCreate(activity)
 			return nil
 		}
-		if err := s.resolver.Resolve(context.Background(), value, createCallback); err != nil {
+		updateCallback := func(c context.Context, activity vocab.ActivityStreamsUpdate) error {
+			orderedItems.AppendActivityStreamsUpdate(activity)
+			return nil
+		}
+		deleteCallback := func(c context.Context, activity vocab.ActivityStreamsDelete) error {
+			orderedItems.AppendActivityStreamsDelete(activity)
+			return nil
+		}
+		noteCallback := func(c context.Context, note vocab.ActivityStreamsNote) error {
+			create, err := createActivityForStoredNote(note)
+			if err != nil {
+				return err
+			}
+			orderedItems.AppendActivityStreamsCreate(create)
+			return nil
+		}
+		if err := s.resolver.Resolve(context.Background(), value, createCallback, updateCallback, deleteCallback, noteCallback); err != nil {
 			return collection, err
 		}
 	}
+	collection.SetActivityStreamsOrderedItems(orderedItems)
 
 	return collection, nil
+}
+
+func createActivityForStoredNote(note vocab.ActivityStreamsNote) (vocab.ActivityStreamsCreate, error) {
+	noteIRI, err := apmodels.GetIRIStringFromJSONLDIdProperty(note.GetJSONLDId())
+	if err != nil {
+		return nil, err
+	}
+	activityIRI, err := url.Parse(strings.TrimSuffix(noteIRI, "/") + "/activity")
+	if err != nil {
+		return nil, err
+	}
+	activity := apmodels.MakeCreateActivity(activityIRI)
+	object := streams.NewActivityStreamsObjectProperty()
+	object.AppendActivityStreamsNote(note)
+	activity.SetActivityStreamsObject(object)
+	if attributedTo := note.GetActivityStreamsAttributedTo(); attributedTo != nil && attributedTo.Len() > 0 && attributedTo.At(0).IsIRI() {
+		actor := streams.NewActivityStreamsActorProperty()
+		actor.AppendIRI(attributedTo.At(0).GetIRI())
+		activity.SetActivityStreamsActor(actor)
+	}
+	activity.SetActivityStreamsTo(note.GetActivityStreamsTo())
+	activity.SetActivityStreamsCc(note.GetActivityStreamsCc())
+	return activity, nil
 }
 
 // AddToOutbox stores a single payload to the persistence layer.

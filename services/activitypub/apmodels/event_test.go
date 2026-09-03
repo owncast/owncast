@@ -76,6 +76,27 @@ func TestScheduledEventFEP8a8eRepresentation(t *testing.T) {
 	}
 }
 
+func TestNormalizeEventPropertiesInsideOutboxPage(t *testing.T) {
+	event := map[string]interface{}{
+		"type":       "Event",
+		"to":         "public",
+		"cc":         "followers",
+		"attachment": map[string]interface{}{"type": "Image"},
+	}
+	payload := map[string]interface{}{
+		"orderedItems": []interface{}{
+			map[string]interface{}{"type": "Create", "object": event},
+		},
+	}
+	NormalizeEventProperties(payload)
+	for _, key := range []string{"to", "cc", "attachment"} {
+		values, ok := event[key].([]interface{})
+		if !ok || len(values) != 1 {
+			t.Fatalf("%s = %#v", key, event[key])
+		}
+	}
+}
+
 func assertEventRecipients(t *testing.T, event map[string]interface{}, key, want string) {
 	t.Helper()
 	recipients, ok := event[key].([]interface{})

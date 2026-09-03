@@ -11,9 +11,13 @@ import (
 
 type federationScheduleRepo struct {
 	scheduleeventsrepository.ScheduleEventsRepository
-	events  []models.ScheduledEvent
-	sentAt  map[string]time.Time
-	loadErr error
+	events         []models.ScheduledEvent
+	pendingUpdates []models.ScheduledEvent
+	pendingDeletes []string
+	sentAt         map[string]time.Time
+	clearedUpdates []string
+	clearedDeletes []string
+	loadErr        error
 }
 
 func (r *federationScheduleRepo) GetEventsToFederate(time.Time) ([]models.ScheduledEvent, error) {
@@ -29,8 +33,26 @@ func (r *federationScheduleRepo) GetEventsToFederate(time.Time) ([]models.Schedu
 	return pending, nil
 }
 
-func (r *federationScheduleRepo) SetEventFederatedAt(id string, sentAt time.Time) error {
+func (r *federationScheduleRepo) SetEventFederatedAt(id string, sentAt time.Time, _ int64) error {
 	r.sentAt[id] = sentAt
+	return nil
+}
+
+func (r *federationScheduleRepo) GetEventsNeedingFederationUpdate() ([]models.ScheduledEvent, error) {
+	return r.pendingUpdates, nil
+}
+
+func (r *federationScheduleRepo) ClearEventFederationUpdatePending(id string, _ int64) error {
+	r.clearedUpdates = append(r.clearedUpdates, id)
+	return nil
+}
+
+func (r *federationScheduleRepo) GetPendingFederationDeletes() ([]string, error) {
+	return r.pendingDeletes, nil
+}
+
+func (r *federationScheduleRepo) ClearPendingFederationDelete(id string) error {
+	r.clearedDeletes = append(r.clearedDeletes, id)
 	return nil
 }
 
@@ -87,5 +109,69 @@ func TestPublishPendingEventsRequiresEnabledScheduleAndFederation(t *testing.T) 
 	service.publishPendingEvents(time.Now())
 	if called {
 		t.Error("disabled federation published a scheduled event")
+	}
+}
+
+func TestPendingEventUpdatesRetryWhenScheduleIsDisabled(t *testing.T) {
+	repo := &federationScheduleRepo{
+		pendingUpdates: []models.ScheduledEvent{{ID: "event"}},
+		pendingDeletes: []string{"event"},
+	}
+	attempts := 0
+	deletes := 0
+	service := New(Deps{
+		ScheduleEventsRepository: repo,
+		GetScheduleEnabled:       func() bool { return false },
+		GetFederationEnabled:     func() bool { return true },
+		FederateScheduledEventUpdate: func(models.ScheduledEvent) error {
+			attempts++
+			if attempts == 1 {
+				return errors.New("queue unavailable")
+			}
+			return nil
+		},
+		FederateScheduledEventDelete: func(models.ScheduledEvent) error {
+			deletes++
+			return nil
+		},
+	})
+
+	service.publishPendingEventUpdates()
+	service.publishPendingEventUpdates()
+	service.publishPendingEventDeletes()
+
+	if attempts != 2 {
+		t.Fatalf("update attempts = %d, want retry after queue failure", attempts)
+	}
+	if len(repo.clearedUpdates) != 1 || repo.clearedUpdates[0] != "event" {
+		t.Fatalf("cleared updates = %#v, want event after successful queue", repo.clearedUpdates)
+	}
+	if deletes != 1 {
+		t.Fatal("disabled schedule suppressed an Event deletion")
+	}
+}
+
+func TestPendingEventDeleteWaitsForFederation(t *testing.T) {
+	repo := &federationScheduleRepo{pendingDeletes: []string{"event"}}
+	enabled := false
+	deletes := 0
+	service := New(Deps{
+		ScheduleEventsRepository: repo,
+		GetFederationEnabled:     func() bool { return enabled },
+		FederateScheduledEventDelete: func(models.ScheduledEvent) error {
+			deletes++
+			return nil
+		},
+	})
+
+	service.publishPendingEventDeletes()
+	enabled = true
+	service.publishPendingEventDeletes()
+
+	if deletes != 1 {
+		t.Fatalf("delete attempts = %d, want one after federation is enabled", deletes)
+	}
+	if len(repo.clearedDeletes) != 1 || repo.clearedDeletes[0] != "event" {
+		t.Fatalf("cleared deletes = %#v", repo.clearedDeletes)
 	}
 }

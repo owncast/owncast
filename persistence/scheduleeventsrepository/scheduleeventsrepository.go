@@ -34,6 +34,7 @@ type ScheduleEventsRepository interface {
 	GetEventsInRange(from, to time.Time) ([]models.ScheduledEvent, error)
 	GetEventsForSeries(seriesID string) ([]models.ScheduledEvent, error)
 	UpdateEventDetails(id, name, description, reminderMessage string, durationMinutes int) error
+	UpdateEventFromSeries(id, name, description, reminderMessage string, durationMinutes int, timezone string) error
 	CancelEvent(id string) error
 	// MoveEvent changes an occurrence's start time. Its original_start
 	// identity is untouched so the materializer will not re-insert the
@@ -49,9 +50,15 @@ type ScheduleEventsRepository interface {
 	GetCurrentOrUpcomingEvents(now time.Time, limit int) ([]models.ScheduledEvent, error)
 	GetNextUpcomingEvents(after time.Time, limit int) ([]models.ScheduledEvent, error)
 	GetEventsToFederate(startingAfter time.Time) ([]models.ScheduledEvent, error)
-	SetEventFederatedAt(id string, t time.Time) error
+	SetEventFederatedAt(id string, t time.Time, version int64) error
+	GetEventsNeedingFederationUpdate() ([]models.ScheduledEvent, error)
+	ClearEventFederationUpdatePending(id string, version int64) error
+	GetPendingFederationDeletes() ([]string, error)
+	ClearPendingFederationDelete(id string) error
 	GetEventsNeedingReminder(startAfter, startBefore time.Time, reminderNumber int) ([]models.ScheduledEvent, error)
 	SetEventReminderSentAt(id string, reminderNumber int, t time.Time) error
+	GetEventsNeedingFederationReminder(startAfter, startBefore time.Time, reminderNumber int) ([]models.ScheduledEvent, error)
+	SetEventFederationReminderSentAt(id string, reminderNumber int, t time.Time) error
 	GetEventsNeedingWebhookWarning(startAfter, startBefore time.Time) ([]models.ScheduledEvent, error)
 	GetEventsNeedingWebhookStart(now time.Time) ([]models.ScheduledEvent, error)
 	GetEventsNeedingWebhookEnd(now time.Time) ([]models.ScheduledEvent, error)

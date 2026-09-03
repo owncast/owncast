@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -47,7 +48,14 @@ func (c *Controllers) ObjectHandler(w http.ResponseWriter, r *http.Request) {
 	actorIRI := c.builder.MakeLocalIRIForAccount(accountName)
 	publicKey := c.signer.GetPublicKey(actorIRI)
 
-	if err := requests.WriteResponse([]byte(object), w, publicKey, c.signer); err != nil {
+	status := http.StatusOK
+	var envelope struct {
+		Type string `json:"type"`
+	}
+	if json.Unmarshal([]byte(object), &envelope) == nil && envelope.Type == "Tombstone" {
+		status = http.StatusGone
+	}
+	if err := requests.WriteResponseWithStatus([]byte(object), w, publicKey, c.signer, status); err != nil {
 		log.Errorln(err)
 	}
 }

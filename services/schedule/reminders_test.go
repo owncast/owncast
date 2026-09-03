@@ -1,6 +1,7 @@
 package schedule
 
 import (
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -11,8 +12,10 @@ import (
 
 type reminderScheduleRepo struct {
 	scheduleeventsrepository.ScheduleEventsRepository
-	events map[int][]models.ScheduledEvent
-	sentAt map[int]map[string]time.Time
+	events    map[int][]models.ScheduledEvent
+	sentAt    map[int]map[string]time.Time
+	fedEvents map[int][]models.ScheduledEvent
+	fedSentAt map[int]map[string]time.Time
 }
 
 func (r *reminderScheduleRepo) GetEventsNeedingReminder(_ time.Time, _ time.Time, reminderNumber int) ([]models.ScheduledEvent, error) {
@@ -27,6 +30,21 @@ func (r *reminderScheduleRepo) GetEventsNeedingReminder(_ time.Time, _ time.Time
 
 func (r *reminderScheduleRepo) SetEventReminderSentAt(id string, reminderNumber int, sentAt time.Time) error {
 	r.sentAt[reminderNumber][id] = sentAt
+	return nil
+}
+
+func (r *reminderScheduleRepo) GetEventsNeedingFederationReminder(_ time.Time, _ time.Time, reminderNumber int) ([]models.ScheduledEvent, error) {
+	var pending []models.ScheduledEvent
+	for _, event := range r.fedEvents[reminderNumber] {
+		if _, sent := r.fedSentAt[reminderNumber][event.ID]; !sent {
+			pending = append(pending, event)
+		}
+	}
+	return pending, nil
+}
+
+func (r *reminderScheduleRepo) SetEventFederationReminderSentAt(id string, reminderNumber int, sentAt time.Time) error {
+	r.fedSentAt[reminderNumber][id] = sentAt
 	return nil
 }
 
@@ -210,5 +228,54 @@ func TestScheduledEventRemindersDoNotDuplicateEqualOffsets(t *testing.T) {
 	service.sendScheduledEventReminders(now)
 	if count != 1 {
 		t.Errorf("sent %d reminders for equal offsets, want 1", count)
+	}
+}
+
+func TestFederatedScheduledEventRemindersRetryAndStampIndependently(t *testing.T) {
+	now := time.Date(2030, time.September, 8, 18, 0, 0, 0, time.UTC)
+	federatedAt := now.Add(-time.Hour)
+	repo := &reminderScheduleRepo{
+		fedEvents: map[int][]models.ScheduledEvent{
+			scheduleeventsrepository.ReminderFirst: {{
+				ID:              "event",
+				Name:            "Federated Event",
+				ReminderMessage: "Starting soon",
+				StartTime:       now.Add(2 * time.Hour),
+				Timezone:        "UTC",
+				FederatedAt:     &federatedAt,
+			}},
+		},
+		fedSentAt: map[int]map[string]time.Time{scheduleeventsrepository.ReminderFirst: {}},
+	}
+	attempts := 0
+	service := New(Deps{
+		ScheduleEventsRepository:        repo,
+		GetScheduleEnabled:              func() bool { return true },
+		GetFederationEnabled:            func() bool { return true },
+		GetScheduleFirstReminderMinutes: func() int { return 120 },
+		GetServerURL:                    func() string { return "https://owncast.example/" },
+		FederateScheduledEventReminder: func(_ models.ScheduledEvent, reminderNumber int, message string) error {
+			attempts++
+			if attempts == 1 {
+				return errors.New("queue unavailable")
+			}
+			if reminderNumber != scheduleeventsrepository.ReminderFirst || !strings.Contains(message, "https://owncast.example/schedule/event") {
+				t.Fatalf("unexpected reminder %d %q", reminderNumber, message)
+			}
+			return nil
+		},
+	})
+
+	service.sendFederatedScheduledEventReminders(now)
+	if len(repo.fedSentAt[scheduleeventsrepository.ReminderFirst]) != 0 {
+		t.Fatal("failed reminder was stamped")
+	}
+	service.sendFederatedScheduledEventReminders(now.Add(time.Minute))
+	service.sendFederatedScheduledEventReminders(now.Add(2 * time.Minute))
+	if attempts != 2 {
+		t.Fatalf("federated reminder attempts = %d, want retry then stop", attempts)
+	}
+	if _, ok := repo.fedSentAt[scheduleeventsrepository.ReminderFirst]["event"]; !ok {
+		t.Fatal("successful federated reminder was not stamped")
 	}
 }

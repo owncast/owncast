@@ -11,10 +11,26 @@ import (
 type cancellingScheduleRepo struct {
 	scheduleeventsrepository.ScheduleEventsRepository
 	cancelled []string
+	events    map[string]models.ScheduledEvent
+	cleared   []string
 }
 
 func (r *cancellingScheduleRepo) CancelEvent(id string) error {
 	r.cancelled = append(r.cancelled, id)
+	if event, ok := r.events[id]; ok {
+		event.Status = models.ScheduledEventStatusCancelled
+		r.events[id] = event
+	}
+	return nil
+}
+
+func (r *cancellingScheduleRepo) GetEvent(id string) (*models.ScheduledEvent, error) {
+	event := r.events[id]
+	return &event, nil
+}
+
+func (r *cancellingScheduleRepo) ClearEventFederationUpdatePending(id string, _ int64) error {
+	r.cleared = append(r.cleared, id)
 	return nil
 }
 
@@ -102,5 +118,39 @@ func TestUpdateChatWindowNotifiesOnceForMissedPreopenedEvent(t *testing.T) {
 	}
 	if len(repo.cancelled) != 1 || repo.cancelled[0] != event.ID {
 		t.Fatalf("cancelled events = %v, want [%s]", repo.cancelled, event.ID)
+	}
+}
+
+func TestMissedFederatedEventPublishesCancellation(t *testing.T) {
+	start := time.Date(2030, time.September, 8, 18, 0, 0, 0, time.UTC)
+	federatedAt := start.Add(-time.Hour)
+	event := &models.ScheduledEvent{
+		ID:              "federated-event",
+		StartTime:       start,
+		DurationMinutes: 5,
+		FederatedAt:     &federatedAt,
+	}
+	repo := &cancellingScheduleRepo{events: map[string]models.ScheduledEvent{event.ID: *event}}
+	var updated models.ScheduledEvent
+	service := New(Deps{
+		ScheduleEventsRepository: repo,
+		GetStatus:                func() models.Status { return models.Status{} },
+		GetChatOpenMinutes:       func() int { return 10 },
+		FederateScheduledEventUpdate: func(event models.ScheduledEvent) error {
+			updated = event
+			return nil
+		},
+	})
+	service.upcomingEvent = event
+	service.upcomingFetchedAt = time.Now()
+
+	service.updateChatWindow(start.Add(-time.Minute))
+	service.updateChatWindow(start.Add(MissedEventGracePeriod))
+
+	if updated.ID != event.ID || updated.Status != models.ScheduledEventStatusCancelled {
+		t.Fatalf("federated cancellation = %#v", updated)
+	}
+	if len(repo.cleared) != 1 || repo.cleared[0] != event.ID {
+		t.Fatalf("cleared updates = %#v", repo.cleared)
 	}
 }

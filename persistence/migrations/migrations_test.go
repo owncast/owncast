@@ -62,7 +62,7 @@ func TestRun_FreshDatabase(t *testing.T) {
 		"ap_followers", "ap_outbox", "ap_accepted_activities",
 		"notifications", "messages", "auth", "ip_bans",
 		"federated_servers",
-		"ap_delivery_queue",
+		"ap_delivery_queue", "stream_event_federation_deletes",
 		"stream_event_series", "stream_events",
 		"goose_db_version",
 	}
@@ -76,10 +76,18 @@ func TestRun_FreshDatabase(t *testing.T) {
 		t.Error("users table is missing disabled_reason column")
 	}
 
-	for _, column := range []string{"webhook_warning_sent_at", "webhook_started_sent_at", "webhook_ended_sent_at", "reminder_message", "reminder_1_sent_at", "reminder_2_sent_at"} {
+	for _, column := range []string{"webhook_warning_sent_at", "webhook_started_sent_at", "webhook_ended_sent_at", "reminder_message", "reminder_1_sent_at", "reminder_2_sent_at", "federation_reminder_1_sent_at", "federation_reminder_2_sent_at", "federation_update_pending", "federation_version"} {
 		if !columnExists(t, db, "stream_events", column) {
 			t.Errorf("stream_events table is missing %s", column)
 		}
+	}
+	for _, column := range []string{"ordering_key", "coalesce_version", "blocks_following"} {
+		if !columnExists(t, db, "ap_delivery_queue", column) {
+			t.Errorf("ap_delivery_queue table is missing %s", column)
+		}
+	}
+	if !columnExists(t, db, "ap_outbox", "coalesce_version") {
+		t.Error("ap_outbox table is missing coalesce_version")
 	}
 	if !columnExists(t, db, "stream_event_series", "reminder_message") {
 		t.Error("stream_event_series table is missing reminder_message")
@@ -90,8 +98,8 @@ func TestRun_FreshDatabase(t *testing.T) {
 		t.Error("fresh install should not have legacy config table")
 	}
 
-	if v := gooseVersion(t, db); v != 11 {
-		t.Errorf("goose version = %d, want 11", v)
+	if v := gooseVersion(t, db); v != 12 {
+		t.Errorf("goose version = %d, want 12", v)
 	}
 
 	// Calling Run a second time should be a no-op (idempotent).
@@ -115,8 +123,8 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	}
 
 	// Goose should record the latest migration.
-	if v := gooseVersion(t, db); v != 11 {
-		t.Errorf("goose version = %d, want 11", v)
+	if v := gooseVersion(t, db); v != 12 {
+		t.Errorf("goose version = %d, want 12", v)
 	}
 
 	// Config version should still be 9, the legacy bridge was not invoked.
@@ -127,11 +135,11 @@ func TestRun_LegacyDatabaseAtV9(t *testing.T) {
 	}
 
 	// goose_db_version, federated_servers, the durable ActivityPub delivery
-	// queue, and the scheduled-streams tables are added to a legacy schema.
+	// queue, scheduled-streams tables, and pending event deletions are added.
 	var newTableCount int
 	mustScan(t, db.QueryRow(`SELECT count(*) FROM sqlite_master WHERE type='table'`), &newTableCount)
-	if newTableCount != tableCount+5 {
-		t.Errorf("table count changed from %d to %d (expected +5)", tableCount, newTableCount)
+	if newTableCount != tableCount+6 {
+		t.Errorf("table count changed from %d to %d (expected +6)", tableCount, newTableCount)
 	}
 
 	if !columnExists(t, db, "users", "disabled_reason") {
@@ -166,8 +174,8 @@ func TestRun_LegacyDatabasePreV9(t *testing.T) {
 	}
 
 	// Goose should have recorded the latest migration.
-	if v := gooseVersion(t, db); v != 11 {
-		t.Errorf("goose version = %d, want 11", v)
+	if v := gooseVersion(t, db); v != 12 {
+		t.Errorf("goose version = %d, want 12", v)
 	}
 }
 

@@ -233,6 +233,12 @@ func (a *Admin) updateSeries(w http.ResponseWriter, series models.ScheduledEvent
 		duration = *request.DurationMinutes
 	}
 
+	events, err := a.scheduleEventsRepository.GetEventsForSeries(series.ID)
+	if err != nil {
+		webutils.InternalErrorHandler(w, err)
+		return err
+	}
+
 	if err := a.scheduleEventsRepository.UpdateSeries(series.ID, name, description, reminderMessage, recurrence, duration); err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return err
@@ -245,11 +251,67 @@ func (a *Admin) updateSeries(w http.ResponseWriter, series models.ScheduledEvent
 		webutils.InternalErrorHandler(w, err)
 		return err
 	}
-	if _, err := schedule.RegenerateSeries(a.scheduleEventsRepository, *updated, time.Now(), schedule.MaterializationHorizon); err != nil {
+	now := time.Now()
+	if _, err := schedule.RegenerateSeries(a.scheduleEventsRepository, *updated, now, schedule.MaterializationHorizon); err != nil {
+		webutils.InternalErrorHandler(w, err)
+		return err
+	}
+	if err := a.syncFederatedSeriesEvents(events, *updated, now); err != nil {
 		webutils.InternalErrorHandler(w, err)
 		return err
 	}
 	return nil
+}
+
+func (a *Admin) syncFederatedSeriesEvents(events []models.ScheduledEvent, series models.ScheduledEventSeries, now time.Time) error {
+	occurrences, err := schedule.ExpandBetween(series.Recurrence, now, now.Add(schedule.MaterializationHorizon))
+	if err != nil {
+		return err
+	}
+	recurrence, err := schedule.ParseRecurrence(series.Recurrence)
+	if err != nil {
+		return err
+	}
+	timezone := schedule.RecurrenceTimezone(recurrence)
+	activeSlots := make(map[int64]struct{}, len(occurrences))
+	for _, occurrence := range occurrences {
+		activeSlots[occurrence.UTC().UnixNano()] = struct{}{}
+	}
+
+	for _, event := range events {
+		if err := a.syncFederatedSeriesEvent(event, series, timezone, activeSlots, now); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (a *Admin) syncFederatedSeriesEvent(event models.ScheduledEvent, series models.ScheduledEventSeries, timezone string, activeSlots map[int64]struct{}, now time.Time) error {
+	if event.FederatedAt == nil || event.Status == models.ScheduledEventStatusCancelled || !event.StartTime.After(now) {
+		return nil
+	}
+	retained := false
+	if event.OriginalStart != nil {
+		_, retained = activeSlots[event.OriginalStart.UTC().UnixNano()]
+	}
+	if !retained {
+		if err := a.scheduleEventsRepository.DeleteEvent(event.ID); err != nil {
+			return err
+		}
+		a.schedule.PublishPendingEventDeletes()
+		return nil
+	}
+	if err := a.scheduleEventsRepository.UpdateEventFromSeries(event.ID, series.Name, series.Description, series.ReminderMessage, series.DurationMinutes, timezone); err != nil {
+		return err
+	}
+	updated, err := a.scheduleEventsRepository.GetEvent(event.ID)
+	if err != nil {
+		return err
+	}
+	if updated == nil {
+		return errors.New("unable to load updated scheduled event")
+	}
+	return a.schedule.PublishEventUpdate(*updated)
 }
 
 func (a *Admin) updateOneOffEvent(w http.ResponseWriter, event models.ScheduledEvent, name, recurrence string, request generated.ScheduledEventInput) error {
@@ -289,6 +351,20 @@ func (a *Admin) updateOneOffEvent(w http.ResponseWriter, event models.ScheduledE
 			return err
 		}
 	}
+	if event.FederatedAt != nil {
+		updated, err := a.scheduleEventsRepository.GetEvent(event.ID)
+		if err != nil || updated == nil {
+			if err == nil {
+				err = errors.New("unable to load updated scheduled event")
+			}
+			webutils.InternalErrorHandler(w, err)
+			return err
+		}
+		if err := a.schedule.PublishEventUpdate(*updated); err != nil {
+			webutils.InternalErrorHandler(w, err)
+			return err
+		}
+	}
 	return nil
 }
 
@@ -313,44 +389,75 @@ func (a *Admin) DeleteScheduledEvent(w http.ResponseWriter, r *http.Request) {
 		webutils.InternalErrorHandler(w, err)
 		return
 	}
-
 	if series != nil {
-		if cancel {
-			err = a.scheduleEventsRepository.SetSeriesActive(request.Id, false)
-		} else {
-			if err := a.scheduleEventsRepository.DeleteUnfederatedFutureEventsForSeries(request.Id, time.Now()); err != nil {
-				webutils.InternalErrorHandler(w, err)
-				return
-			}
-			err = a.scheduleEventsRepository.DeleteSeries(request.Id)
-		}
-		if err != nil {
-			webutils.InternalErrorHandler(w, err)
-			return
-		}
+		err = a.deleteOrCancelSeries(request.Id, cancel)
 	} else {
-		event, err := a.scheduleEventsRepository.GetEvent(request.Id)
-		if err != nil {
-			webutils.InternalErrorHandler(w, err)
+		event, loadErr := a.scheduleEventsRepository.GetEvent(request.Id)
+		if loadErr != nil {
+			webutils.InternalErrorHandler(w, loadErr)
 			return
 		}
 		if event == nil {
 			webutils.BadRequestHandler(w, errors.New("no scheduled event or series with that id"))
 			return
 		}
-		if cancel {
-			err = a.scheduleEventsRepository.CancelEvent(request.Id)
-		} else {
-			err = a.scheduleEventsRepository.DeleteEvent(request.Id)
-		}
-		if err != nil {
-			webutils.InternalErrorHandler(w, err)
-			return
-		}
+		err = a.deleteOrCancelEvent(*event, cancel)
+	}
+	if err != nil {
+		webutils.InternalErrorHandler(w, err)
+		return
 	}
 
 	a.schedule.Refresh()
 	a.writeAdminSchedule(w)
+}
+
+func (a *Admin) deleteOrCancelSeries(id string, cancel bool) error {
+	if cancel {
+		return a.scheduleEventsRepository.SetSeriesActive(id, false)
+	}
+	return a.deleteSeries(id, time.Now())
+}
+
+func (a *Admin) deleteOrCancelEvent(event models.ScheduledEvent, cancel bool) error {
+	if !cancel {
+		if err := a.scheduleEventsRepository.DeleteEvent(event.ID); err != nil {
+			return err
+		}
+		a.schedule.PublishPendingEventDeletes()
+		return nil
+	}
+	if err := a.scheduleEventsRepository.CancelEvent(event.ID); err != nil {
+		return err
+	}
+	if event.FederatedAt == nil {
+		return nil
+	}
+	updated, err := a.scheduleEventsRepository.GetEvent(event.ID)
+	if err != nil {
+		return err
+	}
+	if updated == nil {
+		return errors.New("unable to load cancelled scheduled event")
+	}
+	return a.schedule.PublishEventUpdate(*updated)
+}
+
+func (a *Admin) deleteSeries(id string, now time.Time) error {
+	events, err := a.scheduleEventsRepository.GetEventsForSeries(id)
+	if err != nil {
+		return err
+	}
+	for _, event := range events {
+		if !event.StartTime.After(now) {
+			continue
+		}
+		if err := a.scheduleEventsRepository.DeleteEvent(event.ID); err != nil {
+			return err
+		}
+	}
+	a.schedule.PublishPendingEventDeletes()
+	return a.scheduleEventsRepository.DeleteSeries(id)
 }
 
 // PreviewScheduleRecurrence expands a recurrence rule server-side so the

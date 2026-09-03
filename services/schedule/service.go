@@ -2,6 +2,7 @@ package schedule
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -47,6 +48,11 @@ type chatWindowState struct {
 	expiresAt   time.Time
 }
 
+type reminderSlot struct {
+	number  int
+	minutes int
+}
+
 // Service owns the scheduled streams background loop: materializing
 // occurrence rows from recurring series and answering "what's next" for the
 // status endpoint. Construct with New in main.go and inject into consumers.
@@ -58,6 +64,9 @@ type Service struct {
 	getScheduleEnabled               func() bool
 	getFederationEnabled             func() bool
 	federateScheduledEvent           func(models.ScheduledEvent) error
+	federateScheduledEventUpdate     func(models.ScheduledEvent) error
+	federateScheduledEventDelete     func(models.ScheduledEvent) error
+	federateScheduledEventReminder   func(models.ScheduledEvent, int, string) error
 	getScheduleReminderMessage       func() string
 	getScheduleFirstReminderMinutes  func() int
 	getScheduleSecondReminderMinutes func() int
@@ -85,6 +94,9 @@ type Deps struct {
 	GetScheduleEnabled               func() bool
 	GetFederationEnabled             func() bool
 	FederateScheduledEvent           func(models.ScheduledEvent) error
+	FederateScheduledEventUpdate     func(models.ScheduledEvent) error
+	FederateScheduledEventDelete     func(models.ScheduledEvent) error
+	FederateScheduledEventReminder   func(models.ScheduledEvent, int, string) error
 	GetScheduleReminderMessage       func() string
 	GetScheduleFirstReminderMinutes  func() int
 	GetScheduleSecondReminderMinutes func() int
@@ -104,6 +116,9 @@ func New(deps Deps) *Service {
 		getScheduleEnabled:               deps.GetScheduleEnabled,
 		getFederationEnabled:             deps.GetFederationEnabled,
 		federateScheduledEvent:           deps.FederateScheduledEvent,
+		federateScheduledEventUpdate:     deps.FederateScheduledEventUpdate,
+		federateScheduledEventDelete:     deps.FederateScheduledEventDelete,
+		federateScheduledEventReminder:   deps.FederateScheduledEventReminder,
 		getScheduleReminderMessage:       deps.GetScheduleReminderMessage,
 		getScheduleFirstReminderMinutes:  deps.GetScheduleFirstReminderMinutes,
 		getScheduleSecondReminderMinutes: deps.GetScheduleSecondReminderMinutes,
@@ -174,9 +189,12 @@ func (s *Service) tick() {
 	}
 
 	s.publishPendingEvents(now)
+	s.publishPendingEventUpdates()
+	s.publishPendingEventDeletes()
 	s.Refresh()
 	s.updateChatWindow(now)
 	s.sendScheduledEventReminders(now)
+	s.sendFederatedScheduledEventReminders(now)
 
 	s.sendScheduledEventWebhooks(now)
 }
@@ -187,10 +205,30 @@ func (s *Service) PublishPendingEvents() {
 	s.publishPendingEvents(time.Now())
 }
 
+// PublishEventUpdate queues a complete Event update when federation is enabled.
+func (s *Service) PublishEventUpdate(event models.ScheduledEvent) error {
+	if !s.federationEnabled() || s.federateScheduledEventUpdate == nil {
+		return nil
+	}
+	if err := s.federateScheduledEventUpdate(event); err != nil {
+		return err
+	}
+	if s.repo == nil {
+		return nil
+	}
+	return s.repo.ClearEventFederationUpdatePending(event.ID, event.FederationVersion)
+}
+
+func (s *Service) federationEnabled() bool {
+	return s.getFederationEnabled == nil || s.getFederationEnabled()
+}
+
+func (s *Service) federationActive() bool {
+	return (s.getScheduleEnabled == nil || s.getScheduleEnabled()) && s.federationEnabled()
+}
+
 func (s *Service) publishPendingEvents(now time.Time) {
-	if s.repo == nil || s.federateScheduledEvent == nil ||
-		(s.getScheduleEnabled != nil && !s.getScheduleEnabled()) ||
-		(s.getFederationEnabled != nil && !s.getFederationEnabled()) {
+	if s.repo == nil || s.federateScheduledEvent == nil || !s.federationActive() {
 		return
 	}
 
@@ -204,8 +242,49 @@ func (s *Service) publishPendingEvents(now time.Time) {
 			log.Errorf("unable to federate scheduled stream event %s: %v", event.ID, err)
 			continue
 		}
-		if err := s.repo.SetEventFederatedAt(event.ID, now); err != nil {
+		if err := s.repo.SetEventFederatedAt(event.ID, now, event.FederationVersion); err != nil {
 			log.Errorf("unable to mark scheduled stream event %s as federated: %v", event.ID, err)
+		}
+	}
+}
+
+func (s *Service) publishPendingEventUpdates() {
+	if s.repo == nil || s.federateScheduledEventUpdate == nil || !s.federationEnabled() {
+		return
+	}
+	events, err := s.repo.GetEventsNeedingFederationUpdate()
+	if err != nil {
+		log.Errorf("unable to fetch scheduled stream event updates for federation: %v", err)
+		return
+	}
+	for _, event := range events {
+		if err := s.PublishEventUpdate(event); err != nil {
+			log.Errorf("unable to federate scheduled stream event update %s: %v", event.ID, err)
+		}
+	}
+}
+
+// PublishPendingEventDeletes immediately queues durable occurrence deletions.
+func (s *Service) PublishPendingEventDeletes() {
+	s.publishPendingEventDeletes()
+}
+
+func (s *Service) publishPendingEventDeletes() {
+	if s.repo == nil || s.federateScheduledEventDelete == nil || !s.federationEnabled() {
+		return
+	}
+	ids, err := s.repo.GetPendingFederationDeletes()
+	if err != nil {
+		log.Errorf("unable to fetch scheduled stream event deletions for federation: %v", err)
+		return
+	}
+	for _, id := range ids {
+		if err := s.federateScheduledEventDelete(models.ScheduledEvent{ID: id}); err != nil {
+			log.Errorf("unable to federate scheduled stream event deletion %s: %v", id, err)
+			continue
+		}
+		if err := s.repo.ClearPendingFederationDelete(id); err != nil {
+			log.Errorf("unable to clear scheduled stream event deletion %s: %v", id, err)
 		}
 	}
 }
@@ -223,30 +302,7 @@ func (s *Service) sendScheduledEventReminders(now time.Time) {
 	if s.getServerURL != nil {
 		serverURL = s.getServerURL()
 	}
-	firstReminderMinutes := 0
-	if s.getScheduleFirstReminderMinutes != nil {
-		firstReminderMinutes = s.getScheduleFirstReminderMinutes()
-	}
-	secondReminderMinutes := 0
-	if s.getScheduleSecondReminderMinutes != nil {
-		secondReminderMinutes = s.getScheduleSecondReminderMinutes()
-	}
-	slots := []struct {
-		number  int
-		minutes int
-	}{
-		{number: scheduleeventsrepository.ReminderFirst, minutes: firstReminderMinutes},
-		{number: scheduleeventsrepository.ReminderSecond, minutes: secondReminderMinutes},
-	}
-	seenOffsets := make(map[int]struct{}, len(slots))
-	for _, slot := range slots {
-		if slot.minutes <= 0 {
-			continue
-		}
-		if _, seen := seenOffsets[slot.minutes]; seen {
-			continue
-		}
-		seenOffsets[slot.minutes] = struct{}{}
+	for _, slot := range s.reminderSlots() {
 		events, err := s.repo.GetEventsNeedingReminder(now, now.Add(time.Duration(slot.minutes)*time.Minute), slot.number)
 		if err != nil {
 			log.Errorf("unable to fetch scheduled stream reminders: %v", err)
@@ -276,6 +332,76 @@ func (s *Service) sendScheduledEventReminder(event models.ScheduledEvent, remind
 	}
 }
 
+func (s *Service) sendFederatedScheduledEventReminders(now time.Time) {
+	if s.repo == nil || s.federateScheduledEventReminder == nil || !s.federationActive() {
+		return
+	}
+
+	defaultMessage := ""
+	if s.getScheduleReminderMessage != nil {
+		defaultMessage = s.getScheduleReminderMessage()
+	}
+	serverURL := ""
+	if s.getServerURL != nil {
+		serverURL = s.getServerURL()
+	}
+	for _, slot := range s.reminderSlots() {
+		events, err := s.repo.GetEventsNeedingFederationReminder(now, now.Add(time.Duration(slot.minutes)*time.Minute), slot.number)
+		if err != nil {
+			log.Errorf("unable to fetch federated scheduled stream reminders: %v", err)
+			continue
+		}
+		for _, event := range events {
+			if event.StartTime.Add(-time.Duration(slot.minutes) * time.Minute).After(now) {
+				continue
+			}
+			message := event.ReminderMessage
+			if message == "" {
+				message = defaultMessage
+			}
+			if message == "" {
+				continue
+			}
+			message = formatScheduledEventReminder(message, event, serverURL)
+			if err := s.federateScheduledEventReminder(event, slot.number, message); err != nil {
+				log.Errorf("unable to federate scheduled stream reminder %s: %v", event.ID, err)
+				continue
+			}
+			if err := s.repo.SetEventFederationReminderSentAt(event.ID, slot.number, now); err != nil {
+				log.Errorf("unable to mark federated scheduled stream reminder %s as sent: %v", event.ID, err)
+			}
+		}
+	}
+}
+
+func (s *Service) reminderSlots() []reminderSlot {
+	firstReminderMinutes := 0
+	if s.getScheduleFirstReminderMinutes != nil {
+		firstReminderMinutes = s.getScheduleFirstReminderMinutes()
+	}
+	secondReminderMinutes := 0
+	if s.getScheduleSecondReminderMinutes != nil {
+		secondReminderMinutes = s.getScheduleSecondReminderMinutes()
+	}
+	candidates := []reminderSlot{
+		{number: scheduleeventsrepository.ReminderFirst, minutes: firstReminderMinutes},
+		{number: scheduleeventsrepository.ReminderSecond, minutes: secondReminderMinutes},
+	}
+	slots := make([]reminderSlot, 0, len(candidates))
+	seen := make(map[int]struct{}, len(candidates))
+	for _, slot := range candidates {
+		if slot.minutes <= 0 {
+			continue
+		}
+		if _, exists := seen[slot.minutes]; exists {
+			continue
+		}
+		seen[slot.minutes] = struct{}{}
+		slots = append(slots, slot)
+	}
+	return slots
+}
+
 func formatScheduledEventReminder(message string, event models.ScheduledEvent, serverURL string) string {
 	location := time.UTC
 	if event.Timezone != "" {
@@ -287,7 +413,7 @@ func formatScheduledEventReminder(message string, event models.ScheduledEvent, s
 	if serverURL == "" {
 		return fmt.Sprintf("%s\n\n%s\n%s", message, event.Name, start)
 	}
-	return fmt.Sprintf("%s\n\n%s\n%s\n%s", message, event.Name, start, serverURL)
+	return fmt.Sprintf("%s\n\n%s\n%s\n%s/schedule/%s", message, event.Name, start, strings.TrimSuffix(serverURL, "/"), event.ID)
 }
 
 func (s *Service) sendScheduledEventWebhooks(now time.Time) {
@@ -382,7 +508,7 @@ func (s *Service) processChatWindows(now time.Time, status models.Status) {
 		}
 
 		if !state.cancelled && IsEventMissed(event, now) && s.repo != nil {
-			if err := s.repo.CancelEvent(id); err != nil {
+			if err := s.cancelMissedEvent(id, event); err != nil {
 				log.Errorf("unable to cancel missed scheduled stream event %s: %v", id, err)
 			} else {
 				state.cancelled = true
@@ -391,6 +517,23 @@ func (s *Service) processChatWindows(now time.Time, status models.Status) {
 		}
 		s.chatWindowStates[id] = state
 	}
+}
+
+func (s *Service) cancelMissedEvent(id string, event *models.ScheduledEvent) error {
+	if err := s.repo.CancelEvent(id); err != nil {
+		return err
+	}
+	if event.FederatedAt == nil {
+		return nil
+	}
+	updated, err := s.repo.GetEvent(id)
+	if err != nil {
+		return err
+	}
+	if updated == nil {
+		return fmt.Errorf("cancelled scheduled stream event %s disappeared", id)
+	}
+	return s.PublishEventUpdate(*updated)
 }
 
 func (s *Service) cleanupChatWindowStates(now time.Time) {

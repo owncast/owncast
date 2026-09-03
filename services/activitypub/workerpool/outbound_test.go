@@ -1,7 +1,9 @@
 package workerpool
 
 import (
+	"context"
 	"database/sql"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -15,6 +17,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	logtest "github.com/sirupsen/logrus/hooks/test"
 
+	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/persistence/configrepository"
 	apcrypto "github.com/owncast/owncast/services/activitypub/crypto"
 	"github.com/owncast/owncast/services/datastore"
@@ -151,6 +154,123 @@ func TestCoalescedDeliveryKeepsNewestPayload(t *testing.T) {
 	}
 	if payload != "new" || count != 1 {
 		t.Fatalf("coalesced delivery = (%q, %d rows), want newest payload in one row", payload, count)
+	}
+}
+
+func TestCoalescedDeliveryRejectsOlderVersion(t *testing.T) {
+	service, database := newTestService(t)
+	destination, _ := url.Parse("https://receiver.example/inbox")
+	actor, _ := url.Parse("https://sender.example/federation/user/streamer")
+
+	for _, delivery := range []Delivery{
+		{Inbox: destination, Payload: []byte("new"), ActorIRI: actor, ActivityType: "Update", CoalesceKey: "event", CoalesceVersion: 2},
+		{Inbox: destination, Payload: []byte("old"), ActorIRI: actor, ActivityType: "Update", CoalesceKey: "event", CoalesceVersion: 1},
+	} {
+		if err := service.Enqueue(delivery); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	var payload string
+	if err := database.db.QueryRow(`SELECT CAST(payload AS TEXT) FROM ap_delivery_queue`).Scan(&payload); err != nil {
+		t.Fatal(err)
+	}
+	if payload != "new" {
+		t.Fatalf("coalesced payload = %q, want newer version", payload)
+	}
+}
+
+func TestOrderedDeliveriesClaimInSequence(t *testing.T) {
+	service, database := newTestService(t)
+	destination, _ := url.Parse("https://receiver.example/inbox")
+	actor, _ := url.Parse("https://sender.example/federation/user/streamer")
+	for _, delivery := range []Delivery{
+		{Inbox: destination, Payload: []byte("create"), ActorIRI: actor, ActivityType: "Create", CoalesceKey: "create", OrderingKey: "event", BlocksFollowing: true},
+		{Inbox: destination, Payload: []byte("reminder"), ActorIRI: actor, ActivityType: "Create", CoalesceKey: "reminder", OrderingKey: "event"},
+		{Inbox: destination, Payload: []byte("update"), ActorIRI: actor, ActivityType: "Update", CoalesceKey: "state", OrderingKey: "event"},
+	} {
+		if err := service.Enqueue(delivery); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	queries := database.datastore.GetQueries()
+	now := time.Now()
+	first, err := queries.ClaimActivityPubDelivery(context.Background(), db.ClaimActivityPubDeliveryParams{
+		ClaimedUntil: sql.NullTime{Time: now.Add(time.Minute), Valid: true},
+		Now:          now,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(first.Payload) != "create" {
+		t.Fatalf("first claimed payload = %q", first.Payload)
+	}
+	if _, err := queries.ClaimActivityPubDelivery(context.Background(), db.ClaimActivityPubDeliveryParams{
+		ClaimedUntil: sql.NullTime{Time: now.Add(time.Minute), Valid: true},
+		Now:          now,
+	}); !errors.Is(err, sql.ErrNoRows) {
+		t.Fatalf("claim with pending predecessor error = %v, want sql.ErrNoRows", err)
+	}
+	if _, err := queries.CompleteActivityPubDelivery(context.Background(), db.CompleteActivityPubDeliveryParams{
+		ID: first.ID, Revision: first.Revision,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	second, err := queries.ClaimActivityPubDelivery(context.Background(), db.ClaimActivityPubDeliveryParams{
+		ClaimedUntil: sql.NullTime{Time: now.Add(time.Minute), Valid: true},
+		Now:          now,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(second.Payload) != "reminder" {
+		t.Fatalf("second claimed payload = %q", second.Payload)
+	}
+	third, err := queries.ClaimActivityPubDelivery(context.Background(), db.ClaimActivityPubDeliveryParams{
+		ClaimedUntil: sql.NullTime{Time: now.Add(time.Minute), Valid: true},
+		Now:          now,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(third.Payload) != "update" {
+		t.Fatalf("third claimed payload = %q", third.Payload)
+	}
+}
+
+func TestRemovedClaimedDeliveryIsNotSent(t *testing.T) {
+	var attempts atomic.Int64
+	server := httptest.NewTLSServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
+		attempts.Add(1)
+	}))
+	defer server.Close()
+
+	service, database := newTestService(t)
+	destination, _ := url.Parse(server.URL)
+	actor, _ := url.Parse("https://sender.example/federation/user/streamer")
+	if err := service.Enqueue(Delivery{
+		Inbox: destination, Payload: []byte(`{"type":"Create"}`), ActorIRI: actor,
+		ActivityType: "Create", CoalesceKey: "reminder", OrderingKey: "event",
+	}); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Now()
+	job, err := database.datastore.GetQueries().ClaimActivityPubDelivery(context.Background(), db.ClaimActivityPubDeliveryParams{
+		ClaimedUntil: sql.NullTime{Time: now.Add(time.Minute), Valid: true},
+		Now:          now,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := database.db.Exec(`DELETE FROM ap_delivery_queue WHERE id = ?`, job.ID); err != nil {
+		t.Fatal(err)
+	}
+
+	service.httpClient = server.Client()
+	service.deliver(job)
+	if attempts.Load() != 0 {
+		t.Fatal("removed claimed delivery was sent")
 	}
 }
 

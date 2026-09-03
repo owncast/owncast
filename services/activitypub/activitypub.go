@@ -175,6 +175,21 @@ func (s *Service) SendScheduledEvent(event models.ScheduledEvent) error {
 	return s.outbox.SendScheduledEvent(event)
 }
 
+// SendScheduledEventUpdate publishes the latest complete Event representation.
+func (s *Service) SendScheduledEventUpdate(event models.ScheduledEvent) error {
+	return s.outbox.SendScheduledEventUpdate(event)
+}
+
+// SendScheduledEventDelete publishes a Delete and replaces the Event with a Tombstone.
+func (s *Service) SendScheduledEventDelete(event models.ScheduledEvent) error {
+	return s.outbox.SendScheduledEventDelete(event)
+}
+
+// SendScheduledEventReminder publishes one reminder Note for an occurrence.
+func (s *Service) SendScheduledEventReminder(event models.ScheduledEvent, reminderNumber int, message string) error {
+	return s.outbox.SendScheduledEventReminder(event, reminderNumber, message)
+}
+
 // GetFollowerCount returns the local tracked follower count.
 func (s *Service) GetFollowerCount() (int64, error) {
 	return s.followers.GetCount()

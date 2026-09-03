@@ -14,6 +14,9 @@ SELECT count(*) FROM ap_followers WHERE approved_at is not null AND directory IS
 -- posts and must not inflate the public post count.
 SELECT count(*) FROM ap_outbox WHERE type = 'Note';
 
+-- name: GetOutboxItemCount :one
+SELECT count(*) FROM ap_outbox WHERE type IN ('Note', 'Create', 'Update', 'Delete');
+
 -- name: GetFederationFollowersWithOffset :many
 -- Excludes featured-streams (Owncast-server) follows so they don't show up in
 -- the public or admin followers list; they are tracked as a directory
@@ -47,14 +50,19 @@ UPDATE ap_followers SET approved_at = null, disabled_at = ? WHERE iri = ?;
 SELECT iri, inbox, shared_inbox, name, username, image, request, request_object, created_at, approved_at, disabled_at, directory FROM ap_followers WHERE iri = ?;
 
 -- name: GetOutboxWithOffset :many
--- Only posts (Notes) are listed in the public outbox collection. Other stored
--- objects, such as QuoteAuthorization stamps, stay fetchable by IRI but are
--- not part of the collection.
-SELECT value FROM ap_outbox WHERE type = 'Note' LIMIT ? OFFSET ?;
+-- Notes are stored as dereferenceable objects and wrapped as Create activities
+-- when served. Event lifecycle activities are stored directly.
+SELECT value FROM ap_outbox
+WHERE type IN ('Note', 'Create', 'Update', 'Delete')
+ORDER BY created_at DESC, rowid DESC
+LIMIT ? OFFSET ?;
 
 
 -- name: GetObjectFromOutboxByIRI :one
 SELECT value, live_notification, created_at FROM ap_outbox WHERE iri = ?;
+
+-- name: GetOutboxObjectState :one
+SELECT type, coalesce_version FROM ap_outbox WHERE iri = ?;
 
 -- name: GetNoteFromOutboxByIRI :one
 -- Like GetObjectFromOutboxByIRI but only matches posts (Notes). Used to
@@ -75,6 +83,12 @@ INSERT INTO ap_outbox(iri, value, type, live_notification) values(?, ?, ?, ?);
 INSERT INTO ap_outbox(iri, value, type, live_notification) VALUES(?, ?, ?, ?)
 ON CONFLICT(iri) DO UPDATE SET value = excluded.value, type = excluded.type, live_notification = excluded.live_notification;
 
+-- name: UpsertVersionedOutboxObject :one
+INSERT INTO ap_outbox(iri, value, type, live_notification, coalesce_version) VALUES(?, ?, ?, ?, ?)
+ON CONFLICT(iri) DO UPDATE SET value = excluded.value, type = excluded.type, live_notification = excluded.live_notification, coalesce_version = excluded.coalesce_version
+WHERE excluded.coalesce_version >= ap_outbox.coalesce_version
+RETURNING 1;
+
 -- name: QueueActivityPubDelivery :one
 INSERT INTO ap_delivery_queue (
     inbox,
@@ -82,18 +96,29 @@ INSERT INTO ap_delivery_queue (
     actor_iri,
     activity_type,
     coalesce_key,
+    ordering_key,
+    coalesce_version,
+    blocks_following,
     next_attempt_at
-) VALUES (?, ?, ?, ?, ?, ?)
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT(inbox, coalesce_key) WHERE coalesce_key IS NOT NULL AND failed_at IS NULL
 DO UPDATE SET
     payload = excluded.payload,
     actor_iri = excluded.actor_iri,
     activity_type = excluded.activity_type,
+    ordering_key = excluded.ordering_key,
+    coalesce_version = excluded.coalesce_version,
     next_attempt_at = excluded.next_attempt_at,
+    blocks_following = excluded.blocks_following,
     attempts = 0,
     last_error = NULL,
     revision = ap_delivery_queue.revision + 1
+WHERE excluded.coalesce_version >= ap_delivery_queue.coalesce_version
 RETURNING id;
+
+-- name: DeleteActivityPubReminderDeliveries :exec
+DELETE FROM ap_delivery_queue
+WHERE ordering_key = ? AND coalesce_key LIKE ordering_key || ':reminder:%';
 
 -- name: ClaimActivityPubDelivery :one
 UPDATE ap_delivery_queue
@@ -105,10 +130,24 @@ WHERE id = (
     WHERE candidate.failed_at IS NULL
       AND candidate.next_attempt_at <= @now
       AND (candidate.claimed_until IS NULL OR candidate.claimed_until <= @now)
+      AND (
+        candidate.ordering_key IS NULL OR NOT EXISTS (
+            SELECT 1
+            FROM ap_delivery_queue AS predecessor
+            WHERE predecessor.inbox = candidate.inbox
+              AND predecessor.ordering_key = candidate.ordering_key
+              AND predecessor.failed_at IS NULL
+              AND predecessor.blocks_following = TRUE
+              AND predecessor.id < candidate.id
+        )
+      )
     ORDER BY candidate.next_attempt_at, candidate.id
     LIMIT 1
 )
-RETURNING id, inbox, payload, actor_iri, activity_type, coalesce_key, attempts, revision;
+RETURNING id, inbox, payload, actor_iri, activity_type, coalesce_key, ordering_key, attempts, revision;
+
+-- name: GetActivityPubDeliveryRevision :one
+SELECT revision FROM ap_delivery_queue WHERE id = ?;
 
 -- name: CompleteActivityPubDelivery :execrows
 DELETE FROM ap_delivery_queue WHERE id = ? AND revision = ?;
@@ -382,20 +421,23 @@ SELECT * FROM stream_events WHERE start_time >= ? AND start_time < ? ORDER BY st
 -- name: GetStreamEventsForSeries :many
 SELECT * FROM stream_events WHERE series_id = ? ORDER BY start_time;
 
+-- name: UpdateStreamEventFromSeries :exec
+UPDATE stream_events SET name = ?, description = ?, reminder_message = ?, duration_minutes = ?, timezone = ?, federation_update_pending = TRUE, federation_version = federation_version + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+
 -- name: UpdateStreamEventDetails :exec
-UPDATE stream_events SET name = ?, description = ?, reminder_message = ?, duration_minutes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+UPDATE stream_events SET name = ?, description = ?, reminder_message = ?, duration_minutes = ?, federation_update_pending = TRUE, federation_version = federation_version + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
 
 -- name: CancelStreamEvent :exec
 -- The row is kept: it holds the federation state needed to announce the
 -- cancellation, and its original_start keeps the materializer from
 -- re-creating the slot.
-UPDATE stream_events SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+UPDATE stream_events SET status = 'cancelled', federation_update_pending = TRUE, federation_version = federation_version + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
 
 -- name: MoveStreamEvent :exec
 -- original_start is deliberately untouched: it is the identity the
 -- materializer keys on, so the vacated slot is not re-inserted. A moved
 -- future event enters a new warning window.
-UPDATE stream_events SET start_time = ?, webhook_warning_sent_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
+UPDATE stream_events SET start_time = ?, webhook_warning_sent_at = NULL, federation_update_pending = TRUE, federation_version = federation_version + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?;
 
 -- name: DeleteStreamEvent :exec
 DELETE FROM stream_events WHERE id = ?;
@@ -406,6 +448,17 @@ DELETE FROM stream_events WHERE id = ?;
 -- Cancelled rows also stay, whatever their federation state: deleting one
 -- would let the materializer resurrect the slot as a fresh scheduled row.
 DELETE FROM stream_events WHERE series_id = ? AND federated_at IS NULL AND start_time > ? AND status != 'cancelled';
+
+-- name: AddPendingStreamEventFederationDelete :exec
+INSERT INTO stream_event_federation_deletes(event_id)
+SELECT id FROM stream_events WHERE id = ? AND federated_at IS NOT NULL
+ON CONFLICT(event_id) DO NOTHING;
+
+-- name: GetPendingStreamEventFederationDeletes :many
+SELECT event_id FROM stream_event_federation_deletes ORDER BY created_at;
+
+-- name: DeletePendingStreamEventFederationDelete :exec
+DELETE FROM stream_event_federation_deletes WHERE event_id = ?;
 
 -- name: GetCurrentOrUpcomingStreamEvents :many
 -- Events that are still running (start + duration in the future) or have
@@ -421,7 +474,13 @@ SELECT * FROM stream_events WHERE status = 'scheduled' AND start_time > ? ORDER 
 SELECT * FROM stream_events WHERE federated_at IS NULL AND status = 'scheduled' AND start_time > ? ORDER BY start_time;
 
 -- name: SetStreamEventFederatedAt :exec
-UPDATE stream_events SET federated_at = ? WHERE id = ?;
+UPDATE stream_events SET federated_at = ?, federation_update_pending = federation_version != ? WHERE id = ?;
+
+-- name: GetStreamEventsNeedingFederationUpdate :many
+SELECT * FROM stream_events WHERE federation_update_pending = TRUE AND federated_at IS NOT NULL ORDER BY updated_at;
+
+-- name: ClearStreamEventFederationUpdatePending :exec
+UPDATE stream_events SET federation_update_pending = FALSE WHERE id = ? AND federation_version = ?;
 
 -- name: GetStreamEventsNeedingReminder1 :many
 SELECT * FROM stream_events WHERE reminder_1_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time;
@@ -434,6 +493,18 @@ UPDATE stream_events SET reminder_1_sent_at = ? WHERE id = ?;
 
 -- name: SetStreamEventReminder2SentAt :exec
 UPDATE stream_events SET reminder_2_sent_at = ? WHERE id = ?;
+
+-- name: GetStreamEventsNeedingFederationReminder1 :many
+SELECT * FROM stream_events WHERE federation_reminder_1_sent_at IS NULL AND status = 'scheduled' AND federated_at IS NOT NULL AND start_time > ? AND start_time <= ? ORDER BY start_time;
+
+-- name: GetStreamEventsNeedingFederationReminder2 :many
+SELECT * FROM stream_events WHERE federation_reminder_2_sent_at IS NULL AND status = 'scheduled' AND federated_at IS NOT NULL AND start_time > ? AND start_time <= ? ORDER BY start_time;
+
+-- name: SetStreamEventFederationReminder1SentAt :exec
+UPDATE stream_events SET federation_reminder_1_sent_at = ? WHERE id = ?;
+
+-- name: SetStreamEventFederationReminder2SentAt :exec
+UPDATE stream_events SET federation_reminder_2_sent_at = ? WHERE id = ?;
 
 -- name: GetStreamEventsNeedingWebhookWarning :many
 SELECT * FROM stream_events WHERE webhook_warning_sent_at IS NULL AND status = 'scheduled' AND start_time > ? AND start_time <= ? ORDER BY start_time;

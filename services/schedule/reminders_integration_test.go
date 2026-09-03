@@ -4,6 +4,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/owncast/owncast/models"
 )
 
 func TestScheduledEventRemindersUseRepositoryAndPersistEachSlot(t *testing.T) {
@@ -74,5 +76,41 @@ func TestScheduledEventRemindersUseRepositoryAndPersistEachSlot(t *testing.T) {
 	secondService.sendScheduledEventReminders(nowSecond)
 	if len(messages) != 2 {
 		t.Fatalf("sent %d reminders after repeat, want 2", len(messages))
+	}
+}
+
+func TestFederatedScheduledEventReminderPersistsItsOwnStamp(t *testing.T) {
+	now := time.Date(2045, time.January, 3, 12, 0, 0, 0, time.UTC)
+	id, err := testRepo.AddOneOffEvent("federated reminder", "", "Soon", now.Add(15*time.Minute), 60, "UTC")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = testRepo.DeleteEvent(id) })
+	if err := testRepo.SetEventFederatedAt(id, now.Add(-time.Hour), 0); err != nil {
+		t.Fatal(err)
+	}
+
+	sent := 0
+	service := New(Deps{
+		ScheduleEventsRepository:         testRepo,
+		GetScheduleEnabled:               func() bool { return true },
+		GetFederationEnabled:             func() bool { return true },
+		GetScheduleSecondReminderMinutes: func() int { return 15 },
+		FederateScheduledEventReminder: func(models.ScheduledEvent, int, string) error {
+			sent++
+			return nil
+		},
+	})
+	service.sendFederatedScheduledEventReminders(now)
+	service.sendFederatedScheduledEventReminders(now.Add(time.Minute))
+	if sent != 1 {
+		t.Fatalf("sent %d federated reminders, want 1", sent)
+	}
+	event, err := testRepo.GetEvent(id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if event.FederationReminder2SentAt == nil || event.Reminder2SentAt != nil {
+		t.Fatalf("federation/local stamps = (%v, %v), want only federation", event.FederationReminder2SentAt, event.Reminder2SentAt)
 	}
 }

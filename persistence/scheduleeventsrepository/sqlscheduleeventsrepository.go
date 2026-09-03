@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/owncast/owncast/db"
@@ -215,6 +216,18 @@ func (r *SqlScheduleEventsRepository) UpdateEventDetails(id, name, description, 
 	})
 }
 
+// UpdateEventFromSeries applies editable series fields to an announced occurrence.
+func (r *SqlScheduleEventsRepository) UpdateEventFromSeries(id, name, description, reminderMessage string, durationMinutes int, timezone string) error {
+	return db.New(r.datastore.DB).UpdateStreamEventFromSeries(context.Background(), db.UpdateStreamEventFromSeriesParams{
+		Name:            name,
+		Description:     description,
+		ReminderMessage: reminderMessage,
+		DurationMinutes: int64(durationMinutes),
+		Timezone:        timezone,
+		ID:              id,
+	})
+}
+
 // CancelEvent marks an occurrence cancelled, keeping the row.
 func (r *SqlScheduleEventsRepository) CancelEvent(id string) error {
 	queries := db.New(r.datastore.DB)
@@ -231,10 +244,24 @@ func (r *SqlScheduleEventsRepository) MoveEvent(id string, newStart time.Time) e
 	})
 }
 
-// DeleteEvent removes an occurrence row entirely.
+// DeleteEvent removes an occurrence and durably records any required federation delete.
 func (r *SqlScheduleEventsRepository) DeleteEvent(id string) error {
-	queries := db.New(r.datastore.DB)
-	return queries.DeleteStreamEvent(context.Background(), id)
+	ctx := context.Background()
+	r.datastore.DbLock.Lock()
+	defer r.datastore.DbLock.Unlock()
+	tx, err := r.datastore.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("beginning scheduled event delete: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+	queries := db.New(tx)
+	if err := queries.AddPendingStreamEventFederationDelete(ctx, id); err != nil {
+		return err
+	}
+	if err := queries.DeleteStreamEvent(ctx, id); err != nil {
+		return err
+	}
+	return tx.Commit()
 }
 
 // DeleteUnfederatedFutureEventsForSeries clears regenerable occurrences after
@@ -287,12 +314,37 @@ func (r *SqlScheduleEventsRepository) GetEventsToFederate(startingAfter time.Tim
 }
 
 // SetEventFederatedAt stamps an occurrence as announced.
-func (r *SqlScheduleEventsRepository) SetEventFederatedAt(id string, t time.Time) error {
+func (r *SqlScheduleEventsRepository) SetEventFederatedAt(id string, t time.Time, version int64) error {
 	queries := db.New(r.datastore.DB)
 	return queries.SetStreamEventFederatedAt(context.Background(), db.SetStreamEventFederatedAtParams{
-		FederatedAt: models.TimeToNullTime(t.UTC()),
-		ID:          id,
+		FederatedAt:       models.TimeToNullTime(t.UTC()),
+		FederationVersion: version,
+		ID:                id,
 	})
+}
+
+// GetEventsNeedingFederationUpdate returns announced events with unsent changes.
+func (r *SqlScheduleEventsRepository) GetEventsNeedingFederationUpdate() ([]models.ScheduledEvent, error) {
+	rows, err := db.New(r.datastore.DB).GetStreamEventsNeedingFederationUpdate(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return eventsFromRows(rows), nil
+}
+
+func (r *SqlScheduleEventsRepository) ClearEventFederationUpdatePending(id string, version int64) error {
+	return db.New(r.datastore.DB).ClearStreamEventFederationUpdatePending(context.Background(), db.ClearStreamEventFederationUpdatePendingParams{
+		ID:                id,
+		FederationVersion: version,
+	})
+}
+
+func (r *SqlScheduleEventsRepository) GetPendingFederationDeletes() ([]string, error) {
+	return db.New(r.datastore.DB).GetPendingStreamEventFederationDeletes(context.Background())
+}
+
+func (r *SqlScheduleEventsRepository) ClearPendingFederationDelete(id string) error {
+	return db.New(r.datastore.DB).DeletePendingStreamEventFederationDelete(context.Background(), id)
 }
 
 // GetEventsNeedingReminder returns scheduled occurrences whose selected
@@ -337,6 +389,54 @@ func (r *SqlScheduleEventsRepository) SetEventReminderSentAt(id string, reminder
 		return queries.SetStreamEventReminder2SentAt(context.Background(), db.SetStreamEventReminder2SentAtParams{
 			Reminder2SentAt: sentAt,
 			ID:              id,
+		})
+	default:
+		return errors.New("invalid reminder number")
+	}
+}
+
+// GetEventsNeedingFederationReminder returns announced occurrences whose
+// selected ActivityPub reminder has not been sent.
+func (r *SqlScheduleEventsRepository) GetEventsNeedingFederationReminder(startAfter, startBefore time.Time, reminderNumber int) ([]models.ScheduledEvent, error) {
+	queries := db.New(r.datastore.DB)
+	var (
+		rows []db.StreamEvent
+		err  error
+	)
+	switch reminderNumber {
+	case ReminderFirst:
+		rows, err = queries.GetStreamEventsNeedingFederationReminder1(context.Background(), db.GetStreamEventsNeedingFederationReminder1Params{
+			StartTime:   startAfter.UTC(),
+			StartTime_2: startBefore.UTC(),
+		})
+	case ReminderSecond:
+		rows, err = queries.GetStreamEventsNeedingFederationReminder2(context.Background(), db.GetStreamEventsNeedingFederationReminder2Params{
+			StartTime:   startAfter.UTC(),
+			StartTime_2: startBefore.UTC(),
+		})
+	default:
+		return nil, errors.New("invalid reminder number")
+	}
+	if err != nil {
+		return nil, err
+	}
+	return eventsFromRows(rows), nil
+}
+
+// SetEventFederationReminderSentAt stamps the selected ActivityPub reminder.
+func (r *SqlScheduleEventsRepository) SetEventFederationReminderSentAt(id string, reminderNumber int, t time.Time) error {
+	queries := db.New(r.datastore.DB)
+	sentAt := models.TimeToNullTime(t.UTC())
+	switch reminderNumber {
+	case ReminderFirst:
+		return queries.SetStreamEventFederationReminder1SentAt(context.Background(), db.SetStreamEventFederationReminder1SentAtParams{
+			FederationReminder1SentAt: sentAt,
+			ID:                        id,
+		})
+	case ReminderSecond:
+		return queries.SetStreamEventFederationReminder2SentAt(context.Background(), db.SetStreamEventFederationReminder2SentAtParams{
+			FederationReminder2SentAt: sentAt,
+			ID:                        id,
 		})
 	default:
 		return errors.New("invalid reminder number")
@@ -435,6 +535,7 @@ func eventFromRow(row db.StreamEvent) models.ScheduledEvent {
 		federatedAt := row.FederatedAt.Time.UTC()
 		event.FederatedAt = &federatedAt
 	}
+	event.FederationVersion = row.FederationVersion
 	if row.CreatedAt.Valid {
 		createdAt := row.CreatedAt.Time.UTC()
 		event.CreatedAt = &createdAt
@@ -450,6 +551,14 @@ func eventFromRow(row db.StreamEvent) models.ScheduledEvent {
 	if row.Reminder2SentAt.Valid {
 		reminder2SentAt := row.Reminder2SentAt.Time.UTC()
 		event.Reminder2SentAt = &reminder2SentAt
+	}
+	if row.FederationReminder1SentAt.Valid {
+		sentAt := row.FederationReminder1SentAt.Time.UTC()
+		event.FederationReminder1SentAt = &sentAt
+	}
+	if row.FederationReminder2SentAt.Valid {
+		sentAt := row.FederationReminder2SentAt.Time.UTC()
+		event.FederationReminder2SentAt = &sentAt
 	}
 	return event
 }

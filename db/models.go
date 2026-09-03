@@ -18,19 +18,22 @@ type ApAcceptedActivity struct {
 }
 
 type ApDeliveryQueue struct {
-	ID            int64
-	Inbox         string
-	Payload       []byte
-	ActorIri      string
-	ActivityType  string
-	CoalesceKey   sql.NullString
-	Attempts      int64
-	NextAttemptAt time.Time
-	ClaimedUntil  sql.NullTime
-	LastError     sql.NullString
-	FailedAt      sql.NullTime
-	CreatedAt     time.Time
-	Revision      int64
+	ID              int64
+	Inbox           string
+	Payload         []byte
+	ActorIri        string
+	ActivityType    string
+	CoalesceKey     sql.NullString
+	Attempts        int64
+	NextAttemptAt   time.Time
+	ClaimedUntil    sql.NullTime
+	LastError       sql.NullString
+	FailedAt        sql.NullTime
+	CreatedAt       time.Time
+	Revision        int64
+	OrderingKey     sql.NullString
+	CoalesceVersion int64
+	BlocksFollowing bool
 }
 
 type ApFollower struct {
@@ -56,6 +59,7 @@ type ApOutbox struct {
 	Type             string
 	CreatedAt        sql.NullTime
 	LiveNotification sql.NullBool
+	CoalesceVersion  int64
 }
 
 type Auth struct {
@@ -126,25 +130,34 @@ type Notification struct {
 }
 
 type StreamEvent struct {
-	ID                   string
-	SeriesID             sql.NullString
-	OriginalStart        sql.NullTime
-	Name                 string
-	Description          string
-	StartTime            time.Time
-	DurationMinutes      int64
-	Timezone             string
-	Status               string
-	FederatedAt          sql.NullTime
-	ReminderSentAt       sql.NullTime
-	CreatedAt            sql.NullTime
-	UpdatedAt            sql.NullTime
-	WebhookWarningSentAt sql.NullTime
-	WebhookStartedSentAt sql.NullTime
-	WebhookEndedSentAt   sql.NullTime
-	ReminderMessage      string
-	Reminder1SentAt      sql.NullTime
-	Reminder2SentAt      sql.NullTime
+	ID                        string
+	SeriesID                  sql.NullString
+	OriginalStart             sql.NullTime
+	Name                      string
+	Description               string
+	StartTime                 time.Time
+	DurationMinutes           int64
+	Timezone                  string
+	Status                    string
+	FederatedAt               sql.NullTime
+	ReminderSentAt            sql.NullTime
+	CreatedAt                 sql.NullTime
+	UpdatedAt                 sql.NullTime
+	WebhookWarningSentAt      sql.NullTime
+	WebhookStartedSentAt      sql.NullTime
+	WebhookEndedSentAt        sql.NullTime
+	ReminderMessage           string
+	Reminder1SentAt           sql.NullTime
+	Reminder2SentAt           sql.NullTime
+	FederationReminder1SentAt sql.NullTime
+	FederationReminder2SentAt sql.NullTime
+	FederationUpdatePending   bool
+	FederationVersion         int64
+}
+
+type StreamEventFederationDelete struct {
+	EventID   string
+	CreatedAt time.Time
 }
 
 type StreamEventSeries struct {

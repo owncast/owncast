@@ -37,8 +37,13 @@ func WritePayloadResponse(payload interface{}, w http.ResponseWriter, publicKey 
 	return WriteResponse(b, w, publicKey, signer)
 }
 
-// WriteResponse will write any arbitrary payload to the provided ResponseWriter and sign with the provided key.
+// WriteResponse will write an arbitrary payload with a 200 response and sign it.
 func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.PublicKey, signer *crypto.Signer) error {
+	return WriteResponseWithStatus(payload, w, publicKey, signer, http.StatusOK)
+}
+
+// WriteResponseWithStatus writes and signs an arbitrary payload with the provided status.
+func WriteResponseWithStatus(payload []byte, w http.ResponseWriter, publicKey crypto.PublicKey, signer *crypto.Signer, status int) error {
 	w.Header().Set("Content-Type", "application/activity+json")
 
 	if err := signer.SignResponse(w, payload, publicKey); err != nil {
@@ -47,8 +52,8 @@ func WriteResponse(payload []byte, w http.ResponseWriter, publicKey crypto.Publi
 		return err
 	}
 
+	w.WriteHeader(status)
 	if _, err := w.Write(payload); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		return err
 	}
 

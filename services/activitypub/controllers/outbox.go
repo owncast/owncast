@@ -11,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/requests"
 )
 
@@ -49,7 +50,19 @@ func (c *Controllers) OutboxHandler(w http.ResponseWriter, r *http.Request) {
 	actorIRI := c.builder.MakeLocalIRIForAccount(accountName)
 	publicKey := c.signer.GetPublicKey(actorIRI)
 
-	if err := requests.WriteStreamResponse(response.(vocab.Type), w, publicKey, c.signer); err != nil {
+	responseMap, err := streams.Serialize(response.(vocab.Type))
+	if err != nil {
+		log.Errorln("unable to serialize outbox response", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if item, ok := responseMap["orderedItems"]; ok {
+		if _, isArray := item.([]interface{}); !isArray {
+			responseMap["orderedItems"] = []interface{}{item}
+		}
+	}
+	apmodels.NormalizeEventProperties(responseMap)
+	if err := requests.WritePayloadResponse(responseMap, w, publicKey, c.signer); err != nil {
 		log.Errorln("unable to write stream response for outbox handler", err)
 	}
 }
@@ -121,14 +134,11 @@ func (c *Controllers) getOutboxPage(page string, r *http.Request) (vocab.Activit
 	idProperty.SetIRI(id)
 	collectionPage.SetJSONLDId(idProperty)
 
-	orderedItems := streams.NewActivityStreamsOrderedItemsProperty()
-
 	outboxItems, err := c.persistence.GetOutbox(outboxPageSize, (pageInt-1)*outboxPageSize)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to get federation followers")
 	}
-	orderedItems.AppendActivityStreamsOrderedCollection(outboxItems)
-	collectionPage.SetActivityStreamsOrderedItems(orderedItems)
+	collectionPage.SetActivityStreamsOrderedItems(outboxItems.GetActivityStreamsOrderedItems())
 
 	partOf := streams.NewActivityStreamsPartOfProperty()
 	partOfIRI, err := c.createPageURL(r, nil)

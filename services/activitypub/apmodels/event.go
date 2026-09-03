@@ -38,11 +38,9 @@ func (b *Builder) MakeScheduledEvent(event models.ScheduledEvent) (vocab.Activit
 	name.AppendXMLSchemaString(event.Name)
 	result.SetActivityStreamsName(name)
 
-	if event.Description != "" {
-		content := streams.NewActivityStreamsContentProperty()
-		content.AppendXMLSchemaString(event.Description)
-		result.SetActivityStreamsContent(content)
-	}
+	content := streams.NewActivityStreamsContentProperty()
+	content.AppendXMLSchemaString(event.Description)
+	result.SetActivityStreamsContent(content)
 
 	startTime := streams.NewActivityStreamsStartTimeProperty()
 	startTime.Set(event.StartTime)
@@ -86,7 +84,11 @@ func (b *Builder) MakeScheduledEvent(event models.ScheduledEvent) (vocab.Activit
 	}
 	properties := result.GetUnknownProperties()
 	properties["displayEndTime"] = true
-	properties["eventStatus"] = "EventScheduled"
+	if event.Status == models.ScheduledEventStatusCancelled {
+		properties["eventStatus"] = "EventCancelled"
+	} else {
+		properties["eventStatus"] = "EventScheduled"
+	}
 	properties["joinMode"] = "none"
 	properties["location"] = map[string]interface{}{
 		"type": "VirtualLocation",
@@ -130,27 +132,44 @@ func SerializeEvent(value vocab.Type) ([]byte, error) {
 		return nil, err
 	}
 	payload["@context"] = []string{activityStreamsContext, eventContext, schemaContext}
-	normalizeEventRecipients(payload)
+	NormalizeEventProperties(payload)
 	return json.Marshal(payload)
 }
 
-// Gancio expects Event recipients as arrays even when ActivityStreams JSON-LD
-// compaction would emit one recipient as a scalar.
-func normalizeEventRecipients(payload map[string]interface{}) {
-	event := payload
-	if object, ok := payload["object"].(map[string]interface{}); ok {
-		event = object
+// NormalizeEventProperties keeps the Event extension context and
+// collection-valued fields intact after ActivityStreams JSON-LD compaction.
+func NormalizeEventProperties(payload map[string]interface{}) {
+	if normalizeEventProperties(payload) {
+		payload["@context"] = []string{activityStreamsContext, eventContext, schemaContext}
 	}
-	if event["type"] != "Event" {
-		return
-	}
-	for _, property := range []string{"to", "cc", "attachment"} {
-		value, ok := event[property]
-		if !ok {
-			continue
+}
+
+func normalizeEventProperties(value interface{}) bool {
+	found := false
+	switch typed := value.(type) {
+	case map[string]interface{}:
+		if typed["type"] == "Event" {
+			found = true
+			for _, property := range []string{"to", "cc", "attachment"} {
+				current, ok := typed[property]
+				if !ok {
+					if property == "attachment" {
+						typed[property] = []interface{}{}
+					}
+					continue
+				}
+				if _, ok := current.([]interface{}); !ok {
+					typed[property] = []interface{}{current}
+				}
+			}
 		}
-		if _, ok := value.([]interface{}); !ok {
-			event[property] = []interface{}{value}
+		for _, child := range typed {
+			found = normalizeEventProperties(child) || found
+		}
+	case []interface{}:
+		for _, child := range typed {
+			found = normalizeEventProperties(child) || found
 		}
 	}
+	return found
 }

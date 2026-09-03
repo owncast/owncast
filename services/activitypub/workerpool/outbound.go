@@ -32,14 +32,15 @@ const (
 )
 
 // Delivery is an unsigned ActivityPub activity waiting to be delivered.
-// CoalesceKey replaces an older pending delivery to the same inbox when only
-// the latest state matters, such as featured-stream live status.
 type Delivery struct {
-	Inbox        *url.URL
-	Payload      []byte
-	ActorIRI     *url.URL
-	ActivityType string
-	CoalesceKey  string
+	Inbox           *url.URL
+	Payload         []byte
+	ActorIRI        *url.URL
+	ActivityType    string
+	CoalesceKey     string
+	OrderingKey     string
+	CoalesceVersion int64
+	BlocksFollowing bool
 }
 
 // Deps lists the dependencies for the outbound delivery queue.
@@ -67,6 +68,7 @@ type Service struct {
 
 	failedDomainsMu sync.RWMutex
 	failedDomains   map[string]*domainFailure
+	orderingLocks   [64]sync.Mutex
 
 	retryDelay func(int64) time.Duration
 }
@@ -194,13 +196,19 @@ func validateDelivery(delivery Delivery) error {
 
 func (s *Service) queue(ctx context.Context, queries *db.Queries, delivery Delivery) error {
 	_, err := queries.QueueActivityPubDelivery(ctx, db.QueueActivityPubDeliveryParams{
-		Inbox:         delivery.Inbox.String(),
-		Payload:       delivery.Payload,
-		ActorIri:      delivery.ActorIRI.String(),
-		ActivityType:  delivery.ActivityType,
-		CoalesceKey:   sql.NullString{String: delivery.CoalesceKey, Valid: delivery.CoalesceKey != ""},
-		NextAttemptAt: time.Now(),
+		Inbox:           delivery.Inbox.String(),
+		Payload:         delivery.Payload,
+		ActorIri:        delivery.ActorIRI.String(),
+		ActivityType:    delivery.ActivityType,
+		CoalesceKey:     sql.NullString{String: delivery.CoalesceKey, Valid: delivery.CoalesceKey != ""},
+		OrderingKey:     sql.NullString{String: delivery.OrderingKey, Valid: delivery.OrderingKey != ""},
+		CoalesceVersion: delivery.CoalesceVersion,
+		BlocksFollowing: delivery.BlocksFollowing,
+		NextAttemptAt:   time.Now(),
 	})
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil
+	}
 	if err != nil {
 		return fmt.Errorf("queueing ActivityPub %s delivery: %w", delivery.ActivityType, err)
 	}
@@ -269,7 +277,56 @@ func (s *Service) worker(workerID int) {
 	}
 }
 
+// WithOrderingKey serializes queue mutations with delivery for one ordered stream.
+func (s *Service) WithOrderingKey(key string, fn func() error) error {
+	if key == "" {
+		return fn()
+	}
+	lock := s.orderingLock(key)
+	lock.Lock()
+	defer lock.Unlock()
+	return fn()
+}
+
+func (s *Service) orderingLock(key string) *sync.Mutex {
+	hash := uint32(2166136261)
+	for i := range len(key) {
+		hash ^= uint32(key[i])
+		hash *= 16777619
+	}
+	return &s.orderingLocks[hash%uint32(len(s.orderingLocks))]
+}
+
 func (s *Service) deliver(job db.ClaimActivityPubDeliveryRow) {
+	if !job.OrderingKey.Valid {
+		s.deliverCurrent(job)
+		return
+	}
+	lock := s.orderingLock(job.OrderingKey.String)
+	lock.Lock()
+	defer lock.Unlock()
+	if s.deliveryCurrent(job) {
+		s.deliverCurrent(job)
+	}
+}
+
+func (s *Service) deliveryCurrent(job db.ClaimActivityPubDeliveryRow) bool {
+	revision, err := s.datastore.GetQueries().GetActivityPubDeliveryRevision(context.Background(), job.ID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false
+	}
+	if err != nil {
+		log.Errorf("Unable to verify ActivityPub delivery %d: %v", job.ID, err)
+		return false
+	}
+	if revision != job.Revision {
+		s.releaseSuperseded(job)
+		return false
+	}
+	return true
+}
+
+func (s *Service) deliverCurrent(job db.ClaimActivityPubDeliveryRow) {
 	inbox, err := url.Parse(job.Inbox)
 	if err != nil {
 		s.fail(job, fmt.Errorf("invalid inbox URL: %w", err))
