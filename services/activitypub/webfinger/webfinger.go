@@ -26,10 +26,12 @@ func GetWebfingerLinks(account string) ([]map[string]interface{}, error) {
 		Links []map[string]interface{} `json:"links"`
 	}
 
-	account = strings.TrimLeft(account, "@") // remove any leading @
+	account = strings.TrimLeft(strings.TrimSpace(account), "@") // remove any leading @
 	accountComponents := strings.Split(account, "@")
+	if len(accountComponents) != 2 || accountComponents[0] == "" || accountComponents[1] == "" {
+		return nil, errors.New("fediverse account must be in user@server format")
+	}
 	fediverseServer := accountComponents[1]
-
 	// Reject any requests to our internal network or loopback.
 	if !isValidRedirectURL(fediverseServer) {
 		return nil, errors.New("unable to use provided host as a valid fediverse server")

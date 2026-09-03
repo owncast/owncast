@@ -74,3 +74,11 @@ func TestGetWebfingerLinksTerminalError(t *testing.T) {
 		t.Error("expected an error for a non-200 webfinger response, got nil")
 	}
 }
+
+func TestGetWebfingerLinksRejectsMalformedAccount(t *testing.T) {
+	for _, account := range []string{"invalid-handle", "@", "user@", "@server", "user@one@two"} {
+		if _, err := GetWebfingerLinks(account); err == nil {
+			t.Errorf("GetWebfingerLinks(%q) returned nil error", account)
+		}
+	}
+}

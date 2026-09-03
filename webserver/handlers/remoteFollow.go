@@ -34,7 +34,6 @@ func (h *Handlers) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	localActorPath := h.apBuilder.MakeLocalIRIForAccount(h.configRepository.GetDefaultFederationUsername())
-	var template string
 	links, err := webfinger.GetWebfingerLinks(*request.Account)
 	if err != nil {
 		webutils.WriteSimpleResponse(w, false, err.Error())
@@ -42,13 +41,7 @@ func (h *Handlers) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Acquire the remote follow redirect template.
-	for _, link := range links {
-		for k, v := range link {
-			if k == "rel" && v == "http://ostatus.org/schema/1.0/subscribe" && link["template"] != nil {
-				template = link["template"].(string)
-			}
-		}
-	}
+	template := remoteFollowTemplate(links)
 
 	if localActorPath == nil || localActorPath.String() == "" || template == "" {
 		webutils.WriteSimpleResponse(w, false, "unable to determine remote follow information for "+*request.Account)
@@ -61,4 +54,15 @@ func (h *Handlers) RemoteFollow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	webutils.WriteResponse(w, response)
+}
+
+func remoteFollowTemplate(links []map[string]interface{}) string {
+	for _, link := range links {
+		rel, relOK := link["rel"].(string)
+		template, templateOK := link["template"].(string)
+		if rel == "http://ostatus.org/schema/1.0/subscribe" && templateOK && template != "" && relOK {
+			return template
+		}
+	}
+	return ""
 }
