@@ -58,6 +58,17 @@ type Config struct {
 	// FollowerValidationInterval is how often the follower validation
 	// job runs. A zero value means use the package default.
 	FollowerValidationInterval time.Duration
+
+	// AutoHTTPSHost is the public hostname used for automatic HTTPS and
+	// for seeding the stored server URL. Populated by main.go from the
+	// OWNCAST_HOST_NAME environment variable.
+	AutoHTTPSHost string
+
+	// AutoHTTPSEnabled turns on the automatic HTTPS (Let's Encrypt)
+	// listeners when AutoHTTPSHost is also set. Populated by main.go from
+	// the OWNCAST_ENABLE_AUTO_HTTPS environment variable. Currently
+	// intended for packaged (apt) installs, which set both variables.
+	AutoHTTPSEnabled bool
 }
 
 // NewDefault returns a *Config populated with the default startup values.

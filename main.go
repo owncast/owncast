@@ -4,8 +4,10 @@ import (
 	"context"
 	"flag"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -183,6 +185,7 @@ func main() {
 	federatedserversrepository.SetGlobalInstance(federatedServersRepository)
 
 	handleCommandLineFlags(cfg, configRepository)
+	handleAutoHTTPSEnvironment(cfg, configRepository)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -486,6 +489,43 @@ func handleCommandLineFlags(cfg *config.Config, configRepository configrepositor
 		cfg.FollowerValidationInterval = time.Duration(*followerValidationIntervalSecs) * time.Second
 		log.Printf("Follower validation interval set to %v", cfg.FollowerValidationInterval)
 	}
+}
+
+// handleAutoHTTPSEnvironment reads the automatic HTTPS environment
+// variables. OWNCAST_HOST_NAME is the server's public hostname: when set it
+// is persisted as the stored server URL (https://<host>), following the same
+// persist-on-boot pattern as the command line flags above.
+// OWNCAST_ENABLE_AUTO_HTTPS additionally enables the automatic HTTPS
+// listeners (see webserver/router). Both are currently set by packaged
+// (apt) installs via /etc/default/owncast.
+func handleAutoHTTPSEnvironment(cfg *config.Config, configRepository configrepository.ConfigRepository) {
+	enabled := strings.EqualFold(os.Getenv("OWNCAST_ENABLE_AUTO_HTTPS"), "true")
+	host := strings.ToLower(strings.TrimSpace(os.Getenv("OWNCAST_HOST_NAME")))
+	host = strings.TrimSuffix(host, ".")
+
+	if host == "" {
+		if enabled {
+			log.Errorln("OWNCAST_ENABLE_AUTO_HTTPS is set but OWNCAST_HOST_NAME is not. Automatic HTTPS is disabled.")
+		}
+		return
+	}
+
+	serverURL := "https://" + host
+	parsedURL, err := url.Parse(serverURL)
+	if err != nil || parsedURL.Host != host || parsedURL.Hostname() != host {
+		log.Errorf("OWNCAST_HOST_NAME %q is not a bare hostname (no scheme, port, path, query, or fragment). Automatic HTTPS is disabled.", host)
+		return
+	}
+
+	if existing := configRepository.GetServerURL(); existing != "" && existing != serverURL {
+		log.Infof("Replacing the stored server URL %s with %s from OWNCAST_HOST_NAME. Unset the environment variable to manage it in the admin.", existing, serverURL)
+	}
+	if err := configRepository.SetServerURL(serverURL); err != nil {
+		log.Errorln("Error saving the server URL from OWNCAST_HOST_NAME.", err)
+	}
+
+	cfg.AutoHTTPSHost = host
+	cfg.AutoHTTPSEnabled = enabled
 }
 
 func configureLogging(logDirectory string, enableDebugFeatures bool, enableVerboseLogging bool) {

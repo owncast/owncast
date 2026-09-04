@@ -1,8 +1,9 @@
 package router
 
 import (
-	"fmt"
+	"net"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -126,11 +127,22 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 	protocols.SetUnencryptedHTTP2(true)
 
 	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
+	handler := compress(m)
+
 	server := &http.Server{
-		Addr:              fmt.Sprintf("%s:%d", ip, port),
+		Addr:              net.JoinHostPort(ip, strconv.Itoa(port)),
 		ReadHeaderTimeout: 4 * time.Second,
-		Handler:           compress(m),
+		Handler:           handler,
 		Protocols:         protocols,
+	}
+
+	listener, err := net.Listen("tcp", server.Addr)
+	if err != nil {
+		return err
+	}
+
+	if cfg.AutoHTTPSEnabled && cfg.AutoHTTPSHost != "" {
+		startAutoHTTPS(cfg, handler)
 	}
 
 	if ip != "0.0.0.0" {
@@ -140,7 +152,7 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 	}
 	log.Infoln("Configure this server by visiting /admin.")
 
-	return server.ListenAndServe()
+	return server.Serve(listener)
 }
 
 func addStaticFileEndpoints(r chi.Router, h *handlers.Handlers, apc *apcontrollers.Controllers) {
