@@ -37,4 +37,107 @@ filterTests(['desktop'], () => {
 			cy.get(modalContainer, { timeout: 2000 }).should('be.visible');
 		});
 	});
+
+	describe('Applies documented CSS variable customizations', () => {
+		before(() => {
+			cy.setConfig('appearance', {
+				'theme-color-action': 'blue',
+			});
+			cy.setConfig(
+				'customstyles',
+				`:root {
+					--theme-color-action: red;
+					--theme-color-components-primary-button-border: green;
+					--theme-text-display-font-family: monospace;
+					--theme-text-body-font-family: monospace;
+				}
+
+				#notify-button {
+					border-width: 4px;
+				}
+
+				#notify-button:focus {
+					background-color: rgb(0, 0, 255);
+				}`,
+			);
+			cy.visit('http://localhost:8080/');
+		});
+
+		after(() => {
+			cy.setConfig('customstyles', '');
+			cy.setConfig('appearance', {});
+		});
+
+		it('applies font variables to native and Ant Design elements', () => {
+			cy.get('body').should('have.css', 'font-family', 'monospace');
+			cy.get('#global-header-text').should(
+				'have.css',
+				'font-family',
+				'monospace',
+			);
+			cy.get('#notify-button').should('have.css', 'font-family', 'monospace');
+		});
+
+		it('lets custom variables override appearance variables', () => {
+			cy.document().then((document) => {
+				expect(
+					getComputedStyle(document.documentElement)
+						.getPropertyValue('--theme-color-action')
+						.trim(),
+				).to.equal('red');
+			});
+			cy.get('#notify-button').should(
+				'have.css',
+				'background-color',
+				'rgb(255, 0, 0)',
+			);
+		});
+
+		it('applies custom selectors with higher specificity than component styles', () => {
+			cy.get('#notify-button').should('have.css', 'border-width', '4px');
+		});
+
+		it('applies custom interactive state selectors', () => {
+			cy.get('#notify-button')
+				.focus()
+				.should('have.css', 'background-color', 'rgb(0, 0, 255)');
+		});
+
+		it('retains the cascade after a full page reload', () => {
+			cy.reload();
+			cy.get('#notify-button').should(
+				'have.css',
+				'background-color',
+				'rgb(255, 0, 0)',
+			);
+		});
+	});
+});
+
+filterTests(['mobile'], () => {
+	describe('Applies responsive custom CSS', () => {
+		before(() => {
+			cy.setConfig(
+				'customstyles',
+				`@media (max-width: 600px) {
+					#global-header-text {
+						color: rgb(0, 128, 0);
+					}
+				}`,
+			);
+			cy.visit('http://localhost:8080/');
+		});
+
+		after(() => {
+			cy.setConfig('customstyles', '');
+		});
+
+		it('applies media-query overrides at the mobile viewport', () => {
+			cy.get('#global-header-text').should(
+				'have.css',
+				'color',
+				'rgb(0, 128, 0)',
+			);
+		});
+	});
 });
