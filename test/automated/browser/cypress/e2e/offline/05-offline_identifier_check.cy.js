@@ -86,11 +86,9 @@ filterTests(['desktop'], () => {
 						.trim(),
 				).to.equal('red');
 			});
-			cy.get('#notify-button').should(
-				'have.css',
-				'background-color',
-				'rgb(255, 0, 0)',
-			);
+			cy.get('#notify-button')
+				.should('have.css', 'background-color', 'rgb(255, 0, 0)')
+				.and('have.css', 'border-color', 'rgb(0, 128, 0)');
 		});
 
 		it('applies custom selectors with higher specificity than component styles', () => {
