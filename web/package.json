@@ -2,6 +2,9 @@
   "name": "owncast-web",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "npm": "11.6.2"
+  },
   "resolutions": {
     "babel-preset-current-node-syntax": "1.1.1"
   },
