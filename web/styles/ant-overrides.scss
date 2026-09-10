@@ -8,6 +8,25 @@
   height: auto;
 }
 
+// Keep public Owncast CSS variables authoritative for Ant Design buttons.
+.ant-btn.ant-btn-color-primary {
+  --ant-btn-color-base: var(--theme-color-components-primary-button-background);
+  --ant-btn-color-hover: var(--theme-color-action-hover);
+  --ant-btn-color-active: var(--theme-color-action-hover);
+}
+
+.ant-btn.ant-btn-color-primary.ant-btn-variant-solid {
+  --ant-btn-border-color: var(--theme-color-components-primary-button-border);
+  --ant-btn-text-color: var(--theme-color-components-primary-button-text);
+}
+
+.ant-btn.ant-btn-color-primary:disabled,
+.ant-btn.ant-btn-color-primary.ant-btn-disabled {
+  border-color: var(--theme-color-components-primary-button-border-disabled);
+  color: var(--theme-color-components-primary-button-text-disabled);
+  background: var(--theme-color-components-primary-button-background-disabled);
+}
+
 .ant-alert-error {
   .ant-alert-icon {
     color: var(--theme-color-palette-error);
