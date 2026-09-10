@@ -105,7 +105,7 @@
     "@types/sanitize-html": "^2.9.0",
     "@types/video.js": "^7.3.50",
     "babel-loader": "10.1.1",
-    "chromatic": "18.7.1",
+    "chromatic": "18.7.2",
     "css-loader": "7.1.5",
     "cypress": "^15.0.0",
     "eslint": "10.9.1",
