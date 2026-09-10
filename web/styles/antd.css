@@ -5292,9 +5292,7 @@ span.ant-typography-ellipsis-single-line {
   --ant-color-link: #6544e9;
   --ant-color-text-base: #000;
   --ant-color-bg-base: #fff;
-  --ant-font-family:
-    Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, 'Noto Sans', sans-serif;
+  --ant-font-family: var(--theme-text-body-font-family);
   --ant-font-family-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   --ant-font-size: 14px;
   --ant-line-width: 1px;
@@ -6158,9 +6156,7 @@ span.ant-typography-ellipsis-single-line {
   --ant-color-link: #6544e9;
   --ant-color-text-base: #000;
   --ant-color-bg-base: #fff;
-  --ant-font-family:
-    Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, 'Noto Sans', sans-serif;
+  --ant-font-family: var(--theme-text-body-font-family);
   --ant-font-family-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   --ant-font-size: 14px;
   --ant-line-width: 1px;
@@ -22650,9 +22646,7 @@ a[disabled] {
   --ant-color-link: #6544e9;
   --ant-color-text-base: #000;
   --ant-color-bg-base: #fff;
-  --ant-font-family:
-    Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, 'Noto Sans', sans-serif;
+  --ant-font-family: var(--theme-text-body-font-family);
   --ant-font-family-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   --ant-font-size: 14px;
   --ant-line-width: 1px;
