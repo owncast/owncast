@@ -93,6 +93,44 @@ module.exports = definePlugin({
 	}
 }
 
+func TestSharedEngineJSRandomUUIDUsesHostEntropy(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+
+	env, sends, mu := captureEnv()
+	script := `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage() { owncast.chat.send(crypto.randomUUID()); }
+});`
+
+	const instanceCount = 3
+	values := make([]string, 0, instanceCount)
+	for range instanceCount {
+		loaded := loadShared(t, ctx, env, RuntimeJavaScript, "uuid-test", script, []string{PermChatSend})
+		dispatcher := NewLiveDispatcher(func() []*Loaded { return []*Loaded{loaded} })
+		dispatcher.Dispatch(ctx, EventChatMessageReceived, chatPayload("alice", "hi"))
+		loaded.Close(ctx)
+
+		mu.Lock()
+		if len(*sends) != len(values)+1 {
+			mu.Unlock()
+			t.Fatalf("expected one UUID from plugin instance, got %d sends", len(*sends))
+		}
+		values = append(values, (*sends)[len(values)].Text)
+		mu.Unlock()
+	}
+
+	unique := make(map[string]struct{}, len(values))
+	for _, value := range values {
+		unique[value] = struct{}{}
+	}
+	if len(unique) != len(values) {
+		t.Fatalf("fresh plugin instances returned duplicate UUIDs: %v", values)
+	}
+}
+
 func TestSharedEngineActionValidationErrorReachesJavaScript(t *testing.T) {
 	ctx := context.Background()
 	compiledEngines.resetForTest(ctx)

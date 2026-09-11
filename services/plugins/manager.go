@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -1692,7 +1693,10 @@ func instantiate(ctx context.Context, env *HostEnv, manifest *Manifest, manifest
 	// Give the guest the real host wall and monotonic clocks (wazero's default
 	// is a frozen 2022 clock). Nanosleep is deliberately NOT wired so a plugin
 	// can't block inside a call and burn its timeout budget.
-	moduleConfig := wazero.NewModuleConfig().WithSysWalltime().WithSysNanotime()
+	moduleConfig := wazero.NewModuleConfig().
+		WithSysWalltime().
+		WithSysNanotime().
+		WithRandSource(rand.Reader)
 
 	if manifest.usesSharedEngine() {
 		engine, release, err := compiledEngines.acquire(ctx, env, manifest.Type)
