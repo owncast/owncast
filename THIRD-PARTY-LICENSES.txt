@@ -825,8 +825,8 @@ Web package: @marijn/find-cluster-break@1.0.3
   Declared license: MIT
   LICENSE: SHA256 9360b00fdd091f05c783b568bdd46c679c41b72415599252de98949462ea1acb
 
-Web package: @next/bundle-analyzer@16.2.10
-  Source: https://registry.npmjs.org/@next/bundle-analyzer/-/bundle-analyzer-16.2.10.tgz
+Web package: @next/bundle-analyzer@16.3.4
+  Source: https://registry.npmjs.org/@next/bundle-analyzer/-/bundle-analyzer-16.3.4.tgz
   Declared license: MIT
   LICENSE TEXT NOT FOUND: The package contains no root license text. package.json declares: MIT.
 
