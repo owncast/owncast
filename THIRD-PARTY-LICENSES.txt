@@ -356,7 +356,7 @@ Go module: mvdan.cc/xurls/v2@v2.6.0
   Source: https://pkg.go.dev/mvdan.cc/xurls/v2@v2.6.0
   LICENSE: SHA256 6b44db2e2b57c1f8a3b44f105650813bbef494e0472cb76620d4dfbffd96f988
 
-Go runtime: go1.26.5
+Go runtime: go1.27.1
   Source: https://go.dev/LICENSE
   LICENSE: SHA256 911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad
 
@@ -11110,7 +11110,7 @@ Used by: Go module: golang.org/x/sync@v0.22.0 (LICENSE)
 Used by: Go module: golang.org/x/sys@v0.47.0 (LICENSE)
 Used by: Go module: golang.org/x/text@v0.40.0 (LICENSE)
 Used by: Go module: golang.org/x/time@v0.15.0 (LICENSE)
-Used by: Go runtime: go1.26.5 (LICENSE)
+Used by: Go runtime: go1.27.1 (LICENSE)
 --------------------------------------------------------------------------------
 Copyright 2009 The Go Authors.
 
