@@ -14,8 +14,8 @@ import (
 // added without updating the reserved set.
 func TestReservedEventTypes_CoversCoreEvents(t *testing.T) {
 	for _, e := range []string{
-		EventChatMessageReceived, EventChatUserJoined, EventChatUserParted,
-		EventChatUserRenamed, EventChatMessageModerated, EventChatCommand, EventStreamStarted,
+		EventChatMessageReceived, EventChatMessageBroadcast, EventChatUserJoined,
+		EventChatUserParted, EventChatUserRenamed, EventChatMessageModerated, EventChatCommand, EventStreamStarted,
 		EventStreamStopped, EventStreamTitleChanged, EventSSEConnect,
 		EventSSEDisconnect, EventTick, EventTimerFire, EventFediverseFollow,
 		EventFediverseLike, EventFediverseRepost, EventFediverseMention,

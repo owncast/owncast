@@ -6,6 +6,7 @@ package plugins
 const (
 	// Chat events.
 	EventChatMessageReceived  = "chat.message.received"
+	EventChatMessageBroadcast = "chat.message.broadcast"
 	EventChatUserJoined       = "chat.user.joined"
 	EventChatUserParted       = "chat.user.parted"
 	EventChatUserRenamed      = "chat.user.renamed"
@@ -55,6 +56,7 @@ const (
 // plugin's on_event handler. Plugin-emitted custom events use any other string.
 var reservedEventTypes = map[string]bool{
 	EventChatMessageReceived:  true,
+	EventChatMessageBroadcast: true,
 	EventChatUserJoined:       true,
 	EventChatUserParted:       true,
 	EventChatUserRenamed:      true,

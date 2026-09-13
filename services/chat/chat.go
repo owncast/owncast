@@ -5,6 +5,7 @@
 package chat
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"sort"
@@ -254,9 +255,17 @@ func (s *Service) SendSystemMessageToClient(clientID uint, text string) {
 	}
 }
 
-// BroadcastEvent sends all connected clients the outbound object provided.
+// BroadcastEvent sends an outbound chat event to connected clients and then
+// publishes the same event internally for passive observers such as plugins
+// that mirror the complete rendered chat.
 func (s *Service) BroadcastEvent(event events.OutboundEvent) error {
-	return s.Broadcast(event.GetBroadcastPayload())
+	if err := s.Broadcast(event.GetBroadcastPayload()); err != nil {
+		return err
+	}
+	if s.events != nil {
+		s.events.Publish(context.Background(), dispatcher.Event{Type: event.GetMessageType(), Payload: event})
+	}
+	return nil
 }
 
 // HandleClientConnection handles a single inbound websocket connection.

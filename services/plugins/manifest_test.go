@@ -1074,10 +1074,10 @@ func TestRequireSubscriptionPermissions(t *testing.T) {
 			},
 		},
 		{
-			name: "unrelated subscriptions",
+			name:        "broadcast handler may also send chat",
+			permissions: []string{PermChatSend},
 			subscriptions: Subscriptions{
-				Notify: []Subscription{{Event: "some-other-notify-event"}},
-				Filter: []Subscription{{Event: "some-other-filter-event", Priority: 100}},
+				Notify: []Subscription{{Event: EventChatMessageBroadcast}},
 			},
 		},
 	}

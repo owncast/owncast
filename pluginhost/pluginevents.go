@@ -157,7 +157,9 @@ func newHelpResponder(snapshot func() []*plugins.Loaded, post func(text string))
 // newPluginEventListener returns a dispatcher.Listener that translates each
 // Owncast event into the plugin SDK's payload shape and dispatches it to
 // subscribed plugins. Dispatch runs on its own goroutine so a slow plugin
-// never blocks the event source (the chat hot path).
+// never blocks the event source (the chat hot path). Multiple translated
+// events stay ordered; passive viewers see a user message before command
+// handlers can post their response.
 func newPluginEventListener(pluginDispatcher *plugins.Dispatcher) dispatcher.Listener {
 	return func(ctx context.Context, e dispatcher.Event) {
 		events := translatePluginEvent(e)
@@ -168,31 +170,33 @@ func newPluginEventListener(pluginDispatcher *plugins.Dispatcher) dispatcher.Lis
 		// context so the dispatch isn't cancelled when the publishing call
 		// returns. Per-plugin timeouts still apply inside Dispatch.
 		ctx = context.WithoutCancel(ctx)
-		for _, pe := range events {
-			// Notify-only on purpose: the inbound-chat path already ran
-			// the filter chain through newPluginChatFilter before the
-			// event was broadcast. Calling Dispatch (filter + notify)
-			// here would re-run every plugin's on_filter on a message
-			// that already survived once, doubling work and double-
-			// triggering rate-limit logic (slow-mode, etc.).
-			go func(pe pluginEvent) {
+		go func() {
+			for _, pe := range events {
+				// Notify-only on purpose: the inbound-chat path already ran
+				// the filter chain through newPluginChatFilter before the
+				// event was broadcast. Calling Dispatch (filter + notify)
+				// here would re-run every plugin's on_filter on a message
+				// that already survived once.
 				pluginDispatcher.Notify(ctx, pe.eventType, pe.payload)
 				if pe.eventType == plugins.EventChatMessageReceived {
 					if msg, ok := pe.payload.(pluginChatMessage); ok {
 						pluginDispatcher.DispatchCommands(ctx, msg)
 					}
 				}
-			}(pe)
-		}
+			}
+		}()
 	}
 }
 
-// translatePluginEvent maps shared webhook events and internal ActivityPub
-// events onto plugin events. It is pure so each contract can be tested without
-// a live dispatcher.
+// translatePluginEvent maps shared webhook, outbound chat, and internal
+// ActivityPub events onto plugin events. It is pure so each contract can be
+// tested without a live dispatcher.
 func translatePluginEvent(evt dispatcher.Event) []pluginEvent {
 	if webhookEvent, ok := evt.Payload.(webhooks.WebhookEvent); ok {
 		return translateWebhookEvent(webhookEvent)
+	}
+	if outboundEvent, ok := evt.Payload.(events.OutboundEvent); ok {
+		return translateChatBroadcastEvent(outboundEvent)
 	}
 	return translateFediverseEvent(evt)
 }
@@ -249,10 +253,10 @@ func normalizeFediverseHandle(handle string) string {
 // it should produce (zero, one, or — for a multi-message moderation toggle —
 // several). It's pure so the mapping can be tested without a live dispatcher.
 //
-// Only genuine user chat messages (models.MessageSent) become
-// chat.message.received — system messages and actions (including a plugin's
-// own chat.send output) are intentionally excluded, so plugins don't react to
-// their own posts.
+// Every viewer-visible user/bot message becomes chat.message.broadcast.
+// Only genuine user messages additionally become chat.message.received;
+// keeping bot and system output off the reactive event prevents feedback
+// loops in plugins that reply to chat.
 func translateWebhookEvent(evt webhooks.WebhookEvent) []pluginEvent {
 	switch evt.Type {
 	case models.MessageSent, models.UserJoined, models.UserParted, models.UserNameChanged, models.VisibiltyToggled:
@@ -335,16 +339,28 @@ func chatMessageEvent(evt webhooks.WebhookEvent) []pluginEvent {
 	if !ok {
 		return nil
 	}
-	// Don't deliver messages authored by a bot (e.g. another plugin's
-	// chat.send, posted under its bot identity) back to plugins. This prevents
-	// echo loops: a plugin that replies to chat would otherwise be re-triggered
-	// by its own reply, forever.
-	if data.User != nil && data.User.IsBot {
-		return nil
+	broadcast := plugins.HostChatMessageBroadcast{
+		ID:        data.ID,
+		Type:      models.MessageSent,
+		User:      toHostUserPtr(data.User),
+		Body:      data.Body,
+		Timestamp: formatTimePtr(data.Timestamp),
 	}
+	if data.User != nil {
+		broadcast.SenderName = data.User.DisplayName
+	}
+	out := make([]pluginEvent, 1, 2)
+	out[0] = pluginEvent{plugins.EventChatMessageBroadcast, broadcast}
+
+	// Bot output is observable through chat.message.broadcast but must not
+	// trigger reactive chat handlers, or responders would echo-loop forever.
+	if data.User != nil && data.User.IsBot {
+		return out
+	}
+
 	// Use RawBody (what the user actually typed), not Body (the HTML-rendered
 	// form like `<p>!broadcaster</p>`). Plugins doing command matching or
-	// content analysis want the raw text; the chat client handles rendering.
+	// content analysis want the raw text.
 	msg := pluginChatMessage{
 		ID:        data.ID,
 		User:      toHostUserPtr(data.User),
@@ -352,7 +368,35 @@ func chatMessageEvent(evt webhooks.WebhookEvent) []pluginEvent {
 		Body:      data.RawBody,
 		Timestamp: formatTimePtr(data.Timestamp),
 	}
-	return []pluginEvent{{plugins.EventChatMessageReceived, msg}}
+	return append(out, pluginEvent{plugins.EventChatMessageReceived, msg})
+}
+
+func translateChatBroadcastEvent(event events.OutboundEvent) []pluginEvent {
+	payload := plugins.HostChatMessageBroadcast{
+		Type: event.GetMessageType(),
+	}
+	switch event := event.(type) {
+	case *events.UserMessageEvent:
+		payload.ID = event.ID
+		payload.User = toHostUserPtr(event.User)
+		if event.User != nil {
+			payload.SenderName = event.User.DisplayName
+		}
+		payload.Body = event.Body
+		payload.Timestamp = event.Timestamp.UTC().Format(time.RFC3339)
+	case *events.SystemMessageEvent:
+		payload.ID = event.ID
+		payload.SenderName = event.ServerName
+		payload.Body = event.Body
+		payload.Timestamp = event.Timestamp.UTC().Format(time.RFC3339)
+	case *events.ActionEvent:
+		payload.ID = event.ID
+		payload.Body = event.Body
+		payload.Timestamp = event.Timestamp.UTC().Format(time.RFC3339)
+	default:
+		return nil
+	}
+	return []pluginEvent{{plugins.EventChatMessageBroadcast, payload}}
 }
 
 func translateStreamEvent(evt webhooks.WebhookEvent) []pluginEvent {

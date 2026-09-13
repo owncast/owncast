@@ -223,6 +223,19 @@ type HostChatMessage struct {
 	Timestamp string    `json:"timestamp"`
 }
 
+// HostChatMessageBroadcast is a chat event exactly as viewers receive it.
+// Body contains the host-rendered HTML, unlike HostChatMessage.Body, which is
+// raw text for handlers and filters. It includes user, bot, system, and action
+// messages so passive consumers such as overlays can mirror the complete chat.
+type HostChatMessageBroadcast struct {
+	ID         string    `json:"id"`
+	Type       string    `json:"type"`
+	User       *HostUser `json:"user,omitempty"`
+	SenderName string    `json:"senderName,omitempty"`
+	Body       string    `json:"body"`
+	Timestamp  string    `json:"timestamp"`
+}
+
 // CommandEvent is the internal chat.command payload delivered by the host to
 // every plugin whose declared command matches an accepted chat message.
 type CommandEvent struct {

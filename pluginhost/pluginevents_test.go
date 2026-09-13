@@ -7,19 +7,20 @@ import (
 
 	"github.com/owncast/owncast/models"
 	activityevents "github.com/owncast/owncast/services/activitypub/events"
+	chatevents "github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/services/plugins"
 	"github.com/owncast/owncast/services/webhooks"
 )
 
-func TestTranslateWebhookEvent_ChatMessageOnlyForUserMessages(t *testing.T) {
+func TestTranslateWebhookEvent_ChatMessageBroadcastsBeforeReactiveEvent(t *testing.T) {
 	ts := time.Date(2026, 5, 27, 12, 0, 0, 0, time.UTC)
 	evt := webhooks.WebhookEvent{
 		Type: models.MessageSent,
 		EventData: &webhooks.WebhookChatMessage{
 			ID: "m1",
 			// Body is the HTML-rendered form the chat client sees; RawBody is
-			// what plugins receive. Set both, to mirror the production payload.
+			// what reactive plugins receive.
 			Body:      "<p>hello</p>",
 			RawBody:   "hello",
 			Timestamp: &ts,
@@ -28,15 +29,25 @@ func TestTranslateWebhookEvent_ChatMessageOnlyForUserMessages(t *testing.T) {
 		},
 	}
 	out := translateWebhookEvent(evt)
-	if len(out) != 1 {
-		t.Fatalf("expected 1 event, got %d", len(out))
+	if len(out) != 2 {
+		t.Fatalf("expected 2 events, got %d", len(out))
 	}
-	if out[0].eventType != plugins.EventChatMessageReceived {
-		t.Errorf("eventType = %q want %q", out[0].eventType, plugins.EventChatMessageReceived)
+	if out[0].eventType != plugins.EventChatMessageBroadcast {
+		t.Fatalf("first eventType = %q want %q", out[0].eventType, plugins.EventChatMessageBroadcast)
 	}
-	msg, ok := out[0].payload.(pluginChatMessage)
+	broadcast, ok := out[0].payload.(plugins.HostChatMessageBroadcast)
 	if !ok {
-		t.Fatalf("payload type = %T want pluginChatMessage", out[0].payload)
+		t.Fatalf("broadcast payload type = %T", out[0].payload)
+	}
+	if broadcast.Body != "<p>hello</p>" || broadcast.SenderName != "alice" || broadcast.Type != string(models.MessageSent) {
+		t.Errorf("unexpected broadcast payload: %+v", broadcast)
+	}
+	if out[1].eventType != plugins.EventChatMessageReceived {
+		t.Errorf("eventType = %q want %q", out[1].eventType, plugins.EventChatMessageReceived)
+	}
+	msg, ok := out[1].payload.(pluginChatMessage)
+	if !ok {
+		t.Fatalf("payload type = %T want pluginChatMessage", out[1].payload)
 	}
 	if msg.ID != "m1" || msg.Body != "hello" || msg.ClientID != 42 {
 		t.Errorf("unexpected message payload: %+v", msg)
@@ -203,31 +214,58 @@ func TestTranslatePluginEvent_FediverseWrongPayloadTypes(t *testing.T) {
 	}
 }
 
-func TestTranslateWebhookEvent_SkipsBotAuthoredMessages(t *testing.T) {
-	// A message a plugin posted (under its bot identity) must not be delivered
-	// back to plugins, or chat-reacting plugins would echo-loop forever.
+func TestTranslateWebhookEvent_BotMessageIsBroadcastButNotReactive(t *testing.T) {
 	evt := webhooks.WebhookEvent{
 		Type: models.MessageSent,
 		EventData: &webhooks.WebhookChatMessage{
-			ID:   "b1",
-			Body: "echo",
-			User: &models.User{DisplayName: "echo-bot", IsBot: true},
+			ID:      "b1",
+			Body:    "<p>echo</p>",
+			RawBody: "echo",
+			User:    &models.User{DisplayName: "echo-bot", IsBot: true},
 		},
 	}
-	if out := translateWebhookEvent(evt); len(out) != 0 {
-		t.Errorf("bot-authored message should produce no plugin events, got %d", len(out))
+	out := translateWebhookEvent(evt)
+	if len(out) != 1 || out[0].eventType != plugins.EventChatMessageBroadcast {
+		t.Fatalf("bot output should produce only a broadcast event, got %+v", out)
+	}
+	payload := out[0].payload.(plugins.HostChatMessageBroadcast)
+	if payload.Body != "<p>echo</p>" || payload.SenderName != "echo-bot" {
+		t.Errorf("unexpected bot broadcast: %+v", payload)
+	}
+}
+
+func TestTranslatePluginEvent_BroadcastsSystemAndActionMessages(t *testing.T) {
+	ts := time.Date(2026, 5, 27, 12, 0, 0, 0, time.UTC)
+	tests := []struct {
+		name       string
+		event      chatevents.OutboundEvent
+		senderName string
+	}{
+		{"system", &chatevents.SystemMessageEvent{Event: chatevents.Event{ID: "s1", Timestamp: ts}, MessageEvent: chatevents.MessageEvent{Body: "<p>help</p>"}, ServerName: "My stream"}, "My stream"},
+		{"action", &chatevents.ActionEvent{Event: chatevents.Event{ID: "a1", Timestamp: ts}, MessageEvent: chatevents.MessageEvent{Body: "<p>waved</p>"}}, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			out := translatePluginEvent(dispatcher.Event{Payload: tt.event})
+			if len(out) != 1 || out[0].eventType != plugins.EventChatMessageBroadcast {
+				t.Fatalf("unexpected events: %+v", out)
+			}
+			payload := out[0].payload.(plugins.HostChatMessageBroadcast)
+			if payload.Body == "" || payload.SenderName != tt.senderName || payload.Timestamp != "2026-05-27T12:00:00Z" {
+				t.Errorf("unexpected broadcast payload: %+v", payload)
+			}
+		})
 	}
 }
 
 func TestTranslateWebhookEvent_SystemMessageProducesNothing(t *testing.T) {
-	// A plugin's own chat.send posts a system message; it must not become a
-	// chat.message.received event (no feedback loop).
+	// System messages are sourced from chat.BroadcastEvent, not webhooks.
 	evt := webhooks.WebhookEvent{
 		Type:      models.SystemMessageSent,
 		EventData: &webhooks.WebhookChatMessage{ID: "s1", Body: "system"},
 	}
 	if out := translateWebhookEvent(evt); len(out) != 0 {
-		t.Errorf("system message should produce no plugin events, got %d", len(out))
+		t.Errorf("system webhook should produce no plugin events, got %d", len(out))
 	}
 }
 
