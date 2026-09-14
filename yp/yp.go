@@ -23,6 +23,7 @@ const pingInterval = 4 * time.Minute
 // YP is a service for handling listing in the Owncast directory.
 type YP struct {
 	timer *time.Ticker
+	post  func(string, string, io.Reader) (*http.Response, error)
 
 	// getStatus returns the current stream status; consulted on each
 	// ping cycle to skip pings while offline.
@@ -61,6 +62,7 @@ func New(deps Deps) *YP {
 	return &YP{
 		getStatus:        deps.GetStatus,
 		configRepository: deps.ConfigRepository,
+		post:             http.Post,
 	}
 }
 
@@ -148,7 +150,7 @@ func (yp *YP) ping() {
 	}
 
 	pingURL := config.GetDefaults().YPServer + "/api/ping"
-	resp, err := http.Post(pingURL, "application/json", bytes.NewBuffer(req)) //nolint
+	resp, err := yp.post(pingURL, "application/json", bytes.NewBuffer(req)) //nolint
 	if err != nil {
 		log.Errorln(err)
 		return
@@ -176,7 +178,7 @@ func (yp *YP) ping() {
 	yp.inErrorState = false
 
 	if pingResponse.Key != key {
-		if err := yp.configRepository.SetDirectoryRegistrationKey(key); err != nil {
+		if err := yp.configRepository.SetDirectoryRegistrationKey(pingResponse.Key); err != nil {
 			log.Errorln("unable to save directory key:", err)
 		}
 	}
