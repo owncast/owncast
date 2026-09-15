@@ -3,7 +3,7 @@ module github.com/owncast/owncast/tools
 go 1.26.6
 
 require (
-	github.com/evilmartians/lefthook/v2 v2.1.12
+	github.com/evilmartians/lefthook/v2 v2.1.14
 	github.com/golangci/golangci-lint/v2 v2.12.2
 	github.com/oapi-codegen/oapi-codegen/v2 v2.8.0
 	github.com/sqlc-dev/sqlc v1.31.1
