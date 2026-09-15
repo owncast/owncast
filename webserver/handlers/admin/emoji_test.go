@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/datastore"
 )
 
 // deleteEmojiRequest posts a delete request for the given name and returns
@@ -85,12 +86,37 @@ func TestDeleteCustomEmojiRemovesEmojiInSubdirectory(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Force a fresh cache refresh so package-global cache state and filesystem
+	// timestamp granularity cannot affect this test's setup.
+	if _, err := datastore.UpdateEmojiList(true); err != nil {
+		t.Fatal(err)
+	}
+	initialList := datastore.GetEmojiList()
+	waveFound := false
+	for _, emoji := range initialList {
+		if emoji.Name != nil && *emoji.Name == "wave" {
+			waveFound = true
+			break
+		}
+	}
+	if !waveFound {
+		t.Fatal("wave emoji not in initial list; cache priming failed")
+	}
+
 	if !deleteEmojiRequest(t, "/pack/wave.png") {
 		t.Fatal("expected the nested emoji to be deleted")
 	}
 
 	if _, err := os.Stat(filepath.Join(nested, "wave.png")); !os.IsNotExist(err) {
-		t.Error("nested emoji was not removed")
+		t.Error("nested emoji was not removed from disk")
+	}
+
+	// Verify the cache was invalidated: GetEmojiList should no longer include the deleted emoji
+	emojiList := datastore.GetEmojiList()
+	for _, emoji := range emojiList {
+		if emoji.Name != nil && *emoji.Name == "wave" {
+			t.Error("cache was not invalidated: deleted emoji still in list")
+		}
 	}
 }
 

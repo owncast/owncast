@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/services/datastore"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	webutils "github.com/owncast/owncast/webserver/utils"
@@ -103,7 +104,6 @@ func DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer root.Close()
-
 	if err := root.Remove(name); err != nil {
 		if os.IsNotExist(err) {
 			webutils.WriteSimpleResponse(w, false, fmt.Sprintf("Emoji %q doesn't exist", emoji.Name))
@@ -112,6 +112,10 @@ func DeleteCustomEmoji(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	// Force cache invalidation since deleting a file in a subdirectory doesn't
+	// update the parent directory's ModTime on all systems.
+	_, _ = datastore.UpdateEmojiList(true)
 
 	webutils.WriteSimpleResponse(w, true, fmt.Sprintf("Emoji %q has been deleted", emoji.Name))
 }
