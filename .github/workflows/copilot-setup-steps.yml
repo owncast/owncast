@@ -42,12 +42,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: '24.12.0'
           cache: 'npm'
 
-      - name: Install npm
-        run: npm install --global npm@11.6.2
-
       - name: Install JavaScript dependencies
-        run: npm ci
+        run: npm install
         working-directory: web
