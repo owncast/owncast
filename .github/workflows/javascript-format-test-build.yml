@@ -126,7 +126,7 @@ jobs:
 
       - name: Commit changes
         if: steps.changed-files-yaml.outputs.src_any_changed == 'true' && github.event_name != 'pull_request'
-        uses: EndBug/add-and-commit@v10
+        uses: EndBug/add-and-commit@v11
         with:
           author_name: Owncast
           author_email: owncast@owncast.online
@@ -304,7 +304,7 @@ jobs:
         # Only commit built web project files on develop.
       - name: Commit changes
         if: ${{ github.ref == 'refs/heads/develop' }}
-        uses: EndBug/add-and-commit@v10
+        uses: EndBug/add-and-commit@v11
         with:
           message: 'Bundle embedded web app'
           add: 'static/web'
