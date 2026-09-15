@@ -1,6 +1,7 @@
 package transcoder
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path"
@@ -69,7 +70,7 @@ func (g *ThumbnailGenerator) fireThumbnailGenerator(segmentPath string, variantI
 	var modTime time.Time
 	var names []string
 	for _, f := range files {
-		if path.Ext(f.Name()) != ".ts" {
+		if path.Ext(f.Name()) != ".m4s" {
 			continue
 		}
 
@@ -92,7 +93,20 @@ func (g *ThumbnailGenerator) fireThumbnailGenerator(segmentPath string, variantI
 	if len(names) == 0 {
 		return nil
 	}
+	// With multiple variants ffmpeg names init segments init_0.mp4, init_1.mp4, etc.
+	// With a single variant it uses init.mp4.
+	initSegment := path.Join(framePath, fmt.Sprintf("init_%d.mp4", variantIndex))
+	if !utils.DoesFileExists(initSegment) {
+		initSegment = path.Join(framePath, "init.mp4")
+	}
 	mostRecentFile := path.Join(framePath, names[0])
+
+	// The segment may have been cleaned up between ReadDir and now.
+	if !utils.DoesFileExists(mostRecentFile) {
+		return nil
+	}
+	// fMP4 segments require the init segment to be readable by ffmpeg
+	inputArg := fmt.Sprintf("concat:%s|%s", initSegment, mostRecentFile)
 	ffmpegPath := utils.ValidatedFfmpegPath(g.configRepository.GetFfMpegPath())
 	outputFileTemp := path.Join(g.cfg.TempDir, "tempthumbnail.jpg")
 
@@ -100,7 +114,7 @@ func (g *ThumbnailGenerator) fireThumbnailGenerator(segmentPath string, variantI
 		"-y",            // Overwrite file
 		"-threads", "1", // Low priority processing
 		"-t", "1", // Pull from frame 1
-		"-i", mostRecentFile, // Input
+		"-i", inputArg, // Input (init segment + media segment)
 		"-f", "image2", // format
 		"-vframes", "1", // Single frame
 		outputFileTemp,
@@ -115,7 +129,7 @@ func (g *ThumbnailGenerator) fireThumbnailGenerator(segmentPath string, variantI
 		log.Errorln(err)
 	}
 
-	g.makeAnimatedGifPreview(mostRecentFile, previewGifFile)
+	g.makeAnimatedGifPreview(inputArg, previewGifFile)
 
 	return nil
 }

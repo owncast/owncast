@@ -218,20 +218,29 @@ func GetCacheDurationSecondsForPath(filePath string) int {
 	if filename == "thumbnail.jpg" || filename == "preview.gif" {
 		// Thumbnails & preview gif re-generate during live
 		return 20
-	} else if fileExtension == ".js" || fileExtension == ".css" {
-		// Cache javascript & CSS
-		return 60 * 60 * 24 * defaultDaysCached
-	} else if fileExtension == ".ts" || fileExtension == ".woff2" {
+	}
+
+	// HLS fMP4 init segments. Single-variant ffmpeg writes init.mp4; multi-variant
+	// writes init_0.mp4, init_1.mp4, etc. All of these are regenerated when a
+	// stream restarts, so they need a short cache.
+	if fileExtension == ".mp4" && strings.HasPrefix(filename, "init") {
+		return 20
+	}
+
+	if filename == "/" || fileExtension == "" {
+		return 0
+	}
+
+	switch fileExtension {
+	case ".m3u8", ".html":
+		return 0
+	case ".m4s", ".mp4", ".woff2":
 		// Cache video segments as long as you want. They can't change.
 		// This matters most for local hosting of segments for recordings
 		// and not for live or 3rd party storage.
 		return 31557600
-	} else if fileExtension == ".m3u8" {
-		return 0
-	} else if fileExtension == ".jpg" || fileExtension == ".png" || fileExtension == ".gif" || fileExtension == ".svg" {
+	case ".js", ".css", ".jpg", ".png", ".gif", ".svg":
 		return 60 * 60 * 24 * defaultDaysCached
-	} else if fileExtension == ".html" || filename == "/" || fileExtension == "" {
-		return 0
 	}
 
 	// Default cache length in seconds

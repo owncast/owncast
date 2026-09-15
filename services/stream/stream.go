@@ -2,6 +2,7 @@ package stream
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"path"
@@ -89,29 +90,49 @@ func (s *Service) createInitialOfflineState() error {
 // with the offline video stream state only. No live stream HLS segments
 // will continue to be referenced.
 func (s *Service) transitionToOfflineVideoStreamContent() {
-	log.Traceln("Firing transcoder with offline stream state")
+	log.Traceln("Placing offline fMP4 content into HLS directories")
 
-	offlineTranscoder := transcoder.NewTranscoder(s.cfg, s.configRepository)
-	offlineTranscoder.SetIdentifier("offline")
-	offlineTranscoder.SetLatencyLevel(models.GetLatencyLevel(4))
-	offlineTranscoder.SetIsEvent(true)
-
-	offlineFilePath, err := saveOfflineClipToDisk(s.cfg.TempDir, "offline-v2.ts")
+	offlineInitPath, offlineSegmentPath, err := saveOfflineFMP4ToDisk(s.cfg.TempDir)
 	if err != nil {
-		log.Fatalln("unable to save offline clip:", err)
+		log.Fatalln("unable to save offline fMP4 files:", err)
 	}
 
-	offlineTranscoder.SetInput(offlineFilePath)
-	go offlineTranscoder.Start(false)
+	variants := s.configRepository.GetStreamOutputVariants()
+	if len(variants) == 0 {
+		variants = make([]models.StreamOutputVariant, 1)
+	}
+	for index := range variants {
+		variantDir := filepath.Join(config.HLSStoragePath, fmt.Sprintf("%d", index))
+		if err := os.MkdirAll(variantDir, 0o750); err != nil {
+			log.Errorln("unable to create variant directory:", err)
+			continue
+		}
+		s.makeVariantIndexOffline(index, offlineInitPath, offlineSegmentPath)
+	}
 
-	// Copy the logo to be the thumbnail
+	masterPlaylistPath := filepath.Join(config.HLSStoragePath, "stream.m3u8")
+	masterTmp, err := os.CreateTemp(config.HLSStoragePath, "tmp-stream-*.m3u8")
+	if err != nil {
+		log.Errorln("unable to create master playlist temp file:", err)
+	} else {
+		_, _ = masterTmp.WriteString("#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-INDEPENDENT-SEGMENTS\n")
+		for index := range variants {
+			_, _ = fmt.Fprintf(masterTmp, "#EXT-X-STREAM-INF:BANDWIDTH=0\n%d/stream.m3u8\n", index)
+		}
+		if err := masterTmp.Close(); err != nil {
+			log.Errorln("unable to close master playlist:", err)
+		} else if err := utils.Move(masterTmp.Name(), masterPlaylistPath); err != nil {
+			log.Errorln("unable to atomically replace master playlist:", err)
+		} else if _, err := s.storage.Save(masterPlaylistPath, 0); err != nil {
+			log.Errorln("unable to save master playlist:", err)
+		}
+	}
+
 	logo := s.configRepository.GetLogoPath()
 	dst := filepath.Join(s.cfg.TempDir, "thumbnail.jpg")
 	if err = utils.Copy(filepath.Join("data", logo), dst); err != nil {
 		log.Warnln(err)
 	}
-
-	// Delete the preview Gif
 	_ = os.Remove(path.Join(config.DataDirectory, "preview.gif"))
 }
 
@@ -243,13 +264,16 @@ func (s *Service) applyStreamOffline() {
 		}
 	}
 
-	offlineFilename := "offline-v2.ts"
-
-	offlineFilePath, err := saveOfflineClipToDisk(s.cfg.TempDir, offlineFilename)
+	offlineInitPath, offlineSegmentPath, err := saveOfflineFMP4ToDisk(s.cfg.TempDir)
 	if err != nil {
 		log.Errorln(err)
 		return
 	}
+	// Clean up temp files after all variants have been updated.
+	defer func() {
+		_ = os.Remove(offlineInitPath)
+		_ = os.Remove(offlineSegmentPath)
+	}()
 
 	if s.thumbnailGen != nil {
 		s.thumbnailGen.Stop()
@@ -271,7 +295,7 @@ func (s *Service) applyStreamOffline() {
 	}
 
 	for index := range s.currentBroadcast.OutputSettings {
-		s.makeVariantIndexOffline(index, offlineFilePath, offlineFilename)
+		s.makeVariantIndexOffline(index, offlineInitPath, offlineSegmentPath)
 	}
 
 	s.StartOfflineCleanupTimer()
