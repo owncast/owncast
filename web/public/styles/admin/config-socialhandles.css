@@ -11,6 +11,11 @@
   line-height: normal;
 }
 
+.social-links-edit-container .social-handles-table .social-handle-cell .option-icon img {
+  max-height: 100%;
+  max-width: 100%;
+}
+
 .social-links-edit-container .social-handles-table .social-handle-cell .option-label {
   display: flex;
   flex-direction: column;
@@ -47,6 +52,14 @@
   height: 1.5em;
   width: 1.5em;
   line-height: normal;
+}
+
+.social-option .ant-select-item-option-content .option-icon img,
+.social-option .ant-select-selection-item .option-icon img,
+.social-dropdown .ant-select-item-option-content .option-icon img,
+.social-dropdown .ant-select-selection-item .option-icon img {
+  max-height: 100%;
+  max-width: 100%;
 }
 
 .social-option .ant-select-item-option-content .option-label,
