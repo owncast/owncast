@@ -80,9 +80,9 @@ FAILED_GROUPS=()
 # Run one cypress group. Cloud recording (and the flags that require it) is
 # CI-only: local runs stay fast and work offline. A failing group is recorded
 # and the run continues, so a single run surfaces every broken group.
-# Extra config is merged into one --config flag because cypress honors only
-# the last --config it sees; videosFolder is per group so desktop and mobile
-# runs of the same specs don't overwrite each other's recordings.
+# Extra config is merged into one --config flag because Cypress honors only
+# the last --config it sees. Video and screenshot folders are per group so
+# desktop and mobile runs of the same specs don't overwrite each other's output.
 #   run_cypress <group> <tags-env> <spec-glob> [extra config key=value,...]
 run_cypress() {
 	local group=$1 tags=$2 spec=$3 extra_config="${4:-}"
@@ -91,7 +91,7 @@ run_cypress() {
 		return 0
 	fi
 
-	local config="videosFolder=cypress/videos/$group"
+	local config="videosFolder=cypress/videos/$group,screenshotsFolder=cypress/screenshots/$group"
 	if [ -n "$extra_config" ]; then
 		config="$config,$extra_config"
 	fi

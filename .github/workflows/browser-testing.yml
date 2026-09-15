@@ -247,14 +247,18 @@ jobs:
             aws s3 cp "$f" "s3://$S3_BUCKET/$key" --endpoint-url "$S3_ENDPOINT" \
               --acl public-read --content-type video/mp4 --no-progress >&2
             poster_url=""
-            # Capture near the end, after Cypress assertions have waited for the page to load.
-            if [ -n "$FFMPEG" ] && "$FFMPEG" -v error -sseof -1 -i "$f" -frames:v 1 "${f%.mp4}.png"; then
-              poster="${f%.mp4}.png"
-              poster_url="$S3_ENDPOINT/$S3_BUCKET/${key%.mp4}.png"
-              aws s3 cp "$poster" "s3://$S3_BUCKET/${key%.mp4}.png" --endpoint-url "$S3_ENDPOINT" \
+            # Cypress captures a preview from the last tested page before it tears
+            # down the browser. Do not extract a frame from a video tail: that can
+            # be blank, and specs without selected tests have no preview to publish.
+            dir="${f#videos/}"; dir="${dir%%/*}"
+            preview="screenshots/$dir/$(basename "${f%.mp4}")/preview.png"
+            if [ -f "$preview" ]; then
+              preview_key="$PREFIX/${preview#screenshots/}"
+              poster_url="$S3_ENDPOINT/$S3_BUCKET/$preview_key"
+              aws s3 cp "$preview" "s3://$S3_BUCKET/$preview_key" --endpoint-url "$S3_ENDPOINT" \
                 --acl public-read --content-type image/png --no-progress >&2
             fi
-            dir="${f#videos/}"; dir="${dir%%/*}"
+            # Group recordings under the same heading as their explicit preview.
             if [ "$dir" != "$group" ]; then
               group="$dir"
               printf '\n**%s**\n\n' "$group"
