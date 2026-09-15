@@ -328,6 +328,9 @@ func (s *Server) serveSSE(w http.ResponseWriter, r *http.Request, p *Loaded, cha
 	h.Set("Cache-Control", "no-cache")
 	h.Set("Connection", "keep-alive")
 	w.WriteHeader(http.StatusOK)
+	if _, err := io.WriteString(w, ": connected\n\n"); err != nil {
+		return
+	}
 	flusher.Flush()
 
 	keepAlive := time.NewTicker(SSEKeepAliveInterval)

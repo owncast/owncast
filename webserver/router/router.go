@@ -125,7 +125,7 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 	protocols.SetHTTP1(true)
 	protocols.SetUnencryptedHTTP2(true)
 
-	compress, _ := httpcompression.DefaultAdapter() // Use the default configuration
+	compress, _ := newHTTPCompressionAdapter()
 	server := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", ip, port),
 		ReadHeaderTimeout: 4 * time.Second,
@@ -141,6 +141,12 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 	log.Infoln("Configure this server by visiting /admin.")
 
 	return server.ListenAndServe()
+}
+
+func newHTTPCompressionAdapter() (func(http.Handler) http.Handler, error) {
+	return httpcompression.DefaultAdapter(
+		httpcompression.ContentTypes([]string{"text/event-stream"}, true),
+	)
 }
 
 func addStaticFileEndpoints(r chi.Router, h *handlers.Handlers, apc *apcontrollers.Controllers) {
