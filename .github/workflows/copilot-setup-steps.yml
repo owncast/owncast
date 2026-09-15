@@ -44,6 +44,10 @@ jobs:
         with:
           node-version: '24'
           cache: 'npm'
+
+      - name: Install npm
+        run: npm install --global npm@11.6.2
+
       - name: Install JavaScript dependencies
         run: npm ci
         working-directory: web
