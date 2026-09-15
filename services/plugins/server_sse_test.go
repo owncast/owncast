@@ -93,7 +93,7 @@ func TestServer_SSE_StreamsPublishedFrames(t *testing.T) {
 			srv := httptest.NewServer(sseServer(t, []string{"http.sse"}, hub))
 			defer srv.Close()
 
-			ctx, cancel := context.WithCancel(context.Background())
+			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 			defer cancel()
 			req, err := http.NewRequestWithContext(ctx, "GET", srv.URL+"/plugins/demo"+tc.path, nil)
 			if err != nil {
@@ -111,6 +111,14 @@ func TestServer_SSE_StreamsPublishedFrames(t *testing.T) {
 			if ct := resp.Header.Get("Content-Type"); ct != "text/event-stream" {
 				t.Errorf("Content-Type = %q want text/event-stream", ct)
 			}
+			reader := bufio.NewReader(resp.Body)
+			line, err := reader.ReadString('\n')
+			if err != nil {
+				t.Fatal(err)
+			}
+			if line != ": connected\n" {
+				t.Fatalf("initial SSE line = %q, want %q", line, ": connected\n")
+			}
 
 			// The handler subscribes on its own goroutine; wait for it before
 			// publishing so the frame isn't dropped before anyone's listening.
@@ -120,7 +128,7 @@ func TestServer_SSE_StreamsPublishedFrames(t *testing.T) {
 				t.Fatalf("expected delivery to the connected client, got %d", n)
 			}
 
-			frame := readSSEFrame(t, resp.Body)
+			frame := readSSEFrame(t, reader)
 			if !strings.Contains(frame, "event: emoji\n") || !strings.Contains(frame, "data: 🦉\n") {
 				t.Errorf("unexpected SSE frame: %q", frame)
 			}
