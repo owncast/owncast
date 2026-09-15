@@ -333,10 +333,10 @@ describe('Localization Keys Cross-Language Validation', () => {
     test('should provide English text for plugin SQL storage and configuration', () => {
       expect(
         getNestedValue(englishTranslations, Localization.Admin.Plugins.PermissionNames.storageSql),
-      ).toBe('Store data in a private SQLite database');
+      ).toBe('Store data in a private database');
       expect(
         getNestedValue(englishTranslations, Localization.Admin.Plugins.Permissions.storageSql),
-      ).toBe('Read and write a private SQLite database that persists across reloads.');
+      ).toBe('Read and write a private database that persists across reloads.');
       expect(getNestedValue(englishTranslations, Localization.Admin.Plugins.configure)).toBe(
         'Configure',
       );
