@@ -1,10 +1,13 @@
 package transcoder
 
 import (
+	"errors"
 	"io"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -77,9 +80,20 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	path := r.URL.Path
-	writePath := filepath.Join(config.HLSStoragePath, path)
-	f, err := os.Create(writePath) //nolint: gosec
+	relativePath, writePath, err := safeHLSUploadTarget(config.HLSStoragePath, r.URL.EscapedPath())
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	root, err := os.OpenRoot(config.HLSStoragePath)
+	if err != nil {
+		returnError(err, w)
+		return
+	}
+	defer root.Close()
+
+	f, err := root.Create(relativePath)
 	if err != nil {
 		returnError(err, w)
 		return
@@ -97,13 +111,47 @@ func (s *FileWriterReceiverService) uploadHandler(w http.ResponseWriter, r *http
 }
 
 func (s *FileWriterReceiverService) fileWritten(path string) {
-	if utils.GetRelativePathFromAbsolutePath(path) == "hls/stream.m3u8" {
+	if filepath.ToSlash(utils.GetRelativePathFromAbsolutePath(path)) == "hls/stream.m3u8" {
 		s.callbacks.MasterPlaylistWritten(path)
 	} else if strings.HasSuffix(path, ".ts") {
 		s.callbacks.SegmentWritten(path)
 	} else if strings.HasSuffix(path, ".m3u8") {
 		s.callbacks.VariantPlaylistWritten(path)
 	}
+}
+
+func safeHLSUploadTarget(baseDir string, escapedRequestPath string) (string, string, error) {
+	relativePath, err := safeHLSUploadRelativePath(escapedRequestPath)
+	if err != nil {
+		return "", "", err
+	}
+
+	return relativePath, filepath.Join(baseDir, filepath.FromSlash(relativePath)), nil
+}
+
+func safeHLSUploadRelativePath(escapedRequestPath string) (string, error) {
+	requestPath, err := url.PathUnescape(escapedRequestPath)
+	if err != nil {
+		return "", errors.New("invalid HLS upload path")
+	}
+
+	relativePath, ok := strings.CutPrefix(requestPath, "/")
+	if !ok || relativePath == "" || strings.HasPrefix(relativePath, "/") || strings.Contains(relativePath, `\`) {
+		return "", errors.New("invalid HLS upload path")
+	}
+
+	for _, segment := range strings.Split(relativePath, "/") {
+		if segment == "" || segment == "." || segment == ".." {
+			return "", errors.New("invalid HLS upload path")
+		}
+	}
+
+	cleanPath := path.Clean(relativePath)
+	if !filepath.IsLocal(filepath.FromSlash(cleanPath)) {
+		return "", errors.New("invalid HLS upload path")
+	}
+
+	return cleanPath, nil
 }
 
 func returnError(err error, w http.ResponseWriter) {
