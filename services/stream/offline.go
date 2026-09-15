@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/grafov/m3u8"
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/static"
 	"github.com/owncast/owncast/utils"
@@ -99,9 +98,9 @@ func createEmptyOfflinePlaylist(playlistFilePath string, initFilename string, se
 	_, _ = f.WriteString("#EXT-X-ENDLIST\n")
 }
 
-func saveOfflineFMP4ToDisk() (initPath string, segmentPath string, err error) {
+func saveOfflineFMP4ToDisk(tempDir string) (initPath string, segmentPath string, err error) {
 	initData := static.GetOfflineInitSegment()
-	initTmp, err := os.CreateTemp(config.TempDir, "offline-init-*.mp4")
+	initTmp, err := os.CreateTemp(tempDir, "offline-init-*.mp4")
 	if err != nil {
 		return "", "", fmt.Errorf("unable to create temp file for offline init segment: %s", err)
 	}
@@ -116,7 +115,7 @@ func saveOfflineFMP4ToDisk() (initPath string, segmentPath string, err error) {
 	initPath, _ = filepath.Abs(initTmp.Name())
 
 	segData := static.GetOfflineMediaSegment()
-	segTmp, err := os.CreateTemp(config.TempDir, "offline-v2-*.m4s")
+	segTmp, err := os.CreateTemp(tempDir, "offline-v2-*.m4s")
 	if err != nil {
 		return "", "", fmt.Errorf("unable to create temp file for offline media segment: %s", err)
 	}

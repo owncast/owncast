@@ -19,6 +19,7 @@ type noopReceiverCallbacks struct{}
 func (noopReceiverCallbacks) SegmentWritten(string)         {}
 func (noopReceiverCallbacks) VariantPlaylistWritten(string) {}
 func (noopReceiverCallbacks) MasterPlaylistWritten(string)  {}
+func (noopReceiverCallbacks) InitSegmentWritten(string)     {}
 
 func assertNumericPort(t *testing.T, port string) {
 	t.Helper()
@@ -71,6 +72,7 @@ func (c *receiverCallbacks) VariantPlaylistWritten(path string) {
 func (c *receiverCallbacks) MasterPlaylistWritten(path string) {
 	c.masterPlaylists = append(c.masterPlaylists, path)
 }
+func (c *receiverCallbacks) InitSegmentWritten(string) {}
 
 func withTestHLSStoragePath(t *testing.T) string {
 	t.Helper()
@@ -101,7 +103,7 @@ func TestReceiverUploadWritesOnlySafeHLSPaths(t *testing.T) {
 	}{
 		{"/stream.m3u8", "master", filepath.Join(basePath, "stream.m3u8")},
 		{"/0/stream.m3u8", "variant", filepath.Join(basePath, "0", "stream.m3u8")},
-		{"/0/segment.ts", "segment", filepath.Join(basePath, "0", "segment.ts")},
+		{"/0/segment.m4s", "segment", filepath.Join(basePath, "0", "segment.m4s")},
 	}
 
 	for _, tc := range cases {

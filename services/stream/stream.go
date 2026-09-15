@@ -92,7 +92,7 @@ func (s *Service) createInitialOfflineState() error {
 func (s *Service) transitionToOfflineVideoStreamContent() {
 	log.Traceln("Placing offline fMP4 content into HLS directories")
 
-	offlineInitPath, offlineSegmentPath, err := saveOfflineFMP4ToDisk()
+	offlineInitPath, offlineSegmentPath, err := saveOfflineFMP4ToDisk(s.cfg.TempDir)
 	if err != nil {
 		log.Fatalln("unable to save offline fMP4 files:", err)
 	}
@@ -264,7 +264,7 @@ func (s *Service) applyStreamOffline() {
 		}
 	}
 
-	offlineInitPath, offlineSegmentPath, err := saveOfflineFMP4ToDisk()
+	offlineInitPath, offlineSegmentPath, err := saveOfflineFMP4ToDisk(s.cfg.TempDir)
 	if err != nil {
 		log.Errorln(err)
 		return
