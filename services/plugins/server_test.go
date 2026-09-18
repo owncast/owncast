@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"bytes"
 	"io/fs"
 	"net/http"
 	"net/http/httptest"
@@ -314,6 +315,31 @@ func TestWritePluginHTTPResponse_StripsCoreSessionCookie(t *testing.T) {
 	for _, c := range rec.Result().Cookies() {
 		if c.Name == SessionCookieName {
 			t.Fatalf("plugin-set %s cookie was not stripped: %q", SessionCookieName, c.Value)
+		}
+	}
+}
+
+func TestWritePluginHTTPResponse_BinaryBody(t *testing.T) {
+	out := []byte(`{"status":200,"headers":{"Content-Type":"application/octet-stream"},"bodyBase64":"/wCA"}`)
+	rec := httptest.NewRecorder()
+
+	writePluginHTTPResponse(rec, out, false, nil)
+
+	want := []byte{0xff, 0x00, 0x80}
+	if !bytes.Equal(rec.Body.Bytes(), want) {
+		t.Fatalf("binary body: got %v want %v", rec.Body.Bytes(), want)
+	}
+}
+
+func TestWritePluginHTTPResponse_RejectsInvalidBinaryBody(t *testing.T) {
+	for _, out := range [][]byte{
+		[]byte(`{"bodyBase64":"not base64"}`),
+		[]byte(`{"body":"text","bodyBase64":"dGV4dA=="}`),
+	} {
+		rec := httptest.NewRecorder()
+		writePluginHTTPResponse(rec, out, false, nil)
+		if rec.Code != http.StatusInternalServerError {
+			t.Errorf("status: got %d want %d", rec.Code, http.StatusInternalServerError)
 		}
 	}
 }
