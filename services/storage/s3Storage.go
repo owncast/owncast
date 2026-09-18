@@ -23,6 +23,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/aws/smithy-go/middleware"
+	smithyhttp "github.com/aws/smithy-go/transport/http"
 
 	"github.com/owncast/owncast/config"
 )
@@ -268,6 +270,15 @@ func (s *S3Storage) getDeletableVideoSegmentsWithOffset(offset int) ([]s3object,
 // s3MaxDeleteKeys is the maximum number of keys per DeleteObjects request.
 const s3MaxDeleteKeys = 1000
 
+// withContentMD5 uses the checksum supported across S3-compatible providers.
+func withContentMD5(options *s3.Options) {
+	options.APIOptions = append(options.APIOptions, func(stack *middleware.Stack) error {
+		_, _ = stack.Initialize.Remove("AWSChecksum:SetupInputContext")
+		_, _ = stack.Finalize.Remove("AWSChecksum:ComputeInputPayloadChecksum")
+		return smithyhttp.AddContentChecksumMiddleware(stack)
+	})
+}
+
 func (s *S3Storage) deleteObjects(objects []s3object) {
 	keys := make([]types.ObjectIdentifier, len(objects))
 	for i, object := range objects {
@@ -288,7 +299,7 @@ func (s *S3Storage) deleteObjects(objects []s3object) {
 				Objects: keys[i:end],
 				Quiet:   aws.Bool(true),
 			},
-		})
+		}, withContentMD5)
 		if err != nil {
 			log.Errorf("Unable to delete objects from bucket %q, %v\n", s.s3Bucket, err)
 		} else if len(resp.Errors) > 0 {
