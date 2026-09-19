@@ -1,6 +1,8 @@
 package outbox
 
 import (
+	"context"
+	"encoding/json"
 	"net/url"
 	"testing"
 
@@ -8,7 +10,9 @@ import (
 	"code.superseriousbusiness.org/activity/streams/vocab"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
+	"github.com/owncast/owncast/services/dispatcher"
 )
 
 // TestLeaveActivityStructure tests that the Leave activity is created with the correct structure
@@ -258,4 +262,38 @@ func findSubstring(str, substr string) bool {
 		}
 	}
 	return false
+}
+
+func TestPublishOutboundActivity(t *testing.T) {
+	d := dispatcher.New()
+	var published []dispatcher.Event
+	d.AddListener(func(ctx context.Context, e dispatcher.Event) {
+		published = append(published, e)
+	})
+
+	svc := &Service{events: d}
+	testPayload := []byte(`{"type":"Create","actor":"https://owncast.example/user/streamer"}`)
+	svc.publishOutboundActivity(testPayload)
+
+	if len(published) != 1 {
+		t.Fatalf("expected 1 published event, got %d", len(published))
+	}
+	if published[0].Type != models.FediverseOutboundActivity {
+		t.Fatalf("event type = %q, want %q", published[0].Type, models.FediverseOutboundActivity)
+	}
+	raw, ok := published[0].Payload.(json.RawMessage)
+	if !ok {
+		t.Fatalf("payload type = %T, want json.RawMessage", published[0].Payload)
+	}
+	if string(raw) != string(testPayload) {
+		t.Errorf("payload = %s, want %s", string(raw), string(testPayload))
+	}
+
+	// Test nil events or empty payload does not panic or publish
+	svcNil := &Service{}
+	svcNil.publishOutboundActivity(testPayload)
+	svc.publishOutboundActivity(nil)
+	if len(published) != 1 {
+		t.Errorf("expected still 1 published event, got %d", len(published))
+	}
 }

@@ -6,6 +6,7 @@
 package outbox
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -22,6 +23,7 @@ import (
 	"github.com/teris-io/shortid"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/persistence"
@@ -29,6 +31,7 @@ import (
 	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/activitypub/webfinger"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -43,6 +46,7 @@ type Service struct {
 	builder          *apmodels.Builder
 	resolver         *apresolvers.Resolver
 	cfg              *config.Config
+	events           *dispatcher.Dispatcher
 
 	// Featured-streams ping ticker state. Touched only by
 	// StartStreamPingTicker / StopStreamPingTicker under pingTickerMu.
@@ -60,6 +64,7 @@ type Deps struct {
 	Builder          *apmodels.Builder
 	Resolver         *apresolvers.Resolver
 	Config           *config.Config
+	Events           *dispatcher.Dispatcher
 }
 
 // New constructs an outbox Service. All deps are required.
@@ -72,6 +77,7 @@ func New(deps Deps) *Service {
 		builder:          deps.Builder,
 		resolver:         deps.Resolver,
 		cfg:              deps.Config,
+		events:           deps.Events,
 	}
 }
 
@@ -315,6 +321,8 @@ func (s *Service) SendToDirectoryFollowers(payload []byte, coalesceKey string) e
 // sendToInboxes queues the payload for each inbox. Signing happens immediately
 // before each durable delivery attempt.
 func (s *Service) sendToInboxes(payload []byte, inboxes []string, coalesceKey string) error {
+	s.publishOutboundActivity(payload)
+
 	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 	deliveries := make([]workerpool.Delivery, 0, len(inboxes))
 	payloadType := activityType(payload)
@@ -359,6 +367,8 @@ func (s *Service) SendToUser(inbox *url.URL, payload []byte) error {
 		return errors.Errorf("rejecting invalid inbox URL: %s", inbox.String())
 	}
 
+	s.publishOutboundActivity(payload)
+
 	localActor := s.builder.MakeLocalIRIForAccount(s.configRepository.GetDefaultFederationUsername())
 
 	return s.workerpool.Enqueue(workerpool.Delivery{
@@ -366,6 +376,18 @@ func (s *Service) SendToUser(inbox *url.URL, payload []byte) error {
 		Payload:      payload,
 		ActorIRI:     localActor,
 		ActivityType: activityType(payload),
+	})
+}
+
+func (s *Service) publishOutboundActivity(payload []byte) {
+	if s.events == nil || len(payload) == 0 {
+		return
+	}
+
+	rawPayload := append(json.RawMessage(nil), payload...)
+	s.events.Publish(context.Background(), dispatcher.Event{
+		Type:    models.FediverseOutboundActivity,
+		Payload: rawPayload,
 	})
 }
 

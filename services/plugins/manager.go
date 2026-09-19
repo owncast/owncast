@@ -1824,6 +1824,17 @@ func requireSubscriptionPermissions(manifest *Manifest, subs Subscriptions) erro
 		}
 	}
 
+	if !manifest.hasPermission(PermFediverseOutbound) {
+		for _, s := range subs.Notify {
+			if s.Event == EventFediverseOutbound {
+				return fmt.Errorf(
+					"plugin subscribes to %s but does not declare the %q permission",
+					s.Event, PermFediverseOutbound,
+				)
+			}
+		}
+	}
+
 	return nil
 }
 
