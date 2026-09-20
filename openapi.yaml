@@ -2794,7 +2794,7 @@ paths:
                   servers:
                     type: array
                     items:
-                      $ref: '#/components/schemas/FederatedServer'
+                      $ref: '#/components/schemas/PublicFederatedServer'
         '400':
           $ref: '#/components/responses/400'
         default:
@@ -4131,6 +4131,11 @@ components:
           type: string
           format: uri
           description: URL of the current stream thumbnail
+        displayName:
+          type: string
+          description: Human-friendly display name of the federated server
+        summary:
+          type: string
         lastSeenOnline:
           type: string
           format: date-time
@@ -4147,6 +4152,51 @@ components:
           type: string
           format: date-time
           description: When we started following this server
+        username:
+          type: string
+        acceptedAt:
+          type: string
+          format: date-time
+        rejectedAt:
+          type: string
+          format: date-time
+        pending:
+          type: boolean
+        followStatus:
+          type: string
+        priority:
+          type: integer
+    PublicFederatedServer:
+      type: object
+      description: A public featured Owncast server, ordered by canonical priority.
+      properties:
+        id:
+          type: integer
+        iri:
+          type: string
+          format: uri
+        name:
+          type: string
+        displayName:
+          type: string
+        summary:
+          type: string
+        logoUrl:
+          type: string
+          format: uri
+        isOnline:
+          type: boolean
+        streamTitle:
+          type: string
+        streamDescription:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        thumbnailUrl:
+          type: string
+          format: uri
     Event:
       type: object
       properties:
