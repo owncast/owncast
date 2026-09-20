@@ -1,7 +1,8 @@
 import { FC } from 'react';
-import { Card, Tag, Typography, Badge } from 'antd';
+import { Card, Tag, Typography } from 'antd';
 import classNames from 'classnames';
 import styles from './StreamCard.module.scss';
+import { StreamStatusBadge } from '../StreamStatusBadge/StreamStatusBadge';
 
 const { Text, Paragraph } = Typography;
 
@@ -53,11 +54,7 @@ export const StreamCard: FC<StreamCardProps> = ({
           {serverLogo && <img src={serverLogo} alt={serverName} className={styles.logoOverlay} />}
         </div>
       )}
-      <Badge
-        status={isOnline ? 'success' : 'default'}
-        text={isOnline ? 'LIVE' : 'OFFLINE'}
-        className={styles.statusBadge}
-      />
+      <StreamStatusBadge isOnline={isOnline} className={styles.statusBadge} />
     </div>
   );
 
@@ -110,7 +107,6 @@ export const StreamCard: FC<StreamCardProps> = ({
       <Card
         role="article"
         className={classNames(styles.streamCard, {
-          [styles.online]: isOnline,
           [styles.offline]: !isOnline,
         })}
         cover={cardCover}

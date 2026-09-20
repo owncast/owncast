@@ -29,6 +29,11 @@ export const Localization = {
     unmute: 'Frontend.unmute',
 
     // Navigation and accessibility
+    OfflineRecommendation: {
+      introduction: 'Frontend.OfflineRecommendation.introduction',
+      linkAria: 'Frontend.OfflineRecommendation.linkAria',
+      watchLive: 'Frontend.OfflineRecommendation.watchLive',
+    },
     skipToPlayer: 'Skip to player',
     skipToContent: 'Skip to page content',
     skipToFooter: 'Skip to footer',

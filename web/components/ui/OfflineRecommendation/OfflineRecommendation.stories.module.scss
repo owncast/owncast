@@ -1,0 +1,107 @@
+.viewerFrame {
+  min-height: 100dvh;
+  background: var(--theme-color-background-main);
+  color: var(--theme-color-components-text-on-light);
+  font-family: var(--theme-text-body-font-family);
+}
+
+.viewerHeader {
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  background: var(--theme-color-background-header);
+  color: var(--theme-color-components-text-on-dark);
+
+  strong {
+    font-family: var(--theme-text-display-font-family);
+    font-size: 1.05rem;
+  }
+
+  span {
+    font-size: 0.8rem;
+    opacity: 0.75;
+  }
+}
+
+.offlineStage {
+  min-height: 0;
+  background: var(--theme-color-components-video-background);
+  color: var(--theme-color-palette-4);
+}
+
+.viewerContent {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+}
+
+.viewerTabs {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid rgb(0 0 0 / 12%);
+  color: var(--theme-color-components-text-on-light);
+  font-size: 0.9rem;
+
+  span {
+    padding: 1rem 0 0.75rem;
+    opacity: 0.68;
+  }
+
+  .activeTab {
+    margin-bottom: -1px;
+    border-bottom: 2px solid var(--theme-color-action);
+    color: var(--theme-color-action);
+    font-weight: 600;
+    opacity: 1;
+  }
+}
+
+.viewerSummary {
+  padding: 1.5rem 0;
+  color: var(--theme-color-components-text-on-light);
+
+  h2 {
+    margin: 0;
+    font-family: var(--theme-text-display-font-family);
+    font-size: 1.25rem;
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+    opacity: 0.72;
+  }
+}
+
+.splitPanel {
+  width: min(100%, 1160px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: clamp(1.25rem, 3vw, 2.75rem);
+  align-items: stretch;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 3.5rem);
+}
+
+.offlineOnly {
+  width: 100%;
+}
+
+@media (width <= 768px) {
+  .viewerHeader {
+    min-height: 3.85rem;
+    padding: 0 1rem;
+  }
+
+  .viewerContent {
+    padding: 0 1.25rem 2rem;
+  }
+
+  .splitPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+  }
+}
