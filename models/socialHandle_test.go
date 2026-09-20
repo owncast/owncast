@@ -9,37 +9,33 @@ import (
 	"testing"
 )
 
-func TestGetAllSocialHandlesIncludesRSS(t *testing.T) {
+func TestGetAllSocialHandlesIncludesNewPlatforms(t *testing.T) {
 	handles := GetAllSocialHandles()
 
-	handle, ok := handles["rss"]
-	if !ok {
-		t.Fatal("expected \"rss\" key to be present in GetAllSocialHandles()")
+	tests := []struct {
+		key      string
+		platform string
+		icon     string
+	}{
+		{key: "rss", platform: "RSS", icon: "/img/platformlogos/rss.svg"},
+		{key: "tumblr", platform: "Tumblr", icon: "/img/platformlogos/tumblr.svg"},
 	}
 
-	if handle.Platform != "RSS" {
-		t.Errorf("expected Platform %q, got %q", "RSS", handle.Platform)
-	}
+	for _, tt := range tests {
+		t.Run(tt.key, func(t *testing.T) {
+			handle, ok := handles[tt.key]
+			if !ok {
+				t.Fatalf("expected %q key to be present in GetAllSocialHandles()", tt.key)
+			}
 
-	if handle.Icon != "/img/platformlogos/rss.svg" {
-		t.Errorf("expected Icon %q, got %q", "/img/platformlogos/rss.svg", handle.Icon)
-	}
-}
+			if handle.Platform != tt.platform {
+				t.Errorf("expected Platform %q, got %q", tt.platform, handle.Platform)
+			}
 
-func TestGetAllSocialHandlesIncludesTumblr(t *testing.T) {
-	handles := GetAllSocialHandles()
-
-	handle, ok := handles["tumblr"]
-	if !ok {
-		t.Fatal("expected \"tumblr\" key to be present in GetAllSocialHandles()")
-	}
-
-	if handle.Platform != "Tumblr" {
-		t.Errorf("expected Platform %q, got %q", "Tumblr", handle.Platform)
-	}
-
-	if handle.Icon != "/img/platformlogos/tumblr.svg" {
-		t.Errorf("expected Icon %q, got %q", "/img/platformlogos/tumblr.svg", handle.Icon)
+			if handle.Icon != tt.icon {
+				t.Errorf("expected Icon %q, got %q", tt.icon, handle.Icon)
+			}
+		})
 	}
 }
 
@@ -47,7 +43,6 @@ func TestSocialPlatformSVGsAreValidXML(t *testing.T) {
 	files := []string{"rss.svg", "tumblr.svg"}
 
 	for _, name := range files {
-		name := name
 		t.Run(name, func(t *testing.T) {
 			path := filepath.Join("..", "web", "public", "img", "platformlogos", name)
 
