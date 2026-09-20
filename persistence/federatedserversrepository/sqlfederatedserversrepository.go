@@ -205,14 +205,7 @@ func (r *SqlFederatedServersRepository) AssignNextPriority(iri string) error {
 		return err
 	}
 
-	// sqlc returns COALESCE result as interface{}; convert to int64.
-	var max int64
-	switch v := maxPriority.(type) {
-	case int64:
-		max = v
-	case int32:
-		max = int64(v)
-	}
+	max := maxPriority
 
 	server, err := r.GetFederatedServer(iri)
 	if err != nil || server == nil {

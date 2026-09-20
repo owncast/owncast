@@ -926,14 +926,14 @@ func (q *Queries) GetLocalPostCount(ctx context.Context) (int64, error) {
 }
 
 const getMaxAcceptedFederatedServerPriority = `-- name: GetMaxAcceptedFederatedServerPriority :one
-SELECT COALESCE(MAX(priority), 0) FROM federated_servers WHERE follow_status = 'accepted'
+SELECT CAST(COALESCE(MAX(priority), 0) AS INTEGER) FROM federated_servers WHERE follow_status = 'accepted'
 `
 
-func (q *Queries) GetMaxAcceptedFederatedServerPriority(ctx context.Context) (interface{}, error) {
+func (q *Queries) GetMaxAcceptedFederatedServerPriority(ctx context.Context) (int64, error) {
 	row := q.db.QueryRowContext(ctx, getMaxAcceptedFederatedServerPriority)
-	var coalesce interface{}
-	err := row.Scan(&coalesce)
-	return coalesce, err
+	var column_1 int64
+	err := row.Scan(&column_1)
+	return column_1, err
 }
 
 const getMessagesFromUser = `-- name: GetMessagesFromUser :many

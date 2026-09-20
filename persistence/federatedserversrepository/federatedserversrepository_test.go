@@ -2,6 +2,7 @@ package federatedserversrepository
 
 import (
 	"os"
+	"reflect"
 	"testing"
 	"time"
 
@@ -356,6 +357,80 @@ func TestRemoveFederatedServer_NonExistentServer(t *testing.T) {
 	// Some implementations might silently ignore non-existent servers
 	// or handle this at a higher layer, so we'll just ensure it doesn't panic
 	_ = err // Ignore error for this test
+}
+
+func TestReorderFederatedServer(t *testing.T) {
+	repo := Get()
+	base := "https://priority-test-"
+	for _, suffix := range []string{"one", "two", "three"} {
+		iri := base + suffix + ".example.com"
+		if err := repo.AddFederatedServer(iri, suffix, "", time.Now(), false, suffix, "accepted"); err != nil {
+			t.Fatalf("add %s: %v", suffix, err)
+		}
+		if err := repo.AssignNextPriority(iri); err != nil {
+			t.Fatalf("assign priority %s: %v", suffix, err)
+		}
+	}
+	if _, err := testRepo.(*SqlFederatedServersRepository).datastore.DB.Exec("UPDATE federated_servers SET priority = 1000 WHERE follow_status = 'accepted'"); err != nil {
+		t.Fatalf("normalise existing priorities: %v", err)
+	}
+	for priority, suffix := range []string{"one", "two", "three"} {
+		iri := base + suffix + ".example.com"
+		if _, err := testRepo.(*SqlFederatedServersRepository).datastore.DB.Exec("UPDATE federated_servers SET priority = ? WHERE iri = ?", priority+1, iri); err != nil {
+			t.Fatalf("set priority %s: %v", suffix, err)
+		}
+	}
+	getPriorityOrder := func() []string {
+		servers, err := repo.GetFederatedServers()
+		if err != nil {
+			t.Fatalf("get servers: %v", err)
+		}
+		order := make([]string, 0, 3)
+		for _, server := range servers {
+			if server.IRI >= base && server.IRI < base+"z" && server.Name != nil {
+				order = append(order, *server.Name)
+			}
+		}
+		return order
+	}
+	before := getPriorityOrder()
+	if len(before) != 3 {
+		t.Fatalf("priority test servers = %v, want 3", before)
+	}
+	servers, err := repo.GetFederatedServers()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var firstID int64
+	for _, server := range servers {
+		if server.IRI == base+"one.example.com" {
+			firstID = server.ID
+		}
+	}
+	if firstID == 0 {
+		t.Fatal("first priority test server not found")
+	}
+	if err := repo.ReorderFederatedServer(firstID, "up"); err != nil {
+		t.Fatalf("boundary move up: %v", err)
+	}
+	if got := getPriorityOrder(); !reflect.DeepEqual(got, before) {
+		t.Fatalf("boundary move changed order: before %v after %v", before, got)
+	}
+	if err := repo.ReorderFederatedServer(firstID, "down"); err != nil {
+		t.Fatalf("move down: %v", err)
+	}
+	if got := getPriorityOrder(); !reflect.DeepEqual(got, []string{"two", "one", "three"}) {
+		t.Fatalf("move down order = %v", got)
+	}
+	if err := repo.ReorderFederatedServer(firstID, "up"); err != nil {
+		t.Fatalf("move up: %v", err)
+	}
+	if got := getPriorityOrder(); !reflect.DeepEqual(got, []string{"one", "two", "three"}) {
+		t.Fatalf("move up order = %v", got)
+	}
+	if err := repo.ReorderFederatedServer(firstID, "sideways"); err == nil {
+		t.Fatal("invalid direction should return an error")
+	}
 }
 
 // Helper function

@@ -339,7 +339,7 @@ UPDATE federated_servers SET name = ?, display_name = ?, summary = ?, logo_url =
 UPDATE federated_servers SET priority = ? WHERE id = ?;
 
 -- name: GetMaxAcceptedFederatedServerPriority :one
-SELECT COALESCE(MAX(priority), 0) FROM federated_servers WHERE follow_status = 'accepted';
+SELECT CAST(COALESCE(MAX(priority), 0) AS INTEGER) FROM federated_servers WHERE follow_status = 'accepted';
 
 -- name: GetPendingFederatedServers :many
 SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status, priority FROM federated_servers WHERE pending = true ORDER BY added_at DESC;
