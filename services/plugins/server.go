@@ -3,6 +3,7 @@ package plugins
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -609,26 +610,57 @@ func (s *Server) buildRequestEnvelope(r *http.Request, requestPath string, authe
 // as static HTML assets, so a plugin returning admin HTML from
 // on_http_request gets the iframe theme automatically.
 func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles bool, sessionCookies []*http.Cookie) {
-	var resp struct {
-		Status  int               `json:"status"`
-		Headers map[string]string `json:"headers"`
-		Body    string            `json:"body"`
+	var resp *struct {
+		Status     int               `json:"status"`
+		Headers    map[string]string `json:"headers"`
+		Body       *string           `json:"body"`
+		BodyBase64 *string           `json:"bodyBase64"`
 	}
-	if err := json.Unmarshal(out, &resp); err != nil {
+	if err := json.Unmarshal(out, &resp); err != nil || resp == nil || (resp.Body != nil && resp.BodyBase64 != nil) {
 		http.Error(w, "plugin returned invalid response", http.StatusInternalServerError)
 		return
 	}
 	if resp.Status == 0 {
 		resp.Status = http.StatusOK
 	}
-	if len(resp.Body) > MaxHTTPResponseBodyBytes {
+
+	var binaryBody []byte
+	if resp.BodyBase64 != nil {
+		encodedBody := *resp.BodyBase64
+		decodedLen := base64.StdEncoding.DecodedLen(len(encodedBody))
+		if len(encodedBody) > 0 && encodedBody[len(encodedBody)-1] == '=' {
+			decodedLen--
+		}
+		if len(encodedBody) > 1 && encodedBody[len(encodedBody)-2] == '=' {
+			decodedLen--
+		}
+		if decodedLen > MaxHTTPResponseBodyBytes {
+			http.Error(w, "plugin response too large", http.StatusInternalServerError)
+			return
+		}
+		var err error
+		binaryBody, err = base64.StdEncoding.DecodeString(encodedBody)
+		if err != nil {
+			http.Error(w, "plugin returned invalid response", http.StatusInternalServerError)
+			return
+		}
+	}
+	bodyLen := len(binaryBody)
+	if resp.Body != nil {
+		bodyLen = len(*resp.Body)
+	}
+	if bodyLen > MaxHTTPResponseBodyBytes {
 		http.Error(w, "plugin response too large", http.StatusInternalServerError)
 		return
 	}
 
-	body := resp.Body
 	if injectStyles && responseIsHTML(resp.Headers) {
-		body = string(injectAdminStyles([]byte(body)))
+		if resp.Body != nil {
+			binaryBody = injectAdminStyles([]byte(*resp.Body))
+			resp.Body = nil
+		} else {
+			binaryBody = injectAdminStyles(binaryBody)
+		}
 	}
 
 	for k, v := range resp.Headers {
@@ -648,7 +680,11 @@ func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles boo
 		http.SetCookie(w, c)
 	}
 	w.WriteHeader(resp.Status)
-	_, _ = io.WriteString(w, body)
+	if resp.Body != nil {
+		_, _ = io.WriteString(w, *resp.Body)
+	} else {
+		_, _ = w.Write(binaryBody)
+	}
 }
 
 // stripSetCookie removes any existing Set-Cookie header values for the named

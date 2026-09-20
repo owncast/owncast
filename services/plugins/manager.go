@@ -123,10 +123,10 @@ const (
 	MaxKVValueBytes = 256 << 10 // 256 KiB
 
 	// MaxHTTPHandlerOutputBytes caps the JSON envelope a plugin returns
-	// from on_http_request (status + headers + body). Sized to leave
-	// headroom over MaxHTTPResponseBodyBytes (server.go); the inner body
-	// is then checked again post-unmarshal.
-	MaxHTTPHandlerOutputBytes = 12 << 20 // 12 MiB
+	// from on_http_request (status + headers + body). A 10 MiB binary response
+	// expands to about 13.3 MiB as base64; the decoded body is checked again
+	// post-unmarshal.
+	MaxHTTPHandlerOutputBytes = 16 << 20 // 16 MiB
 
 	// NotifyTimeout caps a single on_event call. Notification handlers
 	// can do real work (kv writes, owncast.* host calls), but they
