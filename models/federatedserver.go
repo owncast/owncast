@@ -30,6 +30,7 @@ type FederatedServer struct {
 	AcceptedAt        *time.Time `json:"acceptedAt,omitempty"`
 	RejectedAt        *time.Time `json:"rejectedAt,omitempty"`
 	FollowStatus      string     `json:"followStatus"`
+	Priority          int64      `json:"priority"`
 }
 
 // FederatedStreamUpdate represents stream metadata for ActivityPub handlers.
@@ -61,6 +62,7 @@ func (f *FederatedServer) FromDatabaseModel(dbServer db.FederatedServer) {
 	f.Summary = nullStringToPointer(dbServer.Summary)
 	f.AcceptedAt = nullTimeToPointer(dbServer.AcceptedAt)
 	f.RejectedAt = nullTimeToPointer(dbServer.RejectedAt)
+	f.Priority = dbServer.Priority
 
 	// Default follow status to "pending" if not set
 	if dbServer.FollowStatus.Valid {

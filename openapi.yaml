@@ -2903,6 +2903,60 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+  /admin/federation/servers/{id}/reorder:
+    put:
+      summary: Move a federated server up or down in the priority order
+      operationId: ReorderFederatedServer
+      tags: ['Internal', 'Admin', 'Federation']
+      security:
+        - BasicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the federated server to reorder
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - direction
+              properties:
+                direction:
+                  type: string
+                  enum: [up, down]
+                  description: Move the server up (higher priority) or down (lower priority)
+      responses:
+        '200':
+          description: Federated server reordered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: ReorderFederatedServerOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Federation']
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the federated server to reorder
+          schema:
+            type: integer
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
   /admin/federation/feature-requests:
     get:
       summary: Get pending requests from other servers to feature this server's stream

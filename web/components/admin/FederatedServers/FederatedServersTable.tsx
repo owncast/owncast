@@ -1,5 +1,6 @@
+import { format, parseISO, isValid } from 'date-fns';
 import { FC, useState } from 'react';
-import { Table, Button, Space, Tag, Popconfirm, message } from 'antd';
+import { Table, Button, Space, Tag, Popconfirm, message, Tooltip } from 'antd';
 import { useTranslation } from 'next-export-i18n';
 import {
   DeleteOutlined,
@@ -7,6 +8,8 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   ClockCircleOutlined,
+  ArrowUpOutlined,
+  ArrowDownOutlined,
 } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { Translation } from '../../ui/Translation/Translation';
@@ -23,12 +26,14 @@ export interface FederatedServerData {
   lastStatusUpdate?: string;
   addedAt: string;
   followStatus?: string;
+  priority?: number;
 }
 
 export interface FederatedServersTableProps {
   servers: FederatedServerData[];
   loading?: boolean;
   onRemove: (id: number) => Promise<void>;
+  onReorder: (id: number, direction: 'up' | 'down') => Promise<void>;
 }
 
 // Prefer the human-friendly display name, fall back to the federation
@@ -40,9 +45,11 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
   servers,
   loading = false,
   onRemove,
+  onReorder,
 }) => {
   const { t } = useTranslation();
   const [removingId, setRemovingId] = useState<number | null>(null);
+  const [reorderingId, setReorderingId] = useState<number | null>(null);
 
   const handleRemove = async (id: number) => {
     setRemovingId(id);
@@ -56,6 +63,14 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
     }
   };
 
+  const acceptedCount = servers.filter(s => s.followStatus === 'accepted').length;
+
+  // Sort: accepted servers first (in priority/API order), then pending, then rejected.
+  // Defined before columns so the Priority column render can reference it.
+  const sortedServers = [
+    ...servers.filter(s => s.followStatus === 'accepted'),
+    ...servers.filter(s => s.followStatus !== 'accepted'),
+  ];
   const columns: ColumnsType<FederatedServerData> = [
     {
       title: (
@@ -156,7 +171,9 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
       dataIndex: 'lastStatusUpdate',
       key: 'lastStatusUpdate',
       render: (text: string) =>
-        text || (
+        text && isValid(parseISO(text)) ? (
+          format(parseISO(text), 'MMM d, yyyy HH:mm')
+        ) : (
           <Translation
             translationKey={Localization.Admin.FeaturedStreams.never}
             defaultText="Never"
@@ -172,6 +189,80 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
       ),
       dataIndex: 'addedAt',
       key: 'addedAt',
+      render: (text: string) =>
+        text && isValid(parseISO(text)) ? format(parseISO(text), 'MMM d, yyyy') : (text ?? ''),
+    },
+    {
+      title: (
+        <Translation
+          translationKey={Localization.Admin.FeaturedStreams.priority}
+          defaultText="Priority"
+        />
+      ),
+      key: 'priority',
+      render: (_: unknown, record: FederatedServerData) => {
+        if (record.followStatus !== 'accepted') return null;
+        const acceptedServers = sortedServers.filter(s => s.followStatus === 'accepted');
+        const acceptedIdx = acceptedServers.findIndex(s => s.id === record.id);
+        const isFirst = acceptedIdx === 0;
+        const isLast = acceptedIdx === acceptedServers.length - 1;
+        return (
+          <Space size="small">
+            <Tooltip
+              title={
+                <Translation
+                  translationKey={Localization.Admin.FeaturedStreams.moveUp}
+                  defaultText="Move up"
+                />
+              }
+            >
+              <Button
+                size="small"
+                icon={<ArrowUpOutlined />}
+                disabled={isFirst || reorderingId === record.id}
+                loading={reorderingId === record.id}
+                onClick={async () => {
+                  setReorderingId(record.id);
+                  try {
+                    await onReorder(record.id, 'up');
+                  } catch {
+                    message.error(t(Localization.Admin.FeaturedStreams.failedToReorder));
+                  } finally {
+                    setReorderingId(null);
+                  }
+                }}
+                aria-label={t(Localization.Admin.FeaturedStreams.moveUp)}
+              />
+            </Tooltip>
+            <Tooltip
+              title={
+                <Translation
+                  translationKey={Localization.Admin.FeaturedStreams.moveDown}
+                  defaultText="Move down"
+                />
+              }
+            >
+              <Button
+                size="small"
+                icon={<ArrowDownOutlined />}
+                disabled={isLast || reorderingId === record.id}
+                loading={reorderingId === record.id}
+                onClick={async () => {
+                  setReorderingId(record.id);
+                  try {
+                    await onReorder(record.id, 'down');
+                  } catch {
+                    message.error(t(Localization.Admin.FeaturedStreams.failedToReorder));
+                  } finally {
+                    setReorderingId(null);
+                  }
+                }}
+                aria-label={t(Localization.Admin.FeaturedStreams.moveDown)}
+              />
+            </Tooltip>
+          </Space>
+        );
+      },
     },
     {
       title: (
@@ -181,7 +272,7 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
         />
       ),
       key: 'actions',
-      render: (_: any, record: FederatedServerData) => (
+      render: (_: unknown, record: FederatedServerData) => (
         <Popconfirm
           title={
             <Translation
@@ -215,17 +306,21 @@ export const FederatedServersTable: FC<FederatedServersTableProps> = ({
     },
   ];
 
+  // Hide the Priority column entirely when there is only one server — move
+  // buttons would both be disabled and the column is just visual noise.
+  const visibleColumns = acceptedCount > 1 ? columns : columns.filter(c => c.key !== 'priority');
+
   return (
     <Table
       className={styles.table}
-      columns={columns}
-      dataSource={servers}
+      columns={visibleColumns}
+      dataSource={sortedServers}
       rowKey="id"
       loading={loading}
       pagination={{
         pageSize: 10,
         showSizeChanger: true,
-        showTotal: (total: number) => `Total ${total} streams`, // Note: This would need custom translation handling
+        showTotal: (total: number) => `Total ${total} streams`,
       }}
     />
   );

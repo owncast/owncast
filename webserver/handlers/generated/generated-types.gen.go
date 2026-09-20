@@ -143,6 +143,24 @@ func (e WebhookEventType) Valid() bool {
 	}
 }
 
+// Defines values for ReorderFederatedServerJSONBodyDirection.
+const (
+	Down ReorderFederatedServerJSONBodyDirection = "down"
+	Up   ReorderFederatedServerJSONBodyDirection = "up"
+)
+
+// Valid indicates whether the value is a known member of the ReorderFederatedServerJSONBodyDirection enum.
+func (e ReorderFederatedServerJSONBodyDirection) Valid() bool {
+	switch e {
+	case Down:
+		return true
+	case Up:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for GetUsersParamsStatus.
 const (
 	Active GetUsersParamsStatus = "active"
@@ -1100,6 +1118,15 @@ type AddFederatedServerJSONBody struct {
 	Url string `json:"url"`
 }
 
+// ReorderFederatedServerJSONBody defines parameters for ReorderFederatedServer.
+type ReorderFederatedServerJSONBody struct {
+	// Direction Move the server up (higher priority) or down (lower priority)
+	Direction ReorderFederatedServerJSONBodyDirection `json:"direction"`
+}
+
+// ReorderFederatedServerJSONBodyDirection defines parameters for ReorderFederatedServer.
+type ReorderFederatedServerJSONBodyDirection string
+
 // GetFollowersAdminParams defines parameters for GetFollowersAdmin.
 type GetFollowersAdminParams struct {
 	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
@@ -1465,6 +1492,9 @@ type SendFederatedMessageJSONRequestBody = AdminConfigValue
 
 // AddFederatedServerJSONRequestBody defines body for AddFederatedServer for application/json ContentType.
 type AddFederatedServerJSONRequestBody AddFederatedServerJSONBody
+
+// ReorderFederatedServerJSONRequestBody defines body for ReorderFederatedServer for application/json ContentType.
+type ReorderFederatedServerJSONRequestBody ReorderFederatedServerJSONBody
 
 // ApproveFollowerJSONRequestBody defines body for ApproveFollower for application/json ContentType.
 type ApproveFollowerJSONRequestBody ApproveFollowerJSONBody

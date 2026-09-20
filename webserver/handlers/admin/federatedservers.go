@@ -218,3 +218,38 @@ func (a *Admin) AddFederatedServerOptions(w http.ResponseWriter, r *http.Request
 func (a *Admin) RemoveFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int) {
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// ReorderFederatedServer moves a federated server one step up or down in the
+// operator-set canonical priority order.
+func (a *Admin) ReorderFederatedServer(w http.ResponseWriter, r *http.Request, id int) {
+	var request struct {
+		Direction string `json:"direction"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		webutils.WriteSimpleResponse(w, false, "Invalid request body: "+err.Error())
+		return
+	}
+	if request.Direction != "up" && request.Direction != "down" {
+		webutils.WriteSimpleResponse(w, false, "direction must be 'up' or 'down'")
+		return
+	}
+
+	repo := federatedserversrepository.Get()
+	if repo == nil {
+		webutils.WriteSimpleResponse(w, false, "Federated servers repository is not initialised")
+		return
+	}
+
+	if err := repo.ReorderFederatedServer(int64(id), request.Direction); err != nil {
+		log.Errorf("Failed to reorder federated server %d: %v", id, err)
+		webutils.WriteSimpleResponse(w, false, "Failed to reorder federated server: "+err.Error())
+		return
+	}
+
+	webutils.WriteSimpleResponse(w, true, "Federated server reordered successfully")
+}
+
+// ReorderFederatedServerOptions handles CORS preflight requests.
+func (a *Admin) ReorderFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNoContent)
+}

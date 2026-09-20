@@ -312,10 +312,10 @@ DELETE FROM users WHERE id = ?;
 -- Federated servers queries
 
 -- name: GetFederatedServers :many
-SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers ORDER BY added_at DESC;
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status, priority FROM federated_servers ORDER BY priority ASC, added_at ASC;
 
 -- name: GetFederatedServer :one
-SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE iri = ?;
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status, priority FROM federated_servers WHERE iri = ?;
 
 -- name: AddFederatedServer :exec
 INSERT INTO federated_servers(iri, name, logo_url, followed_at, pending, username, follow_status) values(?, ?, ?, ?, ?, ?, ?);
@@ -335,5 +335,11 @@ UPDATE federated_servers SET follow_status = ?, pending = ?, accepted_at = ?, re
 -- name: UpdateFederatedServerMetadata :exec
 UPDATE federated_servers SET name = ?, display_name = ?, summary = ?, logo_url = ? WHERE iri = ?;
 
+-- name: SetFederatedServerPriority :exec
+UPDATE federated_servers SET priority = ? WHERE id = ?;
+
+-- name: GetMaxAcceptedFederatedServerPriority :one
+SELECT COALESCE(MAX(priority), 0) FROM federated_servers WHERE follow_status = 'accepted';
+
 -- name: GetPendingFederatedServers :many
-SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE pending = true ORDER BY added_at DESC;
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status, priority FROM federated_servers WHERE pending = true ORDER BY added_at DESC;

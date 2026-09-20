@@ -5,7 +5,7 @@
 
   :global(.ant-table-thead > tr > th) {
     background: var(--theme-color-background-header);
-    color: var(--theme-color-components-text-on-dark);
+    color: var(--theme-color-components-text-on-light);
   }
 
   :global(.ant-table-tbody > tr > td) {

@@ -1,3 +1,4 @@
+import { message as antdMessage } from 'antd';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import {
@@ -31,27 +32,40 @@ describe('FederatedServersTable', () => {
       id: 1,
       iri: 'https://server1.example.com',
       name: 'Server 1',
+      displayName: 'Server 1',
       isOnline: true,
-      lastStatusUpdate: '2024-01-01 12:00',
-      addedAt: '2023-12-01',
+      lastStatusUpdate: '2024-01-01T12:00:00Z',
+      addedAt: '2023-12-01T00:00:00Z',
+      followStatus: 'accepted',
+      priority: 1,
     },
     {
       id: 2,
       iri: 'https://server2.example.com',
       name: 'Server 2',
+      displayName: 'Server 2',
       isOnline: false,
-      addedAt: '2023-12-02',
+      addedAt: '2023-12-02T00:00:00Z',
+      followStatus: 'accepted',
+      priority: 2,
     },
   ];
 
   const mockOnRemove = jest.fn();
-
+  const mockOnReorder = jest.fn();
   beforeEach(() => {
     mockOnRemove.mockClear();
+    mockOnReorder.mockClear();
   });
 
   it('renders servers correctly', () => {
-    render(<FederatedServersTable servers={mockServers} onRemove={mockOnRemove} />);
+    render(
+      <FederatedServersTable
+        servers={mockServers}
+        onRemove={mockOnRemove}
+        onReorder={mockOnReorder}
+      />,
+    );
 
     expect(screen.getByText('Server 1')).toBeInTheDocument();
     expect(screen.getByText('Server 2')).toBeInTheDocument();
@@ -60,7 +74,13 @@ describe('FederatedServersTable', () => {
   });
 
   it('displays online/offline status correctly', () => {
-    render(<FederatedServersTable servers={mockServers} onRemove={mockOnRemove} />);
+    render(
+      <FederatedServersTable
+        servers={mockServers}
+        onRemove={mockOnRemove}
+        onReorder={mockOnReorder}
+      />,
+    );
 
     const onlineTags = screen.getAllByText('Online');
     const offlineTags = screen.getAllByText('Offline');
@@ -70,14 +90,26 @@ describe('FederatedServersTable', () => {
   });
 
   it('displays last checked time or "Never"', () => {
-    render(<FederatedServersTable servers={mockServers} onRemove={mockOnRemove} />);
+    render(
+      <FederatedServersTable
+        servers={mockServers}
+        onRemove={mockOnRemove}
+        onReorder={mockOnReorder}
+      />,
+    );
 
-    expect(screen.getByText('2024-01-01 12:00')).toBeInTheDocument();
+    expect(screen.getByText(/Jan 1, 2024/)).toBeInTheDocument();
     expect(screen.getByText('Never')).toBeInTheDocument();
   });
 
   it('shows confirmation dialog when removing server', async () => {
-    render(<FederatedServersTable servers={mockServers} onRemove={mockOnRemove} />);
+    render(
+      <FederatedServersTable
+        servers={mockServers}
+        onRemove={mockOnRemove}
+        onReorder={mockOnReorder}
+      />,
+    );
 
     const removeButtons = screen.getAllByText('Unfeature');
     fireEvent.click(removeButtons[0]);
@@ -90,7 +122,13 @@ describe('FederatedServersTable', () => {
   it('calls onRemove when confirmed', async () => {
     mockOnRemove.mockResolvedValue(undefined);
 
-    render(<FederatedServersTable servers={mockServers} onRemove={mockOnRemove} />);
+    render(
+      <FederatedServersTable
+        servers={mockServers}
+        onRemove={mockOnRemove}
+        onReorder={mockOnReorder}
+      />,
+    );
 
     const removeButtons = screen.getAllByText('Unfeature');
     fireEvent.click(removeButtons[0]);
@@ -104,7 +142,13 @@ describe('FederatedServersTable', () => {
   });
 
   it('cancels removal when declined', async () => {
-    render(<FederatedServersTable servers={mockServers} onRemove={mockOnRemove} />);
+    render(
+      <FederatedServersTable
+        servers={mockServers}
+        onRemove={mockOnRemove}
+        onReorder={mockOnReorder}
+      />,
+    );
 
     const removeButtons = screen.getAllByText('Unfeature');
     fireEvent.click(removeButtons[0]);
@@ -117,7 +161,12 @@ describe('FederatedServersTable', () => {
 
   it('shows loading state correctly', () => {
     const { container } = render(
-      <FederatedServersTable servers={[]} loading onRemove={mockOnRemove} />,
+      <FederatedServersTable
+        servers={[]}
+        loading
+        onRemove={mockOnRemove}
+        onReorder={mockOnReorder}
+      />,
     );
 
     // Ant Design Table renders a spinner when loading
@@ -125,11 +174,16 @@ describe('FederatedServersTable', () => {
   });
 
   it('handles removal error gracefully', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
-    const { message: antdMessage } = require('antd');
+    // The antd module is mocked above, so this is the mocked message object.
     mockOnRemove.mockRejectedValue(new Error('Removal failed'));
 
-    render(<FederatedServersTable servers={mockServers} onRemove={mockOnRemove} />);
+    render(
+      <FederatedServersTable
+        servers={mockServers}
+        onRemove={mockOnRemove}
+        onReorder={mockOnReorder}
+      />,
+    );
 
     const removeButtons = screen.getAllByText('Unfeature');
     fireEvent.click(removeButtons[0]);
@@ -144,7 +198,11 @@ describe('FederatedServersTable', () => {
 
   it('renders external links for servers', () => {
     const { container } = render(
-      <FederatedServersTable servers={mockServers} onRemove={mockOnRemove} />,
+      <FederatedServersTable
+        servers={mockServers}
+        onRemove={mockOnRemove}
+        onReorder={mockOnReorder}
+      />,
     );
 
     const links = container.querySelectorAll('a[target="_blank"]');

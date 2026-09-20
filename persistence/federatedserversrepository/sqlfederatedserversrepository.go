@@ -2,6 +2,7 @@ package federatedserversrepository
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/owncast/owncast/db"
@@ -190,4 +191,115 @@ func (r *SqlFederatedServersRepository) GetPendingFederatedServers() ([]models.F
 	}
 
 	return servers, nil
+}
+
+// AssignNextPriority sets the priority of the accepted server with the given
+// IRI to MAX(priority)+1 among all currently accepted servers. Called when
+// a remote server accepts our Follow so newly accepted servers enter at the
+// bottom of the operator's ordered list.
+func (r *SqlFederatedServersRepository) AssignNextPriority(iri string) error {
+	queries := db.New(r.datastore.DB)
+
+	maxPriority, err := queries.GetMaxAcceptedFederatedServerPriority(context.Background())
+	if err != nil {
+		return err
+	}
+
+	// sqlc returns COALESCE result as interface{}; convert to int64.
+	var max int64
+	switch v := maxPriority.(type) {
+	case int64:
+		max = v
+	case int32:
+		max = int64(v)
+	}
+
+	server, err := r.GetFederatedServer(iri)
+	if err != nil || server == nil {
+		return err
+	}
+
+	return queries.SetFederatedServerPriority(context.Background(), db.SetFederatedServerPriorityParams{
+		Priority: max + 1,
+		ID:       server.ID,
+	})
+}
+
+// neighbourIndex returns the index of the neighbour to swap with for the given
+// direction, or -1 if the move is a boundary no-op or invalid.
+func neighbourIndex(targetIdx int, direction string) (int, error) {
+	switch direction {
+	case "up":
+		return targetIdx - 1, nil
+	case "down":
+		return targetIdx + 1, nil
+	default:
+		return -1, fmt.Errorf("direction must be 'up' or 'down', got %q", direction)
+	}
+}
+
+// swapPriorities atomically exchanges the priority values of two servers.
+func swapPriorities(ctx context.Context, qtx *db.Queries, a, b models.FederatedServer) error {
+	if err := qtx.SetFederatedServerPriority(ctx, db.SetFederatedServerPriorityParams{
+		Priority: b.Priority,
+		ID:       a.ID,
+	}); err != nil {
+		return err
+	}
+	return qtx.SetFederatedServerPriority(ctx, db.SetFederatedServerPriorityParams{
+		Priority: a.Priority,
+		ID:       b.ID,
+	})
+}
+
+// ReorderFederatedServer moves an accepted server one position up ("up") or
+// down ("down") in the canonical priority order by swapping its priority with
+// its immediate neighbour. The swap is performed inside a transaction so no
+// partial state is possible.
+func (r *SqlFederatedServersRepository) ReorderFederatedServer(id int64, direction string) error {
+	servers, err := r.GetFederatedServers()
+	if err != nil {
+		return err
+	}
+
+	accepted := make([]models.FederatedServer, 0, len(servers))
+	for _, s := range servers {
+		if s.FollowStatus == "accepted" {
+			accepted = append(accepted, s)
+		}
+	}
+
+	targetIdx := -1
+	for i, s := range accepted {
+		if s.ID == id {
+			targetIdx = i
+			break
+		}
+	}
+	if targetIdx < 0 {
+		return fmt.Errorf("federated server with id %d not found or not accepted", id)
+	}
+
+	neighbourIdx, err := neighbourIndex(targetIdx, direction)
+	if err != nil {
+		return err
+	}
+	if neighbourIdx < 0 || neighbourIdx >= len(accepted) {
+		return nil
+	}
+
+	tx, err := r.datastore.DB.BeginTx(context.Background(), nil)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
+	if err = swapPriorities(context.Background(), db.New(tx), accepted[targetIdx], accepted[neighbourIdx]); err != nil {
+		return err
+	}
+	return tx.Commit()
 }

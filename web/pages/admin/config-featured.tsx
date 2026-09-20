@@ -28,6 +28,7 @@ const ConfigFeatured = () => {
     loading: serversLoading,
     addServer,
     removeServer,
+    reorderServer,
   } = useFederatedServers(true);
 
   const {
@@ -118,6 +119,7 @@ const ConfigFeatured = () => {
                       servers={federatedServers}
                       loading={serversLoading}
                       onRemove={removeServer}
+                      onReorder={reorderServer}
                     />
                   </Space>
                 ),

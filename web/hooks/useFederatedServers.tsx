@@ -21,6 +21,7 @@ export interface FederatedServerResponse {
   thumbnailUrl?: string;
   lastStatusUpdate?: string;
   addedAt: string;
+  priority: number;
 }
 
 export interface UseFederatedServersResult {
@@ -30,6 +31,7 @@ export interface UseFederatedServersResult {
   refetch: () => void;
   addServer: (url: string) => Promise<void>;
   removeServer: (id: number) => Promise<void>;
+  reorderServer: (id: number, direction: 'up' | 'down') => Promise<void>;
 }
 
 interface APIErrorResponse {
@@ -147,6 +149,22 @@ export function useFederatedServers(isAdmin: boolean = false): UseFederatedServe
     await fetchServers();
   };
 
+  const reorderServer = async (id: number, direction: 'up' | 'down'): Promise<void> => {
+    const response = await fetch(`${API_ADMIN_FEDERATED_SERVERS}/${id}/reorder`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ direction }),
+    });
+
+    if (!response.ok) {
+      const apiError: APIErrorResponse = await response.json();
+      throw new Error(apiError.message || t(Localization.Admin.FeaturedStreams.failedToReorder));
+    }
+
+    await fetchServers();
+  };
+
   // Fetch on mount, then poll so the directory reflects servers going
   // live/offline without a reload. fetchServers is intentionally NOT a
   // dependency: it is recreated every render (it closes over `t`), so depending
@@ -166,5 +184,6 @@ export function useFederatedServers(isAdmin: boolean = false): UseFederatedServe
     refetch: fetchServers,
     addServer: isAdmin ? addServer : async () => {},
     removeServer: isAdmin ? removeServer : async () => {},
+    reorderServer: isAdmin ? reorderServer : async () => {},
   };
 }
