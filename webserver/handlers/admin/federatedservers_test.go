@@ -20,8 +20,12 @@ func TestFederatedServerPublicAndAdminPayloads(t *testing.T) {
 	if err := migrations.Run(ds.DB, t.TempDir()); err != nil {
 		t.Fatal(err)
 	}
+	previous := federatedserversrepository.Get()
 	repo := federatedserversrepository.New(ds)
 	federatedserversrepository.SetGlobalInstance(repo)
+	t.Cleanup(func() {
+		federatedserversrepository.SetGlobalInstance(previous)
+	})
 
 	for _, server := range []struct {
 		iri, name string
