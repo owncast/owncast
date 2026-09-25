@@ -2276,8 +2276,8 @@ Web package: react-dom@18.3.1
   Declared license: MIT
   LICENSE: SHA256 52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85
 
-Web package: react-error-boundary@6.1.2
-  Source: https://registry.npmjs.org/react-error-boundary/-/react-error-boundary-6.1.2.tgz
+Web package: react-error-boundary@6.1.5
+  Source: https://registry.npmjs.org/react-error-boundary/-/react-error-boundary-6.1.5.tgz
   Declared license: MIT
   LICENSE: SHA256 2cdb493db15b320c5787535f9dadd37b13cae6fe0a1cdd7849ccfbce70c389fd
 
@@ -6812,7 +6812,7 @@ software or this license, under any kind of legal claim._**
 
 ================================================================================
 SHA256: 2cdb493db15b320c5787535f9dadd37b13cae6fe0a1cdd7849ccfbce70c389fd
-Used by: Web package: react-error-boundary@6.1.2 (LICENSE)
+Used by: Web package: react-error-boundary@6.1.5 (LICENSE)
 --------------------------------------------------------------------------------
 The MIT License (MIT)
 Copyright (c) 2020 Brian Vaughn
