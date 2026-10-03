@@ -638,10 +638,7 @@ test_metadata_is_populated() {
 test_listing_field_contract() {
     log_test "TEST 4: Directory listing exposes the documented field contract"
 
-    # The web reads these field names verbatim (web/hooks/useFederatedServers.tsx).
-    # The whole feature shipped broken once because the API and the web had
-    # drifted onto different names, so guard the contract here: the documented
-    # names must be present and the legacy names must never come back.
+    # Public viewer fields must remain usable without exposing admin state.
     local json server
     json=$(get_featured_servers "${OWNCAST_PORT}" public)
     server=$(server_object "${json}" "${OWNCAST2_URL}")
@@ -653,7 +650,7 @@ test_listing_field_contract() {
     fi
 
     local failed=0 field
-    local required=(iri name displayName logoUrl isOnline addedAt followStatus)
+    local required=(id iri name displayName logoUrl isOnline)
     for field in "${required[@]}"; do
         if ! echo "${server}" | jq -e "has(\"${field}\")" > /dev/null 2>&1; then
             log_error "TEST 4 FAILED: response is missing documented field '${field}'"
@@ -661,10 +658,10 @@ test_listing_field_contract() {
         fi
     done
 
-    local forbidden=(url logo thumbnail lastChecked)
+    local forbidden=(addedAt followStatus priority lastStatusUpdate username pending url logo thumbnail lastChecked)
     for field in "${forbidden[@]}"; do
         if echo "${server}" | jq -e "has(\"${field}\")" > /dev/null 2>&1; then
-            log_error "TEST 4 FAILED: response contains legacy field '${field}' the web no longer reads"
+            log_error "TEST 4 FAILED: public response contains non-public or legacy field '${field}'"
             failed=1
         fi
     done
