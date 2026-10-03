@@ -143,6 +143,24 @@ func (e WebhookEventType) Valid() bool {
 	}
 }
 
+// Defines values for ReorderFederatedServerJSONBodyDirection.
+const (
+	Down ReorderFederatedServerJSONBodyDirection = "down"
+	Up   ReorderFederatedServerJSONBodyDirection = "up"
+)
+
+// Valid indicates whether the value is a known member of the ReorderFederatedServerJSONBodyDirection enum.
+func (e ReorderFederatedServerJSONBodyDirection) Valid() bool {
+	switch e {
+	case Down:
+		return true
+	case Up:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for GetUsersParamsStatus.
 const (
 	Active GetUsersParamsStatus = "active"
@@ -507,8 +525,14 @@ type FederatedActivity struct {
 
 // FederatedServer A federated Owncast server that we follow
 type FederatedServer struct {
+	AcceptedAt *time.Time `json:"acceptedAt,omitempty"`
+
 	// AddedAt When we started tracking this server
 	AddedAt *time.Time `json:"addedAt,omitempty"`
+
+	// DisplayName Human-friendly display name of the federated server
+	DisplayName  *string `json:"displayName,omitempty"`
+	FollowStatus *string `json:"followStatus,omitempty"`
 
 	// FollowedAt When we started following this server
 	FollowedAt *time.Time `json:"followedAt,omitempty"`
@@ -532,19 +556,24 @@ type FederatedServer struct {
 	LogoUrl *string `json:"logoUrl,omitempty"`
 
 	// Name Display name of the federated server
-	Name *string `json:"name,omitempty"`
+	Name       *string    `json:"name,omitempty"`
+	Pending    *bool      `json:"pending,omitempty"`
+	Priority   *int       `json:"priority,omitempty"`
+	RejectedAt *time.Time `json:"rejectedAt,omitempty"`
 
 	// StreamDescription Description of the current stream (when online)
 	StreamDescription *string `json:"streamDescription,omitempty"`
 
 	// StreamTitle Title of the current stream (when online)
 	StreamTitle *string `json:"streamTitle,omitempty"`
+	Summary     *string `json:"summary,omitempty"`
 
 	// Tags Tags associated with the current stream
 	Tags *[]string `json:"tags,omitempty"`
 
 	// ThumbnailUrl URL of the current stream thumbnail
 	ThumbnailUrl *string `json:"thumbnailUrl,omitempty"`
+	Username     *string `json:"username,omitempty"`
 }
 
 // FederationConfig defines model for FederationConfig.
@@ -767,6 +796,21 @@ type PlaybackMetrics struct {
 
 	// QualityVariantChanges Quality variant switches since the previous report, not a running total.
 	QualityVariantChanges float64 `json:"qualityVariantChanges"`
+}
+
+// PublicFederatedServer A public featured Owncast server, ordered by canonical priority.
+type PublicFederatedServer struct {
+	DisplayName       *string   `json:"displayName,omitempty"`
+	Id                *int      `json:"id,omitempty"`
+	Iri               *string   `json:"iri,omitempty"`
+	IsOnline          *bool     `json:"isOnline,omitempty"`
+	LogoUrl           *string   `json:"logoUrl,omitempty"`
+	Name              *string   `json:"name,omitempty"`
+	StreamDescription *string   `json:"streamDescription,omitempty"`
+	StreamTitle       *string   `json:"streamTitle,omitempty"`
+	Summary           *string   `json:"summary,omitempty"`
+	Tags              *[]string `json:"tags,omitempty"`
+	ThumbnailUrl      *string   `json:"thumbnailUrl,omitempty"`
 }
 
 // S3Info defines model for S3Info.
@@ -1099,6 +1143,15 @@ type AddFederatedServerJSONBody struct {
 	// Url URL of the federated Owncast server
 	Url string `json:"url"`
 }
+
+// ReorderFederatedServerJSONBody defines parameters for ReorderFederatedServer.
+type ReorderFederatedServerJSONBody struct {
+	// Direction Move the server up (higher priority) or down (lower priority)
+	Direction ReorderFederatedServerJSONBodyDirection `json:"direction"`
+}
+
+// ReorderFederatedServerJSONBodyDirection defines parameters for ReorderFederatedServer.
+type ReorderFederatedServerJSONBodyDirection string
 
 // GetFollowersAdminParams defines parameters for GetFollowersAdmin.
 type GetFollowersAdminParams struct {
@@ -1465,6 +1518,9 @@ type SendFederatedMessageJSONRequestBody = AdminConfigValue
 
 // AddFederatedServerJSONRequestBody defines body for AddFederatedServer for application/json ContentType.
 type AddFederatedServerJSONRequestBody AddFederatedServerJSONBody
+
+// ReorderFederatedServerJSONRequestBody defines body for ReorderFederatedServer for application/json ContentType.
+type ReorderFederatedServerJSONRequestBody ReorderFederatedServerJSONBody
 
 // ApproveFollowerJSONRequestBody defines body for ApproveFollower for application/json ContentType.
 type ApproveFollowerJSONRequestBody ApproveFollowerJSONBody

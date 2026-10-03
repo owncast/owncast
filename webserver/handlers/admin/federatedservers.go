@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"sort"
 
 	log "github.com/sirupsen/logrus"
 
@@ -16,7 +17,10 @@ import (
 	webutils "github.com/owncast/owncast/webserver/utils"
 )
 
-const errCodeUnsupportedFeaturedStreams = "UNSUPPORTED_FEATURED_STREAMS"
+const (
+	errCodeUnsupportedFeaturedStreams = "UNSUPPORTED_FEATURED_STREAMS"
+	acceptedFollowStatus              = "accepted"
+)
 
 // GetFederatedServers returns the PUBLIC featured-streams directory. It only
 // includes servers whose follow has been accepted by the remote server: a
@@ -29,15 +33,36 @@ func (a *Admin) GetFederatedServers(w http.ResponseWriter, r *http.Request) {
 		webutils.WriteSimpleResponse(w, false, err.Error())
 		return
 	}
-
-	accepted := make([]models.FederatedServer, 0, len(servers))
+	accepted := make([]publicFederatedServer, 0, len(servers))
 	for _, s := range servers {
-		if s.FollowStatus == "accepted" {
-			accepted = append(accepted, s)
+		if s.FollowStatus == acceptedFollowStatus {
+			accepted = append(accepted, publicFederatedServerFromModel(s))
 		}
 	}
 
 	writeFederatedServersResponse(w, accepted)
+}
+
+type publicFederatedServer struct {
+	ID                int64    `json:"id"`
+	IRI               string   `json:"iri"`
+	Name              *string  `json:"name,omitempty"`
+	LogoURL           *string  `json:"logoUrl,omitempty"`
+	IsOnline          bool     `json:"isOnline"`
+	StreamTitle       *string  `json:"streamTitle,omitempty"`
+	StreamDescription *string  `json:"streamDescription,omitempty"`
+	Tags              []string `json:"tags,omitempty"`
+	ThumbnailURL      *string  `json:"thumbnailUrl,omitempty"`
+	DisplayName       *string  `json:"displayName,omitempty"`
+	Summary           *string  `json:"summary,omitempty"`
+}
+
+func publicFederatedServerFromModel(s models.FederatedServer) publicFederatedServer {
+	return publicFederatedServer{
+		ID: s.ID, IRI: s.IRI, Name: s.Name, LogoURL: s.LogoURL, IsOnline: s.IsOnline,
+		StreamTitle: s.StreamTitle, StreamDescription: s.StreamDescription,
+		Tags: s.Tags, ThumbnailURL: s.ThumbnailURL, DisplayName: s.DisplayName, Summary: s.Summary,
+	}
 }
 
 // GetAdminFederatedServers returns the full federated-servers list for the
@@ -52,10 +77,23 @@ func (a *Admin) GetAdminFederatedServers(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Keep accepted servers in canonical priority order. Pending and rejected
+	// rows are management-only and follow the accepted sequence.
+	sort.SliceStable(servers, func(i, j int) bool {
+		iAccepted := servers[i].FollowStatus == acceptedFollowStatus
+		jAccepted := servers[j].FollowStatus == acceptedFollowStatus
+		if iAccepted != jAccepted {
+			return iAccepted
+		}
+		if iAccepted && servers[i].Priority != servers[j].Priority {
+			return servers[i].Priority < servers[j].Priority
+		}
+		return servers[i].AddedAt.Before(servers[j].AddedAt)
+	})
+
 	writeFederatedServersResponse(w, servers)
 }
 
-// getFederatedServersList fetches all federated server records, normalising a
 // nil slice to empty.
 func getFederatedServersList() ([]models.FederatedServer, error) {
 	repo := federatedserversrepository.Get()
@@ -75,7 +113,7 @@ func getFederatedServersList() ([]models.FederatedServer, error) {
 }
 
 // writeFederatedServersResponse encodes the standard {servers: [...]} body.
-func writeFederatedServersResponse(w http.ResponseWriter, servers []models.FederatedServer) {
+func writeFederatedServersResponse(w http.ResponseWriter, servers interface{}) {
 	response := struct {
 		Servers interface{} `json:"servers"`
 	}{
@@ -216,5 +254,40 @@ func (a *Admin) AddFederatedServerOptions(w http.ResponseWriter, r *http.Request
 
 // RemoveFederatedServerOptions handles CORS preflight requests.
 func (a *Admin) RemoveFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// ReorderFederatedServer moves a federated server one step up or down in the
+// operator-set canonical priority order.
+func (a *Admin) ReorderFederatedServer(w http.ResponseWriter, r *http.Request, id int) {
+	var request struct {
+		Direction string `json:"direction"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		webutils.WriteSimpleResponse(w, false, "Invalid request body: "+err.Error())
+		return
+	}
+	if request.Direction != "up" && request.Direction != "down" {
+		webutils.WriteSimpleResponse(w, false, "direction must be 'up' or 'down'")
+		return
+	}
+
+	repo := federatedserversrepository.Get()
+	if repo == nil {
+		webutils.WriteSimpleResponse(w, false, "Federated servers repository is not initialised")
+		return
+	}
+
+	if err := repo.ReorderFederatedServer(int64(id), request.Direction); err != nil {
+		log.Errorf("Failed to reorder federated server %d: %v", id, err)
+		webutils.WriteSimpleResponse(w, false, "Failed to reorder federated server: "+err.Error())
+		return
+	}
+
+	webutils.WriteSimpleResponse(w, true, "Federated server reordered successfully")
+}
+
+// ReorderFederatedServerOptions handles CORS preflight requests.
+func (a *Admin) ReorderFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int) {
 	w.WriteHeader(http.StatusNoContent)
 }

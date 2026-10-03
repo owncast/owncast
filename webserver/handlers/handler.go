@@ -134,6 +134,16 @@ func (s *ServerInterfaceImpl) RemoveFederatedServerOptions(w http.ResponseWriter
 	s.h.admin.RemoveFederatedServerOptions(w, r, id)
 }
 
+func (s *ServerInterfaceImpl) ReorderFederatedServer(w http.ResponseWriter, r *http.Request, id int) {
+	s.h.middleware.RequireAdminAuth(func(w http.ResponseWriter, r *http.Request) {
+		s.h.admin.ReorderFederatedServer(w, r, id)
+	})(w, r)
+}
+
+func (s *ServerInterfaceImpl) ReorderFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int) {
+	s.h.admin.ReorderFederatedServerOptions(w, r, id)
+}
+
 func (s *ServerInterfaceImpl) GetFeatureRequests(w http.ResponseWriter, r *http.Request) {
 	s.h.middleware.RequireAdminAuth(s.h.admin.GetFeatureRequests)(w, r)
 }

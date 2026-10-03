@@ -94,6 +94,28 @@
   color: var(--theme-color-palette-4);
 }
 
+.offlineSection {
+  width: 100%;
+  background-color: var(--theme-color-components-video-background);
+}
+
+.offlineRecommendationLayout {
+  width: min(100%, 1160px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: clamp(1.25rem, 3vw, 2.75rem);
+  align-items: stretch;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 3.5rem);
+
+  @include screen(tablet) {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+  }
+}
+
 .actionButtonsContainer {
   display: flex;
   height: 100%;

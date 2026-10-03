@@ -52,6 +52,7 @@ const API_SERVER = {
   username: 'goodnight',
   summary: 'Goodnight TV',
   followStatus: 'accepted',
+  priority: 1,
 };
 
 function mockFetchServers(server: object = API_SERVER) {
@@ -71,7 +72,14 @@ const PublicHarness = () => {
 
 const AdminHarness = () => {
   const { servers, loading, removeServer } = useFederatedServers(true);
-  return <FederatedServersTable servers={servers} loading={loading} onRemove={removeServer} />;
+  return (
+    <FederatedServersTable
+      servers={servers}
+      loading={loading}
+      onRemove={removeServer}
+      onReorder={jest.fn()}
+    />
+  );
 };
 
 describe('useFederatedServers contract', () => {
@@ -126,7 +134,8 @@ describe('useFederatedServers contract', () => {
 
       // isOnline -> "Online"; lastStatusUpdate -> the Last Checked column.
       expect(screen.getByText('Online')).toBeInTheDocument();
-      expect(screen.getByText(API_SERVER.lastStatusUpdate)).toBeInTheDocument();
+      // lastStatusUpdate is formatted as a local date; match the date part only.
+      expect(screen.getByText(/Jun 16, 2026 \d{2}:\d{2}/)).toBeInTheDocument();
 
       // isOnline also surfaces the federated stream title in its column.
       expect(screen.getByText(API_SERVER.streamTitle)).toBeInTheDocument();

@@ -29,6 +29,11 @@ export const Localization = {
     unmute: 'Frontend.unmute',
 
     // Navigation and accessibility
+    OfflineRecommendation: {
+      introduction: 'Frontend.OfflineRecommendation.introduction',
+      linkAria: 'Frontend.OfflineRecommendation.linkAria',
+      watchLive: 'Frontend.OfflineRecommendation.watchLive',
+    },
     skipToPlayer: 'Skip to player',
     skipToContent: 'Skip to page content',
     skipToFooter: 'Skip to footer',
@@ -417,6 +422,10 @@ export const Localization = {
       failedToRemoveDirectory: 'Admin.FeaturedStreams.failedToRemoveDirectory',
       failedToResendApproval: 'Admin.FeaturedStreams.failedToResendApproval',
       removeFromDirectoryButton: 'Admin.FeaturedStreams.removeFromDirectoryButton',
+      moveUp: 'Admin.FeaturedStreams.moveUp',
+      moveDown: 'Admin.FeaturedStreams.moveDown',
+      priority: 'Admin.FeaturedStreams.priority',
+      failedToReorder: 'Admin.FeaturedStreams.failedToReorder',
       removeFromDirectoryConfirm: 'Admin.FeaturedStreams.removeFromDirectoryConfirm',
       resendApprovalButton: 'Admin.FeaturedStreams.resendApprovalButton',
     },

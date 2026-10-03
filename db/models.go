@@ -97,6 +97,7 @@ type FederatedServer struct {
 	AcceptedAt        sql.NullTime
 	RejectedAt        sql.NullTime
 	FollowStatus      sql.NullString
+	Priority          int64
 }
 
 type IpBan struct {

@@ -79,6 +79,13 @@ func (s *Service) markFederatedServerAccepted(actorIRI string, metadata *apmodel
 		return
 	}
 
+	// Assign a priority so the newly accepted server enters at the bottom of
+	// the operator's ordered list rather than floating to the top on the next
+	// public fetch.
+	if err := repo.AssignNextPriority(serverURL); err != nil {
+		log.Warnf("Failed to assign priority for %s: %v", serverURL, err)
+	}
+
 	if actorData, err := s.resolver.GetResolvedActorFromIRI(actorIRI); err == nil {
 		var logoURL string
 		if actorData.Image != nil {

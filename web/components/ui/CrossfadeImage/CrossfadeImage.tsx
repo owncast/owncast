@@ -9,6 +9,8 @@ export type CrossfadeImageProps = {
   objectFit?: ObjectFit;
   duration?: string;
   className?: string;
+  referrerPolicy?: React.ImgHTMLAttributes<HTMLImageElement>['referrerPolicy'];
+  onError?: React.ImgHTMLAttributes<HTMLImageElement>['onError'];
 };
 
 const imgStyle: React.CSSProperties = {
@@ -24,6 +26,8 @@ export const CrossfadeImage: FC<CrossfadeImageProps> = ({
   objectFit = 'fill', // default value for objectFit
   duration = '3s', // default value for duration
   className,
+  referrerPolicy,
+  onError,
 }) => {
   const spanStyle: React.CSSProperties = useMemo(
     () => ({
@@ -64,6 +68,8 @@ export const CrossfadeImage: FC<CrossfadeImageProps> = ({
               alt=""
               style={imgStyles[index]}
               onLoad={index === 2 ? onLoadImg : undefined}
+              referrerPolicy={referrerPolicy}
+              onError={onError}
             />
           ),
       )}

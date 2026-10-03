@@ -449,6 +449,12 @@ type ServerInterface interface {
 
 	// (OPTIONS /admin/federation/servers/{id})
 	RemoveFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int)
+
+	// (OPTIONS /admin/federation/servers/{id}/reorder)
+	ReorderFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int)
+	// ReorderFederatedServer Move a federated server up or down in the priority order
+	// (PUT /admin/federation/servers/{id}/reorder)
+	ReorderFederatedServer(w http.ResponseWriter, r *http.Request, id int)
 	// GetFollowersAdmin Get followers
 	// (GET /admin/followers)
 	GetFollowersAdmin(w http.ResponseWriter, r *http.Request, params GetFollowersAdminParams)
@@ -1539,6 +1545,17 @@ func (_ Unimplemented) RemoveFederatedServer(w http.ResponseWriter, r *http.Requ
 
 // (OPTIONS /admin/federation/servers/{id})
 func (_ Unimplemented) RemoveFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (OPTIONS /admin/federation/servers/{id}/reorder)
+func (_ Unimplemented) ReorderFederatedServerOptions(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ReorderFederatedServer Move a federated server up or down in the priority order
+// (PUT /admin/federation/servers/{id}/reorder)
+func (_ Unimplemented) ReorderFederatedServer(w http.ResponseWriter, r *http.Request, id int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -4030,6 +4047,56 @@ func (siw *ServerInterfaceWrapper) RemoveFederatedServerOptions(w http.ResponseW
 	handler.ServeHTTP(w, r)
 }
 
+// ReorderFederatedServerOptions operation middleware
+func (siw *ServerInterfaceWrapper) ReorderFederatedServerOptions(w http.ResponseWriter, r *http.Request) {
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ReorderFederatedServerOptions(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ReorderFederatedServer operation middleware
+func (siw *ServerInterfaceWrapper) ReorderFederatedServer(w http.ResponseWriter, r *http.Request) {
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ReorderFederatedServer(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetFollowersAdmin operation middleware
 func (siw *ServerInterfaceWrapper) GetFollowersAdmin(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -6365,6 +6432,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Options(options.BaseURL+"/admin/federation/servers/{id}", wrapper.RemoveFederatedServerOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Options(options.BaseURL+"/admin/federation/servers/{id}/reorder", wrapper.ReorderFederatedServerOptions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/admin/federation/servers/{id}/reorder", wrapper.ReorderFederatedServer)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/admin/federation/feature-requests", wrapper.GetFeatureRequests)

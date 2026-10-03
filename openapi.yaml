@@ -2794,7 +2794,7 @@ paths:
                   servers:
                     type: array
                     items:
-                      $ref: '#/components/schemas/FederatedServer'
+                      $ref: '#/components/schemas/PublicFederatedServer'
         '400':
           $ref: '#/components/responses/400'
         default:
@@ -2898,6 +2898,60 @@ paths:
           in: path
           required: true
           description: ID of the federated server to remove
+          schema:
+            type: integer
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+  /admin/federation/servers/{id}/reorder:
+    put:
+      summary: Move a federated server up or down in the priority order
+      operationId: ReorderFederatedServer
+      tags: ['Internal', 'Admin', 'Federation']
+      security:
+        - BasicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the federated server to reorder
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - direction
+              properties:
+                direction:
+                  type: string
+                  enum: [up, down]
+                  description: Move the server up (higher priority) or down (lower priority)
+      responses:
+        '200':
+          description: Federated server reordered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401BasicAuth'
+        default:
+          $ref: '#/components/responses/Default'
+    options:
+      operationId: ReorderFederatedServerOptions
+      x-internal: true
+      tags: ['Objects', 'Internal', 'Admin', 'Federation']
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the federated server to reorder
           schema:
             type: integer
       responses:
@@ -4077,6 +4131,11 @@ components:
           type: string
           format: uri
           description: URL of the current stream thumbnail
+        displayName:
+          type: string
+          description: Human-friendly display name of the federated server
+        summary:
+          type: string
         lastSeenOnline:
           type: string
           format: date-time
@@ -4093,6 +4152,51 @@ components:
           type: string
           format: date-time
           description: When we started following this server
+        username:
+          type: string
+        acceptedAt:
+          type: string
+          format: date-time
+        rejectedAt:
+          type: string
+          format: date-time
+        pending:
+          type: boolean
+        followStatus:
+          type: string
+        priority:
+          type: integer
+    PublicFederatedServer:
+      type: object
+      description: A public featured Owncast server, ordered by canonical priority.
+      properties:
+        id:
+          type: integer
+        iri:
+          type: string
+          format: uri
+        name:
+          type: string
+        displayName:
+          type: string
+        summary:
+          type: string
+        logoUrl:
+          type: string
+          format: uri
+        isOnline:
+          type: boolean
+        streamTitle:
+          type: string
+        streamDescription:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        thumbnailUrl:
+          type: string
+          format: uri
     Event:
       type: object
       properties:

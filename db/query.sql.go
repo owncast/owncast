@@ -536,7 +536,7 @@ func (q *Queries) GetAuthForUsers(ctx context.Context, userIds []string) ([]GetA
 }
 
 const getFederatedServer = `-- name: GetFederatedServer :one
-SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE iri = ?
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status, priority FROM federated_servers WHERE iri = ?
 `
 
 func (q *Queries) GetFederatedServer(ctx context.Context, iri string) (FederatedServer, error) {
@@ -563,13 +563,14 @@ func (q *Queries) GetFederatedServer(ctx context.Context, iri string) (Federated
 		&i.AcceptedAt,
 		&i.RejectedAt,
 		&i.FollowStatus,
+		&i.Priority,
 	)
 	return i, err
 }
 
 const getFederatedServers = `-- name: GetFederatedServers :many
 
-SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers ORDER BY added_at DESC
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status, priority FROM federated_servers ORDER BY priority ASC, added_at ASC
 `
 
 // Federated servers queries
@@ -603,6 +604,7 @@ func (q *Queries) GetFederatedServers(ctx context.Context) ([]FederatedServer, e
 			&i.AcceptedAt,
 			&i.RejectedAt,
 			&i.FollowStatus,
+			&i.Priority,
 		); err != nil {
 			return nil, err
 		}
@@ -923,6 +925,17 @@ func (q *Queries) GetLocalPostCount(ctx context.Context) (int64, error) {
 	return count, err
 }
 
+const getMaxAcceptedFederatedServerPriority = `-- name: GetMaxAcceptedFederatedServerPriority :one
+SELECT CAST(COALESCE(MAX(priority), 0) AS INTEGER) FROM federated_servers WHERE follow_status = 'accepted'
+`
+
+func (q *Queries) GetMaxAcceptedFederatedServerPriority(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getMaxAcceptedFederatedServerPriority)
+	var column_1 int64
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const getMessagesFromUser = `-- name: GetMessagesFromUser :many
 SELECT id, body, hidden_at, timestamp FROM messages WHERE eventType = 'CHAT' AND user_id = ? ORDER BY TIMESTAMP DESC
 `
@@ -1109,7 +1122,7 @@ func (q *Queries) GetPendingFeaturedFollowRequests(ctx context.Context) ([]GetPe
 }
 
 const getPendingFederatedServers = `-- name: GetPendingFederatedServers :many
-SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status FROM federated_servers WHERE pending = true ORDER BY added_at DESC
+SELECT id, iri, name, logo_url, is_online, stream_title, stream_description, stream_tags, thumbnail_url, last_seen_online, last_status_update, added_at, followed_at, pending, username, display_name, summary, accepted_at, rejected_at, follow_status, priority FROM federated_servers WHERE pending = true ORDER BY added_at DESC
 `
 
 func (q *Queries) GetPendingFederatedServers(ctx context.Context) ([]FederatedServer, error) {
@@ -1142,6 +1155,7 @@ func (q *Queries) GetPendingFederatedServers(ctx context.Context) ([]FederatedSe
 			&i.AcceptedAt,
 			&i.RejectedAt,
 			&i.FollowStatus,
+			&i.Priority,
 		); err != nil {
 			return nil, err
 		}
@@ -1809,6 +1823,20 @@ type SetAccessTokenToOwnerParams struct {
 
 func (q *Queries) SetAccessTokenToOwner(ctx context.Context, arg SetAccessTokenToOwnerParams) error {
 	_, err := q.db.ExecContext(ctx, setAccessTokenToOwner, arg.UserID, arg.Token)
+	return err
+}
+
+const setFederatedServerPriority = `-- name: SetFederatedServerPriority :exec
+UPDATE federated_servers SET priority = ? WHERE id = ?
+`
+
+type SetFederatedServerPriorityParams struct {
+	Priority int64
+	ID       int64
+}
+
+func (q *Queries) SetFederatedServerPriority(ctx context.Context, arg SetFederatedServerPriorityParams) error {
+	_, err := q.db.ExecContext(ctx, setFederatedServerPriority, arg.Priority, arg.ID)
 	return err
 }
 

@@ -17,4 +17,6 @@ type FederatedServersRepository interface {
 	UpdateFollowStatus(iri, followStatus string, pending bool, acceptedAt, rejectedAt *time.Time) error
 	UpdateServerMetadata(iri, name, displayName, summary, logoURL string) error
 	GetPendingFederatedServers() ([]models.FederatedServer, error)
+	AssignNextPriority(iri string) error
+	ReorderFederatedServer(id int64, direction string) error
 }

@@ -28,6 +28,7 @@ import {
 import styles from './Content.module.scss';
 import desktopStyles from './DesktopContent.module.scss';
 import { OfflineBanner } from '../OfflineBanner/OfflineBanner';
+import { OfflineRecommendation } from '../OfflineRecommendation/OfflineRecommendation';
 import { Statusbar } from '../Statusbar/Statusbar';
 import { ExternalAction } from '../../../interfaces/external-action';
 import { Modal } from '../Modal/Modal';
@@ -152,6 +153,7 @@ export const Content: FC = () => {
   // engagement) but the public followers list is not shown.
   const showFollowersTab = fediverseEnabled && !hideFollowersTab;
   const { servers: federatedServers } = useFederatedServers();
+  const recommendedServer = federatedServers.find(server => server.isOnline);
 
   const [showChatModal, setShowChatModal] = useState(false);
 
@@ -277,18 +279,34 @@ export const Content: FC = () => {
             />
           )}
           {!online && !appState.appLoading && (
-            <div id="offline-message" style={{ width: '100%' }}>
-              <OfflineBanner
-                showsHeader={false}
-                streamName={name}
-                customText={offlineMessage}
-                notificationsEnabled={supportsBrowserNotifications}
-                fediverseAccount={fediverseAccount}
-                lastLive={lastDisconnectTime}
-                onNotifyClick={() => setShowNotifyModal(true)}
-                onFollowClick={() => setShowFollowModal(true)}
-                className={classnames([styles.topSectionElement, styles.offlineBanner])}
-              />
+            <div
+              id="offline-message"
+              className={classnames(styles.offlineSection, {
+                [styles.topSectionElement]: !!recommendedServer,
+              })}
+            >
+              <div
+                className={classnames({
+                  [styles.offlineRecommendationLayout]: !!recommendedServer,
+                })}
+              >
+                <OfflineBanner
+                  showsHeader={false}
+                  streamName={name}
+                  customText={offlineMessage}
+                  notificationsEnabled={supportsBrowserNotifications}
+                  fediverseAccount={fediverseAccount}
+                  lastLive={lastDisconnectTime}
+                  onNotifyClick={() => setShowNotifyModal(true)}
+                  onFollowClick={() => setShowFollowModal(true)}
+                  className={classnames(styles.offlineBanner, {
+                    [styles.topSectionElement]: !recommendedServer,
+                  })}
+                />
+                {recommendedServer && (
+                  <OfflineRecommendation localStreamName={name} server={recommendedServer} />
+                )}
+              </div>
             </div>
           )}
         </Row>
