@@ -28,11 +28,10 @@
 #    field names and the feature shipped broken but green).
 # 7. Verify the listing is readable on the PUBLIC (unauthenticated) endpoint.
 # 8. Verify the reverse direction (Instance 2 adds Instance 1) also works.
-# 9. Stream a real test video into Instance 2 and verify its entry in
-#    Instance 1's directory flips to live with the stream title, then stop the
-#    stream and verify it flips back to offline promptly (the core of the
-#    feature, both directions). Streams automatically under CI; prompts when
-#    run interactively.
+# 9. Stream a real test video into the selected instance and verify its entry
+#    in the other instance's directory flips live with the stream title, then
+#    back offline after stopping. Interactive runs choose 0 (skip), 1, or 2
+#    and pause for browser inspection while live. CI defaults to instance 2.
 # 10. Verify a server that features another (by following it) does NOT show up
 #     in the followee's followers list or count -- a featured-streams follow is
 #     a directory relationship, not a fan follow.
@@ -86,6 +85,14 @@ OC1_PID=""
 OC2_PID=""
 OC_LAST_PID=""
 TEST_STREAM_PID=""
+STREAM_INSTANCE="${STREAM_INSTANCE:-}"
+STREAM_PORT="${OWNCAST2_PORT}"
+STREAM_RTMP_PORT="${OWNCAST2_RTMP_PORT}"
+STREAM_URL="${OWNCAST2_URL}"
+OBSERVER_INSTANCE=1
+OBSERVER_PORT="${OWNCAST_PORT}"
+OBSERVER_URL="${OWNCAST_URL}"
+OBSERVER_USERNAME="${OWNCAST_FED_USERNAME}"
 
 # Colors
 RED='\033[0;31m'
@@ -99,6 +106,43 @@ log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 log_test() { echo -e "${CYAN}[TEST]${NC} $1"; }
 
+select_stream_instance() {
+    if [[ -z "${STREAM_INSTANCE}" && "${CI}" != "true" ]]; then
+        read -r -p "Which instance should stream? [0=don't stream, 1=owncast.local, 2=owncast2.local] (default 2): " STREAM_INSTANCE
+    fi
+    STREAM_INSTANCE="${STREAM_INSTANCE:-2}"
+    case "${STREAM_INSTANCE}" in
+        0)
+            log_info "Streaming disabled; skipping the live-stream tests."
+            return 0
+            ;;
+        1)
+            STREAM_PORT="${OWNCAST_PORT}"
+            STREAM_RTMP_PORT="${OWNCAST_RTMP_PORT}"
+            STREAM_URL="${OWNCAST_URL}"
+            OBSERVER_INSTANCE=2
+            OBSERVER_PORT="${OWNCAST2_PORT}"
+            OBSERVER_URL="${OWNCAST2_URL}"
+            OBSERVER_USERNAME="${OWNCAST2_FED_USERNAME}"
+            ;;
+        2)
+            STREAM_PORT="${OWNCAST2_PORT}"
+            STREAM_RTMP_PORT="${OWNCAST2_RTMP_PORT}"
+            STREAM_URL="${OWNCAST2_URL}"
+            OBSERVER_INSTANCE=1
+            OBSERVER_PORT="${OWNCAST_PORT}"
+            OBSERVER_URL="${OWNCAST_URL}"
+            OBSERVER_USERNAME="${OWNCAST_FED_USERNAME}"
+            ;;
+        *)
+            log_error "STREAM_INSTANCE must be 0, 1, or 2"
+            return 1
+            ;;
+    esac
+    log_info "Instance ${STREAM_INSTANCE} streams; instance ${OBSERVER_INSTANCE} observes."
+    log_info "Recommendation page while streaming: ${OBSERVER_URL}/"
+}
+
 # shellcheck disable=SC2329  # invoked via trap, not called directly
 cleanup() {
     log_info "Cleaning up..."
@@ -106,11 +150,7 @@ cleanup() {
     # Stop any test stream first so ffmpeg releases the RTMP connection before
     # the Owncast instances are torn down. Kill the ffmpeg child directly too,
     # since the ocTestStream wrapper does not forward signals to it.
-    pkill -f "rtmp://127.0.0.1:${OWNCAST2_RTMP_PORT}/live/" 2>/dev/null || true
-    if [[ -n "${TEST_STREAM_PID}" ]] && kill -0 "${TEST_STREAM_PID}" 2>/dev/null; then
-        kill "${TEST_STREAM_PID}" 2>/dev/null || true
-        wait "${TEST_STREAM_PID}" 2>/dev/null || true
-    fi
+    stop_test_stream
 
     for pid_var in PROXY_PID OC2_PID OC1_PID; do
         local pid="${!pid_var}"
@@ -206,6 +246,17 @@ start_proxy() {
 }
 
 build_owncast() {
+    log_info "Building web assets..."
+    # Ensure npm is available via nvm if not already on PATH.
+    if ! command -v npm &>/dev/null && [[ -s "${HOME}/.nvm/nvm.sh" ]]; then
+        # shellcheck disable=SC1091
+        source "${HOME}/.nvm/nvm.sh"
+        nvm use 24 &>/dev/null || nvm use 24.9.0 &>/dev/null || true
+    fi
+    pushd "${REPO_ROOT}" > /dev/null
+    build/web/bundleWeb.sh --offline
+    popd > /dev/null
+
     log_info "Building Owncast..."
     OWNCAST_BIN="${TEMP_DIR}/owncast"
     pushd "${REPO_ROOT}" > /dev/null
@@ -638,10 +689,7 @@ test_metadata_is_populated() {
 test_listing_field_contract() {
     log_test "TEST 4: Directory listing exposes the documented field contract"
 
-    # The web reads these field names verbatim (web/hooks/useFederatedServers.tsx).
-    # The whole feature shipped broken once because the API and the web had
-    # drifted onto different names, so guard the contract here: the documented
-    # names must be present and the legacy names must never come back.
+    # Public viewer fields must remain usable without exposing admin state.
     local json server
     json=$(get_featured_servers "${OWNCAST_PORT}" public)
     server=$(server_object "${json}" "${OWNCAST2_URL}")
@@ -653,7 +701,7 @@ test_listing_field_contract() {
     fi
 
     local failed=0 field
-    local required=(iri name displayName logoUrl isOnline addedAt followStatus)
+    local required=(id iri name displayName logoUrl isOnline)
     for field in "${required[@]}"; do
         if ! echo "${server}" | jq -e "has(\"${field}\")" > /dev/null 2>&1; then
             log_error "TEST 4 FAILED: response is missing documented field '${field}'"
@@ -661,10 +709,10 @@ test_listing_field_contract() {
         fi
     done
 
-    local forbidden=(url logo thumbnail lastChecked)
+    local forbidden=(addedAt followStatus priority lastStatusUpdate username pending url logo thumbnail lastChecked)
     for field in "${forbidden[@]}"; do
         if echo "${server}" | jq -e "has(\"${field}\")" > /dev/null 2>&1; then
-            log_error "TEST 4 FAILED: response contains legacy field '${field}' the web no longer reads"
+            log_error "TEST 4 FAILED: public response contains non-public or legacy field '${field}'"
             failed=1
         fi
     done
@@ -740,9 +788,11 @@ test_reverse_direction() {
 # trapping EXIT (for the internal test-pattern path), so killing the wrapper
 # alone orphans ffmpeg and the RTMP stream keeps running -- which would leave
 # the source server live and no Leave would ever be sent. Kill the ffmpeg
-# pushing to instance 2's RTMP endpoint directly as well.
+# pushing to the selected instance's RTMP endpoint directly as well.
 stop_test_stream() {
-    pkill -f "rtmp://127.0.0.1:${OWNCAST2_RTMP_PORT}/live/" 2>/dev/null || true
+    if [[ -n "${TEST_STREAM_PID}" ]]; then
+        pkill -f "rtmp://127.0.0.1:${STREAM_RTMP_PORT}/live/" 2>/dev/null || true
+    fi
     if [[ -n "${TEST_STREAM_PID}" ]] && kill -0 "${TEST_STREAM_PID}" 2>/dev/null; then
         kill "${TEST_STREAM_PID}" 2>/dev/null || true
         wait "${TEST_STREAM_PID}" 2>/dev/null || true
@@ -752,18 +802,16 @@ stop_test_stream() {
 
 test_live_status_flip() {
     log_test "TEST 7: Featured stream flips to live when the remote goes online"
+    if [[ "${STREAM_INSTANCE}" == "0" ]]; then
+        log_warn "TEST 7 SKIPPED: streaming disabled"
+        return 0
+    fi
 
-    # This is the heart of the feature: a featured server must show as live,
-    # with its stream metadata, while it is actually streaming. Instance 1
-    # already follows instance 2 (TEST 2), so when instance 2 goes live it
-    # sends an immediate Offer ping that should flip instance 2's row in
-    # instance 1's directory to online.
-    #
-    # In CI we stream automatically; run interactively and we ask first so a
-    # developer can decline (or watch it happen).
+    # Both follow directions are accepted by TEST 6. The selected source
+    # sends an Offer on connect and a Leave on disconnect to the observer.
     if [[ "${CI}" != "true" ]]; then
         echo ""
-        read -p "Start a test stream on instance 2 to verify live-status propagation? [Y/n] " -n 1 -r
+        read -r -p "Start a test stream on instance ${STREAM_INSTANCE}, observed by instance ${OBSERVER_INSTANCE}? [Y/n] "
         echo ""
         if [[ "${REPLY}" =~ ^[Nn]$ ]]; then
             log_warn "TEST 7 SKIPPED: declined to start a test stream"
@@ -776,22 +824,20 @@ test_live_status_flip() {
         return 1
     fi
 
-    # Give instance 2 a known stream title so we can assert it propagates with
-    # the live status, rather than just trusting the boolean flag.
+    # Assert stream metadata propagates as well as the live-status boolean.
     local expected_title="Featured Streams Live Test"
     local auth
     auth=$(get_admin_auth)
-    curl -s -X POST "http://localhost:${OWNCAST2_PORT}/api/admin/config/streamtitle" \
+    curl -s -X POST "http://localhost:${STREAM_PORT}/api/admin/config/streamtitle" \
         -H "Authorization: Basic ${auth}" -H "Content-Type: application/json" \
         -d "{\"value\": \"${expected_title}\"}" > /dev/null
 
-    log_info "Starting test stream into instance 2 (rtmp port ${OWNCAST2_RTMP_PORT})..."
-    "${REPO_ROOT}/test/ocTestStream.sh" "rtmp://127.0.0.1:${OWNCAST2_RTMP_PORT}/live/${STREAM_KEY}" \
+    log_info "Starting test stream into instance ${STREAM_INSTANCE} (rtmp port ${STREAM_RTMP_PORT})..."
+    "${REPO_ROOT}/test/ocTestStream.sh" "rtmp://127.0.0.1:${STREAM_RTMP_PORT}/live/${STREAM_KEY}" \
         > "${TEMP_DIR}/teststream.log" 2>&1 &
     TEST_STREAM_PID=$!
 
-    # Wait for instance 1 to observe instance 2 as online. The Offer fires on
-    # RTMP connect, but allow generous time for ffmpeg startup and delivery.
+    # Allow time for ffmpeg startup and Offer delivery to the observer.
     local timeout=90 waited=0 online="" json
     while [[ ${waited} -lt ${timeout} ]]; do
         if ! kill -0 "${TEST_STREAM_PID}" 2>/dev/null; then
@@ -800,8 +846,8 @@ test_live_status_flip() {
             TEST_STREAM_PID=""
             return 1
         fi
-        json=$(get_featured_servers "${OWNCAST_PORT}" admin)
-        online=$(server_field "${json}" "${OWNCAST2_URL}" isOnline)
+        json=$(get_featured_servers "${OBSERVER_PORT}" admin)
+        online=$(server_field "${json}" "${STREAM_URL}" isOnline)
         if [[ "${online}" == "true" ]]; then
             break
         fi
@@ -810,34 +856,35 @@ test_live_status_flip() {
     done
 
     if [[ "${online}" != "true" ]]; then
-        log_error "TEST 7 FAILED: instance 2 never showed as online on instance 1 within ${timeout}s"
-        log_error "Server record: $(server_object "${json}" "${OWNCAST2_URL}")"
+        log_error "TEST 7 FAILED: instance ${STREAM_INSTANCE} never showed as online on instance ${OBSERVER_INSTANCE} within ${timeout}s"
+        log_error "Server record: $(server_object "${json}" "${STREAM_URL}")"
         stop_test_stream
         return 1
     fi
 
     # The Offer carries stream metadata; the title we set must have propagated.
     local title
-    title=$(server_field "$(get_featured_servers "${OWNCAST_PORT}" admin)" "${OWNCAST2_URL}" streamTitle)
+    title=$(server_field "$(get_featured_servers "${OBSERVER_PORT}" admin)" "${STREAM_URL}" streamTitle)
     if [[ "${title}" != "${expected_title}" ]]; then
         log_error "TEST 7 FAILED: streamTitle is '${title}', expected '${expected_title}'"
         stop_test_stream
         return 1
     fi
 
-    log_info "Instance 2 is live on instance 1 with title '${title}'; stopping the stream..."
+    log_info "Instance ${STREAM_INSTANCE} is live on instance ${OBSERVER_INSTANCE} with title '${title}'."
+    if [[ "${CI}" != "true" ]]; then
+        read -r -p "Inspect ${OBSERVER_URL}/ for the recommendation; press Enter to stop the stream and continue. "
+    fi
+    log_info "Stopping the stream..."
     stop_test_stream
 
-    # Ending the stream makes instance 2 send a Leave activity; instance 1 must
-    # flip the entry back to offline promptly, well before the 20-minute
-    # staleness sweep would otherwise time it out. The latency floor here is
-    # how long instance 2 takes to detect the RTMP disconnect and transition
-    # itself offline, so allow generous headroom and report the measured time.
+    # The Leave must flip the observer's entry offline before the staleness
+    # sweep. Allow time for the source to detect its RTMP disconnect.
     local offline_timeout=180 offline_waited=0
     online="true"
     while [[ ${offline_waited} -lt ${offline_timeout} ]]; do
-        json=$(get_featured_servers "${OWNCAST_PORT}" admin)
-        online=$(server_field "${json}" "${OWNCAST2_URL}" isOnline)
+        json=$(get_featured_servers "${OBSERVER_PORT}" admin)
+        online=$(server_field "${json}" "${STREAM_URL}" isOnline)
         if [[ "${online}" == "false" ]]; then
             break
         fi
@@ -846,17 +893,16 @@ test_live_status_flip() {
     done
 
     if [[ "${online}" != "false" ]]; then
-        log_error "TEST 7 FAILED: instance 2 still shows online on instance 1 ${offline_timeout}s after the stream stopped"
-        log_error "Server record: $(server_object "${json}" "${OWNCAST2_URL}")"
+        log_error "TEST 7 FAILED: instance ${STREAM_INSTANCE} still shows online on instance ${OBSERVER_INSTANCE} ${offline_timeout}s after the stream stopped"
+        log_error "Server record: $(server_object "${json}" "${STREAM_URL}")"
 
-        # Diagnostics: did instance 2 itself go offline, and did the Leave flow?
-        local oc2_self
-        oc2_self=$(curl -s "http://localhost:${OWNCAST2_PORT}/api/status" 2>/dev/null | jq -c '{online}' 2>/dev/null)
-        log_error "Instance 2 self-reported status: ${oc2_self:-<none>}"
-        log_error "--- instance 2 log (disconnect / leave / ping) ---"
-        grep -iE "disconnect|leave|offer|ping|offline|transcoder complet|federat" "${TEMP_DIR}/owncast2.log" 2>/dev/null | tail -25 >&2 || true
-        log_error "--- instance 1 log (inbox / leave) ---"
-        grep -iE "leave|offer|offline|federated server|inbox" "${TEMP_DIR}/owncast1.log" 2>/dev/null | tail -25 >&2 || true
+        local source_status
+        source_status=$(curl -s "http://localhost:${STREAM_PORT}/api/status" 2>/dev/null | jq -c '{online}' 2>/dev/null)
+        log_error "Instance ${STREAM_INSTANCE} self-reported status: ${source_status:-<none>}"
+        log_error "--- source log (disconnect / leave / ping) ---"
+        grep -iE "disconnect|leave|offer|ping|offline|transcoder complet|federat" "${TEMP_DIR}/owncast${STREAM_INSTANCE}.log" 2>/dev/null | tail -25 >&2 || true
+        log_error "--- observer log (inbox / leave) ---"
+        grep -iE "leave|offer|offline|federated server|inbox" "${TEMP_DIR}/owncast${OBSERVER_INSTANCE}.log" 2>/dev/null | tail -25 >&2 || true
         return 1
     fi
 
@@ -899,10 +945,14 @@ test_featuring_server_hidden_from_followers() {
 
 test_feature_while_already_live() {
     log_test "TEST 9: Featuring a server that is already live shows it live promptly"
+    if [[ "${STREAM_INSTANCE}" == "0" ]]; then
+        log_warn "TEST 9 SKIPPED: streaming disabled"
+        return 0
+    fi
 
     if [[ "${CI}" != "true" ]]; then
         echo ""
-        read -p "Run the 'feature while already live' test (starts a stream)? [Y/n] " -n 1 -r
+        read -r -p "Run 'feature while already live' with instance ${STREAM_INSTANCE} streaming and instance ${OBSERVER_INSTANCE} observing? [Y/n] "
         echo ""
         if [[ "${REPLY}" =~ ^[Nn]$ ]]; then
             log_warn "TEST 9 SKIPPED: declined to start a test stream"
@@ -910,38 +960,36 @@ test_feature_while_already_live() {
         fi
     fi
 
-    local instance1_actor="${OWNCAST_URL}/federation/user/${OWNCAST_FED_USERNAME}"
+    local observer_actor="${OBSERVER_URL}/federation/user/${OBSERVER_USERNAME}"
 
-    # Unfeature instance 2 first, so instance 1 is NOT a follower when instance
-    # 2 goes live (otherwise instance 2's immediate go-live ping would reach
-    # instance 1 and mask what we're testing). The unfeature sends an Undo so
-    # instance 2 drops instance 1 as a follower, enabling a clean re-follow.
+    # Unfeature the source so its go-live ping cannot mask the Accept's
+    # carried live status when the observer re-features it.
     local id
-    id=$(server_id "$(get_featured_servers "${OWNCAST_PORT}" admin)" "${OWNCAST2_URL}")
+    id=$(server_id "$(get_featured_servers "${OBSERVER_PORT}" admin)" "${STREAM_URL}")
     if [[ -z "${id}" || "${id}" == "null" ]]; then
-        log_error "TEST 9 FAILED: could not find instance 2's id to unfeature"
+        log_error "TEST 9 FAILED: could not find instance ${STREAM_INSTANCE}'s id to unfeature"
         return 1
     fi
-    log_info "Unfeaturing instance 2 (id ${id}); waiting for the Undo to propagate..."
-    remove_featured_server "${OWNCAST_PORT}" "${id}" > /dev/null
+    log_info "Unfeaturing instance ${STREAM_INSTANCE} (id ${id}); waiting for the Undo to propagate..."
+    remove_featured_server "${OBSERVER_PORT}" "${id}" > /dev/null
     sleep 12
 
-    # Start instance 2 streaming while instance 1 is not following it.
+    # Start the source streaming while the observer is not following it.
     local expected_title="Already Live Test"
     local auth
     auth=$(get_admin_auth)
-    curl -s -X POST "http://localhost:${OWNCAST2_PORT}/api/admin/config/streamtitle" \
+    curl -s -X POST "http://localhost:${STREAM_PORT}/api/admin/config/streamtitle" \
         -H "Authorization: Basic ${auth}" -H "Content-Type: application/json" \
         -d "{\"value\": \"${expected_title}\"}" > /dev/null
 
-    log_info "Starting test stream into instance 2..."
-    "${REPO_ROOT}/test/ocTestStream.sh" "rtmp://127.0.0.1:${OWNCAST2_RTMP_PORT}/live/${STREAM_KEY}" \
+    log_info "Starting test stream into instance ${STREAM_INSTANCE}..."
+    "${REPO_ROOT}/test/ocTestStream.sh" "rtmp://127.0.0.1:${STREAM_RTMP_PORT}/live/${STREAM_KEY}" \
         > "${TEMP_DIR}/teststream-live.log" 2>&1 &
     TEST_STREAM_PID=$!
 
     local waited=0
     while [[ ${waited} -lt 90 ]]; do
-        if [[ "$(curl -s "http://localhost:${OWNCAST2_PORT}/api/status" | jq -r '.online // false' 2>/dev/null)" == "true" ]]; then
+        if [[ "$(curl -s "http://localhost:${STREAM_PORT}/api/status" | jq -r '.online // false' 2>/dev/null)" == "true" ]]; then
             break
         fi
         if ! kill -0 "${TEST_STREAM_PID}" 2>/dev/null; then
@@ -953,37 +1001,36 @@ test_feature_while_already_live() {
         sleep 3
         waited=$((waited + 3))
     done
-    if [[ "$(curl -s "http://localhost:${OWNCAST2_PORT}/api/status" | jq -r '.online // false' 2>/dev/null)" != "true" ]]; then
-        log_error "TEST 9 FAILED: instance 2 did not go live"
+    if [[ "$(curl -s "http://localhost:${STREAM_PORT}/api/status" | jq -r '.online // false' 2>/dev/null)" != "true" ]]; then
+        log_error "TEST 9 FAILED: instance ${STREAM_INSTANCE} did not go live"
         stop_test_stream
         return 1
     fi
 
-    # Re-feature instance 2 while it is already live, then approve.
+    # Re-feature the source while it is already live, then approve.
     local response success
-    response=$(add_featured_server "${OWNCAST_PORT}" "${OWNCAST2_URL}")
+    response=$(add_featured_server "${OBSERVER_PORT}" "${STREAM_URL}")
     success=$(echo "${response}" | jq -r '.success // false' 2>/dev/null)
     if [[ "${success}" != "true" ]]; then
         log_error "TEST 9 FAILED: re-feature add not accepted: $(echo "${response}" | jq -r '.message // ""')"
         stop_test_stream
         return 1
     fi
-    log_info "Approving the re-feature request on instance 2..."
-    approve_featured_request "${OWNCAST2_PORT}" "${instance1_actor}" > /dev/null
-    if ! wait_for_follow_status "${OWNCAST_PORT}" "${OWNCAST2_URL}" "accepted" 40; then
+    log_info "Approving the re-feature request on instance ${STREAM_INSTANCE}..."
+    approve_featured_request "${STREAM_PORT}" "${observer_actor}" > /dev/null
+    if ! wait_for_follow_status "${OBSERVER_PORT}" "${STREAM_URL}" "accepted" 40; then
         log_error "TEST 9 FAILED: re-feature follow not accepted (the unfeature Undo may not have cleared the prior follower)"
         stop_test_stream
         return 1
     fi
 
-    # Instance 1 must show instance 2 live promptly -- this can only come from
-    # the Accept's carried status, since instance 1 just started following and
-    # the next periodic ping is minutes away.
+    # Live status must come from the Accept; the next periodic ping is
+    # minutes away.
     local online="" json
     waited=0
     while [[ ${waited} -lt 30 ]]; do
-        json=$(get_featured_servers "${OWNCAST_PORT}" admin)
-        online=$(server_field "${json}" "${OWNCAST2_URL}" isOnline)
+        json=$(get_featured_servers "${OBSERVER_PORT}" admin)
+        online=$(server_field "${json}" "${STREAM_URL}" isOnline)
         if [[ "${online}" == "true" ]]; then
             break
         fi
@@ -992,14 +1039,14 @@ test_feature_while_already_live() {
     done
 
     if [[ "${online}" != "true" ]]; then
-        log_error "TEST 9 FAILED: instance 2 not shown live on instance 1 within 30s of acceptance"
-        log_error "Server record: $(server_object "${json}" "${OWNCAST2_URL}")"
+        log_error "TEST 9 FAILED: instance ${STREAM_INSTANCE} not shown live on instance ${OBSERVER_INSTANCE} within 30s of acceptance"
+        log_error "Server record: $(server_object "${json}" "${STREAM_URL}")"
         stop_test_stream
         return 1
     fi
 
     local title
-    title=$(server_field "$(get_featured_servers "${OWNCAST_PORT}" admin)" "${OWNCAST2_URL}" streamTitle)
+    title=$(server_field "$(get_featured_servers "${OBSERVER_PORT}" admin)" "${STREAM_URL}" streamTitle)
     stop_test_stream
     log_test "TEST 9 PASSED: featured-while-live shown online ~${waited}s after accept (title='${title}')"
     return 0
@@ -1091,6 +1138,7 @@ main() {
     echo ""
     if test_reverse_direction; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
     echo ""
+    select_stream_instance
     if test_live_status_flip; then passed=$((passed + 1)); else failed=$((failed + 1)); fi
     echo ""
     if test_featuring_server_hidden_from_followers; then passed=$((passed + 1)); else failed=$((failed + 1)); fi

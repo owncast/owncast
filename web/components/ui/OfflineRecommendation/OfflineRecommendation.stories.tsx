@@ -14,6 +14,7 @@ const featuredServer: FederatedServerResponse = {
   thumbnailUrl: 'https://watch.owncast.online/thumbnail.jpg',
   isOnline: true,
   addedAt: new Date().toISOString(),
+  priority: 1,
 };
 
 const brightThumbnailServer: FederatedServerResponse = {
