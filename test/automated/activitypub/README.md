@@ -77,6 +77,23 @@ behind the shared proxy. It:
 9. Streams video and verifies live and offline status delivery
 10. Confirms directory relationships do not inflate follower lists
 
+Interactive runs let you choose which instance streams: `0` skips streaming,
+`1` streams on `owncast.local`, and `2` streams on `owncast2.local` (the default).
+Both live tests use that direction. Test 7 pauses while the stream is live so
+you can inspect the recommendation on the other instance before pressing Enter
+to stop the stream and continue.
+
+To select Instance 1 in advance and keep the servers running afterward:
+
+```bash
+KEEP_RUNNING=true STREAM_INSTANCE=1 bash test-featured-streams.sh
+```
+
+Open `https://owncast2.local:8443/` during the inspection pause. `CI=true` skips
+the interactive prompts and pause, defaults to Instance 2, and honors
+`STREAM_INSTANCE=0`, `1`, or `2`.
+
+
 ### `test-fediverse-otp.sh` (Fediverse authentication, snac2-based)
 
 End-to-end test of logging in with a Fediverse account, with no backend stubs.
