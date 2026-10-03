@@ -29,9 +29,8 @@
 }
 
 .social-option .ant-select-item-option-content,
-.social-option .ant-select-selection-item,
 .social-dropdown .ant-select-item-option-content,
-.social-dropdown .ant-select-selection-item {
+.social-dropdown .ant-select-content-value {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -41,18 +40,16 @@
 }
 
 .social-option .ant-select-item-option-content .option-icon,
-.social-option .ant-select-selection-item .option-icon,
 .social-dropdown .ant-select-item-option-content .option-icon,
-.social-dropdown .ant-select-selection-item .option-icon {
+.social-dropdown .ant-select-content-value .option-icon {
   height: 1.5em;
   width: 1.5em;
   line-height: normal;
 }
 
 .social-option .ant-select-item-option-content .option-label,
-.social-option .ant-select-selection-item .option-label,
 .social-dropdown .ant-select-item-option-content .option-label,
-.social-dropdown .ant-select-selection-item .option-label {
+.social-dropdown .ant-select-content-value .option-label {
   display: inline-block;
   margin-left: 1em;
   line-height: normal;
