@@ -162,6 +162,13 @@ jobs:
           go-version: "1.26.5"
           cache: true
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24.12.0"
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
       - name: Install Caddy
         run: |
           curl -sfL https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_linux_amd64.tar.gz -o caddy.tar.gz
