@@ -27,6 +27,11 @@ import { useRouter } from 'next/router';
 import { useSelectedLanguage } from 'next-export-i18n';
 import { loadViewerLocale, shouldCleanUrlAfterFlip } from '../utils/localeLoader';
 import { AntdProvider } from '../components/theme/AntdProvider';
+import { ensureLocalStorage } from '../utils/ensureLocalStorage';
+
+if (typeof window !== 'undefined') {
+  ensureLocalStorage(window);
+}
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
