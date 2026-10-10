@@ -2696,8 +2696,8 @@ Web package: ws@7.5.11
   Declared license: MIT
   LICENSE: SHA256 3de284c8e6fa7e8437eff6f53695471e0332129a5b42a79361e17b7637de94b3
 
-Web package: xstate@5.32.4
-  Source: https://registry.npmjs.org/xstate/-/xstate-5.32.4.tgz
+Web package: xstate@5.32.6
+  Source: https://registry.npmjs.org/xstate/-/xstate-5.32.6.tgz
   Declared license: MIT
   LICENSE: SHA256 77a7bc14fa3c23c187cfa38925a3c9ffa866b01c1d9b6506f2a1ec533bce6a92
 
@@ -10218,7 +10218,7 @@ THE SOFTWARE.
 ================================================================================
 SHA256: 77a7bc14fa3c23c187cfa38925a3c9ffa866b01c1d9b6506f2a1ec533bce6a92
 Used by: Web package: @xstate/react@6.1.0 (LICENSE)
-Used by: Web package: xstate@5.32.4 (LICENSE)
+Used by: Web package: xstate@5.32.6 (LICENSE)
 --------------------------------------------------------------------------------
 The MIT License (MIT)
 
