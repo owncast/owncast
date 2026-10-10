@@ -50,10 +50,7 @@ jobs:
 
       - name: Install Caddy
         run: |
-          CADDY_URL=$(curl -sf https://api.github.com/repos/caddyserver/caddy/releases/latest \
-            | grep -o 'https://github.com/caddyserver/caddy/releases/download/[^"]*linux_amd64\.tar\.gz' \
-            | head -1)
-          curl -sfL "$CADDY_URL" -o caddy.tar.gz
+          curl -sfL https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_linux_amd64.tar.gz -o caddy.tar.gz
           tar -xzf caddy.tar.gz caddy
           sudo mv caddy /usr/local/bin/caddy
 
@@ -96,10 +93,7 @@ jobs:
 
       - name: Install Caddy
         run: |
-          CADDY_URL=$(curl -sf https://api.github.com/repos/caddyserver/caddy/releases/latest \
-            | grep -o 'https://github.com/caddyserver/caddy/releases/download/[^"]*linux_amd64\.tar\.gz' \
-            | head -1)
-          curl -sfL "$CADDY_URL" -o caddy.tar.gz
+          curl -sfL https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_linux_amd64.tar.gz -o caddy.tar.gz
           tar -xzf caddy.tar.gz caddy
           sudo mv caddy /usr/local/bin/caddy
 
@@ -170,10 +164,7 @@ jobs:
 
       - name: Install Caddy
         run: |
-          CADDY_URL=$(curl -sf https://api.github.com/repos/caddyserver/caddy/releases/latest \
-            | grep -o 'https://github.com/caddyserver/caddy/releases/download/[^"]*linux_amd64\.tar\.gz' \
-            | head -1)
-          curl -sfL "$CADDY_URL" -o caddy.tar.gz
+          curl -sfL https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_linux_amd64.tar.gz -o caddy.tar.gz
           tar -xzf caddy.tar.gz caddy
           sudo mv caddy /usr/local/bin/caddy
 
@@ -217,10 +208,7 @@ jobs:
 
       - name: Install Caddy
         run: |
-          CADDY_URL=$(curl -sf https://api.github.com/repos/caddyserver/caddy/releases/latest \
-            | grep -o 'https://github.com/caddyserver/caddy/releases/download/[^"]*linux_amd64\.tar\.gz' \
-            | head -1)
-          curl -sfL "$CADDY_URL" -o caddy.tar.gz
+          curl -sfL https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_linux_amd64.tar.gz -o caddy.tar.gz
           tar -xzf caddy.tar.gz caddy
           sudo mv caddy /usr/local/bin/caddy
 
@@ -264,10 +252,7 @@ jobs:
 
       - name: Install Caddy
         run: |
-          CADDY_URL=$(curl -sf https://api.github.com/repos/caddyserver/caddy/releases/latest \
-            | grep -o 'https://github.com/caddyserver/caddy/releases/download/[^"]*linux_amd64\.tar\.gz' \
-            | head -1)
-          curl -sfL "$CADDY_URL" -o caddy.tar.gz
+          curl -sfL https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_linux_amd64.tar.gz -o caddy.tar.gz
           tar -xzf caddy.tar.gz caddy
           sudo mv caddy /usr/local/bin/caddy
 
