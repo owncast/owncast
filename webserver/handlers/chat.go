@@ -9,6 +9,7 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/chat"
+	plugins "github.com/owncast/owncast/services/plugins"
 	"github.com/owncast/owncast/utils"
 	"github.com/owncast/owncast/webserver/handlers/generated"
 	"github.com/owncast/owncast/webserver/router/middleware"
@@ -66,6 +67,35 @@ func (h *Handlers) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Requ
 		ID          string `json:"id"`
 		AccessToken string `json:"accessToken"`
 		DisplayName string `json:"displayName"`
+	}
+	// If the request carries a verified gate session (set by the auth-gate
+	// middleware; empty on servers with no auth.gate plugin), return that
+	// user's existing token rather than creating a new anonymous one.
+	// Fail closed on any problem: a gate session with no resolvable user
+	// must never fall through to CreateAnonymousUser — that would create an
+	// anon row and trigger an infinite re-registration loop via the /ws
+	// mismatch guard.
+	if tok := plugins.SessionTokenFromContext(r.Context()); tok != "" {
+		u := h.userRepository.GetUserByToken(tok)
+		if u == nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusForbidden)
+			_ = json.NewEncoder(w).Encode(models.BaseAPIResponse{Success: false, Message: "gate session invalid"})
+			return
+		}
+		if u.DisabledAt != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusForbidden)
+			_ = json.NewEncoder(w).Encode(models.BaseAPIResponse{Success: false, Message: "user is disabled"})
+			return
+		}
+		utils.SetChatAccessTokenCookie(w, r, tok)
+		webutils.WriteResponse(w, registerAnonymousUserResponse{
+			ID:          u.ID,
+			AccessToken: tok,
+			DisplayName: u.DisplayName,
+		})
+		return
 	}
 
 	decoder := json.NewDecoder(r.Body)
