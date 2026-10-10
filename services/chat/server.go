@@ -383,7 +383,7 @@ func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request)
 	// user's token. This prevents an orphan anon user from shadowing the
 	// authenticated gate identity, and is a no-op on servers with no gate
 	// plugin (SessionTokenFromContext returns "" in that case).
-	if !user.Authenticated && plugins.SessionTokenFromContext(r.Context()) != "" {
+	if gateShadowsAnonUser(user, plugins.SessionTokenFromContext(r.Context())) {
 		_ = conn.WriteJSON(events.EventPayload{
 			payloadKeyType: events.ErrorNeedsRegistration,
 		})
@@ -394,6 +394,16 @@ func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request)
 	userAgent := r.UserAgent()
 
 	s.Addclient(conn, user, accessToken, userAgent, ipAddress)
+}
+
+// gateShadowsAnonUser reports whether the client's access token resolved to an
+// unauthenticated (anonymous) user while a verified gate session is also
+// present. In that case the gate identity should take precedence: the client
+// must re-register so /api/chat/register can return the gate user's token.
+// Returns false (no action) when the user is already authenticated, or when no
+// gate session is active (gateToken == "").
+func gateShadowsAnonUser(user *models.User, gateToken string) bool {
+	return gateToken != "" && !user.Authenticated
 }
 
 // Broadcast sends message to all connected clients.

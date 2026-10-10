@@ -215,3 +215,28 @@ func TestUserPartedTimersHandleConcurrentDisconnectsAndReconnects(t *testing.T) 
 		t.Fatalf("pending part timers = %d, want 0", len(chatSvc.userPartedTimers))
 	}
 }
+
+func TestGateShadowsAnonUser(t *testing.T) {
+	anon := &models.User{Authenticated: false}
+	authed := &models.User{Authenticated: true}
+
+	tests := []struct {
+		name      string
+		user      *models.User
+		gateToken string
+		want      bool
+	}{
+		{"anon user with active gate session", anon, "some-gate-token", true},
+		{"anon user without gate session", anon, "", false},
+		{"authenticated user with active gate session", authed, "some-gate-token", false},
+		{"authenticated user without gate session", authed, "", false},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := gateShadowsAnonUser(tc.user, tc.gateToken); got != tc.want {
+				t.Errorf("gateShadowsAnonUser(authenticated=%v, gateToken=%q) = %v, want %v",
+					tc.user.Authenticated, tc.gateToken, got, tc.want)
+			}
+		})
+	}
+}
