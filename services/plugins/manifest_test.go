@@ -1100,6 +1100,23 @@ func TestRequireSubscriptionPermissions(t *testing.T) {
 		)
 	}
 
+	tests = append(tests,
+		testCase{
+			name: "missing permission for " + EventFediverseOutbound,
+			subscriptions: Subscriptions{
+				Notify: []Subscription{{Event: EventFediverseOutbound}},
+			},
+			missingPerm: PermFediverseOutbound,
+		},
+		testCase{
+			name:        "declared permission for " + EventFediverseOutbound,
+			permissions: []string{PermFediverseOutbound},
+			subscriptions: Subscriptions{
+				Notify: []Subscription{{Event: EventFediverseOutbound}},
+			},
+		},
+	)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			manifest := &Manifest{DisplayName: "test", Permissions: tt.permissions}
