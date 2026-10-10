@@ -178,6 +178,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install -y snac2 ffmpeg jq
+          npm ci --prefix web --ignore-scripts
 
       - name: Run setup
         env:
