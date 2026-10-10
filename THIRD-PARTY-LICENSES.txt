@@ -2301,8 +2301,8 @@ Web package: react-markdown@10.1.0
   Declared license: MIT
   license: SHA256 f6196c64e144f9a6fa9154c3a80bc8b89615a9567934b83a8951879f06ba2aef
 
-Web package: react-virtuoso@4.18.10
-  Source: https://registry.npmjs.org/react-virtuoso/-/react-virtuoso-4.18.10.tgz
+Web package: react-virtuoso@4.18.13
+  Source: https://registry.npmjs.org/react-virtuoso/-/react-virtuoso-4.18.13.tgz
   Declared license: MIT
   LICENSE: SHA256 e17320bc71935a17203bc8ed68bb8a2bbc4a9d9ab0acd075c886b68fbbce97cd
 
@@ -14473,7 +14473,7 @@ SOFTWARE.
 
 ================================================================================
 SHA256: e17320bc71935a17203bc8ed68bb8a2bbc4a9d9ab0acd075c886b68fbbce97cd
-Used by: Web package: react-virtuoso@4.18.10 (LICENSE)
+Used by: Web package: react-virtuoso@4.18.13 (LICENSE)
 --------------------------------------------------------------------------------
 MIT License
 
