@@ -621,31 +621,14 @@ func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles boo
 		resp.Status = http.StatusOK
 	}
 
-	var binaryBody []byte
-	if resp.BodyBase64 != nil {
-		var err error
-		binaryBody, err = base64.StdEncoding.DecodeString(*resp.BodyBase64)
-		if err != nil {
-			http.Error(w, "plugin returned invalid response", http.StatusInternalServerError)
-			return
-		}
-	}
-	bodyLen := len(binaryBody)
-	if resp.Body != nil {
-		bodyLen = len(*resp.Body)
-	}
-	if bodyLen > MaxHTTPResponseBodyBytes {
-		http.Error(w, "plugin response too large", http.StatusInternalServerError)
+	body, err := resolvePluginBody(resp.Body, resp.BodyBase64)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if injectStyles && responseIsHTML(resp.Headers) && !responseHasContentEncoding(resp.Headers) {
-		if resp.Body != nil {
-			binaryBody = injectAdminStyles([]byte(*resp.Body))
-			resp.Body = nil
-		} else {
-			binaryBody = injectAdminStyles(binaryBody)
-		}
+		body = injectAdminStyles(body)
 	}
 
 	for k, v := range resp.Headers {
@@ -665,11 +648,30 @@ func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles boo
 		http.SetCookie(w, c)
 	}
 	w.WriteHeader(resp.Status)
-	if resp.Body != nil {
-		_, _ = io.WriteString(w, *resp.Body)
-	} else {
-		_, _ = w.Write(binaryBody)
+	_, _ = w.Write(body)
+}
+
+// resolvePluginBody decodes the response body from either the text or base64
+// field, enforces MaxHTTPResponseBodyBytes, and returns raw bytes. Returns an
+// error on malformed base64 or an oversized decoded body.
+func resolvePluginBody(body, bodyBase64 *string) ([]byte, error) {
+	if bodyBase64 != nil {
+		b, err := base64.StdEncoding.DecodeString(*bodyBase64)
+		if err != nil {
+			return nil, errors.New("plugin returned invalid response")
+		}
+		if len(b) > MaxHTTPResponseBodyBytes {
+			return nil, errors.New("plugin response too large")
+		}
+		return b, nil
 	}
+	if body != nil {
+		if len(*body) > MaxHTTPResponseBodyBytes {
+			return nil, errors.New("plugin response too large")
+		}
+		return []byte(*body), nil
+	}
+	return nil, nil
 }
 
 // stripSetCookie removes any existing Set-Cookie header values for the named
