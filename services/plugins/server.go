@@ -602,7 +602,7 @@ func (s *Server) buildRequestEnvelope(r *http.Request, requestPath string, authe
 // writePluginHTTPResponse parses a plugin's on_http_request output envelope
 // and writes it to the client, filtering disallowed headers.
 //
-// injectStyles=true rewrites an HTML response (Content-Type starting with
+// injectStyles=true rewrites an unencoded HTML response (Content-Type starting with
 // text/html) to include the host's admin stylesheet links — same behavior
 // as static HTML assets, so a plugin returning admin HTML from
 // on_http_request gets the iframe theme automatically.
@@ -623,20 +623,8 @@ func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles boo
 
 	var binaryBody []byte
 	if resp.BodyBase64 != nil {
-		encodedBody := *resp.BodyBase64
-		decodedLen := base64.StdEncoding.DecodedLen(len(encodedBody))
-		if len(encodedBody) > 0 && encodedBody[len(encodedBody)-1] == '=' {
-			decodedLen--
-		}
-		if len(encodedBody) > 1 && encodedBody[len(encodedBody)-2] == '=' {
-			decodedLen--
-		}
-		if decodedLen > MaxHTTPResponseBodyBytes {
-			http.Error(w, "plugin response too large", http.StatusInternalServerError)
-			return
-		}
 		var err error
-		binaryBody, err = base64.StdEncoding.DecodeString(encodedBody)
+		binaryBody, err = base64.StdEncoding.DecodeString(*resp.BodyBase64)
 		if err != nil {
 			http.Error(w, "plugin returned invalid response", http.StatusInternalServerError)
 			return
@@ -651,7 +639,7 @@ func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles boo
 		return
 	}
 
-	if injectStyles && responseIsHTML(resp.Headers) {
+	if injectStyles && responseIsHTML(resp.Headers) && !responseHasContentEncoding(resp.Headers) {
 		if resp.Body != nil {
 			binaryBody = injectAdminStyles([]byte(*resp.Body))
 			resp.Body = nil
@@ -712,6 +700,16 @@ func responseIsHTML(headers map[string]string) bool {
 	for k, v := range headers {
 		if strings.EqualFold(k, "content-type") {
 			return strings.HasPrefix(strings.ToLower(strings.TrimSpace(v)), "text/html")
+		}
+	}
+	return false
+}
+
+// responseHasContentEncoding reports whether a body must be decoded before rewriting it.
+func responseHasContentEncoding(headers map[string]string) bool {
+	for k, v := range headers {
+		if strings.EqualFold(k, "content-encoding") && strings.TrimSpace(v) != "" {
+			return true
 		}
 	}
 	return false
