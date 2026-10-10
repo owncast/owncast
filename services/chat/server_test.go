@@ -9,10 +9,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/owncast/owncast/models"
+	"github.com/owncast/owncast/persistence/authrepository"
 	"github.com/owncast/owncast/persistence/configrepository"
+	"github.com/owncast/owncast/persistence/userrepository"
 	"github.com/owncast/owncast/persistence/webhookrepository"
+	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/services/datastore"
+	"github.com/owncast/owncast/services/plugins"
 	"github.com/owncast/owncast/services/webhooks"
 )
 
@@ -213,5 +218,80 @@ func TestUserPartedTimersHandleConcurrentDisconnectsAndReconnects(t *testing.T) 
 	defer chatSvc.userPartedTimersMu.Unlock()
 	if len(chatSvc.userPartedTimers) != 0 {
 		t.Fatalf("pending part timers = %d, want 0", len(chatSvc.userPartedTimers))
+	}
+}
+
+// TestGateSessionWebSocket exercises identity recovery and disabled-user precedence.
+func TestGateSessionWebSocket(t *testing.T) {
+	for _, tc := range []struct {
+		name          string
+		authenticated bool
+		disabled      bool
+		gate          bool
+		want          string
+	}{
+		{"anonymous with gate", false, false, true, events.ErrorNeedsRegistration},
+		{"disabled anonymous with gate", false, true, true, events.ErrorNeedsRegistration},
+		{"disabled authenticated with gate", true, true, true, events.ErrorUserDisabled},
+		{"disabled anonymous without gate", false, true, false, events.ErrorUserDisabled},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ds, err := datastore.SetupPersistence(t.TempDir()+"/chat.db", t.TempDir())
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = ds.DB.Close() })
+			users := userrepository.New(ds)
+			user, token, err := users.CreateAnonymousUser("stale-viewer")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if tc.authenticated {
+				if err := users.SetUserAsAuthenticated(user.ID); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if tc.disabled {
+				if err := users.SetEnabled(user.ID, false, "test"); err != nil {
+					t.Fatal(err)
+				}
+			}
+			service := &Service{
+				userRepository:           users,
+				configRepository:         configrepository.New(ds),
+				authRepository:           authrepository.New(ds),
+				maxSocketConnectionLimit: 10,
+			}
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if tc.gate {
+					r = r.WithContext(plugins.WithSessionToken(r.Context(), "verified-gate-token"))
+				}
+				service.HandleClientConnection(w, r)
+			}))
+			defer server.Close()
+			conn, response, err := websocket.DefaultDialer.Dial("ws"+server.URL[4:]+"/ws?accessToken="+token, nil)
+			if response != nil {
+				defer response.Body.Close()
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer conn.Close()
+			if err := conn.SetReadDeadline(time.Now().Add(time.Second)); err != nil {
+				t.Fatal(err)
+			}
+			var payload struct {
+				Type string `json:"type"`
+			}
+			if err := conn.ReadJSON(&payload); err != nil {
+				t.Fatal(err)
+			}
+			if payload.Type != tc.want {
+				t.Fatalf("event = %q, want %q", payload.Type, tc.want)
+			}
+			if _, _, err := conn.ReadMessage(); err == nil {
+				t.Fatal("rejected socket remained open")
+			}
+		})
 	}
 }

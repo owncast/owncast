@@ -275,6 +275,8 @@ export const ClientConfigStore: FC = () => {
     setLocalStorage(ACCESS_TOKEN_KEY, '');
     setAccessToken(null);
     ws?.shutdown();
+    setWebsocketService(null);
+    ws = null;
     handleUserRegistration();
   };
 

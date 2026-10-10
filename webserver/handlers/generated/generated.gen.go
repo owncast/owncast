@@ -623,7 +623,7 @@ type ServerInterface interface {
 
 	// (OPTIONS /chat/register)
 	RegisterAnonymousChatUserOptions(w http.ResponseWriter, r *http.Request)
-	// RegisterAnonymousChatUser Registers an anonymous chat user
+	// RegisterAnonymousChatUser Resolves a gate session or registers an anonymous chat user
 	// (POST /chat/register)
 	RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params RegisterAnonymousChatUserParams)
 	// UpdateUserEnabled Enable/disable a user
@@ -1873,7 +1873,7 @@ func (_ Unimplemented) RegisterAnonymousChatUserOptions(w http.ResponseWriter, r
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// RegisterAnonymousChatUser Registers an anonymous chat user
+// RegisterAnonymousChatUser Resolves a gate session or registers an anonymous chat user
 // (POST /chat/register)
 func (_ Unimplemented) RegisterAnonymousChatUser(w http.ResponseWriter, r *http.Request, params RegisterAnonymousChatUserParams) {
 	w.WriteHeader(http.StatusNotImplemented)

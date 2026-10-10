@@ -70,8 +70,13 @@ paths:
           $ref: '#/components/responses/501'
   /chat/register:
     post:
-      summary: Registers an anonymous chat user
+      summary: Resolves a gate session or registers an anonymous chat user
       operationId: RegisterAnonymousChatUser
+      description: |
+        Returns the existing user's identity and access token when a verified
+        auth.gate session is present. Otherwise creates an anonymous chat user.
+        A session whose user is missing or disabled is rejected without creating
+        an anonymous user. The proposed display name is ignored for gate sessions.
       tags: ['Internal', 'Chat']
       parameters:
         - in: header
@@ -91,13 +96,19 @@ paths:
                   type: string
       responses:
         '200':
-          description: Anonymous user information
+          description: Chat user information (existing gate user or newly registered anonymous user)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AnonymousUser'
         '400':
           $ref: '#/components/responses/400'
+        '403':
+          description: The verified gate session has no resolvable user or its user is disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseAPIResponse'
     options:
       operationId: RegisterAnonymousChatUserOptions
       x-internal: true

@@ -26,6 +26,10 @@ import (
 	"github.com/owncast/owncast/utils"
 )
 
+// payloadKeyType is the JSON key used to identify the event type in outbound
+// chat socket payloads. Mirrors events.payloadKeyType (unexported there).
+const payloadKeyType = "type" //nolint:goconst
+
 // Service is an instance of the chat server. Construct via New(Deps).
 type Service struct {
 	clients map[uint]*Client
@@ -357,17 +361,31 @@ func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request)
 	if user == nil {
 		// Send error that registration is required
 		_ = conn.WriteJSON(events.EventPayload{
-			"type": events.ErrorNeedsRegistration,
+			payloadKeyType: events.ErrorNeedsRegistration,
 		})
 		_ = conn.Close()
 		return
 	}
 
+	// Stale-localStorage path: the client sent a stale anonymous token but
+	// a verified gate session is present (armed auth.gate plugin). Force
+	// re-registration so the frontend clears its localStorage token and
+	// calls /api/chat/register again — which will now return the gate
+	// user's token. This prevents an orphan anon user from shadowing the
+	// authenticated gate identity, and is a no-op on servers with no gate
+	// plugin (SessionTokenFromContext returns "" in that case).
+	if !user.Authenticated && plugins.SessionTokenFromContext(r.Context()) != "" {
+		_ = conn.WriteJSON(events.EventPayload{
+			payloadKeyType: events.ErrorNeedsRegistration,
+		})
+		_ = conn.Close()
+		return
+	}
 	// User is disabled therefore we should disconnect.
 	if user.DisabledAt != nil {
 		log.Traceln("Disabled user", user.ID, user.DisplayName, "rejected")
 		_ = conn.WriteJSON(events.EventPayload{
-			"type": events.ErrorUserDisabled,
+			payloadKeyType: events.ErrorUserDisabled,
 		})
 		_ = conn.Close()
 		return
