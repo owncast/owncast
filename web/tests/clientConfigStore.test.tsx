@@ -262,6 +262,8 @@ describe('ClientConfigStore', () => {
     await waitFor(() => expect(store.get(accessTokenAtom)).toBe('new-token'));
     expect(localStorage.getItem('accessToken')).toBe('new-token');
     expect(services.chatService.registerUser).toHaveBeenCalled();
+    await waitFor(() => expect(mockSockets).toHaveLength(2));
+    expect(mockSockets[1].accessToken).toBe('new-token');
   });
 
   it('surfaces a fatal error when the server is unreachable', async () => {

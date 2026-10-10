@@ -73,7 +73,7 @@ func TestRegisterAnonymousChatUserEmptyAfterSanitizationFallsBack(t *testing.T) 
 // user.
 func TestRegisterAnonymousChatUserGateSession(t *testing.T) {
 	// Create and authenticate a gate user.
-	user, tok, err := testHandlers.userRepository.CreateAnonymousUser("GateUser")
+	user, _, err := testHandlers.userRepository.CreateAnonymousUser("GateUser")
 	if err != nil {
 		t.Fatalf("CreateAnonymousUser: %v", err)
 	}
@@ -88,7 +88,7 @@ func TestRegisterAnonymousChatUserGateSession(t *testing.T) {
 	if err := testHandlers.userRepository.AddAccessTokenForUser(gateTok, user.ID); err != nil {
 		t.Fatalf("AddAccessTokenForUser: %v", err)
 	}
-	_ = tok // initial token from CreateAnonymousUser; gate uses gateTok
+	countBefore := testHandlers.userRepository.GetUsersCount()
 
 	req := httptest.NewRequest(http.MethodPost, "/api/chat/register", strings.NewReader(`{}`))
 	req = req.WithContext(plugins.WithSessionToken(req.Context(), gateTok))
@@ -116,6 +116,9 @@ func TestRegisterAnonymousChatUserGateSession(t *testing.T) {
 	}
 	if response.DisplayName != "GateUser" {
 		t.Errorf("expected display name %q, got %q", "GateUser", response.DisplayName)
+	}
+	if got := testHandlers.userRepository.GetUsersCount(); got != countBefore {
+		t.Fatalf("user count changed from %d to %d", countBefore, got)
 	}
 }
 
