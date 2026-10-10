@@ -3,6 +3,7 @@ package plugins
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -604,31 +605,33 @@ func (s *Server) buildRequestEnvelope(r *http.Request, requestPath string, authe
 // writePluginHTTPResponse parses a plugin's on_http_request output envelope
 // and writes it to the client, filtering disallowed headers.
 //
-// injectStyles=true rewrites an HTML response (Content-Type starting with
+// injectStyles=true rewrites an unencoded HTML response (Content-Type starting with
 // text/html) to include the host's admin stylesheet links — same behavior
 // as static HTML assets, so a plugin returning admin HTML from
 // on_http_request gets the iframe theme automatically.
 func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles bool, sessionCookies []*http.Cookie) {
-	var resp struct {
-		Status  int               `json:"status"`
-		Headers map[string]string `json:"headers"`
-		Body    string            `json:"body"`
+	var resp *struct {
+		Status     int               `json:"status"`
+		Headers    map[string]string `json:"headers"`
+		Body       *string           `json:"body"`
+		BodyBase64 *string           `json:"bodyBase64"`
 	}
-	if err := json.Unmarshal(out, &resp); err != nil {
+	if err := json.Unmarshal(out, &resp); err != nil || resp == nil || (resp.Body != nil && resp.BodyBase64 != nil) {
 		http.Error(w, "plugin returned invalid response", http.StatusInternalServerError)
 		return
 	}
 	if resp.Status == 0 {
 		resp.Status = http.StatusOK
 	}
-	if len(resp.Body) > MaxHTTPResponseBodyBytes {
-		http.Error(w, "plugin response too large", http.StatusInternalServerError)
+
+	body, err := resolvePluginBody(resp.Body, resp.BodyBase64)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	body := resp.Body
-	if injectStyles && responseIsHTML(resp.Headers) {
-		body = string(injectAdminStyles([]byte(body)))
+	if injectStyles && responseIsHTML(resp.Headers) && !responseHasContentEncoding(resp.Headers) {
+		body = injectAdminStyles(body)
 	}
 
 	for k, v := range resp.Headers {
@@ -648,7 +651,30 @@ func writePluginHTTPResponse(w http.ResponseWriter, out []byte, injectStyles boo
 		http.SetCookie(w, c)
 	}
 	w.WriteHeader(resp.Status)
-	_, _ = io.WriteString(w, body)
+	_, _ = w.Write(body)
+}
+
+// resolvePluginBody decodes the response body from either the text or base64
+// field, enforces MaxHTTPResponseBodyBytes, and returns raw bytes. Returns an
+// error on malformed base64 or an oversized decoded body.
+func resolvePluginBody(body, bodyBase64 *string) ([]byte, error) {
+	if bodyBase64 != nil {
+		b, err := base64.StdEncoding.DecodeString(*bodyBase64)
+		if err != nil {
+			return nil, errors.New("plugin returned invalid response")
+		}
+		if len(b) > MaxHTTPResponseBodyBytes {
+			return nil, errors.New("plugin response too large")
+		}
+		return b, nil
+	}
+	if body != nil {
+		if len(*body) > MaxHTTPResponseBodyBytes {
+			return nil, errors.New("plugin response too large")
+		}
+		return []byte(*body), nil
+	}
+	return nil, nil
 }
 
 // stripSetCookie removes any existing Set-Cookie header values for the named
@@ -679,6 +705,16 @@ func responseIsHTML(headers map[string]string) bool {
 	for k, v := range headers {
 		if strings.EqualFold(k, "content-type") {
 			return strings.HasPrefix(strings.ToLower(strings.TrimSpace(v)), "text/html")
+		}
+	}
+	return false
+}
+
+// responseHasContentEncoding reports whether a body must be decoded before rewriting it.
+func responseHasContentEncoding(headers map[string]string) bool {
+	for k, v := range headers {
+		if strings.EqualFold(k, "content-encoding") && strings.TrimSpace(v) != "" {
+			return true
 		}
 	}
 	return false

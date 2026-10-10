@@ -1,6 +1,10 @@
 package plugins
 
 import (
+	"bytes"
+	"compress/gzip"
+	"encoding/base64"
+	"encoding/json"
 	"io/fs"
 	"net/http"
 	"net/http/httptest"
@@ -315,6 +319,127 @@ func TestWritePluginHTTPResponse_StripsCoreSessionCookie(t *testing.T) {
 		if c.Name == SessionCookieName {
 			t.Fatalf("plugin-set %s cookie was not stripped: %q", SessionCookieName, c.Value)
 		}
+	}
+}
+
+func TestWritePluginHTTPResponse_BinaryBody(t *testing.T) {
+	out := []byte(`{"status":200,"headers":{"Content-Type":"application/octet-stream"},"bodyBase64":"/wCA"}`)
+	rec := httptest.NewRecorder()
+
+	writePluginHTTPResponse(rec, out, false, nil)
+
+	want := []byte{0xff, 0x00, 0x80}
+	if !bytes.Equal(rec.Body.Bytes(), want) {
+		t.Fatalf("binary body: got %v want %v", rec.Body.Bytes(), want)
+	}
+}
+
+func TestWritePluginHTTPResponse_RejectsInvalidBinaryBody(t *testing.T) {
+	for _, out := range [][]byte{
+		[]byte(`null`),
+		[]byte(`{"bodyBase64":"not base64"}`),
+		[]byte(`{"body":"text","bodyBase64":"dGV4dA=="}`),
+	} {
+		rec := httptest.NewRecorder()
+		writePluginHTTPResponse(rec, out, false, nil)
+		if rec.Code != http.StatusInternalServerError {
+			t.Errorf("status: got %d want %d", rec.Code, http.StatusInternalServerError)
+		}
+	}
+}
+
+func TestWritePluginHTTPResponse_RejectsOversizedDecodedBody(t *testing.T) {
+	bodyBase64 := base64.StdEncoding.EncodeToString(make([]byte, MaxHTTPResponseBodyBytes+1))
+	out := []byte(`{"bodyBase64":"` + bodyBase64 + `"}`)
+	rec := httptest.NewRecorder()
+
+	writePluginHTTPResponse(rec, out, false, nil)
+
+	if rec.Code != http.StatusInternalServerError {
+		t.Errorf("status: got %d want %d", rec.Code, http.StatusInternalServerError)
+	}
+}
+
+func TestWritePluginHTTPResponse_LineWrappedBase64AtBodyLimit(t *testing.T) {
+	body := bytes.Repeat([]byte{0xff}, MaxHTTPResponseBodyBytes)
+	encoded := base64.StdEncoding.EncodeToString(body)
+	var wrapped strings.Builder
+	for len(encoded) > 76 {
+		wrapped.WriteString(encoded[:76])
+		wrapped.WriteString("\r\n")
+		encoded = encoded[76:]
+	}
+	wrapped.WriteString(encoded)
+	out, err := json.Marshal(map[string]string{"bodyBase64": wrapped.String()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rec := httptest.NewRecorder()
+
+	writePluginHTTPResponse(rec, out, false, nil)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status: got %d want %d", rec.Code, http.StatusOK)
+	}
+	if !bytes.Equal(rec.Body.Bytes(), body) {
+		t.Fatal("line-wrapped base64 body did not round-trip")
+	}
+}
+
+func TestWritePluginHTTPResponse_AdminStyles(t *testing.T) {
+	html := []byte("<html><head></head><body>admin</body></html>")
+	var compressed bytes.Buffer
+	writer := gzip.NewWriter(&compressed)
+	if _, err := writer.Write(html); err != nil {
+		t.Fatal(err)
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatal(err)
+	}
+	styledHTML := []byte("<html><head>" + string(adminStyleSnippet) + "</head><body>admin</body></html>")
+	for _, tc := range []struct {
+		name           string
+		bodyField      string
+		body           []byte
+		encodingHeader string
+		encoding       string
+		want           []byte
+	}{
+		{name: "text HTML", bodyField: "body", body: html, want: styledHTML},
+		{name: "base64 HTML", bodyField: "bodyBase64", body: html, want: styledHTML},
+		{name: "empty encoding", bodyField: "body", body: html, encodingHeader: "Content-Encoding", want: styledHTML},
+		{name: "gzip", bodyField: "bodyBase64", body: compressed.Bytes(), encodingHeader: "Content-Encoding", encoding: "gzip", want: compressed.Bytes()},
+		{name: "gzip mixed case header", bodyField: "bodyBase64", body: compressed.Bytes(), encodingHeader: "cOnTeNt-EnCoDiNg", encoding: "gzip", want: compressed.Bytes()},
+		{name: "unsupported text encoding", bodyField: "body", body: html, encodingHeader: "Content-Encoding", encoding: "custom", want: html},
+		{name: "unsupported base64 encoding", bodyField: "bodyBase64", body: html, encodingHeader: "Content-Encoding", encoding: "custom", want: html},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			headers := map[string]string{"Content-Type": "text/html; charset=utf-8"}
+			if tc.encodingHeader != "" {
+				headers[tc.encodingHeader] = tc.encoding
+			}
+			body := string(tc.body)
+			if tc.bodyField == "bodyBase64" {
+				body = base64.StdEncoding.EncodeToString(tc.body)
+			}
+			out, err := json.Marshal(map[string]any{"headers": headers, tc.bodyField: body})
+			if err != nil {
+				t.Fatal(err)
+			}
+			rec := httptest.NewRecorder()
+
+			writePluginHTTPResponse(rec, out, true, nil)
+
+			if rec.Code != http.StatusOK {
+				t.Fatalf("status: got %d want %d", rec.Code, http.StatusOK)
+			}
+			if !bytes.Equal(rec.Body.Bytes(), tc.want) {
+				t.Fatalf("body: got %q want %q", rec.Body.Bytes(), tc.want)
+			}
+			if got := rec.Header().Get("Content-Encoding"); got != tc.encoding {
+				t.Errorf("Content-Encoding: got %q want %q", got, tc.encoding)
+			}
+		})
 	}
 }
 
