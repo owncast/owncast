@@ -3,6 +3,7 @@ name: Extract Default Translations
 on:
   push:
     paths:
+      - '.github/workflows/add-default-web-localizations.yml'
       - 'web/**/*.ts'
       - 'web/**/*.tsx'
       - 'web/**/*.js'
@@ -31,7 +32,8 @@ jobs:
           cache-dependency-path: web/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        # Keep lockfile validation on the project's declared npm version.
+        run: npx --yes "npm@$(node -p 'require("./package.json").engines.npm')" ci
 
       - name: Run translation extraction
         run: npm run translate
