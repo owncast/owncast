@@ -13,9 +13,9 @@ __turbopack_load_page_chunks__("/embed/chat/readwrite", [
   "static/chunks/34q-ksq18l-e_.js",
   "static/chunks/0tz6_10jr3hn4.js",
   "static/chunks/0yskmokwi_7db.js",
-  "static/chunks/0fw_mn16ugp1k.js",
+  "static/chunks/0bej7rdnt07qz.js",
   "static/chunks/2kny8mgjedy7v.js",
   "static/chunks/022mg-8k3zi0c.css",
   "static/chunks/1rc1tesv02ty6.css",
-  "static/chunks/turbopack-1u1tpmjnzsmkc.js"
+  "static/chunks/turbopack-06s7o9wehr1za.js"
 ])

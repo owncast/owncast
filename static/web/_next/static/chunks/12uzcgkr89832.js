@@ -13,8 +13,8 @@ __turbopack_load_page_chunks__("/embed/chat/readonly", [
   "static/chunks/2kny8mgjedy7v.js",
   "static/chunks/2k8g7zb9bac3i.js",
   "static/chunks/2xlx6h5xthqc-.js",
-  "static/chunks/0fw_mn16ugp1k.js",
+  "static/chunks/0bej7rdnt07qz.js",
   "static/chunks/34q-ksq18l-e_.js",
   "static/chunks/022mg-8k3zi0c.css",
-  "static/chunks/turbopack-3jeo0rwgz_ckb.js"
+  "static/chunks/turbopack-1njd811ufm8_z.js"
 ])
