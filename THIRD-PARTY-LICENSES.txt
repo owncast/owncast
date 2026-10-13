@@ -132,8 +132,8 @@ Go module: github.com/gobwas/glob@v0.2.3
   Source: https://pkg.go.dev/github.com/gobwas/glob@v0.2.3
   LICENSE: SHA256 e764fda19e46f945391852a65c57a48900455ff3de37f01a4f232b4d44c0aec6
 
-Go module: github.com/golang-jwt/jwt/v5@v5.2.1
-  Source: https://pkg.go.dev/github.com/golang-jwt/jwt/v5@v5.2.1
+Go module: github.com/golang-jwt/jwt/v5@v5.2.2
+  Source: https://pkg.go.dev/github.com/golang-jwt/jwt/v5@v5.2.2
   LICENSE: SHA256 2ce2d18a4c90147990d4ea9b690bcb7a5e13239e8a31ef68bedd0f99f79e0cf6
 
 Go module: github.com/google/uuid@v1.6.0
@@ -6837,7 +6837,7 @@ SOFTWARE.
 
 ================================================================================
 SHA256: 2ce2d18a4c90147990d4ea9b690bcb7a5e13239e8a31ef68bedd0f99f79e0cf6
-Used by: Go module: github.com/golang-jwt/jwt/v5@v5.2.1 (LICENSE)
+Used by: Go module: github.com/golang-jwt/jwt/v5@v5.2.2 (LICENSE)
 --------------------------------------------------------------------------------
 Copyright (c) 2012 Dave Grijalva
 Copyright (c) 2021 golang-jwt maintainers
