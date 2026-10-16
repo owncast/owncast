@@ -528,6 +528,7 @@
 		"componentError": "Erreur: {{message}}",
 		"helloWorld": "Hello world!",
 		"lastLiveAgo": "Dernière diffusion il y a {{timeAgo}}",
+		"liveNow": "En direct depuis {{timeSince}}",
 		"offlineBasic": "Ce stream est hors ligne. Revenez bientôt !",
 		"offlineFediverseOnly": "Le stream est hors ligne. <span class='follow-link'>Suivez-le</span> {{fediverseAccount}} sur le Fédiverse pour être notifié lorsque {{streamer}} est en ligne !",
 		"offlineNotifyAndFediverse": "Ce stream est hors ligne. Vous pouvez <span class='notify-link'>être notifié</span> la prochaine fois que {{streamer}} sera en direct ou <span class='follow-link'>suivre</span> {{fediverseAccount}} sur le Fediverse.",
