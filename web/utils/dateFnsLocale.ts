@@ -21,7 +21,7 @@ import {
   sv,
   th,
   vi,
-  zhCN,
+  zhTW,
 } from 'date-fns/locale';
 
 const DATE_FNS_LOCALE_MAP: Record<string, Locale> = {
@@ -46,7 +46,7 @@ const DATE_FNS_LOCALE_MAP: Record<string, Locale> = {
   th,
   vi,
   no: nb,
-  zh: zhCN,
+  zh: zhTW,
 };
 
 export function getDateFnsLocale(locale: string): Locale | undefined {
