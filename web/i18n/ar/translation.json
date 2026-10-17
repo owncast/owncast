@@ -528,6 +528,7 @@
 		"componentError": "خطأ: {{message}}",
 		"helloWorld": "مرحبا بالعالم",
 		"lastLiveAgo": "آخر بث مباشر {{timeAgo}}",
+		"liveNow": "مباشر منذ {{timeSince}}",
 		"offlineBasic": "هذا البث غير متصل. تحقق قريباً!",
 		"offlineFediverseOnly": "هذا البث غير متصل. <span class='follow-link'>تابع</span> {{fediverseAccount}} على فيديفيرس لرؤية المرة القادمة التي يذهب فيها {{streamer}} للحياة.",
 		"offlineNotifyAndFediverse": "هذا البث غير متصل بالإنترنت. يمكنك أن تتلقى <span class='notify-link'>إشعارًا</span> في المرة القادمة {{streamer}} أو <span class='follow-link'>متابعة</span> {{fediverseAccount}} على موقع Fediverse.",
