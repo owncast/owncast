@@ -528,7 +528,7 @@
 		"componentError": "Fout: {{message}}",
 		"helloWorld": "Hallo wereld",
 		"lastLiveAgo": "Voor het laatst live: {{timeAgo}} geleden",
-		"liveNow": "Live sinds {{timeSince}}",
+		"liveNow": "Al {{timeSince}} live",
 		"offlineBasic": "Deze stream is offline. Kijk binnenkort nog eens!",
 		"offlineFediverseOnly": "Deze stream is offline. <span class='follow-link'>Volg</span> {{fediverseAccount}} op het Fediverse om te zien wanneer {{streamer}} weer live gaat.",
 		"offlineNotifyAndFediverse": "Deze stream is offline. Je kunt <span class='notify-link'>een melding krijgen</span> wanneer {{streamer}} weer live gaat of {{fediverseAccount}} <span class='follow-link'>volgen</span> op het Fediverse.",

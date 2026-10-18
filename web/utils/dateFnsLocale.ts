@@ -4,6 +4,7 @@ import {
   bn,
   de,
   el,
+  enUS,
   es,
   eu,
   fr,
@@ -24,6 +25,9 @@ import {
   zhTW,
 } from 'date-fns/locale';
 
+// date-fns ships no Irish (ga) or Punjabi (pa) locale, so duration text for
+// those languages intentionally falls back to English rather than throwing
+// or silently rendering undefined.
 const DATE_FNS_LOCALE_MAP: Record<string, Locale> = {
   ar,
   bn,
@@ -45,6 +49,8 @@ const DATE_FNS_LOCALE_MAP: Record<string, Locale> = {
   sv,
   th,
   vi,
+  ga: enUS,
+  pa: enUS,
   no: nb,
   zh: zhTW,
 };
