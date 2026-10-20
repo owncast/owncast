@@ -1099,6 +1099,22 @@ func TestRequireSubscriptionPermissions(t *testing.T) {
 			},
 		)
 	}
+	tests = append(tests,
+		testCase{
+			name: "outbound activity missing permission",
+			subscriptions: Subscriptions{
+				Notify: []Subscription{{Event: EventFediverseOutbound}},
+			},
+			missingPerm: PermFediverseOutbound,
+		},
+		testCase{
+			name:        "outbound activity declared permission",
+			permissions: []string{PermFediverseOutbound},
+			subscriptions: Subscriptions{
+				Notify: []Subscription{{Event: EventFediverseOutbound}},
+			},
+		},
+	)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
