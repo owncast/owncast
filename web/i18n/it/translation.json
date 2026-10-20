@@ -528,6 +528,7 @@
 		"componentError": "Errore: {{message}}",
 		"helloWorld": "Ciao mondo",
 		"lastLiveAgo": "Ultimo live {{timeAgo}} fa",
+		"liveNow": "In diretta da {{timeSince}}",
 		"offlineBasic": "Questo stream è offline. Riprova presto!",
 		"offlineFediverseOnly": "Questo stream è offline. <span class='follow-link'>Segui</span> {{fediverseAccount}} sul Fediverse per vedere la prossima volta che {{streamer}} andrà in diretta.",
 		"offlineNotifyAndFediverse": "Questo stream è offline. È possibile notificare <span class='notify-link'></span> la prossima volta che {{streamer}} va in diretta o <span class='follow-link'>seguire</span> {{fediverseAccount}} sul Fediverse.",
