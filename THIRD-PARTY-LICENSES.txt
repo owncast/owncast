@@ -168,8 +168,8 @@ Go module: github.com/jellydator/ttlcache/v3@v3.4.1
   Source: https://pkg.go.dev/github.com/jellydator/ttlcache/v3@v3.4.1
   LICENSE: SHA256 dfc038ce593ab8f6e92ebcabd5c2dab9ce935d72797d86c73c51a3a6a91bd012
 
-Go module: github.com/klauspost/compress@v1.18.5
-  Source: https://pkg.go.dev/github.com/klauspost/compress@v1.18.5
+Go module: github.com/klauspost/compress@v1.18.7
+  Source: https://pkg.go.dev/github.com/klauspost/compress@v1.18.7
   LICENSE: SHA256 0d9e582ee4bff57bf1189c9e514e6da7ce277f9cd3bc2d488b22fbb39a6d87cf
 
 Go module: github.com/lestrrat-go/file-rotatelogs@v2.4.0+incompatible
@@ -4867,7 +4867,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ================================================================================
 SHA256: 0d9e582ee4bff57bf1189c9e514e6da7ce277f9cd3bc2d488b22fbb39a6d87cf
-Used by: Go module: github.com/klauspost/compress@v1.18.5 (LICENSE)
+Used by: Go module: github.com/klauspost/compress@v1.18.7 (LICENSE)
 --------------------------------------------------------------------------------
 Copyright (c) 2012 The Go Authors. All rights reserved.
 Copyright (c) 2019 Klaus Post. All rights reserved.
