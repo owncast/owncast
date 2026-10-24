@@ -26,6 +26,8 @@ const (
 	FediverseReply EventType = "FEDIVERSE_REPLY"
 	// FediverseActivity is the internal event carrying a verified inbound ActivityPub activity.
 	FediverseActivity EventType = "FEDIVERSE_ACTIVITY"
+	// FediverseOutboundActivity is the internal event carrying an outbound ActivityPub activity.
+	FediverseOutboundActivity EventType = "FEDIVERSE_OUTBOUND_ACTIVITY"
 	// VisibiltyToggled is the event sent when a chat message's visibility changes.
 	VisibiltyToggled EventType = "VISIBILITY-UPDATE"
 	// PING is a ping message.
