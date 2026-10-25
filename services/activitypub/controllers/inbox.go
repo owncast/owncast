@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -46,7 +47,12 @@ func (c *Controllers) acceptInboxRequest(w http.ResponseWriter, r *http.Request)
 	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Errorln("Unable to read inbox request payload", err)
-		w.WriteHeader(http.StatusRequestEntityTooLarge)
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			w.WriteHeader(http.StatusRequestEntityTooLarge)
+		} else {
+			w.WriteHeader(http.StatusBadRequest)
+		}
 		return
 	}
 

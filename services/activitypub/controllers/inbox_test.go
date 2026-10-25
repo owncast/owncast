@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bytes"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -9,6 +10,16 @@ import (
 
 	"github.com/owncast/owncast/services/activitypub/inbox"
 )
+
+type failingReadCloser struct{}
+
+func (failingReadCloser) Read([]byte) (int, error) {
+	return 0, errors.New("read failure")
+}
+
+func (failingReadCloser) Close() error {
+	return nil
+}
 
 // TestInboxBodySizeCap verifies that the inbox handler enforces a 1 MiB
 // request body limit: an oversized POST must return 413, and a normal-sized
@@ -41,6 +52,17 @@ func TestInboxBodySizeCap(t *testing.T) {
 		testControllers.InboxHandler(rr, req)
 		if rr.Code != http.StatusRequestEntityTooLarge {
 			t.Errorf("oversized body: got status %d, want 413", rr.Code)
+		}
+	})
+
+	t.Run("read failure returns 400", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, path, nil)
+		req.Body = failingReadCloser{}
+		req.Header.Set("Content-Type", "application/activity+json")
+		rr := httptest.NewRecorder()
+		testControllers.InboxHandler(rr, req)
+		if rr.Code != http.StatusBadRequest {
+			t.Errorf("read failure: got status %d, want 400", rr.Code)
 		}
 	})
 
