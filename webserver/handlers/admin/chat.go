@@ -68,8 +68,8 @@ func (a *Admin) BanIPAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ipAddress := configValue.Value.(string)
-	if net.ParseIP(ipAddress) == nil {
+	ipAddress, ok := configValue.Value.(string)
+	if !ok || net.ParseIP(ipAddress) == nil {
 		webutils.WriteSimpleResponse(w, false, "invalid IP address")
 		return
 	}
