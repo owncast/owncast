@@ -120,8 +120,8 @@ Go module: github.com/extism/go-sdk@v1.7.1
   Source: https://pkg.go.dev/github.com/extism/go-sdk@v1.7.1
   LICENSE: SHA256 ba1246a778c0fa3d8d8e2e63c3334d88e004743c8bb7f069b1b640d2e3f6476f
 
-Go module: github.com/go-chi/chi/v5@v5.2.4
-  Source: https://pkg.go.dev/github.com/go-chi/chi/v5@v5.2.4
+Go module: github.com/go-chi/chi/v5@v5.4.0
+  Source: https://pkg.go.dev/github.com/go-chi/chi/v5@v5.4.0
   LICENSE: SHA256 a2d51b7515acfaff2f7a88688650f2fc4fd99561383e72bba2305e3db59a1647
 
 Go module: github.com/go-fed/httpsig@v1.1.0
@@ -11532,7 +11532,7 @@ THE SOFTWARE.
 
 ================================================================================
 SHA256: a2d51b7515acfaff2f7a88688650f2fc4fd99561383e72bba2305e3db59a1647
-Used by: Go module: github.com/go-chi/chi/v5@v5.2.4 (LICENSE)
+Used by: Go module: github.com/go-chi/chi/v5@v5.4.0 (LICENSE)
 --------------------------------------------------------------------------------
 Copyright (c) 2015-present Peter Kieltyka (https://github.com/pkieltyka), Google Inc.
 
