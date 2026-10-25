@@ -5,6 +5,7 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
 
@@ -67,7 +68,13 @@ func (a *Admin) BanIPAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := a.authRepository.BanIPAddress(configValue.Value.(string), "manually added"); err != nil {
+	ipAddress := configValue.Value.(string)
+	if net.ParseIP(ipAddress) == nil {
+		webutils.WriteSimpleResponse(w, false, "invalid IP address")
+		return
+	}
+
+	if err := a.authRepository.BanIPAddress(ipAddress, "manually added"); err != nil {
 		webutils.WriteSimpleResponse(w, false, "error saving IP address ban")
 		return
 	}
