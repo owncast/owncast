@@ -3,6 +3,8 @@ package authrepository
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"net"
 
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/webserver/handlers/generated"
@@ -10,6 +12,9 @@ import (
 
 // BanIPAddress will persist a new IP address ban to the datastore.
 func (r *SqlAuthRepository) BanIPAddress(address, note string) error {
+	if net.ParseIP(address) == nil {
+		return fmt.Errorf("invalid IP address %q", address)
+	}
 	return r.datastore.GetQueries().BanIPAddress(context.Background(), db.BanIPAddressParams{
 		IpAddress: address,
 		Notes:     sql.NullString{String: note, Valid: true},

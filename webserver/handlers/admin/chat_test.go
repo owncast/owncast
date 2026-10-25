@@ -7,10 +7,10 @@ import (
 	"testing"
 )
 
-func TestBanIPAddressRejectsNonStringValue(t *testing.T) {
+func TestBanIPAddressRejectsInvalidValue(t *testing.T) {
 	handler := &Admin{}
-
 	for _, body := range []string{
+		`{"value": "not-an-ip"}`,
 		`{"value": true}`,
 		`{"value": 123}`,
 		`{"value": ["127.0.0.1"]}`,
