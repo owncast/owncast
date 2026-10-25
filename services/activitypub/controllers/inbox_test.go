@@ -67,7 +67,7 @@ func TestInboxBodySizeCap(t *testing.T) {
 	})
 
 	t.Run("body within limit returns 202", func(t *testing.T) {
-		body := strings.Repeat("x", 512) // well under 1 MiB
+		body := strings.Repeat("x", 1<<20) // exactly 1 MiB
 		req := httptest.NewRequest(http.MethodPost, path, strings.NewReader(body))
 		req.Header.Set("Content-Type", "application/activity+json")
 		rr := httptest.NewRecorder()
