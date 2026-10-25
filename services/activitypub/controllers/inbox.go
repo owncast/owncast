@@ -42,9 +42,11 @@ func (c *Controllers) acceptInboxRequest(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20) // 1 MiB — consistent with indieauth server handler
 	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Errorln("Unable to read inbox request payload", err)
+		w.WriteHeader(http.StatusRequestEntityTooLarge)
 		return
 	}
 

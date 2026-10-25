@@ -1,8 +1,9 @@
 package router
 
 import (
-	"fmt"
+	"net"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -127,8 +128,10 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 
 	compress, _ := newHTTPCompressionAdapter()
 	server := &http.Server{
-		Addr:              fmt.Sprintf("%s:%d", ip, port),
+		Addr:              net.JoinHostPort(ip, strconv.Itoa(port)),
 		ReadHeaderTimeout: 4 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		IdleTimeout:       60 * time.Second,
 		Handler:           compress(m),
 		Protocols:         protocols,
 	}
