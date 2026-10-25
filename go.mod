@@ -13,7 +13,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.103.3
 	github.com/aws/smithy-go v1.27.1
 	github.com/extism/go-sdk v1.7.1
-	github.com/go-chi/chi/v5 v5.2.4
+	github.com/go-chi/chi/v5 v5.4.0
 	github.com/go-fed/httpsig v1.1.0
 	github.com/gobwas/glob v0.2.3
 	github.com/gorilla/websocket v1.5.3
