@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -42,9 +43,16 @@ func (c *Controllers) acceptInboxRequest(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20) // 1 MiB — consistent with indieauth server handler
 	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Errorln("Unable to read inbox request payload", err)
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			w.WriteHeader(http.StatusRequestEntityTooLarge)
+		} else {
+			w.WriteHeader(http.StatusBadRequest)
+		}
 		return
 	}
 
