@@ -14,6 +14,7 @@ import (
 	"github.com/owncast/owncast/db"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
+	"github.com/owncast/owncast/services/activitypub/events"
 	"github.com/owncast/owncast/services/activitypub/utils"
 	"github.com/owncast/owncast/services/activitypub/webfinger"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
@@ -168,6 +169,7 @@ func (s *Service) sendUndoFollow(targetActorIRI, inbox *url.URL) error {
 	}); err != nil {
 		return fmt.Errorf("queueing unfollow: %w", err)
 	}
+	events.PublishOutbound(context.Background(), s.events, jsonData)
 	log.Infof("Queued unfollow (Undo) to %s", targetActorIRI.String())
 	return nil
 }
@@ -296,7 +298,11 @@ func (s *Service) SendFollowToAccountURI(targetActorID, targetUsername, targetSe
 
 	ds := s.persistence.Datastore()
 	ds.DbLock.Lock()
-	defer ds.DbLock.Unlock()
+	var published []byte
+	defer func() {
+		ds.DbLock.Unlock()
+		events.PublishOutbound(ctx, s.events, published)
+	}()
 	tx, err := ds.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("beginning featured server transaction: %w", err)
@@ -329,6 +335,7 @@ func (s *Service) SendFollowToAccountURI(targetActorID, targetUsername, targetSe
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("committing featured server transaction: %w", err)
 	}
+	published = jsonData
 
 	log.Infof("Queued follow request to %s (actor: %s)", targetServerURL, targetActorID)
 
