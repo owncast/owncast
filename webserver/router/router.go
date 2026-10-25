@@ -18,6 +18,18 @@ import (
 	"github.com/owncast/owncast/webserver/router/middleware"
 )
 
+const pluginUploadReadTimeout = 5 * time.Minute
+
+func withPluginUploadReadTimeout(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost && r.URL.Path == "/api/admin/plugins" {
+			_ = http.NewResponseController(w).SetReadDeadline(time.Now().Add(pluginUploadReadTimeout))
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 // Start starts the router for the http, ws, and rtmp.
 //
 // cfg supplies the bound port + IP for the public web server. h carries
@@ -132,7 +144,7 @@ func Start(cfg *config.Config, enableVerboseLogging bool, h *handlers.Handlers, 
 		ReadHeaderTimeout: 4 * time.Second,
 		ReadTimeout:       30 * time.Second,
 		IdleTimeout:       60 * time.Second,
-		Handler:           compress(m),
+		Handler:           withPluginUploadReadTimeout(compress(m)),
 		Protocols:         protocols,
 	}
 
