@@ -88,6 +88,7 @@ type Service struct {
 	// a map of user IDs and pending chat part messages.
 	userPartedTimers         map[string]*pendingUserPart
 	userPartedTimersMu       sync.Mutex
+	rejectionTimeout         time.Duration
 	seq                      uint
 	maxSocketConnectionLimit uint64
 
