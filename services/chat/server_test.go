@@ -295,3 +295,39 @@ func TestGateSessionWebSocket(t *testing.T) {
 		})
 	}
 }
+
+type fakeAuthRepo struct {
+	authrepository.AuthRepository
+}
+
+func (f fakeAuthRepo) IsIPAddressBanned(address string) (bool, error) {
+	return false, nil
+}
+
+type fakeChatDisabledConfig struct {
+	configrepository.ConfigRepository
+}
+
+func (f fakeChatDisabledConfig) GetChatDisabled() bool { return false }
+
+func TestConcurrentHandleClientConnection_UpgraderCheckOriginRace(t *testing.T) {
+	s := newServer(nil)
+	s.configRepository = fakeChatDisabledConfig{}
+	s.authRepository = fakeAuthRepo{}
+
+	const workers = 10
+	var wg sync.WaitGroup
+	wg.Add(workers)
+
+	for i := 0; i < workers; i++ {
+		go func() {
+			defer wg.Done()
+			req := httptest.NewRequest(http.MethodGet, "/ws", nil)
+			req.RemoteAddr = "127.0.0.1:12345"
+			w := httptest.NewRecorder()
+			s.HandleClientConnection(w, req)
+		}()
+	}
+
+	wg.Wait()
+}
