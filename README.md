@@ -165,6 +165,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <li>Browser testing via <a
 href="https://www.testmuai.com/" target="_blank"><img
 src="https://assets.testmuai.com/resources/images/logos/logo.svg"
+alt="a logo, stating 'TestMu AI, Formerly lambdatest'"
 style="vertical-align: middle;margin-left:5px" width="133" height="42"
 /></a></li>
 <li>Project chat provided by
