@@ -67,8 +67,9 @@ func (s *Service) markFederatedServerAccepted(actorIRI string, metadata *apmodel
 		return
 	}
 
+	// An incoming listing invitation is not permission to follow its sender.
 	server, err := repo.GetFederatedServer(serverURL)
-	if err != nil || server == nil {
+	if err != nil || server == nil || server.FollowStatus != "pending" {
 		log.Debugf("No pending follow found for %s", serverURL)
 		return
 	}
@@ -86,6 +87,11 @@ func (s *Service) markFederatedServerAccepted(actorIRI string, metadata *apmodel
 		log.Warnf("Failed to assign priority for %s: %v", serverURL, err)
 	}
 
+	s.updateAcceptedServerMetadata(repo, serverURL, actorIRI, metadata)
+	log.Infof("Follow request to %s has been accepted", serverURL)
+}
+
+func (s *Service) updateAcceptedServerMetadata(repo federatedserversrepository.FederatedServersRepository, serverURL, actorIRI string, metadata *apmodels.OwncastMetadata) {
 	if actorData, err := s.resolver.GetResolvedActorFromIRI(actorIRI); err == nil {
 		var logoURL string
 		if actorData.Image != nil {
@@ -115,6 +121,4 @@ func (s *Service) markFederatedServerAccepted(actorIRI string, metadata *apmodel
 			log.Errorf("Failed to set initial online status for %s: %v", serverURL, err)
 		}
 	}
-
-	log.Infof("Follow request to %s has been accepted", serverURL)
 }

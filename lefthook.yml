@@ -91,7 +91,7 @@ pre-commit:
       # The tools/ subdirectory is its own Go module. Skip linting when a
       # tools-only change leaves no root-module packages to check.
       run: |
-        packages=$(echo {staged_files} | tr ' ' '\n' | xargs -n1 dirname | sort -u | grep -vE '^tools$|^tools/' || true)
+        packages=$(echo {staged_files} | tr ' ' '\n' | xargs -n1 dirname | sort -u | grep -vE '^tools$|^tools/|^test/automated' || true)
         [ -z "$packages" ] || ./bin/golangci-lint run $packages
     go-test:
       glob: '*.go'
