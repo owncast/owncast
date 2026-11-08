@@ -2401,8 +2401,8 @@ Web package: semver@6.3.1
   Declared license: ISC
   LICENSE: SHA256 4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b
 
-Web package: semver@7.8.5
-  Source: https://registry.npmjs.org/semver/-/semver-7.8.5.tgz
+Web package: semver@7.8.6
+  Source: https://registry.npmjs.org/semver/-/semver-7.8.6.tgz
   Declared license: ISC
   LICENSE: SHA256 4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b
 
@@ -8439,7 +8439,7 @@ SHA256: 4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b
 Used by: Web package: lru-cache@5.1.1 (LICENSE)
 Used by: Web package: once@1.4.0 (LICENSE)
 Used by: Web package: semver@6.3.1 (LICENSE)
-Used by: Web package: semver@7.8.5 (LICENSE)
+Used by: Web package: semver@7.8.6 (LICENSE)
 Used by: Web package: wrappy@1.0.2 (LICENSE)
 Used by: Web package: yallist@3.1.1 (LICENSE)
 --------------------------------------------------------------------------------
