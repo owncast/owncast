@@ -8,6 +8,7 @@ import (
 	"errors"
 	"net/http"
 	"sort"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -35,6 +36,7 @@ type Deps struct {
 	ChatMessageRepository chatmessagerepository.ChatMessageRepository
 	UserRepository        userrepository.UserRepository
 	Events                *dispatcher.Dispatcher
+	RejectionTimeout      time.Duration
 }
 
 // New constructs a chat Service. Call Start to launch the broadcast
@@ -48,6 +50,10 @@ func New(deps Deps) *Service {
 	s.chatMessageRepository = deps.ChatMessageRepository
 	s.userRepository = deps.UserRepository
 	s.events = deps.Events
+	s.rejectionTimeout = deps.RejectionTimeout
+	if s.rejectionTimeout == 0 {
+		s.rejectionTimeout = defaultChatRejectionTimeout
+	}
 	return s
 }
 
