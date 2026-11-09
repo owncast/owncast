@@ -200,7 +200,7 @@ func callOnFilter(ctx context.Context, p *Loaded, eventType string, payload any)
 	if !pl.FunctionExists("on_filter") {
 		return nil, errPluginNoSuchExport
 	}
-	_, out, err := pl.CallWithContext(callCtx, "on_filter", envelope)
+	_, out, err := p.callPlugin(callCtx, "on_filter", envelope)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) || callCtx.Err() == context.DeadlineExceeded {
 			return nil, fmt.Errorf("on_filter timed out after %s", FilterTimeout)
@@ -321,7 +321,7 @@ func callOnEvent(ctx context.Context, p *Loaded, input []byte) error {
 	if !pl.FunctionExists("on_event") {
 		return errPluginNoSuchExport
 	}
-	_, _, err := pl.CallWithContext(callCtx, "on_event", input)
+	_, _, err := p.callPlugin(callCtx, "on_event", input)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) || callCtx.Err() == context.DeadlineExceeded {
 			return fmt.Errorf("on_event timed out after %s", NotifyTimeout)

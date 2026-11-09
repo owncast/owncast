@@ -63,11 +63,19 @@ type Loaded struct {
 	releaseEngine func()
 	// releaseSQL drops this instance's claim on its per-slug database after
 	// plugin code can no longer call host functions.
-	releaseSQL           func()
-	mu                   sync.Mutex
-	failureMu            sync.Mutex
-	filterFails          int
-	disabled             atomic.Bool
+	releaseSQL  func()
+	mu          sync.Mutex
+	failureMu   sync.Mutex
+	filterFails int
+	disabled    atomic.Bool
+	// corruptionFired ensures fireCorrupted triggers at most one reload per
+	// instance, even when multiple goroutines detect the error concurrently.
+	corruptionFired atomic.Bool
+	// onCorrupted, when non-nil, is called (in a goroutine) when callPlugin
+	// detects that the wasm instance has been permanently broken by the
+	// extism/go-sdk shadow-stack leak bug (see github.com/extism/go-sdk#102).
+	// Set by Manager.loadInternal to trigger a Reload.
+	onCorrupted          func()
 	commandCooldownMu    sync.Mutex
 	commandCooldowns     map[commandCooldownKey]int64
 	commandCooldownSweep int64
@@ -75,6 +83,47 @@ type Loaded struct {
 	// underlying file stays open for PublicFS / AssetsFS reads. nil for
 	// loose-files plugins. Closed by Loaded.Close.
 	pkgCloser io.Closer
+}
+
+// isWasmCorrupted reports whether err indicates an extism/go-sdk shadow-stack
+// leak (github.com/extism/go-sdk#102) that has permanently broken the plugin
+// instance. The only recovery is a fresh instantiation (Reload).
+//
+// Two distinct signals appear in practice:
+//   - "(recovered by wazero)": wazero recovered a panic from an extism host
+//     function (http_request on client.Do failure). The recovery itself is
+//     safe, but the guest shadow stack is permanently leaked — for the QuickJS
+//     engine, a single such panic exhausts the available shadow stack.
+//   - "out of bounds memory access": for smaller wasm modules (~20 panics to
+//     exhaust the stack) the OOB trap fires on later calls.
+//
+// Both are matched so detection fires at the earliest signal regardless of
+// guest size.
+func isWasmCorrupted(err error) bool {
+	s := err.Error()
+	return strings.Contains(s, "(recovered by wazero)") ||
+		strings.Contains(s, "out of bounds memory access")
+}
+
+// fireCorrupted triggers an async Reload if the instance has not already
+// started recovery. The goroutine is deferred so callers that hold p.mu
+// don't deadlock: Reload eventually calls l.Close which needs p.mu.
+func (l *Loaded) fireCorrupted() {
+	if l.onCorrupted != nil && l.corruptionFired.CompareAndSwap(false, true) {
+		go l.onCorrupted()
+	}
+}
+
+// callPlugin calls the named wasm export and auto-triggers a reload if the
+// instance is detected as permanently corrupted by the extism shadow-stack
+// leak. Callers that hold p.mu may call this safely; the reload fires in a
+// goroutine after the method returns.
+func (l *Loaded) callPlugin(ctx context.Context, name string, data []byte) (uint32, []byte, error) {
+	rc, out, err := l.plugin.CallWithContext(ctx, name, data)
+	if err != nil && isWasmCorrupted(err) {
+		l.fireCorrupted()
+	}
+	return rc, out, err
 }
 
 // FilterStrikeThreshold is the number of consecutive filter failures a
@@ -225,7 +274,7 @@ func (p *Loaded) callContentExport(ctx context.Context, export, slug string, use
 	callCtx, cancel := context.WithTimeout(ctx, HTTPHandlerTimeout)
 	defer cancel()
 	p.mu.Lock()
-	_, out, err := pl.CallWithContext(callCtx, export, input)
+	_, out, err := p.callPlugin(callCtx, export, input)
 	p.mu.Unlock()
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", export, err)
@@ -262,7 +311,7 @@ func (p *Loaded) callVoidExport(ctx context.Context, export string) (string, err
 	callCtx, cancel := context.WithTimeout(ctx, HTTPHandlerTimeout)
 	defer cancel()
 	p.mu.Lock()
-	_, out, err := pl.CallWithContext(callCtx, export, nil)
+	_, out, err := p.callPlugin(callCtx, export, nil)
 	p.mu.Unlock()
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", export, err)
@@ -1166,6 +1215,14 @@ func (m *Manager) loadInternal(ctx context.Context, name string) error {
 		m.discovered[name].LastError = err.Error()
 		m.mu.Unlock()
 		return err
+	}
+
+	// Wire the auto-reload callback so callPlugin can recover from wasm
+	// memory corruption (extism/go-sdk#102) without admin intervention.
+	loaded.onCorrupted = func() {
+		if err := m.Reload(context.Background(), name); err != nil {
+			fmt.Fprintf(os.Stderr, "plugin %s: auto-reload after wasm corruption failed: %v\n", name, err)
+		}
 	}
 
 	m.mu.Lock()

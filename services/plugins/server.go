@@ -526,7 +526,7 @@ func (s *Server) serveDynamic(w http.ResponseWriter, r *http.Request, p *Loaded,
 	// response after the call returns.
 	callCtx, sink := withAuthSink(callCtx)
 	p.mu.Lock()
-	_, out, err := pl.CallWithContext(callCtx, "on_http_request", envelopeJSON)
+	_, out, err := p.callPlugin(callCtx, "on_http_request", envelopeJSON)
 	p.mu.Unlock()
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) || callCtx.Err() == context.DeadlineExceeded {
@@ -567,7 +567,7 @@ func (s *Server) CallAuthCheck(ctx context.Context, slug string, input []byte) (
 	callCtx, cancel := context.WithTimeout(ctx, HTTPHandlerTimeout)
 	defer cancel()
 	p.mu.Lock()
-	_, out, err := pl.CallWithContext(callCtx, "on_auth_check", input)
+	_, out, err := p.callPlugin(callCtx, "on_auth_check", input)
 	p.mu.Unlock()
 	return out, err
 }
