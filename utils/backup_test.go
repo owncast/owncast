@@ -113,3 +113,91 @@ func TestBackupTruncatesExistingFile(t *testing.T) {
 		t.Fatalf("round-trip row count = %d, want 0", count)
 	}
 }
+
+func TestRestorePreservesDestinationOnFailure(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		sql       string
+		existing  bool
+		wantError bool
+	}{
+		{"invalid SQL", "invalid SQL", true, true},
+		{"partially executed SQL", "CREATE TABLE partial (value TEXT); invalid SQL", true, true},
+		{"new destination", "invalid SQL", false, true},
+		{"successful replacement", "CREATE TABLE restored (value TEXT); INSERT INTO restored VALUES ('restored');", true, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			databaseFile := filepath.Join(dir, "owncast.db")
+			if tc.existing {
+				db, err := sql.Open("sqlite3", databaseFile)
+				if err != nil {
+					t.Fatal(err)
+				}
+				_, execErr := db.Exec("CREATE TABLE original (value TEXT); INSERT INTO original VALUES ('keep me');")
+				closeErr := db.Close()
+				if execErr != nil || closeErr != nil {
+					t.Fatalf("create original database: exec = %v, close = %v", execErr, closeErr)
+				}
+			}
+			original, err := os.ReadFile(databaseFile)
+			if err != nil && tc.existing {
+				t.Fatal(err)
+			}
+
+			var compressed bytes.Buffer
+			writer := gzip.NewWriter(&compressed)
+			if _, err := writer.Write([]byte(tc.sql)); err != nil {
+				t.Fatal(err)
+			}
+			if err := writer.Close(); err != nil {
+				t.Fatal(err)
+			}
+			backupFile := filepath.Join(dir, "backup.gz")
+			if err := os.WriteFile(backupFile, compressed.Bytes(), 0o600); err != nil {
+				t.Fatal(err)
+			}
+
+			if err := Restore(backupFile, databaseFile); (err != nil) != tc.wantError {
+				t.Fatalf("Restore() error = %v, want error = %t", err, tc.wantError)
+			}
+			if tc.wantError {
+				if tc.existing {
+					current, err := os.ReadFile(databaseFile)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if !bytes.Equal(current, original) {
+						t.Error("failed restore changed the existing database")
+					}
+				} else if _, err := os.Stat(databaseFile); !os.IsNotExist(err) {
+					t.Errorf("failed restore left a destination database: %v", err)
+				}
+			} else {
+				db, err := sql.Open("sqlite3", databaseFile)
+				if err != nil {
+					t.Fatal(err)
+				}
+				defer db.Close()
+				var value string
+				if err := db.QueryRow("SELECT value FROM restored").Scan(&value); err != nil || value != "restored" {
+					t.Fatalf("restored value = %q, error = %v", value, err)
+				}
+				var originalTables int
+				if err := db.QueryRow("SELECT count(*) FROM sqlite_master WHERE name = 'original'").Scan(&originalTables); err != nil || originalTables != 0 {
+					t.Fatalf("original tables = %d, error = %v", originalTables, err)
+				}
+			}
+
+			files, err := os.ReadDir(dir)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, file := range files {
+				if file.Name() != "backup.gz" && file.Name() != "owncast.db" {
+					t.Errorf("restore left an unexpected file: %s", file.Name())
+				}
+			}
+		})
+	}
+}

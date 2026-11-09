@@ -41,17 +41,18 @@ func Restore(backupFile string, databaseFile string) error {
 
 	rawSQL := b.String()
 
-	// nolint:gosec
-	f, err := os.Create(databaseFile)
+	// Restore beside the destination so it can be replaced only after success.
+	f, err := os.CreateTemp(filepath.Dir(databaseFile), ".owncast-restore-*")
 	if err != nil {
 		return errors.New("unable to write restored database")
 	}
+	defer os.Remove(f.Name())
 	if err := f.Close(); err != nil {
 		return errors.New("unable to write restored database")
 	}
 
 	// Create a new database by executing the raw SQL
-	db, err := sql.Open("sqlite3", databaseFile)
+	db, err := sql.Open("sqlite3", f.Name())
 	if err != nil {
 		return err
 	}
@@ -59,8 +60,11 @@ func Restore(backupFile string, databaseFile string) error {
 	if _, err := db.Exec(rawSQL); err != nil {
 		return err
 	}
+	if err := db.Close(); err != nil {
+		return err
+	}
 
-	return nil
+	return os.Rename(f.Name(), databaseFile)
 }
 
 // Backup will backup the provided instance of the database to the specified file.
