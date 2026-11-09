@@ -40,6 +40,15 @@ const (
 // wires no SQL backend at all.
 const sqlStorageUnavailable = "SQL storage unavailable"
 
+// invalidUTF8JSONSize is the number of bytes encoding/json emits for one
+// invalid UTF-8 byte. Newer Go emits the 6-byte JSON escape "\ufffd"; older
+// versions (and some platforms) emit the raw 3-byte UTF-8 representation of
+// U+FFFD. Detect at init time so sqlValueSize matches what json.Marshal does.
+var invalidUTF8JSONSize = func() int {
+	b, _ := json.Marshal(string([]byte{0xff}))
+	return len(b) - 2 // strip surrounding quotes
+}()
+
 // errSQLResultTooLarge is the shared "narrow your query" error. Plugins see the
 // text, so it names the fix rather than the internal limit that tripped.
 func errSQLResultTooLarge(what string, limit int) error {
@@ -306,7 +315,7 @@ func sqlValueSize(value any) int {
 			r, width := utf8.DecodeRuneInString(v[i:])
 			i += width
 			if r == utf8.RuneError && width == 1 {
-				size += 6
+				size += invalidUTF8JSONSize
 				continue
 			}
 			switch r {
