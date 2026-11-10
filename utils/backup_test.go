@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"compress/gzip"
 	"database/sql"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"testing"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/mattn/go-sqlite3"
 )
 
 func TestRestoreAcceptsTrailingDataFromLegacyBackup(t *testing.T) {
@@ -184,8 +185,15 @@ func TestRestorePreservesDestinationOnFailure(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if err := Restore(backupFile, databaseFile); (err != nil) != tc.wantError {
-				t.Fatalf("Restore() error = %v, want error = %t", err, tc.wantError)
+			restoreErr := Restore(backupFile, databaseFile)
+			if (restoreErr != nil) != tc.wantError {
+				t.Fatalf("Restore() error = %v, want error = %t", restoreErr, tc.wantError)
+			}
+			if tc.locked {
+				var sqliteErr sqlite3.Error
+				if !errors.As(restoreErr, &sqliteErr) || (sqliteErr.Code != sqlite3.ErrBusy && sqliteErr.Code != sqlite3.ErrLocked) {
+					t.Fatalf("Restore() error = %v, want SQLite busy or locked", restoreErr)
+				}
 			}
 			if tc.wantError {
 				if tc.existing {
