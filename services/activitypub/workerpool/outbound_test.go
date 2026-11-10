@@ -53,9 +53,10 @@ func TestDeliveryRetriesAfterTransientFailure(t *testing.T) {
 		t.Fatalf("enqueue delivery: %v", err)
 	}
 
-	waitFor(t, 20*time.Second, func() bool { return attempts.Load() == 3 })
-	if count := deliveryCount(t, database.db); count != 0 {
-		t.Fatalf("delivery queue count = %d, want 0 after success", count)
+	// The handler counts an attempt before the worker removes the queue row.
+	waitFor(t, 20*time.Second, func() bool { return deliveryCount(t, database.db) == 0 })
+	if got := attempts.Load(); got != 3 {
+		t.Fatalf("delivery attempts = %d, want 3", got)
 	}
 }
 
@@ -121,9 +122,9 @@ func TestDeliverySurvivesWorkerRestart(t *testing.T) {
 	restarted.Start()
 	defer restarted.Stop()
 
-	waitFor(t, 2*time.Second, func() bool { return attempts.Load() == 2 })
-	if count := deliveryCount(t, database.db); count != 0 {
-		t.Fatalf("delivery queue count = %d, want 0 after restarted worker succeeds", count)
+	waitFor(t, 2*time.Second, func() bool { return deliveryCount(t, database.db) == 0 })
+	if got := attempts.Load(); got != 2 {
+		t.Fatalf("delivery attempts = %d, want 2 after restarted worker succeeds", got)
 	}
 }
 

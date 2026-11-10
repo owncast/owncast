@@ -177,14 +177,14 @@ func TestClient_TimeoutLifecycle(t *testing.T) {
 	}{
 		{
 			name:           "initial start triggers timeout",
-			initialTimeout: 50 * time.Millisecond,
+			initialTimeout: time.Minute,
 			action:         "none",
 			wantInTimeout:  true,
 			wantCanSend:    false,
 		},
 		{
 			name:           "duplicate trigger while active is a no-op",
-			initialTimeout: 50 * time.Millisecond,
+			initialTimeout: time.Minute,
 			action:         "re-trigger",
 			wantInTimeout:  true,
 			wantCanSend:    false,
@@ -198,7 +198,7 @@ func TestClient_TimeoutLifecycle(t *testing.T) {
 		},
 		{
 			name:           "close cancels active timeout and resets timeout status",
-			initialTimeout: 50 * time.Millisecond,
+			initialTimeout: time.Minute,
 			action:         "close",
 			wantInTimeout:  false,
 			wantCanSend:    true,
@@ -240,6 +240,8 @@ func TestClient_TimeoutLifecycle(t *testing.T) {
 				if !waitForCondition(500*time.Millisecond, func() bool { return !client.isInTimeout() }) {
 					t.Fatal("timed out waiting for rejection timeout to expire")
 				}
+				// A short re-trigger timeout can expire before the assertion on slow runners.
+				chatSvc.rejectionTimeout = time.Minute
 				client.startChatRejectionTimeout()
 			}
 
