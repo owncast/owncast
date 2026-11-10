@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"context"
 	"encoding/json"
 	"net/url"
 
@@ -9,7 +10,9 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"
+	"github.com/owncast/owncast/services/activitypub/events"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
+	"github.com/owncast/owncast/services/dispatcher"
 
 	"github.com/teris-io/shortid"
 )
@@ -18,7 +21,7 @@ import (
 // delivering an Accept whose result carries the IRI of the stored
 // QuoteAuthorization stamp. The requesting server flips its pending quote to
 // approved and passes the stamp IRI along so other servers can verify it.
-func SendQuoteRequestAccept(wp *workerpool.Service, inbox *url.URL, originalQuoteRequest vocab.GoToSocialQuoteRequest, stampIRI *url.URL, fromLocalAccountName string, builder *apmodels.Builder) error {
+func SendQuoteRequestAccept(wp *workerpool.Service, target *dispatcher.Dispatcher, inbox *url.URL, originalQuoteRequest vocab.GoToSocialQuoteRequest, stampIRI *url.URL, fromLocalAccountName string, builder *apmodels.Builder) error {
 	accept := streams.NewActivityStreamsAccept()
 	setQuoteResponseProperties(accept, originalQuoteRequest, fromLocalAccountName, builder)
 
@@ -26,16 +29,16 @@ func SendQuoteRequestAccept(wp *workerpool.Service, inbox *url.URL, originalQuot
 	result.AppendIRI(stampIRI)
 	accept.SetActivityStreamsResult(result)
 
-	return queueQuoteResponse(wp, inbox, accept, fromLocalAccountName, builder)
+	return queueQuoteResponse(wp, target, inbox, accept, fromLocalAccountName, builder)
 }
 
 // SendQuoteRequestReject declines a remote QuoteRequest, clearing the pending
 // quote on the requesting server.
-func SendQuoteRequestReject(wp *workerpool.Service, inbox *url.URL, originalQuoteRequest vocab.GoToSocialQuoteRequest, fromLocalAccountName string, builder *apmodels.Builder) error {
+func SendQuoteRequestReject(wp *workerpool.Service, target *dispatcher.Dispatcher, inbox *url.URL, originalQuoteRequest vocab.GoToSocialQuoteRequest, fromLocalAccountName string, builder *apmodels.Builder) error {
 	reject := streams.NewActivityStreamsReject()
 	setQuoteResponseProperties(reject, originalQuoteRequest, fromLocalAccountName, builder)
 
-	return queueQuoteResponse(wp, inbox, reject, fromLocalAccountName, builder)
+	return queueQuoteResponse(wp, target, inbox, reject, fromLocalAccountName, builder)
 }
 
 // quoteResponse is the intersection of Accept and Reject used when responding
@@ -64,7 +67,7 @@ func setQuoteResponseProperties(response quoteResponse, originalQuoteRequest voc
 	response.SetActivityStreamsObject(object)
 }
 
-func queueQuoteResponse(wp *workerpool.Service, inbox *url.URL, response vocab.Type, fromLocalAccountName string, builder *apmodels.Builder) error {
+func queueQuoteResponse(wp *workerpool.Service, target *dispatcher.Dispatcher, inbox *url.URL, response vocab.Type, fromLocalAccountName string, builder *apmodels.Builder) error {
 	if err := validateRemoteInbox(inbox); err != nil {
 		return err
 	}
@@ -80,10 +83,14 @@ func queueQuoteResponse(wp *workerpool.Service, inbox *url.URL, response vocab.T
 		return errors.Wrap(err, "unable to marshal quote request response")
 	}
 
-	return wp.Enqueue(workerpool.Delivery{
+	if err := wp.Enqueue(workerpool.Delivery{
 		Inbox:        inbox,
 		Payload:      payload,
 		ActorIRI:     localAccountIRI,
 		ActivityType: response.GetTypeName(),
-	})
+	}); err != nil {
+		return err
+	}
+	events.PublishOutbound(context.Background(), target, payload)
+	return nil
 }

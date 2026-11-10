@@ -17,6 +17,7 @@ import (
 	"github.com/owncast/owncast/services/activitypub/apmodels"
 	"github.com/owncast/owncast/services/activitypub/controllers"
 	"github.com/owncast/owncast/services/activitypub/crypto"
+	"github.com/owncast/owncast/services/activitypub/events"
 	"github.com/owncast/owncast/services/activitypub/inbox"
 	"github.com/owncast/owncast/services/activitypub/jobs"
 	"github.com/owncast/owncast/services/activitypub/outbox"
@@ -44,6 +45,7 @@ type Service struct {
 	followers        followersrepository.FollowersRepository
 	builder          *apmodels.Builder
 	configRepository configrepository.ConfigRepository
+	events           *dispatcher.Dispatcher
 }
 
 // Deps lists the explicit construction inputs for the federation
@@ -81,6 +83,7 @@ func New(deps Deps) *Service {
 		Builder:          deps.Builder,
 		Resolver:         deps.Resolver,
 		Config:           deps.Config,
+		Events:           deps.Events,
 	})
 
 	inboxSvc := inbox.New(inbox.Deps{
@@ -122,6 +125,7 @@ func New(deps Deps) *Service {
 		followers:        followers,
 		builder:          deps.Builder,
 		configRepository: deps.ConfigRepository,
+		events:           deps.Events,
 	}
 }
 
@@ -170,6 +174,12 @@ func (s *Service) SendDirectFederatedMessage(message, account string) error {
 	return s.outbox.SendDirectMessageToAccount(message, account)
 }
 
+// SendAuthenticationFederatedMessage sends a login challenge without exposing
+// authentication content through the outbound plugin event.
+func (s *Service) SendAuthenticationFederatedMessage(message, account string) error {
+	return s.outbox.SendAuthenticationMessageToAccount(message, account)
+}
+
 // GetFollowerCount returns the local tracked follower count.
 func (s *Service) GetFollowerCount() (int64, error) {
 	return s.followers.GetCount()
@@ -201,7 +211,11 @@ func (s *Service) RespondToFollow(actorIRI string, approved, streamActive bool) 
 
 	ds := s.persistence.Datastore()
 	ds.DbLock.Lock()
-	defer ds.DbLock.Unlock()
+	var published []byte
+	defer func() {
+		ds.DbLock.Unlock()
+		events.PublishOutbound(context.Background(), s.events, published)
+	}()
 	tx, err := ds.DB.BeginTx(context.Background(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("beginning follower response transaction: %w", err)
@@ -222,6 +236,7 @@ func (s *Service) RespondToFollow(actorIRI string, approved, streamActive bool) 
 	if err := tx.Commit(); err != nil {
 		return nil, fmt.Errorf("committing follower response: %w", err)
 	}
+	published = delivery.Payload
 	return follow, nil
 }
 
@@ -246,7 +261,11 @@ func (s *Service) RemoveFollower(actorIRI string) error {
 
 	ds := s.persistence.Datastore()
 	ds.DbLock.Lock()
-	defer ds.DbLock.Unlock()
+	var published []byte
+	defer func() {
+		ds.DbLock.Unlock()
+		events.PublishOutbound(context.Background(), s.events, published)
+	}()
 	tx, err := ds.DB.BeginTx(context.Background(), nil)
 	if err != nil {
 		return fmt.Errorf("beginning follower removal transaction: %w", err)
@@ -256,6 +275,7 @@ func (s *Service) RemoveFollower(actorIRI string) error {
 	if delivery != nil {
 		if err := s.workerpool.EnqueueTx(context.Background(), tx, *delivery); err != nil {
 			log.Errorln("unable to queue follow reject for directory", actorIRI, err)
+			delivery = nil
 		}
 	}
 	if err := s.followers.RemoveByIRITx(context.Background(), tx, actorIRI); err != nil {
@@ -263,6 +283,9 @@ func (s *Service) RemoveFollower(actorIRI string) error {
 	}
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("committing follower removal: %w", err)
+	}
+	if delivery != nil {
+		published = delivery.Payload
 	}
 	return nil
 }

@@ -27,6 +27,7 @@ export const PluginPermission = {
   VideoConfigWrite: 'videoconfig.write',
   NotificationsSend: 'notifications.send',
   FediverseInbound: 'fediverse.inbound',
+  FediverseOutbound: 'fediverse.outbound',
   FediversePost: 'fediverse.post',
   UIModify: 'ui.modify',
   AuthGate: 'auth.gate',

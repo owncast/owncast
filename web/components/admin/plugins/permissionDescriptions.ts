@@ -24,6 +24,7 @@ export const permissionDescriptionKey: Record<string, string> = {
   [PluginPermission.UsersRead]: Localization.Admin.Plugins.Permissions.usersRead,
   [PluginPermission.UsersModerate]: Localization.Admin.Plugins.Permissions.usersModerate,
   [PluginPermission.FediverseInbound]: Localization.Admin.Plugins.Permissions.fediverseInbound,
+  [PluginPermission.FediverseOutbound]: Localization.Admin.Plugins.Permissions.fediverseOutbound,
   [PluginPermission.FediversePost]: Localization.Admin.Plugins.Permissions.fediversePost,
   [PluginPermission.VideoConfigRead]: Localization.Admin.Plugins.Permissions.videoconfigRead,
   [PluginPermission.VideoConfigWrite]: Localization.Admin.Plugins.Permissions.videoconfigWrite,
@@ -56,6 +57,8 @@ export const permissionNameKey: Record<string, string> = {
   [PluginPermission.UsersModerate]: Localization.Admin.Plugins.PermissionNames.usersModerate,
   [PluginPermission.FediverseInbound]: Localization.Admin.Plugins.PermissionNames.fediverseInbound,
   [PluginPermission.FediversePost]: Localization.Admin.Plugins.PermissionNames.fediversePost,
+  [PluginPermission.FediverseOutbound]:
+    Localization.Admin.Plugins.PermissionNames.fediverseOutbound,
   [PluginPermission.VideoConfigRead]: Localization.Admin.Plugins.PermissionNames.videoconfigRead,
   [PluginPermission.VideoConfigWrite]: Localization.Admin.Plugins.PermissionNames.videoconfigWrite,
   [PluginPermission.UIModify]: Localization.Admin.Plugins.PermissionNames.uiModify,

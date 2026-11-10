@@ -68,6 +68,9 @@ func newEngagementTestService(t *testing.T) (*Service, *persistence.Service, *[]
 	var publishedMu sync.Mutex
 	published := []dispatcher.Event{}
 	eventDispatcher.AddListener(func(_ context.Context, event dispatcher.Event) {
+		if event.Type == models.FediverseOutboundActivity {
+			return
+		}
 		publishedMu.Lock()
 		defer publishedMu.Unlock()
 		published = append(published, event)
