@@ -114,17 +114,20 @@ func TestBackupTruncatesExistingFile(t *testing.T) {
 	}
 }
 
+// TestRestorePreservesDestinationOnFailure covers failed restores and successful replacement.
 func TestRestorePreservesDestinationOnFailure(t *testing.T) {
 	for _, tc := range []struct {
 		name      string
 		sql       string
 		existing  bool
 		wantError bool
+		locked    bool
 	}{
-		{"invalid SQL", "invalid SQL", true, true},
-		{"partially executed SQL", "CREATE TABLE partial (value TEXT); invalid SQL", true, true},
-		{"new destination", "invalid SQL", false, true},
-		{"successful replacement", "CREATE TABLE restored (value TEXT); INSERT INTO restored VALUES ('restored');", true, false},
+		{"invalid SQL", "invalid SQL", true, true, false},
+		{"partially executed SQL", "CREATE TABLE partial (value TEXT); invalid SQL", true, true, false},
+		{"new destination", "invalid SQL", false, true, false},
+		{"successful replacement", "CREATE TABLE restored (value TEXT); INSERT INTO restored VALUES ('restored');", true, false, false},
+		{"locked destination", "CREATE TABLE restored (value TEXT);", true, true, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			dir := t.TempDir()
@@ -143,6 +146,29 @@ func TestRestorePreservesDestinationOnFailure(t *testing.T) {
 			original, err := os.ReadFile(databaseFile)
 			if err != nil && tc.existing {
 				t.Fatal(err)
+			}
+			var originalInfo os.FileInfo
+			if tc.existing {
+				if err := os.Chmod(databaseFile, 0o640); err != nil {
+					t.Fatal(err)
+				}
+				originalInfo, err = os.Stat(databaseFile)
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			if tc.locked {
+				db, err := sql.Open("sqlite3", databaseFile)
+				if err != nil {
+					t.Fatal(err)
+				}
+				t.Cleanup(func() {
+					_, _ = db.Exec("ROLLBACK")
+					_ = db.Close()
+				})
+				if _, err := db.Exec("BEGIN EXCLUSIVE"); err != nil {
+					t.Fatal(err)
+				}
 			}
 
 			var compressed bytes.Buffer
@@ -174,6 +200,16 @@ func TestRestorePreservesDestinationOnFailure(t *testing.T) {
 					t.Errorf("failed restore left a destination database: %v", err)
 				}
 			} else {
+				restoredInfo, err := os.Stat(databaseFile)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if !os.SameFile(originalInfo, restoredInfo) {
+					t.Error("restore replaced the original file and its ownership")
+				}
+				if restoredInfo.Mode() != originalInfo.Mode() {
+					t.Errorf("restored mode = %v, want %v", restoredInfo.Mode(), originalInfo.Mode())
+				}
 				db, err := sql.Open("sqlite3", databaseFile)
 				if err != nil {
 					t.Fatal(err)
