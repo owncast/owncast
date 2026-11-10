@@ -2,16 +2,16 @@
 	"Admin": {
 		"AccessTokens": {
 			"createNewAccessToken": "Créer un nouveau jeton d'accès",
-			"nameDescription": "Ce nom sera affiché comme expéditeur lors de l'envoi de messages de chat avec ce jeton d'accès.",
+			"nameDescription": "Affiché comme nom d'expéditeur lors de l'envoi de messages avec ce jeton.",
 			"namePlaceholder": "Nom du bot, du service ou de l'intégration",
 			"selectAll": "Tout sélectionner",
-			"selectPermissions": "Sélectionnez les permissions que ce jeton d'accès aura. Elles ne pourront plus être modifiées par la suite."
+			"selectPermissions": "Sélectionnez les permissions de ce jeton d'accès. Elles ne pourront plus être modifiées par la suite."
 		},
 		"Actions": {
 			"createNewAction": "Nouvelle action",
 			"createNewActionTitle": "Nouvelle action",
 			"customHtml": "HTML personnalisé",
-			"description": "Les URL d'actions externes sont des interfaces utilisateur tierces que vous pouvez afficher, intégrées, dans votre page Owncast lorsqu'un utilisateur clique sur un bouton pour lancer votre action.",
+			"description": "Les URL d'actions externes sont des interfaces utilisateur tierces que vous pouvez afficher dans votre page Owncast lorsqu'un utilisateur clique sur un bouton pour lancer votre action.",
 			"descriptionPlaceholder": "Description facultative",
 			"editActionTitle": "Modifier l'action",
 			"htmlEmbedPlaceholder": "Code HTML embed (obligatoire)",
@@ -147,13 +147,13 @@
 			"documentation": "Documentation",
 			"fediverse": "Suivez Owncast sur le Fédiverse",
 			"fixButton": "Guide de dépannage",
-			"fixDescription": "Travaillez avec des problèmes communs avec le guide de dépannage.",
-			"fixTitle": "Quelque chose ne fonctionne pas?",
-			"gettingStarted": "Il semble que vous n'ayez pas encore diffusé. Le guide de démarrage rapide peut vous aider à démarrer votre premier stream.",
+			"fixDescription": "Résolvez les problèmes courants grâce au guide de dépannage.",
+			"fixTitle": "Quelque chose ne fonctionne pas ?",
+			"gettingStarted": "Il semble que vous n'ayez pas encore diffusé. Suivez le guide de démarrage pour lancer votre premier stream !",
 			"gettingStartedLink": "Lire le guide de démarrage rapide",
 			"groupCustomize": "Personnaliser",
 			"groupExtend": "Étendre Owncast",
-			"groupGrow": "Élargissez votre public",
+			"groupGrow": "Toucher un plus grand public",
 			"groupSetup": "Mettez votre stream en place",
 			"learnMore": "En savoir plus",
 			"moreResources": "Autres ressources",
@@ -195,7 +195,7 @@
 		"PlaybackClients": {
 			"description": "Chaque client qui lit actuellement votre vidéo, avec la plus récente santé de lecture mesurée pour elle. Les clients qui rapportent leur propre lecture fournissent plus de détails que ceux que le serveur ne peut observer. La qualité est le débit affiché dans votre playlist de streams, qui inclut l'audio, donc elle est proche mais pas exactement sur le débit vidéo que vous avez configuré.",
 			"errors": "Erreurs",
-			"lastMeasured": "",
+			"lastMeasured": "Moment de la mesure: {{age}}",
 			"latency": "Latence (s)",
 			"location": "Localisation",
 			"player": "Joueur",
@@ -531,7 +531,7 @@
 		"offlineBasic": "Ce stream est hors ligne. Revenez bientôt !",
 		"offlineFediverseOnly": "Le stream est hors ligne. <span class='follow-link'>Suivez-le</span> {{fediverseAccount}} sur le Fédiverse pour être notifié lorsque {{streamer}} est en ligne !",
 		"offlineNotifyAndFediverse": "Ce stream est hors ligne. Vous pouvez <span class='notify-link'>être notifié</span> la prochaine fois que {{streamer}} sera en direct ou <span class='follow-link'>suivre</span> {{fediverseAccount}} sur le Fediverse.",
-		"offlineNotifyOnly": "Ce flux est hors ligne. <span class='notify-link'>Recevez une notification</span> la prochaine fois que {{streamer}} sera en ligne.",
+		"offlineNotifyOnly": "Ce stream est hors ligne. <span class='notify-link'>Activez les notifications</span> pour être prévenu(e) la prochaine fois que {{streamer}} est en ligne.",
 		"showAllTabs": "Afficher tous les onglets",
 		"unmute": "Activer le son"
 	},
