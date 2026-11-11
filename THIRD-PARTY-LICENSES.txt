@@ -705,6 +705,11 @@ Web package: @img/sharp-linuxmusl-x64@0.34.5
   Declared license: Apache-2.0
   LICENSE: SHA256 73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68
 
+Web package: @isaacs/nonrecursive-glob-match@1.1.0
+  Source: https://registry.npmjs.org/@isaacs/nonrecursive-glob-match/-/nonrecursive-glob-match-1.1.0.tgz
+  Declared license: BlueOak-1.0.0
+  LICENSE.md: SHA256 8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004
+
 Web package: @jridgewell/gen-mapping@0.3.13
   Source: https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz
   Declared license: MIT
@@ -1285,8 +1290,8 @@ Web package: bowser@2.14.1
   Declared license: MIT
   LICENSE: SHA256 dfde54fedc270c2a305d9a9f993d93f706d34624455a2fd2d2a05ca34d8ae8c3
 
-Web package: brace-expansion@5.0.7
-  Source: https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.7.tgz
+Web package: brace-expansion@5.0.12
+  Source: https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.12.tgz
   Declared license: MIT
   LICENSE: SHA256 9c63a23124d68cd30cd316a94a1a0bca34f032786df6df69fc4b5f136bac8d2e
 
@@ -1670,8 +1675,8 @@ Web package: glob-stream@8.0.3
   Declared license: MIT
   LICENSE: SHA256 6b510df798d1ac4ce1614aeed60d220233458ff50f8eb6c2ce1218b3ef7600ac
 
-Web package: glob@13.0.6
-  Source: https://registry.npmjs.org/glob/-/glob-13.0.6.tgz
+Web package: glob@14.0.4
+  Source: https://registry.npmjs.org/glob/-/glob-14.0.4.tgz
   Declared license: BlueOak-1.0.0
   LICENSE.md: SHA256 a49c9ba464796f65b59fca3f1e6ca40912df1e859f575383223f7ec6c5baae09
 
@@ -1935,8 +1940,8 @@ Web package: loose-envify@1.4.0
   Declared license: MIT
   LICENSE: SHA256 4eb7543b08d955a6d23fcc224601d43ff566e775be918805e26210d7f6eb4893
 
-Web package: lru-cache@11.5.1
-  Source: https://registry.npmjs.org/lru-cache/-/lru-cache-11.5.1.tgz
+Web package: lru-cache@11.5.3
+  Source: https://registry.npmjs.org/lru-cache/-/lru-cache-11.5.3.tgz
   Declared license: BlueOak-1.0.0
   LICENSE.md: SHA256 8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004
 
@@ -2110,8 +2115,8 @@ Web package: min-indent@1.0.1
   Declared license: MIT
   license: SHA256 a292a098207735327223dab98274f6691f74cfb68bd42f4e7ee2e5de552ca72d
 
-Web package: minimatch@10.2.5
-  Source: https://registry.npmjs.org/minimatch/-/minimatch-10.2.5.tgz
+Web package: minimatch@11.0.5
+  Source: https://registry.npmjs.org/minimatch/-/minimatch-11.0.5.tgz
   Declared license: BlueOak-1.0.0
   LICENSE.md: SHA256 2c7c5d22ed5a8ee968c64757710979afcd77438c48b4a265b94e615babd8a901
 
@@ -2210,8 +2215,8 @@ Web package: parse5@6.0.1
   Declared license: MIT
   LICENSE: SHA256 8c535800331e1e4439835555b3f9edc7fe9dee2fab0d8bbbd5a982e8b8343d4d
 
-Web package: path-scurry@2.0.2
-  Source: https://registry.npmjs.org/path-scurry/-/path-scurry-2.0.2.tgz
+Web package: path-scurry@3.0.0
+  Source: https://registry.npmjs.org/path-scurry/-/path-scurry-3.0.0.tgz
   Declared license: BlueOak-1.0.0
   LICENSE.md: SHA256 8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004
 
@@ -6752,7 +6757,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
 SHA256: 2c7c5d22ed5a8ee968c64757710979afcd77438c48b4a265b94e615babd8a901
-Used by: Web package: minimatch@10.2.5 (LICENSE.md)
+Used by: Web package: minimatch@11.0.5 (LICENSE.md)
 --------------------------------------------------------------------------------
 # Blue Oak Model License
 
@@ -10826,9 +10831,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ================================================================================
 SHA256: 8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004
-Used by: Web package: lru-cache@11.5.1 (LICENSE.md)
+Used by: Web package: @isaacs/nonrecursive-glob-match@1.1.0 (LICENSE.md)
+Used by: Web package: lru-cache@11.5.3 (LICENSE.md)
 Used by: Web package: minipass@7.1.3 (LICENSE.md)
-Used by: Web package: path-scurry@2.0.2 (LICENSE.md)
+Used by: Web package: path-scurry@3.0.0 (LICENSE.md)
 --------------------------------------------------------------------------------
 # Blue Oak Model License
 
@@ -11426,7 +11432,7 @@ SOFTWARE.
 
 ================================================================================
 SHA256: 9c63a23124d68cd30cd316a94a1a0bca34f032786df6df69fc4b5f136bac8d2e
-Used by: Web package: brace-expansion@5.0.7 (LICENSE)
+Used by: Web package: brace-expansion@5.0.12 (LICENSE)
 --------------------------------------------------------------------------------
 MIT License
 
@@ -11557,7 +11563,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
 SHA256: a49c9ba464796f65b59fca3f1e6ca40912df1e859f575383223f7ec6c5baae09
-Used by: Web package: glob@13.0.6 (LICENSE.md)
+Used by: Web package: glob@14.0.4 (LICENSE.md)
 --------------------------------------------------------------------------------
 All packages under `src/` are licensed according to the terms in
 their respective `LICENSE` or `LICENSE.md` files.
