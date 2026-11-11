@@ -528,6 +528,7 @@
 		"componentError": "Σφάλμα: {{message}}",
 		"helloWorld": "Γεια σας κόσμο",
 		"lastLiveAgo": "Πριν από {{timeAgo}}",
+		"liveNow": "Ζωντανά εδώ και {{timeSince}}",
 		"offlineBasic": "Αυτό το ρεύμα είναι εκτός σύνδεσης. Ελέγξτε ξανά σύντομα!",
 		"offlineFediverseOnly": "Αυτό το ρεύμα είναι εκτός σύνδεσης. <span class='follow-link'>Ακολουθήστε</span> {{fediverseAccount}} στο Fediverse για να δείτε την επόμενη φορά που το {{streamer}} ζωντανά.",
 		"offlineNotifyAndFediverse": "Αυτή η ροή είναι εκτός σύνδεσης. Μπορείτε να ειδοποιηθείτε <span class='notify-link'></span> την επόμενη φορά που το {{streamer}} πηγαίνει ζωντανά ή <span class='follow-link'>ακολουθήστε το</span> {{fediverseAccount}} στο Fediverse.",

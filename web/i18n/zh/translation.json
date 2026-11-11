@@ -528,6 +528,7 @@
 		"componentError": "錯誤： {{message}}",
 		"helloWorld": "你好，世界",
 		"lastLiveAgo": "上次實況時間：{{timeAgo}}前",
+		"liveNow": "已直播 {{timeSince}}",
 		"offlineBasic": "此串流已離線。請稍後再回來查看！",
 		"offlineFediverseOnly": "此串流已離線。請在 Fediverse<span class='follow-link'>上追</span>蹤 {{fediverseAccount}} ，以查看 {{streamer}} 的下次直播時間。",
 		"offlineNotifyAndFediverse": "此串流已離線。您可以在 {{streamer}} 上線時<span class='notify-link'>收到通知，</span>或在 Fediverse<span class='follow-link'>上追蹤</span> {{fediverseAccount}}。",

@@ -9,6 +9,7 @@ import { useTranslation } from 'next-export-i18n';
 import { Translation } from '../Translation/Translation';
 import { Localization } from '../../../types/localization';
 import styles from './OfflineBanner.module.scss';
+import { useDateFnsLocale } from '../../../hooks/useDateFnsLocale';
 
 // Lazy loaded components
 
@@ -40,6 +41,7 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
   className,
 }) => {
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
 
   const handleSpanClick = (event: React.MouseEvent<HTMLSpanElement>) => {
     const target = event.target as HTMLSpanElement;
@@ -112,7 +114,7 @@ export const OfflineBanner: FC<OfflineBannerProps> = ({
           <div className={styles.lastLiveDate}>
             <ClockCircleOutlined className={styles.clockIcon} />
             <span id="owncast-offline-last-live-text">
-              {`${t(Localization.Frontend.lastLiveAgo, { timeAgo: formatDistanceToNow(new Date(lastLive)) })}`}
+              {`${t(Localization.Frontend.lastLiveAgo, { timeAgo: formatDistanceToNow(new Date(lastLive), { locale: dateFnsLocale }) })}`}
             </span>
           </div>
         )}
