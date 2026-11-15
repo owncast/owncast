@@ -512,6 +512,13 @@
 			"overLimit": "Over limit",
 			"placeholder": "Your chat display name"
 		},
+		"NotifyButton": {
+			"label": "Notify"
+		},
+		"NotifyReminderPopup": {
+			"description": "Click and never miss future streams!",
+			"title": "Stay updated!"
+		},
 		"OfflineRecommendation": {
 			"introduction": "While {{name}} is offline, visit this recommended stream.",
 			"linkAria": "Watch {{name}} live at {{host}}",

@@ -1,7 +1,8 @@
 import { Button } from 'antd';
 import { FC } from 'react';
 import dynamic from 'next/dynamic';
-import { useTranslation } from 'next-export-i18n';
+import { Translation } from '../ui/Translation/Translation';
+import { Localization } from '../../types/localization';
 import styles from './ActionButton/ActionButton.module.scss';
 
 // Lazy loaded components
@@ -16,8 +17,6 @@ export type NotifyButtonProps = {
 };
 
 export const NotifyButton: FC<NotifyButtonProps> = ({ onClick, text }) => {
-  const { t } = useTranslation();
-
   return (
     <Button
       type="primary"
@@ -26,7 +25,12 @@ export const NotifyButton: FC<NotifyButtonProps> = ({ onClick, text }) => {
       onClick={onClick}
       id="notify-button"
     >
-      {text || t('Notify')}
+      {text || (
+        <Translation
+          translationKey={Localization.Frontend.NotifyButton.label}
+          defaultText="Notify"
+        />
+      )}
     </Button>
   );
 };

@@ -141,6 +141,15 @@ export const Localization = {
       unableToFollow: 'Frontend.FollowModal.unableToFollow',
     },
 
+    // Notify button and the reminder popup shown next to it
+    NotifyButton: {
+      label: 'Frontend.NotifyButton.label',
+    },
+    NotifyReminderPopup: {
+      title: 'Frontend.NotifyReminderPopup.title',
+      description: 'Frontend.NotifyReminderPopup.description',
+    },
+
     // Offline banner messages
     offlineBasic: 'Frontend.offlineBasic',
     offlineNotifyOnly: 'Frontend.offlineNotifyOnly',
