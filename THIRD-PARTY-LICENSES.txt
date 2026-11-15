@@ -2711,8 +2711,8 @@ Web package: yallist@3.1.1
   Declared license: ISC
   LICENSE: SHA256 4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b
 
-Web package: yaml@2.9.0
-  Source: https://registry.npmjs.org/yaml/-/yaml-2.9.0.tgz
+Web package: yaml@2.9.1
+  Source: https://registry.npmjs.org/yaml/-/yaml-2.9.1.tgz
   Declared license: ISC
   LICENSE: SHA256 5bba27375d93e9119f76c1015f7672cf9ad5f70952296e0842fb2243d6376869
 
@@ -9092,7 +9092,7 @@ THE SOFTWARE.
 
 ================================================================================
 SHA256: 5bba27375d93e9119f76c1015f7672cf9ad5f70952296e0842fb2243d6376869
-Used by: Web package: yaml@2.9.0 (LICENSE)
+Used by: Web package: yaml@2.9.1 (LICENSE)
 --------------------------------------------------------------------------------
 Copyright Eemeli Aro <eemeli@gmail.com>
 
