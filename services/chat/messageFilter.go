@@ -4,10 +4,12 @@ import (
 	"html"
 	"regexp"
 	"strings"
+	"unicode"
 
 	goaway "github.com/TwiN/go-away"
 
 	"github.com/owncast/owncast/services/chat/events"
+	"github.com/owncast/owncast/utils"
 )
 
 // ChatMessageFilter is a allow/deny chat message filter.
@@ -19,22 +21,26 @@ func NewMessageFilter() *ChatMessageFilter {
 }
 
 var (
-	// Comments and tags are removed by the renderer before the message is
-	// shown, so the filter must remove them too, or it checks a different text
-	// than the one a viewer reads.
+	// Comments are removed by the renderer before the message is shown, so
+	// the filter must remove them too.
 	htmlCommentPattern = regexp.MustCompile(`(?s)<!--.*?-->`)
-	htmlTagPattern     = regexp.MustCompile(`<[^>]*>`)
-	// Zero-width characters are invisible once rendered, so removing them
-	// restores the word the reader sees. A non-breaking space is visible as a
-	// space, so it becomes one.
-	invisiblePattern = strings.NewReplacer(
-		"\u200b", "",
-		"\u200c", "",
-		"\u200d", "",
-		"\ufeff", "",
-		"\u00a0", " ",
-	)
 )
+
+// dropInvisible removes format characters that are invisible once rendered
+// (zero-width spaces, soft hyphens, word joiners, BOM, ...) and maps a
+// non-breaking space to a regular space, so the filtered text matches what a
+// viewer reads.
+func dropInvisible(s string) string {
+	return strings.Map(func(r rune) rune {
+		if r == '\u00a0' {
+			return ' '
+		}
+		if unicode.Is(unicode.Cf, r) {
+			return -1
+		}
+		return r
+	}, s)
+}
 
 // normalizeMessage renders a message the way a viewer will read it: entities
 // resolved, tags and comments gone, invisible characters removed. The filter
@@ -48,8 +54,10 @@ func normalizeMessage(message string) string {
 	message = events.RenderMarkdown(message)
 	message = html.UnescapeString(message)
 	message = htmlCommentPattern.ReplaceAllString(message, "")
-	message = htmlTagPattern.ReplaceAllString(message, "")
-	message = invisiblePattern.Replace(message)
+	// bluemonday strips tags (including malformed ones) more reliably than a
+	// regex, matching what the renderer's sanitizer leaves as text.
+	message = utils.StripHTML(message)
+	message = dropInvisible(message)
 	return strings.Join(strings.Fields(message), " ")
 }
 
