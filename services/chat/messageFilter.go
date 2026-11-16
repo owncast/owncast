@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	goaway "github.com/TwiN/go-away"
+
+	"github.com/owncast/owncast/services/chat/events"
 )
 
 // ChatMessageFilter is a allow/deny chat message filter.
@@ -40,6 +42,10 @@ var (
 // slur spelled with an entity, split by a tag or hidden behind a zero-width
 // space still reaches the chat.
 func normalizeMessage(message string) string {
+	// Render the message the way a viewer reads it, so markdown syntax that
+	// produces text (links, emphasis, images, ...) is reflected in the
+	// filtered string instead of the raw markup.
+	message = events.RenderMarkdown(message)
 	message = html.UnescapeString(message)
 	message = htmlCommentPattern.ReplaceAllString(message, "")
 	message = htmlTagPattern.ReplaceAllString(message, "")
