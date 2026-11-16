@@ -51,6 +51,8 @@ func TestFilteringSeesTheRenderedText(t *testing.T) {
 		"fu\u200bck this",          // zero-width space is invisible
 		"fu\u00a0ck this",          // non-breaking space reads as a space
 		"<span>fuck</span> this",   // tag-wrapped, plainly profane
+		"f[u](http://x)ck this",    // markdown link text joins the surrounding letters
+		"fu**ck** this",            // markdown emphasis is rendered, letters join
 	}
 
 	unfilteredTestMessages := []string{
