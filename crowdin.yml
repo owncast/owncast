@@ -9,3 +9,10 @@ commit_message: 'Updated translations for %language%'
 files:
   - source: /web/i18n/en/translation.json
     translation: /web/i18n/%two_letters_code%/translation.json
+    # %two_letters_code% maps both Chinese variants to the same "zh" file, so
+    # Simplified and Traditional would overwrite each other. Give Simplified
+    # its own catalog; Traditional keeps the bare "zh" one.
+    languages_mapping:
+      two_letters_code:
+        zh-CN: zh-CN
+        zh-TW: zh
