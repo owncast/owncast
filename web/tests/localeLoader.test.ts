@@ -24,11 +24,11 @@ const freshModules = (): {
   let shouldClean!: ShouldCleanUrlAfterFlip;
   let i18n!: I18nShape;
   jest.isolateModules(() => {
-    /* eslint-disable global-require, @typescript-eslint/no-var-requires */
+    /* eslint-disable global-require, @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports */
     load = require('../utils/localeLoader').loadViewerLocale;
     shouldClean = require('../utils/localeLoader').shouldCleanUrlAfterFlip;
     i18n = require('../i18n');
-    /* eslint-enable global-require, @typescript-eslint/no-var-requires */
+    /* eslint-enable global-require, @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports */
   });
   return { load, shouldClean, i18n };
 };
@@ -64,6 +64,15 @@ describe('pickLocale', () => {
     ['english from the browser needs no catalog', undefined, 'en-US', null],
     ['unknown query and unknown browser yield nothing', 'xx', 'zz-ZZ', null],
     ['both inputs missing yields nothing', undefined, undefined, null],
+    ['simplified chinese browser gets zh-CN', undefined, 'zh-CN', 'zh-CN'],
+    ['simplified chinese is matched case-insensitively', undefined, 'zh-cn', 'zh-CN'],
+    ['traditional chinese browser stays on zh', undefined, 'zh-TW', 'zh'],
+    ['hong kong uses the traditional catalog', undefined, 'zh-HK', 'zh'],
+    ['singapore uses the simplified catalog', undefined, 'zh-SG', 'zh-CN'],
+    ['simplified script subtag wins over the region', undefined, 'zh-Hans-HK', 'zh-CN'],
+    ['traditional script subtag wins over the region', undefined, 'zh-Hant-CN', 'zh'],
+    ['bare zh stays traditional', undefined, 'zh', 'zh'],
+    ['explicit zh-CN query wins over a traditional browser', 'zh-CN', 'zh-TW', 'zh-CN'],
   ])('%s', (_name, queryLang, browserLanguage, expected) => {
     expect(pickLocale(queryLang, browserLanguage)).toBe(expected);
   });

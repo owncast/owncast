@@ -54,7 +54,58 @@ export const AVAILABLE_LOCALES = [
   'th',
   'vi',
   'zh',
+  'zh-CN',
 ];
+
+/**
+ * Chinese is the one language where matching the base subtag is not enough:
+ * Simplified and Traditional are separate catalogs ('zh-CN' and 'zh') and
+ * browsers report the script they want as a region or script subtag.
+ *
+ * The script subtag wins over the region: 'zh-Hant-CN' asks for Traditional.
+ * Bare 'zh' stays Traditional, which is what the catalog Crowdin already
+ * fills with.
+ */
+const chineseLocaleForTag = (tag: string): string => {
+  if (tag.includes('-hans')) {
+    return 'zh-CN';
+  }
+  if (tag.includes('-hant')) {
+    return 'zh';
+  }
+  const region = tag.split('-')[1];
+  if (region === 'cn' || region === 'sg' || region === 'my') {
+    return 'zh-CN';
+  }
+  return 'zh';
+};
+
+/**
+ * Maps a browser language tag onto a catalog we ship, or null when we have
+ * none. Region and script subtags are dropped only after the language-specific
+ * rules above had their say.
+ */
+const localeForBrowserLanguage = (browserLanguage: string | undefined): string | null => {
+  const tag = (browserLanguage || '').toLowerCase();
+  if (!tag) {
+    return null;
+  }
+  // Chinese tags are ambiguous, so resolve them before the exact match below.
+  if (tag.startsWith('zh-')) {
+    return chineseLocaleForTag(tag);
+  }
+  if (AVAILABLE_LOCALES.includes(tag)) {
+    return tag;
+  }
+  // Region-bearing catalogs keep their canonical casing, so a browser that
+  // sends lowercase 'pt-br' still finds 'pt-BR'.
+  const exact = AVAILABLE_LOCALES.find(locale => locale.toLowerCase() === tag);
+  if (exact) {
+    return exact;
+  }
+  const base = tag.split('-')[0];
+  return AVAILABLE_LOCALES.includes(base) ? base : null;
+};
 
 /**
  * Decides which locale catalog to fetch. An explicit, known ?lang= value
@@ -67,8 +118,7 @@ export const pickLocale = (
   browserLanguage: string | undefined,
 ): string | null => {
   const fromQuery = queryLang && AVAILABLE_LOCALES.includes(queryLang) ? queryLang : null;
-  const short = (browserLanguage || '').split('-')[0].toLowerCase();
-  const fromBrowser = AVAILABLE_LOCALES.includes(short) ? short : null;
+  const fromBrowser = localeForBrowserLanguage(browserLanguage);
   const locale = fromQuery || fromBrowser;
   return locale && locale !== 'en' ? locale : null;
 };

@@ -9,13 +9,15 @@ export const Localization = {
    */
   Frontend: {
     // Chat interface
+    // Use a catalog key here, never English text: t() is called with this
+    // value, so an English string never resolves to a translation.
     chatEmbedTitle: 'Frontend.chatEmbedTitle',
     chatOffline: 'Chat is offline',
-    chatDisabled: 'Chat is disabled',
+    chatDisabled: 'Frontend.chatDisabled',
     chatWillBeAvailable: 'Chat will be available when the stream is live',
 
     // Stream information and statistics
-    lastLiveAgo: 'Last live {{timeAgo}} ago',
+    lastLiveAgo: 'Frontend.lastLiveAgo',
     currentViewers: 'Current viewers',
     maxViewers: 'Max viewers this stream',
     noStreamActive: 'No stream is active',

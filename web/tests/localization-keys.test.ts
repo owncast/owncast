@@ -415,14 +415,27 @@ describe('Localization Keys Cross-Language Validation', () => {
     });
   });
 
+  describe('Rendered Frontend Keys', () => {
+    // These two used to hold English text instead of a catalog key, so t()
+    // looked up a key that does not exist and every language rendered English.
+    // They are rendered, so they have to be keys.
+    test.each([
+      ['chatDisabled', Localization.Frontend.chatDisabled, 'Frontend.chatDisabled'],
+      ['lastLiveAgo', Localization.Frontend.lastLiveAgo, 'Frontend.lastLiveAgo'],
+    ])('rendered key %s is a catalog key with an English entry', (_name, key, expected) => {
+      expect(key).toBe(expected);
+
+      const value = getNestedValue(englishTranslations, key);
+      expect(value).toBeDefined();
+      expect(typeof value).toBe('string');
+    });
+  });
+
   describe('Legacy Frontend Keys (Direct String Values)', () => {
-    // These are keys that still use the old direct translation string approach
+    // Unrendered leftovers of the old direct translation string approach. They
+    // cannot resolve at runtime either, but nothing calls t() with them, so
+    // they are inert until someone uses one.
     const legacyKeys = [
-      {
-        key: Localization.Frontend.chatDisabled,
-        name: 'chatDisabled',
-        expectedValue: 'Chat is disabled',
-      },
       {
         key: Localization.Frontend.currentViewers,
         name: 'currentViewers',
@@ -433,11 +446,6 @@ describe('Localization Keys Cross-Language Validation', () => {
         key: Localization.Frontend.healthyStream,
         name: 'healthyStream',
         expectedValue: 'Healthy Stream',
-      },
-      {
-        key: Localization.Frontend.lastLiveAgo,
-        name: 'lastLiveAgo',
-        expectedValue: 'Last live {{timeAgo}} ago',
       },
       {
         key: Localization.Frontend.maxViewers,
