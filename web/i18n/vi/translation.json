@@ -528,6 +528,7 @@
 		"componentError": "Lỗi: {{message}}",
 		"helloWorld": "Xin chào thế giới",
 		"lastLiveAgo": "Lần phát trực tiếp cuối cùng cách đây {{timeAgo}}",
+		"liveNow": "Phát trực tiếp được {{timeSince}}",
 		"offlineBasic": "Luồng này đang ngoại tuyến. Hãy quay lại sau!",
 		"offlineFediverseOnly": "Luồng này đang ngoại tuyến. <span class='follow-link'>Theo dõi</span> {{fediverseAccount}} trên Fediverse để xem lần tới {{streamer}} trực tiếp.",
 		"offlineNotifyAndFediverse": "Luồng này đang ngoại tuyến. Bạn có thể <span class='notify-link'>được thông báo</span> khi {{streamer}} trực tiếp hoặc <span class='follow-link'>theo dõi</span> {{fediverseAccount}} trên Fediverse.",

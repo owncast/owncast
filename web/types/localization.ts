@@ -15,7 +15,8 @@ export const Localization = {
     chatWillBeAvailable: 'Chat will be available when the stream is live',
 
     // Stream information and statistics
-    lastLiveAgo: 'Last live {{timeAgo}} ago',
+    lastLiveAgo: 'Frontend.lastLiveAgo',
+    liveNow: 'Frontend.liveNow',
     currentViewers: 'Current viewers',
     maxViewers: 'Max viewers this stream',
     noStreamActive: 'No stream is active',
