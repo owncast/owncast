@@ -162,11 +162,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## Support
 
 <ul style="font-size:21px; color:black; ">
-<li>Browser testing via <a
-href="https://www.lambdatest.com/" target="_blank"><img
-src="https://www.lambdatest.com/support/img/logo.svg"
-style="vertical-align: middle;margin-left:5px" width="147" height="26"
-/></a></li>
 <li>Project chat provided by
 <a href="https://rocket.chat" target="_blank">
 <img src="https://owncast.online/images/sponsors/rocketchat.png" width="147" height="26" style="vertical-align: middle;margin-left:5px">
