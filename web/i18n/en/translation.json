@@ -486,6 +486,14 @@
 			"featuredTabShort": "Featured",
 			"followersTab": "Followers"
 		},
+		"FollowAndNotify": {
+			"closeReminder": "Close",
+			"follow": "Follow",
+			"followServer": "Follow Server",
+			"followThisStream": "Follow this stream",
+			"notCurrentlyLive": "This stream is not currently live.",
+			"notifyWhenLive": "Notify when live"
+		},
 		"FollowModal": {
 			"description": "By following this stream you'll get notified on the Fediverse when it goes live. Now is a great time to",
 			"followButton": "Follow",

@@ -4,6 +4,8 @@ import classNames from 'classnames';
 import dynamic from 'next/dynamic';
 import styles from './ActionButtonMenu.module.scss';
 import { ExternalAction, ExternalActionUtils } from '../../../interfaces/external-action';
+import { useTranslation } from 'next-export-i18n';
+import { Localization } from '../../../types/localization';
 
 // Lazy loaded components
 
@@ -41,6 +43,7 @@ export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
   showNotifyItem,
   className,
 }) => {
+  const { t } = useTranslation();
   const onClick = a => {
     if (a.key === NOTIFY_KEY) {
       notifyItemSelected();
@@ -72,7 +75,8 @@ export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
       key: FOLLOW_KEY,
       label: (
         <span className={styles.item}>
-          <HeartOutlined className={styles.icon} /> Follow this stream
+          <HeartOutlined className={styles.icon} />{' '}
+          {t(Localization.Frontend.FollowAndNotify.followThisStream)}
         </span>
       ),
     });
@@ -84,7 +88,7 @@ export const ActionButtonMenu: FC<ActionButtonMenuProps> = ({
       label: (
         <span className={styles.item}>
           <BellOutlined className={styles.icon} />
-          Notify when live
+          {t(Localization.Frontend.FollowAndNotify.notifyWhenLive)}
         </span>
       ),
     });

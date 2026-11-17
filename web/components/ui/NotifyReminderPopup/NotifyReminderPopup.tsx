@@ -4,6 +4,7 @@ import styles from './NotifyReminderPopup.module.scss';
 import { Popover } from '../Popover/Popover';
 import { Translation } from '../Translation/Translation';
 import { Localization } from '../../../types/localization';
+import { useTranslation } from 'next-export-i18n';
 
 // Lazy loaded components
 
@@ -24,6 +25,7 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
   notificationClicked,
   notificationClosed,
 }) => {
+  const { t } = useTranslation();
   const [openPopup, setOpenPopup] = useState(open);
   const [mounted, setMounted] = useState(false);
 
@@ -59,7 +61,7 @@ export const NotifyReminderPopup: FC<NotifyReminderPopupProps> = ({
     <div onClick={popupClicked} onKeyDown={popupClicked} role="menuitem" tabIndex={0}>
       <button
         type="button"
-        aria-label="Follow"
+        aria-label={t(Localization.Frontend.FollowAndNotify.closeReminder)}
         className={styles.closebutton}
         onClick={popupClosed}
       >

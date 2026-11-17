@@ -151,6 +151,16 @@ export const Localization = {
       chatButton: 'Frontend.Content.chatButton',
     },
 
+    // Follow and notify buttons, offline embed
+    FollowAndNotify: {
+      follow: 'Frontend.FollowAndNotify.follow',
+      followThisStream: 'Frontend.FollowAndNotify.followThisStream',
+      followServer: 'Frontend.FollowAndNotify.followServer',
+      notifyWhenLive: 'Frontend.FollowAndNotify.notifyWhenLive',
+      notCurrentlyLive: 'Frontend.FollowAndNotify.notCurrentlyLive',
+      closeReminder: 'Frontend.FollowAndNotify.closeReminder',
+    },
+
     NotifyButton: {
       label: 'Frontend.NotifyButton.label',
     },
