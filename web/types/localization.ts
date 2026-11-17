@@ -142,6 +142,15 @@ export const Localization = {
     },
 
     // Notify button and the reminder popup shown next to it
+    // Tabs under the player and the mobile chat button
+    Content: {
+      aboutTab: 'Frontend.Content.aboutTab',
+      followersTab: 'Frontend.Content.followersTab',
+      featuredStreamsTab: 'Frontend.Content.featuredStreamsTab',
+      featuredTabShort: 'Frontend.Content.featuredTabShort',
+      chatButton: 'Frontend.Content.chatButton',
+    },
+
     NotifyButton: {
       label: 'Frontend.NotifyButton.label',
     },

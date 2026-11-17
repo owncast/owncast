@@ -479,6 +479,13 @@
 			"userJoined": "joined the chat.",
 			"userLeft": "left the chat."
 		},
+		"Content": {
+			"aboutTab": "About",
+			"chatButton": "Chat",
+			"featuredStreamsTab": "Featured Streams",
+			"featuredTabShort": "Featured",
+			"followersTab": "Followers"
+		},
 		"FollowModal": {
 			"description": "By following this stream you'll get notified on the Fediverse when it goes live. Now is a great time to",
 			"followButton": "Follow",
