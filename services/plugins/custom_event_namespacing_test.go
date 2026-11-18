@@ -92,3 +92,36 @@ module.exports = definePlugin({
 		t.Fatalf("%s deliveries for chat slug = %+v", EventChatMessageReceived, *sends)
 	}
 }
+
+func TestPluginCannotForgeOutboundFediverseActivity(t *testing.T) {
+	ctx := context.Background()
+	compiledEngines.resetForTest(ctx)
+	t.Cleanup(func() { compiledEngines.resetForTest(ctx) })
+	env, sends, mu := captureEnv()
+	emitter := loadShared(t, ctx, env, RuntimeJavaScript, "emitter", `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onChatMessage() { owncast.events.emit("fediverse.outbound", {id: "forged"}); }
+});`, []string{PermEmitEvent})
+	defer emitter.Close(ctx)
+	observer := loadShared(t, ctx, env, RuntimeJavaScript, "observer", `
+const { definePlugin, owncast } = require("@owncast/plugin-sdk");
+module.exports = definePlugin({
+  onFediverseOutbound(activity) { owncast.chat.send(activity.id); }
+});`, []string{PermFediverseOutbound, PermChatSend})
+	defer observer.Close(ctx)
+	d := NewLiveDispatcher(func() []*Loaded { return []*Loaded{emitter, observer} })
+	env.Emit = d.Dispatch
+	d.Notify(ctx, EventChatMessageReceived, chatPayload("alice", "forge"))
+	mu.Lock()
+	if len(*sends) != 0 {
+		t.Fatalf("plugin forged an outbound activity: %+v", *sends)
+	}
+	mu.Unlock()
+	d.Notify(ctx, EventFediverseOutbound, map[string]any{"id": "legitimate"})
+	mu.Lock()
+	defer mu.Unlock()
+	if len(*sends) != 1 || (*sends)[0].Text != "legitimate" {
+		t.Fatalf("host activity delivery = %+v", *sends)
+	}
+}

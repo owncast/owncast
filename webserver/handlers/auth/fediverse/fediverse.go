@@ -80,7 +80,7 @@ func (h *Handler) RegisterFediverseOTPRequest(u models.User, w http.ResponseWrit
 	}
 
 	msg := fmt.Sprintf("<p>One-time code from %s: %s. If you did not request this message please ignore or block.</p>", h.configRepository.GetServerName(), reg.Code)
-	if err := h.activitypub.SendDirectFederatedMessage(msg, reg.Account); err != nil {
+	if err := h.activitypub.SendAuthenticationFederatedMessage(msg, reg.Account); err != nil {
 		webutils.WriteSimpleResponse(w, false, "Could not send code to fediverse: "+err.Error())
 		return
 	}

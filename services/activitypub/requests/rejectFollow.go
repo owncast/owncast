@@ -14,17 +14,6 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-// SendFollowReject queues a Reject for a previously received Follow. Owncast
-// uses this to revoke a directory follower so the remote server drops its
-// listing instead of leaving it offline forever.
-func SendFollowReject(wp *workerpool.Service, inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder) error {
-	delivery, err := MakeFollowRejectDelivery(inbox, originalFollowActivity, fromLocalAccountName, builder)
-	if err != nil {
-		return err
-	}
-	return wp.Enqueue(delivery)
-}
-
 // MakeFollowRejectDelivery builds the durable delivery for a Follow Reject.
 func MakeFollowRejectDelivery(inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder) (workerpool.Delivery, error) {
 	if err := validateRemoteInbox(inbox); err != nil {

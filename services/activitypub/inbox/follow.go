@@ -11,7 +11,9 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"
+	activityevents "github.com/owncast/owncast/services/activitypub/events"
 	"github.com/owncast/owncast/services/activitypub/requests"
+	"github.com/owncast/owncast/services/activitypub/workerpool"
 	"github.com/owncast/owncast/services/chat/events"
 )
 
@@ -57,19 +59,23 @@ func (s *Service) handleFollowInboxRequest(c context.Context, activity vocab.Act
 }
 
 func (s *Service) createOrHandleFollow(c context.Context, activity vocab.ActivityStreamsFollow, follow *apmodels.ActivityPubActor, followRequest apmodels.ActivityPubActor, approved bool, actorIRI, localAccountName string) (bool, error) {
-	// The duplicate check and insert must be one critical section. Some
-	// ActivityPub servers deliver the same Follow concurrently.
+	// The duplicate check and insert must be one critical section. Publish
+	// after unlocking so event listeners can inspect the committed state.
 	ds := s.persistence.Datastore()
 	ds.DbLock.Lock()
-	defer ds.DbLock.Unlock()
+	var published []byte
+	defer func() {
+		ds.DbLock.Unlock()
+		activityevents.PublishOutbound(c, s.events, published)
+	}()
 
-	if handled, err := s.respondToExistingFollow(activity, follow, actorIRI, localAccountName); handled {
+	handled, payload, err := s.respondToExistingFollow(activity, follow, actorIRI, localAccountName)
+	if handled {
+		published = payload
 		return true, err
 	}
-	if err := s.addFollow(c, activity, followRequest, approved, localAccountName); err != nil {
-		return false, err
-	}
-	return false, nil
+	published, err = s.addFollow(c, activity, followRequest, approved, localAccountName)
+	return false, err
 }
 
 func (s *Service) handleNewFollow(activity vocab.ActivityStreamsFollow, followRequest apmodels.ActivityPubActor, approved bool, actorIRI string) error {
@@ -113,60 +119,60 @@ func (s *Service) handleNewFollow(activity vocab.ActivityStreamsFollow, followRe
 	return nil
 }
 
-func (s *Service) respondToExistingFollow(activity vocab.ActivityStreamsFollow, follow *apmodels.ActivityPubActor, actorIRI, localAccountName string) (bool, error) {
+func (s *Service) respondToExistingFollow(activity vocab.ActivityStreamsFollow, follow *apmodels.ActivityPubActor, actorIRI, localAccountName string) (bool, []byte, error) {
 	existing, err := s.followers.GetByIRI(actorIRI)
 	if errors.Is(err, sql.ErrNoRows) {
-		return false, nil
+		return false, nil, nil
 	}
 	if err != nil {
-		return true, err
+		return true, nil, err
 	}
-	if existing.DisabledAt != nil {
-		return true, requests.SendFollowReject(s.workerpool, follow.Inbox, activity, localAccountName, s.builder)
+	var delivery workerpool.Delivery
+	switch {
+	case existing.DisabledAt != nil:
+		delivery, err = requests.MakeFollowRejectDelivery(follow.Inbox, activity, localAccountName, s.builder)
+	case existing.ApprovedAt != nil:
+		delivery, err = requests.MakeFollowAcceptDelivery(follow.Inbox, activity, localAccountName, s.builder, s.configRepository, false)
+	default:
+		return true, nil, nil
 	}
-	if existing.ApprovedAt != nil {
-		return true, requests.SendFollowAccept(s.workerpool, follow.Inbox, activity, localAccountName, s.builder, s.configRepository, false)
+	if err != nil {
+		return true, nil, err
 	}
-	return true, nil
+	if err := s.workerpool.Enqueue(delivery); err != nil {
+		return true, nil, err
+	}
+	return true, delivery.Payload, nil
 }
 
-func (s *Service) addFollow(c context.Context, activity vocab.ActivityStreamsFollow, follow apmodels.ActivityPubActor, approved bool, localAccountName string) error {
-	ds := s.persistence.Datastore()
-	if !approved {
-		tx, err := ds.DB.BeginTx(c, nil)
+func (s *Service) addFollow(c context.Context, activity vocab.ActivityStreamsFollow, follow apmodels.ActivityPubActor, approved bool, localAccountName string) ([]byte, error) {
+	var delivery workerpool.Delivery
+	if approved {
+		var err error
+		delivery, err = requests.MakeFollowAcceptDelivery(follow.Inbox, activity, localAccountName, s.builder, s.configRepository, false)
 		if err != nil {
-			return errors.Wrap(err, "beginning follow transaction")
+			return nil, err
 		}
-		defer func() { _ = tx.Rollback() }()
-		if err := s.followers.AddTx(c, tx, follow, false); err != nil {
-			return err
-		}
-		if err := tx.Commit(); err != nil {
-			return errors.Wrap(err, "committing follow transaction")
-		}
-		return nil
 	}
 
-	delivery, err := requests.MakeFollowAcceptDelivery(follow.Inbox, activity, localAccountName, s.builder, s.configRepository, false)
-	if err != nil {
-		return err
-	}
-
+	ds := s.persistence.Datastore()
 	tx, err := ds.DB.BeginTx(c, nil)
 	if err != nil {
-		return errors.Wrap(err, "beginning follow transaction")
+		return nil, errors.Wrap(err, "beginning follow transaction")
 	}
 	defer func() { _ = tx.Rollback() }()
-	if err := s.followers.AddTx(c, tx, follow, true); err != nil {
-		return err
+	if err := s.followers.AddTx(c, tx, follow, approved); err != nil {
+		return nil, err
 	}
-	if err := s.workerpool.EnqueueTx(c, tx, delivery); err != nil {
-		return err
+	if approved {
+		if err := s.workerpool.EnqueueTx(c, tx, delivery); err != nil {
+			return nil, err
+		}
 	}
 	if err := tx.Commit(); err != nil {
-		return errors.Wrap(err, "committing follow transaction")
+		return nil, errors.Wrap(err, "committing follow transaction")
 	}
-	return nil
+	return delivery.Payload, nil
 }
 
 func (s *Service) handleUnfollowRequest(c context.Context, activity vocab.ActivityStreamsUndo) error {

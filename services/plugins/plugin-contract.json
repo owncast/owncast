@@ -7,6 +7,7 @@
     "PermChatSend": "chat.send",
     "PermEmitEvent": "events.emit",
     "PermFediverseInbound": "fediverse.inbound",
+    "PermFediverseOutbound": "fediverse.outbound",
     "PermFediversePost": "fediverse.post",
     "PermHttpSSE": "http.sse",
     "PermHttpServe": "http.serve",
