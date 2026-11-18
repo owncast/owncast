@@ -81,6 +81,7 @@ func New(deps Deps) *Service {
 		Builder:          deps.Builder,
 		Resolver:         deps.Resolver,
 		Config:           deps.Config,
+		Events:           deps.Events,
 	})
 
 	inboxSvc := inbox.New(inbox.Deps{
