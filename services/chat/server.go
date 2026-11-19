@@ -91,6 +91,7 @@ type Service struct {
 	rejectionTimeout         time.Duration
 	seq                      uint
 	maxSocketConnectionLimit uint64
+	upgrader                 websocket.Upgrader
 
 	mu sync.RWMutex
 }
@@ -109,6 +110,13 @@ func newServer(webhooksSvc *webhooks.Service) *Service {
 		geoipClient:              geoip.NewClient(),
 		webhooks:                 webhooksSvc,
 		userPartedTimers:         map[string]*pendingUserPart{},
+		upgrader: websocket.Upgrader{
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
 	}
 
 	return server
@@ -320,11 +328,6 @@ func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// To allow dev web environments to connect.
-	upgrader.CheckOrigin = func(r *http.Request) bool {
-		return true
-	}
-
 	// Read the access token before upgrading so we can set the chat identity
 	// cookie on the handshake response — once the connection is upgraded the
 	// underlying ResponseWriter is hijacked and can no longer set headers.
@@ -343,7 +346,7 @@ func (s *Service) HandleClientConnection(w http.ResponseWriter, r *http.Request)
 		accessToken = t
 	}
 
-	conn, err := upgrader.Upgrade(w, r, responseHeader)
+	conn, err := s.upgrader.Upgrade(w, r, responseHeader)
 	if err != nil {
 		log.Debugln(err)
 		return

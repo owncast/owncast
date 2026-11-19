@@ -3,7 +3,6 @@ package chat
 import (
 	"bytes"
 	"encoding/json"
-	"net/http"
 	"sync"
 	"time"
 
@@ -66,17 +65,6 @@ const (
 	// This duration can be configured at service construction via chat.Deps.RejectionTimeout.
 	defaultChatRejectionTimeout = 10 * time.Second
 )
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-
-	// Override default origin check to allow all clients, even those that
-	// do not match our server.
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
 
 var (
 	newline = []byte{'\n'}
