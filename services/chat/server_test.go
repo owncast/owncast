@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -315,6 +316,11 @@ func TestConcurrentHandleClientConnection_UpgraderCheckOriginRace(t *testing.T) 
 	s.configRepository = fakeChatDisabledConfig{}
 	s.authRepository = fakeAuthRepo{}
 
+	server := httptest.NewServer(http.HandlerFunc(s.HandleClientConnection))
+	defer server.Close()
+
+	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
+
 	const workers = 10
 	var wg sync.WaitGroup
 	wg.Add(workers)
@@ -322,10 +328,18 @@ func TestConcurrentHandleClientConnection_UpgraderCheckOriginRace(t *testing.T) 
 	for i := 0; i < workers; i++ {
 		go func() {
 			defer wg.Done()
-			req := httptest.NewRequest(http.MethodGet, "/ws", nil)
-			req.RemoteAddr = "127.0.0.1:12345"
-			w := httptest.NewRecorder()
-			s.HandleClientConnection(w, req)
+			headers := http.Header{
+				"Origin": []string{"http://example.com"},
+			}
+			conn, resp, err := websocket.DefaultDialer.Dial(wsURL, headers)
+			if resp != nil {
+				defer resp.Body.Close()
+			}
+			if err != nil {
+				t.Errorf("handshake failed: %v", err)
+				return
+			}
+			defer conn.Close()
 		}()
 	}
 
