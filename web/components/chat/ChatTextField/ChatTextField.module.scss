@@ -37,7 +37,7 @@
     border-color: red;
   }
 
-  div[role='textbox'] {
+  div[role='combobox'] {
     font-size: 13px;
     font-weight: 400;
     padding: 0.3rem;
@@ -97,4 +97,36 @@
   em-emoji-picker {
     width: 100%;
   }
+}
+
+.mentionSuggestions {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 100%;
+  z-index: 101;
+  margin: 0 0 4px;
+  padding: 4px;
+  list-style: none;
+  border: 1px solid var(--theme-color-components-form-field-border);
+  border-radius: var(--theme-rounded-corners);
+  background-color: var(--theme-color-components-chat-background);
+  color: var(--theme-color-components-chat-text);
+
+  [role='option'] {
+    padding: 8px;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+
+    &:hover,
+    &[aria-selected='true'] {
+      color: var(--theme-color-components-form-field-text);
+      background-color: var(--theme-color-palette-3);
+    }
+  }
+}
+
+.root [data-chat-mention] {
+  color: var(--theme-color-palette-4);
+  background-color: var(--color-owncast-palette-7);
+  border-radius: var(--chat-text-highlight-border-radius);
 }

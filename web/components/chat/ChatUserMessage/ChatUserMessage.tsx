@@ -109,7 +109,16 @@ export const ChatUserMessage: FC<ChatUserMessageProps> = ({
         <Tooltip mouseEnterDelay={1}>
           <Interweave
             className={styles.message}
-            content={body}
+            content={
+              sentBySelf
+                ? body
+                : body.replace(/<span data-chat-mention="[^"]*">([^<]*)<\/span>/g, '$1')
+            }
+            transform={node =>
+              node.tagName === 'SPAN' && node.hasAttribute('data-chat-mention') ? (
+                <mark>{node.textContent}</mark>
+              ) : undefined
+            }
             matchers={[
               new UrlMatcher('url', { customTLDs: ['online'] }),
               new ChatMessageHighlightMatcher('highlight', { highlightString }),

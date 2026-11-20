@@ -172,3 +172,20 @@ export const WithStringHighlighted = {
     highlightString: 'message',
   },
 };
+
+export const OutgoingMention = {
+  render: Template,
+  args: {
+    message: {
+      ...standardMessage,
+      body: '<p>Thanks for joining, <span data-chat-mention="alice">@Alice &amp; Co</span>!</p>',
+    },
+    sentBySelf: true,
+    highlightString: '',
+    showModeratorMenu: false,
+    sameUserAsLast: false,
+    isAuthorModerator: false,
+    isAuthorAuthenticated: false,
+    isAuthorBot: false,
+  },
+};

@@ -85,3 +85,14 @@ export const DisabledChat = {
     },
   },
 };
+
+export const MentionParticipants = {
+  render: Template,
+  args: {
+    enabled: true,
+    mentionCandidates: [
+      { id: 'alice', displayName: 'Alice' },
+      { id: 'elodie', displayName: 'Élodie & Co' },
+    ],
+  },
+};

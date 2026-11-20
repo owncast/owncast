@@ -135,12 +135,16 @@ func (s *Service) userColorChanged(eventData chatClientEvent) {
 }
 
 func (s *Service) userMessageSent(eventData chatClientEvent) {
-	var event events.UserMessageEvent
-	if err := json.Unmarshal(eventData.data, &event); err != nil {
+	var request struct {
+		events.UserMessageEvent
+		Mentions []events.ChatMention `json:"mentions"`
+	}
+	if err := json.Unmarshal(eventData.data, &request); err != nil {
 		log.Errorln("error unmarshalling to UserMessageEvent", err)
 		return
 	}
 
+	event := request.UserMessageEvent
 	event.SetDefaults()
 	event.ClientID = eventData.client.Id
 
@@ -162,6 +166,10 @@ func (s *Service) userMessageSent(eventData chatClientEvent) {
 	// Guard against nil users
 	if event.User == nil {
 		return
+	}
+
+	if len(request.Mentions) > 0 {
+		event.Body = events.RenderChatMentions(event.RawBody, event.Body, request.Mentions, s.userRepository.GetUserByID)
 	}
 
 	// Run inbound-message filters (plugin filterChatMessage handlers) before

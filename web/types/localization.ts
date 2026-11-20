@@ -120,6 +120,7 @@ export const Localization = {
 
     // Chat message components
     Chat: {
+      mentionSuggestions: 'Frontend.Chat.mentionSuggestions',
       userJoined: 'Frontend.Chat.userJoined',
       userLeft: 'Frontend.Chat.userLeft',
       nameChangeText: 'Frontend.Chat.nameChangeText',
