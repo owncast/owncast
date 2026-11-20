@@ -62,7 +62,10 @@ func RenderChatMentions(raw, fallback string, mentions []ChatMention, getUser fu
 	}
 	markdown.WriteString(raw[lastEnd:])
 
-	rendered := RenderAndSanitize(markdown.String())
+	return replaceChatMentionTokens(RenderAndSanitize(markdown.String()), fallback, prefix, replacements)
+}
+
+func replaceChatMentionTokens(rendered, fallback, prefix string, replacements []string) string {
 	replace := strings.NewReplacer(replacements...)
 	tokenizer := htmlparser.NewTokenizer(strings.NewReader(rendered))
 	var output bytes.Buffer
