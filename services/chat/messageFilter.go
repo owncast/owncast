@@ -2,13 +2,11 @@ package chat
 
 import (
 	"html"
-	"regexp"
 	"strings"
 	"unicode"
 
 	goaway "github.com/TwiN/go-away"
 
-	"github.com/owncast/owncast/services/chat/events"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -19,12 +17,6 @@ type ChatMessageFilter struct{}
 func NewMessageFilter() *ChatMessageFilter {
 	return &ChatMessageFilter{}
 }
-
-var (
-	// Comments are removed by the renderer before the message is shown, so
-	// the filter must remove them too.
-	htmlCommentPattern = regexp.MustCompile(`(?s)<!--.*?-->`)
-)
 
 // dropInvisible removes format characters that are invisible once rendered
 // (zero-width spaces, soft hyphens, word joiners, BOM, ...) and maps a
@@ -42,31 +34,23 @@ func dropInvisible(s string) string {
 	}, s)
 }
 
-// normalizeMessage renders a message the way a viewer will read it: entities
-// resolved, tags and comments gone, invisible characters removed. The filter
-// runs before the message is rendered and sanitized, so without this step a
-// slur spelled with an entity, split by a tag or hidden behind a zero-width
-// space still reaches the chat.
-func normalizeMessage(message string) string {
-	// Render the message the way a viewer reads it, so markdown syntax that
-	// produces text (links, emphasis, images, ...) is reflected in the
-	// filtered string instead of the raw markup.
-	message = events.RenderMarkdown(message)
-	message = html.UnescapeString(message)
-	message = htmlCommentPattern.ReplaceAllString(message, "")
-	// bluemonday strips tags (including malformed ones) more reliably than a
-	// regex, matching what the renderer's sanitizer leaves as text.
-	message = utils.StripHTML(message)
-	message = dropInvisible(message)
-	return strings.Join(strings.Fields(message), " ")
+// AllowRaw checks the raw message payload for profanity.
+// This is called early in readPump before the message is rendered.
+func (*ChatMessageFilter) AllowRaw(message string) bool {
+	return !goaway.IsProfane(message)
 }
 
-// Allow will test if this message should be allowed to be sent.
-func (*ChatMessageFilter) Allow(message string) bool {
-	// The raw message is checked as well: normalization strips markup, and a
-	// message that was profane before that strip still is.
-	if goaway.IsProfane(message) {
-		return false
-	}
-	return !goaway.IsProfane(normalizeMessage(message))
+// AllowRendered checks the rendered message body (HTML from SetDefaults)
+// for profanity. It strips tags, unescapes entities, and removes invisible
+// characters to match what a viewer reads.
+func (*ChatMessageFilter) AllowRendered(renderedBody string) bool {
+	// Strip all HTML tags (bluemonday with no allowed elements).
+	text := utils.StripHTML(renderedBody)
+	// Unescape HTML entities.
+	text = html.UnescapeString(text)
+	// Remove invisible format characters and normalize spaces.
+	text = dropInvisible(text)
+	// Collapse whitespace.
+	text = strings.Join(strings.Fields(text), " ")
+	return !goaway.IsProfane(text)
 }
