@@ -144,6 +144,16 @@ func (s *Service) userMessageSent(eventData chatClientEvent) {
 	event.SetDefaults()
 	event.ClientID = eventData.client.Id
 
+	// Check the rendered message body for profanity (entities, tags, invisible chars)
+	// after SetDefaults has rendered and sanitized the message.
+	if s.configRepository.GetChatSlurFilterEnabled() {
+		filter := NewMessageFilter()
+		if !filter.AllowRendered(event.Body) {
+			s.sendActionToClient(eventData.client, "Sorry, that message contained language that is not allowed in this chat.")
+			return
+		}
+	}
+
 	// Ignore empty messages
 	if event.Empty() {
 		return
