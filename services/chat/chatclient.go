@@ -141,7 +141,7 @@ func (c *Client) readPump() {
 
 		// Check if this message passes the optional language filter
 
-		if c.server.configRepository.GetChatSlurFilterEnabled() && !c.messageFilter.Allow(string(message)) {
+		if c.server.configRepository.GetChatSlurFilterEnabled() && !c.messageFilter.AllowRaw(string(message)) {
 			c.sendAction("Sorry, that message contained language that is not allowed in this chat.")
 			continue
 		}
