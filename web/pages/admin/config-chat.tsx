@@ -1,5 +1,6 @@
 import { Col, Row, Typography } from 'antd';
 import { ReactElement, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'next-export-i18n';
 import { TEXTFIELD_TYPE_TEXTAREA } from '../../components/admin/TextField';
 import { TextFieldWithSubmit } from '../../components/admin/TextFieldWithSubmit';
 import { ToggleSwitch } from '../../components/admin/ToggleSwitch';
@@ -22,16 +23,16 @@ import {
   FIELD_PROPS_CHAT_REQUIRE_AUTHENTICATION,
   postConfigUpdateToAPI,
   RESET_TIMEOUT,
-  TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES,
-  TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES,
   TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE,
   FIELD_PROPS_ENABLE_SPAM_PROTECTION,
 } from '../../utils/config-constants';
 import { ServerStatusContext } from '../../utils/server-status-context';
 
 import { AdminLayout } from '../../components/layouts/AdminLayout';
+import { Localization } from '../../types/localization';
 
 export default function ConfigChat() {
+  const { t } = useTranslation();
   const { Title } = Typography;
   const [formDataValues, setFormDataValues] = useState(null);
   const [forbiddenUsernameSaveState, setForbiddenUsernameSaveState] = useState<StatusState>(null);
@@ -159,9 +160,12 @@ export default function ConfigChat() {
 
   function getSuggestedUsernamesLimitWarning(length: number): StatusState | null {
     if (length === 0)
-      return createInputStatus('success', TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES.no_entries);
+      return createInputStatus('success', t(Localization.Admin.ConfigChat.defaultUsernamesNone));
     if (length > 0 && length < 10)
-      return createInputStatus('warning', TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES.min_not_reached);
+      return createInputStatus(
+        'warning',
+        t(Localization.Admin.ConfigChat.defaultUsernamesMinNotReached),
+      );
     return null;
   }
 
@@ -185,13 +189,15 @@ export default function ConfigChat() {
 
   return (
     <div className="config-server-details-form">
-      <Title>Chat Settings</Title>
+      <Title>{t(Localization.Admin.ConfigChat.title)}</Title>
       <Row gutter={[45, 16]}>
         <Col md={24} lg={12}>
           <div className="form-module">
             <ToggleSwitch
               fieldName="chatDisabled"
               {...FIELD_PROPS_DISABLE_CHAT}
+              label={t(Localization.Admin.ConfigChat.chatLabel)}
+              tip={t(Localization.Admin.ConfigChat.chatTip)}
               checked={!formDataValues.chatDisabled}
               reversed
               onChange={handleChatDisableChange}
@@ -199,12 +205,16 @@ export default function ConfigChat() {
             <ToggleSwitch
               fieldName="chatJoinMessagesEnabled"
               {...FIELD_PROPS_CHAT_JOIN_MESSAGES_ENABLED}
+              label={t(Localization.Admin.ConfigChat.joinMessagesLabel)}
+              tip={t(Localization.Admin.ConfigChat.joinMessagesTip)}
               checked={formDataValues.chatJoinMessagesEnabled}
               onChange={handleChatJoinMessagesEnabledChange}
             />
             <TextFieldWithSubmit
               fieldName="welcomeMessage"
               {...TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE}
+              label={t(Localization.Admin.ConfigChat.welcomeMessageLabel)}
+              tip={t(Localization.Admin.ConfigChat.welcomeMessageTip)}
               type={TEXTFIELD_TYPE_TEXTAREA}
               value={formDataValues.welcomeMessage}
               initialValue={welcomeMessage}
@@ -213,9 +223,9 @@ export default function ConfigChat() {
             <br />
             <br />
             <EditValueArray
-              title={TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES.label}
-              placeholder={TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES.placeholder}
-              description={TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES.tip}
+              title={t(Localization.Admin.ConfigChat.forbiddenUsernamesTitle)}
+              placeholder={t(Localization.Admin.ConfigChat.usernamePlaceholder)}
+              description={t(Localization.Admin.ConfigChat.forbiddenUsernamesTip)}
               values={formDataValues.forbiddenUsernames}
               handleDeleteIndex={handleDeleteForbiddenUsernameIndex}
               handleCreateString={handleCreateForbiddenUsername}
@@ -224,9 +234,9 @@ export default function ConfigChat() {
             <br />
             <br />
             <EditValueArray
-              title={TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES.label}
-              placeholder={TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES.placeholder}
-              description={TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES.tip}
+              title={t(Localization.Admin.ConfigChat.defaultUsernamesTitle)}
+              placeholder={t(Localization.Admin.ConfigChat.usernamePlaceholder)}
+              description={t(Localization.Admin.ConfigChat.defaultUsernamesTip)}
               values={formDataValues.suggestedUsernames}
               handleDeleteIndex={handleDeleteSuggestedUsernameIndex}
               handleCreateString={handleCreateSuggestedUsername}
@@ -242,24 +252,32 @@ export default function ConfigChat() {
             <ToggleSwitch
               fieldName="chatSpamProtectionEnabled"
               {...FIELD_PROPS_ENABLE_SPAM_PROTECTION}
+              label={t(Localization.Admin.ConfigChat.spamProtectionLabel)}
+              tip={t(Localization.Admin.ConfigChat.spamProtectionTip)}
               checked={formDataValues.chatSpamProtectionEnabled}
               onChange={handleChatSpamProtectionChange}
             />
             <ToggleSwitch
               fieldName="chatEstablishedUserMode"
               {...CHAT_ESTABLISHED_USER_MODE}
+              label={t(Localization.Admin.ConfigChat.establishedUsersLabel)}
+              tip={t(Localization.Admin.ConfigChat.establishedUsersTip)}
               checked={formDataValues.chatEstablishedUserMode}
               onChange={handleEstablishedUserModeChange}
             />
             <ToggleSwitch
               fieldName="chatSlurFilterEnabled"
               {...FIELD_PROPS_ENABLE_CHAT_SLUR_FILTER}
+              label={t(Localization.Admin.ConfigChat.slurFilterLabel)}
+              tip={t(Localization.Admin.ConfigChat.slurFilterTip)}
               checked={formDataValues.chatSlurFilterEnabled}
               onChange={handleChatSlurFilterChange}
             />
             <ToggleSwitch
               fieldName="chatRequireAuthentication"
               {...FIELD_PROPS_CHAT_REQUIRE_AUTHENTICATION}
+              label={t(Localization.Admin.ConfigChat.requireAuthenticationLabel)}
+              tip={t(Localization.Admin.ConfigChat.requireAuthenticationTip)}
               checked={formDataValues.chatRequireAuthentication}
               onChange={handleChatRequireAuthenticationChange}
             />
