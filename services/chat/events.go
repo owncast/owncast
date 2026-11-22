@@ -149,7 +149,20 @@ func (s *Service) userMessageSent(eventData chatClientEvent) {
 	if s.configRepository.GetChatSlurFilterEnabled() {
 		filter := NewMessageFilter()
 		if !filter.AllowRendered(event.Body) {
-			s.sendActionToClient(eventData.client, "Sorry, that message contained language that is not allowed in this chat.")
+			// Non-blocking delivery so a full client buffer cannot stall the
+			// shared Run loop or hold the read lock.
+			clientMessage := events.ActionEvent{
+				MessageEvent: events.MessageEvent{
+					Body: "Sorry, that message contained language that is not allowed in this chat.",
+				},
+			}
+			clientMessage.SetDefaults()
+			clientMessage.RenderBody()
+			if data, err := json.Marshal(clientMessage.GetBroadcastPayload()); err == nil {
+				if !eventData.client.trySend(data) {
+					go eventData.client.close()
+				}
+			}
 			return
 		}
 	}
