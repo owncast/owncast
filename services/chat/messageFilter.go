@@ -41,32 +41,54 @@ func (*ChatMessageFilter) AllowRaw(message string) bool {
 	return !goaway.IsProfane(message)
 }
 
-// AllowRendered checks the rendered message body (HTML from SetDefaults)
-// for profanity. It strips tags, unescapes entities, and removes invisible
-// characters to match what a viewer reads.
-// altTextPattern captures the value of an alt attribute so the text a viewer
-// can see when an image fails to load is also checked for profanity.
+// altTextPattern captures the value of an alt attribute on an image. It is used
+// to build the fallback text a viewer sees when an image fails to load.
 var altTextPattern = regexp.MustCompile(`(?i)[[:space:]]alt[[:space:]]*=[[:space:]]*(?:"([^"]*)"|'([^']*)')`)
 
+// imgTagPattern matches a whole image tag so it can be replaced in place by its
+// alt text.
+var imgTagPattern = regexp.MustCompile(`(?i)<img\b[^>]*>`)
+
+// normalizeFilterText unescapes entities, drops invisible characters and
+// collapses whitespace so the checked text matches what a viewer reads.
+func normalizeFilterText(s string) string {
+	s = html.UnescapeString(s)
+	s = dropInvisible(s)
+	return strings.Join(strings.Fields(s), " ")
+}
+
+// AllowRendered checks the rendered message body (HTML from SetDefaults) for
+// profanity. Two representations are checked independently:
+//
+//   - the image-free body, which is what a viewer reads when images load;
+//   - a positional fallback where each image is replaced by its alt text at
+//     that image's position, which is what a viewer reads when images fail.
+//
+// Checking each representation on its own matters. Appending every alt value
+// to the end of the stripped body can join a profane body word with a benign
+// alt word into an allowlisted token (e.g. "cock" + "tail" = "cocktail"), and
+// it can reorder text so profanity split around an image is no longer seen
+// (e.g. "f" + "uc" + "k" becomes "fk uc"). Neither representation may be
+// derived from the other, or the filter can be bypassed.
 func (*ChatMessageFilter) AllowRendered(renderedBody string) bool {
-	// Collect alt text from images before stripping tags: a viewer whose image
-	// fails to load can see the alt text, so it must be part of the checked
-	// string.
-	extra := ""
-	for _, m := range altTextPattern.FindAllStringSubmatch(renderedBody, -1) {
-		if m[1] != "" {
-			extra += " " + m[1]
-		} else {
-			extra += " " + m[2]
-		}
+	// Image-free body: StripHTML removes img tags entirely, including alt.
+	imageFree := normalizeFilterText(utils.StripHTML(renderedBody))
+	if goaway.IsProfane(imageFree) {
+		return false
 	}
-	// Strip all HTML tags (bluemonday with no allowed elements).
-	text := utils.StripHTML(renderedBody) + extra
-	// Unescape HTML entities.
-	text = html.UnescapeString(text)
-	// Remove invisible format characters and normalize spaces.
-	text = dropInvisible(text)
-	// Collapse whitespace.
-	text = strings.Join(strings.Fields(text), " ")
-	return !goaway.IsProfane(text)
+
+	// Positional fallback: replace each image with its alt text where it sits
+	// in the document, then check the resulting text.
+	fallback := imgTagPattern.ReplaceAllStringFunc(renderedBody, func(tag string) string {
+		m := altTextPattern.FindStringSubmatch(tag)
+		if m == nil {
+			return ""
+		}
+		if m[1] != "" {
+			return m[1]
+		}
+		return m[2]
+	})
+	fallback = normalizeFilterText(utils.StripHTML(fallback))
+	return !goaway.IsProfane(fallback)
 }

@@ -56,6 +56,12 @@ func TestFilteringSeesTheRenderedText(t *testing.T) {
 		`<p><img src="/img/emoji/nonexistent.svg" alt="&#102;uck"></p>`, // alt text shown on failed image load
 		"<p>f<a href=\"http://x\">u</a>ck this</p>",                     // markdown link becomes <a>, text joins
 		"<p>fu<strong>ck</strong> this</p>",                             // markdown emphasis becomes <strong>, letters join
+		// The image-free body is what a viewer reads while the image loads; the
+		// benign alt text must not be appended to it into an allowlisted token.
+		`<p>co&#99;k <img src="/img/emoji/wink.svg" alt="tail"></p>`,
+		// The positional fallback is what a viewer reads if the image fails;
+		// the alt text must stay at the image's position, not move to the end.
+		`<p>f<img src="/img/emoji/nonexistent.svg" alt="uc">k</p>`,
 	}
 
 	unfilteredTestMessages := []string{
@@ -63,6 +69,7 @@ func TestFilteringSeesTheRenderedText(t *testing.T) {
 		"<p>class & assignment</p>",
 		"<p>nice work &#128077;</p>",
 		"<p>assumptions about the bass fish</p>",
+		`<p>nice work <img src="/img/emoji/wink.svg" alt="thumbs up"></p>`,
 	}
 
 	for _, m := range filteredTestMessages {
