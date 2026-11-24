@@ -3,6 +3,7 @@ package plugins
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +12,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
+
+	extism "github.com/extism/go-sdk"
 )
 
 // A plugin allowed to reach one host must not be able to follow a redirect
@@ -141,5 +144,18 @@ func TestCheckPluginRedirectWithoutPlugin(t *testing.T) {
 	}
 	if err := checkPluginRedirect(req, make([]*http.Request, 10)); err == nil {
 		t.Fatal("expected the default 10-redirect limit")
+	}
+}
+
+// Plugin requests must never get a plain error from CheckRedirect (it panics
+// inside extism), including at the redirect limit.
+func TestCheckPluginRedirectLimitForPlugin(t *testing.T) {
+	p := &extism.Plugin{AllowedHosts: []string{"allowed.example"}}
+	ctx := context.WithValue(context.Background(), extism.PluginCtxKey("plugin"), p)
+	for _, host := range []string{"allowed.example", "other.example"} {
+		req := httptest.NewRequest(http.MethodGet, "http://"+host+"/", nil).WithContext(ctx)
+		if err := checkPluginRedirect(req, make([]*http.Request, 10)); !errors.Is(err, http.ErrUseLastResponse) {
+			t.Errorf("%s at redirect limit: got %v, want http.ErrUseLastResponse", host, err)
+		}
 	}
 }

@@ -20,15 +20,15 @@ func init() {
 }
 
 func checkPluginRedirect(req *http.Request, via []*http.Request) error {
-	// Go's default policy when CheckRedirect is nil.
-	if len(via) >= 10 {
-		return errors.New("stopped after 10 redirects")
-	}
 	p, ok := req.Context().Value(extism.PluginCtxKey("plugin")).(*extism.Plugin)
 	if !ok {
+		// Go's default policy when CheckRedirect is nil.
+		if len(via) >= 10 {
+			return errors.New("stopped after 10 redirects")
+		}
 		return nil
 	}
-	if !hostAllowed(p.AllowedHosts, req.URL.Hostname()) {
+	if len(via) >= 10 || !hostAllowed(p.AllowedHosts, req.URL.Hostname()) {
 		// Hand the plugin the 3xx unfollowed instead of failing the call: an
 		// error here panics inside the extism host function, which leaks the
 		// guest shadow stack and forces a plugin reload.
