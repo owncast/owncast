@@ -237,14 +237,23 @@ jobs:
           fi
           # reasons.tsv: group, spec file name, why the recording is relevant.
           # Retried ledgers are from earlier attempts of the whole suite
-          # (run.sh keeps them); "*" matches every group.
+          # (run.sh keeps them). A changed spec carries its e2e folder
+          # instead of a group, so it matches every viewport run of that
+          # folder (desktop-offline, mobile-offline) and no other folder.
           # shellcheck disable=SC2016  # $why is a jq variable, not a shell one
           spec_reason='.[] | [.group, (.spec | split("/") | last), $why] | @tsv'
           {
             if [ -f results/failures.json ]; then
               jq -r --arg why failed "$spec_reason" results/failures.json
             fi
-            for ledger in results/flaky.json results/*-retried-*.json; do
+            # An earlier attempt's failure is not proof of a later pass: a
+            # retry can die before it reaches that group again.
+            for ledger in results/failures-retried-*.json; do
+              if [ -f "$ledger" ]; then
+                jq -r --arg why 'failed on an earlier attempt' "$spec_reason" "$ledger"
+              fi
+            done
+            for ledger in results/flaky.json results/flaky-retried-*.json; do
               if [ -f "$ledger" ]; then
                 jq -r --arg why 'passed on retry' "$spec_reason" "$ledger"
               fi
@@ -252,16 +261,17 @@ jobs:
             gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --paginate --jq '
               .[] | select(.status != "removed") | .filename
               | select(startswith("test/automated/browser/cypress/e2e/"))
-              | ["*", (split("/") | last), "changed in this PR"] | @tsv'
+              | split("/") | [.[-2], .[-1], "changed in this PR"] | @tsv'
           } > results/reasons.tsv
           group=""
           find videos -name '*.mp4' | sort | while read -r f; do
             dir="${f#videos/}"; dir="${dir%%/*}"
             name="$(basename "$f" .mp4)"
-            reason=$(awk -F'\t' -v g="$dir" -v s="$name" '
-              ($1 == g || $1 == "*") && $2 == s { r[$3] = 1 }
+            reason=$(awk -F'\t' -v g="$dir" -v d="${dir#*-}" -v s="$name" '
+              ($1 == g || $1 == d) && $2 == s { r[$3] = 1 }
               END {
                 if (r["failed"]) out = "failed"
+                else if (r["failed on an earlier attempt"]) out = "failed on an earlier attempt"
                 else if (r["passed on retry"]) out = "passed on retry"
                 if (r["changed in this PR"]) out = out (out ? ", " : "") "changed in this PR"
                 print out
@@ -335,7 +345,7 @@ jobs:
             echo "## E2E UI test videos"
             echo
             if [ -s "$LINKS_FILE" ]; then
-              echo "Recordings of specs that failed, passed only on a retry, or changed in this PR (commit $HEAD_SHA). Click one to watch it in your browser. A spec that passed on a retry shows its passing run."
+              echo "Recordings of specs that failed, needed a retry, or changed in this PR (commit $HEAD_SHA). Click one to watch it in your browser. Each recording is of the spec's most recent run."
               cat "$LINKS_FILE"
             else
               echo "No spec failed, needed a retry, or changed as of commit $HEAD_SHA, so there are no recordings to show."
