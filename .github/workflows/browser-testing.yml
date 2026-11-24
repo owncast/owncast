@@ -361,7 +361,7 @@ jobs:
               echo "Recordings of specs that failed, needed a retry, or changed in this PR (commit $HEAD_SHA). Click one to watch it in your browser. Each recording is of the spec's most recent run."
               cat "$LINKS_FILE"
             elif [ "$PUBLISH_OUTCOME" = success ]; then
-              echo "No spec failed, needed a retry, or changed as of commit $HEAD_SHA, so there are no recordings to show."
+              echo "No recordings of failed, retried, or changed specs to show for commit $HEAD_SHA."
             fi
             if [ "$PUBLISH_OUTCOME" != success ]; then
               echo
