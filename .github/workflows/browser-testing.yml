@@ -319,14 +319,16 @@ jobs:
       # Keep one sticky comment on the PR with a click-to-watch link per
       # relevant recording (created once, updated in place). A run with
       # nothing relevant posts no comment, and rewrites an earlier one so it
-      # does not keep showing a previous commit's recordings. Same-repo PRs
-      # only: fork PRs run with a read-only token that cannot comment.
+      # does not keep showing a previous commit's recordings. The publish
+      # step wipes the old recordings before uploading, so this still runs
+      # when an upload failed partway: an earlier comment's links are dead
+      # by then and have to be replaced. Same-repo PRs only: fork PRs run
+      # with a read-only token that cannot comment.
       - name: Link UI test videos on the PR
         if: >-
           always() &&
           github.event_name == 'pull_request' &&
           github.event.pull_request.head.repo.full_name == github.repository &&
-          steps.video-publish.outcome == 'success' &&
           steps.video-upload.outputs.artifact-url != ''
         env:
           GH_TOKEN: ${{ github.token }}
@@ -334,18 +336,19 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           ARTIFACT_URL: ${{ steps.video-upload.outputs.artifact-url }}
           LINKS_FILE: test/automated/browser/cypress/results/video-links.md
+          PUBLISH_OUTCOME: ${{ steps.video-publish.outcome }}
         run: |
           MARKER='<!-- e2e-ui-test-videos -->'
-          # The publish step writes the links file, empty or not, only when
-          # it gets as far as selecting recordings. Without it nothing is
-          # known about this run, so leave any earlier comment alone.
+          # The publish step creates the links file, empty or not, right
+          # after it wipes the old recordings. Without the file nothing was
+          # wiped or selected, so leave any earlier comment alone.
           if [ ! -e "$LINKS_FILE" ]; then
             echo "Recordings were not published; skipping comment."
             exit 0
           fi
           existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
             --jq "[.[] | select(.body | startswith(\"$MARKER\")) | .id][0] // empty")
-          if [ ! -s "$LINKS_FILE" ] && [ -z "$existing" ]; then
+          if [ ! -s "$LINKS_FILE" ] && [ -z "$existing" ] && [ "$PUBLISH_OUTCOME" = success ]; then
             echo "No relevant recordings and no existing comment; nothing to do."
             exit 0
           fi
@@ -356,8 +359,12 @@ jobs:
             if [ -s "$LINKS_FILE" ]; then
               echo "Recordings of specs that failed, needed a retry, or changed in this PR (commit $HEAD_SHA). Click one to watch it in your browser. Each recording is of the spec's most recent run."
               cat "$LINKS_FILE"
-            else
+            elif [ "$PUBLISH_OUTCOME" = success ]; then
               echo "No spec failed, needed a retry, or changed as of commit $HEAD_SHA, so there are no recordings to show."
+            fi
+            if [ "$PUBLISH_OUTCOME" != success ]; then
+              echo
+              echo "Publishing the recordings for commit $HEAD_SHA did not finish, so some may be missing here."
             fi
             echo
             echo "All recordings as a downloadable artifact (14-day retention): [browser-test-videos]($ARTIFACT_URL)"
