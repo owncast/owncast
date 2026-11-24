@@ -26,7 +26,20 @@ function appendResults(file, records) {
 // group is the run.sh group (desktop-offline, mobile-online, ...), so a
 // failure can be told apart between the desktop and mobile run of one spec.
 function recordResults(group, spec, results) {
-	if (!results || !results.tests) return;
+	if (!results) return;
+	// A spec that crashes before any test starts reports an error and no
+	// tests. It still failed, so it gets a ledger entry.
+	if (results.error && !(results.tests || []).length) {
+		appendResults('failures.json', [
+			{
+				group,
+				spec: spec.relative,
+				test: '(spec did not run)',
+				error: results.error,
+			},
+		]);
+	}
+	if (!results.tests) return;
 	appendResults(
 		'failures.json',
 		results.tests

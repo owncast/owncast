@@ -334,6 +334,13 @@ jobs:
           LINKS_FILE: test/automated/browser/cypress/results/video-links.md
         run: |
           MARKER='<!-- e2e-ui-test-videos -->'
+          # The publish step writes the links file, empty or not, only when
+          # it gets as far as selecting recordings. Without it nothing is
+          # known about this run, so leave any earlier comment alone.
+          if [ ! -e "$LINKS_FILE" ]; then
+            echo "Recordings were not published; skipping comment."
+            exit 0
+          fi
           existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
             --jq "[.[] | select(.body | startswith(\"$MARKER\")) | .id][0] // empty")
           if [ ! -s "$LINKS_FILE" ] && [ -z "$existing" ]; then
