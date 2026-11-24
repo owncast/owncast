@@ -119,8 +119,15 @@ install_ffmpeg
 start_owncast
 
 # Start each run with a clean failure/flake ledger (appended to by after:spec
-# in cypress.config.js across all groups).
-rm -f cypress/results/failures.json cypress/results/flaky.json
+# in cypress.config.js across all groups). CI retries the whole suite, so
+# there an earlier attempt's ledgers are kept beside the new ones: a spec
+# that failed and then passed on the retry would otherwise leave no trace.
+for ledger in failures flaky; do
+	if [ -n "${CI:-}" ] && [ -f "cypress/results/$ledger.json" ]; then
+		mv "cypress/results/$ledger.json" "cypress/results/$ledger-retried-$(date +%s).json"
+	fi
+	rm -f "cypress/results/$ledger.json"
+done
 
 run_cypress "desktop-offline" desktop "cypress/e2e/offline/*.cy.js"
 run_cypress "mobile-offline" mobile "cypress/e2e/offline/*.cy.js" viewportWidth=375,viewportHeight=667
