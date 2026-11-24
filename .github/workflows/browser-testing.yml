@@ -238,6 +238,7 @@ jobs:
           # reasons.tsv: group, spec file name, why the recording is relevant.
           # Retried ledgers are from earlier attempts of the whole suite
           # (run.sh keeps them); "*" matches every group.
+          # shellcheck disable=SC2016  # $why is a jq variable, not a shell one
           spec_reason='.[] | [.group, (.spec | split("/") | last), $why] | @tsv'
           {
             if [ -f results/failures.json ]; then
