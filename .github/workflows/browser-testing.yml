@@ -348,8 +348,8 @@ jobs:
           fi
           existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
             --jq "[.[] | select(.body | startswith(\"$MARKER\")) | .id][0] // empty")
-          if [ ! -s "$LINKS_FILE" ] && [ -z "$existing" ] && [ "$PUBLISH_OUTCOME" = success ]; then
-            echo "No relevant recordings and no existing comment; nothing to do."
+          if [ ! -s "$LINKS_FILE" ] && [ -z "$existing" ]; then
+            echo "No recordings to link and no existing comment; nothing to do."
             exit 0
           fi
           {
