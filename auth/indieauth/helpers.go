@@ -26,6 +26,10 @@ func createAuthRequest(authDestination, userID, displayName, accessToken, baseSe
 		return nil, errors.Wrap(err, "unable to get IndieAuth endpoint from destination URL")
 	}
 
+	return buildAuthRequest(authURL, authEndpointURL, userID, displayName, accessToken, baseServer)
+}
+
+func buildAuthRequest(authURL, authEndpointURL *url.URL, userID, displayName, accessToken, baseServer string) (*Request, error) {
 	baseServerURL, err := url.Parse(baseServer)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to parse local owncast base server URL")
