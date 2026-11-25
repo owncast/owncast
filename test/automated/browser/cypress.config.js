@@ -23,13 +23,29 @@ function appendResults(file, records) {
 	fs.writeFileSync(out, JSON.stringify(existing.concat(records), null, 2));
 }
 
-function recordResults(spec, results) {
-	if (!results || !results.tests) return;
+// group is the run.sh group (desktop-offline, mobile-online, ...), so a
+// failure can be told apart between the desktop and mobile run of one spec.
+function recordResults(group, spec, results) {
+	if (!results) return;
+	// A spec that crashes before any test starts reports an error and no
+	// tests. It still failed, so it gets a ledger entry.
+	if (results.error && !(results.tests || []).length) {
+		appendResults('failures.json', [
+			{
+				group,
+				spec: spec.relative,
+				test: '(spec did not run)',
+				error: results.error,
+			},
+		]);
+	}
+	if (!results.tests) return;
 	appendResults(
 		'failures.json',
 		results.tests
 			.filter((test) => test.state === 'failed')
 			.map((test) => ({
+				group,
 				spec: spec.relative,
 				test: test.title.join(' > '),
 				error: test.displayError,
@@ -45,6 +61,7 @@ function recordResults(spec, results) {
 				(test) => test.state === 'passed' && (test.attempts || []).length > 1,
 			)
 			.map((test) => ({
+				group,
 				spec: spec.relative,
 				test: test.title.join(' > '),
 				attempts: test.attempts.length,
@@ -63,7 +80,9 @@ module.exports = defineConfig({
 		testIsolation: false,
 		setupNodeEvents(on, config) {
 			on('task', remoteFediverse.tasks);
-			on('after:spec', recordResults);
+			// run.sh names each group's videosFolder after the group.
+			const group = path.basename(config.videosFolder);
+			on('after:spec', (spec, results) => recordResults(group, spec, results));
 			return config;
 		},
 	},

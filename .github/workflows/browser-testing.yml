@@ -185,9 +185,12 @@ jobs:
           retention-days: 14
           path: test/automated/browser/cypress/videos/**
 
-      # Publish each recording as a standalone, browser-playable URL. The
-      # repo's S3 storage (already used by the HLS S3 tests) serves the mp4s
+      # Publish recordings as standalone, browser-playable URLs. The repo's
+      # S3 storage (already used by the HLS S3 tests) serves the mp4s
       # directly, so reviewers click a link instead of downloading a zip.
+      # Only recordings that say something about this PR are published: a
+      # spec that failed, one that passed only on a retry, or one the PR
+      # added or changed. The rest stay in the artifact above.
       # Per-PR prefix is wiped first, so a PR only ever holds its latest
       # run's videos. Fork PRs have no secrets and skip this.
       - name: Publish videos for in-browser viewing
@@ -196,8 +199,10 @@ jobs:
         if: >-
           always() &&
           github.event_name == 'pull_request' &&
-          github.event.pull_request.head.repo.full_name == github.repository
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          steps.video-upload.outputs.artifact-url != ''
         env:
+          GH_TOKEN: ${{ github.token }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET: ${{ secrets.S3_SECRET }}
@@ -217,7 +222,6 @@ jobs:
           export AWS_ACCESS_KEY_ID="$S3_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$S3_SECRET"
           export AWS_DEFAULT_REGION="${S3_REGION:-us-east-1}"
           PREFIX="ci/browser-test-videos/pr-$PR_NUMBER"
-          aws s3 rm "s3://$S3_BUCKET/$PREFIX" --recursive --endpoint-url "$S3_ENDPOINT" --quiet || true
           mkdir -p results
           # tools.sh downloads its static ffmpeg into the calling suite's
           # directory ($(pwd) at install time), so the browser suite's copy
@@ -231,8 +235,51 @@ jobs:
           if [ -z "$FFMPEG" ]; then
             echo "::warning title=Video publish::ffmpeg not found; publishing videos without the faststart remux (streaming playback may misbehave)"
           fi
+          # reasons.tsv: group, spec file name, why the recording is relevant.
+          # Retried ledgers are from earlier attempts of the whole suite
+          # (run.sh keeps them). A changed spec carries its e2e folder
+          # instead of a group, so it matches every viewport run of that
+          # folder (desktop-offline, mobile-offline) and no other folder.
+          # shellcheck disable=SC2016  # $why is a jq variable, not a shell one
+          spec_reason='.[] | [.group, (.spec | split("/") | last), $why] | @tsv'
+          {
+            if [ -f results/failures.json ]; then
+              jq -r --arg why failed "$spec_reason" results/failures.json
+            fi
+            # An earlier attempt's failure is not proof of a later pass: a
+            # retry can die before it reaches that group again.
+            for ledger in results/failures-retried-*.json; do
+              if [ -f "$ledger" ]; then
+                jq -r --arg why 'failed on an earlier attempt' "$spec_reason" "$ledger"
+              fi
+            done
+            for ledger in results/flaky.json results/flaky-retried-*.json; do
+              if [ -f "$ledger" ]; then
+                jq -r --arg why 'passed on retry' "$spec_reason" "$ledger"
+              fi
+            done
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --paginate --jq '
+              .[] | select(.status != "removed") | .filename
+              | select(startswith("test/automated/browser/cypress/e2e/"))
+              | split("/") | [.[-2], .[-1], "changed in this PR"] | @tsv'
+          } > results/reasons.tsv
+          # Wipe the PR's previous recordings only now that selection worked,
+          # so a failed lookup above leaves an earlier comment's links alive.
+          aws s3 rm "s3://$S3_BUCKET/$PREFIX" --recursive --endpoint-url "$S3_ENDPOINT" --quiet || true
           group=""
           find videos -name '*.mp4' | sort | while read -r f; do
+            dir="${f#videos/}"; dir="${dir%%/*}"
+            name="$(basename "$f" .mp4)"
+            reason=$(awk -F'\t' -v g="$dir" -v d="${dir#*-}" -v s="$name" '
+              ($1 == g || $1 == d) && $2 == s { r[$3] = 1 }
+              END {
+                if (r["failed"]) out = "failed"
+                else if (r["failed on an earlier attempt"]) out = "failed on an earlier attempt"
+                else if (r["passed on retry"]) out = "passed on retry"
+                if (r["changed in this PR"]) out = out (out ? ", " : "") "changed in this PR"
+                print out
+              }' results/reasons.tsv)
+            if [ -z "$reason" ]; then continue; fi
             # Cypress writes the mp4 index (moov atom) at the end of the
             # file, so browsers streaming from a URL stop early or report a
             # wrong duration. Remux (stream copy) to move it to the front.
@@ -250,8 +297,7 @@ jobs:
             # Cypress captures a preview from the last tested page before it tears
             # down the browser. Do not extract a frame from a video tail: that can
             # be blank, and specs without selected tests have no preview to publish.
-            dir="${f#videos/}"; dir="${dir%%/*}"
-            preview="screenshots/$dir/$(basename "${f%.mp4}")/preview.png"
+            preview="screenshots/$dir/$name/preview.png"
             if [ -f "$preview" ]; then
               preview_key="$PREFIX/${preview#screenshots/}"
               poster_url="$S3_ENDPOINT/$S3_BUCKET/$preview_key"
@@ -264,16 +310,21 @@ jobs:
               printf '\n**%s**\n\n' "$group"
             fi
             if [ -n "$poster_url" ]; then
-              printf -- '- [%s](%s) [![%s preview](%s)](%s)\n' "$(basename "$f" .mp4)" "$url" "$(basename "$f" .mp4)" "$poster_url" "$url"
+              printf -- '- [%s](%s) (%s) [![%s preview](%s)](%s)\n' "$name" "$url" "$reason" "$name" "$poster_url" "$url"
             else
-              printf -- '- [%s](%s)\n' "$(basename "$f" .mp4)" "$url"
+              printf -- '- [%s](%s) (%s)\n' "$name" "$url" "$reason"
             fi
           done > results/video-links.md
           echo "Published $(grep -c '^- ' results/video-links.md) videos."
 
       # Keep one sticky comment on the PR with a click-to-watch link per
-      # recording (created once, updated in place). Same-repo PRs only: fork
-      # PRs run with a read-only token that cannot comment.
+      # relevant recording (created once, updated in place). A run with
+      # nothing relevant posts no comment, and rewrites an earlier one so it
+      # does not keep showing a previous commit's recordings. The publish
+      # step wipes the old recordings before uploading, so this still runs
+      # when an upload failed partway: an earlier comment's links are dead
+      # by then and have to be replaced. Same-repo PRs only: fork PRs run
+      # with a read-only token that cannot comment.
       - name: Link UI test videos on the PR
         if: >-
           always() &&
@@ -286,21 +337,39 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           ARTIFACT_URL: ${{ steps.video-upload.outputs.artifact-url }}
           LINKS_FILE: test/automated/browser/cypress/results/video-links.md
+          PUBLISH_OUTCOME: ${{ steps.video-publish.outcome }}
         run: |
           MARKER='<!-- e2e-ui-test-videos -->'
+          # The publish step creates the links file, empty or not, right
+          # after it wipes the old recordings. Without the file nothing was
+          # wiped or selected, so leave any earlier comment alone.
+          if [ ! -e "$LINKS_FILE" ]; then
+            echo "Recordings were not published; skipping comment."
+            exit 0
+          fi
+          existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
+            --jq "[.[] | select(.body | startswith(\"$MARKER\")) | .id][0] // empty")
+          if [ ! -s "$LINKS_FILE" ] && [ -z "$existing" ]; then
+            echo "No recordings to link and no existing comment; nothing to do."
+            exit 0
+          fi
           {
             echo "$MARKER"
             echo "## E2E UI test videos"
             echo
             if [ -s "$LINKS_FILE" ]; then
-              echo "Preview a recording below, then click it to watch it in your browser (commit $HEAD_SHA):"
+              echo "Recordings of specs that failed, needed a retry, or changed in this PR (commit $HEAD_SHA). Click one to watch it in your browser. Each recording is of the spec's most recent run."
               cat "$LINKS_FILE"
-              echo
+            elif [ "$PUBLISH_OUTCOME" = success ]; then
+              echo "No recordings of failed, retried, or changed specs to show for commit $HEAD_SHA."
             fi
+            if [ "$PUBLISH_OUTCOME" != success ]; then
+              echo
+              echo "Publishing the recordings for commit $HEAD_SHA did not finish, so some may be missing here."
+            fi
+            echo
             echo "All recordings as a downloadable artifact (14-day retention): [browser-test-videos]($ARTIFACT_URL)"
           } > /tmp/video-comment.md
-          existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
-            --jq "[.[] | select(.body | startswith(\"$MARKER\")) | .id][0] // empty")
           if [ -n "$existing" ]; then
             gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -F body=@/tmp/video-comment.md >/dev/null
           else
