@@ -152,7 +152,9 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   });
 
   const upgradeVersionString = `${upgradeVersion}` || '';
-  const upgradeMessage = `Upgrade to v${upgradeVersionString}`;
+  const upgradeMessage = t(Localization.Admin.MainLayout.upgrade, {
+    version: upgradeVersionString,
+  });
   const openMenuItems = upgradeVersion ? ['utilities-menu'] : [];
 
   const clearAlertMessage = () => {
@@ -169,7 +171,9 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     : '';
 
   const statusIcon = online ? <PlayCircleFilled /> : <MinusSquareFilled />;
-  const statusMessage = online ? `Online ${streamDurationString}` : 'Offline';
+  const statusMessage = online
+    ? t(Localization.Admin.MainLayout.statusOnline, { duration: streamDurationString })
+    : t(Localization.Admin.MainLayout.statusOffline);
 
   const statusIndicator = (
     <div className="online-status-indicator">
@@ -180,47 +184,57 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
 
   const integrationsMenu = [
     {
-      label: <Link href="/admin/webhooks">Webhooks</Link>,
+      label: <Link href="/admin/webhooks">{t(Localization.Admin.MainLayout.webhooks)}</Link>,
       key: '/admin/webhooks',
     },
     {
-      label: <Link href="/admin/access-tokens">Access Tokens</Link>,
+      label: (
+        <Link href="/admin/access-tokens">{t(Localization.Admin.MainLayout.accessTokens)}</Link>
+      ),
       key: '/admin/access-tokens',
     },
     {
-      label: <Link href="/admin/actions">External Actions</Link>,
+      label: <Link href="/admin/actions">{t(Localization.Admin.MainLayout.externalActions)}</Link>,
       key: '/admin/actions',
     },
   ];
 
   const chatMenu = [
     {
-      label: <Link href="/admin/chat/messages">Messages</Link>,
+      label: (
+        <Link href="/admin/chat/messages">{t(Localization.Admin.MainLayout.chatMessages)}</Link>
+      ),
       key: '/admin/chat/messages',
     },
     {
-      label: <Link href="/admin/chat/emojis">Emojis</Link>,
+      label: <Link href="/admin/chat/emojis">{t(Localization.Admin.MainLayout.chatEmojis)}</Link>,
       key: '/admin/chat/emojis',
     },
   ];
 
   const utilitiesMenu = [
     {
-      label: <Link href="/admin/hardware-info">Hardware</Link>,
+      label: <Link href="/admin/hardware-info">{t(Localization.Admin.MainLayout.hardware)}</Link>,
       key: '/admin/hardware-info',
     },
     {
-      label: <Link href="/admin/stream-health">Stream Health</Link>,
+      label: (
+        <Link href="/admin/stream-health">{t(Localization.Admin.MainLayout.streamHealth)}</Link>
+      ),
       key: '/admin/stream-health',
     },
     {
-      label: <Link href="/admin/logs">Logs</Link>,
+      label: <Link href="/admin/logs">{t(Localization.Admin.MainLayout.logs)}</Link>,
       key: '/admin/logs',
     },
     ...(federationEnabled
       ? [
           {
-            label: <Link href="/admin/federation/actions">Social Actions</Link>,
+            label: (
+              <Link href="/admin/federation/actions">
+                {t(Localization.Admin.MainLayout.socialActions)}
+              </Link>
+            ),
             key: '/admin/federation/actions',
           },
         ]
@@ -229,47 +243,61 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
 
   const configurationMenu = [
     {
-      label: <Link href="/admin/config/general">General</Link>,
+      label: (
+        <Link href="/admin/config/general">{t(Localization.Admin.MainLayout.configGeneral)}</Link>
+      ),
       key: '/admin/config/general',
     },
     {
-      label: <Link href="/admin/config/server">Server Setup</Link>,
+      label: (
+        <Link href="/admin/config/server">{t(Localization.Admin.MainLayout.configServer)}</Link>
+      ),
       key: '/admin/config/server',
     },
     {
-      label: <Link href="/admin/config-video">Video</Link>,
+      label: <Link href="/admin/config-video">{t(Localization.Admin.MainLayout.configVideo)}</Link>,
       key: '/admin/config-video',
     },
     {
-      label: <Link href="/admin/config-chat">Chat</Link>,
+      label: <Link href="/admin/config-chat">{t(Localization.Admin.MainLayout.configChat)}</Link>,
       key: '/admin/config-chat',
     },
     {
-      label: <Link href="/admin/config-federation">Social</Link>,
+      label: (
+        <Link href="/admin/config-federation">{t(Localization.Admin.MainLayout.configSocial)}</Link>
+      ),
       key: '/admin/config-federation',
     },
     {
-      label: <Link href="/admin/config-notify">Notifications</Link>,
+      label: (
+        <Link href="/admin/config-notify">
+          {t(Localization.Admin.MainLayout.configNotifications)}
+        </Link>
+      ),
       key: '/admin/config-notify',
     },
   ];
 
   const menuItems = [
-    { label: <Link href="/admin">Home</Link>, icon: <HomeOutlined />, key: '/admin' },
     {
-      label: <Link href="/admin/viewer-info">Viewers</Link>,
+      label: <Link href="/admin">{t(Localization.Admin.MainLayout.home)}</Link>,
+      icon: <HomeOutlined />,
+      key: '/admin',
+    },
+    {
+      label: <Link href="/admin/viewer-info">{t(Localization.Admin.MainLayout.viewers)}</Link>,
       icon: <LineChartOutlined />,
       key: '/admin/viewer-info',
     },
     {
-      label: <Link href="/admin/users">Users</Link>,
+      label: <Link href="/admin/users">{t(Localization.Admin.MainLayout.users)}</Link>,
       icon: <TeamOutlined />,
       key: '/admin/users',
     },
     ...(!chatDisabled
       ? [
           {
-            label: <span>Chat</span>,
+            label: <span>{t(Localization.Admin.MainLayout.chat)}</span>,
             icon: <MessageOutlined />,
             children: chatMenu,
             key: 'chat',
@@ -280,7 +308,11 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       ? [
           {
             key: '/admin/federation/followers',
-            label: <Link href="/admin/federation/followers">Followers</Link>,
+            label: (
+              <Link href="/admin/federation/followers">
+                {t(Localization.Admin.MainLayout.followers)}
+              </Link>
+            ),
             icon: (
               <span
                 role="img"
@@ -301,7 +333,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
             key: '/admin/config-featured',
             label: (
               <Link href="/admin/config-featured">
-                Featured Streams
+                {t(Localization.Admin.MainLayout.featuredStreams)}
                 {pendingFeatureRequestCount > 0 && (
                   <Badge
                     count={pendingFeatureRequestCount}
@@ -317,19 +349,19 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       : []),
     {
       key: 'configuration',
-      label: 'Configuration',
+      label: t(Localization.Admin.MainLayout.configuration),
       icon: <SettingOutlined />,
       children: configurationMenu,
     },
     {
       key: 'utilities',
-      label: 'Utilities',
+      label: t(Localization.Admin.MainLayout.utilities),
       icon: <ToolOutlined />,
       children: utilitiesMenu,
     },
     {
       key: 'integrations',
-      label: 'Integrations',
+      label: t(Localization.Admin.MainLayout.integrations),
       icon: <ExperimentOutlined />,
       children: integrationsMenu,
     },
@@ -386,7 +418,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       : []),
     {
       key: '/admin/help',
-      label: <Link href="/admin/help">Help</Link>,
+      label: <Link href="/admin/help">{t(Localization.Admin.MainLayout.help)}</Link>,
       icon: <QuestionCircleOutlined />,
     },
   ];
@@ -418,12 +450,15 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   return (
     <Layout id="admin-page" className={appClass}>
       <Head>
-        <title>Owncast Admin</title>
+        <title>{t(Localization.Admin.MainLayout.title)}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       {serverError?.type === 'OWNCAST_SERVICE_UNREACHABLE' && (
-        <FatalErrorStateModal title="Server Unreachable" message={serverError.msg} />
+        <FatalErrorStateModal
+          title={t(Localization.Admin.MainLayout.serverUnreachable)}
+          message={serverError.msg}
+        />
       )}
 
       <Sider width={240} className="side-nav">
@@ -431,7 +466,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
           <span className="logo-container">
             <OwncastLogo variant="simple" />
           </span>
-          <span className="title-label">Owncast Admin</span>
+          <span className="title-label">{t(Localization.Admin.MainLayout.title)}</span>
         </h1>
         <Menu
           mode="inline"
@@ -447,7 +482,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       <Layout className="layout-main">
         <Header className="layout-header">
           <Space orientation="horizontal">
-            <Tooltip title="Compose post to your social followers">
+            <Tooltip title={t(Localization.Admin.MainLayout.composePostTooltip)}>
               <Button
                 type="link"
                 icon={<EditOutlined />}
@@ -455,7 +490,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
                 onClick={handleCreatePostButtonPressed}
                 style={{ display: federationEnabled ? 'block' : 'none', margin: '10px' }}
               >
-                Compose Post
+                {t(Localization.Admin.MainLayout.composePost)}
               </Button>
             </Tooltip>
           </Space>
@@ -463,7 +498,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
             <TextFieldWithSubmit
               fieldName="streamTitle"
               {...TEXTFIELD_PROPS_STREAM_TITLE}
-              placeholder="What are you streaming now? (Stream title)"
+              placeholder={t(Localization.Admin.MainLayout.streamTitlePlaceholder)}
               value={currentStreamTitle}
               initialValue={instanceDetails.streamTitle}
               onChange={handleStreamTitleChanged}
@@ -478,7 +513,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
 
         <Footer className="footer-container">
           <a href="https://owncast.online/?source=admin" target="_blank" rel="noopener noreferrer">
-            About Owncast v{versionNumber}
+            {t(Localization.Admin.MainLayout.aboutOwncast, { version: versionNumber })}
           </a>
         </Footer>
       </Layout>
