@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"compress/gzip"
 	"database/sql"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"testing"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/mattn/go-sqlite3"
 )
 
 func TestRestoreAcceptsTrailingDataFromLegacyBackup(t *testing.T) {
@@ -111,5 +112,136 @@ func TestBackupTruncatesExistingFile(t *testing.T) {
 	}
 	if count != 0 {
 		t.Fatalf("round-trip row count = %d, want 0", count)
+	}
+}
+
+// TestRestorePreservesDestinationOnFailure covers failed restores and successful replacement.
+func TestRestorePreservesDestinationOnFailure(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		sql       string
+		existing  bool
+		wantError bool
+		locked    bool
+	}{
+		{"invalid SQL", "invalid SQL", true, true, false},
+		{"partially executed SQL", "CREATE TABLE partial (value TEXT); invalid SQL", true, true, false},
+		{"new destination", "invalid SQL", false, true, false},
+		{"successful replacement", "CREATE TABLE restored (value TEXT); INSERT INTO restored VALUES ('restored');", true, false, false},
+		{"locked destination", "CREATE TABLE restored (value TEXT);", true, true, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			databaseFile := filepath.Join(dir, "owncast.db")
+			if tc.existing {
+				db, err := sql.Open("sqlite3", databaseFile)
+				if err != nil {
+					t.Fatal(err)
+				}
+				_, execErr := db.Exec("CREATE TABLE original (value TEXT); INSERT INTO original VALUES ('keep me');")
+				closeErr := db.Close()
+				if execErr != nil || closeErr != nil {
+					t.Fatalf("create original database: exec = %v, close = %v", execErr, closeErr)
+				}
+			}
+			original, err := os.ReadFile(databaseFile)
+			if err != nil && tc.existing {
+				t.Fatal(err)
+			}
+			var originalInfo os.FileInfo
+			if tc.existing {
+				if err := os.Chmod(databaseFile, 0o640); err != nil {
+					t.Fatal(err)
+				}
+				originalInfo, err = os.Stat(databaseFile)
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			if tc.locked {
+				db, err := sql.Open("sqlite3", databaseFile)
+				if err != nil {
+					t.Fatal(err)
+				}
+				t.Cleanup(func() {
+					_, _ = db.Exec("ROLLBACK")
+					_ = db.Close()
+				})
+				if _, err := db.Exec("BEGIN EXCLUSIVE"); err != nil {
+					t.Fatal(err)
+				}
+			}
+
+			var compressed bytes.Buffer
+			writer := gzip.NewWriter(&compressed)
+			if _, err := writer.Write([]byte(tc.sql)); err != nil {
+				t.Fatal(err)
+			}
+			if err := writer.Close(); err != nil {
+				t.Fatal(err)
+			}
+			backupFile := filepath.Join(dir, "backup.gz")
+			if err := os.WriteFile(backupFile, compressed.Bytes(), 0o600); err != nil {
+				t.Fatal(err)
+			}
+
+			restoreErr := Restore(backupFile, databaseFile)
+			if (restoreErr != nil) != tc.wantError {
+				t.Fatalf("Restore() error = %v, want error = %t", restoreErr, tc.wantError)
+			}
+			if tc.locked {
+				var sqliteErr sqlite3.Error
+				if !errors.As(restoreErr, &sqliteErr) || (sqliteErr.Code != sqlite3.ErrBusy && sqliteErr.Code != sqlite3.ErrLocked) {
+					t.Fatalf("Restore() error = %v, want SQLite busy or locked", restoreErr)
+				}
+			}
+			if tc.wantError {
+				if tc.existing {
+					current, err := os.ReadFile(databaseFile)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if !bytes.Equal(current, original) {
+						t.Error("failed restore changed the existing database")
+					}
+				} else if _, err := os.Stat(databaseFile); !os.IsNotExist(err) {
+					t.Errorf("failed restore left a destination database: %v", err)
+				}
+			} else {
+				restoredInfo, err := os.Stat(databaseFile)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if !os.SameFile(originalInfo, restoredInfo) {
+					t.Error("restore replaced the original file and its ownership")
+				}
+				if restoredInfo.Mode() != originalInfo.Mode() {
+					t.Errorf("restored mode = %v, want %v", restoredInfo.Mode(), originalInfo.Mode())
+				}
+				db, err := sql.Open("sqlite3", databaseFile)
+				if err != nil {
+					t.Fatal(err)
+				}
+				defer db.Close()
+				var value string
+				if err := db.QueryRow("SELECT value FROM restored").Scan(&value); err != nil || value != "restored" {
+					t.Fatalf("restored value = %q, error = %v", value, err)
+				}
+				var originalTables int
+				if err := db.QueryRow("SELECT count(*) FROM sqlite_master WHERE name = 'original'").Scan(&originalTables); err != nil || originalTables != 0 {
+					t.Fatalf("original tables = %d, error = %v", originalTables, err)
+				}
+			}
+
+			files, err := os.ReadDir(dir)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, file := range files {
+				if file.Name() != "backup.gz" && file.Name() != "owncast.db" {
+					t.Errorf("restore left an unexpected file: %s", file.Name())
+				}
+			}
+		})
 	}
 }

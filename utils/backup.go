@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/mattn/go-sqlite3"
 	"github.com/schollz/sqlite3dump"
 	log "github.com/sirupsen/logrus"
 )
@@ -41,17 +42,18 @@ func Restore(backupFile string, databaseFile string) error {
 
 	rawSQL := b.String()
 
-	// nolint:gosec
-	f, err := os.Create(databaseFile)
+	// Validate the restore without modifying the destination.
+	f, err := os.CreateTemp(filepath.Dir(databaseFile), ".owncast-restore-*")
 	if err != nil {
 		return errors.New("unable to write restored database")
 	}
+	defer os.Remove(f.Name())
 	if err := f.Close(); err != nil {
 		return errors.New("unable to write restored database")
 	}
 
 	// Create a new database by executing the raw SQL
-	db, err := sql.Open("sqlite3", databaseFile)
+	db, err := sql.Open("sqlite3", f.Name())
 	if err != nil {
 		return err
 	}
@@ -59,8 +61,49 @@ func Restore(backupFile string, databaseFile string) error {
 	if _, err := db.Exec(rawSQL); err != nil {
 		return err
 	}
+	if err := db.Close(); err != nil {
+		return err
+	}
 
-	return nil
+	return copyRestoredDatabase(f.Name(), databaseFile)
+}
+
+// copyRestoredDatabase uses a SQLite write transaction to preserve the destination
+// file's ownership and permissions and roll back an incomplete copy.
+func copyRestoredDatabase(source, destination string) error {
+	f, err := os.OpenFile(destination, os.O_RDWR|os.O_CREATE, 0o600) //nolint:gosec
+	if err != nil {
+		return err
+	}
+	if err := f.Close(); err != nil {
+		return err
+	}
+
+	driver := sqlite3.SQLiteDriver{}
+	sourceConn, err := driver.Open(source)
+	if err != nil {
+		return err
+	}
+	defer sourceConn.Close()
+	destinationConn, err := driver.Open(destination)
+	if err != nil {
+		return err
+	}
+	defer destinationConn.Close()
+
+	backup, err := destinationConn.(*sqlite3.SQLiteConn).Backup("main", sourceConn.(*sqlite3.SQLiteConn), "main")
+	if err != nil {
+		return err
+	}
+	done, stepErr := backup.Step(-1)
+	finishErr := backup.Finish()
+	if stepErr != nil {
+		return stepErr
+	}
+	if !done {
+		return sqlite3.Error{Code: sqlite3.ErrBusy}
+	}
+	return finishErr
 }
 
 // Backup will backup the provided instance of the database to the specified file.
