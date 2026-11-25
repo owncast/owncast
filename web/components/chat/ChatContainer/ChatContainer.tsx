@@ -95,6 +95,27 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(false);
 
+  // Suggest participants seen in chat, including people who spoke before this
+  // viewer connected. Use each participant's most recent known name.
+  const mentionCandidates = useMemo(() => {
+    const participants = new Map<string, User>();
+    messages
+      .slice(-100)
+      .reverse()
+      .forEach(({ user }) => {
+        if (
+          user?.id &&
+          user.id !== chatUserId &&
+          user.displayName &&
+          !user.isBot &&
+          !participants.has(user.id)
+        ) {
+          participants.set(user.id, user);
+        }
+      });
+    return Array.from(participants.values());
+  }, [messages, chatUserId]);
+
   const chatContainerRef = useRef(null);
   const scrollToBottomDelay = useRef(null);
 
@@ -376,6 +397,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
             <ChatTextField
               enabled={chatInputEnabled}
               focusInput={focusInput}
+              mentionCandidates={mentionCandidates}
               disabledPlaceholder={inputDisabledPlaceholder}
             />
           </div>
