@@ -98,13 +98,25 @@ export const MobileContent: FC<MobileContentProps> = ({
 
   const items: NonNullable<TabsProps['items']> = [];
 
-  items.push({ label: 'About', key: '0', children: aboutTabContent });
+  items.push({
+    label: t(Localization.Frontend.Content.aboutTab),
+    key: '0',
+    children: aboutTabContent,
+  });
   if (showFollowersTab) {
-    items.push({ label: 'Followers', key: '1', children: followersTabContent });
+    items.push({
+      label: t(Localization.Frontend.Content.followersTab),
+      key: '1',
+      children: followersTabContent,
+    });
   }
   // Add Featured tab if there are featured streams
   if (federatedServers && federatedServers.length > 0) {
-    items.push({ label: 'Featured', key: '2', children: streamsTabContent });
+    items.push({
+      label: t(Localization.Frontend.Content.featuredTabShort),
+      key: '2',
+      children: streamsTabContent,
+    });
   }
   // Plugin-contributed tabs render after the built-ins. Key is the
   // slug+title combination; the host's validator rejects duplicate

@@ -9,6 +9,8 @@ import { CustomPageContent } from '../CustomPageContent/CustomPageContent';
 import { PluginTabFrame } from '../PluginTabFrame/PluginTabFrame';
 import { ContentHeader } from '../../common/ContentHeader/ContentHeader';
 import { ComponentError } from '../ComponentError/ComponentError';
+import { useTranslation } from 'next-export-i18n';
+import { Localization } from '../../../types/localization';
 
 export type DesktopContentProps = {
   name: string;
@@ -53,6 +55,7 @@ export const DesktopContent: FC<DesktopContentProps> = ({
   showFollowersTab,
   federatedServers = [],
 }) => {
+  const { t } = useTranslation();
   const aboutTabContent = (
     <div className={styles.bottomPageContentContainer}>
       <CustomPageContent content={extraPageContent} />
@@ -73,14 +76,26 @@ export const DesktopContent: FC<DesktopContentProps> = ({
 
   const items: NonNullable<TabsProps['items']> = [];
   if (extraPageContent) {
-    items.push({ label: 'About', key: '2', children: aboutTabContent });
+    items.push({
+      label: t(Localization.Frontend.Content.aboutTab),
+      key: '2',
+      children: aboutTabContent,
+    });
   }
   if (showFollowersTab) {
-    items.push({ label: 'Followers', key: '3', children: followersTabContent });
+    items.push({
+      label: t(Localization.Frontend.Content.followersTab),
+      key: '3',
+      children: followersTabContent,
+    });
   }
   // Add Featured tab if there are featured streams
   if (federatedServers && federatedServers.length > 0) {
-    items.push({ label: 'Featured Streams', key: '4', children: streamsTabContent });
+    items.push({
+      label: t(Localization.Frontend.Content.featuredStreamsTab),
+      key: '4',
+      children: streamsTabContent,
+    });
   }
   // Plugin-contributed tabs render after the built-ins. Key is the
   // slug+title combination; the host's validator rejects duplicate

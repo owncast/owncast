@@ -7,6 +7,8 @@ import dynamic from 'next/dynamic';
 import { Button, Typography } from 'antd';
 import styles from './OfflineEmbed.module.scss';
 import { Modal } from '../Modal/Modal';
+import { useTranslation } from 'next-export-i18n';
+import { Localization } from '../../../types/localization';
 
 // The follow form is antd v6 (the first surface migrated off v4); theming
 // comes from the app-wide AntdProvider in pages/_app.tsx. Load the form
@@ -36,6 +38,7 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
   image,
   supportsFollows,
 }) => {
+  const { t } = useTranslation();
   const [currentMode, setCurrentMode] = useState(EmbedMode.CanFollow);
   const [showFollowModal, setShowFollowModal] = useState(false);
 
@@ -65,7 +68,7 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
 
           <div className={styles.messageContainer}>
             <Title level={2} className={styles.offlineTitle}>
-              This stream is not currently live.
+              {t(Localization.Frontend.FollowAndNotify.notCurrentlyLive)}
             </Title>
             <div className={styles.message} dangerouslySetInnerHTML={{ __html: subtitle }} />
           </div>
@@ -73,7 +76,7 @@ export const OfflineEmbed: FC<OfflineEmbedProps> = ({
           {currentMode === EmbedMode.CanFollow && (
             <>
               <Button className={styles.followButton} type="primary" onClick={followButtonPressed}>
-                Follow Server
+                {t(Localization.Frontend.FollowAndNotify.followServer)}
               </Button>
               <Modal
                 title={`Follow ${streamName}`}

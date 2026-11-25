@@ -479,6 +479,21 @@
 			"userJoined": "joined the chat.",
 			"userLeft": "left the chat."
 		},
+		"Content": {
+			"aboutTab": "About",
+			"chatButton": "Chat",
+			"featuredStreamsTab": "Featured Streams",
+			"featuredTabShort": "Featured",
+			"followersTab": "Followers"
+		},
+		"FollowAndNotify": {
+			"closeReminder": "Close",
+			"follow": "Follow",
+			"followServer": "Follow Server",
+			"followThisStream": "Follow this stream",
+			"notCurrentlyLive": "This stream is not currently live.",
+			"notifyWhenLive": "Notify when live"
+		},
 		"FollowModal": {
 			"description": "By following this stream you'll get notified on the Fediverse when it goes live. Now is a great time to",
 			"followButton": "Follow",
@@ -511,6 +526,13 @@
 			"description": "Your chat display name is what people see when you send chat messages.",
 			"overLimit": "Over limit",
 			"placeholder": "Your chat display name"
+		},
+		"NotifyButton": {
+			"label": "Notify"
+		},
+		"NotifyReminderPopup": {
+			"description": "Click and never miss future streams!",
+			"title": "Stay updated!"
 		},
 		"OfflineRecommendation": {
 			"introduction": "While {{name}} is offline, visit this recommended stream.",

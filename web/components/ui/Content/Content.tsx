@@ -417,7 +417,7 @@ export const Content: FC = () => {
           onClick={() => setShowChatModal(true)}
           className={styles.floatingMobileChatModalButton}
         >
-          Chat <MessageFilled />
+          {t(Localization.Frontend.Content.chatButton)} <MessageFilled />
         </Button>
       )}
     </div>

@@ -141,6 +141,34 @@ export const Localization = {
       unableToFollow: 'Frontend.FollowModal.unableToFollow',
     },
 
+    // Notify button and the reminder popup shown next to it
+    // Tabs under the player and the mobile chat button
+    Content: {
+      aboutTab: 'Frontend.Content.aboutTab',
+      followersTab: 'Frontend.Content.followersTab',
+      featuredStreamsTab: 'Frontend.Content.featuredStreamsTab',
+      featuredTabShort: 'Frontend.Content.featuredTabShort',
+      chatButton: 'Frontend.Content.chatButton',
+    },
+
+    // Follow and notify buttons, offline embed
+    FollowAndNotify: {
+      follow: 'Frontend.FollowAndNotify.follow',
+      followThisStream: 'Frontend.FollowAndNotify.followThisStream',
+      followServer: 'Frontend.FollowAndNotify.followServer',
+      notifyWhenLive: 'Frontend.FollowAndNotify.notifyWhenLive',
+      notCurrentlyLive: 'Frontend.FollowAndNotify.notCurrentlyLive',
+      closeReminder: 'Frontend.FollowAndNotify.closeReminder',
+    },
+
+    NotifyButton: {
+      label: 'Frontend.NotifyButton.label',
+    },
+    NotifyReminderPopup: {
+      title: 'Frontend.NotifyReminderPopup.title',
+      description: 'Frontend.NotifyReminderPopup.description',
+    },
+
     // Offline banner messages
     offlineBasic: 'Frontend.offlineBasic',
     offlineNotifyOnly: 'Frontend.offlineNotifyOnly',
