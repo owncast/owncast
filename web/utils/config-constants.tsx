@@ -120,8 +120,6 @@ export const TEXTFIELD_PROPS_SERVER_WELCOME_MESSAGE = {
   configPath: 'instanceDetails',
   maxLength: 2500,
   placeholder: '',
-  label: 'Welcome Message',
-  tip: 'A system chat message sent to viewers when they first connect to chat. Leave blank to disable.',
 };
 export const TEXTFIELD_PROPS_LOGO = {
   apiPath: API_LOGO,
@@ -279,65 +277,37 @@ export const DEFAULT_VARIANT_STATE: VideoVariant = {
 export const FIELD_PROPS_DISABLE_CHAT = {
   apiPath: API_CHAT_DISABLE,
   configPath: '',
-  label: 'Chat',
-  tip: 'Turn the chat functionality on/off on your Owncast server.',
   useSubmit: true,
 };
 
 export const FIELD_PROPS_ENABLE_SPAM_PROTECTION = {
   apiPath: API_CHAT_SPAM_PROTECTION_ENABLED,
   configPath: '',
-  label: 'Spam Protection',
-  tip: 'Limits how quickly messages can be sent to prevent spamming.',
   useSubmit: true,
 };
 
 export const FIELD_PROPS_CHAT_JOIN_MESSAGES_ENABLED = {
   apiPath: API_CHAT_JOIN_MESSAGES_ENABLED,
   configPath: '',
-  label: 'Join Messages',
-  tip: 'Show when a viewer joins the chat.',
   useSubmit: true,
 };
 
 export const FIELD_PROPS_ENABLE_CHAT_SLUR_FILTER = {
   apiPath: API_CHAT_SLUR_FILTER_ENABLED,
   configPath: '',
-  label: 'Chat language filter',
-  tip: 'Filters out messages that contain offensive language.',
   useSubmit: true,
 };
 
 export const CHAT_ESTABLISHED_USER_MODE = {
   apiPath: API_CHAT_ESTABLISHED_MODE,
   configPath: '',
-  label: 'Established users only',
-  tip: 'Only users who have previously been established for some time may chat.',
   useSubmit: true,
 };
 
 export const FIELD_PROPS_CHAT_REQUIRE_AUTHENTICATION = {
   apiPath: API_CHAT_REQUIRE_AUTHENTICATION,
   configPath: '',
-  label: 'Require Authentication',
-  tip: 'Only users who have authenticated may chat.',
   useSubmit: true,
-};
-
-export const TEXTFIELD_PROPS_CHAT_FORBIDDEN_USERNAMES = {
-  apiPath: API_CHAT_FORBIDDEN_USERNAMES,
-  placeholder: 'username',
-  label: 'Forbidden usernames',
-  tip: 'A list of words in chat usernames you disallow.',
-};
-
-export const TEXTFIELD_PROPS_CHAT_SUGGESTED_USERNAMES = {
-  apiPath: API_CHAT_SUGGESTED_USERNAMES,
-  placeholder: 'username',
-  label: 'Default usernames',
-  tip: 'An optional list of chat usernames that new users get assigned. If the list holds less then 10 items, random names will be generated.  Users can change their usernames afterwards and the same username may be given out multple times.',
-  min_not_reached: 'At least 10 items are required for this feature.',
-  no_entries: 'The default name generator is used.',
 };
 
 export const FIELD_PROPS_ENABLE_FEDERATION = {

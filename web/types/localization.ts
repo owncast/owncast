@@ -205,6 +205,32 @@ export const Localization = {
       resetConfirmCancel: 'Admin.EditFavicon.resetConfirmCancel',
     },
 
+    // ConfigChat component specific keys
+    ConfigChat: {
+      title: 'Admin.ConfigChat.title',
+      chatLabel: 'Admin.ConfigChat.chatLabel',
+      chatTip: 'Admin.ConfigChat.chatTip',
+      joinMessagesLabel: 'Admin.ConfigChat.joinMessagesLabel',
+      joinMessagesTip: 'Admin.ConfigChat.joinMessagesTip',
+      welcomeMessageLabel: 'Admin.ConfigChat.welcomeMessageLabel',
+      welcomeMessageTip: 'Admin.ConfigChat.welcomeMessageTip',
+      forbiddenUsernamesTitle: 'Admin.ConfigChat.forbiddenUsernamesTitle',
+      forbiddenUsernamesTip: 'Admin.ConfigChat.forbiddenUsernamesTip',
+      usernamePlaceholder: 'Admin.ConfigChat.usernamePlaceholder',
+      defaultUsernamesTitle: 'Admin.ConfigChat.defaultUsernamesTitle',
+      defaultUsernamesTip: 'Admin.ConfigChat.defaultUsernamesTip',
+      defaultUsernamesMinNotReached: 'Admin.ConfigChat.defaultUsernamesMinNotReached',
+      defaultUsernamesNone: 'Admin.ConfigChat.defaultUsernamesNone',
+      spamProtectionLabel: 'Admin.ConfigChat.spamProtectionLabel',
+      spamProtectionTip: 'Admin.ConfigChat.spamProtectionTip',
+      establishedUsersLabel: 'Admin.ConfigChat.establishedUsersLabel',
+      establishedUsersTip: 'Admin.ConfigChat.establishedUsersTip',
+      slurFilterLabel: 'Admin.ConfigChat.slurFilterLabel',
+      slurFilterTip: 'Admin.ConfigChat.slurFilterTip',
+      requireAuthenticationLabel: 'Admin.ConfigChat.requireAuthenticationLabel',
+      requireAuthenticationTip: 'Admin.ConfigChat.requireAuthenticationTip',
+    },
+
     // VideoVariantForm component specific keys
     VideoVariantForm: {
       bitrateDisabledPassthrough: 'Admin.VideoVariantForm.bitrateDisabledPassthrough',
