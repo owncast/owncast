@@ -396,8 +396,7 @@ export const Localization = {
 
       // Warnings
       socialFeaturesRequired: 'Admin.FeaturedStreams.socialFeaturesRequired',
-      socialFeaturesRequiredDesc: 'Admin.FeaturedStreams.socialFeaturesRequiredDesc',
-      federationSettings: 'Admin.FeaturedStreams.federationSettings',
+      socialFeaturesRequiredDescription: 'Admin.FeaturedStreams.socialFeaturesRequiredDescription',
 
       // Incoming feature requests (servers asking to feature this stream)
       featureRequestsTitle: 'Admin.FeaturedStreams.featureRequestsTitle',

@@ -1,7 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Typography, Alert, Button, Space, Tabs, Badge } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import Link from 'next/link';
 import { ReactElement, useContext, useState } from 'react';
 import { Translation } from '../../components/ui/Translation/Translation';
 import { Localization } from '../../types/localization';
@@ -181,22 +180,10 @@ const ConfigFeatured = () => {
             />
           }
           description={
-            <>
-              <Translation
-                translationKey={Localization.Admin.FeaturedStreams.socialFeaturesRequiredDesc}
-                defaultText="You must enable social features in the"
-              />{' '}
-              <Link href="/admin/config-federation">
-                <Translation
-                  translationKey={Localization.Admin.FeaturedStreams.federationSettings}
-                  defaultText="Federation settings"
-                />
-              </Link>{' '}
-              <Translation
-                translationKey={Localization.Admin.FeaturedStreams.socialFeaturesRequiredDesc}
-                defaultText="before you can feature other streams."
-              />
-            </>
+            <Translation
+              translationKey={Localization.Admin.FeaturedStreams.socialFeaturesRequiredDescription}
+              defaultText='You must enable social features in the <a href="/admin/config-federation/">Federation settings</a> before you can feature other streams.'
+            />
           }
           type="warning"
           showIcon
