@@ -528,6 +528,7 @@
 		"componentError": "Error: {{message}}",
 		"helloWorld": "สวัสดีโลก",
 		"lastLiveAgo": "ถ่ายทอดสดล่าสุดเมื่อ {{timeAgo}} ที่ผ่านมา",
+		"liveNow": "ถ่ายทอดสดมาแล้ว {{timeSince}}",
 		"offlineBasic": "สตรีมนี้ออฟไลน์ กรุณาตรวจสอบอีกครั้งในภายหลัง!",
 		"offlineFediverseOnly": "สตรีมนี้ออฟไลน์ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse เพื่อดูเมื่อ {{streamer}} เริ่มถ่ายทอดสดครั้งต่อไป",
 		"offlineNotifyAndFediverse": "สตรีมนี้ออฟไลน์ คุณสามารถ <span class='notify-link'>รับการแจ้งเตือน</span> เมื่อ {{streamer}} เริ่มถ่ายทอดสดอีกครั้งหรือ <span class='follow-link'>ติดตาม</span> {{fediverseAccount}} บน Fediverse",

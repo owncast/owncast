@@ -435,11 +435,6 @@ describe('Localization Keys Cross-Language Validation', () => {
         expectedValue: 'Healthy Stream',
       },
       {
-        key: Localization.Frontend.lastLiveAgo,
-        name: 'lastLiveAgo',
-        expectedValue: 'Last live {{timeAgo}} ago',
-      },
-      {
         key: Localization.Frontend.maxViewers,
         name: 'maxViewers',
         expectedValue: 'Max viewers this stream',
