@@ -57,10 +57,11 @@ const (
 	// owncast.auth.grantSession / owncast.auth.endSession. Declaring it does
 	// nothing on its own; the gate only goes live when an admin enables the
 	// plugin, and only one auth.gate plugin may be enabled at a time.
-	PermAuthGate         = "auth.gate"
-	PermFediverseInbound = "fediverse.inbound"
-	PermFediversePost    = "fediverse.post"
-	PermVideoConfigRead  = "videoconfig.read"
+	PermAuthGate          = "auth.gate"
+	PermFediverseInbound  = "fediverse.inbound"
+	PermFediverseOutbound = "fediverse.outbound"
+	PermFediversePost     = "fediverse.post"
+	PermVideoConfigRead   = "videoconfig.read"
 	PermVideoConfigWrite = "videoconfig.write"
 	// PermUIModify lets a plugin add UI surfaces to Owncast: admin pages
 	// (manifest.admin.pages) and viewer action buttons (manifest.actions).

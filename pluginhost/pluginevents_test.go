@@ -186,6 +186,24 @@ func TestTranslatePluginEvent_FediverseActivityPassesThroughRawJSON(t *testing.T
 	}
 }
 
+func TestTranslatePluginEvent_FediverseOutboundPassesThroughRawJSON(t *testing.T) {
+	raw := json.RawMessage(`{"type":"Create","actor":"https://stream.example/user/streamer"}`)
+	out := translatePluginEvent(dispatcher.Event{Type: models.FediverseOutboundActivity, Payload: raw})
+	if len(out) != 1 {
+		t.Fatalf("expected 1 event, got %d", len(out))
+	}
+	if out[0].eventType != "fediverse.outbound" {
+		t.Fatalf("eventType = %q want %q", out[0].eventType, "fediverse.outbound")
+	}
+	payload, err := json.Marshal(out[0].payload)
+	if err != nil {
+		t.Fatalf("marshal payload: %v", err)
+	}
+	if string(payload) != string(raw) {
+		t.Errorf("payload JSON = %s want %s", payload, raw)
+	}
+}
+
 func TestTranslatePluginEvent_FediverseWrongPayloadTypes(t *testing.T) {
 	tests := []dispatcher.Event{
 		{Payload: webhooks.WebhookEvent{Type: models.FediverseEngagementFollow, EventData: struct{}{}}},
@@ -195,6 +213,7 @@ func TestTranslatePluginEvent_FediverseWrongPayloadTypes(t *testing.T) {
 		{Type: models.FediverseReply, Payload: struct{}{}},
 		{Type: models.FediverseEngagementQuote, Payload: struct{}{}},
 		{Type: models.FediverseActivity, Payload: []byte(`{}`)},
+		{Type: models.FediverseOutboundActivity, Payload: []byte(`{}`)},
 	}
 	for _, event := range tests {
 		if out := translatePluginEvent(event); len(out) != 0 {

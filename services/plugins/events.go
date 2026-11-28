@@ -47,6 +47,7 @@ const (
 	EventFediverseReply    = "fediverse.reply"
 	EventFediverseQuote    = "fediverse.quote"
 	EventFediverseActivity = "fediverse.activity"
+	EventFediverseOutbound = "fediverse.outbound"
 )
 
 // reservedEventTypes are the built-in event types the host originates. A
@@ -74,4 +75,5 @@ var reservedEventTypes = map[string]bool{
 	EventFediverseReply:       true,
 	EventFediverseQuote:       true,
 	EventFediverseActivity:    true,
+	EventFediverseOutbound:    true,
 }
