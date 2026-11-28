@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -294,4 +295,53 @@ func TestGateSessionWebSocket(t *testing.T) {
 			}
 		})
 	}
+}
+
+type fakeAuthRepo struct {
+	authrepository.AuthRepository
+}
+
+func (f fakeAuthRepo) IsIPAddressBanned(address string) (bool, error) {
+	return false, nil
+}
+
+type fakeChatDisabledConfig struct {
+	configrepository.ConfigRepository
+}
+
+func (f fakeChatDisabledConfig) GetChatDisabled() bool { return false }
+
+func TestConcurrentHandleClientConnection_UpgraderCheckOriginRace(t *testing.T) {
+	s := newServer(nil)
+	s.configRepository = fakeChatDisabledConfig{}
+	s.authRepository = fakeAuthRepo{}
+
+	server := httptest.NewServer(http.HandlerFunc(s.HandleClientConnection))
+	defer server.Close()
+
+	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
+
+	const workers = 10
+	var wg sync.WaitGroup
+	wg.Add(workers)
+
+	for i := 0; i < workers; i++ {
+		go func() {
+			defer wg.Done()
+			headers := http.Header{
+				"Origin": []string{"http://example.com"},
+			}
+			conn, resp, err := websocket.DefaultDialer.Dial(wsURL, headers)
+			if resp != nil {
+				defer resp.Body.Close()
+			}
+			if err != nil {
+				t.Errorf("handshake failed: %v", err)
+				return
+			}
+			defer conn.Close()
+		}()
+	}
+
+	wg.Wait()
 }
