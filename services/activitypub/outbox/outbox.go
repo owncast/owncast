@@ -6,6 +6,7 @@
 package outbox
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -24,11 +25,13 @@ import (
 	"github.com/owncast/owncast/config"
 	"github.com/owncast/owncast/persistence/configrepository"
 	"github.com/owncast/owncast/services/activitypub/apmodels"
+	"github.com/owncast/owncast/services/activitypub/events"
 	"github.com/owncast/owncast/services/activitypub/persistence"
 	"github.com/owncast/owncast/services/activitypub/persistence/followersrepository"
 	apresolvers "github.com/owncast/owncast/services/activitypub/resolvers"
 	"github.com/owncast/owncast/services/activitypub/webfinger"
 	"github.com/owncast/owncast/services/activitypub/workerpool"
+	"github.com/owncast/owncast/services/dispatcher"
 	"github.com/owncast/owncast/utils"
 )
 
@@ -43,6 +46,7 @@ type Service struct {
 	builder          *apmodels.Builder
 	resolver         *apresolvers.Resolver
 	cfg              *config.Config
+	events           *dispatcher.Dispatcher
 
 	// Featured-streams ping ticker state. Touched only by
 	// StartStreamPingTicker / StopStreamPingTicker under pingTickerMu.
@@ -60,6 +64,7 @@ type Deps struct {
 	Builder          *apmodels.Builder
 	Resolver         *apresolvers.Resolver
 	Config           *config.Config
+	Events           *dispatcher.Dispatcher
 }
 
 // New constructs an outbox Service. All deps are required.
@@ -72,6 +77,7 @@ func New(deps Deps) *Service {
 		builder:          deps.Builder,
 		resolver:         deps.Resolver,
 		cfg:              deps.Config,
+		events:           deps.Events,
 	}
 }
 
@@ -167,12 +173,23 @@ func (s *Service) SendLive() error {
 	if err := s.Add(note, noteID, true); err != nil {
 		return err
 	}
+	events.PublishOutbound(context.Background(), s.events, b)
 
 	return nil
 }
 
 // SendDirectMessageToAccount sends a direct message to a single account.
 func (s *Service) SendDirectMessageToAccount(textContent, account string) error {
+	return s.sendDirectMessageToAccount(textContent, account, true)
+}
+
+// SendAuthenticationMessageToAccount sends a login challenge without exposing
+// its code to plugins.
+func (s *Service) SendAuthenticationMessageToAccount(textContent, account string) error {
+	return s.sendDirectMessageToAccount(textContent, account, false)
+}
+
+func (s *Service) sendDirectMessageToAccount(textContent, account string, notify bool) error {
 	links, err := webfinger.GetWebfingerLinks(account)
 	if err != nil {
 		return errors.Wrap(err, "unable to get webfinger links when sending private message")
@@ -199,7 +216,13 @@ func (s *Service) SendDirectMessageToAccount(textContent, account string) error 
 		return errors.Wrap(err, "unable to serialize custom fediverse message activity")
 	}
 
-	return s.SendToUser(actor.Inbox, b)
+	if err := s.SendToUser(actor.Inbox, b); err != nil {
+		return err
+	}
+	if notify {
+		events.PublishOutbound(context.Background(), s.events, b)
+	}
+	return nil
 }
 
 // SendPublicMessage sends a public message to all followers.
@@ -249,6 +272,7 @@ func (s *Service) SendPublicMessage(textContent string) error {
 	if err := s.Add(note, noteID, false); err != nil {
 		return err
 	}
+	events.PublishOutbound(context.Background(), s.events, b)
 
 	return nil
 }
@@ -399,7 +423,11 @@ func (s *Service) UpdateFollowersWithAccountUpdates() error {
 		log.Errorln("unable to serialize send update actor activity", err)
 		return errors.New("unable to serialize send update actor activity")
 	}
-	return s.SendToFollowers(b)
+	if err := s.SendToFollowers(b); err != nil {
+		return err
+	}
+	events.PublishOutbound(context.Background(), s.events, b)
+	return nil
 }
 
 // Add saves an ActivityPub object to the datastore.

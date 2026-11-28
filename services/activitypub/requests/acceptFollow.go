@@ -15,17 +15,6 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-// SendFollowAccept queues an Accept for a received Follow. The Accept carries
-// this server's current stream status so a newly accepted featured-streams
-// follower reflects our live state immediately.
-func SendFollowAccept(wp *workerpool.Service, inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder, configRepository configrepository.ConfigRepository, streamActive bool) error {
-	delivery, err := MakeFollowAcceptDelivery(inbox, originalFollowActivity, fromLocalAccountName, builder, configRepository, streamActive)
-	if err != nil {
-		return err
-	}
-	return wp.Enqueue(delivery)
-}
-
 // MakeFollowAcceptDelivery builds the durable delivery for a Follow Accept.
 func MakeFollowAcceptDelivery(inbox *url.URL, originalFollowActivity vocab.ActivityStreamsFollow, fromLocalAccountName string, builder *apmodels.Builder, configRepository configrepository.ConfigRepository, streamActive bool) (workerpool.Delivery, error) {
 	if err := validateRemoteInbox(inbox); err != nil {

@@ -199,12 +199,16 @@ func translatePluginEvent(evt dispatcher.Event) []pluginEvent {
 
 func translateFediverseEvent(evt dispatcher.Event) []pluginEvent {
 	switch evt.Type {
-	case models.FediverseActivity:
+	case models.FediverseActivity, models.FediverseOutboundActivity:
 		payload, ok := evt.Payload.(json.RawMessage)
 		if !ok {
 			return nil
 		}
-		return []pluginEvent{{plugins.EventFediverseActivity, payload}}
+		eventType := plugins.EventFediverseActivity
+		if evt.Type == models.FediverseOutboundActivity {
+			eventType = plugins.EventFediverseOutbound
+		}
+		return []pluginEvent{{eventType, payload}}
 	case models.FediverseEngagementLike, models.FediverseEngagementRepost:
 		payload, ok := evt.Payload.(*activityevents.FediverseEngagementEvent)
 		if !ok || payload == nil {

@@ -1,6 +1,7 @@
 package outbox
 
 import (
+	"context"
 	"net/url"
 
 	"code.superseriousbusiness.org/activity/streams"
@@ -10,6 +11,7 @@ import (
 	"github.com/teris-io/shortid"
 
 	"github.com/owncast/owncast/services/activitypub/apmodels"
+	"github.com/owncast/owncast/services/activitypub/events"
 )
 
 // streamStatusActivity is satisfied by the ActivityStreams activity types used
@@ -77,6 +79,7 @@ func (s *Service) sendStreamStatusToFollowers(activity streamStatusActivity, isL
 	if err := s.Add(activity, id, false); err != nil {
 		return err
 	}
+	events.PublishOutbound(context.Background(), s.events, b)
 
 	log.Debugln("Queued " + logLabel + " to directory followers")
 	return nil
